@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="theme-color" content="#000000" />
+
+    <title>Mock website hosting the A-Tag</title>
+
+    <script>
+      (function(a,b){if(!a[b]){a.__adobeNamespace=b;
+      a[b]=function(){a[b].q.push(arguments)};a[b].q=[]}})
+      (window,'adbe')
+    </script>
+    <script src="atag.js" async></script>
+
+    <!-- <script src="HistoryTracker.js"></script>
+    <script>
+      atag("loadPlugin", {
+        params: {
+          name: "historyTracker",
+          age: 37
+        }
+      });
+    </script> -->
+
+    <script>
+      adbe("configure", {
+        params: {
+          orgId: 23784612874,
+          dataSet: "dataset1",
+          shouldStoreCollectedData: 1,
+          device: "Chrome-Mac",
+          collectionUrl: "http://parent.com:8080"
+        }
+      });
+
+      adbe("subscribe", {
+        params: { 
+          eventName: "willPrepareRequest" 
+        },
+        callback: function (payload) {
+          payload.appendToQuery({ key: "value" })
+       }
+      });
+
+      adbe("subscribe", {
+        params: { 
+          eventName: "didMount" 
+        },
+        callback: function (response) {
+          var personalization = response.personalization;
+          console.log(personalization);
+       }
+      });
+    </script>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>
