@@ -22,7 +22,7 @@
 // TODO: We might need a `CoreConfig` module that encapsulates config stuff like initing, adding to it later on...
 
 import CoreComponents from "./CoreComponents";
-import EventBus from "../../helpers/EventBus";
+import EventBus from "./EventBus";
 
 // TODO: Might need to make this guy a smart object, not a simple array.
 const registry = [];
