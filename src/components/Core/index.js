@@ -21,7 +21,6 @@
 
 // TODO: We might need a `CoreConfig` module that encapsulates config stuff like initing, adding to it later on...
 
-import Payload from "./Payload";
 import CoreComponents from "./CoreComponents";
 import EventBus from "../../helpers/EventBus";
 
@@ -34,11 +33,13 @@ export default class Core {
     constructor(configs, ...components) {
         this._components = new CoreComponents(registry.concat(components));
         this._configs = configs;
+        
+        this.interact = this.interact.bind(this);
         this.collect = this.collect.bind(this);
-        this.sendRequest = this.sendRequest.bind(this);
         this._events = new EventBus();
 
-        this._components.componentsDidMount(this);
+        this._components.onComponentsRegistered(this);
+        this.tracker = this._components.getComponent("Tracker");
     }
 
     static makeLogger(prefix) {
@@ -54,88 +55,18 @@ export default class Core {
         plugins.push(plugin);
     }
 
-    get configs() {
-        return this._configs;
-    }
+    get configs() { return this._configs; }
 
-    get events() {
-        return this._events;
-    }
+    get events() { return this._events; }
 
+    get components() { return this._components; }
 
-    // Playing around with a startup call idea.. Or basically page/view load.
+    // Testing how we will expose Components' APIs to main.js and the outside world.
     interact(data, callback) {
-        this.createRequest(data, this.interactRequestHook.bind(this))
-            .then(payload => this.sendRequest("interact", payload))
-            // TODO Maybe callback should follow the Node API: (error, data)
-            .then(() => callback("Startup call has been fired!"));
+        this.tracker.interact(data, callback);
     }
 
-    // TODO: Definitely rename :)
-    // MAYBE: make this api more specific to being an initial call when a page or view first load.
-    // Maybe we need 2 APIs: One that waits for reponse and another that fires and forgets.
     collect(data, callback) {
-        this.createRequest(data, this.prepareRequestHook.bind(this))
-            .then(payload => this.sendRequest("collect", payload))
-            // TODO Maybe callback should follow the Node API: (error, data)
-            .then(() => callback("Data has been collected!"));
-    }
-
-    prepareRequestHook(payload) {
-        this._components.willPrepareRequest(payload);
-    }
-
-    interactRequestHook(payload) {
-        this._components.onStartupRequest(payload);
-    }
-
-    createRequest(data, hook) {
-        // Populate the request's body with payload, data and metadata.
-        const payload = new Payload({ data });
-
-        // TODO: Make those hook calls Async?
-        hook(payload);
-
-        // MAYBE: Not sure how the cross components communication will happen yet.
-        const identity = this._components.getComponent("Identity");
-
-        // Append metadata to the payload.
-        payload.appendToMetadata({
-            ecid: identity.getEcid() || null,
-            enableStore: this.configs.shouldStoreCollectedData,
-            device: this.configs.device || "UNKNOWN-DEVICE"
-        });
-
-        // Append Context data; basically data we can infer from the environment.
-        // TODO: take this stuff out of here, and have some helper component do that.
-        payload.appendToContext({
-            env: {
-                "js_enabled": true,
-                "js_version": "1.8.5",
-                "cookies_enabled": true,
-                "browser_height": 900,
-                "screen_orientation": "landscape",
-                "webgl_renderer": "AMD Radeon Pro 460 OpenGL Engine"
-            },
-            view: {
-                "url": "www.test.com",
-                "referrer": "www.adobe.com"
-            }            
-        });
-
-        return Promise.resolve(payload.toJson());
-    }
-
-    // TODO: This is where we go to the Tracker or Request Component.
-    sendRequest(endpoint, requestPayload) {
-        // MAYBE: Not sure how the cross components communication will happen yet.
-        const tracker = this._components.getComponent("Tracker");
-
-        tracker.send(endpoint, requestPayload)
-            // Freeze the response before handing it to all the components.
-            .then(response => Object.freeze(response.json()))
-            .then(respJson => {
-                this._components.onResponseReady(respJson);
-            });
+        this.tracker.collect(data, callback);
     }
 }

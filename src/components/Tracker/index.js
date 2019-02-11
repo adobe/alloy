@@ -1,26 +1,22 @@
+import Request from "./Request";
 
-export default class Tracker {
-    constructor() {
+export default function Tracker() {
+    let core;
+    
+    Object.defineProperty(this, "namespace", { get() { return "Tracker" } });
 
-    }
+    this.onComponentsRegistered = coreInstance => core = coreInstance;
 
-    get namespace() {
-        return "Tracker";
-    }
+    const makeServerCall = (endpoint, beforeHook, afterHook) => (data, callback) => {
+        const request = new Request(core);
+        return request.send(data, endpoint, beforeHook, afterHook, callback);
+    };
 
-    componentsDidMount(core) {
-        this._core = core;
-    }
+    const beforeInteractHook = payload => core.components.onBeforeInteract(payload);
+    const onInteractResponse = response => core.components.onInteractResponse(response);
+    const onBeforeCollect = payload => core.components.onBeforeCollect(payload);
+    const onCollectResponse = payload => core.components.onCollectResponse(payload);
 
-    send(endpoint, payload) {
-        return fetch(this._core.configs.collectionUrl + "/" + endpoint, {
-            method: "POST",
-            cache: "no-cache",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            referrer: "client",
-            body: payload
-        });
-    }
+    this.interact = makeServerCall("interact", beforeInteractHook, onInteractResponse);
+    this.collect = makeServerCall("collect", onBeforeCollect, onCollectResponse);
 }
