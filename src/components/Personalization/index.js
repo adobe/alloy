@@ -1,34 +1,20 @@
-import Core from "../Core";
 
-function PersonalizationQuery(payload, sessionId) {
-    this.build = function () {
+export default function Personalization() {
+    Object.defineProperty(this, "namespace", { get() { return "Personalization" } });
+    
+    // IMPLEMENT THE HOOKS YOU ARE INTERESTED IN.
+
+    this.onBeforeInteract = (payload) => {
+        console.log("Personalization:::onBeforeInteract");
         payload.appendToQuery({
             personalization: {
-                sessionId: sessionId
+                sessionId: "1234235"
             }
         });
     };
-}
 
-export default class Personalization {
-    constructor() {
-        
-    }
-
-    get namespace() {
-        return "Personalization";
-    }
-
-    // IMPLEMENT THE HOOKS YOU ARE INTERESTED IN.
-
-    onInteractRequest(payload) {
-        console.log("Personalization:::onInteractRequest");
-        const pbuilder = new PersonalizationQuery(payload, "1234235");
-        return pbuilder.build();
-    }
-
-    onResponseReady({ personalization = []} = {}) {
-        console.log("Personalization:::onResponseReady");
+    this.onInteractResponse = ({ resources: { personalization = [] } } = {}) => {
+        console.log("Personalization:::onInteractResponse");
         
         document.addEventListener("DOMContentLoaded", function(event) {
             personalization.forEach(offer => {
@@ -38,5 +24,5 @@ export default class Personalization {
                 }
             });
         });
-    }
+    };
 }

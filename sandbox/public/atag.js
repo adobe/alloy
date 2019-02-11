@@ -319,51 +319,6 @@
 
   var reactorPromise = window.Promise || promise;
 
-  // data should be an array to support sending multiple events.
-  function Payload() {
-    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-        data = _ref.data,
-        _ref$query = _ref.query,
-        query = _ref$query === void 0 ? {} : _ref$query,
-        _ref$metadata = _ref.metadata,
-        metadata = _ref$metadata === void 0 ? {} : _ref$metadata,
-        _ref$context = _ref.context,
-        context = _ref$context === void 0 ? {} : _ref$context;
-
-    var payload = {
-      data: [],
-      query: query,
-      metadata: metadata,
-      context: context
-    }; // TODO Validate...
-
-    if (data) {
-      payload.data.push(data);
-    }
-
-    var append = function append(key) {
-      return function () {
-        var obj = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-        // TODO Validate...
-        console.warn("[Payload:appendTo".concat(key, "] To Implement!"));
-        Object.assign(payload[key], obj);
-        return payload;
-      };
-    };
-
-    this.appendToData = function (obj) {
-      return payload.data.push(obj);
-    };
-
-    this.appendToQuery = append("query");
-    this.appendToMetadata = append("metadata");
-    this.appendToContext = append("context");
-
-    this.toJson = function () {
-      return JSON.stringify(payload);
-    };
-  }
-
   // - This dude acts as a Components repo.
   // - It also implements all of the Core's lifecycle hooks.
   // Let's start the first version with an explicit Hook interface,
@@ -400,32 +355,35 @@
           return component.namespace === namespace;
         });
       } // ALL THE LIFECYCLE HOOKS GO HERE!
-      // TODO Define the final hooks.
 
     }, {
-      key: "onStartupRequest",
-      value: function onStartupRequest(payload) {
-        return this._invokeHook("onStartupRequest", payload);
-      } // MAYBE: A LifeCycle hook once all components have registered?
-      // MAYBE: This is an `appReady` hook?
-
-    }, {
-      key: "componentsDidMount",
-      value: function componentsDidMount(core) {
+      key: "onComponentsRegistered",
+      value: function onComponentsRegistered(core) {
+        // MAYBE: If a Component has a hard dependency, or maybe CORE can do this:
         //if (core.hasComponent('Personalization')) {
         // new Error() or core.missingRequirement('I require Personalization');
         //}
-        return this._invokeHook("componentsDidMount", core);
+        return this._invokeHook("onComponentsRegistered", core);
       }
     }, {
-      key: "willPrepareRequest",
-      value: function willPrepareRequest(payload) {
-        return this._invokeHook("willPrepareRequest", payload);
+      key: "onBeforeInteract",
+      value: function onBeforeInteract(payload) {
+        return this._invokeHook("onBeforeInteract", payload);
       }
     }, {
-      key: "onResponseReady",
-      value: function onResponseReady(response) {
-        return this._invokeHook("onResponseReady", response);
+      key: "onInteractResponse",
+      value: function onInteractResponse(response) {
+        return this._invokeHook("onInteractResponse", response);
+      }
+    }, {
+      key: "onBeforeCollect",
+      value: function onBeforeCollect(payload) {
+        return this._invokeHook("onBeforeCollect", payload);
+      }
+    }, {
+      key: "onCollectResponse",
+      value: function onCollectResponse(response) {
+        return this._invokeHook("onCollectResponse", response);
       }
     }, {
       key: "_invokeHook",
@@ -504,102 +462,25 @@
 
       this._components = new CoreComponents(registry.concat(components));
       this._configs = configs;
+      this.interact = this.interact.bind(this);
       this.collect = this.collect.bind(this);
-      this.sendRequest = this.sendRequest.bind(this);
       this._events = new EventBus();
 
-      this._components.componentsDidMount(this);
+      this._components.onComponentsRegistered(this);
+
+      this.tracker = this._components.getComponent("Tracker");
     }
 
     _createClass(Core, [{
-      key: "startupCall",
-      // Playing around with a startup call idea.. Or basically page/view load.
-      value: function startupCall(data, callback) {
-        var _this = this;
-
-        this.createRequest(data, this.startupRequestHook.bind(this)).then(function (payload) {
-          return _this.sendRequest("interact", payload);
-        }) // TODO Maybe callback should follow the Node API: (error, data)
-        .then(function () {
-          return callback("Startup call has been fired!");
-        });
-      } // TODO: Definitely rename :)
-      // MAYBE: make this api more specific to being an initial call when a page or view first load.
-      // Maybe we need 2 APIs: One that waits for reponse and another that fires and forgets.
-
+      key: "interact",
+      // Testing how we will expose Components' APIs to main.js and the outside world.
+      value: function interact(data, callback) {
+        this.tracker.interact(data, callback);
+      }
     }, {
       key: "collect",
       value: function collect(data, callback) {
-        var _this2 = this;
-
-        this.createRequest(data, this.prepareRequestHook.bind(this)).then(function (payload) {
-          return _this2.sendRequest("collect", payload);
-        }) // TODO Maybe callback should follow the Node API: (error, data)
-        .then(function () {
-          return callback("Data has been collected!");
-        });
-      }
-    }, {
-      key: "prepareRequestHook",
-      value: function prepareRequestHook(payload) {
-        this._components.willPrepareRequest(payload);
-      }
-    }, {
-      key: "startupRequestHook",
-      value: function startupRequestHook(payload) {
-        this._components.onStartupRequest(payload);
-      }
-    }, {
-      key: "createRequest",
-      value: function createRequest(data, hook) {
-        // Populate the request's body with payload, data and metadata.
-        var payload = new Payload({
-          data: data
-        }); // TODO: Make those hook calls Async?
-
-        hook(payload); // MAYBE: Not sure how the cross components communication will happen yet.
-
-        var identity = this._components.getComponent("Identity"); // Append metadata to the payload.
-
-
-        payload.appendToMetadata({
-          ecid: identity.getEcid() || null,
-          enableStore: this.configs.shouldStoreCollectedData,
-          device: this.configs.device || "UNKNOWN-DEVICE"
-        }); // Append Context data; basically data we can infer from the environment.
-        // TODO: take this stuff out of here, and have some helper component do that.
-
-        payload.appendToContext({
-          env: {
-            "js_enabled": true,
-            "js_version": "1.8.5",
-            "cookies_enabled": true,
-            "browser_height": 900,
-            "screen_orientation": "landscape",
-            "webgl_renderer": "AMD Radeon Pro 460 OpenGL Engine"
-          },
-          view: {
-            "url": "www.test.com",
-            "referrer": "www.adobe.com"
-          }
-        });
-        return Promise.resolve(payload.toJson());
-      } // TODO: This is where we go to the Tracker or Request Component.
-
-    }, {
-      key: "sendRequest",
-      value: function sendRequest(endpoint, requestPayload) {
-        var _this3 = this;
-
-        // MAYBE: Not sure how the cross components communication will happen yet.
-        var tracker = this._components.getComponent("Tracker");
-
-        tracker.send(endpoint, requestPayload) // Freeze the response before handing it to all the components.
-        .then(function (response) {
-          return Object.freeze(response.json());
-        }).then(function (respJson) {
-          _this3._components.onResponseReady(respJson);
-        });
+        this.tracker.collect(data, callback);
       }
     }, {
       key: "configs",
@@ -610,6 +491,11 @@
       key: "events",
       get: function get() {
         return this._events;
+      }
+    }, {
+      key: "components",
+      get: function get() {
+        return this._components;
       }
     }], [{
       key: "makeLogger",
@@ -631,104 +517,164 @@
     return Core;
   }();
 
-  function PersonalizationQuery(payload, sessionId) {
-    this.build = function () {
-      payload.appendToQuery({
-        personalization: {
-          sessionId: sessionId
-        }
+  // data should be an array to support sending multiple events.
+  function Payload() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        data = _ref.data,
+        _ref$query = _ref.query,
+        query = _ref$query === void 0 ? {} : _ref$query,
+        _ref$metadata = _ref.metadata,
+        metadata = _ref$metadata === void 0 ? {} : _ref$metadata,
+        _ref$context = _ref.context,
+        context = _ref$context === void 0 ? {} : _ref$context;
+
+    var payload = {
+      data: [],
+      query: query,
+      metadata: metadata,
+      context: context
+    }; // TODO Validate...
+
+    if (data) {
+      payload.data.push(data);
+    }
+
+    var append = function append(key) {
+      return function () {
+        var obj = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        // TODO Validate...
+        console.warn("[Payload:appendTo".concat(key, "] To Implement!"));
+        Object.assign(payload[key], obj);
+        return payload;
+      };
+    };
+
+    this.appendToData = function (obj) {
+      return payload.data.push(obj);
+    };
+
+    this.appendToQuery = append("query");
+    this.appendToMetadata = append("metadata");
+    this.appendToContext = append("context");
+
+    this.toJson = function () {
+      return JSON.stringify(payload);
+    };
+  }
+
+  function setMetadata(payload, core) {
+    // MAYBE: Not sure how the cross components communication will happen yet.
+    var identity = core.components.getComponent("Identity"); // Append metadata to the payload.
+
+    payload.appendToMetadata({
+      ecid: identity.getEcid() || null,
+      enableStore: core.configs.shouldStoreCollectedData,
+      device: core.configs.device || "UNKNOWN-DEVICE"
+    });
+  }
+
+  function setContext(payload) {
+    // Append Context data; basically data we can infer from the environment.
+    // TODO: take this stuff out of here, and have some helper component do that.
+    payload.appendToContext({
+      env: {
+        "js_enabled": true,
+        "js_version": "1.8.5",
+        "cookies_enabled": true,
+        "browser_height": 900,
+        "screen_orientation": "landscape",
+        "webgl_renderer": "AMD Radeon Pro 460 OpenGL Engine"
+      },
+      view: {
+        "url": "www.test.com",
+        "referrer": "www.adobe.com"
+      }
+    });
+  }
+
+  function Request(core) {
+    var createPayload = function createPayload(data, beforeHook) {
+      // Populate the request's body with payload, data and metadata.
+      var payload = new Payload({
+        data: data
+      }); // TODO: Make those hook calls Async?
+
+      beforeHook(payload);
+      setContext(payload);
+      setMetadata(payload, core);
+      return Promise.resolve(payload.toJson());
+    }; // TODO: Extract this stuff into a core helper.
+
+
+    var callServer = function callServer(endpoint) {
+      return function (payload) {
+        return fetch(core.configs.collectionUrl + "/" + endpoint, {
+          method: "POST",
+          cache: "no-cache",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          referrer: "client",
+          body: payload
+        });
+      };
+    };
+
+    this.send = function (data, endpoint, beforeHook, afterHook, callback) {
+      createPayload(data, beforeHook).then(callServer(endpoint)) // Freeze the response before handing it to all the components.
+      .then(function (response) {
+        return Object.freeze(response.json());
+      }).then(function (respJson) {
+        return afterHook(respJson);
+      }).then(function () {
+        return callback("Request has been fired!");
       });
     };
   }
 
-  var Personalization =
-  /*#__PURE__*/
-  function () {
-    function Personalization() {
-      _classCallCheck(this, Personalization);
-    }
-
-    _createClass(Personalization, [{
-      key: "onStartupRequest",
-      // IMPLEMENT THE HOOKS YOU ARE INTERESTED IN.
-      value: function onStartupRequest(payload) {
-        console.log("Personalization:::onStartupRequest");
-        var pbuilder = new PersonalizationQuery(payload, "1234235");
-        return pbuilder.build();
-      }
-    }, {
-      key: "onResponseReady",
-      value: function onResponseReady() {
-        var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-            _ref$personalization = _ref.personalization,
-            personalization = _ref$personalization === void 0 ? [] : _ref$personalization;
-
-        console.log("Personalization:::onResponseReady");
-        document.addEventListener("DOMContentLoaded", function (event) {
-          personalization.forEach(function (offer) {
-            var el = document.querySelector(offer.offerMboxSelector);
-
-            if (el) {
-              el.innerHTML = offer.offerHtmlPayload;
-            }
-          });
-        });
-      }
-    }, {
-      key: "namespace",
-      get: function get() {
-        return "Personalization";
-      }
-    }]);
-
-    return Personalization;
-  }();
-
-  // The register.js modules can be instead part of the build system
-
-  function register() {
-    var personalization = new Personalization();
-    Core.registerComponent(personalization);
-    return personalization;
-  }
-
-  function Destinations() {
-    var hasDestinationExpired = true;
+  function Tracker() {
+    var core;
     Object.defineProperty(this, "namespace", {
       get: function get() {
-        return "Destinations";
+        return "Tracker";
       }
     });
 
-    this.onStartupRequest = function (payload) {
-      console.log("Destinations:::onStartupRequest");
-
-      if (hasDestinationExpired) {
-        payload.appendToQuery({
-          destinations: true
-        });
-        hasDestinationExpired = false;
-      }
+    this.onComponentsRegistered = function (coreInstance) {
+      return core = coreInstance;
     };
 
-    this.onResponseReady = function () {
-      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-          _ref$destinations = _ref.destinations,
-          destinations = _ref$destinations === void 0 ? [] : _ref$destinations;
-
-      console.log("Destinations:::onResponseReady");
-      destinations.forEach(function (dest) {
-        return console.log(dest.url);
-      });
+    var makeServerCall = function makeServerCall(endpoint, beforeHook, afterHook) {
+      return function (data, callback) {
+        var request = new Request(core);
+        return request.send(data, endpoint, beforeHook, afterHook, callback);
+      };
     };
+
+    var beforeInteractHook = function beforeInteractHook(payload) {
+      return core.components.onBeforeInteract(payload);
+    };
+
+    var onInteractResponse = function onInteractResponse(response) {
+      return core.components.onInteractResponse(response);
+    };
+
+    var onBeforeCollect = function onBeforeCollect(payload) {
+      return core.components.onBeforeCollect(payload);
+    };
+
+    var onCollectResponse = function onCollectResponse(payload) {
+      return core.components.onCollectResponse(payload);
+    };
+
+    this.interact = makeServerCall("interact", beforeInteractHook, onInteractResponse);
+    this.collect = makeServerCall("collect", onBeforeCollect, onCollectResponse);
   }
 
-  // The register.js modules can be instead part of the build system
-
-  function register$1() {
-    var destinations = new Destinations();
-    Core.registerComponent(destinations);
-    return destinations;
+  function register() {
+    var tracker = new Tracker();
+    Core.registerComponent(tracker);
+    return tracker;
   }
 
   var js_cookie = createCommonjsModule(function (module, exports) {
@@ -920,8 +866,8 @@
       return reactorCookie.get("ecid");
     };
 
-    this.willPrepareRequest = function (payload) {
-      console.log("Identity:::willPrepareRequest");
+    this.onBeforeCollect = function (payload) {
+      console.log("Identity:::onBeforeCollect");
 
       if (hasIdSyncsExpired) {
         payload.appendToQuery({
@@ -934,9 +880,9 @@
       }
     };
 
-    this.onResponseReady = function (_ref) {
+    this.onInteractResponse = function (_ref) {
       var ecid = _ref.ids.ecid;
-      console.log("Identity:::onResponseReady");
+      console.log("Identity:::onInteractResponse");
       reactorCookie.set('ecid', ecid, {
         expires: 7
       });
@@ -945,54 +891,95 @@
 
   // The register.js modules can be instead part of the build system
 
-  function register$2() {
+  function register$1() {
     var identity = new Identity();
     Core.registerComponent(identity);
     return identity;
   }
 
-  var Tracker =
-  /*#__PURE__*/
-  function () {
-    function Tracker() {
-      _classCallCheck(this, Tracker);
-    }
-
-    _createClass(Tracker, [{
-      key: "componentsDidMount",
-      value: function componentsDidMount(core) {
-        this._core = core;
-      }
-    }, {
-      key: "send",
-      value: function send(endpoint, payload) {
-        return fetch(this._core.configs.collectionUrl + "/" + endpoint, {
-          method: "POST",
-          cache: "no-cache",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          referrer: "client",
-          body: payload
-        });
-      }
-    }, {
-      key: "namespace",
+  function Destinations() {
+    var hasDestinationExpired = true;
+    Object.defineProperty(this, "namespace", {
       get: function get() {
-        return "Tracker";
+        return "Destinations";
       }
-    }]);
+    });
 
-    return Tracker;
-  }();
+    this.onBeforeInteract = function (payload) {
+      console.log("Destinations:::onBeforeInteract");
+
+      if (hasDestinationExpired) {
+        payload.appendToQuery({
+          destinations: true
+        });
+        hasDestinationExpired = false;
+      }
+    };
+
+    this.onInteractResponse = function () {
+      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+          _ref$destinations = _ref.destinations,
+          destinations = _ref$destinations === void 0 ? [] : _ref$destinations;
+
+      console.log("Destinations:::onInteractResponse");
+      destinations.forEach(function (dest) {
+        return console.log(dest.url);
+      });
+    };
+  }
+
+  // The register.js modules can be instead part of the build system
+
+  function register$2() {
+    var destinations = new Destinations();
+    Core.registerComponent(destinations);
+    return destinations;
+  }
+
+  function Personalization() {
+    Object.defineProperty(this, "namespace", {
+      get: function get() {
+        return "Personalization";
+      }
+    }); // IMPLEMENT THE HOOKS YOU ARE INTERESTED IN.
+
+    this.onBeforeInteract = function (payload) {
+      console.log("Personalization:::onBeforeInteract");
+      payload.appendToQuery({
+        personalization: {
+          sessionId: "1234235"
+        }
+      });
+    };
+
+    this.onInteractResponse = function () {
+      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+          _ref$resources$person = _ref.resources.personalization,
+          personalization = _ref$resources$person === void 0 ? [] : _ref$resources$person;
+
+      console.log("Personalization:::onInteractResponse");
+      document.addEventListener("DOMContentLoaded", function (event) {
+        personalization.forEach(function (offer) {
+          var el = document.querySelector(offer.offerMboxSelector);
+
+          if (el) {
+            el.innerHTML = offer.offerHtmlPayload;
+          }
+        });
+      });
+    };
+  }
+
+  // The register.js modules can be instead part of the build system
 
   function register$3() {
-    var tracker = new Tracker();
-    Core.registerComponent(tracker);
-    return tracker;
+    var personalization = new Personalization();
+    Core.registerComponent(personalization);
+    return personalization;
   }
 
   var noop = function noop() {}; // TODO: Support multiple cores maybe per ORG ID.
+  // cores: [{ orgId, instance }...]
 
 
   var core = null; // TODO: Look for existing atag (OR adbe) object on the page first.
@@ -1026,7 +1013,7 @@
       core = new Core(configs); // TODO: Move this guy out of here.. This is just a quick test for the initial call. We might not even need that.
 
       if (!configs.disableStartupCall) {
-        core.startupCall({
+        core.interact({
           event: "page View",
           pageName: "home"
         }, callback);

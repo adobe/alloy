@@ -3,8 +3,8 @@ export default function Destinations() {
     let hasDestinationExpired = true;
     Object.defineProperty(this, "namespace", { get() { return "Destinations" } });
 
-    this.onInteractRequest = (payload) => {
-        console.log("Destinations:::onInteractRequest");
+    this.onBeforeInteract = (payload) => {
+        console.log("Destinations:::onBeforeInteract");
         if (hasDestinationExpired) {
             payload.appendToQuery({
                 destinations: true
@@ -13,8 +13,8 @@ export default function Destinations() {
         }
     };
 
-    this.onResponseReady = ({ destinations = [] } = {}) => {
-        console.log("Destinations:::onResponseReady");
+    this.onInteractResponse = ({ destinations = [] } = {}) => {
+        console.log("Destinations:::onInteractResponse");
         destinations.forEach(dest => console.log(dest.url));
     };
 }

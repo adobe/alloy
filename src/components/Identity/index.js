@@ -8,8 +8,8 @@ export default function Identity() {
         return cookie.get("ecid");
     };
 
-    this.willPrepareRequest = (payload) => {
-        console.log("Identity:::willPrepareRequest");
+    this.onBeforeCollect = (payload) => {
+        console.log("Identity:::onBeforeCollect");
         if (hasIdSyncsExpired) {
             payload.appendToQuery({
                 identity: {
@@ -21,8 +21,8 @@ export default function Identity() {
         }
     };
 
-    this.onResponseReady = ({ ids: { ecid } }) => {
-        console.log("Identity:::onResponseReady");
+    this.onInteractResponse = ({ ids: { ecid } }) => {
+        console.log("Identity:::onInteractResponse");
         cookie.set('ecid', ecid, { expires: 7 });
     };
 }

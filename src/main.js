@@ -7,14 +7,15 @@ import "@adobe/reactor-promise";
 
 import Core from "./components/Core";
 
-import registerPersonalization from "./components/Personalization/register";
-import registerDestinations from "./components/Destinations/register";
-import registerIdentity from "./components/Identity/register";
 import registerTracker from "./components/Tracker/register";
+import registerIdentity from "./components/Identity/register";
+import registerDestinations from "./components/Destinations/register";
+import registerPersonalization from "./components/Personalization/register";
 
 const noop = () => {};
 
 // TODO: Support multiple cores maybe per ORG ID.
+// cores: [{ orgId, instance }...]
 let core = null;
 
 // TODO: Look for existing atag (OR adbe) object on the page first.
@@ -33,10 +34,10 @@ function atag(command = "collect", { params = {}, callback = noop } = {}) {
         // TODO: Register the Components here statically for now. They might be registered differently.
  
         // TODO: Maybe pass Core in.
-        registerPersonalization();
-        registerDestinations();
-        registerIdentity();
         registerTracker();
+        registerIdentity();
+        registerDestinations();
+        registerPersonalization();
 
         core = new Core(configs);
 

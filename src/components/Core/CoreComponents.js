@@ -34,27 +34,29 @@ export default class CoreComponents {
     }
 
     // ALL THE LIFECYCLE HOOKS GO HERE!
-    // TODO Define the final hooks.
-
-    onInteractRequest(payload) {
-        return this._invokeHook("onInteractRequest", payload);
-    }
-
-    // MAYBE: A LifeCycle hook once all components have registered?
-    // MAYBE: This is an `appReady` hook?
-    componentsDidMount(core) {
+    
+    onComponentsRegistered(core) {
+        // MAYBE: If a Component has a hard dependency, or maybe CORE can do this:
         //if (core.hasComponent('Personalization')) {
             // new Error() or core.missingRequirement('I require Personalization');
         //}
-        return this._invokeHook("componentsDidMount", core);
+        return this._invokeHook("onComponentsRegistered", core);
     }
 
-    willPrepareRequest(payload) {
-        return this._invokeHook("willPrepareRequest", payload);
+    onBeforeInteract(payload) {
+        return this._invokeHook("onBeforeInteract", payload);
     }
 
-    onResponseReady(response) {
-        return this._invokeHook("onResponseReady", response);
+    onInteractResponse(response) {
+        return this._invokeHook("onInteractResponse", response);
+    }
+
+    onBeforeCollect(payload) {
+        return this._invokeHook("onBeforeCollect", payload);
+    }
+
+    onCollectResponse(response) {
+        return this._invokeHook("onCollectResponse", response);
     }
 
     _invokeHook(hook, ...args) {
