@@ -448,74 +448,60 @@
     this.publish = makeEmitter(this);
   }
 
-  var registry = [];
+  // This is the Core Component of the A-Tag.
 
-  var Core =
-  /*#__PURE__*/
-  function () {
-    function Core(configs) {
-      _classCallCheck(this, Core);
+  function Core(configs) {
+    var events = new EventBus();
 
-      for (var _len = arguments.length, components = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        components[_key - 1] = arguments[_key];
-      }
-
-      this._components = new CoreComponents(registry.concat(components));
-      this._configs = configs;
-      this.interact = this.interact.bind(this);
-      this.collect = this.collect.bind(this);
-      this._events = new EventBus();
-
-      this._components.onComponentsRegistered(this);
-
-      this.tracker = this._components.getComponent("Tracker");
+    for (var _len = arguments.length, components = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      components[_key - 1] = arguments[_key];
     }
 
-    _createClass(Core, [{
-      key: "interact",
-      // Testing how we will expose Components' APIs to main.js and the outside world.
-      value: function interact(data, callback) {
-        this.tracker.interact(data, callback);
+    var coreComponents = new CoreComponents(Core.registry.concat(components));
+    var tracker = coreComponents.getComponent("Tracker");
+    coreComponents.onComponentsRegistered(this);
+    Object.defineProperties(this, {
+      events: {
+        get: function get() {
+          return events;
+        }
+      },
+      configs: {
+        get: function get() {
+          return configs;
+        }
+      },
+      components: {
+        get: function get() {
+          return coreComponents;
+        }
       }
-    }, {
-      key: "collect",
-      value: function collect(data, callback) {
-        this.tracker.collect(data, callback);
-      }
-    }, {
-      key: "configs",
-      get: function get() {
-        return this._configs;
-      }
-    }, {
-      key: "events",
-      get: function get() {
-        return this._events;
-      }
-    }, {
-      key: "components",
-      get: function get() {
-        return this._components;
-      }
-    }], [{
-      key: "makeLogger",
-      value: function makeLogger(prefix) {
-        return {};
-      }
-    }, {
-      key: "registerComponent",
-      value: function registerComponent(component) {
-        registry.push(component);
-      } // TODO: Define a plugin system.
+    }); // Testing how we will expose Components' APIs to main.js and the outside world.
 
-    }, {
-      key: "registerPlugin",
-      value: function registerPlugin(plugin) {
-      }
-    }]);
+    this.interact = function (data, callback) {
+      tracker.interact(data, callback);
+    };
 
-    return Core;
-  }();
+    this.collect = function (data, callback) {
+      tracker.collect(data, callback);
+    };
+
+    this.makeLogger = function (prefix) {
+      return {};
+    };
+  } // TODO: Might need to make this guy a smart object, not a simple array.
+
+
+  Core.registry = [];
+  Core.plugins = []; // TODO: Validate.
+
+  Core.registerComponent = function (component) {
+    Core.registry.push(component);
+  };
+
+  Core.registerPlugin = function (plugin) {
+    Core.plugins.push(plugin);
+  };
 
   // data should be an array to support sending multiple events.
   function Payload() {
@@ -624,9 +610,7 @@
       createPayload(data, beforeHook).then(callServer(endpoint)) // Freeze the response before handing it to all the components.
       .then(function (response) {
         return Object.freeze(response.json());
-      }).then(function (respJson) {
-        return afterHook(respJson);
-      }).then(function () {
+      }).then(afterHook).then(function () {
         return callback("Request has been fired!");
       });
     };
