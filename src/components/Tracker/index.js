@@ -1,4 +1,5 @@
 import Request from "./Request";
+const noop = () => {};
 
 export default function Tracker() {
   let core;
@@ -16,7 +17,13 @@ export default function Tracker() {
     callback
   ) => {
     const request = new Request(core);
-    return request.send(data, endpoint, beforeHook, afterHook, callback);
+    return request.send(
+      data,
+      endpoint,
+      beforeHook,
+      afterHook,
+      (callback = noop)
+    );
   };
 
   const beforeInteractHook = payload =>

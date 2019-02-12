@@ -13,15 +13,13 @@ import registerIdentity from "./components/Identity/register";
 import registerAudiences from "./components/Audiences/register";
 import registerPersonalization from "./components/Personalization/register";
 
-const noop = () => {};
-
 // TODO: Support multiple cores maybe per ORG ID.
 // cores: [{ orgId, instance }...]
 let core = null;
 
 // TODO: Look for existing atag (OR adbe) object on the page first.
 
-function atag(command = "collect", { params = {}, callback = noop } = {}) {
+function atag(command = "collect", { params = {}, callback } = {}) {
   function collect(payload = {}, callback) {
     // TODO Decide on a final format for all Components' APIs: Maybe (requiredParam, { optional params }), or maybe { ALL PARAMS }.
     return core.collect(payload, callback);

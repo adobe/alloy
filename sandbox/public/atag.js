@@ -40,6 +40,40 @@
     return Constructor;
   }
 
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  function _objectSpread(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i] != null ? arguments[i] : {};
+      var ownKeys = Object.keys(source);
+
+      if (typeof Object.getOwnPropertySymbols === 'function') {
+        ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+          return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+        }));
+      }
+
+      ownKeys.forEach(function (key) {
+        _defineProperty(target, key, source[key]);
+      });
+    }
+
+    return target;
+  }
+
   function _toConsumableArray(arr) {
     return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
   }
@@ -618,6 +652,8 @@
     };
   }
 
+  var noop = function noop() {};
+
   function Tracker() {
     var core;
     Object.defineProperty(this, "namespace", {
@@ -633,7 +669,7 @@
     var makeServerCall = function makeServerCall(endpoint, beforeHook, afterHook) {
       return function (data, callback) {
         var request = new Request(core);
-        return request.send(data, endpoint, beforeHook, afterHook, callback);
+        return request.send(data, endpoint, beforeHook, afterHook, callback = noop);
       };
     };
 
@@ -923,11 +959,17 @@
   }
 
   function Personalization() {
+    var core;
+    var self = this;
     Object.defineProperty(this, "namespace", {
       get: function get() {
         return "Personalization";
       }
     }); // IMPLEMENT THE HOOKS YOU ARE INTERESTED IN.
+
+    this.onComponentsRegistered = function (coreInstance) {
+      core = coreInstance;
+    };
 
     this.onBeforeInteract = function (payload) {
       console.log("Personalization:::onBeforeInteract");
@@ -938,18 +980,26 @@
       });
     };
 
+    this.collect = function (offerInfo) {
+      var tracker = core.components.getComponent("Tracker");
+      tracker.collect(offerInfo);
+    };
+
     this.onInteractResponse = function () {
       var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
           _ref$resources$person = _ref.resources.personalization,
           personalization = _ref$resources$person === void 0 ? [] : _ref$resources$person;
 
       console.log("Personalization:::onInteractResponse");
-      document.addEventListener("DOMContentLoaded", function (event) {
+      document.addEventListener("DOMContentLoaded", function () {
         personalization.forEach(function (offer) {
           var el = document.querySelector(offer.offerMboxSelector);
 
           if (el) {
             el.innerHTML = offer.offerHtmlPayload;
+            self.collect(_objectSpread({
+              event: "offer-rendered"
+            }, offer));
           }
         });
       });
@@ -964,9 +1014,7 @@
     return personalization;
   }
 
-  var noop = function noop() {}; // TODO: Support multiple cores maybe per ORG ID.
   // cores: [{ orgId, instance }...]
-
 
   var core = null; // TODO: Look for existing atag (OR adbe) object on the page first.
 
@@ -976,8 +1024,7 @@
     var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
         _ref$params = _ref.params,
         params = _ref$params === void 0 ? {} : _ref$params,
-        _ref$callback = _ref.callback,
-        callback = _ref$callback === void 0 ? noop : _ref$callback;
+        callback = _ref.callback;
 
     function collect() {
       var payload = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
