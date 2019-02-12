@@ -1,13 +1,13 @@
-export default function Destinations() {
+export default function Audiences() {
   let hasDestinationExpired = true;
   Object.defineProperty(this, "namespace", {
     get() {
-      return "Destinations";
+      return "Audiences";
     }
   });
 
   this.onBeforeInteract = payload => {
-    console.log("Destinations:::onBeforeInteract");
+    console.log("Audiences:::onBeforeInteract");
     if (hasDestinationExpired) {
       payload.appendToQuery({
         destinations: true
@@ -17,7 +17,7 @@ export default function Destinations() {
   };
 
   this.onInteractResponse = ({ destinations = [] } = {}) => {
-    console.log("Destinations:::onInteractResponse");
+    console.log("Audiences:::onInteractResponse");
     destinations.forEach(dest => console.log(dest.url));
   };
 }

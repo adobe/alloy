@@ -10,7 +10,7 @@ import Core from "./components/Core";
 
 import registerTracker from "./components/Tracker/register";
 import registerIdentity from "./components/Identity/register";
-import registerDestinations from "./components/Destinations/register";
+import registerAudiences from "./components/Audiences/register";
 import registerPersonalization from "./components/Personalization/register";
 
 const noop = () => {};
@@ -36,7 +36,7 @@ function atag(command = "collect", { params = {}, callback = noop } = {}) {
     // TODO: Maybe pass Core in.
     registerTracker();
     registerIdentity();
-    registerDestinations();
+    registerAudiences();
     registerPersonalization();
 
     core = new Core(configs);
@@ -62,15 +62,15 @@ function atag(command = "collect", { params = {}, callback = noop } = {}) {
 // TODO: @khoury this needs to be fixed,
 // `npm test` fails because of this construct
 
-// const namespace = window.__adobeNamespace;
+const namespace = window.__adobeNamespace;
 
-// if (window[namespace]) {
-//   const queue = window[namespace].q;
-//   queue.forEach(queuedArguments => {
-//     atag(...queuedArguments);
-//   });
-// }
+if (window[namespace]) {
+  const queue = window[namespace].q;
+  queue.forEach(queuedArguments => {
+    atag(...queuedArguments);
+  });
+}
 
-// window[namespace] = atag;
+window[namespace] = atag;
 
 export default atag;

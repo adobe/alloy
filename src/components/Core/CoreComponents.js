@@ -23,7 +23,7 @@ export default class CoreComponents {
     this._list.push(component);
   }
 
-  hasComponent(namespace) {}
+  hasComponent() {}
 
   getComponent(namespace) {
     return this._list.find(component => component.namespace === namespace);

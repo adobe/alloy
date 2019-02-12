@@ -319,10 +319,12 @@
 
   var reactorPromise = window.Promise || promise;
 
+  var reactorWindow = window;
+
   // - This dude acts as a Components repo.
   // - It also implements all of the Core's lifecycle hooks.
   // Let's start the first version with an explicit Hook interface,
-  // and not a random pub/sub model. Meaning each Component will have 
+  // and not a random pub/sub model. Meaning each Component will have
   // to implement the hook it's interested in as a method on its prototype.
   // We will have a Plop helper that generates Components and populate all the
   // hooks as Template methods.
@@ -347,7 +349,7 @@
       }
     }, {
       key: "hasComponent",
-      value: function hasComponent(namespace) {}
+      value: function hasComponent() {}
     }, {
       key: "getComponent",
       value: function getComponent(namespace) {
@@ -564,16 +566,16 @@
     // TODO: take this stuff out of here, and have some helper component do that.
     payload.appendToContext({
       env: {
-        "js_enabled": true,
-        "js_version": "1.8.5",
-        "cookies_enabled": true,
-        "browser_height": 900,
-        "screen_orientation": "landscape",
-        "webgl_renderer": "AMD Radeon Pro 460 OpenGL Engine"
+        js_enabled: true,
+        js_version: "1.8.5",
+        cookies_enabled: true,
+        browser_height: 900,
+        screen_orientation: "landscape",
+        webgl_renderer: "AMD Radeon Pro 460 OpenGL Engine"
       },
       view: {
-        "url": "www.test.com",
-        "referrer": "www.adobe.com"
+        url: "www.test.com",
+        referrer: "www.adobe.com"
       }
     });
   }
@@ -856,8 +858,8 @@
       if (hasIdSyncsExpired) {
         payload.appendToQuery({
           identity: {
-            "idSyncs": true,
-            "container_id": 7
+            idSyncs: true,
+            container_id: 7
           }
         });
         hasIdSyncsExpired = false;
@@ -867,7 +869,7 @@
     this.onInteractResponse = function (_ref) {
       var ecid = _ref.ids.ecid;
       console.log("Identity:::onInteractResponse");
-      reactorCookie.set('ecid', ecid, {
+      reactorCookie.set("ecid", ecid, {
         expires: 7
       });
     };
@@ -881,16 +883,16 @@
     return identity;
   }
 
-  function Destinations() {
+  function Audiences() {
     var hasDestinationExpired = true;
     Object.defineProperty(this, "namespace", {
       get: function get() {
-        return "Destinations";
+        return "Audiences";
       }
     });
 
     this.onBeforeInteract = function (payload) {
-      console.log("Destinations:::onBeforeInteract");
+      console.log("Audiences:::onBeforeInteract");
 
       if (hasDestinationExpired) {
         payload.appendToQuery({
@@ -905,7 +907,7 @@
           _ref$destinations = _ref.destinations,
           destinations = _ref$destinations === void 0 ? [] : _ref$destinations;
 
-      console.log("Destinations:::onInteractResponse");
+      console.log("Audiences:::onInteractResponse");
       destinations.forEach(function (dest) {
         return console.log(dest.url);
       });
@@ -915,9 +917,9 @@
   // The register.js modules can be instead part of the build system
 
   function register$2() {
-    var destinations = new Destinations();
-    Core.registerComponent(destinations);
-    return destinations;
+    var audiences = new Audiences();
+    Core.registerComponent(audiences);
+    return audiences;
   }
 
   function Personalization() {
@@ -1012,18 +1014,20 @@
       subscribe: subscribe
     };
     commands[command](params, callback);
-  }
+  } // TODO: @khoury this needs to be fixed,
+  // `npm test` fails because of this construct
 
-  var namespace = window.__adobeNamespace;
 
-  if (window[namespace]) {
-    var queue = window[namespace].q;
+  var namespace = reactorWindow.__adobeNamespace;
+
+  if (reactorWindow[namespace]) {
+    var queue = reactorWindow[namespace].q;
     queue.forEach(function (queuedArguments) {
       atag.apply(void 0, _toConsumableArray(queuedArguments));
     });
   }
 
-  window[namespace] = atag;
+  reactorWindow[namespace] = atag;
 
   return atag;
 

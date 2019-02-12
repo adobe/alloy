@@ -8,12 +8,12 @@
 // This way the Actual component is pure and does not register itself.
 
 import Core from "../Core";
-import Destinations from "./index";
+import Audiences from "./index";
 
 function register() {
-  const destinations = new Destinations();
-  Core.registerComponent(destinations);
-  return destinations;
+  const audiences = new Audiences();
+  Core.registerComponent(audiences);
+  return audiences;
 }
 
 export default register;
