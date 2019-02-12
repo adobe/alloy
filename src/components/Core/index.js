@@ -1,4 +1,3 @@
-
 // This is the Core Component of the A-Tag.
 // It provides the following:
 //  - Component system.
@@ -9,7 +8,7 @@
 //  - Core Configs.
 //  - Cross Components communication: (Not defined yet; we have 3 options, or maybe more)
 //      - Option 1: Mediator pattern, where all components go through Core first: Core.execute...
-//          MAYBE: A component exposes its capabilities, and those are exposed on core.            
+//          MAYBE: A component exposes its capabilities, and those are exposed on core.
 //      - Option 2: Event system. (Not the best option since it's too decoupled)
 //      - Option 3: Explicitly fetch a component from Core and work with it.
 //          Example: if (core.hasComponent("foo")) core.getComponent("foo").doSomething();
@@ -18,35 +17,46 @@
 // add their capabilities to the system. So if Personalization for example wants to expose a `getOffer` capability
 // OR: Core.register(component, capabilities): (identity, { "getId": ... })
 
-
 // TODO: We might need a `CoreConfig` module that encapsulates config stuff like initing, adding to it later on...
 
 import CoreComponents from "./CoreComponents";
 import EventBus from "./EventBus";
 
 function Core(configs, ...components) {
-    const events = new EventBus();
-    const coreComponents = new CoreComponents(Core.registry.concat(components));
-    const tracker = coreComponents.getComponent("Tracker");
+  const events = new EventBus();
+  const coreComponents = new CoreComponents(Core.registry.concat(components));
+  const tracker = coreComponents.getComponent("Tracker");
 
-    coreComponents.onComponentsRegistered(this);
-    
-    Object.defineProperties(this, {
-        events: { get() { return events; } },
-        configs: { get() { return configs; } },
-        components: { get() { return coreComponents; } }
-    });
+  coreComponents.onComponentsRegistered(this);
 
-    // Testing how we will expose Components' APIs to main.js and the outside world.
-    this.interact = (data, callback) => {
-        tracker.interact(data, callback);
-    };
+  Object.defineProperties(this, {
+    events: {
+      get() {
+        return events;
+      }
+    },
+    configs: {
+      get() {
+        return configs;
+      }
+    },
+    components: {
+      get() {
+        return coreComponents;
+      }
+    }
+  });
 
-    this.collect = (data, callback) => {
-        tracker.collect(data, callback);
-    };
+  // Testing how we will expose Components' APIs to main.js and the outside world.
+  this.interact = (data, callback) => {
+    tracker.interact(data, callback);
+  };
 
-    this.makeLogger = prefix => ({});
+  this.collect = (data, callback) => {
+    tracker.collect(data, callback);
+  };
+
+  this.makeLogger = prefix => ({});
 }
 
 // TODO: Might need to make this guy a smart object, not a simple array.
@@ -54,7 +64,11 @@ Core.registry = [];
 Core.plugins = [];
 
 // TODO: Validate.
-Core.registerComponent = component => { Core.registry.push(component); };
-Core.registerPlugin = plugin => { Core.plugins.push(plugin); };
+Core.registerComponent = component => {
+  Core.registry.push(component);
+};
+Core.registerPlugin = plugin => {
+  Core.plugins.push(plugin);
+};
 
 export default Core;

@@ -11,9 +11,9 @@ import Core from "../Core";
 import Identity from "./index";
 
 function register() {
-    const identity = new Identity();
-    Core.registerComponent(identity);
-    return identity;
+  const identity = new Identity();
+  Core.registerComponent(identity);
+  return identity;
 }
 
 export default register;

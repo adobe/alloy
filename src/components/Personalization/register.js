@@ -11,9 +11,9 @@ import Core from "../Core";
 import Personalization from "./index";
 
 function register() {
-    const personalization = new Personalization();
-    Core.registerComponent(personalization);
-    return personalization;
+  const personalization = new Personalization();
+  Core.registerComponent(personalization);
+  return personalization;
 }
 
 export default register;

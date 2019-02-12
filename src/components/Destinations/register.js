@@ -11,9 +11,9 @@ import Core from "../Core";
 import Destinations from "./index";
 
 function register() {
-    const destinations = new Destinations();
-    Core.registerComponent(destinations);
-    return destinations;
+  const destinations = new Destinations();
+  Core.registerComponent(destinations);
+  return destinations;
 }
 
 export default register;
