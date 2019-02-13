@@ -8,12 +8,11 @@
 // This way the Actual component is pure and does not register itself.
 
 import Core from "../Core";
-import Personalization from "./index";
+import createPersonalization from "./index";
 
 function register() {
-  const personalization = new Personalization();
+  const personalization = createPersonalization();
   Core.registerComponent(personalization);
-  return personalization;
 }
 
 export default register;

@@ -1,29 +1,16 @@
 import Request from "./Request";
+
 const noop = () => {};
 
-export default function Tracker() {
+export default () => {
   let core;
-
-  Object.defineProperty(this, "namespace", {
-    get() {
-      return "Tracker";
-    }
-  });
-
-  this.onComponentsRegistered = coreInstance => (core = coreInstance);
 
   const makeServerCall = (endpoint, beforeHook, afterHook) => (
     data,
-    callback
+    callback = noop
   ) => {
     const request = new Request(core);
-    return request.send(
-      data,
-      endpoint,
-      beforeHook,
-      afterHook,
-      (callback = noop)
-    );
+    return request.send(data, endpoint, beforeHook, afterHook, callback);
   };
 
   const beforeInteractHook = payload =>
@@ -34,10 +21,16 @@ export default function Tracker() {
   const onCollectResponse = payload =>
     core.components.onCollectResponse(payload);
 
-  this.interact = makeServerCall(
-    "interact",
-    beforeInteractHook,
-    onInteractResponse
-  );
-  this.collect = makeServerCall("collect", onBeforeCollect, onCollectResponse);
-}
+  return {
+    namespace: "Tracker",
+    onComponentsRegistered(_core) {
+      core = _core;
+    },
+    interact: makeServerCall(
+      "interact",
+      beforeInteractHook,
+      onInteractResponse
+    ),
+    collect: makeServerCall("collect", onBeforeCollect, onCollectResponse)
+  };
+};

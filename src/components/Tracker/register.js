@@ -1,10 +1,9 @@
 import Core from "../Core";
-import Tracker from "./index";
+import createTracker from "./index";
 
 function register() {
-  const tracker = new Tracker();
+  const tracker = createTracker();
   Core.registerComponent(tracker);
-  return tracker;
 }
 
 export default register;

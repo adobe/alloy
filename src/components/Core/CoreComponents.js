@@ -13,53 +13,45 @@
 // TODO: Hooks might have to publish events so the outside world can hooks in as well.
 
 // TODO Maybe rename this to `registry`.
-export default class CoreComponents {
-  constructor(listOfComponents) {
-    this._list = listOfComponents;
-  }
 
-  add(component) {
-    // TODO: Validate the interface...
-    this._list.push(component);
-  }
-
-  hasComponent() {}
-
-  getComponent(namespace) {
-    return this._list.find(component => component.namespace === namespace);
-  }
-
-  // ALL THE LIFECYCLE HOOKS GO HERE!
-
-  onComponentsRegistered(core) {
-    // MAYBE: If a Component has a hard dependency, or maybe CORE can do this:
-    //if (core.hasComponent('Personalization')) {
-    // new Error() or core.missingRequirement('I require Personalization');
-    //}
-    return this._invokeHook("onComponentsRegistered", core);
-  }
-
-  onBeforeInteract(payload) {
-    return this._invokeHook("onBeforeInteract", payload);
-  }
-
-  onInteractResponse(response) {
-    return this._invokeHook("onInteractResponse", response);
-  }
-
-  onBeforeCollect(payload) {
-    return this._invokeHook("onBeforeCollect", payload);
-  }
-
-  onCollectResponse(response) {
-    return this._invokeHook("onCollectResponse", response);
-  }
-
-  _invokeHook(hook, ...args) {
-    return this._list.map(component => {
-      if (typeof component[hook] === "function") {
-        return component[hook](...args);
-      }
-    });
-  }
+function invokeHook(listOfComponents, hook, ...args) {
+  return listOfComponents.map(component => {
+    return typeof component[hook] === "function"
+      ? component[hook](...args)
+      : undefined;
+  });
 }
+
+export default listOfComponents => {
+  return {
+    add(component) {
+      // TODO: Validate the interface...
+      listOfComponents.push(component);
+    },
+    // hasComponent() {}
+    getComponent(namespace) {
+      return listOfComponents.find(
+        component => component.namespace === namespace
+      );
+    },
+    onComponentsRegistered(core) {
+      // MAYBE: If a Component has a hard dependency, or maybe CORE can do this:
+      // if (core.hasComponent('Personalization')) {
+      // new Error() or core.missingRequirement('I require Personalization');
+      // }
+      return invokeHook(listOfComponents, "onComponentsRegistered", core);
+    },
+    onBeforeInteract(payload) {
+      return invokeHook(listOfComponents, "onBeforeInteract", payload);
+    },
+    onInteractResponse(response) {
+      return invokeHook(listOfComponents, "onInteractResponse", response);
+    },
+    onBeforeCollect(payload) {
+      return invokeHook(listOfComponents, "onBeforeCollect", payload);
+    },
+    onCollectResponse(response) {
+      return invokeHook(listOfComponents, "onCollectResponse", response);
+    }
+  };
+};

@@ -19,12 +19,12 @@
 
 // TODO: We might need a `CoreConfig` module that encapsulates config stuff like initing, adding to it later on...
 
-import CoreComponents from "./CoreComponents";
+import createCoreComponents from "./CoreComponents";
 import EventBus from "./EventBus";
 
 function Core(configs, ...components) {
   const events = new EventBus();
-  const coreComponents = new CoreComponents(Core.registry.concat(components));
+  const coreComponents = createCoreComponents(Core.registry.concat(components));
   const tracker = coreComponents.getComponent("Tracker");
 
   coreComponents.onComponentsRegistered(this);
