@@ -62,13 +62,15 @@ function atag(command = "collect", { params = {}, callback } = {}) {
 
 const namespace = window.__adobeNamespace;
 
-if (window[namespace]) {
+if (namespace) {
   const queue = window[namespace].q;
+  queue.push = atag;
   queue.forEach(queuedArguments => {
     atag(...queuedArguments);
   });
+} else {
+  // TODO: Improve error message once we give a name to this library.
+  console.error("Incorrectly configured.");
 }
-
-window[namespace] = atag;
 
 export default atag;
