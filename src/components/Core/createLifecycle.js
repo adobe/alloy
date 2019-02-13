@@ -14,44 +14,35 @@
 
 // TODO Maybe rename this to `registry`.
 
-function invokeHook(listOfComponents, hook, ...args) {
-  return listOfComponents.map(component => {
+function invokeHook(components, hook, ...args) {
+  return components.map(component => {
     return typeof component[hook] === "function"
       ? component[hook](...args)
       : undefined;
   });
 }
 
-export default listOfComponents => {
+export default componentRegistry => {
+  const components = componentRegistry.getAll();
   return {
-    add(component) {
-      // TODO: Validate the interface...
-      listOfComponents.push(component);
-    },
-    // hasComponent() {}
-    getComponent(namespace) {
-      return listOfComponents.find(
-        component => component.namespace === namespace
-      );
-    },
     onComponentsRegistered(core) {
       // MAYBE: If a Component has a hard dependency, or maybe CORE can do this:
       // if (core.hasComponent('Personalization')) {
       // new Error() or core.missingRequirement('I require Personalization');
       // }
-      return invokeHook(listOfComponents, "onComponentsRegistered", core);
+      return invokeHook(components, "onComponentsRegistered", core);
     },
     onBeforeInteract(payload) {
-      return invokeHook(listOfComponents, "onBeforeInteract", payload);
+      return invokeHook(components, "onBeforeInteract", payload);
     },
     onInteractResponse(response) {
-      return invokeHook(listOfComponents, "onInteractResponse", response);
+      return invokeHook(components, "onInteractResponse", response);
     },
     onBeforeCollect(payload) {
-      return invokeHook(listOfComponents, "onBeforeCollect", payload);
+      return invokeHook(componentRegistry.getAll(), "onBeforeCollect", payload);
     },
     onCollectResponse(response) {
-      return invokeHook(listOfComponents, "onCollectResponse", response);
+      return invokeHook(components, "onCollectResponse", response);
     }
   };
 };

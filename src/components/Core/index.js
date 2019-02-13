@@ -19,56 +19,40 @@
 
 // TODO: We might need a `CoreConfig` module that encapsulates config stuff like initing, adding to it later on...
 
-import createCoreComponents from "./CoreComponents";
-import EventBus from "./EventBus";
+import mitt from "mitt";
+import createLifecycle from "./createLifecycle";
 
-function Core(configs, ...components) {
-  const events = new EventBus();
-  const coreComponents = createCoreComponents(Core.registry.concat(components));
-  const tracker = coreComponents.getComponent("Tracker");
+export default (configs, componentRegistry) => {
+  // TODO: Might need to make this guy a smart object, not a simple array.
+  const events = mitt();
+  const tracker = componentRegistry.getByNamespace("Tracker");
+  const lifecycle = createLifecycle(componentRegistry);
 
-  coreComponents.onComponentsRegistered(this);
-
-  Object.defineProperties(this, {
-    events: {
-      get() {
-        return events;
-      }
+  const core = {
+    get events() {
+      return events;
     },
-    configs: {
-      get() {
-        return configs;
-      }
+    get configs() {
+      return configs;
     },
-    components: {
-      get() {
-        return coreComponents;
-      }
+    get components() {
+      return componentRegistry;
+    },
+    get lifecycle() {
+      return lifecycle;
+    },
+    interact(data, callback) {
+      tracker.interact(data, callback);
+    },
+    collect(data, callback) {
+      tracker.collect(data, callback);
+    },
+    makeLogger(prefix) {
+      return {};
     }
-  });
-
-  // Testing how we will expose Components' APIs to main.js and the outside world.
-  this.interact = (data, callback) => {
-    tracker.interact(data, callback);
   };
 
-  this.collect = (data, callback) => {
-    tracker.collect(data, callback);
-  };
+  lifecycle.onComponentsRegistered(core);
 
-  this.makeLogger = prefix => ({});
-}
-
-// TODO: Might need to make this guy a smart object, not a simple array.
-Core.registry = [];
-Core.plugins = [];
-
-// TODO: Validate.
-Core.registerComponent = component => {
-  Core.registry.push(component);
+  return core;
 };
-Core.registerPlugin = plugin => {
-  Core.plugins.push(plugin);
-};
-
-export default Core;

@@ -1,4 +1,4 @@
-import Request from "./Request";
+import createRequest from "./createRequest";
 
 const noop = () => {};
 
@@ -9,17 +9,17 @@ export default () => {
     data,
     callback = noop
   ) => {
-    const request = new Request(core);
+    const request = createRequest(core);
     return request.send(data, endpoint, beforeHook, afterHook, callback);
   };
 
   const beforeInteractHook = payload =>
-    core.components.onBeforeInteract(payload);
+    core.lifecycle.onBeforeInteract(payload);
   const onInteractResponse = response =>
-    core.components.onInteractResponse(response);
-  const onBeforeCollect = payload => core.components.onBeforeCollect(payload);
+    core.lifecycle.onInteractResponse(response);
+  const onBeforeCollect = payload => core.lifecycle.onBeforeCollect(payload);
   const onCollectResponse = payload =>
-    core.components.onCollectResponse(payload);
+    core.lifecycle.onCollectResponse(payload);
 
   return {
     namespace: "Tracker",

@@ -18,28 +18,6 @@
     return _typeof(obj);
   }
 
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-
-  function _defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  function _createClass(Constructor, protoProps, staticProps) {
-    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) _defineProperties(Constructor, staticProps);
-    return Constructor;
-  }
-
   function _defineProperty(obj, key, value) {
     if (key in obj) {
       Object.defineProperty(obj, key, {
@@ -355,6 +333,62 @@
 
   var reactorWindow = window;
 
+  //      
+  // An event handler can take an optional event argument
+  // and should not return a value
+  // An array of all currently registered event handlers for a type
+  // A map of event types and their corresponding event handlers.
+
+  /** Mitt: Tiny (~200b) functional event emitter / pubsub.
+   *  @name mitt
+   *  @returns {Mitt}
+   */
+  function mitt(all) {
+    all = all || Object.create(null);
+    return {
+      /**
+       * Register an event handler for the given type.
+       *
+       * @param  {String} type	Type of event to listen for, or `"*"` for all events
+       * @param  {Function} handler Function to call in response to given event
+       * @memberOf mitt
+       */
+      on: function on(type, handler) {
+        (all[type] || (all[type] = [])).push(handler);
+      },
+
+      /**
+       * Remove an event handler for the given type.
+       *
+       * @param  {String} type	Type of event to unregister `handler` from, or `"*"`
+       * @param  {Function} handler Handler function to remove
+       * @memberOf mitt
+       */
+      off: function off(type, handler) {
+        if (all[type]) {
+          all[type].splice(all[type].indexOf(handler) >>> 0, 1);
+        }
+      },
+
+      /**
+       * Invoke all handlers for the given type.
+       * If present, `"*"` handlers are invoked after type-matched handlers.
+       *
+       * @param {String} type  The event type to invoke
+       * @param {Any} [evt]  Any value (object is recommended and powerful), passed to each handler
+       * @memberOf mitt
+       */
+      emit: function emit(type, evt) {
+        (all[type] || []).slice().map(function (handler) {
+          handler(evt);
+        });
+        (all['*'] || []).slice().map(function (handler) {
+          handler(type, evt);
+        });
+      }
+    };
+  }
+
   // - This dude acts as a Components repo.
   // - It also implements all of the Core's lifecycle hooks.
   // Let's start the first version with an explicit Hook interface,
@@ -366,181 +400,90 @@
   // TODO: Support Async hooks. (Or maybe default them as Async)
   // TODO: Hooks might have to publish events so the outside world can hooks in as well.
   // TODO Maybe rename this to `registry`.
-  var CoreComponents =
-  /*#__PURE__*/
-  function () {
-    function CoreComponents(listOfComponents) {
-      _classCallCheck(this, CoreComponents);
-
-      this._list = listOfComponents;
+  function invokeHook(components, hook) {
+    for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+      args[_key - 2] = arguments[_key];
     }
 
-    _createClass(CoreComponents, [{
-      key: "add",
-      value: function add(component) {
-        // TODO: Validate the interface...
-        this._list.push(component);
-      }
-    }, {
-      key: "hasComponent",
-      value: function hasComponent() {}
-    }, {
-      key: "getComponent",
-      value: function getComponent(namespace) {
-        return this._list.find(function (component) {
-          return component.namespace === namespace;
-        });
-      } // ALL THE LIFECYCLE HOOKS GO HERE!
-
-    }, {
-      key: "onComponentsRegistered",
-      value: function onComponentsRegistered(core) {
-        // MAYBE: If a Component has a hard dependency, or maybe CORE can do this:
-        //if (core.hasComponent('Personalization')) {
-        // new Error() or core.missingRequirement('I require Personalization');
-        //}
-        return this._invokeHook("onComponentsRegistered", core);
-      }
-    }, {
-      key: "onBeforeInteract",
-      value: function onBeforeInteract(payload) {
-        return this._invokeHook("onBeforeInteract", payload);
-      }
-    }, {
-      key: "onInteractResponse",
-      value: function onInteractResponse(response) {
-        return this._invokeHook("onInteractResponse", response);
-      }
-    }, {
-      key: "onBeforeCollect",
-      value: function onBeforeCollect(payload) {
-        return this._invokeHook("onBeforeCollect", payload);
-      }
-    }, {
-      key: "onCollectResponse",
-      value: function onCollectResponse(response) {
-        return this._invokeHook("onCollectResponse", response);
-      }
-    }, {
-      key: "_invokeHook",
-      value: function _invokeHook(hook) {
-        for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-          args[_key - 1] = arguments[_key];
-        }
-
-        return this._list.map(function (component) {
-          if (typeof component[hook] === "function") {
-            return component[hook].apply(component, args);
-          }
-        });
-      }
-    }]);
-
-    return CoreComponents;
-  }();
-
-  var makeEmitter = function makeEmitter(target) {
-    var events = {};
-
-    target.on = function (eventName, callback, context) {
-      if (!callback || typeof callback !== "function") {
-        throw new Error("[ON] Callback should be a function.");
-      }
-
-      if (!events.hasOwnProperty(eventName)) {
-        events[eventName] = [];
-      }
-
-      var subscriptionIndex = events[eventName].push({
-        callback: callback,
-        context: context
-      }) - 1;
-      return function () {
-        events[eventName].splice(subscriptionIndex, 1);
-
-        if (!events[eventName].length) {
-          delete events[eventName];
-        }
-      };
-    };
-
-    target.publish = function (eventName) {
-      if (!events.hasOwnProperty(eventName)) {
-        return;
-      }
-
-      var data = [].slice.call(arguments, 1); // Note: We clone the callbacks array because a callback might unsubscribe,
-      // which will change the length of the array and break this for loop.
-
-      events[eventName].slice(0).forEach(function (eventMetadata) {
-        eventMetadata.callback.apply(eventMetadata.context, data);
-      });
-    };
-
-    return target.publish;
-  };
-
-  function EventBus() {
-    this.publish = makeEmitter(this);
+    return components.map(function (component) {
+      return typeof component[hook] === "function" ? component[hook].apply(component, args) : undefined;
+    });
   }
 
-  // This is the Core Component of the A-Tag.
-
-  function Core(configs) {
-    var events = new EventBus();
-
-    for (var _len = arguments.length, components = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      components[_key - 1] = arguments[_key];
-    }
-
-    var coreComponents = new CoreComponents(Core.registry.concat(components));
-    var tracker = coreComponents.getComponent("Tracker");
-    coreComponents.onComponentsRegistered(this);
-    Object.defineProperties(this, {
-      events: {
-        get: function get() {
-          return events;
-        }
+  var createLifecycle = (function (componentRegistry) {
+    var components = componentRegistry.getAll();
+    return {
+      onComponentsRegistered: function onComponentsRegistered(core) {
+        // MAYBE: If a Component has a hard dependency, or maybe CORE can do this:
+        // if (core.hasComponent('Personalization')) {
+        // new Error() or core.missingRequirement('I require Personalization');
+        // }
+        return invokeHook(components, "onComponentsRegistered", core);
       },
-      configs: {
-        get: function get() {
-          return configs;
-        }
+      onBeforeInteract: function onBeforeInteract(payload) {
+        return invokeHook(components, "onBeforeInteract", payload);
       },
-      components: {
-        get: function get() {
-          return coreComponents;
-        }
+      onInteractResponse: function onInteractResponse(response) {
+        return invokeHook(components, "onInteractResponse", response);
+      },
+      onBeforeCollect: function onBeforeCollect(payload) {
+        return invokeHook(componentRegistry.getAll(), "onBeforeCollect", payload);
+      },
+      onCollectResponse: function onCollectResponse(response) {
+        return invokeHook(components, "onCollectResponse", response);
       }
-    }); // Testing how we will expose Components' APIs to main.js and the outside world.
-
-    this.interact = function (data, callback) {
-      tracker.interact(data, callback);
     };
+  });
 
-    this.collect = function (data, callback) {
-      tracker.collect(data, callback);
+  // This is the Core Component of the A-Tag.
+  var createCore = (function (configs, componentRegistry) {
+    // TODO: Might need to make this guy a smart object, not a simple array.
+    var events = mitt();
+    var tracker = componentRegistry.getByNamespace("Tracker");
+    var lifecycle = createLifecycle(componentRegistry);
+    var core = {
+      get events() {
+        return events;
+      },
+
+      get configs() {
+        return configs;
+      },
+
+      get components() {
+        return componentRegistry;
+      },
+
+      get lifecycle() {
+        return lifecycle;
+      },
+
+      interact: function interact(data, callback) {
+        tracker.interact(data, callback);
+      },
+      collect: function collect(data, callback) {
+        tracker.collect(data, callback);
+      },
+      makeLogger: function makeLogger(prefix) {
+        return {};
+      }
     };
+    lifecycle.onComponentsRegistered(core);
+    return core;
+  });
 
-    this.makeLogger = function (prefix) {
-      return {};
+  var append = function append(payload, key) {
+    return function () {
+      var obj = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      // TODO Validate...
+      console.warn("[Payload:appendTo".concat(key, "] To Implement!"));
+      Object.assign(payload[key], obj);
+      return payload;
     };
-  } // TODO: Might need to make this guy a smart object, not a simple array.
+  }; // data should be an array to support sending multiple events.
 
 
-  Core.registry = [];
-  Core.plugins = []; // TODO: Validate.
-
-  Core.registerComponent = function (component) {
-    Core.registry.push(component);
-  };
-
-  Core.registerPlugin = function (plugin) {
-    Core.plugins.push(plugin);
-  };
-
-  // data should be an array to support sending multiple events.
-  function Payload() {
+  var createPayload = (function () {
     var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
         data = _ref.data,
         _ref$query = _ref.query,
@@ -561,32 +504,22 @@
       payload.data.push(data);
     }
 
-    var append = function append(key) {
-      return function () {
-        var obj = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-        // TODO Validate...
-        console.warn("[Payload:appendTo".concat(key, "] To Implement!"));
-        Object.assign(payload[key], obj);
-        return payload;
-      };
+    return {
+      appendToData: function appendToData(obj) {
+        payload.data.push(obj);
+      },
+      appendToQuery: append(payload, "query"),
+      appendToMetadata: append(payload, "metadata"),
+      appendToContext: append(payload, "context"),
+      toJson: function toJson() {
+        return JSON.stringify(payload);
+      }
     };
-
-    this.appendToData = function (obj) {
-      return payload.data.push(obj);
-    };
-
-    this.appendToQuery = append("query");
-    this.appendToMetadata = append("metadata");
-    this.appendToContext = append("context");
-
-    this.toJson = function () {
-      return JSON.stringify(payload);
-    };
-  }
+  });
 
   function setMetadata(payload, core) {
     // MAYBE: Not sure how the cross components communication will happen yet.
-    var identity = core.components.getComponent("Identity"); // Append metadata to the payload.
+    var identity = core.components.getByNamespace("Identity"); // Append metadata to the payload.
 
     payload.appendToMetadata({
       ecid: identity.getEcid() || null,
@@ -614,90 +547,84 @@
     });
   }
 
-  function Request(core) {
-    var createPayload = function createPayload(data, beforeHook) {
-      // Populate the request's body with payload, data and metadata.
-      var payload = new Payload({
-        data: data
-      }); // TODO: Make those hook calls Async?
+  var initalizePayload = function initalizePayload(core, data, beforeHook) {
+    // Populate the request's body with payload, data and metadata.
+    var payload = createPayload({
+      data: data
+    }); // TODO: Make those hook calls Async?
 
-      beforeHook(payload);
-      setContext(payload);
-      setMetadata(payload, core);
-      return Promise.resolve(payload.toJson());
-    }; // TODO: Extract this stuff into a core helper.
+    beforeHook(payload);
+    setContext(payload);
+    setMetadata(payload, core);
+    return Promise.resolve(payload.toJson());
+  }; // TODO: Extract this stuff into a core helper.
 
 
-    var callServer = function callServer(endpoint) {
-      return function (payload) {
-        return fetch(core.configs.collectionUrl + "/" + endpoint, {
-          method: "POST",
-          cache: "no-cache",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          referrer: "client",
-          body: payload
-        });
-      };
-    };
-
-    this.send = function (data, endpoint, beforeHook, afterHook, callback) {
-      createPayload(data, beforeHook).then(callServer(endpoint)) // Freeze the response before handing it to all the components.
-      .then(function (response) {
-        return Object.freeze(response.json());
-      }).then(afterHook).then(function () {
-        return callback("Request has been fired!");
+  var callServer = function callServer(core, endpoint) {
+    return function (payload) {
+      return fetch(core.configs.collectionUrl + "/" + endpoint, {
+        method: "POST",
+        cache: "no-cache",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        referrer: "client",
+        body: payload
       });
     };
-  }
+  };
+
+  var createRequest = (function (core) {
+    return {
+      send: function send(data, endpoint, beforeHook, afterHook, callback) {
+        initalizePayload(core, data, beforeHook).then(callServer(core, endpoint)) // Freeze the response before handing it to all the components.
+        .then(function (response) {
+          return Object.freeze(response.json());
+        }).then(afterHook).then(function () {
+          return callback("Request has been fired!");
+        });
+      }
+    };
+  });
 
   var noop = function noop() {};
 
-  function Tracker() {
+  var createTracker = (function () {
     var core;
-    Object.defineProperty(this, "namespace", {
-      get: function get() {
-        return "Tracker";
-      }
-    });
-
-    this.onComponentsRegistered = function (coreInstance) {
-      return core = coreInstance;
-    };
 
     var makeServerCall = function makeServerCall(endpoint, beforeHook, afterHook) {
-      return function (data, callback) {
-        var request = new Request(core);
-        return request.send(data, endpoint, beforeHook, afterHook, callback = noop);
+      return function (data) {
+        var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
+        var request = createRequest(core);
+        return request.send(data, endpoint, beforeHook, afterHook, callback);
       };
     };
 
     var beforeInteractHook = function beforeInteractHook(payload) {
-      return core.components.onBeforeInteract(payload);
+      return core.lifecycle.onBeforeInteract(payload);
     };
 
     var onInteractResponse = function onInteractResponse(response) {
-      return core.components.onInteractResponse(response);
+      return core.lifecycle.onInteractResponse(response);
     };
 
     var onBeforeCollect = function onBeforeCollect(payload) {
-      return core.components.onBeforeCollect(payload);
+      return core.lifecycle.onBeforeCollect(payload);
     };
 
     var onCollectResponse = function onCollectResponse(payload) {
-      return core.components.onCollectResponse(payload);
+      return core.lifecycle.onCollectResponse(payload);
     };
 
-    this.interact = makeServerCall("interact", beforeInteractHook, onInteractResponse);
-    this.collect = makeServerCall("collect", onBeforeCollect, onCollectResponse);
-  }
-
-  function register() {
-    var tracker = new Tracker();
-    Core.registerComponent(tracker);
-    return tracker;
-  }
+    return {
+      namespace: "Tracker",
+      onComponentsRegistered: function onComponentsRegistered(_core) {
+        core = _core;
+      },
+      interact: makeServerCall("interact", beforeInteractHook, onInteractResponse),
+      collect: makeServerCall("collect", onBeforeCollect, onCollectResponse)
+    };
+  });
 
   var js_cookie = createCommonjsModule(function (module, exports) {
 
@@ -876,143 +803,124 @@
     remove: js_cookie.remove
   };
 
-  function Identity() {
+  var createIdentity = (function () {
     var hasIdSyncsExpired = true;
-    Object.defineProperty(this, "namespace", {
-      get: function get() {
-        return "Identity";
-      }
-    });
+    return {
+      namespace: "Identity",
+      getEcid: function getEcid() {
+        return reactorCookie.get("ecid");
+      },
+      onBeforeCollect: function onBeforeCollect(payload) {
+        console.log("Identity:::onBeforeCollect");
 
-    this.getEcid = function () {
-      return reactorCookie.get("ecid");
-    };
-
-    this.onBeforeCollect = function (payload) {
-      console.log("Identity:::onBeforeCollect");
-
-      if (hasIdSyncsExpired) {
-        payload.appendToQuery({
-          identity: {
-            idSyncs: true,
-            container_id: 7
-          }
-        });
-        hasIdSyncsExpired = false;
-      }
-    };
-
-    this.onInteractResponse = function (_ref) {
-      var ecid = _ref.ids.ecid;
-      console.log("Identity:::onInteractResponse");
-      reactorCookie.set("ecid", ecid, {
-        expires: 7
-      });
-    };
-  }
-
-  // The register.js modules can be instead part of the build system
-
-  function register$1() {
-    var identity = new Identity();
-    Core.registerComponent(identity);
-    return identity;
-  }
-
-  function Audiences() {
-    var hasDestinationExpired = true;
-    Object.defineProperty(this, "namespace", {
-      get: function get() {
-        return "Audiences";
-      }
-    });
-
-    this.onBeforeInteract = function (payload) {
-      console.log("Audiences:::onBeforeInteract");
-
-      if (hasDestinationExpired) {
-        payload.appendToQuery({
-          destinations: true
-        });
-        hasDestinationExpired = false;
-      }
-    };
-
-    this.onInteractResponse = function () {
-      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-          _ref$destinations = _ref.destinations,
-          destinations = _ref$destinations === void 0 ? [] : _ref$destinations;
-
-      console.log("Audiences:::onInteractResponse");
-      destinations.forEach(function (dest) {
-        return console.log(dest.url);
-      });
-    };
-  }
-
-  // The register.js modules can be instead part of the build system
-
-  function register$2() {
-    var audiences = new Audiences();
-    Core.registerComponent(audiences);
-    return audiences;
-  }
-
-  function Personalization() {
-    var core;
-    var self = this;
-    Object.defineProperty(this, "namespace", {
-      get: function get() {
-        return "Personalization";
-      }
-    }); // IMPLEMENT THE HOOKS YOU ARE INTERESTED IN.
-
-    this.onComponentsRegistered = function (coreInstance) {
-      core = coreInstance;
-    };
-
-    this.onBeforeInteract = function (payload) {
-      console.log("Personalization:::onBeforeInteract");
-      payload.appendToQuery({
-        personalization: {
-          sessionId: "1234235"
+        if (hasIdSyncsExpired) {
+          payload.appendToQuery({
+            identity: {
+              idSyncs: true,
+              container_id: 7
+            }
+          });
+          hasIdSyncsExpired = false;
         }
-      });
+      },
+      onInteractResponse: function onInteractResponse(_ref) {
+        var ecid = _ref.ids.ecid;
+        console.log("Identity:::onInteractResponse");
+        reactorCookie.set("ecid", ecid, {
+          expires: 7
+        });
+      }
     };
+  });
 
-    this.collect = function (offerInfo) {
-      var tracker = core.components.getComponent("Tracker");
+  var createAudiences = (function () {
+    var hasDestinationExpired = true;
+    return {
+      namespace: "Audiences",
+      onBeforeInteract: function onBeforeInteract(payload) {
+        console.log("Audiences:::onBeforeInteract");
+
+        if (hasDestinationExpired) {
+          payload.appendToQuery({
+            destinations: true
+          });
+          hasDestinationExpired = false;
+        }
+      },
+      onInteractResponse: function onInteractResponse() {
+        var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+            _ref$destinations = _ref.destinations,
+            destinations = _ref$destinations === void 0 ? [] : _ref$destinations;
+
+        console.log("Audiences:::onInteractResponse");
+        destinations.forEach(function (dest) {
+          return console.log(dest.url);
+        });
+      }
+    };
+  });
+
+  var createPersonalization = (function () {
+    var core;
+
+    var collect = function collect(offerInfo) {
+      var tracker = core.components.getByNamespace("Tracker");
       tracker.collect(offerInfo);
     };
 
-    this.onInteractResponse = function () {
-      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-          _ref$resources$person = _ref.resources.personalization,
-          personalization = _ref$resources$person === void 0 ? [] : _ref$resources$person;
-
-      console.log("Personalization:::onInteractResponse");
-      document.addEventListener("DOMContentLoaded", function () {
-        personalization.forEach(function (offer) {
-          var el = document.querySelector(offer.offerMboxSelector);
-
-          if (el) {
-            el.innerHTML = offer.offerHtmlPayload;
-            self.collect(_objectSpread({
-              event: "offer-rendered"
-            }, offer));
+    return {
+      namespace: "Personalization",
+      onComponentsRegistered: function onComponentsRegistered(_core) {
+        core = _core;
+      },
+      onBeforeInteract: function onBeforeInteract(payload) {
+        console.log("Personalization:::onBeforeInteract");
+        payload.appendToQuery({
+          personalization: {
+            sessionId: "1234235"
           }
         });
-      });
+      },
+      onInteractResponse: function onInteractResponse() {
+        var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+            _ref$resources$person = _ref.resources.personalization,
+            personalization = _ref$resources$person === void 0 ? [] : _ref$resources$person;
+
+        console.log("Personalization:::onInteractResponse");
+        document.addEventListener("DOMContentLoaded", function () {
+          personalization.forEach(function (offer) {
+            var el = document.querySelector(offer.offerMboxSelector);
+
+            if (el) {
+              el.innerHTML = offer.offerHtmlPayload;
+              collect(_objectSpread({
+                event: "offer-rendered"
+              }, offer));
+            }
+          });
+        });
+      }
     };
-  }
+  });
 
-  // The register.js modules can be instead part of the build system
-
-  function register$3() {
-    var personalization = new Personalization();
-    Core.registerComponent(personalization);
-    return personalization;
-  }
+  var createComponentRegistry = (function () {
+    var components = [];
+    return {
+      register: function register(component) {
+        components.push(component);
+      },
+      getByNamespace: function getByNamespace(namespace) {
+        return components.find(function (component) {
+          return component.namespace === namespace;
+        });
+      },
+      getAll: function getAll() {
+        // Slice so it's a copy of the original lest components
+        // try to manipulate it. Maybe not that important.
+        return components.slice();
+      }
+    };
+  });
 
   // cores: [{ orgId, instance }...]
 
@@ -1038,12 +946,13 @@
       // For now we are instantiating Core when configure is called.
       // TODO: Maybe pass those configs to a CoreConfig object that validates and wrap the raw configs.
       // TODO: Register the Components here statically for now. They might be registered differently.
-      // TODO: Maybe pass Core in.
-      register();
-      register$1();
-      register$2();
-      register$3();
-      core = new Core(configs); // TODO: Move this guy out of here.. This is just a quick test for the initial call. We might not even need that.
+      var componentRegistry = createComponentRegistry(); // TODO: Maybe pass Core in.
+
+      componentRegistry.register(createTracker());
+      componentRegistry.register(createIdentity());
+      componentRegistry.register(createAudiences());
+      componentRegistry.register(createPersonalization());
+      core = createCore(configs, componentRegistry); // TODO: Move this guy out of here.. This is just a quick test for the initial call. We might not even need that.
 
       if (!configs.disableStartupCall) {
         core.interact({

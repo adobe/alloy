@@ -6,12 +6,13 @@ import "@adobe/reactor-promise";
 
 import window from "@adobe/reactor-window";
 
-import Core from "./components/Core";
+import createCore from "./components/Core";
 
-import registerTracker from "./components/Tracker/register";
-import registerIdentity from "./components/Identity/register";
-import registerAudiences from "./components/Audiences/register";
-import registerPersonalization from "./components/Personalization/register";
+import createTracker from "./components/Tracker";
+import createIdentity from "./components/Identity";
+import createAudiences from "./components/Audiences";
+import createPersonalization from "./components/Personalization";
+import createComponentRegistry from "./components/Core/createComponentRegistry";
 
 // TODO: Support multiple cores maybe per ORG ID.
 // cores: [{ orgId, instance }...]
@@ -31,13 +32,15 @@ function atag(command = "collect", { params = {}, callback } = {}) {
     // TODO: Maybe pass those configs to a CoreConfig object that validates and wrap the raw configs.
     // TODO: Register the Components here statically for now. They might be registered differently.
 
-    // TODO: Maybe pass Core in.
-    registerTracker();
-    registerIdentity();
-    registerAudiences();
-    registerPersonalization();
+    const componentRegistry = createComponentRegistry();
 
-    core = new Core(configs);
+    // TODO: Maybe pass Core in.
+    componentRegistry.register(createTracker());
+    componentRegistry.register(createIdentity());
+    componentRegistry.register(createAudiences());
+    componentRegistry.register(createPersonalization());
+
+    core = createCore(configs, componentRegistry);
 
     // TODO: Move this guy out of here.. This is just a quick test for the initial call. We might not even need that.
     if (!configs.disableStartupCall) {

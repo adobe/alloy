@@ -2,7 +2,7 @@ export default () => {
   let core;
 
   const collect = offerInfo => {
-    const tracker = core.components.getComponent("Tracker");
+    const tracker = core.components.getByNamespace("Tracker");
     tracker.collect(offerInfo);
   };
 
