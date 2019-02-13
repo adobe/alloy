@@ -6,9 +6,9 @@
   "scripts": {
     "clean": "rimraf dist",
     "lint-src": "eslint src/**",
-    "lint-test": "eslint test/**",
+    "lint-test": "eslint tests/**",
     "lint": "npm run lint-src && npm run lint-test",
-    "format": "prettier --write \"{src,test}/**/*.js\"",
+    "format": "prettier --write \"{src,tests}/**/*.js\"",
     "test": "karma start",
     "prebuild": "npm run clean && npm run format && npm run lint",
     "build": "rollup -c && npm run copy-to-sandbox",
@@ -46,11 +46,13 @@
     "karma-jasmine-matchers": "^4.0.1",
     "karma-spec-reporter": "0.0.32",
     "karma-webpack": "^3.0.5",
+    "npm-run-all": "^4.1.5",
     "prettier": "^1.16.4",
     "rollup": "^1.1.2",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-commonjs": "^9.2.0",
     "rollup-plugin-node-resolve": "^4.0.0",
+    "testcafe": "^1.0.0",
     "webpack": "^3.12.0"
   }
 }
