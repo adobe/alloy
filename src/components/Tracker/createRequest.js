@@ -45,7 +45,7 @@ const initalizePayload = (core, data, beforeHook) => {
 
 // TODO: Extract this stuff into a core helper.
 const callServer = (core, endpoint) => payload => {
-  return fetch(core.configs.collectionUrl + "/" + endpoint, {
+  return fetch(`${core.configs.collectionUrl}/${endpoint}`, {
     method: "POST",
     cache: "no-cache",
     headers: {

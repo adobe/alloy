@@ -48,7 +48,7 @@ export default (configs, componentRegistry) => {
       tracker.collect(data, callback);
     },
     makeLogger(prefix) {
-      return {};
+      console.log(prefix);
     }
   };
 
