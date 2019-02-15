@@ -1,47 +1,39 @@
-export default function Personalization() {
+export default () => {
   let core;
-  const self = this;
 
-  Object.defineProperty(this, "namespace", {
-    get() {
-      return "Personalization";
-    }
-  });
-
-  // IMPLEMENT THE HOOKS YOU ARE INTERESTED IN.
-
-  this.onComponentsRegistered = coreInstance => {
-    core = coreInstance;
-  };
-
-  this.onBeforeInteract = payload => {
-    console.log("Personalization:::onBeforeInteract");
-    payload.appendToQuery({
-      personalization: {
-        sessionId: "1234235"
-      }
-    });
-  };
-
-  this.collect = offerInfo => {
-    const tracker = core.components.getComponent("Tracker");
+  const collect = offerInfo => {
+    const tracker = core.components.getByNamespace("Tracker");
     tracker.collect(offerInfo);
   };
 
-  this.onInteractResponse = ({ resources: { personalization = [] } } = {}) => {
-    console.log("Personalization:::onInteractResponse");
-
-    document.addEventListener("DOMContentLoaded", function() {
-      personalization.forEach(offer => {
-        const el = document.querySelector(offer.offerMboxSelector);
-        if (el) {
-          el.innerHTML = offer.offerHtmlPayload;
-          self.collect({
-            event: "offer-rendered",
-            ...offer
-          });
+  return {
+    namespace: "Personalization",
+    onComponentsRegistered(_core) {
+      core = _core;
+    },
+    onBeforeInteract(payload) {
+      console.log("Personalization:::onBeforeInteract");
+      payload.appendToQuery({
+        personalization: {
+          sessionId: "1234235"
         }
       });
-    });
+    },
+    onInteractResponse({ resources: { personalization = [] } } = {}) {
+      console.log("Personalization:::onInteractResponse");
+
+      document.addEventListener("DOMContentLoaded", () => {
+        personalization.forEach(offer => {
+          const el = document.querySelector(offer.offerMboxSelector);
+          if (el) {
+            el.innerHTML = offer.offerHtmlPayload;
+            collect({
+              event: "offer-rendered",
+              ...offer
+            });
+          }
+        });
+      });
+    }
   };
-}
+};

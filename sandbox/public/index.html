@@ -32,13 +32,13 @@
           dataSet: "dataset1",
           shouldStoreCollectedData: 1,
           device: "Chrome-Mac",
-          collectionUrl: "http://parent.com:8080"
+          collectionUrl: "https://edgegateway.azurewebsites.net"
         }
       });
 
       adbe("subscribe", {
-        params: { 
-          eventName: "willPrepareRequest" 
+        params: {
+          eventName: "willPrepareRequest"
         },
         callback: function (payload) {
           payload.appendToQuery({ key: "value" })
@@ -46,8 +46,8 @@
       });
 
       adbe("subscribe", {
-        params: { 
-          eventName: "didMount" 
+        params: {
+          eventName: "didMount"
         },
         callback: function (response) {
           var personalization = response.personalization;
