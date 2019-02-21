@@ -1,0 +1,22 @@
+{% include header.html %}
+
+{% if page.title or page.description %}
+	<div class="u-bg-gray-30 u-pt-17 u-pb-13">
+		<div class="o-container">
+			<div class="o-row">
+				<div class="o-col-8@lg o-col-7@xl">
+					{% if page.title %}
+						<h1 class="u-mb-1">{{ page.title }}</h1>
+					{% endif %}
+					{% if page.description %}
+						<div class="u-text-md">
+							<p>{{ page.description }}</p>
+						</div>
+					{% endif %}
+				</div><!-- /.o-col -->
+			</div><!-- /.o-row -->
+		</div><!-- /.o-container -->
+	</div>
+{% endif %}
+
+{% include footer.html %}

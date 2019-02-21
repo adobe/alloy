@@ -1,0 +1,129 @@
+/* =============================================================================
+   SPACING (utilities/_spacing.scss)
+   ========================================================================== */
+
+/* stylelint-disable declaration-no-important */
+
+/**
+ * Utilities for controlling an element's padding and margin.
+ */
+
+@each $breakpoint-key, $breakpoint-value in $breakpoints {
+	@if $breakpoint-key == xs {
+		.u-mr-auto {
+			margin-right: auto !important;
+		}
+
+		.u-ml-auto {
+			margin-left: auto !important;
+		}
+
+		.u-mx-auto {
+			margin-right: auto !important;
+			margin-left: auto !important;
+		}
+
+		@each $spacer-key, $spacer-value in $spacers {
+			.u-mt-#{$spacer-key} {
+				margin-top: $spacer-value !important;
+			}
+
+			.u-mr-#{$spacer-key} {
+				margin-right: $spacer-value !important;
+			}
+
+			.u-mb-#{$spacer-key} {
+				margin-bottom: $spacer-value !important;
+			}
+
+			.u-ml-#{$spacer-key} {
+				margin-left: $spacer-value !important;
+			}
+
+			.u-mx-#{$spacer-key} {
+				margin-right: $spacer-value !important;
+				margin-left: $spacer-value !important;
+			}
+
+			.u-pt-#{$spacer-key} {
+				padding-top: $spacer-value !important;
+			}
+
+			.u-pr-#{$spacer-key} {
+				padding-right: $spacer-value !important;
+			}
+
+			.u-pb-#{$spacer-key} {
+				padding-bottom: $spacer-value !important;
+			}
+
+			.u-pl-#{$spacer-key} {
+				padding-left: $spacer-value !important;
+			}
+
+			.u-px-#{$spacer-key} {
+				padding-right: $spacer-value !important;
+				padding-left: $spacer-value !important;
+			}
+		}
+	} @else {
+		@include media-breakpoint-up(#{$breakpoint-key}) {
+			.u-mr-auto\@#{$breakpoint-key} {
+				margin-right: auto !important;
+			}
+
+			.u-ml-auto\@#{$breakpoint-key} {
+				margin-left: auto !important;
+			}
+
+			.u-mx-auto\@#{$breakpoint-key} {
+				margin-right: auto !important;
+				margin-left: auto !important;
+			}
+
+			@each $spacer-key, $spacer-value in $spacers {
+				.u-mt-#{$spacer-key}\@#{$breakpoint-key} {
+					margin-top: $spacer-value !important;
+				}
+
+				.u-mr-#{$spacer-key}\@#{$breakpoint-key} {
+					margin-right: $spacer-value !important;
+				}
+
+				.u-mb-#{$spacer-key}\@#{$breakpoint-key} {
+					margin-bottom: $spacer-value !important;
+				}
+
+				.u-ml-#{$spacer-key}\@#{$breakpoint-key} {
+					margin-left: $spacer-value !important;
+				}
+
+				.u-mx-#{$spacer-key}\@#{$breakpoint-key} {
+					margin-right: $spacer-value !important;
+					margin-left: $spacer-value !important;
+				}
+
+				.u-pt-#{$spacer-key}\@#{$breakpoint-key} {
+					padding-top: $spacer-value !important;
+				}
+
+				.u-pr-#{$spacer-key}\@#{$breakpoint-key} {
+					padding-right: $spacer-value !important;
+				}
+
+				.u-pb-#{$spacer-key}\@#{$breakpoint-key} {
+					padding-bottom: $spacer-value !important;
+				}
+
+				.u-pl-#{$spacer-key}\@#{$breakpoint-key} {
+					padding-left: $spacer-value !important;
+				}
+
+				.u-px-#{$spacer-key}\@#{$breakpoint-key} {
+					padding-right: $spacer-value !important;
+					padding-left: $spacer-value !important;
+				}
+			}
+		}
+	}
+}

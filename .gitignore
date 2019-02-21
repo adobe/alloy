@@ -47,7 +47,6 @@ bower_components
 dist
 
 # Documentation
-docs
 
 # TypeScript definitions
 typings

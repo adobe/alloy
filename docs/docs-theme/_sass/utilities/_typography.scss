@@ -1,0 +1,158 @@
+/* =============================================================================
+   TYPOGRAPHY (utilities/_typography.scss)
+   ========================================================================== */
+
+/* stylelint-disable declaration-no-important */
+
+/* Text Color
+   ========================================================================== */
+
+/**
+ * Utilities for controlling the text color of an element.
+ */
+
+@each $color-key, $color-value in $colors {
+	.u-text-#{$color-key} {
+		color: $color-value !important;
+	}
+}
+
+
+
+/* Text Sizing
+   ========================================================================== */
+
+/**
+ * Utilities for controlling the text size of an element.
+ */
+
+@each $breakpoint-key, $breakpoint-value in $breakpoints {
+	@if $breakpoint-key == xs {
+		.u-text-xxl {
+			font-size: 3.5rem !important;
+		}
+
+		.u-text-xl {
+			font-size: 3.125rem !important;
+		}
+
+		.u-text-lg {
+			font-size: 3rem !important;
+		}
+
+		.u-text-md {
+			font-size: 1.125rem !important;
+		}
+
+		.u-text-base {
+			font-size: $font-size-base !important;
+		}
+
+		.u-text-sm {
+			font-size: .875rem !important;
+		}
+	} @else {
+		@include media-breakpoint-up(#{$breakpoint-key}) {
+			.u-text-xxl\@#{$breakpoint-key} {
+				font-size: 3.5rem !important;
+			}
+
+			.u-text-xl\@#{$breakpoint-key} {
+				font-size: 3.125rem !important;
+			}
+
+			.u-text-lg\@#{$breakpoint-key} {
+				font-size: 3rem !important;
+			}
+
+			.u-text-md\@#{$breakpoint-key} {
+				font-size: 1.375rem !important;
+			}
+
+			.u-text-base\@#{$breakpoint-key} {
+				font-size: $font-size-base !important;
+			}
+
+			.u-text-sm\@#{$breakpoint-key} {
+				font-size: 1rem !important;
+			}
+		}
+	}
+}
+
+
+
+/* Text Alignment
+   ========================================================================== */
+
+/**
+ * Utilities for controlling the alignment of text.
+ */
+
+@each $breakpoint-key, $breakpoint-value in $breakpoints {
+	@if $breakpoint-key == xs {
+		.u-text-center {
+			text-align: center !important;
+		}
+
+		.u-text-left {
+			text-align: left !important;
+		}
+
+		.u-text-right {
+			text-align: right !important;
+		}
+	} @else {
+		@include media-breakpoint-up(#{$breakpoint-key}) {
+			.u-text-center\@#{$breakpoint-key} {
+				text-align: center !important;
+			}
+
+			.u-text-left\@#{$breakpoint-key} {
+				text-align: left !important;
+			}
+
+			.u-text-right\@#{$breakpoint-key} {
+				text-align: right !important;
+			}
+		}
+	}
+}
+
+
+
+/* Style and Decoration
+   ========================================================================== */
+
+/**
+ * Utilities for controlling the style of text.
+ */
+
+.u-italic {
+	font-style: italic !important;
+}
+
+.u-roman {
+	font-style: normal !important;
+}
+
+.u-uppercase {
+	text-transform: uppercase !important;
+}
+
+
+
+/* Font Weight
+   ========================================================================== */
+
+/**
+ * Utilities for controlling the style of text.
+ */
+
+.u-font-medium {
+	font-weight: $font-weight-medium !important;
+}
+
+.u-font-bold {
+	font-weight: $font-weight-bold !important;
+}

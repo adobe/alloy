@@ -1,0 +1,119 @@
+/* =============================================================================
+   POST (components/_post.scss)
+   ========================================================================== */
+
+.c-post {
+	font-size: 1.0625rem;
+
+	/**
+	 * Headings
+	 */
+
+	h1, h2, h3, h4, h5, h6 {
+		position: relative;
+	}
+
+	h2 {
+		border-bottom: 1px solid darken($color-gray-50, 5%);
+		padding-bottom: .625rem;
+	}
+
+	h1, h2 {
+		margin-top: 3.375rem;
+
+		@include media-breakpoint-up(md) {
+			margin-top: 4.25rem;
+		}
+
+		&:first-child {
+			margin-top: 0;
+		}
+	}
+
+	h4, h5, h6 {
+		font-weight: $font-weight-regular;
+	}
+
+	/**
+	 * Lists
+	 */
+
+	ul {
+		li {
+			position: relative;
+			list-style-type: none;
+			padding-left: 1.5625rem;
+
+			&::before {
+				content: '—';
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+		}
+	}
+
+	ol {
+		padding-left: .625rem;
+	}
+
+	/**
+	 * Tables
+	 */
+
+	table {
+		text-align: left;
+
+		@include media-breakpoint-up(lg) {
+			width: calc(100% + (992px / #{$grid-columns}));
+		}
+
+		@include media-breakpoint-up(xl) {
+			width: calc(100% + (1230px / #{$grid-columns}));
+		}
+
+		td, th {
+			vertical-align: top;
+			border: 1px solid $color-gray-50;
+			padding: .5rem 1.125rem;
+		}
+
+		hr {
+			border-color: $color-gray-50;
+		}
+	}
+
+	/**
+	 * Get out
+	 */
+
+	pre,
+	table,
+	.asciicast,
+	.callout,
+	.example,
+	.c-comments {
+		@include media-breakpoint-up(lg) {
+			margin-right: (992px / $grid-columns) * -1 !important; /* stylelint-disable-line declaration-no-important */
+		}
+
+		@include media-breakpoint-up(xl) {
+			margin-right: (1230px / $grid-columns) * -1 !important; /* stylelint-disable-line declaration-no-important */
+		}
+	}
+
+	/**
+	 * Asciinema
+	 */
+
+	.asciicast {
+		margin-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+		margin-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+
+		iframe {
+			display: block !important; /* stylelint-disable-line declaration-no-important */
+			width: 100% !important; /* stylelint-disable-line declaration-no-important */
+			height: 572px !important; /* stylelint-disable-line declaration-no-important */
+		}
+	}
+}

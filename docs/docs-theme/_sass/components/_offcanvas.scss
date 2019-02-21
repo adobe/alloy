@@ -1,0 +1,49 @@
+/* =============================================================================
+   OFFCANVAS (components/_offcanvas.scss)
+   ========================================================================== */
+
+/* Settings
+   ========================================================================== */
+
+$offcanvas-background-color: $color-white !default;
+$offcanvas-offset-top: 100px !default;
+$offcanvas-z-index: 998 !default;
+
+
+
+/* General
+   ========================================================================== */
+
+.c-offcanvas {
+	display: flex;
+	text-align: center;
+	height: 100vh;
+	width: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	background-color: $offcanvas-background-color;
+	z-index: $offcanvas-z-index;
+	padding-top: $offcanvas-offset-top;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-1rem);
+	transition: opacity .2s, visibility .2s, transform .3s;
+
+	/* Active state */
+	&.is-active {
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+	}
+}
+
+
+
+/* Inner
+   ========================================================================== */
+
+.c-offcanvas__inner {
+	margin-left: auto;
+	margin-right: auto;
+}

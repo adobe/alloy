@@ -1,0 +1,86 @@
+/* =============================================================================
+   GRID (tools/_grid.scss)
+   ========================================================================== */
+
+/* Container
+   ========================================================================== */
+
+@mixin grid-container {
+	@each $breakpoint-key, $breakpoint-value in $breakpoints {
+		@if $breakpoint-key != xs {
+			@include media-breakpoint-up($breakpoint-key) {
+				.o-container {
+					max-width: $breakpoint-value - $grid-gutter;
+				}
+			}
+		}
+	}
+}
+
+
+
+/* Columns
+   ========================================================================== */
+
+@mixin grid-column {
+	@each $breakpoint-key, $breakpoint-value in $breakpoints {
+		@if $breakpoint-key == xs {
+			.o-col {
+				flex: 1 1 0;
+			}
+
+			@for $i from 1 through $grid-columns {
+				$column-width: (100% / $grid-columns) * $i;
+
+				.o-col-#{$i} {
+					flex-basis: $column-width;
+					max-width: $column-width;
+				}
+			}
+		} @else {
+			@include media-breakpoint-up(#{$breakpoint-key}) {
+				.o-col\@#{$breakpoint-key} {
+					flex: 1 1 0;
+				}
+
+				@for $i from 1 through $grid-columns {
+					$column-width: (100% / $grid-columns) * $i;
+
+					.o-col-#{$i}\@#{$breakpoint-key} {
+						flex-basis: $column-width;
+						max-width: $column-width;
+					}
+				}
+			}
+		}
+	}
+}
+
+
+
+/* Offsets
+   ========================================================================== */
+
+@mixin grid-column-offset {
+	@each $breakpoint-key, $breakpoint-value in $breakpoints {
+		@if $breakpoint-key == xs {
+			@for $i from 1 through $grid-columns {
+				$column-width: (100% / $grid-columns) * $i;
+
+				.o-offset-#{$i} {
+					margin-left: $column-width;
+				}
+			}
+		} @else {
+			@include media-breakpoint-up(#{$breakpoint-key}) {
+				@for $i from 1 through $grid-columns {
+					$column-width: (100% / $grid-columns) * $i;
+
+					.o-offset-#{$i}\@#{$breakpoint-key} {
+						margin-left: $column-width;
+					}
+				}
+			}
+		}
+	}
+}
