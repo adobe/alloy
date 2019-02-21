@@ -1,0 +1,51 @@
+/* =============================================================================
+   FORMS (elements/_forms.scss)
+   ========================================================================== */
+
+input,
+select,
+textarea {
+	display: block;
+	width: 100%;
+	background-color: $color-white;
+	border: 1px solid $color-gray-100;
+	padding: .5rem 1rem;
+	margin-bottom: $spacer-base;
+}
+
+
+
+/* Button
+   ========================================================================== */
+
+button {
+	display: inline-block;
+	border: 0;
+	background-color: transparent;
+	cursor: pointer;
+	padding: 0;
+
+	&:focus {
+		outline: none;
+	}
+}
+
+
+
+/* Select
+   ========================================================================== */
+
+select {
+	color: $color-gray-300;
+	appearance: none;
+	border-radius: 0;
+	background-image: url('../images/icons/icn-arrow-dropdown.svg');
+	background-repeat: no-repeat;
+	background-position: right 1rem center;
+	background-size: .9rem;
+	transition: border-color .2s;
+
+	&:focus {
+		outline: none;
+	}
+}

@@ -1,0 +1,71 @@
+/* =============================================================================
+   NAV (components/_nav.scss)
+   ========================================================================== */
+
+/**
+ * Basic navigation component. Stands out with different color and larger font
+ * size.
+ */
+
+.c-nav {
+	@extend .o-list-bare;
+	@extend .o-list-inline;
+	display: inline-block;
+	font-size: 1.25rem;
+
+	li {
+		@extend .o-list-inline__item;
+
+		&.is-current {
+			a {
+				border-bottom-color: currentColor;
+
+				.c-offcanvas & {
+					border-bottom-color: transparent;
+				}
+			}
+		}
+	}
+
+	li + li {
+		margin-left: 1.875rem;
+
+		@include media-breakpoint-up(lg) {
+			margin-left: 3.125rem;
+		}
+	}
+
+	a {
+		display: block;
+		position: relative;
+		border-bottom-color: transparent;
+
+		&:hover,
+		&:focus,
+		&:active {
+			border-bottom-color: currentColor;
+		}
+	}
+}
+
+
+
+/* Variants
+   ========================================================================== */
+
+.c-nav--stacked {
+	display: block;
+
+	li {
+		display: block;
+	}
+
+	li + li {
+		margin-top: 1.25rem;
+		margin-left: 0;
+	}
+
+	a {
+		display: inline-block;
+	}
+}

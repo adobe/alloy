@@ -1,0 +1,45 @@
+/* =============================================================================
+   EXAMPLE (components/_example.scss)
+   ========================================================================== */
+
+/**
+ * Layer prefix is missing because this component will be used in markdown
+ * files. We don't want to bother users with CSS layer prefixes.
+ */
+
+.example {
+	position: relative;
+	color: $color-white;
+	font-size: 1.125rem;
+	font-weight: $font-weight-medium;
+	background-color: #4f5264;
+	box-shadow: 0 .1875rem .625rem rgba(0, 0, 0, .1);
+	padding: .5rem 1.25rem;
+
+	> a {
+		@extend .o-link-bare;
+		float: right;
+		font-size: 1rem;
+
+		&::after {
+			content: '';
+			position: relative;
+			display: inline-block;
+			width: 1rem;
+			height: 1rem;
+			background-image: url('../images/icons/open-in-new.svg');
+			margin-left: .375rem;
+			top: .1875rem;
+		}
+
+		&:hover,
+		&:focus,
+		&:active {
+			border-bottom-color: currentColor;
+		}
+	}
+
+	&::before {
+		content: 'Example';
+	}
+}

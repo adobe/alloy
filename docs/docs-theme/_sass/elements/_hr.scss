@@ -1,0 +1,13 @@
+/* =============================================================================
+   HR (elements/_hr.scss)
+   ========================================================================== */
+
+/**
+ * 1. Remove unnecessary border from all sides of an element.
+ * 2. Add border to the bottom side of an element, color will be inherited.
+ */
+
+hr {
+	border: 0; /* [1] */
+	border-bottom: 1px solid; /* [2] */
+}

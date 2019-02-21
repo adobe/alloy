@@ -3,6 +3,7 @@ dist
 sandbox/public/atag.js
 .sonarlint
 
+
 logs
 *.log
 npm-debug.log*
@@ -47,7 +48,8 @@ bower_components
 dist
 
 # Documentation
-docs
+.sass-cache
+_site
 
 # TypeScript definitions
 typings

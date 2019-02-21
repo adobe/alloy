@@ -1,0 +1,51 @@
+# Theme settings
+dox:
+    baseurl:
+    title: Activation / a-tag
+    theme_color: '#0976f8' # Define theme primary color with HEX value
+    language: en-US # Use ISO language and country codes to setup language of your website - https://www.w3schools.com/tags/ref_language_codes.asp and https://www.w3schools.com/tags/ref_country_codes.asp
+    header:
+        logo:
+            text: Activation / a-tag
+            image:
+        nav:
+            - item_name: Homepage
+              item_url: /
+        cta:
+            label: Documentation
+            url: /documentation
+            icon: folder # Choose from 266 icons in "Feather" icon set, list of all icons is available here - https://feathericons.com
+    footer:
+        logo:
+            text: Adobe Activation
+            image:
+        text: Copyright &copy; 2019. - Activation / a-tag <br>All rights reserved.
+    google_analytics:
+        tracking_code: # Add your Google Analytics tracking code to activate Google Analytics
+    comments:
+        disqus_forum_shortname: # Add your Disqus forum shortname to activate comments site-wide
+
+# Defining collections
+collections:
+    documentation:
+        output: true
+
+# Defining defaults
+defaults:
+    -
+        scope:
+            path: ''
+            type: 'documentation'
+        values:
+            layout: 'documentation-single'
+
+# SASS settings
+sass:
+    sass_dir: ./docs-theme/_sass
+    style: :compressed
+
+# Jekyll settings
+layouts_dir: ./docs-theme/_layouts
+includes_dir: ./docs-theme/_includes
+exclude: [ 'README.md', 'CHANGELOG.md' ]
+permalink: /:title/

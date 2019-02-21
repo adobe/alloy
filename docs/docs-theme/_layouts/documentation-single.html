@@ -1,0 +1,73 @@
+{% include header.html %}
+
+{% include hero.html classes='u-bg-gray-30 u-pt-16 u-pb-10' %}
+
+{% if page.content or site.documentation %}
+	<div class="u-pt-8 u-pb-5">
+		<div class="o-container">
+			<div class="o-row">
+				{% if page.content %}
+					<div class="o-col-8@lg o-col-7@xl">
+						<div class="c-post u-mb-3@lg js-post">
+							{{ content }}
+							{% include comments.html classes='u-mt-8 u-mb-3' %}
+						</div><!-- /.c-post -->
+					</div><!-- /.o-col -->
+				{% endif %}
+				{% if site.documentation %}
+					<div class="o-col-3@lg o-offset-1@lg o-offset-2@xl">
+						<ul class="c-page-nav u-sticky u-pin-t-6 u-mt-4 u-mt-1@lg u-mb-1 u-mb-4@lg">
+							{% assign documentation = site.documentation | sort: 'order' %}
+							{% for document in documentation %}
+								{% if page.order >= document.order %}
+									<li class="is-active">
+										<a href="{{ document.url }}">
+											<p class="c-page-nav__heading">{{ document.title }}</p>
+										</a>
+									</li>
+								{% else %}
+									<li>
+										<a href="{{ document.url }}">
+											<p class="c-page-nav__heading">{{ document.title }}</p>
+										</a>
+									</li>
+								{% endif %}
+							{% endfor %}
+						</ul><!-- /.c-page-nav -->
+					</div><!-- /.o-col -->
+				{% endif %}
+			</div><!-- /.o-row -->
+		</div><!-- /.o-container -->
+	</div>
+{% endif %}
+
+{% assign documentation_size = site.documentation | size %}
+{% if documentation_size > 1 %}
+	<div class="u-bg-primary u-text-white u-pt-3 u-pt-4@sm u-pb-3 u-pb-4@sm">
+		<div class="o-container">
+			<div class="o-row">
+				<div class="o-col-12 u-text-center">
+					<div class="u-inline-block u-flex@sm">
+						{% assign documentation = site.documentation | sort: 'order' %}
+						{% for document in documentation %}
+							{% assign next_document = document.order | minus: 1 %}
+							{% assign previous_document = document.order | plus: 1 %}
+							{% if next_document == page.order %}
+								<a href="{{ document.url }}" class="c-arrow-link c-arrow-link--next u-ml-auto">{{ document.title }}</a>
+							{% elsif previous_document == page.order %}
+								<a href="{{ document.url }}" class="c-arrow-link c-arrow-link--prev u-mr-auto">{{ document.title }}</a>
+							{% endif %}
+						{% endfor %}
+					</div>
+				</div><!-- /.o-col -->
+			</div><!-- /.o-row -->
+		</div><!-- /.o-container -->
+	</div>
+{% endif %}
+
+{% assign documentation_size = site.documentation | size %}
+{% if documentation_size > 1 %}
+	{% include footer.html %}
+{% else %}
+	{% include footer.html bordered=true %}
+{% endif %}

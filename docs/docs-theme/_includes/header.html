@@ -1,0 +1,126 @@
+{% if include.style == 'alternative' %}
+	{% assign header_classes = 'c-header u-text-white' %}
+	{% assign cta_classes = 'c-btn c-btn--md c-btn--white u-text-md' %}
+	{% assign hamburger_cta_classes = 'c-hamburger-icon c-hamburger-icon--slider c-hamburger-icon--white js-hamburger-icon js-offcanvas-toggle u-ml-auto u-hidden@lg' %}
+{% else %}
+	{% assign header_classes = 'c-header' %}
+	{% assign cta_classes = 'c-btn c-btn--md c-btn--gray u-text-md' %}
+	{% assign hamburger_cta_classes = 'c-hamburger-icon c-hamburger-icon--slider js-hamburger-icon js-offcanvas-toggle u-ml-auto u-hidden@lg' %}
+{% endif %}
+
+<!DOCTYPE html>
+{% if site.dox.language %}
+	<html lang="{{ site.dox.language }}">
+{% else %}
+	<html>
+{% endif %}
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="x-ua-compatible" content="ie=edge">
+		<meta name="viewport" content="width=device-width, minimum-scale=1.0">
+		{% if page.url == "/" %}
+			<title>{{ site.dox.title }}</title>
+		{% else %}
+			<title>{{ page.title }} | {{ site.dox.title }}</title>
+		{% endif %}
+		{% if page.description %}
+			<meta name="description" content="{{ page.description }}">
+		{% endif %}
+		{% if page.keywords %}
+			<meta name="keywords" content="{{ page.keywords }}">
+		{% endif %}
+		<link rel="icon" href="{% if jekyll.environment == 'production' %}{{ site.dox.baseurl }}{% endif %}/favicon.ico" type="image/x-icon">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono|IBM+Plex+Sans:400,400i,500,500i,700,700i">
+		<link rel="stylesheet" href="{% if jekyll.environment == 'production' %}{{ site.dox.baseurl }}{% endif %}/docs-theme/assets/css/style.css">
+	</head>
+	<body>
+		{% if site.dox.header.nav or site.dox.header.cta %}
+			<div class="c-offcanvas">
+				<div class="c-offcanvas__inner">
+					{% if site.dox.header.nav %}
+						<ul class="c-nav c-nav--stacked u-mx-auto">
+							{% for item in site.dox.header.nav %}
+								<li><a href="{% if jekyll.environment == 'production' %}{{ site.dox.baseurl }}{% endif %}{{ item.item_url }}">{{ item.item_name }}</a></li>
+							{% endfor %}
+						</ul><!-- /.c-nav -->
+					{% endif %}
+					{% if site.dox.header.cta %}
+						{% if site.dox.header.cta.icon %}
+							<a href="{{ site.dox.header.cta.url }}" class="c-btn c-btn--md c-btn--gray u-text-md">
+								{{ site.dox.header.cta.label }}
+								<div class="c-btn__icon">
+									<i class="o-icon o-icon--{{ site.dox.header.cta.icon }}"></i>
+								</div>
+							</a>
+						{% else %}
+							<a href="{{ site.dox.header.cta.url }}" class="c-btn c-btn--md c-btn--gray u-text-md">{{ site.dox.header.cta.label }}</a>
+						{% endif %}
+					{% endif %}
+				</div><!-- /.c-offcanvas__inner -->
+			</div><!-- /.c-offcanvas -->
+		{% endif %}
+
+		{% if site.dox.header.logo.text or site.dox.header.logo.image or site.dox.header.nav %}
+			<header class="{{ header_classes }}">
+				<div class="o-container">
+					<div class="o-row">
+						<div class="o-col-12">
+							<div class="u-flex u-items-center">
+								{% if site.dox.header.logo.text %}
+									{% if page.url == "/" %}
+										<h1 class="c-logo u-mb-0 js-logo">
+											<a href="{% if jekyll.environment == 'production' %}{{ site.dox.baseurl }}{% endif %}/" class="c-logo__link">{{ site.dox.header.logo.text }}</a>
+										</h1><!-- /.c-logo -->
+									{% else %}
+										<p class="c-logo u-mb-0 js-logo">
+											<a href="{% if jekyll.environment == 'production' %}{{ site.dox.baseurl }}{% endif %}/" class="c-logo__link">{{ site.dox.header.logo.text }}</a>
+										</p><!-- /.c-logo -->
+									{% endif %}
+								{% elsif site.dox.header.logo.image %}
+									<div class="c-logo">
+										<a href="{% if jekyll.environment == 'production' %}{{ site.dox.baseurl }}{% endif %}/" class="c-logo__link">
+											<img src="{% if jekyll.environment == 'production' %}{{ site.dox.baseurl }}{% endif %}/docs-theme/assets/images/layout/logo.png">
+										</a><!-- /.c-logo__link -->
+									</div><!-- /.c-logo -->
+								{% endif %}
+								{% if site.dox.header.nav or if site.dox.header.cta %}
+									<div class="u-flex u-items-center u-ml-auto">
+										{% if site.dox.header.nav %}
+											<ul class="c-nav u-mb-0 u-hidden u-block@lg">
+												{% for item in site.dox.header.nav %}
+													{% if item.item_name == page.title %}
+														{% assign item_classes = 'is-current' %}
+													{% else %}
+														{% assign item_classes = '' %}
+													{% endif %}
+													<li class="{{ item_classes }}"><a href="{% if jekyll.environment == 'production' %}{{ site.dox.baseurl }}{% endif %}{{ item.item_url }}">{{ item.item_name }}</a></li>
+												{% endfor %}
+											</ul><!-- /.c-nav -->
+										{% endif %}
+										{% if site.dox.header.cta %}
+											<div class="u-ml-5 u-hidden u-block@lg">
+												{% if site.dox.header.cta.icon %}
+													<a href="{{ site.dox.header.cta.url }}" class="{{ cta_classes }}">
+														{{ site.dox.header.cta.label }}
+														<div class="c-btn__icon">
+															<i class="o-icon o-icon--{{ site.dox.header.cta.icon }}"></i>
+														</div>
+													</a>
+												{% else %}
+													<a href="{{ site.dox.header.cta.url }}" class="{{ cta_classes }}">{{ site.dox.header.cta.label }}</a>
+												{% endif %}
+											</div>
+										{% endif %}
+									</div>
+								{% endif %}
+								<button class="{{ hamburger_cta_classes }}" type="button">
+									<span class="c-hamburger-icon__box">
+										<span class="c-hamburger-icon__inner"></span>
+									</span><!-- /.c-hamburger-icon__box -->
+								</button><!-- /.c-hamburger-icon -->
+							</div>
+						</div><!-- /.o-col -->
+					</div><!-- /.o-row -->
+				</div><!-- /.o-container -->
+			</header><!-- /.c-header -->
+		{% endif %}

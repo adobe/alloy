@@ -1,0 +1,17 @@
+/* =============================================================================
+   FONTS (generic/_fonts.scss)
+   ========================================================================== */
+
+/* Icons
+   ========================================================================== */
+
+@font-face {
+	font-family: 'Dox Icons';
+	src: url('../fonts/dox-icons/dox-icons.eot?3ketly');
+	src: url('../fonts/dox-icons/dox-icons.eot?3ketly#iefix') format('embedded-opentype'),
+	     url('../fonts/dox-icons/dox-icons.ttf?3ketly') format('truetype'),
+	     url('../fonts/dox-icons/dox-icons.woff?3ketly') format('woff'),
+	     url('../fonts/dox-icons/dox-icons.svg?3ketly#dox-icons') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}

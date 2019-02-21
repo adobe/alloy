@@ -1,0 +1,18 @@
+/* =============================================================================
+   MEDIA (elements/_media.scss)
+   ========================================================================== */
+
+/* SVG
+   ========================================================================== */
+
+/**
+ * 1. Fluid SVGs for responsive purposes.
+ * 2. Setting `vertical-align` removes the whitespace that appears under `svg`
+ *    elements when they are dropped into a page as-is. Safer alternative to
+ *    using `display: block;`.
+ */
+
+svg {
+	max-width: 100%; /* [1] */
+	vertical-align: middle; /* [2] */
+}

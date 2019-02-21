@@ -1,0 +1,19 @@
+/* =============================================================================
+   TABLES (objects/_tables.scss)
+   ========================================================================== */
+
+/* Responsive table
+   ========================================================================== */
+
+.o-responsive-table {
+	overflow-x: scroll;
+	-webkit-overflow-scrolling: touch;
+
+	@include media-breakpoint-up(md) {
+		overflow-x: initial;
+	}
+
+	> table {
+		min-width: 37.5rem;
+	}
+}
