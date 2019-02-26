@@ -19,19 +19,6 @@ export default {
   plugins: [
     resolve(),
     commonjs(),
-    babel({
-      babelrc: false,
-      presets: [
-        [
-          "@babel/env",
-          {
-            modules: false,
-            targets: {
-              ie: 10
-            }
-          }
-        ]
-      ]
-    })
+    babel()
   ]
 };
