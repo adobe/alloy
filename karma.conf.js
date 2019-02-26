@@ -1,6 +1,14 @@
 const path = require("path");
 const reporters = ["progress", "coverage"];
-const rules = [{
+const rules = [
+  {
+    test: /\.js$/,
+    include: path.resolve("src"),
+    exclude: new RegExp("test"),
+    loader: "babel-loader"
+  }
+  ,
+  {
   test: /\.js$/,
   include: path.resolve("src"),
   exclude: new RegExp("test"),
@@ -94,6 +102,7 @@ module.exports = function(config) {
     browserNoActivityTimeout: 300000,
 
     webpack: {
+      devtool: '#inline-source-map',
       externals: {
         window: "window",
         document: "document"

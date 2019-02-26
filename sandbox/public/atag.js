@@ -4,20 +4,6 @@
   (global = global || self, global.atag = factory());
 }(this, function () { 'use strict';
 
-  function _typeof(obj) {
-    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-      _typeof = function (obj) {
-        return typeof obj;
-      };
-    } else {
-      _typeof = function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-      };
-    }
-
-    return _typeof(obj);
-  }
-
   function _defineProperty(obj, key, value) {
     if (key in obj) {
       Object.defineProperty(obj, key, {
@@ -94,7 +80,7 @@
       }
 
       function Promise(fn) {
-        if (_typeof(this) !== 'object') throw new TypeError('Promises must be constructed via new');
+        if (typeof this !== 'object') throw new TypeError('Promises must be constructed via new');
         if (typeof fn !== 'function') throw new TypeError('not a function');
         this._state = 0;
         this._handled = false;
@@ -142,7 +128,7 @@
           // Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
           if (newValue === self) throw new TypeError('A promise cannot be resolved with itself.');
 
-          if (newValue && (_typeof(newValue) === 'object' || typeof newValue === 'function')) {
+          if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
             var then = newValue.then;
 
             if (newValue instanceof Promise) {
@@ -237,7 +223,7 @@
 
           function res(i, val) {
             try {
-              if (val && (_typeof(val) === 'object' || typeof val === 'function')) {
+              if (val && (typeof val === 'object' || typeof val === 'function')) {
                 var then = val.then;
 
                 if (typeof then === 'function') {
@@ -265,7 +251,7 @@
       };
 
       Promise.resolve = function (value) {
-        if (value && _typeof(value) === 'object' && value.constructor === Promise) {
+        if (value && typeof value === 'object' && value.constructor === Promise) {
           return value;
         }
 
@@ -465,7 +451,7 @@
         tracker.collect(data, callback);
       },
       makeLogger: function makeLogger(prefix) {
-        return {};
+        console.log(prefix);
       }
     };
     lifecycle.onComponentsRegistered(core);
@@ -562,7 +548,7 @@
 
   var callServer = function callServer(core, endpoint) {
     return function (payload) {
-      return fetch(core.configs.collectionUrl + "/" + endpoint, {
+      return fetch("".concat(core.configs.collectionUrl, "/").concat(endpoint), {
         method: "POST",
         cache: "no-cache",
         headers: {
@@ -926,6 +912,44 @@
 
   var core = null; // TODO: Look for existing atag (OR adbe) object on the page first.
 
+  function collect() {
+    var payload = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var callback = arguments.length > 1 ? arguments[1] : undefined;
+    // TODO Decide on a final format for all Components' APIs: Maybe (requiredParam, { optional params }), or maybe { ALL PARAMS }.
+    return core.collect(payload, callback);
+  } // MAYBE: Since we don't have a data layer yet, should we support a `configs.data`?
+
+
+  function configure(configs) {
+    // For now we are instantiating Core when configure is called.
+    // TODO: Maybe pass those configs to a CoreConfig object that validates and wrap the raw configs.
+    // TODO: Register the Components here statically for now. They might be registered differently.
+    var componentRegistry = createComponentRegistry(); // TODO: Maybe pass Core in.
+
+    componentRegistry.register(createTracker());
+    componentRegistry.register(createIdentity());
+    componentRegistry.register(createAudiences());
+    componentRegistry.register(createPersonalization());
+    core = createCore(configs, componentRegistry); // TODO: Move this guy out of here.. This is just a quick test for the initial call. We might not even need that.
+
+    if (!configs.disableStartupCall) {
+      core.interact({
+        event: "page View",
+        pageName: "home"
+      });
+    }
+  }
+
+  function subscribe(params, callback) {
+    console.log(params, callback);
+  }
+
+  var commands = {
+    collect: collect,
+    configure: configure,
+    subscribe: subscribe
+  };
+
   function atag() {
     var command = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "collect";
 
@@ -934,56 +958,22 @@
         params = _ref$params === void 0 ? {} : _ref$params,
         callback = _ref.callback;
 
-    function collect() {
-      var payload = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      var callback = arguments.length > 1 ? arguments[1] : undefined;
-      // TODO Decide on a final format for all Components' APIs: Maybe (requiredParam, { optional params }), or maybe { ALL PARAMS }.
-      return core.collect(payload, callback);
-    } // MAYBE: Since we don't have a data layer yet, should we support a `configs.data`?
-
-
-    function configure(configs) {
-      // For now we are instantiating Core when configure is called.
-      // TODO: Maybe pass those configs to a CoreConfig object that validates and wrap the raw configs.
-      // TODO: Register the Components here statically for now. They might be registered differently.
-      var componentRegistry = createComponentRegistry(); // TODO: Maybe pass Core in.
-
-      componentRegistry.register(createTracker());
-      componentRegistry.register(createIdentity());
-      componentRegistry.register(createAudiences());
-      componentRegistry.register(createPersonalization());
-      core = createCore(configs, componentRegistry); // TODO: Move this guy out of here.. This is just a quick test for the initial call. We might not even need that.
-
-      if (!configs.disableStartupCall) {
-        core.interact({
-          event: "page View",
-          pageName: "home"
-        }, callback);
-      }
-    }
-
-    function subscribe(params, callback) {}
-
-    var commands = {
-      collect: collect,
-      configure: configure,
-      subscribe: subscribe
-    };
     commands[command](params, callback);
-  } // TODO: @khoury this needs to be fixed,
-  // `npm test` fails because of this construct
+  } // eslint-disable-next-line no-underscore-dangle
 
 
   var namespace = reactorWindow.__adobeNamespace;
 
-  if (reactorWindow[namespace]) {
+  if (namespace) {
     var queue = reactorWindow[namespace].q;
+    queue.push = atag;
     queue.forEach(function (queuedArguments) {
       atag.apply(void 0, _toConsumableArray(queuedArguments));
     });
+  } else {
+    // TODO: Improve error message once we give a name to this library.
+    console.error("Incorrectly configured.");
   }
-
-  reactorWindow[namespace] = atag;
 
   return atag;
 
