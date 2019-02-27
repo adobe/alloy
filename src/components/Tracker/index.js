@@ -13,13 +13,7 @@ export default () => {
     return request.send(data, endpoint, beforeHook, afterHook, callback);
   };
 
-  const beforeInteractHook = payload =>
-    core.lifecycle.onBeforeInteract(payload);
-  const onInteractResponse = response =>
-    core.lifecycle.onInteractResponse(response);
-  const onBeforeCollect = payload => core.lifecycle.onBeforeCollect(payload);
-  const onCollectResponse = payload =>
-    core.lifecycle.onCollectResponse(payload);
+  const makeHookCall = hook => (...args) => core.lifecycle[hook](...args);
 
   return {
     namespace: "Tracker",
@@ -28,9 +22,13 @@ export default () => {
     },
     interact: makeServerCall(
       "interact",
-      beforeInteractHook,
-      onInteractResponse
+      makeHookCall("onBeforeViewStart"),
+      makeHookCall("onViewStartResponse")
     ),
-    collect: makeServerCall("collect", onBeforeCollect, onCollectResponse)
+    collect: makeServerCall(
+      "collect",
+      makeHookCall("onBeforeEvent"),
+      makeHookCall("onEventResponse")
+    )
   };
 };

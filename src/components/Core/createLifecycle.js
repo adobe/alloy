@@ -8,11 +8,14 @@
 // We will have a Plop helper that generates Components and populate all the
 // hooks as Template methods.
 
-// TODO: Finalize the first set of Lifecycle hooks.
+// TODO: Finalize the first set of Lifecycle hooks. (DONE)
 // TODO: Support Async hooks. (Or maybe default them as Async)
 // TODO: Hooks might have to publish events so the outside world can hooks in as well.
 
-// TODO Maybe rename this to `registry`.
+// MAYBE: If a Component has a hard dependency, or maybe CORE can do this:
+// if (core.hasComponent('Personalization')) {
+//  new Error() or core.missingRequirement('I require Personalization');
+// }
 
 function invokeHook(components, hook, ...args) {
   return components.map(component => {
@@ -26,23 +29,26 @@ export default componentRegistry => {
   const components = componentRegistry.getAll();
   return {
     onComponentsRegistered(core) {
-      // MAYBE: If a Component has a hard dependency, or maybe CORE can do this:
-      // if (core.hasComponent('Personalization')) {
-      // new Error() or core.missingRequirement('I require Personalization');
-      // }
       return invokeHook(components, "onComponentsRegistered", core);
     },
-    onBeforeInteract(payload) {
-      return invokeHook(components, "onBeforeInteract", payload);
+    onBeforeViewStart(payload) {
+      return invokeHook(components, "onBeforeViewStart", payload);
     },
-    onInteractResponse(response) {
-      return invokeHook(components, "onInteractResponse", response);
+    onViewStartResponse(response) {
+      return invokeHook(components, "onViewStartResponse", response);
     },
-    onBeforeCollect(payload) {
-      return invokeHook(componentRegistry.getAll(), "onBeforeCollect", payload);
+    onBeforeEvent(payload) {
+      return invokeHook(componentRegistry.getAll(), "onBeforeEvent", payload);
     },
-    onCollectResponse(response) {
-      return invokeHook(components, "onCollectResponse", response);
+    onEventResponse(response) {
+      return invokeHook(components, "onEventResponse", response);
+    },
+    onBeforeUnload() {
+      return invokeHook(components, "onBeforeUnload");
+    },
+    onOptInChanged(permissions) {
+      return invokeHook(components, "onOptInChanged", permissions);
     }
+    // TODO: We might need an `onError(error)` hook.
   };
 };

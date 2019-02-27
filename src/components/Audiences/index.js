@@ -3,8 +3,8 @@ export default () => {
 
   return {
     namespace: "Audiences",
-    onBeforeInteract(payload) {
-      console.log("Audiences:::onBeforeInteract");
+    onBeforeViewStart(payload) {
+      console.log("Audiences:::onBeforeViewStart");
       if (hasDestinationExpired) {
         payload.appendToQuery({
           destinations: true
@@ -12,8 +12,8 @@ export default () => {
         hasDestinationExpired = false;
       }
     },
-    onInteractResponse({ destinations = [] } = {}) {
-      console.log("Audiences:::onInteractResponse");
+    onViewStartResponse({ destinations = [] } = {}) {
+      console.log("Audiences:::onViewStartResponse");
       destinations.forEach(dest => console.log(dest.url));
     }
   };

@@ -11,16 +11,16 @@ export default () => {
     onComponentsRegistered(_core) {
       core = _core;
     },
-    onBeforeInteract(payload) {
-      console.log("Personalization:::onBeforeInteract");
+    onBeforeViewStart(payload) {
+      console.log("Personalization:::onBeforeViewStart");
       payload.appendToQuery({
         personalization: {
           sessionId: "1234235"
         }
       });
     },
-    onInteractResponse({ resources: { personalization = [] } } = {}) {
-      console.log("Personalization:::onInteractResponse");
+    onViewStartResponse({ resources: { personalization = [] } } = {}) {
+      console.log("Personalization:::onViewStartResponse");
 
       document.addEventListener("DOMContentLoaded", () => {
         personalization.forEach(offer => {

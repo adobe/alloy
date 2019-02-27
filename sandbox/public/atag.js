@@ -382,10 +382,13 @@
   // to implement the hook it's interested in as a method on its prototype.
   // We will have a Plop helper that generates Components and populate all the
   // hooks as Template methods.
-  // TODO: Finalize the first set of Lifecycle hooks.
+  // TODO: Finalize the first set of Lifecycle hooks. (DONE)
   // TODO: Support Async hooks. (Or maybe default them as Async)
   // TODO: Hooks might have to publish events so the outside world can hooks in as well.
-  // TODO Maybe rename this to `registry`.
+  // MAYBE: If a Component has a hard dependency, or maybe CORE can do this:
+  // if (core.hasComponent('Personalization')) {
+  //  new Error() or core.missingRequirement('I require Personalization');
+  // }
   function invokeHook(components, hook) {
     for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
       args[_key - 2] = arguments[_key];
@@ -400,24 +403,27 @@
     var components = componentRegistry.getAll();
     return {
       onComponentsRegistered: function onComponentsRegistered(core) {
-        // MAYBE: If a Component has a hard dependency, or maybe CORE can do this:
-        // if (core.hasComponent('Personalization')) {
-        // new Error() or core.missingRequirement('I require Personalization');
-        // }
         return invokeHook(components, "onComponentsRegistered", core);
       },
-      onBeforeInteract: function onBeforeInteract(payload) {
-        return invokeHook(components, "onBeforeInteract", payload);
+      onBeforeViewStart: function onBeforeViewStart(payload) {
+        return invokeHook(components, "onBeforeViewStart", payload);
       },
-      onInteractResponse: function onInteractResponse(response) {
-        return invokeHook(components, "onInteractResponse", response);
+      onViewStartResponse: function onViewStartResponse(response) {
+        return invokeHook(components, "onViewStartResponse", response);
       },
-      onBeforeCollect: function onBeforeCollect(payload) {
-        return invokeHook(componentRegistry.getAll(), "onBeforeCollect", payload);
+      onBeforeEvent: function onBeforeEvent(payload) {
+        return invokeHook(componentRegistry.getAll(), "onBeforeEvent", payload);
       },
-      onCollectResponse: function onCollectResponse(response) {
-        return invokeHook(components, "onCollectResponse", response);
-      }
+      onEventResponse: function onEventResponse(response) {
+        return invokeHook(components, "onEventResponse", response);
+      },
+      onBeforeUnload: function onBeforeUnload() {
+        return invokeHook(components, "onBeforeUnload", response);
+      },
+      onOptInChanged: function onOptInChanged() {
+        return invokeHook(components, "onOptInChanged", response);
+      } // TODO: We might need an `onError(error)` hook.
+
     };
   });
 
@@ -586,20 +592,12 @@
       };
     };
 
-    var beforeInteractHook = function beforeInteractHook(payload) {
-      return core.lifecycle.onBeforeInteract(payload);
-    };
+    var makeHookCall = function makeHookCall(hook) {
+      return function () {
+        var _core$lifecycle;
 
-    var onInteractResponse = function onInteractResponse(response) {
-      return core.lifecycle.onInteractResponse(response);
-    };
-
-    var onBeforeCollect = function onBeforeCollect(payload) {
-      return core.lifecycle.onBeforeCollect(payload);
-    };
-
-    var onCollectResponse = function onCollectResponse(payload) {
-      return core.lifecycle.onCollectResponse(payload);
+        return (_core$lifecycle = core.lifecycle)[hook].apply(_core$lifecycle, arguments);
+      };
     };
 
     return {
@@ -607,8 +605,8 @@
       onComponentsRegistered: function onComponentsRegistered(_core) {
         core = _core;
       },
-      interact: makeServerCall("interact", beforeInteractHook, onInteractResponse),
-      collect: makeServerCall("collect", onBeforeCollect, onCollectResponse)
+      interact: makeServerCall("interact", makeHookCall("onBeforeViewStart"), makeHookCall("onViewStartResponse")),
+      collect: makeServerCall("collect", makeHookCall("onBeforeEvent"), makeHookCall("onEventResponse"))
     };
   });
 
@@ -796,8 +794,8 @@
       getEcid: function getEcid() {
         return reactorCookie.get("ecid");
       },
-      onBeforeCollect: function onBeforeCollect(payload) {
-        console.log("Identity:::onBeforeCollect");
+      onBeforeEvent: function onBeforeEvent(payload) {
+        console.log("Identity:::onBeforeEvent");
 
         if (hasIdSyncsExpired) {
           payload.appendToQuery({
@@ -809,9 +807,9 @@
           hasIdSyncsExpired = false;
         }
       },
-      onInteractResponse: function onInteractResponse(_ref) {
+      onViewStartResponse: function onViewStartResponse(_ref) {
         var ecid = _ref.ids.ecid;
-        console.log("Identity:::onInteractResponse");
+        console.log("Identity:::onViewStartResponse");
         reactorCookie.set("ecid", ecid, {
           expires: 7
         });
@@ -823,8 +821,8 @@
     var hasDestinationExpired = true;
     return {
       namespace: "Audiences",
-      onBeforeInteract: function onBeforeInteract(payload) {
-        console.log("Audiences:::onBeforeInteract");
+      onBeforeViewStart: function onBeforeViewStart(payload) {
+        console.log("Audiences:::onBeforeViewStart");
 
         if (hasDestinationExpired) {
           payload.appendToQuery({
@@ -833,12 +831,12 @@
           hasDestinationExpired = false;
         }
       },
-      onInteractResponse: function onInteractResponse() {
+      onViewStartResponse: function onViewStartResponse() {
         var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
             _ref$destinations = _ref.destinations,
             destinations = _ref$destinations === void 0 ? [] : _ref$destinations;
 
-        console.log("Audiences:::onInteractResponse");
+        console.log("Audiences:::onViewStartResponse");
         destinations.forEach(function (dest) {
           return console.log(dest.url);
         });
@@ -859,20 +857,20 @@
       onComponentsRegistered: function onComponentsRegistered(_core) {
         core = _core;
       },
-      onBeforeInteract: function onBeforeInteract(payload) {
-        console.log("Personalization:::onBeforeInteract");
+      onBeforeViewStart: function onBeforeViewStart(payload) {
+        console.log("Personalization:::onBeforeViewStart");
         payload.appendToQuery({
           personalization: {
             sessionId: "1234235"
           }
         });
       },
-      onInteractResponse: function onInteractResponse() {
+      onViewStartResponse: function onViewStartResponse() {
         var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
             _ref$resources$person = _ref.resources.personalization,
             personalization = _ref$resources$person === void 0 ? [] : _ref$resources$person;
 
-        console.log("Personalization:::onInteractResponse");
+        console.log("Personalization:::onViewStartResponse");
         document.addEventListener("DOMContentLoaded", function () {
           personalization.forEach(function (offer) {
             var el = document.querySelector(offer.offerMboxSelector);
