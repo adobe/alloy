@@ -395,7 +395,12 @@
     }
 
     return components.map(function (component) {
-      return typeof component[hook] === "function" ? component[hook].apply(component, args) : undefined;
+      var _component$lifecycle;
+
+      // TODO Maybe add a smarter check here to help Components' developers
+      // know that their hooks should be organized under `lifecycle`.
+      // Maybe check if hook exist directly on the instance, throw.
+      return component.lifecycle && typeof component.lifecycle[hook] === "function" ? (_component$lifecycle = component.lifecycle)[hook].apply(_component$lifecycle, args) : undefined;
     });
   }
 
@@ -418,10 +423,10 @@
         return invokeHook(components, "onEventResponse", response);
       },
       onBeforeUnload: function onBeforeUnload() {
-        return invokeHook(components, "onBeforeUnload", response);
+        return invokeHook(components, "onBeforeUnload");
       },
-      onOptInChanged: function onOptInChanged() {
-        return invokeHook(components, "onOptInChanged", response);
+      onOptInChanged: function onOptInChanged(permissions) {
+        return invokeHook(components, "onOptInChanged", permissions);
       } // TODO: We might need an `onError(error)` hook.
 
     };
@@ -602,8 +607,10 @@
 
     return {
       namespace: "Tracker",
-      onComponentsRegistered: function onComponentsRegistered(_core) {
-        core = _core;
+      lifecycle: {
+        onComponentsRegistered: function onComponentsRegistered(_core) {
+          core = _core;
+        }
       },
       interact: makeServerCall("interact", makeHookCall("onBeforeViewStart"), makeHookCall("onViewStartResponse")),
       collect: makeServerCall("collect", makeHookCall("onBeforeEvent"), makeHookCall("onEventResponse"))
@@ -794,25 +801,27 @@
       getEcid: function getEcid() {
         return reactorCookie.get("ecid");
       },
-      onBeforeEvent: function onBeforeEvent(payload) {
-        console.log("Identity:::onBeforeEvent");
+      lifecycle: {
+        onBeforeEvent: function onBeforeEvent(payload) {
+          console.log("Identity:::onBeforeEvent");
 
-        if (hasIdSyncsExpired) {
-          payload.appendToQuery({
-            identity: {
-              idSyncs: true,
-              container_id: 7
-            }
+          if (hasIdSyncsExpired) {
+            payload.appendToQuery({
+              identity: {
+                idSyncs: true,
+                container_id: 7
+              }
+            });
+            hasIdSyncsExpired = false;
+          }
+        },
+        onViewStartResponse: function onViewStartResponse(_ref) {
+          var ecid = _ref.ids.ecid;
+          console.log("Identity:::onViewStartResponse");
+          reactorCookie.set("ecid", ecid, {
+            expires: 7
           });
-          hasIdSyncsExpired = false;
         }
-      },
-      onViewStartResponse: function onViewStartResponse(_ref) {
-        var ecid = _ref.ids.ecid;
-        console.log("Identity:::onViewStartResponse");
-        reactorCookie.set("ecid", ecid, {
-          expires: 7
-        });
       }
     };
   });
@@ -821,25 +830,27 @@
     var hasDestinationExpired = true;
     return {
       namespace: "Audiences",
-      onBeforeViewStart: function onBeforeViewStart(payload) {
-        console.log("Audiences:::onBeforeViewStart");
+      lifecycle: {
+        onBeforeViewStart: function onBeforeViewStart(payload) {
+          console.log("Audiences:::onBeforeViewStart");
 
-        if (hasDestinationExpired) {
-          payload.appendToQuery({
-            destinations: true
+          if (hasDestinationExpired) {
+            payload.appendToQuery({
+              destinations: true
+            });
+            hasDestinationExpired = false;
+          }
+        },
+        onViewStartResponse: function onViewStartResponse() {
+          var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+              _ref$destinations = _ref.destinations,
+              destinations = _ref$destinations === void 0 ? [] : _ref$destinations;
+
+          console.log("Audiences:::onViewStartResponse");
+          destinations.forEach(function (dest) {
+            return console.log(dest.url);
           });
-          hasDestinationExpired = false;
         }
-      },
-      onViewStartResponse: function onViewStartResponse() {
-        var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-            _ref$destinations = _ref.destinations,
-            destinations = _ref$destinations === void 0 ? [] : _ref$destinations;
-
-        console.log("Audiences:::onViewStartResponse");
-        destinations.forEach(function (dest) {
-          return console.log(dest.url);
-        });
       }
     };
   });
@@ -854,35 +865,37 @@
 
     return {
       namespace: "Personalization",
-      onComponentsRegistered: function onComponentsRegistered(_core) {
-        core = _core;
-      },
-      onBeforeViewStart: function onBeforeViewStart(payload) {
-        console.log("Personalization:::onBeforeViewStart");
-        payload.appendToQuery({
-          personalization: {
-            sessionId: "1234235"
-          }
-        });
-      },
-      onViewStartResponse: function onViewStartResponse() {
-        var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-            _ref$resources$person = _ref.resources.personalization,
-            personalization = _ref$resources$person === void 0 ? [] : _ref$resources$person;
-
-        console.log("Personalization:::onViewStartResponse");
-        document.addEventListener("DOMContentLoaded", function () {
-          personalization.forEach(function (offer) {
-            var el = document.querySelector(offer.offerMboxSelector);
-
-            if (el) {
-              el.innerHTML = offer.offerHtmlPayload;
-              collect(_objectSpread({
-                event: "offer-rendered"
-              }, offer));
+      lifecycle: {
+        onComponentsRegistered: function onComponentsRegistered(_core) {
+          core = _core;
+        },
+        onBeforeViewStart: function onBeforeViewStart(payload) {
+          console.log("Personalization:::onBeforeViewStart");
+          payload.appendToQuery({
+            personalization: {
+              sessionId: "1234235"
             }
           });
-        });
+        },
+        onViewStartResponse: function onViewStartResponse() {
+          var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+              _ref$resources$person = _ref.resources.personalization,
+              personalization = _ref$resources$person === void 0 ? [] : _ref$resources$person;
+
+          console.log("Personalization:::onViewStartResponse");
+          document.addEventListener("DOMContentLoaded", function () {
+            personalization.forEach(function (offer) {
+              var el = document.querySelector(offer.offerMboxSelector);
+
+              if (el) {
+                el.innerHTML = offer.offerHtmlPayload;
+                collect(_objectSpread({
+                  event: "offer-rendered"
+                }, offer));
+              }
+            });
+          });
+        }
       }
     };
   });

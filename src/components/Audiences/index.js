@@ -3,18 +3,20 @@ export default () => {
 
   return {
     namespace: "Audiences",
-    onBeforeViewStart(payload) {
-      console.log("Audiences:::onBeforeViewStart");
-      if (hasDestinationExpired) {
-        payload.appendToQuery({
-          destinations: true
-        });
-        hasDestinationExpired = false;
+    lifecycle: {
+      onBeforeViewStart(payload) {
+        console.log("Audiences:::onBeforeViewStart");
+        if (hasDestinationExpired) {
+          payload.appendToQuery({
+            destinations: true
+          });
+          hasDestinationExpired = false;
+        }
+      },
+      onViewStartResponse({ destinations = [] } = {}) {
+        console.log("Audiences:::onViewStartResponse");
+        destinations.forEach(dest => console.log(dest.url));
       }
-    },
-    onViewStartResponse({ destinations = [] } = {}) {
-      console.log("Audiences:::onViewStartResponse");
-      destinations.forEach(dest => console.log(dest.url));
     }
   };
 };

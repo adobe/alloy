@@ -8,21 +8,23 @@ export default () => {
     getEcid() {
       return cookie.get("ecid");
     },
-    onBeforeEvent(payload) {
-      console.log("Identity:::onBeforeEvent");
-      if (hasIdSyncsExpired) {
-        payload.appendToQuery({
-          identity: {
-            idSyncs: true,
-            container_id: 7
-          }
-        });
-        hasIdSyncsExpired = false;
+    lifecycle: {
+      onBeforeEvent(payload) {
+        console.log("Identity:::onBeforeEvent");
+        if (hasIdSyncsExpired) {
+          payload.appendToQuery({
+            identity: {
+              idSyncs: true,
+              container_id: 7
+            }
+          });
+          hasIdSyncsExpired = false;
+        }
+      },
+      onViewStartResponse({ ids: { ecid } }) {
+        console.log("Identity:::onViewStartResponse");
+        cookie.set("ecid", ecid, { expires: 7 });
       }
-    },
-    onViewStartResponse({ ids: { ecid } }) {
-      console.log("Identity:::onViewStartResponse");
-      cookie.set("ecid", ecid, { expires: 7 });
     }
   };
 };

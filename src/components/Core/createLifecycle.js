@@ -19,8 +19,12 @@
 
 function invokeHook(components, hook, ...args) {
   return components.map(component => {
-    return typeof component[hook] === "function"
-      ? component[hook](...args)
+    // TODO Maybe add a smarter check here to help Components' developers
+    // know that their hooks should be organized under `lifecycle`.
+    // Maybe check if hook exist directly on the instance, throw.
+    return component.lifecycle &&
+      typeof component.lifecycle[hook] === "function"
+      ? component.lifecycle[hook](...args)
       : undefined;
   });
 }

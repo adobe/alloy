@@ -17,8 +17,10 @@ export default () => {
 
   return {
     namespace: "Tracker",
-    onComponentsRegistered(_core) {
-      core = _core;
+    lifecycle: {
+      onComponentsRegistered(_core) {
+        core = _core;
+      }
     },
     interact: makeServerCall(
       "interact",
