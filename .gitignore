@@ -1,6 +1,7 @@
 node_modules
 dist
 sandbox/public/atag.js
+sandbox/build
 .sonarlint
 
 
