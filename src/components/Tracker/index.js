@@ -22,15 +22,17 @@ export default () => {
         core = _core;
       }
     },
-    interact: makeServerCall(
-      "interact",
-      makeHookCall("onBeforeViewStart"),
-      makeHookCall("onViewStartResponse")
-    ),
-    collect: makeServerCall(
-      "collect",
-      makeHookCall("onBeforeEvent"),
-      makeHookCall("onEventResponse")
-    )
+    commands: {
+      interact: makeServerCall(
+        "interact",
+        makeHookCall("onBeforeViewStart"),
+        makeHookCall("onViewStartResponse")
+      ),
+      collect: makeServerCall(
+        "collect",
+        makeHookCall("onBeforeEvent"),
+        makeHookCall("onEventResponse")
+      )
+    }
   };
 };

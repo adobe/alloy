@@ -6,7 +6,7 @@ function setMetadata(payload, core) {
 
   // Append metadata to the payload.
   payload.appendToMetadata({
-    ecid: identity.getEcid() || null,
+    ecid: identity.commands.getEcid() || null,
     enableStore: core.configs.shouldStoreCollectedData,
     device: core.configs.device || "UNKNOWN-DEVICE"
   });

@@ -17,6 +17,7 @@ export default () => {
         console.log("Audiences:::onViewStartResponse");
         destinations.forEach(dest => console.log(dest.url));
       }
-    }
+    },
+    commands: {}
   };
 };

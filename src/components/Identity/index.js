@@ -5,9 +5,6 @@ export default () => {
 
   return {
     namespace: "Identity",
-    getEcid() {
-      return cookie.get("ecid");
-    },
     lifecycle: {
       onBeforeEvent(payload) {
         console.log("Identity:::onBeforeEvent");
@@ -24,6 +21,11 @@ export default () => {
       onViewStartResponse({ ids: { ecid } }) {
         console.log("Identity:::onViewStartResponse");
         cookie.set("ecid", ecid, { expires: 7 });
+      }
+    },
+    commands: {
+      getEcid() {
+        return cookie.get("ecid");
       }
     }
   };

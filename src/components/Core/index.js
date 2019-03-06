@@ -41,11 +41,12 @@ export default (configs, componentRegistry) => {
     get lifecycle() {
       return lifecycle;
     },
+    // TODO Change the way we expose Components' commands.
     interact(data, callback) {
-      tracker.interact(data, callback);
+      tracker.commands.interact(data, callback);
     },
     collect(data, callback) {
-      tracker.collect(data, callback);
+      tracker.commands.collect(data, callback);
     },
     makeLogger(prefix) {
       console.log(prefix);

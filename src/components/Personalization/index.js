@@ -103,7 +103,7 @@ export default () => {
 
   const collect = offerInfo => {
     const tracker = core.components.getByNamespace("Tracker");
-    tracker.collect(offerInfo);
+    tracker.commands.collect(offerInfo);
   };
 
   return {
