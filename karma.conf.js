@@ -1,5 +1,5 @@
 const path = require("path");
-const reporters = ["progress", "coverage"];
+const reporters = ["spec", "coverage"];
 const rules = [
   {
     test: /\.js$/,
@@ -120,6 +120,11 @@ module.exports = function(config) {
       debug: false,
       progress: true,
       quiet: false
+    },
+    client: {
+      jasmine: {
+          random: false
+      }
     }
   })
 };
