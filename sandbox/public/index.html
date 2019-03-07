@@ -36,23 +36,10 @@
         }
       });
 
-      adbe("subscribe", {
-        params: {
-          eventName: "willPrepareRequest"
-        },
-        callback: function (payload) {
-          payload.appendToQuery({ key: "value" })
-       }
-      });
-
-      adbe("subscribe", {
-        params: {
-          eventName: "didMount"
-        },
-        callback: function (response) {
-          var personalization = response.personalization;
-          console.log(personalization);
-       }
+      // TODO: Rename `interact` to `viewStart` once implemented in Tracker.
+      adbe("interact", {
+        event: "page View",
+        pageName: "home"
       });
     </script>
   </head>

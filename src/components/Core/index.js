@@ -25,7 +25,6 @@ import createLifecycle from "./createLifecycle";
 export default (configs, componentRegistry) => {
   // TODO: Might need to make this guy a smart object, not a simple array.
   const events = mitt();
-  const tracker = componentRegistry.getByNamespace("Tracker");
   const lifecycle = createLifecycle(componentRegistry);
 
   const core = {
@@ -40,13 +39,6 @@ export default (configs, componentRegistry) => {
     },
     get lifecycle() {
       return lifecycle;
-    },
-    // TODO Change the way we expose Components' commands.
-    interact(data, callback) {
-      tracker.commands.interact(data, callback);
-    },
-    collect(data, callback) {
-      tracker.commands.collect(data, callback);
     },
     makeLogger(prefix) {
       console.log(prefix);

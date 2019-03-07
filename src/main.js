@@ -18,12 +18,10 @@ import createComponentRegistry from "./components/Core/createComponentRegistry";
 // cores: [{ orgId, instance }...]
 let core = null;
 
-// TODO: Look for existing atag (OR adbe) object on the page first.
+// eslint-disable-next-line no-underscore-dangle
+const namespace = window.__adobeNamespace;
 
-function collect(payload = {}, callback) {
-  // TODO Decide on a final format for all Components' APIs: Maybe (requiredParam, { optional params }), or maybe { ALL PARAMS }.
-  return core.collect(payload, callback);
-}
+// TODO: Look for existing atag (OR adbe) object on the page first.
 
 // MAYBE: Since we don't have a data layer yet, should we support a `configs.data`?
 function configure(configs) {
@@ -33,45 +31,49 @@ function configure(configs) {
 
   const componentRegistry = createComponentRegistry();
 
-  // TODO: Maybe pass Core in.
   componentRegistry.register(createTracker());
   componentRegistry.register(createIdentity());
   componentRegistry.register(createAudiences());
   componentRegistry.register(createPersonalization());
 
   core = createCore(configs, componentRegistry);
+}
 
-  // TODO: Move this guy out of here.. This is just a quick test for the initial call. We might not even need that.
-  if (!configs.disableStartupCall) {
-    core.interact({
-      event: "page View",
-      pageName: "home"
-    });
+function atag(commandName, { params = {}, callback } = {}) {
+  if (commandName === "configure") {
+    configure(params);
+    return;
+  }
+
+  if (!core) {
+    throw new Error(
+      `${namespace}: Please configure the library by calling ${namespace}("configure", {...}).`
+    );
+  }
+
+  const command = core.components.findComand(commandName);
+
+  // TODO: Replace with util once ready.
+  if (typeof command === "function") {
+    command(params, callback);
+  } else {
+    // TODO: Replace with real logger.
+    console.warn(`The command: ${commandName} does not exist!`);
   }
 }
 
-function subscribe(params, callback) {
-  console.log(params, callback);
+function replaceQueue() {
+  if (namespace) {
+    const queue = window[namespace].q;
+    queue.push = atag;
+    queue.forEach(queuedArguments => {
+      atag(...queuedArguments);
+    });
+  } else {
+    // TODO: Improve error message once we give a name to this library.
+    console.error("Incorrectly configured.");
+  }
 }
 
-const commands = { collect, configure, subscribe };
-
-function atag(command = "collect", { params = {}, callback } = {}) {
-  commands[command](params, callback);
-}
-
-// eslint-disable-next-line no-underscore-dangle
-const namespace = window.__adobeNamespace;
-
-if (namespace) {
-  const queue = window[namespace].q;
-  queue.push = atag;
-  queue.forEach(queuedArguments => {
-    atag(...queuedArguments);
-  });
-} else {
-  // TODO: Improve error message once we give a name to this library.
-  console.error("Incorrectly configured.");
-}
-
+replaceQueue();
 export default atag;
