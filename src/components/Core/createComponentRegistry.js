@@ -3,13 +3,12 @@ const intersection = (a, b) => a.filter(x => b.includes(x));
 export default () => {
   const components = [];
 
+  const getListOfCommands = () =>
+    components.reduce((all, c) => all.concat(Object.keys(c.commands)), []);
+
   function findExistingCommands(newComponent) {
-    const existingComands = components.reduce(
-      (all, c) => all.concat(Object.keys(c.commands)),
-      []
-    );
     return intersection(
-      existingComands,
+      getListOfCommands(),
       Object.keys(newComponent.commands || {})
     );
   }
@@ -34,6 +33,23 @@ export default () => {
       // Slice so it's a copy of the original lest components
       // try to manipulate it. Maybe not that important.
       return components.slice();
+    },
+    findComand(name) {
+      let command;
+
+      components.some(component => {
+        const isCommandFound = Object.keys(component.commands || {}).find(
+          c => c === name
+        );
+
+        if (isCommandFound) {
+          command = component.commands[name].bind(component);
+          return true;
+        }
+        return false;
+      });
+
+      return command;
     }
   };
 };

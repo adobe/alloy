@@ -24,4 +24,17 @@ describe("createComponentRegistry", () => {
       );
     });
   });
+
+  describe("findComand", () => {
+    it("should find the command if it exists", () => {
+      const command = registry.findComand("run");
+      expect(command).toBeDefined();
+      expect(typeof command).toBe("function");
+    });
+
+    it("should return undefined if command does not exist", () => {
+      const command = registry.findComand("UNAVAILABLE");
+      expect(command).not.toBeDefined();
+    });
+  });
 });
