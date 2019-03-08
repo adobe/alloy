@@ -120,11 +120,6 @@ module.exports = function(config) {
       debug: false,
       progress: true,
       quiet: false
-    },
-    client: {
-      jasmine: {
-          random: false
-      }
     }
   })
 };

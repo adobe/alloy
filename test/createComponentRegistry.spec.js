@@ -7,10 +7,9 @@ const compTwo = {
 };
 
 describe("createComponentRegistry", () => {
-  const registry = createComponentRegistry();
-
   describe("register", () => {
     it("should register components correctly", () => {
+      const registry = createComponentRegistry();
       registry.register(compOne);
       const registeredCompOne = registry.getByNamespace("CompOne");
       expect(registeredCompOne).toBeDefined();
@@ -18,6 +17,8 @@ describe("createComponentRegistry", () => {
 
     it("should not register components with existing commands", () => {
       expect(() => {
+        const registry = createComponentRegistry();
+        registry.register(compOne);
         registry.register(compTwo);
       }).toThrowError(
         "[ComponentRegistry] Could not register CompTwo because it has existing command(s): do,run"
@@ -25,15 +26,19 @@ describe("createComponentRegistry", () => {
     });
   });
 
-  describe("findComand", () => {
+  describe("getCommand", () => {
     it("should find the command if it exists", () => {
-      const command = registry.findComand("run");
+      const registry = createComponentRegistry();
+      registry.register(compTwo);
+      const command = registry.getCommand("run");
       expect(command).toBeDefined();
       expect(typeof command).toBe("function");
     });
 
     it("should return undefined if command does not exist", () => {
-      const command = registry.findComand("UNAVAILABLE");
+      const registry = createComponentRegistry();
+      registry.register(compTwo);
+      const command = registry.getCommand("UNAVAILABLE");
       expect(command).not.toBeDefined();
     });
   });

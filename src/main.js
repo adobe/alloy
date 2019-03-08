@@ -39,6 +39,7 @@ function configure(configs) {
   core = createCore(configs, componentRegistry);
 }
 
+// TODO: Change signature to match the final API decision.
 function atag(commandName, { params = {}, callback } = {}) {
   if (commandName === "configure") {
     configure(params);

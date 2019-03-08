@@ -34,7 +34,7 @@ export default () => {
       // try to manipulate it. Maybe not that important.
       return components.slice();
     },
-    findComand(name) {
+    getCommand(name) {
       let command;
 
       components.some(component => {
