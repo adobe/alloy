@@ -16,14 +16,14 @@ const rules = [
   {
     test: /\.js$/,
     include: path.resolve("src"),
-    exclude: new RegExp("test"),
+    exclude: new RegExp("test\/unit"),
     loader: "babel-loader"
   }
   ,
   {
   test: /\.js$/,
   include: path.resolve("src"),
-  exclude: new RegExp("test"),
+  exclude: new RegExp("test\/unit"),
   loader: "istanbul-instrumenter-loader",
   query: {
     esModules: true

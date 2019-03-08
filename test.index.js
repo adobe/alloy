@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const testsContext = require.context('./test', true, /.*\.spec\.jsx?$/);
+const testsContext = require.context('./test/unit', true, /.*\.spec\.jsx?$/);
 testsContext.keys().forEach(testsContext);
 
 // This is necessary for the coverage report to show all source files even when they're not
