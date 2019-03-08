@@ -51,10 +51,12 @@ function configure(configs) {
   core = createCore(configs, componentRegistry);
 }
 
-// TODO: Change signature to match the final API decision.
-function atag(commandName, { params = {}, callback } = {}) {
+// TODO: Replace with util once ready.
+const isFunction = arg => typeof arg === "function";
+
+function atag(commandName, options = {}) {
   if (commandName === "configure") {
-    configure(params);
+    configure(options);
     return;
   }
 
@@ -64,11 +66,12 @@ function atag(commandName, { params = {}, callback } = {}) {
     );
   }
 
-  const command = core.components.findComand(commandName);
+  const command = core.components.getCommand(commandName);
 
-  // TODO: Replace with util once ready.
-  if (typeof command === "function") {
-    command(params, callback);
+  if (isFunction(command)) {
+    // TODO: Let's discuss calling the callback here instead of passing it around.
+    // { callback = noop, ...args }
+    command(options);
   } else {
     // TODO: Replace with real logger.
     console.warn(`The command: ${commandName} does not exist!`);

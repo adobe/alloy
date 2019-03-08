@@ -27,19 +27,19 @@
 
     <script>
       adbe("configure", {
-        params: {
-          orgId: 23784612874,
-          dataSet: "dataset1",
-          shouldStoreCollectedData: 1,
-          device: "Chrome-Mac",
-          collectionUrl: "https://edgegateway.azurewebsites.net"
-        }
+        orgId: 23784612874,
+        dataSet: "dataset1",
+        shouldStoreCollectedData: 1,
+        device: "Chrome-Mac",
+        collectionUrl: "https://edgegateway.azurewebsites.net"
       });
 
       // TODO: Rename `interact` to `viewStart` once implemented in Tracker.
       adbe("interact", {
-        event: "page View",
-        pageName: "home"
+        data: {
+          event: "page View",
+          pageName: "home"
+        }
       });
     </script>
   </head>

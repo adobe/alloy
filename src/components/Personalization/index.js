@@ -146,7 +146,7 @@ export default () => {
           hideElement(selector);
           setupElementDetection(key, selector, event => {
             render(storage, event);
-            collect({ eventToken });
+            collect({ data: eventToken });
           });
         });
       }

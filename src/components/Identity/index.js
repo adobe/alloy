@@ -36,8 +36,13 @@ export default () => {
       }
     },
     commands: {
-      getEcid() {
-        return cookie.get("ecid");
+      getEcid({ callback }) {
+        // TODO: An example where not passing callbacks to commands might
+        // be cleaner; the `atag` fn instead would call it after the commands
+        // return.
+        const ecid = cookie.get("ecid");
+        callback(ecid);
+        return ecid;
       }
     }
   };

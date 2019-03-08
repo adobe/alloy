@@ -17,10 +17,10 @@ const noop = () => {};
 export default () => {
   let core;
 
-  const makeServerCall = (endpoint, beforeHook, afterHook) => (
+  const makeServerCall = (endpoint, beforeHook, afterHook) => ({
     data,
     callback = noop
-  ) => {
+  }) => {
     const request = createRequest(core);
     return request.send(data, endpoint, beforeHook, afterHook, callback);
   };

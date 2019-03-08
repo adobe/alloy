@@ -47,7 +47,7 @@ function Home() {
         <div className="mbox"></div>
         <button onClick={() => {
           window.atag("collect", {
-            params: {
+            data: {
               event: "login",
               userName: "Joe Khoury"
             },
@@ -59,7 +59,7 @@ function Home() {
 
         <button onClick={() => {
           window.atag("collect", {
-            params: {
+            data: {
               event: "video",
               videoName: "Funiest cat ever."
             },
@@ -71,7 +71,7 @@ function Home() {
 
       <button onClick={() => {
           window.atag("collect", {
-            params: {
+            data: {
               event: "custom-event",
               videoName: "Random event."
             },
