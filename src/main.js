@@ -10,91 +10,24 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// Build the Object tree, handle dependencies, reveal the API and wrap it with a
-// global facade function; (Maybe adbe or atag...), and that's what get exposed to
-// the customer.
-
 import window from "@adobe/reactor-window";
-
-import createCore from "./components/Core";
-
-import createTracker from "./components/Tracker";
-import createIdentity from "./components/Identity";
-import createAudiences from "./components/Audiences";
-import createPersonalization from "./components/Personalization";
-import createComponentRegistry from "./components/Core/createComponentRegistry";
-
-import nodeStyleCallbackify from "./utils/nodeStyleCallbackify";
-
-// TODO: Support multiple cores maybe per ORG ID.
-// cores: [{ orgId, instance }...]
-let core = null;
+import createInstance from "./createInstance";
 
 // eslint-disable-next-line no-underscore-dangle
-const namespace = window.__adobeNamespace;
+const namespaces = window.__adobeNS;
 
-// TODO: Look for existing atag (OR adbe) object on the page first.
-
-// MAYBE: Since we don't have a data layer yet, should we support a `configs.data`?
-function configure(configs) {
-  // For now we are instantiating Core when configure is called.
-  // TODO: Maybe pass those configs to a CoreConfig object that validates and wrap the raw configs.
-  // TODO: Register the Components here statically for now. They might be registered differently.
-
-  const componentRegistry = createComponentRegistry();
-
-  componentRegistry.register(createTracker());
-  componentRegistry.register(createIdentity());
-  componentRegistry.register(createAudiences());
-  componentRegistry.register(createPersonalization());
-
-  core = createCore(configs, componentRegistry);
-}
-
-// TODO: Replace with util once ready.
-const isFunction = arg => typeof arg === "function";
-const noop = () => {};
-
-function executeCommand(commandName, options = {}) {
-  let command;
-
-  if (commandName === "configure") {
-    if (core) {
-      throw new Error(
-        `${namespace}: The library has already been configured and may only be configured once.`
-      );
-    }
-    command = configure;
-  } else {
-    if (!core) {
-      throw new Error(
-        `${namespace}: Please configure the library by calling ${namespace}("configure", {...}).`
-      );
-    }
-    command = core.components.getCommand(commandName);
-  }
-
-  if (isFunction(command)) {
-    const { callback = noop, ...otherOptions } = options;
-    nodeStyleCallbackify(command)(otherOptions, callback);
-  } else {
-    // TODO: Replace with real logger.
-    console.warn(`The command: ${commandName} does not exist!`);
-  }
-}
-
-function replaceQueue() {
-  if (namespace) {
+if (namespaces) {
+  namespaces.forEach(namespace => {
+    const instance = createInstance(namespace);
     const queue = window[namespace].q;
-    const executeCommandWithArgs = args => executeCommand(...args);
-
-    queue.push = executeCommandWithArgs;
-    queue.forEach(executeCommandWithArgs);
-  } else {
-    // TODO: Improve error message once we give a name to this library.
-    console.error("Incorrectly configured.");
-  }
+    queue.push = instance;
+    queue.forEach(instance);
+  });
 }
 
-replaceQueue();
-export default executeCommand;
+// TODO: Is this something we want to support? Would it have a different API?
+// Allows a consumer using the npm package to build an instance without
+// any base code.
+export default namespace => {
+  return createInstance(namespace);
+};
