@@ -70,13 +70,15 @@ const callServer = (core, endpoint) => payload => {
 
 export default core => {
   return {
-    send: (data, endpoint, beforeHook, afterHook, callback) => {
-      initalizePayload(core, data, beforeHook)
-        .then(callServer(core, endpoint))
-        // Freeze the response before handing it to all the components.
-        .then(response => Object.freeze(response.json()))
-        .then(afterHook)
-        .then(() => callback("Request has been fired!"));
+    send: (data, endpoint, beforeHook, afterHook) => {
+      return (
+        initalizePayload(core, data, beforeHook)
+          .then(callServer(core, endpoint))
+          // Freeze the response before handing it to all the components.
+          .then(response => Object.freeze(response.json()))
+          .then(afterHook)
+          .then(() => {}) // Makes sure the promise is resolved with no value.
+      );
     }
   };
 };

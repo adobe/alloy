@@ -12,17 +12,12 @@ governing permissions and limitations under the License.
 
 import createRequest from "./createRequest";
 
-const noop = () => {};
-
 export default () => {
   let core;
 
-  const makeServerCall = (endpoint, beforeHook, afterHook) => ({
-    data,
-    callback = noop
-  }) => {
+  const makeServerCall = (endpoint, beforeHook, afterHook) => ({ data }) => {
     const request = createRequest(core);
-    return request.send(data, endpoint, beforeHook, afterHook, callback);
+    return request.send(data, endpoint, beforeHook, afterHook);
   };
 
   const makeHookCall = hook => (...args) => core.lifecycle[hook](...args);

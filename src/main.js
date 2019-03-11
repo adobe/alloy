@@ -14,8 +14,6 @@ governing permissions and limitations under the License.
 // global facade function; (Maybe adbe or atag...), and that's what get exposed to
 // the customer.
 
-import "@adobe/reactor-promise";
-
 import window from "@adobe/reactor-window";
 
 import createCore from "./components/Core";
@@ -25,6 +23,8 @@ import createIdentity from "./components/Identity";
 import createAudiences from "./components/Audiences";
 import createPersonalization from "./components/Personalization";
 import createComponentRegistry from "./components/Core/createComponentRegistry";
+
+import nodeStyleCallbackify from "./utils/nodeStyleCallbackify";
 
 // TODO: Support multiple cores maybe per ORG ID.
 // cores: [{ orgId, instance }...]
@@ -53,25 +53,30 @@ function configure(configs) {
 
 // TODO: Replace with util once ready.
 const isFunction = arg => typeof arg === "function";
+const noop = () => {};
 
-function atag(commandName, options = {}) {
+function executeCommand(commandName, options = {}) {
+  let command;
+
   if (commandName === "configure") {
-    configure(options);
-    return;
+    if (core) {
+      throw new Error(
+        `${namespace}: The library has already been configured and may only be configured once.`
+      );
+    }
+    command = configure;
+  } else {
+    if (!core) {
+      throw new Error(
+        `${namespace}: Please configure the library by calling ${namespace}("configure", {...}).`
+      );
+    }
+    command = core.components.getCommand(commandName);
   }
-
-  if (!core) {
-    throw new Error(
-      `${namespace}: Please configure the library by calling ${namespace}("configure", {...}).`
-    );
-  }
-
-  const command = core.components.getCommand(commandName);
 
   if (isFunction(command)) {
-    // TODO: Let's discuss calling the callback here instead of passing it around.
-    // { callback = noop, ...args }
-    command(options);
+    const { callback = noop, ...otherOptions } = options;
+    nodeStyleCallbackify(command)(otherOptions, callback);
   } else {
     // TODO: Replace with real logger.
     console.warn(`The command: ${commandName} does not exist!`);
@@ -81,10 +86,10 @@ function atag(commandName, options = {}) {
 function replaceQueue() {
   if (namespace) {
     const queue = window[namespace].q;
-    queue.push = atag;
-    queue.forEach(queuedArguments => {
-      atag(...queuedArguments);
-    });
+    const executeCommandWithArgs = args => executeCommand(...args);
+
+    queue.push = executeCommandWithArgs;
+    queue.forEach(executeCommandWithArgs);
   } else {
     // TODO: Improve error message once we give a name to this library.
     console.error("Incorrectly configured.");
@@ -92,4 +97,4 @@ function replaceQueue() {
 }
 
 replaceQueue();
-export default atag;
+export default executeCommand;
