@@ -77,6 +77,7 @@ export default core => {
           // Freeze the response before handing it to all the components.
           .then(response => Object.freeze(response.json()))
           .then(afterHook)
+          .then(() => {}) // Makes sure the promise is resolved with no value.
       );
     }
   };
