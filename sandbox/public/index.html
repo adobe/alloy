@@ -5,7 +5,7 @@
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="theme-color" content="#000000" />
-    <meta http-equiv="Content-Security-Policy" 
+    <meta http-equiv="Content-Security-Policy"
           content="default-src 'self';
             script-src 'self' 'unsafe-inline';
             style-src 'self' 'unsafe-inline';
@@ -14,9 +14,14 @@
     <title>Mock website hosting the A-Tag</title>
 
     <script>
-      (function(a,b){if(!a[b]){a.__adobeNamespace=b;
-      a[b]=function(){a[b].q.push(arguments)};a[b].q=[]}})
-      (window,'adbe')
+      (function(a,b){if(!a[b]){a.__adobeNS=a.__adobeNS||[];
+      a.__adobeNS.push(b);a[b]=function(){a[b].q.push(arguments)};a[b].q=[]}})
+      (window,'adbe');
+
+      // For Testing multiple instances
+      // (function(a,b){if(!a[b]){a.__adobeNS=a.__adobeNS||[];
+      // a.__adobeNS.push(b);a[b]=function(){a[b].q.push(arguments)};a[b].q=[]}})
+      // (window,'ebda');
     </script>
     <script src="atag.js" async></script>
 
@@ -46,6 +51,22 @@
           pageName: "home"
         }
       });
+
+      // For Testing multiple instances
+      // ebda("configure", {
+      //   orgId: 98765432109,
+      //   dataSet: "dataset2",
+      //   shouldStoreCollectedData: 1,
+      //   device: "Chrome-Mac",
+      //   collectionUrl: "https://edgegateway.azurewebsites.net"
+      // });
+      //
+      // ebda("interact", {
+      //   data: {
+      //     event: "page View",
+      //     pageName: "landing"
+      //   }
+      // });
     </script>
   </head>
   <body>
