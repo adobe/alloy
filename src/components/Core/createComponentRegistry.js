@@ -14,29 +14,28 @@ const intersection = (a, b) => a.filter(x => b.includes(x));
 
 export default () => {
   const components = [];
-
-  const getListOfCommands = () =>
-    components.reduce((all, c) => all.concat(Object.keys(c.commands)), []);
-
-  function findExistingCommands(newComponent) {
-    return intersection(
-      getListOfCommands(),
-      Object.keys(newComponent.commands || {})
-    );
-  }
+  const commandByName = {};
 
   return {
     register(component) {
-      const existingCommands = findExistingCommands(component);
+      const { commands: componentCommandByName = {} } = component;
 
-      if (existingCommands.length) {
+      const conflictingCommandNames = intersection(
+        Object.keys(commandByName),
+        Object.keys(componentCommandByName)
+      );
+
+      if (conflictingCommandNames.length) {
         throw new Error(
           `[ComponentRegistry] Could not register ${component.namespace} ` +
-            `because it has existing command(s): ${existingCommands.join(",")}`
+            `because it has existing command(s): ${conflictingCommandNames.join(
+              ","
+            )}`
         );
-      } else {
-        components.push(component);
       }
+
+      Object.assign(commandByName, componentCommandByName);
+      components.push(component);
     },
     getByNamespace(namespace) {
       return components.find(component => component.namespace === namespace);
@@ -47,21 +46,7 @@ export default () => {
       return components.slice();
     },
     getCommand(name) {
-      let command;
-
-      components.some(component => {
-        const isCommandFound = Object.keys(component.commands || {}).find(
-          c => c === name
-        );
-
-        if (isCommandFound) {
-          command = component.commands[name].bind(component);
-          return true;
-        }
-        return false;
-      });
-
-      return command;
+      return commandByName[name];
     }
   };
 };
