@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createPayload from "../Core/createPayload";
+import createPayload from "../../createPayload";
 
-function setMetadata(payload, core) {
+function setMetadata(payload, config) {
   // Append metadata to the payload.
   payload.addMetadata({
-    enableStore: core.configs.shouldStoreCollectedData,
-    device: core.configs.device || "UNKNOWN-DEVICE"
+    enableStore: config.shouldStoreCollectedData,
+    device: config.device || "UNKNOWN-DEVICE"
   });
 }
 
@@ -45,21 +45,21 @@ function setContext(payload) {
   });
 }
 
-const initalizePayload = (core, event, beforeHook) => {
+const initalizePayload = (config, event, beforeHook) => {
   // Populate the request's body with payload, event and metadata.
   const payload = createPayload({ events: [event] });
 
   // TODO: Make those hook calls Async?
   beforeHook(payload);
   setContext(payload);
-  setMetadata(payload, core);
+  setMetadata(payload, config);
 
   return Promise.resolve(payload.toJson());
 };
 
 // TODO: Extract this stuff into a core helper.
-const callServer = (core, endpoint) => payload => {
-  return fetch(`${core.configs.collectionUrl}/${endpoint}`, {
+const callServer = (config, endpoint) => payload => {
+  return fetch(`${config.collectionUrl}/${endpoint}`, {
     method: "POST",
     cache: "no-cache",
     headers: {
@@ -70,12 +70,12 @@ const callServer = (core, endpoint) => payload => {
   });
 };
 
-export default core => {
+export default config => {
   return {
     send: (events, endpoint, beforeHook, afterHook) => {
       return (
-        initalizePayload(core, events, beforeHook)
-          .then(callServer(core, endpoint))
+        initalizePayload(config, events, beforeHook)
+          .then(callServer(config, endpoint))
           // Freeze the response before handing it to all the components.
           .then(response => Object.freeze(response.json()))
           .then(afterHook)

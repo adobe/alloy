@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 export default () => {
   return {
-    namespace: "Audiences",
     lifecycle: {
       onBeforeViewStart(payload) {
         console.log("Audiences:::onBeforeViewStart");

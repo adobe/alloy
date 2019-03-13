@@ -31,7 +31,6 @@ export default () => {
   };
 
   return {
-    namespace: "Identity",
     lifecycle: {
       onBeforeEvent: addIdsContext,
       onBeforeViewStart(payload) {
