@@ -13,12 +13,8 @@ governing permissions and limitations under the License.
 import createPayload from "../Core/createPayload";
 
 function setMetadata(payload, core) {
-  // MAYBE: Not sure how the cross components communication will happen yet.
-  const identity = core.components.getByNamespace("Identity");
-
   // Append metadata to the payload.
-  payload.appendToMetadata({
-    ecid: identity.commands.getEcid() || null,
+  payload.addMetadata({
     enableStore: core.configs.shouldStoreCollectedData,
     device: core.configs.device || "UNKNOWN-DEVICE"
   });
@@ -27,25 +23,31 @@ function setMetadata(payload, core) {
 function setContext(payload) {
   // Append Context data; basically data we can infer from the environment.
   // TODO: take this stuff out of here, and have some helper component do that.
-  payload.appendToContext({
-    env: {
-      js_enabled: true,
-      js_version: "1.8.5",
-      cookies_enabled: true,
-      browser_height: 900,
-      screen_orientation: "landscape",
-      webgl_renderer: "AMD Radeon Pro 460 OpenGL Engine"
-    },
-    view: {
-      url: "www.test.com",
-      referrer: "www.adobe.com"
+  payload.addContext({
+    environment: {
+      type: "browser",
+      browserDetails: {
+        js_enabled: true,
+        js_version: "1.8.5",
+        cookies_enabled: true,
+        browser_height: 900,
+        screen_orientation: "landscape",
+        webgl_renderer: "AMD Radeon Pro 460 OpenGL Engine"
+      }
+    }
+  });
+
+  payload.addContext({
+    webreferrer: {
+      URL: "https://www.adobe.com/index2.html",
+      type: "external"
     }
   });
 }
 
-const initalizePayload = (core, data, beforeHook) => {
-  // Populate the request's body with payload, data and metadata.
-  const payload = createPayload({ data });
+const initalizePayload = (core, event, beforeHook) => {
+  // Populate the request's body with payload, event and metadata.
+  const payload = createPayload({ events: [event] });
 
   // TODO: Make those hook calls Async?
   beforeHook(payload);
@@ -70,9 +72,9 @@ const callServer = (core, endpoint) => payload => {
 
 export default core => {
   return {
-    send: (data, endpoint, beforeHook, afterHook) => {
+    send: (events, endpoint, beforeHook, afterHook) => {
       return (
-        initalizePayload(core, data, beforeHook)
+        initalizePayload(core, events, beforeHook)
           .then(callServer(core, endpoint))
           // Freeze the response before handing it to all the components.
           .then(response => Object.freeze(response.json()))

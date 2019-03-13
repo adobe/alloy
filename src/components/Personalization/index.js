@@ -126,15 +126,18 @@ export default () => {
       },
       onBeforeViewStart(payload) {
         console.log("Personalization:::onBeforeViewStart");
-
-        payload.appendToQuery({
+        payload.addQuery({ personalization: true });
+        payload.addMetadata({
           personalization: {
-            sessionId: "1234235"
+            client: "demo12",
+            sessionID: "12344566"
           }
         });
       },
-      onViewStartResponse({ resources: { personalization = [] } } = {}) {
+      onViewStartResponse(response) {
         console.log("Personalization:::onViewStartResponse");
+        const personalization =
+          response.getPayloadByType("personalization:run") || [];
 
         // Caution!!! Here comes Target black magic
 

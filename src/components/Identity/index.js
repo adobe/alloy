@@ -12,27 +12,44 @@ governing permissions and limitations under the License.
 
 import cookie from "@adobe/reactor-cookie";
 
+const ECID_NAMESPACE = "4";
+
 export default () => {
-  let hasIdSyncsExpired = true;
+  const getEcid = () => cookie.get("ecid");
+
+  const addIdsContext = payload => {
+    const ecid = getEcid();
+    // TODO: Add customer ids.
+    // TODO: Add sugar APIs to payload to support adding
+    // specific contexts: payload.addIdentityContext
+    const identityMap = {
+      ...(ecid && { [ECID_NAMESPACE]: ecid })
+    };
+    payload.addContext({
+      identityMap
+    });
+  };
 
   return {
     namespace: "Identity",
     lifecycle: {
-      onBeforeEvent(payload) {
+      onBeforeEvent: addIdsContext,
+      onBeforeViewStart(payload) {
         console.log("Identity:::onBeforeEvent");
-        if (hasIdSyncsExpired) {
-          payload.appendToQuery({
-            identity: {
-              idSyncs: true,
-              container_id: 7
-            }
-          });
-          hasIdSyncsExpired = false;
-        }
+        addIdsContext(payload);
+        // TODO: Store `lastSyncTS` client side and pass it
+        // for server to decide if we receive ID Syncs.
+        payload.addMetadata({
+          identity: {
+            lastSyncTS: 1222,
+            containerId: 1
+          }
+        });
       },
-      onViewStartResponse({ ids: { ecid } }) {
+      onViewStartResponse(response) {
         console.log("Identity:::onViewStartResponse");
-        cookie.set("ecid", ecid, { expires: 7 });
+        const ecidPayload = response.getPayloadByType("identity:persist") || {};
+        cookie.set("ecid", ecidPayload.id, { expires: 7 });
       }
     },
     commands: {

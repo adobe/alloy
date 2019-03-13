@@ -11,22 +11,18 @@ governing permissions and limitations under the License.
 */
 
 export default () => {
-  let hasDestinationExpired = true;
-
   return {
     namespace: "Audiences",
     lifecycle: {
       onBeforeViewStart(payload) {
         console.log("Audiences:::onBeforeViewStart");
-        if (hasDestinationExpired) {
-          payload.appendToQuery({
-            destinations: true
-          });
-          hasDestinationExpired = false;
-        }
+        // TODO: Remove; We won't need to request destinations explicitely.
+        // This is just for demo currently.
+        payload.addQuery({ urlDestinations: true });
       },
-      onViewStartResponse({ destinations = [] } = {}) {
+      onViewStartResponse(response) {
         console.log("Audiences:::onViewStartResponse");
+        const destinations = response.getPayloadByType("activation:push") || [];
         destinations.forEach(dest => console.log(dest.url));
       }
     },

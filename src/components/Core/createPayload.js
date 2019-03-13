@@ -10,31 +10,58 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const append = (payload, key) => (obj = {}) => {
-  // TODO Validate...
-  console.warn(`[Payload:appendTo${key}] To Implement!`);
-  Object.assign(payload[key], obj);
-  return payload;
-};
+/* TODO: Remove.
 
-// data should be an array to support sending multiple events.
-export default ({ data, query = {}, metadata = {}, context = {} } = {}) => {
-  const payload = { data: [], query, metadata, context };
+  Current Request Schema:
 
-  // TODO Validate...
-  if (data) {
-    payload.data.push(data);
+  https://git.corp.adobe.com/experience-edge/ue-gateway/
+  blob/b946662d672950898248daf346ff6adea4d41de4/resources/request.json
+
+  Top-Level nodes:
+
+  {
+    query: {},
+    "context": {
+      "identityMap": {},
+      "environment": {},
+      "webreferrer": {}
+    },
+    "events": [{ // Might contain meta per event.
+      "timestamp": 1550574782,
+      "eventId": "test",
+      "correlationID": "something",
+      "type": "::page:load",
+      "data": {}
+    }],
+    "meta": {}
   }
 
+*/
+
+const append = (content, key) => (obj = {}) => {
+  // TODO Validate.
+  console.warn(`[Payload:appendTo${key}] To Implement!`);
+  Object.assign(content[key], obj);
+  return content;
+};
+
+export default ({
+  events = [],
+  query = {},
+  metadata = {},
+  context = {}
+} = {}) => {
+  const content = { events, query, metadata, context };
+
   return {
-    appendToData(obj) {
-      payload.data.push(obj);
+    addEvent(ev) {
+      content.events.push(ev);
     },
-    appendToQuery: append(payload, "query"),
-    appendToMetadata: append(payload, "metadata"),
-    appendToContext: append(payload, "context"),
+    addQuery: append(content, "query"),
+    addMetadata: append(content, "metadata"),
+    addContext: append(content, "context"),
     toJson() {
-      return JSON.stringify(payload);
+      return JSON.stringify(content);
     }
   };
 };
