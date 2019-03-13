@@ -23,7 +23,7 @@ export default () => {
   const makeHookCall = hook => (...args) => core.lifecycle[hook](...args);
 
   return {
-    namespace: "Tracker",
+    namespace: "DataCollector",
     lifecycle: {
       onComponentsRegistered(_core) {
         core = _core;

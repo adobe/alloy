@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import createCore from "./components/Core";
 
-import createTracker from "./components/Tracker";
+import createDataCollector from "./components/DataCollector";
 import createIdentity from "./components/Identity";
 import createAudiences from "./components/Audiences";
 import createPersonalization from "./components/Personalization";
@@ -32,7 +32,7 @@ function configure(config) {
 
   const componentRegistry = createComponentRegistry();
 
-  componentRegistry.register(createTracker());
+  componentRegistry.register(createDataCollector());
   componentRegistry.register(createIdentity());
   componentRegistry.register(createAudiences());
   componentRegistry.register(createPersonalization());

@@ -114,8 +114,8 @@ export default () => {
   const storage = {};
 
   const collect = offerInfo => {
-    const tracker = core.components.getByNamespace("Tracker");
-    tracker.commands.collect(offerInfo);
+    const dataCollector = core.components.getByNamespace("DataCollector");
+    dataCollector.commands.collect(offerInfo);
   };
 
   return {
