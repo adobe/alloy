@@ -29,6 +29,8 @@ governing permissions and limitations under the License.
 //  new Error() or core.missingRequirement('I require Personalization');
 // }
 
+import createResponse from "./createResponse";
+
 function invokeHook(components, hook, ...args) {
   return components.map(component => {
     // TODO Maybe add a smarter check here to help Components' developers
@@ -51,13 +53,21 @@ export default componentRegistry => {
       return invokeHook(components, "onBeforeViewStart", payload);
     },
     onViewStartResponse(response) {
-      return invokeHook(components, "onViewStartResponse", response);
+      return invokeHook(
+        components,
+        "onViewStartResponse",
+        createResponse(response)
+      );
     },
     onBeforeEvent(payload) {
       return invokeHook(componentRegistry.getAll(), "onBeforeEvent", payload);
     },
     onEventResponse(response) {
-      return invokeHook(components, "onEventResponse", response);
+      return invokeHook(
+        components,
+        "onEventResponse",
+        createResponse(response)
+      );
     },
     onBeforeUnload() {
       return invokeHook(components, "onBeforeUnload");
