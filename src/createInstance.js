@@ -16,6 +16,7 @@ import createTracker from "./components/Tracker";
 import createIdentity from "./components/Identity";
 import createAudiences from "./components/Audiences";
 import createPersonalization from "./components/Personalization";
+import createContext from "./components/Context";
 import createComponentRegistry from "./components/Core/createComponentRegistry";
 
 import nodeStyleCallbackify from "./utils/nodeStyleCallbackify";
@@ -36,6 +37,7 @@ function configure(config) {
   componentRegistry.register(createIdentity());
   componentRegistry.register(createAudiences());
   componentRegistry.register(createPersonalization());
+  componentRegistry.register(createContext());
 
   return createCore(config, componentRegistry);
 }
