@@ -46,7 +46,7 @@ function Home() {
       <section>
         <div className="mbox"></div>
         <button onClick={() => {
-          window.atag("collect", {
+          window.adbe("collect", {
             data: {
               event: "login",
               userName: "Joe Khoury"
@@ -58,10 +58,10 @@ function Home() {
         }}>Log In</button>
 
         <button onClick={() => {
-          window.atag("collect", {
+          window.adbe("collect", {
             data: {
               event: "video",
-              videoName: "Funiest cat ever."
+              videoName: "Funniest cat ever."
             },
             callback: () => {
               console.log("HIT HAS BEEN SENT!!!");
@@ -70,7 +70,7 @@ function Home() {
         }}>Watch Video</button>
 
       <button onClick={() => {
-          window.atag("collect", {
+          window.adbe("collect", {
             data: {
               event: "custom-event",
               videoName: "Random event."
