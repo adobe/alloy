@@ -1,4 +1,4 @@
-import { getPageInfo } from "../../../src/components/Context/page";
+import { getPageInfo } from "../../../../src/components/Context/page";
 
 describe("Page Info", () => {
   describe("getPageInfo", () => {

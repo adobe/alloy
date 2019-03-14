@@ -4,7 +4,7 @@ import browser from "./browser";
 // TODO: replace this with the real logger
 const logger = console;
 
-export const createContextComponent = availableContexts => {
+export const createContextComponent = (availableContexts, defaultContexts) => {
   let configuredContexts = {};
 
   const onBeforeRequest = payload => {
@@ -21,9 +21,9 @@ export const createContextComponent = availableContexts => {
       onComponentsRegistered(core) {
         if (!core.configs.context) {
           logger.debug(`
-            No configured context.  Defaulting to all available contexts.
+            No configured context.  Using default context.
           `);
-          configuredContexts = availableContexts;
+          configuredContexts = defaultContexts;
           return;
         }
         if (!Array.isArray(core.configs.context)) {
@@ -50,5 +50,5 @@ export const createContextComponent = availableContexts => {
 };
 
 export default () => {
-  return createContextComponent({ page, browser });
+  return createContextComponent({ page, browser }, { page, browser });
 };

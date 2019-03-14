@@ -1,4 +1,4 @@
-import { getBrowserInfo } from "../../../src/components/Context/browser";
+import { getBrowserInfo } from "../../../../src/components/Context/browser";
 
 describe("Context Browser Info", () => {
   const mywindow = {

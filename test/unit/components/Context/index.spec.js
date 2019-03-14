@@ -1,5 +1,5 @@
-import { createContextComponent } from "../../../src/components/Context/index";
-import createPayload from "../../../src/components/Core/createPayload";
+import { createContextComponent } from "../../../../src/components/Context/index";
+import createPayload from "../../../../src/components/Core/createPayload";
 
 describe("Create Context Component", () => {
   const context1 = () => {
@@ -8,7 +8,7 @@ describe("Create Context Component", () => {
   const context2 = () => {
     return { b: "2" };
   };
-  const component = createContextComponent({ context1, context2 });
+  const component = createContextComponent({ context1, context2 }, { context1 });
   let configs;
   const core = {
     get configs() {
@@ -16,7 +16,7 @@ describe("Create Context Component", () => {
     }
   };
 
-  it("works with a configured context", () => {
+  it("enables the configured contexts", () => {
     configs = { context: ["context1", "context2"] };
     component.lifecycle.onComponentsRegistered(core);
     const payload = createPayload();
@@ -28,19 +28,18 @@ describe("Create Context Component", () => {
     });
   });
 
-  it("defaults to all the contexts", () => {
+  it("defaults to the default contexts", () => {
     configs = {};
     component.lifecycle.onComponentsRegistered(core);
     const payload = createPayload();
     component.lifecycle.onBeforeEvent(payload);
 
     expect(JSON.parse(payload.toJson()).context).toEqual({
-      context1: { a: "1" },
-      context2: { b: "2" }
+      context1: { a: "1" }
     });
   });
 
-  it("handles unknown contexts", () => {
+  it("ignores unknown contexts", () => {
     configs = { context: ["unknowncontext", "context1"] };
     component.lifecycle.onComponentsRegistered(core);
     const payload = createPayload();
@@ -51,7 +50,7 @@ describe("Create Context Component", () => {
     });
   });
 
-  it("handles empty context", () => {
+  it("can disable all contexts", () => {
     configs = { context: [] };
     component.lifecycle.onComponentsRegistered(core);
     const payload = createPayload();
@@ -60,7 +59,7 @@ describe("Create Context Component", () => {
     expect(JSON.parse(payload.toJson()).context).toEqual({});
   });
 
-  it("handles non-array context", () => {
+  it("disables all contexts when given a non-array config", () => {
     configs = { context: "context1" };
     component.lifecycle.onComponentsRegistered(core);
     const payload = createPayload();
@@ -69,7 +68,7 @@ describe("Create Context Component", () => {
     expect(JSON.parse(payload.toJson()).context).toEqual({});
   });
 
-  it("works when onBeforeViewStart is called", () => {
+  it("adds to the context when onBeforeViewStart is called", () => {
     configs = { context: ["context1", "context2"] };
     component.lifecycle.onComponentsRegistered(core);
     const payload = createPayload();
