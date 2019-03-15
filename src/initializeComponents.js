@@ -16,6 +16,7 @@ import createTracker from "./components/Tracker";
 import createIdentity from "./components/Identity";
 import createAudiences from "./components/Audiences";
 import createPersonalization from "./components/Personalization";
+import createLifecycle from "./createLifecycle";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
 const componentFactories = {
@@ -36,6 +37,12 @@ export default (config, debugController) => {
       config
     });
     componentRegistry.register(namespace, component);
+  });
+
+  const lifecycle = createLifecycle(componentRegistry);
+  lifecycle.onComponentsRegistered({
+    componentRegistry,
+    lifecycle
   });
 
   return componentRegistry;

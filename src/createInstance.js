@@ -12,23 +12,11 @@ governing permissions and limitations under the License.
 
 import nodeStyleCallbackify from "./utils/nodeStyleCallbackify";
 import initializeComponents from "./initializeComponents";
-import createLifecycle from "./createLifecycle";
 import createDebugController from "./createDebugController";
 
 // TODO: Replace with util once ready.
 const isFunction = arg => typeof arg === "function";
 const noop = () => {};
-
-// MAYBE: Since we don't have a data layer yet, should we support a `config.data`?
-function configure(config, debugController) {
-  const componentRegistry = initializeComponents(config, debugController);
-  const lifecycle = createLifecycle(componentRegistry);
-  lifecycle.onComponentsRegistered({
-    componentRegistry,
-    lifecycle
-  });
-  return componentRegistry;
-}
 
 export default namespace => {
   const debugController = createDebugController(namespace);
@@ -48,7 +36,7 @@ export default namespace => {
         );
       }
       command = config => {
-        componentRegistry = configure(config, debugController);
+        componentRegistry = initializeComponents(config, debugController);
       };
     } else {
       if (!componentRegistry) {
