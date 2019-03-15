@@ -22,9 +22,16 @@ export default () => {
     // TODO: Add customer ids.
     // TODO: Add sugar APIs to payload to support adding
     // specific contexts: payload.addIdentityContext
-    const identityMap = {
-      ...(ecid && { [ECID_NAMESPACE]: ecid })
-    };
+    const identityMap = {};
+
+    if (ecid) {
+      identityMap[ECID_NAMESPACE] = [
+        {
+          id: ecid
+        }
+      ];
+    }
+
     payload.addContext({
       identityMap
     });
