@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import cookie from "@adobe/reactor-cookie";
 
-const ECID_NAMESPACE = "4";
+const ECID_NAMESPACE = "ECID";
 
 export default () => {
   const getEcid = () => cookie.get("ecid");
