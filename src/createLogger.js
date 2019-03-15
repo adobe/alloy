@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import window from "@adobe/reactor-window";
 
 /**
- * Prefix to use on all messages. The rocket unicode doesn't work on IE 10.
+ * Prefix to use on all messages.
  * @type {string}
  */
 const SDK_PREFIX = "[AEP]";
