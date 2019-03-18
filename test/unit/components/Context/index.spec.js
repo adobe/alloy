@@ -8,7 +8,10 @@ describe("Create Context Component", () => {
   const context2 = () => {
     return { b: "2" };
   };
-  const component = createContextComponent({ context1, context2 }, { context1 });
+  const component = createContextComponent(
+    { context1, context2 },
+    { context1 }
+  );
   let configs;
   const core = {
     get configs() {

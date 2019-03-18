@@ -1,12 +1,17 @@
 module.exports = {
-  "extends": ["airbnb", "prettier"],
+  "extends": [
+    "airbnb",
+    "prettier",
+    "plugin:testcafe/recommended"
+  ],
   "env": {
     "browser": true,
     "node": true,
     "jasmine": true
   },
   "plugins": [
-    "prettier"
+    "prettier",
+    "testcafe"
   ],
   "rules": {
     "prettier/prettier": "error"
