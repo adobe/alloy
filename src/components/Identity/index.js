@@ -14,7 +14,7 @@ import cookie from "@adobe/reactor-cookie";
 
 const ECID_NAMESPACE = "ECID";
 
-export default () => {
+const createIdentity = () => {
   const getEcid = () => cookie.get("ecid");
 
   const addIdsContext = payload => {
@@ -38,7 +38,6 @@ export default () => {
   };
 
   return {
-    namespace: "Identity",
     lifecycle: {
       onBeforeEvent: addIdsContext,
       onBeforeViewStart(payload) {
@@ -66,3 +65,7 @@ export default () => {
     }
   };
 };
+
+createIdentity.namespace = "Identity";
+
+export default createIdentity;

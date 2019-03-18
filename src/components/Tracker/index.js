@@ -12,21 +12,20 @@ governing permissions and limitations under the License.
 
 import createRequest from "./createRequest";
 
-export default () => {
-  let core;
+const createTracker = ({ config }) => {
+  let lifecycle;
 
   const makeServerCall = (endpoint, beforeHook, afterHook) => ({ data }) => {
-    const request = createRequest(core);
+    const request = createRequest(config);
     return request.send(data, endpoint, beforeHook, afterHook);
   };
 
-  const makeHookCall = hook => (...args) => core.lifecycle[hook](...args);
+  const makeHookCall = hook => (...args) => lifecycle[hook](...args);
 
   return {
-    namespace: "Tracker",
     lifecycle: {
-      onComponentsRegistered(_core) {
-        core = _core;
+      onComponentsRegistered(tools) {
+        ({ lifecycle } = tools);
       }
     },
     commands: {
@@ -43,3 +42,7 @@ export default () => {
     }
   };
 };
+
+createTracker.namespace = "Tracker";
+
+export default createTracker;

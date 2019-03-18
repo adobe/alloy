@@ -21,8 +21,18 @@ export default fn => {
     // errors that occur during the underlying function call.
     new Promise(resolve => {
       resolve(fn(...args));
-    }).then(data => {
-      callback(null, data);
-    }, callback);
+    }).then(
+      data => {
+        callback(null, data);
+      },
+      error => {
+        // TODO: Do we want to log the error here?
+        // Only when debugging is enabled? If we don't log it at all,
+        // and the user doesn't provide a callback, the error is essentially
+        // swallowed.
+        console.error(error);
+        callback(error);
+      }
+    );
   };
 };
