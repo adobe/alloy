@@ -1,7 +1,7 @@
 import { Selector } from "testcafe";
 
-fixture`Getting Started`.page`http://devexpress.github.io/testcafe/example`;
-
+fixture`Getting Started`.page`http://localhost:3000/`;
+//Start the sandbox react server first
 test("My first test", async t => {
-  await t.typeText("#developer-name", "John Smith").click("#submit-button");
+ 
 });
