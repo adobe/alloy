@@ -79,7 +79,7 @@ function showElement(selector) {
   elements.forEach(e => removeFrom(document.head, e));
 }
 
-function render(cache, event) {
+function render(cache, event, logger) {
   const { animationName } = event;
 
   if (animationName.indexOf(KEY_DETECT_PREFIX) === -1) {
@@ -89,7 +89,7 @@ function render(cache, event) {
   const option = cache[animationName];
 
   if (!option) {
-    console.log("Element with key:", animationName, "not in cache");
+    logger.log("Element with key:", animationName, "not in cache");
     return;
   }
 
@@ -104,37 +104,39 @@ function render(cache, event) {
       showElement(selector);
       break;
     default:
-      console.log(type, "rendeing is not supported");
+      logger.log(type, "rendering is not supported");
       break;
   }
 }
 
-export default () => {
-  let core;
+const createPersonalization = ({ logger }) => {
   const storage = {};
+  let componentRegistry;
 
   const collect = offerInfo => {
-    const dataCollector = core.components.getByNamespace("DataCollector");
-    dataCollector.commands.collect(offerInfo);
+    const tracker = componentRegistry.getByNamespace("DataCollector");
+    tracker.commands.collect(offerInfo);
   };
 
   return {
-    namespace: "Personalization",
     lifecycle: {
-      onComponentsRegistered(_core) {
-        core = _core;
+      onComponentsRegistered(tools) {
+        ({ componentRegistry } = tools);
       },
       onBeforeViewStart(payload) {
         console.log("Personalization:::onBeforeViewStart");
-
-        payload.appendToQuery({
+        payload.addQuery({ personalization: true });
+        payload.addMetadata({
           personalization: {
-            sessionId: "1234235"
+            client: "demo12",
+            sessionID: "12344566"
           }
         });
       },
-      onViewStartResponse({ resources: { personalization = [] } } = {}) {
+      onViewStartResponse(response) {
         console.log("Personalization:::onViewStartResponse");
+        const personalization =
+          response.getPayloadByType("personalization:run") || [];
 
         // Caution!!! Here comes Target black magic
 
@@ -145,7 +147,7 @@ export default () => {
 
           hideElement(selector);
           setupElementDetection(key, selector, event => {
-            render(storage, event);
+            render(storage, event, logger);
             collect({ data: eventToken });
           });
         });
@@ -153,3 +155,7 @@ export default () => {
     }
   };
 };
+
+createPersonalization.namespace = "Personalization";
+
+export default createPersonalization;

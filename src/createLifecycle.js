@@ -10,8 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// - This dude acts as a Components repo.
-// - It also implements all of the Core's lifecycle hooks.
+// - It implements all lifecycle hooks.
 
 // Let's start the first version with an explicit Hook interface,
 // and not a random pub/sub model. Meaning each Component will have
@@ -24,10 +23,12 @@ governing permissions and limitations under the License.
 // TODO: Support Async hooks. (Or maybe default them as Async)
 // TODO: Hooks might have to publish events so the outside world can hooks in as well.
 
-// MAYBE: If a Component has a hard dependency, or maybe CORE can do this:
-// if (core.hasComponent('Personalization')) {
+// MAYBE: If a Component has a hard dependency, maybe throw an error somewhere:
+// if (componentRegistry.hasComponent('Personalization')) {
 //  new Error() or core.missingRequirement('I require Personalization');
 // }
+
+import createResponse from "./createResponse";
 
 function invokeHook(components, hook, ...args) {
   return components.map(component => {
@@ -44,20 +45,28 @@ function invokeHook(components, hook, ...args) {
 export default componentRegistry => {
   const components = componentRegistry.getAll();
   return {
-    onComponentsRegistered(core) {
-      return invokeHook(components, "onComponentsRegistered", core);
+    onComponentsRegistered(tools) {
+      return invokeHook(components, "onComponentsRegistered", tools);
     },
     onBeforeViewStart(payload) {
       return invokeHook(components, "onBeforeViewStart", payload);
     },
     onViewStartResponse(response) {
-      return invokeHook(components, "onViewStartResponse", response);
+      return invokeHook(
+        components,
+        "onViewStartResponse",
+        createResponse(response)
+      );
     },
     onBeforeEvent(payload) {
       return invokeHook(componentRegistry.getAll(), "onBeforeEvent", payload);
     },
     onEventResponse(response) {
-      return invokeHook(components, "onEventResponse", response);
+      return invokeHook(
+        components,
+        "onEventResponse",
+        createResponse(response)
+      );
     },
     onBeforeUnload() {
       return invokeHook(components, "onBeforeUnload");
