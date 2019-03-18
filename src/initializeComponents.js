@@ -19,18 +19,18 @@ import createPersonalization from "./components/Personalization";
 import createLifecycle from "./createLifecycle";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
-const componentFactories = {
-  Tracker: createTracker,
-  Identity: createIdentity,
-  Audiences: createAudiences,
-  Personalization: createPersonalization
-};
+const componentCreators = [
+  createTracker,
+  createIdentity,
+  createAudiences,
+  createPersonalization
+];
 
 export default (config, debugController) => {
   const componentRegistry = createComponentRegistry();
 
-  Object.keys(componentFactories).forEach(namespace => {
-    const createComponent = componentFactories[namespace];
+  componentCreators.forEach(createComponent => {
+    const { namespace } = createComponent;
     const logger = createLogger(debugController, namespace);
     const component = createComponent({
       logger,

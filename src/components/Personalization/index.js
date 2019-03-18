@@ -109,7 +109,7 @@ function render(cache, event, logger) {
   }
 }
 
-export default ({ logger }) => {
+const createPersonalization = ({ logger }) => {
   const storage = {};
   let componentRegistry;
 
@@ -155,3 +155,7 @@ export default ({ logger }) => {
     }
   };
 };
+
+createPersonalization.namespace = "Personalization";
+
+export default createPersonalization;

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import createRequest from "./createRequest";
 
-export default ({ config }) => {
+const createTracker = ({ config }) => {
   let lifecycle;
 
   const makeServerCall = (endpoint, beforeHook, afterHook) => ({ data }) => {
@@ -42,3 +42,7 @@ export default ({ config }) => {
     }
   };
 };
+
+createTracker.namespace = "Tracker";
+
+export default createTracker;
