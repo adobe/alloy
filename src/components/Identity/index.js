@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import cookie from "@adobe/reactor-cookie";
 
-const ECID_NAMESPACE = "4";
+const ECID_NAMESPACE = "ECID";
 
 export default () => {
   const getEcid = () => cookie.get("ecid");
@@ -22,9 +22,16 @@ export default () => {
     // TODO: Add customer ids.
     // TODO: Add sugar APIs to payload to support adding
     // specific contexts: payload.addIdentityContext
-    const identityMap = {
-      ...(ecid && { [ECID_NAMESPACE]: ecid })
-    };
+    const identityMap = {};
+
+    if (ecid) {
+      identityMap[ECID_NAMESPACE] = [
+        {
+          id: ecid
+        }
+      ];
+    }
+
     payload.addContext({
       identityMap
     });
