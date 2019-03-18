@@ -14,7 +14,7 @@ import cookie from "@adobe/reactor-cookie";
 
 const ECID_NAMESPACE = "4";
 
-export default () => {
+const createIdentity = () => {
   const getEcid = () => cookie.get("ecid");
 
   const addIdsContext = payload => {
@@ -58,3 +58,7 @@ export default () => {
     }
   };
 };
+
+createIdentity.namespace = "Identity";
+
+export default createIdentity;
