@@ -20,38 +20,12 @@ function setMetadata(payload, config) {
   });
 }
 
-function setContext(payload) {
-  // Append Context data; basically data we can infer from the environment.
-  // TODO: take this stuff out of here, and have some helper component do that.
-  payload.addContext({
-    environment: {
-      type: "browser",
-      browserDetails: {
-        js_enabled: true,
-        js_version: "1.8.5",
-        cookies_enabled: true,
-        browser_height: 900,
-        screen_orientation: "landscape",
-        webgl_renderer: "AMD Radeon Pro 460 OpenGL Engine"
-      }
-    }
-  });
-
-  payload.addContext({
-    webreferrer: {
-      URL: "https://www.adobe.com/index2.html",
-      type: "external"
-    }
-  });
-}
-
 const initalizePayload = (config, event, beforeHook) => {
-  // Populate the request's body with payload, event and metadata.
+  // Populate the request's body with payload, data and metadata.
   const payload = createPayload({ events: [event] });
 
   // TODO: Make those hook calls Async?
   beforeHook(payload);
-  setContext(payload);
   setMetadata(payload, config);
 
   return Promise.resolve(payload.toJson());

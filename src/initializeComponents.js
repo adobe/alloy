@@ -16,6 +16,7 @@ import createTracker from "./components/Tracker";
 import createIdentity from "./components/Identity";
 import createAudiences from "./components/Audiences";
 import createPersonalization from "./components/Personalization";
+import createContext from "./components/Context";
 import createLifecycle from "./createLifecycle";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
@@ -23,7 +24,8 @@ const componentCreators = [
   createTracker,
   createIdentity,
   createAudiences,
-  createPersonalization
+  createPersonalization,
+  createContext
 ];
 
 export default (config, debugController) => {

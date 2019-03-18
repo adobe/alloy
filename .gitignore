@@ -3,7 +3,7 @@ dist
 sandbox/public/atag.js
 sandbox/build
 .sonarlint
-
+.env
 
 logs
 *.log
