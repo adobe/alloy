@@ -1,27 +1,29 @@
 import { createContextComponent } from "../../../../src/components/Context/index";
-import createPayload from "../../../../src/components/Core/createPayload";
+import createPayload from "../../../../src/createPayload";
 
 describe("Create Context Component", () => {
+  const logger = {
+    log() {},
+    warn() {}
+  };
   const context1 = () => {
     return { a: "1" };
   };
   const context2 = () => {
     return { b: "2" };
   };
-  const component = createContextComponent(
-    { context1, context2 },
-    { context1 }
-  );
-  let configs;
-  const core = {
-    get configs() {
-      return configs;
-    }
-  };
+  const availableContexts = { context1, context2 };
+  const defaultContexts = { context1 };
 
   it("enables the configured contexts", () => {
-    configs = { context: ["context1", "context2"] };
-    component.lifecycle.onComponentsRegistered(core);
+    const config = { context: ["context1", "context2"] };
+    const component = createContextComponent(
+      config,
+      logger,
+      availableContexts,
+      defaultContexts
+    );
+    component.lifecycle.onComponentsRegistered();
     const payload = createPayload();
     component.lifecycle.onBeforeEvent(payload);
 
@@ -32,8 +34,14 @@ describe("Create Context Component", () => {
   });
 
   it("defaults to the default contexts", () => {
-    configs = {};
-    component.lifecycle.onComponentsRegistered(core);
+    const config = {};
+    const component = createContextComponent(
+      config,
+      logger,
+      availableContexts,
+      defaultContexts
+    );
+    component.lifecycle.onComponentsRegistered();
     const payload = createPayload();
     component.lifecycle.onBeforeEvent(payload);
 
@@ -43,8 +51,14 @@ describe("Create Context Component", () => {
   });
 
   it("ignores unknown contexts", () => {
-    configs = { context: ["unknowncontext", "context1"] };
-    component.lifecycle.onComponentsRegistered(core);
+    const config = { context: ["unknowncontext", "context1"] };
+    const component = createContextComponent(
+      config,
+      logger,
+      availableContexts,
+      defaultContexts
+    );
+    component.lifecycle.onComponentsRegistered();
     const payload = createPayload();
     component.lifecycle.onBeforeEvent(payload);
 
@@ -54,8 +68,14 @@ describe("Create Context Component", () => {
   });
 
   it("can disable all contexts", () => {
-    configs = { context: [] };
-    component.lifecycle.onComponentsRegistered(core);
+    const config = { context: [] };
+    const component = createContextComponent(
+      config,
+      logger,
+      availableContexts,
+      defaultContexts
+    );
+    component.lifecycle.onComponentsRegistered();
     const payload = createPayload();
     component.lifecycle.onBeforeEvent(payload);
 
@@ -63,8 +83,14 @@ describe("Create Context Component", () => {
   });
 
   it("disables all contexts when given a non-array config", () => {
-    configs = { context: "context1" };
-    component.lifecycle.onComponentsRegistered(core);
+    const config = { context: "context1" };
+    const component = createContextComponent(
+      config,
+      logger,
+      availableContexts,
+      defaultContexts
+    );
+    component.lifecycle.onComponentsRegistered();
     const payload = createPayload();
     component.lifecycle.onBeforeEvent(payload);
 
@@ -72,8 +98,14 @@ describe("Create Context Component", () => {
   });
 
   it("adds to the context when onBeforeViewStart is called", () => {
-    configs = { context: ["context1", "context2"] };
-    component.lifecycle.onComponentsRegistered(core);
+    const config = { context: ["context1", "context2"] };
+    const component = createContextComponent(
+      config,
+      logger,
+      availableContexts,
+      defaultContexts
+    );
+    component.lifecycle.onComponentsRegistered();
     const payload = createPayload();
     component.lifecycle.onBeforeViewStart(payload);
 

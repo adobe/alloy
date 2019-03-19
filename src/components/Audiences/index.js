@@ -10,9 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default () => {
+const createAudiences = () => {
   return {
-    namespace: "Audiences",
     lifecycle: {
       onBeforeViewStart(payload) {
         console.log("Audiences:::onBeforeViewStart");
@@ -29,3 +28,7 @@ export default () => {
     commands: {}
   };
 };
+
+createAudiences.namespace = "Audiences";
+
+export default createAudiences;

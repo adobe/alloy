@@ -13,40 +13,38 @@ governing permissions and limitations under the License.
 const intersection = (a, b) => a.filter(x => b.includes(x));
 
 export default () => {
-  const components = [];
-  const commandByName = {};
+  const componentsByNamespace = {};
+  const commandsByName = {};
 
   return {
-    register(component) {
-      const { commands: componentCommandByName = {} } = component;
+    register(namespace, component) {
+      const { commands: componentCommandsByName = {} } = component;
 
       const conflictingCommandNames = intersection(
-        Object.keys(commandByName),
-        Object.keys(componentCommandByName)
+        Object.keys(commandsByName),
+        Object.keys(componentCommandsByName)
       );
 
       if (conflictingCommandNames.length) {
         throw new Error(
-          `[ComponentRegistry] Could not register ${component.namespace} ` +
+          `[ComponentRegistry] Could not register ${namespace} ` +
             `because it has existing command(s): ${conflictingCommandNames.join(
               ","
             )}`
         );
       }
 
-      Object.assign(commandByName, componentCommandByName);
-      components.push(component);
+      Object.assign(commandsByName, componentCommandsByName);
+      componentsByNamespace[namespace] = component;
     },
     getByNamespace(namespace) {
-      return components.find(component => component.namespace === namespace);
+      return componentsByNamespace[namespace];
     },
     getAll() {
-      // Slice so it's a copy of the original lest components
-      // try to manipulate it. Maybe not that important.
-      return components.slice();
+      return Object.values(componentsByNamespace);
     },
     getCommand(name) {
-      return commandByName[name];
+      return commandsByName[name];
     }
   };
 };

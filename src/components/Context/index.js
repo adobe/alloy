@@ -1,10 +1,12 @@
 import page from "./page";
 import browser from "./browser";
 
-// TODO: replace this with the real logger
-const logger = console;
-
-export const createContextComponent = (availableContexts, defaultContexts) => {
+export const createContextComponent = (
+  config,
+  logger,
+  availableContexts,
+  defaultContexts
+) => {
   let configuredContexts = {};
 
   const onBeforeRequest = payload => {
@@ -18,23 +20,21 @@ export const createContextComponent = (availableContexts, defaultContexts) => {
   return {
     namespace: "Context",
     lifecycle: {
-      onComponentsRegistered(core) {
-        if (!core.configs.context) {
-          logger.debug(`
-            No configured context.  Using default context.
-          `);
+      onComponentsRegistered() {
+        if (!config.context) {
+          logger.log(`No configured context.  Using default context.`);
           configuredContexts = defaultContexts;
           return;
         }
-        if (!Array.isArray(core.configs.context)) {
-          logger.warn(`
-            Invalid configured context.  Please specify an array of strings.
-          `);
+        if (!Array.isArray(config.context)) {
+          logger.warn(
+            `Invalid configured context.  Please specify an array of strings.`
+          );
           configuredContexts = {};
           return;
         }
 
-        configuredContexts = core.configs.context.reduce((memo, context) => {
+        configuredContexts = config.context.reduce((memo, context) => {
           if (availableContexts[context]) {
             memo[context] = availableContexts[context]; // eslint-disable-line no-param-reassign
           } else {
@@ -49,6 +49,15 @@ export const createContextComponent = (availableContexts, defaultContexts) => {
   };
 };
 
-export default () => {
-  return createContextComponent({ page, browser }, { page, browser });
+const createContext = ({ config, logger }) => {
+  return createContextComponent(
+    config,
+    logger,
+    { page, browser },
+    { page, browser }
+  );
 };
+
+createContext.namespace = "Context";
+
+export default createContext;
