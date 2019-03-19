@@ -11,38 +11,73 @@ governing permissions and limitations under the License.
 */
 
 import cookie from "@adobe/reactor-cookie";
+import defer from "../../utils/defer";
 
 const ECID_NAMESPACE = "ECID";
 
-const createIdentity = () => {
-  const getEcid = () => cookie.get("ecid");
+const addIdsContext = (payload, ecid) => {
+  // TODO: Add customer ids.
+  // TODO: Add sugar APIs to payload to support adding
+  // specific contexts: payload.addIdentityContext
+  const identityMap = {};
 
-  const addIdsContext = payload => {
-    const ecid = getEcid();
-    // TODO: Add customer ids.
-    // TODO: Add sugar APIs to payload to support adding
-    // specific contexts: payload.addIdentityContext
-    const identityMap = {};
+  identityMap[ECID_NAMESPACE] = [
+    {
+      id: ecid
+    }
+  ];
+
+  payload.addContext({
+    identityMap
+  });
+};
+
+// TODO: Namespace the cookie to be specific to the org.
+const getEcid = () => cookie.get("ecid");
+
+const createIdentity = () => {
+  let ecid = getEcid();
+  let deferredForEcid;
+
+  const onBeforeRequest = payload => {
+    let promise;
 
     if (ecid) {
-      identityMap[ECID_NAMESPACE] = [
-        {
-          id: ecid
-        }
-      ];
+      addIdsContext(payload, ecid);
+    } else if (deferredForEcid) {
+      // We don't have an ECID, but the first request has gone out to
+      // fetch it. We must wait for the response to come back with the
+      // ECID before we can apply it to this payload.
+      promise = deferredForEcid.promise.then(() => {
+        addIdsContext(payload, ecid);
+      });
+    } else {
+      // We don't have an ECID and no request has gone out to fetch it.
+      // We won't apply the ECID to this request, but we'll set up a
+      // promise so that future requests can know when the ECID has returned.
+      deferredForEcid = defer();
     }
 
-    payload.addContext({
-      identityMap
-    });
+    return promise;
+  };
+
+  const onResponse = response => {
+    const ecidPayload = response.getPayloadByType("identity:persist");
+
+    if (ecidPayload) {
+      ecid = ecidPayload.id;
+      cookie.set("ecid", ecid, { expires: 7 });
+
+      if (deferredForEcid) {
+        deferredForEcid.resolve();
+      }
+    }
   };
 
   return {
     lifecycle: {
-      onBeforeEvent: addIdsContext,
+      onBeforeEvent: onBeforeRequest,
       onBeforeViewStart(payload) {
-        console.log("Identity:::onBeforeEvent");
-        addIdsContext(payload);
         // TODO: Store `lastSyncTS` client side and pass it
         // for server to decide if we receive ID Syncs.
         payload.addMetadata({
@@ -51,17 +86,13 @@ const createIdentity = () => {
             containerId: 1
           }
         });
+        return onBeforeRequest(payload);
       },
-      onViewStartResponse(response) {
-        console.log("Identity:::onViewStartResponse");
-        const ecidPayload = response.getPayloadByType("identity:persist") || {};
-        cookie.set("ecid", ecidPayload.id, { expires: 7 });
-      }
+      onEventResponse: onResponse,
+      onViewStartResponse: onResponse
     },
     commands: {
-      getEcid() {
-        return cookie.get("ecid");
-      }
+      getEcid
     }
   };
 };

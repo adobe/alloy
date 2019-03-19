@@ -28,52 +28,89 @@ governing permissions and limitations under the License.
 //  new Error() or core.missingRequirement('I require Personalization');
 // }
 
+import Promise from "@adobe/reactor-promise";
 import createResponse from "./createResponse";
 
 function invokeHook(components, hook, ...args) {
-  return components.map(component => {
-    // TODO Maybe add a smarter check here to help Components' developers
-    // know that their hooks should be organized under `lifecycle`.
-    // Maybe check if hook exist directly on the instance, throw.
-    return component.lifecycle &&
-      typeof component.lifecycle[hook] === "function"
-      ? component.lifecycle[hook](...args)
-      : undefined;
-  });
+  return Promise.all(
+    components.map(component => {
+      // TODO Maybe add a smarter check here to help Components' developers
+      // know that their hooks should be organized under `lifecycle`.
+      // Maybe check if hook exist directly on the instance, throw.
+      let promise;
+
+      if (
+        component.lifecycle &&
+        typeof component.lifecycle[hook] === "function"
+      ) {
+        promise = new Promise(resolve => {
+          resolve(component.lifecycle[hook](...args));
+        });
+      }
+
+      return promise;
+    })
+  );
 }
 
+/**
+ * This ensures that if a component's lifecycle method X
+ * attempts to execute lifecycle method Y, that all X methods on all components
+ * will have been called before any of their Y methods are called.
+ * @returns {function}
+ */
+const guardLifecycleMethod = fn => {
+  return (...args) => {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve(fn(...args));
+      });
+    });
+  };
+};
+
 export default componentRegistry => {
-  const components = componentRegistry.getAll();
+  let components;
+
   return {
-    onComponentsRegistered(tools) {
+    // We intentionally don't guard onComponentsRegistered. When the user
+    // configures the SDK, we need onComponentsRegistered on each component
+    // to be executed synchronously (they would be run asynchronously if
+    // this method were guarded due to how the guard works) so that if the
+    // user immediately executes a command right after configuration,
+    // all the components will have already had their onComponentsRegistered
+    // called and be ready to handle the command. At the moment, commands
+    // are always executed synchronously.
+    onComponentsRegistered: tools => {
+      components = componentRegistry.getAll();
       return invokeHook(components, "onComponentsRegistered", tools);
     },
-    onBeforeViewStart(payload) {
+    onBeforeViewStart: guardLifecycleMethod(payload => {
       return invokeHook(components, "onBeforeViewStart", payload);
-    },
-    onViewStartResponse(response) {
+    }),
+    onViewStartResponse: guardLifecycleMethod(response => {
       return invokeHook(
         components,
         "onViewStartResponse",
         createResponse(response)
       );
-    },
-    onBeforeEvent(payload) {
-      return invokeHook(componentRegistry.getAll(), "onBeforeEvent", payload);
-    },
-    onEventResponse(response) {
+    }),
+    onBeforeEvent: guardLifecycleMethod(payload => {
+      return invokeHook(components, "onBeforeEvent", payload);
+    }),
+    onEventResponse: guardLifecycleMethod(response => {
       return invokeHook(
         components,
         "onEventResponse",
         createResponse(response)
       );
-    },
-    onBeforeUnload() {
+    }),
+    onBeforeUnload: guardLifecycleMethod(() => {
       return invokeHook(components, "onBeforeUnload");
-    },
-    onOptInChanged(permissions) {
+    }),
+    onOptInChanged: guardLifecycleMethod(permissions => {
       return invokeHook(components, "onOptInChanged", permissions);
-    }
+    })
     // TODO: We might need an `onError(error)` hook.
   };
 };

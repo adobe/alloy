@@ -24,11 +24,10 @@ const initalizePayload = (config, event, beforeHook) => {
   // Populate the request's body with payload, data and metadata.
   const payload = createPayload({ events: [event] });
 
-  // TODO: Make those hook calls Async?
-  beforeHook(payload);
-  setMetadata(payload, config);
-
-  return Promise.resolve(payload.toJson());
+  return beforeHook(payload).then(() => {
+    setMetadata(payload, config);
+    return payload.toJson();
+  });
 };
 
 // TODO: Extract this stuff into a core helper.
