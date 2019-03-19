@@ -43,6 +43,6 @@ const createTracker = ({ config }) => {
   };
 };
 
-createTracker.namespace = "Tracker";
+createTracker.namespace = "DataCollector";
 
 export default createTracker;

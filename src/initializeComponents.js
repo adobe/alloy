@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import createComponentRegistry from "./createComponentRegistry";
 import createLogger from "./createLogger";
-import createTracker from "./components/Tracker";
+import createDataCollector from "./components/DataCollector";
 import createIdentity from "./components/Identity";
 import createAudiences from "./components/Audiences";
 import createPersonalization from "./components/Personalization";
@@ -21,7 +21,7 @@ import createLifecycle from "./createLifecycle";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
 const componentCreators = [
-  createTracker,
+  createDataCollector,
   createIdentity,
   createAudiences,
   createPersonalization,

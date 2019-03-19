@@ -114,7 +114,7 @@ const createPersonalization = ({ logger }) => {
   let componentRegistry;
 
   const collect = offerInfo => {
-    const tracker = componentRegistry.getByNamespace("Tracker");
+    const tracker = componentRegistry.getByNamespace("DataCollector");
     tracker.commands.collect(offerInfo);
   };
 
