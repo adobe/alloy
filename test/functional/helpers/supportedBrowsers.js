@@ -5,5 +5,5 @@ module.exports = [
   "saucelabs:MicrosoftEdge@17.17134:Windows 10",
   "saucelabs:Firefox@beta:Windows 10",
   "saucelabs:Chrome@beta:Windows 10"
-  //'opera' sauce doesn't do opera though we support it
+  // 'opera' sauce doesn't do opera though we support it
 ];

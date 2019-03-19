@@ -110,13 +110,6 @@ module.exports = config => {
       module: {
         rules
       }
-    },
-
-    webpackServer: {
-      stats: true,
-      debug: false,
-      progress: true,
-      quiet: false
     }
   });
 };
