@@ -20,7 +20,9 @@ const createTracker = ({ config }) => {
     return request.send(data, endpoint, beforeHook, afterHook);
   };
 
-  const makeHookCall = hook => (...args) => lifecycle[hook](...args);
+  const makeHookCall = hook => (...args) => {
+    return lifecycle[hook](...args);
+  };
 
   return {
     lifecycle: {
