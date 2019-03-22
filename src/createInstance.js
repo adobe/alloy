@@ -13,10 +13,7 @@ governing permissions and limitations under the License.
 import nodeStyleCallbackify from "./utils/nodeStyleCallbackify";
 import initializeComponents from "./initializeComponents";
 import createDebugController from "./createDebugController";
-
-// TODO: Replace with util once ready.
-const isFunction = arg => typeof arg === "function";
-const noop = () => {};
+import { isFunction, noop } from "./utils/lodashLike";
 
 export default namespace => {
   const debugController = createDebugController(namespace);

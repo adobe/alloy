@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const intersection = (a, b) => a.filter(x => b.includes(x));
+import { intersection } from "./utils/lodashLike";
 
 // TO-DOCUMENT: All public commands and their signatures.
 export default () => {

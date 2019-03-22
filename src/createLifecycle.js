@@ -30,6 +30,7 @@ governing permissions and limitations under the License.
 
 import Promise from "@adobe/reactor-promise";
 import createResponse from "./createResponse";
+import { isFunction } from "./utils/lodashLike";
 
 function invokeHook(components, hook, ...args) {
   return Promise.all(
@@ -39,10 +40,7 @@ function invokeHook(components, hook, ...args) {
       // Maybe check if hook exist directly on the instance, throw.
       let promise;
 
-      if (
-        component.lifecycle &&
-        typeof component.lifecycle[hook] === "function"
-      ) {
+      if (component.lifecycle && isFunction(component.lifecycle[hook])) {
         promise = new Promise(resolve => {
           resolve(component.lifecycle[hook](...args));
         });
