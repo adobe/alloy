@@ -18,6 +18,7 @@ import window from "@adobe/reactor-window";
  */
 const SDK_PREFIX = "[AEP]";
 
+// TO-DOCUMENT: How to enable debuggin and logging.
 export default (debugController, namespace) => {
   const namespacePrefix = `[${namespace}]`;
 

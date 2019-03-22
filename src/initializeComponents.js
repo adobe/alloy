@@ -39,6 +39,7 @@ export default (config, debugController) => {
     const storage = getNamespacedStorage(
       "orgId." // TODO: Make orgId mandatory and add it here
     );
+    // TO-DOCUMENT: Helpers that we inject into factories.
     const component = createComponent({
       logger,
       config,
