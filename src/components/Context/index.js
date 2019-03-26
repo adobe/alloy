@@ -1,5 +1,3 @@
-import window from "@adobe/reactor-window";
-
 import getPageInfo from "./getPageInfo";
 import getBrowserInfo from "./getBrowserInfo";
 import getTopFrameSet from "./getTopFrameSet";
