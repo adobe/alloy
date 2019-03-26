@@ -2,7 +2,7 @@ export default (config, logger, availableContexts, defaultContexts) => {
   let configuredContexts = {};
   const onBeforeRequest = payload => {
     const context = Object.keys(configuredContexts).reduce((memo, key) => {
-      memo[key] = configuredContexts[key](); // eslint-disable-line no-param-reassign
+      memo = { ...memo, ...configuredContexts[key]() }; // eslint-disable-line no-param-reassign
       return memo;
     }, {});
     payload.addContext(context);

@@ -27,10 +27,7 @@ describe("Context::createComponent", () => {
     const payload = createPayload();
     component.lifecycle.onBeforeEvent(payload);
 
-    expect(JSON.parse(payload.toJson()).context).toEqual({
-      context1: { a: "1" },
-      context2: { b: "2" }
-    });
+    expect(JSON.parse(payload.toJson()).context).toEqual({ a: "1", b: "2" });
   });
 
   it("defaults to the default contexts", () => {
@@ -45,9 +42,7 @@ describe("Context::createComponent", () => {
     const payload = createPayload();
     component.lifecycle.onBeforeEvent(payload);
 
-    expect(JSON.parse(payload.toJson()).context).toEqual({
-      context1: { a: "1" }
-    });
+    expect(JSON.parse(payload.toJson()).context).toEqual({ a: "1" });
   });
 
   it("ignores unknown contexts", () => {
@@ -62,9 +57,7 @@ describe("Context::createComponent", () => {
     const payload = createPayload();
     component.lifecycle.onBeforeEvent(payload);
 
-    expect(JSON.parse(payload.toJson()).context).toEqual({
-      context1: { a: "1" }
-    });
+    expect(JSON.parse(payload.toJson()).context).toEqual({ a: "1" });
   });
 
   it("can disable all contexts", () => {
@@ -109,9 +102,6 @@ describe("Context::createComponent", () => {
     const payload = createPayload();
     component.lifecycle.onBeforeViewStart(payload);
 
-    expect(JSON.parse(payload.toJson()).context).toEqual({
-      context1: { a: "1" },
-      context2: { b: "2" }
-    });
+    expect(JSON.parse(payload.toJson()).context).toEqual({ a: "1", b: "2" });
   });
 });
