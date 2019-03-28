@@ -18,12 +18,9 @@ export default instanceNamespace => {
   // TODO: Figure out how this plays out with segregating Web Storage
   // in the rest of the SDK. Is it segregated by Org ID or Property ID
   // in the rest of the SDK?
-  const localStorage = getNamespacedStorage(
-    "localStorage",
-    `instance.${instanceNamespace}.`
-  );
+  const storage = getNamespacedStorage(`instance.${instanceNamespace}.`);
 
-  let debugEnabled = localStorage.getItem("debug") === "true";
+  let debugEnabled = storage.persistent.getItem("debug") === "true";
 
   return {
     get debugEnabled() {

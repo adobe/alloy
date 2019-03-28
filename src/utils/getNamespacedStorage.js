@@ -11,12 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import window from "@adobe/reactor-window";
-// TODO: What namespace do we use?
+// TODO: Finalize what namespace naming convention to use
 const NAMESPACE = "com.adobe.aep.";
 
-export default (storageType, additionalNamespace) => {
-  const finalNamespace = NAMESPACE + (additionalNamespace || "");
-
+function getStorageByType(storageType, namespace) {
   // When storage is disabled on Safari, the mere act of referencing
   // window.localStorage or window.sessionStorage throws an error.
   // For this reason, we wrap in a try-catch.
@@ -28,7 +26,7 @@ export default (storageType, additionalNamespace) => {
      */
     getItem(name) {
       try {
-        return window[storageType].getItem(finalNamespace + name);
+        return window[storageType].getItem(namespace + name);
       } catch (e) {
         return null;
       }
@@ -41,11 +39,20 @@ export default (storageType, additionalNamespace) => {
      */
     setItem(name, value) {
       try {
-        window[storageType].setItem(finalNamespace + name, value);
+        window[storageType].setItem(namespace + name, value);
         return true;
       } catch (e) {
+        console.log(e);
         return false;
       }
     }
+  };
+}
+
+export default additionalNamespace => {
+  const finalNamespace = NAMESPACE + (additionalNamespace || "");
+  return {
+    session: getStorageByType("sessionStorage", finalNamespace),
+    persistent: getStorageByType("localStorage", finalNamespace)
   };
 };
