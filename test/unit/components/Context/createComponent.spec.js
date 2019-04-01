@@ -1,5 +1,5 @@
 import createComponent from "../../../../src/components/Context/createComponent";
-import createPayload from "../../../../src/createPayload";
+import createPayload from "../../../../src/core/createPayload";
 
 describe("Context::createComponent", () => {
   const logger = {

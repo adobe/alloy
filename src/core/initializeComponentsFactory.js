@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import createComponentRegistry from "./createComponentRegistry";
 import createLifecycle from "./createLifecycle";
-import getNamespacedStorage from "./utils/getNamespacedStorage";
+import getNamespacedStorage from "../utils/getNamespacedStorage";
 
 export default (componentCreators, logger) => config => {
   const componentRegistry = createComponentRegistry();

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import nodeStyleCallbackify from "./utils/nodeStyleCallbackify";
+import nodeStyleCallbackify from "../utils/nodeStyleCallbackify";
 
 // TODO: Replace with util once ready.
 const isFunction = arg => typeof arg === "function";

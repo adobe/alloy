@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getNamespacedStorage from "./utils/getNamespacedStorage";
+import getNamespacedStorage from "../utils/getNamespacedStorage";
 
 export default instanceNamespace => {
   // Segregate whether debugging is enabled by the SDK instance name.

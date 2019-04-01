@@ -2,7 +2,7 @@
   "name": "a-tag",
   "version": "0.0.1",
   "description": "A-Tag - Unified JS library",
-  "main": "src/main.js",
+  "main": "src/core/main.js",
   "scripts": {
     "prepush-msg": "echo 'Running pre-push scripts...' && exit 0",
     "precommit-msg": "echo 'Running pre-commit scripts...' && exit 0",
