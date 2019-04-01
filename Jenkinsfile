@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        docker { image 'node:7-alpine' }
+        docker { image 'testcafe/testcafe' }
     }
     environment{
     GITHUB_CLONE_URL = 'git@git.corp.adobe.com:Activation/a-tag.git'
