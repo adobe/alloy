@@ -69,6 +69,7 @@ const guardLifecycleMethod = fn => {
   };
 };
 
+// TO-DOCUMENT: Lifecycle hooks and their params.
 export default componentRegistry => {
   let components;
 

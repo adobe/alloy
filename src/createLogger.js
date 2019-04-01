@@ -16,6 +16,7 @@ governing permissions and limitations under the License.
  */
 const SDK_PREFIX = "[AEP]";
 
+// TO-DOCUMENT: How to enable debugging and logging.
 export default (window, debugController, namespace) => {
   const namespacePrefix = `[${namespace}]`;
 

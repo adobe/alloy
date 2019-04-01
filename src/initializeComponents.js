@@ -19,8 +19,10 @@ import createAudiences from "./components/Audiences";
 import createPersonalization from "./components/Personalization";
 import createContext from "./components/Context";
 import createLifecycle from "./createLifecycle";
+import getNamespacedStorage from "./utils/getNamespacedStorage";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
+// TODO: Figure out how sub-components will be made available/registered
 const componentCreators = [
   createDataCollector,
   createIdentity,
@@ -35,9 +37,14 @@ export default (config, debugController) => {
   componentCreators.forEach(createComponent => {
     const { namespace } = createComponent;
     const logger = createLogger(window, debugController, namespace);
+    const storage = getNamespacedStorage(
+      "orgId." // TODO: Make orgId mandatory and add it here
+    );
+    // TO-DOCUMENT: Helpers that we inject into factories.
     const component = createComponent({
       logger,
-      config
+      config,
+      storage
     });
     componentRegistry.register(namespace, component);
   });

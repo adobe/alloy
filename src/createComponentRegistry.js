@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 const intersection = (a, b) => a.filter(x => b.includes(x));
 
+// TO-DOCUMENT: All public commands and their signatures.
 export default () => {
   const componentsByNamespace = {};
   const commandsByName = {};

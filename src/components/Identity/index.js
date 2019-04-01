@@ -39,6 +39,7 @@ const createIdentity = () => {
   let ecid = getEcid();
   let deferredForEcid;
 
+  // TO-DOCUMENT: We wait for ECID before trigger any events.
   const onBeforeRequest = payload => {
     let promise;
 
