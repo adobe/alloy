@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        docker { image 'testcafe/testcafe' }
+        docker { image 'honomoa/docker-jenkins-testcafe' }
     }
     environment{
     GITHUB_CLONE_URL = 'git@git.corp.adobe.com:Activation/a-tag.git'
@@ -38,15 +38,9 @@ pipeline {
         }
     }
 
-    stage('Install dependencies') {
+    stage('Run TestCafe') {
         steps {
-            sh 'npm install'
-        }
-    }
-
-    stage('Run Unit Test') {
-        steps {
-            sh 'npm rebuild && npm test --browsers="ChromeHeadless"'
+            sh 'testcafe "firefox,chromium --no-sandbox" test/functional/spec/*.js'
         }
     }    
         
