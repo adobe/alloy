@@ -10,9 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getNamespacedStorage from "../utils/getNamespacedStorage";
-
-export default instanceNamespace => {
+export default (instanceNamespace, getNamespacedStorage) => {
   // Segregate whether debugging is enabled by the SDK instance name.
   // This way consumers can debug one instance at a time.
   // TODO: Figure out how this plays out with segregating Web Storage

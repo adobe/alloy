@@ -10,11 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createComponentRegistry from "./createComponentRegistry";
 import createLifecycle from "./createLifecycle";
-import getNamespacedStorage from "../utils/getNamespacedStorage";
+import createComponentRegistry from "./createComponentRegistry";
 
-export default (componentCreators, logger) => config => {
+export default (componentCreators, logger, getNamespacedStorage) => config => {
   const componentRegistry = createComponentRegistry();
 
   componentCreators.forEach(createComponent => {

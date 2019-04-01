@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import window from "@adobe/reactor-window";
 
 import createInstance from "./createInstance";
+import storageFactory from "../utils/storageFactory";
 import initializeComponentsFactory from "./initializeComponentsFactory";
 
 import createLogger from "./createLogger";
@@ -37,13 +38,16 @@ const componentCreators = [
 // eslint-disable-next-line no-underscore-dangle
 const namespaces = window.__adobeNS;
 
+const storage = storageFactory(window);
+
 if (namespaces) {
   namespaces.forEach(namespace => {
-    const debugController = createDebugController(namespace);
+    const debugController = createDebugController(namespace, storage);
     const logger = createLogger(window, debugController, namespace);
     const initializeComponents = initializeComponentsFactory(
       componentCreators,
-      logger
+      logger,
+      storage
     );
 
     const instance = createInstance(
