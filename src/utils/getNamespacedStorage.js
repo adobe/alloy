@@ -11,8 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import window from "@adobe/reactor-window";
-// TODO: Finalize what namespace naming convention to use
-const NAMESPACE = "com.adobe.aep.";
+import baseNamespace from "../constants/namespace";
 
 function getStorageByType(storageType, namespace) {
   // When storage is disabled on Safari, the mere act of referencing
@@ -50,7 +49,7 @@ function getStorageByType(storageType, namespace) {
 }
 
 export default additionalNamespace => {
-  const finalNamespace = NAMESPACE + (additionalNamespace || "");
+  const finalNamespace = baseNamespace + (additionalNamespace || "");
   return {
     session: getStorageByType("sessionStorage", finalNamespace),
     persistent: getStorageByType("localStorage", finalNamespace)
