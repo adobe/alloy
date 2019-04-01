@@ -1,6 +1,6 @@
-import { getBrowserInfo } from "../../../../src/components/Context/browser";
+import getBrowserInfo from "../../../../src/components/Context/getBrowserInfo";
 
-describe("Context Browser Info", () => {
+describe("Context::getBrowserInfo", () => {
   const mywindow = {
     screen: { width: 1001, height: 1002 },
     innerWidth: 1003,
