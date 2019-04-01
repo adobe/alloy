@@ -10,16 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import window from "@adobe/reactor-window";
-
 /**
  * Prefix to use on all messages.
  * @type {string}
  */
 const SDK_PREFIX = "[AEP]";
 
-// TO-DOCUMENT: How to enable debuggin and logging.
-export default (debugController, namespace) => {
+// TO-DOCUMENT: How to enable debugging and logging.
+export default (window, debugController, namespace) => {
   const namespacePrefix = `[${namespace}]`;
 
   const process = (level, ...rest) => {

@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import window from "@adobe/reactor-window";
 import createComponentRegistry from "./createComponentRegistry";
 import createLogger from "./createLogger";
 import createDataCollector from "./components/DataCollector";
@@ -35,7 +36,7 @@ export default (config, debugController) => {
 
   componentCreators.forEach(createComponent => {
     const { namespace } = createComponent;
-    const logger = createLogger(debugController, namespace);
+    const logger = createLogger(window, debugController, namespace);
     const storage = getNamespacedStorage(
       "orgId." // TODO: Make orgId mandatory and add it here
     );
