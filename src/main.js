@@ -11,14 +11,47 @@ governing permissions and limitations under the License.
 */
 
 import window from "@adobe/reactor-window";
+
 import createInstance from "./createInstance";
+import initializeComponentsFactory from "./initializeComponentsFactory";
+
+import createLogger from "./createLogger";
+import createDebugController from "./createDebugController";
+
+import createDataCollector from "./components/DataCollector";
+import createIdentity from "./components/Identity";
+import createAudiences from "./components/Audiences";
+import createPersonalization from "./components/Personalization";
+import createContext from "./components/Context";
+
+// TODO: Register the Components here statically for now. They might be registered differently.
+// TODO: Figure out how sub-components will be made available/registered
+const componentCreators = [
+  createDataCollector,
+  createIdentity,
+  createAudiences,
+  createPersonalization,
+  createContext
+];
 
 // eslint-disable-next-line no-underscore-dangle
 const namespaces = window.__adobeNS;
 
 if (namespaces) {
   namespaces.forEach(namespace => {
-    const instance = createInstance(namespace);
+    const debugController = createDebugController(namespace);
+    const logger = createLogger(window, debugController, namespace);
+    const initializeComponents = initializeComponentsFactory(
+      componentCreators,
+      logger
+    );
+
+    const instance = createInstance(
+      namespace,
+      initializeComponents,
+      debugController
+    );
+
     const queue = window[namespace].q;
     queue.push = instance;
     queue.forEach(instance);

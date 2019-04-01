@@ -11,18 +11,16 @@ governing permissions and limitations under the License.
 */
 
 import nodeStyleCallbackify from "./utils/nodeStyleCallbackify";
-import initializeComponents from "./initializeComponents";
-import createDebugController from "./createDebugController";
 
 // TODO: Replace with util once ready.
 const isFunction = arg => typeof arg === "function";
 const noop = () => {};
 
-export default namespace => {
-  const debugController = createDebugController(namespace);
+export default (namespace, initializeComponents, debugController) => {
   let componentRegistry;
 
   const debugCommand = ({ enabled }) => {
+    // eslint-disable-next-line no-param-reassign
     debugController.debugEnabled = enabled;
   };
 
@@ -36,7 +34,7 @@ export default namespace => {
         );
       }
       command = config => {
-        componentRegistry = initializeComponents(config, debugController);
+        componentRegistry = initializeComponents(config);
       };
     } else {
       if (!componentRegistry) {
