@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import document from "@adobe/reactor-document";
 
-const KEY_PREFIX = "___adbe";
+const KEY_PREFIX = "___alloy";
 const KEY_DETECT_PREFIX = `${KEY_PREFIX}-detect`;
 
 function hash(string) {

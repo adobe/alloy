@@ -25,7 +25,7 @@ To run tests against a browser in sauce labs, you will need the sauce labs crede
 ### Specifying Test Files
 To run a subset of the tests, specify the path to the test files like this:
 
-`TEST_FILES='test/functional/specs/atag-1.testcafe.js,test/functional/specs/atag-2.testcafe.js' npm run functional`.
+`TEST_FILES='test/functional/specs/alloy-1.testcafe.js,test/functional/specs/alloy-2.testcafe.js' npm run functional`.
 
 Both `BROWSERS` and `TEST_FILES` accept a comma delimited list of entries.
 

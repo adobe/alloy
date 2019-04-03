@@ -61,10 +61,3 @@ if (namespaces) {
     queue.forEach(instance);
   });
 }
-
-// TODO: Is this something we want to support? Would it have a different API?
-// Allows a consumer using the npm package to build an instance without
-// any base code.
-export default namespace => {
-  return createInstance(namespace);
-};
