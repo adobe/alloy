@@ -20,7 +20,6 @@ const getScreenOrientation = window => {
 };
 
 export default window => {
-
   return () => {
     const {
       screen: { width, height }
@@ -28,10 +27,10 @@ export default window => {
     const orientation = getScreenOrientation(window);
 
     return {
-      "xdm:device": {
-        "xdm:screenHeight": height,
-        "xdm:screenWidth": width,
-        "xdm:screenOrientation": orientation
+      device: {
+        screenHeight: height,
+        screenWidth: width,
+        screenOrientation: orientation
       }
     };
   };

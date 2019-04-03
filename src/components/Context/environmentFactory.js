@@ -35,16 +35,16 @@ export default (window, document, dateProvider) => {
       }
     } = window;
     return {
-      "xdm:environment": {
-        "xdm:browserDetails": {
-          "xdm:viewportWidth": innerWidth,
-          "xdm:viewportHeight": innerHeight,
-          "xdm:webGLRenderer": webGLRenderer
+      environment: {
+        browserDetails: {
+          viewportWidth: innerWidth,
+          viewportHeight: innerHeight,
+          webGLRenderer
         },
-        "xdm:connectionType": effectiveType,
-        "xdm:placeContext": {
-          "xdm:localTime": date.toISOString(),
-          "xdm:localTimezoneOffset": date.getTimezoneOffset()
+        connectionType: effectiveType,
+        placeContext: {
+          localTime: date.toISOString(),
+          localTimezoneOffset: date.getTimezoneOffset()
         }
       }
     };

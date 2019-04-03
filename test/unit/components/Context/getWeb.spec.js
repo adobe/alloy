@@ -10,12 +10,12 @@ describe("Context::getWeb", () => {
 
   it("works", () => {
     expect(getWeb(window, topFrameSet)).toEqual({
-      "xdm:web": {
-        "xdm:webPageDetails": {
-          "xdm:URL": "http://mylocation.com"
+      web: {
+        webPageDetails: {
+          URL: "http://mylocation.com"
         },
-        "xdm:webReferrer": {
-          "xdm:URL": "http://myreferrer.com"
+        webReferrer: {
+          URL: "http://myreferrer.com"
         }
       }
     });

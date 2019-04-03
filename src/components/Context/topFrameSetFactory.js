@@ -1,5 +1,4 @@
 export default window => {
-
   return () => {
     let topFrameSet = window;
     const { location } = topFrameSet;
