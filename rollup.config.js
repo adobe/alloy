@@ -15,7 +15,7 @@ import commonjs from "rollup-plugin-commonjs";
 import babel from "rollup-plugin-babel";
 
 export default {
-  input: "src/main.js",
+  input: "src/core/main.js",
   output: [
     {
       file: "dist/atag.js",

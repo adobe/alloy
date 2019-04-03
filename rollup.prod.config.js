@@ -18,7 +18,7 @@ import { terser } from "rollup-plugin-terser";
 import license from "rollup-plugin-license";
 
 export default {
-  input: "src/main.js",
+  input: "src/core/main.js",
   output: [
     {
       file: "dist/atag.js",

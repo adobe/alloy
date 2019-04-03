@@ -10,8 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getNamespacedStorage from "../../../src/utils/getNamespacedStorage";
+import storageFactory from "../../../src/utils/storageFactory";
 
+const getNamespacedStorage = storageFactory(window);
 const storage = getNamespacedStorage("namespace");
 
 describe("getNamespacedStorage", () => {
