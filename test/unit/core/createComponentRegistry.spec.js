@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createComponentRegistry from "../../src/createComponentRegistry";
+import createComponentRegistry from "../../../src/core/createComponentRegistry";
 
 const compOne = { commands: { do() {}, run() {} } };
 const compTwo = {

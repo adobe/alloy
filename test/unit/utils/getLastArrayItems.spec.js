@@ -10,18 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import storageFactory from "../../../src/utils/storageFactory";
+import getLastArrayItems from "../../../src/utils/getLastArrayItems";
 
-const getNamespacedStorage = storageFactory(window);
-const storage = getNamespacedStorage("namespace");
+describe("getLastArrayItems", () => {
+  const letters = ["a", "b", "c"];
 
-describe("getNamespacedStorage", () => {
-  it("is able to write and read from session storage", () => {
-    storage.session.setItem("test", "session-storage");
-    expect(storage.session.getItem("test")).toBe("session-storage");
+  it("returns last items from array larger than count", () => {
+    expect(getLastArrayItems(letters, 2)).toEqual(["b", "c"]);
   });
-  it("is able to write and read from persistent storage", () => {
-    storage.persistent.setItem("test", "persistent-storage");
-    expect(storage.persistent.getItem("test")).toBe("persistent-storage");
+
+  it("returns all items from array smaller than or equal to count", () => {
+    expect(getLastArrayItems(letters, 10)).toEqual(["a", "b", "c"]);
+    expect(getLastArrayItems(letters, 3)).toEqual(["a", "b", "c"]);
   });
 });

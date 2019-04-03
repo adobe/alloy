@@ -10,11 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import window from "@adobe/reactor-window";
-// TODO: Finalize what namespace naming convention to use
-const NAMESPACE = "com.adobe.aep.";
+import baseNamespace from "../constants/namespace";
 
-function getStorageByType(storageType, namespace) {
+function getStorageByType(context, storageType, namespace) {
   // When storage is disabled on Safari, the mere act of referencing
   // window.localStorage or window.sessionStorage throws an error.
   // For this reason, we wrap in a try-catch.
@@ -26,7 +24,7 @@ function getStorageByType(storageType, namespace) {
      */
     getItem(name) {
       try {
-        return window[storageType].getItem(namespace + name);
+        return context[storageType].getItem(namespace + name);
       } catch (e) {
         return null;
       }
@@ -39,7 +37,7 @@ function getStorageByType(storageType, namespace) {
      */
     setItem(name, value) {
       try {
-        window[storageType].setItem(namespace + name, value);
+        context[storageType].setItem(namespace + name, value);
         return true;
       } catch (e) {
         console.log(e);
@@ -49,10 +47,10 @@ function getStorageByType(storageType, namespace) {
   };
 }
 
-export default additionalNamespace => {
-  const finalNamespace = NAMESPACE + (additionalNamespace || "");
+export default context => additionalNamespace => {
+  const finalNamespace = baseNamespace + (additionalNamespace || "");
   return {
-    session: getStorageByType("sessionStorage", finalNamespace),
-    persistent: getStorageByType("localStorage", finalNamespace)
+    session: getStorageByType(context, "sessionStorage", finalNamespace),
+    persistent: getStorageByType(context, "localStorage", finalNamespace)
   };
 };

@@ -1,7 +1,7 @@
-import { createContextComponent } from "../../../../src/components/Context/index";
-import createPayload from "../../../../src/createPayload";
+import createComponent from "../../../../src/components/Context/createComponent";
+import createPayload from "../../../../src/core/createPayload";
 
-describe("Create Context Component", () => {
+describe("Context::createComponent", () => {
   const logger = {
     log() {},
     warn() {}
@@ -17,7 +17,7 @@ describe("Create Context Component", () => {
 
   it("enables the configured contexts", () => {
     const config = { context: ["context1", "context2"] };
-    const component = createContextComponent(
+    const component = createComponent(
       config,
       logger,
       availableContexts,
@@ -35,7 +35,7 @@ describe("Create Context Component", () => {
 
   it("defaults to the default contexts", () => {
     const config = {};
-    const component = createContextComponent(
+    const component = createComponent(
       config,
       logger,
       availableContexts,
@@ -52,7 +52,7 @@ describe("Create Context Component", () => {
 
   it("ignores unknown contexts", () => {
     const config = { context: ["unknowncontext", "context1"] };
-    const component = createContextComponent(
+    const component = createComponent(
       config,
       logger,
       availableContexts,
@@ -69,7 +69,7 @@ describe("Create Context Component", () => {
 
   it("can disable all contexts", () => {
     const config = { context: [] };
-    const component = createContextComponent(
+    const component = createComponent(
       config,
       logger,
       availableContexts,
@@ -84,7 +84,7 @@ describe("Create Context Component", () => {
 
   it("disables all contexts when given a non-array config", () => {
     const config = { context: "context1" };
-    const component = createContextComponent(
+    const component = createComponent(
       config,
       logger,
       availableContexts,
@@ -99,7 +99,7 @@ describe("Create Context Component", () => {
 
   it("adds to the context when onBeforeViewStart is called", () => {
     const config = { context: ["context1", "context2"] };
-    const component = createContextComponent(
+    const component = createComponent(
       config,
       logger,
       availableContexts,

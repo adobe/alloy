@@ -10,16 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import nodeStyleCallbackify from "./utils/nodeStyleCallbackify";
-import initializeComponents from "./initializeComponents";
-import createDebugController from "./createDebugController";
-import { isFunction, noop } from "./utils/lodashLike";
+import nodeStyleCallbackify from "../utils/nodeStyleCallbackify";
 
-export default namespace => {
-  const debugController = createDebugController(namespace);
+// TODO: Replace with util once ready.
+import { isFunction, noop } from "../utils/lodashLike";
+
+export default (namespace, initializeComponents, debugController) => {
   let componentRegistry;
 
   const debugCommand = ({ enabled }) => {
+    // eslint-disable-next-line no-param-reassign
     debugController.debugEnabled = enabled;
   };
 
@@ -33,7 +33,7 @@ export default namespace => {
         );
       }
       command = config => {
-        componentRegistry = initializeComponents(config, debugController);
+        componentRegistry = initializeComponents(config);
       };
     } else {
       if (!componentRegistry) {
