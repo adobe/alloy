@@ -1,0 +1,18 @@
+{
+    "metadataChrome":{
+      "browser":{
+        "name": "chrome",
+        "version": "67.0.33"
+      },
+      "device": "Local test machine",
+      "platform":""
+    },
+    "metadataFirefox":{
+      "browser":{
+        "name": "firefox",
+        "version": "60.0.2"
+      },
+      "device": "Local test machine",
+      "platform":""
+    }
+  }

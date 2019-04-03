@@ -1,6 +1,13 @@
+#!/usr/bin/env groovy
+node {
+    BROWSER_DOCKER_PATH = 'Docker/browsers/Dockerfile'
+    SHARED_LIBRARY_PATH = '/test/Pipeline.groovy'
+}
 pipeline {
     agent {
-        docker { image 'testcafe/testcafe' }
+        node {
+            label 'master'
+        }
     }
     environment{
     GITHUB_CLONE_URL = 'git@git.corp.adobe.com:Activation/a-tag.git'
@@ -13,9 +20,57 @@ pipeline {
     }
 
     stages{
-    stage("clean workspace") {
-        steps {
-            deleteDir()
+stage('Build and run e2e tests ') {
+            parallel {
+                stage('Test in Chrome') {
+                    agent {
+                        dockerfile {
+                            filename "${BROWSER_DOCKER_PATH}"
+                        }
+                    }
+                    steps {
+                        script {
+                            checkout scm
+                            def rootDir = pwd()
+                            def flow = load "${rootDir}${SHARED_LIBRARY_PATH}"
+                            flow.build()
+                            flow.test('Chrome')
+                        }
+                    }
+                }
+                stage('Test in Firefox') {
+                    agent {
+                        dockerfile {
+                            filename "${BROWSER_DOCKER_PATH}"
+                        }
+                    }
+                    steps {
+                        script {
+                            checkout scm
+                            def rootDir = pwd()
+                            def flow = load "${rootDir}${SHARED_LIBRARY_PATH}"
+                            flow.build()
+                            flow.test('Firefox')
+                        }
+                    }
+                }
+            }
+        }
+        stage('Publish reports') {
+            agent {
+                node {
+                    label 'master'
+                }
+            }
+            steps {
+                script {
+                    checkout scm
+                    def rootDir = pwd()
+                    def flow = load "${rootDir}${SHARED_LIBRARY_PATH}"
+                    flow.publishReports()
+                    flow.checkTests()
+                }
+            }
         }
     }
 
