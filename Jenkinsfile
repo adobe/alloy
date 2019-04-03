@@ -38,7 +38,6 @@ pipeline {
     }
 
      stage('Build and run e2e tests ') {
-            parallel {
                 stage('Test in Chrome') {
                     agent {
                         dockerfile {
@@ -55,7 +54,6 @@ pipeline {
                         }
                     }
                 }
-            }
         }
         stage('Publish reports') {
             agent {
