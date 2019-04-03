@@ -7,26 +7,17 @@ describe("Context::getEnvironment", () => {
     innerHeight: 1004,
     navigator: { connection: { effectiveType: "myConnectionType" } }
   };
-  const mycanvas = {
-    getContext: () => {
-      return null;
-    }
-  };
-  const mydocument = {
-    createElement: () => {
-      return mycanvas;
-    }
-  };
 
   it("works", () => {
     const date = new Date(1553550978123);
-    console.log(date.getTimezoneOffset());
-    expect(getEnvironment(mywindow, mydocument, date)).toEqual({
+    const dateProvider = () => {
+      return date;
+    };
+    expect(getEnvironment(mywindow, dateProvider)()).toEqual({
       environment: {
         browserDetails: {
           viewportWidth: 1003,
-          viewportHeight: 1004,
-          webGLRenderer: null
+          viewportHeight: 1004
         },
         connectionType: "myConnectionType",
         placeContext: {
