@@ -7,12 +7,7 @@ pipeline {
 
   }
   stages {
-    stage('clean workspace') {
-      steps {
-        deleteDir()
-      }
-    }
-    stage('Install') {
+    stage('Build') {
       steps {
         sh 'npm install'
       }
