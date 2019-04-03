@@ -18,13 +18,7 @@ pipeline {
     }
 
     stages{
-    stage("clean workspace") {
-        steps {
-            deleteDir()
-        }
-    }
 
-    //Stage: GitHub Integration
     stage('Clone sources') {
         steps{
             script{
@@ -40,12 +34,6 @@ pipeline {
                 print "git branch is ${gitbranch}"
                 git credentialsId: "${env.GITHUB_CLONE_CREDENTIALS}", url: "${env.GITHUB_CLONE_URL}", branch: "${gitbranch}"
             }
-        }
-    }
-
-    stage('Install dependencies') {
-        steps {
-            sh 'npm install'
         }
     }
 
