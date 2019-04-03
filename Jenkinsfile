@@ -30,6 +30,11 @@ pipeline {
 
       }
     }
+    stage('Install') {
+      steps {
+        sh 'npm install'
+      }
+    }
   }
   environment {
     GITHUB_CLONE_URL = 'git@git.corp.adobe.com:Activation/a-tag.git'
