@@ -1,13 +1,6 @@
-#!/usr/bin/env groovy
-node {
-    BROWSER_DOCKER_PATH = 'Docker/browsers/Dockerfile'
-    SHARED_LIBRARY_PATH = '/test/Pipeline.groovy'
-}
 pipeline {
     agent {
-        node {
-            label 'master'
-        }
+        docker { image 'node:7-alpine' }
     }
     environment{
     GITHUB_CLONE_URL = 'git@git.corp.adobe.com:Activation/a-tag.git'
@@ -20,14 +13,14 @@ pipeline {
     }
 
     stages{
-stage('Build and run e2e tests ') {
-        //Stage: GitHub Integration
+    stage("clean workspace") {
+        steps {
+            deleteDir()
+        }
+    }
+
+    //Stage: GitHub Integration
     stage('Clone sources') {
-        agent {
-                node {
-                    label 'master'
-                }
-            }
         steps{
             script{
                 def gitbranch = "${env.GITHUB_CLONE_BRANCH}"
@@ -43,8 +36,16 @@ stage('Build and run e2e tests ') {
                 git credentialsId: "${env.GITHUB_CLONE_CREDENTIALS}", url: "${env.GITHUB_CLONE_URL}", branch: "${gitbranch}"
             }
         }
-    }  
-      
+    }
+
+    stage('Install dependencies') {
+        steps {
+            sh 'npm install'
+        }
+    }
+
+     stage('Build and run e2e tests ') {
+            parallel {
                 stage('Test in Chrome') {
                     agent {
                         dockerfile {
@@ -61,25 +62,48 @@ stage('Build and run e2e tests ') {
                         }
                     }
                 }
-        
-        } 
-        
-    }
-    post {
-        failure {
-            script {
-                currentBuild.result = 'FAILURE'
+                stage('Test in Firefox') {
+                    agent {
+                        dockerfile {
+                            filename "${BROWSER_DOCKER_PATH}"
+                        }
+                    }
+                    steps {
+                        script {
+                            checkout scm
+                            def rootDir = pwd()
+                            def flow = load "${rootDir}${SHARED_LIBRARY_PATH}"
+                            flow.build()
+                            flow.test('Firefox')
+                        }
+                    }
+                }
             }
         }
-        always {
-            script{
-                if(env.EMAIL_ENABLED.toBoolean()){
-                    step([$class: 'Mailer',
-                        notifyEveryUnstableBuild: true,
-                        recipients: "${env.EMAIL_RECIPIENTS}",
-                        sendToIndividuals: true])
+        stage('Publish reports') {
+            agent {
+                node {
+                    label 'master'
+                }
+            }
+            steps {
+                script {
+                    checkout scm
+                    def rootDir = pwd()
+                    def flow = load "${rootDir}${SHARED_LIBRARY_PATH}"
+                    flow.publishReports()
+                    flow.checkTests()
                 }
             }
         }
     }
-}
+    post {
+        failure {
+            script {
+                checkout scm
+                def rootDir = pwd()
+                def flow = load "${rootDir}${SHARED_LIBRARY_PATH}"
+                flow.checkForFailure()
+            }
+        }
+    }
