@@ -1,5 +1,11 @@
 pipeline {
-  agent any
+  agent {
+    docker {
+      image 'node:6-alpine'
+      args '-p 3000:3000'
+    }
+
+  }
   stages {
     stage('clean workspace') {
       steps {
@@ -7,35 +13,21 @@ pipeline {
       }
     }
     stage('Clone sources') {
-      parallel {
-        stage('Clone sources') {
-          steps {
-            script {
-              def gitbranch = "${env.GITHUB_CLONE_BRANCH}"
-              if (!env.GITHUB_CLONE_BRANCH) {
-                gitbranch = "${env.GIT_BRANCH}"
-              }else{
-                //to handle issue with origin/BRANCH_NAME
-                def gitbranchOriginSplit = gitbranch.split('origin/')
-                def gitbranchOriginSplitLength = gitbranchOriginSplit.size()
-                gitbranch = gitbranchOriginSplitLength > 1 ? gitbranchOriginSplit[1] : gitbranch
-              }
-              print "git branch is ${gitbranch}"
-              git credentialsId: "${env.GITHUB_CLONE_CREDENTIALS}", url: "${env.GITHUB_CLONE_URL}", branch: "${gitbranch}"
-            }
+      steps {
+        script {
+          def gitbranch = "${env.GITHUB_CLONE_BRANCH}"
+          if (!env.GITHUB_CLONE_BRANCH) {
+            gitbranch = "${env.GIT_BRANCH}"
+          }else{
+            //to handle issue with origin/BRANCH_NAME
+            def gitbranchOriginSplit = gitbranch.split('origin/')
+            def gitbranchOriginSplitLength = gitbranchOriginSplit.size()
+            gitbranch = gitbranchOriginSplitLength > 1 ? gitbranchOriginSplit[1] : gitbranch
+          }
+          print "git branch is ${gitbranch}"
+          git credentialsId: "${env.GITHUB_CLONE_CREDENTIALS}", url: "${env.GITHUB_CLONE_URL}", branch: "${gitbranch}"
+        }
 
-          }
-        }
-        stage('build') {
-          steps {
-            sh 'npm install'
-          }
-        }
-        stage('run test') {
-          steps {
-            sh 'npm run test'
-          }
-        }
       }
     }
   }
