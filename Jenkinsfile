@@ -12,15 +12,6 @@ pipeline {
       }
     }
   }
-  environment {
-    GITHUB_CLONE_URL = 'git@git.corp.adobe.com:Activation/a-tag.git'
-    GITHUB_CLONE_CREDENTIALS = 'mowla'
-    GITHUB_CLONE_ORG = 'Activation'
-    GITHUB_CLONE_REPO = 'a-tag'
-    GITHUB_CLONE_BRANCH = 'feature/jenkins-docker'
-    EMAIL_ENABLED = true
-    EMAIL_RECIPIENTS = 'mowla@adobe.com'
-  }
   post {
     failure {
       script {
