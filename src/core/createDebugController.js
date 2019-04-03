@@ -25,7 +25,7 @@ export default (instanceNamespace, getNamespacedStorage) => {
       return debugEnabled;
     },
     set debugEnabled(value) {
-      localStorage.setItem("debug", value);
+      storage.persistent.setItem("debug", value);
       debugEnabled = value;
     }
   };

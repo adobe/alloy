@@ -10,8 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// TODO: Finalize what namespace naming convention to use
-const NAMESPACE = "com.adobe.aep.";
+import baseNamespace from "../constants/namespace";
 
 function getStorageByType(context, storageType, namespace) {
   // When storage is disabled on Safari, the mere act of referencing
@@ -49,7 +48,7 @@ function getStorageByType(context, storageType, namespace) {
 }
 
 export default context => additionalNamespace => {
-  const finalNamespace = NAMESPACE + (additionalNamespace || "");
+  const finalNamespace = baseNamespace + (additionalNamespace || "");
   return {
     session: getStorageByType(context, "sessionStorage", finalNamespace),
     persistent: getStorageByType(context, "localStorage", finalNamespace)
