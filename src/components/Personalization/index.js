@@ -12,6 +12,8 @@ governing permissions and limitations under the License.
 
 import document from "@adobe/reactor-document";
 
+// TODO: Can/Should we use the value exported from src/constants/namespace.js
+// for our key prefix?
 const KEY_PREFIX = "___alloy";
 const KEY_DETECT_PREFIX = `${KEY_PREFIX}-detect`;
 
