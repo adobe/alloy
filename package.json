@@ -11,6 +11,7 @@
     "lint-test": "eslint test/functional/** test/unit/**",
     "lint": "npm run lint-src && npm run lint-test",
     "format": "prettier --write \"{src,test}/**/*.js\"",
+    "buildBrowsers": "docker build -t browsers -f Docker/browsers/Dockerfile .",
     "test": "karma start --single-run",
     "testDockerChrome": "xvfb-run --server-num=99 --server-args='-ac -screen 0 1024x768x16' npm run test",
     "test:watch": "karma start",

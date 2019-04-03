@@ -3,12 +3,12 @@
  * all tests. It is used in the Jenkins pipeline to determine if any of the test failed so that we can set the build
  * status to failed.
  */
-let mergedOutputJson = require('../reports/combined/merged-output.json');
+let mergedOutputJson = require("../reports/combined/merged-output.json");
 
 for (let items of mergedOutputJson) {
-    for (let index of items.elements[0].steps) {
-        if (index.result.status === 'failed') {
-            process.exit(1);
-        }
+  for (let index of items.elements[0].steps) {
+    if (index.result.status === "failed") {
+      process.exit(1);
     }
+  }
 }

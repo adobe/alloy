@@ -21,7 +21,30 @@ pipeline {
 
     stages{
 stage('Build and run e2e tests ') {
-            parallel {
+        //Stage: GitHub Integration
+    stage('Clone sources') {
+        agent {
+                node {
+                    label 'master'
+                }
+            }
+        steps{
+            script{
+                def gitbranch = "${env.GITHUB_CLONE_BRANCH}"
+                if (!env.GITHUB_CLONE_BRANCH) {
+                    gitbranch = "${env.GIT_BRANCH}"
+                }else{
+                     //to handle issue with origin/BRANCH_NAME
+                     def gitbranchOriginSplit = gitbranch.split('origin/')
+                     def gitbranchOriginSplitLength = gitbranchOriginSplit.size()
+                     gitbranch = gitbranchOriginSplitLength > 1 ? gitbranchOriginSplit[1] : gitbranch
+                 }
+                print "git branch is ${gitbranch}"
+                git credentialsId: "${env.GITHUB_CLONE_CREDENTIALS}", url: "${env.GITHUB_CLONE_URL}", branch: "${gitbranch}"
+            }
+        }
+    }  
+      
                 stage('Test in Chrome') {
                     agent {
                         dockerfile {
@@ -38,66 +61,8 @@ stage('Build and run e2e tests ') {
                         }
                     }
                 }
-                stage('Test in Firefox') {
-                    agent {
-                        dockerfile {
-                            filename "${BROWSER_DOCKER_PATH}"
-                        }
-                    }
-                    steps {
-                        script {
-                            checkout scm
-                            def rootDir = pwd()
-                            def flow = load "${rootDir}${SHARED_LIBRARY_PATH}"
-                            flow.build()
-                            flow.test('Firefox')
-                        }
-                    }
-                }
-            }
-        }
-        stage('Publish reports') {
-            agent {
-                node {
-                    label 'master'
-                }
-            }
-            steps {
-                script {
-                    checkout scm
-                    def rootDir = pwd()
-                    def flow = load "${rootDir}${SHARED_LIBRARY_PATH}"
-                    flow.publishReports()
-                    flow.checkTests()
-                }
-            }
-        }
-    }
-
-    //Stage: GitHub Integration
-    stage('Clone sources') {
-        steps{
-            script{
-                def gitbranch = "${env.GITHUB_CLONE_BRANCH}"
-                if (!env.GITHUB_CLONE_BRANCH) {
-                    gitbranch = "${env.GIT_BRANCH}"
-                }else{
-                     //to handle issue with origin/BRANCH_NAME
-                     def gitbranchOriginSplit = gitbranch.split('origin/')
-                     def gitbranchOriginSplitLength = gitbranchOriginSplit.size()
-                     gitbranch = gitbranchOriginSplitLength > 1 ? gitbranchOriginSplit[1] : gitbranch
-                 }
-                print "git branch is ${gitbranch}"
-                git credentialsId: "${env.GITHUB_CLONE_CREDENTIALS}", url: "${env.GITHUB_CLONE_URL}", branch: "${gitbranch}"
-            }
-        }
-    }
-
-    stage('Run TestCafe') {
-        steps {
-            sh 'testcafe "firefox,chromium --no-sandbox" test/functional/spec/*.js'
-        }
-    }    
+        
+        } 
         
     }
     post {
