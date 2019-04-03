@@ -55,22 +55,6 @@ pipeline {
                         }
                     }
                 }
-                stage('Test in Firefox') {
-                    agent {
-                        dockerfile {
-                            filename "${BROWSER_DOCKER_PATH}"
-                        }
-                    }
-                    steps {
-                        script {
-                            checkout scm
-                            def rootDir = pwd()
-                            def flow = load "${rootDir}${SHARED_LIBRARY_PATH}"
-                            flow.build()
-                            flow.test('Firefox')
-                        }
-                    }
-                }
             }
         }
         stage('Publish reports') {
