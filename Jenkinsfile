@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 node {
-    BROWSER_DOCKER_PATH = 'docker/browsers/Dockerfile'
-    SHARED_LIBRARY_PATH = '/vars/Pipeline.groovy'
+    BROWSER_DOCKER_PATH = 'Docker/browsers/Dockerfile'
+    SHARED_LIBRARY_PATH = '/test/Pipeline.groovy'
 }
 pipeline {
     agent {
