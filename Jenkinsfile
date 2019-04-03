@@ -12,24 +12,6 @@ pipeline {
         deleteDir()
       }
     }
-    stage('Clone sources') {
-      steps {
-        script {
-          def gitbranch = "${env.GITHUB_CLONE_BRANCH}"
-          if (!env.GITHUB_CLONE_BRANCH) {
-            gitbranch = "${env.GIT_BRANCH}"
-          }else{
-            //to handle issue with origin/BRANCH_NAME
-            def gitbranchOriginSplit = gitbranch.split('origin/')
-            def gitbranchOriginSplitLength = gitbranchOriginSplit.size()
-            gitbranch = gitbranchOriginSplitLength > 1 ? gitbranchOriginSplit[1] : gitbranch
-          }
-          print "git branch is ${gitbranch}"
-          git credentialsId: "${env.GITHUB_CLONE_CREDENTIALS}", url: "${env.GITHUB_CLONE_URL}", branch: "${gitbranch}"
-        }
-
-      }
-    }
     stage('Install') {
       steps {
         sh 'npm install'
