@@ -10,10 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import noop from "../../../../src/utils/lodashLike/noop";
+import isFunction from "../../../src/utils/isFunction";
 
-describe("noop", () => {
-  it("accepts any arguments and returns undefined", () => {
-    expect(noop("foo")).toBeUndefined();
+const nonFunctions = [{}, [], new Date(), /abc/, true, false, "text", 123];
+
+describe("isFunction", () => {
+  it("returns true if the value is a function", () => {
+    expect(isFunction(() => {})).toBeTrue();
+  });
+
+  it("returns false if the value is not a function", () => {
+    nonFunctions.forEach(nonFunction => {
+      expect(isFunction(nonFunction)).toBeFalse();
+    });
   });
 });

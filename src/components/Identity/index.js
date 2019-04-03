@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import cookie from "@adobe/reactor-cookie";
-import defer from "../../utils/defer";
+import { defer } from "../../utils";
 
 const ECID_NAMESPACE = "ECID";
 

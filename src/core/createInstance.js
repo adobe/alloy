@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import nodeStyleCallbackify from "../utils/nodeStyleCallbackify";
 
 // TODO: Replace with util once ready.
-import { isFunction, noop } from "../utils/lodashLike";
+import { isFunction, noop } from "../utils";
 
 export default (namespace, initializeComponents, debugController) => {
   let componentRegistry;

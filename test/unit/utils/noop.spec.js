@@ -10,7 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/* eslint-disable import/prefer-default-export */
-export { default as intersection } from "./intersection";
-export { default as isFunction } from "./isFunction";
-export { default as noop } from "./noop";
+import noop from "../../../src/utils/noop";
+
+describe("noop", () => {
+  it("accepts any arguments and returns undefined", () => {
+    expect(noop("foo")).toBeUndefined();
+  });
+});

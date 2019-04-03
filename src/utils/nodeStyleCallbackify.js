@@ -1,5 +1,5 @@
 import Promise from "@adobe/reactor-promise";
-import { isFunction } from "./lodashLike";
+import isFunction from "./isFunction";
 
 /**
  * Turns a function into a node-style async function, where the result

@@ -30,7 +30,7 @@ governing permissions and limitations under the License.
 
 import Promise from "@adobe/reactor-promise";
 import createResponse from "./createResponse";
-import { isFunction } from "../utils/lodashLike";
+import { isFunction } from "../utils";
 
 function invokeHook(components, hook, ...args) {
   return Promise.all(
