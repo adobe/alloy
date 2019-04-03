@@ -1,3 +1,8 @@
+#!/usr/bin/env groovy
+node {
+    BROWSER_DOCKER_PATH = 'docker/browsers/Dockerfile'
+    SHARED_LIBRARY_PATH = '/vars/Pipeline.groovy'
+}
 pipeline {
     agent {
         docker { image 'node:7-alpine' }
