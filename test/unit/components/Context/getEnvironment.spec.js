@@ -1,4 +1,4 @@
-import getEnvironment from "../../../../src/components/Context/getEnvironment";
+import getEnvironment from "../../../../src/components/Context/environmentFactory";
 
 describe("Context::getEnvironment", () => {
   const mywindow = {
@@ -32,7 +32,7 @@ describe("Context::getEnvironment", () => {
         "xdm:placeContext": {
           "xdm:localTime": "2019-03-25T21:56:18.123Z",
           // browsers don't have support for setting the timezone on a date object, because of
-          // this I cannot have hard-coded integer here becuase depending on the default
+          // this I cannot have hard-coded integer here because depending on the default
           // timezone of the browser you are testing with you will get different results.
           "xdm:localTimezoneOffset": date.getTimezoneOffset()
         }

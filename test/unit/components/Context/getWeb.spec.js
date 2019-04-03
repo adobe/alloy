@@ -1,4 +1,4 @@
-import getWeb from "../../../../src/components/Context/getWeb";
+import getWeb from "../../../../src/components/Context/webFactory";
 
 describe("Context::getWeb", () => {
   const window = {
