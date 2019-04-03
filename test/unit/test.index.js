@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const testsContext = require.context('./test/unit', true, /.*\.spec\.jsx?$/);
+const testsContext = require.context("./", true, /.*\.spec\.js$/);
 testsContext.keys().forEach(testsContext);
 
 // This is necessary for the coverage report to show all source files even when they're not
 // included by tests. https://github.com/webpack-contrib/istanbul-instrumenter-loader/issues/15
-const srcContext = require.context('./src', true, /.*\.jsx?$/);
+const srcContext = require.context("../../src", true, /.*\.js$/);
 srcContext.keys().forEach(srcContext);
