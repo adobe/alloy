@@ -6,7 +6,7 @@ import createComponent from "./createComponent";
 
 const topFrameSetProvider = topFrameSetFactory(window);
 const web = webFactory(window, topFrameSetProvider);
-const environment = environmentFactory(window, document, () => new Date());
+const environment = environmentFactory(window, () => new Date());
 const device = deviceFactory(window);
 
 const createContext = ({ config, logger }) => {
