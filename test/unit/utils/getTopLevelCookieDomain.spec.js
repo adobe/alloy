@@ -10,7 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getTopLevelCookieDomain from "../../../src/utils/getTopLevelCookieDomain";
+import getTopLevelCookieDomain, {
+  testClearCachedValue
+} from "../../../src/utils/getTopLevelCookieDomain";
 
 const mockWindowWithHostname = hostname => {
   return {
@@ -21,6 +23,8 @@ const mockWindowWithHostname = hostname => {
 };
 
 describe("getTld", () => {
+  afterEach(testClearCachedValue);
+
   it("returns an empty string when only one host part exists", () => {
     const window = mockWindowWithHostname("localhost");
     const cookie = {

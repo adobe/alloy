@@ -11,9 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import namespace from "../constants/namespace";
+import getLastArrayItems from "./getLastArrayItems";
 
 const cookieName = `${namespace}getTld`;
-const getArrayItemsFromEnd = (arr, itemCount) => arr.slice(-itemCount);
+
+let topLevelCookieDomain = "";
 
 /**
  * Retrieves the top-most domain that is able to accept cookies. This will
@@ -24,18 +26,25 @@ const getArrayItemsFromEnd = (arr, itemCount) => arr.slice(-itemCount);
  * @returns {string}
  */
 export default function getTopLevelCookieDomain(window, cookie) {
+  if (topLevelCookieDomain) {
+    return topLevelCookieDomain;
+  }
+
   // If hostParts.length === 1, we may be on localhost.
   const hostParts = window.location.hostname.toLowerCase().split(".");
-  let tld = "";
   let i = 1;
 
   while (i < hostParts.length - 1 && !cookie.get(cookieName)) {
     i += 1;
-    tld = getArrayItemsFromEnd(hostParts, i).join(".");
-    cookie.set(cookieName, cookieName, { domain: tld });
+    topLevelCookieDomain = getLastArrayItems(hostParts, i).join(".");
+    cookie.set(cookieName, cookieName, { domain: topLevelCookieDomain });
   }
 
-  cookie.remove(cookieName, { domain: tld });
+  cookie.remove(cookieName, { domain: topLevelCookieDomain });
 
-  return tld;
+  return topLevelCookieDomain;
 }
+
+export const testClearCachedValue = () => {
+  topLevelCookieDomain = "";
+};
