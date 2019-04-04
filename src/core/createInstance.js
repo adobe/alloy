@@ -23,6 +23,14 @@ export default (namespace, initializeComponents, debugController) => {
     debugController.debugEnabled = enabled;
   };
 
+  const configureCommand = config => {
+    if (config.debug !== undefined) {
+      debugCommand({ enabled: config.debug });
+    }
+
+    componentRegistry = initializeComponents(config);
+  };
+
   function executeCommand(commandName, options = {}) {
     let command;
 
@@ -32,9 +40,7 @@ export default (namespace, initializeComponents, debugController) => {
           `${namespace}: The library has already been configured and may only be configured once.`
         );
       }
-      command = config => {
-        componentRegistry = initializeComponents(config);
-      };
+      command = configureCommand;
     } else {
       if (!componentRegistry) {
         throw new Error(
