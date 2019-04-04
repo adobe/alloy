@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 // const puppeteer = require('puppeteer');
-// process.env.CHROME_BIN = puppeteer.executablePath();
+// process.env.CHROME_BIN = "/usr/bin/chromium-browser";
 const path = require("path");
 
 const reporters = ["spec", "coverage"];
@@ -80,10 +80,10 @@ module.exports = config => {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome'],
+    browsers: ['chrome_no_sandbox'],
     customLaunchers: {
         chrome_no_sandbox: {
-            base: 'Chrome',
+            base: 'ChromeHeadless',
             flags: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox'
