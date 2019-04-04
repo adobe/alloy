@@ -10,26 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const path = require("path");
-
 const reporters = ["spec", "coverage"];
-const rules = [
-  {
-    test: /\.js$/,
-    include: path.resolve("src"),
-    use: [
-      {
-        loader: "babel-loader"
-      },
-      {
-        loader: "istanbul-instrumenter-loader",
-        options: {
-          esModules: true
-        }
-      }
-    ]
-  }
-];
+
+const webpackConfig = require("./webpack.test.config");
 
 module.exports = config => {
   config.set({
@@ -43,10 +26,7 @@ module.exports = config => {
     // list of files / patterns to load in the browser
     files: [
       {
-        pattern: "test.index.js",
-        watched: false,
-        included: true,
-        served: true
+        pattern: "test/unit/test.index.js"
       }
     ],
 
@@ -56,7 +36,7 @@ module.exports = config => {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "test.index.js": ["webpack"]
+      "test/unit/test.index.js": ["webpack"]
     },
 
     // test results reporter to use
@@ -101,15 +81,6 @@ module.exports = config => {
     browserDisconnectTolerance: 3,
     browserNoActivityTimeout: 300000,
 
-    webpack: {
-      mode: "development",
-      devtool: "#inline-source-map",
-      resolve: {
-        extensions: [".js"]
-      },
-      module: {
-        rules
-      }
-    }
+    webpack: webpackConfig
   });
 };
