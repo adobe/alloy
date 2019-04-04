@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 // const puppeteer = require('puppeteer');
-// process.env.CHROME_BIN = "/usr/bin/chromium-browser";
+process.env.CHROME_BIN = "/usr/bin/chromium-browser";
 const path = require("path");
 
 const reporters = ["spec", "coverage"];
