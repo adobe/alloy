@@ -82,7 +82,7 @@ module.exports = config => {
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ['Chrome'],
     customLaunchers: {
-        Chrome: {
+        chrome_no_sandbox: {
             base: 'Chrome',
             flags: [
                 '--no-sandbox'
