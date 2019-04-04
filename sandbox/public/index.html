@@ -11,23 +11,23 @@
             style-src 'self' 'unsafe-inline';
             connect-src 'self' https://edgegateway.azurewebsites.net"/>
 
-    <title>Mock website hosting the A-Tag</title>
+    <title>Mock website hosting the Alloy</title>
 
     <script>
       (function(a,b){if(!a[b]){a.__adobeNS=a.__adobeNS||[];
       a.__adobeNS.push(b);a[b]=function(){a[b].q.push(arguments)};a[b].q=[]}})
-      (window,'adbe');
+      (window,'alloy');
 
       // For Testing multiple instances
       // (function(a,b){if(!a[b]){a.__adobeNS=a.__adobeNS||[];
       // a.__adobeNS.push(b);a[b]=function(){a[b].q.push(arguments)};a[b].q=[]}})
       // (window,'ebda');
     </script>
-    <script src="atag.js" async></script>
+    <script src="alloy.js" async></script>
 
     <!-- <script src="HistoryTracker.js"></script>
     <script>
-      atag("loadPlugin", {
+      alloy("loadPlugin", {
         params: {
           name: "historyTracker",
           age: 37
@@ -36,7 +36,7 @@
     </script> -->
 
     <script>
-      adbe("configure", {
+      alloy("configure", {
         orgId: 23784612874,
         dataSet: "dataset1",
         shouldStoreCollectedData: 1,
@@ -45,20 +45,20 @@
       });
 
       // TODO: Rename `interact` to `viewStart` once implemented in Tracker.
-      adbe("interact", {
+      alloy("interact", {
         data: {
           event: "page View",
           pageName: "home"
         }
       });
 
-      adbe("collect", {
+      alloy("collect", {
         data: {
           restaurant: "Chubbys"
         }
       });
 
-      adbe("collect", {
+      alloy("collect", {
         data: {
           product: "Jalapeno ranch burger"
         }

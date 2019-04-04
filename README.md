@@ -1,4 +1,4 @@
-# A-Tag
+# Alloy
 
 Client-Side SDK for Unified Data Collection.
 

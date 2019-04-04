@@ -1,7 +1,7 @@
 {
-  "name": "a-tag",
+  "name": "@adobe/alloy",
   "version": "0.0.1",
-  "description": "A-Tag - Unified JS library",
+  "description": "Client-Side SDK for Unified Data Collection",
   "main": "src/core/main.js",
   "scripts": {
     "prepush-msg": "echo 'Running pre-push scripts...' && exit 0",

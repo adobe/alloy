@@ -10,5 +10,4 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// TODO: Finalize what namespace naming convention to use
-export default "com.adobe.aep.";
+export default "com.adobe.alloy.";

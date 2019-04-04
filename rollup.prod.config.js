@@ -21,14 +21,12 @@ export default {
   input: "src/core/main.js",
   output: [
     {
-      file: "dist/atag.js",
-      format: "umd",
-      name: "atag"
+      file: "dist/alloy.js",
+      format: "umd"
     },
     {
-      file: "sandbox/public/atag.js",
-      format: "umd",
-      name: "atag"
+      file: "sandbox/public/alloy.js",
+      format: "umd"
     }
   ],
   plugins: [

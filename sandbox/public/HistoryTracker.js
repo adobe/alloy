@@ -17,7 +17,7 @@ function HistoryTracker(tracker, options) {
 
 }
 
-atag("registerPlugin", {
+alloy("registerPlugin", {
     params: {
         name: "historyTracker",
         plugin: HistoryTracker
