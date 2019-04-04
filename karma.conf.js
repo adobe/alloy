@@ -85,7 +85,8 @@ module.exports = config => {
         chrome_no_sandbox: {
             base: 'Chrome',
             flags: [
-                '--no-sandbox'
+                '--no-sandbox',
+                '--disable-setuid-sandbox'
             ]
         }
     },
