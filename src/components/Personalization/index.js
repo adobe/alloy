@@ -150,7 +150,7 @@ const createPersonalization = ({ logger }) => {
           hideElement(selector);
           setupElementDetection(key, selector, event => {
             render(storage, event, logger);
-            collect({ data: eventToken });
+            collect({ data: { offerInfo: eventToken } });
           });
         });
       }
