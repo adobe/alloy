@@ -9,7 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
+const puppeteer = require('puppeteer');
+process.env.CHROME_BIN = puppeteer.executablePath();
 const path = require("path");
 
 const reporters = ["spec", "coverage"];
@@ -80,19 +81,19 @@ module.exports = config => {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ['ChromeHeadless'],
-    customLaunchers: {
-        ChromeHeadless: {
-            base: 'Chrome',
-            flags: [
-                '--headless',
-                '--disable-translate',
-                '--disable-extensions',
-                '--disable-gpu',
-                '--no-sandbox',
-                '--remote-debugging-port=9222'
-            ]
-        }
-    },
+    // customLaunchers: {
+    //     ChromeHeadless: {
+    //         base: 'Chrome',
+    //         flags: [
+    //             '--headless',
+    //             '--disable-translate',
+    //             '--disable-extensions',
+    //             '--disable-gpu',
+    //             '--no-sandbox',
+    //             '--remote-debugging-port=9222'
+    //         ]
+    //     }
+    // },
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
     singleRun: false,
