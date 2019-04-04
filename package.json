@@ -13,6 +13,7 @@
     "format": "prettier --write \"{src,test}/**/*.js\"",
     "buildBrowsers": "docker build -t browsers -f Docker/browsers/Dockerfile .",
     "test": "karma start --single-run",
+    "test:jenkins": "CHROME_BIN=/usr/bin/chromium-browser karma start --single-run",
     "testDockerChrome": "xvfb-run --server-num=99 --server-args='-ac -screen 0 1024x768x16' npm run test",
     "test:watch": "karma start",
     "testcafe": "node test/functional/helpers/runner.js",
