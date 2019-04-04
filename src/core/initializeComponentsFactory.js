@@ -23,7 +23,7 @@ export default (componentCreators, logger, getNamespacedStorage) => config => {
     );
     // TO-DOCUMENT: Helpers that we inject into factories.
     const component = createComponent({
-      logger,
+      logger: logger.spawn(`[${namespace}]`),
       config,
       storage
     });
