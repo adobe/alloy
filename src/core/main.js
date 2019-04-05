@@ -43,7 +43,7 @@ const storage = storageFactory(window);
 if (namespaces) {
   namespaces.forEach(namespace => {
     const debugController = createDebugController(namespace, storage);
-    const logger = createLogger(window, debugController, namespace);
+    const logger = createLogger(window, debugController, `[${namespace}]`);
     const initializeComponents = initializeComponentsFactory(
       componentCreators,
       logger,

@@ -10,19 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/**
- * Prefix to use on all messages.
- * @type {string}
- */
-const SDK_PREFIX = "[AEP]";
-
 // TO-DOCUMENT: How to enable debugging and logging.
-export default (window, debugController, namespace) => {
-  const namespacePrefix = `[${namespace}]`;
 
+const createLogger = (window, debugController, prefix) => {
   const process = (level, ...rest) => {
     if (debugController.debugEnabled) {
-      window.console[level](SDK_PREFIX, namespacePrefix, ...rest);
+      window.console[level](prefix, ...rest);
     }
   };
 
@@ -48,6 +41,19 @@ export default (window, debugController, namespace) => {
      * Outputs an error message to the web console.
      * @param {...*} arg Any argument to be logged.
      */
-    error: process.bind(null, "error")
+    error: process.bind(null, "error"),
+    /**
+     * Creates a new logger with an additional prefix.
+     * @param {String} additionalPrefix
+     */
+    spawn(additionalPrefix) {
+      return createLogger(
+        window,
+        debugController,
+        `${prefix} ${additionalPrefix}`
+      );
+    }
   };
 };
+
+export default createLogger;
