@@ -38,10 +38,12 @@ governing permissions and limitations under the License.
 
 */
 
+import { assign } from "../utils";
+
 const append = (content, key) => (obj = {}) => {
   // TODO Validate.
   console.warn(`[Payload:appendTo${key}] To Implement!`);
-  Object.assign(content[key], obj);
+  assign(content[key], obj);
   return content;
 };
 

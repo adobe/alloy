@@ -9,19 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import Promise from "./Promise";
 
 /**
- * A simple utility for managing a promise's state outside of
- * the promise's "executor" (the function passed into the constructor).
+ * Returns an array whose items are the provided object's own enumerable
+ * property values.
+ * @param {Object} obj
+ * @returns {Array}
  */
-export default () => {
-  const deferred = {};
-
-  deferred.promise = new Promise((resolve, reject) => {
-    deferred.resolve = resolve;
-    deferred.reject = reject;
-  });
-
-  return deferred;
+export default obj => {
+  return Object.keys(obj).map(key => obj[key]);
 };
