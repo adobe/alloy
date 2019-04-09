@@ -46,21 +46,20 @@
         debug: true
       });
 
-      // TODO: Rename `interact` to `viewStart` once implemented in Tracker.
-      alloy("interact", {
+      alloy("viewStart", {
         data: {
           event: "page View",
           pageName: "home"
         }
       });
 
-      alloy("collect", {
+      alloy("event", {
         data: {
           restaurant: "Chubbys"
         }
       });
 
-      alloy("collect", {
+      alloy("event", {
         data: {
           product: "Jalapeno ranch burger"
         }
@@ -75,7 +74,7 @@
       //   collectionUrl: "https://edgegateway.azurewebsites.net"
       // });
       //
-      // ebda("interact", {
+      // ebda("viewStart", {
       //   data: {
       //     event: "page View",
       //     pageName: "landing"
