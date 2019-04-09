@@ -40,9 +40,8 @@
   ],
   "dependencies": {
     "@adobe/reactor-cookie": "^1.0.0",
-    "@adobe/reactor-document": "^1.0.0",
+    "@adobe/reactor-object-assign": "^1.0.0",
     "@adobe/reactor-promise": "^1.0.0",
-    "@adobe/reactor-window": "^1.0.0",
     "mitt": "^1.1.3"
   },
   "devDependencies": {

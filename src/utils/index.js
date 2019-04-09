@@ -13,11 +13,19 @@ governing permissions and limitations under the License.
 /* eslint-disable import/prefer-default-export */
 
 // Please keep in alphabetical order.
+export { default as assign } from "./assign";
+export { default as cookie } from "./cookie";
 export { default as defer } from "./defer";
+export { default as find } from "./find";
 export { default as getLastArrayItems } from "./getLastArrayItems";
 export { default as getTopLevelCookieDomain } from "./getTopLevelCookieDomain";
+export { default as includes } from "./includes";
 export { default as intersection } from "./intersection";
 export { default as isFunction } from "./isFunction";
 export { default as nodeStyleCallbackify } from "./nodeStyleCallbackify";
 export { default as noop } from "./noop";
+export { default as Promise } from "./Promise";
+export { default as stackError } from "./stackError";
 export { default as storageFactory } from "./storageFactory";
+export { default as toError } from "./toError";
+export { default as values } from "./values";

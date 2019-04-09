@@ -9,19 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import Promise from "./Promise";
 
 /**
- * A simple utility for managing a promise's state outside of
- * the promise's "executor" (the function passed into the constructor).
+ * Determines whether an array includes a certain value.
+ * @param {Array} arr Array to search.
+ * @param {*} item The item for which to search.
+ * @returns {boolean}
  */
-export default () => {
-  const deferred = {};
-
-  deferred.promise = new Promise((resolve, reject) => {
-    deferred.resolve = resolve;
-    deferred.reject = reject;
-  });
-
-  return deferred;
+export default (arr, item) => {
+  return arr.indexOf(item) !== -1;
 };
