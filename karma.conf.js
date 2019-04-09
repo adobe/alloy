@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+process.env.CHROME_BIN = require("puppeteer").executablePath();
 
 const reporters = ["spec", "coverage"];
 
@@ -21,8 +22,15 @@ module.exports = config => {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ["jasmine", "jasmine-matchers"],
-
+    frameworks: ["jasmine"],
+    plugins: [
+      "karma-jasmine",
+      "karma-coverage",
+      "karma-chrome-launcher",
+      "karma-webpack",
+      "karma-jasmine-matchers",
+      "karma-spec-reporter"
+    ],
     // list of files / patterns to load in the browser
     files: [
       {
@@ -59,8 +67,13 @@ module.exports = config => {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ["ChromeHeadless"],
-
+    browsers: ["ChromeHeadlessNoSandbox"],
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: "ChromeHeadless",
+        flags: ["--no-sandbox"]
+      }
+    },
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
     singleRun: false,

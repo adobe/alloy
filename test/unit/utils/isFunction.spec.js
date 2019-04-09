@@ -16,12 +16,12 @@ const nonFunctions = [{}, [], new Date(), /abc/, true, false, "text", 123];
 
 describe("isFunction", () => {
   it("returns true if the value is a function", () => {
-    expect(isFunction(() => {})).toBeTrue();
+    expect(isFunction(() => {})).toBe(true);
   });
 
   it("returns false if the value is not a function", () => {
     nonFunctions.forEach(nonFunction => {
-      expect(isFunction(nonFunction)).toBeFalse();
+      expect(isFunction(nonFunction)).toBe(false);
     });
   });
 });
