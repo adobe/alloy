@@ -1,4 +1,4 @@
-import getWeb from "../../../../src/components/Context/webFactory";
+import webFactory from "../../../../src/components/Context/webFactory";
 
 describe("Context::getWeb", () => {
   const window = {
@@ -9,7 +9,7 @@ describe("Context::getWeb", () => {
   };
 
   it("works", () => {
-    expect(getWeb(window, topFrameSetProvider)()).toEqual({
+    expect(webFactory(window, topFrameSetProvider)()).toEqual({
       web: {
         webPageDetails: {
           URL: "http://mylocation.com"

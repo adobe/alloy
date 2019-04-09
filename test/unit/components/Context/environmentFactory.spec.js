@@ -1,4 +1,4 @@
-import getEnvironment from "../../../../src/components/Context/environmentFactory";
+import environmentFactory from "../../../../src/components/Context/environmentFactory";
 
 describe("Context::getEnvironment", () => {
   const mywindow = {
@@ -13,7 +13,7 @@ describe("Context::getEnvironment", () => {
     const dateProvider = () => {
       return date;
     };
-    expect(getEnvironment(mywindow, dateProvider)()).toEqual({
+    expect(environmentFactory(mywindow, dateProvider)()).toEqual({
       environment: {
         browserDetails: {
           viewportWidth: 1003,
@@ -29,5 +29,24 @@ describe("Context::getEnvironment", () => {
         }
       }
     });
+  });
+
+  const ieWindow = {
+    screen: { width: 1001, height: 1002 },
+    innerWidth: 1003,
+    innerHeight: 1004,
+    navigator: {}
+  };
+  it("works with ie missing connection type", () => {
+    const date = new Date(1553550978123);
+    const dateProvider = () => {
+      return date;
+    };
+    expect(
+      Object.prototype.hasOwnProperty.call(
+        environmentFactory(ieWindow, dateProvider)().environment,
+        "connectionType"
+      )
+    ).toBe(false);
   });
 });

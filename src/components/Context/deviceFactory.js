@@ -24,14 +24,15 @@ export default window => {
     const {
       screen: { width, height }
     } = window;
-    const orientation = getScreenOrientation(window);
-
-    return {
-      device: {
-        screenHeight: height,
-        screenWidth: width,
-        screenOrientation: orientation
-      }
+    const device = {
+      screenHeight: height,
+      screenWidth: width
     };
+
+    const orientation = getScreenOrientation(window);
+    if (orientation) {
+      device.screenOrientation = orientation;
+    }
+    return { device };
   };
 };
