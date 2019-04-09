@@ -1,21 +1,21 @@
-import getPageInfo from "./getPageInfo";
-import getBrowserInfo from "./getBrowserInfo";
-import getTopFrameSet from "./getTopFrameSet";
+import webFactory from "./webFactory";
+import environmentFactory from "./environmentFactory";
+import deviceFactory from "./deviceFactory";
+import topFrameSetFactory from "./topFrameSetFactory";
 import createComponent from "./createComponent";
 
-let topFrameSet;
-const page = () => {
-  topFrameSet = topFrameSet || getTopFrameSet(window);
-
-  return getPageInfo(window, topFrameSet);
-};
-
-const browser = () => {
-  return getBrowserInfo(window);
-};
+const topFrameSetProvider = topFrameSetFactory(window);
+const web = webFactory(window, topFrameSetProvider);
+const environment = environmentFactory(window, () => new Date());
+const device = deviceFactory(window);
 
 const createContext = ({ config, logger }) => {
-  return createComponent(config, logger, { page, browser }, { page, browser });
+  return createComponent(
+    config,
+    logger,
+    { web, device, environment },
+    { web, device, environment }
+  );
 };
 
 createContext.namespace = "Context";
