@@ -46,7 +46,7 @@ function Home() {
       <section>
         <div className="mbox"></div>
         <button onClick={() => {
-          window.alloy("collect", {
+          window.alloy("event", {
             data: {
               event: "login",
               userName: "Joe Khoury"
@@ -58,7 +58,7 @@ function Home() {
         }}>Log In</button>
 
         <button onClick={() => {
-          window.alloy("collect", {
+          window.alloy("event", {
             data: {
               event: "video",
               videoName: "Funniest cat ever."
@@ -70,7 +70,7 @@ function Home() {
         }}>Watch Video</button>
 
       <button onClick={() => {
-          window.alloy("collect", {
+          window.alloy("event", {
             data: {
               event: "custom-event",
               videoName: "Random event."

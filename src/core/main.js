@@ -10,8 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import window from "@adobe/reactor-window";
-
 import createInstance from "./createInstance";
 import storageFactory from "../utils/storageFactory";
 import initializeComponentsFactory from "./initializeComponentsFactory";
@@ -53,7 +51,8 @@ if (namespaces) {
     const instance = createInstance(
       namespace,
       initializeComponents,
-      debugController
+      debugController,
+      logger
     );
 
     const queue = window[namespace].q;

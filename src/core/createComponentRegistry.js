@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { intersection } from "../utils";
+import { assign, find, intersection, values } from "../utils";
 
 // TO-DOCUMENT: All public commands and their signatures.
 export default () => {
@@ -35,14 +35,19 @@ export default () => {
         );
       }
 
-      Object.assign(commandsByName, componentCommandsByName);
+      assign(commandsByName, componentCommandsByName);
       componentsByNamespace[namespace] = component;
     },
     getByNamespace(namespace) {
       return componentsByNamespace[namespace];
     },
+    getNamespaceByComponent(component) {
+      return find(Object.keys(componentsByNamespace), namespace => {
+        return componentsByNamespace[namespace] === component;
+      });
+    },
     getAll() {
-      return Object.values(componentsByNamespace);
+      return values(componentsByNamespace);
     },
     getCommand(name) {
       return commandsByName[name];

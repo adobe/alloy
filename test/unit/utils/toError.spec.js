@@ -9,19 +9,20 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import Promise from "./Promise";
 
-/**
- * A simple utility for managing a promise's state outside of
- * the promise's "executor" (the function passed into the constructor).
- */
-export default () => {
-  const deferred = {};
+import toError from "../../../src/utils/toError";
 
-  deferred.promise = new Promise((resolve, reject) => {
-    deferred.resolve = resolve;
-    deferred.reject = reject;
+describe("toError", () => {
+  it("returns an error if value is not an error", () => {
+    const message = "Conundrum encountered.";
+    const result = toError(message);
+    expect(result).toEqual(jasmine.any(Error));
+    expect(result.message).toBe("Conundrum encountered.");
   });
 
-  return deferred;
-};
+  it("returns the value unmodified if value is an error", () => {
+    const error = new Error("Conundrum encountered.");
+    const result = toError(error);
+    expect(result).toBe(error);
+  });
+});

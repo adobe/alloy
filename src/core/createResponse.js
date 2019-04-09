@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { assign, find } from "../utils";
+
 /**
  * Represents a gateway response with the addition to helper methods.
  *
@@ -29,12 +31,12 @@ governing permissions and limitations under the License.
  *          example: "identity:persist"
  */
 export default (respDto = { handle: [] }) => {
-  const response = Object.assign(Object.create(null), respDto);
+  const response = assign(Object.create(null), respDto);
   // TODO: Should we freeze the response to prevent change by Components?
   // Object.freeze(response.handle.map(h => Object.freeze(h)));
 
   response.getPayloadByType = type => {
-    const fragment = respDto.handle.find(content => content.type === type);
+    const fragment = find(respDto.handle, content => content.type === type);
     return fragment ? fragment.payload : null;
   };
 

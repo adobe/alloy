@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
+import { stackError } from "../utils";
 
 export default (componentCreators, logger, getNamespacedStorage) => config => {
   const componentRegistry = createComponentRegistry();
@@ -22,11 +23,16 @@ export default (componentCreators, logger, getNamespacedStorage) => config => {
       "orgId." // TODO: Make orgId mandatory and add it here
     );
     // TO-DOCUMENT: Helpers that we inject into factories.
-    const component = createComponent({
-      logger: logger.spawn(`[${namespace}]`),
-      config,
-      storage
-    });
+    let component;
+    try {
+      component = createComponent({
+        logger: logger.spawn(`[${namespace}]`),
+        config,
+        storage
+      });
+    } catch (error) {
+      throw stackError(`Failed while creating ${namespace} component.`, error);
+    }
     componentRegistry.register(namespace, component);
   });
 

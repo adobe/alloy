@@ -31,12 +31,12 @@ const createDataCollector = ({ config }) => {
       }
     },
     commands: {
-      interact: makeServerCall(
+      viewStart: makeServerCall(
         "interact",
         makeHookCall("onBeforeViewStart"),
         makeHookCall("onViewStartResponse")
       ),
-      collect: makeServerCall(
+      event: makeServerCall(
         "collect",
         makeHookCall("onBeforeEvent"),
         makeHookCall("onEventResponse")
