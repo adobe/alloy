@@ -17,11 +17,11 @@ const items = ["a", "b", "c"];
 describe("includes", () => {
   it("returns true if item is found", () => {
     const result = includes(items, "b");
-    expect(result).toBeTrue();
+    expect(result).toBe(true);
   });
 
   it("returns false if item is not found", () => {
     const result = includes(items, "z");
-    expect(result).toBeFalse();
+    expect(result).toBe(false);
   });
 });
