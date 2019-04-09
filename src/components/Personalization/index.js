@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import document from "@adobe/reactor-document";
-
-const KEY_PREFIX = "___adbe";
+// TODO: Can/Should we use the value exported from src/constants/namespace.js
+// for our key prefix?
+const KEY_PREFIX = "___alloy";
 const KEY_DETECT_PREFIX = `${KEY_PREFIX}-detect`;
 
 function hash(string) {
@@ -115,7 +115,7 @@ const createPersonalization = ({ logger }) => {
 
   const collect = offerInfo => {
     const tracker = componentRegistry.getByNamespace("DataCollector");
-    tracker.commands.collect(offerInfo);
+    tracker.commands.event(offerInfo);
   };
 
   return {
@@ -148,7 +148,7 @@ const createPersonalization = ({ logger }) => {
           hideElement(selector);
           setupElementDetection(key, selector, event => {
             render(storage, event, logger);
-            collect({ data: eventToken });
+            collect({ data: { offerInfo: eventToken } });
           });
         });
       }

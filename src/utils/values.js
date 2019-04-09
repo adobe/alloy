@@ -10,10 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const testsContext = require.context('./test/unit', true, /.*\.spec\.jsx?$/);
-testsContext.keys().forEach(testsContext);
-
-// This is necessary for the coverage report to show all source files even when they're not
-// included by tests. https://github.com/webpack-contrib/istanbul-instrumenter-loader/issues/15
-const srcContext = require.context('./src', true, /.*\.jsx?$/);
-srcContext.keys().forEach(srcContext);
+/**
+ * Returns an array whose items are the provided object's own enumerable
+ * property values.
+ * @param {Object} obj
+ * @returns {Array}
+ */
+export default obj => {
+  return Object.keys(obj).map(key => obj[key]);
+};

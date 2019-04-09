@@ -9,19 +9,19 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import Promise from "./Promise";
 
-/**
- * A simple utility for managing a promise's state outside of
- * the promise's "executor" (the function passed into the constructor).
- */
-export default () => {
-  const deferred = {};
+import includes from "../../../src/utils/includes";
 
-  deferred.promise = new Promise((resolve, reject) => {
-    deferred.resolve = resolve;
-    deferred.reject = reject;
+const items = ["a", "b", "c"];
+
+describe("includes", () => {
+  it("returns true if item is found", () => {
+    const result = includes(items, "b");
+    expect(result).toBeTrue();
   });
 
-  return deferred;
-};
+  it("returns false if item is not found", () => {
+    const result = includes(items, "z");
+    expect(result).toBeFalse();
+  });
+});

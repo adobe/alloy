@@ -10,8 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import window from "@adobe/reactor-window";
-
 import createInstance from "./createInstance";
 import storageFactory from "../utils/storageFactory";
 import initializeComponentsFactory from "./initializeComponentsFactory";
@@ -43,7 +41,7 @@ const storage = storageFactory(window);
 if (namespaces) {
   namespaces.forEach(namespace => {
     const debugController = createDebugController(namespace, storage);
-    const logger = createLogger(window, debugController, namespace);
+    const logger = createLogger(window, debugController, `[${namespace}]`);
     const initializeComponents = initializeComponentsFactory(
       componentCreators,
       logger,
@@ -53,7 +51,8 @@ if (namespaces) {
     const instance = createInstance(
       namespace,
       initializeComponents,
-      debugController
+      debugController,
+      logger
     );
 
     const queue = window[namespace].q;
@@ -61,10 +60,3 @@ if (namespaces) {
     queue.forEach(instance);
   });
 }
-
-// TODO: Is this something we want to support? Would it have a different API?
-// Allows a consumer using the npm package to build an instance without
-// any base code.
-export default namespace => {
-  return createInstance(namespace);
-};

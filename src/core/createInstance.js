@@ -10,12 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import nodeStyleCallbackify from "../utils/nodeStyleCallbackify";
+import { isFunction, nodeStyleCallbackify, noop, stackError } from "../utils";
 
-// TODO: Replace with util once ready.
-import { isFunction, noop } from "../utils";
-
-export default (namespace, initializeComponents, debugController) => {
+export default (namespace, initializeComponents, debugController, logger) => {
   let componentRegistry;
 
   const debugCommand = ({ enabled }) => {
@@ -23,41 +20,66 @@ export default (namespace, initializeComponents, debugController) => {
     debugController.debugEnabled = enabled;
   };
 
-  function executeCommand(commandName, options = {}) {
+  const configureCommand = options => {
+    if (options.debug !== undefined) {
+      debugCommand({ enabled: options.debug });
+    }
+
+    componentRegistry = initializeComponents(options);
+  };
+
+  function executeCommand(commandName, options) {
     let command;
 
     if (commandName === "configure") {
       if (componentRegistry) {
         throw new Error(
-          `${namespace}: The library has already been configured and may only be configured once.`
+          "The library has already been configured and may only be configured once."
         );
       }
-      command = config => {
-        componentRegistry = initializeComponents(config);
-      };
+      command = configureCommand;
+    } else if (commandName === "debug") {
+      command = debugCommand;
     } else {
       if (!componentRegistry) {
         throw new Error(
-          `${namespace}: Please configure the library by calling ${namespace}("configure", {...}).`
+          `The library must be configured first. Please do so by calling ${namespace}("configure", {...}).`
         );
       }
 
-      if (commandName === "debug") {
-        command = debugCommand;
-      } else {
-        command = componentRegistry.getCommand(commandName);
+      command = componentRegistry.getCommand(commandName);
+
+      if (!isFunction(command)) {
+        throw new Error(`The ${commandName} command does not exist.`);
       }
     }
 
-    if (isFunction(command)) {
-      const { callback = noop, ...otherOptions } = options;
-      nodeStyleCallbackify(command)(otherOptions, callback);
-    } else {
-      throw new Error(
-        `${namespace}: The command ${commandName} does not exist!`
-      );
-    }
+    return command(options);
   }
 
-  return args => executeCommand(...args);
+  return args => {
+    // Would use destructuring, but destructuring doesn't work on IE
+    // without polyfilling Symbol.
+    // https://github.com/babel/babel/issues/7597
+    const commandName = args[0];
+    const options = args[1];
+    const { callback = noop, ...otherOptions } = options;
+    nodeStyleCallbackify(executeCommand)(
+      commandName,
+      otherOptions,
+      (err, data) => {
+        let error = err;
+
+        if (error) {
+          error = stackError(
+            `An error occurred while executing the ${commandName} command.`,
+            error
+          );
+          logger.error(error);
+        }
+
+        callback(error, data);
+      }
+    );
+  };
 };

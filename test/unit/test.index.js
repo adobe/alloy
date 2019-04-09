@@ -9,19 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import Promise from "./Promise";
 
-/**
- * A simple utility for managing a promise's state outside of
- * the promise's "executor" (the function passed into the constructor).
- */
-export default () => {
-  const deferred = {};
+const testsContext = require.context("./", true, /.*\.spec\.js$/);
+testsContext.keys().forEach(testsContext);
 
-  deferred.promise = new Promise((resolve, reject) => {
-    deferred.resolve = resolve;
-    deferred.reject = reject;
-  });
-
-  return deferred;
-};
+// This is necessary for the coverage report to show all source files even when they're not
+// included by tests. https://github.com/webpack-contrib/istanbul-instrumenter-loader/issues/15
+const srcContext = require.context("../../src", true, /.*\.js$/);
+srcContext.keys().forEach(srcContext);

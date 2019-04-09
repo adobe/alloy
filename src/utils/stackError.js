@@ -9,19 +9,18 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import Promise from "./Promise";
+
+import toError from "./toError";
 
 /**
- * A simple utility for managing a promise's state outside of
- * the promise's "executor" (the function passed into the constructor).
+ * Augments an error's message with additional context as it bubbles up the call stack.
+ * @param {String} message The message to be added to the error.
+ * @param {*} error Optimally, this is an instance of Error. If it is not,
+ * this is used as the basis for the message of a newly created Error instance.
+ * @returns {*}
  */
-export default () => {
-  const deferred = {};
-
-  deferred.promise = new Promise((resolve, reject) => {
-    deferred.resolve = resolve;
-    deferred.reject = reject;
-  });
-
-  return deferred;
+export default (message, error) => {
+  const stackedError = toError(error);
+  stackedError.message = `${message}\nCaused by: ${stackedError.message}`;
+  return stackedError;
 };
