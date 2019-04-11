@@ -1,12 +1,9 @@
-const getScreenOrientation = window => {
-  const { screen } = window;
-  const { orientation, width, height } = screen;
+const getScreenOrientationViaProperty = window => {
+  const {
+    screen: { orientation }
+  } = window;
 
-  if (orientation == null) {
-    return width > height ? "landscape" : "portrait";
-  }
-
-  if (orientation.type == null) {
+  if (orientation == null || orientation.type == null) {
     return null;
   }
 
@@ -16,7 +13,22 @@ const getScreenOrientation = window => {
     return null;
   }
 
-  return parts[0] || null;
+  if (parts[0] !== "portrait" && parts[0] !== "landscape") {
+    return null;
+  }
+
+  return parts[0];
+};
+
+const getScreenOrientationViaMediaQuery = window => {
+  if (window.matchMedia("(orientation: portrait)").matches) {
+    return "portrait";
+  }
+  if (window.matchMedia("(orientation: landscape)").matches) {
+    return "landscape";
+  }
+
+  return null;
 };
 
 export default window => {
@@ -29,7 +41,9 @@ export default window => {
       screenWidth: width
     };
 
-    const orientation = getScreenOrientation(window);
+    const orientation =
+      getScreenOrientationViaProperty(window) ||
+      getScreenOrientationViaMediaQuery(window);
     if (orientation) {
       device.screenOrientation = orientation;
     }
