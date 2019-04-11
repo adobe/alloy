@@ -29,3 +29,7 @@ export { default as stackError } from "./stackError";
 export { default as storageFactory } from "./storageFactory";
 export { default as toError } from "./toError";
 export { default as values } from "./values";
+export { default as isObject } from "./isObject";
+export { default as isNonEmptyString } from "./isNonEmptyString";
+export { default as fireImageOnPage } from "./fireImageOnPage";
+export { default as createDestinations } from "./createDestinations";
