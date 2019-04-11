@@ -53,15 +53,21 @@
         }
       });
 
-      alloy("event", {
-        data: {
-          restaurant: "Chubbys"
-        }
-      });
+      alloy("createCorrelationId", {
+        callback(err, correlationId) {
+          alloy("event", {
+            correlationId,
+            data: {
+              product: "frisbee"
+            }
+          });
 
-      alloy("event", {
-        data: {
-          product: "Jalapeno ranch burger"
+          alloy("event", {
+            correlationId,
+            data: {
+              product: "fishing rod"
+            }
+          });
         }
       });
 

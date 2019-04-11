@@ -22,6 +22,7 @@ import createIdentity from "../components/Identity";
 import createAudiences from "../components/Audiences";
 import createPersonalization from "../components/Personalization";
 import createContext from "../components/Context";
+import createCorrelation from "../components/Correlation";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
 // TODO: Figure out how sub-components will be made available/registered
@@ -30,7 +31,8 @@ const componentCreators = [
   createIdentity,
   createAudiences,
   createPersonalization,
-  createContext
+  createContext,
+  createCorrelation
 ];
 
 // eslint-disable-next-line no-underscore-dangle

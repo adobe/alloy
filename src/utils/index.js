@@ -28,4 +28,5 @@ export { default as Promise } from "./Promise";
 export { default as stackError } from "./stackError";
 export { default as storageFactory } from "./storageFactory";
 export { default as toError } from "./toError";
+export { default as uuid } from "./uuid";
 export { default as values } from "./values";
