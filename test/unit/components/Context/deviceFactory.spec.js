@@ -1,38 +1,72 @@
 import deviceFactory from "../../../../src/components/Context/deviceFactory";
 
 describe("Context::deviceFactory", () => {
-  const window = {
-    screen: {
-      width: 1001,
-      height: 1002,
-      orientation: { type: "landscape-primary" }
-    }
-  };
+  let window;
 
-  const nullOrientationWindow = {
-    screen: {
-      width: 600,
-      height: 800,
-      orientation: {}
-    }
-  };
+  beforeEach(() => {
+    window = {
+      screen: {
+        width: 600,
+        height: 800
+      }
+    };
+  });
 
-  it("works", () => {
+  it("handles the happy path", () => {
+    window.screen.orientation = { type: "landscape-primary" };
     expect(deviceFactory(window)()).toEqual({
       device: {
-        screenHeight: 1002,
-        screenWidth: 1001,
+        screenHeight: 800,
+        screenWidth: 600,
         screenOrientation: "landscape"
       }
     });
   });
 
-  it("handles null screen orientation", () => {
-    expect(deviceFactory(nullOrientationWindow)()).toEqual({
-      device: {
-        screenHeight: 800,
-        screenWidth: 600
+  it("handles portrait orientation type", () => {
+    window.screen.orientation = { type: "portrait-secondary" };
+    expect(deviceFactory(window)().device.screenOrientation).toEqual(
+      "portrait"
+    );
+  });
+
+  it("handles matchMedia queries: portrait", () => {
+    window.matchMedia = query => ({
+      matches: query === "(orientation: portrait)"
+    });
+    expect(deviceFactory(window)().device.screenOrientation).toEqual(
+      "portrait"
+    );
+  });
+
+  it("handles matchMedia queries: landscape", () => {
+    window.matchMedia = query => ({
+      matches: query === "(orientation: landscape)"
+    });
+    expect(deviceFactory(window)().device.screenOrientation).toEqual(
+      "landscape"
+    );
+  });
+
+  [
+    undefined,
+    null,
+    {},
+    { type: "foo" },
+    { type: "a-b" },
+    { type: null }
+  ].forEach(orientation => {
+    it(`handles a bad screen orientation: ${JSON.stringify(orientation)}`, () => {
+      if (orientation !== undefined) {
+        window.screen.orientation = orientation;
       }
+      window.matchMedia = () => ({ matches: false });
+      expect(
+        Object.prototype.hasOwnProperty.call(
+          deviceFactory(window)().device,
+          "screenOrientation"
+        )
+      ).toBe(false);
     });
   });
 });
