@@ -9,11 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-process.env.CHROME_BIN = require("puppeteer").executablePath();
+const puppeteer = require("puppeteer");
+const rollupConfig = require("./rollup.test.config");
 
-const reporters = ["spec", "coverage"];
-
-const webpackConfig = require("./webpack.test.config");
+process.env.CHROME_BIN = puppeteer.executablePath();
 
 module.exports = config => {
   config.set({
@@ -27,30 +26,31 @@ module.exports = config => {
       "karma-jasmine",
       "karma-coverage",
       "karma-chrome-launcher",
-      "karma-webpack",
       "karma-jasmine-matchers",
-      "karma-spec-reporter"
+      "karma-spec-reporter",
+      "karma-rollup-preprocessor"
     ],
     // list of files / patterns to load in the browser
     files: [
       {
-        pattern: "test/unit/test.index.js"
+        pattern: "test/unit/**/*.spec.js",
+        watched: false // The preprocessor will use its own watcher
       }
     ],
 
     // list of files to exclude
-    exclude: ["**/*.spec.js"],
+    exclude: [],
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "test/unit/test.index.js": ["webpack"]
+      "test/unit/**/*.spec.js": ["rollup"]
     },
 
     // test results reporter to use
     // possible values: "dots", "progress"
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters,
+    reporters: ["spec"],
 
     // web server port
     port: 9876,
@@ -94,6 +94,6 @@ module.exports = config => {
     browserDisconnectTolerance: 3,
     browserNoActivityTimeout: 300000,
 
-    webpack: webpackConfig
+    rollupPreprocessor: rollupConfig
   });
 };
