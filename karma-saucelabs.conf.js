@@ -97,7 +97,7 @@ module.exports = function(config) {
     reporters: ["spec", "saucelabs"],
 
     sauceLabs: {
-      accessKey: "6d8a6a2e-369f-46a3-891b-ae05906f998e",
+      accessKey: process.env.SAUCE_ACCESS_KEY,
       connectOptions: {
         port: 4445,
         logfile: "sauce_connect.log"
@@ -106,7 +106,7 @@ module.exports = function(config) {
       recordVideo: false,
       startConnect: true,
       testName: "alloy tests",
-      username: "mowla"
+      username: process.env.SAUCE_USERNAME
     }
   });
 };
