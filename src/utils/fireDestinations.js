@@ -43,5 +43,9 @@ export default ({ iframe, logger }) => {
         logger.error("Destination is not an object.");
       }
     });
+
+    while (destinations.length) {
+      destinations.shift();
+    }
   };
 };
