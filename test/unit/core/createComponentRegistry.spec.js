@@ -22,8 +22,8 @@ describe("createComponentRegistry", () => {
     it("should register components correctly", () => {
       const registry = createComponentRegistry();
       registry.register("CompOne", compOne);
-      const registeredCompOne = registry.getByNamespace("CompOne");
-      expect(registeredCompOne).toBeDefined();
+      const registeredNamespace = registry.getNamespaceByComponent(compOne);
+      expect(registeredNamespace).toBe("CompOne");
     });
 
     it("should not register components with existing commands", () => {

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isFunction, nodeStyleCallbackify, noop, stackError } from "../utils";
+import { isFunction, nodeStyleCallbackify, noop } from "../utils";
 
 export default (namespace, initializeComponents, debugController, logger) => {
   let componentRegistry;
@@ -68,17 +68,11 @@ export default (namespace, initializeComponents, debugController, logger) => {
       commandName,
       otherOptions,
       (err, data) => {
-        let error = err;
-
-        if (error) {
-          error = stackError(
-            `An error occurred while executing the ${commandName} command.`,
-            error
-          );
-          logger.error(error);
+        if (err) {
+          logger.error(err);
         }
 
-        callback(error, data);
+        callback(err, data);
       }
     );
   };

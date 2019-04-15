@@ -10,47 +10,95 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, find, intersection, values } from "../utils";
+import { find, intersection, Promise, stackError } from "../utils";
+
+const wrapForErrorHandling = (fn, stackMessage) => {
+  return (...args) => {
+    let result;
+
+    try {
+      result = fn(...args);
+    } catch (error) {
+      throw stackError(stackMessage, error);
+    }
+
+    if (result instanceof Promise) {
+      result = result.catch(error => {
+        throw stackError(stackMessage, error);
+      });
+    }
+
+    return result;
+  };
+};
 
 // TO-DOCUMENT: All public commands and their signatures.
 export default () => {
   const componentsByNamespace = {};
   const commandsByName = {};
+  const lifecycleCallbacksByName = {};
+
+  const registerComponentCommands = (
+    namespace,
+    componentCommandsByName = {}
+  ) => {
+    const conflictingCommandNames = intersection(
+      Object.keys(commandsByName),
+      Object.keys(componentCommandsByName)
+    );
+
+    if (conflictingCommandNames.length) {
+      throw new Error(
+        `[ComponentRegistry] Could not register ${namespace} ` +
+          `because it has existing command(s): ${conflictingCommandNames.join(
+            ","
+          )}`
+      );
+    }
+
+    Object.keys(componentCommandsByName).forEach(commandName => {
+      const command = componentCommandsByName[commandName];
+      commandsByName[commandName] = wrapForErrorHandling(
+        command,
+        `[${namespace}] An error occurred while executing the ${commandName} command.`
+      );
+    });
+  };
+
+  const registerLifecycleCallbacks = (
+    namespace,
+    componentLifecycleCallbacksByName = {}
+  ) => {
+    Object.keys(componentLifecycleCallbacksByName).forEach(hookName => {
+      lifecycleCallbacksByName[hookName] =
+        lifecycleCallbacksByName[hookName] || [];
+
+      lifecycleCallbacksByName[hookName].push(
+        wrapForErrorHandling(
+          componentLifecycleCallbacksByName[hookName],
+          `[${namespace}] An error occurred while executing the ${hookName} lifecycle hook.`
+        )
+      );
+    });
+  };
 
   return {
     register(namespace, component) {
-      const { commands: componentCommandsByName = {} } = component;
-
-      const conflictingCommandNames = intersection(
-        Object.keys(commandsByName),
-        Object.keys(componentCommandsByName)
-      );
-
-      if (conflictingCommandNames.length) {
-        throw new Error(
-          `[ComponentRegistry] Could not register ${namespace} ` +
-            `because it has existing command(s): ${conflictingCommandNames.join(
-              ","
-            )}`
-        );
-      }
-
-      assign(commandsByName, componentCommandsByName);
+      const { commands, lifecycle } = component;
+      registerComponentCommands(namespace, commands);
+      registerLifecycleCallbacks(namespace, lifecycle);
       componentsByNamespace[namespace] = component;
-    },
-    getByNamespace(namespace) {
-      return componentsByNamespace[namespace];
     },
     getNamespaceByComponent(component) {
       return find(Object.keys(componentsByNamespace), namespace => {
         return componentsByNamespace[namespace] === component;
       });
     },
-    getAll() {
-      return values(componentsByNamespace);
+    getCommand(commandName) {
+      return commandsByName[commandName];
     },
-    getCommand(name) {
-      return commandsByName[name];
+    getLifecycleCallbacks(hookName) {
+      return lifecycleCallbacksByName[hookName] || [];
     }
   };
 };
