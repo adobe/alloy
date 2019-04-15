@@ -56,7 +56,9 @@ describe("Context::deviceFactory", () => {
     { type: "a-b" },
     { type: null }
   ].forEach(orientation => {
-    it(`handles a bad screen orientation: ${JSON.stringify(orientation)}`, () => {
+    it(`handles a bad screen orientation: ${JSON.stringify(
+      orientation
+    )}`, () => {
       if (orientation !== undefined) {
         window.screen.orientation = orientation;
       }
