@@ -1,6 +1,6 @@
 # Alloy
 
-Alloy is the client-side SDK for the Adobe Experience Platform. It allows for streaming data into the platform, syncing identities, personalizing content, and more. This repository is currently under active development and is not yet intended for general consumption.
+Alloy is the web SDK for the Adobe Experience Platform. It allows for streaming data into the platform, syncing identities, personalizing content, and more. This repository is currently under active development and is not yet intended for general consumption.
 
 For documentation on how to use Alloy, please see the [documentation](https://app.gitbook.com/@launch/s/adobe-experience-platform-web-sdk).
 
