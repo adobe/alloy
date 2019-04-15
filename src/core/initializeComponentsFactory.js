@@ -32,7 +32,7 @@ export default (componentCreators, logger, getNamespacedStorage) => config => {
       });
     } catch (error) {
       throw stackError(
-        `An error occurred while creating ${namespace} component.`,
+        `[${namespace}] An error occurred during component creation.`,
         error
       );
     }
