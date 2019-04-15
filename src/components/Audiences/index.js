@@ -27,18 +27,16 @@ const createAudiences = ({ config, logger }) => {
         const destsUtil = createDestinations({ logger });
 
         if (
-          typeof config.destinationsEnabled === "undefined" ||
+          config.destinationsEnabled === undefined ||
           config.destinationsEnabled
         ) {
-          destsUtil.init().then(() => {
-            const destinations =
-              response.getPayloadByType("activation:push") || [];
+          const destinations =
+            response.getPayloadByType("activation:push") || [];
 
-            destsUtil.fire(destinations);
+          destsUtil.fire(destinations);
 
-            // TODO: Figure out if this can be used correctly
-            // destsUtil.end();
-          });
+          // TODO: Figure out if this can be used correctly
+          // destsUtil.end();
         }
       }
     },

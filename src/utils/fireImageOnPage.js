@@ -14,7 +14,7 @@ import isNonEmptyString from "./isNonEmptyString";
 
 /**
  * Fires an image pixel from the current window.
- * @param {*} url
+ * @param {string} url
  * @returns {undefined}
  */
 export default url => {
