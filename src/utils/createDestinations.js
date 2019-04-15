@@ -19,48 +19,43 @@ function getDocumentBody() {
 }
 
 export default ({ logger }) => {
-  let iframe = null;
-
   function createIframe() {
-    if (iframe) {
-      return;
-    }
+    return getDocumentBody().then(() => {
+      // TODO: Do we inject document or window instead?
+      const iframe = document.createElement("iframe");
+      iframe.className = "adobe-iframe";
+      iframe.name = "Adobe Destinationing iFrame";
+      iframe.style.cssText = "display: none; width: 0; height: 0;";
+      document.body.appendChild(iframe);
 
-    // TODO: Do we inject document or window instead?
-    iframe = document.createElement("iframe");
-    iframe.className = "adobe-iframe";
-    iframe.name = "Adobe Destinationing iFrame";
-    iframe.style.cssText = "display: none; width: 0; height: 0;";
-    document.body.appendChild(iframe);
+      return iframe;
+    });
   }
 
-  const init = () => {
-    return new Promise(resolve => {
-      return getDocumentBody().then(() => {
-        createIframe();
-        resolve();
-      });
+  const iframePromise = createIframe();
+
+  const fireDestsPromise = iframePromise.then(iframe => {
+    return fireDestinations({ iframe, logger });
+  });
+
+  let ended = false;
+
+  const end = () => {
+    ended = true;
+    iframePromise.then(iframe => {
+      document.body.removeChild(iframe);
     });
   };
 
-  const end = () => {
-    document.body.removeChild(iframe);
-    iframe = null;
-  };
-
-  const destinationsQueue = [];
-
-  const fire = (destinations = []) => {
-    destinationsQueue.push(...destinations);
-
-    init().then(() => {
-      const fireDests = fireDestinations({ iframe, logger });
-      fireDests(destinationsQueue);
+  const fire = destinations => {
+    fireDestsPromise.then(fireDests => {
+      if (!ended) {
+        fireDests(destinations);
+      }
     });
   };
 
   return {
-    init,
     fire,
     end
   };
