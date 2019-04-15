@@ -1,6 +1,4 @@
-import isObject from "./isObject";
-import isNonEmptyString from "./isNonEmptyString";
-import fireImageOnPage from "./fireImageOnPage";
+import fireDestinations from "./fireDestinations";
 
 function waitForDocumentBody(resolve) {
   if (document.body) {
@@ -19,8 +17,6 @@ function getDocumentBody() {
     }
   });
 }
-
-const fireOnPage = fireImageOnPage;
 
 export default ({ logger }) => {
   let iframe = null;
@@ -47,57 +43,19 @@ export default ({ logger }) => {
     });
   };
 
-  const fireInIframe = url => {
-    if (iframe) {
-      if (isNonEmptyString(url)) {
-        const img = iframe.contentWindow.document.createElement("img");
-
-        img.src = url;
-      }
-    }
-  };
-
   const end = () => {
     document.body.removeChild(iframe);
     iframe = null;
   };
 
-  const fire = (destinations = []) => {
-    const destinationsQueue = [];
+  const destinationsQueue = [];
 
-    Array.prototype.push(destinationsQueue, destinations);
+  const fire = (destinations = []) => {
+    destinationsQueue.push(...destinations);
 
     init().then(() => {
-      destinations.forEach(dest => {
-        if (isObject(dest)) {
-          if (isNonEmptyString(dest.url)) {
-            const url = new RegExp(
-              `^${document.location.protocol}//:`,
-              "i"
-            ).test(dest.url)
-              ? dest.url
-              : `${document.location.protocol}//${dest.url}`;
-
-            if (typeof dest.hideReferrer !== "undefined") {
-              if (dest.hideReferrer) {
-                fireInIframe(url);
-              } else {
-                fireOnPage(url);
-              }
-            } else {
-              logger.error(
-                `Destination hideReferrer property is not defined for url ${
-                  dest.url
-                } .`
-              );
-            }
-          } else {
-            logger.error("Destination url is not a populated string.");
-          }
-        } else {
-          logger.error("Destination is not an object.");
-        }
-      });
+      const fireDests = fireDestinations({ iframe, logger });
+      fireDests(destinationsQueue);
     });
   };
 

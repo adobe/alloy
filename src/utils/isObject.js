@@ -16,4 +16,4 @@ governing permissions and limitations under the License.
  * @returns {boolean}
  */
 export default value =>
-  value !== null && typeof value === "object" && Array.isArray(value) === false;
+  value !== null && typeof value === "object" && !Array.isArray(value);
