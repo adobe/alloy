@@ -10,19 +10,34 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const createAudiences = () => {
+import createDestinations from "../../utils/createDestinations";
+
+const createAudiences = ({ config, logger }) => {
   return {
     lifecycle: {
       onBeforeViewStart(payload) {
-        console.log("Audiences:::onBeforeViewStart");
+        logger.log("Audiences:::onBeforeViewStart");
         // TODO: Remove; We won't need to request destinations explicitely.
         // This is just for demo currently.
         payload.addQuery({ urlDestinations: true });
       },
       onViewStartResponse(response) {
-        console.log("Audiences:::onViewStartResponse");
-        const destinations = response.getPayloadByType("activation:push") || [];
-        destinations.forEach(dest => console.log(dest.url));
+        logger.log("Audiences:::onViewStartResponse");
+
+        const destsUtil = createDestinations({ logger });
+
+        if (
+          config.destinationsEnabled === undefined ||
+          config.destinationsEnabled
+        ) {
+          const destinations =
+            response.getPayloadByType("activation:push") || [];
+
+          destsUtil.fire(destinations);
+
+          // TODO: Figure out if this can be used correctly
+          // destsUtil.end();
+        }
       }
     },
     commands: {}
