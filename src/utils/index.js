@@ -17,7 +17,7 @@ export { default as assign } from "./assign";
 export { default as cookie } from "./cookie";
 export { default as defer } from "./defer";
 export { default as find } from "./find";
-export { default as fireImageOnPage } from "./fireImageOnPage";
+export { default as fireImage } from "./fireImage";
 export { default as getLastArrayItems } from "./getLastArrayItems";
 export { default as getTopLevelCookieDomain } from "./getTopLevelCookieDomain";
 export { default as includes } from "./includes";

@@ -13,13 +13,13 @@ governing permissions and limitations under the License.
 import isNonEmptyString from "./isNonEmptyString";
 
 /**
- * Fires an image pixel from the current window.
+ * Fires an image pixel from the current document's window.
  * @param {string} url
  * @returns {undefined}
  */
-export default url => {
+export default ({ url, currentDocument }) => {
   if (isNonEmptyString(url)) {
-    const img = new Image();
+    const img = (currentDocument || document).createElement("img");
 
     img.src = url;
   }

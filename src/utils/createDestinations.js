@@ -1,4 +1,4 @@
-import fireDestinations from "./fireDestinations";
+import fireDestinationsFactory from "./fireDestinationsFactory";
 
 function waitForDocumentBody(resolve) {
   if (document.body) {
@@ -18,24 +18,24 @@ function getDocumentBody() {
   });
 }
 
+function createIframe() {
+  return getDocumentBody().then(() => {
+    // TODO: Do we inject document or window instead?
+    const iframe = document.createElement("iframe");
+    iframe.className = "adobe-iframe";
+    iframe.name = "Adobe Destinationing iFrame";
+    iframe.style.cssText = "display: none; width: 0; height: 0;";
+    document.body.appendChild(iframe);
+
+    return iframe;
+  });
+}
+
 export default ({ logger }) => {
-  function createIframe() {
-    return getDocumentBody().then(() => {
-      // TODO: Do we inject document or window instead?
-      const iframe = document.createElement("iframe");
-      iframe.className = "adobe-iframe";
-      iframe.name = "Adobe Destinationing iFrame";
-      iframe.style.cssText = "display: none; width: 0; height: 0;";
-      document.body.appendChild(iframe);
-
-      return iframe;
-    });
-  }
-
   const iframePromise = createIframe();
 
   const fireDestsPromise = iframePromise.then(iframe => {
-    return fireDestinations({ iframe, logger });
+    return fireDestinationsFactory({ iframe, logger });
   });
 
   let ended = false;

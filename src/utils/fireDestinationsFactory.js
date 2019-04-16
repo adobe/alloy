@@ -1,17 +1,15 @@
 import isObject from "./isObject";
 import isNonEmptyString from "./isNonEmptyString";
-import fireImageOnPage from "./fireImageOnPage";
+import fireImage from "./fireImage";
 
-const fireOnPage = fireImageOnPage;
+const fireOnPage = fireImage;
 
 export default ({ iframe, logger }) => {
-  const fireInIframe = url => {
+  const fireInIframe = ({ url }) => {
     if (iframe) {
-      if (isNonEmptyString(url)) {
-        const img = iframe.contentWindow.document.createElement("img");
+      const currentDocument = iframe.contentWindow.document;
 
-        img.src = url;
-      }
+      fireImage({ url, currentDocument });
     }
   };
 
@@ -25,9 +23,9 @@ export default ({ iframe, logger }) => {
 
           if (typeof dest.hideReferrer !== "undefined") {
             if (dest.hideReferrer) {
-              fireInIframe(url);
+              fireInIframe({ url });
             } else {
-              fireOnPage(url);
+              fireOnPage({ url });
             }
           } else {
             logger.error(
@@ -43,9 +41,5 @@ export default ({ iframe, logger }) => {
         logger.error("Destination is not an object.");
       }
     });
-
-    while (destinations.length) {
-      destinations.shift();
-    }
   };
 };
