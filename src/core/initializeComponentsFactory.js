@@ -31,7 +31,10 @@ export default (componentCreators, logger, getNamespacedStorage) => config => {
         storage
       });
     } catch (error) {
-      throw stackError(`Failed while creating ${namespace} component.`, error);
+      throw stackError(
+        `[${namespace}] An error occurred during component creation.`,
+        error
+      );
     }
     componentRegistry.register(namespace, component);
   });

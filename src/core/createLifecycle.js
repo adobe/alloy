@@ -29,31 +29,14 @@ governing permissions and limitations under the License.
 // }
 
 import createResponse from "./createResponse";
-import { isFunction, Promise, stackError } from "../utils";
+import { Promise } from "../utils";
 
-function invokeHook(componentRegistry, hook, ...args) {
+function invokeHook(componentRegistry, hookName, ...args) {
   return Promise.all(
-    componentRegistry.getAll().map(component => {
-      // TODO Maybe add a smarter check here to help Components' developers
-      // know that their hooks should be organized under `lifecycle`.
-      // Maybe check if hook exist directly on the instance, throw.
-      let promise;
-
-      if (component.lifecycle && isFunction(component.lifecycle[hook])) {
-        promise = new Promise(resolve => {
-          resolve(component.lifecycle[hook](...args));
-        }).catch(reason => {
-          const componentNamespace = componentRegistry.getNamespaceByComponent(
-            component
-          );
-          throw stackError(
-            `The ${componentNamespace} component threw an error while executing the ${hook} lifecycle hook.`,
-            reason
-          );
-        });
-      }
-
-      return promise;
+    componentRegistry.getLifecycleCallbacks(hookName).map(callback => {
+      return new Promise(resolve => {
+        resolve(callback(...args));
+      });
     })
   );
 }
