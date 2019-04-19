@@ -20,7 +20,7 @@ export default (componentCreators, logger, getNamespacedStorage) => config => {
   componentCreators.forEach(createComponent => {
     const { namespace } = createComponent;
     const storage = getNamespacedStorage(
-      "orgId." // TODO: Make orgId mandatory and add it here
+      "orgID." // TODO: Make orgID mandatory and add it here
     );
     // TO-DOCUMENT: Helpers that we inject into factories.
     let component;

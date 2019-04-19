@@ -1,22 +1,27 @@
 import webFactory from "../../../../src/components/Context/webFactory";
 
-describe("Context::getWeb", () => {
+describe("Context::webFactory", () => {
   const window = {
     location: { href: "http://mylocation.com" }
   };
   const topFrameSetProvider = () => {
     return { document: { referrer: "http://myreferrer.com" } };
   };
+  let addedWeb;
+  const payload = {
+    addWeb(web) {
+      addedWeb = web;
+    }
+  };
 
   it("works", () => {
-    expect(webFactory(window, topFrameSetProvider)()).toEqual({
-      web: {
-        webPageDetails: {
-          URL: "http://mylocation.com"
-        },
-        webReferrer: {
-          URL: "http://myreferrer.com"
-        }
+    webFactory(window, topFrameSetProvider)(payload);
+    expect(addedWeb).toEqual({
+      webPageDetails: {
+        URL: "http://mylocation.com"
+      },
+      webReferrer: {
+        URL: "http://myreferrer.com"
       }
     });
   });

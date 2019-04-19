@@ -125,7 +125,7 @@ const createPersonalization = ({ logger }) => {
       onBeforeViewStart(payload) {
         console.log("Personalization:::onBeforeViewStart");
         payload.addQuery({ personalization: true });
-        payload.addMetadata({
+        payload.addMeta({
           personalization: {
             client: "demo12",
             sessionID: "12344566"

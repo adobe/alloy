@@ -12,35 +12,38 @@ governing permissions and limitations under the License.
 
 import createPayload from "../../core/createPayload";
 
-function setMetadata(payload, config) {
-  // Append metadata to the payload.
-  payload.addMetadata({
+function setMeta(payload, config) {
+  // Append meta to the payload.
+  payload.addMeta({
     enableStore: config.shouldStoreCollectedData,
     device: config.device || "UNKNOWN-DEVICE"
   });
 }
 
 const initalizePayload = (config, event, beforeHook) => {
-  // Populate the request's body with payload, data and metadata.
+  // Populate the request's body with payload, data and meta.
   const payload = createPayload({ events: [event] });
 
   return beforeHook(payload).then(() => {
-    setMetadata(payload, config);
+    setMeta(payload, config);
     return payload.toJson();
   });
 };
 
 // TODO: Extract this stuff into a core helper.
 const callServer = (config, endpoint) => payload => {
-  return fetch(`${config.collectionUrl}/${config.propertyId}/${endpoint}`, {
-    method: "POST",
-    cache: "no-cache",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    referrer: "client",
-    body: payload
-  });
+  return fetch(
+    `${config.collectionUrl}/${endpoint}?propertyID=${config.propertyID}`,
+    {
+      method: "POST",
+      cache: "no-cache",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      referrer: "client",
+      body: payload
+    }
+  );
 };
 
 export default config => {

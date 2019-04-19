@@ -15,9 +15,9 @@ import createRequest from "./createRequest";
 const createDataCollector = ({ config }) => {
   let lifecycle;
 
-  const makeServerCall = (endpoint, beforeHook, afterHook) => ({ data }) => {
+  const makeServerCall = (endpoint, beforeHook, afterHook) => event => {
     const request = createRequest(config);
-    return request.send(data, endpoint, beforeHook, afterHook);
+    return request.send(event, endpoint, beforeHook, afterHook);
   };
 
   const makeHookCall = hook => (...args) => {
@@ -37,7 +37,7 @@ const createDataCollector = ({ config }) => {
         makeHookCall("onViewStartResponse")
       ),
       event: makeServerCall(
-        "collect",
+        "interact",
         makeHookCall("onBeforeEvent"),
         makeHookCall("onEventResponse")
       )

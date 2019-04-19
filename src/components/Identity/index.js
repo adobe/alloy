@@ -26,9 +26,7 @@ const addIdsContext = (payload, ecid) => {
     }
   ];
 
-  payload.addContext({
-    identityMap
-  });
+  payload.addIdentityMap(identityMap);
 };
 
 // TODO: Namespace the cookie to be specific to the org.
@@ -80,7 +78,7 @@ const createIdentity = () => {
       onBeforeViewStart(payload) {
         // TODO: Store `lastSyncTS` client side and pass it
         // for server to decide if we receive ID Syncs.
-        payload.addMetadata({
+        payload.addMeta({
           identity: {
             lastSyncTS: 1222,
             containerId: 1
