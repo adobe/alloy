@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createPayloadItemMerger from "./createPayloadItemMerger";
+import { createMerger } from "../../utils";
 
 export default () => {
   const content = {};
@@ -29,7 +29,7 @@ export default () => {
       content.events = content.events || [];
       content.events.push(event);
     },
-    mergeMeta: createPayloadItemMerger(content, "meta"),
+    mergeMeta: createMerger(content, "meta"),
     toJSON() {
       return content;
     }

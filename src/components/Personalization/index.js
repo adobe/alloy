@@ -136,7 +136,7 @@ const createPersonalization = ({ logger }) => {
           });
         }
       },
-      onBeforeRequest(payload) {
+      onBeforeSend({ payload }) {
         payload.mergeMeta({
           personalization: {
             client: "demo12",
@@ -144,9 +144,6 @@ const createPersonalization = ({ logger }) => {
           }
         });
       },
-      // TODO: pull personalization data from response fragments, which requires
-      //  Jon's network gateway work
-
       onResponse(response) {
         // eslint-disable-next-line no-unreachable
         const personalization =

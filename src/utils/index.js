@@ -15,6 +15,7 @@ governing permissions and limitations under the License.
 // Please keep in alphabetical order.
 export { default as assign } from "./assign";
 export { default as cookie } from "./cookie";
+export { default as createMerger } from "./createMerger";
 export { default as defer } from "./defer";
 export { default as find } from "./find";
 export { default as fireDestinations } from "./fireDestinations";

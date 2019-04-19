@@ -10,17 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign } from "../utils";
-
-/**
- * Creates a function that, when passed an object of updates, will merge
- * the updates onto the current value of a payload property.
- * @param content
- * @param key
- * @returns {Function}
- */
-export default (content, key) => updates => {
-  // eslint-disable-next-line no-param-reassign
-  content[key] = content[key] || {};
-  assign(content[key], updates);
+export default navigator => {
+  return (url, json) => {
+    return new Promise((resolve, reject) => {
+      const blob = new Blob([json], { type: "text/plain; charset=UTF-8" });
+      if (!navigator.sendBeacon(url, blob)) {
+        reject(Error("Unable to send beacon."));
+        return;
+      }
+      resolve();
+    });
+  };
 };

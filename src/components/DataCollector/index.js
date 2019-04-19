@@ -10,22 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createRequest from "../../core/createRequest";
-import createEvent from "../../core/createEvent";
+import createEvent from "./createEvent";
 
 const VIEW_START_EVENT = "viewStart";
 
-const createDataCollector = ({ config }) => {
+const createDataCollector = () => {
   let lifecycle;
+  let network;
 
   const makeServerCall = events => {
-    const request = createRequest(config);
-    return request.send(
-      events,
-      "interact",
-      lifecycle.onBeforeRequest,
-      lifecycle.onResponse
-    );
+    const { payload, send } = network.newRequest();
+    events.forEach(event => payload.addEvent(event));
+    send();
   };
 
   const createEventHandler = options => {
@@ -41,7 +37,7 @@ const createDataCollector = ({ config }) => {
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
-        ({ lifecycle } = tools);
+        ({ lifecycle, network } = tools);
       }
     },
     commands: {
@@ -51,15 +47,5 @@ const createDataCollector = ({ config }) => {
 };
 
 createDataCollector.namespace = "DataCollector";
-
-createDataCollector.configValidators = {
-  collectionUrl: {
-    defaultValue: "https://edgegateway.azurewebsites.net"
-    // defaultValue: "http://ex-edge.stable-stage.aam-npe.adobeinternal.net/v1"
-  },
-  device: {
-    defaultValue: "UNKNOWN-DEVICE"
-  }
-};
 
 export default createDataCollector;

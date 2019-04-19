@@ -15,6 +15,7 @@ import createConfig, { required } from "./createConfig";
 
 const configValidators = {
   propertyID: { validate: required },
+  collectionUrl: { defaultValue: "https://edgegateway.azurewebsites.net" },
   // TODO: For debugging purposes only. Remove eventually.
   shouldStoreCollectedData: { defaultValue: 1 },
   device: { defaultValue: "Chrome-Mac" }

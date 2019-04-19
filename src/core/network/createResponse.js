@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, find } from "../utils";
+import { assign, find } from "../../utils";
 
 /**
  * Represents a gateway response with the addition to helper methods.
@@ -30,7 +30,7 @@ import { assign, find } from "../utils";
  *      - @param {String} type: A string with the current format: <namespace:action>
  *          example: "identity:persist"
  */
-export default (respDto = { handle: [] }) => {
+export default (respDto = { requestId: "", handle: [] }) => {
   const response = assign(Object.create(null), respDto);
   // TODO: Should we freeze the response to prevent change by Components?
   // Object.freeze(response.handle.map(h => Object.freeze(h)));

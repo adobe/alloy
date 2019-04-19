@@ -70,9 +70,6 @@ export default componentRegistry => {
     onBeforeEvent: guardLifecycleMethod((event, isViewStart) => {
       return invokeHook(componentRegistry, "onBeforeEvent", event, isViewStart);
     }),
-    onBeforeRequest: guardLifecycleMethod(payload => {
-      return invokeHook(componentRegistry, "onBeforeRequest", payload);
-    }),
     onResponse: guardLifecycleMethod(response => {
       return invokeHook(componentRegistry, "onResponse", response);
     }),
@@ -81,6 +78,9 @@ export default componentRegistry => {
     }),
     onOptInChanged: guardLifecycleMethod(permissions => {
       return invokeHook(componentRegistry, "onOptInChanged", permissions);
+    }),
+    onBeforeSend: guardLifecycleMethod(request => {
+      return invokeHook(componentRegistry, "onBeforeSend", request);
     })
     // TODO: We might need an `onError(error)` hook.
   };
