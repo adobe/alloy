@@ -21,25 +21,25 @@ const testConfig = {
 };
 
 describe("createConfig", () => {
-  fit("supports being instantiated with a config", () => {
+  it("supports being instantiated with a config", () => {
     const cfg = createConfig(testConfig);
     expect(cfg.a).toEqual(123);
     expect(cfg.c.a1).toEqual("xyz");
   });
-  fit("supports getting a value assigned to a key", () => {
+  it("supports getting a value assigned to a key", () => {
     const cfg = createConfig(testConfig);
     expect(cfg.get("a")).toEqual(123);
   });
-  fit("supports getting a default value when a key is missing", () => {
+  it("supports getting a default value when a key is missing", () => {
     const cfg = createConfig(testConfig);
     expect(cfg.get("z", "missing")).toEqual("missing");
   });
-  fit("supports adding a key value mapping", () => {
+  it("supports adding a key value mapping", () => {
     const cfg = createConfig(testConfig);
     cfg.put("d", "ABC");
     expect(cfg.get("d")).toEqual("ABC");
   });
-  fit("supports extending the config with a new config", () => {
+  it("supports extending the config with a new config", () => {
     const cfg = createConfig(testConfig);
     cfg.putAll({
       d: {
@@ -48,16 +48,16 @@ describe("createConfig", () => {
     });
     expect(cfg.d.b1).toEqual(321);
   });
-  fit("supports adding missing object hierarchies through string dot notation", () => {
+  it("supports adding missing object hierarchies through string dot notation", () => {
     const cfg = createConfig(testConfig);
     cfg.put("c.b1.a2.a3", 321);
     expect(cfg.c.b1.a2.a3).toEqual(321);
   });
-  fit("supports getting a value within object hiearchies through string dot notation", () => {
+  it("supports getting a value within object hiearchies through string dot notation", () => {
     const cfg = createConfig(testConfig);
     expect(cfg.get("c.a1")).toEqual("xyz");
   });
-  fit("supports returning top level key-set", () => {
+  it("supports returning top level key-set", () => {
     const cfg = createConfig(testConfig);
     const s = cfg.keySet();
     expect(s.has("a")).toBe(true);
