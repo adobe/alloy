@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { isObject, isString } from "../utils";
+
 const createConfig = config => {
   const cfg = {
     /**
@@ -19,7 +21,7 @@ const createConfig = config => {
      */
     put: (key, value) => {
       let keys = [key];
-      if (typeof key === "string") {
+      if (isString(key)) {
         keys = key.split(".");
       }
       let obj = cfg;
@@ -40,7 +42,9 @@ const createConfig = config => {
      * @param {Object} New configurations.
      */
     putAll: cfgAdd => {
-      Object.assign(cfg, cfgAdd);
+      if (isObject(cfgAdd)) {
+        Object.assign(cfg, cfgAdd);
+      }
     },
     /**
      * Returns value assigned to key.
@@ -49,7 +53,7 @@ const createConfig = config => {
      */
     get: (key, defaultValue) => {
       let keys = [key];
-      if (typeof key === "string") {
+      if (isString(key)) {
         keys = key.split(".");
       }
       let obj = cfg;
@@ -75,7 +79,7 @@ const createConfig = config => {
      * Adds schema information to the existing configuration schema.
      */
     extendSchema: schemaAddition => {
-      if (schemaAddition && typeof schemaAddition !== "object") {
+      if (isObject(schemaAddition)) {
         Object.assign(cfg.schema, schemaAddition);
       }
       return cfg.schema;
@@ -99,7 +103,7 @@ const createConfig = config => {
     forbiddenKeys: {}
   };
   cfg.forbiddenKeys = new Set(Object.keys(cfg));
-  if (config && typeof config === "object") {
+  if (isObject(config)) {
     cfg.putAll(config);
   }
   return cfg;
