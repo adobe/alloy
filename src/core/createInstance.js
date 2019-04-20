@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { isFunction, nodeStyleCallbackify, noop } from "../utils";
+import createConfig from "./createConfig";
 
 export default (namespace, initializeComponents, debugController, logger) => {
   let componentRegistry;
@@ -24,8 +25,8 @@ export default (namespace, initializeComponents, debugController, logger) => {
     if (options.debug !== undefined) {
       debugCommand({ enabled: options.debug });
     }
-
-    componentRegistry = initializeComponents(options);
+    const config = createConfig(options);
+    componentRegistry = initializeComponents(config);
   };
 
   function executeCommand(commandName, options) {
