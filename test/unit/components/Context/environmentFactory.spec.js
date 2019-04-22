@@ -7,10 +7,10 @@ describe("Context::environmentFactory", () => {
     innerHeight: 1004,
     navigator: { connection: { effectiveType: "myConnectionType" } }
   };
-  let payload;
+  let event;
 
   beforeEach(() => {
-    payload = jasmine.createSpyObj("payload", ["addEnvironment"]);
+    event = jasmine.createSpyObj("event", ["mergeEnvironment"]);
   });
 
   it("works", () => {
@@ -18,8 +18,8 @@ describe("Context::environmentFactory", () => {
     const dateProvider = () => {
       return date;
     };
-    environmentFactory(mywindow, dateProvider)(payload);
-    expect(payload.addEnvironment).toHaveBeenCalledWith({
+    environmentFactory(mywindow, dateProvider)(event);
+    expect(event.mergeEnvironment).toHaveBeenCalledWith({
       type: "browser",
       browserDetails: {
         viewportWidth: 1003,
@@ -40,8 +40,8 @@ describe("Context::environmentFactory", () => {
     const dateProvider = () => {
       return date;
     };
-    environmentFactory(ieWindow, dateProvider)(payload);
-    expect(payload.addEnvironment).toHaveBeenCalledWith({
+    environmentFactory(ieWindow, dateProvider)(event);
+    expect(event.mergeEnvironment).toHaveBeenCalledWith({
       type: "browser",
       browserDetails: {
         viewportWidth: 1003,

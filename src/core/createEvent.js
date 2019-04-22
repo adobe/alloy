@@ -16,20 +16,18 @@ export default () => {
   const content = {};
 
   return {
-    setPropertyID(propertyID) {
-      content.propertyID = propertyID;
+    setCorrelationId(correlationId) {
+      content.correlationID = correlationId;
     },
-    addIdentity: (namespaceCode, identity) => {
-      content.identityMap = content.identityMap || {};
-      content.identityMap[namespaceCode] =
-        content.identityMap[namespaceCode] || [];
-      content.identityMap[namespaceCode].push(identity);
+    setTimestamp(timestamp) {
+      content.timestamp = timestamp;
     },
-    addEvent(event) {
-      content.events = content.events || [];
-      content.events.push(event);
-    },
-    mergeMeta: createPayloadItemMerger(content, "meta"),
+    mergeData: createPayloadItemMerger(content, "data"),
+    mergeQuery: createPayloadItemMerger(content, "query"),
+    mergeWeb: createPayloadItemMerger(content, "web"),
+    mergeDevice: createPayloadItemMerger(content, "device"),
+    mergeEnvironment: createPayloadItemMerger(content, "environment"),
+    mergePlaceContext: createPayloadItemMerger(content, "placeContext"),
     toJSON() {
       return content;
     }

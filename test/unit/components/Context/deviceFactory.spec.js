@@ -2,7 +2,7 @@ import deviceFactory from "../../../../src/components/Context/deviceFactory";
 
 describe("Context::deviceFactory", () => {
   let window;
-  let payload;
+  let event;
 
   beforeEach(() => {
     window = {
@@ -11,13 +11,13 @@ describe("Context::deviceFactory", () => {
         height: 800
       }
     };
-    payload = jasmine.createSpyObj("payload", ["addDevice"]);
+    event = jasmine.createSpyObj("event", ["mergeDevice"]);
   });
 
   it("handles the happy path", () => {
     window.screen.orientation = { type: "landscape-primary" };
-    deviceFactory(window)(payload);
-    expect(payload.addDevice).toHaveBeenCalledWith({
+    deviceFactory(window)(event);
+    expect(event.mergeDevice).toHaveBeenCalledWith({
       screenHeight: 800,
       screenWidth: 600,
       screenOrientation: "landscape"
@@ -26,8 +26,8 @@ describe("Context::deviceFactory", () => {
 
   it("handles portrait orientation type", () => {
     window.screen.orientation = { type: "portrait-secondary" };
-    deviceFactory(window)(payload);
-    expect(payload.addDevice).toHaveBeenCalledWith({
+    deviceFactory(window)(event);
+    expect(event.mergeDevice).toHaveBeenCalledWith({
       screenHeight: 800,
       screenWidth: 600,
       screenOrientation: "portrait"
@@ -38,8 +38,8 @@ describe("Context::deviceFactory", () => {
     window.matchMedia = query => ({
       matches: query === "(orientation: portrait)"
     });
-    deviceFactory(window)(payload);
-    expect(payload.addDevice).toHaveBeenCalledWith({
+    deviceFactory(window)(event);
+    expect(event.mergeDevice).toHaveBeenCalledWith({
       screenHeight: 800,
       screenWidth: 600,
       screenOrientation: "portrait"
@@ -50,8 +50,8 @@ describe("Context::deviceFactory", () => {
     window.matchMedia = query => ({
       matches: query === "(orientation: landscape)"
     });
-    deviceFactory(window)(payload);
-    expect(payload.addDevice).toHaveBeenCalledWith({
+    deviceFactory(window)(event);
+    expect(event.mergeDevice).toHaveBeenCalledWith({
       screenHeight: 800,
       screenWidth: 600,
       screenOrientation: "landscape"
@@ -73,8 +73,8 @@ describe("Context::deviceFactory", () => {
         window.screen.orientation = orientation;
       }
       window.matchMedia = () => ({ matches: false });
-      deviceFactory(window)(payload);
-      expect(payload.addDevice).toHaveBeenCalledWith({
+      deviceFactory(window)(event);
+      expect(event.mergeDevice).toHaveBeenCalledWith({
         screenHeight: 800,
         screenWidth: 600
       });

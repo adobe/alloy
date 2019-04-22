@@ -16,17 +16,9 @@ const ECID_NAMESPACE = "ECID";
 
 const addIdsContext = (payload, ecid) => {
   // TODO: Add customer ids.
-  // TODO: Add sugar APIs to payload to support adding
-  // specific contexts: payload.addIdentityContext
-  const identityMap = {};
-
-  identityMap[ECID_NAMESPACE] = [
-    {
-      id: ecid
-    }
-  ];
-
-  payload.addIdentityMap(identityMap);
+  payload.addIdentity(ECID_NAMESPACE, {
+    id: ecid
+  });
 };
 
 // TODO: Namespace the cookie to be specific to the org.
@@ -38,6 +30,13 @@ const createIdentity = () => {
 
   // TO-DOCUMENT: We wait for ECID before trigger any events.
   const onBeforeRequest = payload => {
+    payload.mergeMeta({
+      identity: {
+        lastSyncTS: 1222,
+        containerId: 1
+      }
+    });
+
     let promise;
 
     if (ecid) {
@@ -74,20 +73,8 @@ const createIdentity = () => {
 
   return {
     lifecycle: {
-      onBeforeEvent: onBeforeRequest,
-      onBeforeViewStart(payload) {
-        // TODO: Store `lastSyncTS` client side and pass it
-        // for server to decide if we receive ID Syncs.
-        payload.addMeta({
-          identity: {
-            lastSyncTS: 1222,
-            containerId: 1
-          }
-        });
-        return onBeforeRequest(payload);
-      },
-      onEventResponse: onResponse,
-      onViewStartResponse: onResponse
+      onBeforeRequest,
+      onResponse
     },
     commands: {
       getEcid

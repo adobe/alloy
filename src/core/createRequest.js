@@ -10,23 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createPayload from "../../core/createPayload";
+import createPayload from "./createPayload";
+import createResponse from "./createResponse";
 
 function setMeta(payload, config) {
   // Append meta to the payload.
-  payload.addMeta({
+  payload.mergeMeta({
     enableStore: config.shouldStoreCollectedData,
     device: config.device || "UNKNOWN-DEVICE"
   });
 }
 
-const initalizePayload = (config, event, beforeHook) => {
+const initalizePayload = (config, events, beforeHook) => {
   // Populate the request's body with payload, data and meta.
-  const payload = createPayload({ events: [event] });
+  const payload = createPayload();
+
+  events.forEach(event => {
+    payload.addEvent(event);
+  });
 
   return beforeHook(payload).then(() => {
     setMeta(payload, config);
-    return payload.toJson();
+    return payload;
   });
 };
 
@@ -41,22 +46,20 @@ const callServer = (config, endpoint) => payload => {
         "Content-Type": "application/json"
       },
       referrer: "client",
-      body: payload
+      body: JSON.stringify(payload)
     }
   );
 };
 
 export default config => {
   return {
-    send: (events, endpoint, beforeHook, afterHook) => {
-      return (
-        initalizePayload(config, events, beforeHook)
-          .then(callServer(config, endpoint))
-          // Freeze the response before handing it to all the components.
-          .then(response => Object.freeze(response.json()))
-          .then(afterHook)
-          .then(() => {}) // Makes sure the promise is resolved with no value.
-      );
+    send(events, endpoint, beforeHook, afterHook) {
+      return initalizePayload(config, events, beforeHook)
+        .then(callServer(config, endpoint))
+        .then(response => response.json())
+        .then(createResponse)
+        .then(afterHook)
+        .then(() => {}); // Makes sure the promise is resolved with no value.
     }
   };
 };

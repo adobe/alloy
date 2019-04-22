@@ -7,16 +7,15 @@ describe("Context::webFactory", () => {
   const topFrameSetProvider = () => {
     return { document: { referrer: "http://myreferrer.com" } };
   };
-  let addedWeb;
-  const payload = {
-    addWeb(web) {
-      addedWeb = web;
-    }
-  };
+  let event;
+
+  beforeEach(() => {
+    event = jasmine.createSpyObj("event", ["mergeWeb"]);
+  });
 
   it("works", () => {
-    webFactory(window, topFrameSetProvider)(payload);
-    expect(addedWeb).toEqual({
+    webFactory(window, topFrameSetProvider)(event);
+    expect(event.mergeWeb).toHaveBeenCalledWith({
       webPageDetails: {
         URL: "http://mylocation.com"
       },

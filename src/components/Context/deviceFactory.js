@@ -44,7 +44,7 @@ const getScreenOrientationViaMediaQuery = window => {
 };
 
 export default window => {
-  return payload => {
+  return event => {
     const {
       screen: { width, height }
     } = window;
@@ -59,6 +59,6 @@ export default window => {
     if (orientation) {
       device.screenOrientation = orientation;
     }
-    return payload.addDevice(device);
+    return event.mergeDevice(device);
   };
 };

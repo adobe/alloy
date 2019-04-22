@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 export default window => {
-  return payload => {
+  return event => {
     const { innerWidth, innerHeight, navigator } = window;
     const environment = {
       type: "browser",
@@ -28,6 +28,6 @@ export default window => {
     ) {
       environment.connectionType = navigator.connection.effectiveType;
     }
-    payload.addEnvironment(environment);
+    event.mergeEnvironment(environment);
   };
 };

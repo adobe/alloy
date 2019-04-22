@@ -10,18 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createRequest from "./createRequest";
+import createRequest from "../../core/createRequest";
+import createEvent from "../../core/createEvent";
 
 const createDataCollector = ({ config }) => {
   let lifecycle;
 
-  const makeServerCall = (endpoint, beforeHook, afterHook) => event => {
+  const makeServerCall = events => {
     const request = createRequest(config);
-    return request.send(event, endpoint, beforeHook, afterHook);
+    return request.send(
+      events,
+      "interact",
+      lifecycle.onBeforeRequest,
+      lifecycle.onResponse
+    );
   };
 
-  const makeHookCall = hook => (...args) => {
-    return lifecycle[hook](...args);
+  const createEventHandler = isViewStart => options => {
+    const event = createEvent();
+    event.mergeData(options.data);
+    lifecycle.onBeforeEvent(event, isViewStart).then(() => {
+      makeServerCall([event]);
+    });
   };
 
   return {
@@ -31,16 +41,8 @@ const createDataCollector = ({ config }) => {
       }
     },
     commands: {
-      viewStart: makeServerCall(
-        "interact",
-        makeHookCall("onBeforeViewStart"),
-        makeHookCall("onViewStartResponse")
-      ),
-      event: makeServerCall(
-        "interact",
-        makeHookCall("onBeforeEvent"),
-        makeHookCall("onEventResponse")
-      )
+      viewStart: createEventHandler(true),
+      event: createEventHandler(false)
     }
   };
 };

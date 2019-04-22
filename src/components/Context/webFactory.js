@@ -13,10 +13,10 @@ governing permissions and limitations under the License.
 export default (window, topFrameSetProvider) => {
   let topFrameSet;
 
-  return payload => {
+  return event => {
     topFrameSet = topFrameSet || topFrameSetProvider();
 
-    payload.addWeb({
+    event.mergeWeb({
       webPageDetails: {
         URL: window.location.href || window.location
       },

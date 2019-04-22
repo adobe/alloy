@@ -12,9 +12,6 @@ governing permissions and limitations under the License.
 
 export default (config, logger, availableContexts, defaultContextNames) => {
   let configuredContexts;
-  const onBeforeRequest = payload => {
-    configuredContexts.forEach(context => context(payload));
-  };
   return {
     namespace: "Context",
     lifecycle: {
@@ -49,8 +46,9 @@ export default (config, logger, availableContexts, defaultContextNames) => {
             configuredContextName => availableContexts[configuredContextName]
           );
       },
-      onBeforeEvent: onBeforeRequest,
-      onBeforeViewStart: onBeforeRequest
+      onBeforeEvent(event) {
+        configuredContexts.forEach(context => context(event));
+      }
     }
   };
 };

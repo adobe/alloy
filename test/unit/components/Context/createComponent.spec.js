@@ -17,10 +17,10 @@ describe("Context::createComponent", () => {
   };
   const availableContexts = { context1, context2 };
   const defaultContextNames = ["context1"];
-  let payload;
+  let event;
 
   beforeEach(() => {
-    payload = jasmine.createSpyObj("payload", ["addContext1", "addContext2"]);
+    event = jasmine.createSpyObj("event", ["addContext1", "addContext2"]);
   });
 
   it("enables the configured contexts", () => {
@@ -32,10 +32,10 @@ describe("Context::createComponent", () => {
       defaultContextNames
     );
     component.lifecycle.onComponentsRegistered();
-    component.lifecycle.onBeforeEvent(payload);
+    component.lifecycle.onBeforeEvent(event);
 
-    expect(payload.addContext1).toHaveBeenCalledWith({ a: "1" });
-    expect(payload.addContext2).toHaveBeenCalledWith({ b: "2" });
+    expect(event.addContext1).toHaveBeenCalledWith({ a: "1" });
+    expect(event.addContext2).toHaveBeenCalledWith({ b: "2" });
   });
 
   it("defaults to the default contexts", () => {
@@ -47,10 +47,10 @@ describe("Context::createComponent", () => {
       defaultContextNames
     );
     component.lifecycle.onComponentsRegistered();
-    component.lifecycle.onBeforeEvent(payload);
+    component.lifecycle.onBeforeEvent(event);
 
-    expect(payload.addContext1).toHaveBeenCalledWith({ a: "1" });
-    expect(payload.addContext2).not.toHaveBeenCalled();
+    expect(event.addContext1).toHaveBeenCalledWith({ a: "1" });
+    expect(event.addContext2).not.toHaveBeenCalled();
   });
 
   it("ignores unknown contexts", () => {
@@ -62,10 +62,10 @@ describe("Context::createComponent", () => {
       defaultContextNames
     );
     component.lifecycle.onComponentsRegistered();
-    component.lifecycle.onBeforeEvent(payload);
+    component.lifecycle.onBeforeEvent(event);
 
-    expect(payload.addContext1).toHaveBeenCalledWith({ a: "1" });
-    expect(payload.addContext2).not.toHaveBeenCalled();
+    expect(event.addContext1).toHaveBeenCalledWith({ a: "1" });
+    expect(event.addContext2).not.toHaveBeenCalled();
   });
 
   it("can disable all contexts", () => {
@@ -77,10 +77,10 @@ describe("Context::createComponent", () => {
       defaultContextNames
     );
     component.lifecycle.onComponentsRegistered();
-    component.lifecycle.onBeforeEvent(payload);
+    component.lifecycle.onBeforeEvent(event);
 
-    expect(payload.addContext1).not.toHaveBeenCalled();
-    expect(payload.addContext2).not.toHaveBeenCalled();
+    expect(event.addContext1).not.toHaveBeenCalled();
+    expect(event.addContext2).not.toHaveBeenCalled();
   });
 
   it("disables all contexts when given a non-array config", () => {
@@ -92,24 +92,9 @@ describe("Context::createComponent", () => {
       defaultContextNames
     );
     component.lifecycle.onComponentsRegistered();
-    component.lifecycle.onBeforeEvent(payload);
+    component.lifecycle.onBeforeEvent(event);
 
-    expect(payload.addContext1).not.toHaveBeenCalled();
-    expect(payload.addContext2).not.toHaveBeenCalled();
-  });
-
-  it("adds to the context when onBeforeViewStart is called", () => {
-    const config = { context: ["context1", "context2"] };
-    const component = createComponent(
-      config,
-      logger,
-      availableContexts,
-      defaultContextNames
-    );
-    component.lifecycle.onComponentsRegistered();
-    component.lifecycle.onBeforeViewStart(payload);
-
-    expect(payload.addContext1).toHaveBeenCalledWith({ a: "1" });
-    expect(payload.addContext2).toHaveBeenCalledWith({ b: "2" });
+    expect(event.addContext1).not.toHaveBeenCalled();
+    expect(event.addContext2).not.toHaveBeenCalled();
   });
 });
