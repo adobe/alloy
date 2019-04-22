@@ -30,6 +30,12 @@ describe("createConfig", () => {
     const cfg = createConfig(testConfig);
     expect(cfg.get("a")).toEqual(123);
   });
+  it("returns undefined when a missing key is requested", () => {
+    const cfg = createConfig(testConfig);
+    expect(cfg.get("missing")).toBe(undefined);
+    expect(cfg.get("missing.missing")).toBe(undefined);
+    expect(cfg.get("c.missing")).toBe(undefined);
+  });
   it("supports getting a default value when a key is missing", () => {
     const cfg = createConfig(testConfig);
     expect(cfg.get("z", "missing")).toEqual("missing");
