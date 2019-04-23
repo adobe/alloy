@@ -124,7 +124,7 @@ const createPersonalization = ({ logger }) => {
       },
       onBeforeEvent(event, isViewStart) {
         if (isViewStart) {
-          console.log("Personalization:::onBeforeViewStart");
+          console.log("Personalization:::onBeforeEvent");
           event.mergeQuery({
             personalization: {
               prefetch: {
@@ -153,7 +153,7 @@ const createPersonalization = ({ logger }) => {
         //  Jon's network gateway work
         return;
         // eslint-disable-next-line no-unreachable
-        console.log("Personalization:::onViewStartResponse");
+        console.log("Personalization:::onResponse");
         const personalization =
           response.getPayloadByType("personalization:run") || [];
 

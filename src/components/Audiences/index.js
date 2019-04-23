@@ -26,8 +26,8 @@ const createAudiences = ({ config, logger }) => {
           urlDestinations: true
         });
       },
-      onViewStartResponse(response) {
-        logger.log("Audiences:::onViewStartResponse");
+      onResponse(response) {
+        logger.log("Audiences:::onResponse");
 
         const destsUtil = createDestinations({ logger });
 
