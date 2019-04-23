@@ -149,9 +149,6 @@ const createPersonalization = ({ logger }) => {
       //  Jon's network gateway work
 
       onResponse(response) {
-        // TODO: pull personalization data from response fragments, which requires
-        //  Jon's network gateway work
-        return;
         // eslint-disable-next-line no-unreachable
         console.log("Personalization:::onResponse");
         const personalization =
