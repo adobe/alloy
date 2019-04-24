@@ -15,14 +15,19 @@ import createDestinations from "../../utils/createDestinations";
 const createAudiences = ({ config, logger }) => {
   return {
     lifecycle: {
-      onBeforeViewStart(payload) {
-        logger.log("Audiences:::onBeforeViewStart");
+      onBeforeEvent(event, isViewStart) {
+        if (!isViewStart) {
+          return;
+        }
+        logger.log("Audiences:::onBeforeEvent");
         // TODO: Remove; We won't need to request destinations explicitely.
         // This is just for demo currently.
-        payload.addQuery({ urlDestinations: true });
+        event.mergeQuery({
+          urlDestinations: true
+        });
       },
-      onViewStartResponse(response) {
-        logger.log("Audiences:::onViewStartResponse");
+      onResponse(response) {
+        logger.log("Audiences:::onResponse");
 
         const destsUtil = createDestinations({ logger });
 

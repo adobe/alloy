@@ -28,7 +28,6 @@ governing permissions and limitations under the License.
 //  new Error() or core.missingRequirement('I require Personalization');
 // }
 
-import createResponse from "./createResponse";
 import { Promise } from "../utils";
 
 function invokeHook(componentRegistry, hookName, ...args) {
@@ -70,25 +69,14 @@ export default componentRegistry => {
     onComponentsRegistered: tools => {
       return invokeHook(componentRegistry, "onComponentsRegistered", tools);
     },
-    onBeforeViewStart: guardLifecycleMethod(payload => {
-      return invokeHook(componentRegistry, "onBeforeViewStart", payload);
+    onBeforeEvent: guardLifecycleMethod((event, isViewStart) => {
+      return invokeHook(componentRegistry, "onBeforeEvent", event, isViewStart);
     }),
-    onViewStartResponse: guardLifecycleMethod(response => {
-      return invokeHook(
-        componentRegistry,
-        "onViewStartResponse",
-        createResponse(response)
-      );
+    onBeforeRequest: guardLifecycleMethod(payload => {
+      return invokeHook(componentRegistry, "onBeforeRequest", payload);
     }),
-    onBeforeEvent: guardLifecycleMethod(payload => {
-      return invokeHook(componentRegistry, "onBeforeEvent", payload);
-    }),
-    onEventResponse: guardLifecycleMethod(response => {
-      return invokeHook(
-        componentRegistry,
-        "onEventResponse",
-        createResponse(response)
-      );
+    onResponse: guardLifecycleMethod(response => {
+      return invokeHook(componentRegistry, "onResponse", response);
     }),
     onBeforeUnload: guardLifecycleMethod(() => {
       return invokeHook(componentRegistry, "onBeforeUnload");

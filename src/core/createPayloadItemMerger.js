@@ -10,19 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (window, topFrameSetProvider) => {
-  let topFrameSet;
+import { assign } from "../utils";
 
-  return event => {
-    topFrameSet = topFrameSet || topFrameSetProvider();
-
-    event.mergeWeb({
-      webPageDetails: {
-        URL: window.location.href || window.location
-      },
-      webReferrer: {
-        URL: topFrameSet.document.referrer
-      }
-    });
-  };
+/**
+ * Creates a function that, when passed an object of updates, will merge
+ * the updates onto the current value of a payload property.
+ * @param content
+ * @param key
+ * @returns {Function}
+ */
+export default (content, key) => updates => {
+  // eslint-disable-next-line no-param-reassign
+  content[key] = content[key] || {};
+  assign(content[key], updates);
 };

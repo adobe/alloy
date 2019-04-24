@@ -122,18 +122,35 @@ const createPersonalization = ({ logger }) => {
       onComponentsRegistered(tools) {
         ({ componentRegistry } = tools);
       },
-      onBeforeViewStart(payload) {
-        console.log("Personalization:::onBeforeViewStart");
-        payload.addQuery({ personalization: true });
-        payload.addMetadata({
+      onBeforeEvent(event, isViewStart) {
+        if (isViewStart) {
+          console.log("Personalization:::onBeforeEvent");
+          event.mergeQuery({
+            personalization: {
+              prefetch: {
+                views: true
+              },
+              execute: {
+                pageLoad: true
+              }
+            }
+          });
+        }
+      },
+      onBeforeRequest(payload) {
+        payload.mergeMeta({
           personalization: {
             client: "demo12",
             sessionID: "12344566"
           }
         });
       },
-      onViewStartResponse(response) {
-        console.log("Personalization:::onViewStartResponse");
+      // TODO: pull personalization data from response fragments, which requires
+      //  Jon's network gateway work
+
+      onResponse(response) {
+        // eslint-disable-next-line no-unreachable
+        console.log("Personalization:::onResponse");
         const personalization =
           response.getPayloadByType("personalization:run") || [];
 

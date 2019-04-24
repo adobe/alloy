@@ -10,19 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (window, topFrameSetProvider) => {
-  let topFrameSet;
-
+export default (window, dateProvider) => {
   return event => {
-    topFrameSet = topFrameSet || topFrameSetProvider();
-
-    event.mergeWeb({
-      webPageDetails: {
-        URL: window.location.href || window.location
-      },
-      webReferrer: {
-        URL: topFrameSet.document.referrer
-      }
-    });
+    const date = dateProvider();
+    const placeContext = {
+      localTime: date.toISOString(),
+      localTimezoneOffset: date.getTimezoneOffset()
+    };
+    event.mergePlaceContext(placeContext);
   };
 };

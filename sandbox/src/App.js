@@ -48,8 +48,8 @@ function Home() {
         <button onClick={() => {
           window.alloy("event", {
             data: {
-              event: "login",
-              userName: "Joe Khoury"
+              event: ["login"],
+              userName: ["Joe Khoury"]
             },
             callback: () => {
               console.log("HIT HAS BEEN SENT!!!");
@@ -60,8 +60,8 @@ function Home() {
         <button onClick={() => {
           window.alloy("event", {
             data: {
-              event: "video",
-              videoName: "Funniest cat ever."
+              event: ["video"],
+              videoName: ["Funniest cat ever."]
             },
             callback: () => {
               console.log("HIT HAS BEEN SENT!!!");
@@ -72,8 +72,8 @@ function Home() {
       <button onClick={() => {
           window.alloy("event", {
             data: {
-              event: "custom-event",
-              videoName: "Random event."
+              event: ["custom-event"],
+              videoName: ["Random event."]
             },
             callback: () => {
               console.log("HIT HAS BEEN SENT!!!");
