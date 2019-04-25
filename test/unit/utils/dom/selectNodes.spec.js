@@ -10,12 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNil from "./isNil";
+import selectNodes from "../../../../src/utils/dom/selectNodes";
 
-/**
- * Returns whether the value is an object.
- * @param {*} value
- * @returns {boolean}
- */
-export default value =>
-  !isNil(value) && !Array.isArray(value) && typeof value === "object";
+describe("selectNodes", () => {
+  it("should return array when nodes are present", () => {
+    expect(selectNodes("HEAD").length).toEqual(1);
+  });
+
+  it("should return array when nodes are NOT present", () => {
+    expect(selectNodes("FOO").length).toEqual(0);
+  });
+});

@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNil from "./isNil";
-
 /**
- * Returns whether the value is an object.
- * @param {*} value
- * @returns {boolean}
+ * Returns an array of matched DOM nodes.
+ * @param {String} selector
+ * @param {Node} doc, defaults to document
+ * @returns {Array} an array of DOM nodes
  */
-export default value =>
-  !isNil(value) && !Array.isArray(value) && typeof value === "object";
+export default function selectNodes(selector, doc = document) {
+  return [].slice.call(doc.querySelectorAll(selector));
+}

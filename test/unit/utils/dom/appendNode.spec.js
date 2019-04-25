@@ -10,12 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNil from "./isNil";
+import createNode from "../../../../src/utils/dom/createNode";
+import appendNode from "../../../../src/utils/dom/appendNode";
+import selectNodes from "../../../../src/utils/dom/selectNodes";
+import removeNode from "../../../../src/utils/dom/removeNode";
 
-/**
- * Returns whether the value is an object.
- * @param {*} value
- * @returns {boolean}
- */
-export default value =>
-  !isNil(value) && !Array.isArray(value) && typeof value === "object";
+describe("appendNode", () => {
+  it("should append a node to head tag", () => {
+    const elem = createNode("style", { id: "append" });
+
+    appendNode(document.head, elem);
+
+    expect(selectNodes("#append").length).toEqual(1);
+
+    removeNode(document.head, elem);
+  });
+});

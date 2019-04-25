@@ -1,3 +1,4 @@
+import isNil from "./isNil";
 import isObject from "./isObject";
 import isNonEmptyString from "./isNonEmptyString";
 import fireImage from "./fireImage";
@@ -21,7 +22,7 @@ export default ({ iframe, logger }) => {
             ? dest.url
             : `//${dest.url}`;
 
-          if (typeof dest.hideReferrer !== "undefined") {
+          if (!isNil(dest.hideReferrer)) {
             if (dest.hideReferrer) {
               fireInIframe({ url });
             } else {

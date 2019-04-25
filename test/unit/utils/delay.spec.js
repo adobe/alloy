@@ -10,12 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNil from "./isNil";
+import delay, { cancelDelay } from "../../../src/utils/delay";
 
-/**
- * Returns whether the value is an object.
- * @param {*} value
- * @returns {boolean}
- */
-export default value =>
-  !isNil(value) && !Array.isArray(value) && typeof value === "object";
+describe("delay", () => {
+  it("should invoke setTimeout", () => {
+    const win = {
+      setTimeout: jasmine.createSpy()
+    };
+
+    delay(() => {}, 0, win);
+
+    expect(win.setTimeout).toHaveBeenCalled();
+  });
+
+  it("should invoke clearTimeout", () => {
+    const win = {
+      clearTimeout: jasmine.createSpy()
+    };
+
+    const timerId = 123;
+
+    cancelDelay(timerId, win);
+
+    expect(win.clearTimeout).toHaveBeenCalled();
+  });
+});

@@ -10,12 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNil from "./isNil";
+import keys from "../../../src/utils/keys";
 
-/**
- * Returns whether the value is an object.
- * @param {*} value
- * @returns {boolean}
- */
-export default value =>
-  !isNil(value) && !Array.isArray(value) && typeof value === "object";
+describe("keys", () => {
+  it("returns empty when no keys", () => {
+    expect(keys({})).toEqual([]);
+  });
+
+  it("returns keys when object", () => {
+    expect(keys({ a: 1, b: 2 })).toEqual(["a", "b"]);
+  });
+});

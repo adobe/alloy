@@ -10,12 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNil from "./isNil";
+import isString from "../../../src/utils/isString";
 
-/**
- * Returns whether the value is an object.
- * @param {*} value
- * @returns {boolean}
- */
-export default value =>
-  !isNil(value) && !Array.isArray(value) && typeof value === "object";
+const nonStrings = [{}, [], new Date(), /abc/, true, false, 123];
+
+describe("isString", () => {
+  it("returns true if the value is a string", () => {
+    expect(isString("123")).toBe(true);
+  });
+
+  it("returns false if the value is not a string", () => {
+    nonStrings.forEach(str => {
+      expect(isString(str)).toBe(false);
+    });
+  });
+});

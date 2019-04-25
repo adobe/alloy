@@ -10,12 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNil from "./isNil";
+import keys from "../keys";
+import appendNode from "./appendNode";
 
-/**
- * Returns whether the value is an object.
- * @param {*} value
- * @returns {boolean}
- */
-export default value =>
-  !isNil(value) && !Array.isArray(value) && typeof value === "object";
+export default function createNode(
+  tag,
+  attrs = {},
+  children = [],
+  doc = document
+) {
+  const result = doc.createElement(tag);
+
+  keys(attrs).forEach(key => {
+    result.setAttribute(key, attrs[key]);
+  });
+
+  children.forEach(child => appendNode(result, child));
+
+  return result;
+}
