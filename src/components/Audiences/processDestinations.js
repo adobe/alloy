@@ -11,19 +11,12 @@ governing permissions and limitations under the License.
 */
 
 import createDestinations from "../../utils/createDestinations";
-import { isObject, isNonEmptyString, cookie } from "../../utils";
+import { isNonEmptyString, cookie } from "../../utils";
 
 export default ({ destinations, config, logger }) => {
-  const urlDestinations = destinations.reduce((arr, dest) => {
-    if (isObject(dest) && dest.type === "url" && isObject(dest.spec)) {
-      arr.push({
-        url: dest.spec.url,
-        hideReferrer: dest.spec.hideReferrer
-      });
-    }
-
-    return arr;
-  }, []);
+  const urlDestinations = destinations
+    .filter(dest => dest.type === "url")
+    .map(dest => dest.spec);
 
   if (
     urlDestinations.length &&
@@ -37,18 +30,9 @@ export default ({ destinations, config, logger }) => {
     // destsUtil.end();
   }
 
-  const cookieDestinations = destinations.reduce((arr, dest) => {
-    if (isObject(dest) && dest.type === "cookie" && isObject(dest.spec)) {
-      arr.push({
-        name: dest.spec.name,
-        value: dest.spec.value,
-        domain: dest.spec.domain,
-        ttl: dest.spec.ttl
-      });
-    }
-
-    return arr;
-  }, []);
+  const cookieDestinations = destinations
+    .filter(dest => dest.type === "cookie")
+    .map(dest => dest.spec);
 
   cookieDestinations.forEach(dest => {
     if (isNonEmptyString(dest.name)) {
