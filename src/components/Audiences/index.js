@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createDestinations from "../../utils/createDestinations";
+import processDestinations from "./processDestinations";
 
 const createAudiences = ({ config, logger }) => {
   return {
@@ -29,20 +29,13 @@ const createAudiences = ({ config, logger }) => {
       onResponse(response) {
         logger.log("Audiences:::onResponse");
 
-        const destsUtil = createDestinations({ logger });
+        const destinations = response.getPayloadByType("activation:push") || [];
 
-        if (
-          config.destinationsEnabled === undefined ||
-          config.destinationsEnabled
-        ) {
-          const destinations =
-            response.getPayloadByType("activation:push") || [];
-
-          destsUtil.fire(destinations);
-
-          // TODO: Figure out if this can be used correctly
-          // destsUtil.end();
-        }
+        processDestinations({
+          destinations,
+          config,
+          logger
+        });
       }
     },
     commands: {}
