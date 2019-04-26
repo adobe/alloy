@@ -12,13 +12,12 @@ governing permissions and limitations under the License.
 
 import isFunction from "../isFunction";
 import isNonEmptyArray from "../isNonEmptyArray";
-import delay from "../delay";
 import Promise from "../Promise";
 import selectNodes from "./selectNodes";
 
 const MUTATION_OBSERVER = "MutationObserver";
 const RAF = "requestAnimationFrame";
-const MO_CONFIG = { childList: true, subtree: true };
+const MUTATION_OBSERVER_CONFIG = { childList: true, subtree: true };
 const VISIBILITY_STATE = "visibilityState";
 const VISIBLE = "visible";
 const DELAY = 100;
@@ -28,8 +27,8 @@ function createError(selector) {
   return new Error(`Could not find: ${selector}`);
 }
 
-function createPromise(func) {
-  return new Promise(func);
+function createPromise(executor) {
+  return new Promise(executor);
 }
 
 export function canUseMutationObserver(win) {
@@ -43,22 +42,22 @@ export function awaitUsingMutationObserver(
   timeout,
   selectFunc
 ) {
-  return createPromise((res, rej) => {
-    const mo = new win[MUTATION_OBSERVER](() => {
-      const elems = selectFunc(selector);
+  return createPromise((resolve, reject) => {
+    const mutationObserver = new win[MUTATION_OBSERVER](() => {
+      const nodes = selectFunc(selector);
 
-      if (isNonEmptyArray(elems)) {
-        mo.disconnect();
-        res(elems);
+      if (isNonEmptyArray(nodes)) {
+        mutationObserver.disconnect();
+        resolve(nodes);
       }
     });
 
-    delay(() => {
-      mo.disconnect();
-      rej(createError(selector));
+    setTimeout(() => {
+      mutationObserver.disconnect();
+      reject(createError(selector));
     }, timeout);
 
-    mo.observe(doc, MO_CONFIG);
+    mutationObserver.observe(doc, MUTATION_OBSERVER_CONFIG);
   });
 }
 
@@ -67,12 +66,12 @@ export function canUseRequestAnimationFrame(doc) {
 }
 
 export function awaitUsingRequestAnimation(win, selector, timeout, selectFunc) {
-  return createPromise((res, rej) => {
+  return createPromise((resolve, reject) => {
     function execute() {
-      const elems = selectFunc(selector);
+      const nodes = selectFunc(selector);
 
-      if (isNonEmptyArray(elems)) {
-        res(elems);
+      if (isNonEmptyArray(nodes)) {
+        resolve(nodes);
         return;
       }
 
@@ -81,29 +80,29 @@ export function awaitUsingRequestAnimation(win, selector, timeout, selectFunc) {
 
     execute();
 
-    delay(() => {
-      rej(createError(selector));
+    setTimeout(() => {
+      reject(createError(selector));
     }, timeout);
   });
 }
 
 export function awaitUsingTimer(selector, timeout, selectFunc) {
-  return createPromise((res, rej) => {
+  return createPromise((resolve, reject) => {
     function execute() {
-      const elems = selectFunc(selector);
+      const nodes = selectFunc(selector);
 
-      if (isNonEmptyArray(elems)) {
-        res(elems);
+      if (isNonEmptyArray(nodes)) {
+        resolve(nodes);
         return;
       }
 
-      delay(execute, DELAY);
+      setTimeout(execute, DELAY);
     }
 
     execute();
 
-    delay(() => {
-      rej(createError(selector));
+    setTimeout(() => {
+      reject(createError(selector));
     }, timeout);
   });
 }
@@ -115,10 +114,10 @@ export default function awaitSelector(
   win = window,
   doc = document
 ) {
-  const elems = selectFunc(selector);
+  const nodes = selectFunc(selector);
 
-  if (isNonEmptyArray(elems)) {
-    return Promise.resolve(elems);
+  if (isNonEmptyArray(nodes)) {
+    return Promise.resolve(nodes);
   }
 
   if (canUseMutationObserver(win)) {

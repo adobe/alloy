@@ -9,7 +9,7 @@ const IFRAME_ATTRS = {
   style: "display: none; width: 0; height: 0;"
 };
 
-function createPair(body) {
+function createPair([body]) {
   const iframe = createNode(IFRAME_TAG, IFRAME_ATTRS);
 
   return { body, iframe: appendNode(body, iframe) };

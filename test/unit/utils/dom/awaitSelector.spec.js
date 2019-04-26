@@ -13,11 +13,10 @@ governing permissions and limitations under the License.
 import awaitSelector from "../../../../src/utils/dom/awaitSelector";
 import selectNodes from "../../../../src/utils/dom/selectNodes";
 import { createNode, appendNode, removeNode } from "../../../../src/utils/dom";
-import delay from "../../../../src/utils/delay";
 
 describe("awaitSelector", () => {
   function createAndAppendNodeDelayed(id) {
-    delay(() => {
+    setTimeout(() => {
       appendNode(document.head, createNode("style", { id }));
     }, 50);
   }

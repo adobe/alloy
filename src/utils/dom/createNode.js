@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import keys from "../keys";
 import appendNode from "./appendNode";
 
 export default function createNode(
@@ -21,7 +20,7 @@ export default function createNode(
 ) {
   const result = doc.createElement(tag);
 
-  keys(attrs).forEach(key => {
+  Object.keys(attrs).forEach(key => {
     result.setAttribute(key, attrs[key]);
   });
 
