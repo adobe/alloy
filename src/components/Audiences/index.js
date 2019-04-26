@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import processDestinationsFactory from "./processDestinationsFactory";
+import processDestinations from "./processDestinations";
 
 const createAudiences = ({ config, logger }) => {
   return {
@@ -31,7 +31,7 @@ const createAudiences = ({ config, logger }) => {
 
         const destinations = response.getPayloadByType("activation:push") || [];
 
-        processDestinationsFactory({
+        processDestinations({
           destinations,
           config,
           logger

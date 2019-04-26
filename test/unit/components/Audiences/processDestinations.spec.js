@@ -1,7 +1,7 @@
-import processDestinationsFactory from "../../../../src/components/Audiences/processDestinationsFactory";
+import processDestinations from "../../../../src/components/Audiences/processDestinations";
 import { cookie } from "../../../../src/utils";
 
-describe("Audiences::processDestinationsFactory", () => {
+describe("Audiences::processDestinations", () => {
   const config = {};
   const logger = {
     error() {}
@@ -43,7 +43,7 @@ describe("Audiences::processDestinationsFactory", () => {
       }
     ];
 
-    processDestinationsFactory({ destinations, config, logger });
+    processDestinations({ destinations, config, logger });
 
     expect(cookie.get("audlabcookie")).toEqual(
       "dgtest\u003ddevicegraphtestdestination1"
