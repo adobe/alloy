@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isObject, isString } from "../utils";
+import { assign, getNestedObject, setNestedObject } from "../utils";
 
 const createConfig = config => {
   const cfg = {
@@ -19,32 +19,15 @@ const createConfig = config => {
      * @param {Object} Key.
      * @param {Object} Value.
      */
-    put: (key, value) => {
-      let keys = [key];
-      if (isString(key)) {
-        keys = key.split(".");
-      }
-      let obj = cfg;
-      let existingValue;
-      for (let i = 0; i < keys.length; i += 1) {
-        if (i === keys.length - 1) {
-          existingValue = obj[keys[i]];
-          obj[keys[i]] = value;
-        } else if (!obj[keys[i]]) {
-          obj[keys[i]] = {};
-        }
-        obj = obj[keys[i]];
-      }
-      return existingValue;
+    set: (key, value) => {
+      return setNestedObject(cfg, key, value);
     },
     /**
      * Assigns all key-value mappings in an existing config to this config
      * @param {Object} New configurations.
      */
-    putAll: cfgAdd => {
-      if (isObject(cfgAdd)) {
-        Object.assign(cfg, cfgAdd);
-      }
+    setAll: cfgAdd => {
+      assign(cfg, cfgAdd);
     },
     /**
      * Returns value assigned to key.
@@ -52,26 +35,15 @@ const createConfig = config => {
      * @param {Object} Default value if no value is found.
      */
     get: (key, defaultValue) => {
-      let keys = [key];
-      if (isString(key)) {
-        keys = key.split(".");
-      }
-      let obj = cfg;
-      for (let i = 0; i < keys.length; i += 1) {
-        if (!obj || !Object.prototype.hasOwnProperty.call(obj, keys[i])) {
-          return defaultValue;
-        }
-        obj = obj[keys[i]];
-      }
-      return obj;
+      return getNestedObject(cfg, key, defaultValue);
     },
     /**
      * Returns a set of the top level keys in this config.
      */
     keySet: () => {
-      const keys = new Set(Object.keys(cfg));
+      const keys = Object.keys(cfg);
       cfg.forbiddenKeys.forEach(key => {
-        keys.delete(key);
+        keys.splice(keys.indexOf(key), 1);
       });
       return keys;
     },
@@ -79,9 +51,7 @@ const createConfig = config => {
      * Adds schema information to the existing configuration schema.
      */
     extendSchema: schemaAddition => {
-      if (isObject(schemaAddition)) {
-        Object.assign(cfg.schema, schemaAddition);
-      }
+      assign(cfg.schema, schemaAddition);
       return cfg.schema;
     },
     /**
@@ -93,18 +63,18 @@ const createConfig = config => {
     },
     toJSON: () => {
       const cfgCopy = {};
-      Object.assign(cfgCopy, cfg);
+      assign(cfgCopy, cfg);
       cfg.forbiddenKeys.forEach(key => {
         delete cfgCopy[key];
       });
       return cfgCopy;
     },
     schema: {},
-    forbiddenKeys: {}
+    forbiddenKeys: []
   };
-  cfg.forbiddenKeys = new Set(Object.keys(cfg));
-  if (isObject(config)) {
-    cfg.putAll(config);
+  cfg.forbiddenKeys = Object.keys(cfg);
+  if (config) {
+    cfg.setAll(config);
   }
   return cfg;
 };

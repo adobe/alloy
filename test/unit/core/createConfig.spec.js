@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { includes } from "../../../src/utils";
 import createConfig from "../../../src/core/createConfig";
 
 const testConfig = {
@@ -17,6 +18,9 @@ const testConfig = {
   b: "abc",
   c: {
     a1: "xyz"
+  },
+  neg: {
+    neg: false
   }
 };
 
@@ -42,12 +46,12 @@ describe("createConfig", () => {
   });
   it("supports adding a key value mapping", () => {
     const cfg = createConfig(testConfig);
-    cfg.put("d", "ABC");
+    cfg.set("d", "ABC");
     expect(cfg.get("d")).toEqual("ABC");
   });
   it("supports extending the config with a new config", () => {
     const cfg = createConfig(testConfig);
-    cfg.putAll({
+    cfg.setAll({
       d: {
         b1: 321
       }
@@ -56,7 +60,7 @@ describe("createConfig", () => {
   });
   it("supports adding missing object hierarchies through string dot notation", () => {
     const cfg = createConfig(testConfig);
-    cfg.put("c.b1.a2.a3", 321);
+    cfg.set("c.b1.a2.a3", 321);
     expect(cfg.c.b1.a2.a3).toEqual(321);
   });
   it("supports getting a value within object hiearchies through string dot notation", () => {
@@ -66,9 +70,13 @@ describe("createConfig", () => {
   it("supports returning top level key-set", () => {
     const cfg = createConfig(testConfig);
     const s = cfg.keySet();
-    expect(s.has("a")).toBe(true);
-    expect(s.has("b")).toBe(true);
-    expect(s.has("c")).toBe(true);
-    expect(s.has("get")).toBe(false);
+    expect(includes(s, "a")).toBe(true);
+    expect(includes(s, "b")).toBe(true);
+    expect(includes(s, "c")).toBe(true);
+    expect(includes(s, "get")).toBe(false);
+  });
+  it("supports handling false values", () => {
+    const cfg = createConfig(testConfig);
+    expect(cfg.get("neg.neg")).toBe(false);
   });
 });
