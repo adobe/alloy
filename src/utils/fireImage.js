@@ -11,6 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import isNonEmptyString from "./isNonEmptyString";
+import { createNode } from "./dom";
+
+const IMAGE_TAG = "img";
 
 /**
  * Fires an image pixel from the current document's window.
@@ -18,9 +21,9 @@ import isNonEmptyString from "./isNonEmptyString";
  * @returns {undefined}
  */
 export default ({ url, currentDocument }) => {
-  if (isNonEmptyString(url)) {
-    const img = (currentDocument || document).createElement("img");
+  const doc = currentDocument || document;
 
-    img.src = url;
+  if (isNonEmptyString(url)) {
+    createNode(IMAGE_TAG, { src: url }, [], doc);
   }
 };

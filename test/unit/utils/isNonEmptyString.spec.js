@@ -10,12 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNil from "./isNil";
+import isNonEmptyString from "../../../src/utils/isNonEmptyString";
 
-/**
- * Returns whether the value is an object.
- * @param {*} value
- * @returns {boolean}
- */
-export default value =>
-  !isNil(value) && !Array.isArray(value) && typeof value === "object";
+describe("isNonEmptyString", () => {
+  it("returns true when string", () => {
+    expect(isNonEmptyString("1234")).toBe(true);
+  });
+
+  it("returns fale when empty string", () => {
+    expect(isNonEmptyString("")).toBe(false);
+  });
+});

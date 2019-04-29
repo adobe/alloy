@@ -10,12 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNil from "./isNil";
-
 /**
- * Returns whether the value is an object.
+ * Returns whether the value is a non-empty array.
  * @param {*} value
  * @returns {boolean}
  */
-export default value =>
-  !isNil(value) && !Array.isArray(value) && typeof value === "object";
+export default value => Array.isArray(value) && value.length > 0;

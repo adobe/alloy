@@ -1,40 +1,23 @@
+import { awaitSelector, createNode, appendNode, removeNode } from "./dom";
 import fireDestinationsFactory from "./fireDestinationsFactory";
 
-function waitForDocumentBody(resolve) {
-  if (document.body) {
-    resolve();
-  } else {
-    setTimeout(() => waitForDocumentBody(resolve), 30);
-  }
-}
+const BODY_TAG = "BODY";
+const IFRAME_TAG = "IFRAME";
+const IFRAME_ATTRS = {
+  name: "Adobe Destinationing iFrame",
+  class: "adobe-iframe",
+  style: "display: none; width: 0; height: 0;"
+};
 
-function getDocumentBody() {
-  return new Promise(resolve => {
-    if (document.body) {
-      resolve();
-    } else {
-      waitForDocumentBody(resolve);
-    }
-  });
-}
+function createIframe([body]) {
+  const iframe = createNode(IFRAME_TAG, IFRAME_ATTRS);
 
-function createIframe() {
-  return getDocumentBody().then(() => {
-    // TODO: Do we inject document or window instead?
-    const iframe = document.createElement("iframe");
-    iframe.className = "adobe-iframe";
-    iframe.name = "Adobe Destinationing iFrame";
-    iframe.style.cssText = "display: none; width: 0; height: 0;";
-    document.body.appendChild(iframe);
-
-    return iframe;
-  });
+  return appendNode(body, iframe);
 }
 
 export default ({ logger }) => {
-  const iframePromise = createIframe();
-
-  const fireDestsPromise = iframePromise.then(iframe => {
+  const iframePromise = awaitSelector(BODY_TAG).then(createIframe);
+  const fireDestinationsPromise = iframePromise.then(iframe => {
     return fireDestinationsFactory({ iframe, logger });
   });
 
@@ -42,13 +25,12 @@ export default ({ logger }) => {
 
   const end = () => {
     ended = true;
-    iframePromise.then(iframe => {
-      document.body.removeChild(iframe);
-    });
+
+    iframePromise.then(removeNode);
   };
 
   const fire = destinations => {
-    fireDestsPromise.then(fireDests => {
+    fireDestinationsPromise.then(fireDests => {
       if (!ended) {
         fireDests(destinations);
       }

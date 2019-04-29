@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNil from "./isNil";
+export default function removeNode(node) {
+  const parent = node.parentNode;
 
-/**
- * Returns whether the value is an object.
- * @param {*} value
- * @returns {boolean}
- */
-export default value =>
-  !isNil(value) && !Array.isArray(value) && typeof value === "object";
+  if (parent) {
+    return parent.removeChild(node);
+  }
+
+  return null;
+}

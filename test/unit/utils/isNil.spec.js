@@ -10,12 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNil from "./isNil";
+import isNil from "../../../src/utils/isNil";
 
-/**
- * Returns whether the value is an object.
- * @param {*} value
- * @returns {boolean}
- */
-export default value =>
-  !isNil(value) && !Array.isArray(value) && typeof value === "object";
+describe("isNil", () => {
+  it("returns true when null", () => {
+    expect(isNil(null)).toBe(true);
+  });
+
+  it("returns true when undefined", () => {
+    expect(isNil(undefined)).toBe(true);
+  });
+
+  it("returns false when value", () => {
+    expect(isNil(1)).toBe(false);
+    expect(isNil({})).toBe(false);
+    expect(isNil("aaa")).toBe(false);
+    expect(isNil(true)).toBe(false);
+    expect(isNil(false)).toBe(false);
+    expect(isNil([])).toBe(false);
+  });
+});

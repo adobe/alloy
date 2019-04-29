@@ -10,12 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNil from "./isNil";
-
-/**
- * Returns whether the value is an object.
- * @param {*} value
- * @returns {boolean}
- */
-export default value =>
-  !isNil(value) && !Array.isArray(value) && typeof value === "object";
+export { default as awaitSelector } from "./awaitSelector";
+export { default as createNode } from "./createNode";
+export { default as appendNode } from "./appendNode";
+export { default as removeNode } from "./removeNode";
