@@ -19,6 +19,11 @@ export default (componentCreators, logger, getNamespacedStorage) => config => {
 
   componentCreators.forEach(createComponent => {
     const { namespace } = createComponent;
+
+    // TODO: Get the default config from the component
+    // const { componentConfigSchema } = createComponent;
+    // TODO: Extend the config with the component config schema
+
     const storage = getNamespacedStorage(
       "orgID." // TODO: Make orgID mandatory and add it here
     );
@@ -38,6 +43,8 @@ export default (componentCreators, logger, getNamespacedStorage) => config => {
     }
     componentRegistry.register(namespace, component);
   });
+
+  // TODO: Output the finalized config schema (if debug is turned on)
 
   const lifecycle = createLifecycle(componentRegistry);
   lifecycle.onComponentsRegistered({
