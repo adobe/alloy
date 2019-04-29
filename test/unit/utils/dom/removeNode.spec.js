@@ -19,7 +19,7 @@ describe("removeNode", () => {
   it("should remove a node from head tag", () => {
     const node = createNode("style", { id: "remove" });
 
-    removeNode(document.head, appendNode(document.head, node));
+    removeNode(appendNode(document.head, node));
 
     expect(selectNodes("#remove").length).toEqual(0);
   });

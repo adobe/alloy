@@ -24,7 +24,7 @@ describe("awaitSelector", () => {
   function cleanUp(id) {
     const nodes = selectNodes(`#${id}`);
 
-    removeNode(document.head, nodes[0]);
+    removeNode(nodes[0]);
   }
 
   function awaitSelectorAndAssert(id, win, doc, done) {

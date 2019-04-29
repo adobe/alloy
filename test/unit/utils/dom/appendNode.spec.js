@@ -23,6 +23,6 @@ describe("appendNode", () => {
 
     expect(selectNodes("#append").length).toEqual(1);
 
-    removeNode(document.head, elem);
+    removeNode(elem);
   });
 });

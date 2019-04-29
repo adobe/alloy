@@ -10,6 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default function removeNode(parent, node) {
-  return parent.removeChild(node);
+export default function removeNode(node) {
+  const parent = node.parentNode;
+
+  if (parent) {
+    return parent.removeChild(node);
+  }
+
+  return null;
 }

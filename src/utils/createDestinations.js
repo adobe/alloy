@@ -9,21 +9,15 @@ const IFRAME_ATTRS = {
   style: "display: none; width: 0; height: 0;"
 };
 
-function createPair([body]) {
+function createIframe([body]) {
   const iframe = createNode(IFRAME_TAG, IFRAME_ATTRS);
 
-  return { body, iframe: appendNode(body, iframe) };
-}
-
-function cleanUp(pair) {
-  const { body, iframe } = pair;
-
-  removeNode(body, iframe);
+  return appendNode(body, iframe);
 }
 
 export default ({ logger }) => {
-  const pairPromise = awaitSelector(BODY_TAG).then(createPair);
-  const fireDestsPromise = pairPromise.then(({ iframe }) => {
+  const iframePromise = awaitSelector(BODY_TAG).then(createIframe);
+  const fireDestinationsPromise = iframePromise.then(iframe => {
     return fireDestinationsFactory({ iframe, logger });
   });
 
@@ -32,11 +26,11 @@ export default ({ logger }) => {
   const end = () => {
     ended = true;
 
-    pairPromise.then(cleanUp);
+    iframePromise.then(removeNode);
   };
 
   const fire = destinations => {
-    fireDestsPromise.then(fireDests => {
+    fireDestinationsPromise.then(fireDests => {
       if (!ended) {
         fireDests(destinations);
       }
