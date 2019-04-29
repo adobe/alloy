@@ -28,8 +28,6 @@ governing permissions and limitations under the License.
 //  new Error() or core.missingRequirement('I require Personalization');
 // }
 
-import { Promise } from "../utils";
-
 function invokeHook(componentRegistry, hookName, ...args) {
   return Promise.all(
     componentRegistry.getLifecycleCallbacks(hookName).map(callback => {

@@ -28,7 +28,6 @@ export { default as isNonEmptyString } from "./isNonEmptyString";
 export { default as isObject } from "./isObject";
 export { default as isString } from "./isString";
 export { default as noop } from "./noop";
-export { default as Promise } from "./Promise";
 export { default as setNestedObject } from "./setNestedObject";
 export { default as stackError } from "./stackError";
 export { default as storageFactory } from "./storageFactory";
