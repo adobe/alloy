@@ -23,6 +23,7 @@
     "prebuild:prod": "npm run prebuild",
     "build:prod": "rollup -c rollup.prod.config.js",
     "build:watch": "rollup -c -w",
+    "build:basecode": "terser src/baseCode/index.js --mangle --compress unused=false",
     "sandbox": "cd sandbox && npm start",
     "sandbox:build": "cd sandbox && npm run build",
     "dev": "npm-run-all --parallel build:watch sandbox"
