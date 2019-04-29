@@ -14,14 +14,9 @@
     <title>Mock website hosting the Alloy</title>
 
     <script>
-      (function(a,b){if(!a[b]){a.__adobeNS=a.__adobeNS||[];
-      a.__adobeNS.push(b);a[b]=function(){a[b].q.push(arguments)};a[b].q=[]}})
-      (window,'alloy');
-
-      // For Testing multiple instances
-      // (function(a,b){if(!a[b]){a.__adobeNS=a.__adobeNS||[];
-      // a.__adobeNS.push(b);a[b]=function(){a[b].q.push(arguments)};a[b].q=[]}})
-      // (window,'ebda');
+      (function(a,b){b.forEach(function(c){if(!a[c]){a.__alloyNS=a.__alloyNS||[],
+      a.__alloyNS.push(c),a[c]=function(){a[c].q.push(arguments)},a[c].q=[]}})})
+      (window,['alloy','ebda'])
     </script>
     <script src="alloy.js" async></script>
 
@@ -68,17 +63,26 @@
 
       // For Testing multiple instances
       // ebda("configure", {
-      //   orgId: 98765432109,
+      //   orgID: 12378461287,
+      //   propertyID: 1999999,
       //   dataSet: "dataset2",
       //   shouldStoreCollectedData: 1,
       //   device: "Chrome-Mac",
-      //   collectionUrl: "https://edgegateway.azurewebsites.net"
+      //   // collectionUrl: "https://edgegateway.azurewebsites.net",
+      //   collectionUrl: "http://ex-edge.stable-stage.aam-npe.adobeinternal.net/v1",
+      //   destinationsEnabled: true,
+      //   debug: true
       // });
       //
       // ebda("viewStart", {
       //   data: {
-      //     event: "page View",
-      //     pageName: "landing"
+      //     pageName: ["landing"]
+      //   }
+      // });
+      //
+      // ebda("event", {
+      //   data: {
+      //     snack: ["oreos"]
       //   }
       // });
     </script>

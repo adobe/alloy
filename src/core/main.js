@@ -34,7 +34,7 @@ const componentCreators = [
 ];
 
 // eslint-disable-next-line no-underscore-dangle
-const namespaces = window.__adobeNS;
+const namespaces = window.__alloyNS;
 
 const storage = storageFactory(window);
 
