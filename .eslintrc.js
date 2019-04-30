@@ -8,6 +8,7 @@ module.exports = {
   plugins: ["prettier", "testcafe"],
   rules: {
     "prettier/prettier": "error",
+    "func-style": "error",
     // Turning this off allows us to import devDependencies in our build tools.
     // We enable the rule in src/.eslintrc.js since that's the only place we
     // want to disallow importing extraneous dependencies.

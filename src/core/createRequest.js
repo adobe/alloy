@@ -13,13 +13,13 @@ governing permissions and limitations under the License.
 import createPayload from "./createPayload";
 import createResponse from "./createResponse";
 
-function setMeta(payload, config) {
+const setMeta = (payload, config) => {
   // Append meta to the payload.
   payload.mergeMeta({
     enableStore: config.shouldStoreCollectedData,
     device: config.device || "UNKNOWN-DEVICE"
   });
-}
+};
 
 const initalizePayload = (config, events, beforeHook) => {
   // Populate the request's body with payload, data and meta.

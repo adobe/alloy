@@ -9,11 +9,11 @@ const IFRAME_ATTRS = {
   style: "display: none; width: 0; height: 0;"
 };
 
-function createIframe([body]) {
+const createIframe = ([body]) => {
   const iframe = createNode(IFRAME_TAG, IFRAME_ATTRS);
 
   return appendNode(body, iframe);
-}
+};
 
 export default ({ logger }) => {
   const iframePromise = awaitSelector(BODY_TAG).then(createIframe);

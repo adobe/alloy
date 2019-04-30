@@ -15,19 +15,19 @@ import selectNodes from "../../../../src/utils/dom/selectNodes";
 import { createNode, appendNode, removeNode } from "../../../../src/utils/dom";
 
 describe("awaitSelector", () => {
-  function createAndAppendNodeDelayed(id) {
+  const createAndAppendNodeDelayed = id => {
     setTimeout(() => {
       appendNode(document.head, createNode("style", { id }));
     }, 50);
-  }
+  };
 
-  function cleanUp(id) {
+  const cleanUp = id => {
     const nodes = selectNodes(`#${id}`);
 
     removeNode(nodes[0]);
-  }
+  };
 
-  function awaitSelectorAndAssert(id, win, doc, done) {
+  const awaitSelectorAndAssert = (id, win, doc, done) => {
     const result = awaitSelector(`#${id}`, 1000, selectNodes, win, doc);
 
     createAndAppendNodeDelayed(id);
@@ -43,7 +43,7 @@ describe("awaitSelector", () => {
         cleanUp(id);
         fail(`${id} should be found`);
       });
-  }
+  };
 
   it("await via MutationObserver", done => {
     awaitSelectorAndAssert("abc", window, document, done);
