@@ -29,7 +29,7 @@ const createDataCollector = ({ config }) => {
   const createEventHandler = isViewStart => options => {
     const event = createEvent();
     event.mergeData(options.data);
-    lifecycle.onBeforeEvent(event, isViewStart).then(() => {
+    lifecycle.onBeforeEvent(event, options, isViewStart).then(() => {
       makeServerCall([event]);
     });
   };

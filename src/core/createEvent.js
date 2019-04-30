@@ -16,10 +16,10 @@ export default () => {
   const content = {};
 
   return {
-    setCorrelationId(correlationId) {
+    set correlationId(correlationId) {
       content.correlationID = correlationId;
     },
-    setTimestamp(timestamp) {
+    set timestamp(timestamp) {
       content.timestamp = timestamp;
     },
     mergeData: createPayloadItemMerger(content, "data"),

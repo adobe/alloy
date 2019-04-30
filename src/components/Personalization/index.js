@@ -122,7 +122,7 @@ const createPersonalization = ({ logger }) => {
       onComponentsRegistered(tools) {
         ({ componentRegistry } = tools);
       },
-      onBeforeEvent(event, isViewStart) {
+      onBeforeEvent(event, options, isViewStart) {
         if (isViewStart) {
           console.log("Personalization:::onBeforeEvent");
           event.mergeQuery({

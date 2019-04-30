@@ -10,25 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createPayloadItemMerger from "./createPayloadItemMerger";
+import uuidv4 from "uuid-browser/v4";
 
-export default () => {
-  const content = {};
-
-  return {
-    addIdentity(namespaceCode, identity) {
-      content.identityMap = content.identityMap || {};
-      content.identityMap[namespaceCode] =
-        content.identityMap[namespaceCode] || [];
-      content.identityMap[namespaceCode].push(identity);
-    },
-    addEvent(event) {
-      content.events = content.events || [];
-      content.events.push(event);
-    },
-    mergeMeta: createPayloadItemMerger(content, "meta"),
-    toJSON() {
-      return content;
-    }
-  };
-};
+export default uuidv4;

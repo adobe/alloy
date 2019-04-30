@@ -50,19 +50,23 @@
         }
       });
 
+      const correlationIDPromise = alloy("createCorrelationID");
+
       alloy("event", {
+        correlationID: correlationIDPromise,
         data: {
           restaurant: ["Chubbys"]
         }
       }).then(() => {
         console.log('Restaurant event has been sent');
-      })
-      //
-      // alloy("event", {
-      //   data: {
-      //     product: "Jalapeno ranch burger"
-      //   }
-      // });
+      });
+
+      alloy("event", {
+        correlationID: correlationIDPromise,
+        data: {
+          product: ["Jalapeño ranch burger"]
+        }
+      });
 
       // For Testing multiple instances
       // ebda("configure", {

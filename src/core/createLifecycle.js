@@ -28,14 +28,16 @@ governing permissions and limitations under the License.
 //  new Error() or core.missingRequirement('I require Personalization');
 // }
 
-function invokeHook(componentRegistry, hookName, ...args) {
-  return Promise.all(
-    componentRegistry.getLifecycleCallbacks(hookName).map(callback => {
-      return new Promise(resolve => {
-        resolve(callback(...args));
-      });
-    })
-  );
+function invokeHook(componentRegistry, hookName) {
+  return (...args) => {
+    return Promise.all(
+      componentRegistry.getLifecycleCallbacks(hookName).map(callback => {
+        return new Promise(resolve => {
+          resolve(callback(...args));
+        });
+      })
+    );
+  };
 }
 
 /**
@@ -64,24 +66,25 @@ export default componentRegistry => {
     // all the components will have already had their onComponentsRegistered
     // called and be ready to handle the command. At the moment, commands
     // are always executed synchronously.
-    onComponentsRegistered: tools => {
-      return invokeHook(componentRegistry, "onComponentsRegistered", tools);
-    },
-    onBeforeEvent: guardLifecycleMethod((event, isViewStart) => {
-      return invokeHook(componentRegistry, "onBeforeEvent", event, isViewStart);
-    }),
-    onBeforeRequest: guardLifecycleMethod(payload => {
-      return invokeHook(componentRegistry, "onBeforeRequest", payload);
-    }),
-    onResponse: guardLifecycleMethod(response => {
-      return invokeHook(componentRegistry, "onResponse", response);
-    }),
-    onBeforeUnload: guardLifecycleMethod(() => {
-      return invokeHook(componentRegistry, "onBeforeUnload");
-    }),
-    onOptInChanged: guardLifecycleMethod(permissions => {
-      return invokeHook(componentRegistry, "onOptInChanged", permissions);
-    })
+    onComponentsRegistered: invokeHook(
+      componentRegistry,
+      "onComponentsRegistered"
+    ),
+    onBeforeEvent: guardLifecycleMethod(
+      invokeHook(componentRegistry, "onBeforeEvent")
+    ),
+    onBeforeRequest: guardLifecycleMethod(
+      invokeHook(componentRegistry, "onBeforeRequest")
+    ),
+    onResponse: guardLifecycleMethod(
+      invokeHook(componentRegistry, "onResponse")
+    ),
+    onBeforeUnload: guardLifecycleMethod(
+      invokeHook(componentRegistry, "onBeforeUnload")
+    ),
+    onOptInChanged: guardLifecycleMethod(
+      invokeHook(componentRegistry, "onOptInChanged")
+    )
     // TODO: We might need an `onError(error)` hook.
   };
 };

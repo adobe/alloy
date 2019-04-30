@@ -15,7 +15,7 @@ import processDestinations from "./processDestinations";
 const createAudiences = ({ config, logger }) => {
   return {
     lifecycle: {
-      onBeforeEvent(event, isViewStart) {
+      onBeforeEvent(event, options, isViewStart) {
         if (!isViewStart) {
           return;
         }

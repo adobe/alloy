@@ -10,25 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createPayloadItemMerger from "./createPayloadItemMerger";
+import { uuid } from "../../utils";
 
-export default () => {
-  const content = {};
-
+const createCorrelation = () => {
   return {
-    addIdentity(namespaceCode, identity) {
-      content.identityMap = content.identityMap || {};
-      content.identityMap[namespaceCode] =
-        content.identityMap[namespaceCode] || [];
-      content.identityMap[namespaceCode].push(identity);
+    lifecycle: {
+      onBeforeEvent(event, options) {
+        return Promise.resolve(options.correlationID).then(correlationID => {
+          if (correlationID !== undefined) {
+            event.correlationID = correlationID;
+          }
+        });
+      }
     },
-    addEvent(event) {
-      content.events = content.events || [];
-      content.events.push(event);
-    },
-    mergeMeta: createPayloadItemMerger(content, "meta"),
-    toJSON() {
-      return content;
+    commands: {
+      createCorrelationID: uuid
     }
   };
 };
+
+createCorrelation.namespace = "Correlation";
+
+export default createCorrelation;
