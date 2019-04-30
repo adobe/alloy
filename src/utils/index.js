@@ -14,6 +14,7 @@ governing permissions and limitations under the License.
 
 // Please keep in alphabetical order.
 export { default as assign } from "./assign";
+export { default as alloyCookie } from "./alloyCookie";
 export { default as cookie } from "./cookie";
 export { default as defer } from "./defer";
 export { default as find } from "./find";
