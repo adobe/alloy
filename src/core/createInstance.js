@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isFunction, nodeStyleCallbackify, noop } from "../utils";
+import { isFunction, toError } from "../utils";
 import createConfig from "./createConfig";
 
-export default (namespace, initializeComponents, debugController, logger) => {
+export default (namespace, initializeComponents, debugController) => {
   let componentRegistry;
 
   const debugCommand = ({ enabled }) => {
@@ -62,19 +62,26 @@ export default (namespace, initializeComponents, debugController, logger) => {
     // Would use destructuring, but destructuring doesn't work on IE
     // without polyfilling Symbol.
     // https://github.com/babel/babel/issues/7597
-    const commandName = args[0];
-    const options = args[1];
-    const { callback = noop, ...otherOptions } = options;
-    nodeStyleCallbackify(executeCommand)(
-      commandName,
-      otherOptions,
-      (err, data) => {
-        if (err) {
-          logger.error(err);
-        }
+    const resolve = args[0];
+    const reject = args[1];
+    const userProvidedArgs = args[2];
+    const commandName = userProvidedArgs[0];
+    const options = userProvidedArgs[1];
 
-        callback(err, data);
-      }
-    );
+    // We have to wrap the function call in "new Promise()" instead of just
+    // doing "Promise.resolve(executeCommand(commandName, options))" so that
+    // the promise can capture any errors that occur synchronously during the
+    // underlying function call.
+    // Also note that executeCommand may or may not return a promise.
+    new Promise(_resolve => {
+      _resolve(executeCommand(commandName, options));
+    })
+      .then(resolve)
+      .catch(error => {
+        const err = toError(error);
+        // eslint-disable-next-line no-param-reassign
+        err.message = `[${namespace}] ${err.message}`;
+        reject(err);
+      });
   };
 };

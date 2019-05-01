@@ -23,6 +23,7 @@
     "prebuild:prod": "npm run prebuild",
     "build:prod": "rollup -c rollup.prod.config.js",
     "build:watch": "rollup -c -w",
+    "build:basecode": "terser src/baseCode/index.js --mangle --compress unused=false",
     "sandbox": "cd sandbox && npm start",
     "sandbox:build": "cd sandbox && npm run build",
     "dev": "npm-run-all --parallel build:watch sandbox"
@@ -45,7 +46,6 @@
   "dependencies": {
     "@adobe/reactor-cookie": "^1.0.0",
     "@adobe/reactor-object-assign": "^1.0.0",
-    "@adobe/reactor-promise": "^1.0.0",
     "mitt": "^1.1.3"
   },
   "devDependencies": {

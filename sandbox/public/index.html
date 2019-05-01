@@ -14,9 +14,10 @@
     <title>Mock website hosting the Alloy</title>
 
     <script>
-      (function(a,b){b.forEach(function(c){if(!a[c]){a.__alloyNS=a.__alloyNS||[],
-      a.__alloyNS.push(c),a[c]=function(){a[c].q.push(arguments)},a[c].q=[]}})})
-      (window,['alloy','ebda'])
+      !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
+      []).push(o),n[o]=function(){var u=arguments;return new Promise(
+      function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
+      (window,["alloy"]);
     </script>
     <script src="alloy.js" async></script>
 
@@ -53,7 +54,9 @@
         data: {
           restaurant: ["Chubbys"]
         }
-      });
+      }).then(() => {
+        console.log('Restaurant event has been sent');
+      })
       //
       // alloy("event", {
       //   data: {
