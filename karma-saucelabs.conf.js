@@ -6,25 +6,26 @@ module.exports = function(config) {
   karmaConfig(config);
 
   const launchers = {
-    sl_chrome_57: {
+    sl_chrome_74: {
       base: "SauceLabs",
       browserName: "chrome",
-      version: "57"
+      version: "74"
+    },
+    sl_safari_12: {
+    	base: 'SauceLabs',
+    	browserName: 'safari',
+    	version: '12'
+    },
+    sl_firefox_10: {
+    	base: 'SauceLabs',
+    	browserName: 'firefox',
+    	version: '66'
+    },
+    sl_ie_11: {
+    	base: 'SauceLabs',
+      browserName: 'ie',
+      version: '11'
     }
-    // sl_safari_9: {
-    // 	base: 'SauceLabs',
-    // 	browserName: 'safari',
-    // 	version: '9'
-    // },
-    // sl_safari_10: {
-    // 	base: 'SauceLabs',
-    // 	browserName: 'safari',
-    // 	version: '10'
-    // },
-    // sl_firefox: {
-    // 	base: 'SauceLabs',
-    // 	browserName: 'firefox'
-    // },
     // sl_firefox_53: {
     // 	base: 'SauceLabs',
     // 	browserName: 'firefox',
