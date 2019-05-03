@@ -6,16 +6,11 @@ module.exports = function(config) {
   karmaConfig(config);
 
   const launchers = {
-    sl_chrome: {
+    sl_chrome_57: {
       base: "SauceLabs",
-      browserName: "chrome"
+      browserName: "chrome",
+      version: "57"
     }
-    // Specify supported browsers here
-    // sl_chrome_57: {
-    // 	base: 'SauceLabs',
-    // 	browserName: 'chrome',
-    // 	version: '57'
-    // },
     // sl_safari_9: {
     // 	base: 'SauceLabs',
     // 	browserName: 'safari',
@@ -72,7 +67,15 @@ module.exports = function(config) {
     // 	version: '5.0'
     // }
   };
-
+  let sauceLabsAccessKey = process.env.SAUCE_ACCESS_KEY;
+  if (!sauceLabsAccessKey) {
+    sauceLabsAccessKey = process.env.SAUCE_ACCESS_KEY_ENC;
+    if (sauceLabsAccessKey) {
+      sauceLabsAccessKey = Buffer.from(sauceLabsAccessKey, "base64").toString(
+        "binary"
+      );
+    }
+  }
   config.set({
     browsers: Object.keys(launchers),
 
@@ -97,15 +100,16 @@ module.exports = function(config) {
     reporters: ["spec", "saucelabs"],
 
     sauceLabs: {
-      accessKey: process.env.SAUCE_ACCESS_KEY,
+      accessKey: sauceLabsAccessKey,
       connectOptions: {
         port: 4445,
         logfile: "sauce_connect.log"
       },
-      recordScreenshots: true,
+      recordScreenshots: false,
       recordVideo: false,
-      startConnect: true,
-      testName: "alloy tests",
+      startConnect: false,
+      testName: "metal-drag-drop tests",
+      tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
       username: process.env.SAUCE_USERNAME
     }
   });
