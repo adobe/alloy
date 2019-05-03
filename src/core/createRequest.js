@@ -17,7 +17,7 @@ function setMeta(payload, config) {
   // Append meta to the payload.
   payload.mergeMeta({
     enableStore: config.shouldStoreCollectedData,
-    device: config.device || "UNKNOWN-DEVICE"
+    device: config.device
   });
 }
 

@@ -24,6 +24,24 @@ const testConfig = {
   }
 };
 
+const testSchema1 = {
+  a: {
+    R: true
+  },
+  c: {
+    a2: {
+      R: true,
+      D: "zyx"
+    }
+  }
+};
+
+const testSchema2 = {
+  orgId: {
+    R: true
+  }
+};
+
 describe("createConfig", () => {
   it("supports being instantiated with a config", () => {
     const cfg = createConfig(testConfig);
@@ -78,5 +96,20 @@ describe("createConfig", () => {
   it("supports handling false values", () => {
     const cfg = createConfig(testConfig);
     expect(cfg.get("neg.neg")).toBe(false);
+  });
+  it("supports validation against a schema", () => {
+    const cfg = createConfig(testConfig);
+    cfg.extendSchema(testSchema1);
+    expect(() => {
+      cfg.validate();
+    }).not.toThrow();
+  });
+  it("throws error when validation fails", () => {
+    const cfg = createConfig(testConfig);
+    cfg.extendSchema(testSchema1);
+    cfg.extendSchema(testSchema2);
+    expect(() => {
+      cfg.validate();
+    }).toThrow();
   });
 });

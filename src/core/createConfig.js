@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, getNestedObject, setNestedObject } from "../utils";
+import { assign, getNestedObject, setNestedObject, isObject } from "../utils";
 
 const createConfig = config => {
   const cfg = {
@@ -57,9 +57,31 @@ const createConfig = config => {
     /**
      * Validates the configuration against the defined schema.
      */
-    validate: () => {
-      // TODO: Validate existing configuration against defined schema.
-      return true;
+    validate: (schemaObj, key) => {
+      if (!schemaObj) {
+        cfg.validate(cfg.schema);
+        return;
+      }
+      const currentKey = key || "";
+      const keys = Object.keys(schemaObj);
+      const required = schemaObj.R;
+      const defaultValue = schemaObj.D;
+      const currentValue = cfg.get(currentKey);
+      if (!currentValue && currentKey) {
+        if (!required) {
+          return;
+        }
+        if (!defaultValue) {
+          throw new Error(`Missing configuration entry: ${currentKey}`);
+        }
+        cfg.set(currentKey, defaultValue);
+        return;
+      }
+      keys.forEach(k => {
+        if (k !== "R" && k !== "D" && isObject(schemaObj[k])) {
+          cfg.validate(schemaObj[k], (currentKey ? `${currentKey}.` : "") + k);
+        }
+      });
     },
     toJSON: () => {
       const cfgCopy = {};

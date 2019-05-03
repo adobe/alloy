@@ -49,4 +49,15 @@ const createDataCollector = ({ config }) => {
 
 createDataCollector.namespace = "DataCollector";
 
+createDataCollector.componentConfigSchema = {
+  collectionUrl: {
+    R: true
+    // D: TODO: Default collection URL?
+  },
+  device: {
+    R: true,
+    D: "UNKNOWN-DEVICE"
+  }
+};
+
 export default createDataCollector;

@@ -13,6 +13,12 @@ governing permissions and limitations under the License.
 import { isFunction, toError } from "../utils";
 import createConfig from "./createConfig";
 
+const configSchema = {
+  orgID: { R: true },
+  propertyID: { R: true },
+  dataSet: { R: true }
+};
+
 export default (namespace, initializeComponents, debugController) => {
   let componentRegistry;
 
@@ -26,6 +32,7 @@ export default (namespace, initializeComponents, debugController) => {
       debugCommand({ enabled: options.debug });
     }
     const config = createConfig(options);
+    config.extendSchema(configSchema);
     componentRegistry = initializeComponents(config);
   };
 
