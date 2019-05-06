@@ -14,7 +14,12 @@ import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
 import { stackError } from "../utils";
 
-export default (componentCreators, logger, getNamespacedStorage) => config => {
+export default (
+  componentCreators,
+  logger,
+  cookie,
+  getNamespacedStorage
+) => config => {
   const componentRegistry = createComponentRegistry();
 
   componentCreators.forEach(createComponent => {
@@ -27,6 +32,7 @@ export default (componentCreators, logger, getNamespacedStorage) => config => {
     try {
       component = createComponent({
         logger: logger.spawn(`[${namespace}]`),
+        cookie: cookie(namespace),
         config,
         storage
       });

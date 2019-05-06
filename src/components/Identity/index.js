@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { defer, alloyCookie } from "../../utils";
+import { defer } from "../../utils";
 
 const ECID_NAMESPACE = "ECID";
 
@@ -21,16 +21,13 @@ const addIdsContext = (payload, ecid) => {
   });
 };
 
-// TODO: Namespace the cookie to be specific to the org.
-const getEcid = () => alloyCookie.get("ECID").ECID;
-
-const createIdentity = ({ logger }) => {
-  let ecid = getEcid();
+const createIdentity = ({ logger, cookie }) => {
+  let { ecid } = cookie.get();
   let deferredForEcid;
 
   // TO-DOCUMENT: We wait for ECID before trigger any events.
   const onBeforeRequest = payload => {
-    logger.log("Identity:::onBeforeRequestEvent");
+    logger.log("onBeforeRequestEvent");
     payload.mergeMeta({
       identity: {
         lastSyncTS: 1222,
@@ -65,7 +62,7 @@ const createIdentity = ({ logger }) => {
     const ecidPayload = response.getPayloadByType("identity:persist");
     if (ecidPayload) {
       ecid = ecidPayload.id;
-      alloyCookie.set("ECID", ecid);
+      cookie.set({ ecid });
 
       if (deferredForEcid) {
         deferredForEcid.resolve();
@@ -73,6 +70,7 @@ const createIdentity = ({ logger }) => {
     }
   };
 
+  const getEcid = () => ecid;
   return {
     lifecycle: {
       onBeforeRequest,
