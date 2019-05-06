@@ -22,25 +22,25 @@ const VISIBLE = "visible";
 const DELAY = 100;
 const MAX_POLLING_TIMEOUT = 5000;
 
-function createError(selector) {
+const createError = selector => {
   return new Error(`Could not find: ${selector}`);
-}
+};
 
-function createPromise(executor) {
+const createPromise = executor => {
   return new Promise(executor);
-}
+};
 
-export function canUseMutationObserver(win) {
+export const canUseMutationObserver = win => {
   return isFunction(win[MUTATION_OBSERVER]);
-}
+};
 
-export function awaitUsingMutationObserver(
+export const awaitUsingMutationObserver = (
   win,
   doc,
   selector,
   timeout,
   selectFunc
-) {
+) => {
   return createPromise((resolve, reject) => {
     const mutationObserver = new win[MUTATION_OBSERVER](() => {
       const nodes = selectFunc(selector);
@@ -58,15 +58,20 @@ export function awaitUsingMutationObserver(
 
     mutationObserver.observe(doc, MUTATION_OBSERVER_CONFIG);
   });
-}
+};
 
-export function canUseRequestAnimationFrame(doc) {
+export const canUseRequestAnimationFrame = doc => {
   return doc[VISIBILITY_STATE] === VISIBLE;
-}
+};
 
-export function awaitUsingRequestAnimation(win, selector, timeout, selectFunc) {
+export const awaitUsingRequestAnimation = (
+  win,
+  selector,
+  timeout,
+  selectFunc
+) => {
   return createPromise((resolve, reject) => {
-    function execute() {
+    const execute = () => {
       const nodes = selectFunc(selector);
 
       if (isNonEmptyArray(nodes)) {
@@ -75,7 +80,7 @@ export function awaitUsingRequestAnimation(win, selector, timeout, selectFunc) {
       }
 
       win[RAF](execute);
-    }
+    };
 
     execute();
 
@@ -83,11 +88,11 @@ export function awaitUsingRequestAnimation(win, selector, timeout, selectFunc) {
       reject(createError(selector));
     }, timeout);
   });
-}
+};
 
-export function awaitUsingTimer(selector, timeout, selectFunc) {
+export const awaitUsingTimer = (selector, timeout, selectFunc) => {
   return createPromise((resolve, reject) => {
-    function execute() {
+    const execute = () => {
       const nodes = selectFunc(selector);
 
       if (isNonEmptyArray(nodes)) {
@@ -96,7 +101,7 @@ export function awaitUsingTimer(selector, timeout, selectFunc) {
       }
 
       setTimeout(execute, DELAY);
-    }
+    };
 
     execute();
 
@@ -104,7 +109,7 @@ export function awaitUsingTimer(selector, timeout, selectFunc) {
       reject(createError(selector));
     }, timeout);
   });
-}
+};
 
 export default function awaitSelector(
   selector,

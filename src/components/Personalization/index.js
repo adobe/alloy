@@ -15,7 +15,7 @@ governing permissions and limitations under the License.
 const KEY_PREFIX = "___alloy";
 const KEY_DETECT_PREFIX = `${KEY_PREFIX}-detect`;
 
-function hash(string) {
+const hash = string => {
   let result = 0;
   const { length } = string;
 
@@ -26,29 +26,29 @@ function hash(string) {
   }
 
   return result;
-}
+};
 
-function buildKey(prefix, selector) {
+const buildKey = (prefix, selector) => {
   return `${prefix}-${hash(selector)}`;
-}
+};
 
-function createStyleTag(className, content) {
+const createStyleTag = (className, content) => {
   const style = document.createElement("style");
   style.className = className;
   style.innerHTML = content;
 
   return style;
-}
+};
 
-function appendTo(parent, element) {
+const appendTo = (parent, element) => {
   parent.appendChild(element);
-}
+};
 
-function removeFrom(parent, element) {
+const removeFrom = (parent, element) => {
   parent.removeChild(element);
-}
+};
 
-function setupElementDetection(key, selector, callback) {
+const setupElementDetection = (key, selector, callback) => {
   const content = `
     @keyframes ${key} {  
       from { opacity: 0.99; }
@@ -63,23 +63,23 @@ function setupElementDetection(key, selector, callback) {
 
   document.addEventListener("animationstart", callback, false);
   appendTo(document.head, createStyleTag(key, content));
-}
+};
 
-function hideElement(selector) {
+const hideElement = selector => {
   const key = buildKey(KEY_PREFIX, selector);
   const content = `${selector} { visibility: hidden }`;
 
   appendTo(document.head, createStyleTag(key, content));
-}
+};
 
-function showElement(selector) {
+const showElement = selector => {
   const key = buildKey(KEY_PREFIX, selector);
   const elements = document.querySelectorAll(`.${key}`);
 
   elements.forEach(e => removeFrom(document.head, e));
-}
+};
 
-function render(cache, event, logger) {
+const render = (cache, event, logger) => {
   const { animationName } = event;
 
   if (animationName.indexOf(KEY_DETECT_PREFIX) === -1) {
@@ -107,7 +107,7 @@ function render(cache, event, logger) {
       logger.log(type, "rendering is not supported");
       break;
   }
-}
+};
 
 const createPersonalization = ({ logger }) => {
   const storage = {};

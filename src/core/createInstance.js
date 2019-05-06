@@ -29,7 +29,7 @@ export default (namespace, initializeComponents, debugController) => {
     componentRegistry = initializeComponents(config);
   };
 
-  function executeCommand(commandName, options) {
+  const executeCommand = (commandName, options) => {
     let command;
 
     if (commandName === "configure") {
@@ -56,7 +56,7 @@ export default (namespace, initializeComponents, debugController) => {
     }
 
     return command(options);
-  }
+  };
 
   return args => {
     // Would use destructuring, but destructuring doesn't work on IE
