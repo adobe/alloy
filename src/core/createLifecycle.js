@@ -28,16 +28,14 @@ governing permissions and limitations under the License.
 //  new Error() or core.missingRequirement('I require Personalization');
 // }
 
-const invokeHook = (componentRegistry, hookName) => {
-  return (...args) => {
-    return Promise.all(
-      componentRegistry.getLifecycleCallbacks(hookName).map(callback => {
-        return new Promise(resolve => {
-          resolve(callback(...args));
-        });
-      })
-    );
-  };
+const invokeHook = (componentRegistry, hookName, ...args) => {
+  return Promise.all(
+    componentRegistry.getLifecycleCallbacks(hookName).map(callback => {
+      return new Promise(resolve => {
+        resolve(callback(...args));
+      });
+    })
+  );
 };
 
 /**
