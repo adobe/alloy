@@ -1,5 +1,6 @@
 import { awaitSelector, createNode, appendNode, removeNode } from "./dom";
 import fireDestinationsFactory from "./fireDestinationsFactory";
+import defer from "./defer";
 
 const BODY_TAG = "BODY";
 const IFRAME_TAG = "IFRAME";
@@ -16,16 +17,20 @@ const createIframe = ([body]) => {
 };
 
 export default ({ logger }) => {
+  const destinationsProcessedDeferred = defer();
   const iframePromise = awaitSelector(BODY_TAG).then(createIframe);
   const fireDestinationsPromise = iframePromise.then(iframe => {
-    return fireDestinationsFactory({ iframe, logger });
+    return fireDestinationsFactory({
+      iframe,
+      logger,
+      destinationsProcessedDeferred
+    });
   });
 
   let ended = false;
 
   const end = () => {
     ended = true;
-
     iframePromise.then(removeNode);
   };
 
@@ -39,6 +44,7 @@ export default ({ logger }) => {
 
   return {
     fire,
-    end
+    end,
+    destinationsProcessedPromise: destinationsProcessedDeferred.promise
   };
 };

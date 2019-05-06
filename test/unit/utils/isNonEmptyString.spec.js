@@ -17,7 +17,7 @@ describe("isNonEmptyString", () => {
     expect(isNonEmptyString("1234")).toBe(true);
   });
 
-  it("returns fale when empty string", () => {
+  it("returns false when empty string", () => {
     expect(isNonEmptyString("")).toBe(false);
   });
 });

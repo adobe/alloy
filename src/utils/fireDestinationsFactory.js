@@ -1,45 +1,80 @@
 import isNil from "./isNil";
-import isObject from "./isObject";
 import isNonEmptyString from "./isNonEmptyString";
 import fireImage from "./fireImage";
 
 const fireOnPage = fireImage;
 
-export default ({ iframe, logger }) => {
-  const fireInIframe = ({ url }) => {
+const processedDests = {
+  loaded: [],
+  errored: [],
+  aborted: []
+};
+
+let numberOfDestinations = -1;
+
+export default ({ iframe, logger, destinationsProcessedDeferred }) => {
+  const checkForCompletion = () => {
+    const processed =
+      processedDests.loaded.length +
+      processedDests.errored.length +
+      processedDests.aborted.length;
+
+    if (processed === numberOfDestinations) {
+      logger.log(
+        `All destinations processed. Loaded: ${
+          processedDests.loaded.length
+        }; errored: ${processedDests.errored.length}; aborted: ${
+          processedDests.aborted.length
+        }`
+      );
+      destinationsProcessedDeferred.resolve(processedDests);
+    }
+  };
+
+  const fireInIframe = ({ attributes }) => {
     if (iframe) {
       const currentDocument = iframe.contentWindow.document;
 
-      fireImage({ url, currentDocument });
+      fireImage({ attributes, currentDocument });
     }
   };
 
   return (destinations = []) => {
-    destinations.forEach(dest => {
-      if (isObject(dest)) {
-        if (isNonEmptyString(dest.url)) {
-          const url = new RegExp(`^//:`, "i").test(dest.url)
-            ? dest.url
-            : `//${dest.url}`;
+    numberOfDestinations = destinations.length;
 
-          if (!isNil(dest.hideReferrer)) {
-            if (dest.hideReferrer) {
-              fireInIframe({ url });
-            } else {
-              fireOnPage({ url });
-            }
+    destinations.forEach(dest => {
+      if (isNonEmptyString(dest.url)) {
+        if (!isNil(dest.hideReferrer)) {
+          const attributes = {
+            onload: () => {
+              processedDests.loaded.push(dest);
+              checkForCompletion();
+            },
+            onerror: () => {
+              processedDests.errored.push(dest);
+              checkForCompletion();
+            },
+            onabort: () => {
+              processedDests.aborted.push(dest);
+              checkForCompletion();
+            },
+            src: dest.url
+          };
+
+          if (dest.hideReferrer) {
+            fireInIframe({ attributes });
           } else {
-            logger.error(
-              `Destination hideReferrer property is not defined for url ${
-                dest.url
-              } .`
-            );
+            fireOnPage({ attributes });
           }
         } else {
-          logger.error("Destination url is not a populated string.");
+          logger.error(
+            `Destination hideReferrer property is not defined for url ${
+              dest.url
+            } .`
+          );
         }
       } else {
-        logger.error("Destination is not an object.");
+        logger.error("Destination url is not a populated string.");
       }
     });
   };

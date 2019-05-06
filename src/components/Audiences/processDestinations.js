@@ -16,7 +16,15 @@ import { isNonEmptyString, cookie } from "../../utils";
 export default ({ destinations, config, logger }) => {
   const urlDestinations = destinations
     .filter(dest => dest.type === "url")
-    .map(dest => dest.spec);
+    .map(dest => {
+      const data = {
+        id: dest.id
+      };
+
+      Object.assign(data, dest.spec);
+
+      return data;
+    });
 
   if (
     urlDestinations.length &&
@@ -25,9 +33,7 @@ export default ({ destinations, config, logger }) => {
     const destsUtil = createDestinations({ logger });
 
     destsUtil.fire(urlDestinations);
-
-    // TODO: Figure out if this can be used correctly
-    // destsUtil.end();
+    destsUtil.destinationsProcessedPromise.then(destsUtil.end);
   }
 
   const cookieDestinations = destinations
@@ -38,7 +44,7 @@ export default ({ destinations, config, logger }) => {
     if (isNonEmptyString(dest.name)) {
       cookie.set(dest.name, dest.value || "", {
         domain: dest.domain || "",
-        expires: dest.ttl ? dest.ttl : 13 * 30
+        expires: dest.ttl ? dest.ttl : 6 * 30 // default of 6 months
       });
     } else {
       logger.error("Cookie destination had an invalid or no name.");

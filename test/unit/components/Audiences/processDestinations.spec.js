@@ -4,6 +4,7 @@ import { cookie } from "../../../../src/utils";
 describe("Audiences::processDestinations", () => {
   const config = {};
   const logger = {
+    log() {},
     error() {}
   };
 

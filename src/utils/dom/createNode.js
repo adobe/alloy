@@ -21,7 +21,14 @@ export default function createNode(
   const result = doc.createElement(tag);
 
   Object.keys(attrs).forEach(key => {
-    result.setAttribute(key, attrs[key]);
+    const value = attrs[key];
+
+    if (typeof value === "function") {
+      result[key] = value;
+    } else {
+      // This sets value to a string
+      result.setAttribute(key, value);
+    }
   });
 
   children.forEach(child => appendNode(result, child));

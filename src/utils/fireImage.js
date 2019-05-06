@@ -17,13 +17,12 @@ const IMAGE_TAG = "img";
 
 /**
  * Fires an image pixel from the current document's window.
- * @param {string} url
+ * @param {object} currentDocument
+ * @param {object} attributes - must include src
  * @returns {undefined}
  */
-export default ({ url, currentDocument }) => {
-  const doc = currentDocument || document;
-
-  if (isNonEmptyString(url)) {
-    createNode(IMAGE_TAG, { src: url }, [], doc);
+export default ({ currentDocument = document, attributes = {} }) => {
+  if (isNonEmptyString(attributes.src)) {
+    createNode(IMAGE_TAG, attributes, [], currentDocument);
   }
 };
