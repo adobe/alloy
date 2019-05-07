@@ -36,18 +36,18 @@ export default ({ logger, destinations }) => {
 
   return Promise.all(
     destinations.map(dest => {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         if (isNonEmptyString(dest.url)) {
           if (!isNil(dest.hideReferrer)) {
             const attributes = {
               onload: resolve,
               onerror: () => {
                 logger.log(`Destination failed: ${dest.url}`);
-                resolve();
+                reject();
               },
               onabort: () => {
                 logger.log(`Destination aborted: ${dest.url}`);
-                resolve();
+                reject();
               },
               src: dest.url
             };
