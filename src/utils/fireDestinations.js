@@ -40,7 +40,9 @@ export default ({ logger, destinations }) => {
         if (isNonEmptyString(dest.url)) {
           if (!isNil(dest.hideReferrer)) {
             const attributes = {
-              onload: resolve,
+              onload: () => {
+                resolve();
+              },
               onerror: () => {
                 logger.log(`Destination failed: ${dest.url}`);
                 reject();
