@@ -4,33 +4,7 @@ import fireImage from "./fireImage";
 
 const fireOnPage = fireImage;
 
-const processedDests = {
-  loaded: [],
-  errored: [],
-  aborted: []
-};
-
-let numberOfDestinations = -1;
-
 export default ({ iframe, logger, destinationsProcessedDeferred }) => {
-  const checkForCompletion = () => {
-    const processed =
-      processedDests.loaded.length +
-      processedDests.errored.length +
-      processedDests.aborted.length;
-
-    if (processed === numberOfDestinations) {
-      logger.log(
-        `All destinations processed. Loaded: ${
-          processedDests.loaded.length
-        }; errored: ${processedDests.errored.length}; aborted: ${
-          processedDests.aborted.length
-        }`
-      );
-      destinationsProcessedDeferred.resolve(processedDests);
-    }
-  };
-
   const fireInIframe = ({ attributes }) => {
     if (iframe) {
       const currentDocument = iframe.contentWindow.document;
@@ -40,7 +14,32 @@ export default ({ iframe, logger, destinationsProcessedDeferred }) => {
   };
 
   return (destinations = []) => {
-    numberOfDestinations = destinations.length;
+    const processedDests = {
+      loaded: [],
+      errored: [],
+      aborted: []
+    };
+
+    const numberOfDestinations = destinations.length;
+
+    const checkForCompletion = () => {
+      const processed =
+        processedDests.loaded.length +
+        processedDests.errored.length +
+        processedDests.aborted.length;
+
+      if (processed === numberOfDestinations) {
+        logger.log(
+          `All destinations processed. Loaded: ${
+            processedDests.loaded.length
+          }; errored: ${processedDests.errored.length}; aborted: ${
+            processedDests.aborted.length
+          }`
+        );
+
+        destinationsProcessedDeferred.resolve(processedDests);
+      }
+    };
 
     destinations.forEach(dest => {
       if (isNonEmptyString(dest.url)) {

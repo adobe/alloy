@@ -16,15 +16,14 @@ import { isNonEmptyString, cookie } from "../../utils";
 export default ({ destinations, config, logger }) => {
   const urlDestinations = destinations
     .filter(dest => dest.type === "url")
-    .map(dest => {
-      const data = {
-        id: dest.id
-      };
-
-      Object.assign(data, dest.spec);
-
-      return data;
-    });
+    .map(dest =>
+      Object.assign(
+        {
+          id: dest.id
+        },
+        dest.spec
+      )
+    );
 
   if (
     urlDestinations.length &&
@@ -33,7 +32,6 @@ export default ({ destinations, config, logger }) => {
     const destsUtil = createDestinations({ logger });
 
     destsUtil.fire(urlDestinations);
-    destsUtil.destinationsProcessedPromise.then(destsUtil.end);
   }
 
   const cookieDestinations = destinations

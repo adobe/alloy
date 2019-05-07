@@ -27,24 +27,16 @@ export default ({ logger }) => {
     });
   });
 
-  let ended = false;
-
-  const end = () => {
-    ended = true;
-    iframePromise.then(removeNode);
-  };
-
   const fire = destinations => {
-    fireDestinationsPromise.then(fireDests => {
-      if (!ended) {
-        fireDests(destinations);
-      }
-    });
+    fireDestinationsPromise.then(fireDests => fireDests(destinations));
   };
+
+  destinationsProcessedDeferred.promise.then(() =>
+    iframePromise.then(removeNode)
+  );
 
   return {
     fire,
-    end,
     destinationsProcessedPromise: destinationsProcessedDeferred.promise
   };
 };
