@@ -12,7 +12,6 @@
     "test": "karma start --single-run",
     "test:coverage": "karma start --single-run --reporters spec,coverage",
     "test:saucelabs": "karma start karma-saucelabs.conf.js",
-    "test:jenkins": "npm run test:coverage",
     "test:watch": "karma start",
     "test:watch:chrome": "karma start --browsers Chrome",
     "testcafe": "node test/functional/helpers/runner.js",
