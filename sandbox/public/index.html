@@ -11,71 +11,51 @@
             style-src 'self' 'unsafe-inline';
             connect-src 'self' https://edgegateway.azurewebsites.net http://ex-edge.stable-stage.aam-npe.adobeinternal.net"/>
 
-    <title>Mock website hosting the Alloy</title>
+    <title>Mock website hosting Alloy</title>
 
     <script>
       !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
       []).push(o),n[o]=function(){var u=arguments;return new Promise(
       function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
-      (window,["alloy"]);
+      (window,["alloy", "organizationTwo"]);
     </script>
     <script src="alloy.js" async></script>
 
-    <!-- <script src="HistoryTracker.js"></script>
-    <script>
-      alloy("loadPlugin", {
-        params: {
-          name: "historyTracker",
-          age: 37
-        }
-      });
-    </script> -->
-
     <script>
       alloy("configure", {
-        orgID: 23784612874,
+        orgID: 12345,
         propertyID: 9999999,
         dataSet: "dataset1",
         shouldStoreCollectedData: 1,
         device: "Chrome-Mac",
-        // collectionUrl: "https://edgegateway.azurewebsites.net",
-        collectionUrl: "http://ex-edge.stable-stage.aam-npe.adobeinternal.net/v1",
+        collectionUrl: "https://edgegateway.azurewebsites.net",
+        // collectionUrl: "http://ex-edge.stable-stage.aam-npe.adobeinternal.net/v1",
         destinationsEnabled: true,
         debug: true
       });
 
       alloy("viewStart", {
+        type: "view:start",
         data: {
-          pageName: ["home"]
-        }
-      });
-
-      alloy("event", {
-        data: {
-          restaurant: ["Chubbys"]
+          "xdm:URL": [location.href],
+          "xdm:name": [location.pathname.substring(1) || "home"]
         }
       }).then(() => {
-        console.log('Restaurant event has been sent');
-      })
-      //
-      // alloy("event", {
-      //   data: {
-      //     product: "Jalapeno ranch burger"
-      //   }
-      // });
+        console.log("View start event has triggered.");
+      });
 
       // For Testing multiple instances
-      // ebda("configure", {
-      //   orgID: 12378461287,
-      //   propertyID: 1999999,
-      //   dataSet: "dataset2",
-      //   shouldStoreCollectedData: 1,
-      //   device: "Chrome-Mac",
-      //   // collectionUrl: "https://edgegateway.azurewebsites.net",
-      //   collectionUrl: "http://ex-edge.stable-stage.aam-npe.adobeinternal.net/v1",
-      //   destinationsEnabled: true,
-      //   debug: true
-      // });
+      organizationTwo("configure", {
+        orgID: 67890,
+        propertyID: 8888888,
+        dataSet: "dataset2",
+        shouldStoreCollectedData: 1,
+        device: "Chrome-Mac",
+        collectionUrl: "https://edgegateway.azurewebsites.net",
+        // collectionUrl: "http://ex-edge.stable-stage.aam-npe.adobeinternal.net/v1",
+        destinationsEnabled: true,
+        debug: true
+      });
       //
       // ebda("viewStart", {
       //   data: {
@@ -91,10 +71,6 @@
     </script>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <div class="container">
-      <h2>Some awesome default content</h2>
-    </div>
   </body>
 </html>
