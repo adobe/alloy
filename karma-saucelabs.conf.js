@@ -12,10 +12,10 @@ module.exports = function(config) {
       platform: "macOS 10.14",
       version: "73.0"
     },
-    sl_osx_safari_12: {
+    sl_osx_safari_11: {
       base: "SauceLabs",
       browserName: "safari",
-      version: "12.0"
+      version: "11.1"
     },
     sl_firefox_66: {
       base: "SauceLabs",
