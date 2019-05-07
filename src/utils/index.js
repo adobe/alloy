@@ -17,6 +17,7 @@ export { default as assign } from "./assign";
 export { default as cookie } from "./cookie";
 export { default as defer } from "./defer";
 export { default as find } from "./find";
+export { default as fireDestinations } from "./fireDestinations";
 export { default as fireImage } from "./fireImage";
 export { default as getLastArrayItems } from "./getLastArrayItems";
 export { default as getNestedObject } from "./getNestedObject";

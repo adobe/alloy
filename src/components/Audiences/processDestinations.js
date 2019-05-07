@@ -10,8 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createDestinations from "../../utils/createDestinations";
-import { isNonEmptyString, cookie } from "../../utils";
+import { isNonEmptyString, cookie, fireDestinations } from "../../utils";
 
 export default ({ destinations, config, logger }) => {
   const urlDestinations = destinations
@@ -29,9 +28,10 @@ export default ({ destinations, config, logger }) => {
     urlDestinations.length &&
     (config.destinationsEnabled === undefined || config.destinationsEnabled)
   ) {
-    const destsUtil = createDestinations({ logger });
-
-    destsUtil.fire(urlDestinations);
+    fireDestinations({
+      logger,
+      destinations: urlDestinations
+    });
   }
 
   const cookieDestinations = destinations
