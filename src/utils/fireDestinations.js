@@ -36,11 +36,9 @@ export default ({ logger, destinations }) => {
 
   return Promise.all(
     destinations.map(dest => {
-      let result;
-
-      if (isNonEmptyString(dest.url)) {
-        if (!isNil(dest.hideReferrer)) {
-          result = new Promise(resolve => {
+      return new Promise(resolve => {
+        if (isNonEmptyString(dest.url)) {
+          if (!isNil(dest.hideReferrer)) {
             const attributes = {
               onload: resolve,
               onerror: () => {
@@ -59,18 +57,16 @@ export default ({ logger, destinations }) => {
             } else {
               fireOnPage({ attributes });
             }
-          });
+          }
+          logger.error(
+            `Destination hideReferrer property is not defined for url ${
+              dest.url
+            } .`
+          );
+        } else {
+          logger.error("Destination url is not a populated string.");
         }
-        logger.error(
-          `Destination hideReferrer property is not defined for url ${
-            dest.url
-          } .`
-        );
-      } else {
-        logger.error("Destination url is not a populated string.");
-      }
-
-      return result;
+      });
     })
   );
 };
