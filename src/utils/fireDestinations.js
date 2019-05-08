@@ -13,6 +13,9 @@ const IFRAME_ATTRS = {
   style: "display: none; width: 0; height: 0;"
 };
 
+const createFilterResultByStatus = status => result => result.status === status;
+const mapResultToDest = result => result.dest;
+
 export default ({ logger, destinations }) => {
   let iframePromise;
 
@@ -86,14 +89,14 @@ export default ({ logger, destinations }) => {
 
     return {
       loaded: results
-        .filter(result => result.status === "loaded")
-        .map(result => result.dest),
+        .filter(createFilterResultByStatus("loaded"))
+        .map(mapResultToDest),
       errored: results
-        .filter(result => result.status === "errored")
-        .map(result => result.dest),
+        .filter(createFilterResultByStatus("errored"))
+        .map(mapResultToDest),
       aborted: results
-        .filter(result => result.status === "aborted")
-        .map(result => result.dest)
+        .filter(createFilterResultByStatus("aborted"))
+        .map(mapResultToDest)
     };
   });
 };
