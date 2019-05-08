@@ -10,13 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyString, cookie, fireDestinations } from "../../utils";
+import {
+  assign,
+  isNonEmptyString,
+  cookie,
+  fireDestinations
+} from "../../utils";
 
 export default ({ destinations, config, logger }) => {
   const urlDestinations = destinations
     .filter(dest => dest.type === "url")
     .map(dest =>
-      Object.assign(
+      assign(
         {
           id: dest.id
         },
