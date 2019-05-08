@@ -8,13 +8,13 @@ COMING SOON
 
 To run the tests with a default browser use `npm run functional`. By default, it runs all tests.
 
-### Enviornment Variables 
+### Environment Variables 
 We've implemented support for environment variables in automation and a `.env` file for local environments. To specify your variables, for example use `URL = 'http://www.example.com/'` in your `.env`. 
 
 Use example .env:
 
 ```
-cp /test/.env.example .env
+cp test/.env.example .env
 ```
 
 ### Specifying Browsers
