@@ -10,24 +10,30 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createDestinations from "../../utils/createDestinations";
-import { isNonEmptyString, cookie } from "../../utils";
+import { isNonEmptyString, cookie, fireDestinations } from "../../utils";
 
 export default ({ destinations, config, logger }) => {
   const urlDestinations = destinations
     .filter(dest => dest.type === "url")
-    .map(dest => dest.spec);
+    .map(dest =>
+      Object.assign(
+        {
+          id: dest.id
+        },
+        dest.spec
+      )
+    );
 
   if (
     urlDestinations.length &&
     (config.destinationsEnabled === undefined || config.destinationsEnabled)
   ) {
-    const destsUtil = createDestinations({ logger });
-
-    destsUtil.fire(urlDestinations);
-
-    // TODO: Figure out if this can be used correctly
-    // destsUtil.end();
+    fireDestinations({
+      logger,
+      destinations: urlDestinations
+    }).then(result => {
+      console.log(result);
+    });
   }
 
   const cookieDestinations = destinations
@@ -38,7 +44,7 @@ export default ({ destinations, config, logger }) => {
     if (isNonEmptyString(dest.name)) {
       cookie.set(dest.name, dest.value || "", {
         domain: dest.domain || "",
-        expires: dest.ttl ? dest.ttl : 13 * 30
+        expires: dest.ttl ? dest.ttl : 6 * 30 // default of 6 months
       });
     } else {
       logger.error("Cookie destination had an invalid or no name.");
