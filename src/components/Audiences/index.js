@@ -30,6 +30,14 @@ const createAudiences = ({ config, logger }) => {
         logger.log("Audiences:::onResponse");
 
         const destinations = response.getPayloadByType("activation:push") || [];
+        // const destinations = [{
+        //   type: "url",
+        //   id: 2097728,
+        //   spec: {
+        //     url: "http://test" + new Date().getTime() + ".abc",
+        //     hideReferrer: 1
+        //   }
+        // }];
 
         processDestinations({
           destinations,

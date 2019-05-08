@@ -35,13 +35,13 @@
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
   "pre-commit": [
-//    "precommit-msg",
-//    "format",
-//    "lint"
+    "precommit-msg",
+    "format",
+    "lint"
   ],
   "pre-push": [
-//    "prepush-msg",
-//    "test"
+    "prepush-msg",
+    "test"
   ],
   "dependencies": {
     "@adobe/reactor-cookie": "^1.0.0",

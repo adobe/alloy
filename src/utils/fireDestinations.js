@@ -1,7 +1,7 @@
 import isNil from "./isNil";
 import isNonEmptyString from "./isNonEmptyString";
 import fireImage from "./fireImage";
-import { appendNode, awaitSelector, createNode } from "./dom";
+import { appendNode, awaitSelector, createNode, removeNode } from "./dom";
 
 const fireOnPage = fireImage;
 
@@ -36,20 +36,29 @@ export default ({ logger, destinations }) => {
 
   return Promise.all(
     destinations.map(dest => {
-      return new Promise((resolve, reject) => {
+      return new Promise(resolve => {
         if (isNonEmptyString(dest.url)) {
           if (!isNil(dest.hideReferrer)) {
             const attributes = {
               onload: () => {
-                resolve();
+                resolve({
+                  status: "loaded",
+                  dest
+                });
               },
               onerror: () => {
                 logger.log(`Destination failed: ${dest.url}`);
-                reject();
+                resolve({
+                  status: "errored",
+                  dest
+                });
               },
               onabort: () => {
                 logger.log(`Destination aborted: ${dest.url}`);
-                reject();
+                resolve({
+                  status: "aborted",
+                  dest
+                });
               },
               src: dest.url
             };
@@ -59,16 +68,35 @@ export default ({ logger, destinations }) => {
             } else {
               fireOnPage({ attributes });
             }
+          } else {
+            logger.error(
+              `Destination hideReferrer property is not defined for url ${
+                dest.url
+              } .`
+            );
           }
-          logger.error(
-            `Destination hideReferrer property is not defined for url ${
-              dest.url
-            } .`
-          );
         } else {
           logger.error("Destination url is not a populated string.");
         }
       });
     })
-  );
+  ).then(results => {
+    return createIframe()
+      .then(iframe => {
+        removeNode(iframe);
+      })
+      .then(() => {
+        return {
+          loaded: results
+            .filter(result => result.status === "loaded")
+            .map(result => result.dest),
+          errored: results
+            .filter(result => result.status === "errored")
+            .map(result => result.dest),
+          aborted: results
+            .filter(result => result.status === "aborted")
+            .map(result => result.dest)
+        };
+      });
+  });
 };

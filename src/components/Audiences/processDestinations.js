@@ -31,6 +31,8 @@ export default ({ destinations, config, logger }) => {
     fireDestinations({
       logger,
       destinations: urlDestinations
+    }).then(result => {
+      console.log(result);
     });
   }
 
