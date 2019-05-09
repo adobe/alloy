@@ -18,12 +18,12 @@ export default (componentCreators, logger, getNamespacedStorage) => config => {
   const componentRegistry = createComponentRegistry();
 
   componentCreators.forEach(createComponent => {
-    const { namespace } = createComponent;
-
     const { configValidators } = createComponent;
     config.addValidators(configValidators);
-    config.validate();
-
+  });
+  config.validate();
+  componentCreators.forEach(createComponent => {
+    const { namespace } = createComponent;
     const storage = getNamespacedStorage(config.orgID);
     // TO-DOCUMENT: Helpers that we inject into factories.
     let component;

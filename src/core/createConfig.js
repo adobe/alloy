@@ -66,9 +66,8 @@ const createConfig = config => {
         const validator = cfg.validators[key];
         const currentValue = cfg.get(key);
         if (
-          !validator.validate &&
           currentValue == null &&
-          validator.defaultValue
+          Object.prototype.hasOwnProperty.call(validator, "defaultValue")
         ) {
           cfg.set(key, validator.defaultValue);
         } else if (validator.validate) {
