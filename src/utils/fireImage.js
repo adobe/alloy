@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNonEmptyString from "./isNonEmptyString";
 import { createNode } from "./dom";
 
 const IMAGE_TAG = "img";
@@ -18,11 +17,18 @@ const IMAGE_TAG = "img";
 /**
  * Fires an image pixel from the current document's window.
  * @param {object} currentDocument
- * @param {object} attributes - must include src
- * @returns {undefined}
+ * @param {string} src
+ * @returns {Promise}
  */
-export default ({ currentDocument = document, attributes = {} }) => {
-  if (isNonEmptyString(attributes.src)) {
+export default ({ currentDocument = document, src }) => {
+  return new Promise((resolve, reject) => {
+    const attributes = {
+      onload: resolve,
+      onerror: reject,
+      onabort: reject,
+      src
+    };
+
     createNode(IMAGE_TAG, attributes, [], currentDocument);
-  }
+  });
 };

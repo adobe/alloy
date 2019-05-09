@@ -31,14 +31,13 @@ describe("fireDestinations", () => {
 
     fireDestinations({ logger, destinations: urlDestinations }).then(
       firedDests => {
-        expect(firedDests.errored[0].id).toEqual(2097728);
-        expect(firedDests.errored[0].url).toEqual(
+        expect(firedDests.failed[0].id).toEqual(2097728);
+        expect(firedDests.failed[0].url).toEqual(
           "http://www.adobe.com?def=456"
         );
-        expect(firedDests.errored[0].hideReferrer).toEqual(1);
-        expect(firedDests.errored[1]).toBeUndefined();
-        expect(firedDests.loaded.length).toEqual(0);
-        expect(firedDests.aborted.length).toEqual(0);
+        expect(firedDests.failed[0].hideReferrer).toEqual(1);
+        expect(firedDests.failed.length).toEqual(1);
+        expect(firedDests.succeeded.length).toEqual(0);
         done();
       }
     );
