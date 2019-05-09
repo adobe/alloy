@@ -23,13 +23,7 @@
 
     <script>
       alloy("configure", {
-        orgID: 12345,
         propertyID: 9999999,
-        dataSet: "dataset1",
-        shouldStoreCollectedData: 1,
-        device: "Chrome-Mac",
-        collectionUrl: "https://edgegateway.azurewebsites.net",
-        // collectionUrl: "http://ex-edge.stable-stage.aam-npe.adobeinternal.net/v1",
         destinationsEnabled: true,
         debug: true
       });
@@ -46,13 +40,7 @@
 
       // For Testing multiple instances
       organizationTwo("configure", {
-        orgID: 67890,
         propertyID: 8888888,
-        dataSet: "dataset2",
-        shouldStoreCollectedData: 1,
-        device: "Chrome-Mac",
-        collectionUrl: "https://edgegateway.azurewebsites.net",
-        // collectionUrl: "http://ex-edge.stable-stage.aam-npe.adobeinternal.net/v1",
         destinationsEnabled: true,
         debug: true
       });
