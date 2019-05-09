@@ -13,19 +13,21 @@ const IFRAME_ATTRS = {
   style: "display: none; width: 0; height: 0;"
 };
 
+const createFilterResultByStatus = status => result => result.status === status;
+const mapResultToDest = result => result.dest;
+
 export default ({ logger, destinations }) => {
-  const createIframe = (() => {
-    let iframePromise;
-    return () => {
-      if (!iframePromise) {
-        iframePromise = awaitSelector(BODY_TAG).then(([body]) => {
-          const iframe = createNode(IFRAME_TAG, IFRAME_ATTRS);
-          return appendNode(body, iframe);
-        });
-      }
-      return iframePromise;
-    };
-  })();
+  let iframePromise;
+
+  const createIframe = () => {
+    if (!iframePromise) {
+      iframePromise = awaitSelector(BODY_TAG).then(([body]) => {
+        const iframe = createNode(IFRAME_TAG, IFRAME_ATTRS);
+        return appendNode(body, iframe);
+      });
+    }
+    return iframePromise;
+  };
 
   const fireInIframe = ({ attributes }) => {
     return createIframe().then(iframe => {
@@ -81,22 +83,20 @@ export default ({ logger, destinations }) => {
       });
     })
   ).then(results => {
-    return createIframe()
-      .then(iframe => {
-        removeNode(iframe);
-      })
-      .then(() => {
-        return {
-          loaded: results
-            .filter(result => result.status === "loaded")
-            .map(result => result.dest),
-          errored: results
-            .filter(result => result.status === "errored")
-            .map(result => result.dest),
-          aborted: results
-            .filter(result => result.status === "aborted")
-            .map(result => result.dest)
-        };
-      });
+    if (iframePromise) {
+      iframePromise.then(iframe => removeNode(iframe));
+    }
+
+    return {
+      loaded: results
+        .filter(createFilterResultByStatus("loaded"))
+        .map(mapResultToDest),
+      errored: results
+        .filter(createFilterResultByStatus("errored"))
+        .map(mapResultToDest),
+      aborted: results
+        .filter(createFilterResultByStatus("aborted"))
+        .map(mapResultToDest)
+    };
   });
 };
