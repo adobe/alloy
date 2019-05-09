@@ -24,14 +24,20 @@ const environment = environmentFactory(window);
 const placeContext = placeContextFactory(window, () => new Date());
 
 const createContext = ({ config, logger }) => {
-  return createComponent(
-    config,
-    logger,
-    { web, device, environment, placeContext },
-    ["web", "device", "environment", "placeContext"]
-  );
+  return createComponent(config, logger, {
+    web,
+    device,
+    environment,
+    placeContext
+  });
 };
 
 createContext.namespace = "Context";
+
+createContext.configValidators = {
+  context: {
+    defaultValue: ["web", "device", "environment", "placeContext"]
+  }
+};
 
 export default createContext;
