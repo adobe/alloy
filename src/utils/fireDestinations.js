@@ -1,5 +1,3 @@
-import isNil from "./isNil";
-import isNonEmptyString from "./isNonEmptyString";
 import fireImage from "./fireImage";
 import { appendNode, awaitSelector, createNode, removeNode } from "./dom";
 
@@ -13,7 +11,8 @@ const IFRAME_ATTRS = {
   style: "display: none; width: 0; height: 0;"
 };
 
-const createFilterResultByStatus = status => result => result.status === status;
+const createFilterResultBySucceeded = succeeded => result =>
+  result.succeeded === succeeded;
 const mapResultToDest = result => result.dest;
 
 export default ({ logger, destinations }) => {
@@ -29,58 +28,34 @@ export default ({ logger, destinations }) => {
     return iframePromise;
   };
 
-  const fireInIframe = ({ attributes }) => {
+  const fireInIframe = ({ src }) => {
     return createIframe().then(iframe => {
       const currentDocument = iframe.contentWindow.document;
-      fireImage({ attributes, currentDocument });
+      return fireImage({ src, currentDocument });
     });
   };
 
   return Promise.all(
     destinations.map(dest => {
-      return new Promise(resolve => {
-        if (isNonEmptyString(dest.url)) {
-          if (!isNil(dest.hideReferrer)) {
-            const attributes = {
-              onload: () => {
-                resolve({
-                  status: "loaded",
-                  dest
-                });
-              },
-              onerror: () => {
-                logger.log(`Destination failed: ${dest.url}`);
-                resolve({
-                  status: "errored",
-                  dest
-                });
-              },
-              onabort: () => {
-                logger.log(`Destination aborted: ${dest.url}`);
-                resolve({
-                  status: "aborted",
-                  dest
-                });
-              },
-              src: dest.url
-            };
+      const imagePromise = dest.hideReferrer
+        ? fireInIframe({ src: dest.url })
+        : fireOnPage({ src: dest.url });
 
-            if (dest.hideReferrer) {
-              fireInIframe({ attributes });
-            } else {
-              fireOnPage({ attributes });
-            }
-          } else {
-            logger.error(
-              `Destination hideReferrer property is not defined for url ${
-                dest.url
-              } .`
-            );
-          }
-        } else {
-          logger.error("Destination url is not a populated string.");
-        }
-      });
+      return imagePromise
+        .then(() => {
+          logger.log(`Destination succeeded: ${dest.url}`);
+          return {
+            succeeded: true,
+            dest
+          };
+        })
+        .catch(() => {
+          logger.log(`Destination failed: ${dest.url}`);
+          return {
+            succeeded: false,
+            dest
+          };
+        });
     })
   ).then(results => {
     if (iframePromise) {
@@ -88,14 +63,11 @@ export default ({ logger, destinations }) => {
     }
 
     return {
-      loaded: results
-        .filter(createFilterResultByStatus("loaded"))
+      succeeded: results
+        .filter(createFilterResultBySucceeded(true))
         .map(mapResultToDest),
-      errored: results
-        .filter(createFilterResultByStatus("errored"))
-        .map(mapResultToDest),
-      aborted: results
-        .filter(createFilterResultByStatus("aborted"))
+      failed: results
+        .filter(createFilterResultBySucceeded(false))
         .map(mapResultToDest)
     };
   });
