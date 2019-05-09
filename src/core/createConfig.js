@@ -114,7 +114,7 @@ export default createConfig;
 export const required = () => {
   return (config, key, currentValue) => {
     let err = "";
-    if (!currentValue) {
+    if (currentValue == null) {
       err = `${key} is a required configuration parameter`;
     }
     return err;
