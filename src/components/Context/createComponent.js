@@ -10,26 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (config, logger, availableContexts, defaultContextNames) => {
+export default (config, logger, availableContexts) => {
   let configuredContexts;
   return {
     namespace: "Context",
     lifecycle: {
       onComponentsRegistered() {
-        let configuredContextNames;
+        let configuredContextNames = [];
 
-        if (config.context) {
-          if (Array.isArray(config.context)) {
-            configuredContextNames = config.context;
-          } else {
-            logger.warn(
-              `Invalid configured context. Please specify an array of strings.`
-            );
-            configuredContextNames = [];
-          }
+        if (Array.isArray(config.context)) {
+          configuredContextNames = config.context;
         } else {
-          logger.log(`No configured context. Using default context.`);
-          configuredContextNames = defaultContextNames;
+          logger.warn(
+            `Invalid configured context. Please specify an array of strings.`
+          );
         }
 
         configuredContexts = configuredContextNames

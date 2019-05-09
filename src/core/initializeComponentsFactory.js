@@ -20,13 +20,11 @@ export default (componentCreators, logger, getNamespacedStorage) => config => {
   componentCreators.forEach(createComponent => {
     const { namespace } = createComponent;
 
-    // TODO: Get the default config from the component
-    // const { componentConfigSchema } = createComponent;
-    // TODO: Extend the config with the component config schema
+    const { configValidators } = createComponent;
+    config.addValidators(configValidators);
+    config.validate();
 
-    const storage = getNamespacedStorage(
-      "orgID." // TODO: Make orgID mandatory and add it here
-    );
+    const storage = getNamespacedStorage(config.orgID);
     // TO-DOCUMENT: Helpers that we inject into factories.
     let component;
     try {
@@ -44,7 +42,8 @@ export default (componentCreators, logger, getNamespacedStorage) => config => {
     componentRegistry.register(namespace, component);
   });
 
-  // TODO: Output the finalized config schema (if debug is turned on)
+  // Output the finalized configuration
+  logger.info("Runtime configuration:\n", JSON.stringify(config, null, 2));
 
   const lifecycle = createLifecycle(componentRegistry);
   lifecycle.onComponentsRegistered({

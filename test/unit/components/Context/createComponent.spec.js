@@ -37,22 +37,6 @@ describe("Context::createComponent", () => {
     expect(event.addContext1).toHaveBeenCalledWith({ a: "1" });
     expect(event.addContext2).toHaveBeenCalledWith({ b: "2" });
   });
-
-  it("defaults to the default contexts", () => {
-    const config = {};
-    const component = createComponent(
-      config,
-      logger,
-      availableContexts,
-      defaultContextNames
-    );
-    component.lifecycle.onComponentsRegistered();
-    component.lifecycle.onBeforeEvent(event);
-
-    expect(event.addContext1).toHaveBeenCalledWith({ a: "1" });
-    expect(event.addContext2).not.toHaveBeenCalled();
-  });
-
   it("ignores unknown contexts", () => {
     const config = { context: ["unknowncontext", "context1"] };
     const component = createComponent(

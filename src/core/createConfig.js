@@ -12,6 +12,9 @@ governing permissions and limitations under the License.
 
 import { assign, getNestedObject, setNestedObject } from "../utils";
 
+const CONFIG_DOC_URI =
+  "https://launch.gitbook.io/adobe-experience-platform-web-sdk/get-started/getting-started#configuration";
+
 const createConfig = config => {
   const cfg = {
     /**
@@ -48,18 +51,46 @@ const createConfig = config => {
       return keys;
     },
     /**
-     * Adds schema information to the existing configuration schema.
+     * Adds more validators to any existing validators.
      */
-    extendSchema: schemaAddition => {
-      assign(cfg.schema, schemaAddition);
-      return cfg.schema;
+    addValidators: validators => {
+      assign(cfg.validators, validators);
+      return cfg.validators;
     },
     /**
-     * Validates the configuration against the defined schema.
+     * Validates the configuration against the defined validators.
      */
     validate: () => {
-      // TODO: Validate existing configuration against defined schema.
-      return true;
+      const keys = Object.keys(cfg.validators);
+      const errors = keys.reduce((ac, key) => {
+        const validator = cfg.validators[key];
+        const currentValue = cfg.get(key);
+        if (
+          !validator.validate &&
+          currentValue == null &&
+          validator.defaultValue
+        ) {
+          cfg.set(key, validator.defaultValue);
+        } else if (validator.validate) {
+          const errorMessage = validator.validate(
+            cfg,
+            key,
+            currentValue,
+            validator.defaultValue
+          );
+          if (errorMessage) {
+            ac.push(errorMessage);
+          }
+        }
+        return ac;
+      }, []);
+      if (errors.length) {
+        throw new Error(
+          `Resolve these configuration problems:\n\t - ${errors.join(
+            "\n\t - "
+          )}\nFor configuration documentation see: ${CONFIG_DOC_URI}`
+        );
+      }
     },
     toJSON: () => {
       const cfgCopy = {};
@@ -69,7 +100,7 @@ const createConfig = config => {
       });
       return cfgCopy;
     },
-    schema: {},
+    validators: {},
     forbiddenKeys: []
   };
   cfg.forbiddenKeys = Object.keys(cfg);
@@ -80,3 +111,12 @@ const createConfig = config => {
 };
 
 export default createConfig;
+export const required = () => {
+  return (config, key, currentValue) => {
+    let err = "";
+    if (!currentValue) {
+      err = `${key} is a required configuration parameter`;
+    }
+    return err;
+  };
+};

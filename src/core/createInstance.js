@@ -11,7 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import { isFunction, toError } from "../utils";
-import createConfig from "./createConfig";
+import createConfig, { required } from "./createConfig";
+
+const configValidators = {
+  orgID: { validate: required() },
+  propertyID: { validate: required() },
+  dataSet: { validate: required() }
+};
 
 export default (namespace, initializeComponents, debugController) => {
   let componentRegistry;
@@ -26,6 +32,7 @@ export default (namespace, initializeComponents, debugController) => {
       debugCommand({ enabled: options.debug });
     }
     const config = createConfig(options);
+    config.addValidators(configValidators);
     componentRegistry = initializeComponents(config);
   };
 
