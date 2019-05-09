@@ -10,7 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, getNestedObject, setNestedObject, isObject } from "../utils";
+import { assign, getNestedObject, setNestedObject } from "../utils";
+
+const CONFIG_DOC_URI =
+  "https://launch.gitbook.io/adobe-experience-platform-web-sdk/get-started/getting-started#configuration";
 
 const createConfig = config => {
   const cfg = {
@@ -48,40 +51,45 @@ const createConfig = config => {
       return keys;
     },
     /**
-     * Adds schema information to the existing configuration schema.
+     * Adds more validators to any existing validators.
      */
-    extendSchema: schemaAddition => {
-      assign(cfg.schema, schemaAddition);
-      return cfg.schema;
+    addValidators: validators => {
+      assign(cfg.validators, validators);
+      return cfg.validators;
     },
     /**
-     * Validates the configuration against the defined schema.
+     * Validates the configuration against the defined validators.
      */
-    validate: (schemaObj, key) => {
-      if (!schemaObj) {
-        cfg.validate(cfg.schema);
-        return;
+    validate: () => {
+      const keys = Object.keys(cfg.validators);
+      const errors = keys.reduce((ac, key) => {
+        const validator = cfg.validators[key];
+        const currentValue = cfg.get(key);
+        if (
+          !validator.validate &&
+          currentValue == null &&
+          validator.defaultValue
+        ) {
+          cfg.set(key, validator.defaultValue);
+        } else if (validator.validate) {
+          const errorMessage = validator.validate(
+            cfg,
+            currentValue,
+            validator.defaultValue
+          );
+          if (errorMessage) {
+            ac.push(errorMessage);
+          }
+        }
+        return ac;
+      }, []);
+      if (errors.length) {
+        throw new Error(
+          `Resolve these configuration problems:\n\t - ${errors.join(
+            "\n\t - "
+          )}\nFor configuration documentation see: ${CONFIG_DOC_URI}`
+        );
       }
-      const currentKey = key || "";
-      const keys = Object.keys(schemaObj);
-      const required = schemaObj.R;
-      const defaultValue = schemaObj.D;
-      const currentValue = cfg.get(currentKey);
-      if (!currentValue && currentKey) {
-        if (!required) {
-          return;
-        }
-        if (!defaultValue) {
-          throw new Error(`Missing configuration entry: ${currentKey}`);
-        }
-        cfg.set(currentKey, defaultValue);
-        return;
-      }
-      keys.forEach(k => {
-        if (k !== "R" && k !== "D" && isObject(schemaObj[k])) {
-          cfg.validate(schemaObj[k], (currentKey ? `${currentKey}.` : "") + k);
-        }
-      });
     },
     toJSON: () => {
       const cfgCopy = {};
@@ -91,7 +99,7 @@ const createConfig = config => {
       });
       return cfgCopy;
     },
-    schema: {},
+    validators: {},
     forbiddenKeys: []
   };
   cfg.forbiddenKeys = Object.keys(cfg);
@@ -102,3 +110,12 @@ const createConfig = config => {
 };
 
 export default createConfig;
+export const requiredValidator = key => {
+  return (config, currentValue) => {
+    let err = "";
+    if (!currentValue) {
+      err = `${key} is a required configuration parameter`;
+    }
+    return err;
+  };
+};

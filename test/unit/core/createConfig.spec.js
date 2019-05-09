@@ -13,36 +13,44 @@ governing permissions and limitations under the License.
 import { includes } from "../../../src/utils";
 import createConfig from "../../../src/core/createConfig";
 
-const testConfig = {
-  a: 123,
-  b: "abc",
-  c: {
-    a1: "xyz"
+let testConfig = {};
+
+const testValidator1 = {
+  a: {
+    validate: (config, currentValue) => {
+      if (currentValue == null) {
+        throw new Error("a is missing");
+      }
+    }
   },
-  neg: {
-    neg: false
+  "c.a2": {
+    defaultValue: "zyx"
   }
 };
 
-const testSchema1 = {
-  a: {
-    R: true
-  },
-  c: {
-    a2: {
-      R: true,
-      D: "zyx"
+const testValidator2 = {
+  orgId: {
+    validate: (config, currentValue) => {
+      if (currentValue == null) {
+        throw new Error("orgId is missing");
+      }
     }
   }
 };
 
-const testSchema2 = {
-  orgId: {
-    R: true
-  }
-};
-
 describe("createConfig", () => {
+  beforeEach(() => {
+    testConfig = {
+      a: 123,
+      b: "abc",
+      c: {
+        a1: "xyz"
+      },
+      neg: {
+        neg: false
+      }
+    };
+  });
   it("supports being instantiated with a config", () => {
     const cfg = createConfig(testConfig);
     expect(cfg.a).toEqual(123);
@@ -99,17 +107,23 @@ describe("createConfig", () => {
   });
   it("supports validation against a schema", () => {
     const cfg = createConfig(testConfig);
-    cfg.extendSchema(testSchema1);
+    cfg.addValidators(testValidator1);
     expect(() => {
       cfg.validate();
     }).not.toThrow();
   });
   it("throws error when validation fails", () => {
     const cfg = createConfig(testConfig);
-    cfg.extendSchema(testSchema1);
-    cfg.extendSchema(testSchema2);
+    cfg.addValidators(testValidator1);
+    cfg.addValidators(testValidator2);
     expect(() => {
       cfg.validate();
     }).toThrow();
+  });
+  it("sets default if defined in validator", () => {
+    const cfg = createConfig(testConfig);
+    cfg.addValidators(testValidator1);
+    cfg.validate();
+    expect(cfg.get("c.a2")).toEqual("zyx");
   });
 });

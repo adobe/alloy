@@ -11,12 +11,12 @@ governing permissions and limitations under the License.
 */
 
 import { isFunction, toError } from "../utils";
-import createConfig from "./createConfig";
+import createConfig, { requiredValidator } from "./createConfig";
 
-const configSchema = {
-  orgID: { R: true },
-  propertyID: { R: true },
-  dataSet: { R: true }
+const configValidators = {
+  orgID: { validate: requiredValidator("orgID") },
+  propertyID: { validate: requiredValidator("propertyID") },
+  dataSet: { validate: requiredValidator("dataSet") }
 };
 
 export default (namespace, initializeComponents, debugController) => {
@@ -32,7 +32,7 @@ export default (namespace, initializeComponents, debugController) => {
       debugCommand({ enabled: options.debug });
     }
     const config = createConfig(options);
-    config.extendSchema(configSchema);
+    config.addValidators(configValidators);
     componentRegistry = initializeComponents(config);
   };
 

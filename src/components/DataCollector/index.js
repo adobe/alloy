@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import createRequest from "../../core/createRequest";
 import createEvent from "../../core/createEvent";
+import { requiredValidator } from "../../core/createConfig";
 
 const createDataCollector = ({ config }) => {
   let lifecycle;
@@ -49,14 +50,12 @@ const createDataCollector = ({ config }) => {
 
 createDataCollector.namespace = "DataCollector";
 
-createDataCollector.componentConfigSchema = {
+createDataCollector.configValidators = {
   collectionUrl: {
-    R: true
-    // D: TODO: Default collection URL?
+    validate: requiredValidator("collectionUrl")
   },
   device: {
-    R: true,
-    D: "UNKNOWN-DEVICE"
+    defaultValue: "UNKNOWN-DEVICE"
   }
 };
 

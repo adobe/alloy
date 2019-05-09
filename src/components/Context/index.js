@@ -34,10 +34,9 @@ const createContext = ({ config, logger }) => {
 
 createContext.namespace = "Context";
 
-createContext.componentConfigSchema = {
+createContext.configValidators = {
   context: {
-    R: true,
-    D: ["web", "device", "environment", "placeContext"]
+    defaultValue: ["web", "device", "environment", "placeContext"]
   }
 };
 
