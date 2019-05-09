@@ -71,6 +71,7 @@ const createConfig = config => {
         ) {
           cfg.set(key, validator.defaultValue);
         } else if (validator.validate) {
+          // The validate property could be expanded into an
           const errorMessage = validator.validate(
             cfg,
             key,
@@ -110,12 +111,10 @@ const createConfig = config => {
 };
 
 export default createConfig;
-export const required = () => {
-  return (config, key, currentValue) => {
-    let err = "";
-    if (currentValue == null) {
-      err = `${key} is a required configuration parameter`;
-    }
-    return err;
-  };
+export const required = (config, key, currentValue) => {
+  let err = "";
+  if (currentValue == null) {
+    err = `${key} is a required configuration parameter`;
+  }
+  return err;
 };

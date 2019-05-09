@@ -52,7 +52,7 @@ createDataCollector.namespace = "DataCollector";
 
 createDataCollector.configValidators = {
   collectionUrl: {
-    validate: required()
+    validate: required
   },
   device: {
     defaultValue: "UNKNOWN-DEVICE"

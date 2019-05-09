@@ -14,9 +14,9 @@ import { isFunction, toError } from "../utils";
 import createConfig, { required } from "./createConfig";
 
 const configValidators = {
-  orgID: { validate: required() },
-  propertyID: { validate: required() },
-  dataSet: { validate: required() }
+  orgID: { validate: required },
+  propertyID: { validate: required },
+  dataSet: { validate: required }
 };
 
 export default (namespace, initializeComponents, debugController) => {
