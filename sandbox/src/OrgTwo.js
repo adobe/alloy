@@ -11,12 +11,7 @@ export default function OrgTwo() {
             <code>
             {`
                 organizationTwo("configure", {
-                    orgID: 67890,
                     propertyID: 8888888,
-                    dataSet: "dataset2",
-                    shouldStoreCollectedData: 1,
-                    device: "Chrome-Mac",
-                    collectionUrl: "https://edgegateway.azurewebsites.net",
                     destinationsEnabled: true,
                     debug: true
                 });

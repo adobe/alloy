@@ -14,9 +14,10 @@ import { isFunction, toError } from "../utils";
 import createConfig, { required } from "./createConfig";
 
 const configValidators = {
-  orgID: { validate: required },
   propertyID: { validate: required },
-  dataSet: { validate: required }
+  // TODO: For debugging purposes only. Remove eventually.
+  shouldStoreCollectedData: { defaultValue: 1 },
+  device: { defaultValue: "Chrome-Mac" }
 };
 
 export default (namespace, initializeComponents, debugController) => {
