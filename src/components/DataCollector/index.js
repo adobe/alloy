@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import createRequest from "../../core/createRequest";
 import createEvent from "../../core/createEvent";
-import { required } from "../../core/createConfig";
 
 const createDataCollector = ({ config }) => {
   let lifecycle;
@@ -52,7 +51,8 @@ createDataCollector.namespace = "DataCollector";
 
 createDataCollector.configValidators = {
   collectionUrl: {
-    validate: required
+    defaultValue: "https://edgegateway.azurewebsites.net"
+    // defaultValue: "http://ex-edge.stable-stage.aam-npe.adobeinternal.net/v1"
   },
   device: {
     defaultValue: "UNKNOWN-DEVICE"
