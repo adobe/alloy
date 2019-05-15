@@ -32,6 +32,7 @@ module.exports = config => {
     ],
     // list of files / patterns to load in the browser
     files: [
+      "node_modules/@babel/polyfill/dist/polyfill.js",
       {
         pattern: "test/unit/**/*.spec.js",
         watched: false // The preprocessor will use its own watcher
