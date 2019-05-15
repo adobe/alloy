@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import "core-js/modules/es6.promise";
 import awaitSelector from "../../../../src/utils/dom/awaitSelector";
 import selectNodes from "../../../../src/utils/dom/selectNodes";
 import { createNode, appendNode, removeNode } from "../../../../src/utils/dom";

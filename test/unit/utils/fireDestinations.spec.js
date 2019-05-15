@@ -1,3 +1,4 @@
+import "@babel/polyfill";
 import fireDestinations from "../../../src/utils/fireDestinations";
 
 describe("fireDestinations", () => {
