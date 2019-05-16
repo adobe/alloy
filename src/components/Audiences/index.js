@@ -19,7 +19,7 @@ const createAudiences = ({ config, logger }) => {
         if (!isViewStart) {
           return;
         }
-        logger.log("Audiences:::onBeforeEvent");
+        logger.log("onBeforeEvent");
         // TODO: Remove; We won't need to request destinations explicitely.
         // This is just for demo currently.
         event.mergeQuery({
@@ -27,9 +27,10 @@ const createAudiences = ({ config, logger }) => {
         });
       },
       onResponse(response) {
-        logger.log("Audiences:::onResponse");
+        logger.log("onResponse");
 
         const destinations = response.getPayloadByType("activation:push") || [];
+
         // const destinations = [{
         //   type: "url",
         //   id: 2097728,
