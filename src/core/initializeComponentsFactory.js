@@ -14,7 +14,12 @@ import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
 import { stackError } from "../utils";
 
-export default (componentCreators, logger, getNamespacedStorage) => config => {
+export default (
+  componentCreators,
+  logger,
+  getNamespacedStorage,
+  cookie
+) => config => {
   const componentRegistry = createComponentRegistry();
 
   componentCreators.forEach(createComponent => {
@@ -24,12 +29,14 @@ export default (componentCreators, logger, getNamespacedStorage) => config => {
   config.validate();
   componentCreators.forEach(createComponent => {
     const { namespace } = createComponent;
+    const { propertyID, cookieDomain } = config;
     const storage = getNamespacedStorage(config.orgID);
     // TO-DOCUMENT: Helpers that we inject into factories.
     let component;
     try {
       component = createComponent({
         logger: logger.spawn(`[${namespace}]`),
+        cookie: cookie(namespace, propertyID, cookieDomain),
         config,
         storage
       });
