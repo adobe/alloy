@@ -15,6 +15,7 @@ import storageFactory from "../utils/storageFactory";
 import initializeComponentsFactory from "./initializeComponentsFactory";
 
 import createLogger from "./createLogger";
+import createCookie from "./createCookie";
 import createDebugController from "./createDebugController";
 
 import createDataCollector from "../components/DataCollector";
@@ -42,10 +43,12 @@ if (namespaces) {
   namespaces.forEach(namespace => {
     const debugController = createDebugController(namespace, storage);
     const logger = createLogger(window, debugController, `[${namespace}]`);
+
     const initializeComponents = initializeComponentsFactory(
       componentCreators,
       logger,
-      storage
+      storage,
+      createCookie
     );
 
     const instance = createInstance(
