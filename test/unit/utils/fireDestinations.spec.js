@@ -1,4 +1,5 @@
 import fireDestinations from "../../../src/utils/fireDestinations";
+import assign from "../../../src/utils/assign";
 
 describe("fireDestinations", () => {
   const logger = {
@@ -21,7 +22,7 @@ describe("fireDestinations", () => {
     const urlDestinations = destinations
       .filter(dest => dest.type === "url")
       .map(dest =>
-        Object.assign(
+        assign(
           {
             id: dest.id
           },
