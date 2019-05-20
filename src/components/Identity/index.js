@@ -33,7 +33,7 @@ const createIdentity = ({ config, logger }) => {
     if (!isViewStart) {
       return;
     }
-    logger.log("onBeforeEvent");
+
     // TODO: Remove; We won't need to request id syncs explicitely.
     // This is just for demo currently.
     event.mergeQuery({
@@ -72,8 +72,6 @@ const createIdentity = ({ config, logger }) => {
   };
 
   const onResponse = response => {
-    logger.log("onResponse");
-
     const ecidPayload = response.getPayloadByType("identity:persist");
 
     if (ecidPayload) {

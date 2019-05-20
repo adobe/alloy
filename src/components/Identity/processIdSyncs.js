@@ -11,21 +11,24 @@ governing permissions and limitations under the License.
 */
 
 import { assign, cookie, fireDestinations } from "../../utils";
+import namespace from "../../constants/namespace";
 
 const millisecondsPerHour = 60 * 60 * 1000;
 
 const getControlObject = () => {
-  return JSON.parse(cookie.get("adobeIdSyncControl") || "{}");
+  return JSON.parse(cookie.get(`${namespace}idSyncControl`) || "{}");
 };
 
 const setControlObject = obj => {
-  cookie.set("adobeIdSyncControl", JSON.stringify(obj), {
+  cookie.set(`${namespace}idSyncControl`, JSON.stringify(obj), {
     expires: 6 * 30 // 6 months
   });
 };
 
 export default ({ destinations, config, logger }) => {
-  if (config.idSyncsEnabled === undefined || config.idSyncsEnabled) {
+  const { idSyncsEnabled = true } = config;
+
+  if (idSyncsEnabled) {
     const controlObject = getControlObject();
     const now = new Date().getTime() / millisecondsPerHour; // hours
 

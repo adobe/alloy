@@ -1,5 +1,6 @@
 import processIdSyncs from "../../../../src/components/Identity/processIdSyncs";
 import { cookie } from "../../../../src/utils";
+import namespace from "../../../../src/constants/namespace";
 
 describe("Identity::processIdSyncs", () => {
   const config = {};
@@ -9,7 +10,7 @@ describe("Identity::processIdSyncs", () => {
   };
 
   const getControlObject = () => {
-    return JSON.parse(cookie.get("adobeIdSyncControl") || "{}");
+    return JSON.parse(cookie.get(`${namespace}idSyncControl`) || "{}");
   };
 
   it("tracks id syncs", done => {
@@ -26,7 +27,7 @@ describe("Identity::processIdSyncs", () => {
     ];
 
     cookie.set(
-      "adobeIdSyncControl",
+      `${namespace}idSyncControl`,
       JSON.stringify({
         123: Math.round(new Date().getTime() / 1000 / 60 / 60) - 10
       }),

@@ -10,15 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  assign,
-  isNonEmptyString,
-  cookie,
-  fireDestinations
-} from "../../utils";
+import { assign, cookie, fireDestinations } from "../../utils";
 
 export default ({ destinations, config, logger }) => {
-  if (config.destinationsEnabled === undefined || config.destinationsEnabled) {
+  const { destinationsEnabled = true } = config;
+
+  if (destinationsEnabled) {
     const urlDestinations = destinations
       .filter(dest => dest.type === "url")
       .map(dest =>
@@ -30,7 +27,7 @@ export default ({ destinations, config, logger }) => {
         )
       );
 
-    if (urlDestinations.length > 0) {
+    if (urlDestinations.length) {
       fireDestinations({
         logger,
         destinations: urlDestinations
@@ -42,14 +39,10 @@ export default ({ destinations, config, logger }) => {
       .map(dest => dest.spec);
 
     cookieDestinations.forEach(dest => {
-      if (isNonEmptyString(dest.name)) {
-        cookie.set(dest.name, dest.value || "", {
-          domain: dest.domain || "",
-          expires: dest.ttl ? dest.ttl : 6 * 30 // default of 6 months
-        });
-      } else {
-        logger.error("Cookie destination had an invalid or no name.");
-      }
+      cookie.set(dest.name, dest.value || "", {
+        domain: dest.domain || "",
+        expires: dest.ttl ? dest.ttl : 6 * 30 // default of 6 months
+      });
     });
   }
 };
