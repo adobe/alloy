@@ -10,7 +10,21 @@ describe("Identity::processIdSyncs", () => {
   };
 
   const getControlObject = () => {
-    return JSON.parse(cookie.get(`${namespace}idSyncControl`) || "{}");
+    const obj = {};
+    const val = cookie.get(`${namespace}idSyncControl`) || "";
+    let arr = [];
+
+    if (val) {
+      arr = val.split("_");
+    }
+
+    arr.forEach(pair => {
+      const [id, ts] = pair.split("-");
+
+      obj[id] = ts;
+    });
+
+    return obj;
   };
 
   it("tracks id syncs", done => {
@@ -28,9 +42,7 @@ describe("Identity::processIdSyncs", () => {
 
     cookie.set(
       `${namespace}idSyncControl`,
-      JSON.stringify({
-        123: Math.round(new Date().getTime() / 1000 / 60 / 60) - 10
-      }),
+      `123-${Math.round(new Date().getTime() / 1000 / 60 / 60) - 10}`,
       {
         expires: 6 * 30 // 6 months
       }

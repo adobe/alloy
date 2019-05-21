@@ -15,12 +15,31 @@ import namespace from "../../constants/namespace";
 
 const millisecondsPerHour = 60 * 60 * 1000;
 
+// TODO: use alloy cookie once https://github.com/adobe/alloy/pull/26 is merged
 const getControlObject = () => {
-  return JSON.parse(cookie.get(`${namespace}idSyncControl`) || "{}");
+  const obj = {};
+  const val = cookie.get(`${namespace}idSyncControl`) || "";
+  let arr = [];
+
+  if (val) {
+    arr = val.split("_");
+  }
+
+  arr.forEach(pair => {
+    const [id, ts] = pair.split("-");
+
+    obj[id] = ts;
+  });
+
+  return obj;
 };
 
 const setControlObject = obj => {
-  cookie.set(`${namespace}idSyncControl`, JSON.stringify(obj), {
+  const arr = [];
+
+  Object.keys(obj).forEach(id => arr.push(`${id}-${obj[id]}`));
+
+  cookie.set(`${namespace}idSyncControl`, arr.join("_"), {
     expires: 6 * 30 // 6 months
   });
 };
