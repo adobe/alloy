@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { cookie, defer } from "../../utils";
+import processIdSyncs from "./processIdSyncs";
 
 const ECID_NAMESPACE = "ECID";
 
@@ -24,9 +25,21 @@ const addIdsContext = (payload, ecid) => {
 // TODO: Namespace the cookie to be specific to the org.
 const getEcid = () => cookie.get("ecid");
 
-const createIdentity = () => {
+const createIdentity = ({ config, logger }) => {
   let ecid = getEcid();
   let deferredForEcid;
+
+  const onBeforeEvent = (event, isViewStart) => {
+    if (!isViewStart) {
+      return;
+    }
+
+    // TODO: Remove; We won't need to request id syncs explicitely.
+    // This is just for demo currently.
+    event.mergeQuery({
+      idSyncs: true
+    });
+  };
 
   // TO-DOCUMENT: We wait for ECID before trigger any events.
   const onBeforeRequest = payload => {
@@ -69,10 +82,39 @@ const createIdentity = () => {
         deferredForEcid.resolve();
       }
     }
+
+    const idSyncs = response.getPayloadByType("identity:exchange") || [];
+
+    // const idSyncs = [
+    //   {
+    //     type: "url",
+    //     id: 411,
+    //     spec: {
+    //       url:
+    //         "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013268",
+    //       hideReferrer: 0
+    //     }
+    //   },
+    //   {
+    //     type: "url",
+    //     id: 2097629,
+    //     spec: {
+    //       url: "//dp2.33across.com/ps/?pid=897&random=1872864154",
+    //       hideReferrer: 1
+    //     }
+    //   }
+    // ];
+
+    processIdSyncs({
+      destinations: idSyncs,
+      config,
+      logger
+    });
   };
 
   return {
     lifecycle: {
+      onBeforeEvent,
       onBeforeRequest,
       onResponse
     },
@@ -83,5 +125,11 @@ const createIdentity = () => {
 };
 
 createIdentity.namespace = "Identity";
+
+createIdentity.configValidators = {
+  idSyncsEnabled: {
+    defaultValue: true
+  }
+};
 
 export default createIdentity;

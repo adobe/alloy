@@ -10,49 +10,37 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  assign,
-  isNonEmptyString,
-  cookie,
-  fireDestinations
-} from "../../utils";
+import { assign, cookie, fireDestinations } from "../../utils";
 
 export default ({ destinations, config, logger }) => {
-  const urlDestinations = destinations
-    .filter(dest => dest.type === "url")
-    .map(dest =>
-      assign(
-        {
-          id: dest.id
-        },
-        dest.spec
-      )
-    );
+  if (config.destinationsEnabled) {
+    const urlDestinations = destinations
+      .filter(dest => dest.type === "url")
+      .map(dest =>
+        assign(
+          {
+            id: dest.id
+          },
+          dest.spec
+        )
+      );
 
-  if (
-    urlDestinations.length &&
-    (config.destinationsEnabled === undefined || config.destinationsEnabled)
-  ) {
-    fireDestinations({
-      logger,
-      destinations: urlDestinations
-    }).then(result => {
-      console.log(result);
-    });
-  }
+    if (urlDestinations.length) {
+      fireDestinations({
+        logger,
+        destinations: urlDestinations
+      });
+    }
 
-  const cookieDestinations = destinations
-    .filter(dest => dest.type === "cookie")
-    .map(dest => dest.spec);
+    const cookieDestinations = destinations
+      .filter(dest => dest.type === "cookie")
+      .map(dest => dest.spec);
 
-  cookieDestinations.forEach(dest => {
-    if (isNonEmptyString(dest.name)) {
+    cookieDestinations.forEach(dest => {
       cookie.set(dest.name, dest.value || "", {
         domain: dest.domain || "",
         expires: dest.ttl ? dest.ttl : 6 * 30 // default of 6 months
       });
-    } else {
-      logger.error("Cookie destination had an invalid or no name.");
-    }
-  });
+    });
+  }
 };

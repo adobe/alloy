@@ -19,7 +19,7 @@ const createAudiences = ({ config, logger }) => {
         if (!isViewStart) {
           return;
         }
-        logger.log("Audiences:::onBeforeEvent");
+
         // TODO: Remove; We won't need to request destinations explicitely.
         // This is just for demo currently.
         event.mergeQuery({
@@ -27,17 +27,7 @@ const createAudiences = ({ config, logger }) => {
         });
       },
       onResponse(response) {
-        logger.log("Audiences:::onResponse");
-
         const destinations = response.getPayloadByType("activation:push") || [];
-        // const destinations = [{
-        //   type: "url",
-        //   id: 2097728,
-        //   spec: {
-        //     url: "http://test" + new Date().getTime() + ".abc",
-        //     hideReferrer: 1
-        //   }
-        // }];
 
         processDestinations({
           destinations,
@@ -51,5 +41,11 @@ const createAudiences = ({ config, logger }) => {
 };
 
 createAudiences.namespace = "Audiences";
+
+createAudiences.configValidators = {
+  destinationsEnabled: {
+    defaultValue: true
+  }
+};
 
 export default createAudiences;
