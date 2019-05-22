@@ -2,7 +2,9 @@ import processDestinations from "../../../../src/components/Audiences/processDes
 import { cookie } from "../../../../src/utils";
 
 describe("Audiences::processDestinations", () => {
-  const config = {};
+  const config = {
+    destinationsEnabled: true
+  };
   const logger = {
     log() {},
     error() {}

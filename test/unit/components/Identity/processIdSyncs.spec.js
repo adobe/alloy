@@ -3,28 +3,26 @@ import { cookie } from "../../../../src/utils";
 import namespace from "../../../../src/constants/namespace";
 
 describe("Identity::processIdSyncs", () => {
-  const config = {};
+  const config = {
+    idSyncsEnabled: true
+  };
   const logger = {
     log() {},
     error() {}
   };
 
   const getControlObject = () => {
-    const obj = {};
     const val = cookie.get(`${namespace}idSyncControl`) || "";
-    let arr = [];
+    const arr = val ? val.split("_") : [];
 
-    if (val) {
-      arr = val.split("_");
-    }
-
-    arr.forEach(pair => {
+    return arr.reduce((obj, pair) => {
+      const o = obj;
       const [id, ts] = pair.split("-");
 
-      obj[id] = ts;
-    });
+      o[id] = ts;
 
-    return obj;
+      return o;
+    }, {});
   };
 
   it("tracks id syncs", done => {

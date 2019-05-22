@@ -126,4 +126,10 @@ const createIdentity = ({ config, logger }) => {
 
 createIdentity.namespace = "Identity";
 
+createIdentity.configValidators = {
+  idSyncsEnabled: {
+    defaultValue: true
+  }
+};
+
 export default createIdentity;

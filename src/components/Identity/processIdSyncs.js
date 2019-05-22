@@ -17,21 +17,17 @@ const millisecondsPerHour = 60 * 60 * 1000;
 
 // TODO: use alloy cookie once https://github.com/adobe/alloy/pull/26 is merged
 const getControlObject = () => {
-  const obj = {};
   const val = cookie.get(`${namespace}idSyncControl`) || "";
-  let arr = [];
+  const arr = val ? val.split("_") : [];
 
-  if (val) {
-    arr = val.split("_");
-  }
-
-  arr.forEach(pair => {
+  return arr.reduce((obj, pair) => {
+    const o = obj;
     const [id, ts] = pair.split("-");
 
-    obj[id] = ts;
-  });
+    o[id] = ts;
 
-  return obj;
+    return o;
+  }, {});
 };
 
 const setControlObject = obj => {
@@ -45,9 +41,7 @@ const setControlObject = obj => {
 };
 
 export default ({ destinations, config, logger }) => {
-  const { idSyncsEnabled = true } = config;
-
-  if (idSyncsEnabled) {
+  if (config.idSyncsEnabled) {
     const controlObject = getControlObject();
     const now = new Date().getTime() / millisecondsPerHour; // hours
 

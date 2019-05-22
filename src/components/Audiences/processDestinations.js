@@ -13,9 +13,7 @@ governing permissions and limitations under the License.
 import { assign, cookie, fireDestinations } from "../../utils";
 
 export default ({ destinations, config, logger }) => {
-  const { destinationsEnabled = true } = config;
-
-  if (destinationsEnabled) {
+  if (config.destinationsEnabled) {
     const urlDestinations = destinations
       .filter(dest => dest.type === "url")
       .map(dest =>

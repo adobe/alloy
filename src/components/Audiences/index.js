@@ -42,4 +42,10 @@ const createAudiences = ({ config, logger }) => {
 
 createAudiences.namespace = "Audiences";
 
+createAudiences.configValidators = {
+  destinationsEnabled: {
+    defaultValue: true
+  }
+};
+
 export default createAudiences;
