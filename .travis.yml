@@ -14,6 +14,8 @@ addons:
     - google-chrome
     packages:
     - google-chrome-stable fluxbox
+  sonarcloud:
+    organization: "adobeinc"
 before_script:
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
@@ -23,6 +25,7 @@ script:
 - npm run test:saucelabs
 - npm run test
 - npm run functional
+- sonar-scanner
 notifications:
   slack:
     secure: WmlaV3SmsMF5h+47uN+G0jQLT3Ja1FQ9q1tW1bGTPAY/UDwp18qVgBeOzo4MaF9ISvcdk1rEK73xhlvdXrymShQKezFlx3W/ePBYKnGyBC8FuSoQEvb+GUNBwt1qzLg3CrHsdcOxGJxZg6UBWp7uBywe4cFbY5oQDOYwVkhrZVHxaJ9KR4lR0Dk/9vDLSVUnLtYiZxQfyg+WZIcCowAhIasp74ZdSFq9Bmamv3b/vdWQRuJRtIbmxjFKvm9T4zCHPAcRFNQ/yzAL7UINVEE8JF1ejIbdl3lVKkKCrMp8L8d7hAZGVClU9Vg3UQ+NK46eAC+qMnY5KPoKkrCsxBqUJ8RIp+D4NLTuYC5ItgUEsb9FTtDib/4XVHXnbLWVLQ+d1ySIVZvnVd/Uk+HkkYAEWs1ZFa+LM7vx0j4qkcoOZY0DTTGsO1D/dBnSiRlBbIuXDbTaAvtQoMxREf4Tu/IzRf0+QR0V/aR9sV61DXFeJdjbsEhfUrryY4DENCwRbhuqpNyI/of/YpRakXjtiVF89hs9XiXzBecfj6F1Hvl/5AHFr/Xa6UEXx/Q+DLvOSOIFAfgsLQA4f+crWz0DQpzGR8kNOKQ3H8m+BXHS/VOf1AmKZAQbPYyaJp/6Lg0jYNzpwdgw6hoYwNky2gAzZ2P1NxUS6FX1OpsvFkE5MyHnHiw=
