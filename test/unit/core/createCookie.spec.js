@@ -39,8 +39,11 @@ describe("createCookie", () => {
 
   it("should return an undefined object when no cookie is found", () => {
     alloyCookie = createCookie(prefix);
-    const test = alloyCookie.get();
-    expect(test).toEqual(undefined);
+    const test1 = alloyCookie.get();
+    expect(test1).toEqual(undefined);
+    alloyCookie = createCookie(prefix, testID1);
+    const test2 = alloyCookie.get();
+    expect(test2).toEqual(undefined);
   });
 
   it("should create an object with prefixed namespace for storing", () => {
@@ -65,6 +68,39 @@ describe("createCookie", () => {
       `{"${prefix}":{"key1":"valnew","key2":"val2"}}`
     );
   });
+
+  it("should remove a stored key value pair", () => {
+    alloyCookie = createCookie(prefix, testID1);
+
+    alloyCookie.set("key1", "val1");
+    expect(cookie.get(`${COOKIE_NAME}_${testID1}`)).toBe(
+      `{"${prefix}":{"key1":"val1"}}`
+    );
+
+    alloyCookie.set("key1", "valnew");
+    alloyCookie.set("key2", "val2");
+    expect(cookie.get(`${COOKIE_NAME}_${testID1}`)).toBe(
+      `{"${prefix}":{"key1":"valnew","key2":"val2"}}`
+    );
+
+    alloyCookie.remove("key2");
+    expect(cookie.get(`${COOKIE_NAME}_${testID1}`)).toBe(
+      `{"${prefix}":{"key1":"valnew"}}`
+    );
+  });
+
+  it("should remove a stored key value pair only when present", () => {
+    alloyCookie = createCookie(prefix, testID1);
+
+    alloyCookie.remove("key1");
+    expect(cookie.get(`${COOKIE_NAME}_${testID1}`)).toEqual(undefined);
+
+    alloyCookie.set("key1", "valnew");
+    alloyCookie.remove("key2");
+    expect(cookie.get(`${COOKIE_NAME}_${testID1}`)).toBe(
+      `{"${prefix}":{"key1":"valnew"}}`
+    );
+  })
 
   it("should create new namespace for each prefix", () => {
     const alloyCookie1 = createCookie(`${prefix}1`, testID1);
