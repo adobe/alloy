@@ -88,7 +88,7 @@
     "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-terser": "^4.0.4",
     "testcafe": "^1.0.1",
-    "testcafe-browser-provider-saucelabs": "^1.6.1",
+    "testcafe-browser-provider-saucelabs": "^1.7.0",
     "testcafe-live": "^0.1.4"
   }
 }
