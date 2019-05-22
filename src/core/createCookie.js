@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 import cookie from "../utils/cookie";
 import cookieDetails from "../constants/cookieDetails";
+import getTopLevelCookieDomain from "../utils/getTopLevelCookieDomain";
 
 const { ALLOY_COOKIE_NAME, ALLOY_COOKIE_TTL } = cookieDetails;
 
@@ -31,7 +32,7 @@ const createCookie = (prefix, id, cookieDomain = "") => {
       );
     },
     /**
-     * Updates and returns values from AlloyCookie for Components
+     * Updates the value  of a key from AlloyCookie for a prefix
      * @param {...*} arg Strings with key and value to be stored in alloy cookie.
      */
     set(key, value) {
@@ -46,7 +47,7 @@ const createCookie = (prefix, id, cookieDomain = "") => {
 
       cookie.set(cookieName, updatedCookie, {
         expires: ALLOY_COOKIE_TTL,
-        domain: cookieDomain // TODO use getTopLevelCookieDomain here
+        domain: cookieDomain || getTopLevelCookieDomain(window, cookie)
       });
     },
     /**
@@ -61,7 +62,7 @@ const createCookie = (prefix, id, cookieDomain = "") => {
         delete currentCookieParsed[prefix][key];
         cookie.set(cookieName, currentCookieParsed, {
           expires: ALLOY_COOKIE_TTL,
-          domain: cookieDomain // TODO use getTopLevelCookieDomain here
+          domain: cookieDomain || getTopLevelCookieDomain(window, cookie)
         });
       }
     }

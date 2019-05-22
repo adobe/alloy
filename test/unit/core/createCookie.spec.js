@@ -100,7 +100,7 @@ describe("createCookie", () => {
     expect(cookie.get(`${COOKIE_NAME}_${testID1}`)).toBe(
       `{"${prefix}":{"key1":"valnew"}}`
     );
-  })
+  });
 
   it("should create new namespace for each prefix", () => {
     const alloyCookie1 = createCookie(`${prefix}1`, testID1);
