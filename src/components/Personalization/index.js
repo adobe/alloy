@@ -124,7 +124,6 @@ const createPersonalization = ({ logger }) => {
       },
       onBeforeEvent(event, isViewStart) {
         if (isViewStart) {
-          console.log("Personalization:::onBeforeEvent");
           event.mergeQuery({
             personalization: {
               prefetch: {
@@ -150,7 +149,6 @@ const createPersonalization = ({ logger }) => {
 
       onResponse(response) {
         // eslint-disable-next-line no-unreachable
-        console.log("Personalization:::onResponse");
         const personalization =
           response.getPayloadByType("personalization:run") || [];
 

@@ -29,8 +29,10 @@
         debug: true
       });
 
-      alloy("viewStart", {
-        type: "view:start",
+      alloy("event", {
+        // NOTE: `viewstart` is a special type of events.
+        // View docs for more info.
+        type: "viewstart",
         data: {
           "xdm:URL": [location.href],
           "xdm:name": [location.pathname.substring(1) || "home"]
@@ -46,18 +48,6 @@
         idSyncsEnabled: true,
         debug: true
       });
-      //
-      // ebda("viewStart", {
-      //   data: {
-      //     pageName: ["landing"]
-      //   }
-      // });
-      //
-      // ebda("event", {
-      //   data: {
-      //     snack: ["oreos"]
-      //   }
-      // });
     </script>
   </head>
   <body>

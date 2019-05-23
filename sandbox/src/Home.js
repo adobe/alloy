@@ -4,11 +4,11 @@ import { withRouter } from "react-router-dom";
 let previousPath;
 function HomeWithHistory({ history }) {
 
-  history.listen((loc, action) => {
+  history.listen((loc) => {
     if (loc.pathname !== previousPath) {
       const instanceName = loc.pathname.includes("orgTwo") ? "organizationTwo" : "alloy";
-      window[instanceName]("viewStart", {
-        type: "view:start",
+      window[instanceName]("event", {
+        type: "viewstart",
         data: {
           "xdm:URL": [window.location.href],
           "xdm:name": [loc.pathname.substring(1)]
