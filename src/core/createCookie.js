@@ -15,6 +15,14 @@ import getTopLevelCookieDomain from "../utils/getTopLevelCookieDomain";
 
 const { ALLOY_COOKIE_NAME, ALLOY_COOKIE_TTL } = cookieDetails;
 
+const safeJSONParse = (object, cookieName) => {
+  try {
+    return JSON.parse(object);
+  } catch (error) {
+    throw new Error(`Invalid cookie format in ${cookieName} cookie`);
+  }
+};
+
 const createCookie = (prefix, id, cookieDomain = "") => {
   return {
     /**
@@ -24,7 +32,9 @@ const createCookie = (prefix, id, cookieDomain = "") => {
     get(name) {
       const cookieName = `${ALLOY_COOKIE_NAME}_${id}`;
       const currentCookie = cookie.get(cookieName);
-      const currentCookieParsed = currentCookie && JSON.parse(currentCookie);
+      const currentCookieParsed =
+        currentCookie && safeJSONParse(currentCookie, cookieName);
+
       return (
         currentCookieParsed &&
         currentCookieParsed[prefix] &&
@@ -38,7 +48,7 @@ const createCookie = (prefix, id, cookieDomain = "") => {
     set(key, value) {
       const cookieName = `${ALLOY_COOKIE_NAME}_${id}`;
       const currentCookie = cookie.get(cookieName)
-        ? JSON.parse(cookie.get(cookieName))
+        ? safeJSONParse(cookie.get(cookieName))
         : {};
       const updatedCookie = {
         ...currentCookie,
@@ -57,7 +67,7 @@ const createCookie = (prefix, id, cookieDomain = "") => {
     remove(key) {
       const cookieName = `${ALLOY_COOKIE_NAME}_${id}`;
       const currentCookie = cookie.get(cookieName);
-      const currentCookieParsed = currentCookie && JSON.parse(currentCookie);
+      const currentCookieParsed = currentCookie && safeJSONParse(currentCookie);
       if (currentCookieParsed && currentCookieParsed[prefix]) {
         delete currentCookieParsed[prefix][key];
         cookie.set(cookieName, currentCookieParsed, {

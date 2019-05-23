@@ -46,6 +46,16 @@ describe("createCookie", () => {
     expect(test2).toEqual(undefined);
   });
 
+  it("Should throw an error when an invalid format is set in cookie", () => {
+    alloyCookie = createCookie(prefix, testID1);
+    document.cookie = `${COOKIE_NAME}_${testID1}=abbc|jhjkh`;
+    expect(() => {
+      alloyCookie.get();
+    }).toThrow(
+      new Error(`Invalid cookie format in ${COOKIE_NAME}_${testID1} cookie`)
+    );
+  });
+
   it("should create an object with prefixed namespace for storing", () => {
     alloyCookie = createCookie(prefix, testID1);
     alloyCookie.set("key1", "val1");
