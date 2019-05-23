@@ -27,8 +27,8 @@ const createCookie = (prefix, id, cookieDomain = "") => {
       const currentCookieParsed = currentCookie && JSON.parse(currentCookie);
       return (
         currentCookieParsed &&
-        currentCookie[prefix] &&
-        currentCookie[prefix][name]
+        currentCookieParsed[prefix] &&
+        currentCookieParsed[prefix][name]
       );
     },
     /**
