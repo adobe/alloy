@@ -13,6 +13,8 @@ governing permissions and limitations under the License.
 import createRequest from "../../core/createRequest";
 import createEvent from "../../core/createEvent";
 
+const VIEW_START_EVENT = "viewstart";
+
 const createDataCollector = ({ config }) => {
   let lifecycle;
 
@@ -26,8 +28,10 @@ const createDataCollector = ({ config }) => {
     );
   };
 
-  const createEventHandler = isViewStart => options => {
+  const createEventHandler = options => {
     const event = createEvent();
+    const isViewStart = options.type && options.type === VIEW_START_EVENT;
+
     event.mergeData(options.data);
     lifecycle.onBeforeEvent(event, isViewStart).then(() => {
       makeServerCall([event]);
@@ -41,8 +45,7 @@ const createDataCollector = ({ config }) => {
       }
     },
     commands: {
-      viewStart: createEventHandler(true),
-      event: createEventHandler(false)
+      event: createEventHandler
     }
   };
 };
