@@ -50,9 +50,9 @@ const removeFrom = (parent, element) => {
 
 const setupElementDetection = (key, selector, callback) => {
   const content = `
-    @keyframes ${key} {  
+    @keyframes ${key} {
       from { opacity: 0.99; }
-      to { opacity: 1; }  
+      to { opacity: 1; }
     }
 
     ${selector} {

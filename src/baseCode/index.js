@@ -40,7 +40,8 @@ governing permissions and limitations under the License.
       // what the Alloy library will consult once it is loaded to determine
       // which global functions have been set up so that is can connect them to
       // the library's command processing pipeline.
-      (window.__alloyNS = window.__alloyNS || []).push(instanceNamespace);
+      window.__alloyNS = window.__alloyNS || [];
+      window.__alloyNS.push(instanceNamespace);
       window[instanceNamespace] = function() {
         var userProvidedArgs = arguments;
         // Always return a promise, because the command may be executed
