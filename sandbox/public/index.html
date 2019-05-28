@@ -30,9 +30,9 @@
       });
 
       alloy("event", {
-        // NOTE: `viewstart` is a special type of events.
+        // NOTE: `viewStart` is a special type of events.
         // View docs for more info.
-        type: "viewstart",
+        type: "viewStart",
         data: {
           "xdm:URL": [location.href],
           "xdm:name": [location.pathname.substring(1) || "home"]

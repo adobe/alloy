@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import createRequest from "../../core/createRequest";
 import createEvent from "../../core/createEvent";
 
-const VIEW_START_EVENT = "viewstart";
+const VIEW_START_EVENT = "viewStart";
 
 const createDataCollector = ({ config }) => {
   let lifecycle;
@@ -30,7 +30,7 @@ const createDataCollector = ({ config }) => {
 
   const createEventHandler = options => {
     const event = createEvent();
-    const isViewStart = options.type && options.type === VIEW_START_EVENT;
+    const isViewStart = options.type === VIEW_START_EVENT;
 
     event.mergeData(options.data);
     lifecycle.onBeforeEvent(event, isViewStart).then(() => {
