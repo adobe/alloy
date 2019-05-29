@@ -129,7 +129,7 @@ export const required = (config, key, currentValue) => {
   }
   return err;
 };
-export const matchesRegEx = (ex) => (config, key, currentValue) => {
+export const matchesRegEx = ex => (config, key, currentValue) => {
   const re = new RegExp(ex);
   let err = "";
   if (!re.test(currentValue)) {
