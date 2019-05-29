@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Expose running port
-EXPOSE ${PORT}
+EXPOSE 8080
 
 # Run the projects
 RUN npm run start

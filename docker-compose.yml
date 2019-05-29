@@ -10,4 +10,4 @@ services:
       - './sandbox:/sandbox'
     env_file: ./sandbox/.env
     ports:
-      - '8080:${PORT-8080}'
+      - '8080:8080'
