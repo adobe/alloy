@@ -63,24 +63,35 @@ const createConfig = config => {
     validate: () => {
       const keys = Object.keys(cfg.validators);
       const errors = keys.reduce((ac, key) => {
-        const validator = cfg.validators[key];
         const currentValue = cfg.get(key);
+        const validator = cfg.validators[key];
         if (
           currentValue == null &&
           Object.prototype.hasOwnProperty.call(validator, "defaultValue")
         ) {
           cfg.set(key, validator.defaultValue);
         } else if (validator.validate) {
-          // The validate property could be expanded into an
-          const errorMessage = validator.validate(
-            cfg,
-            key,
-            currentValue,
-            validator.defaultValue
-          );
-          if (errorMessage) {
-            ac.push(errorMessage);
+          const validators = [];
+          if (Array.isArray(validator.validate)) {
+            assign(validators, validator.validate);
+          } else {
+            validators.push(validator.validate);
           }
+          let errorMessage;
+          /* eslint-disable */
+          for (const validate of validators) {
+            errorMessage = validate(
+              cfg,
+              key,
+              currentValue,
+              validator.defaultValue
+            );
+            if (errorMessage) {
+              ac.push(errorMessage);
+              break;
+            }
+          }
+          /* eslint-enable */
         }
         return ac;
       }, []);
@@ -115,6 +126,14 @@ export const required = (config, key, currentValue) => {
   let err = "";
   if (currentValue == null) {
     err = `${key} is a required configuration parameter`;
+  }
+  return err;
+};
+export const matchesRegEx = (ex) => (config, key, currentValue) => {
+  const re = new RegExp(ex);
+  let err = "";
+  if (!re.test(currentValue)) {
+    err = `Invalid format for ${key}. Value need to conform to regex: ${ex}`;
   }
   return err;
 };

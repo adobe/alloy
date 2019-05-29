@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createEvent from "./createEvent";
+import createEvent from "../../core/createEvent";
 
 const VIEW_START_EVENT = "viewStart";
 
