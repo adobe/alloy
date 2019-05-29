@@ -17,4 +17,4 @@ COPY . .
 EXPOSE ${PORT}
 
 # Run the projects
-CMD ["node", "server.js"]
+RUN npm run start
