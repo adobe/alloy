@@ -1,0 +1,13 @@
+version: '3.4'
+services:
+  alloy:
+    container_name: alloy
+    build:
+      context: ./sandbox
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - './sandbox:/sandbox'
+    env_file: ./sandbox/.env
+    ports:
+      - '8080:${PORT-8080}'
