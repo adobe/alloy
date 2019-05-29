@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import networkStrategyFactory from "../../../../src/core/network/networkStrategy";
+import createNetworkStrategy from "../../../../src/core/network/createNetworkStrategy";
 
 const mockServerClient = window.mockServerClient || (() => {});
 /**
@@ -18,7 +18,7 @@ const mockServerClient = window.mockServerClient || (() => {});
  * Run the mock server with `npm run mockserver`.  If this test sees there
  * is no mock server running, it will mark the tests as pending.
  */
-describe("networkStrategy", () => {
+describe("networkStrategyFactory", () => {
   const requestBody = JSON.stringify({ id: "myrequest" });
 
   let client;
@@ -63,7 +63,7 @@ describe("networkStrategy", () => {
         if (!mockServerRunning) {
           done();
         } else {
-          networkStrategy = networkStrategyFactory(testingWindow);
+          networkStrategy = createNetworkStrategy(testingWindow);
           client = mockServerClient("localhost", 1080);
           client.reset().then(() => done());
         }
@@ -93,7 +93,7 @@ describe("networkStrategy", () => {
           done => {
             mockResponse(code, "mybody").then(() => {
               networkStrategy("http://localhost:1080/myapi", requestBody)
-                .then(({ body }) => {
+                .then(body => {
                   expect(body).toEqual("mybody");
                   done();
                 })
@@ -108,8 +108,8 @@ describe("networkStrategy", () => {
         done => {
           mockResponse(204, "mybody").then(() => {
             networkStrategy("http://localhost:1080/myapi", requestBody)
-              .then(({ body }) => {
-                expect(body).toEqual("");
+              .then(body => {
+                expect(body).toBeUndefined();
                 done();
               })
               .catch(done.fail);
@@ -167,7 +167,8 @@ describe("networkStrategy", () => {
           })
           .then(() => {
             networkStrategy("http://localhost:1080/myapi", requestBody, true)
-              .then(() => {
+              .then(body => {
+                expect(body).toBeUndefined();
                 setTimeout(() => {
                   client
                     .verify(

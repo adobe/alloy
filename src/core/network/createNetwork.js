@@ -15,49 +15,47 @@ import createResponse from "./createResponse";
 import defer from "../../utils/defer";
 
 export default (config, logger, lifecycle, networkStrategy) => {
-  const handleResponse = ({ body, promise }) => {
+  const handleResponse = body => {
     return new Promise(resolve => resolve(createResponse(JSON.parse(body))))
       .then(response => lifecycle.onResponse(response))
-      .catch(e => logger.warn(e))
-      .finally(() => {
-        if (promise) {
-          promise.then(handleResponse);
-        }
-      });
+      .catch(e => logger.warn(e));
   };
 
   const { collectionUrl, propertyID } = config;
   return {
     /**
-     *
-     * @param {boolean} beacon - true to send a beacon (defaults to false).  If you send
+     * The object returned from network.newRequest
+     * @typedef {Object} Request
+     * @property {function} send - call this function when you are ready to send the payload
+     * @property {Object} payload - payload object that will be sent
+     * @property {Promise} responsePromise - promise that will yield the raw response body
+     * @property {boolean} isBeacon - whether or not this request is a beacon request
+     */
+    /**
+     * Create a new request.  Once "send" on the returned object is called, the lifecycle
+     *  method "onBeforeSend" will be triggered with { payload, responsePromise, isBeacon } as
+     *  the parameter.  When the response is returned it will call the lifecycle method "onResponse"
+     *  with the returned response object.
+     * @param {boolean} isBeacon - true to send a beacon (defaults to false).  If you send
      *   a beacon, no data will be returned.
      *
-     * @returns {
-     *   send: call this function when you are ready to send the payload
-     *   payload: payload object that will be sent
-     *   complete: promise that will resolve after data from the server is all processed
-     *   response: promise that resolves with the returned raw body as { body }
-     *   beacon: boolean with whether or not it was called with beacon = true
-     * }
-     *
-     * Once send is called, the lifecycle method "onBeforeSend" will be triggered with
-     * { payload, response, beacon } as the parameter.
-     *
-     * When the response is returned it will call the lifecycle method "onResponse"
-     * with the returned response object
+     * @returns {Request}
      */
-    newRequest(beacon = false) {
-      const payload = createPayload({ beacon });
-      const action = beacon ? "collect" : "interact";
+    newRequest(isBeacon = false) {
+      const payload = createPayload();
+      const action = isBeacon ? "collect" : "interact";
       const url = `${collectionUrl}/${action}?propertyID=${propertyID}`;
       const deferred = defer();
-      const response = deferred.promise
-        .then(() => lifecycle.onBeforeSend({ payload, response, beacon }))
-        .then(() => networkStrategy(url, JSON.stringify(payload), beacon));
+      const responsePromise = deferred.promise
+        .then(() =>
+          lifecycle.onBeforeSend({ payload, responsePromise, isBeacon })
+        )
+        .then(() => networkStrategy(url, JSON.stringify(payload), isBeacon));
 
-      const complete = beacon ? response : response.then(handleResponse);
-      return { payload, complete, response, send: deferred.resolve, beacon };
+      if (!isBeacon) {
+        responsePromise.then(handleResponse);
+      }
+      return { payload, responsePromise, send: deferred.resolve, isBeacon };
     }
   };
 };

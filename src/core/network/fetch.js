@@ -11,22 +11,24 @@ governing permissions and limitations under the License.
 */
 
 export default fetch => {
-  return (url, json) => {
+  return (url, body) => {
     return fetch(url, {
       method: "POST",
       cache: "no-cache",
       headers: {
+        // TODO: this will trigger a pre-flight request
         "Content-Type": "application/json"
       },
       referrer: "client",
-      body: json
-    })
-      .then(response => {
-        if (response.ok) {
-          return response.text();
+      body
+    }).then(response => {
+      if (response.ok) {
+        if (response.status === 204) {
+          return undefined;
         }
-        throw Error(`Bad response code: ${response.code}`);
-      })
-      .then(text => Promise.resolve({ body: text }));
+        return response.text();
+      }
+      throw new Error(`Bad response code: ${response.status}`);
+    });
   };
 };

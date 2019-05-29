@@ -11,16 +11,18 @@ governing permissions and limitations under the License.
 */
 
 export default XMLHttpRequest => {
-  return (url, json) => {
+  return (url, body) => {
     return new Promise((resolve, reject) => {
       const request = new XMLHttpRequest();
       request.onreadystatechange = () => {
         if (request.readyState === 4) {
-          if (request.status >= 200 && request.status < 300) {
-            resolve({ body: request.responseText });
+          if (request.status === 204) {
+            resolve();
+          } else if (request.status >= 200 && request.status < 300) {
+            resolve(request.responseText);
           } else {
             reject(
-              Error(
+              new Error(
                 `Invalid response code ${request.status}. Response was ${
                   request.responseText
                 }.`
@@ -35,7 +37,7 @@ export default XMLHttpRequest => {
       request.withCredentials = false;
       request.onerror = reject;
       request.onabort = reject;
-      request.send(json);
+      request.send(body);
     });
   };
 };

@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 
 export default navigator => {
-  return (url, json) => {
+  return (url, body) => {
     return new Promise((resolve, reject) => {
-      const blob = new Blob([json], { type: "text/plain; charset=UTF-8" });
+      const blob = new Blob([body], { type: "text/plain; charset=UTF-8" });
       if (!navigator.sendBeacon(url, blob)) {
-        reject(Error("Unable to send beacon."));
+        reject(new Error("Unable to send beacon."));
         return;
       }
       resolve();

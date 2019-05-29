@@ -11,15 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { isFunction, toError } from "../utils";
-import createConfig, { required } from "./createConfig";
-
-const configValidators = {
-  propertyID: { validate: required },
-  collectionUrl: { defaultValue: "https://edgegateway.azurewebsites.net" },
-  // TODO: For debugging purposes only. Remove eventually.
-  shouldStoreCollectedData: { defaultValue: 1 },
-  device: { defaultValue: "Chrome-Mac" }
-};
+import createConfig from "./createConfig";
+import configValidators from "./configValidators";
 
 export default (namespace, initializeComponents, debugController) => {
   let componentRegistry;

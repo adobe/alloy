@@ -11,13 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import createNetwork from "./createNetwork";
-import networkStrategyFactory from "./networkStrategy";
+import createNetworkStrategy from "./createNetworkStrategy";
 
 export default (config, logger, lifecycle) => {
   return createNetwork(
     config,
     logger,
     lifecycle,
-    networkStrategyFactory(window)
+    createNetworkStrategy(window)
   );
 };
