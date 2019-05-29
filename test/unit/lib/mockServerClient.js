@@ -8,6 +8,7 @@
  */
 var mockServerClient;
 
+// prettier-ignore
 (function () {
     "use strict";
 

@@ -18,19 +18,20 @@ const createDataCollector = () => {
   let lifecycle;
   let network;
 
-  const makeServerCall = events => {
-    const { payload, send } = network.newRequest();
+  const makeServerCall = (events, beacon) => {
+    const { payload, send } = network.newRequest(beacon);
     events.forEach(event => payload.addEvent(event));
     send();
   };
 
   const createEventHandler = options => {
+    const { beacon } = options;
     const event = createEvent();
     const isViewStart = options.type === VIEW_START_EVENT;
 
     event.mergeData(options.data);
     lifecycle.onBeforeEvent(event, isViewStart).then(() => {
-      makeServerCall([event]);
+      makeServerCall([event], beacon);
     });
   };
 
