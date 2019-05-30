@@ -14,7 +14,7 @@ export default (config, key, currentValue) => {
   const validUrl = /^https:\/\/[^\s/$?#][^\s]*$/.test(currentValue);
   let err = "";
   if (!validUrl) {
-    err = `Invalid URL format for ${key}. Expecting: https://<collection domain>"`;
+    err = `Invalid URL format for ${key}. Expecting: https://<domain>"`;
   }
   return err;
 };
