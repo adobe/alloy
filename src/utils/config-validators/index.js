@@ -10,6 +10,5 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as matchesRegEx } from "./matchesRegEx";
 export { default as required } from "./required";
 export { default as secureUrl } from "./secureUrl";
