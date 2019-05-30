@@ -71,27 +71,15 @@ const createConfig = config => {
         ) {
           cfg.set(key, validator.defaultValue);
         } else if (validator.validate) {
-          const validators = [];
-          if (Array.isArray(validator.validate)) {
-            assign(validators, validator.validate);
-          } else {
-            validators.push(validator.validate);
+          const errorMessage = validator.validate(
+            cfg,
+            key,
+            currentValue,
+            validator.defaultValue
+          );
+          if (errorMessage) {
+            ac.push(errorMessage);
           }
-          let errorMessage;
-          /* eslint-disable */
-          for (const validate of validators) {
-            errorMessage = validate(
-              cfg,
-              key,
-              currentValue,
-              validator.defaultValue
-            );
-            if (errorMessage) {
-              ac.push(errorMessage);
-              break;
-            }
-          }
-          /* eslint-enable */
         }
         return ac;
       }, []);
