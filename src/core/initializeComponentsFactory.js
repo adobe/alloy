@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
+import createNetwork from "./network";
 import { stackError } from "../utils";
 
 export default (
@@ -53,9 +54,11 @@ export default (
   logger.info("Runtime configuration:\n", JSON.stringify(config, null, 2));
 
   const lifecycle = createLifecycle(componentRegistry);
+  const network = createNetwork(config, logger, lifecycle);
   lifecycle.onComponentsRegistered({
     componentRegistry,
-    lifecycle
+    lifecycle,
+    network
   });
 
   return componentRegistry;

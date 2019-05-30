@@ -10,18 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import '@babel/polyfill';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import assign from "./assign";
 
-ReactDOM.render(<App />, document.getElementById('root'));
-
-const promise = new Promise(resolve => resolve("done"));
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: http://bit.ly/CRA-PWA
-serviceWorker.unregister();
+/**
+ * Creates a function that, when passed an object of updates, will merge
+ * the updates onto the current value of a payload property.
+ * @param content
+ * @param key
+ * @returns {Function}
+ */
+export default (content, key) => updates => {
+  // eslint-disable-next-line no-param-reassign
+  content[key] = content[key] || {};
+  assign(content[key], updates);
+};

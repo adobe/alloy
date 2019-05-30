@@ -16,6 +16,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import About from "./About";
 import Home from "./Home";
 import OrgTwo from "./OrgTwo";
+import Links from "./Links";
 
 function BasicExample() {
   return (
@@ -31,6 +32,9 @@ function BasicExample() {
           <li>
             <Link to="/orgTwo">Organization Two</Link>
           </li>
+          <li>
+            <Link to="/links">Links</Link>
+          </li>
         </ul>
 
         <hr />
@@ -38,6 +42,7 @@ function BasicExample() {
         <Route exact path="/" component={Home} />
         <Route path="/about" component={About} />
         <Route path="/orgTwo" component={OrgTwo} />
+        <Route path="/links" component={Links} />
       </div>
     </Router>
   );

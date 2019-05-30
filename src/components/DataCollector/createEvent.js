@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createPayloadItemMerger from "./createPayloadItemMerger";
+// TODO move this dependency to utils
+import { createMerger } from "../../utils";
 
 export default () => {
   const content = {};
@@ -22,12 +23,12 @@ export default () => {
     setTimestamp(timestamp) {
       content.timestamp = timestamp;
     },
-    mergeData: createPayloadItemMerger(content, "data"),
-    mergeQuery: createPayloadItemMerger(content, "query"),
-    mergeWeb: createPayloadItemMerger(content, "web"),
-    mergeDevice: createPayloadItemMerger(content, "device"),
-    mergeEnvironment: createPayloadItemMerger(content, "environment"),
-    mergePlaceContext: createPayloadItemMerger(content, "placeContext"),
+    mergeData: createMerger(content, "data"),
+    mergeQuery: createMerger(content, "query"),
+    mergeWeb: createMerger(content, "web"),
+    mergeDevice: createMerger(content, "device"),
+    mergeEnvironment: createMerger(content, "environment"),
+    mergePlaceContext: createMerger(content, "placeContext"),
     toJSON() {
       return content;
     }
