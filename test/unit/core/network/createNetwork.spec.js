@@ -19,6 +19,7 @@ describe("createNetwork", () => {
   };
 
   const logger = console.log;
+
   const nullLifecycle = {
     onBeforeSend: () => Promise.resolve(),
     onResponseFragment: () => Promise.resolve()
@@ -200,10 +201,9 @@ describe("createNetwork", () => {
   });
 
   it("logs json parse errors", done => {
+
     const networkStrategy = () => {
-      return new Promise(resolve => {
-        resolve({ body: "badbody1" });
-      });
+      return Promise.resolve("badbody1");
     };
     const loggerSpy = jasmine.createSpyObj("logger", ["warn"]);
     const network = createNetwork(
@@ -217,7 +217,7 @@ describe("createNetwork", () => {
     setTimeout(() => {
       expect(loggerSpy.warn).toHaveBeenCalledTimes(1);
       done();
-    }, 0);
+    }, 100);
   });
 
   it("doesn't try to parse the response on a beacon call", done => {
@@ -236,6 +236,6 @@ describe("createNetwork", () => {
     setTimeout(() => {
       expect(loggerSpy.warn).not.toHaveBeenCalled();
       done();
-    }, 0);
+    }, 100);
   });
 });
