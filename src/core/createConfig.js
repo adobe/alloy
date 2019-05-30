@@ -122,18 +122,3 @@ const createConfig = config => {
 };
 
 export default createConfig;
-export const required = (config, key, currentValue) => {
-  let err = "";
-  if (currentValue == null) {
-    err = `${key} is a required configuration parameter`;
-  }
-  return err;
-};
-export const matchesRegEx = ex => (config, key, currentValue) => {
-  const re = new RegExp(ex);
-  let err = "";
-  if (!re.test(currentValue)) {
-    err = `Invalid format for ${key}. Value need to conform to regex: ${ex}`;
-  }
-  return err;
-};

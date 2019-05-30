@@ -11,6 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import createEvent from "../../core/createEvent";
+<<<<<<< HEAD
+=======
+import { secureUrl } from "../../utils/config-validators";
+>>>>>>> Moved configuration validators to cozy folder
 
 const VIEW_START_EVENT = "viewStart";
 
@@ -61,4 +65,18 @@ const createDataCollector = () => {
 
 createDataCollector.namespace = "DataCollector";
 
+<<<<<<< HEAD
+=======
+createDataCollector.configValidators = {
+  collectionUrl: {
+    defaultValue: "https://edgegateway.azurewebsites.net",
+    validate: secureUrl
+    // defaultValue: "http://ex-edge.stable-stage.aam-npe.adobeinternal.net/v1"
+  },
+  device: {
+    defaultValue: "UNKNOWN-DEVICE"
+  }
+};
+
+>>>>>>> Moved configuration validators to cozy folder
 export default createDataCollector;
