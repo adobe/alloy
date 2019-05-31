@@ -9,6 +9,7 @@
           content="default-src 'self';
             script-src 'self' 'unsafe-inline';
             style-src 'self' 'unsafe-inline';
+            img-src 'self' http://edgegateway.azurewebsites.net/dests https://edgegateway.azurewebsites.net/dests;
             connect-src 'self' https://edgegateway.azurewebsites.net http://ex-edge.stable-stage.aam-npe.adobeinternal.net"/>
 
     <title>Mock website hosting Alloy</title>
@@ -33,6 +34,7 @@
         // NOTE: `viewStart` is a special type of events.
         // View docs for more info.
         type: "viewStart",
+        beacon: true,
         data: {
           "xdm:URL": [location.href],
           "xdm:name": [location.pathname.substring(1) || "home"]
