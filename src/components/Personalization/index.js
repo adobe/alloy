@@ -159,7 +159,7 @@ const createPersonalization = ({ logger }) => {
           hideElement(selector);
           setupElementDetection(key, selector, event => {
             render(storage, event, logger);
-            collect({ data: { offerInfo: eventToken } });
+            collect({ beacon: true, data: { offerInfo: eventToken } });
           });
         });
       }

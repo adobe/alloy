@@ -201,7 +201,6 @@ describe("createNetwork", () => {
   });
 
   it("logs json parse errors", done => {
-
     const networkStrategy = () => {
       return Promise.resolve("badbody1");
     };
