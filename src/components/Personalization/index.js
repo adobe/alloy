@@ -76,7 +76,10 @@ const showElement = selector => {
   const key = buildKey(KEY_PREFIX, selector);
   const elements = document.querySelectorAll(`.${key}`);
 
-  elements.forEach(e => removeFrom(document.head, e));
+  // elements is a nodeList, and in IE nodeList does not support forEach
+  for (let i = 0; i < elements.length; i += 1) {
+    removeFrom(document.head, elements[i]);
+  }
 };
 
 const render = (cache, event, logger) => {
@@ -150,7 +153,6 @@ const createPersonalization = ({ logger }) => {
           response.getPayloadByType("personalization:run") || [];
 
         // Caution!!! Here comes Target black magic
-
         personalization.forEach(option => {
           const { selector, eventToken } = option;
           const key = buildKey(KEY_DETECT_PREFIX, selector);

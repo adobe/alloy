@@ -31,7 +31,9 @@ export default XMLHttpRequest => {
           }
         }
       };
-      request.responseType = "text";
+      request.onloadstart = () => {
+        request.responseType = "text";
+      };
       request.open("POST", url, true);
       request.setRequestHeader("Content-Type", "application/json");
       request.withCredentials = false;
