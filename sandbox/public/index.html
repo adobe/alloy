@@ -5,6 +5,7 @@
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="theme-color" content="#000000" />
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
     <meta http-equiv="Content-Security-Policy"
           content="default-src 'self';
             script-src 'self' 'unsafe-inline';
@@ -39,7 +40,7 @@
           "xdm:URL": [location.href],
           "xdm:name": [location.pathname.substring(1) || "home"]
         }
-      }).then(() => {
+      }).then(function() {
         console.log("View start event has triggered.");
       });
 
