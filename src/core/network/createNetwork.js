@@ -21,7 +21,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
       .catch(e => logger.warn(e));
   };
 
-  const { collectionUrl, propertyID } = config;
+  const { collectionDomain, propertyID } = config;
   return {
     /**
      * The object returned from network.newRequest
@@ -44,7 +44,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
     newRequest(isBeacon = false) {
       const payload = createPayload();
       const action = isBeacon ? "collect" : "interact";
-      const url = `${collectionUrl}/${action}?propertyID=${propertyID}`;
+      const url = `https://${collectionDomain}/${action}?propertyID=${propertyID}`;
       const deferred = defer();
       const responsePromise = deferred.promise
         .then(() =>

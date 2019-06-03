@@ -14,7 +14,7 @@ import createNetwork from "../../../../src/core/network/createNetwork";
 
 describe("createNetwork", () => {
   const config = {
-    collectionUrl: "https://alloy.mysite.com/v1",
+    collectionDomain: "alloy.mysite.com",
     propertyID: "mypropertyid"
   };
 
@@ -29,7 +29,7 @@ describe("createNetwork", () => {
     const networkStrategy = url => {
       return new Promise(() => {
         expect(url).toEqual(
-          "https://alloy.mysite.com/v1/interact?propertyID=mypropertyid"
+          "https://alloy.mysite.com/interact?propertyID=mypropertyid"
         );
         done();
       });
@@ -49,7 +49,7 @@ describe("createNetwork", () => {
     const networkStrategy = url => {
       return new Promise(() => {
         expect(url).toEqual(
-          "https://alloy.mysite.com/v1/collect?propertyID=mypropertyid"
+          "https://alloy.mysite.com/collect?propertyID=mypropertyid"
         );
         done();
       });

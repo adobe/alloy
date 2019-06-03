@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 export default (config, key, currentValue) => {
-  const validUrl = /^https:\/\/[^\s/$?#][^\s]*$/.test(currentValue);
+  const validUrl = /^[a-z0-9-.]{1,}$/gi.test(currentValue);
   let err = "";
   if (!validUrl) {
-    err = `Invalid URL format for ${key}. Expecting: https://<domain>"`;
+    err = `Invalid domain for ${key}: ${currentValue}"`;
   }
   return err;
 };

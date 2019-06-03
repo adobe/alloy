@@ -11,4 +11,4 @@ governing permissions and limitations under the License.
 */
 
 export { default as required } from "./required";
-export { default as secureUrl } from "./secureUrl";
+export { default as validDomain } from "./validDomain";
