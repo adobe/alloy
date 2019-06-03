@@ -1,4 +1,4 @@
-import { required } from "./createConfig";
+import { required } from "../utils/config-validators";
 
 export default {
   propertyID: { validate: required },
