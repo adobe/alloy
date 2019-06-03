@@ -2,7 +2,7 @@ import { required, validDomain } from "../utils/config-validators";
 
 export default {
   propertyID: { validate: required },
-  collectionDomain: {
+  edgeDomain: {
     validate: validDomain,
     defaultValue: "edgegateway.azurewebsites.net"
   },
