@@ -18,28 +18,22 @@ const createDataCollector = () => {
   let lifecycle;
   let network;
 
-  const makeServerCall = (events, beacon) => {
-    const { payload, send } = network.newRequest(beacon);
+  const makeServerCall = (events, isBeacon) => {
+    const { payload, send } = network.newRequest(isBeacon);
     events.forEach(event => payload.addEvent(event));
     send();
   };
 
   const createEventHandler = options => {
-    const { beacon } = options;
+    // isBeacon is not intended for consumer usage, but only
+    // for other components to use to force the request to
+    // use beacon transport.
+    const { isBeacon } = options;
     const event = createEvent();
     const isViewStart = options.type === VIEW_START_EVENT;
 
-    // Attempt to use Beacon transport.
-    // If the `beacon` config is set, we use it ONLY if not `viewStart`
-    // because `viewStart` events are expected to return a response.
-
-    // TODO Validate `beacon`.
-    // TODO Might have to move somewhere closer to Network Manager.
-    // TODO Consider adding `beacon` as a config instead of
-    // passing it on each command. This way `Alloy` will always
-    // use beacon when possible.
-
-    const shouldUseBeacon = isViewStart || !beacon ? false : beacon;
+    // viewStart events are always expected to return a response.
+    const shouldUseBeacon = !isViewStart && Boolean(isBeacon);
 
     event.mergeData(options.data);
     lifecycle.onBeforeEvent(event, isViewStart).then(() => {
