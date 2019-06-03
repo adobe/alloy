@@ -63,15 +63,14 @@ const createConfig = config => {
     validate: () => {
       const keys = Object.keys(cfg.validators);
       const errors = keys.reduce((ac, key) => {
-        const validator = cfg.validators[key];
         const currentValue = cfg.get(key);
+        const validator = cfg.validators[key];
         if (
           currentValue == null &&
           Object.prototype.hasOwnProperty.call(validator, "defaultValue")
         ) {
           cfg.set(key, validator.defaultValue);
         } else if (validator.validate) {
-          // The validate property could be expanded into an
           const errorMessage = validator.validate(
             cfg,
             key,
@@ -111,10 +110,3 @@ const createConfig = config => {
 };
 
 export default createConfig;
-export const required = (config, key, currentValue) => {
-  let err = "";
-  if (currentValue == null) {
-    err = `${key} is a required configuration parameter`;
-  }
-  return err;
-};

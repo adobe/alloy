@@ -15,13 +15,15 @@ import createConfig from "../../../src/core/createConfig";
 
 let testConfig = {};
 
+const required = (config, key, currentValue) => {
+  if (currentValue == null) {
+    throw new Error("orgId is missing");
+  }
+};
+
 const testValidator1 = {
   a: {
-    validate: (config, key, currentValue) => {
-      if (currentValue == null) {
-        throw new Error("a is missing");
-      }
-    }
+    validate: required
   },
   "c.a2": {
     defaultValue: "zyx"
@@ -30,11 +32,7 @@ const testValidator1 = {
 
 const testValidator2 = {
   orgId: {
-    validate: (config, key, currentValue) => {
-      if (currentValue == null) {
-        throw new Error("orgId is missing");
-      }
-    }
+    validate: required
   }
 };
 
