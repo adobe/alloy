@@ -15,7 +15,7 @@ import queryString from "@adobe/reactor-query-string";
 // This works
 // import queryString from "query-string";
 
-import { isFunction, toError } from "../utils";
+import { isFunction, toError, stringToBoolean } from "../utils";
 import createConfig from "./createConfig";
 import configValidators from "./configValidators";
 
@@ -33,7 +33,9 @@ export default (namespace, initializeComponents, logController, window) => {
     }
     const parsedQueryString = queryString.parse(window.location.search);
     if (parsedQueryString.debug_enabled !== undefined) {
-      debugCommand({ enabled: parsedQueryString.debug_enabled === "true" });
+      debugCommand({
+        enabled: stringToBoolean(parsedQueryString.debug_enabled)
+      });
     }
     const config = createConfig(options);
     config.addValidators(configValidators);
