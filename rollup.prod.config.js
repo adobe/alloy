@@ -33,7 +33,7 @@ export default {
     }
   ],
   plugins: [
-    resolve(),
+    resolve({ preferBuiltins: false }),
     commonjs(),
     babel(),
     replace({

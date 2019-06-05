@@ -10,12 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// This fails with alloy.js:1427 Uncaught (in promise) TypeError: [alloy] Cannot read property 'parse' of undefined
-import queryString from "@adobe/reactor-query-string";
-// This works
-// import queryString from "query-string";
-
-import { isFunction, toError, stringToBoolean } from "../utils";
+import { isFunction, toError, stringToBoolean, queryString } from "../utils";
 import createConfig from "./createConfig";
 import configValidators from "./configValidators";
 

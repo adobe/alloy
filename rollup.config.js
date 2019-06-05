@@ -33,5 +33,5 @@ export default {
         "if (document.documentMode && document.documentMode < 10) { console.warn('The Adobe Experience Cloud Web SDK does not support IE 9 and below.'); return; }"
     }
   ],
-  plugins: [resolve(), commonjs(), babel()]
+  plugins: [resolve({ preferBuiltins: false }), commonjs(), babel()]
 };

@@ -17,7 +17,7 @@ const istanbul = require("rollup-plugin-istanbul");
 const minimist = require("minimist");
 
 const argv = minimist(process.argv.slice(2));
-const plugins = [resolve(), commonjs(), babel()];
+const plugins = [resolve({ preferBuiltins: false }), commonjs(), babel()];
 
 if (argv.reporters && argv.reporters.split(",").includes("coverage")) {
   plugins.unshift(
