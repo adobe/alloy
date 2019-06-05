@@ -10,11 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+// This fails with alloy.js:1427 Uncaught (in promise) TypeError: [alloy] Cannot read property 'parse' of undefined
+import queryString from "@adobe/reactor-query-string";
+// This works
+// import queryString from "query-string";
+
 import { isFunction, toError } from "../utils";
 import createConfig from "./createConfig";
 import configValidators from "./configValidators";
 
-export default (namespace, initializeComponents, logController) => {
+export default (namespace, initializeComponents, logController, window) => {
   let componentRegistry;
 
   const logCommand = ({ enabled }) => {
@@ -25,6 +30,10 @@ export default (namespace, initializeComponents, logController) => {
   const configureCommand = options => {
     if (options.log !== undefined) {
       logCommand({ enabled: options.log });
+    }
+    const parsedQueryString = queryString.parse(window.location.search);
+    if (parsedQueryString.debug_enabled !== undefined) {
+      debugCommand({ enabled: parsedQueryString.debug_enabled === "true" });
     }
     const config = createConfig(options);
     config.addValidators(configValidators);

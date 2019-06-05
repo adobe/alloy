@@ -56,7 +56,8 @@ if (namespaces) {
     const instance = createInstance(
       namespace,
       initializeComponents,
-      logController
+      logController,
+      window
     );
 
     const queue = window[namespace].q;
