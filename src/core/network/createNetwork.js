@@ -21,7 +21,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
       .catch(e => logger.warn(e));
   };
 
-  const { collectionDomain, propertyID } = config;
+  const { edgeDomain, propertyID } = config;
   return {
     /**
      * The object returned from network.newRequest
@@ -42,7 +42,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
     newRequest(expectsResponse = true) {
       const payload = createPayload();
       const action = expectsResponse ? "interact" : "collect";
-      const url = `https://${collectionDomain}/${action}?propertyID=${propertyID}`;
+      const url = `https://${edgeDomain}/${action}?propertyID=${propertyID}`;
       const deferred = defer();
       const responsePromise = deferred.promise
         .then(() =>

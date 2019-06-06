@@ -14,7 +14,7 @@ import createNetwork from "../../../../src/core/network/createNetwork";
 
 fdescribe("createNetwork", () => {
   const config = {
-    collectionDomain: "alloy.mysite.com",
+    edgeDomain: "alloy.mysite.com",
     propertyID: "mypropertyid"
   };
 
