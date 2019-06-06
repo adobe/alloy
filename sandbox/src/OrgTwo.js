@@ -12,7 +12,6 @@ export default function OrgTwo() {
             {`
                 organizationTwo("configure", {
                     propertyID: 8888888,
-                    destinationsEnabled: true,
                     debug: true
                 });
             `}
