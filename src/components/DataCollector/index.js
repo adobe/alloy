@@ -18,26 +18,20 @@ const createDataCollector = () => {
   let lifecycle;
   let network;
 
-  const makeServerCall = (events, isBeacon) => {
-    const { payload, send } = network.newRequest(isBeacon);
-    events.forEach(event => payload.addEvent(event));
+  const makeServerCall = event => {
+    const expectsResponse = event.expectsResponse();
+    const { payload, send } = network.newRequest(expectsResponse);
+    payload.addEvent(event);
     send();
   };
 
   const createEventHandler = options => {
-    // isBeacon is not intended for consumer usage, but only
-    // for other components to use to force the request to
-    // use beacon transport.
-    const { isBeacon } = options;
     const event = createEvent();
     const isViewStart = options.type === VIEW_START_EVENT;
 
-    // viewStart events are always expected to return a response.
-    const shouldUseBeacon = !isViewStart && Boolean(isBeacon);
-
     event.mergeData(options.data);
     lifecycle.onBeforeEvent(event, isViewStart).then(() => {
-      makeServerCall([event], shouldUseBeacon);
+      makeServerCall(event);
     });
   };
 

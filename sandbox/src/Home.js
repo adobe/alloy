@@ -8,7 +8,7 @@ function HomeWithHistory({ history }) {
     if (loc.pathname !== previousPath) {
       const instanceName = loc.pathname.includes("orgTwo") ? "organizationTwo" : "alloy";
       window[instanceName]("event", {
-        type: "viewstart",
+        type: "viewStart",
         data: {
           "xdm:URL": [window.location.href],
           "xdm:name": [loc.pathname.substring(1)]
@@ -52,7 +52,7 @@ function HomeWithHistory({ history }) {
             <h1>Alloy: Getting Started</h1>
             <h3>Installation</h3>
             <p>
-            The first step in implemented the Adobe Experience Platform SDK is to copy and paste the following 
+            The first step in implemented the Adobe Experience Platform SDK is to copy and paste the following
             "base code" as high as possible in the head tag of your HTML:
             </p>
             <pre>
@@ -71,7 +71,7 @@ function HomeWithHistory({ history }) {
             <button onClick={copyBaseCode}>Copy Base Code</button>
 
             <p>
-            The base code, by default, creates a global function named alloy. You will use this function to interact with the SDK. 
+            The base code, by default, creates a global function named alloy. You will use this function to interact with the SDK.
             If you would like to name the global function something else, you may change the alloy name as follows:
             </p>
             <pre>
@@ -90,11 +90,11 @@ function HomeWithHistory({ history }) {
             <p>
             With this change made, the global function would be named mycustomname instead of alloy.
             This base code, in addition to creating a global function, also loads additional code contained <br/>
-            within an external file (alloy.js) hosted on a server. By default, this code is loaded asynchronously<br/> 
+            within an external file (alloy.js) hosted on a server. By default, this code is loaded asynchronously<br/>
             to allow your webpage to be as performant as possible. This is the recommended implementation.
             </p>
-            <a 
-              href="https://launch.gitbook.io/adobe-experience-platform-web-sdk/" 
+            <a
+              href="https://launch.gitbook.io/adobe-experience-platform-web-sdk/"
               onClick={visitDoc} name="Alloy Public Documentation">Read full documentation</a>
           </div>
         </section>

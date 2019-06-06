@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import createNetwork from "../../../../src/core/network/createNetwork";
 
-describe("createNetwork", () => {
+fdescribe("createNetwork", () => {
   const config = {
     collectionDomain: "alloy.mysite.com",
     propertyID: "mypropertyid"
@@ -40,8 +40,7 @@ describe("createNetwork", () => {
       nullLifecycle,
       networkStrategy
     );
-    const { send, isBeacon } = network.newRequest();
-    expect(isBeacon).toBe(false);
+    const { send } = network.newRequest();
     send();
   });
 
@@ -60,8 +59,7 @@ describe("createNetwork", () => {
       nullLifecycle,
       networkStrategy
     );
-    const { send, isBeacon } = network.newRequest(true);
-    expect(isBeacon).toBe(true);
+    const { send } = network.newRequest(false);
     send();
   });
 

@@ -29,6 +29,9 @@ export default () => {
     mergeDevice: createMerger(content, "device"),
     mergeEnvironment: createMerger(content, "environment"),
     mergePlaceContext: createMerger(content, "placeContext"),
+    expectsResponse() {
+      return Boolean(content.query);
+    },
     toJSON() {
       return content;
     }
