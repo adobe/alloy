@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import createNetwork from "../../../../src/core/network/createNetwork";
 
-fdescribe("createNetwork", () => {
+describe("createNetwork", () => {
   const config = {
     edgeDomain: "alloy.mysite.com",
     propertyID: "mypropertyid"
