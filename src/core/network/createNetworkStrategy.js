@@ -24,10 +24,8 @@ export default window => {
       ? sendBeaconFactory(window.navigator)
       : fetch;
 
-  return (url, body, isBeacon) => {
-    if (isBeacon) {
-      return sendBeacon(url, body);
-    }
-    return fetch(url, body);
+  return (url, body, expectsResponse) => {
+    const method = expectsResponse ? fetch : sendBeacon;
+    return method(url, body);
   };
 };

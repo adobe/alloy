@@ -29,33 +29,44 @@ export default (config, logger, lifecycle, networkStrategy) => {
      * @property {function} send - call this function when you are ready to send the payload
      * @property {Object} payload - payload object that will be sent
      * @property {Promise} responsePromise - promise that will yield the raw response body
-     * @property {boolean} isBeacon - whether or not this request is a beacon request
      */
     /**
      * Create a new request.  Once "send" on the returned object is called, the lifecycle
-     *  method "onBeforeSend" will be triggered with { payload, responsePromise, isBeacon } as
+     *  method "onBeforeSend" will be triggered with { payload, responsePromise } as
      *  the parameter.  When the response is returned it will call the lifecycle method "onResponse"
      *  with the returned response object.
-     * @param {boolean} isBeacon - true to send a beacon (defaults to false).  If you send
-     *   a beacon, no data will be returned.
-     *
+     * @param {boolean} [expectsResponse=true] The endpoint and request mechanism
+     * will be determined by whether a response is expected.
      * @returns {Request}
      */
-    newRequest(isBeacon = false) {
+    newRequest(expectsResponse = true) {
       const payload = createPayload();
-      const action = isBeacon ? "collect" : "interact";
+      const action = expectsResponse ? "interact" : "collect";
       const url = `https://${edgeDomain}/${action}?propertyID=${propertyID}`;
       const deferred = defer();
       const responsePromise = deferred.promise
         .then(() =>
-          lifecycle.onBeforeSend({ payload, responsePromise, isBeacon })
+          lifecycle.onBeforeSend({
+            payload,
+            responsePromise,
+            isBeacon: expectsResponse
+          })
         )
-        .then(() => networkStrategy(url, JSON.stringify(payload), isBeacon));
+        .then(() => {
+          const networkResponse = networkStrategy(
+            url,
+            JSON.stringify(payload),
+            expectsResponse
+          );
 
-      if (!isBeacon) {
+          return networkResponse;
+        });
+
+      if (expectsResponse) {
         responsePromise.then(handleResponse);
       }
-      return { payload, responsePromise, send: deferred.resolve, isBeacon };
+
+      return { payload, responsePromise, send: deferred.resolve };
     }
   };
 };

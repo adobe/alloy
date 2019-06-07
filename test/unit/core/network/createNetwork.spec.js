@@ -40,8 +40,7 @@ describe("createNetwork", () => {
       nullLifecycle,
       networkStrategy
     );
-    const { send, isBeacon } = network.newRequest();
-    expect(isBeacon).toBe(false);
+    const { send } = network.newRequest();
     send();
   });
 
@@ -60,8 +59,7 @@ describe("createNetwork", () => {
       nullLifecycle,
       networkStrategy
     );
-    const { send, isBeacon } = network.newRequest(true);
-    expect(isBeacon).toBe(true);
+    const { send } = network.newRequest(false);
     send();
   });
 
