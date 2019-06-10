@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import createResponse from "../../../../src/core/network/createResponse";
 
-const responseDto = {
+const responseContent = {
   requestId: 123,
   handle: [
     {
@@ -23,15 +23,7 @@ const responseDto = {
 };
 
 describe("createResponse", () => {
-  const response = createResponse(responseDto);
-
-  describe("Response object", () => {
-    it("should contain the DTO's properties and extra methods", () => {
-      ["requestId", "handle", "getPayloadByType"].forEach(prop => {
-        expect(response[prop]).toBeDefined();
-      });
-    });
-  });
+  const response = createResponse(responseContent);
 
   describe("getPayloadByType", () => {
     it("should return the correct payload", () => {
@@ -39,6 +31,12 @@ describe("createResponse", () => {
       const payload = response.getPayloadByType(type1);
       expect(payload).toBeDefined();
       expect(payload).toEqual("Same payload for namespace1:action1");
+    });
+  });
+
+  describe("toJSON", () => {
+    it("returns underlying content object", () => {
+      expect(response.toJSON()).toBe(responseContent);
     });
   });
 });

@@ -12,61 +12,91 @@ governing permissions and limitations under the License.
 
 import createPayload from "./createPayload";
 import createResponse from "./createResponse";
-import defer from "../../utils/defer";
 
 export default (config, logger, lifecycle, networkStrategy) => {
-  const handleResponse = body => {
-    return new Promise(resolve => resolve(createResponse(JSON.parse(body))))
-      .then(response => lifecycle.onResponse(response))
-      .catch(e => logger.warn(e));
+  const handleResponse = responseBody => {
+    let parsedBody;
+
+    try {
+      parsedBody = JSON.parse(responseBody);
+    } catch (e) {
+      throw new Error(
+        `Error parsing server response.\n${e}\nResponse body: ${responseBody}`
+      );
+    }
+
+    logger.log("Received network response:", parsedBody);
+
+    const response = createResponse(parsedBody);
+
+    return lifecycle.onResponse(response).then(() => response);
   };
 
   const { edgeDomain, propertyID } = config;
+
   return {
     /**
      * The object returned from network.newRequest
+     *
      * @typedef {Object} Request
-     * @property {function} send - call this function when you are ready to send the payload
-     * @property {Object} payload - payload object that will be sent
-     * @property {Promise} responsePromise - promise that will yield the raw response body
+     * @property {Function} send Call this function when you are ready to send
+     * the payload. Returns a promise yielding the raw response body.
+     * @property {Object} payload Payload object that will be sent.
      */
     /**
-     * Create a new request.  Once "send" on the returned object is called, the lifecycle
-     *  method "onBeforeSend" will be triggered with { payload, responsePromise } as
-     *  the parameter.  When the response is returned it will call the lifecycle method "onResponse"
-     *  with the returned response object.
+     * Create a new request.  Once "send" on the returned object is called, the
+     * lifecycle method "onBeforeSend" will be triggered with
+     * { payload, responsePromise, isBeacon } as the parameter.  When the
+     * response is returned it will call the lifecycle method "onResponse"
+     * with the returned response object.
+     *
      * @param {boolean} [expectsResponse=true] The endpoint and request mechanism
      * will be determined by whether a response is expected.
      * @returns {Request}
      */
     newRequest(expectsResponse = true) {
       const payload = createPayload();
-      const action = expectsResponse ? "interact" : "collect";
-      const url = `https://${edgeDomain}/${action}?propertyID=${propertyID}`;
-      const deferred = defer();
-      const responsePromise = deferred.promise
-        .then(() =>
-          lifecycle.onBeforeSend({
-            payload,
-            responsePromise,
-            isBeacon: expectsResponse
+
+      const send = () => {
+        const responsePromise = Promise.resolve()
+          .then(() =>
+            lifecycle.onBeforeSend({
+              payload,
+              responsePromise,
+              isBeacon: expectsResponse
+            })
+          )
+          .then(() => {
+            const action = expectsResponse ? "interact" : "collect";
+            const url = `https://${edgeDomain}/${action}?propertyID=${propertyID}`;
+            const responseHandlingMessage = expectsResponse
+              ? ""
+              : " (response will be ignored)";
+            logger.log(
+              `Sending network request${responseHandlingMessage}:`,
+              payload.toJSON()
+            );
+
+            return networkStrategy(
+              url,
+              JSON.stringify(payload),
+              expectsResponse
+            );
           })
-        )
-        .then(() => {
-          const networkResponse = networkStrategy(
-            url,
-            JSON.stringify(payload),
-            expectsResponse
-          );
+          .then(responseBody => {
+            let handleResponsePromise;
 
-          return networkResponse;
-        });
+            if (expectsResponse) {
+              handleResponsePromise = handleResponse(responseBody);
+            }
 
-      if (expectsResponse) {
-        responsePromise.then(handleResponse);
-      }
+            return handleResponsePromise;
+          });
 
-      return { payload, responsePromise, send: deferred.resolve };
+        return responsePromise;
+      };
+
+      return { payload, send };
     }
   };
 };

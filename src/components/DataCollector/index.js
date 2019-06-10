@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createEvent from "./createEvent";
+import { clone } from "../../utils";
 
 const VIEW_START_EVENT = "viewStart";
 
@@ -22,7 +23,17 @@ const createDataCollector = () => {
     const expectsResponse = event.expectsResponse();
     const { payload, send } = network.newRequest(expectsResponse);
     payload.addEvent(event);
-    send();
+    return send().then(response => {
+      const data = {
+        requestBody: clone(payload)
+      };
+
+      if (response) {
+        data.responseBody = clone(response);
+      }
+
+      return data;
+    });
   };
 
   const createEventHandler = options => {
@@ -30,9 +41,9 @@ const createDataCollector = () => {
     const isViewStart = options.type === VIEW_START_EVENT;
 
     event.mergeData(options.data);
-    lifecycle.onBeforeEvent(event, isViewStart).then(() => {
-      makeServerCall(event);
-    });
+    return lifecycle
+      .onBeforeEvent(event, isViewStart)
+      .then(() => makeServerCall(event));
   };
 
   return {

@@ -38,8 +38,8 @@
           "xdm:URL": [location.href],
           "xdm:name": [location.pathname.substring(1) || "home"]
         }
-      }).then(function() {
-        console.log("View start event has triggered.");
+      }).then(function(data) {
+        console.log("View start event has triggered.", data);
       });
 
       // For Testing multiple instances
