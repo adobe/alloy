@@ -48,6 +48,7 @@ const run = (listOfTests, listOfBrowsers = browsers()) => {
       return runner
         .src(tests)
         .browsers(browsers())
+        .reporter("allure")
         .run({ skipJsErrors: true });
     })
     .then(async failedCount => {
