@@ -10,11 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// TO-DOCUMENT: How to enable debugging and logging.
-
-const createLogger = (window, debugController, prefix) => {
+const createLogger = (window, logController, prefix) => {
   const process = (level, ...rest) => {
-    if (debugController.debugEnabled) {
+    if (logController.logEnabled) {
       window.console[level](prefix, ...rest);
     }
   };
@@ -49,7 +47,7 @@ const createLogger = (window, debugController, prefix) => {
     spawn(additionalPrefix) {
       return createLogger(
         window,
-        debugController,
+        logController,
         `${prefix} ${additionalPrefix}`
       );
     }

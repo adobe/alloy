@@ -19,21 +19,21 @@ const message = "test message";
 
 describe("createLogger", () => {
   let window;
-  let debugController;
+  let logController;
   let logger;
 
   beforeEach(() => {
     window = {
       console: jasmine.createSpyObj("console", logMethods)
     };
-    debugController = {};
-    logger = createLogger(window, debugController, prefix);
+    logController = {};
+    logger = createLogger(window, logController, prefix);
   });
 
   const testLogMethods = expectedPrefix => {
     logMethods.forEach(logMethod => {
       it(`logs message if debugging is enabled and ${logMethod} is called`, () => {
-        debugController.debugEnabled = true;
+        logController.logEnabled = true;
         logger[logMethod](message);
 
         expect(window.console[logMethod]).toHaveBeenCalledWith(
@@ -43,7 +43,7 @@ describe("createLogger", () => {
       });
 
       it(`does not log a message if debugging is disabled and ${logMethod} is called`, () => {
-        debugController.debugEnabled = false;
+        logController.logEnabled = false;
         logger[logMethod](message);
 
         expect(window.console[logMethod]).not.toHaveBeenCalled();

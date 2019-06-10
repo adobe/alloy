@@ -14,17 +14,17 @@ import { isFunction, toError } from "../utils";
 import createConfig from "./createConfig";
 import configValidators from "./configValidators";
 
-export default (namespace, initializeComponents, debugController) => {
+export default (namespace, initializeComponents, logController) => {
   let componentRegistry;
 
-  const debugCommand = ({ enabled }) => {
+  const logCommand = ({ enabled }) => {
     // eslint-disable-next-line no-param-reassign
-    debugController.debugEnabled = enabled;
+    logController.logEnabled = enabled;
   };
 
   const configureCommand = options => {
-    if (options.debug !== undefined) {
-      debugCommand({ enabled: options.debug });
+    if (options.log !== undefined) {
+      logCommand({ enabled: options.log });
     }
     const config = createConfig(options);
     config.addValidators(configValidators);
@@ -41,8 +41,8 @@ export default (namespace, initializeComponents, debugController) => {
         );
       }
       command = configureCommand;
-    } else if (commandName === "debug") {
-      command = debugCommand;
+    } else if (commandName === "log") {
+      command = logCommand;
     } else {
       if (!componentRegistry) {
         throw new Error(

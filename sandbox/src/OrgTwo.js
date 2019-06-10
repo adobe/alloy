@@ -12,7 +12,7 @@ export default function OrgTwo() {
             {`
                 organizationTwo("configure", {
                     propertyID: 8888888,
-                    debug: true
+                    log: true
                 });
             `}
             </code>

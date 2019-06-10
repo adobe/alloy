@@ -40,7 +40,6 @@ const getStorageByType = (context, storageType, namespace) => {
         context[storageType].setItem(namespace + name, value);
         return true;
       } catch (e) {
-        console.log(e);
         return false;
       }
     }

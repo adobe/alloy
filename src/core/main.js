@@ -16,7 +16,7 @@ import initializeComponentsFactory from "./initializeComponentsFactory";
 
 import createLogger from "./createLogger";
 import createCookie from "./createCookie";
-import createDebugController from "./createDebugController";
+import createLogController from "./createLogController";
 
 import createDataCollector from "../components/DataCollector";
 import createIdentity from "../components/Identity";
@@ -43,8 +43,8 @@ const storage = storageFactory(window);
 
 if (namespaces) {
   namespaces.forEach(namespace => {
-    const debugController = createDebugController(namespace, storage);
-    const logger = createLogger(window, debugController, `[${namespace}]`);
+    const logController = createLogController(namespace, storage);
+    const logger = createLogger(window, logController, `[${namespace}]`);
 
     const initializeComponents = initializeComponentsFactory(
       componentCreators,
@@ -56,7 +56,7 @@ if (namespaces) {
     const instance = createInstance(
       namespace,
       initializeComponents,
-      debugController
+      logController
     );
 
     const queue = window[namespace].q;

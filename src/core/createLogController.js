@@ -11,22 +11,22 @@ governing permissions and limitations under the License.
 */
 
 export default (instanceNamespace, getNamespacedStorage) => {
-  // Segregate whether debugging is enabled by the SDK instance name.
-  // This way consumers can debug one instance at a time.
+  // Segregate whether logging is enabled by the SDK instance name.
+  // This way consumers can log one instance at a time.
   // TODO: Figure out how this plays out with segregating Web Storage
   // in the rest of the SDK. Is it segregated by Org ID or Property ID
   // in the rest of the SDK?
   const storage = getNamespacedStorage(`instance.${instanceNamespace}.`);
 
-  let debugEnabled = storage.persistent.getItem("debug") === "true";
+  let logEnabled = storage.persistent.getItem("log") === "true";
 
   return {
-    get debugEnabled() {
-      return debugEnabled;
+    get logEnabled() {
+      return logEnabled;
     },
-    set debugEnabled(value) {
-      storage.persistent.setItem("debug", value);
-      debugEnabled = value;
+    set logEnabled(value) {
+      storage.persistent.setItem("log", value);
+      logEnabled = value;
     }
   };
 };
