@@ -145,9 +145,10 @@ describe("createNetwork", () => {
       .send()
       .then(done.fail)
       .catch(e => {
-        expect(e.message).toContain(
-          "Error parsing server response.\nSyntaxError: Unexpected token b in JSON at position 0\nResponse body: badbody"
-        );
+        // The native parse error message is different based on the browser
+        // so we'll just check to parts we control.
+        expect(e.message).toContain("Error parsing server response.\n");
+        expect(e.message).toContain("\nResponse body: badbody");
         done();
       });
   });
