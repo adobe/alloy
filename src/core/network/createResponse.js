@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, find } from "../../utils";
+import { find } from "../../utils";
 
 /**
  * Represents a gateway response with the addition to helper methods.
@@ -25,23 +25,25 @@ import { assign, find } from "../../utils";
  * }
  *
  * @returns {Object<Response>} A Response object containing:
- *  - All the properties of the raw response, frozen
  *  - `getPayloadByType`: returns a fragment of the response by type
  *      - @param {String} type: A string with the current format: <namespace:action>
  *          example: "identity:persist"
  */
-export default (respDto = { requestId: "", handle: [] }) => {
-  const response = assign(Object.create(null), respDto);
+export default (content = { requestId: "", handle: [] }) => {
   // TODO: Should we freeze the response to prevent change by Components?
   // Object.freeze(response.handle.map(h => Object.freeze(h)));
-
-  response.getPayloadByType = type => {
-    const fragment = find(respDto.handle, content => content.type === type);
-    return fragment ? fragment.payload : null;
+  return {
+    getPayloadByType(type) {
+      const fragment = find(
+        content.handle,
+        handleContent => handleContent.type === type
+      );
+      return fragment ? fragment.payload : null;
+    },
+    toJSON() {
+      return content;
+    }
+    // TODO: Maybe consider the following API as well?
+    // - getPayloadsByAction
   };
-
-  // TODO: Maybe consider the following API as well?
-  // - getPayloadsByAction
-
-  return response;
 };

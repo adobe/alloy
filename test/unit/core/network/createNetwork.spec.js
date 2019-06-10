@@ -18,58 +18,44 @@ describe("createNetwork", () => {
     propertyID: "mypropertyid"
   };
 
-  const logger = console.log;
+  const logger = console;
 
   const nullLifecycle = {
     onBeforeSend: () => Promise.resolve(),
-    onResponseFragment: () => Promise.resolve()
+    onResponse: () => Promise.resolve()
   };
 
   it("calls interact by default", done => {
     const networkStrategy = url => {
-      return new Promise(() => {
-        expect(url).toEqual(
-          "https://alloy.mysite.com/interact?propertyID=mypropertyid"
-        );
-        done();
-      });
+      expect(url).toEqual(
+        "https://alloy.mysite.com/interact?propertyID=mypropertyid"
+      );
+      done();
+      return Promise.resolve();
     };
-    const network = createNetwork(
-      config,
-      logger,
-      nullLifecycle,
-      networkStrategy
-    );
-    const { send } = network.newRequest();
-    send();
+    createNetwork(config, logger, nullLifecycle, networkStrategy)
+      .newRequest()
+      .send();
   });
 
   it("can call collect", done => {
     const networkStrategy = url => {
-      return new Promise(() => {
-        expect(url).toEqual(
-          "https://alloy.mysite.com/collect?propertyID=mypropertyid"
-        );
-        done();
-      });
+      expect(url).toEqual(
+        "https://alloy.mysite.com/collect?propertyID=mypropertyid"
+      );
+      done();
+      return Promise.resolve();
     };
-    const network = createNetwork(
-      config,
-      logger,
-      nullLifecycle,
-      networkStrategy
-    );
-    const { send } = network.newRequest(false);
-    send();
+    createNetwork(config, logger, nullLifecycle, networkStrategy)
+      .newRequest(false)
+      .send();
   });
 
   it("sends the payload", done => {
     const networkStrategy = (url, json) => {
-      return new Promise(resolve => {
-        expect(JSON.parse(json).events[0]).toEqual({ id: "myevent1" });
-        resolve();
-        done();
-      });
+      expect(JSON.parse(json).events[0]).toEqual({ id: "myevent1" });
+      done();
+      return Promise.resolve();
     };
     const network = createNetwork(
       config,
@@ -82,73 +68,92 @@ describe("createNetwork", () => {
     send();
   });
 
-  it("resolves the returned promise", done => {
-    const networkStrategy = () => {
-      return new Promise(resolve => {
-        resolve(JSON.stringify({ requestId: "myrequestid", handle: [] }));
-      });
-    };
+  it("logs the request and response when response is expected", done => {
+    spyOn(logger, "log");
+    const mockResponse = { requestId: "myrequestid", handle: [] };
+    const networkStrategy = () => Promise.resolve(JSON.stringify(mockResponse));
     const network = createNetwork(
       config,
       logger,
       nullLifecycle,
       networkStrategy
     );
-    const { responsePromise, send } = network.newRequest();
-    responsePromise
-      .then(body => {
-        const { requestId, handle } = JSON.parse(body);
-        expect(requestId).toEqual("myrequestid");
-        expect(handle).toEqual([]);
+    const { payload, send } = network.newRequest();
+    payload.addEvent({ id: "myevent1" });
+    send().then(() => {
+      expect(logger.log).toHaveBeenCalledWith(
+        "Sending network request:",
+        payload.toJSON()
+      );
+      expect(logger.log).toHaveBeenCalledWith(
+        "Received network response:",
+        mockResponse
+      );
+      done();
+    });
+  });
+
+  it("logs only the request when no response is expected", done => {
+    spyOn(logger, "log");
+    const networkStrategy = () => Promise.resolve();
+    const network = createNetwork(
+      config,
+      logger,
+      nullLifecycle,
+      networkStrategy
+    );
+    const { payload, send } = network.newRequest(false);
+    payload.addEvent({ id: "myevent1" });
+    send().then(() => {
+      expect(logger.log).toHaveBeenCalledWith(
+        "Sending network request (response will be ignored):",
+        payload.toJSON()
+      );
+      expect(logger.log.calls.count()).toBe(1);
+      done();
+    });
+  });
+
+  it("resolves the returned promise", done => {
+    const networkStrategy = () =>
+      Promise.resolve(JSON.stringify({ requestId: "myrequestid", handle: [] }));
+    createNetwork(config, logger, nullLifecycle, networkStrategy)
+      .newRequest()
+      .send()
+      .then(response => {
+        expect(response.getPayloadByType).toEqual(jasmine.any(Function));
         done();
       })
       .catch(done.fail);
-    send();
   });
 
   it("rejects the returned promise", done => {
-    const networkStrategy = () => {
-      return new Promise((resolve, reject) => {
-        reject(new Error("myerror"));
-      });
-    };
-    const network = createNetwork(
-      config,
-      logger,
-      nullLifecycle,
-      networkStrategy
-    );
-    const { responsePromise, send } = network.newRequest();
-    responsePromise.catch(error => {
-      expect(error.message).toEqual("myerror");
-      done();
-    });
-    send();
-  });
-
-  it("resolves the promise even with invalid json", done => {
-    const networkStrategy = () => {
-      return new Promise(resolve => {
-        resolve("badbody");
-      });
-    };
-    const component = createNetwork(
-      config,
-      logger,
-      nullLifecycle,
-      networkStrategy
-    );
-    const { responsePromise, send } = component.newRequest();
-    responsePromise
-      .then(body => {
-        expect(body).toEqual("badbody");
+    const networkStrategy = () => Promise.reject(new Error("myerror"));
+    createNetwork(config, logger, nullLifecycle, networkStrategy)
+      .newRequest()
+      .send()
+      .catch(error => {
+        expect(error.message).toEqual("myerror");
         done();
-      })
-      .catch(done.fail);
-    send();
+      });
   });
 
-  it("allows components to handle response fragments", done => {
+  it("rejects the promise when response is invalid json", done => {
+    const networkStrategy = () => Promise.resolve("badbody");
+    createNetwork(config, logger, nullLifecycle, networkStrategy)
+      .newRequest()
+      .send()
+      .then(done.fail)
+      .catch(e => {
+        // The native parse error message is different based on the browser
+        // so we'll just check to parts we control.
+        expect(e.message).toContain("Error parsing server response.\n");
+        expect(e.message).toContain("\nResponse body: badbody");
+        done();
+      });
+  });
+
+  it("allows components to handle response", done => {
     const myresponse = {
       requestId: "myrequestid",
       handle: [
@@ -161,60 +166,42 @@ describe("createNetwork", () => {
     const lifecycle = {
       onBeforeSend: () => undefined,
       onResponse: response => {
-        const cleanResponse = JSON.parse(JSON.stringify(response));
+        const cleanResponse = response.toJSON();
         expect(cleanResponse).toEqual(myresponse);
         done();
       }
     };
-    const networkStrategy = () => {
-      return new Promise(resolve => {
-        resolve(JSON.stringify(myresponse));
-      });
-    };
-    const network = createNetwork(config, logger, lifecycle, networkStrategy);
-    network.newRequest().send();
+    const networkStrategy = () => Promise.resolve(JSON.stringify(myresponse));
+    createNetwork(config, logger, lifecycle, networkStrategy)
+      .newRequest()
+      .send();
   });
 
-  [true, false].forEach(b => {
-    it(`allows components to get the request info (beacon = ${b})`, done => {
-      let requestPayload;
-      let requestPromise;
+  [true, false].forEach(expectsResponse => {
+    it(`allows components to get the request info (beacon = ${expectsResponse})`, done => {
+      let lifecyclePayload;
+      let lifecycleResponsePromise;
+      let lifecycleIsBeacon;
       const lifecycle = {
-        onBeforeSend: ({ payload, responsePromise, isBeacon, send }) => {
-          expect(send).toBeUndefined();
-          expect(payload).toBe(requestPayload);
-          expect(responsePromise).toBe(requestPromise);
-          expect(isBeacon).toBe(b);
+        onBeforeSend: ({ payload, responsePromise, isBeacon }) => {
+          lifecyclePayload = payload;
+          lifecycleResponsePromise = responsePromise;
+          lifecycleIsBeacon = isBeacon;
           done();
-        },
-        onResponseFragment: () => undefined
+        }
       };
       const networkStrategy = () => new Promise(() => undefined);
       const network = createNetwork(config, logger, lifecycle, networkStrategy);
-      const { payload, responsePromise, send } = network.newRequest(b);
-      requestPayload = payload;
-      requestPromise = responsePromise;
-      send();
+      const { payload, send } = network.newRequest(expectsResponse);
+      const responsePromise = send();
+      responsePromise.then(() => {
+        expect(lifecyclePayload).toBe(payload);
+        expect(lifecycleResponsePromise).toBe(responsePromise);
+        expect(lifecycleIsBeacon).toBe(expectsResponse);
+        expect(responsePromise).toBe(lifecycleResponsePromise);
+        expect(expectsResponse).toBe(expectsResponse);
+      });
     });
-  });
-
-  it("logs json parse errors", done => {
-    const networkStrategy = () => {
-      return Promise.resolve("badbody1");
-    };
-    const loggerSpy = jasmine.createSpyObj("logger", ["warn"]);
-    const network = createNetwork(
-      config,
-      loggerSpy,
-      nullLifecycle,
-      networkStrategy
-    );
-    const { send } = network.newRequest();
-    send();
-    setTimeout(() => {
-      expect(loggerSpy.warn).toHaveBeenCalledTimes(1);
-      done();
-    }, 100);
   });
 
   it("doesn't try to parse the response on a beacon call", done => {
