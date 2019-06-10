@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import { isFunction, toError, stringToBoolean, queryString } from "../utils";
 import createConfig from "./createConfig";
 import configValidators from "./configValidators";
+import logQueryParam from "../constants/logQueryParam";
 
 export default (namespace, initializeComponents, logController, window) => {
   let componentRegistry;
@@ -27,9 +28,9 @@ export default (namespace, initializeComponents, logController, window) => {
       logCommand({ enabled: options.log });
     }
     const parsedQueryString = queryString.parse(window.location.search);
-    if (parsedQueryString.debug_enabled !== undefined) {
-      debugCommand({
-        enabled: stringToBoolean(parsedQueryString.debug_enabled)
+    if (parsedQueryString[logQueryParam] !== undefined) {
+      logCommand({
+        enabled: stringToBoolean(parsedQueryString[logQueryParam])
       });
     }
     const config = createConfig(options);
