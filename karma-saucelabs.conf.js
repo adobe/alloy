@@ -50,10 +50,11 @@ module.exports = function(config) {
       "karma-jasmine-matchers",
       "karma-spec-reporter",
       "karma-rollup-preprocessor",
+      "karma-allure-reporter",
       karmaSauceLauncher
     ],
 
-    reporters: ["spec", "saucelabs"],
+    reporters: ["spec", "saucelabs", "allure"],
 
     sauceLabs: {
       accessKey: sauceLabsAccessKey,
