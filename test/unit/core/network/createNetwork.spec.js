@@ -165,7 +165,7 @@ describe("createNetwork", () => {
     const lifecycle = {
       onBeforeSend: () => undefined,
       onResponse: response => {
-        const cleanResponse = JSON.parse(JSON.stringify(response));
+        const cleanResponse = response.toJSON();
         expect(cleanResponse).toEqual(myresponse);
         done();
       }
