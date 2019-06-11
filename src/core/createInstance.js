@@ -17,6 +17,7 @@ import logQueryParam from "../constants/logQueryParam";
 
 export default (namespace, initializeComponents, logController, window) => {
   let componentRegistry;
+  let configurationFailed = false;
 
   const logCommand = ({ enabled }) => {
     // eslint-disable-next-line no-param-reassign
@@ -35,13 +36,24 @@ export default (namespace, initializeComponents, logController, window) => {
     }
     const config = createConfig(options);
     config.addValidators(configValidators);
-    componentRegistry = initializeComponents(config);
+
+    try {
+      componentRegistry = initializeComponents(config);
+    } catch (e) {
+      configurationFailed = true;
+      throw e;
+    }
   };
 
   const executeCommand = (commandName, options) => {
     let command;
 
-    if (commandName === "configure") {
+    if (configurationFailed) {
+      // We've decided if configuration fails we'll return
+      // never-resolved promises for all subsequent commands rather than
+      // throwing an error for each of them.
+      command = () => new Promise(() => {});
+    } else if (commandName === "configure") {
       if (componentRegistry) {
         throw new Error(
           "The library has already been configured and may only be configured once."
