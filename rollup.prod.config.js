@@ -24,11 +24,11 @@ export default {
   input: "src/core/main.js",
   output: [
     {
-      file: "dist/alloy.js",
+      file: "dist/alloy.min.js",
       format: "umd"
     },
     {
-      file: "sandbox/public/alloy.js",
+      file: "sandbox/public/alloy.min.js",
       format: "umd"
     }
   ],

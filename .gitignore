@@ -1,6 +1,7 @@
 node_modules
 dist
 sandbox/public/alloy.js
+sandbox/public/alloy.min.js
 sandbox/build
 .sonarlint
 .env
