@@ -50,8 +50,7 @@ export default (
     componentRegistry.register(namespace, component);
   });
 
-  // Output the finalized configuration
-  logger.info("Runtime configuration:\n", JSON.stringify(config, null, 2));
+  logger.log("Computed configuration:", config.toJSON());
 
   const lifecycle = createLifecycle(componentRegistry);
   const network = createNetwork(config, logger, lifecycle);

@@ -43,14 +43,14 @@ export default ({ logger, destinations }) => {
 
       return imagePromise
         .then(() => {
-          logger.log(`Destination succeeded: ${dest.url}`);
+          logger.log("Destination succeeded:", dest.url);
           return {
             succeeded: true,
             dest
           };
         })
         .catch(() => {
-          logger.log(`Destination failed: ${dest.url}`);
+          logger.log("Destination failed:", dest.url);
           return {
             succeeded: false,
             dest

@@ -57,6 +57,7 @@ if (namespaces) {
       namespace,
       initializeComponents,
       logController,
+      logger,
       window
     );
 
