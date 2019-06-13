@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { cookie, defer } from "../../utils";
+import { defer } from "../../utils";
 import processIdSyncs from "./processIdSyncs";
 
 const ECID_NAMESPACE = "ECID";
@@ -22,10 +22,9 @@ const addIdsContext = (payload, ecid) => {
   });
 };
 
-// TODO: Namespace the cookie to be specific to the org.
-const getEcid = () => cookie.get("ecid");
+const createIdentity = ({ config, logger, cookie }) => {
+  const getEcid = () => cookie.get(ECID_NAMESPACE);
 
-const createIdentity = ({ config, logger }) => {
   let ecid = getEcid();
   let deferredForEcid;
 
@@ -76,7 +75,7 @@ const createIdentity = ({ config, logger }) => {
 
     if (ecidPayload) {
       ecid = ecidPayload.id;
-      cookie.set("ecid", ecid, { expires: 7 });
+      cookie.set(ECID_NAMESPACE, ecid);
 
       if (deferredForEcid) {
         deferredForEcid.resolve();
@@ -84,26 +83,6 @@ const createIdentity = ({ config, logger }) => {
     }
 
     const idSyncs = response.getPayloadByType("identity:exchange") || [];
-
-    // const idSyncs = [
-    //   {
-    //     type: "url",
-    //     id: 411,
-    //     spec: {
-    //       url:
-    //         "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013268",
-    //       hideReferrer: 0
-    //     }
-    //   },
-    //   {
-    //     type: "url",
-    //     id: 2097629,
-    //     spec: {
-    //       url: "//dp2.33across.com/ps/?pid=897&random=1872864154",
-    //       hideReferrer: 1
-    //     }
-    //   }
-    // ];
 
     processIdSyncs({
       destinations: idSyncs,

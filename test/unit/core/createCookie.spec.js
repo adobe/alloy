@@ -12,10 +12,11 @@ governing permissions and limitations under the License.
 
 import createCookie from "../../../src/core/createCookie";
 import cookie from "../../../src/utils/cookie";
+import cookieDetails from "../../../src/constants/cookieDetails";
 
 const prefix = "testprefix";
 const testID1 = "ID1";
-const COOKIE_NAME = "TEMP_ALLOY_COOKIE";
+const COOKIE_NAME = cookieDetails.ALLOY_COOKIE_NAME;
 const removeCookie = name => {
   document.cookie = `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
 };

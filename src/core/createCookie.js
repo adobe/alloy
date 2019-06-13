@@ -23,6 +23,7 @@ const safeJSONParse = (object, cookieName) => {
   }
 };
 
+// TODO: Support passing a configurable expiry in the config when creating this cookie.
 const createCookie = (prefix, id, cookieDomain = "") => {
   return {
     /**
