@@ -10,10 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default script => {
-  const module = { exports: {} };
+import createSetHtml from "./actions/setHtml";
+import elementExists from "./events/elementExists";
 
-  script.call(module.exports, module, module.exports);
+export default collect => {
+  const setHtml = createSetHtml(collect);
 
-  return module.exports;
+  return {
+    setHtml,
+    elementExists
+  };
 };

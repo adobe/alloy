@@ -1,35 +1,26 @@
-import normalizeSyntheticEvent from "./normalizeSynctheticEvent";
-import createExecuteDelegateModule from "./createExecuteDelegateModule";
 import buildRuleExecutionOrder from "./buildRuleExecutionOrder";
-
-const getModuleDisplayNameByRuleComponent = (moduleProvider, ruleComponent) => {
-  const moduleDefinition = moduleProvider.getModuleDefinition(
-    ruleComponent.modulePath
-  );
-
-  return (
-    (moduleDefinition && moduleDefinition.displayName) ||
-    ruleComponent.modulePath
-  );
-};
 
 const isConditionMet = (condition, result) => {
   return (result && !condition.negate) || (!result && condition.negate);
 };
 
-export default (rules, moduleProvider, logger) => {
+export default (rules, ruleComponentModules, logger) => {
   const lastPromiseInQueue = Promise.resolve();
-  const executeDelegateModule = createExecuteDelegateModule(moduleProvider);
   let eventModulesInitialized = false;
   let triggerCallQueue = [];
 
-  const getErrorMessage = (ruleComponent, rule, errorMessage, errorStack) => {
-    const moduleDisplayName = getModuleDisplayNameByRuleComponent(
-      moduleProvider,
-      ruleComponent
-    );
+  const executeModule = (moduleType, args) => {
+    const ruleComponentModule = ruleComponentModules[moduleType];
 
-    return `Failed to execute ${moduleDisplayName} for ${
+    if (!ruleComponentModule) {
+      throw new Error(`Rule component module "${moduleType}" not found`);
+    }
+
+    return ruleComponentModule(...args);
+  };
+
+  const getErrorMessage = (ruleComponent, rule, errorMessage, errorStack) => {
+    return `Failed to execute ${ruleComponent.moduleType} for ${
       rule.name
     } rule. ${errorMessage} ${errorStack ? `\n ${errorStack}` : ""}`;
   };
@@ -43,10 +34,8 @@ export default (rules, moduleProvider, logger) => {
   };
 
   const logConditionNotMet = (condition, rule) => {
-    const conditionDisplayName = getModuleDisplayNameByRuleComponent(condition);
-
     logger.log(
-      `Condition ${conditionDisplayName} for rule ${rule.name} not met.`
+      `Condition ${condition.moduleType} for rule ${rule.name} not met.`
     );
   };
 
@@ -65,7 +54,7 @@ export default (rules, moduleProvider, logger) => {
       action = rule.actions[i];
 
       try {
-        executeDelegateModule(action, syntheticEvent, [syntheticEvent]);
+        executeModule(action.moduleType, [action.settings, syntheticEvent]);
       } catch (e) {
         logActionError(action, rule, e);
         return;
@@ -86,7 +75,8 @@ export default (rules, moduleProvider, logger) => {
       condition = rule.conditions[i];
 
       try {
-        const result = executeDelegateModule(condition, syntheticEvent, [
+        const result = executeModule(condition.moduleType, [
+          condition.settings,
           syntheticEvent
         ]);
 
@@ -105,38 +95,18 @@ export default (rules, moduleProvider, logger) => {
 
   const initEventModule = ruleEventPair => {
     const { rule, event } = ruleEventPair;
-    event.settings = event.settings || {};
-
-    let moduleName;
-    let extensionName;
 
     try {
-      moduleName = moduleProvider.getModuleDefinition(event.modulePath).name;
-      extensionName = moduleProvider.getModuleExtensionName(event.modulePath);
-
-      const syntheticEventMeta = {
-        $type: `${extensionName}.${moduleName}`,
-        $rule: {
-          id: rule.id,
-          name: rule.name
-        }
-      };
-
       const trigger = syntheticEvent => {
         if (!eventModulesInitialized) {
           triggerCallQueue.push(trigger.bind(null, syntheticEvent));
           return;
         }
 
-        const normalizedSyntheticEvent = normalizeSyntheticEvent(
-          syntheticEventMeta,
-          syntheticEvent
-        );
-
-        checkConditions(rule, normalizedSyntheticEvent);
+        checkConditions(rule, syntheticEvent);
       };
 
-      executeDelegateModule(event, null, [trigger]);
+      executeModule(event.moduleType, [event.settings, trigger]);
     } catch (e) {
       logger.error(getErrorMessage(event, rule, e.message, e.stack));
     }

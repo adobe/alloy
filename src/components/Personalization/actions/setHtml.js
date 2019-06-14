@@ -12,9 +12,7 @@ governing permissions and limitations under the License.
 
 import { removePrehiding } from "../flicker";
 
-export default componentRegistry => {
-  const collect = componentRegistry.getCommand("event");
-
+export default collect => {
   return (settings, event) => {
     const { element, prehidingSelector } = event;
     const { content, metadata } = settings;

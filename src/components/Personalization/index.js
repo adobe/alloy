@@ -11,21 +11,21 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray } from "../../utils";
-import initModules from "./initModules";
-import createModuleProvider from "./turbine/createModuleProvider";
+import initRuleComponentModules from "./initRuleComponentModules";
 import executeRules from "./turbine";
 
 const PAGE_HANDLE = "personalization:page";
 
 const createPersonalization = ({ logger }) => {
-  let moduleProvider;
+  let ruleComponentModules;
 
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
         const { componentRegistry } = tools;
-        const modules = initModules(componentRegistry);
-        moduleProvider = createModuleProvider(modules);
+        ruleComponentModules = initRuleComponentModules(
+          componentRegistry.getCommand("event")
+        );
       },
       onBeforeEvent(event, isViewStart) {
         if (!isViewStart) {
@@ -46,7 +46,7 @@ const createPersonalization = ({ logger }) => {
           const { rules = [] } = fragment;
 
           if (isNonEmptyArray(rules)) {
-            executeRules(rules, moduleProvider, logger);
+            executeRules(rules, ruleComponentModules, logger);
           }
         });
       }
