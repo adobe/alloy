@@ -1,0 +1,19 @@
+version: '3'
+
+volumes:
+  alloy-report:
+    driver: local
+
+services:
+  alloy-report:
+    build:
+      context: ../alloy-report
+      dockerfile: Dockerfile
+    environment:
+      CHECK_RESULTS_EVERY_SECONDS: 10
+    ports:
+      - "4040:4040"
+      - "5050:5050"
+    tty: true
+    volumes:
+    - ./test/results/allure-results:/app/allure-results
