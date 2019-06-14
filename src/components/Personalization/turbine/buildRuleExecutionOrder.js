@@ -10,8 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as awaitSelector } from "./awaitSelector";
-export { default as createNode } from "./createNode";
-export { default as appendNode } from "./appendNode";
-export { default as removeNode } from "./removeNode";
-export { default as selectNodes } from "./selectNodes";
+export default rules => {
+  const ruleEventPairs = [];
+
+  rules.forEach(rule => {
+    if (!rule.events) {
+      return;
+    }
+
+    rule.events.forEach(event => {
+      ruleEventPairs.push({ rule, event });
+    });
+  });
+
+  return ruleEventPairs.sort((ruleEventPairA, ruleEventPairB) => {
+    return ruleEventPairA.event.ruleOrder - ruleEventPairB.event.ruleOrder;
+  });
+};

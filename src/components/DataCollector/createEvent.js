@@ -24,6 +24,7 @@ export default () => {
       content.timestamp = timestamp;
     },
     mergeData: createMerger(content, "data"),
+    mergeMetadata: createMerger(content, "metadata"),
     mergeQuery: createMerger(content, "query"),
     mergeWeb: createMerger(content, "web"),
     mergeDevice: createMerger(content, "device"),

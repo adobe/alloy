@@ -41,6 +41,8 @@ const createDataCollector = () => {
     const isViewStart = options.type === VIEW_START_EVENT;
 
     event.mergeData(options.data);
+    event.mergeMetadata(options.metadata);
+
     return lifecycle
       .onBeforeEvent(event, isViewStart)
       .then(() => makeServerCall(event));

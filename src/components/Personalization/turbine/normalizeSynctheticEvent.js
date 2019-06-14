@@ -10,8 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as awaitSelector } from "./awaitSelector";
-export { default as createNode } from "./createNode";
-export { default as appendNode } from "./appendNode";
-export { default as removeNode } from "./removeNode";
-export { default as selectNodes } from "./selectNodes";
+import assign from "@adobe/reactor-object-assign";
+
+export default (syntheticEventMeta, syntheticEvent) => {
+  /* eslint-disable no-param-reassign */
+  syntheticEvent = syntheticEvent || {};
+  /* eslint-enable no-param-reassign */
+
+  assign(syntheticEvent, syntheticEventMeta);
+
+  return syntheticEvent;
+};

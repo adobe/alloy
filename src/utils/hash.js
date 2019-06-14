@@ -10,8 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as awaitSelector } from "./awaitSelector";
-export { default as createNode } from "./createNode";
-export { default as appendNode } from "./appendNode";
-export { default as removeNode } from "./removeNode";
-export { default as selectNodes } from "./selectNodes";
+export default string => {
+  let result = 0;
+  const { length } = string;
+
+  for (let i = 0; i < length; i += 1) {
+    /* eslint-disable */
+    result = ((result << 5) - result + string.charCodeAt(i)) & 0xffffffff;
+    /* eslint-enable */
+  }
+
+  return result;
+};

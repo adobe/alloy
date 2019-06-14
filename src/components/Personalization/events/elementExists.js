@@ -10,8 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as awaitSelector } from "./awaitSelector";
-export { default as createNode } from "./createNode";
-export { default as appendNode } from "./appendNode";
-export { default as removeNode } from "./removeNode";
-export { default as selectNodes } from "./selectNodes";
+import { awaitSelector } from "../../../utils/dom";
+import { prehideSelector } from "../flicker";
+
+export default (settings, trigger) => {
+  const { selector, prehidingSelector } = settings;
+
+  prehideSelector(prehidingSelector);
+
+  awaitSelector(selector).then(nodes => {
+    nodes.forEach(element => {
+      trigger({
+        element,
+        prehidingSelector
+      });
+    });
+  });
+};
