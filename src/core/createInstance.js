@@ -15,7 +15,13 @@ import createConfig from "./createConfig";
 import configValidators from "./configValidators";
 import logQueryParam from "../constants/logQueryParam";
 
-export default (namespace, initializeComponents, logController, window) => {
+export default (
+  namespace,
+  initializeComponents,
+  logController,
+  logger,
+  window
+) => {
   let componentRegistry;
   let configurationFailed = false;
 
@@ -75,6 +81,8 @@ export default (namespace, initializeComponents, logController, window) => {
         throw new Error(`The ${commandName} command does not exist.`);
       }
     }
+
+    logger.log(`Executing "${commandName}" command.`, "Options:", options);
 
     return command(options);
   };
