@@ -10,20 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { removePrehiding } from "../flicker";
+import { showElements } from "../flicker";
 
 export default collect => {
   return (settings, event) => {
     const { element, prehidingSelector } = event;
-    const { content, metadata } = settings;
+    const { content, meta } = settings;
 
     // this is a very naive approach, we will expand later
     element.innerHTML = content;
 
     // after rendering we should show remove the flicker control CSS classes
-    removePrehiding(prehidingSelector);
+    showElements(prehidingSelector);
 
     // make sure we send back the metadata after successful rendering
-    collect({ metadata: { personalization: metadata } });
+    collect({ meta: { personalization: meta } });
   };
 };

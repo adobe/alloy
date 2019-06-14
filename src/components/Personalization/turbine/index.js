@@ -5,7 +5,6 @@ const isConditionMet = (condition, result) => {
 };
 
 export default (rules, ruleComponentModules, logger) => {
-  const lastPromiseInQueue = Promise.resolve();
   let eventModulesInitialized = false;
   let triggerCallQueue = [];
 
@@ -116,6 +115,4 @@ export default (rules, ruleComponentModules, logger) => {
   eventModulesInitialized = true;
   triggerCallQueue.forEach(triggerCall => triggerCall());
   triggerCallQueue = null;
-
-  return lastPromiseInQueue;
 };

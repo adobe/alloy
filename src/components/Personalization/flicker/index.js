@@ -10,33 +10,31 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { hash } from "../../../utils";
-import {
-  createNode,
-  appendNode,
-  removeNode,
-  selectNodes
-} from "../../../utils/dom";
+import { createNode, appendNode, removeNode } from "../../../utils/dom";
 
-const PREFIX = "alloy-";
 const STYLE_TAG = "style";
-const CLASS_ATTRIBUTE = "class";
+const CACHE = {};
 
-const buildClassName = prehidingSelector => {
-  return `${PREFIX}-${hash(prehidingSelector)}`;
-};
+export const hideElements = prehidingSelector => {
+  // if we have different events with the same
+  // prehiding selector we don't want to recreate
+  // the style tag
+  if (CACHE[prehidingSelector]) {
+    return;
+  }
 
-export const prehideSelector = prehidingSelector => {
-  const className = buildClassName(prehidingSelector);
-  const node = createNode(STYLE_TAG, { [CLASS_ATTRIBUTE]: className });
+  const node = createNode(STYLE_TAG);
   node.innerText = `${prehidingSelector} { visibility: hidden }`;
 
   appendNode(document.head, node);
+
+  CACHE[prehidingSelector] = node;
 };
 
-export const removePrehiding = prehidingSelector => {
-  const className = buildClassName(prehidingSelector);
-  const nodes = selectNodes(`.${className}`);
+export const showElements = prehidingSelector => {
+  const node = CACHE[prehidingSelector];
 
-  nodes.forEach(removeNode);
+  if (node) {
+    removeNode(node);
+  }
 };

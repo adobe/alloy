@@ -24,7 +24,6 @@ export { default as fireImage } from "./fireImage";
 export { default as getLastArrayItems } from "./getLastArrayItems";
 export { default as getNestedObject } from "./getNestedObject";
 export { default as getTopLevelCookieDomain } from "./getTopLevelCookieDomain";
-export { default as hash } from "./hash";
 export { default as includes } from "./includes";
 export { default as intersection } from "./intersection";
 export { default as isFunction } from "./isFunction";

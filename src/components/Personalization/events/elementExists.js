@@ -11,19 +11,26 @@ governing permissions and limitations under the License.
 */
 
 import { awaitSelector } from "../../../utils/dom";
-import { prehideSelector } from "../flicker";
+import { hideElements, showElements } from "../flicker";
 
 export default (settings, trigger) => {
   const { selector, prehidingSelector } = settings;
 
-  prehideSelector(prehidingSelector);
+  hideElements(prehidingSelector);
 
-  awaitSelector(selector).then(nodes => {
-    nodes.forEach(element => {
-      trigger({
-        element,
-        prehidingSelector
+  awaitSelector(selector)
+    .then(nodes => {
+      nodes.forEach(element => {
+        trigger({
+          element,
+          prehidingSelector
+        });
       });
+    })
+    .catch(() => {
+      // in case of awaiting timing out we
+      // need to remove the style tag
+      // hence showing the nodes
+      showElements(prehidingSelector);
     });
-  });
 };
