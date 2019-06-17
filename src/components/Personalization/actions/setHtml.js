@@ -20,7 +20,7 @@ export default collect => {
     // this is a very naive approach, we will expand later
     element.innerHTML = content;
 
-    // after rendering we should show remove the flicker control CSS classes
+    // after rendering we should show remove the flicker control styles
     showElements(prehidingSelector);
 
     // make sure we send back the metadata after successful rendering
