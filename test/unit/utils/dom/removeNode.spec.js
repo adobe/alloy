@@ -16,8 +16,12 @@ import removeNode from "../../../../src/utils/dom/removeNode";
 import selectNodes from "../../../../src/utils/dom/selectNodes";
 
 describe("removeNode", () => {
+  afterEach(() => {
+    selectNodes("div").forEach(removeNode);
+  });
+
   it("should remove a node from head tag", () => {
-    const node = createNode("style", { id: "remove" });
+    const node = createNode("div", { id: "remove" });
 
     removeNode(appendNode(document.head, node));
 

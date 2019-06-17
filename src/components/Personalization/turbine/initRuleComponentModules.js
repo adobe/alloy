@@ -10,20 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default rules => {
-  const ruleEventPairs = [];
+import createSetHtml from "../actions/setHtml";
+import elementExists from "../events/elementExists";
 
-  rules.forEach(rule => {
-    if (!rule.events) {
-      return;
-    }
+export default collect => {
+  const setHtml = createSetHtml(collect);
 
-    rule.events.forEach(event => {
-      ruleEventPairs.push({ rule, event });
-    });
-  });
-
-  return ruleEventPairs.sort((ruleEventPairA, ruleEventPairB) => {
-    return ruleEventPairA.event.ruleOrder - ruleEventPairB.event.ruleOrder;
-  });
+  return {
+    setHtml,
+    elementExists
+  };
 };

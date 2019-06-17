@@ -16,13 +16,15 @@ import selectNodes from "../../../../src/utils/dom/selectNodes";
 import removeNode from "../../../../src/utils/dom/removeNode";
 
 describe("appendNode", () => {
+  afterEach(() => {
+    selectNodes("div").forEach(removeNode);
+  });
+
   it("should append a node to head tag", () => {
-    const elem = createNode("style", { id: "append" });
+    const elem = createNode("div", { id: "append" });
 
     appendNode(document.head, elem);
 
     expect(selectNodes("#append").length).toEqual(1);
-
-    removeNode(elem);
   });
 });

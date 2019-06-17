@@ -17,7 +17,7 @@ import { createNode, appendNode, removeNode } from "../../../../src/utils/dom";
 describe("awaitSelector", () => {
   const createAndAppendNodeDelayed = id => {
     setTimeout(() => {
-      appendNode(document.head, createNode("style", { id }));
+      appendNode(document.head, createNode("div", { id }));
     }, 50);
   };
 
@@ -36,7 +36,7 @@ describe("awaitSelector", () => {
       .then(nodes => {
         done();
         cleanUp(id);
-        expect(nodes[0].tagName).toEqual("STYLE");
+        expect(nodes[0].tagName).toEqual("DIV");
       })
       .catch(() => {
         done();

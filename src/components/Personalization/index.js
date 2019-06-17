@@ -11,8 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray } from "../../utils";
-import initRuleComponentModules from "./initRuleComponentModules";
-import executeRules from "./turbine";
+import { initRuleComponentModules, executeRules } from "./turbine";
 
 const PAGE_HANDLE = "personalization:page";
 
