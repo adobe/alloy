@@ -40,6 +40,7 @@ script:
 - npm run test:report
 - npm run allure:generate
 - npm run functional
+- npm run build:prod
 - sonar-scanner
 
 jobs:
