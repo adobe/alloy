@@ -9,10 +9,12 @@ import createSetHtml from "../../../../../src/components/Personalization/actions
 describe("Presonalization::actions::setHtml", () => {
   beforeEach(() => {
     selectNodes("div").forEach(removeNode);
+    selectNodes("style").forEach(removeNode);
   });
 
   afterEach(() => {
     selectNodes("div").forEach(removeNode);
+    selectNodes("style").forEach(removeNode);
   });
 
   it("should set personalized content", () => {
