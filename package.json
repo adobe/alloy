@@ -49,8 +49,7 @@
   ],
   "bundlesize": [
     {
-      "path": "./dist/alloy.min.js",
-      "maxSize": "8 kB"
+      "path": "./dist/alloy.min.js"
     }
   ],
   "dependencies": {
