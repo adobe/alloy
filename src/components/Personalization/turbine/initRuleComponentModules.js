@@ -10,21 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createNode from "../../../../src/utils/dom/createNode";
-import appendNode from "../../../../src/utils/dom/appendNode";
-import removeNode from "../../../../src/utils/dom/removeNode";
-import selectNodes from "../../../../src/utils/dom/selectNodes";
+import createSetHtml from "../actions/setHtml";
+import elementExists from "../events/elementExists";
 
-describe("removeNode", () => {
-  afterEach(() => {
-    selectNodes("div").forEach(removeNode);
-  });
+export default collect => {
+  const setHtml = createSetHtml(collect);
 
-  it("should remove a node from head tag", () => {
-    const node = createNode("div", { id: "remove" });
-
-    removeNode(appendNode(document.head, node));
-
-    expect(selectNodes("#remove").length).toEqual(0);
-  });
-});
+  return {
+    setHtml,
+    elementExists
+  };
+};

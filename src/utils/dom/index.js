@@ -14,3 +14,4 @@ export { default as awaitSelector } from "./awaitSelector";
 export { default as createNode } from "./createNode";
 export { default as appendNode } from "./appendNode";
 export { default as removeNode } from "./removeNode";
+export { default as selectNodes } from "./selectNodes";

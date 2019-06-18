@@ -10,21 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createNode from "../../../../src/utils/dom/createNode";
-import appendNode from "../../../../src/utils/dom/appendNode";
-import removeNode from "../../../../src/utils/dom/removeNode";
-import selectNodes from "../../../../src/utils/dom/selectNodes";
+import { showElements } from "../flicker";
 
-describe("removeNode", () => {
-  afterEach(() => {
-    selectNodes("div").forEach(removeNode);
-  });
+export default collect => {
+  return (settings, event) => {
+    const { element, prehidingSelector } = event;
+    const { content, meta } = settings;
 
-  it("should remove a node from head tag", () => {
-    const node = createNode("div", { id: "remove" });
+    // this is a very naive approach, we will expand later
+    element.innerHTML = content;
 
-    removeNode(appendNode(document.head, node));
+    // after rendering we should show remove the flicker control styles
+    showElements(prehidingSelector);
 
-    expect(selectNodes("#remove").length).toEqual(0);
-  });
-});
+    // make sure we send back the metadata after successful rendering
+    collect({ meta: { personalization: meta } });
+  };
+};
