@@ -14,7 +14,7 @@ describe("Presonalization::flicker", () => {
   });
 
   it("should add prehiding style tags", () => {
-    const prehidingSelector = ".container";
+    const prehidingSelector = ".add";
 
     hideElements(prehidingSelector);
 
@@ -30,7 +30,7 @@ describe("Presonalization::flicker", () => {
   });
 
   it("should remove prehiding style tags", () => {
-    const prehidingSelector = ".container";
+    const prehidingSelector = ".remove";
 
     hideElements(prehidingSelector);
     showElements(prehidingSelector);

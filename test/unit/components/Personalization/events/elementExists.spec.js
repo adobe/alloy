@@ -6,25 +6,37 @@ import {
 } from "../../../../../src/utils/dom";
 import elementExists from "../../../../../src/components/Personalization/events/elementExists";
 
+const cleanUp = () => {
+  selectNodes("span#elementExists").forEach(removeNode);
+  selectNodes("style").forEach(node => {
+    if (node.innerText.indexOf("elementExists") !== -1) {
+      removeNode(node);
+    }
+  });
+};
+
 describe("Presonalization::events::elementExists", () => {
   beforeEach(() => {
-    selectNodes("span").forEach(removeNode);
+    cleanUp();
   });
 
   afterEach(() => {
-    selectNodes("span").forEach(removeNode);
+    cleanUp();
   });
 
   it("should fire event when element exists", done => {
-    appendNode(document.body, createNode("span", { id: "foo" }));
+    appendNode(document.body, createNode("span", { id: "elementExists" }));
 
-    const settings = { selector: "#foo", prehidingSelector: "#foo" };
+    const settings = {
+      selector: "#elementExists",
+      prehidingSelector: "#elementExists"
+    };
     const trigger = event => {
       const { element, prehidingSelector } = event;
 
       done();
-      expect(prehidingSelector).toEqual("#foo");
-      expect(element.id).toEqual("foo");
+      expect(prehidingSelector).toEqual("#elementExists");
+      expect(element.id).toEqual("elementExists");
     };
 
     elementExists(settings, trigger);
