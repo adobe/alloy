@@ -63,7 +63,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
             lifecycle.onBeforeSend({
               payload,
               responsePromise,
-              isBeacon: expectsResponse
+              isBeacon: !expectsResponse
             })
           )
           .then(() => {

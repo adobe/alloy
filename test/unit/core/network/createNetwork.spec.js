@@ -179,27 +179,21 @@ describe("createNetwork", () => {
 
   [true, false].forEach(expectsResponse => {
     it(`allows components to get the request info (beacon = ${expectsResponse})`, done => {
-      let lifecyclePayload;
-      let lifecycleResponsePromise;
-      let lifecycleIsBeacon;
       const lifecycle = {
-        onBeforeSend: ({ payload, responsePromise, isBeacon }) => {
-          lifecyclePayload = payload;
-          lifecycleResponsePromise = responsePromise;
-          lifecycleIsBeacon = isBeacon;
-          done();
-        }
+        onBeforeSend: jasmine.createSpy().and.callFake(() => Promise.resolve()),
+        onResponse: () => Promise.resolve()
       };
-      const networkStrategy = () => new Promise(() => undefined);
+      const networkStrategy = () => Promise.resolve("{}");
       const network = createNetwork(config, logger, lifecycle, networkStrategy);
       const { payload, send } = network.newRequest(expectsResponse);
       const responsePromise = send();
       responsePromise.then(() => {
-        expect(lifecyclePayload).toBe(payload);
-        expect(lifecycleResponsePromise).toBe(responsePromise);
-        expect(lifecycleIsBeacon).toBe(expectsResponse);
-        expect(responsePromise).toBe(lifecycleResponsePromise);
-        expect(expectsResponse).toBe(expectsResponse);
+        expect(lifecycle.onBeforeSend).toHaveBeenCalledWith({
+          payload,
+          responsePromise,
+          isBeacon: !expectsResponse
+        });
+        done();
       });
     });
   });
