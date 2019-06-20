@@ -83,7 +83,7 @@ describe("createNetwork", () => {
     send().then(() => {
       expect(logger.log).toHaveBeenCalledWith(
         "Sending network request:",
-        payload.toJSON()
+        JSON.parse(JSON.stringify(payload))
       );
       expect(logger.log).toHaveBeenCalledWith(
         "Received network response:",

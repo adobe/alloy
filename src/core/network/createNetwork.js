@@ -72,16 +72,20 @@ export default (config, logger, lifecycle, networkStrategy) => {
             const responseHandlingMessage = expectsResponse
               ? ""
               : " (no response is expected)";
+            const stringifiedPayload = JSON.stringify(payload);
+
+            // We want to log raw payload and event data rather than
+            // our fancy wrapper objects. Calling payload.toJSON() is
+            // insufficient to get all the nested raw data, because it's
+            // not recursive (it doesn't call toJSON() on the event objects).
+            // Parsing the result of JSON.stringify(), however, gives the
+            // fully recursive raw data.
             logger.log(
               `Sending network request${responseHandlingMessage}:`,
-              payload.toJSON()
+              JSON.parse(stringifiedPayload)
             );
 
-            return networkStrategy(
-              url,
-              JSON.stringify(payload),
-              expectsResponse
-            );
+            return networkStrategy(url, stringifiedPayload, expectsResponse);
           })
           .then(responseBody => {
             let handleResponsePromise;
