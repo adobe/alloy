@@ -71,7 +71,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
             const url = `https://${edgeDomain}/${action}?propertyID=${propertyID}`;
             const responseHandlingMessage = expectsResponse
               ? ""
-              : " (response will be ignored)";
+              : " (no response is expected)";
             const stringifiedPayload = JSON.stringify(payload);
 
             // We want to log raw payload and event data rather than

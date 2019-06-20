@@ -106,7 +106,7 @@ describe("createNetwork", () => {
     payload.addEvent({ id: "myevent1" });
     send().then(() => {
       expect(logger.log).toHaveBeenCalledWith(
-        "Sending network request (response will be ignored):",
+        "Sending network request (no response is expected):",
         payload.toJSON()
       );
       expect(logger.log.calls.count()).toBe(1);
