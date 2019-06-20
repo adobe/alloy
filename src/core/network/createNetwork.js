@@ -85,11 +85,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
               JSON.parse(stringifiedPayload)
             );
 
-            return networkStrategy(
-              url,
-              JSON.stringify(payload),
-              expectsResponse
-            );
+            return networkStrategy(url, stringifiedPayload, expectsResponse);
           })
           .then(responseBody => {
             let handleResponsePromise;
