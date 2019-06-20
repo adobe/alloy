@@ -15,12 +15,6 @@
 
 <!--- Why is this change required? What problem does it solve? -->
 
-## How Has This Been Tested?
-
-<!--- Please describe in detail how you tested your changes. -->
-<!--- Include details of your testing environment, and the tests you ran to -->
-<!--- see how your change affects other areas of the code, etc. -->
-
 ## Screenshots (if appropriate):
 
 ## Types of changes
@@ -38,6 +32,5 @@
 
 - [ ] My change requires a change to the documentation.
 - [ ] I have updated the documentation accordingly.
-- [ ] I have added tests to cover my changes.
+- [ ] I have added/removed/modified tests to cover my changes and all tests pass.
 - [ ] I have run the Sandbox successfully.
-- [ ] All new and existing tests passed.
