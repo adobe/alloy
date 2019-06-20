@@ -71,7 +71,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
             const url = `https://${edgeDomain}/${action}?propertyID=${propertyID}`;
             const responseHandlingMessage = expectsResponse
               ? ""
-              : " (response will be ignored)";
+              : " (no response is expected)";
             logger.log(
               `Sending network request${responseHandlingMessage}:`,
               payload.toJSON()
