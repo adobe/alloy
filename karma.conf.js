@@ -28,7 +28,8 @@ module.exports = config => {
       "karma-chrome-launcher",
       "karma-jasmine-matchers",
       "karma-spec-reporter",
-      "karma-rollup-preprocessor"
+      "karma-rollup-preprocessor",
+      "karma-allure-reporter"
     ],
     // list of files / patterns to load in the browser
     files: [
@@ -53,6 +54,11 @@ module.exports = config => {
     // possible values: "dots", "progress"
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ["spec"],
+
+    allureReport: {
+      reportDir: "test/allure/allure-results/", // By default files will be save in the base dir
+      useBrowserName: true // add browser name to report and classes names
+    },
 
     // web server port
     port: 9876,
