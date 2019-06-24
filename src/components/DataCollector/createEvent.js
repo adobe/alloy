@@ -15,6 +15,7 @@ import { createMerger } from "../../utils";
 
 export default () => {
   const content = {};
+  let expectsResponse = false;
 
   return {
     setCorrelationId(correlationId) {
@@ -30,8 +31,11 @@ export default () => {
     mergeDevice: createMerger(content, "device"),
     mergeEnvironment: createMerger(content, "environment"),
     mergePlaceContext: createMerger(content, "placeContext"),
-    expectsResponse() {
-      return Boolean(content.query);
+    expectResponse() {
+      expectsResponse = true;
+    },
+    get expectsResponse() {
+      return expectsResponse;
     },
     toJSON() {
       return content;

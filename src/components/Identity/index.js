@@ -26,18 +26,19 @@ const createIdentity = ({ config, logger, cookie }) => {
   const getEcid = () => cookie.get(ECID_NAMESPACE);
 
   let ecid = getEcid();
+  let responseRequested = false;
   let deferredForEcid;
 
-  const onBeforeEvent = (event, isViewStart) => {
-    if (!isViewStart) {
-      return;
+  const onBeforeEvent = event => {
+    if (!ecid && !responseRequested) {
+      // TODO: Remove; We won't need to request id syncs explicitely.
+      // This is just for demo currently.
+      event.mergeQuery({
+        idSyncs: true
+      });
+      event.expectResponse();
+      responseRequested = true;
     }
-
-    // TODO: Remove; We won't need to request id syncs explicitely.
-    // This is just for demo currently.
-    event.mergeQuery({
-      idSyncs: true
-    });
   };
 
   // TO-DOCUMENT: We wait for ECID before trigger any events.

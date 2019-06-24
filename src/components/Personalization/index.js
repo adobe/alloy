@@ -37,6 +37,7 @@ const createPersonalization = ({ logger }) => {
             views: true
           }
         });
+        event.expectResponse();
       },
       onResponse(response) {
         const fragments = response.getPayloadByType(PAGE_HANDLE) || [];
