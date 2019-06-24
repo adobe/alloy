@@ -26,10 +26,11 @@
     "build:watch": "rollup -c -w",
     "build:basecode": "terser src/baseCode/index.js --mangle --compress unused=false",
     "sandbox": "cd sandbox && npm start",
+    "sandbox:install": "cd sandbox && npm install",
     "sandbox:build": "cd sandbox && npm run build",
     "dev": "npm-run-all --parallel build:watch sandbox",
     "mockserver": "mockserver -serverPort 1080 -jvmOptions \"-Dmockserver.enableCORSForAllResponses=true\"",
-    "allure:generate": "allure generate test/allure/allure-results/ -o test/allure/allure-report/"
+    "allure:generate": "allure generate test/allure/allure-results/ -o test/allure/allure-report/ && cp -R sandbox/public/ test/allure/allure-report/sandbox"
   },
   "repository": {
     "type": "git",
