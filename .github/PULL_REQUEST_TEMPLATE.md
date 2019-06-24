@@ -32,5 +32,5 @@
 
 - [ ] My change requires a change to the documentation.
 - [ ] I have updated the documentation accordingly.
-- [ ] I have added/removed/modified tests to cover my changes and all tests pass.
+- [ ] All tests pass and I've made any necessary test changes.
 - [ ] I have run the Sandbox successfully.
