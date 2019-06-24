@@ -11,14 +11,12 @@ governing permissions and limitations under the License.
 */
 
 import path from "path";
-import replace from "rollup-plugin-replace";
 import resolve from "rollup-plugin-node-resolve";
 import commonjs from "rollup-plugin-commonjs";
 import babel from "rollup-plugin-babel";
 import { terser } from "rollup-plugin-terser";
 import license from "rollup-plugin-license";
-
-const { version } = require("./package.json");
+import replaceVersion from "./rollupPluginReplaceVersion";
 
 export default {
   input: "src/core/main.js",
@@ -36,12 +34,7 @@ export default {
     resolve({ preferBuiltins: false }),
     commonjs(),
     babel(),
-    replace({
-      delimiters: ["{{", "}}"],
-      values: {
-        version
-      }
-    }),
+    replaceVersion(),
     terser(),
     license({
       banner: {
