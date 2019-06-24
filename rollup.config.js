@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import resolve from "rollup-plugin-node-resolve";
 import commonjs from "rollup-plugin-commonjs";
 import babel from "rollup-plugin-babel";
+import replaceVersion from "./rollupPluginReplaceVersion";
 
 export default {
   input: "src/core/main.js",
@@ -33,5 +34,10 @@ export default {
         "if (document.documentMode && document.documentMode < 10) { console.warn('The Adobe Experience Cloud Web SDK does not support IE 9 and below.'); return; }"
     }
   ],
-  plugins: [resolve({ preferBuiltins: false }), commonjs(), babel()]
+  plugins: [
+    resolve({ preferBuiltins: false }),
+    commonjs(),
+    babel(),
+    replaceVersion()
+  ]
 };
