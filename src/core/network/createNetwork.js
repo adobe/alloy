@@ -36,71 +36,65 @@ export default (config, logger, lifecycle, networkStrategy) => {
 
   return {
     /**
-     * The object returned from network.newRequest
-     *
-     * @typedef {Object} Request
-     * @property {Function} send Call this function when you are ready to send
-     * the payload. Returns a promise yielding the raw response body.
-     * @property {Object} payload Payload object that will be sent.
+     * Create a new payload.  Once you have added data to the payload, send it with
+     * the sendRequest method.
      */
+    createPayload() {
+      return createPayload();
+    },
     /**
-     * Create a new request.  Once "send" on the returned object is called, the
-     * lifecycle method "onBeforeSend" will be triggered with
+     * Send the request to either interact or collect based on expectsResponse.
+     * The lifecycle method "onBeforeSend" will be triggered with
      * { payload, responsePromise, isBeacon } as the parameter.  When the
      * response is returned it will call the lifecycle method "onResponse"
      * with the returned response object.
      *
      * @param {boolean} [expectsResponse=true] The endpoint and request mechanism
      * will be determined by whether a response is expected.
-     * @returns {Request}
+     * @returns {Promise} a promise resolved with the response object once the response is
+     * completely processed.
      */
-    newRequest(expectsResponse = true) {
-      const payload = createPayload();
-
-      const send = () => {
-        const responsePromise = Promise.resolve()
-          .then(() =>
-            lifecycle.onBeforeSend({
-              payload,
-              responsePromise,
-              isBeacon: !expectsResponse
-            })
-          )
-          .then(() => {
-            const action = expectsResponse ? "interact" : "collect";
-            const url = `https://${edgeDomain}/${action}?propertyID=${propertyID}`;
-            const responseHandlingMessage = expectsResponse
-              ? ""
-              : " (no response is expected)";
-            const stringifiedPayload = JSON.stringify(payload);
-
-            // We want to log raw payload and event data rather than
-            // our fancy wrapper objects. Calling payload.toJSON() is
-            // insufficient to get all the nested raw data, because it's
-            // not recursive (it doesn't call toJSON() on the event objects).
-            // Parsing the result of JSON.stringify(), however, gives the
-            // fully recursive raw data.
-            logger.log(
-              `Sending network request${responseHandlingMessage}:`,
-              JSON.parse(stringifiedPayload)
-            );
-
-            return networkStrategy(url, stringifiedPayload, expectsResponse);
+    sendRequest(payload, expectsResponse = true) {
+      const responsePromise = Promise.resolve()
+        .then(() =>
+          lifecycle.onBeforeSend({
+            payload,
+            responsePromise,
+            isBeacon: !expectsResponse
           })
-          .then(responseBody => {
-            let handleResponsePromise;
+        )
+        .then(() => {
+          const action = expectsResponse ? "interact" : "collect";
+          const url = `https://${edgeDomain}/${action}?propertyID=${propertyID}`;
+          const responseHandlingMessage = expectsResponse
+            ? ""
+            : " (no response is expected)";
+          const stringifiedPayload = JSON.stringify(payload);
 
-            if (expectsResponse) {
-              handleResponsePromise = handleResponse(responseBody);
-            }
+          // We want to log raw payload and event data rather than
+          // our fancy wrapper objects. Calling payload.toJSON() is
+          // insufficient to get all the nested raw data, because it's
+          // not recursive (it doesn't call toJSON() on the event objects).
+          // Parsing the result of JSON.stringify(), however, gives the
+          // fully recursive raw data.
+          logger.log(
+            `Sending network request${responseHandlingMessage}:`,
+            JSON.parse(stringifiedPayload)
+          );
 
-            return handleResponsePromise;
-          });
+          return networkStrategy(url, stringifiedPayload, expectsResponse);
+        })
+        .then(responseBody => {
+          let handleResponsePromise;
 
-        return responsePromise;
-      };
+          if (expectsResponse) {
+            handleResponsePromise = handleResponse(responseBody);
+          }
 
-      return { payload, send };
+          return handleResponsePromise;
+        });
+
+      return responsePromise;
     }
   };
 };
