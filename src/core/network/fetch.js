@@ -16,8 +16,7 @@ export default fetch => {
       method: "POST",
       cache: "no-cache",
       headers: {
-        // TODO: this will trigger a pre-flight request
-        "Content-Type": "application/json"
+        "Content-Type": "text/plain; charset=UTF-8"
       },
       referrer: "client",
       body

@@ -25,6 +25,7 @@ const createAudiences = ({ config, logger }) => {
         event.mergeQuery({
           urlDestinations: true
         });
+        event.expectResponse();
       },
       onResponse(response) {
         const destinations = response.getPayloadByType("activation:push") || [];

@@ -20,7 +20,7 @@ const createDataCollector = () => {
   let network;
 
   const makeServerCall = event => {
-    const expectsResponse = event.expectsResponse();
+    const { expectsResponse } = event;
     const { payload, send } = network.newRequest(expectsResponse);
     payload.addEvent(event);
     return send().then(response => {
