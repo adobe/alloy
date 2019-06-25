@@ -21,9 +21,9 @@ const createDataCollector = () => {
 
   const makeServerCall = event => {
     const { expectsResponse } = event;
-    const { payload, send } = network.newRequest(expectsResponse);
+    const payload = network.createPayload();
     payload.addEvent(event);
-    return send().then(response => {
+    return network.sendRequest(payload, expectsResponse).then(response => {
       const data = {
         requestBody: clone(payload)
       };
