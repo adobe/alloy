@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createMerger } from "../../utils";
+import { createMerger, find, isNonEmptyArray } from "../../utils";
 
 export default () => {
   const content = {};
@@ -30,6 +30,12 @@ export default () => {
       content.events.push(event);
     },
     mergeMeta: createMerger(content, "meta"),
+    get expectsResponse() {
+      return (
+        isNonEmptyArray(content.events) &&
+        find(content.events, event => event.expectsResponse) !== undefined
+      );
+    },
     toJSON() {
       return content;
     }

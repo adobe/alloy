@@ -43,26 +43,19 @@ export default (config, logger, lifecycle, networkStrategy) => {
     createPayload,
     /**
      * Send the request to either interact or collect based on expectsResponse.
-     * The lifecycle method "onBeforeSend" will be triggered with
-     * { payload, responsePromise, isBeacon } as the parameter.  When the
-     * response is returned it will call the lifecycle method "onResponse"
+     * When the response is returned it will call the lifecycle method "onResponse"
      * with the returned response object.
      *
+     * @param {Object} payload This will be JSON stringified and sent as the post body.
      * @param {boolean} [expectsResponse=true] The endpoint and request mechanism
      * will be determined by whether a response is expected.
      * @returns {Promise} a promise resolved with the response object once the response is
-     * completely processed.
+     * completely processed.  If expectsResponse==false, the promise will be resolved
+     * with undefined.
      */
     sendRequest(payload, expectsResponse = true) {
       const requestID = uuid();
-      const responsePromise = Promise.resolve()
-        .then(() =>
-          lifecycle.onBeforeSend({
-            payload,
-            responsePromise,
-            isBeacon: !expectsResponse
-          })
-        )
+      return Promise.resolve()
         .then(() => {
           const action = expectsResponse ? "interact" : "collect";
           const url = `https://${edgeDomain}/${action}?propertyID=${propertyID}`;
@@ -93,8 +86,6 @@ export default (config, logger, lifecycle, networkStrategy) => {
 
           return handleResponsePromise;
         });
-
-      return responsePromise;
     }
   };
 };

@@ -79,8 +79,13 @@ export default componentRegistry => {
     onOptInChanged: guardLifecycleMethod(permissions => {
       return invokeHook(componentRegistry, "onOptInChanged", permissions);
     }),
-    onBeforeSend: guardLifecycleMethod(request => {
-      return invokeHook(componentRegistry, "onBeforeSend", request);
+    onBeforeDataCollection: guardLifecycleMethod((payload, responsePromise) => {
+      return invokeHook(
+        componentRegistry,
+        "onBeforeDataCollection",
+        payload,
+        responsePromise
+      );
     })
     // TODO: We might need an `onError(error)` hook.
   };
