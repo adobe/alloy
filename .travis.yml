@@ -33,6 +33,8 @@ before_script:
 
 script:
 - npm install
+- npm run sandbox:install
+- npm run sandbox:build
 - npm run build  
 - npm run test:saucelabs
 - npm run test:report
@@ -41,11 +43,13 @@ script:
 - sonar-scanner
 
 deploy:
-  provider: azure_web_apps
-  project: ./test/allure/allure-report/
-  site: adobealloy
-  on:
-    branch: master
+  - provider: azure_web_apps
+    skip_cleanup: true
+    provider: azure_web_apps
+    project: ./test/allure/allure-report/
+    site: adobealloy
+    on:
+      branch: master
 
 notifications:
   slack:
