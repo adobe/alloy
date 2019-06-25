@@ -1,7 +1,7 @@
 import {
   required,
   validDomain,
-  validPrehidingSelector
+  eitherNilOrNonEmpty
 } from "../utils/config-validators";
 
 export default {
@@ -13,7 +13,7 @@ export default {
     defaultValue: "edgegateway.azurewebsites.net"
   },
   prehidingSelector: {
-    validate: validPrehidingSelector
+    validate: eitherNilOrNonEmpty
   },
   // TODO: For debugging purposes only. Remove eventually.
   shouldStoreCollectedData: { defaultValue: 1 },
