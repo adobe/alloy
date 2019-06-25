@@ -12,10 +12,9 @@ governing permissions and limitations under the License.
 
 import createPayload from "./createPayload";
 import createResponse from "./createResponse";
+import { uuid } from "../../utils";
 
 export default (config, logger, lifecycle, networkStrategy) => {
-  let requestIDIncrementor = 0;
-
   const handleResponse = (requestID, responseBody) => {
     let parsedBody;
 
@@ -60,8 +59,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
       const payload = createPayload();
 
       const send = () => {
-        requestIDIncrementor += 1;
-        const requestID = requestIDIncrementor;
+        const requestID = uuid();
         const responsePromise = Promise.resolve()
           .then(() =>
             lifecycle.onBeforeSend({
