@@ -13,8 +13,10 @@ governing permissions and limitations under the License.
 export default (config, key, currentValue) => {
   const validUrl = /^[a-z0-9-.]{1,}$/gi.test(currentValue);
   let err = "";
+
   if (!validUrl) {
-    err = `Invalid domain for ${key}: ${currentValue}"`;
+    err = `Invalid domain for ${key}: ${currentValue}`;
   }
+
   return err;
 };

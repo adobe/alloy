@@ -21,13 +21,23 @@ describe("configValidators", () => {
       propertyID: "myproperty1",
       edgeDomain: "stats.firstparty.com"
     },
-    { propertyID: "myproperty1", edgeDomain: "STATS.FIRSTPARY.COM" }
+    { propertyID: "myproperty1", edgeDomain: "STATS.FIRSTPARY.COM" },
+    {
+      propertyID: "myproperty1",
+      edgeDomain: "STATS.FIRSTPARY.COM",
+      prehidingSelector: "#foo"
+    }
   ];
 
   const invalidConfigurations = [
     {},
     { propertyID: "myproperty1", edgeDomain: "" },
-    { propertyID: "myproperty1", edgeDomain: "stats firstparty.com" }
+    { propertyID: "myproperty1", edgeDomain: "stats firstparty.com" },
+    {
+      propertyID: "myproperty1",
+      edgeDomain: "stats firstparty.com",
+      prehidingSelector: ""
+    }
   ];
 
   validConfigurations.forEach((config, i) => {
