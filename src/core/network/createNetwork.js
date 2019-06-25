@@ -39,9 +39,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
      * Create a new payload.  Once you have added data to the payload, send it with
      * the sendRequest method.
      */
-    createPayload() {
-      return createPayload();
-    },
+    createPayload,
     /**
      * Send the request to either interact or collect based on expectsResponse.
      * The lifecycle method "onBeforeSend" will be triggered with
