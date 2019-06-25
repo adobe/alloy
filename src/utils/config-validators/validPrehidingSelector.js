@@ -10,13 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (config, key, currentValue) => {
-  const validUrl = /^[a-z0-9-.]{1,}$/gi.test(currentValue);
-  let err = "";
+import isNil from "../isNil";
+import isNonEmptyString from "../isNonEmptyString";
 
-  if (!validUrl) {
-    err = `Invalid domain for ${key}: ${currentValue}`;
+export default (config, key, currentValue) => {
+  if (isNil(currentValue)) {
+    return "";
   }
 
-  return err;
+  if (isNonEmptyString(currentValue)) {
+    return "";
+  }
+
+  return `Invalid value for ${key}: ${currentValue}`;
 };

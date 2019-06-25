@@ -12,3 +12,4 @@ governing permissions and limitations under the License.
 
 export { default as required } from "./required";
 export { default as validDomain } from "./validDomain";
+export { default as validPrehidingSelector } from "./validPrehidingSelector";
