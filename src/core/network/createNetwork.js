@@ -12,9 +12,10 @@ governing permissions and limitations under the License.
 
 import createPayload from "./createPayload";
 import createResponse from "./createResponse";
+import { uuid } from "../../utils";
 
 export default (config, logger, lifecycle, networkStrategy) => {
-  const handleResponse = responseBody => {
+  const handleResponse = (requestID, responseBody) => {
     let parsedBody;
 
     try {
@@ -25,7 +26,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
       );
     }
 
-    logger.log("Received network response:", parsedBody);
+    logger.log(`Request ${requestID}: Received response.`, parsedBody);
 
     const response = createResponse(parsedBody);
 
@@ -53,6 +54,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
      * completely processed.
      */
     sendRequest(payload, expectsResponse = true) {
+      const requestID = uuid();
       const responsePromise = Promise.resolve()
         .then(() =>
           lifecycle.onBeforeSend({
@@ -76,7 +78,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
           // Parsing the result of JSON.stringify(), however, gives the
           // fully recursive raw data.
           logger.log(
-            `Sending network request${responseHandlingMessage}:`,
+            `Request ${requestID}: Sending request${responseHandlingMessage}.`,
             JSON.parse(stringifiedPayload)
           );
 
@@ -86,7 +88,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
           let handleResponsePromise;
 
           if (expectsResponse) {
-            handleResponsePromise = handleResponse(responseBody);
+            handleResponsePromise = handleResponse(requestID, responseBody);
           }
 
           return handleResponsePromise;

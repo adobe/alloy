@@ -92,11 +92,11 @@ describe("createNetwork", () => {
     payload.addEvent({ id: "myevent1" });
     network.sendRequest(payload).then(() => {
       expect(logger.log).toHaveBeenCalledWith(
-        "Sending network request:",
+        jasmine.stringMatching(/^Request .+: Sending request.$/),
         JSON.parse(JSON.stringify(payload))
       );
       expect(logger.log).toHaveBeenCalledWith(
-        "Received network response:",
+        jasmine.stringMatching(/^Request .+: Received response.$/),
         mockResponse
       );
       done();
@@ -116,7 +116,9 @@ describe("createNetwork", () => {
     payload.addEvent({ id: "myevent1" });
     network.sendRequest(payload, false).then(() => {
       expect(logger.log).toHaveBeenCalledWith(
-        "Sending network request (no response is expected):",
+        jasmine.stringMatching(
+          /^Request .+: Sending request \(no response is expected\).$/
+        ),
         payload.toJSON()
       );
       expect(logger.log.calls.count()).toBe(1);

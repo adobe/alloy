@@ -23,15 +23,27 @@ export default {
   output: [
     {
       file: "dist/alloy.min.js",
-      format: "umd"
+      format: "umd",
+      // Allow non-IE browsers and IE11
+      // document.documentMode was added in IE8, and is specific to IE.
+      // IE7 and lower are not ES5 compatible so will get a parse error loading the library.
+      intro:
+        "if (document.documentMode && document.documentMode < 11) { console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.'); return; }"
     },
     {
       file: "sandbox/public/alloy.min.js",
-      format: "umd"
+      format: "umd",
+      intro:
+        "if (document.documentMode && document.documentMode < 11) { console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.'); return; }"
     }
   ],
   plugins: [
-    resolve({ preferBuiltins: false }),
+    resolve({
+      preferBuiltins: false,
+      // Support the browser field in dependencies' package.json.
+      // Useful for the uuid package.
+      mainFields: ["module", "main", "browser"]
+    }),
     commonjs(),
     babel(),
     replaceVersion(),

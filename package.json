@@ -52,7 +52,8 @@
     "@adobe/reactor-object-assign": "^1.0.0",
     "@adobe/reactor-query-string": "^1.0.0",
     "mitt": "^1.1.3",
-    "mockserver-node": "^5.5.2"
+    "mockserver-node": "^5.5.2",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
