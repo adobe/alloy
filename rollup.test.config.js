@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+const jscc = require("rollup-plugin-jscc");
 const resolve = require("rollup-plugin-node-resolve");
 const commonjs = require("rollup-plugin-commonjs");
 const babel = require("rollup-plugin-babel");
@@ -18,6 +19,7 @@ const minimist = require("minimist");
 
 const argv = minimist(process.argv.slice(2));
 const plugins = [
+  jscc(),
   resolve({
     preferBuiltins: false,
     // Support the browser field in dependencies' package.json.

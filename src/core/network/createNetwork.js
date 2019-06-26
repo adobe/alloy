@@ -65,7 +65,16 @@ export default (config, logger, lifecycle, networkStrategy) => {
         )
         .then(() => {
           const action = expectsResponse ? "interact" : "collect";
-          const url = `https://${edgeDomain}/${action}?propertyID=${propertyID}`;
+
+          let baseUrl = `https://${edgeDomain}`;
+
+          // #if _DEV
+          if (config.get("localEdge")) {
+            baseUrl = `http://localhost:8080`;
+          }
+          // #endif
+
+          const url = `${baseUrl}/${action}?propertyID=${propertyID}`;
           const responseHandlingMessage = expectsResponse
             ? ""
             : " (no response is expected)";
