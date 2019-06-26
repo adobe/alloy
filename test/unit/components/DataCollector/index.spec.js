@@ -14,9 +14,9 @@ import createDataCollector from "../../../../src/components/DataCollector/index"
 import createPayload from "../../../../src/core/network/createPayload";
 import { defer } from "../../../../src/utils";
 
-const flushPromises = () => {
+const flushPromises = returnValue => {
   const deferred = defer();
-  setTimeout(deferred.resolve, 0);
+  setTimeout(() => deferred.resolve(returnValue), 0);
   return deferred.promise;
 };
 
@@ -31,7 +31,7 @@ describe("Event Command", () => {
   };
   const network = {
     createPayload,
-    sendRequest: () => Promise.resolve({})
+    sendRequest: () => flushPromises({})
   };
   beforeEach(() => {
     onBeforeEventSpy = spyOn(lifecycle, "onBeforeEvent").and.callThrough();
@@ -44,6 +44,9 @@ describe("Event Command", () => {
     dataCollector.lifecycle.onComponentsRegistered({ lifecycle, network });
     eventCommand = dataCollector.commands.event;
   });
+  afterEach(() => {
+    return flushPromises();
+  })
 
   it("Calls onBeforeEvent", () => {
     return eventCommand({}).then(() => {
