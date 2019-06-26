@@ -10,9 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as awaitSelector } from "./awaitSelector";
-export { default as createNode } from "./createNode";
-export { default as appendNode } from "./appendNode";
-export { default as removeNode } from "./removeNode";
-export { default as selectNodes } from "./selectNodes";
-export { default as findById } from "./findById";
+import {
+  selectNodes,
+  removeNode,
+  appendNode,
+  createNode,
+  findById
+} from "../../../../src/utils/dom";
+
+describe("findById", () => {
+  afterEach(() => {
+    selectNodes("#fooById").forEach(removeNode);
+  });
+
+  it("should return the node if exists", () => {
+    appendNode(document.head, createNode("style", { id: "fooById" }));
+
+    expect(findById("fooById")).not.toBeNull();
+  });
+
+  it("should return array when nodes are NOT present", () => {
+    expect(findById("fooById")).toBeNull();
+  });
+});

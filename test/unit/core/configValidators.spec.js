@@ -25,7 +25,7 @@ describe("configValidators", () => {
     {
       propertyID: "myproperty1",
       edgeDomain: "STATS.FIRSTPARY.COM",
-      prehidingSelector: "#foo"
+      prehidingStyle: "#foo"
     }
   ];
 
@@ -36,7 +36,7 @@ describe("configValidators", () => {
     {
       propertyID: "myproperty1",
       edgeDomain: "stats firstparty.com",
-      prehidingSelector: ""
+      prehidingStyle: ""
     }
   ];
 

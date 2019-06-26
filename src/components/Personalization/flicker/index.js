@@ -10,8 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createNode, appendNode, removeNode } from "../../../utils/dom";
+import {
+  createNode,
+  appendNode,
+  removeNode,
+  findById
+} from "../../../utils/dom";
 
+const CONTAINERS_HIDING_ID = "alloy-prehiding";
+const HIDING_STYLE_DEFINITION = "{ visibility: hidden }";
 const STYLE_TAG = "style";
 const CACHE = {};
 
@@ -23,8 +30,9 @@ export const hideElements = prehidingSelector => {
     return;
   }
 
-  const node = createNode(STYLE_TAG);
-  node.innerText = `${prehidingSelector} { visibility: hidden }`;
+  const node = createNode(STYLE_TAG, {
+    text: `${prehidingSelector} ${HIDING_STYLE_DEFINITION}`
+  });
 
   appendNode(document.head, node);
 
@@ -37,4 +45,38 @@ export const showElements = prehidingSelector => {
   if (node) {
     removeNode(node);
   }
+};
+
+export const hideContainers = prehidingStyle => {
+  if (!prehidingStyle) {
+    return;
+  }
+
+  // If containers prehiding style has been added
+  // by customer's prehiding snippet we don't
+  // want to add the same node
+  const node = findById(CONTAINERS_HIDING_ID);
+
+  if (node) {
+    return;
+  }
+
+  const styleNode = createNode(STYLE_TAG, {
+    id: CONTAINERS_HIDING_ID,
+    text: prehidingStyle
+  });
+
+  appendNode(document.head, styleNode);
+};
+
+export const showContainers = () => {
+  // If containers prehiding style exists
+  // we will remove it
+  const node = findById(CONTAINERS_HIDING_ID);
+
+  if (!node) {
+    return;
+  }
+
+  removeNode(node);
 };

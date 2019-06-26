@@ -12,7 +12,7 @@ export default {
     validate: validDomain,
     defaultValue: "edgegateway.azurewebsites.net"
   },
-  prehidingSelector: {
+  prehidingStyle: {
     validate: eitherNilOrNonEmpty
   },
   // TODO: For debugging purposes only. Remove eventually.

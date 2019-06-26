@@ -10,17 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNil from "../isNil";
-import isNonEmptyString from "../isNonEmptyString";
-
-export default (config, key, currentValue) => {
-  if (isNil(currentValue)) {
-    return "";
-  }
-
-  if (isNonEmptyString(currentValue)) {
-    return "";
-  }
-
-  return `Invalid value for ${key}: ${currentValue}`;
-};
+/**
+ * Returns an array of matched DOM nodes.
+ * @param {String} id
+ * @param {Node} doc, defaults to document
+ * @returns {HTMLElement} an element of null
+ */
+export default function findById(id, doc = document) {
+  return doc.getElementById(id);
+}

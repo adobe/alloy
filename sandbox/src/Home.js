@@ -42,12 +42,14 @@ function HomeWithHistory({ history }) {
 
   return (
       <div>
-        <section>
-          <div className="mbox"></div>
+        <section>  
           <div className="container">
             <h2>Some awesome default content</h2>
             <br/>
           </div>
+        </section>
+
+        <section> 
           <div>
             <h1>Alloy: Getting Started</h1>
             <h3>Installation</h3>

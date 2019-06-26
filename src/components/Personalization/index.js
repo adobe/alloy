@@ -12,10 +12,44 @@ governing permissions and limitations under the License.
 
 import { isNonEmptyArray } from "../../utils";
 import { initRuleComponentModules, executeRules } from "./turbine";
+import { hideContainers, showContainers, hideElements } from "./flicker";
 
 const PAGE_HANDLE = "personalization:page";
+const EVENT_COMMAND = "event";
+const isElementExists = event => event.moduleType === "elementExists";
 
-const createPersonalization = ({ logger }) => {
+const hideElementsForPage = fragments => {
+  fragments.forEach(fragment => {
+    const { rules = [] } = fragment;
+
+    rules.forEach(rule => {
+      const { events = [] } = rule;
+      const filteredEvents = events.filter(isElementExists);
+
+      filteredEvents.forEach(event => {
+        const { settings = {} } = event;
+        const { prehidingSelector } = settings;
+
+        if (prehidingSelector) {
+          hideElements(prehidingSelector);
+        }
+      });
+    });
+  });
+};
+
+const executeFragments = (fragments, modules, logger) => {
+  fragments.forEach(fragment => {
+    const { rules = [] } = fragment;
+
+    if (isNonEmptyArray(rules)) {
+      executeRules(rules, modules, logger);
+    }
+  });
+};
+
+const createPersonalization = ({ config, logger }) => {
+  const { prehidingStyle } = config;
   let ruleComponentModules;
 
   return {
@@ -23,7 +57,7 @@ const createPersonalization = ({ logger }) => {
       onComponentsRegistered(tools) {
         const { componentRegistry } = tools;
         ruleComponentModules = initRuleComponentModules(
-          componentRegistry.getCommand("event")
+          componentRegistry.getCommand(EVENT_COMMAND)
         );
       },
       onBeforeEvent(event, isViewStart) {
@@ -31,24 +65,30 @@ const createPersonalization = ({ logger }) => {
           return;
         }
 
+        // For viewStart we try to hide the personalization containers
+        hideContainers(prehidingStyle);
+
         event.mergeQuery({
           personalization: {
             page: true,
             views: true
           }
         });
+
         event.expectResponse();
       },
       onResponse(response) {
         const fragments = response.getPayloadByType(PAGE_HANDLE) || [];
 
-        fragments.forEach(fragment => {
-          const { rules = [] } = fragment;
+        // On response we first hide all the elements for
+        // personalization:page handle
+        hideElementsForPage(fragments);
 
-          if (isNonEmptyArray(rules)) {
-            executeRules(rules, ruleComponentModules, logger);
-          }
-        });
+        // Once the all element are hidden
+        // we have to show the containers
+        showContainers(prehidingStyle);
+
+        executeFragments(fragments, ruleComponentModules, logger);
       }
     }
   };
