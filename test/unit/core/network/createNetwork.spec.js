@@ -33,9 +33,14 @@ describe("createNetwork", () => {
       done();
       return Promise.resolve();
     };
-    createNetwork(config, logger, nullLifecycle, networkStrategy)
-      .newRequest()
-      .send();
+    const network = createNetwork(
+      config,
+      logger,
+      nullLifecycle,
+      networkStrategy
+    );
+    const payload = network.createPayload();
+    network.sendRequest(payload);
   });
 
   it("can call collect", done => {
@@ -46,9 +51,14 @@ describe("createNetwork", () => {
       done();
       return Promise.resolve();
     };
-    createNetwork(config, logger, nullLifecycle, networkStrategy)
-      .newRequest(false)
-      .send();
+    const network = createNetwork(
+      config,
+      logger,
+      nullLifecycle,
+      networkStrategy
+    );
+    const payload = network.createPayload();
+    network.sendRequest(payload, false);
   });
 
   it("sends the payload", done => {
@@ -63,9 +73,9 @@ describe("createNetwork", () => {
       nullLifecycle,
       networkStrategy
     );
-    const { payload, send } = network.newRequest();
+    const payload = network.createPayload();
     payload.addEvent({ id: "myevent1" });
-    send();
+    network.sendRequest(payload);
   });
 
   it("logs the request and response when response is expected", done => {
@@ -78,9 +88,9 @@ describe("createNetwork", () => {
       nullLifecycle,
       networkStrategy
     );
-    const { payload, send } = network.newRequest();
+    const payload = network.createPayload();
     payload.addEvent({ id: "myevent1" });
-    send().then(() => {
+    network.sendRequest(payload).then(() => {
       expect(logger.log).toHaveBeenCalledWith(
         jasmine.stringMatching(/^Request .+: Sending request.$/),
         JSON.parse(JSON.stringify(payload))
@@ -102,9 +112,9 @@ describe("createNetwork", () => {
       nullLifecycle,
       networkStrategy
     );
-    const { payload, send } = network.newRequest(false);
+    const payload = network.createPayload();
     payload.addEvent({ id: "myevent1" });
-    send().then(() => {
+    network.sendRequest(payload, false).then(() => {
       expect(logger.log).toHaveBeenCalledWith(
         jasmine.stringMatching(
           /^Request .+: Sending request \(no response is expected\).$/
@@ -119,9 +129,15 @@ describe("createNetwork", () => {
   it("resolves the returned promise", done => {
     const networkStrategy = () =>
       Promise.resolve(JSON.stringify({ requestId: "myrequestid", handle: [] }));
-    createNetwork(config, logger, nullLifecycle, networkStrategy)
-      .newRequest()
-      .send()
+    const network = createNetwork(
+      config,
+      logger,
+      nullLifecycle,
+      networkStrategy
+    );
+    const payload = network.createPayload();
+    network
+      .sendRequest(payload)
       .then(response => {
         expect(response.getPayloadByType).toEqual(jasmine.any(Function));
         done();
@@ -131,20 +147,30 @@ describe("createNetwork", () => {
 
   it("rejects the returned promise", done => {
     const networkStrategy = () => Promise.reject(new Error("myerror"));
-    createNetwork(config, logger, nullLifecycle, networkStrategy)
-      .newRequest()
-      .send()
-      .catch(error => {
-        expect(error.message).toEqual("myerror");
-        done();
-      });
+    const network = createNetwork(
+      config,
+      logger,
+      nullLifecycle,
+      networkStrategy
+    );
+    const payload = network.createPayload();
+    network.sendRequest(payload).catch(error => {
+      expect(error.message).toEqual("myerror");
+      done();
+    });
   });
 
   it("rejects the promise when response is invalid json", done => {
     const networkStrategy = () => Promise.resolve("badbody");
-    createNetwork(config, logger, nullLifecycle, networkStrategy)
-      .newRequest()
-      .send()
+    const network = createNetwork(
+      config,
+      logger,
+      nullLifecycle,
+      networkStrategy
+    );
+    const payload = network.createPayload();
+    network
+      .sendRequest(payload)
       .then(done.fail)
       .catch(e => {
         // The native parse error message is different based on the browser
@@ -174,9 +200,9 @@ describe("createNetwork", () => {
       }
     };
     const networkStrategy = () => Promise.resolve(JSON.stringify(myresponse));
-    createNetwork(config, logger, lifecycle, networkStrategy)
-      .newRequest()
-      .send();
+    const network = createNetwork(config, logger, lifecycle, networkStrategy);
+    const payload = network.createPayload();
+    network.sendRequest(payload);
   });
 
   [true, false].forEach(expectsResponse => {
@@ -187,8 +213,8 @@ describe("createNetwork", () => {
       };
       const networkStrategy = () => Promise.resolve("{}");
       const network = createNetwork(config, logger, lifecycle, networkStrategy);
-      const { payload, send } = network.newRequest(expectsResponse);
-      const responsePromise = send();
+      const payload = network.createPayload();
+      const responsePromise = network.sendRequest(payload, expectsResponse);
       responsePromise.then(() => {
         expect(lifecycle.onBeforeSend).toHaveBeenCalledWith({
           payload,
@@ -211,8 +237,8 @@ describe("createNetwork", () => {
       nullLifecycle,
       networkStrategy
     );
-    const { send } = network.newRequest(true);
-    send();
+    const payload = network.createPayload();
+    network.sendRequest(payload);
     setTimeout(() => {
       expect(loggerSpy.warn).not.toHaveBeenCalled();
       done();
