@@ -19,6 +19,9 @@ import {
 
 const HIDING_STYLE_DEFINITION = "{ visibility: hidden }";
 const STYLE_TAG = "style";
+
+// Using global is OK since we have a single DOM
+// so storing nodes even for multiple Alloy instances is fine
 const styleNodes = {};
 
 export const hideElements = prehidingSelector => {
