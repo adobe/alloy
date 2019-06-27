@@ -27,7 +27,7 @@ describe("createNode", () => {
   });
 
   it("should createNode with tag, child", () => {
-    const element = createNode("DIV", {}, [createNode("p")]);
+    const element = createNode("DIV", {}, {}, [createNode("p")]);
 
     expect(element.tagName).toEqual("DIV");
     expect(element.firstElementChild.tagName).toEqual("P");

@@ -12,7 +12,10 @@ export default {
     validate: validDomain,
     defaultValue: "edgegateway.azurewebsites.net"
   },
-  prehidingSelector: {
+  prehidingId: {
+    defaultValue: "alloy-prehiding"
+  },
+  prehidingStyle: {
     validate: eitherNilOrNonEmpty
   },
   // TODO: For debugging purposes only. Remove eventually.

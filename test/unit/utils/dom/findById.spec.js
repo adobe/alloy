@@ -10,26 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import appendNode from "./appendNode";
+import {
+  selectNodes,
+  removeNode,
+  appendNode,
+  createNode,
+  findById
+} from "../../../../src/utils/dom";
 
-export default function createNode(
-  tag,
-  attrs = {},
-  props = {},
-  children = [],
-  doc = document
-) {
-  const result = doc.createElement(tag);
-
-  Object.keys(attrs).forEach(key => {
-    result.setAttribute(key, attrs[key]);
+describe("findById", () => {
+  afterEach(() => {
+    selectNodes("#fooById").forEach(removeNode);
   });
 
-  Object.keys(props).forEach(key => {
-    result[key] = props[key];
+  it("should return the node if exists", () => {
+    appendNode(document.head, createNode("style", { id: "fooById" }));
+
+    expect(findById("fooById")).not.toBeNull();
   });
 
-  children.forEach(child => appendNode(result, child));
-
-  return result;
-}
+  it("should return array when nodes are NOT present", () => {
+    expect(findById("fooById")).toBeNull();
+  });
+});
