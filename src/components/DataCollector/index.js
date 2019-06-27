@@ -27,19 +27,18 @@ const createDataCollector = () => {
         return lifecycle.onBeforeDataCollection(payload, responsePromise);
       })
       .then(() => {
-        return network
-          .sendRequest(payload, payload.expectsResponse)
-          .then(response => {
-            const data = {
-              requestBody: clone(payload)
-            };
+        return network.sendRequest(payload, payload.expectsResponse);
+      })
+      .then(response => {
+        const data = {
+          requestBody: clone(payload)
+        };
 
-            if (response) {
-              data.responseBody = clone(response);
-            }
+        if (response) {
+          data.responseBody = clone(response);
+        }
 
-            return data;
-          });
+        return data;
       });
     return responsePromise;
   };

@@ -3,7 +3,6 @@ Copyright 2019 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software distributed under
 the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
 OF ANY KIND, either express or implied. See the License for the specific language
@@ -46,7 +45,7 @@ describe("Event Command", () => {
   });
   afterEach(() => {
     return flushPromises();
-  })
+  });
 
   it("Calls onBeforeEvent", () => {
     return eventCommand({}).then(() => {
@@ -66,12 +65,10 @@ describe("Event Command", () => {
   });
   it("Calls onBeforeEvent with a matching event", () => {
     eventCommand({ data: { a: 1 }, meta: { b: 2 } }).then(() => {
-      expect(lifecycle.onBeforeEvent.calls.argsFor(0)[0].toJSON().data).toEqual(
-        { a: 1 }
-      );
-      expect(lifecycle.onBeforeEvent.calls.argsFor(0)[0].toJSON().meta).toEqual(
-        { b: 2 }
-      );
+      expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith({
+        data: { a: 1 },
+        meta: { b: 2 }
+      });
     });
   });
 
