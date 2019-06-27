@@ -17,37 +17,39 @@ import {
   findById
 } from "../../../utils/dom";
 
-const CONTAINERS_HIDING_ID = "alloy-prehiding";
 const HIDING_STYLE_DEFINITION = "{ visibility: hidden }";
 const STYLE_TAG = "style";
-const CACHE = {};
+const styleNodes = {};
 
 export const hideElements = prehidingSelector => {
   // if we have different events with the same
   // prehiding selector we don't want to recreate
   // the style tag
-  if (CACHE[prehidingSelector]) {
+  if (styleNodes[prehidingSelector]) {
     return;
   }
 
-  const node = createNode(STYLE_TAG, {
-    text: `${prehidingSelector} ${HIDING_STYLE_DEFINITION}`
-  });
+  const attrs = {};
+  const props = {
+    innerText: `${prehidingSelector} ${HIDING_STYLE_DEFINITION}`
+  };
+  const node = createNode(STYLE_TAG, attrs, props);
 
   appendNode(document.head, node);
 
-  CACHE[prehidingSelector] = node;
+  styleNodes[prehidingSelector] = node;
 };
 
 export const showElements = prehidingSelector => {
-  const node = CACHE[prehidingSelector];
+  const node = styleNodes[prehidingSelector];
 
   if (node) {
     removeNode(node);
+    delete styleNodes[prehidingSelector];
   }
 };
 
-export const hideContainers = prehidingStyle => {
+export const hideContainers = (prehidingId, prehidingStyle) => {
   if (!prehidingStyle) {
     return;
   }
@@ -55,24 +57,23 @@ export const hideContainers = prehidingStyle => {
   // If containers prehiding style has been added
   // by customer's prehiding snippet we don't
   // want to add the same node
-  const node = findById(CONTAINERS_HIDING_ID);
+  const node = findById(prehidingId);
 
   if (node) {
     return;
   }
 
-  const styleNode = createNode(STYLE_TAG, {
-    id: CONTAINERS_HIDING_ID,
-    text: prehidingStyle
-  });
+  const attrs = { id: prehidingId };
+  const props = { innerText: prehidingStyle };
+  const styleNode = createNode(STYLE_TAG, attrs, props);
 
   appendNode(document.head, styleNode);
 };
 
-export const showContainers = () => {
+export const showContainers = prehidingId => {
   // If containers prehiding style exists
   // we will remove it
-  const node = findById(CONTAINERS_HIDING_ID);
+  const node = findById(prehidingId);
 
   if (!node) {
     return;

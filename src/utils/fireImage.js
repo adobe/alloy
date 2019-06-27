@@ -22,13 +22,13 @@ const IMAGE_TAG = "img";
  */
 export default ({ currentDocument = document, src }) => {
   return new Promise((resolve, reject) => {
-    const attributes = {
+    const attrs = { src };
+    const props = {
       onload: resolve,
       onerror: reject,
-      onabort: reject,
-      src
+      onabort: reject
     };
 
-    createNode(IMAGE_TAG, attributes, [], currentDocument);
+    createNode(IMAGE_TAG, attrs, props, [], currentDocument);
   });
 };

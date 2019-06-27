@@ -49,7 +49,7 @@ const executeFragments = (fragments, modules, logger) => {
 };
 
 const createPersonalization = ({ config, logger }) => {
-  const { prehidingStyle } = config;
+  const { prehidingId, prehidingStyle } = config;
   let ruleComponentModules;
 
   return {
@@ -66,7 +66,7 @@ const createPersonalization = ({ config, logger }) => {
         }
 
         // For viewStart we try to hide the personalization containers
-        hideContainers(prehidingStyle);
+        hideContainers(prehidingId, prehidingStyle);
 
         event.mergeQuery({
           personalization: {
@@ -86,7 +86,7 @@ const createPersonalization = ({ config, logger }) => {
 
         // Once the all element are hidden
         // we have to show the containers
-        showContainers(prehidingStyle);
+        showContainers(prehidingId);
 
         executeFragments(fragments, ruleComponentModules, logger);
       }

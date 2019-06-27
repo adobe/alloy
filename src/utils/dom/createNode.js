@@ -10,32 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isFunction from "../isFunction";
 import appendNode from "./appendNode";
 
 export default function createNode(
   tag,
   attrs = {},
+  props = {},
   children = [],
   doc = document
 ) {
   const result = doc.createElement(tag);
 
   Object.keys(attrs).forEach(key => {
-    const value = attrs[key];
+    result.setAttribute(key, attrs[key]);
+  });
 
-    if (key === "text") {
-      result.innerText = value;
-      return;
-    }
-
-    if (isFunction(value)) {
-      result[key] = value;
-      return;
-    }
-
-    // This sets value to a string
-    result.setAttribute(key, value);
+  Object.keys(props).forEach(key => {
+    result[key] = props[key];
   });
 
   children.forEach(child => appendNode(result, child));
