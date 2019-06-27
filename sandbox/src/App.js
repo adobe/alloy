@@ -17,6 +17,7 @@ import About from "./About";
 import Home from "./Home";
 import OrgTwo from "./OrgTwo";
 import Links from "./Links";
+import Stitch from "./Stitch";
 
 function BasicExample() {
   return (
@@ -35,6 +36,9 @@ function BasicExample() {
           <li>
             <Link to="/links">Links</Link>
           </li>
+          <li>
+            <Link to="/stitch">Stitch</Link>
+          </li>
         </ul>
 
         <hr />
@@ -43,6 +47,7 @@ function BasicExample() {
         <Route path="/about" component={About} />
         <Route path="/orgTwo" component={OrgTwo} />
         <Route path="/links" component={Links} />
+        <Route path="/stitch" component={Stitch} />
       </div>
     </Router>
   );

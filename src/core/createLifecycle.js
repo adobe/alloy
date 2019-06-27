@@ -19,23 +19,26 @@ governing permissions and limitations under the License.
 // We will have a Plop helper that generates Components and populate all the
 // hooks as Template methods.
 
-// TODO: Finalize the first set of Lifecycle hooks. (DONE)
-// TODO: Support Async hooks. (Or maybe default them as Async)
 // TODO: Hooks might have to publish events so the outside world can hooks in as well.
 
-// MAYBE: If a Component has a hard dependency, maybe throw an error somewhere:
-// if (componentRegistry.hasComponent('Personalization')) {
-//  new Error() or core.missingRequirement('I require Personalization');
-// }
+// TO-DOCUMENT: Lifecycle hooks and their params.
+const hookNames = [
+  "onComponentsRegistered",
+  "onBeforeEvent",
+  "onResponse",
+  "onBeforeDataCollection"
+];
 
-const invokeHook = (componentRegistry, hookName, ...args) => {
-  return Promise.all(
-    componentRegistry.getLifecycleCallbacks(hookName).map(callback => {
-      return new Promise(resolve => {
-        resolve(callback(...args));
-      });
-    })
-  );
+const createHook = (componentRegistry, hookName) => {
+  return (...args) => {
+    return Promise.all(
+      componentRegistry.getLifecycleCallbacks(hookName).map(callback => {
+        return new Promise(resolve => {
+          resolve(callback(...args));
+        });
+      })
+    );
+  };
 };
 
 /**
@@ -45,7 +48,7 @@ const invokeHook = (componentRegistry, hookName, ...args) => {
  * this by kicking the call to the Y method to the next JavaScript tick.
  * @returns {function}
  */
-const guardLifecycleMethod = fn => {
+const guardHook = fn => {
   return (...args) => {
     return Promise.resolve().then(() => {
       return fn(...args);
@@ -53,40 +56,20 @@ const guardLifecycleMethod = fn => {
   };
 };
 
-// TO-DOCUMENT: Lifecycle hooks and their params.
 export default componentRegistry => {
-  return {
-    // We intentionally don't guard onComponentsRegistered. When the user
-    // configures the SDK, we need onComponentsRegistered on each component
-    // to be executed synchronously (they would be run asynchronously if
-    // this method were guarded due to how the guard works) so that if the
-    // user immediately executes a command right after configuration,
-    // all the components will have already had their onComponentsRegistered
-    // called and be ready to handle the command. At the moment, commands
-    // are always executed synchronously.
-    onComponentsRegistered: tools => {
-      return invokeHook(componentRegistry, "onComponentsRegistered", tools);
-    },
-    onBeforeEvent: guardLifecycleMethod((event, isViewStart) => {
-      return invokeHook(componentRegistry, "onBeforeEvent", event, isViewStart);
-    }),
-    onResponse: guardLifecycleMethod(response => {
-      return invokeHook(componentRegistry, "onResponse", response);
-    }),
-    onBeforeUnload: guardLifecycleMethod(() => {
-      return invokeHook(componentRegistry, "onBeforeUnload");
-    }),
-    onOptInChanged: guardLifecycleMethod(permissions => {
-      return invokeHook(componentRegistry, "onOptInChanged", permissions);
-    }),
-    onBeforeDataCollection: guardLifecycleMethod((payload, responsePromise) => {
-      return invokeHook(
-        componentRegistry,
-        "onBeforeDataCollection",
-        payload,
-        responsePromise
-      );
-    })
-    // TODO: We might need an `onError(error)` hook.
-  };
+  return hookNames.reduce((memo, hookName) => {
+    let hook = createHook(componentRegistry, hookName);
+
+    // For onComponentsRegistered, we need to make sure it fires right away
+    // rather than delaying it in guardHook. This is so if
+    // a command is executed right way, we can be sure that all the components
+    // will have already had their onComponentsRegistered
+    // called and be ready to handle the command.
+    if (hookName !== "onComponentsRegistered") {
+      hook = guardHook(hook);
+    }
+
+    memo[hookName] = hook;
+    return memo;
+  }, {});
 };

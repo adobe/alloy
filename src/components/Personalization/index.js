@@ -60,7 +60,7 @@ const createPersonalization = ({ config, logger }) => {
           componentRegistry.getCommand(EVENT_COMMAND)
         );
       },
-      onBeforeEvent(event, isViewStart) {
+      onBeforeEvent(event, options, isViewStart) {
         if (!isViewStart) {
           return;
         }
