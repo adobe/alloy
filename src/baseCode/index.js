@@ -16,7 +16,7 @@ governing permissions and limitations under the License.
 /* eslint no-var: 0 */
 
 /**
- * This is the code, once minified, that an Alloy consumer copies and pasted
+ * This is the code, once minified, that an Alloy consumer copies and pastes
  * into their website's HTML. It sets up any global functions the consumer will
  * use to interact with Alloy. It also provides a queuing mechanism whereby
  * any function calls made by the consumer before the Alloy library file
@@ -50,7 +50,7 @@ governing permissions and limitations under the License.
           // Push required call information into the queue. Once the Alloy
           // library is loaded, it will process this queue and resolve/reject
           // the promise we just returned to the consumer. If the Alloy
-          // library has already loaded, then it will have alredy overridden
+          // library has already loaded, then it will have already overridden
           // q.push and will therefore process the call immediately.
           window[instanceNamespace].q.push([resolve, reject, userProvidedArgs]);
         });
