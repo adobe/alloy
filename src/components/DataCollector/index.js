@@ -20,20 +20,27 @@ const createDataCollector = () => {
   let network;
 
   const makeServerCall = event => {
-    const { expectsResponse } = event;
     const payload = network.createPayload();
     payload.addEvent(event);
-    return network.sendRequest(payload, expectsResponse).then(response => {
-      const data = {
-        requestBody: clone(payload)
-      };
+    const responsePromise = Promise.resolve()
+      .then(() => {
+        return lifecycle.onBeforeDataCollection(payload, responsePromise);
+      })
+      .then(() => {
+        return network.sendRequest(payload, payload.expectsResponse);
+      })
+      .then(response => {
+        const data = {
+          requestBody: clone(payload)
+        };
 
-      if (response) {
-        data.responseBody = clone(response);
-      }
+        if (response) {
+          data.responseBody = clone(response);
+        }
 
-      return data;
-    });
+        return data;
+      });
+    return responsePromise;
   };
 
   const createEventHandler = options => {

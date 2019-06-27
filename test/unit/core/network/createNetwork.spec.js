@@ -20,77 +20,57 @@ describe("createNetwork", () => {
 
   const logger = console;
 
-  const nullLifecycle = {
+  const lifecycle = {
     onBeforeSend: () => Promise.resolve(),
     onResponse: () => Promise.resolve()
   };
 
-  it("calls interact by default", done => {
-    const networkStrategy = url => {
-      expect(url).toEqual(
-        "https://alloy.mysite.com/interact?propertyID=mypropertyid"
+  const mockResponse = { requestId: "myrequestid", handle: [] };
+
+  let network;
+  let networkStrategy;
+
+  beforeEach(() => {
+    spyOn(lifecycle, "onBeforeSend").and.callThrough();
+    spyOn(lifecycle, "onResponse").and.callThrough();
+    networkStrategy = jasmine
+      .createSpy()
+      .and.returnValue(Promise.resolve(JSON.stringify(mockResponse)));
+    network = createNetwork(config, logger, lifecycle, networkStrategy);
+  });
+
+  it("calls interact by default", () => {
+    return network.sendRequest({}, true).then(() => {
+      expect(networkStrategy).toHaveBeenCalledWith(
+        "https://alloy.mysite.com/interact?propertyID=mypropertyid",
+        "{}",
+        true
       );
-      done();
-      return Promise.resolve();
-    };
-    const network = createNetwork(
-      config,
-      logger,
-      nullLifecycle,
-      networkStrategy
-    );
-    const payload = network.createPayload();
-    network.sendRequest(payload);
+    });
   });
 
-  it("can call collect", done => {
-    const networkStrategy = url => {
-      expect(url).toEqual(
-        "https://alloy.mysite.com/collect?propertyID=mypropertyid"
+  it("can call collect", () => {
+    return network.sendRequest({}, false).then(() => {
+      expect(networkStrategy).toHaveBeenCalledWith(
+        "https://alloy.mysite.com/collect?propertyID=mypropertyid",
+        "{}",
+        false
       );
-      done();
-      return Promise.resolve();
-    };
-    const network = createNetwork(
-      config,
-      logger,
-      nullLifecycle,
-      networkStrategy
-    );
-    const payload = network.createPayload();
-    network.sendRequest(payload, false);
+    });
   });
 
-  it("sends the payload", done => {
-    const networkStrategy = (url, json) => {
-      expect(JSON.parse(json).events[0]).toEqual({ id: "myevent1" });
-      done();
-      return Promise.resolve();
-    };
-    const network = createNetwork(
-      config,
-      logger,
-      nullLifecycle,
-      networkStrategy
-    );
-    const payload = network.createPayload();
-    payload.addEvent({ id: "myevent1" });
-    network.sendRequest(payload);
+  it("sends the payload", () => {
+    return network.sendRequest({ id: "mypayload" }, true).then(() => {
+      expect(JSON.parse(networkStrategy.calls.argsFor(0)[1])).toEqual({
+        id: "mypayload"
+      });
+    });
   });
 
-  it("logs the request and response when response is expected", done => {
+  it("logs the request and response when response is expected", () => {
     spyOn(logger, "log");
-    const mockResponse = { requestId: "myrequestid", handle: [] };
-    const networkStrategy = () => Promise.resolve(JSON.stringify(mockResponse));
-    const network = createNetwork(
-      config,
-      logger,
-      nullLifecycle,
-      networkStrategy
-    );
-    const payload = network.createPayload();
-    payload.addEvent({ id: "myevent1" });
-    network.sendRequest(payload).then(() => {
+    const payload = { id: "mypayload2" };
+    return network.sendRequest(payload, true).then(() => {
       expect(logger.log).toHaveBeenCalledWith(
         jasmine.stringMatching(/^Request .+: Sending request.$/),
         JSON.parse(JSON.stringify(payload))
@@ -99,89 +79,57 @@ describe("createNetwork", () => {
         jasmine.stringMatching(/^Request .+: Received response.$/),
         mockResponse
       );
-      done();
     });
   });
 
-  it("logs only the request when no response is expected", done => {
+  it("logs only the request when no response is expected", () => {
     spyOn(logger, "log");
-    const networkStrategy = () => Promise.resolve();
-    const network = createNetwork(
-      config,
-      logger,
-      nullLifecycle,
-      networkStrategy
-    );
-    const payload = network.createPayload();
-    payload.addEvent({ id: "myevent1" });
-    network.sendRequest(payload, false).then(() => {
+    const payload = { id: "mypayload2" };
+    return network.sendRequest(payload, false).then(() => {
       expect(logger.log).toHaveBeenCalledWith(
         jasmine.stringMatching(
           /^Request .+: Sending request \(no response is expected\).$/
         ),
-        payload.toJSON()
+        JSON.parse(JSON.stringify(payload))
       );
       expect(logger.log.calls.count()).toBe(1);
-      done();
     });
   });
 
-  it("resolves the returned promise", done => {
-    const networkStrategy = () =>
-      Promise.resolve(JSON.stringify({ requestId: "myrequestid", handle: [] }));
-    const network = createNetwork(
-      config,
-      logger,
-      nullLifecycle,
-      networkStrategy
-    );
-    const payload = network.createPayload();
-    network
-      .sendRequest(payload)
-      .then(response => {
-        expect(response.getPayloadByType).toEqual(jasmine.any(Function));
-        done();
+  it("resolves the returned promise", () => {
+    return network.sendRequest({}, true).then(response => {
+      expect(response.getPayloadByType).toEqual(jasmine.any(Function));
+    });
+  });
+
+  it("rejects the returned promise", () => {
+    networkStrategy.and.returnValue(Promise.reject(new Error("myerror")));
+    return network
+      .sendRequest({}, true)
+      .then(() => {
+        throw Error("Expecting sendRequest to fail.");
       })
-      .catch(done.fail);
+      .catch(error => {
+        expect(error.message).toEqual("myerror");
+      });
   });
 
-  it("rejects the returned promise", done => {
-    const networkStrategy = () => Promise.reject(new Error("myerror"));
-    const network = createNetwork(
-      config,
-      logger,
-      nullLifecycle,
-      networkStrategy
-    );
-    const payload = network.createPayload();
-    network.sendRequest(payload).catch(error => {
-      expect(error.message).toEqual("myerror");
-      done();
-    });
-  });
-
-  it("rejects the promise when response is invalid json", done => {
-    const networkStrategy = () => Promise.resolve("badbody");
-    const network = createNetwork(
-      config,
-      logger,
-      nullLifecycle,
-      networkStrategy
-    );
-    const payload = network.createPayload();
-    network
-      .sendRequest(payload)
-      .then(done.fail)
+  it("rejects the promise when response is invalid json", () => {
+    networkStrategy.and.returnValue(Promise.resolve("badbody"));
+    return network
+      .sendRequest({}, true)
+      .then(() => {
+        throw Error("Expecting sendRequest to fail.");
+      })
       .catch(e => {
         // The native parse error message is different based on the browser
         // so we'll just check to parts we control.
         expect(e.message).toContain("Error parsing server response.\n");
         expect(e.message).toContain("\nResponse body: badbody");
-        done();
       });
   });
 
-  it("allows components to handle response", done => {
+  it("allows components to handle the response", () => {
     const myresponse = {
       requestId: "myrequestid",
       handle: [
@@ -191,57 +139,22 @@ describe("createNetwork", () => {
         }
       ]
     };
-    const lifecycle = {
-      onBeforeSend: () => undefined,
-      onResponse: response => {
-        const cleanResponse = response.toJSON();
-        expect(cleanResponse).toEqual(myresponse);
-        done();
-      }
-    };
-    const networkStrategy = () => Promise.resolve(JSON.stringify(myresponse));
-    const network = createNetwork(config, logger, lifecycle, networkStrategy);
-    const payload = network.createPayload();
-    network.sendRequest(payload);
-  });
-
-  [true, false].forEach(expectsResponse => {
-    it(`allows components to get the request info (beacon = ${expectsResponse})`, done => {
-      const lifecycle = {
-        onBeforeSend: jasmine.createSpy().and.callFake(() => Promise.resolve()),
-        onResponse: () => Promise.resolve()
-      };
-      const networkStrategy = () => Promise.resolve("{}");
-      const network = createNetwork(config, logger, lifecycle, networkStrategy);
-      const payload = network.createPayload();
-      const responsePromise = network.sendRequest(payload, expectsResponse);
-      responsePromise.then(() => {
-        expect(lifecycle.onBeforeSend).toHaveBeenCalledWith({
-          payload,
-          responsePromise,
-          isBeacon: !expectsResponse
-        });
-        done();
-      });
+    lifecycle.onResponse.and.callFake(response => {
+      const cleanResponse = response.toJSON();
+      expect(cleanResponse).toEqual(myresponse);
+      return Promise.resolve();
+    });
+    networkStrategy.and.returnValue(
+      Promise.resolve(JSON.stringify(myresponse))
+    );
+    return network.sendRequest({}, true).then(() => {
+      expect(lifecycle.onResponse).toHaveBeenCalled();
     });
   });
 
-  it("doesn't try to parse the response on a beacon call", done => {
-    const networkStrategy = () => {
-      return Promise.resolve();
-    };
-    const loggerSpy = jasmine.createSpyObj("logger", ["warn"]);
-    const network = createNetwork(
-      config,
-      console,
-      nullLifecycle,
-      networkStrategy
-    );
-    const payload = network.createPayload();
-    network.sendRequest(payload);
-    setTimeout(() => {
-      expect(loggerSpy.warn).not.toHaveBeenCalled();
-      done();
-    }, 100);
+  it("doesn't try to parse the response on a beacon call", () => {
+    networkStrategy.and.returnValue(Promise.resolve("bar"));
+    // a failed promise will fail the test
+    return network.sendRequest({}, false);
   });
 });

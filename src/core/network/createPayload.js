@@ -30,6 +30,12 @@ export default () => {
       content.events.push(event);
     },
     mergeMeta: createMerger(content, "meta"),
+    get expectsResponse() {
+      return (
+        Array.isArray(content.events) &&
+        content.events.some(event => event.expectsResponse)
+      );
+    },
     toJSON() {
       return content;
     }

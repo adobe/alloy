@@ -42,7 +42,7 @@ const createIdentity = ({ config, logger, cookie }) => {
   };
 
   // TO-DOCUMENT: We wait for ECID before trigger any events.
-  const onBeforeSend = ({ payload }) => {
+  const onBeforeDataCollection = payload => {
     payload.mergeMeta({
       identity: {
         lastSyncTS: 1222,
@@ -97,7 +97,7 @@ const createIdentity = ({ config, logger, cookie }) => {
   return {
     lifecycle: {
       onBeforeEvent,
-      onBeforeSend,
+      onBeforeDataCollection,
       onResponse
     },
     commands: {
