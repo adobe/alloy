@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import createPayload from "./createPayload";
 import createResponse from "./createResponse";
-import { uuid } from "../../utils";
+import { executeWithRetry, stackError, uuid } from "../../utils";
 
 export default (config, logger, lifecycle, networkStrategy) => {
   const handleResponse = (requestID, responseBody) => {
@@ -84,7 +84,13 @@ export default (config, logger, lifecycle, networkStrategy) => {
             JSON.parse(stringifiedPayload)
           );
 
-          return networkStrategy(url, stringifiedPayload, expectsResponse);
+          return executeWithRetry(
+            () => networkStrategy(url, stringifiedPayload, expectsResponse),
+            3
+          );
+        })
+        .catch(error => {
+          throw stackError("Network request failed.", error);
         })
         .then(responseBody => {
           let handleResponsePromise;
