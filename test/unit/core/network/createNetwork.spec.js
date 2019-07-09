@@ -20,19 +20,18 @@ describe("createNetwork", () => {
 
   const logger = console;
 
-  const lifecycle = {
-    onBeforeSend: () => Promise.resolve(),
-    onResponse: () => Promise.resolve()
-  };
-
   const mockResponse = { requestId: "myrequestid", handle: [] };
 
+  let lifecycle;
   let network;
   let networkStrategy;
 
   beforeEach(() => {
-    spyOn(lifecycle, "onBeforeSend").and.callThrough();
-    spyOn(lifecycle, "onResponse").and.callThrough();
+    lifecycle = {
+      onBeforeSend: jasmine.createSpy().and.returnValue(Promise.resolve()),
+      onResponse: jasmine.createSpy().and.returnValue(Promise.resolve()),
+      onResponseError: jasmine.createSpy().and.returnValue(Promise.resolve())
+    };
     networkStrategy = jasmine
       .createSpy()
       .and.returnValue(Promise.resolve(JSON.stringify(mockResponse)));
@@ -102,7 +101,7 @@ describe("createNetwork", () => {
     });
   });
 
-  it("rejects the returned promise", () => {
+  it("runs onResponseError hook and rejects the returned promise", () => {
     networkStrategy.and.returnValue(Promise.reject(new Error("myerror")));
     return network
       .sendRequest({}, true)
@@ -110,22 +109,24 @@ describe("createNetwork", () => {
         throw Error("Expecting sendRequest to fail.");
       })
       .catch(error => {
+        expect(lifecycle.onResponseError).toHaveBeenCalledWith(error);
         expect(error.message).toEqual("myerror");
       });
   });
 
-  it("rejects the promise when response is invalid json", () => {
+  it("runs onResponseError hook and rejects the promise when response is invalid json", () => {
     networkStrategy.and.returnValue(Promise.resolve("badbody"));
     return network
       .sendRequest({}, true)
       .then(() => {
         throw Error("Expecting sendRequest to fail.");
       })
-      .catch(e => {
+      .catch(error => {
+        expect(lifecycle.onResponseError).toHaveBeenCalledWith(error);
         // The native parse error message is different based on the browser
         // so we'll just check to parts we control.
-        expect(e.message).toContain("Error parsing server response.\n");
-        expect(e.message).toContain("\nResponse body: badbody");
+        expect(error.message).toContain("Error parsing server response.\n");
+        expect(error.message).toContain("\nResponse body: badbody");
       });
   });
 

@@ -79,6 +79,9 @@ const createPersonalization = ({ config, logger }) => {
         showContainers(prehidingId);
 
         executeFragments(fragments, ruleComponentModules, logger);
+      },
+      onResponseError() {
+        showContainers(prehidingId);
       }
     }
   };

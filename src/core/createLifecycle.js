@@ -26,6 +26,7 @@ const hookNames = [
   "onComponentsRegistered",
   "onBeforeEvent",
   "onResponse",
+  "onResponseError",
   "onBeforeDataCollection"
 ];
 
