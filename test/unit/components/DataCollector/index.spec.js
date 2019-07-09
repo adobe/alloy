@@ -56,12 +56,14 @@ describe("Event Command", () => {
     });
   });
   it("Extracts isViewStart for onBeforeEvent", () => {
-    return eventCommand({ type: "viewStart" }).then(() => {
-      expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith(
-        jasmine.anything(),
-        true
-      );
-    });
+    return eventCommand({ eventType: "web.webpagedetails.pageViews" }).then(
+      () => {
+        expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith(
+          jasmine.anything(),
+          true
+        );
+      }
+    );
   });
   it("Calls onBeforeEvent with a matching event", () => {
     eventCommand({ data: { a: 1 }, meta: { b: 2 } }).then(() => {

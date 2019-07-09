@@ -4,6 +4,7 @@ export default function Links() {
 
   const adobeLink = event => {
     window.alloy("event", {
+      eventType: "web.webinteraction.linkClicks",
       beacon: true,
       data: {
         "activitystreams:href": ["http://www.adobe.com"]

@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import createEvent from "./createEvent";
 import { clone } from "../../utils";
 
-const VIEW_START_EVENT = "viewStart";
+const VIEW_START_EVENT = "web.webpagedetails.pageViews";
 
 const createDataCollector = () => {
   let lifecycle;
@@ -45,8 +45,9 @@ const createDataCollector = () => {
 
   const createEventHandler = options => {
     const event = createEvent();
-    const isViewStart = options.type === VIEW_START_EVENT;
+    const isViewStart = options.eventType === VIEW_START_EVENT;
 
+    event.setEventType(options.eventType);
     event.mergeData(options.data);
     event.mergeMeta(options.meta);
 

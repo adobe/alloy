@@ -8,7 +8,7 @@ function HomeWithHistory({ history }) {
     if (loc.pathname !== previousPath) {
       const instanceName = loc.pathname.includes("orgTwo") ? "organizationTwo" : "alloy";
       window[instanceName]("event", {
-        type: "viewStart",
+        eventType: "web.webpagedetails.pageViews",
         data: {
           "xdm:URL": [window.location.href],
           "xdm:name": [loc.pathname.substring(1)]
@@ -20,7 +20,7 @@ function HomeWithHistory({ history }) {
 
   const visitDoc = ev => {
     window.alloy("event", {
-      type: "visit-doc",
+      eventType: "web.webinteraction.linkClicks",
       data: {
         "activitystreams:href": [ev.target.href],
         "activitystreams:name": [ev.target.name],
@@ -31,7 +31,7 @@ function HomeWithHistory({ history }) {
 
   const copyBaseCode = ev => {
     window.alloy("event", {
-      type: "copy-base-code",
+      eventType: "web.webinteraction.linkClicks",
       data: {
         "activitystreams:href": ["https://launch.gitbook.io/adobe-experience-platform-web-sdk/"],
         "activitystreams:name": ["copyBaseCode"],

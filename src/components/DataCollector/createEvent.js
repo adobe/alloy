@@ -24,6 +24,9 @@ export default () => {
     setTimestamp(timestamp) {
       content.timestamp = timestamp;
     },
+    setEventType(eventType) {
+      content.eventType = eventType;
+    },
     mergeData: createMerger(content, "data"),
     mergeMeta: createMerger(content, "meta"),
     mergeQuery: createMerger(content, "query"),
