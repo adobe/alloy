@@ -16,16 +16,9 @@ const createAudiences = ({ config, logger }) => {
   return {
     lifecycle: {
       onBeforeEvent(event, options, isViewStart) {
-        if (!isViewStart) {
-          return;
+        if (isViewStart) {
+          event.expectResponse();
         }
-
-        // TODO: Remove; We won't need to request destinations explicitely.
-        // This is just for demo currently.
-        event.mergeQuery({
-          urlDestinations: true
-        });
-        event.expectResponse();
       },
       onResponse(response) {
         const destinations = response.getPayloadByType("activation:push") || [];

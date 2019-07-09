@@ -61,21 +61,11 @@ const createPersonalization = ({ config, logger }) => {
         );
       },
       onBeforeEvent(event, options, isViewStart) {
-        if (!isViewStart) {
-          return;
+        if (isViewStart) {
+          // For viewStart we try to hide the personalization containers
+          hideContainers(prehidingId, prehidingStyle);
+          event.expectResponse();
         }
-
-        // For viewStart we try to hide the personalization containers
-        hideContainers(prehidingId, prehidingStyle);
-
-        event.mergeQuery({
-          personalization: {
-            page: true,
-            views: true
-          }
-        });
-
-        event.expectResponse();
       },
       onResponse(response) {
         const fragments = response.getPayloadByType(PAGE_HANDLE) || [];
