@@ -42,14 +42,21 @@ script:
 - npm run functional
 - sonar-scanner
 
-deploy:
-  - provider: azure_web_apps
-    skip_cleanup: true
-    provider: azure_web_apps
-    project: ./test/allure/allure-report/
-    site: adobealloy
-    on:
-      branch: master
+jobs:
+  - stage: Deploy Allure Report
+    deploy:
+      provider: azure_web_apps
+      skip_cleanup: true
+      verbose: true
+      local-dir: ./test/allure/allure-report/
+      site: adobealloy
+  - stage: Deploy Sandbox
+    deploy:
+      provider: azure_web_apps
+      skip_cleanup: true
+      verbose: true
+      local-dir: ./sandbox/
+      site: alloyqe
 
 notifications:
   slack:
