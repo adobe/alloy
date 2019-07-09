@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import createPayload from "./createPayload";
 import createResponse from "./createResponse";
 import { uuid } from "../../utils";
+import apiVersion from "../../constants/apiVersion";
 
 export default (config, logger, lifecycle, networkStrategy) => {
   const handleResponse = (requestID, responseBody) => {
@@ -67,7 +68,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
           }
           // #endif
 
-          const url = `${baseUrl}/v1/${action}?propertyID=${propertyID}`;
+          const url = `${baseUrl}/${apiVersion}/${action}?propertyID=${propertyID}`;
           const responseHandlingMessage = expectsResponse
             ? ""
             : " (no response is expected)";
