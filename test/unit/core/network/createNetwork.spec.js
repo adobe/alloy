@@ -42,7 +42,7 @@ describe("createNetwork", () => {
   it("calls interact by default", () => {
     return network.sendRequest({}, true).then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
-        "https://alloy.mysite.com/interact?propertyID=mypropertyid",
+        "https://alloy.mysite.com/v1/interact?propertyID=mypropertyid",
         "{}",
         true
       );
@@ -52,7 +52,7 @@ describe("createNetwork", () => {
   it("can call collect", () => {
     return network.sendRequest({}, false).then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
-        "https://alloy.mysite.com/collect?propertyID=mypropertyid",
+        "https://alloy.mysite.com/v1/collect?propertyID=mypropertyid",
         "{}",
         false
       );

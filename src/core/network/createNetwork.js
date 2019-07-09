@@ -67,7 +67,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
           }
           // #endif
 
-          const url = `${baseUrl}/${action}?propertyID=${propertyID}`;
+          const url = `${baseUrl}/v1/${action}?propertyID=${propertyID}`;
           const responseHandlingMessage = expectsResponse
             ? ""
             : " (no response is expected)";

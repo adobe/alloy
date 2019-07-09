@@ -10,8 +10,8 @@
           content="default-src 'self';
             script-src 'self' 'unsafe-inline';
             style-src 'self' 'unsafe-inline';
-            img-src 'self' http://edgegateway.azurewebsites.net/dests https://edgegateway.azurewebsites.net/dests;
-            connect-src 'self' https://edgegateway.azurewebsites.net http://ex-edge.stable-stage.aam-npe.adobeinternal.net http://localhost:8080"/>
+            img-src *;
+            connect-src 'self' https://alpha.konductor.adobedc.net https://edgegateway.azurewebsites.net http://ex-edge.stable-stage.aam-npe.adobeinternal.net http://localhost:8080"/>
 
     <title>Mock website hosting Alloy</title>
 
@@ -35,6 +35,7 @@
       // Set localEdge to true to use a locally-running edge gateway mock
       // https://git.corp.adobe.com/Activation/edge-gateway-mock
       alloy("configure", {
+        // edgeDomain: "alpha.konductor.adobedc.net",
         propertyID: 9999999,
         log: true,
         prehidingId: "alloy-prehiding",
@@ -55,6 +56,7 @@
 
       // For Testing multiple instances
       organizationTwo("configure", {
+        // edgeDomain: "alpha.konductor.adobedc.net",
         propertyID: 8888888,
         log: true
       });
