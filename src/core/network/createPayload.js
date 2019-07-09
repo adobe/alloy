@@ -16,9 +16,6 @@ export default () => {
   const content = {};
 
   return {
-    setPropertyID(propertyID) {
-      content.propertyID = propertyID;
-    },
     addIdentity: (namespaceCode, identity) => {
       content.identityMap = content.identityMap || {};
       content.identityMap[namespaceCode] =

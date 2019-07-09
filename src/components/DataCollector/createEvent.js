@@ -18,11 +18,8 @@ export default () => {
   let expectsResponse = false;
 
   return {
-    setCorrelationId(correlationId) {
-      content.correlationID = correlationId;
-    },
-    setTimestamp(timestamp) {
-      content.timestamp = timestamp;
+    set stitchId(stitchId) {
+      content.stitchId = stitchId;
     },
     mergeData: createMerger(content, "data"),
     mergeMeta: createMerger(content, "meta"),

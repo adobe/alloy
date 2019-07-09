@@ -51,7 +51,7 @@ const createDataCollector = () => {
     event.mergeMeta(options.meta);
 
     return lifecycle
-      .onBeforeEvent(event, isViewStart)
+      .onBeforeEvent(event, options, isViewStart)
       .then(() => makeServerCall(event));
   };
 
