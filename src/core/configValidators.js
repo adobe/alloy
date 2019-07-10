@@ -10,7 +10,7 @@ export default {
   },
   edgeDomain: {
     validate: validDomain,
-    defaultValue: "edgegateway.azurewebsites.net"
+    defaultValue: "alpha.konductor.adobedc.net"
   },
   prehidingId: {
     defaultValue: "alloy-prehiding"
