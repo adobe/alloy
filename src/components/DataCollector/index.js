@@ -12,8 +12,11 @@ governing permissions and limitations under the License.
 
 import createEvent from "./createEvent";
 import { clone } from "../../utils";
+import createClickActivityCollector from "./activity/click";
 
-const createDataCollector = ({ config }) => {
+const VIEW_START_EVENT = "viewStart";
+
+const createDataCollector = ({ config, logger }) => {
   const { imsOrgId } = config;
   let lifecycle;
   let network;
@@ -58,6 +61,8 @@ const createDataCollector = ({ config }) => {
       .then(() => optIn.whenOptedIn())
       .then(() => makeServerCall(event));
   };
+
+  createClickActivityCollector(config, logger, createEventHandler);
 
   return {
     lifecycle: {

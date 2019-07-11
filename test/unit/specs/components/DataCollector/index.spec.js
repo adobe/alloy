@@ -14,6 +14,14 @@ import createPayload from "../../../../../src/core/network/createPayload";
 import { defer } from "../../../../../src/utils";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
+const logger = {
+  log() {},
+  warn() {}
+};
+const config = {
+  get() {}
+};
+
 describe("Event Command", () => {
   let lifecycle;
   let network;
@@ -43,7 +51,8 @@ describe("Event Command", () => {
     const dataCollector = createDataCollector({
       config: {
         imsOrgId: "ABC123"
-      }
+      },
+      logger
     });
     dataCollector.lifecycle.onComponentsRegistered({
       lifecycle,
