@@ -30,14 +30,14 @@ export default (
   config.validate();
   componentCreators.forEach(createComponent => {
     const { namespace } = createComponent;
-    const { propertyID, cookieDomain } = config;
-    const storage = getNamespacedStorage(config.orgID);
+    const { propertyId, cookieDomain } = config;
+    const storage = getNamespacedStorage(config.orgId);
     // TO-DOCUMENT: Helpers that we inject into factories.
     let component;
     try {
       component = createComponent({
         logger: logger.spawn(`[${namespace}]`),
-        cookie: cookie(namespace, propertyID, cookieDomain),
+        cookie: cookie(namespace, propertyId, cookieDomain),
         config,
         storage
       });

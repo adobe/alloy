@@ -57,8 +57,8 @@ describe("Stitch", () => {
   });
 
   describe("commands", () => {
-    describe("createStitchID", () => {
-      it("returns a UUID v4-compliant ID", () => {
+    describe("createStitchId", () => {
+      it("returns a UUID v4-compliant Id", () => {
         expect(uuidv4Regex.test(stitch.commands.createStitchId())).toBe(true);
       });
     });

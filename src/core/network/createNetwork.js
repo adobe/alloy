@@ -16,7 +16,7 @@ import { uuid } from "../../utils";
 import apiVersion from "../../constants/apiVersion";
 
 export default (config, logger, lifecycle, networkStrategy) => {
-  const handleResponse = (requestID, responseBody) => {
+  const handleResponse = (requestId, responseBody) => {
     let parsedBody;
 
     try {
@@ -27,14 +27,14 @@ export default (config, logger, lifecycle, networkStrategy) => {
       );
     }
 
-    logger.log(`Request ${requestID}: Received response.`, parsedBody);
+    logger.log(`Request ${requestId}: Received response.`, parsedBody);
 
     const response = createResponse(parsedBody);
 
     return lifecycle.onResponse(response).then(() => response);
   };
 
-  const { edgeDomain, propertyID } = config;
+  const { edgeDomain, propertyId } = config;
 
   return {
     /**
@@ -55,7 +55,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
      * with undefined.
      */
     sendRequest(payload, expectsResponse = true) {
-      const requestID = uuid();
+      const requestId = uuid();
       return Promise.resolve()
         .then(() => {
           const action = expectsResponse ? "interact" : "collect";
@@ -68,7 +68,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
           }
           // #endif
 
-          const url = `${baseUrl}/${apiVersion}/${action}?propertyID=${propertyID}`;
+          const url = `${baseUrl}/${apiVersion}/${action}?propertyId=${propertyId}`;
           const responseHandlingMessage = expectsResponse
             ? ""
             : " (no response is expected)";
@@ -81,7 +81,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
           // Parsing the result of JSON.stringify(), however, gives the
           // fully recursive raw data.
           logger.log(
-            `Request ${requestID}: Sending request${responseHandlingMessage}.`,
+            `Request ${requestId}: Sending request${responseHandlingMessage}.`,
             JSON.parse(stringifiedPayload)
           );
 
@@ -91,7 +91,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
           let handleResponsePromise;
 
           if (expectsResponse) {
-            handleResponsePromise = handleResponse(requestID, responseBody);
+            handleResponsePromise = handleResponse(requestId, responseBody);
           }
 
           return handleResponsePromise;

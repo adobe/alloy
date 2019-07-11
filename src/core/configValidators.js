@@ -5,7 +5,7 @@ import {
 } from "../utils/config-validators";
 
 export default {
-  propertyID: {
+  propertyId: {
     validate: required
   },
   edgeDomain: {

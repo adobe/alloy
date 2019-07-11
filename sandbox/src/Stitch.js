@@ -27,7 +27,7 @@ export default function Stitch() {
       <h3>This is the Stitch view, part of the Single Page Application.</h3>
       <p>
         On this view, we are sending two events at different times, stitched
-        together using a stitch ID.
+        together using a stitch Id.
       </p>
     </div>
   );
