@@ -10,36 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import processDestinations from "./processDestinations";
+import { uuid } from "../../utils";
 
-const createAudiences = ({ config, logger }) => {
+const createStitch = () => {
   return {
     lifecycle: {
-      onBeforeEvent(event, options, isViewStart) {
-        if (isViewStart) {
-          event.expectResponse();
-        }
-      },
-      onResponse(response) {
-        const destinations = response.getPayloadByType("activation:push") || [];
-
-        processDestinations({
-          destinations,
-          config,
-          logger
+      onBeforeEvent(event, options) {
+        return Promise.resolve(options.stitchId).then(stitchId => {
+          if (stitchId !== undefined) {
+            event.stitchId = stitchId;
+          }
         });
       }
     },
-    commands: {}
+    commands: {
+      createStitchId: uuid
+    }
   };
 };
 
-createAudiences.namespace = "Audiences";
+createStitch.namespace = "Stitch";
 
-createAudiences.configValidators = {
-  destinationsEnabled: {
-    defaultValue: true
-  }
-};
-
-export default createAudiences;
+export default createStitch;

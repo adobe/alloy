@@ -22,7 +22,7 @@
     "prebuild": "npm run clean && npm run format && npm run lint",
     "build": "rollup -c",
     "prebuild:prod": "npm run prebuild",
-    "build:prod": "rollup -c --environment BUILD:production && rollup -c --environment MINIFY,BUILD:production",
+    "build:prod": "rollup -c --environment BUILD:production && rollup -c --environment MINIFY,BUILD:production && bundlesize",
     "build:watch": "rollup -c -w",
     "build:basecode": "terser src/baseCode/index.js --mangle --compress unused=false",
     "sandbox": "cd sandbox && npm start",
@@ -30,7 +30,7 @@
     "sandbox:build": "cd sandbox && npm run build",
     "dev": "npm-run-all --parallel build:watch sandbox",
     "mockserver": "mockserver -serverPort 1080 -jvmOptions \"-Dmockserver.enableCORSForAllResponses=true\"",
-    "allure:generate": "allure generate test/allure/allure-results/ -o test/allure/allure-report/ && cp -R sandbox/public/ test/allure/allure-report/sandbox"
+    "allure:generate": "allure generate test/allure/allure-results/ -o test/allure/allure-report/"
   },
   "repository": {
     "type": "git",
@@ -47,6 +47,11 @@
     "prepush-msg",
     "test"
   ],
+  "bundlesize": [
+    {
+      "path": "./dist/alloy.min.js"
+    }
+  ],
   "dependencies": {
     "@adobe/reactor-cookie": "^1.0.0",
     "@adobe/reactor-object-assign": "^1.0.0",
@@ -61,6 +66,7 @@
     "@babel/plugin-transform-template-literals": "^7.4.4",
     "@babel/preset-env": "^7.4.5",
     "babel-loader": "^8.0.5",
+    "bundlesize": "^0.17.2",
     "dotenv": "^6.2.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",

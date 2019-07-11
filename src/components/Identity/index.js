@@ -31,11 +31,6 @@ const createIdentity = ({ config, logger, cookie }) => {
 
   const onBeforeEvent = event => {
     if (!ecid && !responseRequested) {
-      // TODO: Remove; We won't need to request id syncs explicitely.
-      // This is just for demo currently.
-      event.mergeQuery({
-        idSyncs: true
-      });
       event.expectResponse();
       responseRequested = true;
     }

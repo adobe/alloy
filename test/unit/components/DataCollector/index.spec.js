@@ -48,27 +48,33 @@ describe("Event Command", () => {
   });
 
   it("Calls onBeforeEvent", () => {
-    return eventCommand({}).then(() => {
+    const options = {};
+    return eventCommand(options).then(() => {
       expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith(
         jasmine.anything(),
+        options,
         false
       );
     });
   });
   it("Extracts isViewStart for onBeforeEvent", () => {
-    return eventCommand({ type: "viewStart" }).then(() => {
+    const options = { type: "viewStart" };
+    return eventCommand(options).then(() => {
       expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith(
         jasmine.anything(),
+        options,
         true
       );
     });
   });
   it("Calls onBeforeEvent with a matching event", () => {
-    eventCommand({ data: { a: 1 }, meta: { b: 2 } }).then(() => {
-      expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith({
-        data: { a: 1 },
-        meta: { b: 2 }
-      });
+    const options = { data: { a: 1 }, meta: { b: 2 } };
+    return eventCommand(options).then(() => {
+      expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith(
+        jasmine.anything(),
+        options,
+        false
+      );
     });
   });
 

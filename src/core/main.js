@@ -23,6 +23,7 @@ import createIdentity from "../components/Identity";
 import createAudiences from "../components/Audiences";
 import createPersonalization from "../components/Personalization";
 import createContext from "../components/Context";
+import createStitch from "../components/Stitch";
 import createLibraryInfo from "../components/LibraryInfo";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
@@ -33,6 +34,7 @@ const componentCreators = [
   createAudiences,
   createPersonalization,
   createContext,
+  createStitch,
   createLibraryInfo
 ];
 
