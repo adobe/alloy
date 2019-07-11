@@ -110,7 +110,9 @@ describe("createNetwork", () => {
         throw Error("Expecting sendRequest to fail.");
       })
       .catch(error => {
-        expect(error.message).toEqual("myerror");
+        expect(error.message).toEqual(
+          "Network request failed.\nCaused by: myerror"
+        );
       });
   });
 
@@ -156,5 +158,26 @@ describe("createNetwork", () => {
     networkStrategy.and.returnValue(Promise.resolve("bar"));
     // a failed promise will fail the test
     return network.sendRequest({}, false);
+  });
+
+  it("retries failed requests until success", () => {
+    const fn = networkStrategy.and.callFake(() => {
+      return fn.calls.count() < 3
+        ? Promise.reject()
+        : Promise.resolve(JSON.stringify(mockResponse));
+    });
+    return network.sendRequest({}, true).then(() => {
+      expect(networkStrategy).toHaveBeenCalledTimes(3);
+    });
+  });
+
+  it("retries failed requests until max retries met", () => {
+    networkStrategy.and.returnValue(Promise.reject(new Error("bad thing")));
+    return network.sendRequest({}, true).catch(error => {
+      expect(networkStrategy).toHaveBeenCalledTimes(4);
+      expect(error.message).toBe(
+        "Network request failed.\nCaused by: bad thing"
+      );
+    });
   });
 });
