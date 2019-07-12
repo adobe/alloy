@@ -101,6 +101,10 @@ export default (config, logger, lifecycle, networkStrategy) => {
           }
 
           return handleResponsePromise;
+        })
+        .catch(error => {
+          lifecycle.onResponseError(error);
+          throw error;
         });
     }
   };
