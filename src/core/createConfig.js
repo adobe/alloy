@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { assign, getNestedObject, setNestedObject } from "../utils";
 
 const CONFIG_DOC_URI =
-  "https://launch.gitbook.io/adobe-experience-platform-web-sdk/get-started/getting-started#configuration";
+  "https://launch.gitbook.io/adobe-experience-platform-web-sdk/fundamentals/configuring-the-sdk";
 
 const createConfig = config => {
   const cfg = {
