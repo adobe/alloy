@@ -19,6 +19,7 @@ describe("createNetwork", () => {
   };
 
   const logger = console;
+  logger.enabled = true;
 
   const mockResponse = { requestId: "myrequestid", handle: [] };
 
