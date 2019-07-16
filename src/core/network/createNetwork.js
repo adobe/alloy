@@ -80,10 +80,13 @@ export default (config, logger, lifecycle, networkStrategy) => {
           // not recursive (it doesn't call toJSON() on the event objects).
           // Parsing the result of JSON.stringify(), however, gives the
           // fully recursive raw data.
-          logger.log(
-            `Request ${requestID}: Sending request${responseHandlingMessage}.`,
-            JSON.parse(stringifiedPayload)
-          );
+          // JSON.parse is expensive so we short circuit if logging is disabled.
+          if(logger.enabled()) {
+            logger.log(
+              `Request ${requestID}: Sending request${responseHandlingMessage}.`,
+              JSON.parse(stringifiedPayload)
+            );
+          }
 
           return executeWithRetry(
             () => networkStrategy(url, stringifiedPayload, expectsResponse),
