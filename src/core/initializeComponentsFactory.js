@@ -54,7 +54,7 @@ export default (
   });
 
   // toJson is expensive so we short circuit if logging is disabled
-  if(logger.enabled) logger.log("Computed configuration:", config.toJSON());
+  if (logger.enabled) logger.log("Computed configuration:", config.toJSON());
 
   const lifecycle = createLifecycle(componentRegistry);
   const network = createNetwork(config, logger, lifecycle);

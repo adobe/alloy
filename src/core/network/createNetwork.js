@@ -81,7 +81,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
           // Parsing the result of JSON.stringify(), however, gives the
           // fully recursive raw data.
           // JSON.parse is expensive so we short circuit if logging is disabled.
-          if(logger.enabled()) {
+          if (logger.enabled) {
             logger.log(
               `Request ${requestID}: Sending request${responseHandlingMessage}.`,
               JSON.parse(stringifiedPayload)
