@@ -9,7 +9,7 @@ export default function Stitch() {
         "key1": "value1"
       },
       stitchId: stitchId.current
-    });
+    }).catch(console.error);
 
     setTimeout(() => {
       window.alloy("event", {
@@ -17,7 +17,7 @@ export default function Stitch() {
           "key2": "value2"
         },
         stitchId: stitchId.current
-      });
+      }).catch(console.error);
     }, 3000);
   }, []);
 

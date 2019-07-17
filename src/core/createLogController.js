@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (instanceNamespace, getNamespacedStorage) => {
+export default (instanceNamespace, createNamespacedStorage) => {
   // Segregate whether logging is enabled by the SDK instance name.
   // This way consumers can log one instance at a time.
   // TODO: Figure out how this plays out with segregating Web Storage
   // in the rest of the SDK. Is it segregated by Org ID or Property ID
   // in the rest of the SDK?
-  const storage = getNamespacedStorage(`instance.${instanceNamespace}.`);
+  const storage = createNamespacedStorage(`instance.${instanceNamespace}.`);
 
   let logEnabled = storage.persistent.getItem("log") === "true";
 

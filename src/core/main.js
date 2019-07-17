@@ -23,6 +23,7 @@ import createIdentity from "../components/Identity";
 import createAudiences from "../components/Audiences";
 import createPersonalization from "../components/Personalization";
 import createContext from "../components/Context";
+import createPrivacy from "../components/Privacy";
 import createStitch from "../components/Stitch";
 import createLibraryInfo from "../components/LibraryInfo";
 
@@ -34,6 +35,7 @@ const componentCreators = [
   createAudiences,
   createPersonalization,
   createContext,
+  createPrivacy,
   createStitch,
   createLibraryInfo
 ];
@@ -41,17 +43,20 @@ const componentCreators = [
 // eslint-disable-next-line no-underscore-dangle
 const namespaces = window.__alloyNS;
 
-const storage = storageFactory(window);
+const createNamespacedStorage = storageFactory(window);
 
 if (namespaces) {
   namespaces.forEach(namespace => {
-    const logController = createLogController(namespace, storage);
+    const logController = createLogController(
+      namespace,
+      createNamespacedStorage
+    );
     const logger = createLogger(window, logController, `[${namespace}]`);
 
     const initializeComponents = initializeComponentsFactory(
       componentCreators,
       logger,
-      storage,
+      createNamespacedStorage,
       createCookie
     );
 

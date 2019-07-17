@@ -18,6 +18,7 @@ const VIEW_START_EVENT = "viewStart";
 const createDataCollector = () => {
   let lifecycle;
   let network;
+  let optIn;
 
   const makeServerCall = event => {
     const payload = network.createPayload();
@@ -58,11 +59,13 @@ const createDataCollector = () => {
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
-        ({ lifecycle, network } = tools);
+        ({ lifecycle, network, optIn } = tools);
       }
     },
     commands: {
-      event: createEventHandler
+      event(options) {
+        return optIn.whenOptedIn().then(() => createEventHandler(options));
+      }
     }
   };
 };

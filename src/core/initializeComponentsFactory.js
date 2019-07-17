@@ -14,14 +14,18 @@ import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
 import createNetwork from "./network";
 import { stackError } from "../utils";
+import createOptIn from "./createOptIn";
 
 export default (
   componentCreators,
   logger,
-  getNamespacedStorage,
+  createNamespacedStorage,
   cookie
 ) => config => {
   const componentRegistry = createComponentRegistry();
+  const { orgID, propertyID, cookieDomain } = config;
+  const storage = createNamespacedStorage(orgID);
+  const optIn = createOptIn();
 
   componentCreators.forEach(createComponent => {
     const { configValidators } = createComponent;
@@ -30,8 +34,6 @@ export default (
   config.validate();
   componentCreators.forEach(createComponent => {
     const { namespace } = createComponent;
-    const { propertyID, cookieDomain } = config;
-    const storage = getNamespacedStorage(config.orgID);
     // TO-DOCUMENT: Helpers that we inject into factories.
     let component;
     try {
@@ -39,7 +41,8 @@ export default (
         logger: logger.spawn(`[${namespace}]`),
         cookie: cookie(namespace, propertyID, cookieDomain),
         config,
-        storage
+        storage,
+        enableOptIn: optIn.enable
       });
     } catch (error) {
       throw stackError(
@@ -57,7 +60,8 @@ export default (
   lifecycle.onComponentsRegistered({
     componentRegistry,
     lifecycle,
-    network
+    network,
+    optIn
   });
 
   return componentRegistry;
