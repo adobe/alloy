@@ -50,13 +50,6 @@ describe("DOM::escapeDigitsInSelector", () => {
     expect(result).toEqual(".-\\31 23");
     expect(document.querySelector(result)).toEqual(null);
   });
-
-  it("should escape when double hyphens and digits class selector", () => {
-    const result = escapeDigitsInSelector(".--123");
-
-    expect(result).toEqual(".--123");
-    expect(document.querySelector(result)).toEqual(null);
-  });
 });
 
 describe("DOM::parseSelector", () => {
