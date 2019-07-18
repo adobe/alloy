@@ -18,8 +18,7 @@ describe("createNetwork", () => {
     propertyID: "mypropertyid"
   };
 
-  const logger = console;
-  logger.enabled = true;
+  let logger;
 
   const mockResponse = { requestId: "myrequestid", handle: [] };
 
@@ -28,6 +27,8 @@ describe("createNetwork", () => {
   let networkStrategy;
 
   beforeEach(() => {
+    logger = jasmine.createSpyObj(logger, ["log"]);
+    logger.enabled = true;
     lifecycle = {
       onBeforeSend: jasmine.createSpy().and.returnValue(Promise.resolve()),
       onResponse: jasmine.createSpy().and.returnValue(Promise.resolve()),
@@ -68,7 +69,6 @@ describe("createNetwork", () => {
   });
 
   it("logs the request and response when response is expected", () => {
-    spyOn(logger, "log");
     const payload = { id: "mypayload2" };
     return network.sendRequest(payload, true).then(() => {
       expect(logger.log).toHaveBeenCalledWith(
@@ -83,7 +83,6 @@ describe("createNetwork", () => {
   });
 
   it("logs only the request when no response is expected", () => {
-    spyOn(logger, "log");
     const payload = { id: "mypayload2" };
     return network.sendRequest(payload, false).then(() => {
       expect(logger.log).toHaveBeenCalledWith(
