@@ -4,7 +4,7 @@ import {
   showElements
 } from "../../../../../src/components/Personalization/flicker";
 
-describe("Presonalization::flicker", () => {
+describe("Personalization::flicker", () => {
   beforeEach(() => {
     selectNodes("style").forEach(removeNode);
   });
@@ -22,7 +22,7 @@ describe("Presonalization::flicker", () => {
 
     expect(styles.length).toEqual(1);
 
-    const styleDefinition = styles[0].innerText;
+    const styleDefinition = styles[0].textContent;
 
     expect(styleDefinition).toEqual(
       `${prehidingSelector} { visibility: hidden }`

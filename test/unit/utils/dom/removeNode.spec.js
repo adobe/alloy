@@ -15,7 +15,7 @@ import appendNode from "../../../../src/utils/dom/appendNode";
 import removeNode from "../../../../src/utils/dom/removeNode";
 import selectNodes from "../../../../src/utils/dom/selectNodes";
 
-describe("removeNode", () => {
+describe("DOM::removeNode", () => {
   afterEach(() => {
     selectNodes("div").forEach(removeNode);
   });

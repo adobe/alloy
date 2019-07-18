@@ -9,13 +9,13 @@ import createSetHtml from "../../../../../src/components/Personalization/actions
 const cleanUp = () => {
   selectNodes("div#setHtml").forEach(removeNode);
   selectNodes("style").forEach(node => {
-    if (node.innerText.indexOf("setHtml") !== -1) {
+    if (node.textContent.indexOf("setHtml") !== -1) {
       removeNode(node);
     }
   });
 };
 
-describe("Presonalization::actions::setHtml", () => {
+describe("Personalization::actions::setHtml", () => {
   beforeEach(() => {
     cleanUp();
   });
@@ -28,7 +28,7 @@ describe("Presonalization::actions::setHtml", () => {
     const collect = jasmine.createSpy();
     const setHtml = createSetHtml(collect);
     const element = createNode("div", { id: "setHtml" });
-    element.innerText = "foo";
+    element.textContent = "foo";
 
     appendNode(document.body, element);
 
@@ -37,7 +37,7 @@ describe("Presonalization::actions::setHtml", () => {
 
     setHtml(settings, event);
 
-    expect(element.innerText).toEqual("bar");
+    expect(element.textContent).toEqual("bar");
     expect(collect).toHaveBeenCalledWith({
       meta: { personalization: { a: 1 } }
     });

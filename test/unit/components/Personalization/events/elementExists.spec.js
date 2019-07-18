@@ -9,13 +9,13 @@ import elementExists from "../../../../../src/components/Personalization/events/
 const cleanUp = () => {
   selectNodes("span#elementExists").forEach(removeNode);
   selectNodes("style").forEach(node => {
-    if (node.innerText.indexOf("elementExists") !== -1) {
+    if (node.textContent.indexOf("elementExists") !== -1) {
       removeNode(node);
     }
   });
 };
 
-describe("Presonalization::events::elementExists", () => {
+describe("Personalization::events::elementExists", () => {
   beforeEach(() => {
     cleanUp();
   });
