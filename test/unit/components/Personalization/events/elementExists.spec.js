@@ -32,11 +32,11 @@ describe("Presonalization::events::elementExists", () => {
       prehidingSelector: "#elementExists"
     };
     const trigger = event => {
-      const { element, prehidingSelector } = event;
+      const { elements, prehidingSelector } = event;
 
       done();
       expect(prehidingSelector).toEqual("#elementExists");
-      expect(element.id).toEqual("elementExists");
+      expect(elements[0].id).toEqual("elementExists");
     };
 
     elementExists(settings, trigger);

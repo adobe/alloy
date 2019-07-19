@@ -14,11 +14,13 @@ import { showElements } from "../flicker";
 
 export default collect => {
   return (settings, event) => {
-    const { element, prehidingSelector } = event;
+    const { elements, prehidingSelector } = event;
     const { content, meta } = settings;
 
     // this is a very naive approach, we will expand later
-    element.innerHTML = content;
+    elements.forEach(element => {
+      element.innerHTML = content;
+    });
 
     // after rendering we should show remove the flicker control styles
     showElements(prehidingSelector);

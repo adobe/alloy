@@ -10,22 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { awaitSelector } from "../../../utils/dom";
-import { hideElements, showElements } from "../flicker";
+import { showElements } from "../flicker";
 
-export default (settings, trigger) => {
-  const { selector, prehidingSelector } = settings;
+export default collect => {
+  return (settings, event) => {
+    const { elements, prehidingSelector } = event;
+    const { content, meta } = settings;
 
-  hideElements(prehidingSelector);
-
-  awaitSelector(selector)
-    .then(elements => {
-      trigger({ elements, prehidingSelector });
-    })
-    .catch(() => {
-      // in case of awaiting timing out we
-      // need to remove the style tag
-      // hence showing the nodes
-      showElements(prehidingSelector);
+    elements.forEach(element => {
+      element.textContent = content;
     });
+
+    // after rendering we should show remove the flicker control styles
+    showElements(prehidingSelector);
+
+    // make sure we send back the metadata after successful rendering
+    collect({ meta: { personalization: meta } });
+  };
 };

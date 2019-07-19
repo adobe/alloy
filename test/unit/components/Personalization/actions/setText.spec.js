@@ -4,18 +4,18 @@ import {
   appendNode,
   createNode
 } from "../../../../../src/utils/dom";
-import createSetHtml from "../../../../../src/components/Personalization/actions/setHtml";
+import createSetHtml from "../../../../../src/components/Personalization/actions/setText";
 
 const cleanUp = () => {
-  selectNodes("div#setHtml").forEach(removeNode);
+  selectNodes("div#setText").forEach(removeNode);
   selectNodes("style").forEach(node => {
-    if (node.textContent.indexOf("setHtml") !== -1) {
+    if (node.textContent.indexOf("setText") !== -1) {
       removeNode(node);
     }
   });
 };
 
-describe("Presonalization::actions::setHtml", () => {
+describe("Presonalization::actions::setText", () => {
   beforeEach(() => {
     cleanUp();
   });
@@ -27,18 +27,18 @@ describe("Presonalization::actions::setHtml", () => {
   it("should set personalized content", () => {
     const collect = jasmine.createSpy();
     const setHtml = createSetHtml(collect);
-    const element = createNode("div", { id: "setHtml" });
-    element.innerHTML = "foo";
+    const element = createNode("div", { id: "setText" });
+    element.textContent = "foo";
     const elements = [element];
 
     appendNode(document.body, element);
 
     const settings = { content: "bar", meta: { a: 1 } };
-    const event = { elements, prehidingSelector: "#setHtml" };
+    const event = { elements, prehidingSelector: "#setText" };
 
     setHtml(settings, event);
 
-    expect(elements[0].innerHTML).toEqual("bar");
+    expect(elements[0].textContent).toEqual("bar");
     expect(collect).toHaveBeenCalledWith({
       meta: { personalization: { a: 1 } }
     });
