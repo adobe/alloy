@@ -37,7 +37,7 @@ describe("Presonalization::actions::setStyle", () => {
 
     setStyle(settings, event);
 
-    expect(elements[0].style.color).toEqual("red");
+    expect(elements[0].style.getPropertyValue("color")).toEqual("red");
     expect(collect).toHaveBeenCalledWith({
       meta: { personalization: { a: 1 } }
     });
