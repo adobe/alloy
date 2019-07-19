@@ -10,20 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import elementExists from "../events/elementExists";
-import createSetHtml from "../actions/setHtml";
-import createSetText from "../actions/setText";
-import createSetAttribute from "../actions/setAttribute";
+import { showElements } from "../flicker";
 
 export default collect => {
-  const setHtml = createSetHtml(collect);
-  const setText = createSetText(collect);
-  const setAttribute = createSetAttribute(collect);
+  return (settings, event) => {
+    const { elements, prehidingSelector } = event;
+    const { content, meta } = settings;
 
-  return {
-    elementExists,
-    setHtml,
-    setText,
-    setAttribute
+    elements.forEach(element => {
+      Object.keys(content).forEach(key => {
+        element.setAttribute(key, content[key]);
+      });
+    });
+
+    // after rendering we should show remove the flicker control styles
+    showElements(prehidingSelector);
+
+    // make sure we send back the metadata after successful rendering
+    collect({ meta: { personalization: meta } });
   };
 };
