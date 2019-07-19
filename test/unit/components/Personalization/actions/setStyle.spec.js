@@ -32,12 +32,14 @@ describe("Presonalization::actions::setStyle", () => {
 
     appendNode(document.body, element);
 
-    const settings = { content: { color: "red" }, meta: { a: 1 } };
+    const settings = { content: { "background-color": "red" }, meta: { a: 1 } };
     const event = { elements, prehidingSelector: "#setStyle" };
 
     setStyle(settings, event);
 
-    expect(elements[0].style.getPropertyValue("color")).toEqual("red");
+    expect(elements[0].style.getPropertyValue("background-color")).toEqual(
+      "red"
+    );
     expect(collect).toHaveBeenCalledWith({
       meta: { personalization: { a: 1 } }
     });
