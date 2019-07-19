@@ -24,9 +24,9 @@ import {
 
 describe("DOM::escapeDigitsInSelector", () => {
   it("should escape when digits only for ID selector", () => {
-    const result = escapeDigitsInSelector("#123");
+    const result = escapeDigitsInSelector("#123 > #foo div.345");
 
-    expect(result).toEqual("#\\31 23");
+    expect(result).toEqual("#\\31 23 > #foo div.\\33 45");
     expect(document.querySelector(result)).toEqual(null);
   });
 
@@ -131,5 +131,60 @@ describe("DOM::selectNodesWithEq", () => {
     expect(result[1].textContent).toEqual("second");
     expect(result[2].tagName).toEqual("DIV");
     expect(result[2].textContent).toEqual("third");
+  });
+
+  it("should select when eq and no elements", () => {
+    appendNode(document.body, createNode("DIV", { id: "abc", class: "eq" }));
+
+    const result = selectNodesWithEq("#abc:eq(0) > div.foo");
+
+    expect(result.length).toEqual(0);
+  });
+
+  it("should select when eq and eq greater than number of nodes", () => {
+    appendNode(document.body, createNode("DIV", { id: "abc", class: "eq" }));
+
+    const result = selectNodesWithEq("#abc:eq(1)");
+
+    expect(result.length).toEqual(0);
+  });
+
+  it("should show eq vs nth-of-child difference", () => {
+    const content = `
+      <div>
+        <p>first</p>
+      </div>
+      <div>
+        <p>second</p>
+      </div>
+    `;
+
+    appendNode(
+      document.body,
+      createNode("DIV", { id: "abc", class: "eq" }, { innerHTML: content })
+    );
+
+    // NOTE: eq has zero based index, while nth-child index starts at 1
+    const resultWithEq = selectNodesWithEq("#abc > div p:eq(0)");
+    const resultWitNthChild = selectNodesWithEq("#abc > div :nth-child(1)");
+
+    expect(resultWithEq.length).toEqual(1);
+    expect(resultWitNthChild.length).toEqual(2);
+  });
+
+  it("should show throw errors", () => {
+    appendNode(document.body, createNode("DIV", { id: "abc", class: "eq" }));
+
+    const selectors = [
+      "#abc:eq(bad)",
+      "#abc:eq(eq())",
+      "#abc:eq(0))",
+      "#abc.123",
+      " > "
+    ];
+
+    selectors.forEach(selector => {
+      expect(() => selectNodesWithEq(selector)).toThrow();
+    });
   });
 });

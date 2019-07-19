@@ -10,12 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNonEmptyArray from "../isNonEmptyArray";
 import isNonEmptyString from "../isNonEmptyString";
 import selectNodes from "./selectNodes";
 
 // ID and CSS classes can not start with digits
-const DIGIT_IN_SELECTOR_PATTERN = /((\.|#)(-)?\d{1})/g;
+const DIGIT_IN_SELECTOR_PATTERN = /(#|\.)(-)?(\d{1})(.*)/g;
 // This is required to remove leading " > " from parsed pieces
 const SIBLING_PATTERN = /^\s*>?\s*/;
 const EQ_START = ":eq(";
@@ -24,34 +23,15 @@ const EQ_PATTERN = /:eq\((\d+)\)/g;
 const cleanUp = str => str.replace(SIBLING_PATTERN, "").trim();
 const isNotEqSelector = str => str.indexOf(EQ_START) === -1;
 
-const createPair = match => {
-  const first = match.charAt(0);
-  const second = match.charAt(1);
-  const third = match.charAt(2);
-  const result = { key: match };
-
-  if (second === "-") {
-    result.val = `${first}${second}\\3${third} `;
-  } else {
-    result.val = `${first}\\3${second} `;
-  }
-
-  return result;
-};
-
 export const escapeDigitsInSelector = selector => {
-  const matches = selector.match(DIGIT_IN_SELECTOR_PATTERN);
+  const replace = value =>
+    value.replace(DIGIT_IN_SELECTOR_PATTERN, `$1$2\\3$3 $4`);
 
-  if (isNonEmptyArray(matches)) {
-    const pairs = matches.map(createPair);
-
-    return pairs.reduce(
-      (acc, pair) => acc.replace(pair.key, pair.val),
-      selector
-    );
-  }
-
-  return selector;
+  return selector
+    .split(" ")
+    .filter(isNonEmptyString)
+    .map(replace)
+    .join(" ");
 };
 
 export const parseSelector = rawSelector => {
@@ -90,13 +70,22 @@ export const selectNodesWithEq = (selector, doc = document) => {
 
   const parts = parseSelector(selector);
   const { length } = parts;
-  let result = null;
+  let result = [];
   let context = doc;
   let i = 0;
 
   while (i < length) {
     const { sel, eq } = parts[i];
     const nodes = selectNodes(sel, context);
+    const { length: nodesCount } = nodes;
+
+    if (nodesCount === 0) {
+      break;
+    }
+
+    if (eq != null && eq > nodesCount - 1) {
+      break;
+    }
 
     if (i < length - 1) {
       if (eq == null) {
