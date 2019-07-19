@@ -10,14 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createSetHtml from "../actions/setHtml";
 import elementExists from "../events/elementExists";
+import createSetHtml from "../actions/setHtml";
+import createSetText from "../actions/setText";
 
 export default collect => {
   const setHtml = createSetHtml(collect);
+  const setText = createSetText(collect);
 
   return {
+    elementExists,
     setHtml,
-    elementExists
+    setText
   };
 };

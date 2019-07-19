@@ -4,7 +4,7 @@ import {
   appendNode,
   createNode
 } from "../../../../../src/utils/dom";
-import createSetHtml from "../../../../../src/components/Personalization/actions/setText";
+import createSetText from "../../../../../src/components/Personalization/actions/setText";
 
 const cleanUp = () => {
   selectNodes("div#setText").forEach(removeNode);
@@ -26,7 +26,7 @@ describe("Presonalization::actions::setText", () => {
 
   it("should set personalized content", () => {
     const collect = jasmine.createSpy();
-    const setHtml = createSetHtml(collect);
+    const setText = createSetText(collect);
     const element = createNode("div", { id: "setText" });
     element.textContent = "foo";
     const elements = [element];
@@ -36,7 +36,7 @@ describe("Presonalization::actions::setText", () => {
     const settings = { content: "bar", meta: { a: 1 } };
     const event = { elements, prehidingSelector: "#setText" };
 
-    setHtml(settings, event);
+    setText(settings, event);
 
     expect(elements[0].textContent).toEqual("bar");
     expect(collect).toHaveBeenCalledWith({
