@@ -1,22 +1,27 @@
-import { ClientFunction } from 'testcafe';
-import Page from '../helpers/page-model';
+import { ClientFunction } from "testcafe";
+import Page from "../helpers/page-model";
 
 const page = new Page();
 
-const urlCollector = 'https://alloyqe.azurewebsites.net/';
+const urlCollector = "https://alloyqe.azurewebsites.net/";
 
-fixture `test`
-    .page(urlCollector)
-    .requestHooks(page.edgeGateway,page.alloyQe);
+fixture`test`.page(urlCollector).requestHooks(page.edgeGateway, page.alloyQe);
 
-test('C2560 - ', async t => {
+test("C2560 - Install and test for global function named alloy.", async t => {
+  await page.loggerContains(page.alloyQe, "https://alloyqe.azurewebsites.net/");
+  await page.loggerContains(
+    page.alloyQe,
+    "https://alloyqe.azurewebsites.net/alloy.js"
+  );
+  await page.loggerContains(
+    page.edgeGateway,
+    "https://edgegateway.azurewebsites.net/"
+  );
 
-    await t.expect(page.alloyQe.contains(record =>
-        record.request.url.match('https://alloyqe.azurewebsites.net/'))).ok();
+  const alloySdk = ClientFunction(() => {
+    // eslint-disable-next-line no-underscore-dangle
+    return window.__alloyNS[0];
+  });
 
-    await t.expect(page.edgeGateway.contains(record =>
-        record.request.url.match('https://edgegateway.azurewebsites.net/'))).ok();
-    
-    console.log(page.alloyQe.requests)
-
-    });
+  await t.expect(await alloySdk()).contains("alloy");
+});
