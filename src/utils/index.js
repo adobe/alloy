@@ -27,6 +27,7 @@ export { default as getNestedObject } from "./getNestedObject";
 export { default as getTopLevelCookieDomain } from "./getTopLevelCookieDomain";
 export { default as includes } from "./includes";
 export { default as intersection } from "./intersection";
+export { default as isBoolean } from "./isBoolean";
 export { default as isFunction } from "./isFunction";
 export { default as isNonEmptyArray } from "./isNonEmptyArray";
 export { default as isNonEmptyString } from "./isNonEmptyString";

@@ -10,7 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as required } from "./required";
-export { default as validDomain } from "./validDomain";
-export { default as eitherNilOrNonEmpty } from "./eitherNilOrNonEmpty";
-export { default as boolean } from "./boolean";
+/**
+ * Returns whether the value is a boolean.
+ * @param {*} value
+ * @returns {boolean}
+ */
+export default value => typeof value === "boolean";

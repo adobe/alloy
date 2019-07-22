@@ -12,12 +12,7 @@ governing permissions and limitations under the License.
 import createDataCollector from "../../../../src/components/DataCollector/index";
 import createPayload from "../../../../src/core/network/createPayload";
 import { defer } from "../../../../src/utils";
-
-const flushPromises = returnValue => {
-  const deferred = defer();
-  setTimeout(() => deferred.resolve(returnValue), 0);
-  return deferred.promise;
-};
+import flushPromises from "../../flushPromises";
 
 describe("Event Command", () => {
   let eventCommand;
@@ -30,7 +25,12 @@ describe("Event Command", () => {
   };
   const network = {
     createPayload,
-    sendRequest: () => flushPromises({})
+    sendRequest: () => flushPromises().then(() => ({}))
+  };
+  const optIn = {
+    whenOptedIn() {
+      return Promise.resolve();
+    }
   };
   beforeEach(() => {
     onBeforeEventSpy = spyOn(lifecycle, "onBeforeEvent").and.callThrough();
@@ -40,7 +40,11 @@ describe("Event Command", () => {
     ).and.callThrough();
     sendRequestSpy = spyOn(network, "sendRequest").and.callThrough();
     const dataCollector = createDataCollector();
-    dataCollector.lifecycle.onComponentsRegistered({ lifecycle, network });
+    dataCollector.lifecycle.onComponentsRegistered({
+      lifecycle,
+      network,
+      optIn
+    });
     eventCommand = dataCollector.commands.event;
   });
   afterEach(() => {

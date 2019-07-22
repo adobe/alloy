@@ -10,7 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as required } from "./required";
-export { default as validDomain } from "./validDomain";
-export { default as eitherNilOrNonEmpty } from "./eitherNilOrNonEmpty";
-export { default as boolean } from "./boolean";
+import isBoolean from "../isBoolean";
+
+export default (config, key, currentValue) => {
+  return isBoolean(currentValue)
+    ? ""
+    : `Value for ${key} is not a boolean: ${currentValue}`;
+};

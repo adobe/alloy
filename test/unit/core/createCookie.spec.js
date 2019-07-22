@@ -65,6 +65,17 @@ describe("createCookie", () => {
     );
   });
 
+  it("should only read the cookie from storage once (for optimization)", () => {
+    cookie.set(`${COOKIE_NAME}_${testID1}`, `{"${prefix}":{"key1":"val1"}}`);
+    alloyCookie = createCookie(prefix, testID1);
+    expect(alloyCookie.get("key1")).toBe("val1");
+    removeAllCookies();
+    expect(alloyCookie.get("key1")).toBe("val1");
+    alloyCookie.set("key1", "val2");
+    removeAllCookies();
+    expect(alloyCookie.get("key1")).toBe("val2");
+  });
+
   it("should update a stored value", () => {
     alloyCookie = createCookie(prefix, testID1);
 
