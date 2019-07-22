@@ -2,7 +2,8 @@ import {
   selectNodes,
   removeNode,
   appendNode,
-  createNode
+  createNode,
+  findById
 } from "../../../../../src/utils/dom";
 import createSetStyle from "../../../../../src/components/Personalization/actions/setStyle";
 
@@ -40,9 +41,9 @@ describe("Presonalization::actions::setStyle", () => {
 
     setStyle(settings, event);
 
-    const result = window.getComputedStyle(element, null);
+    const result = findById("setStyle");
 
-    expect(result.getPropertyValue("background-color")).toEqual(
+    expect(result.style.getPropertyValue("background-color")).toEqual(
       "rgb(255, 0, 0)"
     );
     expect(collect).toHaveBeenCalledWith({
