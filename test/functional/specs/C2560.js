@@ -12,16 +12,18 @@ test("C2560 - Install and test for global function named alloy.", async t => {
   await page.loggerContains(
     page.alloyQe,
     "https://alloyqe.azurewebsites.net/alloy.js"
-  );
+  ).ok;
   await page.loggerContains(
     page.edgeGateway,
     "https://edgegateway.azurewebsites.net/"
-  );
+  ).ok;
 
   const alloySdk = ClientFunction(() => {
     // eslint-disable-next-line no-underscore-dangle
-    return window.__alloyNS[0];
+    return window.__alloyNS;
   });
 
-  await t.expect(await alloySdk()).contains("alloy");
+  await t
+    .expect(alloySdk())
+    .contains("alloy", "array contains the expected value");
 });
