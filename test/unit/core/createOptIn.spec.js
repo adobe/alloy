@@ -118,5 +118,19 @@ describe("createOptIn", () => {
         expect(optedOutSpy).toHaveBeenCalledWith(jasmine.any(Error));
       });
     });
+
+    it("resolves nested whenOptedIn calls", () => {
+      const optedInSpy = jasmine.createSpy();
+      optIn.enable(cookie);
+      optIn
+        .whenOptedIn()
+        .then(() => optIn.whenOptedIn())
+        .then(optedInSpy);
+      optIn.setPurposes("all");
+
+      return flushPromises().then(() => {
+        expect(optedInSpy).toHaveBeenCalled();
+      });
+    });
   });
 });
