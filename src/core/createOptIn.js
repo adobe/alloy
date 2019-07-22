@@ -14,13 +14,13 @@ import { defer } from "../utils";
 
 const COOKIE_NAMESPACE = "optIn";
 
-// The user has opted into all behaviors.
+// The user has opted into all purposes.
 const ALL = "all";
 
-// The user has opted into no behaviors.
+// The user has opted into no purposes.
 const NONE = "none";
 
-// The user has yet to provide opt-in behaviors.
+// The user has yet to provide opt-in purposes.
 const PENDING = "pending";
 
 export default () => {
@@ -65,7 +65,7 @@ export default () => {
       processDeferreds();
     },
     /**
-     * Whether the user has opted into all behaviors.
+     * Whether the user has opted into all purposes.
      * @returns {boolean}
      */
     // TODO Once we support opting into specific purposes, this
@@ -75,9 +75,9 @@ export default () => {
       return purposes === ALL;
     },
     /**
-     * Returns a promise that is resolved once the user opts into all behaviors.
+     * Returns a promise that is resolved once the user opts into all purposes.
      * If the user has already opted in, the promise will already be resolved.
-     * The user user opts into no behaviors, the promise will be rejected.
+     * The user user opts into no purposes, the promise will be rejected.
      */
     // TODO Once we support opting into specific purposes, this
     // method will accept an array of purpose names as an argument and
