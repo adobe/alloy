@@ -14,7 +14,7 @@ export default (instanceNamespace, getNamespacedStorage) => {
   // Segregate whether logging is enabled by the SDK instance name.
   // This way consumers can log one instance at a time.
   // TODO: Figure out how this plays out with segregating Web Storage
-  // in the rest of the SDK. Is it segregated by Org Id or Property Id
+  // in the rest of the SDK. Is it segregated by Org ID or Property ID
   // in the rest of the SDK?
   const storage = getNamespacedStorage(`instance.${instanceNamespace}.`);
 
