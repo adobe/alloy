@@ -32,14 +32,19 @@ describe("Presonalization::actions::setStyle", () => {
 
     appendNode(document.body, element);
 
-    const settings = { content: { "font-size": "12px" }, meta: { a: 1 } };
+    const settings = {
+      content: { "background-color": "rgb(255, 0, 0)" },
+      meta: { a: 1 }
+    };
     const event = { elements, prehidingSelector: "#setStyle" };
 
     setStyle(settings, event);
 
     const result = window.getComputedStyle(element, null);
 
-    expect(result.getPropertyValue("font-size")).toEqual("12px");
+    expect(result.getPropertyValue("background-color")).toEqual(
+      "rgb(255, 0, 0)"
+    );
     expect(collect).toHaveBeenCalledWith({
       meta: { personalization: { a: 1 } }
     });
