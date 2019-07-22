@@ -2,8 +2,7 @@ import {
   selectNodes,
   removeNode,
   appendNode,
-  createNode,
-  findById
+  createNode
 } from "../../../../../src/utils/dom";
 import createSetStyle from "../../../../../src/components/Personalization/actions/setStyle";
 
@@ -34,18 +33,16 @@ describe("Presonalization::actions::setStyle", () => {
     appendNode(document.body, element);
 
     const settings = {
-      content: { "background-color": "rgb(255, 0, 0)" },
+      content: { "font-size": "33px", priority: "important" },
       meta: { a: 1 }
     };
     const event = { elements, prehidingSelector: "#setStyle" };
 
     setStyle(settings, event);
 
-    const result = findById("setStyle");
+    const result = window.getComputedStyle(element, null);
 
-    expect(result.style.getPropertyValue("background-color")).toEqual(
-      "rgb(255, 0, 0)"
-    );
+    expect(result.getPropertyValue("font-size")).toEqual("33px");
     expect(collect).toHaveBeenCalledWith({
       meta: { personalization: { a: 1 } }
     });
