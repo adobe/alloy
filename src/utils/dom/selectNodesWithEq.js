@@ -14,6 +14,7 @@ import isNonEmptyString from "../isNonEmptyString";
 import selectNodes from "./selectNodes";
 
 // ID and CSS classes can not start with digits
+// Pleas check https://www.w3.org/TR/css-syntax-3/#escaping
 const DIGIT_IN_SELECTOR_PATTERN = /(#|\.)(-)?(\d{1})(.*)/g;
 // This is required to remove leading " > " from parsed pieces
 const SIBLING_PATTERN = /^\s*>?\s*/;
