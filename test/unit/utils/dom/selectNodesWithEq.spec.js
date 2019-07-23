@@ -17,35 +17,35 @@ import {
   removeNode
 } from "../../../../src/utils/dom";
 import {
-  escapeDigitsInSelector,
+  escapeIdentifiersInSelector,
   parseSelector,
   selectNodesWithEq
 } from "../../../../src/utils/dom/selectNodesWithEq";
 
-describe("DOM::escapeDigitsInSelector", () => {
+describe("DOM::escapeIdentifiersInSelector", () => {
   it("should escape when digits only for ID selector", () => {
-    const result = escapeDigitsInSelector("#123 > #foo div.345");
+    const result = escapeIdentifiersInSelector("#123 > #foo div.345");
 
     expect(result).toEqual("#\\31 23 > #foo div.\\33 45");
     expect(document.querySelector(result)).toEqual(null);
   });
 
   it("should escape when digits only for class selector", () => {
-    const result = escapeDigitsInSelector(".123");
+    const result = escapeIdentifiersInSelector(".123");
 
     expect(result).toEqual(".\\31 23");
     expect(document.querySelector(result)).toEqual(null);
   });
 
   it("should escape when hyphen and digits ID selector", () => {
-    const result = escapeDigitsInSelector("#-123");
+    const result = escapeIdentifiersInSelector("#-123");
 
     expect(result).toEqual("#-\\31 23");
     expect(document.querySelector(result)).toEqual(null);
   });
 
   it("should escape when hyphen and digits class selector", () => {
-    const result = escapeDigitsInSelector(".-123");
+    const result = escapeIdentifiersInSelector(".-123");
 
     expect(result).toEqual(".-\\31 23");
     expect(document.querySelector(result)).toEqual(null);

@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import escape from "css.escape";
 import isNonEmptyString from "../isNonEmptyString";
 import selectNodes from "./selectNodes";
 
-// ID and CSS classes can not start with digits
-// Pleas check https://www.w3.org/TR/css-syntax-3/#escaping
-const DIGIT_IN_SELECTOR_PATTERN = /(#|\.)(-)?(\d{1})(.*)/g;
+// Trying to match ID or CSS class
+const CSS_IDENTIFIER_PATTERN = /(#|\.)(-?\w+)/g;
 // This is required to remove leading " > " from parsed pieces
 const SIBLING_PATTERN = /^\s*>?\s*/;
 const EQ_START = ":eq(";
@@ -24,20 +24,19 @@ const EQ_PATTERN = /:eq\((\d+)\)/g;
 const cleanUp = str => str.replace(SIBLING_PATTERN, "").trim();
 const isNotEqSelector = str => str.indexOf(EQ_START) === -1;
 
-export const escapeDigitsInSelector = selector => {
-  const replace = value =>
-    value.replace(DIGIT_IN_SELECTOR_PATTERN, `$1$2\\3$3 $4`);
+// Here we use CSS.escape() to make sure we get
+// correct values for ID and CSS class
+// Please check:  https://www.w3.org/TR/css-syntax-3/#escaping
+// CSS.escape() polyfill can be found here: https://github.com/mathiasbynens/CSS.escape
+const replaceIdentifier = (_, $1, $2) => `${$1}${escape($2)}`;
 
-  return selector
-    .split(" ")
-    .filter(isNonEmptyString)
-    .map(replace)
-    .join(" ");
+export const escapeIdentifiersInSelector = selector => {
+  return selector.replace(CSS_IDENTIFIER_PATTERN, replaceIdentifier);
 };
 
 export const parseSelector = rawSelector => {
   const result = [];
-  const selector = escapeDigitsInSelector(rawSelector.trim());
+  const selector = escapeIdentifiersInSelector(rawSelector.trim());
   const parts = selector.split(EQ_PATTERN).filter(isNonEmptyString);
   const { length } = parts;
   let i = 0;
