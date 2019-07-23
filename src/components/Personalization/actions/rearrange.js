@@ -17,7 +17,7 @@ const COMMENT_NODE = 8;
 const toArray = elements => [].slice.call(elements);
 const notComment = element => element.nodeType !== COMMENT_NODE;
 
-const rearangeChildren = (element, from, to) => {
+const rearrangeChildren = (element, from, to) => {
   const children = toArray(element.children).filter(notComment);
   const elementFrom = children[from];
   const elementTo = children[to];
@@ -42,7 +42,7 @@ export default collect => {
     const { from, to } = content;
 
     elements.forEach(element => {
-      rearangeChildren(element, from, to);
+      rearrangeChildren(element, from, to);
     });
 
     // after rendering we should remove the flicker control styles
