@@ -23,7 +23,7 @@ export default collect => {
       });
     });
 
-    // after rendering we should show remove the flicker control styles
+    // after rendering we should remove the flicker control styles
     showElements(prehidingSelector);
 
     // make sure we send back the metadata after successful rendering
