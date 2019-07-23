@@ -15,18 +15,21 @@ import createSetHtml from "../actions/setHtml";
 import createSetText from "../actions/setText";
 import createSetAttribute from "../actions/setAttribute";
 import createSetImageSource from "../actions/setImageSource";
+import createSetStyle from "../actions/setStyle";
 
 export default collect => {
   const setHtml = createSetHtml(collect);
   const setText = createSetText(collect);
   const setAttribute = createSetAttribute(collect);
   const setImageSource = createSetImageSource(collect);
+  const setStyle = createSetStyle(collect);
 
   return {
     elementExists,
     setHtml,
     setText,
     setAttribute,
-    setImageSource
+    setImageSource,
+    setStyle
   };
 };
