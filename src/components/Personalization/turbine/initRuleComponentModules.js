@@ -19,6 +19,7 @@ import createSetStyle from "../actions/setStyle";
 import createMove from "../actions/move";
 import createResize from "../actions/resize";
 import createRearrange from "../actions/rearrange";
+import createRemove from "../actions/remove";
 
 export default collect => {
   const setHtml = createSetHtml(collect);
@@ -29,6 +30,7 @@ export default collect => {
   const move = createMove(collect);
   const resize = createResize(collect);
   const rearrange = createRearrange(collect);
+  const remove = createRemove(collect);
 
   return {
     elementExists,
@@ -39,6 +41,7 @@ export default collect => {
     setStyle,
     move,
     resize,
-    rearrange
+    rearrange,
+    remove
   };
 };
