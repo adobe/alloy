@@ -19,13 +19,8 @@ export default (settings, trigger) => {
   hideElements(prehidingSelector);
 
   awaitSelector(selector)
-    .then(nodes => {
-      nodes.forEach(element => {
-        trigger({
-          element,
-          prehidingSelector
-        });
-      });
+    .then(elements => {
+      trigger({ elements, prehidingSelector });
     })
     .catch(() => {
       // in case of awaiting timing out we

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import createNode from "../../../../../src/utils/dom/createNode";
 
-describe("createNode", () => {
+describe("DOM::createNode", () => {
   it("should createNode with tag only", () => {
     const element = createNode("DIV");
 

@@ -12,14 +12,37 @@ governing permissions and limitations under the License.
 
 import { showElements } from "../flicker";
 
+const COMMENT_NODE = 8;
+
+const toArray = elements => [].slice.call(elements);
+const notComment = element => element.nodeType !== COMMENT_NODE;
+
+const rearrangeChildren = (element, from, to) => {
+  const children = toArray(element.children).filter(notComment);
+  const elementFrom = children[from];
+  const elementTo = children[to];
+
+  if (!elementFrom || !elementTo) {
+    // TODO: We will need to add logging
+    // to ease troubleshooting
+    return;
+  }
+
+  if (from < to) {
+    element.insertBefore(elementFrom, elementTo.nextElementSibling);
+  } else {
+    element.insertBefore(elementFrom, elementTo);
+  }
+};
+
 export default collect => {
   return (settings, event) => {
     const { elements, prehidingSelector } = event;
     const { content, meta } = settings;
+    const { from, to } = content;
 
-    // this is a very naive approach, we will expand later
     elements.forEach(element => {
-      element.innerHTML = content;
+      rearrangeChildren(element, from, to);
     });
 
     // after rendering we should remove the flicker control styles

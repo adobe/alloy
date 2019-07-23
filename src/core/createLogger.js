@@ -18,6 +18,9 @@ const createLogger = (window, logController, prefix) => {
   };
 
   return {
+    get enabled() {
+      return logController.logEnabled;
+    },
     /**
      * Outputs a message to the web console.
      * @param {...*} arg Any argument to be logged.

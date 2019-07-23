@@ -23,6 +23,14 @@ const createDataCollector = () => {
   const makeServerCall = event => {
     const payload = network.createPayload();
     payload.addEvent(event);
+
+    // TODO Temporary. Remove when no longer needed.
+    payload.mergeMeta({
+      gateway: {
+        imsOrgID: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+      }
+    });
+
     const responsePromise = Promise.resolve()
       .then(() => {
         return lifecycle.onBeforeDataCollection(payload, responsePromise);

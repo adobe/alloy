@@ -10,26 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  selectNodes,
-  removeNode,
-  appendNode,
-  createNode,
-  findById
-} from "../../../../../src/utils/dom";
+import { showElements } from "../flicker";
 
-describe("DOM::findById", () => {
-  afterEach(() => {
-    selectNodes("#fooById").forEach(removeNode);
-  });
+export default collect => {
+  return (settings, event) => {
+    const { elements, prehidingSelector } = event;
+    const { content, meta } = settings;
 
-  it("should return the node if exists", () => {
-    appendNode(document.head, createNode("style", { id: "fooById" }));
+    elements.forEach(element => {
+      element.textContent = content;
+    });
 
-    expect(findById("fooById")).not.toBeNull();
-  });
+    // after rendering we should remove the flicker control styles
+    showElements(prehidingSelector);
 
-  it("should return array when nodes are NOT present", () => {
-    expect(findById("fooById")).toBeNull();
-  });
-});
+    // make sure we send back the metadata after successful rendering
+    collect({ meta: { personalization: meta } });
+  };
+};

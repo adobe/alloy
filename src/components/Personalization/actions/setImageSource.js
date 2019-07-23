@@ -12,14 +12,29 @@ governing permissions and limitations under the License.
 
 import { showElements } from "../flicker";
 
+const IMAGE_TAG = "IMG";
+const SRC = "src";
+
+const isImage = element => element.tagName === IMAGE_TAG;
+const loadImage = url => {
+  const image = document.createElement(IMAGE_TAG);
+  image.src = url;
+};
+
 export default collect => {
   return (settings, event) => {
     const { elements, prehidingSelector } = event;
-    const { content, meta } = settings;
+    const { content: url, meta } = settings;
 
-    // this is a very naive approach, we will expand later
-    elements.forEach(element => {
-      element.innerHTML = content;
+    elements.filter(isImage).forEach(element => {
+      // Start downloading the image
+      loadImage(url);
+
+      // Remove "src" so there is no flicker
+      element.removeAttribute(SRC);
+
+      // Replace the image "src"
+      element.setAttribute(SRC, url);
     });
 
     // after rendering we should remove the flicker control styles

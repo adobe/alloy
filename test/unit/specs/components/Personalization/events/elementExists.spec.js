@@ -9,13 +9,13 @@ import elementExists from "../../../../../../src/components/Personalization/even
 const cleanUp = () => {
   selectNodes("span#elementExists").forEach(removeNode);
   selectNodes("style").forEach(node => {
-    if (node.innerText.indexOf("elementExists") !== -1) {
+    if (node.textContent.indexOf("elementExists") !== -1) {
       removeNode(node);
     }
   });
 };
 
-describe("Presonalization::events::elementExists", () => {
+describe("Personalization::events::elementExists", () => {
   beforeEach(() => {
     cleanUp();
   });
@@ -32,11 +32,11 @@ describe("Presonalization::events::elementExists", () => {
       prehidingSelector: "#elementExists"
     };
     const trigger = event => {
-      const { element, prehidingSelector } = event;
+      const { elements, prehidingSelector } = event;
 
       done();
       expect(prehidingSelector).toEqual("#elementExists");
-      expect(element.id).toEqual("elementExists");
+      expect(elements[0].id).toEqual("elementExists");
     };
 
     elementExists(settings, trigger);
