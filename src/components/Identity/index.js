@@ -20,6 +20,9 @@ import {
   normalizeCustomerIDs
 } from "./identityUtil";
 
+import { COOKIE_NAMES } from "./constants";
+
+const { CUSTOMER_ID_HASH, EXPERIENCE_CLOUD_ID } = COOKIE_NAMES;
 const ECID_NAMESPACE = "ECID";
 
 const addIdsContext = (payload, ecid) => {
@@ -32,7 +35,7 @@ const addIdsContext = (payload, ecid) => {
 const createIdentity = ({ config, logger, cookie }) => {
   // We avoid reading the ECID from the cookie right away, because we
   // need to wait for the user to opt in first.
-  const getEcid = () => cookie.get(ECID_NAMESPACE);
+  const getEcid = () => cookie.get(EXPERIENCE_CLOUD_ID);
   let optIn;
   let responseRequested = false;
   let deferredForEcid;
@@ -65,11 +68,11 @@ const createIdentity = ({ config, logger, cookie }) => {
     const customerIDsHash = createHashFromString(
       serializeCustomerIDs(normalizedCustomerIDs)
     );
-    const hasSynced = customerIDsHash === cookie.get("CIDH");
+    const hasSynced = customerIDsHash === cookie.get(CUSTOMER_ID_HASH);
     event.mergeMeta({ identity: { customerIDs, hasSynced } });
 
     if (!hasSynced) {
-      cookie.set("CIDH", customerIDsHash);
+      cookie.set(CUSTOMER_ID_HASH, customerIDsHash);
     }
     return lifecycle
       .onBeforeEvent(event, options)
@@ -126,7 +129,7 @@ const createIdentity = ({ config, logger, cookie }) => {
           const ecidPayload = response.getPayloadByType("identity:persist");
 
           if (ecidPayload) {
-            cookie.set(ECID_NAMESPACE, ecidPayload.id);
+            cookie.set(EXPERIENCE_CLOUD_ID, ecidPayload.id);
 
             if (deferredForEcid) {
               deferredForEcid.resolve();
