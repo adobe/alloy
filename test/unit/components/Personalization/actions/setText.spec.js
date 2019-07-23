@@ -15,7 +15,7 @@ const cleanUp = () => {
   });
 };
 
-describe("Presonalization::actions::setText", () => {
+describe("Personalization::actions::setText", () => {
   beforeEach(() => {
     cleanUp();
   });
