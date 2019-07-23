@@ -1,0 +1,11 @@
+const AUTH_STATES = {
+  UNKNOWN: 0,
+  AUTHENTICATED: 1,
+  LOGGED_OUT: 2
+};
+
+const COOKIE_NAMES = {
+  CUSTOMER_ID_HASH: "CIDH"
+};
+
+export { AUTH_STATES, COOKIE_NAMES };

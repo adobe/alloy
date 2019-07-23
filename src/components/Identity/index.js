@@ -12,6 +12,13 @@ governing permissions and limitations under the License.
 
 import { defer } from "../../utils";
 import processIdSyncs from "./processIdSyncs";
+import createEvent from "../DataCollector/createEvent";
+import {
+  serializeCustomerIDs,
+  createHashFromString,
+  validateCustomerIDs,
+  normalizeCustomerIDs
+} from "./identityUtil";
 
 const ECID_NAMESPACE = "ECID";
 
@@ -29,11 +36,50 @@ const createIdentity = ({ config, logger, cookie }) => {
   let optIn;
   let responseRequested = false;
   let deferredForEcid;
+  let network;
+  let lifecycle;
+  const customerIDs = {};
+  const getCustomerIDs = () => customerIDs;
+
+  const makeServerCall = event => {
+    const payload = network.createPayload();
+    payload.addEvent(event);
+    const responsePromise = Promise.resolve()
+      .then(() => {
+        return lifecycle.onBeforeDataCollection(payload, responsePromise);
+      })
+      .then(() => {
+        return network.sendRequest(payload, payload.expectsResponse);
+      });
+
+    return responsePromise;
+  };
+
+  const setCustomerIDs = options => {
+    const event = createEvent();
+    validateCustomerIDs(options.customerIDs);
+    Object.keys(options.customerIDs).forEach(key => {
+      customerIDs[key] = options.customerIDs[key];
+    });
+    const normalizedCustomerIDs = normalizeCustomerIDs(customerIDs);
+    const customerIDsHash = createHashFromString(
+      serializeCustomerIDs(normalizedCustomerIDs)
+    );
+    const hasSynced = customerIDsHash === cookie.get("CIDH");
+    event.mergeMeta({ identity: { customerIDs, hasSynced } });
+
+    if (!hasSynced) {
+      cookie.set("CIDH", customerIDsHash);
+    }
+    return lifecycle
+      .onBeforeEvent(event, options)
+      .then(() => makeServerCall(event));
+  };
 
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
-        ({ optIn } = tools);
+        ({ lifecycle, network, optIn } = tools);
       },
       // Waiting for opt-in because we'll be reading the ECID from a cookie
       onBeforeEvent(event) {
@@ -100,6 +146,12 @@ const createIdentity = ({ config, logger, cookie }) => {
     commands: {
       getEcid() {
         return optIn.whenOptedIn().then(getEcid);
+      },
+      setCustomerIDs(options) {
+        return optIn.whenOptedIn().then(setCustomerIDs(options));
+      },
+      getCustomerIDs() {
+        return optIn.whenOptedIn().then(getCustomerIDs);
       }
     }
   };
