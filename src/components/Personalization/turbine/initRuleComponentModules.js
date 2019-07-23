@@ -14,16 +14,19 @@ import elementExists from "../events/elementExists";
 import createSetHtml from "../actions/setHtml";
 import createSetText from "../actions/setText";
 import createSetAttribute from "../actions/setAttribute";
+import createSetImageSource from "../actions/setImageSource";
 
 export default collect => {
   const setHtml = createSetHtml(collect);
   const setText = createSetText(collect);
   const setAttribute = createSetAttribute(collect);
+  const setImageSource = createSetImageSource(collect);
 
   return {
     elementExists,
     setHtml,
     setText,
-    setAttribute
+    setAttribute,
+    setImageSource
   };
 };
