@@ -17,6 +17,7 @@ import createSetAttribute from "../actions/setAttribute";
 import createSetImageSource from "../actions/setImageSource";
 import createSetStyle from "../actions/setStyle";
 import createMove from "../actions/move";
+import createResize from "../actions/resize";
 
 export default collect => {
   const setHtml = createSetHtml(collect);
@@ -25,6 +26,7 @@ export default collect => {
   const setImageSource = createSetImageSource(collect);
   const setStyle = createSetStyle(collect);
   const move = createMove(collect);
+  const resize = createResize(collect);
 
   return {
     elementExists,
@@ -33,6 +35,7 @@ export default collect => {
     setAttribute,
     setImageSource,
     setStyle,
-    move
+    move,
+    resize
   };
 };
