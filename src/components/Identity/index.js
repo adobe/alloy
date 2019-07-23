@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { defer } from "../../utils";
+import { defer, assign } from "../../utils";
 import processIdSyncs from "./processIdSyncs";
 import createEvent from "../DataCollector/createEvent";
 import {
-  serializeCustomerIds,
-  createHashFromString,
+  createHash,
   validateCustomerIds,
-  normalizeCustomerIds
+  normalizeCustomerIds,
+  bufferToHex
 } from "./util";
 
 import { COOKIE_NAMES } from "./constants";
@@ -46,36 +46,35 @@ const createIdentity = ({ config, logger, cookie }) => {
   const makeServerCall = event => {
     const payload = network.createPayload();
     payload.addEvent(event);
-    const responsePromise = Promise.resolve()
+    return Promise.resolve()
       .then(() => {
-        return lifecycle.onBeforeDataCollection(payload, responsePromise);
+        return lifecycle.onBeforeDataCollection(payload);
       })
       .then(() => {
         return network.sendRequest(payload, payload.expectsResponse);
       });
-
-    return responsePromise;
   };
 
   const setCustomerIds = ids => {
     validateCustomerIds(ids);
     const event = createEvent();
-    Object.keys(ids).forEach(key => {
-      customerIds[key] = ids[key];
-    });
-    const normalizedCustomerIds = normalizeCustomerIds(customerIds);
-    const customerIdsHash = createHashFromString(
-      serializeCustomerIds(normalizedCustomerIds)
-    );
-    const hasSynced = customerIdsHash === cookie.get(CUSTOMER_ID_HASH);
-    event.mergeMeta({ identity: { customerIds, hasSynced } });
+    assign(customerIds, ids);
 
-    if (!hasSynced) {
-      cookie.set(CUSTOMER_ID_HASH, customerIdsHash);
-    }
-    return lifecycle
-      .onBeforeEvent(event, ids)
-      .then(() => makeServerCall(event));
+    const normalizedCustomerIds = normalizeCustomerIds(customerIds);
+
+    createHash(JSON.stringify(normalizedCustomerIds)).then(hash => {
+      const customerIdsHash = bufferToHex(hash);
+      const hasSynced = customerIdsHash === cookie.get(CUSTOMER_ID_HASH);
+      event.mergeMeta({ identity: { customerIds, hasSynced } });
+
+      if (!hasSynced) {
+        cookie.set(CUSTOMER_ID_HASH, customerIdsHash);
+      }
+
+      return lifecycle
+        .onBeforeEvent(event, ids)
+        .then(() => makeServerCall(event));
+    });
   };
 
   return {

@@ -1,53 +1,42 @@
 import {
-  serializeCustomerIds,
-  createHashFromString,
+  createHash,
   validateCustomerIds,
-  normalizeCustomerIds
+  normalizeCustomerIds,
+  bufferToHex
 } from "../../../../src/components/Identity/util";
 import { AUTH_STATES } from "../../../../src/components/Identity/constants";
 
 describe("Identity::identityUtil", () => {
-  describe("serializeCustomerIds", () => {
-    it("should return empty string if array is empty", () => {
-      const customerIds = {};
-      expect(serializeCustomerIds(customerIds)).toBe("");
-    });
-
-    it("should serialize an object with keys separated by pipe characters", () => {
-      const customerIds = {
-        email: {
-          id: "me@abc.com",
-          authState: 1
-        },
-        crm: {
-          id: "qwerty",
-          authState: 0
-        }
-      };
-      const serilaizedCustomerIds = "email|me@abc.com1|crm|qwerty0";
-      expect(serializeCustomerIds(customerIds)).toBe(serilaizedCustomerIds);
-    });
-  });
-  describe("createHashFromString", () => {
+  describe("createHash", () => {
     it("should return 0 if the string is empty", () => {
       const stringToHash = "";
-      expect(createHashFromString(stringToHash)).toBe(0);
+      createHash(stringToHash).then(val => expect(bufferToHex(val).toBe(0)));
     });
     it("should generate same hash for same string", () => {
-      const stringOneToHash = "123";
-      const stringTwoToHash = "123";
-      expect(createHashFromString(stringOneToHash)).toBe(
-        createHashFromString(stringTwoToHash)
-      );
+      const stringOneToHash = "12345sadnksdc";
+      const stringTwoToHash = "12345sadnksdc";
+      createHash(stringOneToHash).then(result => {
+        expect(bufferToHex(result)).toBe(
+          "bea2016e1e7828a0525b16dc6d921bc3ae8d25f13479c3241b59ad0fa8f92d86"
+        );
+      });
+      createHash(stringTwoToHash).then(result => {
+        expect(bufferToHex(result)).toBe(
+          "bea2016e1e7828a0525b16dc6d921bc3ae8d25f13479c3241b59ad0fa8f92d86"
+        );
+      });
     });
     it("should generate different hash for strings with same chars in different order", () => {
       const stringOneToHash = "qwertyuhj|kj";
       const stringTwoToHash = "qwertyuhj|jk";
-      expect(createHashFromString(stringOneToHash)).not.toBe(
-        createHashFromString(stringTwoToHash)
-      );
+      createHash(stringOneToHash).then(resultOne => {
+        createHash(stringTwoToHash).then(resultTwo => {
+          expect(bufferToHex(resultOne)).not.toBe(bufferToHex(resultTwo));
+        });
+      });
     });
   });
+
   describe("validateCustomerIds", () => {
     it("should throw an error when each key is not an object", () => {
       const objToTest = {
@@ -58,7 +47,7 @@ describe("Identity::identityUtil", () => {
         validateCustomerIds(objToTest);
       }).toThrow(
         new Error(
-          "Invalid customer Id format. Each namespace should be an object."
+          "Invalid customer ID format. Each namespace should be an object."
         )
       );
     });
@@ -76,7 +65,7 @@ describe("Identity::identityUtil", () => {
         validateCustomerIds(objToTest);
       }).toThrow(
         new Error(
-          "Invalid customer Id format. Each namespace object should have an id."
+          "Invalid customer ID format. Each namespace object should have an ID."
         )
       );
     });
@@ -118,6 +107,7 @@ describe("Identity::identityUtil", () => {
       };
       expect(normalizeCustomerIds(objToTest)).toEqual(normalizedObj);
     });
+
     it("should add a valid authState if invalid authState is given", () => {
       const objToTest = {
         email: {
@@ -140,6 +130,46 @@ describe("Identity::identityUtil", () => {
         }
       };
       expect(normalizeCustomerIds(objToTest)).toEqual(normalizedObj);
+    });
+  });
+
+  describe("normalizeCustomerIds and createHash", () => {
+    it("should create same hash if the customer IDs are in different order", () => {
+      const customerIdOne = {
+        email: {
+          id: "tester",
+          authState: "login"
+        },
+        crm: {
+          id: "1234",
+          authState: "logout"
+        }
+      };
+      const customerIdTwo = {
+        crm: {
+          id: "1234",
+          authState: "logout"
+        },
+        email: {
+          id: "tester",
+          authState: "login"
+        }
+      };
+      expect(customerIdOne).not.toBe(customerIdTwo);
+      expect(customerIdOne).toEqual(customerIdTwo);
+      const stringifiedNormalizedOne = JSON.stringify(
+        normalizeCustomerIds(customerIdOne)
+      );
+      const stringifiedNormalizedTwo = JSON.stringify(
+        normalizeCustomerIds(customerIdTwo)
+      );
+      expect(stringifiedNormalizedOne).toBe(stringifiedNormalizedTwo);
+
+      createHash(stringifiedNormalizedOne).then(resultOne => {
+        createHash(stringifiedNormalizedTwo).then(resultTwo => {
+          expect(bufferToHex(resultOne)).toBe(bufferToHex(resultTwo));
+        });
+      });
     });
   });
 });
