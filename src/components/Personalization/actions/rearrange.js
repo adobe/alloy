@@ -14,10 +14,11 @@ import { showElements } from "../flicker";
 
 const COMMENT_NODE = 8;
 
+const toArray = elements => [].slice.call(elements);
+const notComment = element => element.nodeType !== COMMENT_NODE;
+
 const rearangeChildren = (element, from, to) => {
-  const children = [...element.children].filter(
-    e => e.nodeType !== COMMENT_NODE
-  );
+  const children = toArray(element.children).filter(notComment);
   const elementFrom = children[from];
   const elementTo = children[to];
 
