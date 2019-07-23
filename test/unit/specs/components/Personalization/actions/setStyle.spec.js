@@ -3,8 +3,8 @@ import {
   removeNode,
   appendNode,
   createNode
-} from "../../../../../src/utils/dom";
-import createSetStyle from "../../../../../src/components/Personalization/actions/setStyle";
+} from "../../../../../../src/utils/dom";
+import createSetStyle from "../../../../../../src/components/Personalization/actions/setStyle";
 
 const cleanUp = () => {
   selectNodes("div#setStyle").forEach(removeNode);

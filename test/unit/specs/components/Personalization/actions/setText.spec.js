@@ -3,8 +3,8 @@ import {
   removeNode,
   appendNode,
   createNode
-} from "../../../../../src/utils/dom";
-import createSetText from "../../../../../src/components/Personalization/actions/setText";
+} from "../../../../../../src/utils/dom";
+import createSetText from "../../../../../../src/components/Personalization/actions/setText";
 
 const cleanUp = () => {
   selectNodes("div#setText").forEach(removeNode);

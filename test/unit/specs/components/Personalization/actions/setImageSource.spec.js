@@ -3,8 +3,8 @@ import {
   removeNode,
   appendNode,
   createNode
-} from "../../../../../src/utils/dom";
-import createSetImageSource from "../../../../../src/components/Personalization/actions/setImageSource";
+} from "../../../../../../src/utils/dom";
+import createSetImageSource from "../../../../../../src/components/Personalization/actions/setImageSource";
 
 const cleanUp = () => {
   selectNodes("div#setImageSource").forEach(removeNode);

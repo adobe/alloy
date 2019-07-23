@@ -15,12 +15,12 @@ import {
   appendNode,
   selectNodes,
   removeNode
-} from "../../../../src/utils/dom";
+} from "../../../../../src/utils/dom";
 import {
   escapeIdentifiersInSelector,
   parseSelector,
   selectNodesWithEq
-} from "../../../../src/utils/dom/selectNodesWithEq";
+} from "../../../../../src/utils/dom/selectNodesWithEq";
 
 describe("DOM::escapeIdentifiersInSelector", () => {
   it("should escape when digits only for ID selector", () => {

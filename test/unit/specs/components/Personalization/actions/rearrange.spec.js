@@ -3,8 +3,8 @@ import {
   removeNode,
   appendNode,
   createNode
-} from "../../../../../src/utils/dom";
-import createRearrange from "../../../../../src/components/Personalization/actions/rearrange";
+} from "../../../../../../src/utils/dom";
+import createRearrange from "../../../../../../src/components/Personalization/actions/rearrange";
 
 const cleanUp = () => {
   selectNodes("ul#rearrange").forEach(removeNode);
