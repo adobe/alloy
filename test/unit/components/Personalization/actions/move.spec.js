@@ -4,18 +4,18 @@ import {
   appendNode,
   createNode
 } from "../../../../../src/utils/dom";
-import createSetAttribute from "../../../../../src/components/Personalization/actions/setAttribute";
+import createMove from "../../../../../src/components/Personalization/actions/move";
 
 const cleanUp = () => {
-  selectNodes("div#setAttribute").forEach(removeNode);
+  selectNodes("div#move").forEach(removeNode);
   selectNodes("style").forEach(node => {
-    if (node.textContent.indexOf("setAttribute") !== -1) {
+    if (node.textContent.indexOf("move") !== -1) {
       removeNode(node);
     }
   });
 };
 
-describe("Personalization::actions::setAttribute", () => {
+describe("Personalization::actions::move", () => {
   beforeEach(() => {
     cleanUp();
   });
@@ -26,18 +26,22 @@ describe("Personalization::actions::setAttribute", () => {
 
   it("should set personalized content", () => {
     const collect = jasmine.createSpy();
-    const setAttribute = createSetAttribute(collect);
+    const move = createMove(collect);
     const element = createNode("div", { id: "setAttribute" });
     const elements = [element];
 
     appendNode(document.body, element);
 
-    const settings = { content: { "data-test": "bar" }, meta: { a: 1 } };
+    const settings = {
+      content: { left: "100px", top: "100px" },
+      meta: { a: 1 }
+    };
     const event = { elements, prehidingSelector: "#setAttribute" };
 
-    setAttribute(settings, event);
+    move(settings, event);
 
-    expect(elements[0].getAttribute("data-test")).toEqual("bar");
+    expect(elements[0].style.left).toEqual("100px");
+    expect(elements[0].style.top).toEqual("100px");
     expect(collect).toHaveBeenCalledWith({
       meta: { personalization: { a: 1 } }
     });

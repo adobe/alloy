@@ -15,7 +15,7 @@ const cleanUp = () => {
   });
 };
 
-describe("Presonalization::actions::setImageSource", () => {
+describe("Personalization::actions::setImageSource", () => {
   beforeEach(() => {
     cleanUp();
   });
