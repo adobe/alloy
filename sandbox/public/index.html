@@ -55,24 +55,20 @@
         console.log("Sandbox: View start event has completed.", data);
       });
 
-      alloy("setCustomerIDs", {
-        // NOTE: `viewStart` is a special type of events.
-        // View docs for more info.
-        customerIDs: {
-          "email" : {
-            "id": "me@gmail.com",
-            "authState": 0
-          },
-          "crm" : {
-            "id": "1234",
-            "authState": 0
-          }
+      alloy("setCustomerIds", {
+        "email" : {
+          "id": "me@gmail.com",
+          "authState": 0
+        },
+        "crm" : {
+          "id": "1234",
+          "authState": 0
         }
       }).then(function() {
         console.log("Sandbox: Set customer IDs event has completed.");
       })
 
-      alloy("getCustomerIDs", {}).then((data)=> console.log("Sandbox: get customer IDs", data));
+      alloy("getCustomerIds", {}).then((data)=> console.log("Sandbox: get customer IDs", data));
       // For Testing multiple instances
       organizationTwo("configure", {
         // edgeDomain: "alpha.konductor.adobedc.net",

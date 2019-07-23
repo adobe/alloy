@@ -1,20 +1,20 @@
 import {
-  serializeCustomerIDs,
+  serializeCustomerIds,
   createHashFromString,
-  validateCustomerIDs,
-  normalizeCustomerIDs
-} from "../../../../src/components/Identity/identityUtil";
+  validateCustomerIds,
+  normalizeCustomerIds
+} from "../../../../src/components/Identity/util";
 import { AUTH_STATES } from "../../../../src/components/Identity/constants";
 
 describe("Identity::identityUtil", () => {
-  describe("serializeCustomerIDs", () => {
+  describe("serializeCustomerIds", () => {
     it("should return empty string if array is empty", () => {
-      const customerIDs = {};
-      expect(serializeCustomerIDs(customerIDs)).toBe("");
+      const customerIds = {};
+      expect(serializeCustomerIds(customerIds)).toBe("");
     });
 
     it("should serialize an object with keys separated by pipe characters", () => {
-      const customerIDs = {
+      const customerIds = {
         email: {
           id: "me@abc.com",
           authState: 1
@@ -24,8 +24,8 @@ describe("Identity::identityUtil", () => {
           authState: 0
         }
       };
-      const serilaizedCustomerIDs = "email|me@abc.com1|crm|qwerty0";
-      expect(serializeCustomerIDs(customerIDs)).toBe(serilaizedCustomerIDs);
+      const serilaizedCustomerIds = "email|me@abc.com1|crm|qwerty0";
+      expect(serializeCustomerIds(customerIds)).toBe(serilaizedCustomerIds);
     });
   });
   describe("createHashFromString", () => {
@@ -48,17 +48,17 @@ describe("Identity::identityUtil", () => {
       );
     });
   });
-  describe("validateCustomerIDs", () => {
+  describe("validateCustomerIds", () => {
     it("should throw an error when each key is not an object", () => {
       const objToTest = {
         email: "qwerty@asdf.com",
         authState: 0
       };
       expect(() => {
-        validateCustomerIDs(objToTest);
+        validateCustomerIds(objToTest);
       }).toThrow(
         new Error(
-          "Invalid customer ID format. Each namespace should be an object"
+          "Invalid customer Id format. Each namespace should be an object."
         )
       );
     });
@@ -73,10 +73,10 @@ describe("Identity::identityUtil", () => {
         }
       };
       expect(() => {
-        validateCustomerIDs(objToTest);
+        validateCustomerIds(objToTest);
       }).toThrow(
         new Error(
-          "Invalid customer ID format. Each namespace object should have an id"
+          "Invalid customer Id format. Each namespace object should have an id."
         )
       );
     });
@@ -91,12 +91,12 @@ describe("Identity::identityUtil", () => {
         }
       };
       expect(() => {
-        validateCustomerIDs(objToTest);
+        validateCustomerIds(objToTest);
       }).not.toThrow();
     });
   });
 
-  describe("normalizeCustomerIDs", () => {
+  describe("normalizeCustomerIds", () => {
     it("should add an authState if missing", () => {
       const objToTest = {
         email: {
@@ -116,7 +116,7 @@ describe("Identity::identityUtil", () => {
           authState: AUTH_STATES.UNKNOWN
         }
       };
-      expect(normalizeCustomerIDs(objToTest)).toEqual(normalizedObj);
+      expect(normalizeCustomerIds(objToTest)).toEqual(normalizedObj);
     });
     it("should add a valid authState if invalid authState is given", () => {
       const objToTest = {
@@ -139,7 +139,7 @@ describe("Identity::identityUtil", () => {
           authState: AUTH_STATES.UNKNOWN
         }
       };
-      expect(normalizeCustomerIDs(objToTest)).toEqual(normalizedObj);
+      expect(normalizeCustomerIds(objToTest)).toEqual(normalizedObj);
     });
   });
 });

@@ -14,20 +14,19 @@ import { defer } from "../../utils";
 import processIdSyncs from "./processIdSyncs";
 import createEvent from "../DataCollector/createEvent";
 import {
-  serializeCustomerIDs,
+  serializeCustomerIds,
   createHashFromString,
-  validateCustomerIDs,
-  normalizeCustomerIDs
-} from "./identityUtil";
+  validateCustomerIds,
+  normalizeCustomerIds
+} from "./util";
 
 import { COOKIE_NAMES } from "./constants";
 
 const { CUSTOMER_ID_HASH, EXPERIENCE_CLOUD_ID } = COOKIE_NAMES;
-const ECID_NAMESPACE = "ECID";
 
 const addIdsContext = (payload, ecid) => {
   // TODO: Add customer ids.
-  payload.addIdentity(ECID_NAMESPACE, {
+  payload.addIdentity(EXPERIENCE_CLOUD_ID, {
     id: ecid
   });
 };
@@ -41,8 +40,8 @@ const createIdentity = ({ config, logger, cookie }) => {
   let deferredForEcid;
   let network;
   let lifecycle;
-  const customerIDs = {};
-  const getCustomerIDs = () => customerIDs;
+  const customerIds = {};
+  const getCustomerIds = () => customerIds;
 
   const makeServerCall = event => {
     const payload = network.createPayload();
@@ -58,24 +57,24 @@ const createIdentity = ({ config, logger, cookie }) => {
     return responsePromise;
   };
 
-  const setCustomerIDs = options => {
+  const setCustomerIds = ids => {
+    validateCustomerIds(ids);
     const event = createEvent();
-    validateCustomerIDs(options.customerIDs);
-    Object.keys(options.customerIDs).forEach(key => {
-      customerIDs[key] = options.customerIDs[key];
+    Object.keys(ids).forEach(key => {
+      customerIds[key] = ids[key];
     });
-    const normalizedCustomerIDs = normalizeCustomerIDs(customerIDs);
-    const customerIDsHash = createHashFromString(
-      serializeCustomerIDs(normalizedCustomerIDs)
+    const normalizedCustomerIds = normalizeCustomerIds(customerIds);
+    const customerIdsHash = createHashFromString(
+      serializeCustomerIds(normalizedCustomerIds)
     );
-    const hasSynced = customerIDsHash === cookie.get(CUSTOMER_ID_HASH);
-    event.mergeMeta({ identity: { customerIDs, hasSynced } });
+    const hasSynced = customerIdsHash === cookie.get(CUSTOMER_ID_HASH);
+    event.mergeMeta({ identity: { customerIds, hasSynced } });
 
     if (!hasSynced) {
-      cookie.set(CUSTOMER_ID_HASH, customerIDsHash);
+      cookie.set(CUSTOMER_ID_HASH, customerIdsHash);
     }
     return lifecycle
-      .onBeforeEvent(event, options)
+      .onBeforeEvent(event, ids)
       .then(() => makeServerCall(event));
   };
 
@@ -150,11 +149,11 @@ const createIdentity = ({ config, logger, cookie }) => {
       getEcid() {
         return optIn.whenOptedIn().then(getEcid);
       },
-      setCustomerIDs(options) {
-        return optIn.whenOptedIn().then(setCustomerIDs(options));
+      setCustomerIds(options) {
+        return optIn.whenOptedIn().then(setCustomerIds(options));
       },
-      getCustomerIDs() {
-        return optIn.whenOptedIn().then(getCustomerIDs);
+      getCustomerIds() {
+        return optIn.whenOptedIn().then(getCustomerIds);
       }
     }
   };
