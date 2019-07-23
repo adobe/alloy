@@ -3,8 +3,8 @@ import {
   removeNode,
   appendNode,
   createNode
-} from "../../../../../src/utils/dom";
-import createRemove from "../../../../../src/components/Personalization/actions/remove";
+} from "../../../../../../src/utils/dom";
+import createRemove from "../../../../../../src/components/Personalization/actions/remove";
 
 const cleanUp = () => {
   selectNodes("div#remove").forEach(removeNode);
