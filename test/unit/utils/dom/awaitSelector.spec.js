@@ -14,7 +14,7 @@ import awaitSelector from "../../../../src/utils/dom/awaitSelector";
 import selectNodes from "../../../../src/utils/dom/selectNodes";
 import { createNode, appendNode, removeNode } from "../../../../src/utils/dom";
 
-describe("awaitSelector", () => {
+describe("DOM::awaitSelector", () => {
   const createAndAppendNodeDelayed = id => {
     setTimeout(() => {
       appendNode(document.head, createNode("div", { id }));
@@ -28,7 +28,7 @@ describe("awaitSelector", () => {
   };
 
   const awaitSelectorAndAssert = (id, win, doc, done) => {
-    const result = awaitSelector(`#${id}`, 1000, selectNodes, win, doc);
+    const result = awaitSelector(`#${id}`, selectNodes, 1000, win, doc);
 
     createAndAppendNodeDelayed(id);
 

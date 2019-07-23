@@ -18,7 +18,7 @@ import {
   findById
 } from "../../../../src/utils/dom";
 
-describe("findById", () => {
+describe("DOM::findById", () => {
   afterEach(() => {
     selectNodes("#fooById").forEach(removeNode);
   });

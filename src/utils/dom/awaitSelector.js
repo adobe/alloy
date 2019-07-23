@@ -113,8 +113,8 @@ export const awaitUsingTimer = (selector, timeout, selectFunc) => {
 
 export default function awaitSelector(
   selector,
-  timeout = MAX_POLLING_TIMEOUT,
   selectFunc = selectNodes,
+  timeout = MAX_POLLING_TIMEOUT,
   win = window,
   doc = document
 ) {
