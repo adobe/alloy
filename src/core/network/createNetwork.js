@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import createPayload from "./createPayload";
 import createResponse from "./createResponse";
-import { uuid } from "../../utils";
+import { executeWithRetry, stackError, uuid } from "../../utils";
 import apiVersion from "../../constants/apiVersion";
 
 export default (config, logger, lifecycle, networkStrategy) => {
@@ -80,12 +80,21 @@ export default (config, logger, lifecycle, networkStrategy) => {
           // not recursive (it doesn't call toJSON() on the event objects).
           // Parsing the result of JSON.stringify(), however, gives the
           // fully recursive raw data.
-          logger.log(
-            `Request ${requestId}: Sending request${responseHandlingMessage}.`,
-            JSON.parse(stringifiedPayload)
-          );
+          // JSON.parse is expensive so we short circuit if logging is disabled.
+          if (logger.enabled) {
+            logger.log(
+              `Request ${requestId}: Sending request${responseHandlingMessage}.`,
+              JSON.parse(stringifiedPayload)
+            );
+          }
 
-          return networkStrategy(url, stringifiedPayload, expectsResponse);
+          return executeWithRetry(
+            () => networkStrategy(url, stringifiedPayload, expectsResponse),
+            3
+          );
+        })
+        .catch(error => {
+          throw stackError("Network request failed.", error);
         })
         .then(responseBody => {
           let handleResponsePromise;
@@ -95,6 +104,10 @@ export default (config, logger, lifecycle, networkStrategy) => {
           }
 
           return handleResponsePromise;
+        })
+        .catch(error => {
+          lifecycle.onResponseError(error);
+          throw error;
         });
     }
   };

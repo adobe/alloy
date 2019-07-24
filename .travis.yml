@@ -40,6 +40,7 @@ script:
 - npm run test:report
 - npm run allure:generate
 - npm run functional
+- rollup -c --environment BUILD:production && rollup -c --environment MINIFY,BUILD:production && bundlesize
 - sonar-scanner
 
 jobs:

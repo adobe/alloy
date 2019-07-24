@@ -23,80 +23,84 @@ const addIdsContext = (payload, ecid) => {
 };
 
 const createIdentity = ({ config, logger, cookie }) => {
+  // We avoid reading the ECID from the cookie right away, because we
+  // need to wait for the user to opt in first.
   const getEcid = () => cookie.get(ECID_NAMESPACE);
-
-  let ecid = getEcid();
+  let optIn;
   let responseRequested = false;
   let deferredForEcid;
 
-  const onBeforeEvent = event => {
-    if (!ecid && !responseRequested) {
-      event.expectResponse();
-      responseRequested = true;
-    }
-  };
-
-  // TO-DOCUMENT: We wait for ECID before trigger any events.
-  const onBeforeDataCollection = payload => {
-    payload.mergeMeta({
-      identity: {
-        lastSyncTS: 1222,
-        containerId: 1
-      }
-    });
-
-    let promise;
-
-    if (ecid) {
-      addIdsContext(payload, ecid);
-    } else if (deferredForEcid) {
-      // We don't have an ECID, but the first request has gone out to
-      // fetch it. We must wait for the response to come back with the
-      // ECID before we can apply it to this payload.
-      logger.log("Delaying request while retrieving ECID from server.");
-      promise = deferredForEcid.promise.then(() => {
-        logger.log("Resuming previously delayed request.");
-        addIdsContext(payload, ecid);
-      });
-    } else {
-      // We don't have an ECID and no request has gone out to fetch it.
-      // We won't apply the ECID to this request, but we'll set up a
-      // promise so that future requests can know when the ECID has returned.
-      deferredForEcid = defer();
-    }
-
-    return promise;
-  };
-
-  const onResponse = response => {
-    const ecidPayload = response.getPayloadByType("identity:persist");
-
-    if (ecidPayload) {
-      ecid = ecidPayload.id;
-      cookie.set(ECID_NAMESPACE, ecid);
-
-      if (deferredForEcid) {
-        deferredForEcid.resolve();
-      }
-    }
-
-    const idSyncs = response.getPayloadByType("identity:exchange") || [];
-
-    processIdSyncs({
-      destinations: idSyncs,
-      config,
-      logger
-    });
-  };
-
   return {
     lifecycle: {
-      onBeforeEvent,
-      onBeforeDataCollection,
-      onResponse
+      onComponentsRegistered(tools) {
+        ({ optIn } = tools);
+      },
+      // Waiting for opt-in because we'll be reading the ECID from a cookie
+      onBeforeEvent(event) {
+        return optIn.whenOptedIn().then(() => {
+          const ecid = getEcid();
+          if (!ecid && !responseRequested) {
+            event.expectResponse();
+            responseRequested = true;
+          }
+        });
+      },
+      // Waiting for opt-in because we'll be reading the ECID from a cookie
+      // TO-DOCUMENT: We wait for ECID before trigger any events.
+      onBeforeDataCollection(payload) {
+        return optIn.whenOptedIn().then(() => {
+          const ecid = getEcid();
+
+          let promise;
+
+          if (ecid) {
+            addIdsContext(payload, ecid);
+          } else if (deferredForEcid) {
+            // We don't have an ECID, but the first request has gone out to
+            // fetch it. We must wait for the response to come back with the
+            // ECID before we can apply it to this payload.
+            logger.log("Delaying request while retrieving ECID from server.");
+            promise = deferredForEcid.promise.then(() => {
+              logger.log("Resuming previously delayed request.");
+              addIdsContext(payload, ecid);
+            });
+          } else {
+            // We don't have an ECID and no request has gone out to fetch it.
+            // We won't apply the ECID to this request, but we'll set up a
+            // promise so that future requests can know when the ECID has returned.
+            deferredForEcid = defer();
+          }
+
+          return promise;
+        });
+      },
+      // Waiting for opt-in because we'll be writing the ECID to a cookie
+      onResponse(response) {
+        return optIn.whenOptedIn().then(() => {
+          const ecidPayload = response.getPayloadByType("identity:persist");
+
+          if (ecidPayload) {
+            cookie.set(ECID_NAMESPACE, ecidPayload.id);
+
+            if (deferredForEcid) {
+              deferredForEcid.resolve();
+            }
+          }
+
+          const idSyncs = response.getPayloadByType("identity:exchange") || [];
+
+          processIdSyncs({
+            destinations: idSyncs,
+            config,
+            logger
+          });
+        });
+      }
     },
     commands: {
-      getEcid
+      getEcid() {
+        return optIn.whenOptedIn().then(getEcid);
+      }
     }
   };
 };

@@ -18,10 +18,19 @@ const VIEW_START_EVENT = "viewStart";
 const createDataCollector = () => {
   let lifecycle;
   let network;
+  let optIn;
 
   const makeServerCall = event => {
     const payload = network.createPayload();
     payload.addEvent(event);
+
+    // TODO Temporary. Remove when no longer needed.
+    payload.mergeMeta({
+      gateway: {
+        imsOrgID: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+      }
+    });
+
     const responsePromise = Promise.resolve()
       .then(() => {
         return lifecycle.onBeforeDataCollection(payload, responsePromise);
@@ -58,11 +67,13 @@ const createDataCollector = () => {
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
-        ({ lifecycle, network } = tools);
+        ({ lifecycle, network, optIn } = tools);
       }
     },
     commands: {
-      event: createEventHandler
+      event(options) {
+        return optIn.whenOptedIn().then(() => createEventHandler(options));
+      }
     }
   };
 };

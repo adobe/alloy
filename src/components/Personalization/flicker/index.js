@@ -34,7 +34,7 @@ export const hideElements = prehidingSelector => {
 
   const attrs = {};
   const props = {
-    innerText: `${prehidingSelector} ${HIDING_STYLE_DEFINITION}`
+    textContent: `${prehidingSelector} ${HIDING_STYLE_DEFINITION}`
   };
   const node = createNode(STYLE_TAG, attrs, props);
 
@@ -67,7 +67,7 @@ export const hideContainers = (prehidingId, prehidingStyle) => {
   }
 
   const attrs = { id: prehidingId };
-  const props = { innerText: prehidingStyle };
+  const props = { textContent: prehidingStyle };
   const styleNode = createNode(STYLE_TAG, attrs, props);
 
   appendNode(document.head, styleNode);
