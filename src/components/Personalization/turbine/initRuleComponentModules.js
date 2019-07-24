@@ -23,6 +23,7 @@ import createRemove from "../actions/remove";
 import createInsertAfter from "../actions/insertAfter";
 import createInsertBefore from "../actions/insertBefore";
 import createReplaceHtml from "../actions/replaceHtml";
+import createPrependHtml from "../actions/prependHtml";
 
 export default collect => {
   const setHtml = createSetHtml(collect);
@@ -37,6 +38,7 @@ export default collect => {
   const insertAfter = createInsertAfter(collect);
   const insertBefore = createInsertBefore(collect);
   const replaceHtml = createReplaceHtml(collect);
+  const prependHtml = createPrependHtml(collect);
 
   return {
     elementExists,
@@ -51,6 +53,7 @@ export default collect => {
     remove,
     insertAfter,
     insertBefore,
-    replaceHtml
+    replaceHtml,
+    prependHtml
   };
 };
