@@ -15,7 +15,7 @@ import createNetwork from "../../../../../src/core/network/createNetwork";
 describe("createNetwork", () => {
   const config = {
     edgeDomain: "alloy.mysite.com",
-    propertyID: "mypropertyid"
+    propertyId: "mypropertyid"
   };
 
   let logger;
@@ -43,7 +43,7 @@ describe("createNetwork", () => {
   it("calls interact by default", () => {
     return network.sendRequest({}, true).then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
-        "https://alloy.mysite.com/v1/interact?propertyID=mypropertyid",
+        "https://alloy.mysite.com/v1/interact?propertyId=mypropertyid",
         "{}",
         true
       );
@@ -53,7 +53,7 @@ describe("createNetwork", () => {
   it("can call collect", () => {
     return network.sendRequest({}, false).then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
-        "https://alloy.mysite.com/v1/collect?propertyID=mypropertyid",
+        "https://alloy.mysite.com/v1/collect?propertyId=mypropertyid",
         "{}",
         false
       );

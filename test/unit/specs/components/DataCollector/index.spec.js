@@ -39,7 +39,11 @@ describe("Event Command", () => {
       "onBeforeDataCollection"
     ).and.callThrough();
     sendRequestSpy = spyOn(network, "sendRequest").and.callThrough();
-    const dataCollector = createDataCollector();
+    const dataCollector = createDataCollector({
+      config: {
+        imsOrgId: "ABC123"
+      }
+    });
     dataCollector.lifecycle.onComponentsRegistered({
       lifecycle,
       network,

@@ -15,15 +15,15 @@ import createConfig from "../../../../src/core/createConfig";
 
 describe("configValidators", () => {
   const validConfigurations = [
-    { propertyID: "" },
-    { propertyID: "myproperty1" },
+    { propertyId: "" },
+    { propertyId: "myproperty1" },
     {
-      propertyID: "myproperty1",
+      propertyId: "myproperty1",
       edgeDomain: "stats.firstparty.com"
     },
-    { propertyID: "myproperty1", edgeDomain: "STATS.FIRSTPARY.COM" },
+    { propertyId: "myproperty1", edgeDomain: "STATS.FIRSTPARY.COM" },
     {
-      propertyID: "myproperty1",
+      propertyId: "myproperty1",
       edgeDomain: "STATS.FIRSTPARY.COM",
       prehidingStyle: "#foo"
     }
@@ -31,10 +31,10 @@ describe("configValidators", () => {
 
   const invalidConfigurations = [
     {},
-    { propertyID: "myproperty1", edgeDomain: "" },
-    { propertyID: "myproperty1", edgeDomain: "stats firstparty.com" },
+    { propertyId: "myproperty1", edgeDomain: "" },
+    { propertyId: "myproperty1", edgeDomain: "stats firstparty.com" },
     {
-      propertyID: "myproperty1",
+      propertyId: "myproperty1",
       edgeDomain: "stats firstparty.com",
       prehidingStyle: ""
     }

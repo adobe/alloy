@@ -11,13 +11,13 @@ export default function OrgTwo() {
             <code>
             {`
                 organizationTwo("configure", {
-                    propertyID: 8888888,
+                    propertyId: 8888888,
                     log: true
                 });
             `}
             </code>
         </pre>
-        <p>By going to the Network tab in your Developer Tools, you should see requests ending with <i>?propertyID=8888888</i></p>
+        <p>By going to the Network tab in your Developer Tools, you should see requests ending with <i>?propertyId=8888888</i></p>
         </div>
     );
 }
