@@ -23,8 +23,9 @@ export default (
   cookie
 ) => config => {
   const componentRegistry = createComponentRegistry();
-  const { orgId, propertyId, cookieDomain } = config;
-  const storage = createNamespacedStorage(orgId);
+  const { imsOrgId, propertyId, cookieDomain } = config;
+  // TODO: Should this storage be namespaced by property ID or org ID?
+  const storage = createNamespacedStorage(imsOrgId);
   const optIn = createOptIn();
 
   componentCreators.forEach(createComponent => {

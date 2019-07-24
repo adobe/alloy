@@ -35,9 +35,10 @@
       // Set localEdge to true to use a locally-running edge gateway mock
       // https://git.corp.adobe.com/Activation/edge-gateway-mock
       alloy("configure", {
-        // edgeDomain: "alpha.konductor.adobedc.net",
+        // edgeDomain: "edgegateway.azurewebsites.net",
         // optInEnabled: true,
         propertyId: 9999999,
+        imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
         log: true,
         prehidingId: "alloy-prehiding",
         prehidingStyle: "section:nth-of-type(1) { opacity: 0 !important }"
@@ -57,8 +58,9 @@
 
       // For Testing multiple instances
       organizationTwo("configure", {
-        // edgeDomain: "alpha.konductor.adobedc.net",
+        // edgeDomain: "edgegateway.azurewebsites.net",
         propertyId: 8888888,
+        imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
         log: true
       });
     </script>

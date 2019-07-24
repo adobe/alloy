@@ -15,7 +15,8 @@ import { clone } from "../../utils";
 
 const VIEW_START_EVENT = "viewStart";
 
-const createDataCollector = () => {
+const createDataCollector = ({ config }) => {
+  const { imsOrgId } = config;
   let lifecycle;
   let network;
   let optIn;
@@ -23,11 +24,9 @@ const createDataCollector = () => {
   const makeServerCall = event => {
     const payload = network.createPayload();
     payload.addEvent(event);
-
-    // TODO Temporary. Remove when no longer needed.
     payload.mergeMeta({
       gateway: {
-        imsOrgID: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+        imsOrgId
       }
     });
 

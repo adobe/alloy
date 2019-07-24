@@ -27,8 +27,8 @@ const safeJSONParse = (object, cookieName) => {
  * The purpose of this proxy is to cache the cookie so we don't have to
  * read and deserialize it every time a piece of it is accessed.
  */
-const createCookieProxy = (propertyID, cookieDomain = "") => {
-  const cookieName = `${ALLOY_COOKIE_NAME}_${propertyID}`;
+const createCookieProxy = (propertyId, cookieDomain = "") => {
+  const cookieName = `${ALLOY_COOKIE_NAME}_${propertyId}`;
 
   let deserializedCookie;
   let cookieHasBeenRead = false;
@@ -60,8 +60,8 @@ const createCookieProxy = (propertyID, cookieDomain = "") => {
 };
 
 // TODO: Support passing a configurable expiry in the config when creating this cookie.
-const createCookie = (componentNamespace, propertyID, cookieDomain = "") => {
-  const cookieProxy = createCookieProxy(propertyID, cookieDomain);
+const createCookie = (componentNamespace, propertyId, cookieDomain = "") => {
+  const cookieProxy = createCookieProxy(propertyId, cookieDomain);
 
   return {
     /**
