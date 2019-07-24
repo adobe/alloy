@@ -26,7 +26,7 @@ const insertAfter = (container, content) => {
   const elements = [].slice.call(fragment.children);
 
   elements.forEach(element => {
-    container.parentNode.insertBefore(element, element.nextElementSibling);
+    container.parentNode.insertBefore(element, container.nextElementSibling);
   });
 };
 
