@@ -10,14 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import toArray from "../toArray";
+export default element => {
+  const result = element.parentNode;
 
-/**
- * Returns an array of matched DOM nodes.
- * @param {String} selector
- * @param {Node} doc, defaults to document
- * @returns {Array} an array of DOM nodes
- */
-export default function selectNodes(selector, doc = document) {
-  return toArray(doc.querySelectorAll(selector));
-}
+  if (result) {
+    return result;
+  }
+
+  return null;
+};

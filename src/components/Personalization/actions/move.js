@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { setStyle } from "../../../utils/dom";
 import { showElements } from "../flicker";
 
 export default collect => {
@@ -19,7 +20,7 @@ export default collect => {
 
     elements.forEach(element => {
       Object.keys(content).forEach(key => {
-        element.style.setProperty(key, content[key]);
+        setStyle(element, key, content[key]);
       });
     });
 

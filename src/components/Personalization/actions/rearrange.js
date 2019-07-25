@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import {
+  getChildren,
+  insertElementAfter,
+  insertElementBefore
+} from "../../../utils/dom";
 import { showElements } from "../flicker";
 
-const COMMENT_NODE = 8;
-
-const toArray = elements => [].slice.call(elements);
-const notComment = element => element.nodeType !== COMMENT_NODE;
-
 const rearrangeChildren = (element, from, to) => {
-  const children = toArray(element.children).filter(notComment);
+  const children = getChildren(element);
   const elementFrom = children[from];
   const elementTo = children[to];
 
@@ -29,9 +29,9 @@ const rearrangeChildren = (element, from, to) => {
   }
 
   if (from < to) {
-    element.insertBefore(elementFrom, elementTo.nextElementSibling);
+    insertElementAfter(elementTo, elementFrom);
   } else {
-    element.insertBefore(elementFrom, elementTo);
+    insertElementBefore(elementTo, elementFrom);
   }
 };
 

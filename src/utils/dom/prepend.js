@@ -10,14 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import toArray from "../toArray";
+import createFragment from "./createFragment";
+import getChildren from "./getChildren";
+import getFirstChild from "./getFirstChild";
+import insertElementBefore from "./insertElementBefore";
 
-/**
- * Returns an array of matched DOM nodes.
- * @param {String} selector
- * @param {Node} doc, defaults to document
- * @returns {Array} an array of DOM nodes
- */
-export default function selectNodes(selector, doc = document) {
-  return toArray(doc.querySelectorAll(selector));
-}
+export default (container, content) => {
+  const fragment = createFragment(content);
+  const elements = getChildren(fragment);
+  const { length } = elements;
+  let i = length - 1;
+
+  // We are inserting elements in reverse order
+  while (i >= 0) {
+    const element = elements[i];
+
+    insertElementBefore(getFirstChild(container), element);
+
+    i -= 1;
+  }
+};

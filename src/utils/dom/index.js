@@ -12,8 +12,21 @@ governing permissions and limitations under the License.
 
 export { default as awaitSelector } from "./awaitSelector";
 export { default as createNode } from "./createNode";
+export { default as createFragment } from "./createFragment";
 export { default as appendNode } from "./appendNode";
 export { default as removeNode } from "./removeNode";
 export { default as selectNodes } from "./selectNodes";
 export { selectNodesWithEq } from "./selectNodesWithEq";
 export { default as findById } from "./findById";
+export { default as preloadImage } from "./preloadImage";
+export { default as setAttribute } from "./setAttribute";
+export { default as removeAttribute } from "./removeAttribute";
+export { default as setStyle } from "./setStyle";
+export { default as insertAfter } from "./insertAfter";
+export { default as insertElementAfter } from "./insertElementAfter";
+export { default as insertBefore } from "./insertBefore";
+export { default as insertElementBefore } from "./insertElementBefore";
+export { default as getNextSibling } from "./getNextSibling";
+export { default as getChildren } from "./getChildren";
+export { default as append } from "./append";
+export { default as prepend } from "./prepend";

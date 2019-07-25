@@ -10,16 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import {
+  preloadImage,
+  setAttribute,
+  removeAttribute
+} from "../../../utils/dom";
+import { IMG, SRC } from "../../../utils/dom/constants";
 import { showElements } from "../flicker";
 
-const IMAGE_TAG = "IMG";
-const SRC = "src";
-
-const isImage = element => element.tagName === IMAGE_TAG;
-const loadImage = url => {
-  const image = document.createElement(IMAGE_TAG);
-  image.src = url;
-};
+const isImage = element => element.tagName === IMG;
 
 export default collect => {
   return (settings, event) => {
@@ -28,13 +27,13 @@ export default collect => {
 
     elements.filter(isImage).forEach(element => {
       // Start downloading the image
-      loadImage(url);
+      preloadImage(url);
 
       // Remove "src" so there is no flicker
-      element.removeAttribute(SRC);
+      removeAttribute(element, SRC);
 
       // Replace the image "src"
-      element.setAttribute(SRC, url);
+      setAttribute(element, SRC, url);
     });
 
     // after rendering we should remove the flicker control styles
