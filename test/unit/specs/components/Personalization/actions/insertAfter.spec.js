@@ -27,25 +27,25 @@ describe("Personalization::actions::insertAfter", () => {
   it("should inser after personalized content", () => {
     const collect = jasmine.createSpy();
     const insertAfter = createInsertAfter(collect);
-    const content = `<div id="a" class="test">AAA</div>`;
-    const element = createNode(
+    const child = createNode(
       "div",
-      { id: "insertAfter" },
-      { innerHTML: content }
+      { id: "a", class: "ia" },
+      { innerHTML: "AAA" }
     );
-    const elements = [element];
+    const element = createNode("div", { id: "insertAfter" }, {}, [child]);
+    const elements = [child];
 
     appendNode(document.body, element);
 
     const settings = {
-      content: `<div id="b" class="test">BBB</div>`,
+      content: `<div id="b" class="ia">BBB</div>`,
       meta: { a: 1 }
     };
     const event = { elements, prehidingSelector: "#a" };
 
     insertAfter(settings, event);
 
-    const result = selectNodes(".test");
+    const result = selectNodes("div#insertAfter .ia");
 
     expect(result[0].innerHTML).toEqual("AAA");
     expect(result[1].innerHTML).toEqual("BBB");
