@@ -10,7 +10,21 @@ governing permissions and limitations under the License.
 */
 
 /**
- * Returns a promise that will be resolved after all currently resolved promises.
+ * Returns a promise that will be resolved after all outstanding promise chains
+ * have been flushed. This assumes (1) that the promise chains to be flushed
+ * resolve their promises promptly (rather than doing something like
+ * setTimeout(..., 100) somewhere in the chain) and (2) that the chains
+ * are no longer than 10 promises long.
  * @returns {Promise}
  */
-export default () => new Promise(resolve => setTimeout(resolve));
+export default () => {
+  let promise;
+
+  for (let i = 0; i < 10; i += 1) {
+    promise = promise
+      ? promise.then(() => Promise.resolve())
+      : Promise.resolve();
+  }
+
+  return promise;
+};

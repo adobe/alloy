@@ -12,27 +12,28 @@ governing permissions and limitations under the License.
 import createDataCollector from "../../../../../src/components/DataCollector/index";
 import createPayload from "../../../../../src/core/network/createPayload";
 import { defer } from "../../../../../src/utils";
-import flushPromises from "../../../helpers/flushPromises";
+import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("Event Command", () => {
-  let eventCommand;
+  let lifecycle;
+  let network;
+  let optIn;
   let onBeforeEventSpy;
   let onBeforeDataCollectionSpy;
   let sendRequestSpy;
-  const lifecycle = {
-    onBeforeEvent: () => Promise.resolve(),
-    onBeforeDataCollection: () => Promise.resolve()
-  };
-  const network = {
-    createPayload,
-    sendRequest: () => flushPromises().then(() => ({}))
-  };
-  const optIn = {
-    whenOptedIn() {
-      return Promise.resolve();
-    }
-  };
+  let eventCommand;
   beforeEach(() => {
+    lifecycle = {
+      onBeforeEvent: () => Promise.resolve(),
+      onBeforeDataCollection: () => Promise.resolve()
+    };
+    network = {
+      createPayload,
+      sendRequest: () => Promise.resolve({})
+    };
+    optIn = {
+      whenOptedIn: () => Promise.resolve()
+    };
     onBeforeEventSpy = spyOn(lifecycle, "onBeforeEvent").and.callThrough();
     onBeforeDataCollectionSpy = spyOn(
       lifecycle,
@@ -50,9 +51,6 @@ describe("Event Command", () => {
       optIn
     });
     eventCommand = dataCollector.commands.event;
-  });
-  afterEach(() => {
-    return flushPromises();
   });
 
   it("Calls onBeforeEvent", () => {
@@ -105,11 +103,11 @@ describe("Event Command", () => {
     const deferred = defer();
     onBeforeEventSpy.and.returnValue(deferred.promise);
     eventCommand({});
-    return flushPromises().then(() => {
+    return flushPromiseChains().then(() => {
       expect(lifecycle.onBeforeEvent).toHaveBeenCalled();
       expect(network.sendRequest).not.toHaveBeenCalled();
       deferred.resolve();
-      flushPromises().then(() => {
+      flushPromiseChains().then(() => {
         expect(network.sendRequest).toHaveBeenCalled();
       });
     });
@@ -139,11 +137,11 @@ describe("Event Command", () => {
     const deferred = defer();
     onBeforeDataCollectionSpy.and.returnValue(deferred.promise);
     eventCommand({});
-    return flushPromises().then(() => {
+    return flushPromiseChains().then(() => {
       expect(lifecycle.onBeforeDataCollection).toHaveBeenCalled();
       expect(network.sendRequest).not.toHaveBeenCalled();
       deferred.resolve();
-      flushPromises().then(() => {
+      flushPromiseChains().then(() => {
         expect(network.sendRequest).toHaveBeenCalled();
       });
     });

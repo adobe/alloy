@@ -14,6 +14,7 @@ governing permissions and limitations under the License.
 /* eslint no-underscore-dangle: 0 */
 /* eslint prefer-rest-params: 0 */
 /* eslint no-var: 0 */
+/* eslint-disable func-names */
 
 /**
  * This is the code, once minified, that an Alloy consumer copies and pastes

@@ -2,7 +2,7 @@ const karmaSauceLauncher = require("karma-sauce-launcher");
 
 const karmaConfig = require("./karma.conf.js");
 
-module.exports = function(config) {
+module.exports = config => {
   karmaConfig(config);
 
   const customLaunchers = {

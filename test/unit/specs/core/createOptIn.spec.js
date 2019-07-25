@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createOptIn from "../../../../src/core/createOptIn";
-import flushPromises from "../../helpers/flushPromises";
+import flushPromiseChains from "../../helpers/flushPromiseChains";
 
 describe("createOptIn", () => {
   let optIn;
@@ -43,15 +43,14 @@ describe("createOptIn", () => {
       return optIn.whenOptedIn();
     });
 
-    it("considers the user opted out if cookie is set to 'none'", done => {
+    it("considers the user opted out if cookie is set to 'none'", () => {
       cookie.get.and.returnValue("none");
       optIn.enable(cookie);
 
       expect(optIn.isOptedIn()).toBe(false);
-      optIn.whenOptedIn().catch(error => {
-        expect(error).toBeDefined();
-        done();
-      });
+      return expectAsync(optIn.whenOptedIn()).toBeRejectedWith(
+        jasmine.any(Error)
+      );
     });
 
     it("considers the user pending opt in if cookie is not set", () => {
@@ -60,77 +59,64 @@ describe("createOptIn", () => {
 
       expect(optIn.isOptedIn()).toBe(false);
       optIn.whenOptedIn().then(optedInSpy);
-      return flushPromises().then(() => {
+      return flushPromiseChains().then(() => {
         expect(optedInSpy).not.toHaveBeenCalled();
       });
     });
 
     it("considers the user opted in after the user opts in", () => {
-      const optedInSpy = jasmine.createSpy();
       optIn.enable(cookie);
-      optIn.whenOptedIn().then(optedInSpy);
+      const whenOptedInPromise = optIn.whenOptedIn();
       optIn.setPurposes("all");
 
       expect(cookie.set).toHaveBeenCalledWith("optIn", "all");
       expect(optIn.isOptedIn()).toBe(true);
-      return flushPromises().then(() => {
-        expect(optedInSpy).toHaveBeenCalled();
-      });
+      return expectAsync(whenOptedInPromise).toBeResolved();
     });
 
     it("considers the user opted out after the user opts out", () => {
-      const optedOutSpy = jasmine.createSpy();
       optIn.enable(cookie);
-      optIn.whenOptedIn().catch(optedOutSpy);
+      const whenOptedInPromise = optIn.whenOptedIn();
       optIn.setPurposes("none");
 
       expect(cookie.set).toHaveBeenCalledWith("optIn", "none");
       expect(optIn.isOptedIn()).toBe(false);
-      return flushPromises().then(() => {
-        expect(optedOutSpy).toHaveBeenCalledWith(jasmine.any(Error));
-      });
+      return expectAsync(whenOptedInPromise).toBeRejectedWith(
+        jasmine.any(Error)
+      );
     });
 
     it("considers the user opted in after the user opts out then opts in", () => {
-      const optedInSpy = jasmine.createSpy();
       optIn.enable(cookie);
       optIn.setPurposes("none");
       optIn.setPurposes("all");
-      optIn.whenOptedIn().then(optedInSpy);
+      const whenOptedInPromise = optIn.whenOptedIn();
 
       expect(cookie.set).toHaveBeenCalledWith("optIn", "all");
       expect(optIn.isOptedIn()).toBe(true);
-      return flushPromises().then(() => {
-        expect(optedInSpy).toHaveBeenCalled();
-      });
+      return expectAsync(whenOptedInPromise).toBeResolved();
     });
 
     it("considers the user opted out after the user opts in then opts out", () => {
-      const optedOutSpy = jasmine.createSpy();
       optIn.enable(cookie);
       optIn.setPurposes("all");
       optIn.setPurposes("none");
-      optIn.whenOptedIn().catch(optedOutSpy);
+      const whenOptedInPromise = optIn.whenOptedIn();
 
       expect(cookie.set).toHaveBeenCalledWith("optIn", "none");
       expect(optIn.isOptedIn()).toBe(false);
-      return flushPromises().then(() => {
-        expect(optedOutSpy).toHaveBeenCalledWith(jasmine.any(Error));
-      });
+      return expectAsync(whenOptedInPromise).toBeRejectedWith(
+        jasmine.any(Error)
+      );
     });
 
     it("resolves nested whenOptedIn calls", () => {
-      const optedInSpy = jasmine.createSpy();
       optIn.enable(cookie);
-      optIn
+      const whenOptedInPromise = optIn
         .whenOptedIn()
-        .then(() => optIn.whenOptedIn())
-        .then(optedInSpy);
+        .then(() => optIn.whenOptedIn());
       optIn.setPurposes("all");
-
-      return flushPromises().then(() => {
-        expect(optedInSpy).toHaveBeenCalled();
-      });
+      return expectAsync(whenOptedInPromise).toBeResolved();
     });
   });
 });
