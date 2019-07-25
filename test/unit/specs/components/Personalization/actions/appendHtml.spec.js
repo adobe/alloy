@@ -38,18 +38,19 @@ describe("Personalization::actions::appendHtml", () => {
     appendNode(document.body, element);
 
     const settings = {
-      content: `<li>2</li>`,
+      content: `<li>2</li><li>3</li>`,
       meta: { a: 1 }
     };
     const event = { elements, prehidingSelector: "#appendHtml" };
 
     appendHtml(settings, event);
 
-    const result = selectNodes("li");
+    const result = selectNodes("ul#appendHtml li");
 
-    expect(result.length).toEqual(2);
+    expect(result.length).toEqual(3);
     expect(result[0].innerHTML).toEqual("1");
     expect(result[1].innerHTML).toEqual("2");
+    expect(result[2].innerHTML).toEqual("3");
     expect(collect).toHaveBeenCalledWith({
       meta: { personalization: { a: 1 } }
     });
