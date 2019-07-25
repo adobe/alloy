@@ -40,8 +40,10 @@ describe("Personalization::actions::move", () => {
 
     move(settings, event);
 
-    expect(elements[0].style.left).toEqual("100px");
-    expect(elements[0].style.top).toEqual("100px");
+    const result = window.getComputedStyle(element, null);
+
+    expect(result.left).toEqual("100px");
+    expect(result.top).toEqual("100px");
     expect(collect).toHaveBeenCalledWith({
       meta: { personalization: { a: 1 } }
     });

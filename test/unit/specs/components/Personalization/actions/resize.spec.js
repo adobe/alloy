@@ -40,8 +40,10 @@ describe("Personalization::actions::resize", () => {
 
     resize(settings, event);
 
-    expect(elements[0].style.width).toEqual("100px");
-    expect(elements[0].style.height).toEqual("100px");
+    const result = window.getComputedStyle(element, null);
+
+    expect(result.width).toEqual("100px");
+    expect(result.height).toEqual("100px");
     expect(collect).toHaveBeenCalledWith({
       meta: { personalization: { a: 1 } }
     });
