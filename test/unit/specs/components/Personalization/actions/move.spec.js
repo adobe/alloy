@@ -24,7 +24,7 @@ describe("Personalization::actions::move", () => {
     cleanUp();
   });
 
-  it("should set personalized content", () => {
+  it("should set personalized content", done => {
     const collect = jasmine.createSpy();
     const move = createMove(collect);
     const element = createNode("div", { id: "move" });
@@ -40,14 +40,13 @@ describe("Personalization::actions::move", () => {
 
     move(settings, event);
 
-    /* eslint-disable no-unused-vars */
-    const forceRerender = elements[0].offsetLeft;
-    /* eslint-enable no-unused-vars */
-
-    expect(elements[0].style.left).toEqual("100px");
-    expect(elements[0].style.top).toEqual("100px");
-    expect(collect).toHaveBeenCalledWith({
-      meta: { personalization: { a: 1 } }
+    setTimeout(() => {
+      done();
+      expect(elements[0].style.left).toEqual("100px");
+      expect(elements[0].style.top).toEqual("100px");
+      expect(collect).toHaveBeenCalledWith({
+        meta: { personalization: { a: 1 } }
+      });
     });
   });
 });
