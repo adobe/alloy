@@ -24,10 +24,17 @@ const createFragment = content => {
 const prependHtml = (container, content) => {
   const fragment = createFragment(content);
   const elements = [].slice.call(fragment.children);
+  const { length } = elements;
+  let i = length - 1;
 
-  elements.forEach(element => {
+  // We are inserting elements in reverse order
+  while (i >= 0) {
+    const element = elements[i];
+
     container.insertBefore(element, container.firstElementChild);
-  });
+
+    i -= 1;
+  }
 };
 
 export default collect => {
