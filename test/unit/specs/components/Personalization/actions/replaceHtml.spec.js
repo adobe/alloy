@@ -27,25 +27,25 @@ describe("Personalization::actions::replaceHtml", () => {
   it("should replace element with personalized content", () => {
     const collect = jasmine.createSpy();
     const replaceHtml = createReplaceHtml(collect);
-    const content = `<div id="a" class="test">AAA</div>`;
-    const element = createNode(
+    const child = createNode(
       "div",
-      { id: "replaceHtml" },
-      { innerHTML: content }
+      { id: "a", class: "rh" },
+      { innerHTML: "AAA" }
     );
-    const elements = [element];
+    const element = createNode("div", { id: "replaceHtml" }, {}, [child]);
+    const elements = [child];
 
     appendNode(document.body, element);
 
     const settings = {
-      content: `<div id="b" class="test">BBB</div>`,
+      content: `<div id="b" class="rh">BBB</div>`,
       meta: { a: 1 }
     };
     const event = { elements, prehidingSelector: "#a" };
 
     replaceHtml(settings, event);
 
-    const result = selectNodes(".test");
+    const result = selectNodes("div#replaceHtml .rh");
 
     expect(result.length).toEqual(1);
     expect(result[0].innerHTML).toEqual("BBB");
