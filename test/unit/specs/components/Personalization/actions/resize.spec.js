@@ -40,10 +40,12 @@ describe("Personalization::actions::resize", () => {
 
     resize(settings, event);
 
-    const result = window.getComputedStyle(element, null);
+    /* eslint-disable no-unused-vars */
+    const forceRerender = elements[0].offsetLeft;
+    /* eslint-enable no-unused-vars */
 
-    expect(result.width).toEqual("100px");
-    expect(result.height).toEqual("100px");
+    expect(elements[0].style.width).toEqual("100px");
+    expect(elements[0].style.height).toEqual("100px");
     expect(collect).toHaveBeenCalledWith({
       meta: { personalization: { a: 1 } }
     });
