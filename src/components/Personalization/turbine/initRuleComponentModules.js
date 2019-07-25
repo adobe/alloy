@@ -24,6 +24,7 @@ import createInsertAfter from "../actions/insertAfter";
 import createInsertBefore from "../actions/insertBefore";
 import createReplaceHtml from "../actions/replaceHtml";
 import createPrependHtml from "../actions/prependHtml";
+import createAppendHtml from "../actions/appendHtml";
 
 export default collect => {
   const setHtml = createSetHtml(collect);
@@ -39,6 +40,7 @@ export default collect => {
   const insertBefore = createInsertBefore(collect);
   const replaceHtml = createReplaceHtml(collect);
   const prependHtml = createPrependHtml(collect);
+  const appendHtml = createAppendHtml(collect);
 
   return {
     elementExists,
@@ -54,6 +56,7 @@ export default collect => {
     insertAfter,
     insertBefore,
     replaceHtml,
-    prependHtml
+    prependHtml,
+    appendHtml
   };
 };
