@@ -22,6 +22,7 @@ import createRearrange from "../actions/rearrange";
 import createRemove from "../actions/remove";
 import createInsertAfter from "../actions/insertAfter";
 import createInsertBefore from "../actions/insertBefore";
+import createReplaceHtml from "../actions/replaceHtml";
 
 export default collect => {
   const setHtml = createSetHtml(collect);
@@ -35,6 +36,7 @@ export default collect => {
   const remove = createRemove(collect);
   const insertAfter = createInsertAfter(collect);
   const insertBefore = createInsertBefore(collect);
+  const replaceHtml = createReplaceHtml(collect);
 
   return {
     elementExists,
@@ -48,6 +50,7 @@ export default collect => {
     rearrange,
     remove,
     insertAfter,
-    insertBefore
+    insertBefore,
+    replaceHtml
   };
 };
