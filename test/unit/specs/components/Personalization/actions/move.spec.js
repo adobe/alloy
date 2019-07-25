@@ -27,7 +27,7 @@ describe("Personalization::actions::move", () => {
   it("should set personalized content", () => {
     const collect = jasmine.createSpy();
     const move = createMove(collect);
-    const element = createNode("div", { id: "setAttribute" });
+    const element = createNode("div", { id: "move" });
     const elements = [element];
 
     appendNode(document.body, element);
@@ -36,7 +36,7 @@ describe("Personalization::actions::move", () => {
       content: { left: "100px", top: "100px" },
       meta: { a: 1 }
     };
-    const event = { elements, prehidingSelector: "#setAttribute" };
+    const event = { elements, prehidingSelector: "#move" };
 
     move(settings, event);
 
