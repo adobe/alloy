@@ -19,6 +19,7 @@ const logger = {
   warn() {}
 };
 const config = {
+  imsOrgId: "ABC123",
   get() {}
 };
 
@@ -49,9 +50,7 @@ describe("Event Command", () => {
     ).and.callThrough();
     sendRequestSpy = spyOn(network, "sendRequest").and.callThrough();
     const dataCollector = createDataCollector({
-      config: {
-        imsOrgId: "ABC123"
-      },
+      config,
       logger
     });
     dataCollector.lifecycle.onComponentsRegistered({
