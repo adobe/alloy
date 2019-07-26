@@ -1,27 +1,18 @@
 import {
   selectNodes,
-  removeNode,
   appendNode,
   createNode
 } from "../../../../../../src/utils/dom";
 import createInsertBefore from "../../../../../../src/components/Personalization/actions/insertBefore";
-
-const cleanUp = () => {
-  selectNodes("div#insertBefore").forEach(removeNode);
-  selectNodes("style").forEach(node => {
-    if (node.textContent.indexOf("insertBefore") !== -1) {
-      removeNode(node);
-    }
-  });
-};
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::insertBefore", () => {
   beforeEach(() => {
-    cleanUp();
+    cleanUpDomChanges("insertBefore");
   });
 
   afterEach(() => {
-    cleanUp();
+    cleanUpDomChanges("insertBefore");
   });
 
   it("should inser before personalized content", () => {

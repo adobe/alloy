@@ -1,27 +1,14 @@
-import {
-  selectNodes,
-  removeNode,
-  appendNode,
-  createNode
-} from "../../../../../../src/utils/dom";
+import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import createSetText from "../../../../../../src/components/Personalization/actions/setText";
-
-const cleanUp = () => {
-  selectNodes("div#setText").forEach(removeNode);
-  selectNodes("style").forEach(node => {
-    if (node.textContent.indexOf("setText") !== -1) {
-      removeNode(node);
-    }
-  });
-};
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::setText", () => {
   beforeEach(() => {
-    cleanUp();
+    cleanUpDomChanges("setHtml");
   });
 
   afterEach(() => {
-    cleanUp();
+    cleanUpDomChanges("setHtml");
   });
 
   it("should set personalized content", () => {

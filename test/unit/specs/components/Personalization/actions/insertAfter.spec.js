@@ -1,27 +1,18 @@
 import {
   selectNodes,
-  removeNode,
   appendNode,
   createNode
 } from "../../../../../../src/utils/dom";
 import createInsertAfter from "../../../../../../src/components/Personalization/actions/insertAfter";
-
-const cleanUp = () => {
-  selectNodes("div#insertAfter").forEach(removeNode);
-  selectNodes("style").forEach(node => {
-    if (node.textContent.indexOf("insertAfter") !== -1) {
-      removeNode(node);
-    }
-  });
-};
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::insertAfter", () => {
   beforeEach(() => {
-    cleanUp();
+    cleanUpDomChanges("insertAfter");
   });
 
   afterEach(() => {
-    cleanUp();
+    cleanUpDomChanges("insertAfter");
   });
 
   it("should inser after personalized content", () => {

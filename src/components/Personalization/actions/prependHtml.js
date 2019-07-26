@@ -10,32 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { prepend } from "../../../utils/dom";
 import { showElements } from "../flicker";
-
-const DIV_TAG = "DIV";
-
-const createFragment = content => {
-  const result = document.createElement(DIV_TAG);
-  result.innerHTML = content;
-
-  return result;
-};
-
-const prependHtml = (container, content) => {
-  const fragment = createFragment(content);
-  const elements = [].slice.call(fragment.children);
-  const { length } = elements;
-  let i = length - 1;
-
-  // We are inserting elements in reverse order
-  while (i >= 0) {
-    const element = elements[i];
-
-    container.insertBefore(element, container.firstElementChild);
-
-    i -= 1;
-  }
-};
 
 export default collect => {
   return (settings, event) => {
@@ -44,7 +20,7 @@ export default collect => {
 
     // this is a very naive approach, we will expand later
     elements.forEach(element => {
-      prependHtml(element, content);
+      prepend(element, content);
     });
 
     // after rendering we should remove the flicker control styles

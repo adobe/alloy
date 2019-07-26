@@ -1,27 +1,18 @@
 import {
   selectNodes,
-  removeNode,
   appendNode,
   createNode
 } from "../../../../../../src/utils/dom";
 import createReplaceHtml from "../../../../../../src/components/Personalization/actions/replaceHtml";
-
-const cleanUp = () => {
-  selectNodes("div#replaceHtml").forEach(removeNode);
-  selectNodes("style").forEach(node => {
-    if (node.textContent.indexOf("replaceHtml") !== -1) {
-      removeNode(node);
-    }
-  });
-};
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::replaceHtml", () => {
   beforeEach(() => {
-    cleanUp();
+    cleanUpDomChanges("replaceHtml");
   });
 
   afterEach(() => {
-    cleanUp();
+    cleanUpDomChanges("replaceHtml");
   });
 
   it("should replace element with personalized content", () => {

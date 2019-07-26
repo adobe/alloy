@@ -10,25 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { insertBefore } from "../../../utils/dom";
 import { showElements } from "../flicker";
-
-const DIV_TAG = "DIV";
-
-const createFragment = content => {
-  const result = document.createElement(DIV_TAG);
-  result.innerHTML = content;
-
-  return result;
-};
-
-const insertBefore = (container, content) => {
-  const fragment = createFragment(content);
-  const elements = [].slice.call(fragment.children);
-
-  elements.forEach(element => {
-    container.parentNode.insertBefore(element, container);
-  });
-};
 
 export default collect => {
   return (settings, event) => {

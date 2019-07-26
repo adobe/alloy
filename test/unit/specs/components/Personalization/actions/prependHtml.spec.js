@@ -1,27 +1,18 @@
 import {
   selectNodes,
-  removeNode,
   appendNode,
   createNode
 } from "../../../../../../src/utils/dom";
 import createPrependHtml from "../../../../../../src/components/Personalization/actions/prependHtml";
-
-const cleanUp = () => {
-  selectNodes("ul#prependHtml").forEach(removeNode);
-  selectNodes("style").forEach(node => {
-    if (node.textContent.indexOf("prependHtml") !== -1) {
-      removeNode(node);
-    }
-  });
-};
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::prependHtml", () => {
   beforeEach(() => {
-    cleanUp();
+    cleanUpDomChanges("prependHtml");
   });
 
   afterEach(() => {
-    cleanUp();
+    cleanUpDomChanges("prependHtml");
   });
 
   it("should prepend personalized content", () => {
