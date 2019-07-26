@@ -86,9 +86,12 @@ const createPersonalization = ({ config, logger, cookie }) => {
       },
       onBeforeEvent(event, options, isViewStart) {
         if (isViewStart) {
+          // If isViewStart we enable personalization
+          event.mergeQuery({ personalization: { enabled: true } });
+          event.expectResponse();
+
           // For viewStart we try to hide the personalization containers
           hideContainers(prehidingId, prehidingStyle);
-          event.expectResponse();
         }
       },
       onResponse(response) {
