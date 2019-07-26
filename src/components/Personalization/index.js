@@ -10,29 +10,32 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray, uuid, getTopLevelCookieDomain } from "../../utils";
+import { isNonEmptyArray, uuid } from "../../utils";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers, hideElements } from "./flicker";
 
 const PAGE_HANDLE = "personalization:page";
-const SESSION_ID_COOKIE = "alloy-session-id";
+const SESSION_ID_COOKIE = "SID";
 const SESSION_ID_TTL = 31 * 60 * 1000;
 const EVENT_COMMAND = "event";
+
 const isElementExists = event => event.moduleType === "elementExists";
 
 const getOrCreateSessionId = cookie => {
-  let sessionId = cookie.get(SESSION_ID_COOKIE);
-  const domain = getTopLevelCookieDomain(window, cookie);
-  const expires = new Date(Date.now() + SESSION_ID_TTL);
+  let cookieValue = cookie.get(SESSION_ID_COOKIE);
+  const now = Date.now();
+  const expires = now + SESSION_ID_TTL;
 
-  if (!sessionId) {
-    sessionId = uuid();
+  if (!cookieValue || now > cookieValue.expires) {
+    cookieValue = { value: uuid(), expires };
+  } else {
+    cookieValue.expires = expires;
   }
 
-  // We have to extend cookie lifetime
-  cookie.set(SESSION_ID_COOKIE, sessionId, { domain, expires });
+  // We have to extend session ID lifetime
+  cookie.set(SESSION_ID_COOKIE, cookieValue);
 
-  return sessionId;
+  return cookieValue.value;
 };
 const hideElementsForPage = fragment => {
   const { rules = [] } = fragment;
