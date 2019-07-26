@@ -45,6 +45,8 @@ export default function getTopLevelCookieDomain(window, cookie) {
   return topLevelCookieDomain;
 }
 
-export const testClearCachedValue = () => {
+// #if _TEST
+export const clearCachedValue = () => {
   topLevelCookieDomain = "";
 };
+// #endif

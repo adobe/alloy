@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import getTopLevelCookieDomain, {
-  testClearCachedValue
+  clearCachedValue
 } from "../../../../src/utils/getTopLevelCookieDomain";
 
 const mockWindowWithHostname = hostname => {
@@ -23,7 +23,7 @@ const mockWindowWithHostname = hostname => {
 };
 
 describe("getTld", () => {
-  afterEach(testClearCachedValue);
+  afterEach(clearCachedValue);
 
   it("returns an empty string when only one host part exists", () => {
     const window = mockWindowWithHostname("localhost");
