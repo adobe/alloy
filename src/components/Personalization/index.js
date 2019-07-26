@@ -63,19 +63,23 @@ const executeFragment = (fragment, modules, logger) => {
 const createPersonalization = ({ config, logger, cookie }) => {
   const { prehidingId, prehidingStyle } = config;
   let ruleComponentModules;
+  let optIn;
 
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
         const { componentRegistry } = tools;
+        ({ optIn } = tools);
         ruleComponentModules = initRuleComponentModules(
           componentRegistry.getCommand(EVENT_COMMAND)
         );
       },
       onBeforeDataCollection(payload) {
-        const sessionId = getOrCreateSessionId(cookie);
+        return optIn.whenOptedIn().then(() => {
+          const sessionId = getOrCreateSessionId(cookie);
 
-        payload.mergeMeta({ personalization: { sessionId } });
+          payload.mergeMeta({ personalization: { sessionId } });
+        });
       },
       onBeforeEvent(event, options, isViewStart) {
         if (isViewStart) {
