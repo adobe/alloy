@@ -15,12 +15,6 @@ const cleanUp = () => {
   });
 };
 
-const invalidateIfRequired = element => {
-  if (element.style.setAttribute) {
-    element.style.setAttribute("background", "red");
-  }
-};
-
 describe("Personalization::actions::move", () => {
   beforeEach(() => {
     cleanUp();
@@ -45,8 +39,6 @@ describe("Personalization::actions::move", () => {
     const event = { elements, prehidingSelector: "#move" };
 
     move(settings, event);
-
-    invalidateIfRequired(elements[0]);
 
     expect(elements[0].style.left).toEqual("100px");
     expect(elements[0].style.top).toEqual("100px");

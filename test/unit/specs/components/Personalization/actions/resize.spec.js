@@ -15,12 +15,6 @@ const cleanUp = () => {
   });
 };
 
-const invalidateIfRequired = element => {
-  if (element.style.setAttribute) {
-    element.style.setAttribute("background", "red");
-  }
-};
-
 describe("Personalization::actions::resize", () => {
   beforeEach(() => {
     cleanUp();
@@ -45,8 +39,6 @@ describe("Personalization::actions::resize", () => {
     const event = { elements, prehidingSelector: "#resize" };
 
     resize(settings, event);
-
-    invalidateIfRequired(elements[0]);
 
     expect(elements[0].style.width).toEqual("100px");
     expect(elements[0].style.height).toEqual("100px");

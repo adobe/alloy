@@ -11,5 +11,13 @@ governing permissions and limitations under the License.
 */
 
 export default (element, name, value, priority) => {
-  element.style.setProperty(name, value, priority);
+  let css;
+
+  if (priority) {
+    css = `${name}:${value} !${priority};`;
+  } else {
+    css = `${name}:${value};`;
+  }
+
+  element.style.cssText += `;${css}`;
 };
