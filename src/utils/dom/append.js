@@ -13,8 +13,8 @@ governing permissions and limitations under the License.
 import createFragment from "./createFragment";
 import getChildren from "./getChildren";
 
-export default (container, content) => {
-  const fragment = createFragment(content);
+export default (container, html) => {
+  const fragment = createFragment(html);
   const elements = getChildren(fragment);
 
   elements.forEach(element => {

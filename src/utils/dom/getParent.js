@@ -11,11 +11,5 @@ governing permissions and limitations under the License.
 */
 
 export default element => {
-  const result = element.parentNode;
-
-  if (result) {
-    return result;
-  }
-
-  return null;
+  return element.parentNode;
 };

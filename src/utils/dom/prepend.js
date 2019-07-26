@@ -15,8 +15,8 @@ import getChildren from "./getChildren";
 import getFirstChild from "./getFirstChild";
 import insertElementBefore from "./insertElementBefore";
 
-export default (container, content) => {
-  const fragment = createFragment(content);
+export default (container, html) => {
+  const fragment = createFragment(html);
   const elements = getChildren(fragment);
   const { length } = elements;
   let i = length - 1;
