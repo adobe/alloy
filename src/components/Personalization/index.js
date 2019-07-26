@@ -10,14 +10,33 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray } from "../../utils";
+import { isNonEmptyArray, uuid } from "../../utils";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers, hideElements } from "./flicker";
 
 const PAGE_HANDLE = "personalization:page";
+const SESSION_ID_COOKIE = "SID";
+const SESSION_ID_TTL = 31 * 60 * 1000;
 const EVENT_COMMAND = "event";
+
 const isElementExists = event => event.moduleType === "elementExists";
 
+const getOrCreateSessionId = cookie => {
+  let cookieValue = cookie.get(SESSION_ID_COOKIE);
+  const now = Date.now();
+  const expires = now + SESSION_ID_TTL;
+
+  if (!cookieValue || now > cookieValue.expires) {
+    cookieValue = { value: uuid(), expires };
+  } else {
+    cookieValue.expires = expires;
+  }
+
+  // We have to extend session ID lifetime
+  cookie.set(SESSION_ID_COOKIE, cookieValue);
+
+  return cookieValue.value;
+};
 const hideElementsForPage = fragment => {
   const { rules = [] } = fragment;
 
@@ -44,17 +63,26 @@ const executeFragment = (fragment, modules, logger) => {
   }
 };
 
-const createPersonalization = ({ config, logger }) => {
+const createPersonalization = ({ config, logger, cookie }) => {
   const { prehidingId, prehidingStyle } = config;
   let ruleComponentModules;
+  let optIn;
 
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
         const { componentRegistry } = tools;
+        ({ optIn } = tools);
         ruleComponentModules = initRuleComponentModules(
           componentRegistry.getCommand(EVENT_COMMAND)
         );
+      },
+      onBeforeDataCollection(payload) {
+        return optIn.whenOptedIn().then(() => {
+          const sessionId = getOrCreateSessionId(cookie);
+
+          payload.mergeMeta({ personalization: { sessionId } });
+        });
       },
       onBeforeEvent(event, options, isViewStart) {
         if (isViewStart) {
