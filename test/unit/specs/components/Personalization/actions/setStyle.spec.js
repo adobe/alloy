@@ -1,27 +1,14 @@
-import {
-  selectNodes,
-  removeNode,
-  appendNode,
-  createNode
-} from "../../../../../../src/utils/dom";
+import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import createSetStyle from "../../../../../../src/components/Personalization/actions/setStyle";
-
-const cleanUp = () => {
-  selectNodes("div#setStyle").forEach(removeNode);
-  selectNodes("style").forEach(node => {
-    if (node.textContent.indexOf("setStyle") !== -1) {
-      removeNode(node);
-    }
-  });
-};
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Presonalization::actions::setStyle", () => {
   beforeEach(() => {
-    cleanUp();
+    cleanUpDomChanges("setStyle");
   });
 
   afterEach(() => {
-    cleanUp();
+    cleanUpDomChanges("setStyle");
   });
 
   it("should set personalized content", () => {
@@ -40,9 +27,7 @@ describe("Presonalization::actions::setStyle", () => {
 
     setStyle(settings, event);
 
-    const result = window.getComputedStyle(element, null);
-
-    expect(result.getPropertyValue("font-size")).toEqual("33px");
+    expect(elements[0].style.getPropertyValue("font-size")).toEqual("33px");
     expect(collect).toHaveBeenCalledWith({
       meta: { personalization: { a: 1 } }
     });

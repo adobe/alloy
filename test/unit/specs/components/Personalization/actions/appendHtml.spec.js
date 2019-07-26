@@ -1,27 +1,18 @@
 import {
   selectNodes,
-  removeNode,
   appendNode,
   createNode
 } from "../../../../../../src/utils/dom";
 import createAppendHtml from "../../../../../../src/components/Personalization/actions/appendHtml";
-
-const cleanUp = () => {
-  selectNodes("ul#appendHtml").forEach(removeNode);
-  selectNodes("style").forEach(node => {
-    if (node.textContent.indexOf("appendHtml") !== -1) {
-      removeNode(node);
-    }
-  });
-};
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::appendHtml", () => {
   beforeEach(() => {
-    cleanUp();
+    cleanUpDomChanges("appendHtml");
   });
 
   afterEach(() => {
-    cleanUp();
+    cleanUpDomChanges("appendHtml");
   });
 
   it("should append personalized content", () => {

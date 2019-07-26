@@ -1,27 +1,14 @@
-import {
-  selectNodes,
-  removeNode,
-  appendNode,
-  createNode
-} from "../../../../../../src/utils/dom";
+import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import createMove from "../../../../../../src/components/Personalization/actions/move";
-
-const cleanUp = () => {
-  selectNodes("div#move").forEach(removeNode);
-  selectNodes("style").forEach(node => {
-    if (node.textContent.indexOf("move") !== -1) {
-      removeNode(node);
-    }
-  });
-};
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::move", () => {
   beforeEach(() => {
-    cleanUp();
+    cleanUpDomChanges("move");
   });
 
   afterEach(() => {
-    cleanUp();
+    cleanUpDomChanges("move");
   });
 
   it("should set personalized content", () => {

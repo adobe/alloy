@@ -1,27 +1,18 @@
 import {
   selectNodes,
-  removeNode,
   appendNode,
   createNode
 } from "../../../../../../src/utils/dom";
 import createRemove from "../../../../../../src/components/Personalization/actions/remove";
-
-const cleanUp = () => {
-  selectNodes("div#remove").forEach(removeNode);
-  selectNodes("style").forEach(node => {
-    if (node.textContent.indexOf("remove") !== -1) {
-      removeNode(node);
-    }
-  });
-};
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Presonalization::actions::remove", () => {
   beforeEach(() => {
-    cleanUp();
+    cleanUpDomChanges("remove");
   });
 
   afterEach(() => {
-    cleanUp();
+    cleanUpDomChanges("remove");
   });
 
   it("should remove element", () => {

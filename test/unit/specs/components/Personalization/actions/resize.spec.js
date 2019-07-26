@@ -1,27 +1,14 @@
-import {
-  selectNodes,
-  removeNode,
-  appendNode,
-  createNode
-} from "../../../../../../src/utils/dom";
+import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import createResize from "../../../../../../src/components/Personalization/actions/resize";
-
-const cleanUp = () => {
-  selectNodes("div#resize").forEach(removeNode);
-  selectNodes("style").forEach(node => {
-    if (node.textContent.indexOf("resize") !== -1) {
-      removeNode(node);
-    }
-  });
-};
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::resize", () => {
   beforeEach(() => {
-    cleanUp();
+    cleanUpDomChanges("resize");
   });
 
   afterEach(() => {
-    cleanUp();
+    cleanUpDomChanges("resize");
   });
 
   it("should set personalized content", () => {

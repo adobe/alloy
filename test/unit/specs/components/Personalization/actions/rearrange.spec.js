@@ -1,27 +1,18 @@
 import {
   selectNodes,
-  removeNode,
   appendNode,
   createNode
 } from "../../../../../../src/utils/dom";
 import createRearrange from "../../../../../../src/components/Personalization/actions/rearrange";
-
-const cleanUp = () => {
-  selectNodes("ul#rearrange").forEach(removeNode);
-  selectNodes("style").forEach(node => {
-    if (node.textContent.indexOf("rearrange") !== -1) {
-      removeNode(node);
-    }
-  });
-};
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Presonalization::actions::rearrange", () => {
   beforeEach(() => {
-    cleanUp();
+    cleanUpDomChanges("rearrange");
   });
 
   afterEach(() => {
-    cleanUp();
+    cleanUpDomChanges("rearrange");
   });
 
   it("should rearrange elements when from < to", () => {

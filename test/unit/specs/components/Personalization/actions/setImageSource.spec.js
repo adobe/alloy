@@ -1,27 +1,14 @@
-import {
-  selectNodes,
-  removeNode,
-  appendNode,
-  createNode
-} from "../../../../../../src/utils/dom";
+import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import createSetImageSource from "../../../../../../src/components/Personalization/actions/setImageSource";
-
-const cleanUp = () => {
-  selectNodes("div#setImageSource").forEach(removeNode);
-  selectNodes("style").forEach(node => {
-    if (node.textContent.indexOf("setImageSource") !== -1) {
-      removeNode(node);
-    }
-  });
-};
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::setImageSource", () => {
   beforeEach(() => {
-    cleanUp();
+    cleanUpDomChanges("setImageSource");
   });
 
   afterEach(() => {
-    cleanUp();
+    cleanUpDomChanges("setImageSource");
   });
 
   it("should set personalized content", () => {
