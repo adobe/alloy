@@ -10,14 +10,30 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray } from "../../utils";
+import { isNonEmptyArray, uuid, getTopLevelCookieDomain } from "../../utils";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers, hideElements } from "./flicker";
 
 const PAGE_HANDLE = "personalization:page";
+const SESSION_ID_COOKIE = "alloy-session-id";
+const SESSION_ID_TTL = 31 * 60 * 1000;
 const EVENT_COMMAND = "event";
 const isElementExists = event => event.moduleType === "elementExists";
 
+const getOrCreateSessionId = cookie => {
+  let sessionId = cookie.get(SESSION_ID_COOKIE);
+  const domain = getTopLevelCookieDomain(window, cookie);
+  const expires = new Date(Date.now() + SESSION_ID_TTL);
+
+  if (!sessionId) {
+    sessionId = uuid();
+  }
+
+  // We have to extend cookie lifetime
+  cookie.set(SESSION_ID_COOKIE, sessionId, { domain, expires });
+
+  return sessionId;
+};
 const hideElementsForPage = fragment => {
   const { rules = [] } = fragment;
 
@@ -44,7 +60,7 @@ const executeFragment = (fragment, modules, logger) => {
   }
 };
 
-const createPersonalization = ({ config, logger }) => {
+const createPersonalization = ({ config, logger, cookie }) => {
   const { prehidingId, prehidingStyle } = config;
   let ruleComponentModules;
 
@@ -55,6 +71,11 @@ const createPersonalization = ({ config, logger }) => {
         ruleComponentModules = initRuleComponentModules(
           componentRegistry.getCommand(EVENT_COMMAND)
         );
+      },
+      onBeforeDataCollection(payload) {
+        const sessionId = getOrCreateSessionId(cookie);
+
+        payload.mergeMeta({ personalization: { sessionId } });
       },
       onBeforeEvent(event, options, isViewStart) {
         if (isViewStart) {
