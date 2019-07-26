@@ -18,34 +18,30 @@ const PAGE_HANDLE = "personalization:page";
 const EVENT_COMMAND = "event";
 const isElementExists = event => event.moduleType === "elementExists";
 
-const hideElementsForPage = fragments => {
-  fragments.forEach(fragment => {
-    const { rules = [] } = fragment;
+const hideElementsForPage = fragment => {
+  const { rules = [] } = fragment;
 
-    rules.forEach(rule => {
-      const { events = [] } = rule;
-      const filteredEvents = events.filter(isElementExists);
+  rules.forEach(rule => {
+    const { events = [] } = rule;
+    const filteredEvents = events.filter(isElementExists);
 
-      filteredEvents.forEach(event => {
-        const { settings = {} } = event;
-        const { prehidingSelector } = settings;
+    filteredEvents.forEach(event => {
+      const { settings = {} } = event;
+      const { prehidingSelector } = settings;
 
-        if (prehidingSelector) {
-          hideElements(prehidingSelector);
-        }
-      });
+      if (prehidingSelector) {
+        hideElements(prehidingSelector);
+      }
     });
   });
 };
 
-const executeFragments = (fragments, modules, logger) => {
-  fragments.forEach(fragment => {
-    const { rules = [] } = fragment;
+const executeFragment = (fragment, modules, logger) => {
+  const { rules = [] } = fragment;
 
-    if (isNonEmptyArray(rules)) {
-      executeRules(rules, modules, logger);
-    }
-  });
+  if (isNonEmptyArray(rules)) {
+    executeRules(rules, modules, logger);
+  }
 };
 
 const createPersonalization = ({ config, logger }) => {
@@ -68,17 +64,17 @@ const createPersonalization = ({ config, logger }) => {
         }
       },
       onResponse(response) {
-        const fragments = response.getPayloadByType(PAGE_HANDLE) || [];
+        const fragment = response.getPayloadByType(PAGE_HANDLE) || {};
 
         // On response we first hide all the elements for
         // personalization:page handle
-        hideElementsForPage(fragments);
+        hideElementsForPage(fragment);
 
         // Once the all element are hidden
         // we have to show the containers
         showContainers(prehidingId);
 
-        executeFragments(fragments, ruleComponentModules, logger);
+        executeFragment(fragment, ruleComponentModules, logger);
       },
       onResponseError() {
         showContainers(prehidingId);
