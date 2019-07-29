@@ -14,6 +14,7 @@ import cookieDetails from "../constants/cookieDetails";
 import getTopLevelCookieDomain from "../utils/getTopLevelCookieDomain";
 
 const { ALLOY_COOKIE_NAME, ALLOY_COOKIE_TTL } = cookieDetails;
+const cookieProxyByPropertyId = {};
 
 const safeJSONParse = (object, cookieName) => {
   try {
@@ -28,12 +29,20 @@ const safeJSONParse = (object, cookieName) => {
  * read and deserialize it every time a piece of it is accessed.
  */
 const createCookieProxy = (propertyId, cookieDomain = "") => {
-  const cookieName = `${ALLOY_COOKIE_NAME}_${propertyId}`;
+  // Because the cookie proxy caches the deserialized cookie, we want to make
+  // sure there's only one cookie proxy created per cookie because multiple
+  // caches per cookies would result in caches getting stale.
+  let cookieProxy = cookieProxyByPropertyId[propertyId];
 
+  if (cookieProxy) {
+    return cookieProxy;
+  }
+
+  const cookieName = `${ALLOY_COOKIE_NAME}_${propertyId}`;
   let deserializedCookie;
   let cookieHasBeenRead = false;
 
-  return {
+  cookieProxy = {
     get() {
       // We don't read the cookie right when the cookie proxy is created
       // because we don't know if the user has opted in. If the user
@@ -41,12 +50,14 @@ const createCookieProxy = (propertyId, cookieDomain = "") => {
       // If a component tries to read something off the cookie though,
       // we assume that the component has received word that the user
       // has opted-in. The responsibility is on the component.
-      if (!cookieHasBeenRead) {
-        const serializedCookie = cookie.get(cookieName);
-        deserializedCookie =
-          serializedCookie && safeJSONParse(serializedCookie, cookieName);
-        cookieHasBeenRead = true;
+      if (cookieHasBeenRead) {
+        return deserializedCookie;
       }
+
+      const serializedCookie = cookie.get(cookieName);
+      deserializedCookie =
+        serializedCookie && safeJSONParse(serializedCookie, cookieName);
+      cookieHasBeenRead = true;
       return deserializedCookie;
     },
     set(updatedCookie) {
@@ -57,6 +68,10 @@ const createCookieProxy = (propertyId, cookieDomain = "") => {
       });
     }
   };
+
+  cookieProxyByPropertyId[propertyId] = cookieProxy;
+
+  return cookieProxy;
 };
 
 // TODO: Support passing a configurable expiry in the config when creating this cookie.
@@ -108,3 +123,11 @@ const createCookie = (componentNamespace, propertyId, cookieDomain = "") => {
 };
 
 export default createCookie;
+
+// #if _TEST
+export const clearProxies = () => {
+  Object.keys(cookieProxyByPropertyId).forEach(propertyId => {
+    delete cookieProxyByPropertyId[propertyId];
+  });
+};
+// #endif
