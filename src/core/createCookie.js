@@ -34,38 +34,42 @@ const createCookieProxy = (propertyId, cookieDomain = "") => {
   // caches per cookies would result in caches getting stale.
   let cookieProxy = cookieProxyByPropertyId[propertyId];
 
-  if (!cookieProxy) {
-    const cookieName = `${ALLOY_COOKIE_NAME}_${propertyId}`;
-    let deserializedCookie;
-    let cookieHasBeenRead = false;
-
-    cookieProxy = {
-      get() {
-        // We don't read the cookie right when the cookie proxy is created
-        // because we don't know if the user has opted in. If the user
-        // hasn't opted in, we're legally obligated to not read the cookie.
-        // If a component tries to read something off the cookie though,
-        // we assume that the component has received word that the user
-        // has opted-in. The responsibility is on the component.
-        if (!cookieHasBeenRead) {
-          const serializedCookie = cookie.get(cookieName);
-          deserializedCookie =
-            serializedCookie && safeJSONParse(serializedCookie, cookieName);
-          cookieHasBeenRead = true;
-        }
-        return deserializedCookie;
-      },
-      set(updatedCookie) {
-        deserializedCookie = updatedCookie;
-        cookie.set(cookieName, updatedCookie, {
-          expires: ALLOY_COOKIE_TTL,
-          domain: cookieDomain || getTopLevelCookieDomain(window, cookie)
-        });
-      }
-    };
-
-    cookieProxyByPropertyId[propertyId] = cookieProxy;
+  if (cookieProxy) {
+    return cookieProxy;
   }
+
+  const cookieName = `${ALLOY_COOKIE_NAME}_${propertyId}`;
+  let deserializedCookie;
+  let cookieHasBeenRead = false;
+
+  cookieProxy = {
+    get() {
+      // We don't read the cookie right when the cookie proxy is created
+      // because we don't know if the user has opted in. If the user
+      // hasn't opted in, we're legally obligated to not read the cookie.
+      // If a component tries to read something off the cookie though,
+      // we assume that the component has received word that the user
+      // has opted-in. The responsibility is on the component.
+      if (cookieHasBeenRead) {
+        return deserializedCookie;
+      }
+
+      const serializedCookie = cookie.get(cookieName);
+      deserializedCookie =
+        serializedCookie && safeJSONParse(serializedCookie, cookieName);
+      cookieHasBeenRead = true;
+      return deserializedCookie;
+    },
+    set(updatedCookie) {
+      deserializedCookie = updatedCookie;
+      cookie.set(cookieName, updatedCookie, {
+        expires: ALLOY_COOKIE_TTL,
+        domain: cookieDomain || getTopLevelCookieDomain(window, cookie)
+      });
+    }
+  };
+
+  cookieProxyByPropertyId[propertyId] = cookieProxy;
 
   return cookieProxy;
 };
