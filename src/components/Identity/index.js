@@ -149,7 +149,7 @@ const createIdentity = ({ config, logger, cookie }) => {
         return optIn.whenOptedIn().then(getEcid);
       },
       setCustomerIds(options) {
-        return optIn.whenOptedIn().then(setCustomerIds(options));
+        optIn.whenOptedIn().then(setCustomerIds(options));
       },
       getCustomerIds() {
         return optIn.whenOptedIn().then(getCustomerIds);
