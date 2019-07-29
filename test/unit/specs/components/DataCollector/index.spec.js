@@ -176,4 +176,22 @@ describe("Event Command", () => {
       );
     });
   });
+
+  describe("privacy", () => {
+    it("calls onBeforeEvent before consent and onBeforeDataCollection after", () => {
+      const deferred = defer();
+      optIn.whenOptedIn = () => deferred.promise;
+      eventCommand({});
+      return flushPromiseChains()
+        .then(() => {
+          expect(onBeforeEventSpy).toHaveBeenCalled();
+          expect(onBeforeDataCollectionSpy).not.toHaveBeenCalled();
+          deferred.resolve();
+          return flushPromiseChains();
+        })
+        .then(() => {
+          expect(onBeforeDataCollectionSpy).toHaveBeenCalled();
+        });
+    });
+  });
 });
