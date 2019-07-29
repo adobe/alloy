@@ -1,5 +1,5 @@
 import { AUTH_STATES } from "./constants";
-import isObject from "../../utils/isObject";
+import {isObject, values} from "../../utils";
 
 const ERROR_MESSAGE = "Invalid customer ID format.";
 const NOT_AN_OBJECT_ERROR = "Each namespace should be an object.";
@@ -32,7 +32,7 @@ const normalizeCustomerIds = customerIds => {
   const sortedCustomerIds = sortObjectKeyNames(customerIds);
   return Object.keys(sortedCustomerIds).reduce((normalizedIds, customerId) => {
     const { id, authState } = sortedCustomerIds[customerId];
-    const authStates = Object.values(AUTH_STATES);
+    const authStates = values(AUTH_STATES);
     normalizedIds[customerId] = {
       id,
       authState: authStates.includes(authState)
