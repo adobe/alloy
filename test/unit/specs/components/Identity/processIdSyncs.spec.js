@@ -1,6 +1,8 @@
 import processIdSyncs from "../../../../../src/components/Identity/processIdSyncs";
-import { cookie } from "../../../../../src/utils";
-import namespace from "../../../../../src/constants/namespace";
+import createCookie from "../../../../../src/core/createCookie";
+
+const cookie = createCookie("willi", "123");
+const ID_SYNC_CONTROL = "idSyncControl";
 
 describe("Identity::processIdSyncs", () => {
   const config = {
@@ -12,7 +14,7 @@ describe("Identity::processIdSyncs", () => {
   };
 
   const getControlObject = () => {
-    const val = cookie.get(`${namespace}idSyncControl`) || "";
+    const val = cookie.get(ID_SYNC_CONTROL) || "";
     const arr = val ? val.split("_") : [];
 
     return arr.reduce((obj, pair) => {
@@ -39,17 +41,14 @@ describe("Identity::processIdSyncs", () => {
     ];
 
     cookie.set(
-      `${namespace}idSyncControl`,
-      `123-${Math.round(new Date().getTime() / 1000 / 60 / 60) - 10}`,
-      {
-        expires: 6 * 30 // 6 months
-      }
+      ID_SYNC_CONTROL,
+      `123-${Math.round(new Date().getTime() / 1000 / 60 / 60) - 10}`
     );
 
     let obj = getControlObject();
 
     expect(obj[123]).toBeDefined();
-    processIdSyncs({ destinations: idSyncs, config, logger });
+    processIdSyncs({ destinations: idSyncs, config, logger, cookie });
 
     const checkCookie = () => {
       obj = getControlObject();

@@ -10,14 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, cookie, fireDestinations } from "../../utils";
-import namespace from "../../constants/namespace";
+import { assign, fireDestinations } from "../../utils";
 
-const millisecondsPerHour = 60 * 60 * 1000;
+const ID_SYNC_CONTROL = "idSyncControl";
+const ID_SYNC_TIMESTAMP = "idSyncTimestamp";
+const SEVEN_DAYS_IN_HOURS = 7 * 24;
+const MILLISECONDS_PER_HOUR = 60 * 60 * 1000;
 
-// TODO: use alloy cookie once https://github.com/adobe/alloy/pull/26 is merged
+let alloyCookie;
+
 const getControlObject = () => {
-  const val = cookie.get(`${namespace}idSyncControl`) || "";
+  const val = alloyCookie.get(ID_SYNC_CONTROL) || "";
   const arr = val ? val.split("_") : [];
 
   return arr.reduce((obj, pair) => {
@@ -35,15 +38,15 @@ const setControlObject = obj => {
 
   Object.keys(obj).forEach(id => arr.push(`${id}-${obj[id]}`));
 
-  cookie.set(`${namespace}idSyncControl`, arr.join("_"), {
-    expires: 6 * 30 // 6 months
-  });
+  alloyCookie.set(ID_SYNC_CONTROL, arr.join("_"));
 };
 
-export default ({ destinations, config, logger }) => {
+export default ({ destinations, config, logger, cookie }) => {
+  alloyCookie = cookie;
+
   if (config.idSyncsEnabled) {
     const controlObject = getControlObject();
-    const now = new Date().getTime() / millisecondsPerHour; // hours
+    const now = new Date().getTime() / MILLISECONDS_PER_HOUR; // hours
 
     Object.keys(controlObject).forEach(key => {
       if (controlObject[key] < now) {
@@ -70,7 +73,7 @@ export default ({ destinations, config, logger }) => {
         destinations: idSyncs
       }).then(result => {
         const timeStamp = Math.round(
-          new Date().getTime() / millisecondsPerHour
+          new Date().getTime() / MILLISECONDS_PER_HOUR
         ); // hours
 
         result.succeeded.forEach(idSync => {
@@ -82,6 +85,12 @@ export default ({ destinations, config, logger }) => {
         });
 
         setControlObject(controlObject);
+
+        cookie.set(
+          ID_SYNC_TIMESTAMP,
+          Math.round(new Date().getTime() / MILLISECONDS_PER_HOUR) +
+            SEVEN_DAYS_IN_HOURS
+        );
       });
     }
   }
