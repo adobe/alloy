@@ -85,11 +85,16 @@ const createPersonalization = ({ config, logger, cookie }) => {
         });
       },
       onBeforeEvent(event, options, isViewStart) {
-        if (isViewStart) {
-          // For viewStart we try to hide the personalization containers
-          hideContainers(prehidingId, prehidingStyle);
-          event.expectResponse();
+        if (!isViewStart) {
+          // If NOT isViewStart disable personalization
+          event.mergeQuery({ personalization: { enabled: false } });
+          return;
         }
+
+        event.expectResponse();
+
+        // For viewStart we try to hide the personalization containers
+        hideContainers(prehidingId, prehidingStyle);
       },
       onResponse(response) {
         const fragment = response.getPayloadByType(PAGE_HANDLE) || {};
