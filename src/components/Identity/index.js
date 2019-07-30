@@ -62,7 +62,7 @@ const createIdentity = ({ config, logger, cookie }) => {
             logger.log("Delaying request while retrieving ECID from server.");
             promise = deferredForEcid.promise.then(() => {
               logger.log("Resuming previously delayed request.");
-              addIdsContext(payload, ecid);
+              addIdsContext(payload, getEcid());
             });
           } else {
             // We don't have an ECID and no request has gone out to fetch it.
