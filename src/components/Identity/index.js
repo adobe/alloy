@@ -43,37 +43,40 @@ const createIdentity = ({ config, logger, cookie }) => {
   const customerIds = {};
   const getCustomerIds = () => customerIds;
 
-  const makeServerCall = event => {
-    const payload = network.createPayload();
-    payload.addEvent(event);
+  const makeServerCall = payload => {
     return Promise.resolve()
       .then(() => {
         return lifecycle.onBeforeDataCollection(payload);
       })
       .then(() => {
-        return network.sendRequest(payload, payload.expectsResponse);
+        return network.sendRequest(payload, false);
       });
   };
 
   const setCustomerIds = ids => {
     validateCustomerIds(ids);
     const event = createEvent();
+    const payload = network.createPayload();
+
     assign(customerIds, ids);
 
     const normalizedCustomerIds = normalizeCustomerIds(customerIds);
 
+    Object.keys(normalizeCustomerIds).forEach(idName => {
+      payload.addIdentity(idName, normalizeCustomerIds[idName]);
+    });
+
     createHash(JSON.stringify(normalizedCustomerIds)).then(hash => {
       const customerIdsHash = bufferToHex(hash);
-      const hasSynced = customerIdsHash === cookie.get(CUSTOMER_ID_HASH);
-      event.mergeMeta({ identity: { customerIds, hasSynced } });
-
-      if (!hasSynced) {
+      const customerIdChanged =
+        customerIdsHash === cookie.get(CUSTOMER_ID_HASH);
+      payload.mergeMeta({ identity: { customerIdChanged } });
+      if (!customerIdChanged) {
         cookie.set(CUSTOMER_ID_HASH, customerIdsHash);
       }
-
       return lifecycle
-        .onBeforeEvent(event, ids)
-        .then(() => makeServerCall(event));
+        .onBeforeEvent(event, normalizedCustomerIds, customerIdChanged)
+        .then(() => makeServerCall(payload));
     });
   };
 
