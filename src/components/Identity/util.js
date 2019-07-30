@@ -1,5 +1,5 @@
 import { AUTH_STATES } from "./constants";
-import {isObject, values} from "../../utils";
+import { isObject, values } from "../../utils";
 
 const ERROR_MESSAGE = "Invalid customer ID format.";
 const NOT_AN_OBJECT_ERROR = "Each namespace should be an object.";
