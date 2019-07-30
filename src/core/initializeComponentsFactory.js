@@ -10,20 +10,31 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createLifecycle from "./createLifecycle";
-import createComponentRegistry from "./createComponentRegistry";
-import createNetwork from "./network";
 import { stackError } from "../utils";
-import createOptIn from "./createOptIn";
+import cookieDetails from "../constants/cookieDetails";
+
+const { ALLOY_COOKIE_NAME, ALLOY_COOKIE_EXPIRES } = cookieDetails;
 
 export default (
   componentCreators,
   logger,
   createNamespacedStorage,
-  cookie
+  createCookieProxy,
+  createCookie,
+  createLifecycle,
+  createComponentRegistry,
+  createNetwork,
+  createOptIn
 ) => config => {
   const componentRegistry = createComponentRegistry();
   const { imsOrgId, propertyId, cookieDomain } = config;
+  const cookieName = `${ALLOY_COOKIE_NAME}_${propertyId}`;
+  const cookieProxy = createCookieProxy(
+    cookieName,
+    ALLOY_COOKIE_EXPIRES,
+    cookieDomain
+  );
+
   // TODO: Should this storage be namespaced by property ID or org ID?
   const storage = createNamespacedStorage(imsOrgId);
   const optIn = createOptIn();
@@ -40,7 +51,7 @@ export default (
     try {
       component = createComponent({
         logger: logger.spawn(`[${namespace}]`),
-        cookie: cookie(namespace, propertyId, cookieDomain),
+        cookie: createCookie(cookieProxy, namespace),
         config,
         storage,
         enableOptIn: optIn.enable
