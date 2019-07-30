@@ -13,8 +13,6 @@ governing permissions and limitations under the License.
 import createEvent from "./createEvent";
 import { clone } from "../../utils";
 
-const VIEW_START_EVENT = "viewStart";
-
 const createDataCollector = ({ config }) => {
   const { imsOrgId } = config;
   let lifecycle;
@@ -50,10 +48,10 @@ const createDataCollector = ({ config }) => {
 
   const createEventHandler = options => {
     const event = createEvent();
-    const isViewStart = options.type === VIEW_START_EVENT;
+    const { isViewStart = false, data, meta } = options;
 
-    event.mergeData(options.data);
-    event.mergeMeta(options.meta);
+    event.mergeData(data);
+    event.mergeMeta(meta);
 
     return lifecycle
       .onBeforeEvent(event, options, isViewStart)

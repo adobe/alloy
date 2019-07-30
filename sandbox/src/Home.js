@@ -8,7 +8,7 @@ function HomeWithHistory({ history }) {
     if (loc.pathname !== previousPath) {
       const instanceName = loc.pathname.includes("orgTwo") ? "organizationTwo" : "alloy";
       window[instanceName]("event", {
-        type: "viewStart",
+        isViewStart: true,
         data: {
           "url": window.location.href,
           "name": loc.pathname.substring(1)
