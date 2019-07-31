@@ -15,8 +15,13 @@ import storageFactory from "../utils/storageFactory";
 import initializeComponentsFactory from "./initializeComponentsFactory";
 
 import createLogger from "./createLogger";
+import createCookieProxy from "./createCookieProxy";
 import createCookie from "./createCookie";
 import createLogController from "./createLogController";
+import createLifecycle from "./createLifecycle";
+import createComponentRegistry from "./createComponentRegistry";
+import createNetwork from "./network";
+import createOptIn from "./createOptIn";
 
 import createDataCollector from "../components/DataCollector";
 import createIdentity from "../components/Identity";
@@ -57,7 +62,12 @@ if (namespaces) {
       componentCreators,
       logger,
       createNamespacedStorage,
-      createCookie
+      createCookieProxy,
+      createCookie,
+      createLifecycle,
+      createComponentRegistry,
+      createNetwork,
+      createOptIn
     );
 
     const instance = createInstance(
