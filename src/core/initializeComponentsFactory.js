@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { stackError } from "../utils";
 import cookieDetails from "../constants/cookieDetails";
 
-const { ALLOY_COOKIE_NAME, ALLOY_COOKIE_EXPIRES } = cookieDetails;
+const { ALLOY_COOKIE_NAME, ALLOY_COOKIE_TTL_IN_DAYS } = cookieDetails;
 
 export default (
   componentCreators,
@@ -31,7 +31,7 @@ export default (
   const cookieName = `${ALLOY_COOKIE_NAME}_${propertyId}`;
   const cookieProxy = createCookieProxy(
     cookieName,
-    ALLOY_COOKIE_EXPIRES,
+    ALLOY_COOKIE_TTL_IN_DAYS,
     cookieDomain
   );
 

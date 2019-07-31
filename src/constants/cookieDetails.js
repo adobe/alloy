@@ -12,5 +12,5 @@ governing permissions and limitations under the License.
 
 export default {
   ALLOY_COOKIE_NAME: "adobe_alloy", // TODO: Rename this cookie
-  ALLOY_COOKIE_EXPIRES: 180
+  ALLOY_COOKIE_TTL_IN_DAYS: 180
 };
