@@ -26,7 +26,7 @@ const removeAllCookies = () => {
   });
 };
 
-describe("createCookie", () => {
+describe("createCookieProxy", () => {
   let cookieProxy;
 
   afterEach(() => {
