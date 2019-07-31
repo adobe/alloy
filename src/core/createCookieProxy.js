@@ -11,10 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import cookie from "../utils/cookie";
-import getTopLevelCookieDomain from "../utils/getTopLevelCookieDomain";
-import memoize from "../utils/memoize";
-
-const memoizedGetTopLevelCookieDomain = memoize(getTopLevelCookieDomain);
 
 const safeJSONParse = (object, cookieName) => {
   try {
@@ -29,7 +25,7 @@ const safeJSONParse = (object, cookieName) => {
  * read and deserialize it every time a piece of it is accessed. It assumes
  * nothing outside of Alloy will be modifying the cookie.
  */
-export default (name, expires, domain = "") => {
+export default (name, expires, domain) => {
   let deserializedCookie;
   let cookieHasBeenRead = false;
 
@@ -55,7 +51,7 @@ export default (name, expires, domain = "") => {
       deserializedCookie = updatedCookie;
       cookie.set(name, updatedCookie, {
         expires,
-        domain: domain || memoizedGetTopLevelCookieDomain(window, cookie)
+        domain
       });
     }
   };
