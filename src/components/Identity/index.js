@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { defer } from "../../utils";
+import { defer, flatMap } from "../../utils";
 import processIdSyncs from "./processIdSyncs";
 
 const ECID_NAMESPACE = "ECID";
@@ -77,17 +77,20 @@ const createIdentity = ({ config, logger, cookie }) => {
       // Waiting for opt-in because we'll be writing the ECID to a cookie
       onResponse(response) {
         return optIn.whenOptedIn().then(() => {
-          const ecidPayload = response.getPayloadByType("identity:persist");
+          const ecidPayloads = response.getPayloadsByType("identity:persist");
 
-          if (ecidPayload) {
-            cookie.set(ECID_NAMESPACE, ecidPayload.id);
+          if (ecidPayloads.length > 0) {
+            cookie.set(ECID_NAMESPACE, ecidPayloads[0].id);
 
             if (deferredForEcid) {
               deferredForEcid.resolve();
             }
           }
 
-          const idSyncs = response.getPayloadByType("identity:exchange") || [];
+          const idSyncs = flatMap(
+            response.getPayloadsByType("identity:exchange"),
+            fragment => fragment
+          );
 
           processIdSyncs({
             destinations: idSyncs,

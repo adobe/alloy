@@ -112,7 +112,7 @@ const createPersonalization = ({ config, logger, cookie }) => {
         hideContainers(prehidingId, prehidingStyle);
       },
       onResponse(response) {
-        const fragments = response.getPayloadByType(PAGE_HANDLE) || [];
+        const fragments = response.getPayloadsByType(PAGE_HANDLE);
 
         // On response we first hide all the elements for
         // personalization:page handle

@@ -10,8 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { find } from "../../utils";
-
 /**
  * Represents a gateway response with the addition to helper methods.
  *
@@ -25,7 +23,7 @@ import { find } from "../../utils";
  * }
  *
  * @returns {Object<Response>} A Response object containing:
- *  - `getPayloadByType`: returns a fragment of the response by type
+ *  - `getPayloadsByType`: returns matching fragments of the response by type
  *      - @param {String} type: A string with the current format: <namespace:action>
  *          example: "identity:persist"
  */
@@ -33,12 +31,11 @@ export default (content = { requestId: "", handle: [] }) => {
   // TODO: Should we freeze the response to prevent change by Components?
   // Object.freeze(response.handle.map(h => Object.freeze(h)));
   return {
-    getPayloadByType(type) {
-      const fragment = find(
-        content.handle,
-        handleContent => handleContent.type === type
-      );
-      return fragment ? fragment.payload : null;
+    getPayloadsByType(type) {
+      const { handle = [] } = content;
+      return handle
+        .filter(fragment => fragment.type === type)
+        .map(fragment => fragment.payload);
     },
     toJSON() {
       return content;
