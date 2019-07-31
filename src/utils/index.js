@@ -33,6 +33,7 @@ export { default as isNonEmptyArray } from "./isNonEmptyArray";
 export { default as isNonEmptyString } from "./isNonEmptyString";
 export { default as isObject } from "./isObject";
 export { default as isString } from "./isString";
+export { default as memoize } from "./memoize";
 export { default as noop } from "./noop";
 export { default as queryString } from "./querystring";
 export { default as setNestedObject } from "./setNestedObject";

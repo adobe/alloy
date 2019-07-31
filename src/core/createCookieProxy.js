@@ -12,6 +12,9 @@ governing permissions and limitations under the License.
 
 import cookie from "../utils/cookie";
 import getTopLevelCookieDomain from "../utils/getTopLevelCookieDomain";
+import memoize from "../utils/memoize";
+
+const memoizedGetTopLevelCookieDomain = memoize(getTopLevelCookieDomain);
 
 const safeJSONParse = (object, cookieName) => {
   try {
@@ -52,7 +55,7 @@ export default (name, expires, domain = "") => {
       deserializedCookie = updatedCookie;
       cookie.set(name, updatedCookie, {
         expires,
-        domain: domain || getTopLevelCookieDomain(window, cookie)
+        domain: domain || memoizedGetTopLevelCookieDomain(window, cookie)
       });
     }
   };
