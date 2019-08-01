@@ -19,9 +19,10 @@ describe("Personalization::actions::move", () => {
 
     appendNode(document.body, element);
 
+    const meta = { a: 1 };
     const settings = {
       content: { left: "100px", top: "100px" },
-      meta: { a: 1 }
+      meta
     };
     const event = { elements, prehidingSelector: "#move" };
 
@@ -29,8 +30,6 @@ describe("Personalization::actions::move", () => {
 
     expect(elements[0].style.left).toEqual("100px");
     expect(elements[0].style.top).toEqual("100px");
-    expect(collect).toHaveBeenCalledWith({
-      meta: { personalization: { a: 1 } }
-    });
+    expect(collect).toHaveBeenCalledWith(meta);
   });
 });

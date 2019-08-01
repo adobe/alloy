@@ -28,9 +28,10 @@ describe("Personalization::actions::replaceHtml", () => {
 
     appendNode(document.body, element);
 
+    const meta = { a: 1 };
     const settings = {
       content: `<div id="b" class="rh">BBB</div>`,
-      meta: { a: 1 }
+      meta
     };
     const event = { elements, prehidingSelector: "#a" };
 
@@ -40,8 +41,6 @@ describe("Personalization::actions::replaceHtml", () => {
 
     expect(result.length).toEqual(1);
     expect(result[0].innerHTML).toEqual("BBB");
-    expect(collect).toHaveBeenCalledWith({
-      meta: { personalization: { a: 1 } }
-    });
+    expect(collect).toHaveBeenCalledWith(meta);
   });
 });

@@ -19,9 +19,10 @@ describe("Personalization::actions::resize", () => {
 
     appendNode(document.body, element);
 
+    const meta = { a: 1 };
     const settings = {
       content: { width: "100px", height: "100px" },
-      meta: { a: 1 }
+      meta
     };
     const event = { elements, prehidingSelector: "#resize" };
 
@@ -29,8 +30,6 @@ describe("Personalization::actions::resize", () => {
 
     expect(elements[0].style.width).toEqual("100px");
     expect(elements[0].style.height).toEqual("100px");
-    expect(collect).toHaveBeenCalledWith({
-      meta: { personalization: { a: 1 } }
-    });
+    expect(collect).toHaveBeenCalledWith(meta);
   });
 });
