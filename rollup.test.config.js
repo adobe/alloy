@@ -19,11 +19,7 @@ const minimist = require("minimist");
 
 const argv = minimist(process.argv.slice(2));
 const plugins = [
-  jscc({
-    values: {
-      _TEST: true
-    }
-  }),
+  jscc(),
   resolve({
     preferBuiltins: false,
     // Support the browser field in dependencies' package.json.
