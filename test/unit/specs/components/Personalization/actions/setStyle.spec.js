@@ -19,17 +19,16 @@ describe("Presonalization::actions::setStyle", () => {
 
     appendNode(document.body, element);
 
+    const meta = { a: 1 };
     const settings = {
       content: { "font-size": "33px", priority: "important" },
-      meta: { a: 1 }
+      meta
     };
     const event = { elements, prehidingSelector: "#setStyle" };
 
     setStyle(settings, event);
 
     expect(elements[0].style.getPropertyValue("font-size")).toEqual("33px");
-    expect(collect).toHaveBeenCalledWith({
-      meta: { personalization: { a: 1 } }
-    });
+    expect(collect).toHaveBeenCalledWith(meta);
   });
 });

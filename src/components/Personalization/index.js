@@ -37,6 +37,7 @@ const getOrCreateSessionId = cookie => {
 
   return cookieValue.value;
 };
+
 const hideElementsForPage = fragment => {
   const { rules = [] } = fragment;
 
@@ -63,6 +64,17 @@ const executeFragment = (fragment, modules, logger) => {
   }
 };
 
+const createCollect = collect => {
+  return payload => {
+    const id = uuid();
+    const timestamp = Date.now();
+    const notification = Object.assign({}, payload, { id, timestamp });
+    const personalization = { notification };
+
+    collect({ meta: { personalization } });
+  };
+};
+
 const createPersonalization = ({ config, logger, cookie }) => {
   const { prehidingId, prehidingStyle } = config;
   let ruleComponentModules;
@@ -73,9 +85,8 @@ const createPersonalization = ({ config, logger, cookie }) => {
       onComponentsRegistered(tools) {
         const { componentRegistry } = tools;
         ({ optIn } = tools);
-        ruleComponentModules = initRuleComponentModules(
-          componentRegistry.getCommand(EVENT_COMMAND)
-        );
+        const collect = componentRegistry.getCommand(EVENT_COMMAND);
+        ruleComponentModules = initRuleComponentModules(createCollect(collect));
       },
       onBeforeDataCollection(payload) {
         return optIn.whenOptedIn().then(() => {

@@ -28,9 +28,10 @@ describe("Personalization::actions::insertBefore", () => {
 
     appendNode(document.body, element);
 
+    const meta = { a: 1 };
     const settings = {
       content: `<div id="b" class="ib">BBB</div>`,
-      meta: { a: 1 }
+      meta
     };
     const event = { elements, prehidingSelector: "#a" };
 
@@ -40,8 +41,6 @@ describe("Personalization::actions::insertBefore", () => {
 
     expect(result[0].innerHTML).toEqual("BBB");
     expect(result[1].innerHTML).toEqual("AAA");
-    expect(collect).toHaveBeenCalledWith({
-      meta: { personalization: { a: 1 } }
-    });
+    expect(collect).toHaveBeenCalledWith(meta);
   });
 });

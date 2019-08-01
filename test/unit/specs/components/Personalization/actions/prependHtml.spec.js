@@ -28,9 +28,10 @@ describe("Personalization::actions::prependHtml", () => {
 
     appendNode(document.body, element);
 
+    const meta = { a: 1 };
     const settings = {
       content: `<li>1</li><li>2</li>`,
-      meta: { a: 1 }
+      meta
     };
     const event = { elements, prehidingSelector: "#prependHtml" };
 
@@ -42,8 +43,6 @@ describe("Personalization::actions::prependHtml", () => {
     expect(result[0].innerHTML).toEqual("1");
     expect(result[1].innerHTML).toEqual("2");
     expect(result[2].innerHTML).toEqual("3");
-    expect(collect).toHaveBeenCalledWith({
-      meta: { personalization: { a: 1 } }
-    });
+    expect(collect).toHaveBeenCalledWith(meta);
   });
 });

@@ -25,6 +25,6 @@ export default collect => {
     showElements(prehidingSelector);
 
     // make sure we send back the metadata after successful rendering
-    collect({ meta: { personalization: meta } });
+    collect(meta);
   };
 };

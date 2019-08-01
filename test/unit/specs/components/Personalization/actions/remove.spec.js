@@ -24,7 +24,8 @@ describe("Presonalization::actions::remove", () => {
 
     appendNode(document.body, element);
 
-    const settings = { meta: { a: 1 } };
+    const meta = { a: 1 };
+    const settings = { meta };
     const event = { elements, prehidingSelector: "#remove" };
 
     remove(settings, event);
@@ -32,8 +33,6 @@ describe("Presonalization::actions::remove", () => {
     const result = selectNodes("#child");
 
     expect(result.length).toEqual(0);
-    expect(collect).toHaveBeenCalledWith({
-      meta: { personalization: { a: 1 } }
-    });
+    expect(collect).toHaveBeenCalledWith(meta);
   });
 });

@@ -19,14 +19,13 @@ describe("Personalization::actions::setAttribute", () => {
 
     appendNode(document.body, element);
 
-    const settings = { content: { "data-test": "bar" }, meta: { a: 1 } };
+    const meta = { a: 1 };
+    const settings = { content: { "data-test": "bar" }, meta };
     const event = { elements, prehidingSelector: "#setAttribute" };
 
     setAttribute(settings, event);
 
     expect(elements[0].getAttribute("data-test")).toEqual("bar");
-    expect(collect).toHaveBeenCalledWith({
-      meta: { personalization: { a: 1 } }
-    });
+    expect(collect).toHaveBeenCalledWith(meta);
   });
 });
