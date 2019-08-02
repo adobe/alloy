@@ -30,7 +30,7 @@ export default function getTopLevelCookieDomain(window, cookie) {
   const hostParts = window.location.hostname.toLowerCase().split(".");
   let i = 1;
 
-  while (i < hostParts.length - 1 && !cookie.get(cookieName)) {
+  while (i < hostParts.length && !cookie.get(cookieName)) {
     i += 1;
     topLevelCookieDomain = getLastArrayItems(hostParts, i).join(".");
     cookie.set(cookieName, cookieName, { domain: topLevelCookieDomain });
