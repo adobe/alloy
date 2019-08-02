@@ -23,7 +23,7 @@ const createPrivacy = ({ config, logger, enableOptIn, cookie }) => {
   let optIn;
 
   if (config.optInEnabled) {
-    enableOptIn(cookie);
+    enableOptIn(logger, cookie);
   }
 
   return {
