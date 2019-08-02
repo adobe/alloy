@@ -1,0 +1,35 @@
+{
+    "desktop": {
+      "testsFolder": "test/functional/specs/desktop/",
+      "browser": [
+        "all"
+      ],
+      "test": "",
+      "group": "dektop",
+      "testClass": "",
+      "testName": "",
+      "skipCriticalConsoleJsErrors": true,
+      "quarantineMode": true,
+      "speed": 0.5,
+      "selectorTimeOut": 5000,
+      "assertionTimeout": 5000,
+      "concurrency": 1
+    },
+    "mobile": {
+      "testsFolder": "test/functional/specs/mobile/",
+      "browser": [
+        "saucelabs:iPhone X Simulator@11.3"
+      ],
+      "test": "",
+      "group": "mobile",
+      "testClass": "",
+      "testName": "",
+      "skipCriticalConsoleJsErrors": true,
+      "quarantineMode": true,
+      "speed": 0.5,
+      "selectorTimeOut": 6000,
+      "assertionTimeout": 6000,
+      "concurrency": 10
+    }
+  }
+  

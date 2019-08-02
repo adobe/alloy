@@ -16,7 +16,7 @@
     "test:slreport": "karma start karma-saucelabs.conf.js --reporters allure",
     "test:watch": "karma start",
     "test:watch:chrome": "karma start --browsers Chrome",
-    "testcafe": "node test/functional/helpers/runner.js",
+    "testcafe": "node test/functional/testrunner.js",
     "functional": "BROWSERS='chrome,firefox' TEST_FILES='test/functional/specs/**/*.js' npm run testcafe",
     "functional-sl": "TEST_FILES='test/functional/specs/**/*.js' npm run testcafe",
     "prebuild": "npm run clean && npm run format && npm run lint",
@@ -29,8 +29,7 @@
     "sandbox:install": "cd sandbox && npm install",
     "sandbox:build": "cd sandbox && npm run build",
     "dev": "npm-run-all --parallel build:watch sandbox",
-    "mockserver": "mockserver -serverPort 1080 -jvmOptions \"-Dmockserver.enableCORSForAllResponses=true\"",
-    "allure:generate": "allure generate test/allure/allure-results/ -o test/allure/allure-report/"
+    "mockserver": "mockserver -serverPort 1080 -jvmOptions \"-Dmockserver.enableCORSForAllResponses=true\""
   },
   "repository": {
     "type": "git",
@@ -98,6 +97,7 @@
     "prettier": "^1.16.4",
     "promise-polyfill": "^8.1.0",
     "puppeteer": "^1.16.0",
+    "request": "^2.88.0",
     "rollup": "^1.1.2",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-commonjs": "^9.3.4",
@@ -111,6 +111,8 @@
     "testcafe-browser-provider-saucelabs": "^1.7.0",
     "testcafe-live": "^0.1.4",
     "testcafe-reporter-allure": "^1.0.5",
+    "ua-parser": "^0.3.5",
+    "url-parse": "^1.4.7",
     "zlib": "^1.0.5"
   }
 }
