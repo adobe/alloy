@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { stackError, memoize, getTopLevelCookieDomain } from "../utils";
+import { stackError, memoize, getTopLevelCookieDomain, cookie } from "../utils";
 import cookieDetails from "../constants/cookieDetails";
 
 const { ALLOY_COOKIE_NAME, ALLOY_COOKIE_TTL_IN_DAYS } = cookieDetails;
@@ -34,7 +34,7 @@ export default (
   const cookieProxy = createCookieProxy(
     cookieName,
     ALLOY_COOKIE_TTL_IN_DAYS,
-    cookieDomain || memoizedGetTopLevelDomain()
+    cookieDomain || memoizedGetTopLevelDomain(window, cookie)
   );
 
   // TODO: Should this storage be namespaced by property ID or org ID?
