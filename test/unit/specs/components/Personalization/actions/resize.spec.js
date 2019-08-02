@@ -1,5 +1,5 @@
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import createResize from "../../../../../../src/components/Personalization/actions/resize";
+import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::resize", () => {
@@ -13,7 +13,8 @@ describe("Personalization::actions::resize", () => {
 
   it("should set personalized content", () => {
     const collect = jasmine.createSpy();
-    const resize = createResize(collect);
+    const modules = initRuleComponentModules(collect);
+    const { resize } = modules;
     const element = createNode("div", { id: "resize" });
     const elements = [element];
 

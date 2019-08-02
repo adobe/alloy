@@ -1,5 +1,5 @@
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import createSetImageSource from "../../../../../../src/components/Personalization/actions/setImageSource";
+import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::setImageSource", () => {
@@ -14,7 +14,8 @@ describe("Personalization::actions::setImageSource", () => {
   it("should set personalized content", () => {
     const url = "http://foo.com/a.png";
     const collect = jasmine.createSpy();
-    const setImageSource = createSetImageSource(collect);
+    const modules = initRuleComponentModules(collect);
+    const { setImageSource } = modules;
     const element = createNode("img", { id: "setImageSource", src: url });
     const elements = [element];
 

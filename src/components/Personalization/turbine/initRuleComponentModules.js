@@ -10,53 +10,41 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import {
+  removeNode,
+  insertAfter,
+  insertBefore,
+  prepend,
+  append
+} from "../../../utils/dom";
 import elementExists from "../events/elementExists";
-import createSetHtml from "../actions/setHtml";
-import createSetText from "../actions/setText";
-import createSetAttribute from "../actions/setAttribute";
-import createSetImageSource from "../actions/setImageSource";
-import createSetStyle from "../actions/setStyle";
-import createMove from "../actions/move";
-import createResize from "../actions/resize";
-import createRearrange from "../actions/rearrange";
-import createRemove from "../actions/remove";
-import createInsertAfter from "../actions/insertAfter";
-import createInsertBefore from "../actions/insertBefore";
-import createReplaceHtml from "../actions/replaceHtml";
-import createPrependHtml from "../actions/prependHtml";
-import createAppendHtml from "../actions/appendHtml";
+import {
+  createAction,
+  setHtml,
+  setText,
+  setAttributes,
+  swapImage,
+  setStyles,
+  rearrangeChildren,
+  replace
+} from "../helper";
 
 export default collect => {
-  const setHtml = createSetHtml(collect);
-  const setText = createSetText(collect);
-  const setAttribute = createSetAttribute(collect);
-  const setImageSource = createSetImageSource(collect);
-  const setStyle = createSetStyle(collect);
-  const move = createMove(collect);
-  const resize = createResize(collect);
-  const rearrange = createRearrange(collect);
-  const remove = createRemove(collect);
-  const insertAfter = createInsertAfter(collect);
-  const insertBefore = createInsertBefore(collect);
-  const replaceHtml = createReplaceHtml(collect);
-  const prependHtml = createPrependHtml(collect);
-  const appendHtml = createAppendHtml(collect);
-
   return {
     elementExists,
-    setHtml,
-    setText,
-    setAttribute,
-    setImageSource,
-    setStyle,
-    move,
-    resize,
-    rearrange,
-    remove,
-    insertAfter,
-    insertBefore,
-    replaceHtml,
-    prependHtml,
-    appendHtml
+    setHtml: createAction(collect, setHtml),
+    setText: createAction(collect, setText),
+    setAttribute: createAction(collect, setAttributes),
+    setImageSource: createAction(collect, swapImage),
+    setStyle: createAction(collect, setStyles),
+    move: createAction(collect, setStyles),
+    resize: createAction(collect, setStyles),
+    rearrange: createAction(collect, rearrangeChildren),
+    remove: createAction(collect, removeNode),
+    insertAfter: createAction(collect, insertAfter),
+    insertBefore: createAction(collect, insertBefore),
+    replaceHtml: createAction(collect, replace),
+    prependHtml: createAction(collect, prepend),
+    appendHtml: createAction(collect, append)
   };
 };

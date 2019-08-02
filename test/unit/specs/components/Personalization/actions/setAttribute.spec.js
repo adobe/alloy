@@ -1,5 +1,5 @@
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import createSetAttribute from "../../../../../../src/components/Personalization/actions/setAttribute";
+import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::setAttribute", () => {
@@ -13,7 +13,8 @@ describe("Personalization::actions::setAttribute", () => {
 
   it("should set personalized content", () => {
     const collect = jasmine.createSpy();
-    const setAttribute = createSetAttribute(collect);
+    const modules = initRuleComponentModules(collect);
+    const { setAttribute } = modules;
     const element = createNode("div", { id: "setAttribute" });
     const elements = [element];
 

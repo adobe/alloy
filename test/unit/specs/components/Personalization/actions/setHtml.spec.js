@@ -1,5 +1,5 @@
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import createSetHtml from "../../../../../../src/components/Personalization/actions/setHtml";
+import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::setHtml", () => {
@@ -13,7 +13,8 @@ describe("Personalization::actions::setHtml", () => {
 
   it("should set personalized content", () => {
     const collect = jasmine.createSpy();
-    const setHtml = createSetHtml(collect);
+    const modules = initRuleComponentModules(collect);
+    const { setHtml } = modules;
     const element = createNode("div", { id: "setHtml" });
     element.innerHTML = "foo";
     const elements = [element];
