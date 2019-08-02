@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import { assign, fireDestinations } from "../../utils";
-
-const ID_SYNC_CONTROL = "idSyncControl";
-const ID_SYNC_TIMESTAMP = "idSyncTimestamp";
-const SEVEN_DAYS_IN_HOURS = 7 * 24;
-const MILLISECONDS_PER_HOUR = 60 * 60 * 1000;
+import { ID_SYNC_TIMESTAMP, ID_SYNC_CONTROL } from "./constants";
+import {
+  MILLISECONDS_PER_HOUR,
+  SEVEN_DAYS_IN_HOURS
+} from "../../constants/times";
 
 let alloyCookie;
 
@@ -44,54 +44,54 @@ const setControlObject = obj => {
 export default ({ destinations, config, logger, cookie }) => {
   alloyCookie = cookie;
 
-  if (config.idSyncsEnabled) {
-    const controlObject = getControlObject();
-    const now = new Date().getTime() / MILLISECONDS_PER_HOUR; // hours
+  if (!config.idSyncsEnabled) {
+    return;
+  }
 
-    Object.keys(controlObject).forEach(key => {
-      if (controlObject[key] < now) {
-        delete controlObject[key];
-      }
-    });
+  const controlObject = getControlObject();
+  const now = new Date().getTime() / MILLISECONDS_PER_HOUR; // hours
 
-    const idSyncs = destinations
-      .filter(
-        dest => dest.type === "url" && controlObject[dest.id] === undefined
-      )
-      .map(dest =>
-        assign(
-          {
-            id: dest.id
-          },
-          dest.spec
-        )
-      );
-
-    if (idSyncs.length) {
-      fireDestinations({
-        logger,
-        destinations: idSyncs
-      }).then(result => {
-        const timeStamp = Math.round(
-          new Date().getTime() / MILLISECONDS_PER_HOUR
-        ); // hours
-
-        result.succeeded.forEach(idSync => {
-          const ttl = (idSync.ttl || 7) * 24; // hours
-
-          if (idSync.id !== undefined) {
-            controlObject[idSync.id] = timeStamp + ttl;
-          }
-        });
-
-        setControlObject(controlObject);
-
-        cookie.set(
-          ID_SYNC_TIMESTAMP,
-          Math.round(new Date().getTime() / MILLISECONDS_PER_HOUR) +
-            SEVEN_DAYS_IN_HOURS
-        );
-      });
+  Object.keys(controlObject).forEach(key => {
+    if (controlObject[key] < now) {
+      delete controlObject[key];
     }
+  });
+
+  const idSyncs = destinations
+    .filter(dest => dest.type === "url" && controlObject[dest.id] === undefined)
+    .map(dest =>
+      assign(
+        {
+          id: dest.id
+        },
+        dest.spec
+      )
+    );
+
+  if (idSyncs.length) {
+    fireDestinations({
+      logger,
+      destinations: idSyncs
+    }).then(result => {
+      const timeStamp = Math.round(
+        new Date().getTime() / MILLISECONDS_PER_HOUR
+      ); // hours
+
+      result.succeeded.forEach(idSync => {
+        const ttl = (idSync.ttl || 7) * 24; // hours
+
+        if (idSync.id !== undefined) {
+          controlObject[idSync.id] = timeStamp + ttl;
+        }
+      });
+
+      setControlObject(controlObject);
+
+      cookie.set(
+        ID_SYNC_TIMESTAMP,
+        Math.round(new Date().getTime() / MILLISECONDS_PER_HOUR) +
+          SEVEN_DAYS_IN_HOURS
+      );
+    });
   }
 };

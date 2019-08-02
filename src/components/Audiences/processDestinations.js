@@ -13,34 +13,36 @@ governing permissions and limitations under the License.
 import { assign, cookie, fireDestinations } from "../../utils";
 
 export default ({ destinations, config, logger }) => {
-  if (config.destinationsEnabled) {
-    const urlDestinations = destinations
-      .filter(dest => dest.type === "url")
-      .map(dest =>
-        assign(
-          {
-            id: dest.id
-          },
-          dest.spec
-        )
-      );
+  if (!config.destinationsEnabled) {
+    return;
+  }
 
-    if (urlDestinations.length) {
-      fireDestinations({
-        logger,
-        destinations: urlDestinations
-      });
-    }
+  const urlDestinations = destinations
+    .filter(dest => dest.type === "url")
+    .map(dest =>
+      assign(
+        {
+          id: dest.id
+        },
+        dest.spec
+      )
+    );
 
-    const cookieDestinations = destinations
-      .filter(dest => dest.type === "cookie")
-      .map(dest => dest.spec);
-
-    cookieDestinations.forEach(dest => {
-      cookie.set(dest.name, dest.value || "", {
-        domain: dest.domain || "",
-        expires: dest.ttl ? dest.ttl : 6 * 30 // default of 6 months
-      });
+  if (urlDestinations.length) {
+    fireDestinations({
+      logger,
+      destinations: urlDestinations
     });
   }
+
+  const cookieDestinations = destinations
+    .filter(dest => dest.type === "cookie")
+    .map(dest => dest.spec);
+
+  cookieDestinations.forEach(dest => {
+    cookie.set(dest.name, dest.value || "", {
+      domain: dest.domain || "",
+      expires: dest.ttl ? dest.ttl : 6 * 30 // default of 6 months
+    });
+  });
 };

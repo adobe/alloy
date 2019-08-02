@@ -12,10 +12,8 @@ governing permissions and limitations under the License.
 
 import { defer } from "../../utils";
 import processIdSyncs from "./processIdSyncs";
-
-const ECID_NAMESPACE = "ECID";
-const ID_SYNC_TIMESTAMP = "idSyncTimestamp";
-const MILLISECONDS_PER_HOUR = 60 * 60 * 1000;
+import { ECID_NAMESPACE, ID_SYNC_TIMESTAMP } from "./constants";
+import { MILLISECONDS_PER_HOUR } from "../../constants/times";
 
 const addIdsContext = (payload, ecid) => {
   // TODO: Add customer ids.
@@ -39,23 +37,23 @@ const createIdentity = ({ config, logger, cookie }) => {
       },
       // Waiting for opt-in because we'll be reading the ECID from a cookie
       onBeforeEvent(event) {
-        const nowInHours = Math.round(
-          new Date().getTime() / MILLISECONDS_PER_HOUR
-        );
-        const timestamp = parseInt(cookie.get(ID_SYNC_TIMESTAMP) || 0, 10);
-
-        event.mergeQuery({
-          identity: {
-            exchange: config.idSyncsEnabled && nowInHours > timestamp
-          }
-        });
-
         return optIn.whenOptedIn().then(() => {
           const ecid = getEcid();
           if (!ecid && !responseRequested) {
             event.expectResponse();
             responseRequested = true;
           }
+
+          const nowInHours = Math.round(
+            new Date().getTime() / MILLISECONDS_PER_HOUR
+          );
+          const timestamp = parseInt(cookie.get(ID_SYNC_TIMESTAMP) || 0, 10);
+
+          event.mergeQuery({
+            identity: {
+              exchange: config.idSyncsEnabled && nowInHours > timestamp
+            }
+          });
         });
       },
       // Waiting for opt-in because we'll be reading the ECID from a cookie
