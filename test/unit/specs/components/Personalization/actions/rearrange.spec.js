@@ -3,7 +3,7 @@ import {
   appendNode,
   createNode
 } from "../../../../../../src/utils/dom";
-import createRearrange from "../../../../../../src/components/Personalization/actions/rearrange";
+import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Presonalization::actions::rearrange", () => {
@@ -17,7 +17,8 @@ describe("Presonalization::actions::rearrange", () => {
 
   it("should rearrange elements when from < to", () => {
     const collect = jasmine.createSpy();
-    const rearrange = createRearrange(collect);
+    const modules = initRuleComponentModules(collect);
+    const { rearrange } = modules;
     const content = `
       <li>1</li>
       <li>2</li>
@@ -49,7 +50,8 @@ describe("Presonalization::actions::rearrange", () => {
 
   it("should rearrange elements when from > to", () => {
     const collect = jasmine.createSpy();
-    const rearrange = createRearrange(collect);
+    const modules = initRuleComponentModules(collect);
+    const { rearrange } = modules;
     const content = `
       <li>1</li>
       <li>2</li>

@@ -1,5 +1,5 @@
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import createMove from "../../../../../../src/components/Personalization/actions/move";
+import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::move", () => {
@@ -13,7 +13,8 @@ describe("Personalization::actions::move", () => {
 
   it("should set personalized content", () => {
     const collect = jasmine.createSpy();
-    const move = createMove(collect);
+    const modules = initRuleComponentModules(collect);
+    const { move } = modules;
     const element = createNode("div", { id: "move" });
     const elements = [element];
 

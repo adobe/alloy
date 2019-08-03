@@ -3,7 +3,7 @@ import {
   appendNode,
   createNode
 } from "../../../../../../src/utils/dom";
-import createRemove from "../../../../../../src/components/Personalization/actions/remove";
+import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Presonalization::actions::remove", () => {
@@ -17,7 +17,8 @@ describe("Presonalization::actions::remove", () => {
 
   it("should remove element", () => {
     const collect = jasmine.createSpy();
-    const remove = createRemove(collect);
+    const modules = initRuleComponentModules(collect);
+    const { remove } = modules;
     const content = `<div id="child"></div>`;
     const element = createNode("div", { id: "remove" }, { innerHTML: content });
     const elements = [element];

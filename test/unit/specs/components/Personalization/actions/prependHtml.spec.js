@@ -3,7 +3,7 @@ import {
   appendNode,
   createNode
 } from "../../../../../../src/utils/dom";
-import createPrependHtml from "../../../../../../src/components/Personalization/actions/prependHtml";
+import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::prependHtml", () => {
@@ -17,7 +17,8 @@ describe("Personalization::actions::prependHtml", () => {
 
   it("should prepend personalized content", () => {
     const collect = jasmine.createSpy();
-    const prependHtml = createPrependHtml(collect);
+    const modules = initRuleComponentModules(collect);
+    const { prependHtml } = modules;
     const content = `<li>3</li>`;
     const element = createNode(
       "ul",
