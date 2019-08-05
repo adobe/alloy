@@ -33,7 +33,7 @@ const createContext = ({ config, logger }) => {
 };
 
 createContext.namespace = "Context";
-
+createContext.abbreviation = "CO";
 createContext.configValidators = {
   context: {
     defaultValue: ["web", "device", "environment", "placeContext"]

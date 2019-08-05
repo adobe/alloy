@@ -30,5 +30,5 @@ const createStitch = () => {
 };
 
 createStitch.namespace = "Stitch";
-
+createStitch.abbreviation = "ST";
 export default createStitch;

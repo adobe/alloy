@@ -25,5 +25,5 @@ const createLibraryInfo = () => {
 };
 
 createLibraryInfo.namespace = "LibraryInfo";
-
+createLibraryInfo.abbreviation = "LI";
 export default createLibraryInfo;

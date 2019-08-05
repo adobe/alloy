@@ -58,6 +58,11 @@ describe("createCookie", () => {
       const value = alloyCookie.get("foo");
       expect(value).toEqual("bar");
     });
+
+    it("should throw an error if namespace is undefined", () => {
+      alloyCookie = createCookie(cookieProxy, undefined);
+      expect(() => alloyCookie.get("foo")).toThrowError();
+    });
   });
 
   describe("set", () => {
@@ -110,6 +115,11 @@ describe("createCookie", () => {
       // have been modified.
       expect(originalCookieObject).toEqual(clonedOriginalCookieObject);
     });
+
+    it("should throw an error if namespace is empty String", () => {
+      alloyCookie = createCookie(cookieProxy, "");
+      expect(() => alloyCookie.set("foo", "baz")).toThrowError();
+    });
   });
 
   describe("remove", () => {
@@ -152,6 +162,11 @@ describe("createCookie", () => {
       // The original cookie object returned from the cookie proxy shouldn't
       // have been modified.
       expect(originalCookieObject).toEqual(clonedOriginalCookieObject);
+    });
+
+    it("should throw an error if namespace is undefined", () => {
+      alloyCookie = createCookie(cookieProxy, undefined);
+      expect(() => alloyCookie.remove("foo")).toThrowError();
     });
   });
 });
