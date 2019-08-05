@@ -17,38 +17,33 @@ import {
   SEVEN_DAYS_IN_HOURS
 } from "../../constants/times";
 
-let alloyCookie;
-
-const getControlObject = () => {
-  const val = alloyCookie.get(ID_SYNC_CONTROL) || "";
+const getControlObject = cookie => {
+  const val = cookie.get(ID_SYNC_CONTROL) || "";
   const arr = val ? val.split("_") : [];
 
-  return arr.reduce((obj, pair) => {
-    const o = obj;
-    const [id, ts] = pair.split("-");
+  return arr.reduce((controlObject, idTimestampPair) => {
+    const [id, timestamp] = idTimestampPair.split("-");
 
-    o[id] = ts;
+    controlObject[id] = timestamp;
 
-    return o;
+    return controlObject;
   }, {});
 };
 
-const setControlObject = obj => {
-  const arr = [];
+const setControlObject = (controlObject, cookie) => {
+  const arr = Object.keys(controlObject).map(
+    id => `${id}-${controlObject[id]}`
+  );
 
-  Object.keys(obj).forEach(id => arr.push(`${id}-${obj[id]}`));
-
-  alloyCookie.set(ID_SYNC_CONTROL, arr.join("_"));
+  cookie.set(ID_SYNC_CONTROL, arr.join("_"));
 };
 
 export default ({ destinations, config, logger, cookie }) => {
-  alloyCookie = cookie;
-
   if (!config.idSyncsEnabled) {
     return;
   }
 
-  const controlObject = getControlObject();
+  const controlObject = getControlObject(cookie);
   const now = new Date().getTime() / MILLISECONDS_PER_HOUR; // hours
 
   Object.keys(controlObject).forEach(key => {
@@ -85,7 +80,7 @@ export default ({ destinations, config, logger, cookie }) => {
         }
       });
 
-      setControlObject(controlObject);
+      setControlObject(controlObject, cookie);
 
       cookie.set(
         ID_SYNC_TIMESTAMP,

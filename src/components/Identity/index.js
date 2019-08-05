@@ -49,11 +49,13 @@ const createIdentity = ({ config, logger, cookie }) => {
           );
           const timestamp = parseInt(cookie.get(ID_SYNC_TIMESTAMP) || 0, 10);
 
-          event.mergeQuery({
-            identity: {
-              exchange: config.idSyncsEnabled && nowInHours > timestamp
-            }
-          });
+          if (config.idSyncsEnabled && nowInHours > timestamp) {
+            event.mergeQuery({
+              identity: {
+                exchange: true
+              }
+            });
+          }
         });
       },
       // Waiting for opt-in because we'll be reading the ECID from a cookie
