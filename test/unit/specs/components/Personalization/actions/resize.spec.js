@@ -11,7 +11,7 @@ describe("Personalization::actions::resize", () => {
     cleanUpDomChanges("resize");
   });
 
-  it("should set personalized content", () => {
+  it("should set personalized content", done => {
     const collect = jasmine.createSpy();
     const modules = initRuleComponentModules(collect);
     const { resize } = modules;
@@ -27,10 +27,16 @@ describe("Personalization::actions::resize", () => {
     };
     const event = { elements, prehidingSelector: "#resize" };
 
-    resize(settings, event);
-
-    expect(elements[0].style.width).toEqual("100px");
-    expect(elements[0].style.height).toEqual("100px");
-    expect(collect).toHaveBeenCalledWith(meta);
+    resize(settings, event)
+      .then(() => {
+        expect(elements[0].style.width).toEqual("100px");
+        expect(elements[0].style.height).toEqual("100px");
+        expect(collect).toHaveBeenCalledWith(meta);
+        done();
+      })
+      .catch(() => {
+        fail("Should not fail");
+        done();
+      });
   });
 });

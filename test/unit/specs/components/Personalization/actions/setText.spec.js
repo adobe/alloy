@@ -4,14 +4,14 @@ import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::setText", () => {
   beforeEach(() => {
-    cleanUpDomChanges("setHtml");
+    cleanUpDomChanges("setText");
   });
 
   afterEach(() => {
-    cleanUpDomChanges("setHtml");
+    cleanUpDomChanges("setText");
   });
 
-  it("should set personalized content", () => {
+  it("should set personalized text", done => {
     const collect = jasmine.createSpy();
     const modules = initRuleComponentModules(collect);
     const { setText } = modules;
@@ -25,9 +25,15 @@ describe("Personalization::actions::setText", () => {
     const settings = { content: "bar", meta };
     const event = { elements, prehidingSelector: "#setText" };
 
-    setText(settings, event);
-
-    expect(elements[0].textContent).toEqual("bar");
-    expect(collect).toHaveBeenCalledWith(meta);
+    setText(settings, event)
+      .then(() => {
+        expect(elements[0].textContent).toEqual("bar");
+        expect(collect).toHaveBeenCalledWith(meta);
+        done();
+      })
+      .catch(() => {
+        fail("Should not fail");
+        done();
+      });
   });
 });

@@ -15,7 +15,7 @@ describe("Presonalization::actions::remove", () => {
     cleanUpDomChanges("remove");
   });
 
-  it("should remove element", () => {
+  it("should remove element", done => {
     const collect = jasmine.createSpy();
     const modules = initRuleComponentModules(collect);
     const { remove } = modules;
@@ -29,11 +29,17 @@ describe("Presonalization::actions::remove", () => {
     const settings = { meta };
     const event = { elements, prehidingSelector: "#remove" };
 
-    remove(settings, event);
+    remove(settings, event)
+      .then(() => {
+        const result = selectNodes("#child");
 
-    const result = selectNodes("#child");
-
-    expect(result.length).toEqual(0);
-    expect(collect).toHaveBeenCalledWith(meta);
+        expect(result.length).toEqual(0);
+        expect(collect).toHaveBeenCalledWith(meta);
+        done();
+      })
+      .catch(() => {
+        fail("Should not fail");
+        done();
+      });
   });
 });

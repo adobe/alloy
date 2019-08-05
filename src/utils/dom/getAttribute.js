@@ -10,17 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getParent from "./getParent";
-import getNextSibling from "./getNextSibling";
-
-export default (container, element) => {
-  if (!container) {
-    return;
-  }
-
-  const parent = getParent(container);
-
-  if (parent) {
-    parent.insertBefore(element, getNextSibling(container));
-  }
+export default (element, name) => {
+  return element.getAttribute(name);
 };

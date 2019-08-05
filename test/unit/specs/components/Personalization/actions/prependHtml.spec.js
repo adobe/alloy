@@ -15,7 +15,7 @@ describe("Personalization::actions::prependHtml", () => {
     cleanUpDomChanges("prependHtml");
   });
 
-  it("should prepend personalized content", () => {
+  it("should prepend personalized content", done => {
     const collect = jasmine.createSpy();
     const modules = initRuleComponentModules(collect);
     const { prependHtml } = modules;
@@ -36,14 +36,20 @@ describe("Personalization::actions::prependHtml", () => {
     };
     const event = { elements, prehidingSelector: "#prependHtml" };
 
-    prependHtml(settings, event);
+    prependHtml(settings, event)
+      .then(() => {
+        const result = selectNodes("ul#prependHtml li");
 
-    const result = selectNodes("ul#prependHtml li");
-
-    expect(result.length).toEqual(3);
-    expect(result[0].innerHTML).toEqual("1");
-    expect(result[1].innerHTML).toEqual("2");
-    expect(result[2].innerHTML).toEqual("3");
-    expect(collect).toHaveBeenCalledWith(meta);
+        expect(result.length).toEqual(3);
+        expect(result[0].innerHTML).toEqual("1");
+        expect(result[1].innerHTML).toEqual("2");
+        expect(result[2].innerHTML).toEqual("3");
+        expect(collect).toHaveBeenCalledWith(meta);
+        done();
+      })
+      .catch(() => {
+        fail("Should not fail");
+        done();
+      });
   });
 });

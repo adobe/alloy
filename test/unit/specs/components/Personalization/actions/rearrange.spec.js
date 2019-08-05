@@ -15,7 +15,7 @@ describe("Presonalization::actions::rearrange", () => {
     cleanUpDomChanges("rearrange");
   });
 
-  it("should rearrange elements when from < to", () => {
+  it("should rearrange elements when from < to", done => {
     const collect = jasmine.createSpy();
     const modules = initRuleComponentModules(collect);
     const { rearrange } = modules;
@@ -37,18 +37,23 @@ describe("Presonalization::actions::rearrange", () => {
     const settings = { content: { from: 0, to: 2 }, meta };
     const event = { elements, prehidingSelector: "#rearrange" };
 
-    rearrange(settings, event);
+    rearrange(settings, event)
+      .then(() => {
+        const result = selectNodes("li");
 
-    const result = selectNodes("li");
-
-    expect(result[0].textContent).toEqual("2");
-    expect(result[1].textContent).toEqual("3");
-    expect(result[2].textContent).toEqual("1");
-
-    expect(collect).toHaveBeenCalledWith(meta);
+        expect(result[0].textContent).toEqual("2");
+        expect(result[1].textContent).toEqual("3");
+        expect(result[2].textContent).toEqual("1");
+        expect(collect).toHaveBeenCalledWith(meta);
+        done();
+      })
+      .catch(() => {
+        fail("Should not fail");
+        done();
+      });
   });
 
-  it("should rearrange elements when from > to", () => {
+  it("should rearrange elements when from > to", done => {
     const collect = jasmine.createSpy();
     const modules = initRuleComponentModules(collect);
     const { rearrange } = modules;
@@ -70,14 +75,19 @@ describe("Presonalization::actions::rearrange", () => {
     const settings = { content: { from: 2, to: 0 }, meta };
     const event = { elements, prehidingSelector: "#rearrange" };
 
-    rearrange(settings, event);
+    rearrange(settings, event)
+      .then(() => {
+        const result = selectNodes("li");
 
-    const result = selectNodes("li");
-
-    expect(result[0].textContent).toEqual("3");
-    expect(result[1].textContent).toEqual("1");
-    expect(result[2].textContent).toEqual("2");
-
-    expect(collect).toHaveBeenCalledWith(meta);
+        expect(result[0].textContent).toEqual("3");
+        expect(result[1].textContent).toEqual("1");
+        expect(result[2].textContent).toEqual("2");
+        expect(collect).toHaveBeenCalledWith(meta);
+        done();
+      })
+      .catch(() => {
+        fail("Should not fail");
+        done();
+      });
   });
 });
