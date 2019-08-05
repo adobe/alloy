@@ -36,10 +36,11 @@
       // https://git.corp.adobe.com/Activation/edge-gateway-mock
       alloy("configure", {
         // edgeDomain: "edgegateway.azurewebsites.net",
-        // optInEnabled: true,
+        optInEnabled: true,
+        suppressErrors: true,
         propertyId: 9999999,
         imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
-        log: true,
+        log: false,
         prehidingId: "alloy-prehiding",
         prehidingStyle: "section:nth-of-type(1) { opacity: 0 !important }"
       });
