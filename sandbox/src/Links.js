@@ -2,11 +2,11 @@ import React from "react";
 
 export default function Links() {
 
-  const adobeLink = event => {
+  const adobeLink = () => {
     window.alloy("event", {
       beacon: true,
       data: {
-        "activitystreams:href": ["http://www.adobe.com"]
+        "activitystreams:href": "http://www.adobe.com"
       }
     });
   };
