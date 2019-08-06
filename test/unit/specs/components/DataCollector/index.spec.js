@@ -9,10 +9,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import flushPromiseChains from "../../../helpers/flushPromiseChains";
 import createDataCollector from "../../../../../src/components/DataCollector/index";
 import createPayload from "../../../../../src/core/network/createPayload";
 import { defer } from "../../../../../src/utils";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("Event Command", () => {
   let lifecycle;
@@ -103,14 +103,16 @@ describe("Event Command", () => {
     const deferred = defer();
     onBeforeEventSpy.and.returnValue(deferred.promise);
     eventCommand({});
-    return flushPromiseChains().then(() => {
-      expect(lifecycle.onBeforeEvent).toHaveBeenCalled();
-      expect(network.sendRequest).not.toHaveBeenCalled();
-      deferred.resolve();
-      flushPromiseChains().then(() => {
+    return flushPromiseChains()
+      .then(() => {
+        expect(lifecycle.onBeforeEvent).toHaveBeenCalled();
+        expect(network.sendRequest).not.toHaveBeenCalled();
+        deferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
         expect(network.sendRequest).toHaveBeenCalled();
       });
-    });
   });
 
   it("Sends the event through to the Network Gateway", () => {
@@ -137,14 +139,16 @@ describe("Event Command", () => {
     const deferred = defer();
     onBeforeDataCollectionSpy.and.returnValue(deferred.promise);
     eventCommand({});
-    return flushPromiseChains().then(() => {
-      expect(lifecycle.onBeforeDataCollection).toHaveBeenCalled();
-      expect(network.sendRequest).not.toHaveBeenCalled();
-      deferred.resolve();
-      flushPromiseChains().then(() => {
+    return flushPromiseChains()
+      .then(() => {
+        expect(lifecycle.onBeforeDataCollection).toHaveBeenCalled();
+        expect(network.sendRequest).not.toHaveBeenCalled();
+        deferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
         expect(network.sendRequest).toHaveBeenCalled();
       });
-    });
   });
 
   it("Returns a promise resolved with the request and response", () => {

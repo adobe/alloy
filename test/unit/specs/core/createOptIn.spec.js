@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createOptIn from "../../../../src/core/createOptIn";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
+import createOptIn from "../../../../src/core/createOptIn";
 
 describe("createOptIn", () => {
   let optIn;
