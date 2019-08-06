@@ -11,7 +11,7 @@ describe("Personalization::actions::move", () => {
     cleanUpDomChanges("move");
   });
 
-  it("should set personalized content", () => {
+  it("should move personalized content", () => {
     const collect = jasmine.createSpy();
     const modules = initRuleComponentModules(collect);
     const { move } = modules;
@@ -27,10 +27,10 @@ describe("Personalization::actions::move", () => {
     };
     const event = { elements, prehidingSelector: "#move" };
 
-    move(settings, event);
-
-    expect(elements[0].style.left).toEqual("100px");
-    expect(elements[0].style.top).toEqual("100px");
-    expect(collect).toHaveBeenCalledWith(meta);
+    move(settings, event).then(() => {
+      expect(elements[0].style.left).toEqual("100px");
+      expect(elements[0].style.top).toEqual("100px");
+      expect(collect).toHaveBeenCalledWith(meta);
+    });
   });
 });

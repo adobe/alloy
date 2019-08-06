@@ -10,94 +10,37 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  getChildren,
-  insertElementAfter,
-  insertElementBefore,
-  setAttribute,
-  removeAttribute,
-  setStyle,
-  insertBefore,
-  removeNode,
-  preloadImage
-} from "../../../utils/dom";
-import { IMG, SRC } from "../../../utils/dom/constants";
 import { showElements } from "../flicker";
+
+export { default as setText } from "./setText";
+export { default as setHtml } from "./setHtml";
+export { default as appendHtml } from "./appendHtml";
+export { default as prependHtml } from "./prependHtml";
+export { default as replaceHtml } from "./replaceHtml";
+export { default as insertHtmlBefore } from "./insertHtmlBefore";
+export { default as insertHtmlAfter } from "./insertHtmlAfter";
+export { default as setStyles } from "./setStyles";
+export { default as setAttributes } from "./setAttributes";
+export { default as swapImage } from "./swapImage";
+export { default as rearrangeChildren } from "./rearrangeChildren";
 
 export const createAction = (collect, renderFunc) => {
   return (settings, event) => {
     const { elements, prehidingSelector } = event;
     const { content, meta } = settings;
+    const executions = elements.map(element =>
+      Promise.resolve(renderFunc(element, content))
+    );
 
-    // this is a very naive approach, we will expand later
-    elements.forEach(element => {
-      renderFunc(element, content);
-    });
-
-    // after rendering we should remove the flicker control styles
-    showElements(prehidingSelector);
-
-    // make sure we send back the metadata after successful rendering
-    collect(meta);
+    return Promise.all(executions)
+      .then(() => {
+        // Success, unhide elements and notify
+        showElements(prehidingSelector);
+        collect(meta);
+      })
+      .catch(() => {
+        // Something went horribly wrong, unhide elements
+        showElements(prehidingSelector);
+      });
   };
-};
-
-export const rearrangeChildren = (element, { from, to }) => {
-  const children = getChildren(element);
-  const elementFrom = children[from];
-  const elementTo = children[to];
-
-  if (!elementFrom || !elementTo) {
-    // TODO: We will need to add logging
-    // to ease troubleshooting
-    return;
-  }
-
-  if (from < to) {
-    insertElementAfter(elementTo, elementFrom);
-  } else {
-    insertElementBefore(elementTo, elementFrom);
-  }
-};
-
-export const setAttributes = (element, attributes) => {
-  Object.keys(attributes).forEach(key => {
-    setAttribute(element, key, attributes[key]);
-  });
-};
-
-export const setStyles = (element, styles) => {
-  const { priority, ...style } = styles;
-
-  Object.keys(style).forEach(key => {
-    setStyle(element, key, style[key], priority);
-  });
-};
-
-export const replace = (element, html) => {
-  insertBefore(element, html);
-  removeNode(element);
-};
-
-export const swapImage = (element, url) => {
-  if (element.tagName !== IMG) {
-    return;
-  }
-
-  // Start downloading the image
-  preloadImage(url);
-
-  // Remove "src" so there is no flicker
-  removeAttribute(element, SRC);
-
-  // Replace the image "src"
-  setAttribute(element, SRC, url);
-};
-
-export const setHtml = (element, html) => {
-  element.innerHTML = html;
-};
-
-export const setText = (element, text) => {
-  element.textContent = text;
 };

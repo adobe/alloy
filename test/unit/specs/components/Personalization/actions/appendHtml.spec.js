@@ -36,14 +36,14 @@ describe("Personalization::actions::appendHtml", () => {
     };
     const event = { elements, prehidingSelector: "#appendHtml" };
 
-    appendHtml(settings, event);
+    return appendHtml(settings, event).then(() => {
+      const result = selectNodes("ul#appendHtml li");
 
-    const result = selectNodes("ul#appendHtml li");
-
-    expect(result.length).toEqual(3);
-    expect(result[0].innerHTML).toEqual("1");
-    expect(result[1].innerHTML).toEqual("2");
-    expect(result[2].innerHTML).toEqual("3");
-    expect(collect).toHaveBeenCalledWith(meta);
+      expect(result.length).toEqual(3);
+      expect(result[0].innerHTML).toEqual("1");
+      expect(result[1].innerHTML).toEqual("2");
+      expect(result[2].innerHTML).toEqual("3");
+      expect(collect).toHaveBeenCalledWith(meta);
+    });
   });
 });

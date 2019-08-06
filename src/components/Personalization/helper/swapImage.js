@@ -10,16 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getParent from "./getParent";
+import { setAttribute, removeAttribute } from "../../../utils/dom";
+import { SRC } from "../../../utils/dom/constants";
+import { isImage, loadImage } from "./images";
 
-export default (container, element) => {
-  if (!container) {
+export default (container, url) => {
+  if (!isImage(container)) {
     return;
   }
 
-  const parent = getParent(container);
+  // Start downloading the image
+  loadImage(url);
 
-  if (parent) {
-    parent.insertBefore(element, container);
-  }
+  // Remove "src" so there is no flicker
+  removeAttribute(container, SRC);
+
+  // Replace the image "src"
+  setAttribute(container, SRC, url);
 };

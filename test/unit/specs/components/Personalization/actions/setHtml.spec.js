@@ -25,9 +25,9 @@ describe("Personalization::actions::setHtml", () => {
     const settings = { content: "bar", meta };
     const event = { elements, prehidingSelector: "#setHtml" };
 
-    setHtml(settings, event);
-
-    expect(elements[0].innerHTML).toEqual("bar");
-    expect(collect).toHaveBeenCalledWith(meta);
+    return setHtml(settings, event).then(() => {
+      expect(elements[0].innerHTML).toEqual("bar");
+      expect(collect).toHaveBeenCalledWith(meta);
+    });
   });
 });

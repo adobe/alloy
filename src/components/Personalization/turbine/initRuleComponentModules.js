@@ -10,13 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  removeNode,
-  insertAfter,
-  insertBefore,
-  prepend,
-  append
-} from "../../../utils/dom";
+import { removeNode } from "../../../utils/dom";
 import elementExists from "../events/elementExists";
 import {
   createAction,
@@ -26,13 +20,18 @@ import {
   swapImage,
   setStyles,
   rearrangeChildren,
-  replace
+  replaceHtml,
+  appendHtml,
+  prependHtml,
+  insertHtmlAfter,
+  insertHtmlBefore
 } from "../helper";
 
 export default collect => {
   return {
     elementExists,
     setHtml: createAction(collect, setHtml),
+    customCode: createAction(collect, setHtml),
     setText: createAction(collect, setText),
     setAttribute: createAction(collect, setAttributes),
     setImageSource: createAction(collect, swapImage),
@@ -41,10 +40,10 @@ export default collect => {
     resize: createAction(collect, setStyles),
     rearrange: createAction(collect, rearrangeChildren),
     remove: createAction(collect, removeNode),
-    insertAfter: createAction(collect, insertAfter),
-    insertBefore: createAction(collect, insertBefore),
-    replaceHtml: createAction(collect, replace),
-    prependHtml: createAction(collect, prepend),
-    appendHtml: createAction(collect, append)
+    insertAfter: createAction(collect, insertHtmlAfter),
+    insertBefore: createAction(collect, insertHtmlBefore),
+    replaceHtml: createAction(collect, replaceHtml),
+    prependHtml: createAction(collect, prependHtml),
+    appendHtml: createAction(collect, appendHtml)
   };
 };

@@ -11,7 +11,7 @@ describe("Presonalization::actions::setStyle", () => {
     cleanUpDomChanges("setStyle");
   });
 
-  it("should set personalized content", () => {
+  it("should set styles", () => {
     const collect = jasmine.createSpy();
     const modules = initRuleComponentModules(collect);
     const { setStyle } = modules;
@@ -27,9 +27,9 @@ describe("Presonalization::actions::setStyle", () => {
     };
     const event = { elements, prehidingSelector: "#setStyle" };
 
-    setStyle(settings, event);
-
-    expect(elements[0].style.getPropertyValue("font-size")).toEqual("33px");
-    expect(collect).toHaveBeenCalledWith(meta);
+    return setStyle(settings, event).then(() => {
+      expect(elements[0].style.getPropertyValue("font-size")).toEqual("33px");
+      expect(collect).toHaveBeenCalledWith(meta);
+    });
   });
 });

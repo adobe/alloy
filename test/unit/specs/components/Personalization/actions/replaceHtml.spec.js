@@ -36,12 +36,12 @@ describe("Personalization::actions::replaceHtml", () => {
     };
     const event = { elements, prehidingSelector: "#a" };
 
-    replaceHtml(settings, event);
+    return replaceHtml(settings, event).then(() => {
+      const result = selectNodes("div#replaceHtml .rh");
 
-    const result = selectNodes("div#replaceHtml .rh");
-
-    expect(result.length).toEqual(1);
-    expect(result[0].innerHTML).toEqual("BBB");
-    expect(collect).toHaveBeenCalledWith(meta);
+      expect(result.length).toEqual(1);
+      expect(result[0].innerHTML).toEqual("BBB");
+      expect(collect).toHaveBeenCalledWith(meta);
+    });
   });
 });

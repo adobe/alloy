@@ -29,11 +29,11 @@ describe("Presonalization::actions::remove", () => {
     const settings = { meta };
     const event = { elements, prehidingSelector: "#remove" };
 
-    remove(settings, event);
+    return remove(settings, event).then(() => {
+      const result = selectNodes("#child");
 
-    const result = selectNodes("#child");
-
-    expect(result.length).toEqual(0);
-    expect(collect).toHaveBeenCalledWith(meta);
+      expect(result.length).toEqual(0);
+      expect(collect).toHaveBeenCalledWith(meta);
+    });
   });
 });

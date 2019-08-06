@@ -10,23 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createFragment from "./createFragment";
-import getChildren from "./getChildren";
-import getFirstChild from "./getFirstChild";
-import insertElementBefore from "./insertElementBefore";
+import { createFragment, getChildNodes, appendNode } from "../../../utils/dom";
+import { loadImages } from "./images";
+import { executeInlineScripts, executeRemoteScripts } from "./scripts";
 
 export default (container, html) => {
   const fragment = createFragment(html);
-  const elements = getChildren(fragment);
-  const { length } = elements;
-  let i = length - 1;
+  const elements = getChildNodes(fragment);
 
-  // We are inserting elements in reverse order
-  while (i >= 0) {
-    const element = elements[i];
+  loadImages(fragment);
 
-    insertElementBefore(getFirstChild(container), element);
+  elements.forEach(element => {
+    appendNode(container, element);
+  });
 
-    i -= 1;
-  }
+  executeInlineScripts(container, fragment, appendNode);
+
+  return executeRemoteScripts(fragment);
 };
