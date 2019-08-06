@@ -49,4 +49,23 @@ describe("getTld", () => {
     expect(getTopLevelCookieDomain(window, cookie)).toBe("c.co.uk");
     expect(cookie.remove).toHaveBeenCalled();
   });
+
+  it("tries all segments of the hostname if necessary", () => {
+    const window = mockWindowWithHostname("10.30.34.68");
+    let storedValue;
+    const cookie = {
+      get() {
+        return storedValue;
+      },
+      set(name, value, options) {
+        if (options.domain === "10.30.34.68") {
+          storedValue = value;
+        }
+      },
+      remove: jasmine.createSpy()
+    };
+
+    expect(getTopLevelCookieDomain(window, cookie)).toBe("10.30.34.68");
+    expect(cookie.remove).toHaveBeenCalled();
+  });
 });
