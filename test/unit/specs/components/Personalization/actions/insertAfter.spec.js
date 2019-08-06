@@ -15,7 +15,7 @@ describe("Personalization::actions::insertAfter", () => {
     cleanUpDomChanges("insertAfter");
   });
 
-  it("should inser after personalized content", done => {
+  it("should insert after personalized content", () => {
     const collect = jasmine.createSpy();
     const modules = initRuleComponentModules(collect);
     const { insertAfter } = modules;
@@ -36,18 +36,12 @@ describe("Personalization::actions::insertAfter", () => {
     };
     const event = { elements, prehidingSelector: "#a" };
 
-    insertAfter(settings, event)
-      .then(() => {
-        const result = selectNodes("div#insertAfter .ia");
+    return insertAfter(settings, event).then(() => {
+      const result = selectNodes("div#insertAfter .ia");
 
-        expect(result[0].innerHTML).toEqual("AAA");
-        expect(result[1].innerHTML).toEqual("BBB");
-        expect(collect).toHaveBeenCalledWith(meta);
-        done();
-      })
-      .catch(() => {
-        fail("Should not fail");
-        done();
-      });
+      expect(result[0].innerHTML).toEqual("AAA");
+      expect(result[1].innerHTML).toEqual("BBB");
+      expect(collect).toHaveBeenCalledWith(meta);
+    });
   });
 });

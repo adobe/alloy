@@ -15,7 +15,7 @@ describe("Personalization::actions::appendHtml", () => {
     cleanUpDomChanges("appendHtml");
   });
 
-  it("should append personalized content", done => {
+  it("should append personalized content", () => {
     const collect = jasmine.createSpy();
     const modules = initRuleComponentModules(collect);
     const { appendHtml } = modules;
@@ -36,20 +36,14 @@ describe("Personalization::actions::appendHtml", () => {
     };
     const event = { elements, prehidingSelector: "#appendHtml" };
 
-    appendHtml(settings, event)
-      .then(() => {
-        const result = selectNodes("ul#appendHtml li");
+    return appendHtml(settings, event).then(() => {
+      const result = selectNodes("ul#appendHtml li");
 
-        expect(result.length).toEqual(3);
-        expect(result[0].innerHTML).toEqual("1");
-        expect(result[1].innerHTML).toEqual("2");
-        expect(result[2].innerHTML).toEqual("3");
-        expect(collect).toHaveBeenCalledWith(meta);
-        done();
-      })
-      .catch(() => {
-        fail("Shoudl not fail");
-        done();
-      });
+      expect(result.length).toEqual(3);
+      expect(result[0].innerHTML).toEqual("1");
+      expect(result[1].innerHTML).toEqual("2");
+      expect(result[2].innerHTML).toEqual("3");
+      expect(collect).toHaveBeenCalledWith(meta);
+    });
   });
 });

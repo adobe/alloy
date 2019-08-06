@@ -11,7 +11,7 @@ describe("Personalization::actions::setAttribute", () => {
     cleanUpDomChanges("setAttribute");
   });
 
-  it("should set personalized content", done => {
+  it("should set element attribute", () => {
     const collect = jasmine.createSpy();
     const modules = initRuleComponentModules(collect);
     const { setAttribute } = modules;
@@ -24,15 +24,9 @@ describe("Personalization::actions::setAttribute", () => {
     const settings = { content: { "data-test": "bar" }, meta };
     const event = { elements, prehidingSelector: "#setAttribute" };
 
-    setAttribute(settings, event)
-      .then(() => {
-        expect(elements[0].getAttribute("data-test")).toEqual("bar");
-        expect(collect).toHaveBeenCalledWith(meta);
-        done();
-      })
-      .catch(() => {
-        fail("Shoudl not fail");
-        done();
-      });
+    return setAttribute(settings, event).then(() => {
+      expect(elements[0].getAttribute("data-test")).toEqual("bar");
+      expect(collect).toHaveBeenCalledWith(meta);
+    });
   });
 });

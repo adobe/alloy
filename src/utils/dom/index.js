@@ -18,7 +18,6 @@ export { default as removeNode } from "./removeNode";
 export { default as selectNodes } from "./selectNodes";
 export { selectNodesWithEq } from "./selectNodesWithEq";
 export { default as findById } from "./findById";
-export { default as loadImage } from "./loadImage";
 export { default as setAttribute } from "./setAttribute";
 export { default as getAttribute } from "./getAttribute";
 export { default as removeAttribute } from "./removeAttribute";

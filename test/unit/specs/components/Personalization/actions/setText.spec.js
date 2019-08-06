@@ -11,7 +11,7 @@ describe("Personalization::actions::setText", () => {
     cleanUpDomChanges("setText");
   });
 
-  it("should set personalized text", done => {
+  it("should set personalized text", () => {
     const collect = jasmine.createSpy();
     const modules = initRuleComponentModules(collect);
     const { setText } = modules;
@@ -25,15 +25,9 @@ describe("Personalization::actions::setText", () => {
     const settings = { content: "bar", meta };
     const event = { elements, prehidingSelector: "#setText" };
 
-    setText(settings, event)
-      .then(() => {
-        expect(elements[0].textContent).toEqual("bar");
-        expect(collect).toHaveBeenCalledWith(meta);
-        done();
-      })
-      .catch(() => {
-        fail("Should not fail");
-        done();
-      });
+    return setText(settings, event).then(() => {
+      expect(elements[0].textContent).toEqual("bar");
+      expect(collect).toHaveBeenCalledWith(meta);
+    });
   });
 });

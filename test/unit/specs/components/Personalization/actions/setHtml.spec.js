@@ -11,7 +11,7 @@ describe("Personalization::actions::setHtml", () => {
     cleanUpDomChanges("setHtml");
   });
 
-  it("should set personalized content", done => {
+  it("should set personalized content", () => {
     const collect = jasmine.createSpy();
     const modules = initRuleComponentModules(collect);
     const { setHtml } = modules;
@@ -25,15 +25,9 @@ describe("Personalization::actions::setHtml", () => {
     const settings = { content: "bar", meta };
     const event = { elements, prehidingSelector: "#setHtml" };
 
-    setHtml(settings, event)
-      .then(() => {
-        expect(elements[0].innerHTML).toEqual("bar");
-        expect(collect).toHaveBeenCalledWith(meta);
-        done();
-      })
-      .catch(() => {
-        fail("Should not fail");
-        done();
-      });
+    return setHtml(settings, event).then(() => {
+      expect(elements[0].innerHTML).toEqual("bar");
+      expect(collect).toHaveBeenCalledWith(meta);
+    });
   });
 });

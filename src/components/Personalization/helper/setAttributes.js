@@ -10,9 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { IMG } from "./constants";
-import createNode from "./createNode";
+import { setAttribute } from "../../../utils/dom";
 
-export default url => {
-  return createNode(IMG, { src: url });
+export default (container, attributes) => {
+  Object.keys(attributes).forEach(key => {
+    setAttribute(container, key, attributes[key]);
+  });
 };

@@ -15,7 +15,7 @@ describe("Personalization::actions::replaceHtml", () => {
     cleanUpDomChanges("replaceHtml");
   });
 
-  it("should replace element with personalized content", done => {
+  it("should replace element with personalized content", () => {
     const collect = jasmine.createSpy();
     const modules = initRuleComponentModules(collect);
     const { replaceHtml } = modules;
@@ -36,18 +36,12 @@ describe("Personalization::actions::replaceHtml", () => {
     };
     const event = { elements, prehidingSelector: "#a" };
 
-    replaceHtml(settings, event)
-      .then(() => {
-        const result = selectNodes("div#replaceHtml .rh");
+    return replaceHtml(settings, event).then(() => {
+      const result = selectNodes("div#replaceHtml .rh");
 
-        expect(result.length).toEqual(1);
-        expect(result[0].innerHTML).toEqual("BBB");
-        expect(collect).toHaveBeenCalledWith(meta);
-        done();
-      })
-      .catch(() => {
-        fail("Should not fail");
-        done();
-      });
+      expect(result.length).toEqual(1);
+      expect(result[0].innerHTML).toEqual("BBB");
+      expect(collect).toHaveBeenCalledWith(meta);
+    });
   });
 });
