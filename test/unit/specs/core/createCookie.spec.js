@@ -24,6 +24,18 @@ describe("createCookie", () => {
     cookieProxy = jasmine.createSpyObj("cookieProxy", ["get", "set"]);
   });
 
+  it("should throw an error if namespace is undefined", () => {
+    expect(() => createCookie(cookieProxy, undefined)).toThrowError();
+  });
+
+  it("should throw an error if namespace is a number", () => {
+    expect(() => createCookie(cookieProxy, 42)).toThrowError();
+  });
+
+  it("should throw an error if namespace is empty string", () => {
+    expect(() => createCookie(cookieProxy, "")).toThrowError();
+  });
+
   describe("get", () => {
     it("should return undefined when no cookie is found", () => {
       cookieProxy.get.and.returnValue(undefined);
@@ -57,11 +69,6 @@ describe("createCookie", () => {
       alloyCookie = createCookie(cookieProxy, componentNamespace1);
       const value = alloyCookie.get("foo");
       expect(value).toEqual("bar");
-    });
-
-    it("should throw an error if namespace is undefined", () => {
-      alloyCookie = createCookie(cookieProxy, undefined);
-      expect(() => alloyCookie.get("foo")).toThrowError();
     });
   });
 
@@ -115,11 +122,6 @@ describe("createCookie", () => {
       // have been modified.
       expect(originalCookieObject).toEqual(clonedOriginalCookieObject);
     });
-
-    it("should throw an error if namespace is empty String", () => {
-      alloyCookie = createCookie(cookieProxy, "");
-      expect(() => alloyCookie.set("foo", "baz")).toThrowError();
-    });
   });
 
   describe("remove", () => {
@@ -162,11 +164,6 @@ describe("createCookie", () => {
       // The original cookie object returned from the cookie proxy shouldn't
       // have been modified.
       expect(originalCookieObject).toEqual(clonedOriginalCookieObject);
-    });
-
-    it("should throw an error if namespace is undefined", () => {
-      alloyCookie = createCookie(cookieProxy, undefined);
-      expect(() => alloyCookie.remove("foo")).toThrowError();
     });
   });
 });

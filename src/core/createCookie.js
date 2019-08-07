@@ -13,13 +13,11 @@ governing permissions and limitations under the License.
 import { isNonEmptyString } from "../utils";
 
 export default (cookieProxy, componentNamespace) => {
-  const validateNamespace = () => {
-    if (!isNonEmptyString(componentNamespace)) {
-      throw Error(
-        "No cookie namespace.  Please define 'abbreviation' on the component."
-      );
-    }
-  };
+  if (!isNonEmptyString(componentNamespace)) {
+    throw Error(
+      "No cookie namespace.  Please define 'abbreviation' on the component."
+    );
+  }
 
   return {
     /**
@@ -27,7 +25,6 @@ export default (cookieProxy, componentNamespace) => {
      * @param {string} key
      */
     get(key) {
-      validateNamespace();
       const currentCookie = cookieProxy.get();
       return (
         currentCookie &&
@@ -41,7 +38,6 @@ export default (cookieProxy, componentNamespace) => {
      * @param {string} value
      */
     set(key, value) {
-      validateNamespace();
       const currentCookie = cookieProxy.get() || {};
       const updatedCookie = {
         ...currentCookie,
@@ -57,7 +53,6 @@ export default (cookieProxy, componentNamespace) => {
      * @param {string} key
      */
     remove(key) {
-      validateNamespace();
       const currentCookie = cookieProxy.get();
       if (currentCookie && currentCookie[componentNamespace]) {
         const updatedCookie = {
