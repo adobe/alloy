@@ -27,7 +27,6 @@ const createIdentity = ({ config, logger, cookie }) => {
   // need to wait for the user to opt in first.
   const getEcid = () => cookie.get(ECID_NAMESPACE);
   let optIn;
-  let responseRequested = false;
   let deferredForEcid;
 
   return {
@@ -38,12 +37,6 @@ const createIdentity = ({ config, logger, cookie }) => {
       // Waiting for opt-in because we'll be reading the ECID from a cookie
       onBeforeEvent(event) {
         return optIn.whenOptedIn().then(() => {
-          const ecid = getEcid();
-          if (!ecid && !responseRequested) {
-            event.expectResponse();
-            responseRequested = true;
-          }
-
           const nowInHours = Math.round(
             convertTimes(MILLISECOND, HOUR, new Date().getTime())
           );
@@ -82,6 +75,7 @@ const createIdentity = ({ config, logger, cookie }) => {
             // We won't apply the ECID to this request, but we'll set up a
             // promise so that future requests can know when the ECID has returned.
             deferredForEcid = defer();
+            payload.expectResponse();
           }
 
           return promise;
