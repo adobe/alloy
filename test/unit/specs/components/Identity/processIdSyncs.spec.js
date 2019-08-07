@@ -42,7 +42,9 @@ describe("Identity::processIdSyncs", () => {
 
     cookie.set(
       ID_SYNC_CONTROL,
-      `123-${Math.round(new Date().getTime() / 1000 / 60 / 60) - 10}`
+      `123-${(Math.round(new Date().getTime() / 1000 / 60 / 60) - 10).toString(
+        36
+      )}`
     );
 
     let obj = getControlObject();

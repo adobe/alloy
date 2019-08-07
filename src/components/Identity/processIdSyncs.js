@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, fireDestinations } from "../../utils";
+import { assign, fireDestinations, convertTimes } from "../../utils";
+import { DAY, HOUR } from "../../utils/convertTimes";
 import { ID_SYNC_TIMESTAMP, ID_SYNC_CONTROL } from "./constants";
-import {
-  MILLISECONDS_PER_HOUR,
-  SEVEN_DAYS_IN_HOURS
-} from "../../constants/times";
+
+const MILLISECONDS_PER_HOUR = HOUR;
+const SEVEN_DAYS_IN_HOURS = convertTimes(DAY, HOUR, 7);
 
 const getControlObject = cookie => {
   const val = cookie.get(ID_SYNC_CONTROL) || "";
@@ -24,7 +24,7 @@ const getControlObject = cookie => {
   return arr.reduce((controlObject, idTimestampPair) => {
     const [id, timestamp] = idTimestampPair.split("-");
 
-    controlObject[id] = timestamp;
+    controlObject[id] = parseInt(timestamp, 36);
 
     return controlObject;
   }, {});
@@ -32,7 +32,7 @@ const getControlObject = cookie => {
 
 const setControlObject = (controlObject, cookie) => {
   const arr = Object.keys(controlObject).map(
-    id => `${id}-${controlObject[id]}`
+    id => `${id}-${controlObject[id].toString(36)}`
   );
 
   cookie.set(ID_SYNC_CONTROL, arr.join("_"));

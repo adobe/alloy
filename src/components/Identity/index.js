@@ -12,8 +12,10 @@ governing permissions and limitations under the License.
 
 import { defer } from "../../utils";
 import processIdSyncs from "./processIdSyncs";
+import { HOUR } from "../../utils/convertTimes";
 import { ECID_NAMESPACE, ID_SYNC_TIMESTAMP } from "./constants";
-import { MILLISECONDS_PER_HOUR } from "../../constants/times";
+
+const MILLISECONDS_PER_HOUR = HOUR;
 
 const addIdsContext = (payload, ecid) => {
   // TODO: Add customer ids.
