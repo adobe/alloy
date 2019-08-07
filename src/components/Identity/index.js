@@ -109,6 +109,7 @@ const createIdentity = ({ config, logger, cookie }) => {
 };
 
 createIdentity.namespace = "Identity";
+createIdentity.abbreviation = "ID";
 
 createIdentity.configValidators = {
   idSyncsEnabled: {

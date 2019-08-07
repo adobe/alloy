@@ -39,7 +39,7 @@ const createAudiences = ({ config, logger }) => {
 };
 
 createAudiences.namespace = "Audiences";
-
+createAudiences.abbreviation = "AU";
 createAudiences.configValidators = {
   destinationsEnabled: {
     defaultValue: true

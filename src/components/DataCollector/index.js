@@ -77,5 +77,5 @@ const createDataCollector = ({ config }) => {
 };
 
 createDataCollector.namespace = "DataCollector";
-
+createDataCollector.abbreviation = "DC";
 export default createDataCollector;

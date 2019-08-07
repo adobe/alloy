@@ -60,6 +60,7 @@ const createPrivacy = ({ config, logger, enableOptIn, cookie }) => {
 };
 
 createPrivacy.namespace = "Privacy";
+createPrivacy.abbreviation = "PR";
 
 createPrivacy.configValidators = {
   optInEnabled: {

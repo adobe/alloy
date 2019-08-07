@@ -132,5 +132,6 @@ const createPersonalization = ({ config, logger, cookie }) => {
 };
 
 createPersonalization.namespace = "Personalization";
+createPersonalization.abbreviation = "PE";
 
 export default createPersonalization;

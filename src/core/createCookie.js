@@ -10,7 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { isNonEmptyString } from "../utils";
+
 export default (cookieProxy, componentNamespace) => {
+  if (!isNonEmptyString(componentNamespace)) {
+    throw Error(
+      "No cookie namespace.  Please define 'abbreviation' on the component."
+    );
+  }
+
   return {
     /**
      * Returns a value from the Alloy cookie for a given key.

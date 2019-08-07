@@ -47,13 +47,13 @@ export default (
   });
   config.validate();
   componentCreators.forEach(createComponent => {
-    const { namespace } = createComponent;
+    const { namespace, abbreviation } = createComponent;
     // TO-DOCUMENT: Helpers that we inject into factories.
     let component;
     try {
       component = createComponent({
         logger: logger.spawn(`[${namespace}]`),
-        cookie: createCookie(cookieProxy, namespace),
+        cookie: createCookie(cookieProxy, abbreviation),
         config,
         storage,
         enableOptIn: optIn.enable

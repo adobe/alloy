@@ -103,14 +103,16 @@ describe("Event Command", () => {
     const deferred = defer();
     onBeforeEventSpy.and.returnValue(deferred.promise);
     eventCommand({});
-    return flushPromiseChains().then(() => {
-      expect(onBeforeEventSpy).toHaveBeenCalled();
-      expect(sendRequestSpy).not.toHaveBeenCalled();
-      deferred.resolve();
-      return flushPromiseChains();
-    }).then(() => {
-      expect(sendRequestSpy).toHaveBeenCalled();
-    });
+    return flushPromiseChains()
+      .then(() => {
+        expect(onBeforeEventSpy).toHaveBeenCalled();
+        expect(sendRequestSpy).not.toHaveBeenCalled();
+        deferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(sendRequestSpy).toHaveBeenCalled();
+      });
   });
 
   it("Sends the event through to the Network Gateway", () => {
@@ -137,14 +139,16 @@ describe("Event Command", () => {
     const deferred = defer();
     onBeforeDataCollectionSpy.and.returnValue(deferred.promise);
     eventCommand({});
-    return flushPromiseChains().then(() => {
-      expect(onBeforeDataCollectionSpy).toHaveBeenCalled();
-      expect(sendRequestSpy).not.toHaveBeenCalled();
-      deferred.resolve();
-      return flushPromiseChains();
-    }).then(() => {
-      expect(sendRequestSpy).toHaveBeenCalled();
-    });
+    return flushPromiseChains()
+      .then(() => {
+        expect(onBeforeDataCollectionSpy).toHaveBeenCalled();
+        expect(sendRequestSpy).not.toHaveBeenCalled();
+        deferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(sendRequestSpy).toHaveBeenCalled();
+      });
   });
 
   it("Returns a promise resolved with the request and response", () => {
@@ -161,19 +165,13 @@ describe("Event Command", () => {
       return Promise.resolve();
     });
     return eventCommand({}).then(() => {
-      expect(sendRequestSpy).toHaveBeenCalledWith(
-        jasmine.anything(),
-        true
-      );
+      expect(sendRequestSpy).toHaveBeenCalledWith(jasmine.anything(), true);
     });
   });
 
   it("sends expectsResponse == false", () => {
     return eventCommand({}).then(() => {
-      expect(sendRequestSpy).toHaveBeenCalledWith(
-        jasmine.anything(),
-        false
-      );
+      expect(sendRequestSpy).toHaveBeenCalledWith(jasmine.anything(), false);
     });
   });
 

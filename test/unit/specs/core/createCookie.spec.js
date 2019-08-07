@@ -24,6 +24,18 @@ describe("createCookie", () => {
     cookieProxy = jasmine.createSpyObj("cookieProxy", ["get", "set"]);
   });
 
+  it("should throw an error if namespace is undefined", () => {
+    expect(() => createCookie(cookieProxy, undefined)).toThrowError();
+  });
+
+  it("should throw an error if namespace is a number", () => {
+    expect(() => createCookie(cookieProxy, 42)).toThrowError();
+  });
+
+  it("should throw an error if namespace is empty string", () => {
+    expect(() => createCookie(cookieProxy, "")).toThrowError();
+  });
+
   describe("get", () => {
     it("should return undefined when no cookie is found", () => {
       cookieProxy.get.and.returnValue(undefined);
