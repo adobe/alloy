@@ -14,6 +14,7 @@ import { createMerger } from "../../utils";
 
 export default () => {
   const content = {};
+  let expectsResponse = false;
 
   return {
     addIdentity: (namespaceCode, identity) => {
@@ -27,10 +28,14 @@ export default () => {
       content.events.push(event);
     },
     mergeMeta: createMerger(content, "meta"),
+    expectResponse() {
+      expectsResponse = true;
+    },
     get expectsResponse() {
       return (
-        Array.isArray(content.events) &&
-        content.events.some(event => event.expectsResponse)
+        expectsResponse ||
+        (Array.isArray(content.events) &&
+          content.events.some(event => event.expectsResponse))
       );
     },
     toJSON() {
