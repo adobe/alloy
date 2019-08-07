@@ -6,7 +6,7 @@ export default function Stitch() {
   useEffect(() => {
     window.alloy("event", {
       data: {
-        "key1": ["value1"]
+        "key1": "value1"
       },
       stitchId: stitchId.current
     }).catch(console.error);
@@ -14,7 +14,7 @@ export default function Stitch() {
     setTimeout(() => {
       window.alloy("event", {
         data: {
-          "key2": ["value2"]
+          "key2": "value2"
         },
         stitchId: stitchId.current
       }).catch(console.error);

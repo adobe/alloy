@@ -18,6 +18,7 @@ import Home from "./Home";
 import OrgTwo from "./OrgTwo";
 import Links from "./Links";
 import Stitch from "./Stitch";
+import OptIn from "./OptIn";
 
 function BasicExample() {
   return (
@@ -39,6 +40,9 @@ function BasicExample() {
           <li>
             <Link to="/stitch">Stitch</Link>
           </li>
+          <li>
+            <Link to="/optIn">OptIn</Link>
+          </li>
         </ul>
 
         <hr />
@@ -48,6 +52,7 @@ function BasicExample() {
         <Route path="/orgTwo" component={OrgTwo} />
         <Route path="/links" component={Links} />
         <Route path="/stitch" component={Stitch} />
+        <Route path="/optIn" component={OptIn} />
       </div>
     </Router>
   );

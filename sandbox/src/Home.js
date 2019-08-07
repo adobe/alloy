@@ -10,8 +10,8 @@ function HomeWithHistory({ history }) {
       window[instanceName]("event", {
         type: "viewStart",
         data: {
-          "xdm:URL": [window.location.href],
-          "xdm:name": [loc.pathname.substring(1)]
+          "url": window.location.href,
+          "name": loc.pathname.substring(1)
         }
       });
     }
@@ -22,8 +22,8 @@ function HomeWithHistory({ history }) {
     window.alloy("event", {
       type: "visit-doc",
       data: {
-        "activitystreams:href": [ev.target.href],
-        "activitystreams:name": [ev.target.name],
+        "activitystreams:href": ev.target.href,
+        "activitystreams:name": ev.target.name,
         "activitystreams:mediaType": "text/html",
       }
     });
@@ -33,11 +33,17 @@ function HomeWithHistory({ history }) {
     window.alloy("event", {
       type: "copy-base-code",
       data: {
-        "activitystreams:href": ["https://launch.gitbook.io/adobe-experience-platform-web-sdk/"],
-        "activitystreams:name": ["copyBaseCode"],
+        "activitystreams:href": "https://launch.gitbook.io/adobe-experience-platform-web-sdk/",
+        "activitystreams:name": "copyBaseCode",
         "activitystreams:mediaType": "text/html",
       }
     });
+  };
+
+  const makeOptInCommand = purposes => () => {
+    window.alloy("optIn", {
+      purposes
+    }).catch(console.error);
   };
 
   return (
@@ -98,6 +104,17 @@ function HomeWithHistory({ history }) {
             <a
               href="https://launch.gitbook.io/adobe-experience-platform-web-sdk/"
               onClick={visitDoc} name="Alloy Public Documentation">Read full documentation</a>
+
+            <div>
+              <h2>Opt-In</h2>
+              <p>To test Opt-In on load, set the `optInEnabled` config to true.</p>
+              <div>
+                <button onClick={makeOptInCommand("all")}>OptIn to all purposes</button>
+                <span>should trigger queued up commands.</span></div>
+              <div>
+                <button onClick={makeOptInCommand("none")}>OptIn to no purposes</button>
+                <span>should stop most commands and throw an error.</span></div>
+            </div>
           </div>
         </section>
       </div>
