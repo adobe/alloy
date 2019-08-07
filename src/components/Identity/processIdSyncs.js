@@ -10,79 +10,82 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, cookie, fireDestinations } from "../../utils";
-import namespace from "../../constants/namespace";
+import { assign, fireDestinations, convertTimes } from "../../utils";
+import { DAY, HOUR, MILLISECOND } from "../../utils/convertTimes";
+import { ID_SYNC_TIMESTAMP, ID_SYNC_CONTROL } from "./constants";
 
-const millisecondsPerHour = 60 * 60 * 1000;
-
-// TODO: use alloy cookie once https://github.com/adobe/alloy/pull/26 is merged
-const getControlObject = () => {
-  const val = cookie.get(`${namespace}idSyncControl`) || "";
+const getControlObject = cookie => {
+  const val = cookie.get(ID_SYNC_CONTROL) || "";
   const arr = val ? val.split("_") : [];
 
-  return arr.reduce((obj, pair) => {
-    const o = obj;
-    const [id, ts] = pair.split("-");
+  return arr.reduce((controlObject, idTimestampPair) => {
+    const [id, timestamp] = idTimestampPair.split("-");
 
-    o[id] = ts;
+    controlObject[id] = parseInt(timestamp, 36);
 
-    return o;
+    return controlObject;
   }, {});
 };
 
-const setControlObject = obj => {
-  const arr = [];
+const setControlObject = (controlObject, cookie) => {
+  const arr = Object.keys(controlObject).map(
+    id => `${id}-${controlObject[id].toString(36)}`
+  );
 
-  Object.keys(obj).forEach(id => arr.push(`${id}-${obj[id]}`));
-
-  cookie.set(`${namespace}idSyncControl`, arr.join("_"), {
-    expires: 6 * 30 // 6 months
-  });
+  cookie.set(ID_SYNC_CONTROL, arr.join("_"));
 };
 
-export default ({ destinations, config, logger }) => {
-  if (config.idSyncsEnabled) {
-    const controlObject = getControlObject();
-    const now = new Date().getTime() / millisecondsPerHour; // hours
+export default ({ destinations, config, logger, cookie }) => {
+  if (!config.idSyncsEnabled) {
+    return;
+  }
 
-    Object.keys(controlObject).forEach(key => {
-      if (controlObject[key] < now) {
-        delete controlObject[key];
-      }
-    });
+  const controlObject = getControlObject(cookie);
+  const now = convertTimes(MILLISECOND, HOUR, new Date().getTime()); // hours
 
-    const idSyncs = destinations
-      .filter(
-        dest => dest.type === "url" && controlObject[dest.id] === undefined
-      )
-      .map(dest =>
-        assign(
-          {
-            id: dest.id
-          },
-          dest.spec
-        )
-      );
-
-    if (idSyncs.length) {
-      fireDestinations({
-        logger,
-        destinations: idSyncs
-      }).then(result => {
-        const timeStamp = Math.round(
-          new Date().getTime() / millisecondsPerHour
-        ); // hours
-
-        result.succeeded.forEach(idSync => {
-          const ttl = (idSync.ttl || 7) * 24; // hours
-
-          if (idSync.id !== undefined) {
-            controlObject[idSync.id] = timeStamp + ttl;
-          }
-        });
-
-        setControlObject(controlObject);
-      });
+  Object.keys(controlObject).forEach(key => {
+    if (controlObject[key] < now) {
+      delete controlObject[key];
     }
+  });
+
+  const idSyncs = destinations
+    .filter(dest => dest.type === "url" && controlObject[dest.id] === undefined)
+    .map(dest =>
+      assign(
+        {
+          id: dest.id
+        },
+        dest.spec
+      )
+    );
+
+  if (idSyncs.length) {
+    fireDestinations({
+      logger,
+      destinations: idSyncs
+    }).then(result => {
+      const timeStamp = Math.round(
+        convertTimes(MILLISECOND, HOUR, new Date().getTime())
+      ); // hours
+
+      result.succeeded.forEach(idSync => {
+        const ttl = (idSync.ttl || 7) * 24; // hours
+
+        if (idSync.id !== undefined) {
+          controlObject[idSync.id] = timeStamp + ttl;
+        }
+      });
+
+      setControlObject(controlObject, cookie);
+
+      cookie.set(
+        ID_SYNC_TIMESTAMP,
+        (
+          Math.round(convertTimes(MILLISECOND, HOUR, new Date().getTime())) +
+          convertTimes(DAY, HOUR, 7)
+        ).toString(36)
+      );
+    });
   }
 };

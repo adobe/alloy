@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { defer, flatMap } from "../../utils";
+import { defer, flatMap, convertTimes } from "../../utils";
 import processIdSyncs from "./processIdSyncs";
-
-const ECID_NAMESPACE = "ECID";
+import { HOUR, MILLISECOND } from "../../utils/convertTimes";
+import { ECID_NAMESPACE, ID_SYNC_TIMESTAMP } from "./constants";
 
 const addIdsContext = (payload, ecid) => {
   // TODO: Add customer ids.
@@ -42,6 +42,19 @@ const createIdentity = ({ config, logger, cookie }) => {
           if (!ecid && !responseRequested) {
             event.expectResponse();
             responseRequested = true;
+          }
+
+          const nowInHours = Math.round(
+            convertTimes(MILLISECOND, HOUR, new Date().getTime())
+          );
+          const timestamp = parseInt(cookie.get(ID_SYNC_TIMESTAMP) || 0, 36);
+
+          if (config.idSyncsEnabled && nowInHours > timestamp) {
+            event.mergeQuery({
+              identity: {
+                exchange: true
+              }
+            });
           }
         });
       },
@@ -95,7 +108,8 @@ const createIdentity = ({ config, logger, cookie }) => {
           processIdSyncs({
             destinations: idSyncs,
             config,
-            logger
+            logger,
+            cookie
           });
         });
       }
