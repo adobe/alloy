@@ -37,7 +37,7 @@ export default () => {
         if (optedIn) {
           deferred.resolve();
         } else {
-          deferred.reject(new Error("User has opted out."));
+          deferred.reject(new Error("User opted into no purposes."));
         }
       }
     }
@@ -47,12 +47,17 @@ export default () => {
     /**
      * Only to be called by the Privacy component during startup. If opt-in
      * isn't enabled, this method will not be called.
-     * @param {Object} _cookie The cookie management object, namespaced
+     * @param {Object} logger A logger object.
+     * @param {Object} _cookie A cookie management object.
      * to the Privacy component.
      */
-    enable(_cookie) {
+    enable(logger, _cookie) {
       cookie = _cookie;
       purposes = cookie.get(COOKIE_NAMESPACE) || PENDING;
+
+      if (purposes === PENDING) {
+        logger.warn("Some commands may be delayed until the user opts in.");
+      }
     },
     /**
      * Update the purposes the user has opted into. Only to be called by the

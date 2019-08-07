@@ -11,23 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import { setStyle } from "../../../utils/dom";
-import { showElements } from "../flicker";
 
-export default collect => {
-  return (settings, event) => {
-    const { elements, prehidingSelector } = event;
-    const { content, meta } = settings;
+export default (container, styles) => {
+  const { priority, ...style } = styles;
 
-    elements.forEach(element => {
-      Object.keys(content).forEach(key => {
-        setStyle(element, key, content[key]);
-      });
-    });
-
-    // after rendering we should remove the flicker control styles
-    showElements(prehidingSelector);
-
-    // make sure we send back the metadata after successful rendering
-    collect({ meta: { personalization: meta } });
-  };
+  Object.keys(style).forEach(key => {
+    setStyle(container, key, style[key], priority);
+  });
 };

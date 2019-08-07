@@ -1,5 +1,5 @@
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import createResize from "../../../../../../src/components/Personalization/actions/resize";
+import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::resize", () => {
@@ -11,26 +11,26 @@ describe("Personalization::actions::resize", () => {
     cleanUpDomChanges("resize");
   });
 
-  it("should set personalized content", () => {
+  it("should resize personalized content", () => {
     const collect = jasmine.createSpy();
-    const resize = createResize(collect);
+    const modules = initRuleComponentModules(collect);
+    const { resize } = modules;
     const element = createNode("div", { id: "resize" });
     const elements = [element];
 
     appendNode(document.body, element);
 
+    const meta = { a: 1 };
     const settings = {
       content: { width: "100px", height: "100px" },
-      meta: { a: 1 }
+      meta
     };
     const event = { elements, prehidingSelector: "#resize" };
 
-    resize(settings, event);
-
-    expect(elements[0].style.width).toEqual("100px");
-    expect(elements[0].style.height).toEqual("100px");
-    expect(collect).toHaveBeenCalledWith({
-      meta: { personalization: { a: 1 } }
+    return resize(settings, event).then(() => {
+      expect(elements[0].style.width).toEqual("100px");
+      expect(elements[0].style.height).toEqual("100px");
+      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

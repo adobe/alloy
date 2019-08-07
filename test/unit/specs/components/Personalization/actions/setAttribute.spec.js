@@ -1,5 +1,5 @@
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import createSetAttribute from "../../../../../../src/components/Personalization/actions/setAttribute";
+import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::setAttribute", () => {
@@ -11,22 +11,22 @@ describe("Personalization::actions::setAttribute", () => {
     cleanUpDomChanges("setAttribute");
   });
 
-  it("should set personalized content", () => {
+  it("should set element attribute", () => {
     const collect = jasmine.createSpy();
-    const setAttribute = createSetAttribute(collect);
+    const modules = initRuleComponentModules(collect);
+    const { setAttribute } = modules;
     const element = createNode("div", { id: "setAttribute" });
     const elements = [element];
 
     appendNode(document.body, element);
 
-    const settings = { content: { "data-test": "bar" }, meta: { a: 1 } };
+    const meta = { a: 1 };
+    const settings = { content: { "data-test": "bar" }, meta };
     const event = { elements, prehidingSelector: "#setAttribute" };
 
-    setAttribute(settings, event);
-
-    expect(elements[0].getAttribute("data-test")).toEqual("bar");
-    expect(collect).toHaveBeenCalledWith({
-      meta: { personalization: { a: 1 } }
+    return setAttribute(settings, event).then(() => {
+      expect(elements[0].getAttribute("data-test")).toEqual("bar");
+      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

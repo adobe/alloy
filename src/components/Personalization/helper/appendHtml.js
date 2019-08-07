@@ -10,22 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { showElements } from "../flicker";
+import { createFragment, getChildNodes, appendNode } from "../../../utils/dom";
+import { loadImages } from "./images";
+import { executeInlineScripts, executeRemoteScripts } from "./scripts";
 
-export default collect => {
-  return (settings, event) => {
-    const { elements, prehidingSelector } = event;
-    const { content, meta } = settings;
+export default (container, html) => {
+  const fragment = createFragment(html);
+  const elements = getChildNodes(fragment);
 
-    // this is a very naive approach, we will expand later
-    elements.forEach(element => {
-      element.innerHTML = content;
-    });
+  loadImages(fragment);
 
-    // after rendering we should remove the flicker control styles
-    showElements(prehidingSelector);
+  elements.forEach(element => {
+    appendNode(container, element);
+  });
 
-    // make sure we send back the metadata after successful rendering
-    collect({ meta: { personalization: meta } });
-  };
+  executeInlineScripts(container, fragment, appendNode);
+
+  return executeRemoteScripts(fragment);
 };

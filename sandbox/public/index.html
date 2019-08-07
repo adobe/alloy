@@ -37,6 +37,7 @@
       alloy("configure", {
         edgeDomain: "edgegateway.azurewebsites.net",
         // optInEnabled: true,
+        // suppressErrors: true,
         propertyId: 9999999,
         imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
         log: true,
@@ -49,8 +50,8 @@
         // View docs for more info.
         type: "viewStart",
         data: {
-          "xdm:URL": [location.href],
-          "xdm:name": [location.pathname.substring(1) || "home"]
+          "url": location.href,
+          "name": location.pathname.substring(1) || "home"
         }
       }).then(function(data) {
         console.log("Sandbox: View start event has completed.", data);

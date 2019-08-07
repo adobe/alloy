@@ -3,7 +3,7 @@ import {
   appendNode,
   createNode
 } from "../../../../../../src/utils/dom";
-import createPrependHtml from "../../../../../../src/components/Personalization/actions/prependHtml";
+import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::prependHtml", () => {
@@ -17,7 +17,8 @@ describe("Personalization::actions::prependHtml", () => {
 
   it("should prepend personalized content", () => {
     const collect = jasmine.createSpy();
-    const prependHtml = createPrependHtml(collect);
+    const modules = initRuleComponentModules(collect);
+    const { prependHtml } = modules;
     const content = `<li>3</li>`;
     const element = createNode(
       "ul",
@@ -28,22 +29,21 @@ describe("Personalization::actions::prependHtml", () => {
 
     appendNode(document.body, element);
 
+    const meta = { a: 1 };
     const settings = {
       content: `<li>1</li><li>2</li>`,
-      meta: { a: 1 }
+      meta
     };
     const event = { elements, prehidingSelector: "#prependHtml" };
 
-    prependHtml(settings, event);
+    return prependHtml(settings, event).then(() => {
+      const result = selectNodes("ul#prependHtml li");
 
-    const result = selectNodes("ul#prependHtml li");
-
-    expect(result.length).toEqual(3);
-    expect(result[0].innerHTML).toEqual("1");
-    expect(result[1].innerHTML).toEqual("2");
-    expect(result[2].innerHTML).toEqual("3");
-    expect(collect).toHaveBeenCalledWith({
-      meta: { personalization: { a: 1 } }
+      expect(result.length).toEqual(3);
+      expect(result[0].innerHTML).toEqual("1");
+      expect(result[1].innerHTML).toEqual("2");
+      expect(result[2].innerHTML).toEqual("3");
+      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

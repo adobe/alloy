@@ -28,16 +28,18 @@ describe("createOptIn", () => {
   });
 
   describe("when enabled", () => {
+    let logger;
     let cookie;
 
     beforeEach(() => {
+      logger = jasmine.createSpyObj("logger", ["warn"]);
       cookie = jasmine.createSpyObj("cookie", ["get", "set"]);
       cookie.get.and.returnValue(null);
     });
 
     it("considers the user opted in if cookie is set to 'all'", () => {
       cookie.get.and.returnValue("all");
-      optIn.enable(cookie);
+      optIn.enable(logger, cookie);
 
       expect(optIn.isOptedIn()).toBe(true);
       return optIn.whenOptedIn();
@@ -45,7 +47,7 @@ describe("createOptIn", () => {
 
     it("considers the user opted out if cookie is set to 'none'", () => {
       cookie.get.and.returnValue("none");
-      optIn.enable(cookie);
+      optIn.enable(logger, cookie);
 
       expect(optIn.isOptedIn()).toBe(false);
       return expectAsync(optIn.whenOptedIn()).toBeRejectedWith(
@@ -55,8 +57,11 @@ describe("createOptIn", () => {
 
     it("considers the user pending opt in if cookie is not set", () => {
       const optedInSpy = jasmine.createSpy();
-      optIn.enable(cookie);
+      optIn.enable(logger, cookie);
 
+      expect(logger.warn).toHaveBeenCalledWith(
+        "Some commands may be delayed until the user opts in."
+      );
       expect(optIn.isOptedIn()).toBe(false);
       optIn.whenOptedIn().then(optedInSpy);
       return flushPromiseChains().then(() => {
@@ -65,7 +70,7 @@ describe("createOptIn", () => {
     });
 
     it("considers the user opted in after the user opts in", () => {
-      optIn.enable(cookie);
+      optIn.enable(logger, cookie);
       const whenOptedInPromise = optIn.whenOptedIn();
       optIn.setPurposes("all");
 
@@ -75,7 +80,7 @@ describe("createOptIn", () => {
     });
 
     it("considers the user opted out after the user opts out", () => {
-      optIn.enable(cookie);
+      optIn.enable(logger, cookie);
       const whenOptedInPromise = optIn.whenOptedIn();
       optIn.setPurposes("none");
 
@@ -87,7 +92,7 @@ describe("createOptIn", () => {
     });
 
     it("considers the user opted in after the user opts out then opts in", () => {
-      optIn.enable(cookie);
+      optIn.enable(logger, cookie);
       optIn.setPurposes("none");
       optIn.setPurposes("all");
       const whenOptedInPromise = optIn.whenOptedIn();
@@ -98,7 +103,7 @@ describe("createOptIn", () => {
     });
 
     it("considers the user opted out after the user opts in then opts out", () => {
-      optIn.enable(cookie);
+      optIn.enable(logger, cookie);
       optIn.setPurposes("all");
       optIn.setPurposes("none");
       const whenOptedInPromise = optIn.whenOptedIn();
@@ -111,7 +116,7 @@ describe("createOptIn", () => {
     });
 
     it("resolves nested whenOptedIn calls", () => {
-      optIn.enable(cookie);
+      optIn.enable(logger, cookie);
       const whenOptedInPromise = optIn
         .whenOptedIn()
         .then(() => optIn.whenOptedIn());

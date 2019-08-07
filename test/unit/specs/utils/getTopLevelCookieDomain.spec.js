@@ -10,9 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getTopLevelCookieDomain, {
-  testClearCachedValue
-} from "../../../../src/utils/getTopLevelCookieDomain";
+import getTopLevelCookieDomain from "../../../../src/utils/getTopLevelCookieDomain";
 
 const mockWindowWithHostname = hostname => {
   return {
@@ -23,8 +21,6 @@ const mockWindowWithHostname = hostname => {
 };
 
 describe("getTld", () => {
-  afterEach(testClearCachedValue);
-
   it("returns an empty string when only one host part exists", () => {
     const window = mockWindowWithHostname("localhost");
     const cookie = {
@@ -51,6 +47,25 @@ describe("getTld", () => {
     };
 
     expect(getTopLevelCookieDomain(window, cookie)).toBe("c.co.uk");
+    expect(cookie.remove).toHaveBeenCalled();
+  });
+
+  it("tries all segments of the hostname if necessary", () => {
+    const window = mockWindowWithHostname("10.30.34.68");
+    let storedValue;
+    const cookie = {
+      get() {
+        return storedValue;
+      },
+      set(name, value, options) {
+        if (options.domain === "10.30.34.68") {
+          storedValue = value;
+        }
+      },
+      remove: jasmine.createSpy()
+    };
+
+    expect(getTopLevelCookieDomain(window, cookie)).toBe("10.30.34.68");
     expect(cookie.remove).toHaveBeenCalled();
   });
 });

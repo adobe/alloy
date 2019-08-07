@@ -15,8 +15,6 @@ import getLastArrayItems from "./getLastArrayItems";
 
 const cookieName = `${namespace}getTld`;
 
-let topLevelCookieDomain = "";
-
 /**
  * Retrieves the top-most domain that is able to accept cookies. This will
  * be the top-most domain that is not a "public suffix" as outlined
@@ -26,15 +24,13 @@ let topLevelCookieDomain = "";
  * @returns {string}
  */
 export default function getTopLevelCookieDomain(window, cookie) {
-  if (topLevelCookieDomain) {
-    return topLevelCookieDomain;
-  }
+  let topLevelCookieDomain = "";
 
   // If hostParts.length === 1, we may be on localhost.
   const hostParts = window.location.hostname.toLowerCase().split(".");
   let i = 1;
 
-  while (i < hostParts.length - 1 && !cookie.get(cookieName)) {
+  while (i < hostParts.length && !cookie.get(cookieName)) {
     i += 1;
     topLevelCookieDomain = getLastArrayItems(hostParts, i).join(".");
     cookie.set(cookieName, cookieName, { domain: topLevelCookieDomain });
@@ -44,7 +40,3 @@ export default function getTopLevelCookieDomain(window, cookie) {
 
   return topLevelCookieDomain;
 }
-
-export const testClearCachedValue = () => {
-  topLevelCookieDomain = "";
-};

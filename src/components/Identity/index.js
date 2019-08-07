@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { defer, convertTimes } from "../../utils";
+import { defer, flatMap, convertTimes } from "../../utils";
 import processIdSyncs from "./processIdSyncs";
 import { HOUR, MILLISECOND } from "../../utils/convertTimes";
 import { ECID_NAMESPACE, ID_SYNC_TIMESTAMP } from "./constants";
@@ -75,7 +75,7 @@ const createIdentity = ({ config, logger, cookie }) => {
             logger.log("Delaying request while retrieving ECID from server.");
             promise = deferredForEcid.promise.then(() => {
               logger.log("Resuming previously delayed request.");
-              addIdsContext(payload, ecid);
+              addIdsContext(payload, getEcid());
             });
           } else {
             // We don't have an ECID and no request has gone out to fetch it.
@@ -90,17 +90,20 @@ const createIdentity = ({ config, logger, cookie }) => {
       // Waiting for opt-in because we'll be writing the ECID to a cookie
       onResponse(response) {
         return optIn.whenOptedIn().then(() => {
-          const ecidPayload = response.getPayloadByType("identity:persist");
+          const ecidPayloads = response.getPayloadsByType("identity:persist");
 
-          if (ecidPayload) {
-            cookie.set(ECID_NAMESPACE, ecidPayload.id);
+          if (ecidPayloads.length > 0) {
+            cookie.set(ECID_NAMESPACE, ecidPayloads[0].id);
 
             if (deferredForEcid) {
               deferredForEcid.resolve();
             }
           }
 
-          const idSyncs = response.getPayloadByType("identity:exchange") || [];
+          const idSyncs = flatMap(
+            response.getPayloadsByType("identity:exchange"),
+            fragment => fragment
+          );
 
           processIdSyncs({
             destinations: idSyncs,
@@ -120,6 +123,7 @@ const createIdentity = ({ config, logger, cookie }) => {
 };
 
 createIdentity.namespace = "Identity";
+createIdentity.abbreviation = "ID";
 
 createIdentity.configValidators = {
   idSyncsEnabled: {

@@ -3,7 +3,7 @@ import {
   appendNode,
   createNode
 } from "../../../../../../src/utils/dom";
-import createInsertBefore from "../../../../../../src/components/Personalization/actions/insertBefore";
+import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::insertBefore", () => {
@@ -15,9 +15,10 @@ describe("Personalization::actions::insertBefore", () => {
     cleanUpDomChanges("insertBefore");
   });
 
-  it("should inser before personalized content", () => {
+  it("should insert before personalized content", () => {
     const collect = jasmine.createSpy();
-    const insertBefore = createInsertBefore(collect);
+    const modules = initRuleComponentModules(collect);
+    const { insertBefore } = modules;
     const child = createNode(
       "div",
       { id: "a", class: "ib" },
@@ -28,20 +29,19 @@ describe("Personalization::actions::insertBefore", () => {
 
     appendNode(document.body, element);
 
+    const meta = { a: 1 };
     const settings = {
       content: `<div id="b" class="ib">BBB</div>`,
-      meta: { a: 1 }
+      meta
     };
     const event = { elements, prehidingSelector: "#a" };
 
-    insertBefore(settings, event);
+    return insertBefore(settings, event).then(() => {
+      const result = selectNodes("div#insertBefore .ib");
 
-    const result = selectNodes("div#insertBefore .ib");
-
-    expect(result[0].innerHTML).toEqual("BBB");
-    expect(result[1].innerHTML).toEqual("AAA");
-    expect(collect).toHaveBeenCalledWith({
-      meta: { personalization: { a: 1 } }
+      expect(result[0].innerHTML).toEqual("BBB");
+      expect(result[1].innerHTML).toEqual("AAA");
+      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

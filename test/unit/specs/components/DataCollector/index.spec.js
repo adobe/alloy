@@ -66,7 +66,7 @@ describe("Event Command", () => {
   it("Extracts isViewStart for onBeforeEvent", () => {
     const options = { type: "viewStart" };
     return eventCommand(options).then(() => {
-      expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith(
+      expect(onBeforeEventSpy).toHaveBeenCalledWith(
         jasmine.anything(),
         options,
         true
@@ -76,7 +76,7 @@ describe("Event Command", () => {
   it("Calls onBeforeEvent with a matching event", () => {
     const options = { data: { a: 1 }, meta: { b: 2 } };
     return eventCommand(options).then(() => {
-      expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith(
+      expect(onBeforeEventSpy).toHaveBeenCalledWith(
         jasmine.anything(),
         options,
         false
@@ -103,25 +103,27 @@ describe("Event Command", () => {
     const deferred = defer();
     onBeforeEventSpy.and.returnValue(deferred.promise);
     eventCommand({});
-    return flushPromiseChains().then(() => {
-      expect(lifecycle.onBeforeEvent).toHaveBeenCalled();
-      expect(network.sendRequest).not.toHaveBeenCalled();
-      deferred.resolve();
-      flushPromiseChains().then(() => {
-        expect(network.sendRequest).toHaveBeenCalled();
+    return flushPromiseChains()
+      .then(() => {
+        expect(onBeforeEventSpy).toHaveBeenCalled();
+        expect(sendRequestSpy).not.toHaveBeenCalled();
+        deferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(sendRequestSpy).toHaveBeenCalled();
       });
-    });
   });
 
   it("Sends the event through to the Network Gateway", () => {
     return eventCommand({ data: { a: 1 } }).then(() => {
-      expect(network.sendRequest).toHaveBeenCalled();
+      expect(sendRequestSpy).toHaveBeenCalled();
     });
   });
 
   it("Calls onBeforeDataCollection", () => {
     return eventCommand({}).then(() => {
-      expect(lifecycle.onBeforeDataCollection).toHaveBeenCalled();
+      expect(onBeforeDataCollectionSpy).toHaveBeenCalled();
     });
   });
   it("The promise on onBeforeDataCollection resolves", () => {
@@ -137,14 +139,16 @@ describe("Event Command", () => {
     const deferred = defer();
     onBeforeDataCollectionSpy.and.returnValue(deferred.promise);
     eventCommand({});
-    return flushPromiseChains().then(() => {
-      expect(lifecycle.onBeforeDataCollection).toHaveBeenCalled();
-      expect(network.sendRequest).not.toHaveBeenCalled();
-      deferred.resolve();
-      flushPromiseChains().then(() => {
-        expect(network.sendRequest).toHaveBeenCalled();
+    return flushPromiseChains()
+      .then(() => {
+        expect(onBeforeDataCollectionSpy).toHaveBeenCalled();
+        expect(sendRequestSpy).not.toHaveBeenCalled();
+        deferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(sendRequestSpy).toHaveBeenCalled();
       });
-    });
   });
 
   it("Returns a promise resolved with the request and response", () => {
@@ -161,19 +165,31 @@ describe("Event Command", () => {
       return Promise.resolve();
     });
     return eventCommand({}).then(() => {
-      expect(network.sendRequest).toHaveBeenCalledWith(
-        jasmine.anything(),
-        true
-      );
+      expect(sendRequestSpy).toHaveBeenCalledWith(jasmine.anything(), true);
     });
   });
 
   it("sends expectsResponse == false", () => {
     return eventCommand({}).then(() => {
-      expect(network.sendRequest).toHaveBeenCalledWith(
-        jasmine.anything(),
-        false
-      );
+      expect(sendRequestSpy).toHaveBeenCalledWith(jasmine.anything(), false);
+    });
+  });
+
+  describe("privacy", () => {
+    it("calls onBeforeEvent before consent and onBeforeDataCollection after", () => {
+      const deferred = defer();
+      optIn.whenOptedIn = () => deferred.promise;
+      eventCommand({});
+      return flushPromiseChains()
+        .then(() => {
+          expect(onBeforeEventSpy).toHaveBeenCalled();
+          expect(onBeforeDataCollectionSpy).not.toHaveBeenCalled();
+          deferred.resolve();
+          return flushPromiseChains();
+        })
+        .then(() => {
+          expect(onBeforeDataCollectionSpy).toHaveBeenCalled();
+        });
     });
   });
 });

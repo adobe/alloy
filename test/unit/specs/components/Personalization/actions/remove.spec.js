@@ -3,7 +3,7 @@ import {
   appendNode,
   createNode
 } from "../../../../../../src/utils/dom";
-import createRemove from "../../../../../../src/components/Personalization/actions/remove";
+import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Presonalization::actions::remove", () => {
@@ -17,23 +17,23 @@ describe("Presonalization::actions::remove", () => {
 
   it("should remove element", () => {
     const collect = jasmine.createSpy();
-    const remove = createRemove(collect);
+    const modules = initRuleComponentModules(collect);
+    const { remove } = modules;
     const content = `<div id="child"></div>`;
     const element = createNode("div", { id: "remove" }, { innerHTML: content });
     const elements = [element];
 
     appendNode(document.body, element);
 
-    const settings = { meta: { a: 1 } };
+    const meta = { a: 1 };
+    const settings = { meta };
     const event = { elements, prehidingSelector: "#remove" };
 
-    remove(settings, event);
+    return remove(settings, event).then(() => {
+      const result = selectNodes("#child");
 
-    const result = selectNodes("#child");
-
-    expect(result.length).toEqual(0);
-    expect(collect).toHaveBeenCalledWith({
-      meta: { personalization: { a: 1 } }
+      expect(result.length).toEqual(0);
+      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

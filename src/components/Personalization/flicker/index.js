@@ -16,9 +16,9 @@ import {
   removeNode,
   findById
 } from "../../../utils/dom";
+import { STYLE } from "../../../utils/dom/constants";
 
 const HIDING_STYLE_DEFINITION = "{ visibility: hidden }";
-const STYLE_TAG = "style";
 
 // Using global is OK since we have a single DOM
 // so storing nodes even for multiple Alloy instances is fine
@@ -36,7 +36,7 @@ export const hideElements = prehidingSelector => {
   const props = {
     textContent: `${prehidingSelector} ${HIDING_STYLE_DEFINITION}`
   };
-  const node = createNode(STYLE_TAG, attrs, props);
+  const node = createNode(STYLE, attrs, props);
 
   appendNode(document.head, node);
 
@@ -68,7 +68,7 @@ export const hideContainers = (prehidingId, prehidingStyle) => {
 
   const attrs = { id: prehidingId };
   const props = { textContent: prehidingStyle };
-  const styleNode = createNode(STYLE_TAG, attrs, props);
+  const styleNode = createNode(STYLE, attrs, props);
 
   appendNode(document.head, styleNode);
 };

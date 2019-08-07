@@ -10,23 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createFragment from "./createFragment";
-import getChildren from "./getChildren";
-import getFirstChild from "./getFirstChild";
-import insertElementBefore from "./insertElementBefore";
+import { setAttribute, removeAttribute } from "../../../utils/dom";
+import { SRC } from "../../../utils/dom/constants";
+import { isImage, loadImage } from "./images";
 
-export default (container, html) => {
-  const fragment = createFragment(html);
-  const elements = getChildren(fragment);
-  const { length } = elements;
-  let i = length - 1;
-
-  // We are inserting elements in reverse order
-  while (i >= 0) {
-    const element = elements[i];
-
-    insertElementBefore(getFirstChild(container), element);
-
-    i -= 1;
+export default (container, url) => {
+  if (!isImage(container)) {
+    return;
   }
+
+  // Start downloading the image
+  loadImage(url);
+
+  // Remove "src" so there is no flicker
+  removeAttribute(container, SRC);
+
+  // Replace the image "src"
+  setAttribute(container, SRC, url);
 };

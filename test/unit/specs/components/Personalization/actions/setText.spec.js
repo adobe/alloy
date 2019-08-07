@@ -1,33 +1,33 @@
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import createSetText from "../../../../../../src/components/Personalization/actions/setText";
+import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::setText", () => {
   beforeEach(() => {
-    cleanUpDomChanges("setHtml");
+    cleanUpDomChanges("setText");
   });
 
   afterEach(() => {
-    cleanUpDomChanges("setHtml");
+    cleanUpDomChanges("setText");
   });
 
-  it("should set personalized content", () => {
+  it("should set personalized text", () => {
     const collect = jasmine.createSpy();
-    const setText = createSetText(collect);
+    const modules = initRuleComponentModules(collect);
+    const { setText } = modules;
     const element = createNode("div", { id: "setText" });
     element.textContent = "foo";
     const elements = [element];
 
     appendNode(document.body, element);
 
-    const settings = { content: "bar", meta: { a: 1 } };
+    const meta = { a: 1 };
+    const settings = { content: "bar", meta };
     const event = { elements, prehidingSelector: "#setText" };
 
-    setText(settings, event);
-
-    expect(elements[0].textContent).toEqual("bar");
-    expect(collect).toHaveBeenCalledWith({
-      meta: { personalization: { a: 1 } }
+    return setText(settings, event).then(() => {
+      expect(elements[0].textContent).toEqual("bar");
+      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

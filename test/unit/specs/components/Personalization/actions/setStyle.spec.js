@@ -1,5 +1,5 @@
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import createSetStyle from "../../../../../../src/components/Personalization/actions/setStyle";
+import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Presonalization::actions::setStyle", () => {
@@ -11,25 +11,25 @@ describe("Presonalization::actions::setStyle", () => {
     cleanUpDomChanges("setStyle");
   });
 
-  it("should set personalized content", () => {
+  it("should set styles", () => {
     const collect = jasmine.createSpy();
-    const setStyle = createSetStyle(collect);
+    const modules = initRuleComponentModules(collect);
+    const { setStyle } = modules;
     const element = createNode("div", { id: "setStyle" });
     const elements = [element];
 
     appendNode(document.body, element);
 
+    const meta = { a: 1 };
     const settings = {
       content: { "font-size": "33px", priority: "important" },
-      meta: { a: 1 }
+      meta
     };
     const event = { elements, prehidingSelector: "#setStyle" };
 
-    setStyle(settings, event);
-
-    expect(elements[0].style.getPropertyValue("font-size")).toEqual("33px");
-    expect(collect).toHaveBeenCalledWith({
-      meta: { personalization: { a: 1 } }
+    return setStyle(settings, event).then(() => {
+      expect(elements[0].style.getPropertyValue("font-size")).toEqual("33px");
+      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

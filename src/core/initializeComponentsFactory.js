@@ -10,20 +10,33 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createLifecycle from "./createLifecycle";
-import createComponentRegistry from "./createComponentRegistry";
-import createNetwork from "./network";
-import { stackError } from "../utils";
-import createOptIn from "./createOptIn";
+import { stackError, memoize, getTopLevelCookieDomain, cookie } from "../utils";
+import cookieDetails from "../constants/cookieDetails";
+
+const { ALLOY_COOKIE_NAME, ALLOY_COOKIE_TTL_IN_DAYS } = cookieDetails;
+
+const memoizedGetTopLevelDomain = memoize(getTopLevelCookieDomain);
 
 export default (
   componentCreators,
   logger,
   createNamespacedStorage,
-  cookie
+  createCookieProxy,
+  createCookie,
+  createLifecycle,
+  createComponentRegistry,
+  createNetwork,
+  createOptIn
 ) => config => {
   const componentRegistry = createComponentRegistry();
   const { imsOrgId, propertyId, cookieDomain } = config;
+  const cookieName = `${ALLOY_COOKIE_NAME}_${propertyId}`;
+  const cookieProxy = createCookieProxy(
+    cookieName,
+    ALLOY_COOKIE_TTL_IN_DAYS,
+    cookieDomain || memoizedGetTopLevelDomain(window, cookie)
+  );
+
   // TODO: Should this storage be namespaced by property ID or org ID?
   const storage = createNamespacedStorage(imsOrgId);
   const optIn = createOptIn();
@@ -34,13 +47,13 @@ export default (
   });
   config.validate();
   componentCreators.forEach(createComponent => {
-    const { namespace } = createComponent;
+    const { namespace, abbreviation } = createComponent;
     // TO-DOCUMENT: Helpers that we inject into factories.
     let component;
     try {
       component = createComponent({
         logger: logger.spawn(`[${namespace}]`),
-        cookie: cookie(namespace, propertyId, cookieDomain),
+        cookie: createCookie(cookieProxy, abbreviation),
         config,
         storage,
         enableOptIn: optIn.enable

@@ -10,16 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getParent from "./getParent";
+import { getChildNodes, removeNode } from "../../../utils/dom";
+import appendHtml from "./appendHtml";
 
-export default (container, element) => {
-  if (!container) {
-    return;
-  }
+const clear = container => {
+  // We want to remove ALL nodes, text, comments etc
+  const childNodes = getChildNodes(container);
 
-  const parent = getParent(container);
+  childNodes.forEach(removeNode);
+};
 
-  if (parent) {
-    parent.insertBefore(element, container);
-  }
+export default (container, html) => {
+  clear(container);
+  appendHtml(container, html);
 };

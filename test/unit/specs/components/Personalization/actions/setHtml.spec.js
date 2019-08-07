@@ -1,5 +1,5 @@
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import createSetHtml from "../../../../../../src/components/Personalization/actions/setHtml";
+import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::setHtml", () => {
@@ -13,21 +13,21 @@ describe("Personalization::actions::setHtml", () => {
 
   it("should set personalized content", () => {
     const collect = jasmine.createSpy();
-    const setHtml = createSetHtml(collect);
+    const modules = initRuleComponentModules(collect);
+    const { setHtml } = modules;
     const element = createNode("div", { id: "setHtml" });
     element.innerHTML = "foo";
     const elements = [element];
 
     appendNode(document.body, element);
 
-    const settings = { content: "bar", meta: { a: 1 } };
+    const meta = { a: 1 };
+    const settings = { content: "bar", meta };
     const event = { elements, prehidingSelector: "#setHtml" };
 
-    setHtml(settings, event);
-
-    expect(elements[0].innerHTML).toEqual("bar");
-    expect(collect).toHaveBeenCalledWith({
-      meta: { personalization: { a: 1 } }
+    return setHtml(settings, event).then(() => {
+      expect(elements[0].innerHTML).toEqual("bar");
+      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

@@ -10,16 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getParent from "./getParent";
+import { getChildren, insertAfter, insertBefore } from "../../../utils/dom";
 
-export default (container, element) => {
-  if (!container) {
+export default (container, { from, to }) => {
+  const children = getChildren(container);
+  const elementFrom = children[from];
+  const elementTo = children[to];
+
+  if (!elementFrom || !elementTo) {
+    // TODO: We will need to add logging
+    // to ease troubleshooting
     return;
   }
 
-  const parent = getParent(container);
-
-  if (parent) {
-    parent.insertBefore(element, container);
+  if (from < to) {
+    insertAfter(elementTo, elementFrom);
+  } else {
+    insertBefore(elementTo, elementFrom);
   }
 };

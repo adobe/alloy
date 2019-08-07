@@ -60,6 +60,7 @@ const createDataCollector = ({ config }) => {
 
     return lifecycle
       .onBeforeEvent(event, options, isViewStart)
+      .then(() => optIn.whenOptedIn())
       .then(() => makeServerCall(event));
   };
 
@@ -70,13 +71,11 @@ const createDataCollector = ({ config }) => {
       }
     },
     commands: {
-      event(options) {
-        return optIn.whenOptedIn().then(() => createEventHandler(options));
-      }
+      event: createEventHandler
     }
   };
 };
 
 createDataCollector.namespace = "DataCollector";
-
+createDataCollector.abbreviation = "DC";
 export default createDataCollector;

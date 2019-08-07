@@ -10,22 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { removeNode } from "../../../utils/dom";
-import { showElements } from "../flicker";
+import toArray from "../toArray";
 
-export default collect => {
-  return (settings, event) => {
-    const { elements, prehidingSelector } = event;
-    const { meta } = settings;
+export default element => {
+  const { childNodes } = element;
 
-    elements.forEach(element => {
-      removeNode(element);
-    });
+  if (childNodes) {
+    return toArray(childNodes);
+  }
 
-    // after rendering we should remove the flicker control styles
-    showElements(prehidingSelector);
-
-    // make sure we send back the metadata after successful rendering
-    collect({ meta: { personalization: meta } });
-  };
+  return [];
 };

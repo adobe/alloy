@@ -10,14 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createFragment from "./createFragment";
-import getChildren from "./getChildren";
-
-export default (container, html) => {
-  const fragment = createFragment(html);
-  const elements = getChildren(fragment);
-
-  elements.forEach(element => {
-    container.appendChild(element);
-  });
+export default (container, text) => {
+  container.textContent = text;
 };

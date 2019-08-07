@@ -24,6 +24,7 @@ export default (
 ) => {
   let componentRegistry;
   let configurationFailed = false;
+  let suppressErrors;
 
   const logCommand = ({ enabled }) => {
     // eslint-disable-next-line no-param-reassign
@@ -31,6 +32,7 @@ export default (
   };
 
   const configureCommand = options => {
+    ({ suppressErrors } = options);
     if (options.log !== undefined) {
       logCommand({ enabled: options.log });
     }
@@ -95,7 +97,7 @@ export default (
     const reject = args[1];
     const userProvidedArgs = args[2];
     const commandName = userProvidedArgs[0];
-    const options = userProvidedArgs[1];
+    const options = userProvidedArgs[1] || {};
 
     // We have to wrap the function call in "new Promise()" instead of just
     // doing "Promise.resolve(executeCommand(commandName, options))" so that
@@ -110,7 +112,12 @@ export default (
         const err = toError(error);
         // eslint-disable-next-line no-param-reassign
         err.message = `[${namespace}] ${err.message}`;
-        reject(err);
+
+        if (suppressErrors) {
+          logger.error(err);
+        } else {
+          reject(err);
+        }
       });
   };
 };

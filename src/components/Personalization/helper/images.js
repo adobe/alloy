@@ -10,16 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getParent from "./getParent";
+import { createNode, getAttribute, selectNodes } from "../../../utils/dom";
+import { IMG, SRC } from "../../../utils/dom/constants";
 
-export default (container, element) => {
-  if (!container) {
-    return;
-  }
+export const isImage = element => element.tagName === IMG;
 
-  const parent = getParent(container);
+export const loadImage = url => {
+  return createNode(IMG, { src: url });
+};
 
-  if (parent) {
-    parent.insertBefore(element, container);
-  }
+export const loadImages = fragment => {
+  const images = selectNodes(IMG, fragment);
+
+  images.forEach(image => {
+    const url = getAttribute(image, SRC);
+
+    if (url) {
+      loadImage(url);
+    }
+  });
 };

@@ -16,7 +16,7 @@ import { hideContainers, showContainers, hideElements } from "./flicker";
 
 const PAGE_HANDLE = "personalization:page";
 const SESSION_ID_COOKIE = "SID";
-const SESSION_ID_TTL = 31 * 60 * 1000;
+const SESSION_ID_TTL_IN_DAYS = 31 * 60 * 1000;
 const EVENT_COMMAND = "event";
 
 const isElementExists = event => event.moduleType === "elementExists";
@@ -24,7 +24,7 @@ const isElementExists = event => event.moduleType === "elementExists";
 const getOrCreateSessionId = cookie => {
   let cookieValue = cookie.get(SESSION_ID_COOKIE);
   const now = Date.now();
-  const expires = now + SESSION_ID_TTL;
+  const expires = now + SESSION_ID_TTL_IN_DAYS;
 
   if (!cookieValue || now > cookieValue.expires) {
     cookieValue = { value: uuid(), expires };
@@ -37,30 +37,46 @@ const getOrCreateSessionId = cookie => {
 
   return cookieValue.value;
 };
-const hideElementsForPage = fragment => {
-  const { rules = [] } = fragment;
 
-  rules.forEach(rule => {
-    const { events = [] } = rule;
-    const filteredEvents = events.filter(isElementExists);
+const hideElementsForPage = fragments => {
+  fragments.forEach(fragment => {
+    const { rules = [] } = fragment;
 
-    filteredEvents.forEach(event => {
-      const { settings = {} } = event;
-      const { prehidingSelector } = settings;
+    rules.forEach(rule => {
+      const { events = [] } = rule;
+      const filteredEvents = events.filter(isElementExists);
 
-      if (prehidingSelector) {
-        hideElements(prehidingSelector);
-      }
+      filteredEvents.forEach(event => {
+        const { settings = {} } = event;
+        const { prehidingSelector } = settings;
+
+        if (prehidingSelector) {
+          hideElements(prehidingSelector);
+        }
+      });
     });
   });
 };
 
-const executeFragment = (fragment, modules, logger) => {
-  const { rules = [] } = fragment;
+const executeFragments = (fragments, modules, logger) => {
+  fragments.forEach(fragment => {
+    const { rules = [] } = fragment;
 
-  if (isNonEmptyArray(rules)) {
-    executeRules(rules, modules, logger);
-  }
+    if (isNonEmptyArray(rules)) {
+      executeRules(rules, modules, logger);
+    }
+  });
+};
+
+const createCollect = collect => {
+  return payload => {
+    const id = uuid();
+    const timestamp = Date.now();
+    const notification = Object.assign({}, payload, { id, timestamp });
+    const personalization = { notification };
+
+    collect({ meta: { personalization } });
+  };
 };
 
 const createPersonalization = ({ config, logger, cookie }) => {
@@ -73,9 +89,8 @@ const createPersonalization = ({ config, logger, cookie }) => {
       onComponentsRegistered(tools) {
         const { componentRegistry } = tools;
         ({ optIn } = tools);
-        ruleComponentModules = initRuleComponentModules(
-          componentRegistry.getCommand(EVENT_COMMAND)
-        );
+        const collect = componentRegistry.getCommand(EVENT_COMMAND);
+        ruleComponentModules = initRuleComponentModules(createCollect(collect));
       },
       onBeforeDataCollection(payload) {
         return optIn.whenOptedIn().then(() => {
@@ -97,17 +112,17 @@ const createPersonalization = ({ config, logger, cookie }) => {
         hideContainers(prehidingId, prehidingStyle);
       },
       onResponse(response) {
-        const fragment = response.getPayloadByType(PAGE_HANDLE) || {};
+        const fragments = response.getPayloadsByType(PAGE_HANDLE);
 
         // On response we first hide all the elements for
         // personalization:page handle
-        hideElementsForPage(fragment);
+        hideElementsForPage(fragments);
 
         // Once the all element are hidden
         // we have to show the containers
         showContainers(prehidingId);
 
-        executeFragment(fragment, ruleComponentModules, logger);
+        executeFragments(fragments, ruleComponentModules, logger);
       },
       onResponseError() {
         showContainers(prehidingId);
@@ -117,5 +132,6 @@ const createPersonalization = ({ config, logger, cookie }) => {
 };
 
 createPersonalization.namespace = "Personalization";
+createPersonalization.abbreviation = "PE";
 
 export default createPersonalization;

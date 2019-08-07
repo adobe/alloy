@@ -10,21 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { showElements } from "../flicker";
-
-export default collect => {
-  return (settings, event) => {
-    const { elements, prehidingSelector } = event;
-    const { content, meta } = settings;
-
-    elements.forEach(element => {
-      element.textContent = content;
-    });
-
-    // after rendering we should remove the flicker control styles
-    showElements(prehidingSelector);
-
-    // make sure we send back the metadata after successful rendering
-    collect({ meta: { personalization: meta } });
-  };
+export default (element, name) => {
+  return element.getAttribute(name);
 };
