@@ -10,17 +10,24 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import deepAssign from "./deepAssign";
+import deepAssign from "../../../../src/utils/deepAssign";
+import assign from "../../../../src/utils/assign";
 
-/**
- * Creates a function that, when passed an object of updates, will merge
- * the updates onto the current value of a payload property.
- * @param content
- * @param key
- * @returns {Function}
- */
-export default (content, key) => updates => {
-  // eslint-disable-next-line no-param-reassign
-  content[key] = content[key] || {};
-  deepAssign(content[key], updates);
-};
+describe("deepAssign", () => {
+  it("should copy values like assign", () => {
+    expect(deepAssign({}, { a: 1 }, { b: 2 })).toEqual(
+      assign({}, { a: 1 }, { b: 2 })
+    );
+  });
+
+  it("should copy values recursively assign", () => {
+    const result = deepAssign(
+      {},
+      { a: { c: 1 } },
+      { b: 2 },
+      { a: { c: 2, d: 3 } }
+    );
+
+    expect(result).toEqual({ a: { c: 2, d: 3 }, b: 2 });
+  });
+});
