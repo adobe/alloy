@@ -97,7 +97,7 @@ describe("createNetwork", () => {
 
   it("resolves the returned promise", () => {
     return network.sendRequest({}, true).then(response => {
-      expect(response.getPayloadByType).toEqual(jasmine.any(Function));
+      expect(response.getPayloadsByType).toEqual(jasmine.any(Function));
     });
   });
 

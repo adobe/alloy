@@ -22,6 +22,7 @@ export { default as executeWithRetry } from "./executeWithRetry";
 export { default as find } from "./find";
 export { default as fireDestinations } from "./fireDestinations";
 export { default as fireImage } from "./fireImage";
+export { default as flatMap } from "./flatMap";
 export { default as getLastArrayItems } from "./getLastArrayItems";
 export { default as getNestedObject } from "./getNestedObject";
 export { default as getTopLevelCookieDomain } from "./getTopLevelCookieDomain";

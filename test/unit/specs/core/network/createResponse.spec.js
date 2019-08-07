@@ -16,8 +16,20 @@ const responseContent = {
   requestId: 123,
   handle: [
     {
-      type: "namespace1:action1",
-      payload: "Same payload for namespace1:action1"
+      type: "type1",
+      payload: "payload1a"
+    },
+    {
+      type: "type2",
+      payload: "payload2a"
+    },
+    {
+      type: "type1",
+      payload: "payload1b"
+    },
+    {
+      type: "type1",
+      payload: "payload1c"
     }
   ]
 };
@@ -25,12 +37,31 @@ const responseContent = {
 describe("createResponse", () => {
   const response = createResponse(responseContent);
 
-  describe("getPayloadByType", () => {
-    it("should return the correct payload", () => {
-      const type1 = "namespace1:action1";
-      const payload = response.getPayloadByType(type1);
-      expect(payload).toBeDefined();
-      expect(payload).toEqual("Same payload for namespace1:action1");
+  describe("getPayloadsByType", () => {
+    it("handles undefined", () => {
+      const emptyResponse = createResponse(undefined);
+      expect(emptyResponse.getPayloadsByType("type1")).toEqual([]);
+    });
+
+    it("handles a bad response", () => {
+      const emptyResponse = createResponse({ error: "bad response" });
+      expect(emptyResponse.getPayloadsByType("type1")).toEqual([]);
+    });
+
+    it("returns empty array when there are no matching payloads", () => {
+      expect(response.getPayloadsByType("type3")).toEqual([]);
+    });
+
+    it("returns one matching payload as an array", () => {
+      expect(response.getPayloadsByType("type2")).toEqual(["payload2a"]);
+    });
+
+    it("returns three matching payloads", () => {
+      expect(response.getPayloadsByType("type1")).toEqual([
+        "payload1a",
+        "payload1b",
+        "payload1c"
+      ]);
     });
   });
 

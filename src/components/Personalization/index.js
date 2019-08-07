@@ -38,30 +38,34 @@ const getOrCreateSessionId = cookie => {
   return cookieValue.value;
 };
 
-const hideElementsForPage = fragment => {
-  const { rules = [] } = fragment;
+const hideElementsForPage = fragments => {
+  fragments.forEach(fragment => {
+    const { rules = [] } = fragment;
 
-  rules.forEach(rule => {
-    const { events = [] } = rule;
-    const filteredEvents = events.filter(isElementExists);
+    rules.forEach(rule => {
+      const { events = [] } = rule;
+      const filteredEvents = events.filter(isElementExists);
 
-    filteredEvents.forEach(event => {
-      const { settings = {} } = event;
-      const { prehidingSelector } = settings;
+      filteredEvents.forEach(event => {
+        const { settings = {} } = event;
+        const { prehidingSelector } = settings;
 
-      if (prehidingSelector) {
-        hideElements(prehidingSelector);
-      }
+        if (prehidingSelector) {
+          hideElements(prehidingSelector);
+        }
+      });
     });
   });
 };
 
-const executeFragment = (fragment, modules, logger) => {
-  const { rules = [] } = fragment;
+const executeFragments = (fragments, modules, logger) => {
+  fragments.forEach(fragment => {
+    const { rules = [] } = fragment;
 
-  if (isNonEmptyArray(rules)) {
-    executeRules(rules, modules, logger);
-  }
+    if (isNonEmptyArray(rules)) {
+      executeRules(rules, modules, logger);
+    }
+  });
 };
 
 const createCollect = collect => {
@@ -108,17 +112,17 @@ const createPersonalization = ({ config, logger, cookie }) => {
         hideContainers(prehidingId, prehidingStyle);
       },
       onResponse(response) {
-        const fragment = response.getPayloadByType(PAGE_HANDLE) || {};
+        const fragments = response.getPayloadsByType(PAGE_HANDLE);
 
         // On response we first hide all the elements for
         // personalization:page handle
-        hideElementsForPage(fragment);
+        hideElementsForPage(fragments);
 
         // Once the all element are hidden
         // we have to show the containers
         showContainers(prehidingId);
 
-        executeFragment(fragment, ruleComponentModules, logger);
+        executeFragments(fragments, ruleComponentModules, logger);
       },
       onResponseError() {
         showContainers(prehidingId);
