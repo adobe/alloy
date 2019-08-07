@@ -10,12 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { defer } from "../../utils";
+import { defer, convertTimes } from "../../utils";
 import processIdSyncs from "./processIdSyncs";
-import { HOUR } from "../../utils/convertTimes";
+import { HOUR, MILLISECOND } from "../../utils/convertTimes";
 import { ECID_NAMESPACE, ID_SYNC_TIMESTAMP } from "./constants";
-
-const MILLISECONDS_PER_HOUR = HOUR;
 
 const addIdsContext = (payload, ecid) => {
   // TODO: Add customer ids.
@@ -47,9 +45,9 @@ const createIdentity = ({ config, logger, cookie }) => {
           }
 
           const nowInHours = Math.round(
-            new Date().getTime() / MILLISECONDS_PER_HOUR
+            convertTimes(MILLISECOND, HOUR, new Date().getTime())
           );
-          const timestamp = parseInt(cookie.get(ID_SYNC_TIMESTAMP) || 0, 10);
+          const timestamp = parseInt(cookie.get(ID_SYNC_TIMESTAMP) || 0, 36);
 
           if (config.idSyncsEnabled && nowInHours > timestamp) {
             event.mergeQuery({

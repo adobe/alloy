@@ -11,11 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { assign, fireDestinations, convertTimes } from "../../utils";
-import { DAY, HOUR } from "../../utils/convertTimes";
+import { DAY, HOUR, MILLISECOND } from "../../utils/convertTimes";
 import { ID_SYNC_TIMESTAMP, ID_SYNC_CONTROL } from "./constants";
-
-const MILLISECONDS_PER_HOUR = HOUR;
-const SEVEN_DAYS_IN_HOURS = convertTimes(DAY, HOUR, 7);
 
 const getControlObject = cookie => {
   const val = cookie.get(ID_SYNC_CONTROL) || "";
@@ -44,7 +41,7 @@ export default ({ destinations, config, logger, cookie }) => {
   }
 
   const controlObject = getControlObject(cookie);
-  const now = new Date().getTime() / MILLISECONDS_PER_HOUR; // hours
+  const now = convertTimes(MILLISECOND, HOUR, new Date().getTime()); // hours
 
   Object.keys(controlObject).forEach(key => {
     if (controlObject[key] < now) {
@@ -69,7 +66,7 @@ export default ({ destinations, config, logger, cookie }) => {
       destinations: idSyncs
     }).then(result => {
       const timeStamp = Math.round(
-        new Date().getTime() / MILLISECONDS_PER_HOUR
+        convertTimes(MILLISECOND, HOUR, new Date().getTime())
       ); // hours
 
       result.succeeded.forEach(idSync => {
@@ -84,8 +81,10 @@ export default ({ destinations, config, logger, cookie }) => {
 
       cookie.set(
         ID_SYNC_TIMESTAMP,
-        Math.round(new Date().getTime() / MILLISECONDS_PER_HOUR) +
-          SEVEN_DAYS_IN_HOURS
+        (
+          Math.round(convertTimes(MILLISECOND, HOUR, new Date().getTime())) +
+          convertTimes(DAY, HOUR, 7)
+        ).toString(36)
       );
     });
   }
