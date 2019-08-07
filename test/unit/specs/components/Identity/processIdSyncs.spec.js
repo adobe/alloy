@@ -1,9 +1,12 @@
 import processIdSyncs from "../../../../../src/components/Identity/processIdSyncs";
 import createCookieProxy from "../../../../../src/core/createCookieProxy";
-import createCookie from "../../../../../src/core/createCookie";
+import createComponentNamespacedCookieJar from "../../../../../src/core/createComponentNamespacedCookieJar";
 
 const cookieProxy = createCookieProxy("identity", 180);
-const cookie = createCookie(cookieProxy, "component_name");
+const cookie = createComponentNamespacedCookieJar(
+  cookieProxy,
+  "component_name"
+);
 const ID_SYNC_CONTROL = "idSyncControl";
 
 describe("Identity::processIdSyncs", () => {

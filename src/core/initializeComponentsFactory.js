@@ -22,7 +22,7 @@ export default (
   logger,
   createNamespacedStorage,
   createCookieProxy,
-  createCookie,
+  createComponentNamespacedCookieJar,
   createLifecycle,
   createComponentRegistry,
   createNetwork,
@@ -53,7 +53,7 @@ export default (
     try {
       component = createComponent({
         logger: logger.spawn(`[${namespace}]`),
-        cookie: createCookie(cookieProxy, abbreviation),
+        cookie: createComponentNamespacedCookieJar(cookieProxy, abbreviation),
         config,
         storage,
         enableOptIn: optIn.enable
