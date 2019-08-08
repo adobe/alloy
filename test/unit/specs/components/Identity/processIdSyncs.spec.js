@@ -3,7 +3,7 @@ import createCookieProxy from "../../../../../src/core/createCookieProxy";
 import createComponentNamespacedCookieJar from "../../../../../src/core/createComponentNamespacedCookieJar";
 
 const cookieProxy = createCookieProxy("identity", 180);
-const cookie = createComponentNamespacedCookieJar(
+const cookieJar = createComponentNamespacedCookieJar(
   cookieProxy,
   "component_name"
 );
@@ -19,7 +19,7 @@ describe("Identity::processIdSyncs", () => {
   };
 
   const getControlObject = () => {
-    const val = cookie.get(ID_SYNC_CONTROL) || "";
+    const val = cookieJar.get(ID_SYNC_CONTROL) || "";
     const arr = val ? val.split("_") : [];
 
     return arr.reduce((obj, pair) => {
@@ -45,7 +45,7 @@ describe("Identity::processIdSyncs", () => {
       }
     ];
 
-    cookie.set(
+    cookieJar.set(
       ID_SYNC_CONTROL,
       `123-${(Math.round(new Date().getTime() / 1000 / 60 / 60) - 10).toString(
         36
@@ -55,7 +55,7 @@ describe("Identity::processIdSyncs", () => {
     let obj = getControlObject();
 
     expect(obj[123]).toBeDefined();
-    processIdSyncs({ destinations: idSyncs, config, logger, cookie });
+    processIdSyncs({ destinations: idSyncs, config, logger, cookieJar });
 
     const checkCookie = () => {
       obj = getControlObject();

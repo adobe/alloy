@@ -30,10 +30,10 @@ const addIdsContext = (payload, ecid) => {
   });
 };
 
-const createIdentity = ({ config, logger, cookie }) => {
+const createIdentity = ({ config, logger, cookieJar }) => {
   // We avoid reading the ECID from the cookie right away, because we
   // need to wait for the user to opt in first.
-  const getEcid = () => cookie.get(EXPERIENCE_CLOUD_ID);
+  const getEcid = () => cookieJar.get(EXPERIENCE_CLOUD_ID);
   let optIn;
   let deferredForEcid;
   let network;
@@ -63,10 +63,11 @@ const createIdentity = ({ config, logger, cookie }) => {
       JSON.stringify(normalizedCustomerIds)
     ).toString(36);
     // TODO: add more tests around this piece
-    const customerIdChanged = customerIdsHash !== cookie.get(CUSTOMER_ID_HASH);
+    const customerIdChanged =
+      customerIdsHash !== cookieJar.get(CUSTOMER_ID_HASH);
     payload.mergeMeta({ identityMap: { customerIdChanged } });
     if (customerIdChanged) {
-      cookie.set(CUSTOMER_ID_HASH, customerIdsHash);
+      cookieJar.set(CUSTOMER_ID_HASH, customerIdsHash);
     }
     return lifecycle
       .onBeforeEvent(event, normalizedCustomerIds, customerIdChanged)
@@ -85,7 +86,7 @@ const createIdentity = ({ config, logger, cookie }) => {
           const nowInHours = Math.round(
             convertTimes(MILLISECOND, HOUR, new Date().getTime())
           );
-          const timestamp = parseInt(cookie.get(ID_SYNC_TIMESTAMP) || 0, 36);
+          const timestamp = parseInt(cookieJar.get(ID_SYNC_TIMESTAMP) || 0, 36);
 
           if (config.idSyncsEnabled && nowInHours > timestamp) {
             event.mergeQuery({
@@ -132,7 +133,7 @@ const createIdentity = ({ config, logger, cookie }) => {
           const ecidPayloads = response.getPayloadsByType("identity:persist");
 
           if (ecidPayloads.length > 0) {
-            cookie.set(EXPERIENCE_CLOUD_ID, ecidPayloads[0].id);
+            cookieJar.set(EXPERIENCE_CLOUD_ID, ecidPayloads[0].id);
 
             if (deferredForEcid) {
               deferredForEcid.resolve();
@@ -148,7 +149,7 @@ const createIdentity = ({ config, logger, cookie }) => {
             destinations: idSyncs,
             config,
             logger,
-            cookie
+            cookieJar
           });
         });
       }

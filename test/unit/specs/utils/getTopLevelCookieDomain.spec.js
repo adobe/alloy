@@ -23,18 +23,18 @@ const mockWindowWithHostname = hostname => {
 describe("getTld", () => {
   it("returns an empty string when only one host part exists", () => {
     const window = mockWindowWithHostname("localhost");
-    const cookie = {
+    const cookieJar = {
       get() {},
       set() {},
       remove() {}
     };
-    expect(getTopLevelCookieDomain(window, cookie)).toBe("");
+    expect(getTopLevelCookieDomain(window, cookieJar)).toBe("");
   });
 
   it("returns the first host that allows a cookie to be set", () => {
     const window = mockWindowWithHostname("a.b.c.co.uk");
     let storedValue;
-    const cookie = {
+    const cookieJar = {
       get() {
         return storedValue;
       },
@@ -46,14 +46,14 @@ describe("getTld", () => {
       remove: jasmine.createSpy()
     };
 
-    expect(getTopLevelCookieDomain(window, cookie)).toBe("c.co.uk");
-    expect(cookie.remove).toHaveBeenCalled();
+    expect(getTopLevelCookieDomain(window, cookieJar)).toBe("c.co.uk");
+    expect(cookieJar.remove).toHaveBeenCalled();
   });
 
   it("tries all segments of the hostname if necessary", () => {
     const window = mockWindowWithHostname("10.30.34.68");
     let storedValue;
-    const cookie = {
+    const cookieJar = {
       get() {
         return storedValue;
       },
@@ -65,7 +65,7 @@ describe("getTld", () => {
       remove: jasmine.createSpy()
     };
 
-    expect(getTopLevelCookieDomain(window, cookie)).toBe("10.30.34.68");
-    expect(cookie.remove).toHaveBeenCalled();
+    expect(getTopLevelCookieDomain(window, cookieJar)).toBe("10.30.34.68");
+    expect(cookieJar.remove).toHaveBeenCalled();
   });
 });
