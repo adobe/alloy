@@ -88,11 +88,19 @@ const createIdentity = ({ config, logger, cookie }) => {
           const timestamp = parseInt(cookie.get(ID_SYNC_TIMESTAMP) || 0, 36);
 
           if (config.idSyncsEnabled && nowInHours > timestamp) {
-            event.mergeQuery({
+            const identityQuery = {
               identity: {
                 exchange: true
               }
-            });
+            };
+
+            const containerId = parseInt(config.idSyncContainerId, 10);
+
+            if (!Number.isNaN(containerId)) {
+              assign(identityQuery.identity, { containerId });
+            }
+
+            event.mergeQuery(identityQuery);
           }
         });
       },
