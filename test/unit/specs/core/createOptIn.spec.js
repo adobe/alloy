@@ -29,25 +29,25 @@ describe("createOptIn", () => {
 
   describe("when enabled", () => {
     let logger;
-    let cookie;
+    let cookieJar;
 
     beforeEach(() => {
       logger = jasmine.createSpyObj("logger", ["warn"]);
-      cookie = jasmine.createSpyObj("cookie", ["get", "set"]);
-      cookie.get.and.returnValue(null);
+      cookieJar = jasmine.createSpyObj("cookieJar", ["get", "set"]);
+      cookieJar.get.and.returnValue(null);
     });
 
     it("considers the user opted in if cookie is set to 'all'", () => {
-      cookie.get.and.returnValue("all");
-      optIn.enable(logger, cookie);
+      cookieJar.get.and.returnValue("all");
+      optIn.enable(logger, cookieJar);
 
       expect(optIn.isOptedIn()).toBe(true);
       return optIn.whenOptedIn();
     });
 
     it("considers the user opted out if cookie is set to 'none'", () => {
-      cookie.get.and.returnValue("none");
-      optIn.enable(logger, cookie);
+      cookieJar.get.and.returnValue("none");
+      optIn.enable(logger, cookieJar);
 
       expect(optIn.isOptedIn()).toBe(false);
       return expectAsync(optIn.whenOptedIn()).toBeRejectedWith(
@@ -57,7 +57,7 @@ describe("createOptIn", () => {
 
     it("considers the user pending opt in if cookie is not set", () => {
       const optedInSpy = jasmine.createSpy();
-      optIn.enable(logger, cookie);
+      optIn.enable(logger, cookieJar);
 
       expect(logger.warn).toHaveBeenCalledWith(
         "Some commands may be delayed until the user opts in."
@@ -70,21 +70,21 @@ describe("createOptIn", () => {
     });
 
     it("considers the user opted in after the user opts in", () => {
-      optIn.enable(logger, cookie);
+      optIn.enable(logger, cookieJar);
       const whenOptedInPromise = optIn.whenOptedIn();
       optIn.setPurposes("all");
 
-      expect(cookie.set).toHaveBeenCalledWith("optIn", "all");
+      expect(cookieJar.set).toHaveBeenCalledWith("optIn", "all");
       expect(optIn.isOptedIn()).toBe(true);
       return expectAsync(whenOptedInPromise).toBeResolved();
     });
 
     it("considers the user opted out after the user opts out", () => {
-      optIn.enable(logger, cookie);
+      optIn.enable(logger, cookieJar);
       const whenOptedInPromise = optIn.whenOptedIn();
       optIn.setPurposes("none");
 
-      expect(cookie.set).toHaveBeenCalledWith("optIn", "none");
+      expect(cookieJar.set).toHaveBeenCalledWith("optIn", "none");
       expect(optIn.isOptedIn()).toBe(false);
       return expectAsync(whenOptedInPromise).toBeRejectedWith(
         jasmine.any(Error)
@@ -92,23 +92,23 @@ describe("createOptIn", () => {
     });
 
     it("considers the user opted in after the user opts out then opts in", () => {
-      optIn.enable(logger, cookie);
+      optIn.enable(logger, cookieJar);
       optIn.setPurposes("none");
       optIn.setPurposes("all");
       const whenOptedInPromise = optIn.whenOptedIn();
 
-      expect(cookie.set).toHaveBeenCalledWith("optIn", "all");
+      expect(cookieJar.set).toHaveBeenCalledWith("optIn", "all");
       expect(optIn.isOptedIn()).toBe(true);
       return expectAsync(whenOptedInPromise).toBeResolved();
     });
 
     it("considers the user opted out after the user opts in then opts out", () => {
-      optIn.enable(logger, cookie);
+      optIn.enable(logger, cookieJar);
       optIn.setPurposes("all");
       optIn.setPurposes("none");
       const whenOptedInPromise = optIn.whenOptedIn();
 
-      expect(cookie.set).toHaveBeenCalledWith("optIn", "none");
+      expect(cookieJar.set).toHaveBeenCalledWith("optIn", "none");
       expect(optIn.isOptedIn()).toBe(false);
       return expectAsync(whenOptedInPromise).toBeRejectedWith(
         jasmine.any(Error)
@@ -116,7 +116,7 @@ describe("createOptIn", () => {
     });
 
     it("resolves nested whenOptedIn calls", () => {
-      optIn.enable(logger, cookie);
+      optIn.enable(logger, cookieJar);
       const whenOptedInPromise = optIn
         .whenOptedIn()
         .then(() => optIn.whenOptedIn());

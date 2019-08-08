@@ -21,8 +21,8 @@ const EVENT_COMMAND = "event";
 
 const isElementExists = event => event.moduleType === "elementExists";
 
-const getOrCreateSessionId = cookie => {
-  let cookieValue = cookie.get(SESSION_ID_COOKIE);
+const getOrCreateSessionId = cookieJar => {
+  let cookieValue = cookieJar.get(SESSION_ID_COOKIE);
   const now = Date.now();
   const expires = now + SESSION_ID_TTL_IN_DAYS;
 
@@ -33,7 +33,7 @@ const getOrCreateSessionId = cookie => {
   }
 
   // We have to extend session ID lifetime
-  cookie.set(SESSION_ID_COOKIE, cookieValue);
+  cookieJar.set(SESSION_ID_COOKIE, cookieValue);
 
   return cookieValue.value;
 };
@@ -79,7 +79,7 @@ const createCollect = collect => {
   };
 };
 
-const createPersonalization = ({ config, logger, cookie }) => {
+const createPersonalization = ({ config, logger, cookieJar }) => {
   const { prehidingId, prehidingStyle } = config;
   let ruleComponentModules;
   let optIn;
@@ -104,7 +104,7 @@ const createPersonalization = ({ config, logger, cookie }) => {
         }
 
         return optIn.whenOptedIn().then(() => {
-          const sessionId = getOrCreateSessionId(cookie);
+          const sessionId = getOrCreateSessionId(cookieJar);
 
           // Session ID is required both for data fetching and
           // data collection call

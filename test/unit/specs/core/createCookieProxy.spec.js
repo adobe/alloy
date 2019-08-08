@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createCookieProxy from "../../../../src/core/createCookieProxy";
-import cookie from "../../../../src/utils/cookie";
+import cookieJar from "../../../../src/utils/cookieJar";
 
 const COOKIE_NAME = "testcookie";
 const COOKIE_EXPIRES = 180;
@@ -50,7 +50,7 @@ describe("createCookieProxy", () => {
     });
 
     it("should only read the cookie from storage once (for optimization)", () => {
-      cookie.set(`${COOKIE_NAME}`, '{"foo":"bar"}');
+      cookieJar.set(`${COOKIE_NAME}`, '{"foo":"bar"}');
       expect(cookieProxy.get()).toEqual({ foo: "bar" });
       removeAllCookies();
       expect(cookieProxy.get()).toEqual({ foo: "bar" });
@@ -65,13 +65,13 @@ describe("createCookieProxy", () => {
   describe("set", () => {
     it("should create a cookie if one doesn't exist", () => {
       cookieProxy.set({ foo: "bar" });
-      expect(cookie.get(COOKIE_NAME)).toBe('{"foo":"bar"}');
+      expect(cookieJar.get(COOKIE_NAME)).toBe('{"foo":"bar"}');
     });
 
     it("should update a cookie if one does exist", () => {
       document.cookie = `${COOKIE_NAME}={"foo":"bar"}`;
       cookieProxy.set({ foo: "baz" });
-      expect(cookie.get(COOKIE_NAME)).toBe('{"foo":"baz"}');
+      expect(cookieJar.get(COOKIE_NAME)).toBe('{"foo":"baz"}');
     });
   });
 });

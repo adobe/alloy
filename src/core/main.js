@@ -16,7 +16,7 @@ import initializeComponentsFactory from "./initializeComponentsFactory";
 
 import createLogger from "./createLogger";
 import createCookieProxy from "./createCookieProxy";
-import createCookie from "./createCookie";
+import createComponentNamespacedCookieJar from "./createComponentNamespacedCookieJar";
 import createLogController from "./createLogController";
 import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
@@ -63,7 +63,7 @@ if (namespaces) {
       logger,
       createNamespacedStorage,
       createCookieProxy,
-      createCookie,
+      createComponentNamespacedCookieJar,
       createLifecycle,
       createComponentRegistry,
       createNetwork,

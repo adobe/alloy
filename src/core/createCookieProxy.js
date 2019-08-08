@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import cookie from "../utils/cookie";
+import cookieJar from "../utils/cookieJar";
 
 const safeJSONParse = (object, cookieName) => {
   try {
@@ -41,7 +41,7 @@ export default (name, expires, domain) => {
         return deserializedCookie;
       }
 
-      const serializedCookie = cookie.get(name);
+      const serializedCookie = cookieJar.get(name);
       deserializedCookie =
         serializedCookie && safeJSONParse(serializedCookie, name);
       cookieHasBeenRead = true;
@@ -49,7 +49,7 @@ export default (name, expires, domain) => {
     },
     set(updatedCookie) {
       deserializedCookie = updatedCookie;
-      cookie.set(name, updatedCookie, {
+      cookieJar.set(name, updatedCookie, {
         expires,
         domain
       });

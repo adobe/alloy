@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createCookie from "../../../../src/core/createCookie";
+import createComponentNamespacedCookieJar from "../../../../src/core/createComponentNamespacedCookieJar";
 import { clone } from "../../../../src/utils";
 
 const componentNamespace1 = "component1";
 const componentNamespace2 = "component2";
 
-describe("createCookie", () => {
+describe("createComponentNamespacedCookieJar", () => {
   let cookieProxy;
   let alloyCookie;
 
@@ -25,28 +25,40 @@ describe("createCookie", () => {
   });
 
   it("should throw an error if namespace is undefined", () => {
-    expect(() => createCookie(cookieProxy, undefined)).toThrowError();
+    expect(() =>
+      createComponentNamespacedCookieJar(cookieProxy, undefined)
+    ).toThrowError();
   });
 
   it("should throw an error if namespace is a number", () => {
-    expect(() => createCookie(cookieProxy, 42)).toThrowError();
+    expect(() =>
+      createComponentNamespacedCookieJar(cookieProxy, 42)
+    ).toThrowError();
   });
 
   it("should throw an error if namespace is empty string", () => {
-    expect(() => createCookie(cookieProxy, "")).toThrowError();
+    expect(() =>
+      createComponentNamespacedCookieJar(cookieProxy, "")
+    ).toThrowError();
   });
 
   describe("get", () => {
     it("should return undefined when no cookie is found", () => {
       cookieProxy.get.and.returnValue(undefined);
-      alloyCookie = createCookie(cookieProxy, componentNamespace1);
+      alloyCookie = createComponentNamespacedCookieJar(
+        cookieProxy,
+        componentNamespace1
+      );
       const value = alloyCookie.get("foo");
       expect(value).toEqual(undefined);
     });
 
     it("should return undefined if component namespace not found on cookie", () => {
       cookieProxy.get.and.returnValue({});
-      alloyCookie = createCookie(cookieProxy, componentNamespace1);
+      alloyCookie = createComponentNamespacedCookieJar(
+        cookieProxy,
+        componentNamespace1
+      );
       const value = alloyCookie.get("foo");
       expect(value).toEqual(undefined);
     });
@@ -55,7 +67,10 @@ describe("createCookie", () => {
       cookieProxy.get.and.returnValue({
         [componentNamespace1]: {}
       });
-      alloyCookie = createCookie(cookieProxy, componentNamespace1);
+      alloyCookie = createComponentNamespacedCookieJar(
+        cookieProxy,
+        componentNamespace1
+      );
       const value = alloyCookie.get("foo");
       expect(value).toEqual(undefined);
     });
@@ -66,7 +81,10 @@ describe("createCookie", () => {
           foo: "bar"
         }
       });
-      alloyCookie = createCookie(cookieProxy, componentNamespace1);
+      alloyCookie = createComponentNamespacedCookieJar(
+        cookieProxy,
+        componentNamespace1
+      );
       const value = alloyCookie.get("foo");
       expect(value).toEqual("bar");
     });
@@ -75,7 +93,10 @@ describe("createCookie", () => {
   describe("set", () => {
     it("should set value when cookie doesn't exist", () => {
       cookieProxy.get.and.returnValue(undefined);
-      alloyCookie = createCookie(cookieProxy, componentNamespace1);
+      alloyCookie = createComponentNamespacedCookieJar(
+        cookieProxy,
+        componentNamespace1
+      );
       alloyCookie.set("foo", "bar");
       expect(cookieProxy.set).toHaveBeenCalledWith({
         [componentNamespace1]: {
@@ -86,7 +107,10 @@ describe("createCookie", () => {
 
     it("should set value when namespace doesn't exist on cookie", () => {
       cookieProxy.get.and.returnValue({});
-      alloyCookie = createCookie(cookieProxy, componentNamespace1);
+      alloyCookie = createComponentNamespacedCookieJar(
+        cookieProxy,
+        componentNamespace1
+      );
       alloyCookie.set("foo", "bar");
       expect(cookieProxy.set).toHaveBeenCalledWith({
         [componentNamespace1]: {
@@ -107,7 +131,10 @@ describe("createCookie", () => {
       };
       const clonedOriginalCookieObject = clone(originalCookieObject);
       cookieProxy.get.and.returnValue(originalCookieObject);
-      alloyCookie = createCookie(cookieProxy, componentNamespace1);
+      alloyCookie = createComponentNamespacedCookieJar(
+        cookieProxy,
+        componentNamespace1
+      );
       alloyCookie.set("foo", "baz");
       expect(cookieProxy.set).toHaveBeenCalledWith({
         [componentNamespace1]: {
@@ -127,14 +154,20 @@ describe("createCookie", () => {
   describe("remove", () => {
     it("doesn't attempt to set cookie when cookie doesn't exist", () => {
       cookieProxy.get.and.returnValue(undefined);
-      alloyCookie = createCookie(cookieProxy, componentNamespace1);
+      alloyCookie = createComponentNamespacedCookieJar(
+        cookieProxy,
+        componentNamespace1
+      );
       alloyCookie.remove("foo");
       expect(cookieProxy.set).not.toHaveBeenCalled();
     });
 
     it("doesn't attempt to set cookie when namespace doesn't exist in cookie", () => {
       cookieProxy.get.and.returnValue({});
-      alloyCookie = createCookie(cookieProxy, componentNamespace1);
+      alloyCookie = createComponentNamespacedCookieJar(
+        cookieProxy,
+        componentNamespace1
+      );
       alloyCookie.remove("foo");
       expect(cookieProxy.set).not.toHaveBeenCalled();
     });
@@ -151,7 +184,10 @@ describe("createCookie", () => {
       };
       const clonedOriginalCookieObject = clone(originalCookieObject);
       cookieProxy.get.and.returnValue(originalCookieObject);
-      alloyCookie = createCookie(cookieProxy, componentNamespace1);
+      alloyCookie = createComponentNamespacedCookieJar(
+        cookieProxy,
+        componentNamespace1
+      );
       alloyCookie.remove("foo");
       expect(cookieProxy.set).toHaveBeenCalledWith({
         [componentNamespace1]: {

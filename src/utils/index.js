@@ -16,7 +16,7 @@ governing permissions and limitations under the License.
 export { default as assign } from "./assign";
 export { default as clone } from "./clone";
 export { default as convertTimes } from "./convertTimes";
-export { default as cookie } from "./cookie";
+export { default as cookieJar } from "./cookieJar";
 export { default as createMerger } from "./createMerger";
 export { default as crc32 } from "./crc32";
 export { default as defer } from "./defer";

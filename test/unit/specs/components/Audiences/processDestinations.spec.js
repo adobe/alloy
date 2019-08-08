@@ -1,5 +1,5 @@
 import processDestinations from "../../../../../src/components/Audiences/processDestinations";
-import { cookie } from "../../../../../src/utils";
+import { cookieJar } from "../../../../../src/utils";
 
 describe("Audiences::processDestinations", () => {
   const config = {
@@ -48,9 +48,11 @@ describe("Audiences::processDestinations", () => {
 
     processDestinations({ destinations, config, logger });
 
-    expect(cookie.get("audlabcookie")).toEqual(
+    expect(cookieJar.get("audlabcookie")).toEqual(
       "dgtest\u003ddevicegraphtestdestination1"
     );
-    expect(cookie.get("testCookieDestination")).toEqual("destination\u003ds2");
+    expect(cookieJar.get("testCookieDestination")).toEqual(
+      "destination\u003ds2"
+    );
   });
 });
