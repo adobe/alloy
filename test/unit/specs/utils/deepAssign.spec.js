@@ -14,13 +14,59 @@ import deepAssign from "../../../../src/utils/deepAssign";
 import assign from "../../../../src/utils/assign";
 
 describe("deepAssign", () => {
-  it("should copy values like assign", () => {
-    expect(deepAssign({}, { a: 1 }, { b: 2 })).toEqual(
-      assign({}, { a: 1 }, { b: 2 })
-    );
+  it("should throw when target is null or unbdefined", () => {
+    expect(() => {
+      deepAssign(null, { a: 1 });
+    }).toThrow();
+
+    expect(() => {
+      deepAssign(undefined, { a: 1 });
+    }).toThrow();
   });
 
-  it("should copy values recursively assign", () => {
+  it("should assing when target is string", () => {
+    const result1 = deepAssign("foo", { a: 1 });
+    const result2 = assign("foo", { a: 1 });
+
+    expect(result1).toEqual(result2);
+  });
+
+  it("should assing when target is number", () => {
+    const result1 = deepAssign(1, { a: 1 });
+    const result2 = assign(1, { a: 1 });
+
+    expect(result1).toEqual(result2);
+  });
+
+  it("should assing when target is array", () => {
+    const result1 = deepAssign([1], { a: 1 });
+    const result2 = assign([1], { a: 1 });
+
+    expect(result1).toEqual(result2);
+  });
+
+  it("should assing when target is object and source is string", () => {
+    const result1 = deepAssign({}, "foo");
+    const result2 = assign({}, "foo");
+
+    expect(result1).toEqual(result2);
+  });
+
+  it("should assing when target is object and source is number", () => {
+    const result1 = deepAssign({}, 1);
+    const result2 = assign({}, 1);
+
+    expect(result1).toEqual(result2);
+  });
+
+  it("should assing when target is object and source is array", () => {
+    const result1 = deepAssign({}, [1]);
+    const result2 = assign({}, [1]);
+
+    expect(result1).toEqual(result2);
+  });
+
+  it("should assign values recursively", () => {
     const result = deepAssign(
       {},
       { a: { c: 1 } },
