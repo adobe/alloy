@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import assign from "./assign";
+import deepAssign from "./deepAssign";
 
 /**
  * Creates a function that, when passed an object of updates, will merge
@@ -22,5 +22,5 @@ import assign from "./assign";
 export default (content, key) => updates => {
   // eslint-disable-next-line no-param-reassign
   content[key] = content[key] || {};
-  assign(content[key], updates);
+  deepAssign(content[key], updates);
 };

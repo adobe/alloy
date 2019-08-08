@@ -92,24 +92,24 @@ const createPersonalization = ({ config, logger, cookie }) => {
         const collect = componentRegistry.getCommand(EVENT_COMMAND);
         ruleComponentModules = initRuleComponentModules(createCollect(collect));
       },
-      onBeforeDataCollection(payload) {
-        return optIn.whenOptedIn().then(() => {
-          const sessionId = getOrCreateSessionId(cookie);
-
-          payload.mergeMeta({ personalization: { sessionId } });
-        });
-      },
       onBeforeEvent(event, options, isViewStart) {
         if (!isViewStart) {
           // If NOT isViewStart disable personalization
           event.mergeQuery({ personalization: { enabled: false } });
-          return;
+        } else {
+          event.expectResponse();
+
+          // For viewStart we try to hide the personalization containers
+          hideContainers(prehidingId, prehidingStyle);
         }
 
-        event.expectResponse();
+        return optIn.whenOptedIn().then(() => {
+          const sessionId = getOrCreateSessionId(cookie);
 
-        // For viewStart we try to hide the personalization containers
-        hideContainers(prehidingId, prehidingStyle);
+          // Session ID is required both for data fetching and
+          // data collection call
+          event.mergeMeta({ personalization: { sessionId } });
+        });
       },
       onResponse(response) {
         const fragments = response.getPayloadsByType(PAGE_HANDLE);

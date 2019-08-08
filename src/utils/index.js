@@ -20,6 +20,7 @@ export { default as cookie } from "./cookie";
 export { default as createMerger } from "./createMerger";
 export { default as crc32 } from "./crc32";
 export { default as defer } from "./defer";
+export { default as deepAssign } from "./deepAssign";
 export { default as executeWithRetry } from "./executeWithRetry";
 export { default as find } from "./find";
 export { default as fireDestinations } from "./fireDestinations";
