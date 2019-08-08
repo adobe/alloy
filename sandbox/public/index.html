@@ -57,6 +57,19 @@
         console.log("Sandbox: View start event has completed.", data);
       });
 
+      alloy("setCustomerIds", {
+        "email" : {
+          "id": "me@gmail.com",
+          "authState": 0
+        },
+        "crm" : {
+          "id": "1234",
+          "authState": 0
+        }
+      }).then(function() {
+        console.log("Sandbox: Set customer IDs event has completed.");
+      })
+
       // For Testing multiple instances
       organizationTwo("configure", {
         // edgeDomain: "edgegateway.azurewebsites.net",

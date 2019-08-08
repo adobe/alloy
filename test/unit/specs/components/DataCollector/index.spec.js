@@ -126,14 +126,6 @@ describe("Event Command", () => {
       expect(onBeforeDataCollectionSpy).toHaveBeenCalled();
     });
   });
-  it("The promise on onBeforeDataCollection resolves", () => {
-    return eventCommand({}).then(() => {
-      return lifecycle.onBeforeDataCollection.calls.argsFor(0)[1].then(data => {
-        expect(data.requestBody).toBeDefined();
-        expect(data.responseBody).toBeDefined();
-      });
-    });
-  });
 
   it("Waits for onBeforeDataCollection promises", () => {
     const deferred = defer();

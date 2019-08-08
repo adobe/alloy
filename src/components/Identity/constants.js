@@ -1,15 +1,14 @@
-/*
-Copyright 2019 Adobe. All rights reserved.
-This file is licensed to you under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License. You may obtain a copy
-of the License at http://www.apache.org/licenses/LICENSE-2.0
+const AUTH_STATES = {
+  UNKNOWN: 0,
+  AUTHENTICATED: 1,
+  LOGGED_OUT: 2
+};
 
-Unless required by applicable law or agreed to in writing, software distributed under
-the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-OF ANY KIND, either express or implied. See the License for the specific language
-governing permissions and limitations under the License.
-*/
+const COOKIE_NAMES = {
+  CUSTOMER_ID_HASH: "CIDH",
+  EXPERIENCE_CLOUD_ID: "ECID",
+  ID_SYNC_TIMESTAMP: "idSyncTimestamp",
+  ID_SYNC_CONTROL: "idSyncControl"
+};
 
-export const ECID_NAMESPACE = "ECID";
-export const ID_SYNC_TIMESTAMP = "idSyncTimestamp";
-export const ID_SYNC_CONTROL = "idSyncControl";
+export { AUTH_STATES, COOKIE_NAMES };

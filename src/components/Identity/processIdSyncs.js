@@ -12,8 +12,9 @@ governing permissions and limitations under the License.
 
 import { assign, fireDestinations, convertTimes } from "../../utils";
 import { DAY, HOUR, MILLISECOND } from "../../utils/convertTimes";
-import { ID_SYNC_TIMESTAMP, ID_SYNC_CONTROL } from "./constants";
+import { COOKIE_NAMES } from "./constants";
 
+const { ID_SYNC_TIMESTAMP, ID_SYNC_CONTROL } = COOKIE_NAMES;
 const getControlObject = cookie => {
   const val = cookie.get(ID_SYNC_CONTROL) || "";
   const arr = val ? val.split("_") : [];

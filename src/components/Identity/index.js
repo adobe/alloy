@@ -10,14 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { defer, flatMap, convertTimes } from "../../utils";
+import { defer, assign, flatMap, crc32, convertTimes } from "../../utils";
 import processIdSyncs from "./processIdSyncs";
+import createEvent from "../DataCollector/createEvent";
+import { validateCustomerIds, normalizeCustomerIds } from "./util";
 import { HOUR, MILLISECOND } from "../../utils/convertTimes";
-import { ECID_NAMESPACE, ID_SYNC_TIMESTAMP } from "./constants";
+import { COOKIE_NAMES } from "./constants";
+
+const {
+  CUSTOMER_ID_HASH,
+  EXPERIENCE_CLOUD_ID,
+  ID_SYNC_TIMESTAMP
+} = COOKIE_NAMES;
 
 const addIdsContext = (payload, ecid) => {
   // TODO: Add customer ids.
-  payload.addIdentity(ECID_NAMESPACE, {
+  payload.addIdentity(EXPERIENCE_CLOUD_ID, {
     id: ecid
   });
 };
@@ -25,14 +33,51 @@ const addIdsContext = (payload, ecid) => {
 const createIdentity = ({ config, logger, cookie }) => {
   // We avoid reading the ECID from the cookie right away, because we
   // need to wait for the user to opt in first.
-  const getEcid = () => cookie.get(ECID_NAMESPACE);
+  const getEcid = () => cookie.get(EXPERIENCE_CLOUD_ID);
   let optIn;
   let deferredForEcid;
+  let network;
+  let lifecycle;
+  const customerIds = {};
+
+  const makeServerCall = payload => {
+    return lifecycle.onBeforeDataCollection(payload).then(() => {
+      return network.sendRequest(payload, payload.expectsResponse);
+    });
+  };
+
+  const setCustomerIds = ids => {
+    validateCustomerIds(ids);
+    const event = createEvent();
+    event.mergeData(ids.data);
+    const payload = network.createPayload();
+    payload.addEvent(event);
+    assign(customerIds, ids);
+
+    const normalizedCustomerIds = normalizeCustomerIds(customerIds);
+
+    Object.keys(normalizedCustomerIds).forEach(idName => {
+      payload.addIdentity(idName, normalizedCustomerIds[idName]);
+    });
+    const customerIdsHash = crc32(
+      JSON.stringify(normalizedCustomerIds)
+    ).toString(36);
+    // TODO: add more tests around this piece
+    const customerIdChanged = customerIdsHash !== cookie.get(CUSTOMER_ID_HASH);
+    payload.mergeMeta({ identityMap: { customerIdChanged } });
+    if (customerIdChanged) {
+      cookie.set(CUSTOMER_ID_HASH, customerIdsHash);
+    }
+    return lifecycle
+      .onBeforeEvent(event, normalizedCustomerIds, customerIdChanged)
+      .then(() => optIn.whenOptedIn())
+      .then(() => makeServerCall(payload));
+  };
 
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
-        ({ optIn } = tools);
+        ({ lifecycle, network, optIn } = tools);
       },
       // Waiting for opt-in because we'll be reading the ECID from a cookie
       onBeforeEvent(event) {
@@ -87,7 +132,7 @@ const createIdentity = ({ config, logger, cookie }) => {
           const ecidPayloads = response.getPayloadsByType("identity:persist");
 
           if (ecidPayloads.length > 0) {
-            cookie.set(ECID_NAMESPACE, ecidPayloads[0].id);
+            cookie.set(EXPERIENCE_CLOUD_ID, ecidPayloads[0].id);
 
             if (deferredForEcid) {
               deferredForEcid.resolve();
@@ -111,6 +156,10 @@ const createIdentity = ({ config, logger, cookie }) => {
     commands: {
       getEcid() {
         return optIn.whenOptedIn().then(getEcid);
+      },
+      // TODO: Discuss renaming of CustomerIds to UserIds
+      setCustomerIds(options) {
+        return optIn.whenOptedIn().then(() => setCustomerIds(options));
       }
     }
   };
