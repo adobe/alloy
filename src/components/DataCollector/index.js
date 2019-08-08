@@ -30,10 +30,8 @@ const createDataCollector = ({ config }) => {
       }
     });
 
-    const responsePromise = Promise.resolve()
-      .then(() => {
-        return lifecycle.onBeforeDataCollection(payload, responsePromise);
-      })
+    return lifecycle
+      .onBeforeDataCollection(payload)
       .then(() => {
         return network.sendRequest(payload, payload.expectsResponse);
       })
@@ -48,7 +46,6 @@ const createDataCollector = ({ config }) => {
 
         return data;
       });
-    return responsePromise;
   };
 
   const createEventHandler = options => {

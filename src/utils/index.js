@@ -18,6 +18,7 @@ export { default as clone } from "./clone";
 export { default as convertTimes } from "./convertTimes";
 export { default as cookie } from "./cookie";
 export { default as createMerger } from "./createMerger";
+export { default as crc32 } from "./crc32";
 export { default as defer } from "./defer";
 export { default as executeWithRetry } from "./executeWithRetry";
 export { default as find } from "./find";
