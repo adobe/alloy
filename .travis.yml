@@ -22,8 +22,6 @@ addons:
     - google-chrome
     packages:
     - google-chrome-stable fluxbox
-  sonarcloud:
-    organization: "adobeinc"
 
 before_script:
 - export DISPLAY=:99.0
@@ -41,7 +39,6 @@ script:
 - npm run allure:generate
 - npm run functional
 - rollup -c --environment BUILD:production && rollup -c --environment MINIFY,BUILD:production && bundlesize
-- sonar-scanner
 
 jobs:
   include:
