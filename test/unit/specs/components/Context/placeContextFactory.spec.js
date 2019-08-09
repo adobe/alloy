@@ -1,18 +1,11 @@
 import placeContextFactory from "../../../../../src/components/Context/placeContextFactory";
 
 describe("Context::placeContextFactory", () => {
-  let window;
   let event;
   let dateProvider;
-  const date = new Date(1553550978123);
+  const date = new Date("March 25, 2019 21:56:18.123");
 
   beforeEach(() => {
-    window = {
-      screen: {
-        width: 600,
-        height: 800
-      }
-    };
     event = jasmine.createSpyObj("event", ["mergePlaceContext"]);
     dateProvider = () => {
       return date;
@@ -20,13 +13,11 @@ describe("Context::placeContextFactory", () => {
   });
 
   it("adds placeContext", () => {
-    placeContextFactory(window, dateProvider)(event);
+    spyOn(date, "getTimezoneOffset").and.returnValue(7 * 60);
+    placeContextFactory(dateProvider)(event);
     expect(event.mergePlaceContext).toHaveBeenCalledWith({
-      localTime: "2019-03-25T21:56:18.123Z",
-      // browsers don't have support for setting the timezone on a date object, because of
-      // this I cannot have hard-coded integer here because depending on the default
-      // timezone of the browser you are testing with you will get different results.
-      localTimezoneOffset: date.getTimezoneOffset()
+      localTime: "2019-03-25T21:56:18-07:00",
+      localTimezoneOffset: 7 * 60
     });
   });
 });

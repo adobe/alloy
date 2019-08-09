@@ -52,5 +52,6 @@ export { default as storageFactory } from "./storageFactory";
 export { default as stringToBoolean } from "./stringToBoolean";
 export { default as toArray } from "./toArray";
 export { default as toError } from "./toError";
+export { default as toISOStringLocal } from "./toISOStringLocal";
 export { default as uuid } from "./uuid";
 export { default as values } from "./values";

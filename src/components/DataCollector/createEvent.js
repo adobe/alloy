@@ -28,6 +28,9 @@ export default () => {
     mergeDevice: createMerger(content, "device"),
     mergeEnvironment: createMerger(content, "environment"),
     mergePlaceContext: createMerger(content, "placeContext"),
+    setTimestamp: timestamp => {
+      content.timestamp = timestamp;
+    },
     expectResponse() {
       expectsResponse = true;
     },

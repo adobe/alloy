@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (config, logger, availableContexts) => {
+export default (config, logger, availableContexts, requiredContexts) => {
   let configuredContexts;
   return {
     namespace: "Context",
@@ -38,7 +38,8 @@ export default (config, logger, availableContexts) => {
           })
           .map(
             configuredContextName => availableContexts[configuredContextName]
-          );
+          )
+          .concat(requiredContexts);
       },
       onBeforeEvent(event) {
         configuredContexts.forEach(context => context(event));
