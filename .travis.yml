@@ -1,6 +1,6 @@
 dist: trusty
 sudo: required
-language: 
+language:
 - node_js
 
 node_js:
@@ -22,8 +22,8 @@ addons:
     - google-chrome
     packages:
     - google-chrome-stable fluxbox
-  sonarcloud:
-    organization: "adobeinc"
+#  sonarcloud:
+#    organization: "adobeinc"
 
 before_script:
 - export DISPLAY=:99.0
@@ -35,7 +35,7 @@ script:
 - npm install
 - npm run sandbox:install
 - npm run sandbox:build
-- npm run build  
+- npm run build
 - npm run test:saucelabs
 - npm run test:report
 - npm run allure:generate
