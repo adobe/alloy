@@ -80,7 +80,7 @@ const createCollect = collect => {
 };
 
 const createPersonalization = ({ config, logger, cookieJar }) => {
-  const { prehidingId, prehidingStyle } = config;
+  const { authoringMode, prehidingId, prehidingStyle } = config;
   let ruleComponentModules;
   let optIn;
 
@@ -93,6 +93,18 @@ const createPersonalization = ({ config, logger, cookieJar }) => {
         ruleComponentModules = initRuleComponentModules(createCollect(collect));
       },
       onBeforeEvent(event, options, isViewStart) {
+        if (authoringMode) {
+          logger.warn("Rendering is disabled, authoring mode.");
+
+          event.mergeQuery({
+            personalization: {
+              enabled: false
+            }
+          });
+
+          return Promise.resolve();
+        }
+
         if (!isViewStart) {
           // If NOT isViewStart disable personalization
           event.mergeQuery({ personalization: { enabled: false } });
@@ -112,6 +124,10 @@ const createPersonalization = ({ config, logger, cookieJar }) => {
         });
       },
       onResponse(response) {
+        if (authoringMode) {
+          return;
+        }
+
         const fragments = response.getPayloadsByType(PAGE_HANDLE);
 
         // On response we first hide all the elements for
