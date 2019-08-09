@@ -36,7 +36,7 @@ const setControlObject = (controlObject, cookieJar) => {
   cookieJar.set(ID_SYNC_CONTROL, arr.join("_"));
 };
 
-export default ({ destinations, config, logger, cookieJar }) => {
+const createProcessor = (config, logger, cookieJar) => destinations => {
   if (!config.idSyncsEnabled) {
     return;
   }
@@ -89,4 +89,21 @@ export default ({ destinations, config, logger, cookieJar }) => {
       );
     });
   }
+};
+
+const createExpiryChecker = cookieJar => () => {
+  const nowInHours = Math.round(
+    convertTimes(MILLISECOND, HOUR, new Date().getTime())
+  );
+  const timestamp = parseInt(cookieJar.get(ID_SYNC_TIMESTAMP) || 0, 36);
+
+  return nowInHours > timestamp;
+};
+
+export default (config, logger, cookieJar) => {
+
+  return {
+    process: createProcessor(config, logger, cookieJar),
+    hasExpired: createExpiryChecker(cookieJar)
+  };
 };

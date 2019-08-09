@@ -1,4 +1,4 @@
-import processIdSyncs from "../../../../../src/components/Identity/processIdSyncs";
+import createIdSyncs from "../../../../../src/components/Identity/createIdSyncs";
 import createCookieProxy from "../../../../../src/core/createCookieProxy";
 import createComponentNamespacedCookieJar from "../../../../../src/core/createComponentNamespacedCookieJar";
 
@@ -9,7 +9,7 @@ const cookieJar = createComponentNamespacedCookieJar(
 );
 const ID_SYNC_CONTROL = "idSyncControl";
 
-describe("Identity::processIdSyncs", () => {
+describe("Identity::createIdSyncs", () => {
   const config = {
     idSyncsEnabled: true
   };
@@ -33,7 +33,7 @@ describe("Identity::processIdSyncs", () => {
   };
 
   it("tracks id syncs", done => {
-    const idSyncs = [
+    const idsToSync = [
       {
         type: "url",
         id: 411,
@@ -55,7 +55,8 @@ describe("Identity::processIdSyncs", () => {
     let obj = getControlObject();
 
     expect(obj[123]).toBeDefined();
-    processIdSyncs({ destinations: idSyncs, config, logger, cookieJar });
+    const idSyncs = createIdSyncs(config, logger, cookieJar);
+    idSyncs.process(idsToSync);
 
     const checkCookie = () => {
       obj = getControlObject();

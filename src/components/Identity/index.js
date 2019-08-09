@@ -10,18 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { defer, assign, flatMap, crc32, convertTimes } from "../../utils";
-import processIdSyncs from "./processIdSyncs";
+import { defer, assign, flatMap, crc32 } from "../../utils";
+import createIdSyncs from "./createIdSyncs";
 import createEvent from "../DataCollector/createEvent";
 import { validateCustomerIds, normalizeCustomerIds } from "./util";
-import { HOUR, MILLISECOND } from "../../utils/convertTimes";
 import { COOKIE_NAMES } from "./constants";
 
-const {
-  CUSTOMER_ID_HASH,
-  EXPERIENCE_CLOUD_ID,
-  ID_SYNC_TIMESTAMP
-} = COOKIE_NAMES;
+const { CUSTOMER_ID_HASH, EXPERIENCE_CLOUD_ID } = COOKIE_NAMES;
 
 const addIdsContext = (payload, ecid) => {
   // TODO: Add customer ids.
@@ -38,6 +33,7 @@ const createIdentity = ({ config, logger, cookieJar }) => {
   let deferredForEcid;
   let network;
   let lifecycle;
+  const idSyncs = createIdSyncs(config, logger, cookieJar);
   const customerIds = {};
   let alreadyQueriedForIdSyncs = false;
 
@@ -84,12 +80,11 @@ const createIdentity = ({ config, logger, cookieJar }) => {
       // Waiting for opt-in because we'll be reading the ECID from a cookie
       onBeforeEvent(event) {
         return optIn.whenOptedIn().then(() => {
-          const nowInHours = Math.round(
-            convertTimes(MILLISECOND, HOUR, new Date().getTime())
-          );
-          const timestamp = parseInt(cookieJar.get(ID_SYNC_TIMESTAMP) || 0, 36);
-
-          if (!alreadyQueriedForIdSyncs && config.idSyncsEnabled && nowInHours > timestamp) {
+          if (
+            !alreadyQueriedForIdSyncs &&
+            config.idSyncsEnabled &&
+            idSyncs.hasExpired()
+          ) {
             alreadyQueriedForIdSyncs = true;
             event.mergeQuery({
               identity: {
@@ -142,17 +137,12 @@ const createIdentity = ({ config, logger, cookieJar }) => {
             }
           }
 
-          const idSyncs = flatMap(
-            response.getPayloadsByType("identity:exchange"),
-            fragment => fragment
+          idSyncs.process(
+            flatMap(
+              response.getPayloadsByType("identity:exchange"),
+              fragment => fragment
+            )
           );
-
-          processIdSyncs({
-            destinations: idSyncs,
-            config,
-            logger,
-            cookieJar
-          });
         });
       }
     },
