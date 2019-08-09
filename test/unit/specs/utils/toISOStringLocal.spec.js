@@ -18,4 +18,10 @@ describe("toISOStringLocal", () => {
     spyOn(date, "getTimezoneOffset").and.returnValue(-176);
     expect(toISOStringLocal(date)).toEqual("2020-01-01T00:00:42+02:56");
   });
+
+  it("handles a UTC timezone", () => {
+    const date = new Date("December 31, 2019 22:36:00");
+    spyOn(date, "getTimezoneOffset").and.returnValue(0);
+    expect(toISOStringLocal(date)).toEqual("2019-12-31T22:36:00+00:00");
+  })
 });

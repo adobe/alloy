@@ -29,7 +29,7 @@ export default date => {
   // means that the offset is positive if the local timezone is behind UTC and negative if it is
   // ahead. For example, for time zone UTC+10:00, -600 will be returned.
   const timezoneOffset = date.getTimezoneOffset();
-  const ts = timezoneOffset < 0 ? "+" : "-";
+  const ts = timezoneOffset > 0 ? "-" : "+";
   const th = pad(Math.floor(Math.abs(timezoneOffset) / 60));
   const tm = pad(Math.abs(timezoneOffset) % 60);
 
