@@ -39,6 +39,7 @@ const createIdentity = ({ config, logger, cookieJar }) => {
   let network;
   let lifecycle;
   const customerIds = {};
+  let alreadyQueriedForIdSyncs = false;
 
   const makeServerCall = payload => {
     return lifecycle.onBeforeDataCollection(payload).then(() => {
@@ -88,7 +89,8 @@ const createIdentity = ({ config, logger, cookieJar }) => {
           );
           const timestamp = parseInt(cookieJar.get(ID_SYNC_TIMESTAMP) || 0, 36);
 
-          if (config.idSyncsEnabled && nowInHours > timestamp) {
+          if (!alreadyQueriedForIdSyncs && config.idSyncsEnabled && nowInHours > timestamp) {
+            alreadyQueriedForIdSyncs = true;
             event.mergeQuery({
               identity: {
                 exchange: true
