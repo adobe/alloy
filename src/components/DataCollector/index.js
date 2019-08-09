@@ -48,13 +48,13 @@ const createDataCollector = ({ config }) => {
 
   const createEventHandler = options => {
     const event = createEvent();
-    const { isViewStart = false, data, meta } = options;
+    const { viewStart = false, data, meta } = options;
 
     event.mergeData(data);
     event.mergeMeta(meta);
 
     return lifecycle
-      .onBeforeEvent(event, options, isViewStart)
+      .onBeforeEvent(event, options, viewStart)
       .then(() => optIn.whenOptedIn())
       .then(() => makeServerCall(event));
   };

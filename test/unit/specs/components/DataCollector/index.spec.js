@@ -63,8 +63,8 @@ describe("Event Command", () => {
       );
     });
   });
-  it("Extracts isViewStart for onBeforeEvent", () => {
-    const options = { isViewStart: true };
+  it("Extracts viewStart for onBeforeEvent", () => {
+    const options = { viewStart: true };
     return eventCommand(options).then(() => {
       expect(onBeforeEventSpy).toHaveBeenCalledWith(
         jasmine.anything(),
