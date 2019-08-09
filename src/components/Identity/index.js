@@ -48,10 +48,10 @@ const createIdentity = ({ config, logger, cookieJar }) => {
 
   const setCustomerIds = ids => {
     validateCustomerIds(ids);
-    const event = createEvent();
-    event.mergeData(ids.data);
+    const event = createEvent(); // FIXME: We shouldn't need an event.
+    event.mergeData({}); // FIXME: We shouldn't need an event.
     const payload = network.createPayload();
-    payload.addEvent(event);
+    payload.addEvent(event); // FIXME: We shouldn't need an event.
     assign(customerIds, ids);
 
     const normalizedCustomerIds = normalizeCustomerIds(customerIds);
@@ -70,7 +70,7 @@ const createIdentity = ({ config, logger, cookieJar }) => {
       cookieJar.set(CUSTOMER_ID_HASH, customerIdsHash);
     }
     return lifecycle
-      .onBeforeEvent(event, normalizedCustomerIds, customerIdChanged)
+      .onBeforeEvent(event, {}, false) // FIXME: We shouldn't need an event.
       .then(() => optIn.whenOptedIn())
       .then(() => makeServerCall(payload));
   };
