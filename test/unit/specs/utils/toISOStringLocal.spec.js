@@ -23,5 +23,5 @@ describe("toISOStringLocal", () => {
     const date = new Date("December 31, 2019 22:36:00");
     spyOn(date, "getTimezoneOffset").and.returnValue(0);
     expect(toISOStringLocal(date)).toEqual("2019-12-31T22:36:00+00:00");
-  })
+  });
 });

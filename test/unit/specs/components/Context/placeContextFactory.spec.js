@@ -3,7 +3,7 @@ import placeContextFactory from "../../../../../src/components/Context/placeCont
 describe("Context::placeContextFactory", () => {
   let event;
   let dateProvider;
-  const date = new Date("March 25, 2019 21:56:18.123");
+  const date = new Date("March 25, 2019 21:56:18");
 
   beforeEach(() => {
     event = jasmine.createSpyObj("event", ["mergePlaceContext"]);
