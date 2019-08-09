@@ -46,10 +46,9 @@
       });
 
       alloy("event", {
-        // NOTE: `viewStart` is a special type of events.
-        // View docs for more info.
-        type: "viewStart",
+        viewStart: true,
         data: {
+          "type": "page-view",
           "url": location.href,
           "name": location.pathname.substring(1) || "home"
         }
