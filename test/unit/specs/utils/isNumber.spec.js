@@ -10,8 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as boolean } from "./boolean";
-export { default as eitherNilOrNonEmpty } from "./eitherNilOrNonEmpty";
-export { default as nonNegativeInteger } from "./nonNegativeInteger";
-export { default as required } from "./required";
-export { default as validDomain } from "./validDomain";
+import isNumber from "../../../../src/utils/isNumber";
+
+describe("isNumber", () => {
+  it("tests", () => {
+    expect(isNumber(null)).toBe(false);
+    expect(isNumber(undefined)).toBe(false);
+    expect(isNumber("abc")).toBe(false);
+    expect(isNumber(parseInt("abc", 10))).toBe(false);
+    expect(isNumber("123")).toBe(false);
+    expect(isNumber(123)).toBe(true);
+    expect(isNumber(123.45)).toBe(true);
+    expect(isNumber(-123)).toBe(true);
+    expect(isNumber(-123.45)).toBe(true);
+  });
+});
