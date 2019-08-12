@@ -42,7 +42,9 @@
         propertyId: 9999999,
         imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
         log: true,
-        authoringMode: document.location.href.indexOf("mboxEdit") !== -1,
+        // Target VEC appends "mobxEdit" to URL when loading the page.
+        // By checking this params we know we are in authoring mode
+        authoringMode: document.location.href.indexOf("mboxEdit") !== -1, 
         prehidingId: "alloy-prehiding",
         prehidingStyle: "section:nth-of-type(1) { opacity: 0 !important }"
       });
