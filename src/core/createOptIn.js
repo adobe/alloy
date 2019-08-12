@@ -25,7 +25,7 @@ const PENDING = "pending";
 
 export default () => {
   const deferredsAwaitingResolution = [];
-  let cookie;
+  let cookieJar;
   let purposes = ALL;
 
   const processDeferreds = () => {
@@ -48,12 +48,12 @@ export default () => {
      * Only to be called by the Privacy component during startup. If opt-in
      * isn't enabled, this method will not be called.
      * @param {Object} logger A logger object.
-     * @param {Object} _cookie A cookie management object.
+     * @param {Object} _cookieJar A cookie management object.
      * to the Privacy component.
      */
-    enable(logger, _cookie) {
-      cookie = _cookie;
-      purposes = cookie.get(COOKIE_NAMESPACE) || PENDING;
+    enable(logger, _cookieJar) {
+      cookieJar = _cookieJar;
+      purposes = cookieJar.get(COOKIE_NAMESPACE) || PENDING;
 
       if (purposes === PENDING) {
         logger.warn("Some commands may be delayed until the user opts in.");
@@ -66,7 +66,7 @@ export default () => {
      */
     setPurposes(newPurposes) {
       purposes = newPurposes;
-      cookie.set(COOKIE_NAMESPACE, newPurposes);
+      cookieJar.set(COOKIE_NAMESPACE, newPurposes);
       processDeferreds();
     },
     /**

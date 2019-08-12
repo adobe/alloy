@@ -1,6 +1,6 @@
 dist: trusty
 sudo: required
-language: 
+language:
 - node_js
 
 node_js:
@@ -35,13 +35,13 @@ script:
 - npm install
 - npm run sandbox:install
 - npm run sandbox:build
-- npm run build  
+- npm run build
 - npm run test:saucelabs
 - npm run test:report
 - npm run allure:generate
 - npm run functional
 - rollup -c --environment BUILD:production && rollup -c --environment MINIFY,BUILD:production && bundlesize
-- sonar-scanner
+# - sonar-scanner
 
 jobs:
   include:

@@ -10,19 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { defer, assign, flatMap, crc32, convertTimes } from "../../utils";
+import { defer, assign, flatMap, crc32 } from "../../utils";
 import { nonNegativeInteger } from "../../utils/config-validators";
-import processIdSyncs from "./processIdSyncs";
+import createIdSyncs from "./createIdSyncs";
 import createEvent from "../DataCollector/createEvent";
 import { validateCustomerIds, normalizeCustomerIds } from "./util";
-import { HOUR, MILLISECOND } from "../../utils/convertTimes";
 import { COOKIE_NAMES } from "./constants";
 
-const {
-  CUSTOMER_ID_HASH,
-  EXPERIENCE_CLOUD_ID,
-  ID_SYNC_TIMESTAMP
-} = COOKIE_NAMES;
+const { CUSTOMER_ID_HASH, EXPERIENCE_CLOUD_ID } = COOKIE_NAMES;
 
 const addIdsContext = (payload, ecid) => {
   // TODO: Add customer ids.
@@ -31,15 +26,17 @@ const addIdsContext = (payload, ecid) => {
   });
 };
 
-const createIdentity = ({ config, logger, cookie }) => {
+const createIdentity = ({ config, logger, cookieJar }) => {
   // We avoid reading the ECID from the cookie right away, because we
   // need to wait for the user to opt in first.
-  const getEcid = () => cookie.get(EXPERIENCE_CLOUD_ID);
+  const getEcid = () => cookieJar.get(EXPERIENCE_CLOUD_ID);
   let optIn;
   let deferredForEcid;
   let network;
   let lifecycle;
+  const idSyncs = createIdSyncs(config, logger, cookieJar);
   const customerIds = {};
+  let alreadyQueriedForIdSyncs = false;
 
   const makeServerCall = payload => {
     return lifecycle.onBeforeDataCollection(payload).then(() => {
@@ -49,10 +46,10 @@ const createIdentity = ({ config, logger, cookie }) => {
 
   const setCustomerIds = ids => {
     validateCustomerIds(ids);
-    const event = createEvent();
-    event.mergeData(ids.data);
+    const event = createEvent(); // FIXME: We shouldn't need an event.
+    event.mergeData({}); // FIXME: We shouldn't need an event.
     const payload = network.createPayload();
-    payload.addEvent(event);
+    payload.addEvent(event); // FIXME: We shouldn't need an event.
     assign(customerIds, ids);
 
     const normalizedCustomerIds = normalizeCustomerIds(customerIds);
@@ -64,13 +61,14 @@ const createIdentity = ({ config, logger, cookie }) => {
       JSON.stringify(normalizedCustomerIds)
     ).toString(36);
     // TODO: add more tests around this piece
-    const customerIdChanged = customerIdsHash !== cookie.get(CUSTOMER_ID_HASH);
+    const customerIdChanged =
+      customerIdsHash !== cookieJar.get(CUSTOMER_ID_HASH);
     payload.mergeMeta({ identityMap: { customerIdChanged } });
     if (customerIdChanged) {
-      cookie.set(CUSTOMER_ID_HASH, customerIdsHash);
+      cookieJar.set(CUSTOMER_ID_HASH, customerIdsHash);
     }
     return lifecycle
-      .onBeforeEvent(event, normalizedCustomerIds, customerIdChanged)
+      .onBeforeEvent(event, {}, false) // FIXME: We shouldn't need an event.
       .then(() => optIn.whenOptedIn())
       .then(() => makeServerCall(payload));
   };
@@ -83,13 +81,13 @@ const createIdentity = ({ config, logger, cookie }) => {
       // Waiting for opt-in because we'll be reading the ECID from a cookie
       onBeforeEvent(event) {
         return optIn.whenOptedIn().then(() => {
-          const nowInHours = Math.round(
-            convertTimes(MILLISECOND, HOUR, new Date().getTime())
-          );
-          const timestamp = parseInt(cookie.get(ID_SYNC_TIMESTAMP) || 0, 36);
-
-          if (config.idSyncsEnabled && nowInHours > timestamp) {
-            const identityQuery = {
+          if (
+            !alreadyQueriedForIdSyncs &&
+            config.idSyncsEnabled &&
+            idSyncs.hasExpired()
+          ) {
+            alreadyQueriedForIdSyncs = true;
+            event.mergeQuery({
               identity: {
                 exchange: true
               }
@@ -139,24 +137,19 @@ const createIdentity = ({ config, logger, cookie }) => {
           const ecidPayloads = response.getPayloadsByType("identity:persist");
 
           if (ecidPayloads.length > 0) {
-            cookie.set(EXPERIENCE_CLOUD_ID, ecidPayloads[0].id);
+            cookieJar.set(EXPERIENCE_CLOUD_ID, ecidPayloads[0].id);
 
             if (deferredForEcid) {
               deferredForEcid.resolve();
             }
           }
 
-          const idSyncs = flatMap(
-            response.getPayloadsByType("identity:exchange"),
-            fragment => fragment
+          idSyncs.process(
+            flatMap(
+              response.getPayloadsByType("identity:exchange"),
+              fragment => fragment
+            )
           );
-
-          processIdSyncs({
-            destinations: idSyncs,
-            config,
-            logger,
-            cookie
-          });
         });
       }
     },

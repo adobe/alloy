@@ -15,8 +15,8 @@ import { DAY, HOUR, MILLISECOND } from "../../utils/convertTimes";
 import { COOKIE_NAMES } from "./constants";
 
 const { ID_SYNC_TIMESTAMP, ID_SYNC_CONTROL } = COOKIE_NAMES;
-const getControlObject = cookie => {
-  const val = cookie.get(ID_SYNC_CONTROL) || "";
+const getControlObject = cookieJar => {
+  const val = cookieJar.get(ID_SYNC_CONTROL) || "";
   const arr = val ? val.split("_") : [];
 
   return arr.reduce((controlObject, idTimestampPair) => {
@@ -28,20 +28,20 @@ const getControlObject = cookie => {
   }, {});
 };
 
-const setControlObject = (controlObject, cookie) => {
+const setControlObject = (controlObject, cookieJar) => {
   const arr = Object.keys(controlObject).map(
     id => `${id}-${controlObject[id].toString(36)}`
   );
 
-  cookie.set(ID_SYNC_CONTROL, arr.join("_"));
+  cookieJar.set(ID_SYNC_CONTROL, arr.join("_"));
 };
 
-export default ({ destinations, config, logger, cookie }) => {
+const createProcessor = (config, logger, cookieJar) => destinations => {
   if (!config.idSyncsEnabled) {
     return;
   }
 
-  const controlObject = getControlObject(cookie);
+  const controlObject = getControlObject(cookieJar);
   const now = convertTimes(MILLISECOND, HOUR, new Date().getTime()); // hours
 
   Object.keys(controlObject).forEach(key => {
@@ -78,9 +78,9 @@ export default ({ destinations, config, logger, cookie }) => {
         }
       });
 
-      setControlObject(controlObject, cookie);
+      setControlObject(controlObject, cookieJar);
 
-      cookie.set(
+      cookieJar.set(
         ID_SYNC_TIMESTAMP,
         (
           Math.round(convertTimes(MILLISECOND, HOUR, new Date().getTime())) +
@@ -89,4 +89,21 @@ export default ({ destinations, config, logger, cookie }) => {
       );
     });
   }
+};
+
+const createExpiryChecker = cookieJar => () => {
+  const nowInHours = Math.round(
+    convertTimes(MILLISECOND, HOUR, new Date().getTime())
+  );
+  const timestamp = parseInt(cookieJar.get(ID_SYNC_TIMESTAMP) || 0, 36);
+
+  return nowInHours > timestamp;
+};
+
+export default (config, logger, cookieJar) => {
+
+  return {
+    process: createProcessor(config, logger, cookieJar),
+    hasExpired: createExpiryChecker(cookieJar)
+  };
 };

@@ -20,23 +20,23 @@ const cookieName = `${namespace}getTld`;
  * be the top-most domain that is not a "public suffix" as outlined
  * in https://publicsuffix.org/
  * @param {Object} window
- * @param {Object} cookie
+ * @param {Object} cookieJar
  * @returns {string}
  */
-export default function getTopLevelCookieDomain(window, cookie) {
+export default function getTopLevelCookieDomain(window, cookieJar) {
   let topLevelCookieDomain = "";
 
   // If hostParts.length === 1, we may be on localhost.
   const hostParts = window.location.hostname.toLowerCase().split(".");
   let i = 1;
 
-  while (i < hostParts.length && !cookie.get(cookieName)) {
+  while (i < hostParts.length && !cookieJar.get(cookieName)) {
     i += 1;
     topLevelCookieDomain = getLastArrayItems(hostParts, i).join(".");
-    cookie.set(cookieName, cookieName, { domain: topLevelCookieDomain });
+    cookieJar.set(cookieName, cookieName, { domain: topLevelCookieDomain });
   }
 
-  cookie.remove(cookieName, { domain: topLevelCookieDomain });
+  cookieJar.remove(cookieName, { domain: topLevelCookieDomain });
 
   return topLevelCookieDomain;
 }

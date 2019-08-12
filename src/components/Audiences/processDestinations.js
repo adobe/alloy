@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, cookie, fireDestinations } from "../../utils";
+import { assign, cookieJar, fireDestinations } from "../../utils";
 
 export default ({ destinations, config, logger }) => {
   if (!config.destinationsEnabled) {
@@ -40,7 +40,7 @@ export default ({ destinations, config, logger }) => {
     .map(dest => dest.spec);
 
   cookieDestinations.forEach(dest => {
-    cookie.set(dest.name, dest.value || "", {
+    cookieJar.set(dest.name, dest.value || "", {
       domain: dest.domain || "",
       expires: dest.ttl ? dest.ttl : 6 * 30 // default of 6 months
     });
