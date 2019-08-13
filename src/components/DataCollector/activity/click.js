@@ -79,15 +79,16 @@ const createClickHandler = (config, logger, collect) => {
       }
     }
     if (objectHref && isSupportedHrefObject(clickObject)) {
+      // TODO: Update name (link name) and type (exit, other, download) to be collected
       collect({
         beacon: true,
         data: {
-          webinteraction: {
-            type: "other",
-            URL: objectHref,
-            linkClicks: {
-              value: 1
-            }
+          eventType: "web.webinteraction",
+          name: "Link Click",
+          type: "other",
+          URL: objectHref,
+          linkClicks: {
+            value: 1
           }
         }
       });
