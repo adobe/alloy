@@ -9,7 +9,7 @@ const cookieJar = createComponentNamespacedCookieJar(
 );
 const ID_SYNC_CONTROL = "idSyncControl";
 
-describe("Identity::createIdSyncs", () => {
+fdescribe("Identity::createIdSyncs", () => {
   const config = {
     idSyncsEnabled: true
   };
@@ -32,7 +32,7 @@ describe("Identity::createIdSyncs", () => {
     }, {});
   };
 
-  it("tracks id syncs", done => {
+  it("tracks id syncs", () => {
     const idsToSync = [
       {
         type: "url",
@@ -63,7 +63,6 @@ describe("Identity::createIdSyncs", () => {
 
       if (obj[411] !== undefined) {
         expect(obj[123]).toBeUndefined();
-        done();
       } else {
         setTimeout(checkCookie, 50);
       }

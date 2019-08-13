@@ -16,7 +16,7 @@ import { hideContainers, showContainers, hideElements } from "./flicker";
 
 const PAGE_HANDLE = "personalization:page";
 const SESSION_ID_COOKIE = "SID";
-const SESSION_ID_TTL_IN_DAYS = 31 * 60 * 1000;
+const SESSION_ID_TTL_IN_MINUTES = 31 * 60 * 1000;
 const EVENT_COMMAND = "event";
 
 const isElementExists = event => event.moduleType === "elementExists";
@@ -24,7 +24,7 @@ const isElementExists = event => event.moduleType === "elementExists";
 const getOrCreateSessionId = cookieJar => {
   let cookieValue = cookieJar.get(SESSION_ID_COOKIE);
   const now = Date.now();
-  const expires = now + SESSION_ID_TTL_IN_DAYS;
+  const expires = now + SESSION_ID_TTL_IN_MINUTES;
 
   if (!cookieValue || now > cookieValue.expires) {
     cookieValue = { value: uuid(), expires };
