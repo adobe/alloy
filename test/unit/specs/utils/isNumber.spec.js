@@ -13,15 +13,16 @@ governing permissions and limitations under the License.
 import isNumber from "../../../../src/utils/isNumber";
 
 describe("isNumber", () => {
-  it("tests", () => {
-    expect(isNumber(null)).toBe(false);
-    expect(isNumber(undefined)).toBe(false);
-    expect(isNumber("abc")).toBe(false);
-    expect(isNumber(parseInt("abc", 10))).toBe(false);
-    expect(isNumber("123")).toBe(false);
-    expect(isNumber(123)).toBe(true);
-    expect(isNumber(123.45)).toBe(true);
-    expect(isNumber(-123)).toBe(true);
-    expect(isNumber(-123.45)).toBe(true);
+  it("returns true if the value is a number", () => {
+    [123, 123.45, -123, -123.45].forEach(value =>
+      expect(isNumber(value)).toBe(true)
+    );
+  });
+
+  // eslint-disable-next-line no-restricted-globals
+  it("returns false if the value is not a number", () => {
+    [null, undefined, NaN, "abc", "123"].forEach(value =>
+      expect(isNumber(value)).toBe(false)
+    );
   });
 });

@@ -87,13 +87,13 @@ const createIdentity = ({ config, logger, cookieJar }) => {
             idSyncs.hasExpired()
           ) {
             alreadyQueriedForIdSyncs = true;
-            event.mergeQuery({
+            const identityQuery = {
               identity: {
                 exchange: true
               }
             };
 
-            if (config.idSyncContainerId !== null) {
+            if (config.idSyncContainerId !== undefined) {
               identityQuery.identity.containerId = config.idSyncContainerId;
             }
 
@@ -173,8 +173,7 @@ createIdentity.configValidators = {
     defaultValue: true
   },
   idSyncContainerId: {
-    validate: nonNegativeInteger,
-    defaultValue: null
+    validate: nonNegativeInteger
   }
 };
 
