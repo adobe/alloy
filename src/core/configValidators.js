@@ -1,7 +1,8 @@
 import {
   required,
   validDomain,
-  eitherNilOrNonEmpty
+  eitherNilOrNonEmpty,
+  boolean
 } from "../utils/config-validators";
 
 export default {
@@ -17,6 +18,10 @@ export default {
   },
   prehidingStyle: {
     validate: eitherNilOrNonEmpty
+  },
+  authoringMode: {
+    defaultValue: false,
+    validate: boolean
   },
   // TODO: For debugging purposes only. Remove eventually.
   shouldStoreCollectedData: { defaultValue: 1 },

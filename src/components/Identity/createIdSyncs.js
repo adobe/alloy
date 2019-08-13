@@ -101,7 +101,6 @@ const createExpiryChecker = cookieJar => () => {
 };
 
 export default (config, logger, cookieJar) => {
-
   return {
     process: createProcessor(config, logger, cookieJar),
     hasExpired: createExpiryChecker(cookieJar)
