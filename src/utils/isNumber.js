@@ -10,8 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as boolean } from "./boolean";
-export { default as eitherNilOrNonEmpty } from "./eitherNilOrNonEmpty";
-export { default as nonNegativeInteger } from "./nonNegativeInteger";
-export { default as required } from "./required";
-export { default as validDomain } from "./validDomain";
+/**
+ * Returns whether the value is a number.
+ * @param {*} value
+ * @returns {boolean}
+ */
+// eslint-disable-next-line no-restricted-globals
+export default value => typeof value === "number" && !isNaN(value);

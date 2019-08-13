@@ -10,8 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as boolean } from "./boolean";
-export { default as eitherNilOrNonEmpty } from "./eitherNilOrNonEmpty";
-export { default as nonNegativeInteger } from "./nonNegativeInteger";
-export { default as required } from "./required";
-export { default as validDomain } from "./validDomain";
+import isNumber from "../../../../src/utils/isNumber";
+
+describe("isNumber", () => {
+  it("returns true if the value is a number", () => {
+    [123, 123.45, -123, -123.45].forEach(value =>
+      expect(isNumber(value)).toBe(true)
+    );
+  });
+
+  // eslint-disable-next-line no-restricted-globals
+  it("returns false if the value is not a number", () => {
+    [null, undefined, NaN, "abc", "123"].forEach(value =>
+      expect(isNumber(value)).toBe(false)
+    );
+  });
+});

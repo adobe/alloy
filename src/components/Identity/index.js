@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { defer, assign, flatMap, crc32 } from "../../utils";
+import { nonNegativeInteger } from "../../utils/config-validators";
 import createIdSyncs from "./createIdSyncs";
 import createEvent from "../DataCollector/createEvent";
 import { validateCustomerIds, normalizeCustomerIds } from "./util";
@@ -86,11 +87,17 @@ const createIdentity = ({ config, logger, cookieJar }) => {
             idSyncs.hasExpired()
           ) {
             alreadyQueriedForIdSyncs = true;
-            event.mergeQuery({
+            const identityQuery = {
               identity: {
                 exchange: true
               }
-            });
+            };
+
+            if (config.idSyncContainerId !== undefined) {
+              identityQuery.identity.containerId = config.idSyncContainerId;
+            }
+
+            event.mergeQuery(identityQuery);
           }
         });
       },
@@ -164,6 +171,9 @@ createIdentity.abbreviation = "ID";
 createIdentity.configValidators = {
   idSyncsEnabled: {
     defaultValue: true
+  },
+  idSyncContainerId: {
+    validate: nonNegativeInteger
   }
 };
 

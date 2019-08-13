@@ -10,8 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as boolean } from "./boolean";
-export { default as eitherNilOrNonEmpty } from "./eitherNilOrNonEmpty";
-export { default as nonNegativeInteger } from "./nonNegativeInteger";
-export { default as required } from "./required";
-export { default as validDomain } from "./validDomain";
+import isInteger from "../isInteger";
+
+export default (config, key, currentValue) => {
+  return isInteger(currentValue) && currentValue >= 0
+    ? ""
+    : `Value for ${key} is not a nonnegative integer: ${currentValue}`;
+};
