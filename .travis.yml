@@ -33,12 +33,9 @@ before_script:
 
 script:
 - npm install
-- npm run sandbox:install
-- npm run sandbox:build
 - npm run build
 - npm run test:saucelabs
 - npm run test:report
-- npm run allure:generate
 - npm run functional
 - rollup -c --environment BUILD:production && rollup -c --environment MINIFY,BUILD:production && bundlesize
 # - sonar-scanner
@@ -52,13 +49,6 @@ jobs:
         verbose: true
         local-dir: ./test/allure/allure-report/
         site: adobealloy
-    - stage: Deploy Sandbox
-      deploy:
-        provider: azure_web_apps
-        skip_cleanup: true
-        verbose: true
-        local-dir: ./sandbox/
-        site: alloyqe
 
 notifications:
   slack:
