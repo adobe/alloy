@@ -19,7 +19,7 @@ export default {
   prehidingStyle: {
     validate: eitherNilOrNonEmpty
   },
-  authoringMode: {
+  authoringModeEnabled: {
     defaultValue: false,
     validate: boolean
   },

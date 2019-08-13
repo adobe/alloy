@@ -80,7 +80,7 @@ const createCollect = collect => {
 };
 
 const createPersonalization = ({ config, logger, cookieJar }) => {
-  const { authoringMode, prehidingId, prehidingStyle } = config;
+  const { authoringModeEnabled, prehidingId, prehidingStyle } = config;
   let ruleComponentModules;
   let optIn;
 
@@ -93,7 +93,7 @@ const createPersonalization = ({ config, logger, cookieJar }) => {
         ruleComponentModules = initRuleComponentModules(createCollect(collect));
       },
       onBeforeEvent(event, options, isViewStart) {
-        if (authoringMode) {
+        if (authoringModeEnabled) {
           logger.warn("Rendering is disabled, authoring mode.");
 
           event.mergeQuery({
@@ -124,7 +124,7 @@ const createPersonalization = ({ config, logger, cookieJar }) => {
         });
       },
       onResponse(response) {
-        if (authoringMode) {
+        if (authoringModeEnabled) {
           return;
         }
 
