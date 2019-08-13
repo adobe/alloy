@@ -38,10 +38,10 @@
       alloy("configure", {
         // edgeDomain: "edgegateway.azurewebsites.net",
         // optInEnabled: true,
-        // suppressErrors: true,
+        // errorsEnabled: false,
         propertyId: 9999999,
         imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
-        log: true,
+        logEnabled: true,
         // Target VEC appends "mobxEdit" to URL when loading the page.
         // By checking this params we know we are in authoring mode
         authoringMode: document.location.href.indexOf("mboxEdit") !== -1, 
@@ -78,7 +78,7 @@
         // edgeDomain: "edgegateway.azurewebsites.net",
         propertyId: 8888888,
         imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
-        log: true
+        logEnabled: true
       });
     </script>
   </head>

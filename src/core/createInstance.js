@@ -24,7 +24,7 @@ export default (
 ) => {
   let componentRegistry;
   let configurationFailed = false;
-  let suppressErrors;
+  let errorsEnabled;
 
   const logCommand = ({ enabled }) => {
     // eslint-disable-next-line no-param-reassign
@@ -32,9 +32,9 @@ export default (
   };
 
   const configureCommand = options => {
-    ({ suppressErrors } = options);
-    if (options.log !== undefined) {
-      logCommand({ enabled: options.log });
+    ({ errorsEnabled = true } = options);
+    if (options.logEnabled !== undefined) {
+      logCommand({ enabled: options.logEnabled });
     }
     const parsedQueryString = queryString.parse(window.location.search);
     if (parsedQueryString[logQueryParam] !== undefined) {
@@ -113,7 +113,7 @@ export default (
         // eslint-disable-next-line no-param-reassign
         err.message = `[${namespace}] ${err.message}`;
 
-        if (suppressErrors) {
+        if (!errorsEnabled) {
           logger.error(err);
         } else {
           reject(err);
