@@ -14,8 +14,6 @@ import createEvent from "./createEvent";
 import { clone } from "../../utils";
 import createClickActivityCollector from "./activity/click";
 
-const VIEW_START_EVENT = "viewStart";
-
 const createDataCollector = ({ config, logger }) => {
   const { imsOrgId } = config;
   let lifecycle;
@@ -78,4 +76,10 @@ const createDataCollector = ({ config, logger }) => {
 
 createDataCollector.namespace = "DataCollector";
 createDataCollector.abbreviation = "DC";
+createDataCollector.configValidators = {
+  clickCollectionEnabled: {
+    defaultValue: true
+  }
+};
+
 export default createDataCollector;

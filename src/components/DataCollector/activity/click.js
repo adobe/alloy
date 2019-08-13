@@ -96,9 +96,9 @@ const createClickHandler = (config, logger, collect) => {
 };
 
 export default (config, logger, collect) => {
-  const enabled = config.get("dataCollector.clickActivity.enabled", true);
+  const enabled = config.get("clickCollectionEnabled");
   if (!enabled) {
-    logger.log("The click activity collector is disabled");
+    logger.log("Click activity collection is disabled");
     return;
   }
   const clickHandler = createClickHandler(config, logger, collect);
