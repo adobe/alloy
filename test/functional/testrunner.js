@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-underscore-dangle */
 /*
 Copyright 2019 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -10,14 +12,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/* eslint-disable func-style */
-/* eslint-disable no-console */
-/* eslint-disable prefer-destructuring */
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-undef */
-/* eslint-disable no-useless-concat */
-
 const createTestCafe = require("testcafe");
 const fs = require("fs");
 const path = require("path");
@@ -26,7 +20,6 @@ const { exec } = require("child_process");
 const config = require("./localConfig");
 
 let testcafe = null;
-const group = config.desktop.group;
 const allFilesSync = (dir, fileList = []) => {
   fs.readdirSync(dir).forEach(file => {
     const filePath = path.join(dir, file);
@@ -39,64 +32,48 @@ const allFilesSync = (dir, fileList = []) => {
     return arr.length !== 0;
   });
 };
-function cleanReports() {
-  return new Promise((resolve, reject) => {
-    // remove exisiting Allure reports.
-    exec("rm -rf " + "allure", (err, stdout, stderr) => {
-      console.log(`stdout: ${stdout}`);
-      console.log(`stderr: ${stderr}`);
+
+cleanReports = () => {
+  return new Promise(resolve => {
+    exec("rm -rf allure", () => {
       resolve();
     });
-    exec("rm -rf " + "reports", (err, stdout, stderr) => {
-      console.log(`stdout: ${stdout}`);
-      console.log(`stderr: ${stderr}`);
+    exec("rm -rf reports", () => {
       resolve();
     });
   });
-}
-async function createReport() {
-  console.log("Opening report .....");
-  await exec(
-    "allure generate allure/allure-results --clean -o allure/allure-report && allure open allure/allure-report",
-    async (err, stdout, stderr) => {
-      if (err) {
-        console.log("couldn't execute the allure....");
-        return;
-      }
-      await console.log(`stdout: ${stdout}`);
-      await console.log(`stderr: ${stderr}`);
-    }
+};
+
+createReport = () => {
+  exec(
+    "allure generate allure/allure-results --clean -o allure/allure-report",
+    () => {}
   );
-}
-try {
-  createTestCafe().then(tc => {
-    testcafe = tc;
-    const runner = testcafe.createRunner();
-    runSuite = suite => {
-      const runoptions = {
-        skipJsErrors: config.desktop.skipCriticalConsoleJsErrors,
-        quarantineMode: config.desktop.quarantineMode,
-        speed: config.desktop.speed,
-        debugMode: false,
-        selectorTimeout: config.desktop.selectorTimeOut,
-        assertionTimeout: config.desktop.assertionTimeout
-      };
-      return runner
-        .src(suite)
-        .filter(testName => /^smoke/.test(testName))
-        .browsers(config.desktop.browser)
-        .reporter("allure")
-        .concurrency(config.desktop.concurrency)
-        .run(runoptions)
-        .catch(e => console.log("runner failed", e));
+};
+
+createTestCafe().then(tc => {
+  testcafe = tc;
+  const runner = testcafe.createRunner();
+  runSuite = suite => {
+    const runOptions = {
+      skipJsErrors: config.desktop.skipCriticalConsoleJsErrors,
+      quarantineMode: config.desktop.quarantineMode,
+      speed: config.desktop.speed,
+      debugMode: false,
+      selectorTimeout: config.desktop.selectorTimeOut,
+      assertionTimeout: config.desktop.assertionTimeout
     };
-    const testFolder = config.desktop.testsFolder;
-    const testsList = allFilesSync(testFolder);
-    console.log("Running tests under ", testsList);
-    runSuite(testsList)
-      .then(() => testcafe.close())
-      .then(() => createReport());
-  });
-} catch (e) {
-  console.error(e);
-}
+    return runner
+      .src(suite)
+      .filter(testName => /^Regression/.test(testName))
+      .browsers(config.desktop.browser)
+      .reporter("allure")
+      .concurrency(config.desktop.concurrency)
+      .run(runOptions);
+  };
+  const testFolder = config.desktop.testsFolder;
+  const testsList = allFilesSync(testFolder);
+  runSuite(testsList)
+    .then(() => testcafe.close())
+    .then(() => createReport());
+});

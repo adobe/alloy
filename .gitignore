@@ -5,6 +5,7 @@ sandbox/public/alloy.min.js
 sandbox/build
 .sonarlint
 .env
+allure
 
 logs
 *.log

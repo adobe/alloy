@@ -9,7 +9,7 @@ const cookieJar = createComponentNamespacedCookieJar(
 );
 const ID_SYNC_CONTROL = "idSyncControl";
 
-fdescribe("Identity::createIdSyncs", () => {
+describe("Identity::createIdSyncs", () => {
   const config = {
     idSyncsEnabled: true
   };

@@ -5,7 +5,7 @@
         "all"
       ],
       "test": "",
-      "group": "dektop",
+      "group": "desktop",
       "testClass": "",
       "testName": "",
       "skipCriticalConsoleJsErrors": true,
