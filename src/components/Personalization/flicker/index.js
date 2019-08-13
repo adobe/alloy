@@ -18,6 +18,7 @@ import {
 } from "../../../utils/dom";
 import { STYLE } from "../../../utils/dom/constants";
 
+const PREHIDING_ID = "alloy-prehiding";
 const HIDING_STYLE_DEFINITION = "{ visibility: hidden }";
 
 // Using global is OK since we have a single DOM
@@ -52,7 +53,7 @@ export const showElements = prehidingSelector => {
   }
 };
 
-export const hideContainers = (prehidingId, prehidingStyle) => {
+export const hideContainers = prehidingStyle => {
   if (!prehidingStyle) {
     return;
   }
@@ -60,23 +61,23 @@ export const hideContainers = (prehidingId, prehidingStyle) => {
   // If containers prehiding style has been added
   // by customer's prehiding snippet we don't
   // want to add the same node
-  const node = findById(prehidingId);
+  const node = findById(PREHIDING_ID);
 
   if (node) {
     return;
   }
 
-  const attrs = { id: prehidingId };
+  const attrs = { id: PREHIDING_ID };
   const props = { textContent: prehidingStyle };
   const styleNode = createNode(STYLE, attrs, props);
 
   appendNode(document.head, styleNode);
 };
 
-export const showContainers = prehidingId => {
+export const showContainers = () => {
   // If containers prehiding style exists
   // we will remove it
-  const node = findById(prehidingId);
+  const node = findById(PREHIDING_ID);
 
   if (!node) {
     return;

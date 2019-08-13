@@ -13,9 +13,6 @@ export default {
     validate: validDomain,
     defaultValue: "alpha.konductor.adobedc.net"
   },
-  prehidingId: {
-    defaultValue: "alloy-prehiding"
-  },
   prehidingStyle: {
     validate: eitherNilOrNonEmpty
   },
