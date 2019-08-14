@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 /**
  * Returns an array of matched DOM nodes.
  * @param {String} id
- * @param {Node} context, defaults to document
+ * @param {Node} [context=document] defaults to document
  * @returns {HTMLElement} an element of null
  */
 export default (id, context = document) => {

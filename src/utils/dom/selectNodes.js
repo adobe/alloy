@@ -15,7 +15,7 @@ import toArray from "../toArray";
 /**
  * Returns an array of matched DOM nodes.
  * @param {String} selector
- * @param {Node} context, defaults to document
+ * @param {Node} [context=document] defaults to document
  * @returns {Array} an array of DOM nodes
  */
 export default (selector, context = document) => {
