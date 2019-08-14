@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import isBoolean from "../isBoolean";
 
 export default (key, currentValue) => {
-  return isBoolean(currentValue)
+  return currentValue === undefined || isBoolean(currentValue)
     ? ""
     : `Value for ${key} is not a boolean: ${currentValue}`;
 };
