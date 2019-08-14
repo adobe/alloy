@@ -80,7 +80,7 @@ const createCollect = collect => {
 };
 
 const createPersonalization = ({ config, logger, cookieJar }) => {
-  const { authoringModeEnabled, prehidingId, prehidingStyle } = config;
+  const { authoringModeEnabled, prehidingStyle } = config;
   let ruleComponentModules;
   let optIn;
 
@@ -112,7 +112,7 @@ const createPersonalization = ({ config, logger, cookieJar }) => {
           event.expectResponse();
 
           // For viewStart we try to hide the personalization containers
-          hideContainers(prehidingId, prehidingStyle);
+          hideContainers(prehidingStyle);
         }
 
         return optIn.whenOptedIn().then(() => {
@@ -136,12 +136,12 @@ const createPersonalization = ({ config, logger, cookieJar }) => {
 
         // Once the all element are hidden
         // we have to show the containers
-        showContainers(prehidingId);
+        showContainers();
 
         executeFragments(fragments, ruleComponentModules, logger);
       },
       onResponseError() {
-        showContainers(prehidingId);
+        showContainers();
       }
     }
   };
