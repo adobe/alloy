@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { defer, assign, flatMap, crc32 } from "../../utils";
-import { nonNegativeInteger } from "../../utils/config-validators";
+import { nonNegativeInteger } from "../../utils/configValidators";
 import createIdSyncs from "./createIdSyncs";
 import createEvent from "../DataCollector/createEvent";
 import { validateCustomerIds, normalizeCustomerIds } from "./util";

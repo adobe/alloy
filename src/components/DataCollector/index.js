@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import createEvent from "./createEvent";
 import { clone } from "../../utils";
-import { required, validDomain } from "../../utils/config-validators";
+import { required, validDomain } from "../../utils/configValidators";
 
 const createDataCollector = ({ config }) => {
   const { imsOrgId } = config;
