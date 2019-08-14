@@ -10,11 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  createFragment,
-  getChildNodes,
-  insertBefore
-} from "../../../utils/dom";
+import { createFragment, getChildNodes, insertBefore } from "./dom";
 import { loadImages } from "./images";
 import { executeInlineScripts, executeRemoteScripts } from "./scripts";
 

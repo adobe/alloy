@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import escape from "css.escape";
-import isNonEmptyString from "../isNonEmptyString";
-import selectNodes from "./selectNodes";
+import { isNonEmptyString } from "../../../../utils";
+import { selectNodes } from "../../../../utils/dom";
 
 // Trying to match ID or CSS class
 const CSS_IDENTIFIER_PATTERN = /(#|\.)(-?\w+)/g;

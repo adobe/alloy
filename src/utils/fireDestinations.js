@@ -1,10 +1,21 @@
+/*
+Copyright 2019 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
 import fireImage from "./fireImage";
 import { appendNode, awaitSelector, createNode, removeNode } from "./dom";
+import { BODY, IFRAME } from "./dom/constants";
 
 const fireOnPage = fireImage;
 
-const BODY_TAG = "BODY";
-const IFRAME_TAG = "IFRAME";
 const IFRAME_ATTRS = {
   name: "Adobe Destinationing iFrame",
   class: "adobe-iframe",
@@ -20,8 +31,8 @@ export default ({ logger, destinations }) => {
 
   const createIframe = () => {
     if (!iframePromise) {
-      iframePromise = awaitSelector(BODY_TAG).then(([body]) => {
-        const iframe = createNode(IFRAME_TAG, IFRAME_ATTRS);
+      iframePromise = awaitSelector(BODY).then(([body]) => {
+        const iframe = createNode(IFRAME, IFRAME_ATTRS);
         return appendNode(body, iframe);
       });
     }

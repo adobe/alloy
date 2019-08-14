@@ -10,8 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createNode, getAttribute, selectNodes } from "../../../utils/dom";
+import { createNode, selectNodes } from "../../../utils/dom";
 import { IMG, SRC } from "../../../utils/dom/constants";
+import { getAttribute } from "./dom";
 
 export const isImage = element => element.tagName === IMG;
 

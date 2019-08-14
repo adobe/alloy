@@ -10,12 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/**
- * Returns an array of matched DOM nodes.
- * @param {String} id
- * @param {Node} doc, defaults to document
- * @returns {HTMLElement} an element of null
- */
-export default function findById(id, doc = document) {
-  return doc.getElementById(id);
-}
+import { toArray } from "../../../../utils";
+
+export default element => {
+  const { children } = element;
+
+  if (children) {
+    return toArray(children);
+  }
+
+  return [];
+};

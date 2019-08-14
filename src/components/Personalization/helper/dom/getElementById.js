@@ -10,26 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  selectNodes,
-  removeNode,
-  appendNode,
-  createNode,
-  findById
-} from "../../../../../src/utils/dom";
-
-describe("DOM::findById", () => {
-  afterEach(() => {
-    selectNodes("#fooById").forEach(removeNode);
-  });
-
-  it("should return the node if exists", () => {
-    appendNode(document.head, createNode("style", { id: "fooById" }));
-
-    expect(findById("fooById")).not.toBeNull();
-  });
-
-  it("should return array when nodes are NOT present", () => {
-    expect(findById("fooById")).toBeNull();
-  });
-});
+/**
+ * Returns an array of matched DOM nodes.
+ * @param {String} id
+ * @param {Node} context, defaults to document
+ * @returns {HTMLElement} an element of null
+ */
+export default (id, context = document) => {
+  return context.getElementById(id);
+};

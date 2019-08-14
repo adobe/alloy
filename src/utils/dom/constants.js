@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+export const BODY = "BODY";
+export const IFRAME = "IFRAME";
 export const IMG = "IMG";
 export const DIV = "DIV";
 export const STYLE = "STYLE";
