@@ -13,7 +13,8 @@ governing permissions and limitations under the License.
 import isInteger from "../isInteger";
 
 export default (config, key, currentValue) => {
-  return isInteger(currentValue) && currentValue >= 0
+  return currentValue === undefined ||
+    (isInteger(currentValue) && currentValue >= 0)
     ? ""
     : `Value for ${key} is not a nonnegative integer: ${currentValue}`;
 };
