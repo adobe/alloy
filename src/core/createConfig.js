@@ -72,7 +72,6 @@ const createConfig = config => {
           cfg.set(key, validator.defaultValue);
         } else if (validator.validate) {
           const errorMessage = validator.validate(
-            cfg,
             key,
             currentValue,
             validator.defaultValue

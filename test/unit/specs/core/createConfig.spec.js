@@ -15,7 +15,7 @@ import createConfig from "../../../../src/core/createConfig";
 
 let testConfig = {};
 
-const required = (config, key, currentValue) => {
+const required = (key, currentValue) => {
   if (currentValue == null) {
     throw new Error("orgId is missing");
   }

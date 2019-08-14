@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import isInteger from "../isInteger";
 
-export default (config, key, currentValue) => {
+export default (key, currentValue) => {
   return currentValue === undefined ||
     (isInteger(currentValue) && currentValue >= 0)
     ? ""

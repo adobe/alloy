@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import isNil from "../isNil";
 import isNonEmptyString from "../isNonEmptyString";
 
-export default (config, key, currentValue) => {
+export default (key, currentValue) => {
   if (isNil(currentValue)) {
     return "";
   }
