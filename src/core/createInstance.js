@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import { isFunction, toError, stringToBoolean, queryString } from "../utils";
 import createConfig from "./createConfig";
-import configValidators from "./configValidators";
 import logQueryParam from "../constants/logQueryParam";
 
 export default (
@@ -43,7 +42,6 @@ export default (
       });
     }
     const config = createConfig(options);
-    config.addValidators(configValidators);
 
     try {
       componentRegistry = initializeComponents(config);

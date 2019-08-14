@@ -13,6 +13,39 @@ import createDataCollector from "../../../../../src/components/DataCollector/ind
 import createPayload from "../../../../../src/core/network/createPayload";
 import { defer } from "../../../../../src/utils";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
+import createConfig from "../../../../../src/core/createConfig";
+
+const validConfigurations = [
+  { propertyId: "", imsOrgId: "" },
+  { propertyId: "myproperty1", imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg" },
+  {
+    propertyId: "myproperty1",
+    edgeDomain: "stats.firstparty.com",
+    imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+  },
+  {
+    propertyId: "myproperty1",
+    edgeDomain: "STATS.FIRSTPARY.COM",
+    imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+  },
+  {
+    propertyId: "myproperty1",
+    edgeDomain: "STATS.FIRSTPARY.COM",
+    prehidingStyle: "#foo",
+    imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+  }
+];
+
+const invalidConfigurations = [
+  {},
+  { propertyId: "myproperty1", edgeDomain: "" },
+  { propertyId: "myproperty1", edgeDomain: "stats firstparty.com" },
+  {
+    propertyId: "myproperty1",
+    edgeDomain: "stats firstparty.com",
+    prehidingStyle: ""
+  }
+];
 
 describe("Event Command", () => {
   let lifecycle;
@@ -182,6 +215,24 @@ describe("Event Command", () => {
         .then(() => {
           expect(onBeforeDataCollectionSpy).toHaveBeenCalled();
         });
+    });
+  });
+
+  describe("configs", () => {
+    validConfigurations.forEach((config, i) => {
+      it(`validates configuration (${i})`, () => {
+        const configObj = createConfig(config);
+        configObj.addValidators(createDataCollector.configValidators);
+        configObj.validate();
+      });
+    });
+
+    invalidConfigurations.forEach((config, i) => {
+      it(`invalidates configuration (${i})`, () => {
+        const configObj = createConfig(config);
+        configObj.addValidators(createDataCollector.configValidators);
+        expect(() => configObj.validate()).toThrowError();
+      });
     });
   });
 });

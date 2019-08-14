@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import createEvent from "./createEvent";
 import { clone } from "../../utils";
+import { required, validDomain } from "../../utils/config-validators";
 
 const createDataCollector = ({ config }) => {
   const { imsOrgId } = config;
@@ -73,4 +74,18 @@ const createDataCollector = ({ config }) => {
 
 createDataCollector.namespace = "DataCollector";
 createDataCollector.abbreviation = "DC";
+
+createDataCollector.configValidators = {
+  propertyId: {
+    validate: required
+  },
+  edgeDomain: {
+    validate: validDomain,
+    defaultValue: "alpha.konductor.adobedc.net"
+  },
+  imsOrgId: {
+    validate: required
+  }
+};
+
 export default createDataCollector;
