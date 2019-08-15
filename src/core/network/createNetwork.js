@@ -54,11 +54,12 @@ export default (config, logger, lifecycle, networkStrategy) => {
      * completely processed.  If expectsResponse==false, the promise will be resolved
      * with undefined.
      */
-    sendRequest(payload, expectsResponse = true) {
+    sendRequest(payload, expectsResponse = true, exitLink = false) {
       const requestId = uuid();
+      const reallyExpectsResponse = exitLink ? false : expectsResponse;
       return Promise.resolve()
         .then(() => {
-          const action = expectsResponse ? "interact" : "collect";
+          const action = reallyExpectsResponse ? "interact" : "collect";
 
           let baseUrl = `https://${edgeDomain}`;
 
@@ -69,7 +70,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
           // #endif
 
           const url = `${baseUrl}/${apiVersion}/${action}?propertyId=${propertyId}`;
-          const responseHandlingMessage = expectsResponse
+          const responseHandlingMessage = reallyExpectsResponse
             ? ""
             : " (no response is expected)";
           const stringifiedPayload = JSON.stringify(payload);
@@ -89,7 +90,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
           }
 
           return executeWithRetry(
-            () => networkStrategy(url, stringifiedPayload, expectsResponse),
+            () => networkStrategy(url, stringifiedPayload, exitLink),
             3
           );
         })
@@ -99,7 +100,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
         .then(responseBody => {
           let handleResponsePromise;
 
-          if (expectsResponse) {
+          if (reallyExpectsResponse) {
             handleResponsePromise = handleResponse(requestId, responseBody);
           }
 

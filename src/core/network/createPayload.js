@@ -15,6 +15,13 @@ import { createMerger } from "../../utils";
 export default () => {
   const content = {};
   let expectsResponse = false;
+  let exitLink = false;
+
+  const findInEvents = prop => {
+    return (
+      Array.isArray(content.events) && content.events.some(event => event[prop])
+    );
+  };
 
   return {
     addIdentity: (namespaceCode, identity) => {
@@ -32,11 +39,15 @@ export default () => {
       expectsResponse = true;
     },
     get expectsResponse() {
-      return (
-        expectsResponse ||
-        (Array.isArray(content.events) &&
-          content.events.some(event => event.expectsResponse))
-      );
+      return expectsResponse || findInEvents("expectsResponse");
+    },
+    willExit() {
+      exitLink = true;
+    },
+    get exitLink() {
+      // TODO: Do we need this on event as well?
+      // TODO: Maybe use a more abstract name.
+      return exitLink;
     },
     toJSON() {
       return content;

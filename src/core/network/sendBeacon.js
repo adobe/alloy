@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default navigator => {
+export default (navigator, fetch, logger) => {
   return (url, body) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       const blob = new Blob([body], { type: "text/plain; charset=UTF-8" });
       if (!navigator.sendBeacon(url, blob)) {
-        reject(new Error("Unable to send beacon."));
-        return;
+        logger.log("The `beacon` call has failed; falling back to `fetch`");
+        fetch(url, body);
       }
       resolve();
     });
