@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default dateProvider => {
-  return event => {
-    const date = dateProvider();
-    event.timestamp = date.toISOString();
-  };
+// Fill with zeros on the left until length === size
+export default (number, size) => {
+  let zeroFilled = `${number}`;
+  while (zeroFilled.length < size) zeroFilled = `0${zeroFilled}`;
+  return zeroFilled;
 };

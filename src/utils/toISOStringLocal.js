@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const pad = n => (n < 10 ? `0${n}` : n);
+import zFill from "./zFill";
 
 /**
  * Formats the date into an ISO date-time string in the local timezone
@@ -18,20 +18,21 @@ const pad = n => (n < 10 ? `0${n}` : n);
  */
 export default date => {
   const YYYY = date.getFullYear();
-  const MM = pad(date.getMonth() + 1);
-  const DD = pad(date.getDate());
+  const MM = zFill(date.getMonth() + 1, 2);
+  const DD = zFill(date.getDate(), 2);
 
-  const hh = pad(date.getHours());
-  const mm = pad(date.getMinutes());
-  const ss = pad(date.getSeconds());
+  const hh = zFill(date.getHours(), 2);
+  const mm = zFill(date.getMinutes(), 2);
+  const ss = zFill(date.getSeconds(), 2);
+  const mmm = zFill(date.getMilliseconds(), 3);
 
   // The time-zone offset is the difference, in minutes, from local time to UTC. Note that this
   // means that the offset is positive if the local timezone is behind UTC and negative if it is
   // ahead. For example, for time zone UTC+10:00, -600 will be returned.
   const timezoneOffset = date.getTimezoneOffset();
   const ts = timezoneOffset > 0 ? "-" : "+";
-  const th = pad(Math.floor(Math.abs(timezoneOffset) / 60));
-  const tm = pad(Math.abs(timezoneOffset) % 60);
+  const th = zFill(Math.floor(Math.abs(timezoneOffset) / 60), 2);
+  const tm = zFill(Math.abs(timezoneOffset) % 60, 2);
 
-  return `${YYYY}-${MM}-${DD}T${hh}:${mm}:${ss}${ts}${th}:${tm}`;
+  return `${YYYY}-${MM}-${DD}T${hh}:${mm}:${ss}.${mmm}${ts}${th}:${tm}`;
 };

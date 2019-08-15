@@ -55,3 +55,4 @@ export { default as toError } from "./toError";
 export { default as toISOStringLocal } from "./toISOStringLocal";
 export { default as uuid } from "./uuid";
 export { default as values } from "./values";
+export { default as zFill } from "./zFill";
