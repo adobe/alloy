@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { awaitSelector, selectNodesWithEq } from "../../../utils/dom";
+import { awaitSelector } from "../../../utils/dom";
+import { selectNodesWithEq } from "../helper/dom";
 import { hideElements, showElements } from "../flicker";
 
 export default (settings, trigger) => {

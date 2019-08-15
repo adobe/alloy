@@ -14,11 +14,11 @@ import {
   selectNodes,
   removeNode,
   appendNode,
-  createNode,
-  findById
-} from "../../../../../src/utils/dom";
+  createNode
+} from "../../../../../../../src/utils/dom";
+import { getElementById } from "../../../../../../../src/components/Personalization/helper/dom";
 
-describe("DOM::findById", () => {
+describe("Personalization::DOM::getElementById", () => {
   afterEach(() => {
     selectNodes("#fooById").forEach(removeNode);
   });
@@ -26,10 +26,10 @@ describe("DOM::findById", () => {
   it("should return the node if exists", () => {
     appendNode(document.head, createNode("style", { id: "fooById" }));
 
-    expect(findById("fooById")).not.toBeNull();
+    expect(getElementById("fooById")).not.toBeNull();
   });
 
   it("should return array when nodes are NOT present", () => {
-    expect(findById("fooById")).toBeNull();
+    expect(getElementById("fooById")).toBeNull();
   });
 });

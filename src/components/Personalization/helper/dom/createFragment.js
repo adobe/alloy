@@ -10,14 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import toArray from "../toArray";
+import { createNode } from "../../../../utils/dom";
+import { DIV } from "../../../../utils/dom/constants";
 
-export default element => {
-  const { children } = element;
-
-  if (children) {
-    return toArray(children);
-  }
-
-  return [];
+export default content => {
+  return createNode(DIV, {}, { innerHTML: content });
 };

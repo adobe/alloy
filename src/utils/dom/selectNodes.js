@@ -15,9 +15,9 @@ import toArray from "../toArray";
 /**
  * Returns an array of matched DOM nodes.
  * @param {String} selector
- * @param {Node} doc, defaults to document
+ * @param {Node} [context=document] defaults to document
  * @returns {Array} an array of DOM nodes
  */
-export default function selectNodes(selector, doc = document) {
-  return toArray(doc.querySelectorAll(selector));
-}
+export default (selector, context = document) => {
+  return toArray(context.querySelectorAll(selector));
+};

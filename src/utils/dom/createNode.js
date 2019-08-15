@@ -12,13 +12,7 @@ governing permissions and limitations under the License.
 
 import appendNode from "./appendNode";
 
-export default function createNode(
-  tag,
-  attrs = {},
-  props = {},
-  children = [],
-  doc = document
-) {
+export default (tag, attrs = {}, props = {}, children = [], doc = document) => {
   const result = doc.createElement(tag);
 
   Object.keys(attrs).forEach(key => {
@@ -32,4 +26,4 @@ export default function createNode(
   children.forEach(child => appendNode(result, child));
 
   return result;
-}
+};

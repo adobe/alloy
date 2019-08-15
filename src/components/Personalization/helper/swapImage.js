@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { setAttribute, removeAttribute } from "../../../utils/dom";
 import { SRC } from "../../../utils/dom/constants";
+import { setAttribute, removeAttribute } from "./dom";
 import { isImage, loadImage } from "./images";
 
 export default (container, url) => {

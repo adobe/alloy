@@ -10,9 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createNode } from "./dom";
-
-const IMAGE_TAG = "img";
+import createNode from "./dom/createNode";
+import { IMG } from "./dom/constants";
 
 /**
  * Fires an image pixel from the current document's window.
@@ -20,7 +19,7 @@ const IMAGE_TAG = "img";
  * @param {string} src
  * @returns {Promise}
  */
-export default ({ currentDocument = document, src }) => {
+export default ({ src, currentDocument = document }) => {
   return new Promise((resolve, reject) => {
     const attrs = { src };
     const props = {
@@ -29,6 +28,6 @@ export default ({ currentDocument = document, src }) => {
       onabort: reject
     };
 
-    createNode(IMAGE_TAG, attrs, props, [], currentDocument);
+    createNode(IMG, attrs, props, [], currentDocument);
   });
 };

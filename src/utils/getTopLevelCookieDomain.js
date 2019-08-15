@@ -23,7 +23,7 @@ const cookieName = `${namespace}getTld`;
  * @param {Object} cookieJar
  * @returns {string}
  */
-export default function getTopLevelCookieDomain(window, cookieJar) {
+export default (window, cookieJar) => {
   let topLevelCookieDomain = "";
 
   // If hostParts.length === 1, we may be on localhost.
@@ -39,4 +39,4 @@ export default function getTopLevelCookieDomain(window, cookieJar) {
   cookieJar.remove(cookieName, { domain: topLevelCookieDomain });
 
   return topLevelCookieDomain;
-}
+};

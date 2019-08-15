@@ -111,13 +111,13 @@ export const awaitUsingTimer = (selector, timeout, selectFunc) => {
   });
 };
 
-export default function awaitSelector(
+export default (
   selector,
   selectFunc = selectNodes,
   timeout = MAX_POLLING_TIMEOUT,
   win = window,
   doc = document
-) {
+) => {
   const nodes = selectFunc(selector);
 
   if (isNonEmptyArray(nodes)) {
@@ -133,4 +133,4 @@ export default function awaitSelector(
   }
 
   return awaitUsingTimer(selector, timeout, selectFunc);
-}
+};

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default function removeNode(node) {
+export default node => {
   const parent = node.parentNode;
 
   if (parent) {
@@ -18,4 +18,4 @@ export default function removeNode(node) {
   }
 
   return null;
-}
+};

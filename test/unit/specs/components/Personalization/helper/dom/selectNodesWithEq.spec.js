@@ -15,14 +15,14 @@ import {
   appendNode,
   selectNodes,
   removeNode
-} from "../../../../../src/utils/dom";
+} from "../../../../../../../src/utils/dom";
 import {
   escapeIdentifiersInSelector,
   parseSelector,
   selectNodesWithEq
-} from "../../../../../src/utils/dom/selectNodesWithEq";
+} from "../../../../../../../src/components/Personalization/helper/dom/selectNodesWithEq";
 
-describe("DOM::escapeIdentifiersInSelector", () => {
+describe("Personalization::DOM::escapeIdentifiersInSelector", () => {
   it("should escape when digits only for ID selector", () => {
     const result = escapeIdentifiersInSelector("#123 > #foo div.345");
 
@@ -52,7 +52,7 @@ describe("DOM::escapeIdentifiersInSelector", () => {
   });
 });
 
-describe("DOM::parseSelector", () => {
+describe("Personalization::DOM::parseSelector", () => {
   it("should parse selector when no eq", () => {
     const result = parseSelector("#test");
 
@@ -71,7 +71,7 @@ describe("DOM::parseSelector", () => {
   });
 });
 
-describe("DOM::selectNodesWithEq", () => {
+describe("Personalization::DOM::selectNodesWithEq", () => {
   afterEach(() => {
     selectNodes(".eq").forEach(removeNode);
   });

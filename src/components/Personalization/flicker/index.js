@@ -10,13 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  createNode,
-  appendNode,
-  removeNode,
-  findById
-} from "../../../utils/dom";
+import { createNode, appendNode, removeNode } from "../../../utils/dom";
 import { STYLE } from "../../../utils/dom/constants";
+import { getElementById } from "../helper/dom";
 
 const PREHIDING_ID = "alloy-prehiding";
 const HIDING_STYLE_DEFINITION = "{ visibility: hidden }";
@@ -61,7 +57,7 @@ export const hideContainers = prehidingStyle => {
   // If containers prehiding style has been added
   // by customer's prehiding snippet we don't
   // want to add the same node
-  const node = findById(PREHIDING_ID);
+  const node = getElementById(PREHIDING_ID);
 
   if (node) {
     return;
@@ -77,7 +73,7 @@ export const hideContainers = prehidingStyle => {
 export const showContainers = () => {
   // If containers prehiding style exists
   // we will remove it
-  const node = findById(PREHIDING_ID);
+  const node = getElementById(PREHIDING_ID);
 
   if (!node) {
     return;
