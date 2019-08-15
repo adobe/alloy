@@ -5,7 +5,6 @@ export default function LargePayload() {
   const makePayload = size => () => {
     const payload = new Uint8Array(size * 1024);
     window.alloy("event", {
-      beacon: true,
       data: {
         payload
       }
