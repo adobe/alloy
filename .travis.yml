@@ -34,7 +34,9 @@ before_script:
 script:
 - npm install
 - npm run build
+- npm run test
 - npm run test:saucelabs
+- npm run test:report
 - npm run functional
 - rollup -c --environment BUILD:production && rollup -c --environment MINIFY,BUILD:production && bundlesize
 # - sonar-scanner
