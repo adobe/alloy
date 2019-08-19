@@ -80,12 +80,12 @@ export default (
 
   const lifecycle = createLifecycle(componentRegistry);
   const network = createNetwork(config, logger, lifecycle);
-  lifecycle.onComponentsRegistered({
-    componentRegistry,
-    lifecycle,
-    network,
-    optIn
-  });
-
-  return componentRegistry;
+  return lifecycle
+    .onComponentsRegistered({
+      componentRegistry,
+      lifecycle,
+      network,
+      optIn
+    })
+    .then(() => componentRegistry);
 };

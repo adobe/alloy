@@ -106,8 +106,20 @@ export default (config, logger, lifecycle, networkStrategy) => {
           return handleResponsePromise;
         })
         .catch(error => {
-          lifecycle.onResponseError(error);
-          throw error;
+          // The network error that just occurred is more important than
+          // any error that may occur in lifecycle.onResponseError(). For
+          // that reason, we make sure the network error is the one that
+          // bubbles up. We also wait until lifecycle.onResponseError is
+          // complete before returning, so that any error that may occur
+          // in lifecycle.onResponseError is properly suppressed if the
+          // user has errorsEnabled: false in the configuration.
+          // We could use finally() here, but just to be safe, we don't,
+          // because finally() is only recently supported natively and may
+          // not exist in customer-provided promise polyfills.
+          const throwError = () => {
+            throw error;
+          };
+          return lifecycle.onResponseError(error).then(throwError, throwError);
         });
     }
   };

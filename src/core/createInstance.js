@@ -21,9 +21,8 @@ export default (
   logger,
   window
 ) => {
-  let componentRegistry;
-  let configurationFailed = false;
   let errorsEnabled;
+  let configurePromise;
 
   const logCommand = ({ enabled }) => {
     // eslint-disable-next-line no-param-reassign
@@ -43,48 +42,59 @@ export default (
     }
     const config = createConfig(options);
 
-    try {
-      componentRegistry = initializeComponents(config);
-    } catch (e) {
-      configurationFailed = true;
-      throw e;
-    }
+    return initializeComponents(config);
   };
 
   const executeCommand = (commandName, options) => {
-    let command;
+    let execute;
 
-    if (configurationFailed) {
-      // We've decided if configuration fails we'll return
-      // never-resolved promises for all subsequent commands rather than
-      // throwing an error for each of them.
-      command = () => new Promise(() => {});
-    } else if (commandName === "configure") {
-      if (componentRegistry) {
+    if (commandName === "configure") {
+      if (configurePromise) {
         throw new Error(
           "The library has already been configured and may only be configured once."
         );
       }
-      command = configureCommand;
-    } else if (commandName === "log") {
-      command = logCommand;
+
+      execute = () => {
+        configurePromise = configureCommand(options);
+        return configurePromise;
+      };
     } else {
-      if (!componentRegistry) {
+      if (!configurePromise) {
         throw new Error(
           `The library must be configured first. Please do so by calling ${namespace}("configure", {...}).`
         );
       }
 
-      command = componentRegistry.getCommand(commandName);
-
-      if (!isFunction(command)) {
-        throw new Error(`The ${commandName} command does not exist.`);
+      if (commandName === "log") {
+        execute = () => logCommand(options);
+      } else {
+        execute = () => {
+          return configurePromise.then(
+            componentRegistry => {
+              const command = componentRegistry.getCommand(commandName);
+              if (!isFunction(command)) {
+                throw new Error(`The ${commandName} command does not exist.`);
+              }
+              return command(options);
+            },
+            () => {
+              // If configuration failed, we prevent the configuration
+              // error from bubbling here because we don't want the
+              // configuration error to be reported in the console every
+              // time any command is executed. Only having it bubble
+              // once when the configure command runs is sufficient.
+              // Instead, for this command, we'll just return a promise
+              // that never gets resolved.
+              return new Promise(() => {});
+            }
+          );
+        };
       }
     }
 
     logger.log(`Executing "${commandName}" command.`, "Options:", options);
-
-    return command(options);
+    return execute();
   };
 
   return args => {
