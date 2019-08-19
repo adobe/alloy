@@ -19,6 +19,7 @@ import OrgTwo from "./OrgTwo";
 import Links from "./Links";
 import Stitch from "./Stitch";
 import OptIn from "./OptIn";
+import LargePayload from "./LargePayload";
 
 function BasicExample() {
   return (
@@ -43,6 +44,9 @@ function BasicExample() {
           <li>
             <Link to="/optIn">OptIn</Link>
           </li>
+          <li>
+            <Link to="/largePayload">LargePayload</Link>
+          </li>
         </ul>
 
         <hr />
@@ -53,6 +57,7 @@ function BasicExample() {
         <Route path="/links" component={Links} />
         <Route path="/stitch" component={Stitch} />
         <Route path="/optIn" component={OptIn} />
+        <Route path="/largePayload" component={LargePayload} />
       </div>
     </Router>
   );
