@@ -21,7 +21,7 @@ const createDataCollector = ({ config, logger }) => {
   let network;
   let optIn;
 
-  const makeServerCall = event => {
+  const makeServerCall = (event, exitLink) => {
     const payload = network.createPayload();
     payload.addEvent(event);
     payload.mergeMeta({
@@ -33,7 +33,7 @@ const createDataCollector = ({ config, logger }) => {
     return lifecycle
       .onBeforeDataCollection(payload)
       .then(() => {
-        return network.sendRequest(payload, payload.expectsResponse);
+        return network.sendRequest(payload, payload.expectsResponse, exitLink);
       })
       .then(response => {
         const data = {
@@ -50,15 +50,15 @@ const createDataCollector = ({ config, logger }) => {
 
   const createEventHandler = options => {
     const event = createEvent();
-    const { viewStart = false, data, meta } = options;
+    const { viewStart = false, exitLink = false, data, meta } = options;
 
     event.mergeData(data);
     event.mergeMeta(meta);
 
     return lifecycle
-      .onBeforeEvent(event, options, viewStart)
+      .onBeforeEvent(event, options, viewStart, exitLink)
       .then(() => optIn.whenOptedIn())
-      .then(() => makeServerCall(event));
+      .then(() => makeServerCall(event, exitLink));
   };
 
   createClickActivityCollector(config, logger, createEventHandler);

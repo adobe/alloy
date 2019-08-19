@@ -20,6 +20,10 @@ const mockServerClient = window.mockServerClient || (() => {});
  */
 describe("networkStrategyFactory", () => {
   const requestBody = JSON.stringify({ id: "myrequest" });
+  const largeRequestBody = JSON.stringify({
+    id: "mylargerequest",
+    data: new Uint8Array(10 * 1024)
+  });
 
   let client;
   let networkStrategy;
@@ -63,7 +67,7 @@ describe("networkStrategyFactory", () => {
         if (!mockServerRunning) {
           done();
         } else {
-          networkStrategy = createNetworkStrategy(testingWindow);
+          networkStrategy = createNetworkStrategy(testingWindow, console);
           client = mockServerClient("localhost", 1080);
           client.reset().then(() => done());
         }
@@ -182,6 +186,43 @@ describe("networkStrategyFactory", () => {
                     ) // verify atLeast 1, atMost 1 times called
                     .then(done, done.fail);
                 }, 500);
+              })
+              .catch(done.fail);
+          });
+      });
+
+      whenMockServerIsRunningIt("sends a large beacon", done => {
+        client
+          .mockAnyResponse({
+            httpRequest: {
+              method: "POST",
+              path: "/myapi"
+            },
+            httpResponse: {
+              statusCode: 204
+            }
+          })
+          .then(() => {
+            networkStrategy(
+              "http://localhost:1080/myapi",
+              largeRequestBody,
+              true
+            )
+              .then(body => {
+                expect(body).toBeUndefined();
+                // no setTimeout here like for the regular beacon test because the promise returned
+                // should be the fetch promise that is resolved when it was successfully sent.
+                client
+                  .verify(
+                    {
+                      method: "POST",
+                      path: "/myapi",
+                      body: largeRequestBody
+                    },
+                    1,
+                    1
+                  ) // verify atLeast 1, atMost 1 times called
+                  .then(done, done.fail);
               })
               .catch(done.fail);
           });

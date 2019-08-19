@@ -12,13 +12,11 @@ governing permissions and limitations under the License.
 
 export default (navigator, fetch, logger) => {
   return (url, body) => {
-    return new Promise(resolve => {
-      const blob = new Blob([body], { type: "text/plain; charset=UTF-8" });
-      if (!navigator.sendBeacon(url, blob)) {
-        logger.log("The `beacon` call has failed; falling back to `fetch`");
-        fetch(url, body);
-      }
-      resolve();
-    });
+    const blob = new Blob([body], { type: "text/plain; charset=UTF-8" });
+    if (!navigator.sendBeacon(url, blob)) {
+      logger.log("The `beacon` call has failed; falling back to `fetch`");
+      return fetch(url, body);
+    }
+    return Promise.resolve();
   };
 };

@@ -50,12 +50,19 @@ export default (config, logger, lifecycle, networkStrategy) => {
      * @param {Object} payload This will be JSON stringified and sent as the post body.
      * @param {boolean} [expectsResponse=true] The endpoint and request mechanism
      * will be determined by whether a response is expected.
+     * @param {boolean} [exitLink=false] The network transport method (sendBeacon vs. fetch)
+     * will be determined by whether this is an exitLink.
      * @returns {Promise} a promise resolved with the response object once the response is
      * completely processed.  If expectsResponse==false, the promise will be resolved
      * with undefined.
      */
     sendRequest(payload, expectsResponse = true, exitLink = false) {
       const requestId = uuid();
+      if (expectsResponse && exitLink) {
+        logger.log(
+          `Attempt to get response during exit link.  Assuming no response is expected.`
+        );
+      }
       const reallyExpectsResponse = exitLink ? false : expectsResponse;
       return Promise.resolve()
         .then(() => {
