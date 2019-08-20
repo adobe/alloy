@@ -10,82 +10,34 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const isValidObject = clickObj => {
-  if (clickObj) {
-    if (clickObj.tagName || clickObj.parentElement || clickObj.parentNode) {
-      return true;
-    }
-  }
-  return false;
-};
+import {
+  getAbsoluteUrlFromAnchorElement,
+  isSupportedAnchorElement
+} from "../utils";
 
-const isSupportedHrefObject = obj => {
-  if (
-    obj.href &&
-    (obj.tagName === "A" || obj.tagName === "AREA") &&
-    (!obj.onclick ||
-      !obj.protocol ||
-      obj.protocol.toLowerCase().indexOf("javascript") < 0)
-  ) {
-    return true;
-  }
-  return false;
-};
-
-const getObjectHref = obj => {
-  const loc = window.location;
-  let href = obj.href ? obj.href : "";
-  let { protocol, host } = obj;
-  let i = href.indexOf(":");
-  const j = href.indexOf("?");
-  const k = href.indexOf("/");
-  if (href && (i < 0 || (j >= 0 && i > j) || (k >= 0 && i > k))) {
-    if (!(protocol && protocol.length > 1)) {
-      protocol = loc.protocol ? loc.protocol : "";
-    }
-    protocol = protocol ? `{$protocol}//` : "";
-    if (!host) {
-      host = loc.host ? loc.host : "";
-    }
-    i = loc.pathname.lastIndexOf("/");
-    href =
-      protocol +
-      host +
-      (href.substring(0, 1) !== "/"
-        ? `$loc.pathname.substring(0, i < 0 ? 0 : i)/`
-        : "") +
-      href;
-  }
-  return href;
-};
-
-const createClickHandler = (config, logger, collect) => {
+const createClickHandler = (logger, collect) => {
   return event => {
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
-    let clickObject = event.target;
-    if (!isValidObject(clickObject)) {
-      return;
-    }
-
-    let objectHref = getObjectHref(clickObject);
-    // Iterate through parent objects to obtain valid href
-    // TODO: Replace this with generic DOM tool that fetch all configured object properties
-    while (clickObject && clickObject.tagName !== "BODY" && !objectHref) {
-      clickObject = clickObject.parentElement
-        ? clickObject.parentElement
-        : clickObject.parentNode;
-      if (clickObject) {
-        objectHref = getObjectHref(clickObject);
+    let clickedObj = event.target;
+    let linkUrl = getAbsoluteUrlFromAnchorElement(window, clickedObj);
+    // Search parent elements for an anchor element
+    // TODO: Replace with generic DOM tool that can fetch configured properties
+    while (clickedObj && clickedObj !== document.body && !linkUrl) {
+      clickedObj = clickedObj.parentElement
+        ? clickedObj.parentElement
+        : clickedObj.parentNode;
+      if (clickedObj) {
+        linkUrl = getAbsoluteUrlFromAnchorElement(window, clickedObj);
       }
     }
-    if (objectHref && isSupportedHrefObject(clickObject)) {
-      // TODO: Update name (link name) and type (exit, other, download) to be collected
+    if (linkUrl && isSupportedAnchorElement(clickedObj)) {
+      // TODO: Update name (link name) and support exit, other, and download link types
       collect({
         data: {
           eventType: "web.webinteraction",
           name: "Link Click",
           type: "other",
-          URL: objectHref,
+          URL: linkUrl,
           linkClicks: {
             value: 1
           }
@@ -101,7 +53,7 @@ export default (config, logger, collect) => {
     logger.log("Click activity collection is disabled");
     return;
   }
-  const clickHandler = createClickHandler(config, logger, collect);
+  const clickHandler = createClickHandler(logger, collect);
   if (document && document.addEventListener) {
     document.addEventListener("click", clickHandler, true);
   }
