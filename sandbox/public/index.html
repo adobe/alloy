@@ -61,9 +61,10 @@
       });
 
       alloy("setCustomerIds", {
-        "email" : {
+        "emailHash" : {
           "id": "me@gmail.com",
-          "authState": 0
+          "authState": 0,
+          "hash": true
         },
         "crm" : {
           "id": "1234",
@@ -71,7 +72,7 @@
         }
       }).then(function() {
         console.log("Sandbox: Set customer IDs event has completed.");
-      })
+      });
 
       // For Testing multiple instances
       organizationTwo("configure", {
