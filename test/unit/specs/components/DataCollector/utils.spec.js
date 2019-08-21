@@ -8,15 +8,21 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-/*
+
 import {
   urlStartsWithScheme,
-  getAbsoluteUrlFromAnchorElement
+  getAbsoluteUrlFromAnchorElement,
+  isSupportedAnchorElement
 } from "../../../../../src/components/DataCollector/utils";
-*/
-import { urlStartsWithScheme } from "../../../../../src/components/DataCollector/utils";
 
-/* const populateAnchorState anchorState => {}; */
+const initAnchorState = (window, element, anchorState) => {
+  element.href = anchorState["element.href"];
+  element.protocol = anchorState["element.protocol"];
+  element.host = anchorState["element.host"];
+  window.location.protocol = anchorState["window.location.protocol"];
+  window.location.host = anchorState["window.location.host"];
+  window.location.pathname = anchorState["window.location.pathname"];
+};
 
 describe("DataCollector::utils", () => {
   describe("urlStartsWithScheme", () => {
@@ -44,41 +50,85 @@ describe("DataCollector::utils", () => {
     });
   });
   describe("getAbsoluteUrlFromAnchorElement", () => {
-    /*
-    let window = {
-      location: {
+    it("Makes best attempt to constructs absolute URLs", () => {
+      const window = {
+        location: {
+          protocol: "",
+          host: "",
+          pathname: ""
+        }
+      };
+      const element = {
         protocol: "",
         host: ""
-      }
-    };
-    let element = {};
-    */
-    const anchorTests = [
-      {
-        "window.location.protocol": "http",
-        "window.location.host": "example.com"
-      }
-    ];
-    it("Makes best attempt to constructs absolute URLs", () => {
-      anchorTests.forEach(anchorTest => {
-        expect(anchorTest).not.toBe(null);
+      };
+      const anchorStates = [
+        {
+          "element.href": "http://example.com/example.html",
+          "element.protocol": "",
+          "element.host": "",
+          "window.location.protocol": "http:",
+          "window.location.host": "example.com",
+          "window.location.pathname": "/",
+          expectedResult: "http://example.com/example.html"
+        },
+        {
+          "element.href": "example.html",
+          "element.protocol": "",
+          "element.host": "",
+          "window.location.protocol": "https:",
+          "window.location.host": "example.com",
+          "window.location.pathname": "/",
+          expectedResult: "https://example.com/example.html"
+        }
+      ];
+      anchorStates.forEach(anchorState => {
+        initAnchorState(window, element, anchorState);
+        expect(getAbsoluteUrlFromAnchorElement(window, element)).toBe(
+          anchorState.expectedResult
+        );
       });
     });
-    /*
-    element.href = "http://example.com/example.html";
-    it("Makes best attempt to constructs absolute URLs", () => {
-
-
-    expect(getAbsoluteUrlFromAnchorElement(window, element)).toEqual(
-        "http://example.com/example.html"
-      );
+  });
+  describe("isSupportedAnchorElement", () => {
+    it("Returns true for supported anchor elements", () => {
+      const validAnchorElements = [
+        {
+          href: "http://example.com",
+          tagName: "A"
+        },
+        {
+          href: "http://example.com",
+          tagName: "AREA"
+        }
+      ];
+      validAnchorElements.forEach(element => {
+        expect(isSupportedAnchorElement(element)).toBe(true);
+      });
     });
-    element.href = "example.html";
-    it("Makes best attempt to constructs absolute URLs", () => {
-      expect(getAbsoluteUrlFromAnchorElement(window, element)).toEqual(
-        "https://example.com/example.html"
-      );
+    it("Returns false for unsupported anchor elements", () => {
+      const invalidAnchorElements = [
+        {},
+        {
+          href: ""
+        },
+        {
+          href: "http://example.com"
+        },
+        {
+          href: "http://example.com",
+          tagName: "LINK"
+        },
+        {
+          href: "http://example.com",
+          tagName: "A",
+          onclick: "example();",
+          protocol: " javascript:"
+        }
+      ];
+      invalidAnchorElements.forEach(element => {
+        expect(isSupportedAnchorElement(element)).toBe(false);
+      });
     });
-    */
   });
 });
