@@ -12,9 +12,10 @@ governing permissions and limitations under the License.
 
 import createEvent from "./createEvent";
 import { clone } from "../../utils";
+import createClickActivityCollector from "./activity/click";
 import { required, validDomain } from "../../utils/configValidators";
 
-const createDataCollector = ({ config }) => {
+const createDataCollector = ({ config, logger }) => {
   const { imsOrgId } = config;
   let lifecycle;
   let network;
@@ -60,6 +61,8 @@ const createDataCollector = ({ config }) => {
       .then(() => makeServerCall(event));
   };
 
+  createClickActivityCollector(config, logger, createEventHandler);
+
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
@@ -74,7 +77,6 @@ const createDataCollector = ({ config }) => {
 
 createDataCollector.namespace = "DataCollector";
 createDataCollector.abbreviation = "DC";
-
 createDataCollector.configValidators = {
   propertyId: {
     validate: required
@@ -85,6 +87,9 @@ createDataCollector.configValidators = {
   },
   imsOrgId: {
     validate: required
+  },
+  clickCollectionEnabled: {
+    defaultValue: true
   }
 };
 

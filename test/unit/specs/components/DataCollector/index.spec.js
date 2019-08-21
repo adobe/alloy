@@ -47,6 +47,15 @@ const invalidConfigurations = [
   }
 ];
 
+const logger = {
+  log() {},
+  warn() {}
+};
+const config = {
+  imsOrgId: "ABC123",
+  get() {}
+};
+
 describe("Event Command", () => {
   let lifecycle;
   let network;
@@ -74,9 +83,8 @@ describe("Event Command", () => {
     ).and.callThrough();
     sendRequestSpy = spyOn(network, "sendRequest").and.callThrough();
     const dataCollector = createDataCollector({
-      config: {
-        imsOrgId: "ABC123"
-      }
+      config,
+      logger
     });
     dataCollector.lifecycle.onComponentsRegistered({
       lifecycle,
@@ -219,17 +227,17 @@ describe("Event Command", () => {
   });
 
   describe("configs", () => {
-    validConfigurations.forEach((config, i) => {
+    validConfigurations.forEach((cfg, i) => {
       it(`validates configuration (${i})`, () => {
-        const configObj = createConfig(config);
+        const configObj = createConfig(cfg);
         configObj.addValidators(createDataCollector.configValidators);
         configObj.validate();
       });
     });
 
-    invalidConfigurations.forEach((config, i) => {
+    invalidConfigurations.forEach((cfg, i) => {
       it(`invalidates configuration (${i})`, () => {
-        const configObj = createConfig(config);
+        const configObj = createConfig(cfg);
         configObj.addValidators(createDataCollector.configValidators);
         expect(() => configObj.validate()).toThrowError();
       });
