@@ -15,7 +15,7 @@ import {
   isSupportedAnchorElement
 } from "../utils";
 
-const createClickHandler = (logger, collect) => {
+const createClickHandler = (window, logger, collect) => {
   return event => {
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
     let clickedObj = event.target;
@@ -50,6 +50,6 @@ export default (config, logger, collect) => {
   if (!enabled) {
     return;
   }
-  const clickHandler = createClickHandler(logger, collect);
+  const clickHandler = createClickHandler(window, logger, collect);
   document.addEventListener("click", clickHandler, true);
 };
