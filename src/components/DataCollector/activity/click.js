@@ -23,9 +23,7 @@ const createClickHandler = (logger, collect) => {
     // Search parent elements for an anchor element
     // TODO: Replace with generic DOM tool that can fetch configured properties
     while (clickedObj && clickedObj !== document.body && !linkUrl) {
-      clickedObj = clickedObj.parentElement
-        ? clickedObj.parentElement
-        : clickedObj.parentNode;
+      clickedObj = clickedObj.parentElement || clickedObj.parentNode;
       if (clickedObj) {
         linkUrl = getAbsoluteUrlFromAnchorElement(window, clickedObj);
       }

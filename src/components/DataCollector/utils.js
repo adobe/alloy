@@ -19,7 +19,7 @@ const getAbsoluteUrlFromAnchorElement = (window, element) => {
   let url = element.href ? element.href : "";
   let { protocol, host } = element;
   if (!urlStartsWithScheme(url)) {
-    if (!(protocol && protocol.length > 1)) {
+    if (!protocol) {
       protocol = loc.protocol ? loc.protocol : "";
     }
     protocol = protocol ? `${protocol}//` : "";
