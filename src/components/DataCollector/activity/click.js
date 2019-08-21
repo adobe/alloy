@@ -54,7 +54,5 @@ export default (config, logger, collect) => {
     return;
   }
   const clickHandler = createClickHandler(logger, collect);
-  if (document && document.addEventListener) {
-    document.addEventListener("click", clickHandler, true);
-  }
+  document.addEventListener("click", clickHandler, true);
 };
