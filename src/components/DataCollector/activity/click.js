@@ -32,12 +32,16 @@ const createClickHandler = (window, logger, collect) => {
       // TODO: Update name (link name) and support exit, other, and download link types
       collect({
         data: {
-          eventType: "web.webinteraction",
-          name: "Link Click",
-          type: "other",
-          URL: linkUrl,
-          linkClicks: {
-            value: 1
+          eventType: "web.webinteraction.linkClicks",
+          web: {
+            webinteraction: {
+              name: "Link Click",
+              type: "other",
+              URL: linkUrl,
+              linkClicks: {
+                value: 1
+              }
+            }
           }
         }
       });
