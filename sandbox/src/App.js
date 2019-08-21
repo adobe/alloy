@@ -20,6 +20,7 @@ import Links from "./Links";
 import Stitch from "./Stitch";
 import OptIn from "./OptIn";
 import LargePayload from "./LargePayload";
+import DualTag from "./DualTag";
 
 function BasicExample() {
   return (
@@ -47,6 +48,9 @@ function BasicExample() {
           <li>
             <Link to="/largePayload">LargePayload</Link>
           </li>
+          <li>
+            <Link to="/DualTag">DualTag</Link>
+          </li>
         </ul>
 
         <hr />
@@ -58,6 +62,7 @@ function BasicExample() {
         <Route path="/stitch" component={Stitch} />
         <Route path="/optIn" component={OptIn} />
         <Route path="/largePayload" component={LargePayload} />
+        <Route path="/DualTag" component={DualTag} />
       </div>
     </Router>
   );
