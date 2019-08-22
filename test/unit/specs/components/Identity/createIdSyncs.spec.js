@@ -22,13 +22,12 @@ describe("Identity::createIdSyncs", () => {
     const val = cookieJar.get(ID_SYNC_CONTROL) || "";
     const arr = val ? val.split("_") : [];
 
-    return arr.reduce((obj, pair) => {
-      const o = obj;
-      const [id, ts] = pair.split("-");
+    return arr.reduce((controlObject, idTimestampPair) => {
+      const [id, timestamp] = idTimestampPair.split("-");
 
-      o[id] = ts;
+      controlObject[id] = parseInt(timestamp, 36);
 
-      return o;
+      return controlObject;
     }, {});
   };
 
@@ -40,7 +39,8 @@ describe("Identity::createIdSyncs", () => {
         spec: {
           url:
             "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013268",
-          hideReferrer: 0
+          hideReferrer: 0,
+          ttlMinutes: 120
         }
       }
     ];
@@ -56,18 +56,13 @@ describe("Identity::createIdSyncs", () => {
 
     expect(obj[123]).toBeDefined();
     const idSyncs = createIdSyncs(config, logger, cookieJar);
-    idSyncs.process(idsToSync);
+    idSyncs.process(idsToSync).then(() => {
+      const now = Math.round(new Date().getTime() / 1000 / 60 / 60); // hours
 
-    const checkCookie = () => {
       obj = getControlObject();
-
-      if (obj[411] !== undefined) {
-        expect(obj[123]).toBeUndefined();
-      } else {
-        setTimeout(checkCookie, 50);
-      }
-    };
-
-    checkCookie();
+      expect(obj[411]).toBeDefined();
+      expect(obj[411] - now).toEqual(2);
+      expect(obj[123]).toBeUndefined();
+    });
   });
 });

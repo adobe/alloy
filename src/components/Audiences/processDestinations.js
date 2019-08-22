@@ -42,7 +42,7 @@ export default ({ destinations, config, logger }) => {
   cookieDestinations.forEach(dest => {
     cookieJar.set(dest.name, dest.value || "", {
       domain: dest.domain || "",
-      expires: dest.ttl ? dest.ttl : 6 * 30 // default of 6 months
+      expires: dest.ttlDays ? dest.ttlDays : 10 // days
     });
   });
 };

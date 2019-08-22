@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { assign, fireDestinations, convertTimes } from "../../utils";
-import { DAY, HOUR, MILLISECOND } from "../../utils/convertTimes";
+import { DAY, HOUR, MINUTE, MILLISECOND } from "../../utils/convertTimes";
 import { COOKIE_NAMES } from "./constants";
 
 const { ID_SYNC_TIMESTAMP, ID_SYNC_CONTROL } = COOKIE_NAMES;
@@ -37,58 +37,68 @@ const setControlObject = (controlObject, cookieJar) => {
 };
 
 const createProcessor = (config, logger, cookieJar) => destinations => {
-  if (!config.idSyncsEnabled) {
-    return;
-  }
+  return new Promise(resolve => {
+    if (!config.idSyncsEnabled) {
+      return;
+    }
 
-  const controlObject = getControlObject(cookieJar);
-  const now = convertTimes(MILLISECOND, HOUR, new Date().getTime()); // hours
+    const controlObject = getControlObject(cookieJar);
+    const now = convertTimes(MILLISECOND, HOUR, new Date().getTime()); // hours
 
-  Object.keys(controlObject).forEach(key => {
-    if (controlObject[key] < now) {
-      delete controlObject[key];
+    Object.keys(controlObject).forEach(key => {
+      if (controlObject[key] < now) {
+        delete controlObject[key];
+      }
+    });
+
+    const idSyncs = destinations
+      .filter(
+        dest => dest.type === "url" && controlObject[dest.id] === undefined
+      )
+      .map(dest =>
+        assign(
+          {
+            id: dest.id
+          },
+          dest.spec
+        )
+      );
+
+    if (idSyncs.length) {
+      fireDestinations({
+        logger,
+        destinations: idSyncs
+      }).then(result => {
+        const timeStamp = Math.round(
+          convertTimes(MILLISECOND, HOUR, new Date().getTime())
+        ); // hours
+
+        result.succeeded.forEach(idSync => {
+          const ttl = Math.round(
+            convertTimes(MINUTE, HOUR, idSync.ttlMinutes || 10080)
+          ); // hours
+
+          if (idSync.id !== undefined) {
+            controlObject[idSync.id] = timeStamp + ttl; // hours
+          }
+        });
+
+        setControlObject(controlObject, cookieJar);
+
+        cookieJar.set(
+          ID_SYNC_TIMESTAMP,
+          (
+            Math.round(convertTimes(MILLISECOND, HOUR, new Date().getTime())) +
+            convertTimes(DAY, HOUR, 7)
+          ).toString(36)
+        );
+
+        resolve();
+      });
+    } else {
+      resolve();
     }
   });
-
-  const idSyncs = destinations
-    .filter(dest => dest.type === "url" && controlObject[dest.id] === undefined)
-    .map(dest =>
-      assign(
-        {
-          id: dest.id
-        },
-        dest.spec
-      )
-    );
-
-  if (idSyncs.length) {
-    fireDestinations({
-      logger,
-      destinations: idSyncs
-    }).then(result => {
-      const timeStamp = Math.round(
-        convertTimes(MILLISECOND, HOUR, new Date().getTime())
-      ); // hours
-
-      result.succeeded.forEach(idSync => {
-        const ttl = (idSync.ttl || 7) * 24; // hours
-
-        if (idSync.id !== undefined) {
-          controlObject[idSync.id] = timeStamp + ttl;
-        }
-      });
-
-      setControlObject(controlObject, cookieJar);
-
-      cookieJar.set(
-        ID_SYNC_TIMESTAMP,
-        (
-          Math.round(convertTimes(MILLISECOND, HOUR, new Date().getTime())) +
-          convertTimes(DAY, HOUR, 7)
-        ).toString(36)
-      );
-    });
-  }
 };
 
 const createExpiryChecker = cookieJar => () => {
