@@ -106,23 +106,35 @@ describe("createNetwork", () => {
     lifecycle.onResponseError.and.returnValue(
       Promise.reject(new Error("lifecycleerror"))
     );
-    return network.sendRequest({}, true).catch(error => {
-      expect(lifecycle.onResponseError).toHaveBeenCalledWith(error);
-      expect(error.message).toEqual(
-        "Network request failed.\nCaused by: networkerror"
-      );
-    });
+    return network
+      .sendRequest({}, true)
+      .then(() => {
+        // If sendRequest resolves instead of rejects, we want this test to fail.
+        throw Error("Expected sendRequest to reject promise.");
+      })
+      .catch(error => {
+        expect(lifecycle.onResponseError).toHaveBeenCalledWith(error);
+        expect(error.message).toEqual(
+          "Network request failed.\nCaused by: networkerror"
+        );
+      });
   });
 
   it("runs onResponseError hook and rejects the promise when response is invalid json", () => {
     networkStrategy.and.returnValue(Promise.resolve("badbody"));
-    return network.sendRequest({}, true).catch(error => {
-      expect(lifecycle.onResponseError).toHaveBeenCalledWith(error);
-      // The native parse error message is different based on the browser
-      // so we'll just check to parts we control.
-      expect(error.message).toContain("Error parsing server response.\n");
-      expect(error.message).toContain("\nResponse body: badbody");
-    });
+    return network
+      .sendRequest({}, true)
+      .then(() => {
+        // If sendRequest resolves instead of rejects, we want this test to fail.
+        throw Error("Expected sendRequest to reject promise.");
+      })
+      .catch(error => {
+        expect(lifecycle.onResponseError).toHaveBeenCalledWith(error);
+        // The native parse error message is different based on the browser
+        // so we'll just check to parts we control.
+        expect(error.message).toContain("Error parsing server response.\n");
+        expect(error.message).toContain("\nResponse body: badbody");
+      });
   });
 
   it("allows components to handle the response", () => {
