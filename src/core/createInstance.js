@@ -30,19 +30,24 @@ export default (
   };
 
   const configureCommand = options => {
-    ({ errorsEnabled = true } = options);
-    if (options.logEnabled !== undefined) {
-      logCommand({ enabled: options.logEnabled });
-    }
-    const parsedQueryString = queryString.parse(window.location.search);
-    if (parsedQueryString[logQueryParam] !== undefined) {
-      logCommand({
-        enabled: stringToBoolean(parsedQueryString[logQueryParam])
-      });
-    }
-    const config = createConfig(options);
+    // We wrap this code in a promise, so that if there are any errors
+    // in any of it, the promise returned from this function
+    // will be properly rejected.
+    return new Promise((resolve, reject) => {
+      ({ errorsEnabled = true } = options);
+      if (options.logEnabled !== undefined) {
+        logCommand({ enabled: options.logEnabled });
+      }
+      const parsedQueryString = queryString.parse(window.location.search);
+      if (parsedQueryString[logQueryParam] !== undefined) {
+        logCommand({
+          enabled: stringToBoolean(parsedQueryString[logQueryParam])
+        });
+      }
+      const config = createConfig(options);
 
-    return initializeComponents(config);
+      initializeComponents(config).then(resolve, reject);
+    });
   };
 
   const executeCommand = (commandName, options) => {
@@ -79,6 +84,9 @@ export default (
               return command(options);
             },
             () => {
+              logger.warn(
+                `An error during configuration is preventing the ${commandName} command from executing.`
+              );
               // If configuration failed, we prevent the configuration
               // error from bubbling here because we don't want the
               // configuration error to be reported in the console every
@@ -93,7 +101,7 @@ export default (
       }
     }
 
-    logger.log(`Executing "${commandName}" command.`, "Options:", options);
+    logger.log(`Executing ${commandName} command.`, "Options:", options);
     return execute();
   };
 
