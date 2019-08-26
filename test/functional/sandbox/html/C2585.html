@@ -2,18 +2,30 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self' *.demdex.net;
-          script-src 'self' 'unsafe-inline' assets.adobedtm.com cdn.tt.omtrdc.net;
-          style-src 'self' 'unsafe-inline' cdn.tt.omtrdc.net;
-          img-src * data:;
-          connect-src 'self' unifiedjslab.tt.omtrdc.net *.demdex.net http://localhost:8080 https://alpha.konductor.adobedc.net https://edgegateway.azurewebsites.net "/>
         <title>Alloy Test Page</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
         <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:200,300,400,400i,500,600,700" rel="stylesheet">
-        <script src="js/alloy.js" async></script>
+        <script>
+            !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
+            []).push(o),n[o]=function(){var u=arguments;return new Promise(
+            function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
+            (window,["alloy"]);
+        </script>
+        <script src="js/alloy.js"></script>
+        <script>
+        alloy("log", {
+        "enabled": true
+        });
+        </script>
+        <script>
+        alloy("event", {
+        "data": {
+            "key":"value"
+        },
+        });
+        </script>
 
     </head>
     <body data-smooth-scroll-offset="77">
