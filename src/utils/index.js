@@ -14,6 +14,7 @@ governing permissions and limitations under the License.
 
 // Please keep in alphabetical order.
 export { default as assign } from "./assign";
+export { default as bufferToHex } from "./bufferToHex";
 export { default as clone } from "./clone";
 export { default as convertTimes } from "./convertTimes";
 export { default as cookieJar } from "./cookieJar";
@@ -43,6 +44,7 @@ export { default as memoize } from "./memoize";
 export { default as noop } from "./noop";
 export { default as queryString } from "./querystring";
 export { default as setNestedObject } from "./setNestedObject";
+export { default as sha256Buffer } from "./sha256Buffer";
 export { default as stackError } from "./stackError";
 export { default as storageFactory } from "./storageFactory";
 export { default as stringToBoolean } from "./stringToBoolean";

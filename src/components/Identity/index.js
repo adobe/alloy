@@ -10,13 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { defer, assign, flatMap } from "../../utils";
+import { defer, flatMap } from "../../utils";
 import { nonNegativeInteger } from "../../utils/configValidators";
 import createIdSyncs from "./createIdSyncs";
-import createEvent from "../DataCollector/createEvent";
-import { validateCustomerIds } from "./util";
 import { COOKIE_NAMES } from "./constants";
-import syncDeclaredIds from "./syncDeclaredIds";
+import setCustomerIds from "./setCustomerIds";
 
 const { EXPERIENCE_CLOUD_ID } = COOKIE_NAMES;
 
@@ -36,26 +34,7 @@ const createIdentity = ({ config, logger, cookieJar }) => {
   let network;
   let lifecycle;
   const idSyncs = createIdSyncs(config, logger, cookieJar);
-  const customerIds = {};
   let alreadyQueriedForIdSyncs = false;
-
-  const setCustomerIds = ids => {
-    validateCustomerIds(ids);
-    const event = createEvent(); // FIXME: We shouldn't need an event.
-    event.mergeData({}); // FIXME: We shouldn't need an event.
-    const payload = network.createPayload();
-    payload.addEvent(event); // FIXME: We shouldn't need an event.
-    assign(customerIds, ids);
-    syncDeclaredIds(
-      customerIds,
-      event,
-      payload,
-      cookieJar,
-      lifecycle,
-      network,
-      optIn
-    );
-  };
 
   return {
     lifecycle: {
@@ -138,7 +117,11 @@ const createIdentity = ({ config, logger, cookieJar }) => {
       },
       // TODO: Discuss renaming of CustomerIds to UserIds
       setCustomerIds(options) {
-        return optIn.whenOptedIn().then(() => setCustomerIds(options));
+        return optIn
+          .whenOptedIn()
+          .then(() =>
+            setCustomerIds(options, cookieJar, lifecycle, network, optIn)
+          );
       }
     }
   };
