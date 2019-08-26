@@ -101,17 +101,21 @@ describe("createNetwork", () => {
     });
   });
 
-  it("runs onResponseError hook and rejects the returned promise", () => {
-    networkStrategy.and.returnValue(Promise.reject(new Error("myerror")));
+  it("runs onResponseError hook and rejects the returned promise with network error rather than lifecycle error", () => {
+    networkStrategy.and.returnValue(Promise.reject(new Error("networkerror")));
+    lifecycle.onResponseError.and.returnValue(
+      Promise.reject(new Error("lifecycleerror"))
+    );
     return network
       .sendRequest({}, true)
       .then(() => {
-        throw Error("Expecting sendRequest to fail.");
+        // If sendRequest resolves instead of rejects, we want this test to fail.
+        throw Error("Expected sendRequest to reject promise.");
       })
       .catch(error => {
         expect(lifecycle.onResponseError).toHaveBeenCalledWith(error);
         expect(error.message).toEqual(
-          "Network request failed.\nCaused by: myerror"
+          "Network request failed.\nCaused by: networkerror"
         );
       });
   });
@@ -121,7 +125,8 @@ describe("createNetwork", () => {
     return network
       .sendRequest({}, true)
       .then(() => {
-        throw Error("Expecting sendRequest to fail.");
+        // If sendRequest resolves instead of rejects, we want this test to fail.
+        throw Error("Expected sendRequest to reject promise.");
       })
       .catch(error => {
         expect(lifecycle.onResponseError).toHaveBeenCalledWith(error);
