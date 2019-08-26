@@ -22,13 +22,17 @@
     "prebuild": "npm run clean && npm run format && npm run lint",
     "build": "rollup -c",
     "prebuild:prod": "npm run prebuild",
-    "build:prod": "rollup -c --environment BUILD:production && rollup -c --environment MINIFY,BUILD:production && bundlesize",
+    "build:prod:standalone:unminified": "rollup -c --environment BUILD:prodStandalone",
+    "build:prod:standalone:minified": "rollup -c --environment MINIFY,BUILD:prodStandalone",
+    "build:prod:reactor:unminified": "rollup -c --environment BUILD:prodReactor",
+    "build:prod": "npm-run-all --parallel build:prod:standalone:unminified build:prod:standalone:minified build:prod:reactor:unminified && bundlesize",
     "build:watch": "rollup -c -w",
     "build:basecode": "terser src/baseCode/index.js --mangle --compress unused=false",
     "sandbox": "cd sandbox && npm start",
     "sandbox:install": "cd sandbox && npm install",
     "sandbox:build": "cd sandbox && npm run build",
     "dev": "npm-run-all --parallel build:watch sandbox",
+    "checkbundlesize": "npm run build:prod:standalone:minified && bundlesize",
     "mockserver": "mockserver -serverPort 1080 -jvmOptions \"-Dmockserver.enableCORSForAllResponses=true\""
   },
   "repository": {
@@ -48,7 +52,7 @@
   ],
   "bundlesize": [
     {
-      "path": "./dist/alloy.min.js"
+      "path": "./dist/standalone/alloy.min.js"
     }
   ],
   "dependencies": {

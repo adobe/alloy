@@ -19,22 +19,42 @@ import { terser } from "rollup-plugin-terser";
 import license from "rollup-plugin-license";
 import replaceVersion from "./rollupPluginReplaceVersion";
 
-const production = process.env.BUILD === "production";
+const buildTargets = {
+  PROD_STANDALONE: "prodStandalone",
+  PROD_REACTOR: "prodReactor",
+  DEV: "dev"
+};
+
+const destDirectoryByBuildTarget = {
+  [buildTargets.PROD_STANDALONE]: "dist/standalone/",
+  [buildTargets.PROD_REACTOR]: "dist/reactor/",
+  [buildTargets.DEV]: "sandbox/public/"
+};
+
+const buildTarget = process.env.BUILD || buildTargets.DEV;
 const minify = process.env.MINIFY;
-const destDirectory = production ? "dist/" : "sandbox/public/";
+const destDirectory = destDirectoryByBuildTarget[buildTarget];
+
 const minifiedExtension = minify ? ".min" : "";
 
 const plugins = [
   jscc({
     values: {
-      _DEV: !production
+      _DEV: buildTarget === buildTargets.DEV,
+      _REACTOR: buildTarget === buildTargets.PROD_REACTOR
     }
   }),
   resolve({
     preferBuiltins: false,
     // Support the browser field in dependencies' package.json.
     // Useful for the uuid package.
-    mainFields: ["module", "main", "browser"]
+    mainFields: ["module", "main", "browser"],
+    // If we're building for Reactor, we'll use Reactor's core modules
+    // (named @adobe/reactor-*) instead of including the packages directly.
+    only:
+      buildTarget === buildTargets.PROD_REACTOR
+        ? [/^((?!@adobe\/reactor).)*$/]
+        : undefined
   }),
   commonjs(),
   babel(),
@@ -45,7 +65,7 @@ if (minify) {
   plugins.push(terser());
 }
 
-if (production) {
+if (buildTarget !== buildTargets.DEV) {
   plugins.push(
     license({
       banner: {

@@ -38,7 +38,7 @@ script:
 - npm run test:saucelabs
 - npm run test:report
 - npm run functional
-- rollup -c --environment BUILD:production && rollup -c --environment MINIFY,BUILD:production && bundlesize
+- npm run checkbundlesize
 # - sonar-scanner
 
 jobs:

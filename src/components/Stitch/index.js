@@ -12,7 +12,14 @@ governing permissions and limitations under the License.
 
 import { uuid } from "../../utils";
 
-const createStitch = () => {
+const createStitch = ({ config }) => {
+  // #if _REACTOR
+  // This is a way for the Stitch ID data element in the Reactor extension
+  // to get a stitch ID synchronously since data elements are required
+  // to be synchronous.
+  config.reactorRegisterCreateStitchId(uuid);
+  // #endif
+
   return {
     lifecycle: {
       onBeforeEvent(event, options) {
@@ -31,4 +38,13 @@ const createStitch = () => {
 
 createStitch.namespace = "Stitch";
 createStitch.abbreviation = "ST";
+createStitch.configValidators = {};
+
+// #if _REACTOR
+// Not much need to validate since we are our own consumer.
+createStitch.configValidators.reactorRegisterCreateStitchId = {
+  defaultValue: () => {}
+};
+// #endif
+
 export default createStitch;
