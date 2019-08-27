@@ -39,7 +39,7 @@ const setControlObject = (controlObject, cookieJar) => {
 const createProcessor = (config, logger, cookieJar) => destinations => {
   return new Promise(resolve => {
     if (!config.idSyncsEnabled) {
-      return;
+      resolve();
     }
 
     const controlObject = getControlObject(cookieJar);
@@ -69,18 +69,16 @@ const createProcessor = (config, logger, cookieJar) => destinations => {
         logger,
         destinations: idSyncs
       }).then(result => {
-        const timeStamp = Math.round(
+        const nowInHours = Math.round(
           convertTimes(MILLISECOND, HOUR, new Date().getTime())
-        ); // hours
+        );
 
         result.succeeded.forEach(idSync => {
-          const ttl = Math.round(
+          const ttlInHours = Math.round(
             convertTimes(MINUTE, HOUR, idSync.ttlMinutes || 10080)
-          ); // hours
+          );
 
-          if (idSync.id !== undefined) {
-            controlObject[idSync.id] = timeStamp + ttl; // hours
-          }
+          controlObject[idSync.id] = nowInHours + ttlInHours;
         });
 
         setControlObject(controlObject, cookieJar);
