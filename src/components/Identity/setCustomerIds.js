@@ -29,7 +29,7 @@ export default (ids, cookieJar, lifecycle, network, optIn) => {
       });
       payload.mergeMeta({ identity: { customerIdChanged } });
       if (customerIdChanged) {
-        customerIdsProcess.updateCheckSum(cookieJar);
+        customerIdsProcess.updateChecksum(cookieJar);
       }
       return lifecycle
         .onBeforeEvent(event, {}, false) // FIXME: We shouldn't need an event.

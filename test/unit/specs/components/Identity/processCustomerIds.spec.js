@@ -30,7 +30,7 @@ describe("Identity::processCustomerIds", () => {
     };
     const idSyncProcess = processCustomerIds(ids);
     expect(idSyncProcess.detectCustomerIdChange).toBeDefined();
-    expect(idSyncProcess.updateCheckSum).toBeDefined();
+    expect(idSyncProcess.updateChecksum).toBeDefined();
     expect(idSyncProcess.getNormalizedAndHashedIds).toBeDefined();
   });
 
@@ -46,7 +46,7 @@ describe("Identity::processCustomerIds", () => {
       };
       const idSyncProcess = processCustomerIds(ids);
       expect(idSyncProcess.detectCustomerIdChange(cookieJar)).toBe(true);
-      idSyncProcess.updateCheckSum(cookieJar);
+      idSyncProcess.updateChecksum(cookieJar);
       const idSyncProcessAgain = processCustomerIds(ids);
       expect(idSyncProcessAgain.detectCustomerIdChange(cookieJar)).toBe(false);
     });
@@ -63,7 +63,7 @@ describe("Identity::processCustomerIds", () => {
 
       const idSyncProcess = processCustomerIds(idsOne);
       expect(idSyncProcess.detectCustomerIdChange(cookieJar)).toBe(true);
-      idSyncProcess.updateCheckSum(cookieJar);
+      idSyncProcess.updateChecksum(cookieJar);
 
       const idsTwo = {
         id2: {
@@ -75,7 +75,7 @@ describe("Identity::processCustomerIds", () => {
       };
       const secondIdSyncProcess = processCustomerIds(idsTwo);
       expect(secondIdSyncProcess.detectCustomerIdChange(cookieJar)).toBe(true);
-      secondIdSyncProcess.updateCheckSum(cookieJar);
+      secondIdSyncProcess.updateChecksum(cookieJar);
 
       const idsThree = {
         id1: {
@@ -102,7 +102,7 @@ describe("Identity::processCustomerIds", () => {
 
       const normalizedIds = JSON.stringify(normalizeCustomerIds(ids));
       const idSyncProcess = processCustomerIds(ids);
-      idSyncProcess.updateCheckSum(cookieJar);
+      idSyncProcess.updateChecksum(cookieJar);
       const testChecksum = crc32(normalizedIds).toString(36);
       expect(cookieJar.get(CUSTOMER_ID_HASH)).toBe(testChecksum);
     });

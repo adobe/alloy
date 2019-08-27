@@ -1,11 +1,5 @@
 import { AUTH_STATES } from "./constants";
-import {
-  isObject,
-  values,
-  includes,
-  bufferToHex,
-  sha256Buffer
-} from "../../utils";
+import { isObject, values, includes } from "../../utils";
 
 const ERROR_MESSAGE = "Invalid customer ID format.";
 const NOT_AN_OBJECT_ERROR = "Each namespace should be an object.";
@@ -49,4 +43,4 @@ const normalizeCustomerIds = customerIds => {
   }, {});
 };
 
-export { validateCustomerIds, normalizeCustomerIds, bufferToHex, sha256Buffer };
+export { validateCustomerIds, normalizeCustomerIds };
