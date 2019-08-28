@@ -134,7 +134,10 @@ const createIdentity = ({ config, logger, cookieJar }) => {
       // Waiting for opt-in because we'll be writing the ECID to a cookie
       onResponse(response) {
         return optIn.whenOptedIn().then(() => {
-          const ecidPayloads = response.getPayloadsByType("identity:persist");
+          const ecidPayloads = flatMap(
+            response.getPayloadsByType("identity:persist"),
+            fragment => fragment
+          );
 
           if (ecidPayloads.length > 0) {
             cookieJar.set(EXPERIENCE_CLOUD_ID, ecidPayloads[0].id);

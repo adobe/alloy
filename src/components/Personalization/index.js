@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray, uuid } from "../../utils";
+import { isNonEmptyArray, uuid, flatMap } from "../../utils";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers, hideElements } from "./flicker";
 import { eitherNilOrNonEmpty, boolean } from "../../utils/configValidators";
@@ -129,7 +129,10 @@ const createPersonalization = ({ config, logger, cookieJar }) => {
           return;
         }
 
-        const fragments = response.getPayloadsByType(PAGE_HANDLE);
+        const fragments = flatMap(
+          response.getPayloadsByType(PAGE_HANDLE),
+          fragment => fragment
+        );
 
         // On response we first hide all the elements for
         // personalization:page handle
