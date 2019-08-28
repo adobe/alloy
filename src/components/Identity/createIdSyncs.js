@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { assign, fireDestinations, convertTimes } from "../../utils";
 import { DAY, HOUR, MINUTE, MILLISECOND } from "../../utils/convertTimes";
-import { COOKIE_NAMES } from "./constants";
+import { COOKIE_NAMES, DEFAULT_ID_SYNC_TTL_MINUTES } from "./constants";
 
 const { ID_SYNC_TIMESTAMP, ID_SYNC_CONTROL } = COOKIE_NAMES;
 const getControlObject = cookieJar => {
@@ -37,9 +37,9 @@ const setControlObject = (controlObject, cookieJar) => {
 };
 
 const createProcessor = (config, logger, cookieJar) => destinations => {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     if (!config.idSyncsEnabled) {
-      resolve();
+      return Promise.resolve();
     }
 
     const controlObject = getControlObject(cookieJar);
@@ -65,37 +65,42 @@ const createProcessor = (config, logger, cookieJar) => destinations => {
       );
 
     if (idSyncs.length) {
-      fireDestinations({
+      return fireDestinations({
         logger,
         destinations: idSyncs
-      }).then(result => {
-        const nowInHours = Math.round(
-          convertTimes(MILLISECOND, HOUR, new Date().getTime())
-        );
-
-        result.succeeded.forEach(idSync => {
-          const ttlInHours = Math.round(
-            convertTimes(MINUTE, HOUR, idSync.ttlMinutes || 10080)
+      })
+        .then(result => {
+          const nowInHours = Math.round(
+            convertTimes(MILLISECOND, HOUR, new Date().getTime())
           );
 
-          controlObject[idSync.id] = nowInHours + ttlInHours;
-        });
+          result.succeeded.forEach(idSync => {
+            const ttlInHours = Math.round(
+              convertTimes(
+                MINUTE,
+                HOUR,
+                idSync.ttlMinutes || DEFAULT_ID_SYNC_TTL_MINUTES
+              )
+            );
 
-        setControlObject(controlObject, cookieJar);
+            controlObject[idSync.id] = nowInHours + ttlInHours;
+          });
 
-        cookieJar.set(
-          ID_SYNC_TIMESTAMP,
-          (
-            Math.round(convertTimes(MILLISECOND, HOUR, new Date().getTime())) +
-            convertTimes(DAY, HOUR, 7)
-          ).toString(36)
-        );
+          setControlObject(controlObject, cookieJar);
 
-        resolve();
-      });
-    } else {
-      resolve();
+          cookieJar.set(
+            ID_SYNC_TIMESTAMP,
+            (
+              Math.round(
+                convertTimes(MILLISECOND, HOUR, new Date().getTime())
+              ) + convertTimes(DAY, HOUR, 7)
+            ).toString(36)
+          );
+        })
+        .then(resolve, reject);
     }
+
+    return Promise.resolve();
   });
 };
 

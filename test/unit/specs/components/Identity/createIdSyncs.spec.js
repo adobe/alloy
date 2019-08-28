@@ -56,7 +56,7 @@ describe("Identity::createIdSyncs", () => {
 
     expect(obj[123]).toBeDefined();
     const idSyncs = createIdSyncs(config, logger, cookieJar);
-    idSyncs.process(idsToSync).then(() => {
+    return idSyncs.process(idsToSync).then(() => {
       const now = Math.round(new Date().getTime() / 1000 / 60 / 60); // hours
 
       obj = getControlObject();
