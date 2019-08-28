@@ -144,7 +144,7 @@ const createIdentity = ({ config, logger, cookieJar }) => {
             }
           }
 
-          idSyncs.process(
+          return idSyncs.process(
             flatMap(
               response.getPayloadsByType("identity:exchange"),
               fragment => fragment
