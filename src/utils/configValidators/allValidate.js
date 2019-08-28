@@ -10,10 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as allValidate } from "./allValidate";
-export { default as boolean } from "./boolean";
-export { default as eitherNilOrNonEmpty } from "./eitherNilOrNonEmpty";
-export { default as nonNegativeInteger } from "./nonNegativeInteger";
-export { default as required } from "./required";
-export { default as unique } from "./unique";
-export { default as validDomain } from "./validDomain";
+export default (...validators) => {
+  if (validators.length < 2) {
+    throw Error("allValidate requires at least 2 validators");
+  }
+
+  return (...args) => {
+    let error;
+    let i;
+    for (i = 0; i < validators.length; i += 1) {
+      error = validators[i](...args);
+      if (error) {
+        return error;
+      }
+    }
+    return "";
+  };
+};

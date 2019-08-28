@@ -10,10 +10,27 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as allValidate } from "./allValidate";
-export { default as boolean } from "./boolean";
-export { default as eitherNilOrNonEmpty } from "./eitherNilOrNonEmpty";
-export { default as nonNegativeInteger } from "./nonNegativeInteger";
-export { default as required } from "./required";
-export { default as unique } from "./unique";
-export { default as validDomain } from "./validDomain";
+import {
+  required,
+  validDomain,
+  allValidate,
+  unique
+} from "../../utils/configValidators";
+
+export default (propertyIdValues, orgIdValues) => {
+  return {
+    propertyId: {
+      validate: allValidate(required, unique(propertyIdValues))
+    },
+    edgeDomain: {
+      validate: validDomain,
+      defaultValue: "alpha.konductor.adobedc.net"
+    },
+    imsOrgId: {
+      validate: allValidate(required, unique(orgIdValues))
+    },
+    clickCollectionEnabled: {
+      defaultValue: true
+    }
+  };
+};
