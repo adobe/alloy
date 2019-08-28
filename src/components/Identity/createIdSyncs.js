@@ -37,71 +37,64 @@ const setControlObject = (controlObject, cookieJar) => {
 };
 
 const createProcessor = (config, logger, cookieJar) => destinations => {
-  return new Promise((resolve, reject) => {
-    if (!config.idSyncsEnabled) {
-      return Promise.resolve();
+  if (!config.idSyncsEnabled) {
+    return Promise.resolve();
+  }
+
+  const controlObject = getControlObject(cookieJar);
+  const now = convertTimes(MILLISECOND, HOUR, new Date().getTime()); // hours
+
+  Object.keys(controlObject).forEach(key => {
+    if (controlObject[key] < now) {
+      delete controlObject[key];
     }
+  });
 
-    const controlObject = getControlObject(cookieJar);
-    const now = convertTimes(MILLISECOND, HOUR, new Date().getTime()); // hours
-
-    Object.keys(controlObject).forEach(key => {
-      if (controlObject[key] < now) {
-        delete controlObject[key];
-      }
-    });
-
-    const idSyncs = destinations
-      .filter(
-        dest => dest.type === "url" && controlObject[dest.id] === undefined
+  const idSyncs = destinations
+    .filter(dest => dest.type === "url" && controlObject[dest.id] === undefined)
+    .map(dest =>
+      assign(
+        {
+          id: dest.id
+        },
+        dest.spec
       )
-      .map(dest =>
-        assign(
-          {
-            id: dest.id
-          },
-          dest.spec
-        )
+    );
+
+  if (idSyncs.length) {
+    return fireDestinations({
+      logger,
+      destinations: idSyncs
+    }).then(result => {
+      const nowInHours = Math.round(
+        convertTimes(MILLISECOND, HOUR, new Date().getTime())
       );
 
-    if (idSyncs.length) {
-      return fireDestinations({
-        logger,
-        destinations: idSyncs
-      })
-        .then(result => {
-          const nowInHours = Math.round(
-            convertTimes(MILLISECOND, HOUR, new Date().getTime())
-          );
+      result.succeeded.forEach(idSync => {
+        const ttlInHours = Math.round(
+          convertTimes(
+            MINUTE,
+            HOUR,
+            idSync.ttlMinutes || DEFAULT_ID_SYNC_TTL_MINUTES
+          )
+        );
 
-          result.succeeded.forEach(idSync => {
-            const ttlInHours = Math.round(
-              convertTimes(
-                MINUTE,
-                HOUR,
-                idSync.ttlMinutes || DEFAULT_ID_SYNC_TTL_MINUTES
-              )
-            );
+        controlObject[idSync.id] = nowInHours + ttlInHours;
+      });
 
-            controlObject[idSync.id] = nowInHours + ttlInHours;
-          });
+      setControlObject(controlObject, cookieJar);
 
-          setControlObject(controlObject, cookieJar);
+      cookieJar.set(
+        ID_SYNC_TIMESTAMP,
+        (
+          Math.round(convertTimes(MILLISECOND, HOUR, new Date().getTime())) +
+          convertTimes(DAY, HOUR, 7)
+        ).toString(36)
+      );
+    });
+  }
 
-          cookieJar.set(
-            ID_SYNC_TIMESTAMP,
-            (
-              Math.round(
-                convertTimes(MILLISECOND, HOUR, new Date().getTime())
-              ) + convertTimes(DAY, HOUR, 7)
-            ).toString(36)
-          );
-        })
-        .then(resolve, reject);
-    }
-
-    return Promise.resolve();
-  });
+  return Promise.resolve();
 };
 
 const createExpiryChecker = cookieJar => () => {

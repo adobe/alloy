@@ -111,10 +111,19 @@ export default (
         // eslint-disable-next-line no-param-reassign
         err.message = `[${namespace}] ${err.message}`;
 
-        if (!errorsEnabled) {
-          logger.error(err);
-        } else {
+        // If errors are enabled, we reject the promise we return
+        // to the customer. If the customer catches the error
+        // (using .catch()), the error won't hit the console.
+        // If the customer doesn't catch the error, the error
+        // will hit the console. This is due to how native
+        // browser functionality handles unhandled errors.
+        // If errors are NOT enabled, we instead pump the error
+        // through our logger, in which case the error will
+        // hit the console only if logging is enabled.
+        if (errorsEnabled) {
           reject(err);
+        } else {
+          logger.error(err);
         }
       });
   };
