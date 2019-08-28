@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { defer, assign, flatMap, crc32 } from "../../utils";
+import { defer, assign, crc32 } from "../../utils";
 import { nonNegativeInteger } from "../../utils/configValidators";
 import createIdSyncs from "./createIdSyncs";
 import createEvent from "../DataCollector/createEvent";
@@ -134,10 +134,7 @@ const createIdentity = ({ config, logger, cookieJar }) => {
       // Waiting for opt-in because we'll be writing the ECID to a cookie
       onResponse(response) {
         return optIn.whenOptedIn().then(() => {
-          const ecidPayloads = flatMap(
-            response.getPayloadsByType("identity:persist"),
-            fragment => fragment
-          );
+          const ecidPayloads = response.getPayloadsByType("identity:persist");
 
           if (ecidPayloads.length > 0) {
             cookieJar.set(EXPERIENCE_CLOUD_ID, ecidPayloads[0].id);
@@ -147,12 +144,7 @@ const createIdentity = ({ config, logger, cookieJar }) => {
             }
           }
 
-          return idSyncs.process(
-            flatMap(
-              response.getPayloadsByType("identity:exchange"),
-              fragment => fragment
-            )
-          );
+          idSyncs.process(response.getPayloadsByType("identity:exchange"));
         });
       }
     },
