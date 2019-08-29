@@ -29,7 +29,7 @@ import createAudiences from "../components/Audiences";
 import createPersonalization from "../components/Personalization";
 import createContext from "../components/Context";
 import createPrivacy from "../components/Privacy";
-import createStitch from "../components/Stitch";
+import createEventMerge from "../components/EventMerge";
 import createLibraryInfo from "../components/LibraryInfo";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
@@ -41,7 +41,7 @@ const componentCreators = [
   createPersonalization,
   createContext,
   createPrivacy,
-  createStitch,
+  createEventMerge,
   createLibraryInfo
 ];
 
