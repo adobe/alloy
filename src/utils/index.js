@@ -15,6 +15,10 @@ governing permissions and limitations under the License.
 // Please keep in alphabetical order.
 export { default as assign } from "./assign";
 export { default as clone } from "./clone";
+export { default as convertBufferToHex } from "./convertBufferToHex";
+export {
+  default as convertStringToSha256Buffer
+} from "./convertStringToSha256Buffer";
 export { default as convertTimes } from "./convertTimes";
 export { default as cookieJar } from "./cookieJar";
 export { default as createMerger } from "./createMerger";
