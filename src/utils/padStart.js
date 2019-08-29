@@ -9,15 +9,17 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { toISOStringLocal } from "../../utils";
 
-export default dateProvider => {
-  return event => {
-    const date = dateProvider();
-    const placeContext = {
-      localTime: toISOStringLocal(date),
-      localTimezoneOffset: date.getTimezoneOffset()
-    };
-    event.mergePlaceContext(placeContext);
-  };
+// adapted from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
+export default (string, targetLength, padString) => {
+  const originalString = String(string);
+  let repeatedPadString = String(padString);
+  if (originalString.length >= targetLength || repeatedPadString.length === 0) {
+    return originalString;
+  }
+  const lengthToAdd = targetLength - originalString.length;
+  while (lengthToAdd > repeatedPadString.length) {
+    repeatedPadString += repeatedPadString;
+  }
+  return repeatedPadString.slice(0, lengthToAdd) + originalString;
 };
