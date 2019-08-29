@@ -50,13 +50,24 @@ const namespaces = window.__alloyNS;
 
 const createNamespacedStorage = storageFactory(window);
 
+let console;
+
+// #if _REACTOR
+// When running within the Reactor extension, we want logging to be
+// toggled when Reactor logging is toggled. The easiest way to do
+// this is to pipe our log messages through the Reactor logger.
+console = turbine.logger;
+// #else
+({ console } = window);
+// #endif
+
 if (namespaces) {
   namespaces.forEach(namespace => {
     const logController = createLogController(
       namespace,
       createNamespacedStorage
     );
-    const logger = createLogger(window, logController, `[${namespace}]`);
+    const logger = createLogger(console, logController, `[${namespace}]`);
 
     const initializeComponents = initializeComponentsFactory(
       componentCreators,

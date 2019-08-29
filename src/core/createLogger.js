@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const createLogger = (window, logController, prefix) => {
+const createLogger = (console, logController, prefix) => {
   const process = (level, ...rest) => {
     if (logController.logEnabled) {
-      window.console[level](prefix, ...rest);
+      console[level](prefix, ...rest);
     }
   };
 
@@ -49,7 +49,7 @@ const createLogger = (window, logController, prefix) => {
      */
     spawn(additionalPrefix) {
       return createLogger(
-        window,
+        console,
         logController,
         `${prefix} ${additionalPrefix}`
       );

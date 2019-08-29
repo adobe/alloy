@@ -16,9 +16,15 @@ const uuidv4Regex = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[
 
 describe("Stitch", () => {
   let stitch;
+  let reactorRegisterCreateStitchId;
 
   beforeAll(() => {
-    stitch = createStitch();
+    reactorRegisterCreateStitchId = jasmine.createSpy();
+    stitch = createStitch({
+      config: {
+        reactorRegisterCreateStitchId
+      }
+    });
   });
 
   describe("lifecycle", () => {
@@ -61,6 +67,14 @@ describe("Stitch", () => {
       it("returns a UUID v4-compliant Id", () => {
         expect(uuidv4Regex.test(stitch.commands.createStitchId())).toBe(true);
       });
+    });
+  });
+
+  describe("reactor-specific functionality", () => {
+    it("registers a function for creating a stitch ID", () => {
+      const createStitchId = reactorRegisterCreateStitchId.calls.first()
+        .args[0];
+      expect(uuidv4Regex.test(createStitchId())).toBe(true);
     });
   });
 });

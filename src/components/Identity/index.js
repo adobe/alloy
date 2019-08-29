@@ -77,6 +77,15 @@ const createIdentity = ({ config, logger, cookieJar }) => {
     lifecycle: {
       onComponentsRegistered(tools) {
         ({ lifecycle, network, optIn } = tools);
+
+        // #if _REACTOR
+        // This is a way for the ECID data element in the Reactor extension
+        // to get the ECID synchronously since data elements are required
+        // to be synchronous.
+        config.reactorRegisterGetEcid(() => {
+          return optIn.isOptedIn() ? getEcid() : undefined;
+        });
+        // #endif
       },
       // Waiting for opt-in because we'll be reading the ECID from a cookie
       onBeforeEvent(event) {
@@ -171,5 +180,12 @@ createIdentity.configValidators = {
     validate: nonNegativeInteger
   }
 };
+
+// #if _REACTOR
+// Not much need to validate since we are our own consumer.
+createIdentity.configValidators.reactorRegisterGetEcid = {
+  defaultValue: () => {}
+};
+// #endif
 
 export default createIdentity;
