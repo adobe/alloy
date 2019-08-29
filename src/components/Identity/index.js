@@ -15,11 +15,11 @@ import { nonNegativeInteger } from "../../utils/configValidators";
 import createIdSyncs from "./createIdSyncs";
 import { COOKIE_NAMES } from "./constants";
 import setCustomerIds from "./setCustomerIds";
+import addCustomerIdsToPayload from "./addCustomerIdsToPayload";
 
 const { EXPERIENCE_CLOUD_ID } = COOKIE_NAMES;
 
 const addIdsContext = (payload, ecid) => {
-  // TODO: Add customer ids.
   payload.addIdentity(EXPERIENCE_CLOUD_ID, {
     id: ecid
   });
@@ -35,7 +35,6 @@ const createIdentity = ({ config, logger, cookieJar }) => {
   let lifecycle;
   const idSyncs = createIdSyncs(config, logger, cookieJar);
   let alreadyQueriedForIdSyncs = false;
-
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
@@ -78,7 +77,7 @@ const createIdentity = ({ config, logger, cookieJar }) => {
       onBeforeDataCollection(payload) {
         return optIn.whenOptedIn().then(() => {
           const ecid = getEcid();
-
+          const { customerIds } = config;
           let promise;
 
           if (ecid) {
@@ -90,7 +89,7 @@ const createIdentity = ({ config, logger, cookieJar }) => {
             logger.log("Delaying request while retrieving ECID from server.");
             promise = deferredForEcid.promise.then(() => {
               logger.log("Resuming previously delayed request.");
-              addIdsContext(payload, getEcid());
+              addIdsContext(payload, getEcid(), config);
             });
           } else {
             // We don't have an ECID and no request has gone out to fetch it.
@@ -98,6 +97,9 @@ const createIdentity = ({ config, logger, cookieJar }) => {
             // promise so that future requests can know when the ECID has returned.
             deferredForEcid = defer();
             payload.expectResponse();
+          }
+          if (customerIds) {
+            addCustomerIdsToPayload(customerIds, cookieJar, payload);
           }
 
           return promise;

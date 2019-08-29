@@ -1,7 +1,5 @@
-import { assign } from "../../utils";
 import createEvent from "../DataCollector/createEvent";
-import { validateCustomerIds } from "./util";
-import processCustomerIds from "./processCustomerIds";
+import addCustomerIdsToPayload from "./addCustomerIdsToPayload";
 
 const makeServerCall = (payload, lifecycle, network) => {
   return lifecycle.onBeforeDataCollection(payload).then(() => {
@@ -10,30 +8,14 @@ const makeServerCall = (payload, lifecycle, network) => {
 };
 
 export default (ids, cookieJar, lifecycle, network, optIn) => {
-  validateCustomerIds(ids);
   const event = createEvent(); // FIXME: We shouldn't need an event.
   event.mergeData({}); // FIXME: We shouldn't need an event.
   const payload = network.createPayload();
   payload.addEvent(event); // FIXME: We shouldn't need an event.
-  const customerIds = assign({}, ids);
-  const customerIdsProcess = processCustomerIds(customerIds);
-  const customerIdChanged = customerIdsProcess.detectCustomerIdChange(
-    cookieJar
-  );
-  customerIdsProcess
-    .getNormalizedAndHashedIds()
-    .then(normalizedAndHashedIds => {
-      const idNames = Object.keys(normalizedAndHashedIds);
-      idNames.forEach(idName => {
-        payload.addIdentity(idName, normalizedAndHashedIds[idName]);
-      });
-      payload.mergeMeta({ identity: { customerIdChanged } });
-      if (customerIdChanged) {
-        customerIdsProcess.updateChecksum(cookieJar);
-      }
-      return lifecycle
-        .onBeforeEvent(event, {}, false) // FIXME: We shouldn't need an event.
-        .then(() => optIn.whenOptedIn())
-        .then(() => makeServerCall(payload, lifecycle, network));
-    });
+  addCustomerIdsToPayload(ids, cookieJar, payload).then(() => {
+    return lifecycle
+      .onBeforeEvent(event, {}, false) // FIXME: We shouldn't need an event.
+      .then(() => optIn.whenOptedIn())
+      .then(() => makeServerCall(payload, lifecycle, network));
+  });
 };
