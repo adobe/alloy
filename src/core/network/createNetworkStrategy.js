@@ -25,7 +25,7 @@ export default (window, logger) => {
       : fetch;
 
   return (url, body, documentUnloading) => {
-    const method = !documentUnloading ? fetch : sendBeacon;
+    const method = documentUnloading ? sendBeacon : fetch;
     return method(url, body);
   };
 };

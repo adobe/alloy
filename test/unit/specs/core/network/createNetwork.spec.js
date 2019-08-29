@@ -60,7 +60,7 @@ describe("createNetwork", () => {
     });
   });
 
-  it("can call with an exit link", () => {
+  it("can call when the document is unloading", () => {
     return network.sendRequest({}, false, true).then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
         "https://alloy.mysite.com/v1/collect?propertyId=mypropertyid",

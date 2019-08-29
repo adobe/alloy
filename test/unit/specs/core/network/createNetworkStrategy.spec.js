@@ -27,7 +27,11 @@ const wrapInRealPromises = client => {
   }, {});
 };
 
-const eventually = (testFunction, checks = 5, timeBetweenChecks = 100) => {
+const eventually = (
+  testFunction,
+  checks = 5,
+  millisecondsBetweenChecks = 100
+) => {
   return new Promise((resolve, reject) => {
     const check = remainingChecks => {
       setTimeout(() => {
@@ -40,7 +44,7 @@ const eventually = (testFunction, checks = 5, timeBetweenChecks = 100) => {
               check(remainingChecks - 1);
             }
           });
-      }, timeBetweenChecks);
+      }, millisecondsBetweenChecks);
     };
     check(checks);
   });
