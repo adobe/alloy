@@ -17,6 +17,7 @@
     "allure:generate": "allure generate allure/allure-results/ -o allure/allure-report/",
     "test:watch": "karma start",
     "test:watch:chrome": "karma start --browsers Chrome",
+    "copy": "cp dist/alloy.js test/functional/sandbox/html/js/",
     "functional": "node test/functional/testrunner.js",
     "functional-sl": "TEST_FILES='test/functional/specs/**/*.js' npm run testcafe",
     "prebuild": "npm run clean && npm run format && npm run lint",
