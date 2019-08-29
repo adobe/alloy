@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { defer, flatMap } from "../../utils";
+import { defer } from "../../utils";
 import { nonNegativeInteger } from "../../utils/configValidators";
 import createIdSyncs from "./createIdSyncs";
 import { COOKIE_NAMES } from "./constants";
