@@ -17,7 +17,7 @@ import About from "./About";
 import Home from "./Home";
 import OrgTwo from "./OrgTwo";
 import Links from "./Links";
-import Stitch from "./Stitch";
+import EventMerge from "./EventMerge";
 import OptIn from "./OptIn";
 import LargePayload from "./LargePayload";
 import DualTag from "./DualTag";
@@ -40,7 +40,7 @@ function BasicExample() {
             <Link to="/links">Links</Link>
           </li>
           <li>
-            <Link to="/stitch">Stitch</Link>
+            <Link to="/eventMerge">EventMerge</Link>
           </li>
           <li>
             <Link to="/optIn">OptIn</Link>
@@ -59,7 +59,7 @@ function BasicExample() {
         <Route path="/about" component={About} />
         <Route path="/orgTwo" component={OrgTwo} />
         <Route path="/links" component={Links} />
-        <Route path="/stitch" component={Stitch} />
+        <Route path="/eventMerge" component={EventMerge} />
         <Route path="/optIn" component={OptIn} />
         <Route path="/largePayload" component={LargePayload} />
         <Route path="/DualTag" component={DualTag} />

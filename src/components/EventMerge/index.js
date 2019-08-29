@@ -12,39 +12,39 @@ governing permissions and limitations under the License.
 
 import { uuid } from "../../utils";
 
-const createStitch = ({ config }) => {
+const createEventMerge = ({ config }) => {
   // #if _REACTOR
-  // This is a way for the Stitch ID data element in the Reactor extension
-  // to get a stitch ID synchronously since data elements are required
+  // This is a way for the Event Merge ID data element in the Reactor extension
+  // to get an event merge ID synchronously since data elements are required
   // to be synchronous.
-  config.reactorRegisterCreateStitchId(uuid);
+  config.reactorRegisterCreateEventMergeId(uuid);
   // #endif
 
   return {
     lifecycle: {
       onBeforeEvent(event, options) {
-        return Promise.resolve(options.stitchId).then(stitchId => {
-          if (stitchId !== undefined) {
-            event.stitchId = stitchId;
+        return Promise.resolve(options.eventMergeId).then(eventMergeId => {
+          if (eventMergeId !== undefined) {
+            event.eventMergeId = eventMergeId;
           }
         });
       }
     },
     commands: {
-      createStitchId: uuid
+      createEventMergeId: uuid
     }
   };
 };
 
-createStitch.namespace = "Stitch";
-createStitch.abbreviation = "ST";
-createStitch.configValidators = {};
+createEventMerge.namespace = "EventMerge";
+createEventMerge.abbreviation = "EM";
+createEventMerge.configValidators = {};
 
 // #if _REACTOR
 // Not much need to validate since we are our own consumer.
-createStitch.configValidators.reactorRegisterCreateStitchId = {
+createEventMerge.configValidators.reactorRegisterCreateEventMergeId = {
   defaultValue: () => {}
 };
 // #endif
 
-export default createStitch;
+export default createEventMerge;

@@ -18,8 +18,8 @@ export default () => {
   let expectsResponse = false;
 
   return {
-    set stitchId(stitchId) {
-      content.stitchId = stitchId;
+    set eventMergeId(eventMergeId) {
+      content.eventMergeId = eventMergeId;
     },
     mergeData: createMerger(content, "data"),
     mergeMeta: createMerger(content, "meta"),
