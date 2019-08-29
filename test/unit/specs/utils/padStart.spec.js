@@ -9,22 +9,24 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { zFill } from "../../../../src/utils";
+import { padStart } from "../../../../src/utils";
 
-describe("zFill", () => {
+describe("padStart", () => {
   [
-    [-1, 2, "-1"],
-    [0, 2, "00"],
-    [3, 2, "03"],
-    [10, 2, "10"],
-    [10, 3, "010"],
-    [2015, 2, "2015"],
-    [undefined, 3, "undefined"],
-    [null, 5, "0null"],
-    ["", 3, "000"]
-  ].forEach(([input, size, expected]) => {
-    it(`zFill(${input}, ${size}) === '${expected}'`, () => {
-      expect(zFill(input, size)).toEqual(expected);
+    [-1, 2, "0", "-1"],
+    [0, 2, "0", "00"],
+    [3, 2, "0", "03"],
+    [10, 2, "0", "10"],
+    [10, 3, "0", "010"],
+    [2015, 2, "0", "2015"],
+    [undefined, 3, "0", "undefined"],
+    [null, 5, "0", "0null"],
+    ["", 3, "0", "000"],
+    ["foo", 10, "bar", "barbarbfoo"],
+    ["a", 2, "", "a"]
+  ].forEach(([input, size, padString, expected]) => {
+    it(`padStart(${input}, ${size}, "${padString}") === '${expected}'`, () => {
+      expect(padStart(input, size, padString)).toEqual(expected);
     });
   });
 });
