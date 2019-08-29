@@ -100,16 +100,29 @@ describe("Event Command", () => {
       expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith(
         jasmine.anything(),
         options,
+        false,
         false
       );
     });
   });
   it("Extracts viewStart for onBeforeEvent", () => {
-    const options = { viewStart: true };
+    const options = { viewStart: true, documentUnloading: false };
     return eventCommand(options).then(() => {
       expect(onBeforeEventSpy).toHaveBeenCalledWith(
         jasmine.anything(),
         options,
+        true,
+        false
+      );
+    });
+  });
+  it("Extracts documentUnloading for onBeforeEvent", () => {
+    const options = { documentUnloading: true };
+    return eventCommand(options).then(() => {
+      expect(onBeforeEventSpy).toHaveBeenCalledWith(
+        jasmine.anything(),
+        options,
+        false,
         true
       );
     });
@@ -120,6 +133,7 @@ describe("Event Command", () => {
       expect(onBeforeEventSpy).toHaveBeenCalledWith(
         jasmine.anything(),
         options,
+        false,
         false
       );
     });
@@ -198,13 +212,31 @@ describe("Event Command", () => {
       return Promise.resolve();
     });
     return eventCommand({}).then(() => {
-      expect(sendRequestSpy).toHaveBeenCalledWith(jasmine.anything(), true);
+      expect(sendRequestSpy).toHaveBeenCalledWith(
+        jasmine.anything(),
+        true,
+        false
+      );
     });
   });
 
   it("sends expectsResponse == false", () => {
     return eventCommand({}).then(() => {
-      expect(sendRequestSpy).toHaveBeenCalledWith(jasmine.anything(), false);
+      expect(sendRequestSpy).toHaveBeenCalledWith(
+        jasmine.anything(),
+        false,
+        false
+      );
+    });
+  });
+
+  it("sends documentUnloading == true", () => {
+    return eventCommand({ documentUnloading: true }).then(() => {
+      expect(sendRequestSpy).toHaveBeenCalledWith(
+        jasmine.anything(),
+        false,
+        true
+      );
     });
   });
 

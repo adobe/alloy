@@ -50,15 +50,21 @@ export default (config, logger, lifecycle, networkStrategy) => {
      * @param {Object} payload This will be JSON stringified and sent as the post body.
      * @param {boolean} [expectsResponse=true] The endpoint and request mechanism
      * will be determined by whether a response is expected.
+     * @param {boolean} [documentUnloading=false] This determines the network transport method.
+     * When the document is unloading, sendBeacon is used, otherwise fetch is used.
      * @returns {Promise} a promise resolved with the response object once the response is
      * completely processed.  If expectsResponse==false, the promise will be resolved
      * with undefined.
      */
-    sendRequest(payload, expectsResponse = true) {
+    sendRequest(payload, expectsResponse = true, documentUnloading = false) {
       const requestId = uuid();
+      if (documentUnloading) {
+        logger.log(`No response requested due to document unloading.`);
+      }
+      const reallyExpectsResponse = documentUnloading ? false : expectsResponse;
       return Promise.resolve()
         .then(() => {
-          const action = expectsResponse ? "interact" : "collect";
+          const action = reallyExpectsResponse ? "interact" : "collect";
 
           let baseUrl = `https://${edgeDomain}`;
 
@@ -69,7 +75,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
           // #endif
 
           const url = `${baseUrl}/${apiVersion}/${action}?propertyId=${propertyId}`;
-          const responseHandlingMessage = expectsResponse
+          const responseHandlingMessage = reallyExpectsResponse
             ? ""
             : " (no response is expected)";
           const stringifiedPayload = JSON.stringify(payload);
@@ -89,7 +95,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
           }
 
           return executeWithRetry(
-            () => networkStrategy(url, stringifiedPayload, expectsResponse),
+            () => networkStrategy(url, stringifiedPayload, documentUnloading),
             3
           );
         })
@@ -99,7 +105,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
         .then(responseBody => {
           let handleResponsePromise;
 
-          if (expectsResponse) {
+          if (reallyExpectsResponse) {
             handleResponsePromise = handleResponse(requestId, responseBody);
           }
 

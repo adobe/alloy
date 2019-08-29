@@ -40,12 +40,12 @@ describe("createNetwork", () => {
     network = createNetwork(config, logger, lifecycle, networkStrategy);
   });
 
-  it("calls interact by default", () => {
-    return network.sendRequest({}, true).then(() => {
+  it("can call interact", () => {
+    return network.sendRequest({}, true, false).then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
         "https://alloy.mysite.com/v1/interact?propertyId=mypropertyid",
         "{}",
-        true
+        false
       );
     });
   });
@@ -56,6 +56,26 @@ describe("createNetwork", () => {
         "https://alloy.mysite.com/v1/collect?propertyId=mypropertyid",
         "{}",
         false
+      );
+    });
+  });
+
+  it("can call when the document is unloading", () => {
+    return network.sendRequest({}, false, true).then(() => {
+      expect(networkStrategy).toHaveBeenCalledWith(
+        "https://alloy.mysite.com/v1/collect?propertyId=mypropertyid",
+        "{}",
+        true
+      );
+    });
+  });
+
+  it("uses collect when a request expects a response and is an exit link", () => {
+    return network.sendRequest({}, true, true).then(() => {
+      expect(networkStrategy).toHaveBeenCalledWith(
+        "https://alloy.mysite.com/v1/collect?propertyId=mypropertyid",
+        "{}",
+        true
       );
     });
   });
