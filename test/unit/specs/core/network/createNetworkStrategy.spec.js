@@ -13,6 +13,39 @@ governing permissions and limitations under the License.
 import createNetworkStrategy from "../../../../../src/core/network/createNetworkStrategy";
 
 const mockServerClient = window.mockServerClient || (() => {});
+
+// the mockserver client library just returns objects with a "then" method.  In order to do
+// promise chaining, we need to wrap these "fake" promises in real ones.
+const wrapInRealPromises = client => {
+  return Object.keys(client).reduce((memo, functionName) => {
+    memo[functionName] = (...args) => {
+      return new Promise((resolve, reject) => {
+        client[functionName](...args).then(resolve, reject);
+      });
+    };
+    return memo;
+  }, {});
+};
+
+const eventually = (testFunction, checks = 5, timeBetweenChecks = 100) => {
+  return new Promise((resolve, reject) => {
+    const check = remainingChecks => {
+      setTimeout(() => {
+        testFunction()
+          .then(resolve)
+          .catch(error => {
+            if (remainingChecks <= 0) {
+              reject(error);
+            } else {
+              check(remainingChecks - 1);
+            }
+          });
+      }, timeBetweenChecks);
+    };
+    check(checks);
+  });
+};
+
 /**
  * These tests require a mock server to be running to do the verification
  * Run the mock server with `npm run mockserver`.  If this test sees there
@@ -30,8 +63,8 @@ describe("networkStrategyFactory", () => {
   let mockServerRunning = false;
 
   // Check to see if the mock server is running:
-  beforeAll(done => {
-    new Promise((resolve, reject) => {
+  beforeAll(() => {
+    return new Promise((resolve, reject) => {
       const timeout = setTimeout(reject, 500);
       fetch("http://localhost:1080/status", { method: "PUT" })
         .then(resolve)
@@ -43,18 +76,16 @@ describe("networkStrategyFactory", () => {
       })
       .catch(() => {
         mockServerRunning = false;
-      })
-      .finally(done);
+      });
   });
 
-  const whenMockServerIsRunningIt = (name, doneFunc) => {
-    it(name, done => {
-      if (!mockServerRunning) {
-        pending("Mock server is not running");
-        done();
-      } else {
-        doneFunc(done);
+  const whenMockServerIsRunningIt = (name, testFunc) => {
+    it(name, () => {
+      if (mockServerRunning) {
+        return testFunc();
       }
+      pending("Mock server is not running");
+      return Promise.resolve();
     });
   };
 
@@ -63,18 +94,17 @@ describe("networkStrategyFactory", () => {
     ["XMLHttpRequest", { XMLHttpRequest: window.XMLHttpRequest }]
   ].forEach(([name, testingWindow]) => {
     describe(name, () => {
-      beforeEach(done => {
-        if (!mockServerRunning) {
-          done();
-        } else {
+      beforeEach(() => {
+        if (mockServerRunning) {
           networkStrategy = createNetworkStrategy(testingWindow, console);
-          client = mockServerClient("localhost", 1080);
-          client.reset().then(() => done());
+          client = wrapInRealPromises(mockServerClient("localhost", 1080));
+          return client.reset();
         }
+        return Promise.resolve();
       });
 
       const mockResponse = (code, body) => {
-        return client.mockAnyResponse({
+        const promise = client.mockAnyResponse({
           httpRequest: {
             method: "POST",
             path: "/myapi",
@@ -89,56 +119,52 @@ describe("networkStrategyFactory", () => {
             body
           }
         });
+        return promise;
       };
 
       [200].forEach(code => {
         whenMockServerIsRunningIt(
           `handles successful response code ${code}`,
-          done => {
-            mockResponse(code, "mybody").then(() => {
-              networkStrategy("http://localhost:1080/myapi", requestBody)
-                .then(body => {
-                  expect(body).toEqual("mybody");
-                  done();
-                })
-                .catch(done.fail);
-            });
+          () => {
+            return mockResponse(code, "mybody")
+              .then(() =>
+                networkStrategy("http://localhost:1080/myapi", requestBody)
+              )
+              .then(body => {
+                expect(body).toEqual("mybody");
+              });
           }
         );
       });
 
       whenMockServerIsRunningIt(
         "handles successful response code 204 (no content)",
-        done => {
-          mockResponse(204, "mybody").then(() => {
-            networkStrategy("http://localhost:1080/myapi", requestBody)
-              .then(body => {
-                expect(body).toBeUndefined();
-                done();
-              })
-              .catch(done.fail);
-          });
+        () => {
+          return mockResponse(204, "mybody")
+            .then(() =>
+              networkStrategy("http://localhost:1080/myapi", requestBody)
+            )
+            .then(body => {
+              expect(body).toBeUndefined();
+            });
         }
       );
 
       [301, 400, 403, 500].forEach(code => {
-        whenMockServerIsRunningIt(
-          `handles error response code ${code}`,
-          done => {
-            mockResponse(code, "mybody").then(() => {
+        whenMockServerIsRunningIt(`handles error response code ${code}`, () => {
+          return mockResponse(code, "mybody")
+            .then(() =>
               networkStrategy("http://localhost:1080/myapi", requestBody)
-                .then(done.fail)
-                .catch(error => {
-                  expect(error).toBeDefined();
-                  done();
-                });
+            )
+            .then(fail)
+            .catch(error => {
+              expect(error).toBeDefined();
             });
-          }
-        );
+        });
       });
 
-      whenMockServerIsRunningIt("handles a dropped connection", done => {
-        client
+      whenMockServerIsRunningIt("handles a dropped connection", () => {
+        return client
           .mockAnyResponse({
             httpRequest: {
               method: "POST",
@@ -148,84 +174,81 @@ describe("networkStrategyFactory", () => {
               dropConnection: true
             }
           })
-          .then(() => {
+          .then(() =>
             networkStrategy("http://localhost:1080/myapi", requestBody)
-              .then(done.fail)
-              .catch(error => {
-                expect(error).toBeDefined();
-                done();
-              });
+          )
+          .then(fail)
+          .catch(error => {
+            expect(error).toBeDefined();
           });
       });
 
-      whenMockServerIsRunningIt("sends a beacon", done => {
-        client
+      whenMockServerIsRunningIt("sends a beacon", () => {
+        // use a different endpoint here, because when the test fails, the beacon could still go
+        // out and cause other tests to fail.
+        return client
           .mockAnyResponse({
             httpRequest: {
               method: "POST",
-              path: "/myapi"
+              path: "/smallbeacon"
             },
             httpResponse: {
               statusCode: 204
             }
           })
-          .then(() => {
-            networkStrategy("http://localhost:1080/myapi", requestBody, true)
-              .then(body => {
-                expect(body).toBeUndefined();
-                setTimeout(() => {
-                  client
-                    .verify(
-                      {
-                        method: "POST",
-                        path: "/myapi",
-                        body: requestBody
-                      },
-                      1,
-                      1
-                    ) // verify atLeast 1, atMost 1 times called
-                    .then(done, done.fail);
-                }, 500);
-              })
-              .catch(done.fail);
-          });
-      });
-
-      whenMockServerIsRunningIt("sends a large beacon", done => {
-        client
-          .mockAnyResponse({
-            httpRequest: {
-              method: "POST",
-              path: "/myapi"
-            },
-            httpResponse: {
-              statusCode: 204
-            }
-          })
-          .then(() => {
+          .then(() =>
             networkStrategy(
-              "http://localhost:1080/myapi",
+              "http://localhost:1080/smallbeacon",
+              requestBody,
+              true
+            )
+          )
+          .then(body => expect(body).toBeUndefined())
+          .then(() => {
+            return eventually(() => {
+              return client.verify(
+                {
+                  method: "POST",
+                  path: "/smallbeacon",
+                  body: requestBody
+                },
+                1,
+                1
+              ); // verify atLeast 1, atMost 1 times called
+            });
+          });
+      });
+
+      whenMockServerIsRunningIt("sends a large beacon", () => {
+        client
+          .mockAnyResponse({
+            httpRequest: {
+              method: "POST",
+              path: "/largebeacon"
+            },
+            httpResponse: {
+              statusCode: 204
+            }
+          })
+          .then(() =>
+            networkStrategy(
+              "http://localhost:1080/largebeacon",
               largeRequestBody,
               true
             )
-              .then(body => {
-                expect(body).toBeUndefined();
-                // no setTimeout here like for the regular beacon test because the promise returned
-                // should be the fetch promise that is resolved when it was successfully sent.
-                client
-                  .verify(
-                    {
-                      method: "POST",
-                      path: "/myapi",
-                      body: largeRequestBody
-                    },
-                    1,
-                    1
-                  ) // verify atLeast 1, atMost 1 times called
-                  .then(done, done.fail);
-              })
-              .catch(done.fail);
-          });
+          )
+          .then(body => expect(body).toBeUndefined())
+          .then(() =>
+            client.verify(
+              {
+                method: "POST",
+                path: "/largebeacon",
+                body: largeRequestBody
+              },
+              1,
+              1
+            )
+          ); // verify atLeast 1, atMost 1 times called
       });
     });
   });

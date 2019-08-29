@@ -50,20 +50,18 @@ export default (config, logger, lifecycle, networkStrategy) => {
      * @param {Object} payload This will be JSON stringified and sent as the post body.
      * @param {boolean} [expectsResponse=true] The endpoint and request mechanism
      * will be determined by whether a response is expected.
-     * @param {boolean} [exitLink=false] The network transport method (sendBeacon vs. fetch)
-     * will be determined by whether this is an exitLink.
+     * @param {boolean} [documentUnloading=false] This determines the network transport method.
+     * When the document is unloading, sendBeacon is used, otherwise fetch is used.
      * @returns {Promise} a promise resolved with the response object once the response is
      * completely processed.  If expectsResponse==false, the promise will be resolved
      * with undefined.
      */
-    sendRequest(payload, expectsResponse = true, exitLink = false) {
+    sendRequest(payload, expectsResponse = true, documentUnloading = false) {
       const requestId = uuid();
-      if (expectsResponse && exitLink) {
-        logger.log(
-          `Attempt to get response during exit link.  Assuming no response is expected.`
-        );
+      if (documentUnloading) {
+        logger.log(`No response requested due to document unloading.`);
       }
-      const reallyExpectsResponse = exitLink ? false : expectsResponse;
+      const reallyExpectsResponse = documentUnloading ? false : expectsResponse;
       return Promise.resolve()
         .then(() => {
           const action = reallyExpectsResponse ? "interact" : "collect";
@@ -97,7 +95,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
           }
 
           return executeWithRetry(
-            () => networkStrategy(url, stringifiedPayload, exitLink),
+            () => networkStrategy(url, stringifiedPayload, documentUnloading),
             3
           );
         })

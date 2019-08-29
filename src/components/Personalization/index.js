@@ -76,8 +76,7 @@ const createCollect = collect => {
     const notification = Object.assign({}, payload, { id, timestamp });
     const personalization = { notification };
 
-    const data = new Uint8Array(94 * 1024);
-    collect({ meta: { personalization }, data });
+    collect({ meta: { personalization } });
   };
 };
 

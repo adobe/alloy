@@ -106,7 +106,7 @@ describe("Event Command", () => {
     });
   });
   it("Extracts viewStart for onBeforeEvent", () => {
-    const options = { viewStart: true, exitLink: false };
+    const options = { viewStart: true, documentUnloading: false };
     return eventCommand(options).then(() => {
       expect(onBeforeEventSpy).toHaveBeenCalledWith(
         jasmine.anything(),
@@ -116,8 +116,8 @@ describe("Event Command", () => {
       );
     });
   });
-  it("Extracts exitLink for onBeforeEvent", () => {
-    const options = { exitLink: true };
+  it("Extracts documentUnloading for onBeforeEvent", () => {
+    const options = { documentUnloading: true };
     return eventCommand(options).then(() => {
       expect(onBeforeEventSpy).toHaveBeenCalledWith(
         jasmine.anything(),
@@ -230,8 +230,8 @@ describe("Event Command", () => {
     });
   });
 
-  it("sends exitLink == true", () => {
-    return eventCommand({ exitLink: true }).then(() => {
+  it("sends documentUnloading == true", () => {
+    return eventCommand({ documentUnloading: true }).then(() => {
       expect(sendRequestSpy).toHaveBeenCalledWith(
         jasmine.anything(),
         false,
