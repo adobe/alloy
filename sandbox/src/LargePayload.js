@@ -7,7 +7,7 @@ export default function LargePayload() {
     for (i = 0; i < times; i++) {
       const payload = new Uint8Array(size * 1024);
       window.alloy("event", {
-        exitLink: true,
+        documentUnloading: true,
         data: {
           payload
         }
