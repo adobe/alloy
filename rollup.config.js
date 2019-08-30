@@ -48,13 +48,7 @@ const plugins = [
     preferBuiltins: false,
     // Support the browser field in dependencies' package.json.
     // Useful for the uuid package.
-    mainFields: ["module", "main", "browser"],
-    // If we're building for Reactor, we'll use Reactor's core modules
-    // (named @adobe/reactor-*) instead of including the packages directly.
-    only:
-      buildTarget === buildTargets.PROD_REACTOR
-        ? [/^((?!@adobe\/reactor).)*$/]
-        : undefined
+    mainFields: ["module", "main", "browser"]
   }),
   commonjs(),
   babel(),
@@ -75,18 +69,52 @@ if (buildTarget !== buildTargets.DEV) {
   );
 }
 
-export default {
+const config = {
   input: "src/core/main.js",
   output: [
     {
       file: `${destDirectory}alloy${minifiedExtension}.js`,
-      format: "umd",
+      // For the Reactor-specific build, we need to use the CommonJS format
+      // for output instead of IIFE, otherwise Rollup doesn't know whether the
+      // "external" modules (as defined elsewhere in this configuration) are
+      // coming from global variables or from another CommonJS bundler, so
+      // it adds a bunch of cruft to accommodate and logs build warnings.
+      // Because we have to use the CommonJS format for the Reactor-specific
+      // build, we can't just use an "intro" that looks like:
+      // if (IE less than version 11) {
+      //   console.warn("unsupported browser");
+      //   return;
+      // }
+      // because you can't "return" from a CommonJS module. Therefore, we have
+      // to do an if-else for an "intro" and "outro".
+      // If we do an if-else, we're not compliant with strict mode, because
+      // babel inserts its function declarations directly inside our if-else.
+      // Because function declarations are not allowed directly within an
+      // if-else in strict mode, we need to wrap babel's
+      // function declarations (and our own code) inside an IIFE.
+      // So, what we end up with is output using "format: cjs" but with an
+      // appropriate intro and outro that provides browser checking and an
+      // IIFE. This works for both Reactor-specific and standalone use cases.
+      format: "cjs",
       // Allow non-IE browsers and IE11
       // document.documentMode was added in IE8, and is specific to IE.
-      // IE7 and lower are not ES5 compatible so will get a parse error loading the library.
+      // IE7 and lower are not ES5 compatible so will get a parse error loading
+      // the library.
       intro:
-        "if (document.documentMode && document.documentMode < 11) { console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.'); return; }"
+        "if (document.documentMode && document.documentMode < 11) {\n" +
+        "  console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.');\n" +
+        "} else {\n" +
+        "  (function() {",
+      outro: "  })();\n}"
     }
   ],
   plugins
 };
+
+// If we're building for Reactor, we'll use Reactor's core modules
+// (named @adobe/reactor-*) instead of including the packages directly.
+if (buildTarget === buildTargets.PROD_REACTOR) {
+  config.external = name => /^@adobe\/reactor-/.test(name);
+}
+
+export default config;
