@@ -64,10 +64,6 @@ describe("createConfig", () => {
     expect(cfg.get("missing.missing")).toBe(undefined);
     expect(cfg.get("c.missing")).toBe(undefined);
   });
-  it("supports getting a default value when a key is missing", () => {
-    const cfg = createConfig(testConfig);
-    expect(cfg.get("z", "missing")).toEqual("missing");
-  });
   it("supports adding a key value mapping", () => {
     const cfg = createConfig(testConfig);
     cfg.set("d", "ABC");
@@ -82,15 +78,6 @@ describe("createConfig", () => {
     });
     expect(cfg.d.b1).toEqual(321);
   });
-  it("supports adding missing object hierarchies through string dot notation", () => {
-    const cfg = createConfig(testConfig);
-    cfg.set("c.b1.a2.a3", 321);
-    expect(cfg.c.b1.a2.a3).toEqual(321);
-  });
-  it("supports getting a value within object hiearchies through string dot notation", () => {
-    const cfg = createConfig(testConfig);
-    expect(cfg.get("c.a1")).toEqual("xyz");
-  });
   it("supports returning top level key-set", () => {
     const cfg = createConfig(testConfig);
     const s = cfg.keySet();
@@ -98,10 +85,6 @@ describe("createConfig", () => {
     expect(includes(s, "b")).toBe(true);
     expect(includes(s, "c")).toBe(true);
     expect(includes(s, "get")).toBe(false);
-  });
-  it("supports handling false values", () => {
-    const cfg = createConfig(testConfig);
-    expect(cfg.get("neg.neg")).toBe(false);
   });
   it("supports validation against a schema", () => {
     const cfg = createConfig(testConfig);
