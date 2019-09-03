@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, getNestedObject, setNestedObject } from "../utils";
+import { assign } from "../utils";
 
 const CONFIG_DOC_URI =
   "https://launch.gitbook.io/adobe-experience-platform-web-sdk/fundamentals/configuring-the-sdk";
@@ -23,7 +23,7 @@ const createConfig = config => {
      * @param {Object} Value.
      */
     set: (key, value) => {
-      return setNestedObject(cfg, key, value);
+      cfg[key] = value;
     },
     /**
      * Assigns all key-value mappings in an existing config to this config
@@ -35,10 +35,9 @@ const createConfig = config => {
     /**
      * Returns value assigned to key.
      * @param {Object} Key.
-     * @param {Object} Default value if no value is found.
      */
-    get: (key, defaultValue) => {
-      return getNestedObject(cfg, key, defaultValue);
+    get: key => {
+      return cfg[key];
     },
     /**
      * Returns a set of the top level keys in this config.
