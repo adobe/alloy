@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 export default values => (key, currentValue) => {
-  if (values.includes(currentValue)) {
+  if (values.indexOf(currentValue) >= 0) {
     return `${key} must be unique`;
   }
   values.push(currentValue);
