@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import unique from "../../../../../src/utils/configValidators/unique";
+import { createUnique } from "../../../../../src/utils/configValidators";
 
 describe("configValidator::unique", () => {
   [["a"], ["a", "b", "c"]].forEach(values => {
     it(`should accept ${JSON.stringify(values)}`, () => {
-      const validator = unique([]);
+      const validator = createUnique();
       values.forEach(value => {
         expect(validator("mykey", value)).toEqual("");
       });
@@ -24,7 +24,7 @@ describe("configValidator::unique", () => {
 
   [["a", "a"], ["a", "b", "a"], ["a", "b", "b"]].forEach(values => {
     it(`should reject ${JSON.stringify(values)}`, () => {
-      const validator = unique([]);
+      const validator = createUnique();
       values.forEach((value, i) => {
         if (i + 1 === values.length) {
           expect(validator("mykey", value)).not.toEqual("");

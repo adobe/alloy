@@ -14,20 +14,20 @@ import {
   required,
   validDomain,
   allValidate,
-  unique
+  createUnique
 } from "../../utils/configValidators";
 
-export default (propertyIdValues, orgIdValues) => {
+export default () => {
   return {
     propertyId: {
-      validate: allValidate(required, unique(propertyIdValues))
+      validate: allValidate(required, createUnique())
     },
     edgeDomain: {
       validate: validDomain,
       defaultValue: "alpha.konductor.adobedc.net"
     },
     imsOrgId: {
-      validate: allValidate(required, unique(orgIdValues))
+      validate: allValidate(required, createUnique())
     },
     clickCollectionEnabled: {
       defaultValue: true

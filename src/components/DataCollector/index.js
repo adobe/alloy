@@ -92,6 +92,6 @@ const createDataCollector = ({ config, logger }) => {
 
 createDataCollector.namespace = "DataCollector";
 createDataCollector.abbreviation = "DC";
-createDataCollector.configValidators = createConfigValidators([], []);
+createDataCollector.configValidators = createConfigValidators();
 
 export default createDataCollector;

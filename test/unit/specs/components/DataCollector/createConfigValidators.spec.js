@@ -38,7 +38,7 @@ describe("DataCollector::createConfigValidators", () => {
   ].forEach((cfg, i) => {
     it(`validates configuration (${i})`, () => {
       const configObj = createConfig(cfg);
-      configObj.addValidators(createConfigValidators([], []));
+      configObj.addValidators(createConfigValidators());
       configObj.validate();
     });
   });
@@ -55,13 +55,13 @@ describe("DataCollector::createConfigValidators", () => {
   ].forEach((cfg, i) => {
     it(`invalidates configuration (${i})`, () => {
       const configObj = createConfig(cfg);
-      configObj.addValidators(createConfigValidators([], []));
+      configObj.addValidators(createConfigValidators());
       expect(() => configObj.validate()).toThrowError();
     });
   });
 
   it("invalidates duplicate propertyIds", () => {
-    const validators = createConfigValidators([], []);
+    const validators = createConfigValidators();
     const config1 = createConfig({ propertyId: "property1", imsOrgId: "ims1" });
     const config2 = createConfig({ propertyId: "property2", imsOrgId: "ims2" });
     const config3 = createConfig({ propertyId: "property1", imsOrgId: "ims3" });
@@ -74,7 +74,7 @@ describe("DataCollector::createConfigValidators", () => {
   });
 
   it("invalidates duplicate imsOrgIds", () => {
-    const validators = createConfigValidators([], []);
+    const validators = createConfigValidators();
     const config1 = createConfig({ propertyId: "a", imsOrgId: "a" });
     const config2 = createConfig({ propertyId: "b", imsOrgId: "b" });
     const config3 = createConfig({ propertyId: "c", imsOrgId: "a" });

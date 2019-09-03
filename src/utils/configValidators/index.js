@@ -12,8 +12,8 @@ governing permissions and limitations under the License.
 
 export { default as allValidate } from "./allValidate";
 export { default as boolean } from "./boolean";
+export { default as createUnique } from "./createUnique";
 export { default as eitherNilOrNonEmpty } from "./eitherNilOrNonEmpty";
 export { default as nonNegativeInteger } from "./nonNegativeInteger";
 export { default as required } from "./required";
-export { default as unique } from "./unique";
 export { default as validDomain } from "./validDomain";

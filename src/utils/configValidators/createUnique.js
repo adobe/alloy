@@ -10,10 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default values => (key, currentValue) => {
-  if (values.indexOf(currentValue) >= 0) {
-    return `${key} must be unique`;
-  }
-  values.push(currentValue);
-  return "";
+export default () => {
+  const values = [];
+  return (key, currentValue) => {
+    if (values.indexOf(currentValue) >= 0) {
+      return `${key} must be unique`;
+    }
+    values.push(currentValue);
+    return "";
+  };
 };
