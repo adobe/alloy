@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import { defer } from "../../utils";
 import { boolean, number } from "../../utils/configValidators";
 import createIdSyncs from "./createIdSyncs";
+import createManualIdSyncs from "./createManualIdSyncs";
 import createCustomerIds from "./customerIds/createCustomerIds";
 
 import { COOKIE_NAMES } from "./constants";
@@ -35,6 +36,7 @@ const createIdentity = ({ config, logger, cookieJar }) => {
   let lifecycle;
   let customerIds;
   const idSyncs = createIdSyncs(config, logger, cookieJar);
+  const manualIdSyncs = createManualIdSyncs(config, logger, cookieJar, idSyncs);
   let alreadyQueriedForIdSyncs = false;
   return {
     lifecycle: {
@@ -127,6 +129,11 @@ const createIdentity = ({ config, logger, cookieJar }) => {
       },
       setCustomerIds(options) {
         return optIn.whenOptedIn().then(() => customerIds.sync(options));
+      },
+      syncIdsByUrl(options) {
+        return optIn
+          .whenOptedIn()
+          .then(() => manualIdSyncs.syncIdsByUrl(options));
       }
     }
   };
