@@ -38,7 +38,9 @@ const setControlObject = (controlObject, cookieJar) => {
 
 const createProcessor = (config, logger, cookieJar) => destinations => {
   if (!config.idSyncsEnabled) {
-    return Promise.resolve();
+    return Promise.resolve({
+      message: "ID syncs not enabled"
+    });
   }
 
   const controlObject = getControlObject(cookieJar);
@@ -91,10 +93,14 @@ const createProcessor = (config, logger, cookieJar) => destinations => {
           convertTimes(DAY, HOUR, 7)
         ).toString(36)
       );
+
+      return Promise.resolve(result);
     });
   }
 
-  return Promise.resolve();
+  return Promise.resolve({
+    message: "No ID syncs were in queue"
+  });
 };
 
 const createExpiryChecker = cookieJar => () => {
