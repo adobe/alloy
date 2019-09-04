@@ -10,23 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { awaitSelector } from "../../../utils/dom";
-import { selectNodesWithEq } from "../helper/dom";
-import { hideElements, showElements } from "../flicker";
+import { countDownLatch } from "../../../utils";
 
-export default (settings, trigger) => {
-  const { selector, prehidingSelector } = settings;
+export default collect => {
+  return (settings, trigger) => {
+    const { numberOfActions, meta } = settings;
+    const latch = countDownLatch(numberOfActions);
+    const notify = () => latch.countDown();
 
-  hideElements(prehidingSelector);
+    latch.wait().then(() => collect(meta));
 
-  awaitSelector(selector, selectNodesWithEq)
-    .then(elements => {
-      trigger({ elements, prehidingSelector });
-    })
-    .catch(() => {
-      // in case of awaiting timing out we
-      // need to remove the style tag
-      // hence showing the nodes
-      showElements(prehidingSelector);
-    });
+    trigger({ meta, notify });
+  };
 };

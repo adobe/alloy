@@ -5,6 +5,7 @@ import {
 } from "../../../../../../src/utils/dom";
 import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import { noop } from "../../../../../../src/utils";
 
 describe("Personalization::actions::replaceHtml", () => {
   beforeEach(() => {
@@ -16,8 +17,8 @@ describe("Personalization::actions::replaceHtml", () => {
   });
 
   it("should replace element with personalized content", () => {
-    const collect = jasmine.createSpy();
-    const modules = initRuleComponentModules(collect);
+    const notify = jasmine.createSpy();
+    const modules = initRuleComponentModules(noop);
     const { replaceHtml } = modules;
     const child = createNode(
       "div",
@@ -25,23 +26,22 @@ describe("Personalization::actions::replaceHtml", () => {
       { innerHTML: "AAA" }
     );
     const element = createNode("div", { id: "replaceHtml" }, {}, [child]);
-    const elements = [child];
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
-      content: `<div id="b" class="rh">BBB</div>`,
-      meta
+      selector: "#a",
+      prehidingSelector: "#a",
+      content: `<div id="b" class="rh">BBB</div>`
     };
-    const event = { elements, prehidingSelector: "#a" };
+    const event = { notify };
 
     return replaceHtml(settings, event).then(() => {
       const result = selectNodes("div#replaceHtml .rh");
 
       expect(result.length).toEqual(1);
       expect(result[0].innerHTML).toEqual("BBB");
-      expect(collect).toHaveBeenCalledWith(meta);
+      expect(notify).toHaveBeenCalled();
     });
   });
 });

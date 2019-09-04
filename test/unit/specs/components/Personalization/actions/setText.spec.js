@@ -1,6 +1,7 @@
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import { noop } from "../../../../../../src/utils";
 
 describe("Personalization::actions::setText", () => {
   beforeEach(() => {
@@ -12,8 +13,8 @@ describe("Personalization::actions::setText", () => {
   });
 
   it("should set personalized text", () => {
-    const collect = jasmine.createSpy();
-    const modules = initRuleComponentModules(collect);
+    const notify = jasmine.createSpy();
+    const modules = initRuleComponentModules(noop);
     const { setText } = modules;
     const element = createNode("div", { id: "setText" });
     element.textContent = "foo";
@@ -21,13 +22,16 @@ describe("Personalization::actions::setText", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
-    const settings = { content: "bar", meta };
-    const event = { elements, prehidingSelector: "#setText" };
+    const settings = {
+      selector: "#setText",
+      prehidingSelector: "#setText",
+      content: "bar"
+    };
+    const event = { notify };
 
     return setText(settings, event).then(() => {
       expect(elements[0].textContent).toEqual("bar");
-      expect(collect).toHaveBeenCalledWith(meta);
+      expect(notify).toHaveBeenCalled();
     });
   });
 });

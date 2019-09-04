@@ -5,6 +5,7 @@ import {
 } from "../../../../../../src/utils/dom";
 import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import { noop } from "../../../../../../src/utils";
 
 describe("Personalization::actions::insertAfter", () => {
   beforeEach(() => {
@@ -16,8 +17,8 @@ describe("Personalization::actions::insertAfter", () => {
   });
 
   it("should insert after personalized content", () => {
-    const collect = jasmine.createSpy();
-    const modules = initRuleComponentModules(collect);
+    const notify = jasmine.createSpy();
+    const modules = initRuleComponentModules(noop);
     const { insertAfter } = modules;
     const child = createNode(
       "div",
@@ -25,23 +26,22 @@ describe("Personalization::actions::insertAfter", () => {
       { innerHTML: "AAA" }
     );
     const element = createNode("div", { id: "insertAfter" }, {}, [child]);
-    const elements = [child];
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
-      content: `<div id="b" class="ia">BBB</div>`,
-      meta
+      selector: "#a",
+      prehidingSelector: "#a",
+      content: `<div id="b" class="ia">BBB</div>`
     };
-    const event = { elements, prehidingSelector: "#a" };
+    const event = { notify };
 
     return insertAfter(settings, event).then(() => {
       const result = selectNodes("div#insertAfter .ia");
 
       expect(result[0].innerHTML).toEqual("AAA");
       expect(result[1].innerHTML).toEqual("BBB");
-      expect(collect).toHaveBeenCalledWith(meta);
+      expect(notify).toHaveBeenCalled();
     });
   });
 });

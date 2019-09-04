@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { removeNode } from "../../../utils/dom";
-import elementExists from "../events/elementExists";
+import createRuleLoaded from "../events/ruleLoaded";
 import {
   createAction,
   setHtml,
@@ -29,21 +29,21 @@ import {
 
 export default collect => {
   return {
-    elementExists,
-    setHtml: createAction(collect, setHtml),
-    customCode: createAction(collect, setHtml),
-    setText: createAction(collect, setText),
-    setAttribute: createAction(collect, setAttributes),
-    setImageSource: createAction(collect, swapImage),
-    setStyle: createAction(collect, setStyles),
-    move: createAction(collect, setStyles),
-    resize: createAction(collect, setStyles),
-    rearrange: createAction(collect, rearrangeChildren),
-    remove: createAction(collect, removeNode),
-    insertAfter: createAction(collect, insertHtmlAfter),
-    insertBefore: createAction(collect, insertHtmlBefore),
-    replaceHtml: createAction(collect, replaceHtml),
-    prependHtml: createAction(collect, prependHtml),
-    appendHtml: createAction(collect, appendHtml)
+    ruleLoaded: createRuleLoaded(collect),
+    setHtml: createAction(setHtml),
+    customCode: createAction(setHtml),
+    setText: createAction(setText),
+    setAttribute: createAction(setAttributes),
+    setImageSource: createAction(swapImage),
+    setStyle: createAction(setStyles),
+    move: createAction(setStyles),
+    resize: createAction(setStyles),
+    rearrange: createAction(rearrangeChildren),
+    remove: createAction(removeNode),
+    insertAfter: createAction(insertHtmlAfter),
+    insertBefore: createAction(insertHtmlBefore),
+    replaceHtml: createAction(replaceHtml),
+    prependHtml: createAction(prependHtml),
+    appendHtml: createAction(appendHtml)
   };
 };

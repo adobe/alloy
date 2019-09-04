@@ -5,6 +5,7 @@ import {
 } from "../../../../../../src/utils/dom";
 import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import { noop } from "../../../../../../src/utils";
 
 describe("Personalization::actions::prependHtml", () => {
   beforeEach(() => {
@@ -16,8 +17,8 @@ describe("Personalization::actions::prependHtml", () => {
   });
 
   it("should prepend personalized content", () => {
-    const collect = jasmine.createSpy();
-    const modules = initRuleComponentModules(collect);
+    const notify = jasmine.createSpy();
+    const modules = initRuleComponentModules(noop);
     const { prependHtml } = modules;
     const content = `<li>3</li>`;
     const element = createNode(
@@ -25,16 +26,15 @@ describe("Personalization::actions::prependHtml", () => {
       { id: "prependHtml" },
       { innerHTML: content }
     );
-    const elements = [element];
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
-      content: `<li>1</li><li>2</li>`,
-      meta
+      selector: "#prependHtml",
+      prehidingSelector: "#prependHtml",
+      content: `<li>1</li><li>2</li>`
     };
-    const event = { elements, prehidingSelector: "#prependHtml" };
+    const event = { notify };
 
     return prependHtml(settings, event).then(() => {
       const result = selectNodes("ul#prependHtml li");
@@ -43,7 +43,7 @@ describe("Personalization::actions::prependHtml", () => {
       expect(result[0].innerHTML).toEqual("1");
       expect(result[1].innerHTML).toEqual("2");
       expect(result[2].innerHTML).toEqual("3");
-      expect(collect).toHaveBeenCalledWith(meta);
+      expect(notify).toHaveBeenCalled();
     });
   });
 });

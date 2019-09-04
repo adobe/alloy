@@ -5,6 +5,7 @@ import {
 } from "../../../../../../src/utils/dom";
 import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import { noop } from "../../../../../../src/utils";
 
 describe("Presonalization::actions::remove", () => {
   beforeEach(() => {
@@ -16,24 +17,25 @@ describe("Presonalization::actions::remove", () => {
   });
 
   it("should remove element", () => {
-    const collect = jasmine.createSpy();
-    const modules = initRuleComponentModules(collect);
+    const notify = jasmine.createSpy();
+    const modules = initRuleComponentModules(noop);
     const { remove } = modules;
     const content = `<div id="child"></div>`;
     const element = createNode("div", { id: "remove" }, { innerHTML: content });
-    const elements = [element];
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
-    const settings = { meta };
-    const event = { elements, prehidingSelector: "#remove" };
+    const settings = {
+      selector: "#remove",
+      prehidingSelector: "#remove"
+    };
+    const event = { notify };
 
     return remove(settings, event).then(() => {
       const result = selectNodes("#child");
 
       expect(result.length).toEqual(0);
-      expect(collect).toHaveBeenCalledWith(meta);
+      expect(notify).toHaveBeenCalled();
     });
   });
 });

@@ -5,8 +5,9 @@ import {
 } from "../../../../../../src/utils/dom";
 import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import { noop } from "../../../../../../src/utils";
 
-describe("Presonalization::actions::rearrange", () => {
+describe("Personalization::actions::rearrange", () => {
   beforeEach(() => {
     cleanUpDomChanges("rearrange");
   });
@@ -16,8 +17,8 @@ describe("Presonalization::actions::rearrange", () => {
   });
 
   it("should rearrange elements when from < to", () => {
-    const collect = jasmine.createSpy();
-    const modules = initRuleComponentModules(collect);
+    const notify = jasmine.createSpy();
+    const modules = initRuleComponentModules(noop);
     const { rearrange } = modules;
     const content = `
       <li>1</li>
@@ -29,13 +30,15 @@ describe("Presonalization::actions::rearrange", () => {
       { id: "rearrange" },
       { innerHTML: content }
     );
-    const elements = [element];
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
-    const settings = { content: { from: 0, to: 2 }, meta };
-    const event = { elements, prehidingSelector: "#rearrange" };
+    const settings = {
+      selector: "#rearrange",
+      prehidingSelector: "#rearrange",
+      content: { from: 0, to: 2 }
+    };
+    const event = { notify };
 
     return rearrange(settings, event).then(() => {
       const result = selectNodes("li");
@@ -43,13 +46,13 @@ describe("Presonalization::actions::rearrange", () => {
       expect(result[0].textContent).toEqual("2");
       expect(result[1].textContent).toEqual("3");
       expect(result[2].textContent).toEqual("1");
-      expect(collect).toHaveBeenCalledWith(meta);
+      expect(notify).toHaveBeenCalled();
     });
   });
 
   it("should rearrange elements when from > to", () => {
-    const collect = jasmine.createSpy();
-    const modules = initRuleComponentModules(collect);
+    const notify = jasmine.createSpy();
+    const modules = initRuleComponentModules(noop);
     const { rearrange } = modules;
     const content = `
       <li>1</li>
@@ -61,13 +64,15 @@ describe("Presonalization::actions::rearrange", () => {
       { id: "rearrange" },
       { innerHTML: content }
     );
-    const elements = [element];
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
-    const settings = { content: { from: 2, to: 0 }, meta };
-    const event = { elements, prehidingSelector: "#rearrange" };
+    const settings = {
+      selector: "#rearrange",
+      prehidingSelector: "#rearrange",
+      content: { from: 2, to: 0 }
+    };
+    const event = { notify };
 
     return rearrange(settings, event).then(() => {
       const result = selectNodes("li");
@@ -75,7 +80,7 @@ describe("Presonalization::actions::rearrange", () => {
       expect(result[0].textContent).toEqual("3");
       expect(result[1].textContent).toEqual("1");
       expect(result[2].textContent).toEqual("2");
-      expect(collect).toHaveBeenCalledWith(meta);
+      expect(notify).toHaveBeenCalled();
     });
   });
 });

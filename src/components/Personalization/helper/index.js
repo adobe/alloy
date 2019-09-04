@@ -10,7 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { showElements } from "../flicker";
+import { awaitSelector } from "../../../utils/dom";
+import { hideElements, showElements } from "../flicker";
+import { selectNodesWithEq } from "./dom";
 
 export { default as setText } from "./setText";
 export { default as setHtml } from "./setHtml";
@@ -24,22 +26,32 @@ export { default as setAttributes } from "./setAttributes";
 export { default as swapImage } from "./swapImage";
 export { default as rearrangeChildren } from "./rearrangeChildren";
 
-export const createAction = (collect, renderFunc) => {
-  return (settings, event) => {
-    const { elements, prehidingSelector } = event;
-    const { content, meta } = settings;
-    const executions = elements.map(element =>
-      Promise.resolve(renderFunc(element, content))
-    );
+const renderContent = (elements, content, renderFunc) => {
+  const executions = elements.map(element =>
+    Promise.resolve(renderFunc(element, content))
+  );
 
-    return Promise.all(executions)
+  return Promise.all(executions);
+};
+
+export const createAction = renderFunc => {
+  return (settings, event) => {
+    const { notify } = event;
+    const { selector, prehidingSelector, content } = settings;
+
+    hideElements(prehidingSelector);
+
+    return awaitSelector(selector, selectNodesWithEq)
+      .then(elements => renderContent(elements, content, renderFunc))
       .then(() => {
-        // Success, unhide elements and notify
+        // if everything is OK, notify and show elements
+        notify();
         showElements(prehidingSelector);
-        collect(meta);
       })
       .catch(() => {
-        // Something went horribly wrong, unhide elements
+        // in case of awaiting timing or error, we need to remove the style tag
+        // hence showing the pre-hidden elements and notify
+        notify();
         showElements(prehidingSelector);
       });
   };
