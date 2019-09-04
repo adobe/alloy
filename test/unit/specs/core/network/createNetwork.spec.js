@@ -40,12 +40,12 @@ describe("createNetwork", () => {
     network = createNetwork(config, logger, lifecycle, networkStrategy);
   });
 
-  it("calls interact by default", () => {
-    return network.sendRequest({}, true).then(() => {
+  it("can call interact", () => {
+    return network.sendRequest({}, true, false).then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
         "https://alloy.mysite.com/v1/interact?propertyId=mypropertyid",
         "{}",
-        true
+        false
       );
     });
   });
@@ -56,6 +56,26 @@ describe("createNetwork", () => {
         "https://alloy.mysite.com/v1/collect?propertyId=mypropertyid",
         "{}",
         false
+      );
+    });
+  });
+
+  it("can call when the document is unloading", () => {
+    return network.sendRequest({}, false, true).then(() => {
+      expect(networkStrategy).toHaveBeenCalledWith(
+        "https://alloy.mysite.com/v1/collect?propertyId=mypropertyid",
+        "{}",
+        true
+      );
+    });
+  });
+
+  it("uses collect when a request expects a response and is an exit link", () => {
+    return network.sendRequest({}, true, true).then(() => {
+      expect(networkStrategy).toHaveBeenCalledWith(
+        "https://alloy.mysite.com/v1/collect?propertyId=mypropertyid",
+        "{}",
+        true
       );
     });
   });
@@ -101,17 +121,21 @@ describe("createNetwork", () => {
     });
   });
 
-  it("runs onResponseError hook and rejects the returned promise", () => {
-    networkStrategy.and.returnValue(Promise.reject(new Error("myerror")));
+  it("runs onResponseError hook and rejects the returned promise with network error rather than lifecycle error", () => {
+    networkStrategy.and.returnValue(Promise.reject(new Error("networkerror")));
+    lifecycle.onResponseError.and.returnValue(
+      Promise.reject(new Error("lifecycleerror"))
+    );
     return network
       .sendRequest({}, true)
       .then(() => {
-        throw Error("Expecting sendRequest to fail.");
+        // If sendRequest resolves instead of rejects, we want this test to fail.
+        throw Error("Expected sendRequest to reject promise.");
       })
       .catch(error => {
         expect(lifecycle.onResponseError).toHaveBeenCalledWith(error);
         expect(error.message).toEqual(
-          "Network request failed.\nCaused by: myerror"
+          "Network request failed.\nCaused by: networkerror"
         );
       });
   });
@@ -121,7 +145,8 @@ describe("createNetwork", () => {
     return network
       .sendRequest({}, true)
       .then(() => {
-        throw Error("Expecting sendRequest to fail.");
+        // If sendRequest resolves instead of rejects, we want this test to fail.
+        throw Error("Expected sendRequest to reject promise.");
       })
       .catch(error => {
         expect(lifecycle.onResponseError).toHaveBeenCalledWith(error);

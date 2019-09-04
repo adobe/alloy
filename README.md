@@ -24,7 +24,7 @@ Several npm scripts have been provided for assisting in development. Each script
 * `lint` Analyzes code for potential errors.
 * `format` Formats code to match agreed-upon style guidelines.
 
-For functional testing, please see the [functional testing documentation](test/docs/functional.md).
+For functional testing, please see the [functional testing documentation](test/docs/alloy_qe_func.png).
 
 When you attempt to commit code changes, several of the above tasks will be run automatically to help ensure that your changes pass tests and are consistent with agreed-upon standards.
 

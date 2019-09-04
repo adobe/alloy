@@ -18,6 +18,6 @@ export default (config, logger, lifecycle) => {
     config,
     logger,
     lifecycle,
-    createNetworkStrategy(window)
+    createNetworkStrategy(window, logger)
   );
 };

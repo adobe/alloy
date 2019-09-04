@@ -10,14 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { defer, assign, flatMap, crc32 } from "../../utils";
+import { defer } from "../../utils";
 import { nonNegativeInteger } from "../../utils/configValidators";
 import createIdSyncs from "./createIdSyncs";
-import createEvent from "../DataCollector/createEvent";
-import { validateCustomerIds, normalizeCustomerIds } from "./util";
 import { COOKIE_NAMES } from "./constants";
+import setCustomerIds from "./setCustomerIds";
 
-const { CUSTOMER_ID_HASH, EXPERIENCE_CLOUD_ID } = COOKIE_NAMES;
+const { EXPERIENCE_CLOUD_ID } = COOKIE_NAMES;
 
 const addIdsContext = (payload, ecid) => {
   // TODO: Add customer ids.
@@ -35,48 +34,21 @@ const createIdentity = ({ config, logger, cookieJar }) => {
   let network;
   let lifecycle;
   const idSyncs = createIdSyncs(config, logger, cookieJar);
-  const customerIds = {};
   let alreadyQueriedForIdSyncs = false;
-
-  const makeServerCall = payload => {
-    return lifecycle.onBeforeDataCollection(payload).then(() => {
-      return network.sendRequest(payload, payload.expectsResponse);
-    });
-  };
-
-  const setCustomerIds = ids => {
-    validateCustomerIds(ids);
-    const event = createEvent(); // FIXME: We shouldn't need an event.
-    event.mergeData({}); // FIXME: We shouldn't need an event.
-    const payload = network.createPayload();
-    payload.addEvent(event); // FIXME: We shouldn't need an event.
-    assign(customerIds, ids);
-
-    const normalizedCustomerIds = normalizeCustomerIds(customerIds);
-
-    Object.keys(normalizedCustomerIds).forEach(idName => {
-      payload.addIdentity(idName, normalizedCustomerIds[idName]);
-    });
-    const customerIdsHash = crc32(
-      JSON.stringify(normalizedCustomerIds)
-    ).toString(36);
-    // TODO: add more tests around this piece
-    const customerIdChanged =
-      customerIdsHash !== cookieJar.get(CUSTOMER_ID_HASH);
-    payload.mergeMeta({ identityMap: { customerIdChanged } });
-    if (customerIdChanged) {
-      cookieJar.set(CUSTOMER_ID_HASH, customerIdsHash);
-    }
-    return lifecycle
-      .onBeforeEvent(event, {}, false) // FIXME: We shouldn't need an event.
-      .then(() => optIn.whenOptedIn())
-      .then(() => makeServerCall(payload));
-  };
 
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
         ({ lifecycle, network, optIn } = tools);
+
+        // #if _REACTOR
+        // This is a way for the ECID data element in the Reactor extension
+        // to get the ECID synchronously since data elements are required
+        // to be synchronous.
+        config.reactorRegisterGetEcid(() => {
+          return optIn.isOptedIn() ? getEcid() : undefined;
+        });
+        // #endif
       },
       // Waiting for opt-in because we'll be reading the ECID from a cookie
       onBeforeEvent(event) {
@@ -144,12 +116,7 @@ const createIdentity = ({ config, logger, cookieJar }) => {
             }
           }
 
-          idSyncs.process(
-            flatMap(
-              response.getPayloadsByType("identity:exchange"),
-              fragment => fragment
-            )
-          );
+          idSyncs.process(response.getPayloadsByType("identity:exchange"));
         });
       }
     },
@@ -159,7 +126,11 @@ const createIdentity = ({ config, logger, cookieJar }) => {
       },
       // TODO: Discuss renaming of CustomerIds to UserIds
       setCustomerIds(options) {
-        return optIn.whenOptedIn().then(() => setCustomerIds(options));
+        return optIn
+          .whenOptedIn()
+          .then(() =>
+            setCustomerIds(options, cookieJar, lifecycle, network, optIn)
+          );
       }
     }
   };
@@ -176,5 +147,12 @@ createIdentity.configValidators = {
     validate: nonNegativeInteger
   }
 };
+
+// #if _REACTOR
+// Not much need to validate since we are our own consumer.
+createIdentity.configValidators.reactorRegisterGetEcid = {
+  defaultValue: () => {}
+};
+// #endif
 
 export default createIdentity;

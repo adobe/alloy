@@ -15,17 +15,17 @@ import fetchFactory from "./fetch";
 import sendBeaconFactory from "./sendBeacon";
 import isFunction from "../../utils/isFunction";
 
-export default window => {
+export default (window, logger) => {
   const fetch = isFunction(window.fetch)
     ? fetchFactory(window.fetch)
     : xhrRequestFactory(window.XMLHttpRequest);
   const sendBeacon =
     window.navigator && isFunction(window.navigator.sendBeacon)
-      ? sendBeaconFactory(window.navigator)
+      ? sendBeaconFactory(window.navigator, fetch, logger)
       : fetch;
 
-  return (url, body, expectsResponse) => {
-    const method = expectsResponse ? fetch : sendBeacon;
+  return (url, body, documentUnloading) => {
+    const method = documentUnloading ? sendBeacon : fetch;
     return method(url, body);
   };
 };

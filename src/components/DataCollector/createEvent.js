@@ -18,8 +18,8 @@ export default () => {
   let expectsResponse = false;
 
   return {
-    set stitchId(stitchId) {
-      content.stitchId = stitchId;
+    set eventMergeId(eventMergeId) {
+      content.eventMergeId = eventMergeId;
     },
     mergeData: createMerger(content, "data"),
     mergeMeta: createMerger(content, "meta"),
@@ -28,6 +28,9 @@ export default () => {
     mergeDevice: createMerger(content, "device"),
     mergeEnvironment: createMerger(content, "environment"),
     mergePlaceContext: createMerger(content, "placeContext"),
+    set timestamp(timestamp) {
+      content.timestamp = timestamp;
+    },
     expectResponse() {
       expectsResponse = true;
     },

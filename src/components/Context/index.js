@@ -15,21 +15,28 @@ import deviceFactory from "./deviceFactory";
 import environmentFactory from "./environmentFactory";
 import placeContextFactory from "./placeContextFactory";
 import topFrameSetFactory from "./topFrameSetFactory";
+import timestampFactory from "./timestampFactory";
 import createComponent from "./createComponent";
 
 const topFrameSetProvider = topFrameSetFactory(window);
 const web = webFactory(window, topFrameSetProvider);
 const device = deviceFactory(window);
 const environment = environmentFactory(window);
-const placeContext = placeContextFactory(window, () => new Date());
+const placeContext = placeContextFactory(() => new Date());
+const timestamp = timestampFactory(() => new Date());
 
 const createContext = ({ config, logger }) => {
-  return createComponent(config, logger, {
-    web,
-    device,
-    environment,
-    placeContext
-  });
+  return createComponent(
+    config,
+    logger,
+    {
+      web,
+      device,
+      environment,
+      placeContext
+    },
+    [timestamp]
+  );
 };
 
 createContext.namespace = "Context";

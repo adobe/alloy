@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import processDestinations from "./processDestinations";
-import { flatMap } from "../../utils";
 
 const createAudiences = ({ config, logger }) => {
   return {
@@ -22,10 +21,7 @@ const createAudiences = ({ config, logger }) => {
         }
       },
       onResponse(response) {
-        const destinations = flatMap(
-          response.getPayloadsByType("activation:push"),
-          payloads => payloads
-        );
+        const destinations = response.getPayloadsByType("activation:push");
 
         processDestinations({
           destinations,

@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { flatMap } from "../../utils";
+
 /**
  * Represents a gateway response with the addition to helper methods.
  *
@@ -33,9 +35,10 @@ export default (content = { requestId: "", handle: [] }) => {
   return {
     getPayloadsByType(type) {
       const { handle = [] } = content;
-      return handle
-        .filter(fragment => fragment.type === type)
-        .map(fragment => fragment.payload);
+      return flatMap(
+        handle.filter(fragment => fragment.type === type),
+        fragment => fragment.payload
+      );
     },
     toJSON() {
       return content;

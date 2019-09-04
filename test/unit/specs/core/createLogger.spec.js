@@ -18,16 +18,14 @@ const spawnPrefix = "testspawnprefix";
 const message = "test message";
 
 describe("createLogger", () => {
-  let window;
+  let console;
   let logController;
   let logger;
 
   beforeEach(() => {
-    window = {
-      console: jasmine.createSpyObj("console", logMethods)
-    };
+    console = jasmine.createSpyObj("console", logMethods);
     logController = {};
-    logger = createLogger(window, logController, prefix);
+    logger = createLogger(console, logController, prefix);
   });
 
   const testLogMethods = expectedPrefix => {
@@ -36,7 +34,7 @@ describe("createLogger", () => {
         logController.logEnabled = true;
         logger[logMethod](message);
 
-        expect(window.console[logMethod]).toHaveBeenCalledWith(
+        expect(console[logMethod]).toHaveBeenCalledWith(
           expectedPrefix,
           message
         );
@@ -46,7 +44,7 @@ describe("createLogger", () => {
         logController.logEnabled = false;
         logger[logMethod](message);
 
-        expect(window.console[logMethod]).not.toHaveBeenCalled();
+        expect(console[logMethod]).not.toHaveBeenCalled();
       });
     });
   };

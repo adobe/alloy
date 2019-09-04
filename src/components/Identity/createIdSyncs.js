@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { assign, fireDestinations, convertTimes } from "../../utils";
-import { DAY, HOUR, MILLISECOND } from "../../utils/convertTimes";
-import { COOKIE_NAMES } from "./constants";
+import { DAY, HOUR, MINUTE, MILLISECOND } from "../../utils/convertTimes";
+import { COOKIE_NAMES, DEFAULT_ID_SYNC_TTL_MINUTES } from "./constants";
 
 const { ID_SYNC_TIMESTAMP, ID_SYNC_CONTROL } = COOKIE_NAMES;
 const getControlObject = cookieJar => {
@@ -38,7 +38,7 @@ const setControlObject = (controlObject, cookieJar) => {
 
 const createProcessor = (config, logger, cookieJar) => destinations => {
   if (!config.idSyncsEnabled) {
-    return;
+    return Promise.resolve();
   }
 
   const controlObject = getControlObject(cookieJar);
@@ -62,20 +62,24 @@ const createProcessor = (config, logger, cookieJar) => destinations => {
     );
 
   if (idSyncs.length) {
-    fireDestinations({
+    return fireDestinations({
       logger,
       destinations: idSyncs
     }).then(result => {
-      const timeStamp = Math.round(
+      const nowInHours = Math.round(
         convertTimes(MILLISECOND, HOUR, new Date().getTime())
-      ); // hours
+      );
 
       result.succeeded.forEach(idSync => {
-        const ttl = (idSync.ttl || 7) * 24; // hours
+        const ttlInHours = Math.round(
+          convertTimes(
+            MINUTE,
+            HOUR,
+            idSync.ttlMinutes || DEFAULT_ID_SYNC_TTL_MINUTES
+          )
+        );
 
-        if (idSync.id !== undefined) {
-          controlObject[idSync.id] = timeStamp + ttl;
-        }
+        controlObject[idSync.id] = nowInHours + ttlInHours;
       });
 
       setControlObject(controlObject, cookieJar);
@@ -89,6 +93,8 @@ const createProcessor = (config, logger, cookieJar) => destinations => {
       );
     });
   }
+
+  return Promise.resolve();
 };
 
 const createExpiryChecker = cookieJar => () => {

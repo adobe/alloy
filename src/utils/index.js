@@ -15,6 +15,10 @@ governing permissions and limitations under the License.
 // Please keep in alphabetical order.
 export { default as assign } from "./assign";
 export { default as clone } from "./clone";
+export { default as convertBufferToHex } from "./convertBufferToHex";
+export {
+  default as convertStringToSha256Buffer
+} from "./convertStringToSha256Buffer";
 export { default as convertTimes } from "./convertTimes";
 export { default as cookieJar } from "./cookieJar";
 export { default as createMerger } from "./createMerger";
@@ -27,7 +31,6 @@ export { default as fireDestinations } from "./fireDestinations";
 export { default as fireImage } from "./fireImage";
 export { default as flatMap } from "./flatMap";
 export { default as getLastArrayItems } from "./getLastArrayItems";
-export { default as getNestedObject } from "./getNestedObject";
 export { default as getTopLevelCookieDomain } from "./getTopLevelCookieDomain";
 export { default as includes } from "./includes";
 export { default as intersection } from "./intersection";
@@ -41,12 +44,13 @@ export { default as isObject } from "./isObject";
 export { default as isString } from "./isString";
 export { default as memoize } from "./memoize";
 export { default as noop } from "./noop";
+export { default as padStart } from "./padStart";
 export { default as queryString } from "./querystring";
-export { default as setNestedObject } from "./setNestedObject";
 export { default as stackError } from "./stackError";
 export { default as storageFactory } from "./storageFactory";
 export { default as stringToBoolean } from "./stringToBoolean";
 export { default as toArray } from "./toArray";
 export { default as toError } from "./toError";
+export { default as toISOStringLocal } from "./toISOStringLocal";
 export { default as uuid } from "./uuid";
 export { default as values } from "./values";

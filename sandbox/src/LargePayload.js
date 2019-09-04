@@ -2,13 +2,17 @@ import React from "react";
 
 export default function LargePayload() {
 
-  const makePayload = size => () => {
-    const payload = new Uint8Array(size * 1024);
-    window.alloy("event", {
-      data: {
-        payload
-      }
-    });
+  const makePayload = (size, times = 1) => () => {
+    var i;
+    for (i = 0; i < times; i++) {
+      const payload = new Uint8Array(size * 1024);
+      window.alloy("event", {
+        documentUnloading: true,
+        data: {
+          payload
+        }
+      });
+    }
   };
 
   return (
@@ -24,6 +28,11 @@ export default function LargePayload() {
       <p onClick={makePayload(50)}>Send 50kb payload</p>
       <p onClick={makePayload(100)}>Send 100kb payload</p>
       <p onClick={makePayload(200)}>Send 200kb payload</p>
+
+      <p onClick={makePayload(5, 2)}>Send 2 5kb payloads</p>
+      <p onClick={makePayload(5, 3)}>Send 3 5kb payloads</p>
+      <p onClick={makePayload(5, 4)}>Send 4 5kb payloads</p>
+
     </div>
   );
 }

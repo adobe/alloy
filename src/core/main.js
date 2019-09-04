@@ -29,7 +29,7 @@ import createAudiences from "../components/Audiences";
 import createPersonalization from "../components/Personalization";
 import createContext from "../components/Context";
 import createPrivacy from "../components/Privacy";
-import createStitch from "../components/Stitch";
+import createEventMerge from "../components/EventMerge";
 import createLibraryInfo from "../components/LibraryInfo";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
@@ -41,7 +41,7 @@ const componentCreators = [
   createPersonalization,
   createContext,
   createPrivacy,
-  createStitch,
+  createEventMerge,
   createLibraryInfo
 ];
 
@@ -50,13 +50,24 @@ const namespaces = window.__alloyNS;
 
 const createNamespacedStorage = storageFactory(window);
 
+let console;
+
+// #if _REACTOR
+// When running within the Reactor extension, we want logging to be
+// toggled when Reactor logging is toggled. The easiest way to do
+// this is to pipe our log messages through the Reactor logger.
+console = turbine.logger;
+// #else
+({ console } = window);
+// #endif
+
 if (namespaces) {
   namespaces.forEach(namespace => {
     const logController = createLogController(
       namespace,
       createNamespacedStorage
     );
-    const logger = createLogger(window, logController, `[${namespace}]`);
+    const logger = createLogger(console, logController, `[${namespace}]`);
 
     const initializeComponents = initializeComponentsFactory(
       componentCreators,

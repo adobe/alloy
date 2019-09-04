@@ -4,6 +4,7 @@ export default function Links() {
 
   const adobeLink = () => {
     window.alloy("event", {
+      documentUnloading: true,
       data: {
         "activitystreams:href": "http://www.adobe.com"
       }

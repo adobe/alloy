@@ -59,18 +59,7 @@ const guardHook = fn => {
 
 export default componentRegistry => {
   return hookNames.reduce((memo, hookName) => {
-    let hook = createHook(componentRegistry, hookName);
-
-    // For onComponentsRegistered, we need to make sure it fires right away
-    // rather than delaying it in guardHook. This is so if
-    // a command is executed right way, we can be sure that all the components
-    // will have already had their onComponentsRegistered
-    // called and be ready to handle the command.
-    if (hookName !== "onComponentsRegistered") {
-      hook = guardHook(hook);
-    }
-
-    memo[hookName] = hook;
+    memo[hookName] = guardHook(createHook(componentRegistry, hookName));
     return memo;
   }, {});
 };
