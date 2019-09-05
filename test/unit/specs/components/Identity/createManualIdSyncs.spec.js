@@ -17,9 +17,9 @@ const logger = {
 const manualIdSyncs = createManualIdSyncs(config, logger, cookieJar);
 
 describe("Identity::createManualIdSyncs", () => {
-  it("syncIdByUrl only processes valid id syncs", () => {
+  it("syncIdsByUrl throws an error if not all id syncs are valid", () => {
     const data = {
-      idSyncsArray: [
+      idSyncs: [
         {
           id: 500,
           spec: {
@@ -81,7 +81,40 @@ describe("Identity::createManualIdSyncs", () => {
       ]
     };
 
-    return manualIdSyncs.syncIdByUrl(data).then(result => {
+    return manualIdSyncs.syncIdsByUrl(data).catch(result => {
+      expect(result.message).toEqual(
+        "syncIdsByUrl was passed one or more invalid id syncs."
+      );
+    });
+  });
+
+  it("syncIdsByUrl only processes if all id syncs are valid", () => {
+    const data = {
+      idSyncs: [
+        {
+          type: "url",
+          id: 501,
+          spec: {
+            url:
+              "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013271",
+            hideReferrer: 0,
+            ttlMinutes: 120
+          }
+        },
+        {
+          type: "url",
+          id: 504,
+          spec: {
+            url:
+              "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013274",
+            hideReferrer: 0,
+            ttlMinutes: 120
+          }
+        }
+      ]
+    };
+
+    return manualIdSyncs.syncIdsByUrl(data).then(result => {
       expect(result.succeeded.length).toEqual(2);
       expect(result.succeeded[0].url).toEqual(
         "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013271"

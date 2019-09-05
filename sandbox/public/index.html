@@ -74,8 +74,8 @@
         console.log("Sandbox: Set customer IDs event has completed.");
       });
 
-      alloy("syncIdByUrl", {
-        "idSyncsArray": [
+      alloy("syncIdsByUrl", {
+        "idSyncs": [
           {
             type: "url",
             id: 500,
@@ -88,7 +88,7 @@
           }
         ]
       }).then(function(result) {
-        console.log("syncIdByUrl result", result);
+        console.log("syncIdsByUrl result", result);
       });
 
       // For Testing multiple instances
