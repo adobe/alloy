@@ -13,15 +13,14 @@ governing permissions and limitations under the License.
 import createIdSyncs from "./createIdSyncs";
 import { isObject, isNumber, isNonEmptyString } from "../../utils";
 
-const createSyncIdByUrl = (
+const createSyncIdsByUrl = (
   config,
   logger,
   cookieJar,
   idSyncsProcessor
 ) => data => {
-  let hasInvalidIdSyncs = false;
-
-  const idSyncs = (data.idSyncsArray || []).filter((idSync = {}) => {
+  const { idSyncs = [] } = data;
+  const areAllIdSyncsValid = idSyncs.every((idSync = {}) => {
     if (
       !isObject(idSync) ||
       idSync.type !== "url" ||
@@ -32,45 +31,30 @@ const createSyncIdByUrl = (
       (idSync.spec.ttlMinutes !== undefined &&
         !isNumber(idSync.spec.ttlMinutes))
     ) {
-      hasInvalidIdSyncs = true;
-
       return false;
     }
 
     return true;
   });
 
-  if (hasInvalidIdSyncs) {
-    logger.log(`[syncIdByUrl] was passed one or more invalid id syncs. The correct format is:
-     {
-        type: "url",
-        id: 411,
-        spec: {
-          url:
-            "https://idsync.com/365868.gif?partner_uid=79653899615727305204290942296930013268",
-          hideReferrer: 0, // 0/1
-          ttlMinutes: 120 // default = 10080 minutes = 7 days
-        }
-      }`);
+  if (!areAllIdSyncsValid) {
+    return Promise.reject(
+      new Error("syncIdsByUrl was passed one or more invalid id syncs.")
+    );
   }
 
-  if (idSyncs.length) {
-    return idSyncsProcessor.process(idSyncs).then(result => {
-      logger.log("[syncIdByUrl] processed successfully");
-
-      return Promise.resolve(result);
-    });
-  }
-
-  return Promise.resolve({
-    message: "[syncIdByUrl] No ID syncs were in queue"
-  });
+  return idSyncsProcessor.process(idSyncs);
 };
 
 export default (config, logger, cookieJar) => {
   const idSyncsProcessor = createIdSyncs(config, logger, cookieJar);
 
   return {
-    syncIdByUrl: createSyncIdByUrl(config, logger, cookieJar, idSyncsProcessor)
+    syncIdsByUrl: createSyncIdsByUrl(
+      config,
+      logger,
+      cookieJar,
+      idSyncsProcessor
+    )
   };
 };

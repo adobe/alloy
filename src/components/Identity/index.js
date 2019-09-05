@@ -134,10 +134,10 @@ const createIdentity = ({ config, logger, cookieJar }) => {
             setCustomerIds(options, cookieJar, lifecycle, network, optIn)
           );
       },
-      syncIdByUrl(options) {
+      syncIdsByUrl(options) {
         return optIn
           .whenOptedIn()
-          .then(() => manualIdSyncs.syncIdByUrl(options));
+          .then(() => manualIdSyncs.syncIdsByUrl(options));
       }
     }
   };

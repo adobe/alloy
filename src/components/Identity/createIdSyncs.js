@@ -38,9 +38,7 @@ const setControlObject = (controlObject, cookieJar) => {
 
 const createProcessor = (config, logger, cookieJar) => destinations => {
   if (!config.idSyncsEnabled) {
-    return Promise.resolve({
-      message: "ID syncs not enabled"
-    });
+    return Promise.reject(new Error("ID syncs not enabled"));
   }
 
   const controlObject = getControlObject(cookieJar);
@@ -63,43 +61,37 @@ const createProcessor = (config, logger, cookieJar) => destinations => {
       )
     );
 
-  if (idSyncs.length) {
-    return fireDestinations({
-      logger,
-      destinations: idSyncs
-    }).then(result => {
-      const nowInHours = Math.round(
-        convertTimes(MILLISECOND, HOUR, new Date().getTime())
+  return fireDestinations({
+    logger,
+    destinations: idSyncs
+  }).then(result => {
+    const nowInHours = Math.round(
+      convertTimes(MILLISECOND, HOUR, new Date().getTime())
+    );
+
+    result.succeeded.forEach(idSync => {
+      const ttlInHours = Math.round(
+        convertTimes(
+          MINUTE,
+          HOUR,
+          idSync.ttlMinutes || DEFAULT_ID_SYNC_TTL_MINUTES
+        )
       );
 
-      result.succeeded.forEach(idSync => {
-        const ttlInHours = Math.round(
-          convertTimes(
-            MINUTE,
-            HOUR,
-            idSync.ttlMinutes || DEFAULT_ID_SYNC_TTL_MINUTES
-          )
-        );
-
-        controlObject[idSync.id] = nowInHours + ttlInHours;
-      });
-
-      setControlObject(controlObject, cookieJar);
-
-      cookieJar.set(
-        ID_SYNC_TIMESTAMP,
-        (
-          Math.round(convertTimes(MILLISECOND, HOUR, new Date().getTime())) +
-          convertTimes(DAY, HOUR, 7)
-        ).toString(36)
-      );
-
-      return Promise.resolve(result);
+      controlObject[idSync.id] = nowInHours + ttlInHours;
     });
-  }
 
-  return Promise.resolve({
-    message: "No ID syncs were in queue"
+    setControlObject(controlObject, cookieJar);
+
+    cookieJar.set(
+      ID_SYNC_TIMESTAMP,
+      (
+        Math.round(convertTimes(MILLISECOND, HOUR, new Date().getTime())) +
+        convertTimes(DAY, HOUR, 7)
+      ).toString(36)
+    );
+
+    return Promise.resolve(result);
   });
 };
 
