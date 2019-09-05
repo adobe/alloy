@@ -16,6 +16,7 @@ import createIdSyncs from "./createIdSyncs";
 import { COOKIE_NAMES } from "./constants";
 import setCustomerIds from "./setCustomerIds";
 import addCustomerIdsToPayload from "./addCustomerIdsToPayload";
+import { updateCustomerIdState } from "./util";
 
 const { EXPERIENCE_CLOUD_ID } = COOKIE_NAMES;
 
@@ -35,6 +36,9 @@ const createIdentity = ({ config, logger, cookieJar }) => {
   let lifecycle;
   const idSyncs = createIdSyncs(config, logger, cookieJar);
   let alreadyQueriedForIdSyncs = false;
+  // Defining initial state of customerIds
+  let customerIdState = {};
+  let haveCustomerIds = false;
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
@@ -74,10 +78,18 @@ const createIdentity = ({ config, logger, cookieJar }) => {
       },
       // Waiting for opt-in because we'll be reading the ECID from a cookie
       // TO-DOCUMENT: We wait for ECID before trigger any events.
-      onBeforeDataCollection(payload) {
+      onBeforeDataCollection(payload, processedIds) {
         return optIn.whenOptedIn().then(() => {
           const ecid = getEcid();
-          const { customerIds } = config;
+          let customerIdChanged = false;
+          if (processedIds) {
+            customerIdState = updateCustomerIdState(
+              customerIdState,
+              processedIds.normalizedAndHashedIds
+            );
+            haveCustomerIds = true;
+            ({ customerIdChanged } = processedIds);
+          }
           let promise;
 
           if (ecid) {
@@ -89,7 +101,7 @@ const createIdentity = ({ config, logger, cookieJar }) => {
             logger.log("Delaying request while retrieving ECID from server.");
             promise = deferredForEcid.promise.then(() => {
               logger.log("Resuming previously delayed request.");
-              addIdsContext(payload, getEcid(), config);
+              addIdsContext(payload, getEcid());
             });
           } else {
             // We don't have an ECID and no request has gone out to fetch it.
@@ -98,8 +110,12 @@ const createIdentity = ({ config, logger, cookieJar }) => {
             deferredForEcid = defer();
             payload.expectResponse();
           }
-          if (customerIds) {
-            addCustomerIdsToPayload(customerIds, cookieJar, payload);
+          if (haveCustomerIds) {
+            addCustomerIdsToPayload(
+              customerIdState,
+              customerIdChanged,
+              payload
+            );
           }
 
           return promise;

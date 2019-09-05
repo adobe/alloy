@@ -46,14 +46,7 @@
         // By checking this params we know we are in authoring mode
         authoringModeEnabled: document.location.href.indexOf("mboxEdit") !== -1,
         prehidingStyle: "section:nth-of-type(1) { opacity: 0 !important }",
-        idSyncContainerId: 81,
-        "customerIds": {
-          "email" : {
-          "id": "you@gmail.com",
-            "authState": 0,
-            "hash": false 
-          }
-         }
+        idSyncContainerId: 81, 
       });
 
       alloy("event", {
@@ -72,29 +65,21 @@
           "id": "me@gmail.com",
           "authState": 0,
           "hash": true //TODO: document customer ID hashing syntax
-        },
-        "crm" : {
+        },"crm" : {
           "id": "1234",
           "authState": 0
         }
       }).then(function() {
         console.log("Sandbox: Set customer IDs event has completed.");
       });
-
+      
       // For Testing multiple instances
       organizationTwo("configure", {
         // edgeDomain: "edgegateway.azurewebsites.net",
         propertyId: 8888888,
         imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
         logEnabled: true,
-  clickCollectionEnabled: false,
-  "customerIds": {
-          "email" : {
-          "id": "youtoo@gmail.com",
-            "authState": 0,
-            "hash": false 
-          }
-         }
+        clickCollectionEnabled: false, 
       });
     </script>
   </head>

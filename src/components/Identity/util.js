@@ -43,4 +43,11 @@ const normalizeCustomerIds = customerIds => {
   }, {});
 };
 
-export { validateCustomerIds, normalizeCustomerIds };
+const updateCustomerIdState = (currentState, newState) => {
+  return {
+    ...currentState,
+    ...newState
+  };
+};
+
+export { validateCustomerIds, normalizeCustomerIds, updateCustomerIdState };
