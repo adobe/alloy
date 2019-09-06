@@ -10,11 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import createExpected from "./createExpected";
+
+const expected = createExpected("a unique value across instances");
+
 export default () => {
   const values = [];
   return (key, currentValue) => {
     if (values.indexOf(currentValue) >= 0) {
-      return `${key} must be unique`;
+      return expected(key, currentValue);
     }
     values.push(currentValue);
     return "";

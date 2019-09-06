@@ -9,14 +9,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import isString from "../isString";
+import createExpected from "./createExpected";
 
-export default (key, currentValue) => {
-  const validUrl = /^[a-z0-9-.]{1,}$/gi.test(currentValue);
-  let err = "";
+const expected = createExpected("a string");
 
-  if (!validUrl) {
-    err = `Invalid domain for ${key}: ${currentValue}`;
+export default (key, value) => {
+  if (isString(value)) {
+    return "";
   }
-
-  return err;
+  return expected(key, value);
 };

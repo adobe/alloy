@@ -10,20 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (...validators) => {
-  if (validators.length < 2) {
-    throw Error("allValidate requires at least 2 validators");
-  }
+import { string } from "../../../../../src/utils/configValidators";
 
-  return (...args) => {
-    let error;
-    let i;
-    for (i = 0; i < validators.length; i += 1) {
-      error = validators[i](...args);
-      if (error) {
-        return error;
-      }
-    }
-    return "";
-  };
-};
+describe("configValidator::domain", () => {
+  it("accepts", () => {
+    expect(string().domain()("key", "stats.adobe.com")).toBeFalsy();
+  });
+
+  it("rejects", () => {
+    expect(string().domain()("key", "http://stats.adobe.com")).toBeTruthy();
+  });
+});

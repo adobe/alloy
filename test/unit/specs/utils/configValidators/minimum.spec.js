@@ -9,24 +9,16 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { integer } from "../../../../../src/utils/configValidators";
 
-import { string, boolean } from "../../utils/configValidators";
+describe("configValidator::minimum", () => {
+  [0, 42].forEach(value => {
+    it(`accepts ${value}`, () => {
+      expect(integer().minimum(0)("key", value)).toBeFalsy();
+    });
+  });
 
-export default () => {
-  return {
-    propertyId: {
-      validate: string().unique()
-    },
-    edgeDomain: {
-      defaultValue: "alpha.konductor.adobedc.net",
-      validate: string().domain()
-    },
-    imsOrgId: {
-      validate: string().unique()
-    },
-    clickCollectionEnabled: {
-      defaultValue: true,
-      validate: boolean()
-    }
-  };
-};
+  it(`rejects -1`, () => {
+    expect(integer().minimum(0)("key", -1)).toBeTruthy();
+  });
+});

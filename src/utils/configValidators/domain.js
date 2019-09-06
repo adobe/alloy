@@ -9,18 +9,16 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import createExpected from "./createExpected";
 
-import isNil from "../isNil";
-import isNonEmptyString from "../isNonEmptyString";
+const expected = createExpected("a valid domain");
 
 export default (key, currentValue) => {
-  if (isNil(currentValue)) {
-    return "";
+  const validUrl = /^[a-z0-9-.]{1,}$/gi.test(currentValue);
+  let err = "";
+  if (!validUrl) {
+    err = expected(key, currentValue);
   }
 
-  if (isNonEmptyString(currentValue)) {
-    return "";
-  }
-
-  return `Invalid value for ${key}: ${currentValue}`;
+  return err;
 };

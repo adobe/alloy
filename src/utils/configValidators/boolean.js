@@ -11,9 +11,12 @@ governing permissions and limitations under the License.
 */
 
 import isBoolean from "../isBoolean";
+import createExpected from "./createExpected";
+
+const expected = createExpected("true or false");
 
 export default (key, currentValue) => {
   return currentValue === undefined || isBoolean(currentValue)
     ? ""
-    : `Value for ${key} is not a boolean: ${currentValue}`;
+    : expected(key, currentValue);
 };

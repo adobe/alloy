@@ -9,24 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import createExpected from "./createExpected";
 
-import { string, boolean } from "../../utils/configValidators";
+export default minimum => (key, currentValue) => {
+  const expected = createExpected(
+    `an integer greater than or equal to ${minimum}`
+  );
 
-export default () => {
-  return {
-    propertyId: {
-      validate: string().unique()
-    },
-    edgeDomain: {
-      defaultValue: "alpha.konductor.adobedc.net",
-      validate: string().domain()
-    },
-    imsOrgId: {
-      validate: string().unique()
-    },
-    clickCollectionEnabled: {
-      defaultValue: true,
-      validate: boolean()
-    }
-  };
+  return currentValue >= minimum ? "" : expected(key, currentValue);
 };

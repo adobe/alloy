@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { defer } from "../../utils";
-import { nonNegativeInteger } from "../../utils/configValidators";
+import { boolean, integer } from "../../utils/configValidators";
 import createIdSyncs from "./createIdSyncs";
 import { COOKIE_NAMES } from "./constants";
 import setCustomerIds from "./setCustomerIds";
@@ -141,10 +141,12 @@ createIdentity.abbreviation = "ID";
 
 createIdentity.configValidators = {
   idSyncsEnabled: {
-    defaultValue: true
+    defaultValue: true,
+    validate: boolean()
   },
   idSyncContainerId: {
-    validate: nonNegativeInteger
+    defaultValue: undefined,
+    validate: integer().minimum(0)
   }
 };
 

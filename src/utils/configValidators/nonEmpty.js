@@ -10,23 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, boolean } from "../../utils/configValidators";
+import createExpected from "./createExpected";
 
-export default () => {
-  return {
-    propertyId: {
-      validate: string().unique()
-    },
-    edgeDomain: {
-      defaultValue: "alpha.konductor.adobedc.net",
-      validate: string().domain()
-    },
-    imsOrgId: {
-      validate: string().unique()
-    },
-    clickCollectionEnabled: {
-      defaultValue: true,
-      validate: boolean()
-    }
-  };
+const expected = createExpected("a non-empty string");
+
+export default (key, value) => {
+  if (value.length > 0) {
+    return "";
+  }
+  return expected(key, value);
 };

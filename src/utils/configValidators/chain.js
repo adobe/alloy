@@ -10,11 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isInteger from "../isInteger";
+import assign from "../assign";
 
-export default (key, currentValue) => {
-  return currentValue === undefined ||
-    (isInteger(currentValue) && currentValue >= 0)
-    ? ""
-    : `Value for ${key} is not a nonnegative integer: ${currentValue}`;
+export default (validator, other, additionalMethods = {}) => {
+  const newValidator = (...args) => {
+    const error = validator(...args);
+    return error || other(...args);
+  };
+  assign(newValidator, validator, additionalMethods);
+  return newValidator;
 };

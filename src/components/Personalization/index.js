@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { isNonEmptyArray, uuid } from "../../utils";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers, hideElements } from "./flicker";
-import { eitherNilOrNonEmpty, boolean } from "../../utils/configValidators";
+import { string, boolean } from "../../utils/configValidators";
 
 const PAGE_HANDLE = "personalization:page";
 const SESSION_ID_COOKIE = "SID";
@@ -153,11 +153,12 @@ createPersonalization.abbreviation = "PE";
 
 createPersonalization.configValidators = {
   prehidingStyle: {
-    validate: eitherNilOrNonEmpty
+    defaultValue: undefined,
+    validate: string().nonEmpty()
   },
   authoringModeEnabled: {
     defaultValue: false,
-    validate: boolean
+    validate: boolean()
   }
 };
 
