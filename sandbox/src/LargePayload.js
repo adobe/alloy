@@ -8,7 +8,7 @@ export default function LargePayload() {
       const payload = new Uint8Array(size * 1024);
       window.alloy("event", {
         documentUnloading: true,
-        data: {
+        xdm: {
           payload
         }
       });
