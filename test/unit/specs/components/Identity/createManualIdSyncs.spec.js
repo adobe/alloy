@@ -87,41 +87,4 @@ describe("Identity::createManualIdSyncs", () => {
       );
     });
   });
-
-  it("syncIdsByUrl only processes if all id syncs are valid", () => {
-    const data = {
-      idSyncs: [
-        {
-          type: "url",
-          id: 501,
-          spec: {
-            url:
-              "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013271",
-            hideReferrer: 0,
-            ttlMinutes: 120
-          }
-        },
-        {
-          type: "url",
-          id: 504,
-          spec: {
-            url:
-              "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013274",
-            hideReferrer: 0,
-            ttlMinutes: 120
-          }
-        }
-      ]
-    };
-
-    return manualIdSyncs.syncIdsByUrl(data).then(result => {
-      expect(result.succeeded.length).toEqual(2);
-      expect(result.succeeded[0].url).toEqual(
-        "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013271"
-      );
-      expect(result.succeeded[1].url).toEqual(
-        "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013274"
-      );
-    });
-  });
 });
