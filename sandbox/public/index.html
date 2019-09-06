@@ -3,27 +3,34 @@
   <head>
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
     <meta name="theme-color" content="#000000" />
     <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
-    <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self' *.demdex.net;
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' *.demdex.net;
             script-src 'self' 'unsafe-inline' assets.adobedtm.com cdn.tt.omtrdc.net;
             style-src 'self' 'unsafe-inline' cdn.tt.omtrdc.net;
             img-src * data:;
-            connect-src 'self' unifiedjslab.tt.omtrdc.net *.demdex.net http://localhost:8080 https://alpha.konductor.adobedc.net https://edgegateway.azurewebsites.net konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net"/>
+            connect-src 'self' unifiedjslab.tt.omtrdc.net *.demdex.net http://localhost:8080 https://alpha.konductor.adobedc.net https://edgegateway.azurewebsites.net konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net"
+    />
 
     <title>Mock website hosting Alloy</title>
 
+    <!-- prettier-ignore -->
     <script>
       !function(e,a,n,t){var i=e.head;if(i){
-        if (a) return;
-        var o=e.createElement("style");
-        o.id="alloy-prehiding",o.innerText=n,i.appendChild(o),
-        setTimeout(function(){o.parentNode&&o.parentNode.removeChild(o)},t)}}
-        (document, document.location.href.indexOf("mboxEdit") !== -1, "section:nth-of-type(1) { opacity: 0 !important }", 3000);
+      if (a) return;
+      var o=e.createElement("style");
+      o.id="alloy-prehiding",o.innerText=n,i.appendChild(o),
+      setTimeout(function(){o.parentNode&&o.parentNode.removeChild(o)},t)}}
+      (document, document.location.href.indexOf("mboxEdit") !== -1, "section:nth-of-type(1) { opacity: 0 !important }", 3000);
     </script>
 
+    <!-- prettier-ignore -->
     <script>
       !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
       []).push(o),n[o]=function(){var u=arguments;return new Promise(
@@ -33,10 +40,10 @@
     <script src="alloy.js" async></script>
 
     <script>
-
       alloy("configure", {
         // edgeDomain: "edgegateway.azurewebsites.net",
-        edgeDomain: "konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net",
+        edgeDomain:
+          "konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net",
         // optInEnabled: true,
         propertyId: 9999999,
         imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
@@ -52,33 +59,33 @@
       alloy("event", {
         viewStart: true,
         xdm: {
-          "_myorg": {
+          _myorg: {
             // Using a promise to demonstrate they are supported.
-            "type": Promise.resolve("page-view"),
-            "url": location.href,
-            "name": location.pathname.substring(1) || "home"
+            type: Promise.resolve("page-view"),
+            url: location.href,
+            name: location.pathname.substring(1) || "home"
           },
           // Demonstrates overriding automatically collected data
-          "device": {
+          device: {
             screenHeight: 1
           }
         },
         data: {
-          "nonXdmKey": "nonXdmValue"
+          nonXdmKey: "nonXdmValue"
         }
       }).then(function(data) {
         console.log("Sandbox: View start event has completed.", data);
       });
 
       alloy("setCustomerIds", {
-        "emailHash" : {
-          "id": "me@gmail.com",
-          "authState": 0,
-          "hash": true //TODO: document customer ID hashing syntax
+        emailHash: {
+          id: "me@gmail.com",
+          authState: 0,
+          hash: true //TODO: document customer ID hashing syntax
         },
-        "crm" : {
-          "id": "1234",
-          "authState": 0
+        crm: {
+          id: "1234",
+          authState: 0
         }
       }).then(function() {
         console.log("Sandbox: Set customer IDs event has completed.");

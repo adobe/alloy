@@ -11,15 +11,13 @@ governing permissions and limitations under the License.
 */
 
 function HistoryTracker(tracker, options) {
-
-    console.log(tracker);
-    console.log(options);
-
+  console.log(tracker);
+  console.log(options);
 }
 
 alloy("registerPlugin", {
-    params: {
-        name: "historyTracker",
-        plugin: HistoryTracker
-    }
+  params: {
+    name: "historyTracker",
+    plugin: HistoryTracker
+  }
 });

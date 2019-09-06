@@ -27,7 +27,7 @@ describe("isPlainObject", () => {
     }
 
     expect(isPlainObject(/foo/)).toBe(false);
-    expect(isPlainObject(function() {})).toBe(false);
+    expect(isPlainObject(() => {})).toBe(false);
     expect(isPlainObject(1)).toBe(false);
     expect(isPlainObject(["foo", "bar"])).toBe(false);
     expect(isPlainObject([])).toBe(false);
