@@ -17,6 +17,7 @@ const uuidv4Regex = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[
 describe("EventMerge", () => {
   let eventMerge;
   let reactorRegisterCreateEventMergeId;
+  let mockEvent;
 
   beforeAll(() => {
     reactorRegisterCreateEventMergeId = jasmine.createSpy();
@@ -27,36 +28,42 @@ describe("EventMerge", () => {
     });
   });
 
+  beforeEach(() => {
+    mockEvent = jasmine.createSpyObj("event", ["mergeXdm"]);
+  });
+
   describe("lifecycle", () => {
     describe("onBeforeEvent", () => {
-      it("applies an eventMergeId to the event when provided in options", done => {
-        const event = {};
+      it("applies an eventMergeId to the event when provided in options", () => {
         const options = {
           eventMergeId: "ABC123"
         };
-        eventMerge.lifecycle.onBeforeEvent(event, options).then(() => {
-          expect(event.eventMergeId).toBe("ABC123");
-          done();
-        });
+        return eventMerge.lifecycle
+          .onBeforeEvent(mockEvent, options)
+          .then(() => {
+            expect(mockEvent.mergeXdm).toHaveBeenCalledWith({
+              eventMergeId: "ABC123"
+            });
+          });
       });
 
-      it("applies an eventMergeId to the event when promise provided in options", done => {
-        const event = {};
+      it("applies an eventMergeId to the event when promise provided in options", () => {
         const options = {
           eventMergeId: Promise.resolve("ABC123")
         };
-        eventMerge.lifecycle.onBeforeEvent(event, options).then(() => {
-          expect(event.eventMergeId).toBe("ABC123");
-          done();
-        });
+        return eventMerge.lifecycle
+          .onBeforeEvent(mockEvent, options)
+          .then(() => {
+            expect(mockEvent.mergeXdm).toHaveBeenCalledWith({
+              eventMergeId: "ABC123"
+            });
+          });
       });
 
-      it("does not apply an eventMergeId to the event when not provided in options", done => {
-        const event = {};
+      it("does not apply an eventMergeId to the event when not provided in options", () => {
         const options = {};
-        eventMerge.lifecycle.onBeforeEvent(event, options).then(() => {
-          expect(event.eventMergeId).toBeUndefined();
-          done();
+        eventMerge.lifecycle.onBeforeEvent(mockEvent, options).then(() => {
+          expect(mockEvent.mergeXdm).not.toHaveBeenCalled();
         });
       });
     });

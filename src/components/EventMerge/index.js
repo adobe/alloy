@@ -25,7 +25,9 @@ const createEventMerge = ({ config }) => {
       onBeforeEvent(event, options) {
         return Promise.resolve(options.eventMergeId).then(eventMergeId => {
           if (eventMergeId !== undefined) {
-            event.eventMergeId = eventMergeId;
+            event.mergeXdm({
+              eventMergeId
+            });
           }
         });
       }

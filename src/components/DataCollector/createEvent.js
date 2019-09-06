@@ -18,9 +18,6 @@ export default () => {
   let expectsResponse = false;
 
   return {
-    set eventMergeId(eventMergeId) {
-      content.eventMergeId = eventMergeId;
-    },
     set data(data) {
       content.data = data;
     },
