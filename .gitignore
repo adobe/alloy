@@ -67,3 +67,5 @@ typings
 .rpt2_cache/
 
 TMP_DIR/
+
+bin/
