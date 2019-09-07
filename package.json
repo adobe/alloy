@@ -18,6 +18,7 @@
     "test:watch": "karma start",
     "test:watch:chrome": "karma start --browsers Chrome",
     "copy": "cp dist/alloy.js test/functional/sandbox/html/js/",
+    "test-server": "http-server test/functional/sandbox/html/ -o",
     "functional": "baseurl=dev node test/functional/testrunner.js",
     "functional:prod": "baseurl=prod node test/functional/testrunner.js",
     "functional:sl": "baseurl=dev node test/functional/testrunner.js --sl",
