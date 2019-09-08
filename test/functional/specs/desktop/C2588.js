@@ -1,7 +1,7 @@
 import { t } from "testcafe";
 
 fixture`C2588`.page(
-  "https://sandbox-qe.azurewebsites.net/sandbox/html/C2588.html"
+  "http://127.0.0.1:8080/C2588.html"
 );
 
 const testDescription =

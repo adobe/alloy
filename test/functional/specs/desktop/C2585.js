@@ -1,5 +1,5 @@
 fixture`C2585`.page(
-  "https://sandbox-qe.azurewebsites.net/sandbox/html/C2585.html"
+  "http://127.0.0.1:8080/C2585.html"
 );
 
 const testDescription =
