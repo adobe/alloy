@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Alloy Test Page</title>
+        <script>
+            !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
+            []).push(o),n[o]=function(){var u=arguments;return new Promise(
+            function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
+            (window,["alloy"]);
+        </script>
+        <script src="/dist/standalone/alloy.js" async></script>
+
+        <script>
+            alloy("configure", {
+                errorsEnabled: false,
+                logEnabled: true
+            });
+            alloy("boguscommand");
+        </script>
+    </head>
+</html>
