@@ -18,7 +18,7 @@
     "test:watch": "karma start",
     "test:watch:chrome": "karma start --browsers Chrome",
     "copy": "cp dist/alloy.js test/functional/sandbox/html/js/",
-    "test-server": "http-server test/functional/sandbox/html/ -o",
+    "test-server": "http-server -o",
     "functional": "baseurl=dev node test/functional/testrunner.js",
     "functional:prod": "baseurl=prod node test/functional/testrunner.js",
     "functional:sl": "baseurl=dev node test/functional/testrunner.js --sl",
@@ -117,7 +117,6 @@
     "rollup-plugin-terser": "^4.0.4",
     "testcafe": "^1.4.3",
     "testcafe-browser-provider-saucelabs": "^1.7.0",
-    "testcafe-live": "^0.1.4",
     "testcafe-reporter-allure": "^1.0.5",
     "ua-parser": "^0.3.5",
     "url-parse": "^1.4.7"

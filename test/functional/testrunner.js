@@ -69,9 +69,7 @@ if (environment === "dev" && isSL === false) {
         .src(suite)
         .filter(testName => /^Regression/.test(testName))
         .browsers(config.desktop.browser)
-        .reporter("allure")
         .concurrency(config.desktop.concurrency)
-        .clientScripts("dist/standalone/alloy.js")
         .run(runOptions);
     };
     const testFolder = config.desktop.testsFolder;
@@ -99,7 +97,6 @@ if (environment === "dev" && isSL === false) {
         .browsers(config.desktop.browser)
         .reporter("allure")
         .concurrency(config.desktop.concurrency)
-        .clientScripts("dist/standalone/alloy.min.js")
         .run(runOptions);
     };
     const testFolder = config.desktop.testsFolder;
@@ -127,7 +124,6 @@ if (environment === "dev" && isSL === false) {
         .browsers(config.desktop.saucelabs)
         .reporter("allure")
         .concurrency(config.desktop.concurrency)
-        .clientScripts("dist/standalone/alloy.js")
         .run(runOptions);
     };
     const testFolder = config.desktop.testsFolder;
@@ -155,7 +151,6 @@ if (environment === "dev" && isSL === false) {
         .browsers(config.desktop.saucelabs)
         .reporter("allure")
         .concurrency(config.desktop.concurrency)
-        .clientScripts("dist/standalone/alloy.min.js")
         .run(runOptions);
     };
     const testFolder = config.desktop.testsFolder;
