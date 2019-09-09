@@ -54,19 +54,19 @@ const createDataCollector = ({ config, logger }) => {
 
   const createEventHandler = options => {
     const event = createEvent();
-    const {
-      viewStart = false,
-      documentUnloading = false,
-      data,
-      meta
-    } = options;
-
-    event.mergeData(data);
-    event.mergeMeta(meta);
+    const { viewStart = false, documentUnloading = false, xdm, data } = options;
 
     return lifecycle
       .onBeforeEvent(event, options, viewStart, documentUnloading)
-      .then(() => optIn.whenOptedIn())
+      .then(() => {
+        // We merge the user's data after onBeforeEvent so that
+        // it overlays on top of any data Alloy automatically
+        // provides. This allows the user to override the
+        // automatically collected data.
+        event.mergeXdm(xdm);
+        event.data = data;
+        return optIn.whenOptedIn();
+      })
       .then(() => makeServerCall(event, documentUnloading));
   };
 
