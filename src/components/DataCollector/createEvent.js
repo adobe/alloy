@@ -14,7 +14,9 @@ governing permissions and limitations under the License.
 import { createMerger } from "../../utils";
 
 export default () => {
-  const content = {};
+  const content = {
+    data: {} // FIXME: Remove once Konductor makes it optional.
+  };
   let expectsResponse = false;
 
   return {

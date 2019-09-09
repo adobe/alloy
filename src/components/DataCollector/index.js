@@ -63,8 +63,12 @@ const createDataCollector = ({ config, logger }) => {
         // it overlays on top of any data Alloy automatically
         // provides. This allows the user to override the
         // automatically collected data.
-        event.mergeXdm(xdm);
-        event.data = data;
+        if (xdm) {
+          event.mergeXdm(xdm);
+        }
+        if (data) {
+          event.data = data;
+        }
         return optIn.whenOptedIn();
       })
       .then(() => makeServerCall(event, documentUnloading));
