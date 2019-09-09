@@ -51,7 +51,7 @@ const createIdentity = ({ config, logger, cookieJar }) => {
         // #endif
       },
       // Waiting for opt-in because we'll be reading the ECID from a cookie
-      onBeforeEvent(event) {
+      onBeforeEvent({ event }) {
         return optIn.whenOptedIn().then(() => {
           if (
             !alreadyQueriedForIdSyncs &&
@@ -75,7 +75,7 @@ const createIdentity = ({ config, logger, cookieJar }) => {
       },
       // Waiting for opt-in because we'll be reading the ECID from a cookie
       // TO-DOCUMENT: We wait for ECID before trigger any events.
-      onBeforeDataCollection(payload) {
+      onBeforeDataCollection({ payload }) {
         return optIn.whenOptedIn().then(() => {
           const ecid = getEcid();
 
@@ -104,7 +104,7 @@ const createIdentity = ({ config, logger, cookieJar }) => {
         });
       },
       // Waiting for opt-in because we'll be writing the ECID to a cookie
-      onResponse(response) {
+      onResponse({ response }) {
         return optIn.whenOptedIn().then(() => {
           const ecidPayloads = response.getPayloadsByType("identity:persist");
 

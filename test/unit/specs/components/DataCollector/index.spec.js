@@ -97,50 +97,50 @@ describe("Event Command", () => {
   it("Calls onBeforeEvent", () => {
     const options = {};
     return eventCommand(options).then(() => {
-      expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith(
-        jasmine.anything(),
+      expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith({
+        event: jasmine.anything(),
         options,
-        false,
-        false
-      );
+        viewStart: false,
+        documentUnloading: false
+      });
     });
   });
   it("Extracts viewStart for onBeforeEvent", () => {
     const options = { viewStart: true, documentUnloading: false };
     return eventCommand(options).then(() => {
-      expect(onBeforeEventSpy).toHaveBeenCalledWith(
-        jasmine.anything(),
+      expect(onBeforeEventSpy).toHaveBeenCalledWith({
+        event: jasmine.anything(),
         options,
-        true,
-        false
-      );
+        viewStart: true,
+        documentUnloading: false
+      });
     });
   });
   it("Extracts documentUnloading for onBeforeEvent", () => {
     const options = { documentUnloading: true };
     return eventCommand(options).then(() => {
-      expect(onBeforeEventSpy).toHaveBeenCalledWith(
-        jasmine.anything(),
+      expect(onBeforeEventSpy).toHaveBeenCalledWith({
+        event: jasmine.anything(),
         options,
-        false,
-        true
-      );
+        viewStart: false,
+        documentUnloading: true
+      });
     });
   });
   it("Calls onBeforeEvent with a matching event", () => {
     const options = { data: { a: 1 }, meta: { b: 2 } };
     return eventCommand(options).then(() => {
-      expect(onBeforeEventSpy).toHaveBeenCalledWith(
-        jasmine.anything(),
+      expect(onBeforeEventSpy).toHaveBeenCalledWith({
+        event: jasmine.anything(),
         options,
-        false,
-        false
-      );
+        viewStart: false,
+        documentUnloading: false
+      });
     });
   });
 
   it("Allows other components to modify the event", () => {
-    onBeforeEventSpy.and.callFake(event => {
+    onBeforeEventSpy.and.callFake(({ event }) => {
       event.mergeData({ a: "changed" });
       return Promise.resolve();
     });
@@ -207,7 +207,7 @@ describe("Event Command", () => {
   });
 
   it("sends expectsResponse == true", () => {
-    onBeforeEventSpy.and.callFake(event => {
+    onBeforeEventSpy.and.callFake(({ event }) => {
       event.expectResponse();
       return Promise.resolve();
     });

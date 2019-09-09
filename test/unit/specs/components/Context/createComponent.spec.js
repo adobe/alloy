@@ -37,7 +37,7 @@ describe("Context::createComponent", () => {
       requiredContext
     ]);
     component.lifecycle.onComponentsRegistered();
-    component.lifecycle.onBeforeEvent(event);
+    component.lifecycle.onBeforeEvent({ event });
 
     expect(event.addContext1).toHaveBeenCalledWith({ a: "1" });
     expect(event.addContext2).toHaveBeenCalledWith({ b: "2" });
@@ -49,7 +49,7 @@ describe("Context::createComponent", () => {
       requiredContext
     ]);
     component.lifecycle.onComponentsRegistered();
-    component.lifecycle.onBeforeEvent(event);
+    component.lifecycle.onBeforeEvent({ event });
 
     expect(event.addContext1).toHaveBeenCalledWith({ a: "1" });
     expect(event.addContext2).not.toHaveBeenCalled();
@@ -62,7 +62,7 @@ describe("Context::createComponent", () => {
       requiredContext
     ]);
     component.lifecycle.onComponentsRegistered();
-    component.lifecycle.onBeforeEvent(event);
+    component.lifecycle.onBeforeEvent({ event });
 
     expect(event.addContext1).not.toHaveBeenCalled();
     expect(event.addContext2).not.toHaveBeenCalled();
@@ -75,7 +75,7 @@ describe("Context::createComponent", () => {
       requiredContext
     ]);
     component.lifecycle.onComponentsRegistered();
-    component.lifecycle.onBeforeEvent(event);
+    component.lifecycle.onBeforeEvent({ event });
 
     expect(event.addContext1).not.toHaveBeenCalled();
     expect(event.addContext2).not.toHaveBeenCalled();
