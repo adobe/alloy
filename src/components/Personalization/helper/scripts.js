@@ -25,10 +25,9 @@ const getInlineScripts = fragment => {
   const scripts = selectNodes(SCRIPT, fragment);
   const result = [];
   const { length } = scripts;
-  let i = 0;
 
   /* eslint-disable no-continue */
-  for (i = 0; i < length; i += 1) {
+  for (let i = 0; i < length; i += 1) {
     const element = scripts[i];
 
     if (!isInlineScript(element)) {
@@ -52,10 +51,9 @@ const getRemoteScriptsUrls = fragment => {
   const scripts = selectNodes(SCRIPT, fragment);
   const result = [];
   const { length } = scripts;
-  let i = 0;
 
   /* eslint-disable no-continue */
-  for (i = 0; i < length; i += 1) {
+  for (let i = 0; i < length; i += 1) {
     const element = scripts[i];
 
     if (!isRemoteScript(element)) {
