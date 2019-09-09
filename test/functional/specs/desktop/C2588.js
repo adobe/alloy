@@ -12,7 +12,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Throw error when configure is executed multiple times.", async () => {
+test("Regression: Throw error when configure is executed multiple times.", async () => {
   const message = await t.getBrowserConsoleMessages();
   await t
     .expect(message.error[0])

@@ -12,7 +12,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Throw error when configure is not the first command executed.", async () => {
+test("Regression: Throw error when configure is not the first command executed.", async () => {
   const message = await t.getBrowserConsoleMessages();
   await t
     .expect(message.error[0])

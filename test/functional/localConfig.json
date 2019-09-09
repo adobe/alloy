@@ -2,7 +2,7 @@
     "desktop": {
       "testsFolder": "test/functional/specs/desktop/",
       "browser": [
-        "chrome"
+        "all"
       ],
       "saucelabs": [
         "saucelabs:Internet Explorer@10.0:Windows 8",

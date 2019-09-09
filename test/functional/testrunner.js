@@ -69,6 +69,7 @@ if (environment === "dev" && isSL === false) {
         .src(suite)
         .filter(testName => /^Regression/.test(testName))
         .browsers(config.desktop.browser)
+        .reporter("allure")
         .concurrency(config.desktop.concurrency)
         .run(runOptions);
     };
