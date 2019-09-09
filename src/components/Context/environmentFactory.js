@@ -28,6 +28,8 @@ export default window => {
     ) {
       environment.connectionType = navigator.connection.effectiveType;
     }
-    event.mergeEnvironment(environment);
+    event.mergeXdm({
+      environment
+    });
   };
 };

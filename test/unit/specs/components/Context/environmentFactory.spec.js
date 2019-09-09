@@ -10,7 +10,7 @@ describe("Context::environmentFactory", () => {
   let event;
 
   beforeEach(() => {
-    event = jasmine.createSpyObj("event", ["mergeEnvironment"]);
+    event = jasmine.createSpyObj("event", ["mergeXdm"]);
   });
 
   it("works", () => {
@@ -19,13 +19,15 @@ describe("Context::environmentFactory", () => {
       return date;
     };
     environmentFactory(mywindow, dateProvider)(event);
-    expect(event.mergeEnvironment).toHaveBeenCalledWith({
-      type: "browser",
-      browserDetails: {
-        viewportWidth: 1003,
-        viewportHeight: 1004
-      },
-      connectionType: "myConnectionType"
+    expect(event.mergeXdm).toHaveBeenCalledWith({
+      environment: {
+        type: "browser",
+        browserDetails: {
+          viewportWidth: 1003,
+          viewportHeight: 1004
+        },
+        connectionType: "myConnectionType"
+      }
     });
   });
 
@@ -41,11 +43,13 @@ describe("Context::environmentFactory", () => {
       return date;
     };
     environmentFactory(ieWindow, dateProvider)(event);
-    expect(event.mergeEnvironment).toHaveBeenCalledWith({
-      type: "browser",
-      browserDetails: {
-        viewportWidth: 1003,
-        viewportHeight: 1004
+    expect(event.mergeXdm).toHaveBeenCalledWith({
+      environment: {
+        type: "browser",
+        browserDetails: {
+          viewportWidth: 1003,
+          viewportHeight: 1004
+        }
       }
     });
   });
