@@ -16,14 +16,12 @@ export default (window, topFrameSetProvider) => {
   return event => {
     topFrameSet = topFrameSet || topFrameSetProvider();
 
-    event.mergeXdm({
-      web: {
-        webPageDetails: {
-          URL: window.location.href || window.location
-        },
-        webReferrer: {
-          URL: topFrameSet.document.referrer
-        }
+    event.mergeWeb({
+      webPageDetails: {
+        URL: window.location.href || window.location
+      },
+      webReferrer: {
+        URL: topFrameSet.document.referrer
       }
     });
   };

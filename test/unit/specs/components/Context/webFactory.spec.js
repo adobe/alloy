@@ -10,19 +10,17 @@ describe("Context::webFactory", () => {
   let event;
 
   beforeEach(() => {
-    event = jasmine.createSpyObj("event", ["mergeXdm"]);
+    event = jasmine.createSpyObj("event", ["mergeWeb"]);
   });
 
   it("works", () => {
     webFactory(window, topFrameSetProvider)(event);
-    expect(event.mergeXdm).toHaveBeenCalledWith({
-      web: {
-        webPageDetails: {
-          URL: "http://mylocation.com"
-        },
-        webReferrer: {
-          URL: "http://myreferrer.com"
-        }
+    expect(event.mergeWeb).toHaveBeenCalledWith({
+      webPageDetails: {
+        URL: "http://mylocation.com"
+      },
+      webReferrer: {
+        URL: "http://myreferrer.com"
       }
     });
   });
