@@ -22,7 +22,7 @@
     "functional:prod": "baseurl=prod node test/functional/testrunner.js",
     "functional:sl": "baseurl=dev node test/functional/testrunner.js --sl",
     "functional:sl:prod": "baseurl=prod node test/functional/testrunner.js --sl",
-    "functional:ci": "npm run functional && run-p --race test-server",
+    "functional:ci": "npm run prebuild:prod && run-p --race test-server functional",
     "prebuild": "npm run clean && npm run format && npm run lint",
     "build": "rollup -c",
     "prebuild:prod": "npm run prebuild",

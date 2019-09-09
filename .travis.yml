@@ -6,9 +6,12 @@ language:
 node_js:
 - '10'
 
+cache:
+  directories:
+    - ~/.npm
+    - node_modules
+
 install:
-- npm i -g npm
-- npm install -g http-server
 - npm install -g allure-commandline
 
 cache:
