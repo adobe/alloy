@@ -37,11 +37,8 @@ before_script:
 
 script:
 - npm install
-- npm run build:prod
+- npm run test:slreport
 - npm run functional:ci
-- npm run test
-- npm run test:saucelabs
-- npm run test:report
 - npm run checkbundlesize
 # - sonar-scanner
 
