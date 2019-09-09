@@ -21,12 +21,16 @@ export default () => {
     set eventMergeId(eventMergeId) {
       content.eventMergeId = eventMergeId;
     },
-    set data(data) {
-      content.data = data;
-    },
-    mergeXdm: createMerger(content, "xdm"),
+    mergeData: createMerger(content, "data"),
     mergeMeta: createMerger(content, "meta"),
     mergeQuery: createMerger(content, "query"),
+    mergeWeb: createMerger(content, "web"),
+    mergeDevice: createMerger(content, "device"),
+    mergeEnvironment: createMerger(content, "environment"),
+    mergePlaceContext: createMerger(content, "placeContext"),
+    set timestamp(timestamp) {
+      content.timestamp = timestamp;
+    },
     expectResponse() {
       expectsResponse = true;
     },

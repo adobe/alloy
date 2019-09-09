@@ -9,7 +9,7 @@ function HomeWithHistory({ history }) {
       const instanceName = loc.pathname.includes("orgTwo") ? "organizationTwo" : "alloy";
       window[instanceName]("event", {
         viewStart: true,
-        xdm: {
+        data: {
           "eventType": "page-view",
           "url": window.location.href,
           "name": loc.pathname.substring(1)
@@ -21,7 +21,7 @@ function HomeWithHistory({ history }) {
 
   const visitDoc = ev => {
     window.alloy("event", {
-      xdm: {
+      data: {
         "eventType": "visit-doc",
         "activitystreams:href": ev.target.href,
         "activitystreams:name": ev.target.name,
@@ -32,7 +32,7 @@ function HomeWithHistory({ history }) {
 
   const copyBaseCode = ev => {
     window.alloy("event", {
-      xdm: {
+      data: {
         "eventType": "copy-base-code",
         "activitystreams:href": "https://launch.gitbook.io/adobe-experience-platform-web-sdk/",
         "activitystreams:name": "copyBaseCode",
@@ -49,14 +49,14 @@ function HomeWithHistory({ history }) {
 
   return (
       <div>
-        <section>
+        <section>  
           <div className="container">
             <h2>Some awesome default content</h2>
             <br/>
           </div>
         </section>
 
-        <section>
+        <section> 
           <div>
             <h1>Alloy: Getting Started</h1>
             <h3>Installation</h3>

@@ -6,7 +6,7 @@ describe("Context::placeContextFactory", () => {
   const date = new Date("March 25, 2019 21:56:18");
 
   beforeEach(() => {
-    event = jasmine.createSpyObj("event", ["mergeXdm"]);
+    event = jasmine.createSpyObj("event", ["mergePlaceContext"]);
     dateProvider = () => {
       return date;
     };
@@ -15,11 +15,9 @@ describe("Context::placeContextFactory", () => {
   it("adds placeContext", () => {
     spyOn(date, "getTimezoneOffset").and.returnValue(7 * 60);
     placeContextFactory(dateProvider)(event);
-    expect(event.mergeXdm).toHaveBeenCalledWith({
-      placeContext: {
-        localTime: "2019-03-25T21:56:18.000-07:00",
-        localTimezoneOffset: 7 * 60
-      }
+    expect(event.mergePlaceContext).toHaveBeenCalledWith({
+      localTime: "2019-03-25T21:56:18.000-07:00",
+      localTimezoneOffset: 7 * 60
     });
   });
 });

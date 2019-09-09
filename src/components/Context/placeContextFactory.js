@@ -18,8 +18,6 @@ export default dateProvider => {
       localTime: toISOStringLocal(date),
       localTimezoneOffset: date.getTimezoneOffset()
     };
-    event.mergeXdm({
-      placeContext
-    });
+    event.mergePlaceContext(placeContext);
   };
 };

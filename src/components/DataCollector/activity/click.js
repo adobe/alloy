@@ -31,7 +31,7 @@ const createClickHandler = (window, logger, collect) => {
     if (linkUrl && isSupportedAnchorElement(clickedObj)) {
       // TODO: Update name (link name) and support exit, other, and download link types
       collect({
-        xdm: {
+        data: {
           eventType: "web.webinteraction.linkClicks",
           web: {
             webinteraction: {
