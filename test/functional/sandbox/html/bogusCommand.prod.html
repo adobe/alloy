@@ -12,7 +12,11 @@
         <script src="/dist/standalone/alloy.min.js" async></script>
 
         <script>
-        alloy("boguscommand");
+            alloy("configure", {
+                errorsEnabled: false,
+                logEnabled: true
+            });
+            alloy("boguscommand");
         </script>
     </head>
 </html>
