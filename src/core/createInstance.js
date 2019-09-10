@@ -128,6 +128,13 @@ export default (
     new Promise(_resolve => {
       logger.log(`Executing ${commandName} command.`, "Options:", options);
       _resolve(
+        // Note that promiseAllObject also clones the options object.
+        // This is an important aspect because it serves as taking a snapshot
+        // of options content (particularly important with xdm and data
+        // options where the original objects are more likely to be modified
+        // by the customer over time).
+        // TODO: Add a test for createInstance that ensures options are
+        // being cloned.
         promiseAllObject(options).then(resolvedOptions => {
           return executeCommand(commandName, resolvedOptions);
         })
