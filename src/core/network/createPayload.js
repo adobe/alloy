@@ -39,7 +39,10 @@ export default () => {
       );
     },
     toJSON() {
-      return content;
+      return {
+        ...content,
+        events: (content.events || []).map(event => event.toJSON())
+      };
     }
   };
 };

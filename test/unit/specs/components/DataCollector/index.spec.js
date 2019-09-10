@@ -146,10 +146,7 @@ describe("Event Command", () => {
     });
     return eventCommand({ data: { a: 1 } }).then(() => {
       expect(
-        network.sendRequest.calls
-          .argsFor(0)[0]
-          .toJSON()
-          .events[0].toJSON().data
+        network.sendRequest.calls.argsFor(0)[0].toJSON().events[0].data
       ).toEqual({ a: "changed" });
     });
   });

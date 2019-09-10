@@ -51,4 +51,32 @@ describe("Payload", () => {
     payload.addEvent(collectEvent);
     expect(payload.expectsResponse).toBe(false);
   });
+
+  it("converts to a JSON object", () => {
+    const payload = createPayload();
+    payload.addIdentity("MY", { id: "myid" });
+    const event = createEvent();
+    event.mergeData({ mykey: "myvalue" });
+    payload.addEvent(event);
+    payload.mergeMeta({ mymetakey: "mymetavalue" });
+    expect(payload.toJSON()).toEqual({
+      identityMap: {
+        MY: [
+          {
+            id: "myid"
+          }
+        ]
+      },
+      events: [
+        {
+          data: {
+            mykey: "myvalue"
+          }
+        }
+      ],
+      meta: {
+        mymetakey: "mymetavalue"
+      }
+    });
+  });
 });

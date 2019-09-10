@@ -206,4 +206,25 @@ describe("createNetwork", () => {
       );
     });
   });
+
+  it("calls a configured beforeSend before sending the payload", () => {
+    const config2 = {
+      edgeDomain: "alloy.mysite.com",
+      propertyId: "mypropertyid",
+      beforeSend(payload) {
+        payload.b = "beforeSend2";
+        payload.c = "beforeSend3";
+        return payload;
+      }
+    };
+    network = createNetwork(config2, logger, lifecycle, networkStrategy);
+    return network.sendRequest({ a: "1", b: "2" }).then(() => {
+      expect(networkStrategy).toHaveBeenCalledTimes(1);
+      expect(JSON.parse(networkStrategy.calls.argsFor(0)[1])).toEqual({
+        a: "1",
+        b: "beforeSend2",
+        c: "beforeSend3"
+      });
+    });
+  });
 });

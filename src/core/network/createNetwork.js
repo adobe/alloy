@@ -34,7 +34,8 @@ export default (config, logger, lifecycle, networkStrategy) => {
     return lifecycle.onResponse(response).then(() => response);
   };
 
-  const { edgeDomain, propertyId } = config;
+  // TODO: add config validation to beforeSend
+  const { edgeDomain, propertyId, beforeSend = payload => payload } = config;
 
   return {
     /**
@@ -62,8 +63,9 @@ export default (config, logger, lifecycle, networkStrategy) => {
         logger.log(`No response requested due to document unloading.`);
       }
       const reallyExpectsResponse = documentUnloading ? false : expectsResponse;
-      return Promise.resolve()
-        .then(() => {
+      return Promise.resolve(payload)
+        .then(beforeSend)
+        .then(newPayload => {
           const action = reallyExpectsResponse ? "interact" : "collect";
 
           let baseUrl = `https://${edgeDomain}`;
@@ -78,7 +80,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
           const responseHandlingMessage = reallyExpectsResponse
             ? ""
             : " (no response is expected)";
-          const stringifiedPayload = JSON.stringify(payload);
+          const stringifiedPayload = JSON.stringify(newPayload);
 
           // We want to log raw payload and event data rather than
           // our fancy wrapper objects. Calling payload.toJSON() is
