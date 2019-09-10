@@ -100,8 +100,8 @@ describe("Event Command", () => {
       expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith({
         event: jasmine.anything(),
         options,
-        viewStart: false,
-        documentUnloading: false
+        isViewStart: false,
+        isDocumentUnloading: false
       });
     });
   });
@@ -111,8 +111,8 @@ describe("Event Command", () => {
       expect(onBeforeEventSpy).toHaveBeenCalledWith({
         event: jasmine.anything(),
         options,
-        viewStart: true,
-        documentUnloading: false
+        isViewStart: true,
+        isDocumentUnloading: false
       });
     });
   });
@@ -122,8 +122,8 @@ describe("Event Command", () => {
       expect(onBeforeEventSpy).toHaveBeenCalledWith({
         event: jasmine.anything(),
         options,
-        viewStart: false,
-        documentUnloading: true
+        isViewStart: false,
+        isDocumentUnloading: true
       });
     });
   });
@@ -133,8 +133,8 @@ describe("Event Command", () => {
       expect(onBeforeEventSpy).toHaveBeenCalledWith({
         event: jasmine.anything(),
         options,
-        viewStart: false,
-        documentUnloading: false
+        isViewStart: false,
+        isDocumentUnloading: false
       });
     });
   });

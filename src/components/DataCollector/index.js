@@ -65,7 +65,12 @@ const createDataCollector = ({ config, logger }) => {
     event.mergeMeta(meta);
 
     return lifecycle
-      .onBeforeEvent({ event, options, viewStart, documentUnloading })
+      .onBeforeEvent({
+        event,
+        options,
+        isViewStart: viewStart,
+        isDocumentUnloading: documentUnloading
+      })
       .then(() => optIn.whenOptedIn())
       .then(() => makeServerCall(event, documentUnloading));
   };
