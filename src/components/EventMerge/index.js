@@ -21,17 +21,6 @@ const createEventMerge = ({ config }) => {
   // #endif
 
   return {
-    lifecycle: {
-      onBeforeEvent(event, options) {
-        return Promise.resolve(options.eventMergeId).then(eventMergeId => {
-          if (eventMergeId !== undefined) {
-            event.mergeXdm({
-              eventMergeId
-            });
-          }
-        });
-      }
-    },
     commands: {
       createEventMergeId: uuid
     }

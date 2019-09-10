@@ -10,7 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isFunction, toError, stringToBoolean, queryString } from "../utils";
+import {
+  isFunction,
+  promiseAllObject,
+  toError,
+  stringToBoolean,
+  queryString
+} from "../utils";
 import createConfig from "./createConfig";
 import logQueryParam from "../constants/logQueryParam";
 
@@ -101,7 +107,6 @@ export default (
       }
     }
 
-    logger.log(`Executing ${commandName} command.`, "Options:", options);
     return execute();
   };
 
@@ -121,7 +126,12 @@ export default (
     // underlying function call.
     // Also note that executeCommand may or may not return a promise.
     new Promise(_resolve => {
-      _resolve(executeCommand(commandName, options));
+      logger.log(`Executing ${commandName} command.`, "Options:", options);
+      _resolve(
+        promiseAllObject(options).then(resolvedOptions => {
+          return executeCommand(commandName, resolvedOptions);
+        })
+      );
     })
       .then(resolve)
       .catch(error => {
