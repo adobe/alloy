@@ -102,4 +102,14 @@ describe("promiseAllObject", () => {
       expect(resolvedFoodLibrary).toEqual([expectedResult]);
     });
   });
+
+  it("rejects promise if nested promise is rejected", () => {
+    const foodLibrary = createFoodLibrary();
+    foodLibrary.vegetables = Promise.reject(new Error("custom message"));
+    return promiseAllObject(foodLibrary)
+      .then(fail)
+      .catch(error => {
+        expect(error.message).toBe("custom message");
+      });
+  });
 });
