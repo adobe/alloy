@@ -15,7 +15,8 @@ import {
   promiseAllObject,
   toError,
   stringToBoolean,
-  queryString
+  queryString,
+  stackError
 } from "../utils";
 import createConfig from "./createConfig";
 import logQueryParam from "../constants/logQueryParam";
@@ -135,9 +136,16 @@ export default (
         // by the customer over time).
         // TODO: Add a test for createInstance that ensures options are
         // being cloned.
-        promiseAllObject(options).then(resolvedOptions => {
-          return executeCommand(commandName, resolvedOptions);
-        })
+        promiseAllObject(options)
+          .catch(error => {
+            throw stackError(
+              `An error occurred in a promise found within options passed for the ${commandName} command.`,
+              error
+            );
+          })
+          .then(resolvedOptions => {
+            return executeCommand(commandName, resolvedOptions);
+          })
       );
     })
       .then(resolve)
