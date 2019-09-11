@@ -33,7 +33,6 @@ script:
 - npm run build
 - npm run test
 - npm run test:saucelabs
-- npm run test:report
 - npm run checkbundlesize
 # - sonar-scanner
 
