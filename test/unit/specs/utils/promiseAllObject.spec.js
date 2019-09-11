@@ -32,7 +32,7 @@ const createFoodLibrary = () => {
     vegetables: Promise.resolve([
       {
         name: "Artichoke",
-        calories: 60
+        calories: Promise.resolve(60)
       }
     ]),
     grains: [
@@ -84,7 +84,7 @@ const expectedResult = {
   undefinedValue: undefined
 };
 
-describe("promiseAllObject", () => {
+fdescribe("promiseAllObject", () => {
   it("waits for nested promises inside object", () => {
     const foodLibrary = createFoodLibrary();
     return promiseAllObject(foodLibrary).then(resolvedFoodLibrary => {
