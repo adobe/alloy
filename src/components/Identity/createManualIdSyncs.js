@@ -10,8 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createIdSyncs from "./createIdSyncs";
-import { isObject, isNumber, isNonEmptyString } from "../../utils";
+import { isObject, isNumber, isNonEmptyString, find } from "../../utils";
 
 const createSyncIdsByUrl = (
   config,
@@ -20,35 +19,31 @@ const createSyncIdsByUrl = (
   idSyncsProcessor
 ) => data => {
   const { idSyncs = [] } = data;
-  const areAllIdSyncsValid = idSyncs.every((idSync = {}) => {
-    if (
-      !isObject(idSync) ||
-      idSync.type !== "url" ||
-      !isNumber(idSync.id) ||
-      !isObject(idSync.spec) ||
-      !isNonEmptyString(idSync.spec.url) ||
-      (idSync.spec.hideReferrer !== 0 && idSync.spec.hideReferrer !== 1) ||
-      (idSync.spec.ttlMinutes !== undefined &&
-        !isNumber(idSync.spec.ttlMinutes))
-    ) {
-      return false;
-    }
+  const isIdSyncValid = (idSync = {}) =>
+    isObject(idSync) &&
+    idSync.type === "url" &&
+    isNumber(idSync.id) &&
+    isObject(idSync.spec) &&
+    isNonEmptyString(idSync.spec.url) &&
+    (idSync.spec.hideReferrer === 0 || idSync.spec.hideReferrer === 1) &&
+    (idSync.spec.ttlMinutes === undefined || isNumber(idSync.spec.ttlMinutes));
 
-    return true;
-  });
+  const invalidIdSync = find(idSyncs, idSync => !isIdSyncValid(idSync));
 
-  if (!areAllIdSyncsValid) {
+  if (invalidIdSync) {
     return Promise.reject(
-      new Error("syncIdsByUrl was passed one or more invalid id syncs.")
+      new Error(
+        `An invalid ID sync with the ID of ${
+          invalidIdSync.id
+        } was passed to syncIdsByUrl.`
+      )
     );
   }
 
   return idSyncsProcessor.process(idSyncs);
 };
 
-export default (config, logger, cookieJar) => {
-  const idSyncsProcessor = createIdSyncs(config, logger, cookieJar);
-
+export default (config, logger, cookieJar, idSyncsProcessor) => {
   return {
     syncIdsByUrl: createSyncIdsByUrl(
       config,

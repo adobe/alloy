@@ -14,10 +14,19 @@ const logger = {
   log() {},
   error() {}
 };
-const manualIdSyncs = createManualIdSyncs(config, logger, cookieJar);
 
 describe("Identity::createManualIdSyncs", () => {
   it("syncIdsByUrl throws an error if not all id syncs are valid", () => {
+    const idSyncProcessor = {
+      process: () => {},
+      hasExpired: () => true
+    };
+    const manualIdSyncs = createManualIdSyncs(
+      config,
+      logger,
+      cookieJar,
+      idSyncProcessor
+    );
     const data = {
       idSyncs: [
         {
@@ -83,8 +92,55 @@ describe("Identity::createManualIdSyncs", () => {
 
     return manualIdSyncs.syncIdsByUrl(data).catch(result => {
       expect(result.message).toEqual(
-        "syncIdsByUrl was passed one or more invalid id syncs."
+        "An invalid ID sync with the ID of 500 was passed to syncIdsByUrl."
       );
     });
+  });
+
+  it("syncIdsByUrl only processes if all id syncs are valid", () => {
+    const idSyncProcessor = {
+      process: idSyncs => {
+        expect(idSyncs.length).toEqual(2);
+        expect(idSyncs[0].spec.url).toEqual(
+          "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013271"
+        );
+        expect(idSyncs[1].spec.url).toEqual(
+          "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013274"
+        );
+      },
+      hasExpired: () => true
+    };
+    const manualIdSyncs = createManualIdSyncs(
+      config,
+      logger,
+      cookieJar,
+      idSyncProcessor
+    );
+    const data = {
+      idSyncs: [
+        {
+          type: "url",
+          id: 501,
+          spec: {
+            url:
+              "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013271",
+            hideReferrer: 0,
+            ttlMinutes: 120
+          }
+        },
+        {
+          type: "url",
+          id: 504,
+          spec: {
+            url:
+              "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013274",
+            hideReferrer: 0,
+            ttlMinutes: 120
+          }
+        }
+      ]
+    };
+
+    manualIdSyncs.syncIdsByUrl(data);
   });
 });
