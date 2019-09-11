@@ -91,7 +91,7 @@ const createProcessor = (config, logger, cookieJar) => destinations => {
       ).toString(36)
     );
 
-    return Promise.resolve(result);
+    return result;
   });
 };
 
