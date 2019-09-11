@@ -1,8 +1,6 @@
 import { t } from "testcafe";
 
-fixture`C2588`.page(
-  "http://127.0.0.1:8080/C2588.html"
-);
+fixture`C2588`.page("http://127.0.0.1:8080/C2588.html");
 
 const testDescription =
   "Regression: Throw error when configure is executed multiple times.";
