@@ -31,7 +31,7 @@ const createDataCollector = ({ config, logger }) => {
     });
 
     return lifecycle
-      .onBeforeDataCollection(payload)
+      .onBeforeDataCollection({ payload })
       .then(() => {
         return network.sendRequest(
           payload,
@@ -57,7 +57,12 @@ const createDataCollector = ({ config, logger }) => {
     const { viewStart = false, documentUnloading = false, xdm, data } = options;
 
     return lifecycle
-      .onBeforeEvent(event, options, viewStart, documentUnloading)
+      .onBeforeEvent({
+        event,
+        options,
+        isViewStart: viewStart,
+        isDocumentUnloading: documentUnloading
+      })
       .then(() => {
         // We merge the user's data after onBeforeEvent so that
         // it overlays on top of any data Alloy automatically

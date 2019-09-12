@@ -15,12 +15,12 @@ import processDestinations from "./processDestinations";
 const createAudiences = ({ config, logger }) => {
   return {
     lifecycle: {
-      onBeforeEvent(event, options, isViewStart) {
+      onBeforeEvent({ event, isViewStart }) {
         if (isViewStart) {
           event.expectResponse();
         }
       },
-      onResponse(response) {
+      onResponse({ response }) {
         const destinations = response.getPayloadsByType("activation:push");
 
         processDestinations({

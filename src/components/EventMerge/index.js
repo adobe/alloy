@@ -22,7 +22,7 @@ const createEventMerge = ({ config }) => {
 
   return {
     lifecycle: {
-      onBeforeEvent(event, options) {
+      onBeforeEvent({ event, options }) {
         return Promise.resolve(options.eventMergeId).then(eventMergeId => {
           if (eventMergeId !== undefined) {
             event.eventMergeId = eventMergeId;
