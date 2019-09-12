@@ -84,7 +84,7 @@ const expectedResult = {
   undefinedValue: undefined
 };
 
-fdescribe("promiseAllObject", () => {
+describe("promiseAllObject", () => {
   it("waits for nested promises inside object", () => {
     const foodLibrary = createFoodLibrary();
     return promiseAllObject(foodLibrary).then(resolvedFoodLibrary => {
