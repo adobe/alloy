@@ -33,12 +33,11 @@
     <script src="alloy.js" async></script>
 
     <script>
-      // Set localEdge to true to use a locally-running edge gateway mock
-      // https://git.corp.adobe.com/Activation/edge-gateway-mock
+
       alloy("configure", {
         // edgeDomain: "edgegateway.azurewebsites.net",
         // optInEnabled: true,
-        // errorsEnabled: false,
+        errorsEnabled: false,
         propertyId: 9999999,
         imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
         logEnabled: true,
