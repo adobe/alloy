@@ -73,10 +73,8 @@ export default (rules, ruleComponentModules, logger) => {
       return;
     }
 
-    let action;
-
     for (let i = 0; i < rule.actions.length; i += 1) {
-      action = rule.actions[i];
+      const action = rule.actions[i];
 
       try {
         executeModule(action.moduleType, [action.settings, syntheticEvent]);
@@ -94,10 +92,8 @@ export default (rules, ruleComponentModules, logger) => {
       return;
     }
 
-    let condition;
-
     for (let i = 0; i < rule.conditions.length; i += 1) {
-      condition = rule.conditions[i];
+      const condition = rule.conditions[i];
 
       try {
         const result = executeModule(condition.moduleType, [
