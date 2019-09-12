@@ -10,6 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default message => (key, value) => {
-  return `'${key}': Expected ${message}, but got '${value}'.`;
+export default message => (isValid, key, value) => {
+  return isValid ? "" : `'${key}': Expected ${message}, but got '${value}'.`;
 };

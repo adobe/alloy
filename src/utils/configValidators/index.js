@@ -17,8 +17,10 @@ import createUniqueValidator from "./createUnique";
 import domainValidator from "./domain";
 import integerValidator from "./integer";
 import nonEmptyValidator from "./nonEmpty";
+import numberValidator from "./number";
 import requiredValidator from "./required";
 import stringValidator from "./string";
+import createExpected from "./createExpected";
 
 // We determine required vs. optional configs by the presense of a default value key.
 // If the config is optional and not set, the validation doesn't get called and the
@@ -26,43 +28,57 @@ import stringValidator from "./string";
 // and the value is null, the config is required.
 const baseValidator = (...args) => requiredValidator(...args);
 
-// string validators
 const domain = function domain() {
   return chain(this, domainValidator);
 };
 const nonEmpty = function nonEmpty() {
   return chain(this, nonEmptyValidator);
 };
-
-// integer validators
+const unique = function createUnique() {
+  return chain(this, createUniqueValidator());
+};
 const minimum = function minimum(minValue) {
   return chain(this, createMinimumValidator(minValue));
 };
+const integer = function integer() {
+  return chain(this, integerValidator);
+};
 
-// untyped validators
+// exposed validators
 const boolean = function boolean() {
   return chain(this, booleanValidator);
 };
-const integer = function integer() {
-  return chain(this, integerValidator, { minimum });
+const number = function number() {
+  return chain(this, numberValidator, { minimum, integer, unique });
 };
 const string = function string() {
-  return chain(this, stringValidator, { domain, nonEmpty });
-};
-const unique = function unique() {
-  return chain(this, createUniqueValidator());
+  return chain(this, stringValidator, { domain, nonEmpty, unique });
 };
 
-assign(baseValidator, { unique, string, boolean, integer });
+// Use this to change the message that is returned.  This is useful for complex validators
+// where you don't want to just tell the user one thing at a time.  For example:
+// number().integer().minimum(0)("key", "foo") => "'key': Expected a number, but got 'foo'"
+// number().integer().minimum(0).expected("an integer greater than or equal to 0")("key", "foo")
+//  => "'key': Expected an integer greater than or equal to 0"
+const expected = function expected(message) {
+  const e = createExpected(message);
+  const validator = this;
+  const newValidator = (...args) => {
+    return e(!validator(...args), ...args);
+  };
 
-const boundUnique = unique.bind(baseValidator);
+  assign(newValidator, validator);
+  return newValidator;
+};
+
+assign(baseValidator, { expected });
+
 const boundString = string.bind(baseValidator);
 const boundBoolean = boolean.bind(baseValidator);
-const boundInteger = integer.bind(baseValidator);
+const boundNumber = number.bind(baseValidator);
 
 export {
-  boundUnique as unique,
   boundString as string,
   boundBoolean as boolean,
-  boundInteger as integer
+  boundNumber as number
 };

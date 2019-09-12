@@ -10,27 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { integer } from "../../../../../src/utils/configValidators";
+import { number } from "../../../../../src/utils/configValidators";
 
 describe("configValidator::integer", () => {
-  [true, "", "foo", [1], {}].forEach(value => {
+  const validator = number().integer();
+
+  [42.01, -1.1, NaN].forEach(value => {
     it(`rejects '${value}'`, () => {
-      const validator = integer();
       expect(validator("key", value)).toBeTruthy();
     });
   });
 
   [0, 42, -1].forEach(value => {
     it(`accepts '${value}'`, () => {
-      const validator = integer();
       expect(validator("key", value)).toBeFalsy();
-    });
-  });
-
-  [null, undefined].forEach(value => {
-    it(`complains about required when ${JSON.stringify(value)}`, () => {
-      const validator = integer();
-      expect(validator("key", value)).toContain("required");
     });
   });
 });

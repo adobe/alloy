@@ -16,5 +16,5 @@ import createExpected from "./createExpected";
 const expected = createExpected("an integer");
 
 export default (key, currentValue) => {
-  return isInteger(currentValue) ? "" : expected(key, currentValue);
+  return expected(isInteger(currentValue), key, currentValue);
 };

@@ -13,8 +13,8 @@ import createExpected from "./createExpected";
 
 export default minimum => (key, currentValue) => {
   const expected = createExpected(
-    `an integer greater than or equal to ${minimum}`
+    `a value greater than or equal to ${minimum}`
   );
 
-  return currentValue >= minimum ? "" : expected(key, currentValue);
+  return expected(currentValue >= minimum, key, currentValue);
 };

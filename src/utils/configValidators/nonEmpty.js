@@ -15,8 +15,5 @@ import createExpected from "./createExpected";
 const expected = createExpected("a non-empty string");
 
 export default (key, value) => {
-  if (value.length > 0) {
-    return "";
-  }
-  return expected(key, value);
+  return expected(value.length > 0, key, value);
 };

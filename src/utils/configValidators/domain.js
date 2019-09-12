@@ -14,11 +14,5 @@ import createExpected from "./createExpected";
 const expected = createExpected("a valid domain");
 
 export default (key, currentValue) => {
-  const validUrl = /^[a-z0-9-.]{1,}$/gi.test(currentValue);
-  let err = "";
-  if (!validUrl) {
-    err = expected(key, currentValue);
-  }
-
-  return err;
+  return expected(/^[a-z0-9-.]{1,}$/gi.test(currentValue), key, currentValue);
 };

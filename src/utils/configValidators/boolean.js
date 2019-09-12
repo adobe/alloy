@@ -16,7 +16,5 @@ import createExpected from "./createExpected";
 const expected = createExpected("true or false");
 
 export default (key, currentValue) => {
-  return currentValue === undefined || isBoolean(currentValue)
-    ? ""
-    : expected(key, currentValue);
+  return expected(isBoolean(currentValue), key, currentValue);
 };

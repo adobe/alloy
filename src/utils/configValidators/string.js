@@ -15,8 +15,5 @@ import createExpected from "./createExpected";
 const expected = createExpected("a string");
 
 export default (key, value) => {
-  if (isString(value)) {
-    return "";
-  }
-  return expected(key, value);
+  return expected(isString(value), key, value);
 };

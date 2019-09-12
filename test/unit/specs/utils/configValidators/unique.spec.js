@@ -9,12 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { unique } from "../../../../../src/utils/configValidators";
+import { string } from "../../../../../src/utils/configValidators";
 
 describe("configValidator::unique", () => {
   [["a"], ["a", "b", "c"]].forEach(values => {
     it(`should accept ${JSON.stringify(values)}`, () => {
-      const validator = unique();
+      const validator = string().unique();
       values.forEach(value => {
         expect(validator("mykey", value)).toEqual("");
       });
@@ -23,7 +23,7 @@ describe("configValidator::unique", () => {
 
   [["a", "a"], ["a", "b", "a"], ["a", "b", "b"]].forEach(values => {
     it(`should reject ${JSON.stringify(values)}`, () => {
-      const validator = unique();
+      const validator = string().unique();
       values.forEach((value, i) => {
         if (i + 1 === values.length) {
           expect(validator("mykey", value)).not.toEqual("");
@@ -36,7 +36,7 @@ describe("configValidator::unique", () => {
 
   [null, undefined].forEach(value => {
     it(`complains about required when ${JSON.stringify(value)}`, () => {
-      const validator = unique();
+      const validator = string().unique();
       expect(validator("key", value)).toContain("required");
     });
   });

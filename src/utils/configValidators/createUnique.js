@@ -18,7 +18,7 @@ export default () => {
   const values = [];
   return (key, currentValue) => {
     if (values.indexOf(currentValue) >= 0) {
-      return expected(key, currentValue);
+      return expected(false, key, currentValue);
     }
     values.push(currentValue);
     return "";

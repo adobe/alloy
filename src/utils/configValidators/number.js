@@ -9,16 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { number } from "../../../../../src/utils/configValidators";
 
-describe("configValidator::minimum", () => {
-  [0, 42].forEach(value => {
-    it(`accepts ${value}`, () => {
-      expect(number().minimum(0)("key", value)).toBeFalsy();
-    });
-  });
+import isNumber from "../isNumber";
+import createExpected from "./createExpected";
 
-  it(`rejects -1`, () => {
-    expect(number().minimum(0)("key", -1)).toBeTruthy();
-  });
-});
+const expected = createExpected("a number");
+
+export default (key, currentValue) => {
+  return expected(isNumber(currentValue), key, currentValue);
+};
