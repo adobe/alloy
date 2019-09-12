@@ -141,7 +141,7 @@ describe("Event Command", () => {
 
   it("Allows other components to modify the event", () => {
     onBeforeEventSpy.and.callFake(({ event }) => {
-      event.mergeData({ a: "changed" });
+      event.mergeXdm({ a: "changed" });
       return Promise.resolve();
     });
     return eventCommand({ data: { a: 1 } }).then(() => {
@@ -149,7 +149,7 @@ describe("Event Command", () => {
         network.sendRequest.calls
           .argsFor(0)[0]
           .toJSON()
-          .events[0].toJSON().data
+          .events[0].toJSON().xdm
       ).toEqual({ a: "changed" });
     });
   });

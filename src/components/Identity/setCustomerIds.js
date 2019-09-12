@@ -12,7 +12,6 @@ const makeServerCall = (payload, lifecycle, network) => {
 export default (ids, cookieJar, lifecycle, network, optIn) => {
   validateCustomerIds(ids);
   const event = createEvent(); // FIXME: We shouldn't need an event.
-  event.mergeData({}); // FIXME: We shouldn't need an event.
   const payload = network.createPayload();
   payload.addEvent(event); // FIXME: We shouldn't need an event.
   const customerIds = assign({}, ids);

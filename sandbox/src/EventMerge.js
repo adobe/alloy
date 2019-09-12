@@ -5,7 +5,7 @@ export default function EventMerge() {
 
   useEffect(() => {
     window.alloy("event", {
-      data: {
+      xdm: {
         "key1": "value1"
       },
       eventMergeId: eventMergeId.current
@@ -13,7 +13,7 @@ export default function EventMerge() {
 
     setTimeout(() => {
       window.alloy("event", {
-        data: {
+        xdm: {
           "key2": "value2"
         },
         eventMergeId: eventMergeId.current

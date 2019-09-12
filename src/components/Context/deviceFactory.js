@@ -59,6 +59,8 @@ export default window => {
     if (orientation) {
       device.screenOrientation = orientation;
     }
-    return event.mergeDevice(device);
+    event.mergeXdm({
+      device
+    });
   };
 };

@@ -11,26 +11,30 @@ describe("Context::deviceFactory", () => {
         height: 800
       }
     };
-    event = jasmine.createSpyObj("event", ["mergeDevice"]);
+    event = jasmine.createSpyObj("event", ["mergeXdm"]);
   });
 
   it("handles the happy path", () => {
     window.screen.orientation = { type: "landscape-primary" };
     deviceFactory(window)(event);
-    expect(event.mergeDevice).toHaveBeenCalledWith({
-      screenHeight: 800,
-      screenWidth: 600,
-      screenOrientation: "landscape"
+    expect(event.mergeXdm).toHaveBeenCalledWith({
+      device: {
+        screenHeight: 800,
+        screenWidth: 600,
+        screenOrientation: "landscape"
+      }
     });
   });
 
   it("handles portrait orientation type", () => {
     window.screen.orientation = { type: "portrait-secondary" };
     deviceFactory(window)(event);
-    expect(event.mergeDevice).toHaveBeenCalledWith({
-      screenHeight: 800,
-      screenWidth: 600,
-      screenOrientation: "portrait"
+    expect(event.mergeXdm).toHaveBeenCalledWith({
+      device: {
+        screenHeight: 800,
+        screenWidth: 600,
+        screenOrientation: "portrait"
+      }
     });
   });
 
@@ -39,10 +43,12 @@ describe("Context::deviceFactory", () => {
       matches: query === "(orientation: portrait)"
     });
     deviceFactory(window)(event);
-    expect(event.mergeDevice).toHaveBeenCalledWith({
-      screenHeight: 800,
-      screenWidth: 600,
-      screenOrientation: "portrait"
+    expect(event.mergeXdm).toHaveBeenCalledWith({
+      device: {
+        screenHeight: 800,
+        screenWidth: 600,
+        screenOrientation: "portrait"
+      }
     });
   });
 
@@ -51,10 +57,12 @@ describe("Context::deviceFactory", () => {
       matches: query === "(orientation: landscape)"
     });
     deviceFactory(window)(event);
-    expect(event.mergeDevice).toHaveBeenCalledWith({
-      screenHeight: 800,
-      screenWidth: 600,
-      screenOrientation: "landscape"
+    expect(event.mergeXdm).toHaveBeenCalledWith({
+      device: {
+        screenHeight: 800,
+        screenWidth: 600,
+        screenOrientation: "landscape"
+      }
     });
   });
 
@@ -74,9 +82,11 @@ describe("Context::deviceFactory", () => {
       }
       window.matchMedia = () => ({ matches: false });
       deviceFactory(window)(event);
-      expect(event.mergeDevice).toHaveBeenCalledWith({
-        screenHeight: 800,
-        screenWidth: 600
+      expect(event.mergeXdm).toHaveBeenCalledWith({
+        device: {
+          screenHeight: 800,
+          screenWidth: 600
+        }
       });
     });
   });

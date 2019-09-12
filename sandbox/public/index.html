@@ -11,7 +11,7 @@
             script-src 'self' 'unsafe-inline' assets.adobedtm.com cdn.tt.omtrdc.net;
             style-src 'self' 'unsafe-inline' cdn.tt.omtrdc.net;
             img-src * data:;
-            connect-src 'self' unifiedjslab.tt.omtrdc.net *.demdex.net http://localhost:8080 https://alpha.konductor.adobedc.net https://edgegateway.azurewebsites.net "/>
+            connect-src 'self' unifiedjslab.tt.omtrdc.net *.demdex.net http://localhost:8080 https://alpha.konductor.adobedc.net https://edgegateway.azurewebsites.net konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net"/>
 
     <title>Mock website hosting Alloy</title>
 
@@ -36,6 +36,7 @@
 
       alloy("configure", {
         // edgeDomain: "edgegateway.azurewebsites.net",
+        // edgeDomain: "konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net",
         // optInEnabled: true,
         errorsEnabled: false,
         propertyId: 9999999,
@@ -50,10 +51,19 @@
 
       alloy("event", {
         viewStart: true,
+        xdm: {
+          "_myorg": {
+            "type": "page-view",
+            "url": location.href,
+            "name": location.pathname.substring(1) || "home"
+          },
+          // Demonstrates overriding automatically collected data
+          "device": {
+            screenHeight: 1
+          }
+        },
         data: {
-          "type": "page-view",
-          "url": location.href,
-          "name": location.pathname.substring(1) || "home"
+          "nonXdmKey": "nonXdmValue"
         }
       }).then(function(data) {
         console.log("Sandbox: View start event has completed.", data);
@@ -79,7 +89,7 @@
         propertyId: 8888888,
         imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
         logEnabled: true,
-	clickCollectionEnabled: false
+        clickCollectionEnabled: false
       });
     </script>
   </head>
