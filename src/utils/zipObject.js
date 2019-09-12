@@ -10,28 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// TODO move this dependency to utils
-import { createMerger } from "../../utils";
-
-export default () => {
-  const content = {};
-  let expectsResponse = false;
-
-  return {
-    set data(data) {
-      content.data = data;
-    },
-    mergeXdm: createMerger(content, "xdm"),
-    mergeMeta: createMerger(content, "meta"),
-    mergeQuery: createMerger(content, "query"),
-    expectResponse() {
-      expectsResponse = true;
-    },
-    get expectsResponse() {
-      return expectsResponse;
-    },
-    toJSON() {
-      return content;
-    }
-  };
+/**
+ * Applies keys with their respective values to a target object,
+ * where keys and values are ordered in separate arrays.
+ * @param {Array} keys The keys to apply to the object.
+ * @param {Array} values The values to apply to the object.
+ * @param {Object} [target] The object to which key-values should be applied.
+ * @returns {*}
+ */
+export default (keys, values, target = {}) => {
+  return keys.reduce((accumulator, key, index) => {
+    accumulator[key] = values[index];
+    return accumulator;
+  }, target);
 };

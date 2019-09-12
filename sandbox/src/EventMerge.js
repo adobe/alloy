@@ -6,17 +6,17 @@ export default function EventMerge() {
   useEffect(() => {
     window.alloy("event", {
       xdm: {
-        "key1": "value1"
-      },
-      eventMergeId: eventMergeId.current
+        "key1": "value1",
+        eventMergeId: eventMergeId.current
+      }
     }).catch(console.error);
 
     setTimeout(() => {
       window.alloy("event", {
         xdm: {
-          "key2": "value2"
-        },
-        eventMergeId: eventMergeId.current
+          "key2": "value2",
+          eventMergeId: eventMergeId.current
+        }
       }).catch(console.error);
     }, 3000);
   }, []);

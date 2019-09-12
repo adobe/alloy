@@ -27,41 +27,6 @@ describe("EventMerge", () => {
     });
   });
 
-  describe("lifecycle", () => {
-    describe("onBeforeEvent", () => {
-      it("applies an eventMergeId to the event when provided in options", done => {
-        const event = {};
-        const options = {
-          eventMergeId: "ABC123"
-        };
-        eventMerge.lifecycle.onBeforeEvent({ event, options }).then(() => {
-          expect(event.eventMergeId).toBe("ABC123");
-          done();
-        });
-      });
-
-      it("applies an eventMergeId to the event when promise provided in options", done => {
-        const event = {};
-        const options = {
-          eventMergeId: Promise.resolve("ABC123")
-        };
-        eventMerge.lifecycle.onBeforeEvent({ event, options }).then(() => {
-          expect(event.eventMergeId).toBe("ABC123");
-          done();
-        });
-      });
-
-      it("does not apply an eventMergeId to the event when not provided in options", done => {
-        const event = {};
-        const options = {};
-        eventMerge.lifecycle.onBeforeEvent({ event, options }).then(() => {
-          expect(event.eventMergeId).toBeUndefined();
-          done();
-        });
-      });
-    });
-  });
-
   describe("commands", () => {
     describe("createEventMergeId", () => {
       it("returns a UUID v4-compliant Id", () => {

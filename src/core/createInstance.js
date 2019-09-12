@@ -10,7 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isFunction, toError, stringToBoolean, queryString } from "../utils";
+import {
+  isFunction,
+  promiseAllObject,
+  toError,
+  stringToBoolean,
+  queryString,
+  stackError
+} from "../utils";
 import createConfig from "./createConfig";
 import logQueryParam from "../constants/logQueryParam";
 import { boolean } from "../utils/configValidators";
@@ -112,7 +119,6 @@ export default (
       }
     }
 
-    logger.log(`Executing ${commandName} command.`, "Options:", options);
     return execute();
   };
 
@@ -132,7 +138,26 @@ export default (
     // underlying function call.
     // Also note that executeCommand may or may not return a promise.
     new Promise(_resolve => {
-      _resolve(executeCommand(commandName, options));
+      logger.log(`Executing ${commandName} command.`, "Options:", options);
+      _resolve(
+        // Note that promiseAllObject also clones the options object.
+        // This is an important aspect because it serves as taking a snapshot
+        // of options content (particularly important with xdm and data
+        // options where the original objects are more likely to be modified
+        // by the customer over time).
+        // TODO: Add a test for createInstance that ensures options are
+        // being cloned.
+        promiseAllObject(options)
+          .catch(error => {
+            throw stackError(
+              `An error occurred in a promise found within options passed for the ${commandName} command.`,
+              error
+            );
+          })
+          .then(resolvedOptions => {
+            return executeCommand(commandName, resolvedOptions);
+          })
+      );
     })
       .then(resolve)
       .catch(error => {
