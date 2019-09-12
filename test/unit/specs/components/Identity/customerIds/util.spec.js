@@ -1,11 +1,21 @@
 import {
   validateCustomerIds,
   normalizeCustomerIds
-} from "../../../../../src/components/Identity/util";
-import { AUTH_STATES } from "../../../../../src/components/Identity/constants";
+} from "../../../../../../src/components/Identity/customerIds/util";
+import { AUTH_STATES } from "../../../../../../src/components/Identity/constants";
 
 describe("Identity::identityUtil", () => {
   describe("validateCustomerIds", () => {
+    it("should throw an error when input is not an object", () => {
+      const idToTest = "email=qwerty@asdf.com";
+      expect(() => {
+        validateCustomerIds(idToTest);
+      }).toThrow(
+        new Error(
+          "Invalid customer ID format. Each namespace should be an object."
+        )
+      );
+    });
     it("should throw an error when each key is not an object", () => {
       const objToTest = {
         email: "qwerty@asdf.com",
