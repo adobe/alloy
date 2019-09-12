@@ -8,7 +8,7 @@
     "precommit-msg": "echo 'Running pre-commit scripts...' && exit 0",
     "clean": "rimraf dist",
     "lint": "eslint \"*.js\" \"src/**/*.js\" \"test/**/*.js\"",
-    "format": "prettier --write \"*.js\" \"{src,test}/**/*.js\"",
+    "format": "prettier --write \"*.{html,js}\" \"{sandbox,src,test}/**/*.{html,js}\"",
     "test": "karma start --single-run",
     "test:report": "karma start --single-run --reporters allure",
     "test:slreport": "karma start karma-saucelabs.conf.js --reporters allure",
