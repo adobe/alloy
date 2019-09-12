@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 export default (key, currentValue) => {
   let err = "";
   if (currentValue == null) {
-    err = `${key} is a required configuration parameter`;
+    err = `'${key}' is a required configuration parameter`;
   }
   return err;
 };

@@ -10,11 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isBoolean from "../isBoolean";
 import createExpected from "./createExpected";
 
-const expected = createExpected("true or false");
+const expected = createExpected("a non-empty string");
 
-export default (key, currentValue) => {
-  return expected(isBoolean(currentValue), key, currentValue);
+export default (key, value) => {
+  return expected(value.length > 0, key, value);
 };

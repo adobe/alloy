@@ -9,12 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-import isBoolean from "../isBoolean";
 import createExpected from "./createExpected";
 
-const expected = createExpected("true or false");
+const expected = createExpected("a valid domain");
 
 export default (key, currentValue) => {
-  return expected(isBoolean(currentValue), key, currentValue);
+  return expected(/^[a-z0-9-.]{1,}$/gi.test(currentValue), key, currentValue);
 };

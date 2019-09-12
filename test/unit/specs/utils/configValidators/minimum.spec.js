@@ -9,14 +9,16 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { number } from "../../../../../src/utils/configValidators";
 
-export default (key, currentValue) => {
-  const validUrl = /^[a-z0-9-.]{1,}$/gi.test(currentValue);
-  let err = "";
+describe("configValidator::minimum", () => {
+  [0, 42].forEach(value => {
+    it(`accepts ${value}`, () => {
+      expect(number().minimum(0)("key", value)).toBeFalsy();
+    });
+  });
 
-  if (!validUrl) {
-    err = `Invalid domain for ${key}: ${currentValue}`;
-  }
-
-  return err;
-};
+  it(`rejects -1`, () => {
+    expect(number().minimum(0)("key", -1)).toBeTruthy();
+  });
+});

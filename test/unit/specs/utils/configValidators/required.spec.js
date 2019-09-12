@@ -10,11 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isBoolean from "../isBoolean";
-import createExpected from "./createExpected";
+import required from "../../../../../src/utils/configValidators/required";
 
-const expected = createExpected("true or false");
+describe("configValidators::required", () => {
+  ["", "value", 0, 1, true, false].forEach(value => {
+    it(`validates '${value}'`, () => {
+      expect(required("myKey", value, undefined)).toBe("");
+    });
+  });
 
-export default (key, currentValue) => {
-  return expected(isBoolean(currentValue), key, currentValue);
-};
+  [null, undefined].forEach(value => {
+    it(`rejects ${value}`, () => {
+      expect(required("myKey", value, undefined)).toBeTruthy();
+    });
+  });
+});

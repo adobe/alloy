@@ -10,11 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isInteger from "../isInteger";
-
-export default (key, currentValue) => {
-  return currentValue === undefined ||
-    (isInteger(currentValue) && currentValue >= 0)
-    ? ""
-    : `Value for ${key} is not a nonnegative integer: ${currentValue}`;
+export default message => (isValid, key, value) => {
+  return isValid ? "" : `'${key}': Expected ${message}, but got '${value}'.`;
 };

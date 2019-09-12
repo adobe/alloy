@@ -10,17 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNil from "../isNil";
-import isNonEmptyString from "../isNonEmptyString";
+import isInteger from "../isInteger";
+import createExpected from "./createExpected";
+
+const expected = createExpected("an integer");
 
 export default (key, currentValue) => {
-  if (isNil(currentValue)) {
-    return "";
-  }
-
-  if (isNonEmptyString(currentValue)) {
-    return "";
-  }
-
-  return `Invalid value for ${key}: ${currentValue}`;
+  return expected(isInteger(currentValue), key, currentValue);
 };

@@ -39,11 +39,11 @@ export default (
 
   const coreConfigValidators = {
     errorsEnabled: {
-      validate: boolean,
+      validate: boolean(),
       defaultValue: true
     },
     logEnabled: {
-      validate: boolean,
+      validate: boolean(),
       defaultValue: false
     }
   };

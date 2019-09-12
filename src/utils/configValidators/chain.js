@@ -10,11 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isBoolean from "../isBoolean";
-import createExpected from "./createExpected";
+import assign from "../assign";
 
-const expected = createExpected("true or false");
-
-export default (key, currentValue) => {
-  return expected(isBoolean(currentValue), key, currentValue);
+export default (validator, other, additionalMethods = {}) => {
+  const newValidator = (...args) => {
+    const error = validator(...args);
+    return error || other(...args);
+  };
+  assign(newValidator, validator, additionalMethods);
+  return newValidator;
 };

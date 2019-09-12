@@ -9,12 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-import isBoolean from "../isBoolean";
 import createExpected from "./createExpected";
 
-const expected = createExpected("true or false");
+export default minimum => (key, currentValue) => {
+  const expected = createExpected(
+    `a value greater than or equal to ${minimum}`
+  );
 
-export default (key, currentValue) => {
-  return expected(isBoolean(currentValue), key, currentValue);
+  return expected(currentValue >= minimum, key, currentValue);
 };
