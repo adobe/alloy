@@ -20,6 +20,7 @@ import {
 } from "../utils";
 import createConfig from "./createConfig";
 import logQueryParam from "../constants/logQueryParam";
+import { boolean } from "../utils/configValidators";
 
 export default (
   namespace,
@@ -36,23 +37,33 @@ export default (
     logController.logEnabled = enabled;
   };
 
+  const coreConfigValidators = {
+    errorsEnabled: {
+      validate: boolean,
+      defaultValue: true
+    },
+    logEnabled: {
+      validate: boolean,
+      defaultValue: false
+    }
+  };
+
   const configureCommand = options => {
     // We wrap this code in a promise, so that if there are any errors
     // in any of it, the promise returned from this function
     // will be properly rejected.
     return new Promise((resolve, reject) => {
-      ({ errorsEnabled = true } = options);
-      if (options.logEnabled !== undefined) {
-        logCommand({ enabled: options.logEnabled });
-      }
+      const config = createConfig(options);
+      config.addValidators(coreConfigValidators);
+      config.validate();
+      ({ errorsEnabled } = config);
+      logCommand({ enabled: config.logEnabled });
       const parsedQueryString = queryString.parse(window.location.search);
       if (parsedQueryString[logQueryParam] !== undefined) {
         logCommand({
           enabled: stringToBoolean(parsedQueryString[logQueryParam])
         });
       }
-      const config = createConfig(options);
-
       initializeComponents(config).then(resolve, reject);
     });
   };

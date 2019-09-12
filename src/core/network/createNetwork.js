@@ -31,7 +31,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
 
     const response = createResponse(parsedBody);
 
-    return lifecycle.onResponse(response).then(() => response);
+    return lifecycle.onResponse({ response }).then(() => response);
   };
 
   const { edgeDomain, propertyId } = config;
@@ -125,7 +125,9 @@ export default (config, logger, lifecycle, networkStrategy) => {
           const throwError = () => {
             throw error;
           };
-          return lifecycle.onResponseError(error).then(throwError, throwError);
+          return lifecycle
+            .onResponseError({ error })
+            .then(throwError, throwError);
         });
     }
   };

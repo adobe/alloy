@@ -33,16 +33,14 @@
     <script src="alloy.js" async></script>
 
     <script>
-      // Set localEdge to true to use a locally-running edge gateway mock
-      // https://git.corp.adobe.com/Activation/edge-gateway-mock
+
       alloy("configure", {
         // edgeDomain: "edgegateway.azurewebsites.net",
-        // edgeDomain: "konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net",
+        edgeDomain: "konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net",
         // optInEnabled: true,
-        // errorsEnabled: false,
-        // Using a promise to demonstrate they are supported.
-        propertyId: Promise.resolve(9999999),
+        propertyId: 9999999,
         imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
+        // errorsEnabled: false,
         logEnabled: true,
         // Target VEC appends "mobxEdit" to URL when loading the page.
         // By checking this params we know we are in authoring mode
@@ -55,7 +53,8 @@
         viewStart: true,
         xdm: {
           "_myorg": {
-            "type": "page-view",
+            // Using a promise to demonstrate they are supported.
+            "type": Promise.resolve("page-view"),
             "url": location.href,
             "name": location.pathname.substring(1) || "home"
           },

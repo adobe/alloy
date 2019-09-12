@@ -93,7 +93,7 @@ const createPersonalization = ({ config, logger, cookieJar }) => {
         const collect = componentRegistry.getCommand(EVENT_COMMAND);
         ruleComponentModules = initRuleComponentModules(createCollect(collect));
       },
-      onBeforeEvent(event, options, isViewStart) {
+      onBeforeEvent({ event, isViewStart }) {
         if (authoringModeEnabled) {
           logger.warn("Rendering is disabled, authoring mode.");
 
@@ -124,7 +124,7 @@ const createPersonalization = ({ config, logger, cookieJar }) => {
           event.mergeMeta({ personalization: { sessionId } });
         });
       },
-      onResponse(response) {
+      onResponse({ response }) {
         if (authoringModeEnabled) {
           return;
         }

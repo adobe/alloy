@@ -41,7 +41,7 @@ export default (config, logger, availableContexts, requiredContexts) => {
           )
           .concat(requiredContexts);
       },
-      onBeforeEvent(event) {
+      onBeforeEvent({ event }) {
         configuredContexts.forEach(context => context(event));
       }
     }

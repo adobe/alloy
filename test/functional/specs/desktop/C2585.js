@@ -1,19 +1,20 @@
-fixture`C2585`.page(
-  "https://sandbox-qe.azurewebsites.net/sandbox/html/C2585.html"
-);
+import { t } from "testcafe";
 
-const testDescription =
-  "Regression: Throw error when configure is not the first command executed.";
+const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/pageEvent.html`;
+
+fixture`C2585`.page(urlCollector);
 
 test.meta({
   ID: "C2585",
   SEVERITY: "P0",
   TEST_RUN: "Regression"
-})(testDescription, async t => {
-  const { error } = await t.getBrowserConsoleMessages();
+});
+
+test("Regression: Throw error when configure is not the first command executed.", async () => {
+  const message = await t.getBrowserConsoleMessages();
   await t
-    .expect(error)
-    .eql([
+    .expect(message.error)
+    .contains(
       '[alloy] Error: [alloy] The library must be configured first. Please do so by calling alloy("configure", {...}).'
-    ]);
+    );
 });

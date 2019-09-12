@@ -9,16 +9,14 @@
             function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
             (window,["alloy"]);
         </script>
-        <script src="js/alloy.js"></script>
+        <script src="/dist/standalone/alloy.min.js" async></script>
+
         <script>
-        alloy("log", {
-        "enabled": true
-        });
-        alloy("event", {
-        "data": {
-            "key":"value"
-        },
-        });
+            alloy("configure", {
+                errorsEnabled: false,
+                logEnabled: true
+            });
+            alloy("boguscommand");
         </script>
     </head>
 </html>

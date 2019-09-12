@@ -133,7 +133,7 @@ describe("createNetwork", () => {
         throw Error("Expected sendRequest to reject promise.");
       })
       .catch(error => {
-        expect(lifecycle.onResponseError).toHaveBeenCalledWith(error);
+        expect(lifecycle.onResponseError).toHaveBeenCalledWith({ error });
         expect(error.message).toEqual(
           "Network request failed.\nCaused by: networkerror"
         );
@@ -149,7 +149,7 @@ describe("createNetwork", () => {
         throw Error("Expected sendRequest to reject promise.");
       })
       .catch(error => {
-        expect(lifecycle.onResponseError).toHaveBeenCalledWith(error);
+        expect(lifecycle.onResponseError).toHaveBeenCalledWith({ error });
         // The native parse error message is different based on the browser
         // so we'll just check to parts we control.
         expect(error.message).toContain("Error parsing server response.\n");
@@ -167,7 +167,7 @@ describe("createNetwork", () => {
         }
       ]
     };
-    lifecycle.onResponse.and.callFake(response => {
+    lifecycle.onResponse.and.callFake(({ response }) => {
       const cleanResponse = response.toJSON();
       expect(cleanResponse).toEqual(myresponse);
       return Promise.resolve();
