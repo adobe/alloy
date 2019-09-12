@@ -34,7 +34,7 @@ describe("EventMerge", () => {
         const options = {
           eventMergeId: "ABC123"
         };
-        eventMerge.lifecycle.onBeforeEvent(event, options).then(() => {
+        eventMerge.lifecycle.onBeforeEvent({ event, options }).then(() => {
           expect(event.eventMergeId).toBe("ABC123");
           done();
         });
@@ -45,7 +45,7 @@ describe("EventMerge", () => {
         const options = {
           eventMergeId: Promise.resolve("ABC123")
         };
-        eventMerge.lifecycle.onBeforeEvent(event, options).then(() => {
+        eventMerge.lifecycle.onBeforeEvent({ event, options }).then(() => {
           expect(event.eventMergeId).toBe("ABC123");
           done();
         });
@@ -54,7 +54,7 @@ describe("EventMerge", () => {
       it("does not apply an eventMergeId to the event when not provided in options", done => {
         const event = {};
         const options = {};
-        eventMerge.lifecycle.onBeforeEvent(event, options).then(() => {
+        eventMerge.lifecycle.onBeforeEvent({ event, options }).then(() => {
           expect(event.eventMergeId).toBeUndefined();
           done();
         });
