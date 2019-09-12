@@ -11,7 +11,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 require("dotenv").config();
-const environment = process.env.baseurl;
 const createTestCafe = require("testcafe");
 const fs = require("fs");
 const path = require("path");
@@ -52,7 +51,7 @@ createReport = () => {
 };
 
 const isSL = process.argv.includes("--sl");
-if (environment === "dev" && isSL === false) {
+if (isSL === false) {
   createTestCafe().then(tc => {
     testcafe = tc;
     const runner = testcafe.createRunner();
@@ -79,61 +78,7 @@ if (environment === "dev" && isSL === false) {
       .then(() => testcafe.close())
       .then(() => createReport());
   });
-} else if (environment === "prod" && isSL === false) {
-  createTestCafe().then(tc => {
-    testcafe = tc;
-    const runner = testcafe.createRunner();
-    runSuite = suite => {
-      const runOptions = {
-        skipJsErrors: config.desktop.skipCriticalConsoleJsErrors,
-        quarantineMode: config.desktop.quarantineMode,
-        speed: config.desktop.speed,
-        debugMode: false,
-        selectorTimeout: config.desktop.selectorTimeOut,
-        assertionTimeout: config.desktop.assertionTimeout
-      };
-      return runner
-        .src(suite)
-        .filter(testName => /^Regression/.test(testName))
-        .browsers(config.desktop.browser)
-        .reporter("allure")
-        .concurrency(config.desktop.concurrency)
-        .run(runOptions);
-    };
-    const testFolder = config.desktop.testsFolder;
-    const testsList = allFilesSync(testFolder);
-    runSuite(testsList)
-      .then(() => testcafe.close())
-      .then(() => createReport());
-  });
-} else if (environment === "dev" && isSL === true) {
-  createTestCafe().then(tc => {
-    testcafe = tc;
-    const runner = testcafe.createRunner();
-    runSuite = suite => {
-      const runOptions = {
-        skipJsErrors: config.desktop.skipCriticalConsoleJsErrors,
-        quarantineMode: config.desktop.quarantineMode,
-        speed: config.desktop.speed,
-        debugMode: false,
-        selectorTimeout: config.desktop.selectorTimeOut,
-        assertionTimeout: config.desktop.assertionTimeout
-      };
-      return runner
-        .src(suite)
-        .filter(testName => /^Regression/.test(testName))
-        .browsers(config.desktop.saucelabs)
-        .reporter("allure")
-        .concurrency(config.desktop.concurrency)
-        .run(runOptions);
-    };
-    const testFolder = config.desktop.testsFolder;
-    const testsList = allFilesSync(testFolder);
-    runSuite(testsList)
-      .then(() => testcafe.close())
-      .then(() => createReport());
-  });
-} else if (environment === "prod" && isSL === true) {
+} else if (isSL === true) {
   createTestCafe().then(tc => {
     testcafe = tc;
     const runner = testcafe.createRunner();

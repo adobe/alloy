@@ -1,4 +1,4 @@
-dist: trusty
+dist: xenial
 sudo: required
 language:
 - node_js
@@ -6,12 +6,8 @@ language:
 node_js:
 - '10'
 
-cache:
-  directories:
-    - ~/.npm
-    - node_modules
-
 install:
+- npm i -g npm
 - npm install -g allure-commandline
 
 cache:
@@ -29,16 +25,15 @@ addons:
   sonarcloud:
     organization: "adobeinc"
 
-before_script:
-- export DISPLAY=:99.0
-- sh -e /etc/init.d/xvfb start
-- sleep 3
-- fluxbox >/dev/null 2>&1 &
+services:
+  - xvfb
 
 script:
 - npm install
-- npm run test:slreport
-- npm run functional:ci
+- npm run build
+- npm run test
+- npm run test:saucelabs
+- npm run functional
 - npm run checkbundlesize
 # - sonar-scanner
 

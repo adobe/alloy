@@ -1,8 +1,6 @@
 import { t } from "testcafe";
 
-const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/pageEvent.${
-  process.env.baseurl
-}.html`;
+const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/pageEvent.html`;
 
 fixture`C2585`.page(urlCollector);
 
@@ -15,8 +13,8 @@ test.meta({
 test("Regression: Throw error when configure is not the first command executed.", async () => {
   const message = await t.getBrowserConsoleMessages();
   await t
-    .expect(message.error[0])
-    .eql(
+    .expect(message.error)
+    .contains(
       '[alloy] Error: [alloy] The library must be configured first. Please do so by calling alloy("configure", {...}).'
     );
 });

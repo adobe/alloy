@@ -1,8 +1,6 @@
 import { t } from "testcafe";
 
-const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/bogusCommand.${
-  process.env.baseurl
-}.html`;
+const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/bogusCommand.html`;
 
 fixture`C2587`.page(urlCollector);
 
@@ -15,8 +13,8 @@ test.meta({
 test("Regression: Throw error when executing command that doesn't exist", async () => {
   const message = await t.getBrowserConsoleMessages();
   await t
-    .expect(message.warn[0])
-    .eql(
+    .expect(message.warn)
+    .contains(
       "[alloy] An error during configuration is preventing the boguscommand command from executing."
     );
 });
