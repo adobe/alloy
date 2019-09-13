@@ -13,13 +13,13 @@ governing permissions and limitations under the License.
 import { defer } from "../../utils";
 import { boolean, number } from "../../utils/configValidators";
 import createIdSyncs from "./createIdSyncs";
+import createCustomerIds from "./customerIds/createCustomerIds";
+
 import { COOKIE_NAMES } from "./constants";
-import setCustomerIds from "./setCustomerIds";
 
 const { EXPERIENCE_CLOUD_ID } = COOKIE_NAMES;
 
 const addIdsContext = (payload, ecid) => {
-  // TODO: Add customer ids.
   payload.addIdentity(EXPERIENCE_CLOUD_ID, {
     id: ecid
   });
@@ -33,13 +33,14 @@ const createIdentity = ({ config, logger, cookieJar }) => {
   let deferredForEcid;
   let network;
   let lifecycle;
+  let customerIds;
   const idSyncs = createIdSyncs(config, logger, cookieJar);
   let alreadyQueriedForIdSyncs = false;
-
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
         ({ lifecycle, network, optIn } = tools);
+        customerIds = createCustomerIds(cookieJar, lifecycle, network, optIn);
 
         // #if _REACTOR
         // This is a way for the ECID data element in the Reactor extension
@@ -99,7 +100,7 @@ const createIdentity = ({ config, logger, cookieJar }) => {
             deferredForEcid = defer();
             payload.expectResponse();
           }
-
+          customerIds.addToPayload(payload);
           return promise;
         });
       },
@@ -124,13 +125,8 @@ const createIdentity = ({ config, logger, cookieJar }) => {
       getEcid() {
         return optIn.whenOptedIn().then(getEcid);
       },
-      // TODO: Discuss renaming of CustomerIds to UserIds
       setCustomerIds(options) {
-        return optIn
-          .whenOptedIn()
-          .then(() =>
-            setCustomerIds(options, cookieJar, lifecycle, network, optIn)
-          );
+        return optIn.whenOptedIn().then(() => customerIds.sync(options));
       }
     }
   };
