@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Alloy Test Page</title>
+    <!-- prettier-ignore -->
+    <script>
+        !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
+        []).push(o),n[o]=function(){var u=arguments;return new Promise(
+        function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
+        (window,["alloy"]);
+    </script>
+    <script src="/dist/standalone/alloy.min.js" async></script>
+  </head>
+
+  <body id="body">
+    <section class="content">
+      <div class="left-nav">
+        <div>
+          <ul>
+            <li><a href="#">Config with logEnabled: true.</a></li>
+            <li><a href="#/nologconfig">Config with no log configs.</a></li>
+            <li><a href="#/disablelog">Config with logEnabled: false.</a></li>
+            <li><a href="#/event">Event</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="contents"></div>
+    </section>
+
+    <script src="../js/helper.js"></script>
+  </body>
+</html>

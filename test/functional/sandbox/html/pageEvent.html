@@ -3,20 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <title>Alloy Test Page</title>
+    <!-- prettier-ignore -->
     <script>
-      !(function(n, o) {
-        o.forEach(function(o) {
-          n[o] ||
-            ((n.__alloyNS = n.__alloyNS || []).push(o),
-            (n[o] = function() {
-              var u = arguments;
-              return new Promise(function(i, l) {
-                n[o].q.push([i, l, u]);
-              });
-            }),
-            (n[o].q = []));
-        });
-      })(window, ["alloy"]);
+      !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
+      []).push(o),n[o]=function(){var u=arguments;return new Promise(
+      function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
+      (window,["alloy"]);
     </script>
     <script src="/dist/standalone/alloy.min.js" async></script>
 
