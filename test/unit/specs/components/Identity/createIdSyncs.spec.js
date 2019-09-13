@@ -31,19 +31,8 @@ describe("Identity::createIdSyncs", () => {
     }, {});
   };
 
-  it("tracks id syncs", () => {
-    const idsToSync = [
-      {
-        type: "url",
-        id: 411,
-        spec: {
-          url:
-            "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013268",
-          hideReferrer: 0,
-          ttlMinutes: 120
-        }
-      }
-    ];
+  it("resets expired id syncs", () => {
+    const idsToSync = [];
 
     cookieJar.set(
       ID_SYNC_CONTROL,
@@ -57,11 +46,7 @@ describe("Identity::createIdSyncs", () => {
     expect(obj[123]).toBeDefined();
     const idSyncs = createIdSyncs(config, logger, cookieJar);
     return idSyncs.process(idsToSync).then(() => {
-      const now = Math.round(new Date().getTime() / 1000 / 60 / 60); // hours
-
       obj = getControlObject();
-      expect(obj[411]).toBeDefined();
-      expect(obj[411] - now).toEqual(2);
       expect(obj[123]).toBeUndefined();
     });
   });
