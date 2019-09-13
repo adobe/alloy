@@ -3,7 +3,8 @@ import {
   crc32,
   convertBufferToHex,
   convertStringToSha256Buffer,
-  clone
+  clone,
+  uuid
 } from "../../../utils";
 import { COOKIE_NAMES } from "../constants";
 import createEvent from "../../DataCollector/createEvent";
@@ -35,8 +36,9 @@ export default (cookieJar, lifecycle, network, optIn) => {
   };
 
   const makeServerCall = payload => {
-    return lifecycle.onBeforeDataCollection({ payload }).then(() => {
-      return network.sendRequest(payload, payload.expectsResponse);
+    const requestId = uuid();
+    return lifecycle.onBeforeDataCollection({ payload, requestId }).then(() => {
+      return network.sendRequest(payload, requestId, payload.expectsResponse);
     });
   };
 

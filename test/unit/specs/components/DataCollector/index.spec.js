@@ -143,9 +143,14 @@ describe("Event Command", () => {
     });
   });
 
-  it("Calls onBeforeDataCollection", () => {
+  it("Calls onBeforeDataCollection with the requestId", () => {
     return eventCommand({}).then(() => {
+      expect(sendRequestSpy).toHaveBeenCalled();
       expect(onBeforeDataCollectionSpy).toHaveBeenCalled();
+      expect(onBeforeDataCollectionSpy).toHaveBeenCalledWith({
+        payload: jasmine.anything(),
+        requestId: sendRequestSpy.calls.argsFor(0)[1]
+      });
     });
   });
 
@@ -181,6 +186,7 @@ describe("Event Command", () => {
     return eventCommand({}).then(() => {
       expect(sendRequestSpy).toHaveBeenCalledWith(
         jasmine.anything(),
+        jasmine.anything(),
         true,
         false
       );
@@ -190,6 +196,7 @@ describe("Event Command", () => {
   it("sends expectsResponse == false", () => {
     return eventCommand({}).then(() => {
       expect(sendRequestSpy).toHaveBeenCalledWith(
+        jasmine.anything(),
         jasmine.anything(),
         false,
         false
@@ -201,8 +208,17 @@ describe("Event Command", () => {
     return eventCommand({ documentUnloading: true }).then(() => {
       expect(sendRequestSpy).toHaveBeenCalledWith(
         jasmine.anything(),
+        jasmine.anything(),
         false,
         true
+      );
+    });
+  });
+
+  it("creates a uuid for the requestId", () => {
+    return eventCommand({}).then(() => {
+      expect(sendRequestSpy.calls.argsFor(0)[1]).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
       );
     });
   });

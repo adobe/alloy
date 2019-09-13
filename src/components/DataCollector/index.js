@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import createEvent from "./createEvent";
 import createConfigValidators from "./createConfigValidators";
-import { clone } from "../../utils";
+import { clone, uuid } from "../../utils";
 
 import createClickActivityCollector from "./activity/click";
 
@@ -31,11 +31,14 @@ const createDataCollector = ({ config, logger }) => {
       }
     });
 
+    const requestId = uuid();
+
     return lifecycle
-      .onBeforeDataCollection({ payload })
+      .onBeforeDataCollection({ payload, requestId })
       .then(() => {
         return network.sendRequest(
           payload,
+          requestId,
           payload.expectsResponse,
           documentUnloading
         );
