@@ -46,7 +46,7 @@
     onRoutePostInit: initHighlighter
   });
 
-  router.register("/", "alloystart", {
+  router.register("/logenabled", "logenabled", {
     onPostInit: function() {
         alloy("configure", {
             logEnabled: true,
