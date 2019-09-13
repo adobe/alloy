@@ -42,8 +42,8 @@
     <script>
       alloy("configure", {
         // edgeDomain: "edgegateway.azurewebsites.net",
-        edgeDomain:
-          "konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net",
+        // edgeDomain:
+        //   "konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net",
         // optInEnabled: true,
         propertyId: "9999999",
         imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
@@ -71,7 +71,10 @@
           }
         },
         data: {
-          nonXdmKey: "nonXdmValue"
+          nonXdmKey: "nonXdmValue",
+          // The following prop is a trait set in Audience Manager to
+          // return destinations.
+          name: "home"
         }
       }).then(function(data) {
         console.log("Sandbox: View start event has completed.", data);
