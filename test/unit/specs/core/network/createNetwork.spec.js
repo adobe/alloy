@@ -43,7 +43,9 @@ describe("createNetwork", () => {
   it("can call interact", () => {
     return network.sendRequest({}, true, false).then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
-        "https://alloy.mysite.com/v1/interact?propertyId=mypropertyid",
+        jasmine.stringMatching(
+          /^https:\/\/alloy\.mysite\.com\/v1\/interact\?propertyId=mypropertyid&requestId=[0-9a-f-]+$/
+        ),
         "{}",
         false
       );
@@ -51,9 +53,11 @@ describe("createNetwork", () => {
   });
 
   it("can call collect", () => {
-    return network.sendRequest({}, false).then(() => {
+    return network.sendRequest({}, false, undefined, "myrequestid").then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
-        "https://alloy.mysite.com/v1/collect?propertyId=mypropertyid",
+        jasmine.stringMatching(
+          /^https:\/\/alloy\.mysite\.com\/v1\/collect\?propertyId=mypropertyid&requestId=[0-9a-f-]+$/
+        ),
         "{}",
         false
       );
@@ -61,9 +65,11 @@ describe("createNetwork", () => {
   });
 
   it("can call when the document is unloading", () => {
-    return network.sendRequest({}, false, true).then(() => {
+    return network.sendRequest({}, false, true, "myrequestid").then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
-        "https://alloy.mysite.com/v1/collect?propertyId=mypropertyid",
+        jasmine.stringMatching(
+          /^https:\/\/alloy\.mysite\.com\/v1\/collect\?propertyId=mypropertyid&requestId=[0-9a-f-]+$/
+        ),
         "{}",
         true
       );
@@ -71,9 +77,11 @@ describe("createNetwork", () => {
   });
 
   it("uses collect when a request expects a response and is an exit link", () => {
-    return network.sendRequest({}, true, true).then(() => {
+    return network.sendRequest({}, true, true, "myrequestid").then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
-        "https://alloy.mysite.com/v1/collect?propertyId=mypropertyid",
+        jasmine.stringMatching(
+          /^https:\/\/alloy\.mysite\.com\/v1\/collect\?propertyId=mypropertyid&requestId=[0-9a-f-]+$/
+        ),
         "{}",
         true
       );
@@ -133,7 +141,10 @@ describe("createNetwork", () => {
         throw Error("Expected sendRequest to reject promise.");
       })
       .catch(error => {
-        expect(lifecycle.onResponseError).toHaveBeenCalledWith({ error });
+        expect(lifecycle.onResponseError).toHaveBeenCalledWith({
+          error,
+          requestId: jasmine.anything()
+        });
         expect(error.message).toEqual(
           "Network request failed.\nCaused by: networkerror"
         );
@@ -149,7 +160,10 @@ describe("createNetwork", () => {
         throw Error("Expected sendRequest to reject promise.");
       })
       .catch(error => {
-        expect(lifecycle.onResponseError).toHaveBeenCalledWith({ error });
+        expect(lifecycle.onResponseError).toHaveBeenCalledWith({
+          error,
+          requestId: jasmine.anything()
+        });
         // The native parse error message is different based on the browser
         // so we'll just check to parts we control.
         expect(error.message).toContain("Error parsing server response.\n");
@@ -167,9 +181,10 @@ describe("createNetwork", () => {
         }
       ]
     };
-    lifecycle.onResponse.and.callFake(({ response }) => {
+    lifecycle.onResponse.and.callFake(({ response, requestId }) => {
       const cleanResponse = response.toJSON();
       expect(cleanResponse).toEqual(myresponse);
+      expect(requestId).toBeDefined();
       return Promise.resolve();
     });
     networkStrategy.and.returnValue(
