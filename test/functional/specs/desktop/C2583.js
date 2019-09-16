@@ -10,7 +10,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Regression: Toggle logging through configuration.", async () => {
+test("Regression: Set the log option to true. Load the page. Execute an event command.", async () => {
   await t
     .click(
       Selector(
@@ -24,8 +24,10 @@ test("Regression: Toggle logging through configuration.", async () => {
     );
 
   const message = await t.getBrowserConsoleMessages();
+
   await t.expect(message.log).match(/\[alloy] Executing event command./);
 
+  // Remove the log option from the configuration. Refresh the browser. Execute an event command.
   await t
     .click(
       Selector(
@@ -39,6 +41,7 @@ test("Regression: Toggle logging through configuration.", async () => {
     );
 
   const message2 = await t.getBrowserConsoleMessages();
+
   await t
     .expect(message2.log)
     .match(/Config nologconfig initiated./)
@@ -46,4 +49,39 @@ test("Regression: Toggle logging through configuration.", async () => {
     .match(/Config event initiated./)
     .expect(message2.log)
     .match(/\[alloy] Executing event command./);
+});
+
+test("Regression: Set the log option in the configuration to false. Refresh the browser. Execute an event command.", async () => {
+  await t
+    .click(
+      Selector(
+        "#body > section > div.left-nav > div > ul > li:nth-child(3) > a"
+      )
+    )
+    .click(
+      Selector(
+        "#body > section > div.left-nav > div > ul > li:nth-child(4) > a"
+      )
+    );
+
+  const message = await t.getBrowserConsoleMessages();
+
+  await t.expect(message.log).notContains("Executing event command.");
+
+  // Remove the log option from the configuration. Refresh the browser. Execute an event command.
+  await t
+    .click(
+      Selector(
+        "#body > section > div.left-nav > div > ul > li:nth-child(2) > a"
+      )
+    )
+    .click(
+      Selector(
+        "#body > section > div.left-nav > div > ul > li:nth-child(4) > a"
+      )
+    );
+
+  const message2 = await t.getBrowserConsoleMessages();
+
+  await t.expect(message2.log).notContains("Executing event command.");
 });

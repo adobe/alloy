@@ -1,6 +1,6 @@
-import { t } from "testcafe";
+import { t, Selector } from "testcafe";
 
-const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/pageEvent.html`;
+const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html`;
 
 fixture`C2585`.page(urlCollector);
 
@@ -11,10 +11,15 @@ test.meta({
 });
 
 test("Regression: Throw error when configure is not the first command executed.", async () => {
+  await t.click(
+    Selector("#body > section > div.left-nav > div > ul > li:nth-child(4) > a")
+  );
+
   const message = await t.getBrowserConsoleMessages();
+
   await t
-    .expect(message.error)
-    .contains(
-      '[alloy] Error: [alloy] The library must be configured first. Please do so by calling alloy("configure", {...}).'
+    .expect(message.log)
+    .match(
+      '[alloy] The library must be configured first. Please do so by calling alloy("configure", {...}).'
     );
 });
