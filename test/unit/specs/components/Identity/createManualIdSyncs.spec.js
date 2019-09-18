@@ -1,5 +1,6 @@
 import createCookieProxy from "../../../../../src/core/createCookieProxy";
 import createComponentNamespacedCookieJar from "../../../../../src/core/createComponentNamespacedCookieJar";
+import createIdSyncs from "../../../../../src/components/Identity/createIdSyncs";
 import createManualIdSyncs from "../../../../../src/components/Identity/createManualIdSyncs";
 
 const cookieProxy = createCookieProxy("identity", 180);
@@ -142,5 +143,45 @@ describe("Identity::createManualIdSyncs", () => {
     };
 
     manualIdSyncs.syncIdsByUrl(data);
+  });
+
+  it("syncIdsByUrl throws an error if not all id syncs succeeded", () => {
+    const idSyncProcessor = createIdSyncs(config, logger, cookieJar);
+    const manualIdSyncs = createManualIdSyncs(
+      config,
+      logger,
+      cookieJar,
+      idSyncProcessor
+    );
+    const data = {
+      idSyncs: [
+        {
+          type: "url",
+          id: 500,
+          spec: {
+            url:
+              "https://idsync.com/365868.gif?partner_uid=79653899615727305204290942296930013270",
+            hideReferrer: 0,
+            ttlMinutes: 120
+          }
+        },
+        {
+          type: "url",
+          id: 502,
+          spec: {
+            url:
+              "https://idsync.com/365868.gif?partner_uid=79653899615727305204290942296930013270",
+            hideReferrer: 0,
+            ttlMinutes: 120
+          }
+        }
+      ]
+    };
+
+    return manualIdSyncs.syncIdsByUrl(data).catch(result => {
+      expect(result.message).toEqual(
+        "The following ID sync IDs failed: 500, 502."
+      );
+    });
   });
 });
