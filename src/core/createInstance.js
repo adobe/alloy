@@ -29,7 +29,8 @@ export default (
   logger,
   window
 ) => {
-  let errorsEnabled;
+  // Assume errors are enabled until configuration says otherwise.
+  let errorsEnabled = true;
   let configurePromise;
 
   const logCommand = ({ enabled }) => {
