@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, isString } from "../utils";
+import { assign } from "../utils";
 
 const CONFIG_DOC_URI =
   "https://launch.gitbook.io/adobe-experience-platform-web-sdk/fundamentals/configuring-the-sdk";
@@ -76,11 +76,7 @@ const createConfig = config => {
             validator.defaultValue
           );
           if (errorMessage) {
-            if (isString(errorMessage)) {
-              ac.push(errorMessage);
-            } else {
-              ac.push(`An internal error occurred while validating '${key}'`);
-            }
+            ac.push(errorMessage);
           }
         }
         return ac;
