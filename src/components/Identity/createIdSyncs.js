@@ -94,7 +94,9 @@ const createProcessor = (config, logger, cookieJar) => destinations => {
     if (result.failed.length) {
       const failedIds = result.failed.map(idSync => idSync.id);
 
-      throw new Error(`The following ID sync IDs failed: ${failedIds.join(", ")}.`)
+      throw new Error(
+        `The following ID sync IDs failed: ${failedIds.join(", ")}.`
+      );
     }
 
     return result;
