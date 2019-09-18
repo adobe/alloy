@@ -31,7 +31,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
 
     const response = createResponse(parsedBody);
 
-    return lifecycle.onResponse({ response }).then(() => response);
+    return lifecycle.onResponse({ response, requestId }).then(() => response);
   };
 
   const { edgeDomain, propertyId } = config;
@@ -74,7 +74,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
           }
           // #endif
 
-          const url = `${baseUrl}/${apiVersion}/${action}?propertyId=${propertyId}`;
+          const url = `${baseUrl}/${apiVersion}/${action}?propertyId=${propertyId}&requestId=${requestId}`;
           const responseHandlingMessage = reallyExpectsResponse
             ? ""
             : " (no response is expected)";
@@ -126,7 +126,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
             throw error;
           };
           return lifecycle
-            .onResponseError({ error })
+            .onResponseError({ error, requestId })
             .then(throwError, throwError);
         });
     }
