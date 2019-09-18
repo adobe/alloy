@@ -22,6 +22,7 @@ import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
 import createNetwork from "./network";
 import createOptIn from "./createOptIn";
+import createExecuteCommand from "./createExecuteCommand";
 
 import createDataCollector from "../components/DataCollector";
 import createIdentity from "../components/Identity";
@@ -81,13 +82,15 @@ if (namespaces) {
       createOptIn
     );
 
-    const instance = createInstance(
+    const executeCommand = createExecuteCommand(
       namespace,
       initializeComponents,
       logController,
       logger,
       window
     );
+
+    const instance = createInstance(executeCommand);
 
     const queue = window[namespace].q;
     queue.push = instance;
