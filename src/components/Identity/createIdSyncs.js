@@ -91,6 +91,14 @@ const createProcessor = (config, logger, cookieJar) => destinations => {
       ).toString(36)
     );
 
+    if (result.failed.length) {
+      const failedIds = result.failed.map(idSync => idSync.id);
+
+      return Promise.reject(
+        new Error(`The following id sync ids failed: ${failedIds.join(", ")}.`)
+      );
+    }
+
     return result;
   });
 };
