@@ -65,7 +65,7 @@ createPrivacy.abbreviation = "PR";
 createPrivacy.configValidators = {
   optInEnabled: {
     defaultValue: false,
-    validate: boolean
+    validate: boolean()
   }
 };
 
