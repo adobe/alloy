@@ -22,35 +22,25 @@ const { ALLOY_COOKIE_NAME, ALLOY_COOKIE_TTL_IN_DAYS } = cookieDetails;
 
 const memoizedGetTopLevelDomain = memoize(getTopLevelCookieDomain);
 
-export default (
+export default ({
   componentCreators,
   logger,
-  createNamespacedStorage,
   createCookieProxy,
   createComponentNamespacedCookieJar,
-  createLifecycle,
-  createComponentRegistry,
+  lifecycle,
+  componentRegistry,
   createNetwork,
-  createOptIn
-) => config => {
-  const componentRegistry = createComponentRegistry();
-  const { imsOrgId, propertyId, cookieDomain } = config;
-  const cookieName = `${ALLOY_COOKIE_NAME}_${propertyId}`;
+  optIn
+}) => config => {
+  const network = createNetwork(config, logger, lifecycle);
+  const { imsOrgId, cookieDomain } = config;
+  const cookieName = `${ALLOY_COOKIE_NAME}_${imsOrgId}`;
   const cookieProxy = createCookieProxy(
     cookieName,
     ALLOY_COOKIE_TTL_IN_DAYS,
     cookieDomain || memoizedGetTopLevelDomain(window, cookieJar)
   );
 
-  // TODO: Should this storage be namespaced by property ID or org ID?
-  const storage = createNamespacedStorage(imsOrgId);
-  const optIn = createOptIn();
-
-  componentCreators.forEach(createComponent => {
-    const { configValidators } = createComponent;
-    config.addValidators(configValidators);
-  });
-  config.validate();
   componentCreators.forEach(createComponent => {
     const { namespace, abbreviation } = createComponent;
     // TO-DOCUMENT: Helpers that we inject into factories.
@@ -63,7 +53,6 @@ export default (
           abbreviation
         ),
         config,
-        storage,
         enableOptIn: optIn.enable
       });
     } catch (error) {
@@ -75,11 +64,6 @@ export default (
     componentRegistry.register(namespace, component);
   });
 
-  // toJson is expensive so we short circuit if logging is disabled
-  if (logger.enabled) logger.log("Computed configuration:", config.toJSON());
-
-  const lifecycle = createLifecycle(componentRegistry);
-  const network = createNetwork(config, logger, lifecycle);
   return lifecycle
     .onComponentsRegistered({
       componentRegistry,

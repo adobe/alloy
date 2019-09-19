@@ -10,53 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isFunction, toError, stringToBoolean, queryString } from "../utils";
-import createConfig from "./createConfig";
-import logQueryParam from "../constants/logQueryParam";
-import { boolean } from "../utils/configValidators";
+import { isFunction, toError } from "../utils";
 
-const coreConfigValidators = {
-  errorsEnabled: {
-    validate: boolean(),
-    defaultValue: true
-  },
-  logEnabled: {
-    validate: boolean(),
-    defaultValue: false
-  }
-};
-
-export default (
+export default ({
   namespace,
-  initializeComponents,
-  logController,
   logger,
-  window
-) => {
-  // Assume errors are enabled until configuration says otherwise.
-  let errorsEnabled = true;
+  configureCommand,
+  logCommand,
+  getErrorsEnabled
+}) => {
   let configurePromise;
-
-  const logCommand = ({ enabled }) => {
-    // eslint-disable-next-line no-param-reassign
-    logController.logEnabled = enabled;
-    return Promise.resolve();
-  };
-
-  const configureCommand = options => {
-    const config = createConfig(options);
-    config.addValidators(coreConfigValidators);
-    config.validate();
-    ({ errorsEnabled } = config);
-    logCommand({ enabled: config.logEnabled });
-    const parsedQueryString = queryString.parse(window.location.search);
-    if (parsedQueryString[logQueryParam] !== undefined) {
-      logCommand({
-        enabled: stringToBoolean(parsedQueryString[logQueryParam])
-      });
-    }
-    return initializeComponents(config);
-  };
 
   const getExecutor = (commandName, options) => {
     let execute;
@@ -133,7 +96,7 @@ export default (
       // If errors are NOT enabled, we instead pump the error
       // through our logger, in which case the error will
       // hit the console only if logging is enabled.
-      if (errorsEnabled) {
+      if (getErrorsEnabled()) {
         throw error;
       } else {
         logger.error(err);

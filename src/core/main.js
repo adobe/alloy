@@ -10,10 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createInstance from "./createInstance";
-import storageFactory from "../utils/storageFactory";
-import initializeComponentsFactory from "./initializeComponentsFactory";
-
+import instanceFactory from "./instanceFactory";
+import { storageFactory } from "../utils";
 import createLogger from "./createLogger";
 import createCookieProxy from "./createCookieProxy";
 import createComponentNamespacedCookieJar from "./createComponentNamespacedCookieJar";
@@ -22,29 +20,11 @@ import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
 import createNetwork from "./network";
 import createOptIn from "./createOptIn";
-import createExecuteCommand from "./createExecuteCommand";
-
-import createDataCollector from "../components/DataCollector";
-import createIdentity from "../components/Identity";
-import createAudiences from "../components/Audiences";
-import createPersonalization from "../components/Personalization";
-import createContext from "../components/Context";
-import createPrivacy from "../components/Privacy";
-import createEventMerge from "../components/EventMerge";
-import createLibraryInfo from "../components/LibraryInfo";
-
-// TODO: Register the Components here statically for now. They might be registered differently.
-// TODO: Figure out how sub-components will be made available/registered
-const componentCreators = [
-  createDataCollector,
-  createIdentity,
-  createAudiences,
-  createPersonalization,
-  createContext,
-  createPrivacy,
-  createEventMerge,
-  createLibraryInfo
-];
+import executeCommandFactory from "./executeCommandFactory";
+import componentCreators from "./componentCreators";
+import configureCommandFactory from "./commands/configureCommandFactory";
+import logCommandFactory from "./commands/logCommandFactory";
+import initializeComponentsFactory from "./initializeComponentsFactory";
 
 // eslint-disable-next-line no-underscore-dangle
 const namespaces = window.__alloyNS;
@@ -69,28 +49,48 @@ if (namespaces) {
       createNamespacedStorage
     );
     const logger = createLogger(console, logController, `[${namespace}]`);
+    const componentRegistry = createComponentRegistry();
+    const optIn = createOptIn();
+    const lifecycle = createLifecycle(componentRegistry);
+    let errorsEnabled = true;
 
-    const initializeComponents = initializeComponentsFactory(
+    const initializeComponents = initializeComponentsFactory({
       componentCreators,
       logger,
-      createNamespacedStorage,
       createCookieProxy,
       createComponentNamespacedCookieJar,
-      createLifecycle,
-      createComponentRegistry,
+      lifecycle,
+      componentRegistry,
       createNetwork,
-      createOptIn
-    );
+      optIn
+    });
 
-    const executeCommand = createExecuteCommand(
-      namespace,
-      initializeComponents,
-      logController,
+    const logCommand = logCommandFactory({
+      logController
+    });
+
+    const configureCommand = configureCommandFactory({
+      componentCreators,
+      logCommand,
       logger,
+      initializeComponents,
+      setErrorsEnabled(value) {
+        errorsEnabled = value;
+      },
       window
-    );
+    });
 
-    const instance = createInstance(executeCommand);
+    const executeCommand = executeCommandFactory({
+      namespace,
+      logger,
+      configureCommand,
+      logCommand,
+      getErrorsEnabled() {
+        return errorsEnabled;
+      }
+    });
+
+    const instance = instanceFactory(executeCommand);
 
     const queue = window[namespace].q;
     queue.push = instance;
