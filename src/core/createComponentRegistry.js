@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { find, intersection, stackError } from "../utils";
+import { intersection, stackError } from "../utils";
 
 const wrapForErrorHandling = (fn, stackMessage) => {
   return (...args) => {
@@ -88,11 +88,6 @@ export default () => {
       registerComponentCommands(namespace, commands);
       registerLifecycleCallbacks(namespace, lifecycle);
       componentsByNamespace[namespace] = component;
-    },
-    getNamespaceByComponent(component) {
-      return find(Object.keys(componentsByNamespace), namespace => {
-        return componentsByNamespace[namespace] === component;
-      });
     },
     getCommand(commandName) {
       return commandsByName[commandName];

@@ -38,7 +38,7 @@ export default ({
     } else {
       if (!configurePromise) {
         throw new Error(
-          `The library must be configured first. Please do so by calling ${namespace}("configure", {...}).`
+          `The library must be configured first. Please do so by executing the configure command.`
         );
       }
 
