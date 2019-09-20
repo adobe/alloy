@@ -9,7 +9,7 @@ const cookieJar = createComponentNamespacedCookieJar(
   "component_name"
 );
 const config = {
-  idSyncsEnabled: true
+  idSyncEnabled: true
 };
 const logger = {
   log() {},

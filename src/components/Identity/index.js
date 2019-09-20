@@ -58,7 +58,7 @@ const createIdentity = ({ config, logger, cookieJar }) => {
         return optIn.whenOptedIn().then(() => {
           if (
             !alreadyQueriedForIdSyncs &&
-            config.idSyncsEnabled &&
+            config.idSyncEnabled &&
             idSyncs.hasExpired()
           ) {
             alreadyQueriedForIdSyncs = true;
@@ -143,7 +143,7 @@ createIdentity.namespace = "Identity";
 createIdentity.abbreviation = "ID";
 
 createIdentity.configValidators = {
-  idSyncsEnabled: {
+  idSyncEnabled: {
     defaultValue: true,
     validate: boolean()
   },

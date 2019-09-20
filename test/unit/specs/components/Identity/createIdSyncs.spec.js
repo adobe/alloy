@@ -11,7 +11,7 @@ const ID_SYNC_CONTROL = "idSyncControl";
 
 describe("Identity::createIdSyncs", () => {
   const config = {
-    idSyncsEnabled: true
+    idSyncEnabled: true
   };
   const logger = {
     log() {},

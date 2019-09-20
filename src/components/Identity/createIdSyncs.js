@@ -37,7 +37,7 @@ const setControlObject = (controlObject, cookieJar) => {
 };
 
 const createProcessor = (config, logger, cookieJar) => destinations => {
-  if (!config.idSyncsEnabled) {
+  if (!config.idSyncEnabled) {
     return Promise.reject(new Error("ID syncs not enabled"));
   }
 
