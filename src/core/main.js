@@ -22,9 +22,11 @@ import createNetwork from "./network";
 import createOptIn from "./createOptIn";
 import executeCommandFactory from "./executeCommandFactory";
 import componentCreators from "./componentCreators";
-import configureCommandFactory from "./commands/configureCommandFactory";
-import logCommandFactory from "./commands/logCommandFactory";
+import configureCommandFactory from "./configureCommandFactory";
+import logCommandFactory from "./logCommandFactory";
 import initializeComponentsFactory from "./initializeComponentsFactory";
+import createConfig from "./createConfig";
+import configValidators from "./configValidators";
 
 // eslint-disable-next-line no-underscore-dangle
 const namespaces = window.__alloyNS;
@@ -71,6 +73,8 @@ if (namespaces) {
 
     const configureCommand = configureCommandFactory({
       componentCreators,
+      createConfig,
+      configValidators,
       logCommand,
       logger,
       initializeComponents,

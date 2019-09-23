@@ -10,24 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createConfig from "../createConfig";
-import { queryString, stringToBoolean } from "../../utils";
-import logQueryParam from "../../constants/logQueryParam";
-import { boolean } from "../../utils/configValidators";
-
-const coreConfigValidators = {
-  errorsEnabled: {
-    validate: boolean(),
-    defaultValue: true
-  },
-  logEnabled: {
-    validate: boolean(),
-    defaultValue: false
-  }
-};
+import { queryString, stringToBoolean } from "../utils";
+import logQueryParam from "../constants/logQueryParam";
 
 export default ({
   componentCreators,
+  createConfig,
+  coreConfigValidators,
   logCommand,
   logger,
   initializeComponents,
@@ -42,13 +31,13 @@ export default ({
   });
   config.validate();
   setErrorsEnabled(config.errorsEnabled);
-  logCommand({ enabled: config.logEnabled });
   const parsedQueryString = queryString.parse(window.location.search);
-  if (parsedQueryString[logQueryParam] !== undefined) {
-    logCommand({
-      enabled: stringToBoolean(parsedQueryString[logQueryParam])
-    });
-  }
+  logCommand({
+    enabled:
+      parsedQueryString[logQueryParam] !== undefined
+        ? stringToBoolean(parsedQueryString[logQueryParam])
+        : config.logEnabled
+  });
   // toJson is expensive so we short circuit if logging is disabled
   if (logger.enabled) logger.log("Computed configuration:", config.toJSON());
   return initializeComponents(config);

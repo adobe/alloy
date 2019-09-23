@@ -12,5 +12,4 @@ governing permissions and limitations under the License.
 
 export default ({ logController }) => options => {
   logController.logEnabled = options.enabled;
-  return Promise.resolve();
 };
