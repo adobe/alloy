@@ -11,12 +11,14 @@ governing permissions and limitations under the License.
 */
 
 import createIdentity from "../../../../../src/components/Identity";
+import flushPromiseChains from "../../../helpers/flushPromiseChains";
+import { COOKIE_NAMES } from "../../../../../src/components/Identity/constants";
 
+const { EXPERIENCE_CLOUD_ID } = COOKIE_NAMES;
 describe("Identity", () => {
   describe("reactor-specific functionality", () => {
     let identity;
     let reactorRegisterGetEcid;
-
     beforeEach(() => {
       reactorRegisterGetEcid = jasmine.createSpy();
 
@@ -57,6 +59,62 @@ describe("Identity", () => {
 
         const getEcid = reactorRegisterGetEcid.calls.first().args[0];
         expect(getEcid()).toBeUndefined();
+      });
+    });
+
+    describe("onResponse", () => {
+      let cookieJar;
+      let response;
+      beforeEach(() => {
+        cookieJar = {
+          get(key) {
+            return key === "ECID" ? "ABC" : null;
+          },
+          set: jasmine.createSpy()
+        };
+        response = {
+          getPayloadsByType: jasmine
+            .createSpy()
+            .and.returnValue([{ id: "ABC" }]),
+          toJSON: jasmine.createSpy()
+        };
+
+        identity = createIdentity({
+          config: {
+            reactorRegisterGetEcid
+          },
+          cookieJar
+        });
+        identity.lifecycle.onComponentsRegistered({
+          optIn: {
+            whenOptedIn() {
+              return Promise.resolve();
+            }
+          }
+        });
+      });
+      it("should get called with an object with a property named response in it", () => {
+        identity.lifecycle.onResponse({ response });
+        return flushPromiseChains().then(() => {
+          expect(response.getPayloadsByType).toHaveBeenCalledWith(
+            "identity:persist"
+          );
+          expect(cookieJar.set).toHaveBeenCalledWith(
+            EXPERIENCE_CLOUD_ID,
+            "ABC"
+          );
+          expect(response.getPayloadsByType).toHaveBeenCalledWith(
+            "identity:exchange"
+          );
+        });
+      });
+      it("should not do anything if the wrong object is passed", () => {
+        identity.lifecycle.onResponse(response);
+        return flushPromiseChains().then(() => {
+          expect(response.getPayloadsByType).not.toHaveBeenCalled();
+          expect(cookieJar.set).not.toHaveBeenCalled();
+          expect(response.getPayloadsByType).not.toHaveBeenCalled();
+        });
       });
     });
   });
