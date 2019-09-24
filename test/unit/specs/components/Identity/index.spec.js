@@ -108,12 +108,27 @@ describe("Identity", () => {
           );
         });
       });
-      it("should not do anything if the wrong object is passed", () => {
-        identity.lifecycle.onResponse(response);
+      it("should not set ECID if the response doesn't have id", () => {
+        response = {
+          getPayloadsByType: jasmine.createSpy().and.returnValue([]),
+          toJSON: jasmine.createSpy()
+        };
+        identity = createIdentity({
+          config: {
+            reactorRegisterGetEcid
+          },
+          cookieJar
+        });
+        identity.lifecycle.onComponentsRegistered({
+          optIn: {
+            whenOptedIn() {
+              return Promise.resolve();
+            }
+          }
+        });
+        identity.lifecycle.onResponse({ response });
         return flushPromiseChains().then(() => {
-          expect(response.getPayloadsByType).not.toHaveBeenCalled();
           expect(cookieJar.set).not.toHaveBeenCalled();
-          expect(response.getPayloadsByType).not.toHaveBeenCalled();
         });
       });
     });
