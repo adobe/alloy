@@ -70,6 +70,12 @@ if (namespaces) {
       return memoizedGetTopLevelDomain(window, cookieJar);
     };
     let errorsEnabled = true;
+    const getErrorsEnabled = () => {
+      return errorsEnabled;
+    };
+    const setErrorsEnabled = value => {
+      errorsEnabled = value;
+    };
 
     const initializeComponents = initializeComponentsFactory({
       componentCreators,
@@ -103,17 +109,13 @@ if (namespaces) {
       logCommand,
       logger,
       initializeComponents,
-      setErrorsEnabled(value) {
-        errorsEnabled = value;
-      },
+      setErrorsEnabled,
       window
     });
 
     const handleError = handleErrorFactory({
       namespace,
-      getErrorsEnabled: () => {
-        return errorsEnabled;
-      },
+      getErrorsEnabled,
       logger
     });
 
