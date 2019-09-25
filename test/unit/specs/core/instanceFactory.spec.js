@@ -14,7 +14,7 @@ import instanceFactory from "../../../../src/core/instanceFactory";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
 
 describe("instanceFactory", () => {
-  it("executes command successfully", () => {
+  it("successfully executes command", () => {
     const executeCommand = jasmine
       .createSpy()
       .and.returnValue(Promise.resolve("commandresult"));
@@ -32,7 +32,7 @@ describe("instanceFactory", () => {
     });
   });
 
-  it("executes command successfully", () => {
+  it("unsuccessfully execute command", () => {
     const executeCommand = jasmine
       .createSpy()
       .and.returnValue(Promise.reject(new Error("error occurred")));
