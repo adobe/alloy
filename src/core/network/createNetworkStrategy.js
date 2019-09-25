@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import xhrRequestFactory from "./xhrRequest";
-import fetchFactory from "./fetch";
-import sendBeaconFactory from "./sendBeacon";
+import xhrRequestFactory from "./xhrRequestFactory";
+import fetchFactory from "./fetchFactory";
+import sendBeaconFactory from "./sendBeaconFactory";
 import isFunction from "../../utils/isFunction";
 
 export default (window, logger) => {

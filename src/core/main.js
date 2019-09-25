@@ -23,7 +23,7 @@ import createComponentNamespacedCookieJar from "./createComponentNamespacedCooki
 import createLogController from "./createLogController";
 import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
-import createNetwork from "./network";
+import createNetwork from "./network/createNetwork";
 import createOptIn from "./createOptIn";
 import executeCommandFactory from "./executeCommandFactory";
 import componentCreators from "./componentCreators";
@@ -38,6 +38,7 @@ import configToolFactory from "./tools/configToolFactory";
 import cookieJarToolFactory from "./tools/cookieJarToolFactory";
 import enableOptInToolFactory from "./tools/enableOptInToolFactory";
 import loggerToolFactory from "./tools/loggerToolFactory";
+import createNetworkStrategy from "./network/createNetworkStrategy";
 
 // eslint-disable-next-line no-underscore-dangle
 const namespaces = window.__alloyNS;
@@ -69,6 +70,7 @@ if (namespaces) {
     const getTopLevelDomain = () => {
       return memoizedGetTopLevelDomain(window, cookieJar);
     };
+    const networkStrategy = createNetworkStrategy(window, logger);
     let errorsEnabled = true;
     const getErrorsEnabled = () => {
       return errorsEnabled;
@@ -93,7 +95,12 @@ if (namespaces) {
         ),
         enableOptIn: enableOptInToolFactory(optIn),
         logger: loggerToolFactory(logger),
-        network: networkToolFactory(createNetwork, lifecycle, logger)
+        network: networkToolFactory(
+          createNetwork,
+          lifecycle,
+          logger,
+          networkStrategy
+        )
       },
       optIn
     });

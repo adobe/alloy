@@ -19,8 +19,19 @@ describe("networkToolFactory", () => {
     const lifecycle = { onComponentsRegistered() {} };
     const logger = { log() {} };
     const config = { a: "b" };
-    const tool = networkToolFactory(createNetwork, lifecycle, logger)(config)();
-    expect(createNetwork).toHaveBeenCalledWith(config, logger, lifecycle);
+    const networkStrategy = () => {};
+    const tool = networkToolFactory(
+      createNetwork,
+      lifecycle,
+      logger,
+      networkStrategy
+    )(config)();
+    expect(createNetwork).toHaveBeenCalledWith(
+      config,
+      logger,
+      lifecycle,
+      networkStrategy
+    );
     expect(tool).toBe(network);
   });
 });
