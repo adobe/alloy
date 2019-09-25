@@ -12,16 +12,8 @@ test.meta({
 
 test("Regression: Set the log option to true. Load the page. Execute an event command.", async () => {
   await t
-    .click(
-      Selector(
-        "#body > section > div.left-nav > div > ul > li:nth-child(1) > a"
-      )
-    )
-    .click(
-      Selector(
-        "#body > section > div.left-nav > div > ul > li:nth-child(4) > a"
-      )
-    );
+    .click(Selector("#logenabled-button"))
+    .click(Selector("#event-button"));
 
   const message = await t.getBrowserConsoleMessages();
 
@@ -29,16 +21,8 @@ test("Regression: Set the log option to true. Load the page. Execute an event co
 
   // Remove the log option from the configuration. Refresh the browser. Execute an event command.
   await t
-    .click(
-      Selector(
-        "#body > section > div.left-nav > div > ul > li:nth-child(2) > a"
-      )
-    )
-    .click(
-      Selector(
-        "#body > section > div.left-nav > div > ul > li:nth-child(4) > a"
-      )
-    );
+    .click(Selector("#nologconfig-button"))
+    .click(Selector("#event-button"));
 
   const message2 = await t.getBrowserConsoleMessages();
 
@@ -53,16 +37,8 @@ test("Regression: Set the log option to true. Load the page. Execute an event co
 
 test("Regression: Set the log option in the configuration to false. Refresh the browser. Execute an event command.", async () => {
   await t
-    .click(
-      Selector(
-        "#body > section > div.left-nav > div > ul > li:nth-child(3) > a"
-      )
-    )
-    .click(
-      Selector(
-        "#body > section > div.left-nav > div > ul > li:nth-child(4) > a"
-      )
-    );
+    .click(Selector("#disablelog-button"))
+    .click(Selector("#event-button"));
 
   const message = await t.getBrowserConsoleMessages();
 
@@ -70,16 +46,8 @@ test("Regression: Set the log option in the configuration to false. Refresh the 
 
   // Remove the log option from the configuration. Refresh the browser. Execute an event command.
   await t
-    .click(
-      Selector(
-        "#body > section > div.left-nav > div > ul > li:nth-child(2) > a"
-      )
-    )
-    .click(
-      Selector(
-        "#body > section > div.left-nav > div > ul > li:nth-child(4) > a"
-      )
-    );
+    .click(Selector("#nologconfig-button"))
+    .click(Selector("#event-button"));
 
   const message2 = await t.getBrowserConsoleMessages();
 
