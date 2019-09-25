@@ -51,11 +51,11 @@ describe("Event Command", () => {
     sendRequestSpy = spyOn(network, "sendRequest").and.callThrough();
     const dataCollector = createDataCollector({
       config,
-      logger
+      logger,
+      network
     });
     dataCollector.lifecycle.onComponentsRegistered({
       lifecycle,
-      network,
       optIn
     });
     eventCommand = dataCollector.commands.event;

@@ -10,51 +10,33 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  stackError,
-  memoize,
-  getTopLevelCookieDomain,
-  cookieJar
-} from "../utils";
-import cookieDetails from "../constants/cookieDetails";
-
-const { ALLOY_COOKIE_NAME, ALLOY_COOKIE_TTL_IN_DAYS } = cookieDetails;
-
-const memoizedGetTopLevelDomain = memoize(getTopLevelCookieDomain);
+import { stackError } from "../utils";
 
 export default ({
   componentCreators,
-  logger,
-  createCookieProxy,
-  createComponentNamespacedCookieJar,
   lifecycle,
   componentRegistry,
-  createNetwork,
+  tools,
   optIn
 }) => config => {
-  const network = createNetwork(config, logger, lifecycle);
-  const { imsOrgId, cookieDomain } = config;
-  const cookieName = `${ALLOY_COOKIE_NAME}_${imsOrgId}`;
-  const cookieProxy = createCookieProxy(
-    cookieName,
-    ALLOY_COOKIE_TTL_IN_DAYS,
-    cookieDomain || memoizedGetTopLevelDomain(window, cookieJar)
-  );
+  const configuredTools = Object.keys(tools).reduce((accumulator, toolKey) => {
+    accumulator[toolKey] = tools[toolKey](config);
+    return accumulator;
+  }, {});
 
   componentCreators.forEach(createComponent => {
-    const { namespace, abbreviation } = createComponent;
+    const { namespace } = createComponent;
+    const componentTools = Object.keys(configuredTools).reduce(
+      (accumulator, toolKey) => {
+        accumulator[toolKey] = configuredTools[toolKey](createComponent);
+        return accumulator;
+      },
+      {}
+    );
     // TO-DOCUMENT: Helpers that we inject into factories.
     let component;
     try {
-      component = createComponent({
-        logger: logger.spawn(`[${namespace}]`),
-        cookieJar: createComponentNamespacedCookieJar(
-          cookieProxy,
-          abbreviation
-        ),
-        config,
-        enableOptIn: optIn.enable
-      });
+      component = createComponent(componentTools);
     } catch (error) {
       throw stackError(
         `[${namespace}] An error occurred during component creation.`,
@@ -68,7 +50,6 @@ export default ({
     .onComponentsRegistered({
       componentRegistry,
       lifecycle,
-      network,
       optIn
     })
     .then(() => componentRegistry);

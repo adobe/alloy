@@ -13,50 +13,16 @@ governing permissions and limitations under the License.
 import initializeComponentsFactory from "../../../../src/core/initializeComponentsFactory";
 
 describe("initializeComponentsFactory", () => {
-  let spawnedLoggerByPrefix;
-  let componentNamespacedCookieJarByAbbreviation;
-  let logger;
-  let cookieProxy;
-  let createCookieProxy;
-  let createComponentNamespacedCookieJar;
   let lifecycle;
   let componentRegistry;
-  let network;
-  let createNetwork;
   let optIn;
   let componentByNamespace;
   let componentCreators;
+  let tools;
   let initializeComponents;
   let config;
 
   beforeEach(() => {
-    spawnedLoggerByPrefix = {};
-    componentNamespacedCookieJarByAbbreviation = {};
-    logger = {
-      spawn: jasmine.createSpy().and.callFake(prefix => {
-        const spawnedLogger = {};
-        spawnedLoggerByPrefix[prefix] = spawnedLogger;
-        return spawnedLogger;
-      })
-    };
-    cookieProxy = {
-      get() {},
-      set() {}
-    };
-    createCookieProxy = jasmine.createSpy().and.returnValue(cookieProxy);
-    createComponentNamespacedCookieJar = jasmine
-      .createSpy()
-      .and.callFake((_cookieProxy, abbreviation) => {
-        const componentNamespacedCookieJar = {
-          get() {},
-          set() {},
-          remove() {}
-        };
-        componentNamespacedCookieJarByAbbreviation[
-          abbreviation
-        ] = componentNamespacedCookieJar;
-        return componentNamespacedCookieJar;
-      });
     lifecycle = {
       onComponentsRegistered: jasmine
         .createSpy()
@@ -65,8 +31,6 @@ describe("initializeComponentsFactory", () => {
     componentRegistry = {
       register: jasmine.createSpy()
     };
-    network = {};
-    createNetwork = jasmine.createSpy().and.returnValue(network);
     optIn = {
       enable() {}
     };
@@ -85,14 +49,25 @@ describe("initializeComponentsFactory", () => {
     componentCreator2.namespace = "Comp2";
     componentCreator2.abbreviation = "c2";
     componentCreators = [componentCreator1, componentCreator2];
+
+    tools = {
+      tool1(_config) {
+        return componentCreator => {
+          return { name: "tool1", config: _config, componentCreator };
+        };
+      },
+      tool2(_config) {
+        return componentCreator => {
+          return { name: "tool2", config: _config, componentCreator };
+        };
+      }
+    };
+
     initializeComponents = initializeComponentsFactory({
       componentCreators,
-      logger,
-      createCookieProxy,
-      createComponentNamespacedCookieJar,
       lifecycle,
       componentRegistry,
-      createNetwork,
+      tools,
       optIn
     });
     config = {
@@ -103,25 +78,19 @@ describe("initializeComponentsFactory", () => {
   it("creates and registers components", () => {
     const initializeComponentsPromise = initializeComponents(config);
 
-    expect(createNetwork).toHaveBeenCalledWith(config, logger, lifecycle);
-    expect(createCookieProxy).toHaveBeenCalledWith(
-      `adobe_alloy_ORG1`,
-      180,
-      jasmine.any(String)
-    );
     componentCreators.forEach(componentCreator => {
-      const { namespace, abbreviation } = componentCreator;
-      const spawnedLoggerPrefix = `[${namespace}]`;
-      expect(logger.spawn).toHaveBeenCalledWith(spawnedLoggerPrefix);
-      expect(createComponentNamespacedCookieJar).toHaveBeenCalledWith(
-        cookieProxy,
-        abbreviation
-      );
+      const { namespace } = componentCreator;
       expect(componentCreator).toHaveBeenCalledWith({
-        logger: spawnedLoggerByPrefix[spawnedLoggerPrefix],
-        cookieJar: componentNamespacedCookieJarByAbbreviation[abbreviation],
-        config,
-        enableOptIn: optIn.enable
+        tool1: {
+          name: "tool1",
+          config,
+          componentCreator
+        },
+        tool2: {
+          name: "tool2",
+          config,
+          componentCreator
+        }
       });
       expect(componentRegistry.register).toHaveBeenCalledWith(
         namespace,
@@ -131,7 +100,6 @@ describe("initializeComponentsFactory", () => {
     expect(lifecycle.onComponentsRegistered).toHaveBeenCalledWith({
       componentRegistry,
       lifecycle,
-      network,
       optIn
     });
 
@@ -146,17 +114,5 @@ describe("initializeComponentsFactory", () => {
     expect(() => {
       initializeComponents(config);
     }).toThrowError(/\[Comp2\] An error occurred during component creation./);
-  });
-
-  it("uses cookieDomain for cookie proxy if provided in config", () => {
-    config.cookieDomain = "example.com";
-
-    initializeComponents(config);
-
-    expect(createCookieProxy).toHaveBeenCalledWith(
-      `adobe_alloy_ORG1`,
-      180,
-      "example.com"
-    );
   });
 });

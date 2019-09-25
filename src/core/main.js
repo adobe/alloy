@@ -11,7 +11,12 @@ governing permissions and limitations under the License.
 */
 
 import instanceFactory from "./instanceFactory";
-import { storageFactory } from "../utils";
+import {
+  getTopLevelCookieDomain,
+  memoize,
+  storageFactory,
+  cookieJar
+} from "../utils";
 import createLogger from "./createLogger";
 import createCookieProxy from "./createCookieProxy";
 import createComponentNamespacedCookieJar from "./createComponentNamespacedCookieJar";
@@ -28,11 +33,17 @@ import initializeComponentsFactory from "./initializeComponentsFactory";
 import createConfig from "./createConfig";
 import configValidators from "./configValidators";
 import handleErrorFactory from "./handleErrorFactory";
+import networkToolFactory from "./tools/networkToolFactory";
+import configToolFactory from "./tools/configToolFactory";
+import cookieJarToolFactory from "./tools/cookieJarToolFactory";
+import enableOptInToolFactory from "./tools/enableOptInToolFactory";
+import loggerToolFactory from "./tools/loggerToolFactory";
 
 // eslint-disable-next-line no-underscore-dangle
 const namespaces = window.__alloyNS;
 
 const createNamespacedStorage = storageFactory(window);
+const memoizedGetTopLevelDomain = memoize(getTopLevelCookieDomain);
 
 let console;
 
@@ -55,6 +66,9 @@ if (namespaces) {
     const componentRegistry = createComponentRegistry();
     const optIn = createOptIn();
     const lifecycle = createLifecycle(componentRegistry);
+    const getTopLevelDomain = () => {
+      return memoizedGetTopLevelDomain(window, cookieJar);
+    };
     let errorsEnabled = true;
 
     const initializeComponents = initializeComponentsFactory({
@@ -64,7 +78,17 @@ if (namespaces) {
       createComponentNamespacedCookieJar,
       lifecycle,
       componentRegistry,
-      createNetwork,
+      tools: {
+        config: configToolFactory(),
+        cookieJar: cookieJarToolFactory(
+          createCookieProxy,
+          createComponentNamespacedCookieJar,
+          getTopLevelDomain
+        ),
+        enableOptIn: enableOptInToolFactory(optIn),
+        logger: loggerToolFactory(logger),
+        network: networkToolFactory(createNetwork, lifecycle, logger)
+      },
       optIn
     });
 
