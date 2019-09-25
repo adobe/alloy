@@ -58,6 +58,15 @@
     }
   });
 
+  router.register("/configlogenable", "configlogenable", {
+    onPostInit: function() {
+      alloy("configure", {
+        errorsEnabled: false,
+        logEnabled: true
+      });
+    }
+  });
+
   router.register("/nologconfig", "nologconfig", {
     onPostInit: function() {
       alloy("configure", {

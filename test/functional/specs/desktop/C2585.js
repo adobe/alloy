@@ -11,15 +11,15 @@ test.meta({
 });
 
 test("Regression: Throw error when configure is not the first command executed.", async () => {
-  await t.click(
-    Selector("#body > section > div.left-nav > div > ul > li:nth-child(4) > a")
-  );
+  // Note: unable to enable logging with url parameter or enabler logger config.
 
+  await t.click(Selector("#logger-button"));
+  await t.click(Selector("#event-button"));
   const message = await t.getBrowserConsoleMessages();
 
   await t
-    .expect(message.log)
+    .expect(message.warn)
     .match(
-      '[alloy] The library must be configured first. Please do so by calling alloy("configure", {...}).'
+      /\[alloy] An error during configuration is preventing the event command from executing./
     );
 });
