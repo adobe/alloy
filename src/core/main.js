@@ -27,6 +27,7 @@ import logCommandFactory from "./logCommandFactory";
 import initializeComponentsFactory from "./initializeComponentsFactory";
 import createConfig from "./createConfig";
 import configValidators from "./configValidators";
+import handleErrorFactory from "./handleErrorFactory";
 
 // eslint-disable-next-line no-underscore-dangle
 const namespaces = window.__alloyNS;
@@ -84,14 +85,19 @@ if (namespaces) {
       window
     });
 
-    const executeCommand = executeCommandFactory({
+    const handleError = handleErrorFactory({
       namespace,
+      getErrorsEnabled: () => {
+        return errorsEnabled;
+      },
+      logger
+    });
+
+    const executeCommand = executeCommandFactory({
       logger,
       configureCommand,
       logCommand,
-      getErrorsEnabled() {
-        return errorsEnabled;
-      }
+      handleError
     });
 
     const instance = instanceFactory(executeCommand);

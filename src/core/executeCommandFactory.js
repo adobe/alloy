@@ -10,15 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isFunction, toError } from "../utils";
+import { isFunction } from "../utils";
 
-export default ({
-  namespace,
-  logger,
-  configureCommand,
-  logCommand,
-  getErrorsEnabled
-}) => {
+export default ({ logger, configureCommand, logCommand, handleError }) => {
   let configurePromise;
 
   const getExecutor = (commandName, options) => {
@@ -82,25 +76,6 @@ export default ({
       const execute = getExecutor(commandName, options);
       logger.log(`Executing ${commandName} command.`, "Options:", options);
       resolve(execute());
-    }).catch(error => {
-      const err = toError(error);
-      // eslint-disable-next-line no-param-reassign
-      err.message = `[${namespace}] ${err.message}`;
-
-      // If errors are enabled, we reject the promise we return
-      // to the customer. If the customer catches the error
-      // (using .catch()), the error won't hit the console.
-      // If the customer doesn't catch the error, the error
-      // will hit the console. This is due to how native
-      // browser functionality handles unhandled errors.
-      // If errors are NOT enabled, we instead pump the error
-      // through our logger, in which case the error will
-      // hit the console only if logging is enabled.
-      if (getErrorsEnabled()) {
-        throw error;
-      } else {
-        logger.error(err);
-      }
-    });
+    }).catch(handleError);
   };
 };

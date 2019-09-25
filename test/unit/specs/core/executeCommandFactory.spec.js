@@ -13,40 +13,36 @@ governing permissions and limitations under the License.
 import executeCommandFactory from "../../../../src/core/executeCommandFactory";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
 
-const namespace = "foo";
-
 describe("executeCommandFactory", () => {
   let logger;
-  let getErrorsEnabled;
+  let handleError;
 
   beforeEach(() => {
     logger = jasmine.createSpyObj("logger", ["log", "info", "warn", "error"]);
-    getErrorsEnabled = jasmine.createSpy().and.returnValue(true);
+    handleError = jasmine.createSpy().and.callFake(error => {
+      throw error;
+    });
   });
 
   it("rejects promise if configure is not the first command executed", () => {
     const executeCommand = executeCommandFactory({
-      namespace,
       logger,
-      getErrorsEnabled
+      handleError
     });
 
     return executeCommand("event")
       .then(fail)
       .catch(error => {
-        expect(error.message).toContain(
-          "[foo] The library must be configured first"
-        );
+        expect(error.message).toContain("The library must be configured first");
       });
   });
 
   it("rejects promise if configure command is executed twice", () => {
     const configureCommand = () => Promise.resolve();
     const executeCommand = executeCommandFactory({
-      namespace,
       logger,
-      getErrorsEnabled,
-      configureCommand
+      configureCommand,
+      handleError
     });
 
     executeCommand("configure");
@@ -54,7 +50,7 @@ describe("executeCommandFactory", () => {
       .then(fail)
       .catch(error => {
         expect(error.message).toContain(
-          "[foo] The library has already been configured"
+          "The library has already been configured"
         );
       });
   });
@@ -65,26 +61,24 @@ describe("executeCommandFactory", () => {
     };
     const configureCommand = () => Promise.resolve(componentRegistry);
     const executeCommand = executeCommandFactory({
-      namespace,
       logger,
-      getErrorsEnabled,
-      configureCommand
+      configureCommand,
+      handleError
     });
     executeCommand("configure");
-    executeCommand("bogus")
+    return executeCommand("bogus")
       .then(fail)
       .catch(error => {
-        expect(error.message).toBe("[foo] The bogus command does not exist.");
+        expect(error.message).toBe("The bogus command does not exist.");
       });
   });
 
   it("never resolves/rejects promise to any other command after configure fails", () => {
     const configureCommand = () => Promise.reject();
     const executeCommand = executeCommandFactory({
-      namespace,
       logger,
-      getErrorsEnabled,
-      configureCommand
+      configureCommand,
+      handleError
     });
 
     executeCommand("configure");
@@ -110,11 +104,10 @@ describe("executeCommandFactory", () => {
       .createSpy()
       .and.returnValue(Promise.resolve("logResult"));
     const executeCommand = executeCommandFactory({
-      namespace,
       logger,
-      getErrorsEnabled,
       configureCommand,
-      logCommand
+      logCommand,
+      handleError
     });
 
     return Promise.all([
