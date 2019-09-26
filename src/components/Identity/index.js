@@ -72,6 +72,11 @@ const createIdentity = ({ config, logger, cookieJar }) => {
               identityQuery.identity.containerId = config.idSyncContainerId;
             }
 
+            if (config.thirdPartyCookiesEnabled !== undefined) {
+              identityQuery.identity.thirdPartyCookiesEnabled =
+                config.thirdPartyCookiesEnabled;
+            }
+
             event.mergeQuery(identityQuery);
           }
         });
@@ -153,6 +158,10 @@ createIdentity.configValidators = {
       .integer()
       .minimum(0)
       .expected("an integer greater than or equal to 0")
+  },
+  thirdPartyCookiesEnabled: {
+    defaultValue: undefined,
+    validate: boolean()
   }
 };
 
