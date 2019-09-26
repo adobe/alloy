@@ -6,7 +6,6 @@ sandbox/build
 .sonarlint
 .env
 allure
-
 logs
 *.log
 npm-debug.log*

@@ -38,7 +38,6 @@
   }
 
   function initHighlighter(routeName) {
-    console.log("Config " + routeName + " initiated.");
   }
 
   var containerEl = document.querySelector(".contents");
@@ -96,6 +95,8 @@
         data: {
           key: "value"
         }
+      }).catch(ex => {
+        console.log(ex);
       });
     }
   });

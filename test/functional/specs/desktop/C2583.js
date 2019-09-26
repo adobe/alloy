@@ -19,20 +19,13 @@ test("Regression: Set the log option to true. Load the page. Execute an event co
 
   await t.expect(message.log).match(/\[alloy] Executing event command./);
 
-  // Remove the log option from the configuration. Refresh the browser. Execute an event command.
   await t
     .click(Selector("#nologconfig-button"))
     .click(Selector("#event-button"));
 
   const message2 = await t.getBrowserConsoleMessages();
 
-  await t
-    .expect(message2.log)
-    .match(/Config nologconfig initiated./)
-    .expect(message2.log)
-    .match(/Config event initiated./)
-    .expect(message2.log)
-    .match(/\[alloy] Executing event command./);
+  await t.expect(message2.log).match(/\[alloy] Executing event command./);
 });
 
 test("Regression: Set the log option in the configuration to false. Refresh the browser. Execute an event command.", async () => {
@@ -44,7 +37,6 @@ test("Regression: Set the log option in the configuration to false. Refresh the 
 
   await t.expect(message.log).notContains("Executing event command.");
 
-  // Remove the log option from the configuration. Refresh the browser. Execute an event command.
   await t
     .click(Selector("#nologconfig-button"))
     .click(Selector("#event-button"));
