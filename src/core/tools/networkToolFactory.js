@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 /**
  * Tool-specific dependencies => config => componentCreator => result
  */
-export default (createNetwork, lifecycle, logger) => config => () => {
-  return createNetwork(config, logger, lifecycle);
+export default (createNetwork, lifecycle, logger) => config => {
+  const network = createNetwork(config, logger, lifecycle);
+  return () => network;
 };
