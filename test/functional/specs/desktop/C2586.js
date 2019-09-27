@@ -15,3 +15,13 @@ test("Regression: Toggle logging through the querystring parameter.", async t =>
   const message = await t.getBrowserConsoleMessages();
   await t.expect(message.log).match(/The library must be configured first./);
 });
+
+test("Regression: Toggle logging through the querystring parameter.", async t => {
+  await t
+    .navigateTo(
+      "http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html?alloy_log=false"
+    )
+    .click(Selector("#event-button"));
+  const message = await t.getBrowserConsoleMessages();
+  await t.expect(message.log).notMatch(/The library must be configured first./);
+});
