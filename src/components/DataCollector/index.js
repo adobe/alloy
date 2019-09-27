@@ -16,10 +16,9 @@ import { clone } from "../../utils";
 
 import createClickActivityCollector from "./activity/click";
 
-const createDataCollector = ({ config, logger }) => {
+const createDataCollector = ({ config, logger, network }) => {
   const { imsOrgId } = config;
   let lifecycle;
-  let network;
   let optIn;
 
   const makeServerCall = (event, documentUnloading) => {
@@ -81,7 +80,7 @@ const createDataCollector = ({ config, logger }) => {
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
-        ({ lifecycle, network, optIn } = tools);
+        ({ lifecycle, optIn } = tools);
       }
     },
     commands: {

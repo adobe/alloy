@@ -25,7 +25,8 @@ export default (instanceNamespace, createNamespacedStorage) => {
       return logEnabled;
     },
     set logEnabled(value) {
-      storage.persistent.setItem("log", value);
+      // Web storage only allows strings, so we explicitly convert to string.
+      storage.persistent.setItem("log", value.toString());
       logEnabled = value;
     }
   };

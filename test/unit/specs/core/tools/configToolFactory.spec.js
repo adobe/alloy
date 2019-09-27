@@ -10,17 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/**
- * Applies keys with their respective values to a target object,
- * where keys and values are ordered in separate arrays.
- * @param {Array} keys The keys to apply to the object.
- * @param {Array} values The values to apply to the object.
- * @param {Object} [target] The object to which key-values should be applied.
- * @returns {*}
- */
-export default (keys, values, target = {}) => {
-  return keys.reduce((accumulator, key, index) => {
-    accumulator[key] = values[index];
-    return accumulator;
-  }, target);
-};
+import configToolFactory from "../../../../../src/core/tools/configToolFactory";
+
+describe("configToolFactory", () => {
+  it("returns config tool", () => {
+    const config = {
+      a: "b"
+    };
+    expect(configToolFactory()(config)()).toBe(config);
+  });
+});

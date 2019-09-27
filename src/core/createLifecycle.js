@@ -10,17 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// - It implements all lifecycle hooks.
-
-// Let's start the first version with an explicit Hook interface,
-// and not a random pub/sub model. Meaning each Component will have
-// to implement the hook it's interested in as a method on its prototype.
-
-// We will have a Plop helper that generates Components and populate all the
-// hooks as Template methods.
-
-// TODO: Hooks might have to publish events so the outside world can hooks in as well.
-
 // TO-DOCUMENT: Lifecycle hooks and their params.
 const hookNames = [
   "onComponentsRegistered",
@@ -38,7 +27,10 @@ const createHook = (componentRegistry, hookName) => {
           resolve(callback(...args));
         });
       })
-    );
+    ).then(() => {
+      // Prevent potential callback return values from being exposed beyond
+      // this point. Return values from callbacks shouldn't be relied on.
+    });
   };
 };
 

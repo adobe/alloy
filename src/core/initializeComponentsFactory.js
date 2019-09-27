@@ -10,62 +10,33 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  stackError,
-  memoize,
-  getTopLevelCookieDomain,
-  cookieJar
-} from "../utils";
-import cookieDetails from "../constants/cookieDetails";
+import { stackError } from "../utils";
 
-const { ALLOY_COOKIE_NAME, ALLOY_COOKIE_TTL_IN_DAYS } = cookieDetails;
-
-const memoizedGetTopLevelDomain = memoize(getTopLevelCookieDomain);
-
-export default (
+export default ({
   componentCreators,
-  logger,
-  createNamespacedStorage,
-  createCookieProxy,
-  createComponentNamespacedCookieJar,
-  createLifecycle,
-  createComponentRegistry,
-  createNetwork,
-  createOptIn
-) => config => {
-  const componentRegistry = createComponentRegistry();
-  const { imsOrgId, propertyId, cookieDomain } = config;
-  const cookieName = `${ALLOY_COOKIE_NAME}_${propertyId}`;
-  const cookieProxy = createCookieProxy(
-    cookieName,
-    ALLOY_COOKIE_TTL_IN_DAYS,
-    cookieDomain || memoizedGetTopLevelDomain(window, cookieJar)
-  );
-
-  // TODO: Should this storage be namespaced by property ID or org ID?
-  const storage = createNamespacedStorage(imsOrgId);
-  const optIn = createOptIn();
+  lifecycle,
+  componentRegistry,
+  tools,
+  optIn
+}) => config => {
+  const configuredTools = Object.keys(tools).reduce((accumulator, toolKey) => {
+    accumulator[toolKey] = tools[toolKey](config);
+    return accumulator;
+  }, {});
 
   componentCreators.forEach(createComponent => {
-    const { configValidators } = createComponent;
-    config.addValidators(configValidators);
-  });
-  config.validate();
-  componentCreators.forEach(createComponent => {
-    const { namespace, abbreviation } = createComponent;
+    const { namespace } = createComponent;
+    const componentTools = Object.keys(configuredTools).reduce(
+      (accumulator, toolKey) => {
+        accumulator[toolKey] = configuredTools[toolKey](createComponent);
+        return accumulator;
+      },
+      {}
+    );
     // TO-DOCUMENT: Helpers that we inject into factories.
     let component;
     try {
-      component = createComponent({
-        logger: logger.spawn(`[${namespace}]`),
-        cookieJar: createComponentNamespacedCookieJar(
-          cookieProxy,
-          abbreviation
-        ),
-        config,
-        storage,
-        enableOptIn: optIn.enable
-      });
+      component = createComponent(componentTools);
     } catch (error) {
       throw stackError(
         `[${namespace}] An error occurred during component creation.`,
@@ -75,16 +46,10 @@ export default (
     componentRegistry.register(namespace, component);
   });
 
-  // toJson is expensive so we short circuit if logging is disabled
-  if (logger.enabled) logger.log("Computed configuration:", config.toJSON());
-
-  const lifecycle = createLifecycle(componentRegistry);
-  const network = createNetwork(config, logger, lifecycle);
   return lifecycle
     .onComponentsRegistered({
       componentRegistry,
       lifecycle,
-      network,
       optIn
     })
     .then(() => componentRegistry);

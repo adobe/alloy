@@ -10,10 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createInstance from "./createInstance";
-import storageFactory from "../utils/storageFactory";
-import initializeComponentsFactory from "./initializeComponentsFactory";
-
+import instanceFactory from "./instanceFactory";
+import {
+  getTopLevelCookieDomain,
+  memoize,
+  storageFactory,
+  cookieJar
+} from "../utils";
 import createLogger from "./createLogger";
 import createCookieProxy from "./createCookieProxy";
 import createComponentNamespacedCookieJar from "./createComponentNamespacedCookieJar";
@@ -22,33 +25,25 @@ import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
 import createNetwork from "./network";
 import createOptIn from "./createOptIn";
-
-import createDataCollector from "../components/DataCollector";
-import createIdentity from "../components/Identity";
-import createAudiences from "../components/Audiences";
-import createPersonalization from "../components/Personalization";
-import createContext from "../components/Context";
-import createPrivacy from "../components/Privacy";
-import createEventMerge from "../components/EventMerge";
-import createLibraryInfo from "../components/LibraryInfo";
-
-// TODO: Register the Components here statically for now. They might be registered differently.
-// TODO: Figure out how sub-components will be made available/registered
-const componentCreators = [
-  createDataCollector,
-  createIdentity,
-  createAudiences,
-  createPersonalization,
-  createContext,
-  createPrivacy,
-  createEventMerge,
-  createLibraryInfo
-];
+import executeCommandFactory from "./executeCommandFactory";
+import componentCreators from "./componentCreators";
+import configureCommandFactory from "./configureCommandFactory";
+import logCommandFactory from "./logCommandFactory";
+import initializeComponentsFactory from "./initializeComponentsFactory";
+import createConfig from "./createConfig";
+import configValidators from "./configValidators";
+import handleErrorFactory from "./handleErrorFactory";
+import networkToolFactory from "./tools/networkToolFactory";
+import configToolFactory from "./tools/configToolFactory";
+import cookieJarToolFactory from "./tools/cookieJarToolFactory";
+import enableOptInToolFactory from "./tools/enableOptInToolFactory";
+import loggerToolFactory from "./tools/loggerToolFactory";
 
 // eslint-disable-next-line no-underscore-dangle
 const namespaces = window.__alloyNS;
 
 const createNamespacedStorage = storageFactory(window);
+const memoizedGetTopLevelDomain = memoize(getTopLevelCookieDomain);
 
 let console;
 
@@ -68,26 +63,70 @@ if (namespaces) {
       createNamespacedStorage
     );
     const logger = createLogger(console, logController, `[${namespace}]`);
+    const componentRegistry = createComponentRegistry();
+    const optIn = createOptIn();
+    const lifecycle = createLifecycle(componentRegistry);
+    const getTopLevelDomain = () => {
+      return memoizedGetTopLevelDomain(window, cookieJar);
+    };
+    let errorsEnabled = true;
+    const getErrorsEnabled = () => {
+      return errorsEnabled;
+    };
+    const setErrorsEnabled = value => {
+      errorsEnabled = value;
+    };
 
-    const initializeComponents = initializeComponentsFactory(
+    const initializeComponents = initializeComponentsFactory({
       componentCreators,
       logger,
-      createNamespacedStorage,
       createCookieProxy,
       createComponentNamespacedCookieJar,
-      createLifecycle,
-      createComponentRegistry,
-      createNetwork,
-      createOptIn
-    );
+      lifecycle,
+      componentRegistry,
+      tools: {
+        config: configToolFactory(),
+        cookieJar: cookieJarToolFactory(
+          createCookieProxy,
+          createComponentNamespacedCookieJar,
+          getTopLevelDomain
+        ),
+        enableOptIn: enableOptInToolFactory(optIn),
+        logger: loggerToolFactory(logger),
+        network: networkToolFactory(createNetwork, lifecycle, logger)
+      },
+      optIn
+    });
 
-    const instance = createInstance(
-      namespace,
-      initializeComponents,
-      logController,
+    const logCommand = logCommandFactory({
+      logController
+    });
+
+    const configureCommand = configureCommandFactory({
+      componentCreators,
+      createConfig,
+      configValidators,
+      logCommand,
       logger,
+      initializeComponents,
+      setErrorsEnabled,
       window
-    );
+    });
+
+    const handleError = handleErrorFactory({
+      namespace,
+      getErrorsEnabled,
+      logger
+    });
+
+    const executeCommand = executeCommandFactory({
+      logger,
+      configureCommand,
+      logCommand,
+      handleError
+    });
+
+    const instance = instanceFactory(executeCommand);
 
     const queue = window[namespace].q;
     queue.push = instance;

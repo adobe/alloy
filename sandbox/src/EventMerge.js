@@ -1,28 +1,30 @@
 import React, { useRef, useEffect } from "react";
 
 export default function EventMerge() {
-  const eventMergeId = useRef(window.alloy("createEventMergeId"));
+  const eventMergeIdPromise = useRef(window.alloy("createEventMergeId"));
 
   useEffect(() => {
-    window
-      .alloy("event", {
-        xdm: {
-          key1: "value1",
-          eventMergeId: eventMergeId.current
-        }
-      })
-      .catch(console.error);
-
-    setTimeout(() => {
+    eventMergeIdPromise.current.then(eventMergeId => {
       window
         .alloy("event", {
           xdm: {
-            key2: "value2",
-            eventMergeId: eventMergeId.current
+            key1: "value1",
+            eventMergeId
           }
         })
         .catch(console.error);
-    }, 3000);
+
+      setTimeout(() => {
+        window
+          .alloy("event", {
+            xdm: {
+              key2: "value2",
+              eventMergeId
+            }
+          })
+          .catch(console.error);
+      }, 3000);
+    });
   }, []);
 
   return (
