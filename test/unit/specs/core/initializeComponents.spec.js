@@ -10,16 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import initializeComponentsFactory from "../../../../src/core/initializeComponentsFactory";
+import initializeComponents from "../../../../src/core/initializeComponents";
 
-describe("initializeComponentsFactory", () => {
+describe("initializeComponents", () => {
   let lifecycle;
   let componentRegistry;
   let optIn;
   let componentByNamespace;
   let componentCreators;
   let tools;
-  let initializeComponents;
   let config;
 
   beforeEach(() => {
@@ -62,21 +61,20 @@ describe("initializeComponentsFactory", () => {
         };
       }
     };
-
-    initializeComponents = initializeComponentsFactory({
-      componentCreators,
-      lifecycle,
-      componentRegistry,
-      tools,
-      optIn
-    });
     config = {
       imsOrgId: "ORG1"
     };
   });
 
   it("creates and registers components", () => {
-    const initializeComponentsPromise = initializeComponents(config);
+    const initializeComponentsPromise = initializeComponents({
+      config,
+      componentCreators,
+      lifecycle,
+      componentRegistry,
+      tools,
+      optIn
+    });
 
     componentCreators.forEach(componentCreator => {
       const { namespace } = componentCreator;
@@ -112,7 +110,14 @@ describe("initializeComponentsFactory", () => {
     componentCreators[1].and.throwError("thrownError");
 
     expect(() => {
-      initializeComponents(config);
+      initializeComponents({
+        config,
+        componentCreators,
+        lifecycle,
+        componentRegistry,
+        tools,
+        optIn
+      });
     }).toThrowError(/\[Comp2\] An error occurred during component creation./);
   });
 });

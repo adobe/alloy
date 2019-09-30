@@ -27,11 +27,10 @@ import createNetwork from "./network";
 import createOptIn from "./createOptIn";
 import executeCommandFactory from "./executeCommandFactory";
 import componentCreators from "./componentCreators";
-import configureCommandFactory from "./configureCommandFactory";
-import logCommandFactory from "./logCommandFactory";
-import initializeComponentsFactory from "./initializeComponentsFactory";
+import buildAndValidateConfig from "./buildAndValidateConfig";
+import initializeComponents from "./initializeComponents";
 import createConfig from "./createConfig";
-import configValidators from "./configValidators";
+import coreConfigValidators from "./configValidators";
 import handleErrorFactory from "./handleErrorFactory";
 import networkToolFactory from "./tools/networkToolFactory";
 import configToolFactory from "./tools/configToolFactory";
@@ -77,41 +76,40 @@ if (namespaces) {
       errorsEnabled = value;
     };
 
-    const initializeComponents = initializeComponentsFactory({
-      componentCreators,
-      logger,
-      createCookieProxy,
-      createComponentNamespacedCookieJar,
-      lifecycle,
-      componentRegistry,
-      tools: {
-        config: configToolFactory(),
-        cookieJar: cookieJarToolFactory(
-          createCookieProxy,
-          createComponentNamespacedCookieJar,
-          getTopLevelDomain
-        ),
-        enableOptIn: enableOptInToolFactory(optIn),
-        logger: loggerToolFactory(logger),
-        network: networkToolFactory(createNetwork, lifecycle, logger)
-      },
-      optIn
-    });
+    const logCommand = options => {
+      logController.logEnabled = options.enabled;
+    };
 
-    const logCommand = logCommandFactory({
-      logController
-    });
-
-    const configureCommand = configureCommandFactory({
-      componentCreators,
-      createConfig,
-      configValidators,
-      logCommand,
-      logger,
-      initializeComponents,
-      setErrorsEnabled,
-      window
-    });
+    const configureCommand = options => {
+      const config = buildAndValidateConfig({
+        options,
+        componentCreators,
+        createConfig,
+        coreConfigValidators,
+        logCommand,
+        logger,
+        setErrorsEnabled,
+        window
+      });
+      return initializeComponents({
+        config,
+        componentCreators,
+        lifecycle,
+        componentRegistry,
+        tools: {
+          config: configToolFactory(),
+          cookieJar: cookieJarToolFactory(
+            createCookieProxy,
+            createComponentNamespacedCookieJar,
+            getTopLevelDomain
+          ),
+          enableOptIn: enableOptInToolFactory(optIn),
+          logger: loggerToolFactory(logger),
+          network: networkToolFactory(createNetwork, lifecycle, logger)
+        },
+        optIn
+      });
+    };
 
     const handleError = handleErrorFactory({
       namespace,

@@ -13,12 +13,13 @@ governing permissions and limitations under the License.
 import { stackError } from "../utils";
 
 export default ({
+  config,
   componentCreators,
   lifecycle,
   componentRegistry,
   tools,
   optIn
-}) => config => {
+}) => {
   const configuredTools = Object.keys(tools).reduce((accumulator, toolKey) => {
     accumulator[toolKey] = tools[toolKey](config);
     return accumulator;
