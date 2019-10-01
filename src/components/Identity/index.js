@@ -159,7 +159,7 @@ createIdentity.configValidators = {
       .expected("an integer greater than or equal to 0")
   },
   thirdPartyCookiesEnabled: {
-    defaultValue: undefined,
+    defaultValue: true,
     validate: boolean()
   }
 };
