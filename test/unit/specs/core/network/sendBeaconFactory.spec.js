@@ -18,9 +18,16 @@ import sendBeaconFactory from "../../../../../src/core/network/sendBeaconFactory
 // Fortunately, if navigator.sendBeacon doesn't exist (IE 11), sendBeaconFactory
 // should never be used (see createNetworkStrategy.js), so we can skip
 // these tests altogether.
-if (window.navigator.sendBeacon) {
-  describe("sendBeaconFactory", () => {
-    it("falls back to fetch if sendBeacon fails", () => {
+const guardForSendBeaconAvailability = spec => {
+  return window.navigator.sendBeacon
+    ? spec
+    : () => pending("No sendBeacon API available.");
+};
+
+describe("sendBeaconFactory", () => {
+  it(
+    "falls back to fetch if sendBeacon fails",
+    guardForSendBeaconAvailability(() => {
       const navigator = {
         sendBeacon: jasmine.createSpy().and.returnValue(false)
       };
@@ -41,18 +48,22 @@ if (window.navigator.sendBeacon) {
         jasmine.stringMatching("call has failed")
       );
       expect(result).toBe(fetchPromise);
-    });
+    })
+  );
 
-    it("does not fall back to fetch if sendBeacon succeeds", () => {
+  it(
+    "does not fall back to fetch if sendBeacon succeeds",
+    guardForSendBeaconAvailability(() => {
       const navigator = {
         sendBeacon: jasmine.createSpy().and.returnValue(true)
       };
       const body = { a: "b" };
       const fetch = jasmine.createSpy();
       const sendBeacon = sendBeaconFactory(navigator, fetch);
+      // eslint-disable-next-line consistent-return
       return sendBeacon("https://example.com/endpoint", body).then(() => {
         expect(fetch).not.toHaveBeenCalled();
       });
-    });
-  });
-}
+    })
+  );
+});
