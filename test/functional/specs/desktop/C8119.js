@@ -21,9 +21,7 @@ test.meta({
 });
 
 test("Regression: Load page with link. Click link. Verify no request sent.", async () => {
-  await t.click(
-    Selector("#body > section > div.left-nav > div > ul > li:nth-child(1) > a")
-  );
+  await t.click(Selector("#alloy-link-test"));
   await responseStatus(networkLogger.gatewayEndpointLogs.requests, 200);
   const gatewayRequest = networkLogger.gatewayEndpointLogs.requests[0];
   await t.expect(gatewayRequest).eql(undefined);

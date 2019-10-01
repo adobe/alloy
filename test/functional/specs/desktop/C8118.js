@@ -21,9 +21,7 @@ test.meta({
 });
 
 test("Regression: Load page with link. Click link. Verify request.", async () => {
-  await t.click(
-    Selector("#body > section > div.left-nav > div > ul > li:nth-child(1) > a")
-  );
+  await t.click(Selector("#alloy-link-test"));
   await responseStatus(networkLogger.gatewayEndpointLogs.requests, 200);
   const gatewayRequest = networkLogger.gatewayEndpointLogs.requests[0];
   const requestBody = JSON.parse(gatewayRequest.request.body);
