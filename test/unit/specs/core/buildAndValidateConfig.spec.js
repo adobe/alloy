@@ -10,61 +10,70 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import configureCommandFactory from "../../../../src/core/configureCommandFactory";
+import buildAndValidateConfig from "../../../../src/core/buildAndValidateConfig";
 
-describe("configureCommandFactory", () => {
+describe("buildAndValidateConfig", () => {
+  let options;
   let componentCreators;
   let config;
   let createConfig;
-  let configValidators;
+  let coreConfigValidators;
   let logCommand;
   let logger;
-  let initializeComponents;
   let setErrorsEnabled;
   let window;
-  let configureCommand;
 
   beforeEach(() => {
+    options = {};
     const componentCreator = () => {};
-    componentCreator.configValidators = {};
+    componentCreator.configValidators = {
+      idSyncEnabled: {
+        defaultValue: true,
+        validate() {
+          return "";
+        }
+      }
+    };
     componentCreators = [componentCreator];
     config = {
       addValidators: jasmine.createSpy(),
       validate: jasmine.createSpy().and.returnValue(true)
     };
     createConfig = jasmine.createSpy().and.returnValue(config);
-    configValidators = {};
+    coreConfigValidators = {
+      errorsEnabled: {
+        validate() {
+          return "";
+        },
+        defaultValue: true
+      }
+    };
     logCommand = jasmine.createSpy();
     logger = {
       enabled: false,
       log: jasmine.createSpy()
     };
-    initializeComponents = jasmine
-      .createSpy()
-      .and.returnValue(Promise.resolve("initializeComponentsResult"));
     setErrorsEnabled = jasmine.createSpy();
     window = {
       location: {
         search: ""
       }
     };
-    configureCommand = configureCommandFactory({
-      componentCreators,
-      createConfig,
-      configValidators,
-      logCommand,
-      logger,
-      initializeComponents,
-      setErrorsEnabled,
-      window
-    });
   });
 
   it("adds validators and validates options", () => {
-    const options = {};
-    configureCommand(options);
+    buildAndValidateConfig({
+      options,
+      componentCreators,
+      createConfig,
+      coreConfigValidators,
+      logCommand,
+      logger,
+      setErrorsEnabled,
+      window
+    });
     expect(createConfig).toHaveBeenCalledWith(options);
-    expect(config.addValidators).toHaveBeenCalledWith(configValidators);
+    expect(config.addValidators).toHaveBeenCalledWith(coreConfigValidators);
     expect(config.addValidators).toHaveBeenCalledWith(
       componentCreators[0].configValidators
     );
@@ -73,13 +82,31 @@ describe("configureCommandFactory", () => {
 
   it("sets errors enabled based on config", () => {
     config.errorsEnabled = true;
-    configureCommand({});
+    buildAndValidateConfig({
+      options,
+      componentCreators,
+      createConfig,
+      configValidators: coreConfigValidators,
+      logCommand,
+      logger,
+      setErrorsEnabled,
+      window
+    });
     expect(setErrorsEnabled).toHaveBeenCalledWith(true);
   });
 
   it("calls log command based on config", () => {
     config.logEnabled = true;
-    configureCommand({});
+    buildAndValidateConfig({
+      options,
+      componentCreators,
+      createConfig,
+      configValidators: coreConfigValidators,
+      logCommand,
+      logger,
+      setErrorsEnabled,
+      window
+    });
     expect(logCommand).toHaveBeenCalledWith({
       enabled: true
     });
@@ -88,25 +115,50 @@ describe("configureCommandFactory", () => {
   it("calls log command based on querystring (and takes priority over config)", () => {
     config.logEnabled = false;
     window.location.search = "?alloy_log=true";
-    configureCommand({});
+    buildAndValidateConfig({
+      options,
+      componentCreators,
+      createConfig,
+      configValidators: coreConfigValidators,
+      logCommand,
+      logger,
+      setErrorsEnabled,
+      window
+    });
     expect(logCommand).toHaveBeenCalledWith({
       enabled: true
     });
   });
 
-  it("logs computed configuration", () => {
+  it("logs and returns computed configuration", () => {
     logger.enabled = true;
     config.toJSON = () => ({ foo: "bar" });
-    configureCommand({});
+    buildAndValidateConfig({
+      options,
+      componentCreators,
+      createConfig,
+      configValidators: coreConfigValidators,
+      logCommand,
+      logger,
+      setErrorsEnabled,
+      window
+    });
     expect(logger.log).toHaveBeenCalledWith("Computed configuration:", {
       foo: "bar"
     });
   });
 
-  it("initializes components", () => {
-    return configureCommand({}).then(result => {
-      expect(initializeComponents).toHaveBeenCalledWith(config);
-      expect(result).toBe("initializeComponentsResult");
+  it("returns config", () => {
+    const result = buildAndValidateConfig({
+      options,
+      componentCreators,
+      createConfig,
+      configValidators: coreConfigValidators,
+      logCommand,
+      logger,
+      setErrorsEnabled,
+      window
     });
+    expect(result).toBe(config);
   });
 });

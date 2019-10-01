@@ -13,13 +13,23 @@ governing permissions and limitations under the License.
 import networkToolFactory from "../../../../../src/core/tools/networkToolFactory";
 
 describe("networkToolFactory", () => {
+  let network;
+  let createNetwork;
+  let lifecycle;
+  let logger;
+  let networkStrategy;
+  let config;
+
+  beforeEach(() => {
+    network = { sendRequest() {} };
+    createNetwork = jasmine.createSpy().and.returnValue(network);
+    lifecycle = { onComponentsRegistered() {} };
+    logger = { log() {} };
+    networkStrategy = () => {};
+    config = { a: "b" };
+  });
+
   it("returns network tool", () => {
-    const network = { sendRequest() {} };
-    const createNetwork = jasmine.createSpy().and.returnValue(network);
-    const lifecycle = { onComponentsRegistered() {} };
-    const logger = { log() {} };
-    const config = { a: "b" };
-    const networkStrategy = () => {};
     const tool = networkToolFactory(
       createNetwork,
       lifecycle,
@@ -33,5 +43,13 @@ describe("networkToolFactory", () => {
       networkStrategy
     );
     expect(tool).toBe(network);
+  });
+
+  it("creates a shared network for multiple components", () => {
+    const configuredTool = networkToolFactory(createNetwork, lifecycle, logger)(
+      config
+    );
+    expect(configuredTool()).toBe(network);
+    expect(configuredTool()).toBe(network);
   });
 });

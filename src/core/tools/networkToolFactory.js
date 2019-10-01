@@ -18,6 +18,7 @@ export default (
   lifecycle,
   logger,
   networkStrategy
-) => config => () => {
-  return createNetwork(config, logger, lifecycle, networkStrategy);
+) => config => {
+  const network = createNetwork(config, logger, lifecycle, networkStrategy);
+  return () => network;
 };

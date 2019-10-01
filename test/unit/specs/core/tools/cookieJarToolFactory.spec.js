@@ -57,6 +57,20 @@ describe("cookieJarToolFactory", () => {
     expect(tool).toBe(componentNamespacedCookieJar);
   });
 
+  it("creates a shared cookie proxy for multiple components", () => {
+    const configuredTool = cookieJarToolFactory(
+      createCookieProxy,
+      createComponentNamespacedCookieJar,
+      getTopLevelDomain
+    )(config);
+    const componentCreator2 = {
+      abbreviation: "T2"
+    };
+    configuredTool(componentCreator);
+    configuredTool(componentCreator2);
+    expect(createCookieProxy).toHaveBeenCalledTimes(1);
+  });
+
   it("uses the cookie domain provided in config", () => {
     config.cookieDomain = "example.com";
     cookieJarToolFactory(
