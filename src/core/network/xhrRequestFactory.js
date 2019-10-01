@@ -23,9 +23,9 @@ export default XMLHttpRequest => {
           } else {
             reject(
               new Error(
-                `Invalid response code ${request.status}. Response was ${
+                `Invalid response code ${request.status}. Response was "${
                   request.responseText
-                }.`
+                }".`
               )
             );
           }

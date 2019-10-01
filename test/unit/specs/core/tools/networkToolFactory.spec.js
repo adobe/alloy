@@ -17,6 +17,7 @@ describe("networkToolFactory", () => {
   let createNetwork;
   let lifecycle;
   let logger;
+  let networkStrategy;
   let config;
 
   beforeEach(() => {
@@ -24,12 +25,23 @@ describe("networkToolFactory", () => {
     createNetwork = jasmine.createSpy().and.returnValue(network);
     lifecycle = { onComponentsRegistered() {} };
     logger = { log() {} };
+    networkStrategy = () => {};
     config = { a: "b" };
   });
 
   it("returns network tool", () => {
-    const tool = networkToolFactory(createNetwork, lifecycle, logger)(config)();
-    expect(createNetwork).toHaveBeenCalledWith(config, logger, lifecycle);
+    const tool = networkToolFactory(
+      createNetwork,
+      lifecycle,
+      logger,
+      networkStrategy
+    )(config)();
+    expect(createNetwork).toHaveBeenCalledWith(
+      config,
+      logger,
+      lifecycle,
+      networkStrategy
+    );
     expect(tool).toBe(network);
   });
 
