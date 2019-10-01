@@ -1,6 +1,7 @@
 import { t } from "testcafe";
+import testServerUrl from "../../src/constants/testServerUrl";
 
-const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/multiConfig.html`;
+const urlCollector = `${testServerUrl}/test/functional/sandbox/html/multiConfig.html`;
 
 fixture`C2588`.page(urlCollector);
 

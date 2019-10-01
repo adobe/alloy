@@ -12,10 +12,12 @@ const createRequestLogger = endpoint => {
 };
 
 const createNetworkLogger = () => {
-  const gatewayEndpoint = /edgegateway\.azurewebsites/;
+  const gatewayEndpoint = /konductor\.adobedc/;
   const sandboxEndpoint = /alloyqe\.azurewebsites/;
 
-  const gatewayEndpointLogs = createRequestLogger(gatewayEndpoint);
+  const gatewayEndpointLogs = createRequestLogger(gatewayEndpoint, {
+    logRequestBody: true
+  });
   const sandboxEndpointLogs = createRequestLogger(sandboxEndpoint);
 
   const clearLogs = async () => {
