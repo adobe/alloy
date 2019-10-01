@@ -4,8 +4,7 @@ describe("Context::environmentFactory", () => {
   const mywindow = {
     screen: { width: 1001, height: 1002 },
     innerWidth: 1003,
-    innerHeight: 1004,
-    navigator: { connection: { effectiveType: "myConnectionType" } }
+    innerHeight: 1004
   };
   let event;
 
@@ -19,30 +18,6 @@ describe("Context::environmentFactory", () => {
       return date;
     };
     environmentFactory(mywindow, dateProvider)(event);
-    expect(event.mergeXdm).toHaveBeenCalledWith({
-      environment: {
-        type: "browser",
-        browserDetails: {
-          viewportWidth: 1003,
-          viewportHeight: 1004
-        },
-        connectionType: "myConnectionType"
-      }
-    });
-  });
-
-  const ieWindow = {
-    screen: { width: 1001, height: 1002 },
-    innerWidth: 1003,
-    innerHeight: 1004,
-    navigator: {}
-  };
-  it("works with ie missing connection type", () => {
-    const date = new Date(1553550978123);
-    const dateProvider = () => {
-      return date;
-    };
-    environmentFactory(ieWindow, dateProvider)(event);
     expect(event.mergeXdm).toHaveBeenCalledWith({
       environment: {
         type: "browser",

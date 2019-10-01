@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 export default window => {
   return event => {
-    const { innerWidth, innerHeight, navigator } = window;
+    const { innerWidth, innerHeight } = window;
     const environment = {
       type: "browser",
       browserDetails: {
@@ -20,14 +20,7 @@ export default window => {
         viewportHeight: innerHeight
       }
     };
-    // not all browsers support navigator.connection.effectiveType
-    if (
-      navigator &&
-      navigator.connection &&
-      navigator.connection.effectiveType
-    ) {
-      environment.connectionType = navigator.connection.effectiveType;
-    }
+
     event.mergeXdm({
       environment
     });
