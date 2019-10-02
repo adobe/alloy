@@ -12,12 +12,7 @@ governing permissions and limitations under the License.
 
 import { isObject, isNumber, isNonEmptyString, find } from "../../utils";
 
-const createSyncIdsByUrl = (
-  config,
-  logger,
-  cookieJar,
-  idSyncsProcessor
-) => data => {
+const createSyncIdsByUrl = idSyncsProcessor => data => {
   const { idSyncs = [] } = data;
   const isIdSyncValid = (idSync = {}) =>
     isObject(idSync) &&
@@ -43,13 +38,8 @@ const createSyncIdsByUrl = (
   return idSyncsProcessor.process(idSyncs);
 };
 
-export default (config, logger, cookieJar, idSyncsProcessor) => {
+export default idSyncsProcessor => {
   return {
-    syncIdsByUrl: createSyncIdsByUrl(
-      config,
-      logger,
-      cookieJar,
-      idSyncsProcessor
-    )
+    syncIdsByUrl: createSyncIdsByUrl(idSyncsProcessor)
   };
 };
