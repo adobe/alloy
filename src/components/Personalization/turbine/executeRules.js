@@ -10,24 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+const DEFAULT_EVENT = { moduleType: "libraryLoaded" };
+
+const getEvents = rule => {
+  const { events = [] } = rule;
+
+  return events.length === 0 ? [DEFAULT_EVENT] : events;
+};
+
 const buildRuleExecutionOrder = rules => {
   const ruleEventPairs = [];
 
   rules.forEach(rule => {
-    if (!rule.events) {
-      return;
-    }
+    const events = getEvents(rule);
 
-    rule.events.forEach(event => {
+    events.forEach(event => {
       ruleEventPairs.push({ rule, event });
     });
   });
 
   return ruleEventPairs;
-};
-
-const isConditionMet = (condition, result) => {
-  return (result && !condition.negate) || (!result && condition.negate);
 };
 
 export default (rules, ruleComponentModules, logger) => {
@@ -54,16 +56,6 @@ export default (rules, ruleComponentModules, logger) => {
     logger.error(getErrorMessage(action, rule, e.message, e.stack));
   };
 
-  const logConditionError = (condition, rule, e) => {
-    logger.error(getErrorMessage(condition, rule, e.message, e.stack));
-  };
-
-  const logConditionNotMet = (condition, rule) => {
-    logger.log(
-      `Condition ${condition.moduleType} for rule ${rule.name} not met.`
-    );
-  };
-
   const logRuleCompleted = rule => {
     logger.log(`Rule ${rule.name} fired.`);
   };
@@ -87,33 +79,6 @@ export default (rules, ruleComponentModules, logger) => {
     logRuleCompleted(rule);
   };
 
-  const checkConditions = (rule, syntheticEvent) => {
-    if (!rule.conditions) {
-      return;
-    }
-
-    for (let i = 0; i < rule.conditions.length; i += 1) {
-      const condition = rule.conditions[i];
-
-      try {
-        const result = executeModule(condition.moduleType, [
-          condition.settings,
-          syntheticEvent
-        ]);
-
-        if (!isConditionMet(condition, result)) {
-          logConditionNotMet(condition, rule);
-          return;
-        }
-      } catch (e) {
-        logConditionError(condition, rule, e);
-        return;
-      }
-    }
-
-    runActions(rule, syntheticEvent);
-  };
-
   const initEventModule = ruleEventPair => {
     const { rule, event } = ruleEventPair;
 
@@ -124,7 +89,7 @@ export default (rules, ruleComponentModules, logger) => {
           return;
         }
 
-        checkConditions(rule, syntheticEvent);
+        runActions(rule, syntheticEvent);
       };
 
       executeModule(event.moduleType, [event.settings, trigger]);

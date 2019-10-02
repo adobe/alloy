@@ -25,18 +25,18 @@ describe("Personalization::actions::appendHtml", () => {
       { id: "appendHtml" },
       { innerHTML: content }
     );
-    const elements = [element];
 
     appendNode(document.body, element);
 
     const meta = { a: 1 };
     const settings = {
+      selector: "#appendHtml",
+      prehidingSelector: "#appendHtml",
       content: `<li>2</li><li>3</li>`,
       meta
     };
-    const event = { elements, prehidingSelector: "#appendHtml" };
 
-    return appendHtml(settings, event).then(() => {
+    return appendHtml(settings).then(() => {
       const result = selectNodes("ul#appendHtml li");
 
       expect(result.length).toEqual(3);

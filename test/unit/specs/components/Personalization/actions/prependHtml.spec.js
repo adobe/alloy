@@ -25,18 +25,18 @@ describe("Personalization::actions::prependHtml", () => {
       { id: "prependHtml" },
       { innerHTML: content }
     );
-    const elements = [element];
 
     appendNode(document.body, element);
 
     const meta = { a: 1 };
     const settings = {
+      selector: "#prependHtml",
+      prehidingSelector: "#prependHtml",
       content: `<li>1</li><li>2</li>`,
       meta
     };
-    const event = { elements, prehidingSelector: "#prependHtml" };
 
-    return prependHtml(settings, event).then(() => {
+    return prependHtml(settings).then(() => {
       const result = selectNodes("ul#prependHtml li");
 
       expect(result.length).toEqual(3);

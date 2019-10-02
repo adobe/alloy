@@ -25,18 +25,18 @@ describe("Personalization::actions::insertAfter", () => {
       { innerHTML: "AAA" }
     );
     const element = createNode("div", { id: "insertAfter" }, {}, [child]);
-    const elements = [child];
 
     appendNode(document.body, element);
 
     const meta = { a: 1 };
     const settings = {
+      selector: "#a",
+      prehidingSelector: "#a",
       content: `<div id="b" class="ia">BBB</div>`,
       meta
     };
-    const event = { elements, prehidingSelector: "#a" };
 
-    return insertAfter(settings, event).then(() => {
+    return insertAfter(settings).then(() => {
       const result = selectNodes("div#insertAfter .ia");
 
       expect(result[0].innerHTML).toEqual("AAA");

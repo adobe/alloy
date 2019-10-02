@@ -15,12 +15,10 @@ import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers, hideElements } from "./flicker";
 import { string, boolean } from "../../utils/configValidators";
 
-const PAGE_HANDLE = "personalization:page";
+const DECISIONS_HANDLE = "personalization:decisions";
 const SESSION_ID_COOKIE = "SID";
 const SESSION_ID_TTL_IN_MINUTES = 31 * 60 * 1000;
 const EVENT_COMMAND = "event";
-
-const isElementExists = event => event.moduleType === "elementExists";
 
 const getOrCreateSessionId = cookieJar => {
   let cookieValue = cookieJar.get(SESSION_ID_COOKIE);
@@ -44,16 +42,17 @@ const hideElementsForPage = fragments => {
     const { rules = [] } = fragment;
 
     rules.forEach(rule => {
-      const { events = [] } = rule;
-      const filteredEvents = events.filter(isElementExists);
+      const { actions = [] } = rule;
 
-      filteredEvents.forEach(event => {
-        const { settings = {} } = event;
+      actions.forEach(action => {
+        const { settings = {} } = action;
         const { prehidingSelector } = settings;
 
-        if (prehidingSelector) {
-          hideElements(prehidingSelector);
+        if (!prehidingSelector) {
+          return;
         }
+
+        hideElements(prehidingSelector);
       });
     });
   });
@@ -71,9 +70,7 @@ const executeFragments = (fragments, modules, logger) => {
 
 const createCollect = collect => {
   return payload => {
-    const id = uuid();
-    const timestamp = Date.now();
-    const notification = Object.assign({}, payload, { id, timestamp });
+    const notification = Object.assign({}, payload);
     const personalization = { notification };
 
     collect({ meta: { personalization } });
@@ -129,7 +126,7 @@ const createPersonalization = ({ config, logger, cookieJar }) => {
           return;
         }
 
-        const fragments = response.getPayloadsByType(PAGE_HANDLE);
+        const fragments = response.getPayloadsByType(DECISIONS_HANDLE);
 
         // On response we first hide all the elements for
         // personalization:page handle

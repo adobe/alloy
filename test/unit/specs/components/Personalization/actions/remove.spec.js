@@ -6,7 +6,7 @@ import {
 import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
-describe("Presonalization::actions::remove", () => {
+describe("Personalization::actions::remove", () => {
   beforeEach(() => {
     cleanUpDomChanges("remove");
   });
@@ -21,15 +21,17 @@ describe("Presonalization::actions::remove", () => {
     const { remove } = modules;
     const content = `<div id="child"></div>`;
     const element = createNode("div", { id: "remove" }, { innerHTML: content });
-    const elements = [element];
 
     appendNode(document.body, element);
 
     const meta = { a: 1 };
-    const settings = { meta };
-    const event = { elements, prehidingSelector: "#remove" };
+    const settings = {
+      selector: "#remove",
+      prehidingSelector: "#remove",
+      meta
+    };
 
-    return remove(settings, event).then(() => {
+    return remove(settings).then(() => {
       const result = selectNodes("#child");
 
       expect(result.length).toEqual(0);

@@ -22,10 +22,14 @@ describe("Personalization::actions::setText", () => {
     appendNode(document.body, element);
 
     const meta = { a: 1 };
-    const settings = { content: "bar", meta };
-    const event = { elements, prehidingSelector: "#setText" };
+    const settings = {
+      selector: "#setText",
+      prehidingSelector: "#setText",
+      content: "bar",
+      meta
+    };
 
-    return setText(settings, event).then(() => {
+    return setText(settings).then(() => {
       expect(elements[0].textContent).toEqual("bar");
       expect(collect).toHaveBeenCalledWith(meta);
     });

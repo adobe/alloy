@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { removeNode } from "../../../utils/dom";
-import elementExists from "../events/elementExists";
+import libraryLoaded from "../events/libraryLoaded";
 import {
   createAction,
   setHtml,
@@ -29,7 +29,7 @@ import {
 
 export default collect => {
   return {
-    elementExists,
+    libraryLoaded,
     setHtml: createAction(collect, setHtml),
     customCode: createAction(collect, setHtml),
     setText: createAction(collect, setText),
@@ -44,6 +44,8 @@ export default collect => {
     insertBefore: createAction(collect, insertHtmlBefore),
     replaceHtml: createAction(collect, replaceHtml),
     prependHtml: createAction(collect, prependHtml),
-    appendHtml: createAction(collect, appendHtml)
+    appendHtml: createAction(collect, appendHtml),
+    // TODO: NOT IMPLEMENTED
+    click: () => {}
   };
 };

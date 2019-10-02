@@ -6,7 +6,7 @@ import {
 import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
-describe("Presonalization::actions::rearrange", () => {
+describe("Personalization::actions::rearrange", () => {
   beforeEach(() => {
     cleanUpDomChanges("rearrange");
   });
@@ -29,15 +29,18 @@ describe("Presonalization::actions::rearrange", () => {
       { id: "rearrange" },
       { innerHTML: content }
     );
-    const elements = [element];
 
     appendNode(document.body, element);
 
     const meta = { a: 1 };
-    const settings = { content: { from: 0, to: 2 }, meta };
-    const event = { elements, prehidingSelector: "#rearrange" };
+    const settings = {
+      selector: "#rearrange",
+      prehidingSelector: "#rearrange",
+      content: { from: 0, to: 2 },
+      meta
+    };
 
-    return rearrange(settings, event).then(() => {
+    return rearrange(settings).then(() => {
       const result = selectNodes("li");
 
       expect(result[0].textContent).toEqual("2");
@@ -61,15 +64,18 @@ describe("Presonalization::actions::rearrange", () => {
       { id: "rearrange" },
       { innerHTML: content }
     );
-    const elements = [element];
 
     appendNode(document.body, element);
 
     const meta = { a: 1 };
-    const settings = { content: { from: 2, to: 0 }, meta };
-    const event = { elements, prehidingSelector: "#rearrange" };
+    const settings = {
+      selector: "#rearrange",
+      prehidingSelector: "#rearrange",
+      content: { from: 2, to: 0 },
+      meta
+    };
 
-    return rearrange(settings, event).then(() => {
+    return rearrange(settings).then(() => {
       const result = selectNodes("li");
 
       expect(result[0].textContent).toEqual("3");

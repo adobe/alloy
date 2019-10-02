@@ -22,10 +22,14 @@ describe("Personalization::actions::setImageSource", () => {
     appendNode(document.body, element);
 
     const meta = { a: 1 };
-    const settings = { content: "http://foo.com/b.png", meta };
-    const event = { elements, prehidingSelector: "#setImageSource" };
+    const settings = {
+      selector: "#setImageSource",
+      prehidingSelector: "#setImageSource",
+      content: "http://foo.com/b.png",
+      meta
+    };
 
-    return setImageSource(settings, event).then(() => {
+    return setImageSource(settings).then(() => {
       expect(elements[0].getAttribute("src")).toEqual("http://foo.com/b.png");
       expect(collect).toHaveBeenCalledWith(meta);
     });

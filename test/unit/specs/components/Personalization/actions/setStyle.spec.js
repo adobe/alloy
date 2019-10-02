@@ -2,7 +2,7 @@ import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
-describe("Presonalization::actions::setStyle", () => {
+describe("Personalization::actions::setStyle", () => {
   beforeEach(() => {
     cleanUpDomChanges("setStyle");
   });
@@ -22,12 +22,13 @@ describe("Presonalization::actions::setStyle", () => {
 
     const meta = { a: 1 };
     const settings = {
+      selector: "#setStyle",
+      prehidingSelector: "#setStyle",
       content: { "font-size": "33px", priority: "important" },
       meta
     };
-    const event = { elements, prehidingSelector: "#setStyle" };
 
-    return setStyle(settings, event).then(() => {
+    return setStyle(settings).then(() => {
       expect(elements[0].style.getPropertyValue("font-size")).toEqual("33px");
       expect(collect).toHaveBeenCalledWith(meta);
     });
