@@ -55,27 +55,31 @@ const createIdentity = ({ config, logger, cookieJar, network }) => {
       // Waiting for opt-in because we'll be reading the ECID from a cookie
       onBeforeEvent({ event }) {
         return optIn.whenOptedIn().then(() => {
+          const identityQuery = {
+            identity: {}
+          };
+          let sendIdentityQuery = false;
+
           if (
             !alreadyQueriedForIdSyncs &&
             config.idSyncEnabled &&
             idSyncs.hasExpired()
           ) {
             alreadyQueriedForIdSyncs = true;
-            const identityQuery = {
-              identity: {
-                exchange: true
-              }
-            };
+            identityQuery.identity.exchange = true;
+            sendIdentityQuery = true;
 
             if (config.idSyncContainerId !== undefined) {
               identityQuery.identity.containerId = config.idSyncContainerId;
             }
+          }
 
-            if (config.thirdPartyCookiesEnabled !== undefined) {
-              identityQuery.identity.thirdPartyCookiesEnabled =
-                config.thirdPartyCookiesEnabled;
-            }
+          if (!config.thirdPartyCookiesEnabled) {
+            identityQuery.identity.thirdPartyCookiesEnabled = false;
+            sendIdentityQuery = true;
+          }
 
+          if (sendIdentityQuery) {
             event.mergeQuery(identityQuery);
           }
         });
@@ -159,7 +163,7 @@ createIdentity.configValidators = {
       .expected("an integer greater than or equal to 0")
   },
   thirdPartyCookiesEnabled: {
-    defaultValue: undefined,
+    defaultValue: true,
     validate: boolean()
   }
 };
