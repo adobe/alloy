@@ -74,7 +74,7 @@ const createIdentity = ({ config, logger, cookieJar, network }) => {
             }
           }
 
-          if (config.thirdPartyCookiesEnabled === false) {
+          if (!config.thirdPartyCookiesEnabled) {
             identityQuery.identity.thirdPartyCookiesEnabled = false;
             sendIdentityQuery = true;
           }
