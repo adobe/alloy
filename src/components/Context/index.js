@@ -16,6 +16,8 @@ import environmentFactory from "./environmentFactory";
 import placeContextFactory from "./placeContextFactory";
 import topFrameSetFactory from "./topFrameSetFactory";
 import timestampFactory from "./timestampFactory";
+import implementationDetailsFactory from "./implementationDetailsFactory";
+import libraryVersion from "../../constants/libraryVersion";
 import createComponent from "./createComponent";
 
 const topFrameSetProvider = topFrameSetFactory(window);
@@ -24,6 +26,7 @@ const device = deviceFactory(window);
 const environment = environmentFactory(window);
 const placeContext = placeContextFactory(() => new Date());
 const timestamp = timestampFactory(() => new Date());
+const implementationDetails = implementationDetailsFactory(libraryVersion);
 
 const createContext = ({ config, logger }) => {
   return createComponent(
@@ -33,7 +36,8 @@ const createContext = ({ config, logger }) => {
       web,
       device,
       environment,
-      placeContext
+      placeContext,
+      implementationDetails
     },
     [timestamp]
   );
@@ -43,7 +47,13 @@ createContext.namespace = "Context";
 createContext.abbreviation = "CO";
 createContext.configValidators = {
   context: {
-    defaultValue: ["web", "device", "environment", "placeContext"]
+    defaultValue: [
+      "web",
+      "device",
+      "environment",
+      "placeContext",
+      "implementationDetails"
+    ]
   }
 };
 
