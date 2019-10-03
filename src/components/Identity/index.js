@@ -35,7 +35,7 @@ const createIdentity = ({ config, logger, cookieJar, network }) => {
   let lifecycle;
   let customerIds;
   const idSyncs = createIdSyncs(config, logger, cookieJar);
-  const manualIdSyncs = createManualIdSyncs(config, logger, cookieJar, idSyncs);
+  const manualIdSyncs = createManualIdSyncs(idSyncs);
   let alreadyQueriedForIdSyncs = false;
   return {
     lifecycle: {
