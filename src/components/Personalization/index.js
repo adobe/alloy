@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { isNonEmptyArray, uuid } from "../../utils";
 import { initRuleComponentModules, executeRules } from "./turbine";
-import { hideContainers, showContainers, hideElements } from "./flicker";
+import { hideContainers, showContainers } from "./flicker";
 import { string, boolean } from "../../utils/configValidators";
 
 const DECISIONS_HANDLE = "personalization:decisions";
@@ -37,27 +37,6 @@ const getOrCreateSessionId = cookieJar => {
   return cookieValue.value;
 };
 
-const hideElementsForPage = fragments => {
-  fragments.forEach(fragment => {
-    const { rules = [] } = fragment;
-
-    rules.forEach(rule => {
-      const { actions = [] } = rule;
-
-      actions.forEach(action => {
-        const { settings = {} } = action;
-        const { prehidingSelector } = settings;
-
-        if (!prehidingSelector) {
-          return;
-        }
-
-        hideElements(prehidingSelector);
-      });
-    });
-  });
-};
-
 const executeFragments = (fragments, modules, logger) => {
   fragments.forEach(fragment => {
     const { rules = [] } = fragment;
@@ -69,12 +48,12 @@ const executeFragments = (fragments, modules, logger) => {
 };
 
 const createCollect = collect => {
-  return payload => {
-    const notification = Object.assign({}, payload);
-    const personalization = { notification };
-
-    collect({ meta: { personalization } });
-  };
+  return payload =>
+    collect({
+      meta: {
+        personalization: Object.assign({}, payload)
+      }
+    });
 };
 
 const createPersonalization = ({ config, logger, cookieJar }) => {
@@ -94,11 +73,7 @@ const createPersonalization = ({ config, logger, cookieJar }) => {
         if (authoringModeEnabled) {
           logger.warn("Rendering is disabled, authoring mode.");
 
-          event.mergeQuery({
-            personalization: {
-              enabled: false
-            }
-          });
+          event.mergeQuery({ personalization: { enabled: false } });
 
           return Promise.resolve();
         }
@@ -128,15 +103,9 @@ const createPersonalization = ({ config, logger, cookieJar }) => {
 
         const fragments = response.getPayloadsByType(DECISIONS_HANDLE);
 
-        // On response we first hide all the elements for
-        // personalization:page handle
-        hideElementsForPage(fragments);
-
-        // Once the all element are hidden
-        // we have to show the containers
-        showContainers();
-
         executeFragments(fragments, ruleComponentModules, logger);
+
+        showContainers();
       },
       onResponseError() {
         showContainers();

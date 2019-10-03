@@ -27,9 +27,7 @@ export { default as swapImage } from "./swapImage";
 export { default as rearrangeChildren } from "./rearrangeChildren";
 
 const renderContent = (elements, content, renderFunc) => {
-  const executions = elements.map(element =>
-    Promise.resolve(renderFunc(element, content))
-  );
+  const executions = elements.map(element => renderFunc(element, content));
 
   return Promise.all(executions);
 };

@@ -10,19 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const DEFAULT_EVENT = { moduleType: "libraryLoaded" };
-
-const getEvents = rule => {
-  const { events = [] } = rule;
-
-  return events.length === 0 ? [DEFAULT_EVENT] : events;
-};
-
 const buildRuleExecutionOrder = rules => {
   const ruleEventPairs = [];
 
   rules.forEach(rule => {
-    const events = getEvents(rule);
+    const { events } = rule;
 
     events.forEach(event => {
       ruleEventPairs.push({ rule, event });
