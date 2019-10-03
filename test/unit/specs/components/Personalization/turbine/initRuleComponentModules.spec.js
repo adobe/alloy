@@ -12,25 +12,32 @@ governing permissions and limitations under the License.
 
 import initRuleComponentModules from "../../../../../../src/components/Personalization/turbine/initRuleComponentModules";
 
-const STANDARD_MODULES = new Set([
-  "libraryLoaded",
-  "setHtml",
-  "customCode",
-  "setText",
-  "setAttribute",
-  "setImageSource",
-  "setStyle",
-  "move",
-  "resize",
-  "rearrange",
-  "remove",
-  "insertAfter",
-  "insertBefore",
-  "replaceHtml",
-  "prependHtml",
-  "appendHtml",
-  "click"
-]);
+const buildSet = () => {
+  const result = new Set();
+
+  // This is to make IE 11 happy
+  result.add("libraryLoaded");
+  result.add("setHtml");
+  result.add("customCode");
+  result.add("setText");
+  result.add("setAttribute");
+  result.add("setImageSource");
+  result.add("setStyle");
+  result.add("move");
+  result.add("resize");
+  result.add("rearrange");
+  result.add("remove");
+  result.add("insertAfter");
+  result.add("insertBefore");
+  result.add("replaceHtml");
+  result.add("prependHtml");
+  result.add("appendHtml");
+  result.add("click");
+
+  return result;
+};
+
+const STANDARD_MODULES = buildSet();
 
 describe("Personalization::turbine::initRuleComponentModules", () => {
   it("should have all the required modules", () => {
