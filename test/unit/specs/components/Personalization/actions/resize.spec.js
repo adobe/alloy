@@ -22,12 +22,13 @@ describe("Personalization::actions::resize", () => {
 
     const meta = { a: 1 };
     const settings = {
+      selector: "#resize",
+      prehidingSelector: "#resize",
       content: { width: "100px", height: "100px" },
       meta
     };
-    const event = { elements, prehidingSelector: "#resize" };
 
-    return resize(settings, event).then(() => {
+    return resize(settings).then(() => {
       expect(elements[0].style.width).toEqual("100px");
       expect(elements[0].style.height).toEqual("100px");
       expect(collect).toHaveBeenCalledWith(meta);

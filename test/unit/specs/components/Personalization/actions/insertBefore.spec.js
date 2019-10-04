@@ -25,18 +25,18 @@ describe("Personalization::actions::insertBefore", () => {
       { innerHTML: "AAA" }
     );
     const element = createNode("div", { id: "insertBefore" }, {}, [child]);
-    const elements = [child];
 
     appendNode(document.body, element);
 
     const meta = { a: 1 };
     const settings = {
+      selector: "#a",
+      prehidingSelector: "#a",
       content: `<div id="b" class="ib">BBB</div>`,
       meta
     };
-    const event = { elements, prehidingSelector: "#a" };
 
-    return insertBefore(settings, event).then(() => {
+    return insertBefore(settings).then(() => {
       const result = selectNodes("div#insertBefore .ib");
 
       expect(result[0].innerHTML).toEqual("BBB");

@@ -26,7 +26,7 @@ describe("xhrRequest", () => {
       "send",
       "onloadstart"
     ]);
-    XMLHttpRequest = function() {
+    XMLHttpRequest = () => {
       return request;
     };
     xhrRequest = xhrRequestFactory(XMLHttpRequest);

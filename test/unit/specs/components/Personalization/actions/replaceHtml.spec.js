@@ -25,18 +25,18 @@ describe("Personalization::actions::replaceHtml", () => {
       { innerHTML: "AAA" }
     );
     const element = createNode("div", { id: "replaceHtml" }, {}, [child]);
-    const elements = [child];
 
     appendNode(document.body, element);
 
     const meta = { a: 1 };
     const settings = {
+      selector: "#a",
+      prehidingSelector: "#a",
       content: `<div id="b" class="rh">BBB</div>`,
       meta
     };
-    const event = { elements, prehidingSelector: "#a" };
 
-    return replaceHtml(settings, event).then(() => {
+    return replaceHtml(settings).then(() => {
       const result = selectNodes("div#replaceHtml .rh");
 
       expect(result.length).toEqual(1);

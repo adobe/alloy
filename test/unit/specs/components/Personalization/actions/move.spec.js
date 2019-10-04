@@ -22,12 +22,13 @@ describe("Personalization::actions::move", () => {
 
     const meta = { a: 1 };
     const settings = {
+      selector: "#move",
+      prehidingSelector: "#move",
       content: { left: "100px", top: "100px" },
       meta
     };
-    const event = { elements, prehidingSelector: "#move" };
 
-    move(settings, event).then(() => {
+    move(settings).then(() => {
       expect(elements[0].style.left).toEqual("100px");
       expect(elements[0].style.top).toEqual("100px");
       expect(collect).toHaveBeenCalledWith(meta);

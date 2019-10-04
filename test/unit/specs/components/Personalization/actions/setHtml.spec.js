@@ -22,8 +22,13 @@ describe("Personalization::actions::setHtml", () => {
     appendNode(document.body, element);
 
     const meta = { a: 1 };
-    const settings = { content: "bar", meta };
-    const event = { elements, prehidingSelector: "#setHtml" };
+    const settings = {
+      selector: "#setHtml",
+      prehidingSelector: "#setHtml",
+      content: "bar",
+      meta
+    };
+    const event = { elements };
 
     return setHtml(settings, event).then(() => {
       expect(elements[0].innerHTML).toEqual("bar");

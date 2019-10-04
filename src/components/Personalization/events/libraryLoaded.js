@@ -10,23 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { awaitSelector } from "../../../utils/dom";
-import { selectNodesWithEq } from "../helper/dom";
-import { hideElements, showElements } from "../flicker";
-
 export default (settings, trigger) => {
-  const { selector, prehidingSelector } = settings;
-
-  hideElements(prehidingSelector);
-
-  awaitSelector(selector, selectNodesWithEq)
-    .then(elements => {
-      trigger({ elements, prehidingSelector });
-    })
-    .catch(() => {
-      // in case of awaiting timing out we
-      // need to remove the style tag
-      // hence showing the nodes
-      showElements(prehidingSelector);
-    });
+  trigger();
 };
