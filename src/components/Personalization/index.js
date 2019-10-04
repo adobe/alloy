@@ -10,32 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray, uuid } from "../../utils";
+import { isNonEmptyArray } from "../../utils";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
 import { string, boolean } from "../../utils/configValidators";
 
 const DECISIONS_HANDLE = "personalization:decisions";
-const SESSION_ID_COOKIE = "SID";
-const SESSION_ID_TTL_IN_MINUTES = 31 * 60 * 1000;
 const EVENT_COMMAND = "event";
-
-const getOrCreateSessionId = cookieJar => {
-  let cookieValue = cookieJar.get(SESSION_ID_COOKIE);
-  const now = Date.now();
-  const expires = now + SESSION_ID_TTL_IN_MINUTES;
-
-  if (!cookieValue || now > cookieValue.expires) {
-    cookieValue = { value: uuid(), expires };
-  } else {
-    cookieValue.expires = expires;
-  }
-
-  // We have to extend session ID lifetime
-  cookieJar.set(SESSION_ID_COOKIE, cookieValue);
-
-  return cookieValue.value;
-};
 
 const executeFragments = (fragments, modules, logger) => {
   fragments.forEach(fragment => {
@@ -56,16 +37,14 @@ const createCollect = collect => {
     });
 };
 
-const createPersonalization = ({ config, logger, cookieJar }) => {
+const createPersonalization = ({ config, logger }) => {
   const { authoringModeEnabled, prehidingStyle } = config;
   let ruleComponentModules;
-  let optIn;
 
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
         const { componentRegistry } = tools;
-        ({ optIn } = tools);
         const collect = componentRegistry.getCommand(EVENT_COMMAND);
         ruleComponentModules = initRuleComponentModules(createCollect(collect));
       },
@@ -74,8 +53,6 @@ const createPersonalization = ({ config, logger, cookieJar }) => {
           logger.warn("Rendering is disabled, authoring mode.");
 
           event.mergeQuery({ personalization: { enabled: false } });
-
-          return Promise.resolve();
         }
 
         if (!isViewStart) {
@@ -87,14 +64,6 @@ const createPersonalization = ({ config, logger, cookieJar }) => {
           // For viewStart we try to hide the personalization containers
           hideContainers(prehidingStyle);
         }
-
-        return optIn.whenOptedIn().then(() => {
-          const sessionId = getOrCreateSessionId(cookieJar);
-
-          // Session ID is required both for data fetching and
-          // data collection call
-          event.mergeMeta({ personalization: { sessionId } });
-        });
       },
       onResponse({ response }) {
         if (authoringModeEnabled) {
