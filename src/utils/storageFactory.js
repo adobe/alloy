@@ -12,6 +12,20 @@ governing permissions and limitations under the License.
 
 import baseNamespace from "../constants/namespace";
 
+const createMemoryStorage = namespace => {
+  const storage = {};
+
+  return {
+    getItem(name) {
+      return storage[namespace + name];
+    },
+
+    setItem(name, value) {
+      storage[namespace + name] = value;
+    }
+  };
+};
+
 const getStorageByType = (context, storageType, namespace) => {
   // When storage is disabled on Safari, the mere act of referencing
   // window.localStorage or window.sessionStorage throws an error.
@@ -50,6 +64,7 @@ export default context => additionalNamespace => {
   const finalNamespace = baseNamespace + (additionalNamespace || "");
   return {
     session: getStorageByType(context, "sessionStorage", finalNamespace),
-    persistent: getStorageByType(context, "localStorage", finalNamespace)
+    persistent: getStorageByType(context, "localStorage", finalNamespace),
+    memory: createMemoryStorage(finalNamespace)
   };
 };

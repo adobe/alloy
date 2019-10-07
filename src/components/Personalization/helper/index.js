@@ -25,6 +25,7 @@ export { default as setStyles } from "./setStyles";
 export { default as setAttributes } from "./setAttributes";
 export { default as swapImage } from "./swapImage";
 export { default as rearrangeChildren } from "./rearrangeChildren";
+export { default as click } from "./click";
 
 const renderContent = (elements, content, renderFunc) => {
   const executions = elements.map(element => renderFunc(element, content));

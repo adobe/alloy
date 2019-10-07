@@ -10,11 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray } from "../../utils";
+import { isNonEmptyArray, storageFactory } from "../../utils";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
 import { string, boolean } from "../../utils/configValidators";
 
+const ABBREVIATION = "PE";
 const DECISIONS_HANDLE = "personalization:decisions";
 const EVENT_COMMAND = "event";
 
@@ -37,16 +38,25 @@ const createCollect = collect => {
     });
 };
 
+const getStorage = () => {
+  const getNamespacedStorage = storageFactory(window);
+
+  return getNamespacedStorage(ABBREVIATION).memory;
+};
+
 const createPersonalization = ({ config, logger }) => {
   const { authoringModeEnabled, prehidingStyle } = config;
+  let storage;
   let ruleComponentModules;
 
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
         const { componentRegistry } = tools;
-        const collect = componentRegistry.getCommand(EVENT_COMMAND);
-        ruleComponentModules = initRuleComponentModules(createCollect(collect));
+        const event = componentRegistry.getCommand(EVENT_COMMAND);
+        const collect = createCollect(event);
+        storage = getStorage();
+        ruleComponentModules = initRuleComponentModules(collect, storage);
       },
       onBeforeEvent({ event, isViewStart }) {
         if (authoringModeEnabled) {
@@ -84,7 +94,7 @@ const createPersonalization = ({ config, logger }) => {
 };
 
 createPersonalization.namespace = "Personalization";
-createPersonalization.abbreviation = "PE";
+createPersonalization.abbreviation = ABBREVIATION;
 
 createPersonalization.configValidators = {
   prehidingStyle: {

@@ -24,10 +24,11 @@ import {
   appendHtml,
   prependHtml,
   insertHtmlAfter,
-  insertHtmlBefore
+  insertHtmlBefore,
+  click
 } from "../helper";
 
-export default collect => {
+export default (collect, storage) => {
   return {
     libraryLoaded,
     setHtml: createAction(collect, setHtml),
@@ -45,7 +46,6 @@ export default collect => {
     replaceHtml: createAction(collect, replaceHtml),
     prependHtml: createAction(collect, prependHtml),
     appendHtml: createAction(collect, appendHtml),
-    // TODO: NOT IMPLEMENTED
-    click: () => {}
+    click: settings => click(settings, storage)
   };
 };
