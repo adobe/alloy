@@ -12,16 +12,15 @@ governing permissions and limitations under the License.
 
 import { uuid } from "../../../utils";
 import { awaitSelector } from "../../../utils/dom";
+import ALLOY_KEY from "../../../constants/clickTrackingAttribute";
 import { selectNodesWithEq, setAttribute } from "./dom";
 
-const ALLOY_KEY = "data-alloy-key";
-
-export default (settings, storage) => {
+export default (settings, store) => {
   const key = uuid();
   const { selector, meta } = settings;
 
   return awaitSelector(selector, selectNodesWithEq).then(elements => {
-    storage.setItem(key, meta);
+    store(key, meta);
 
     elements.forEach(element => {
       setAttribute(element, ALLOY_KEY, key);

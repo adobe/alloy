@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray, storageFactory } from "../../utils";
+import { isNonEmptyArray } from "../../utils";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
 import { string, boolean } from "../../utils/configValidators";
@@ -38,15 +38,15 @@ const createCollect = collect => {
     });
 };
 
-const getStorage = () => {
-  const getNamespacedStorage = storageFactory(window);
-
-  return getNamespacedStorage(ABBREVIATION).memory;
+const createStore = storage => {
+  return (key, value) => {
+    storage[key] = value;
+  };
 };
 
 const createPersonalization = ({ config, logger }) => {
   const { authoringModeEnabled, prehidingStyle } = config;
-  let storage;
+  const storage = {};
   let ruleComponentModules;
 
   return {
@@ -55,8 +55,8 @@ const createPersonalization = ({ config, logger }) => {
         const { componentRegistry } = tools;
         const event = componentRegistry.getCommand(EVENT_COMMAND);
         const collect = createCollect(event);
-        storage = getStorage();
-        ruleComponentModules = initRuleComponentModules(collect, storage);
+        const store = createStore(storage);
+        ruleComponentModules = initRuleComponentModules(collect, store);
       },
       onBeforeEvent({ event, isViewStart }) {
         if (authoringModeEnabled) {

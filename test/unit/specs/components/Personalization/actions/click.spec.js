@@ -13,8 +13,8 @@ describe("Personalization::actions::click", () => {
 
   it("should set click tracking attribute", () => {
     const collect = jasmine.createSpy();
-    const storage = jasmine.createSpyObj("storage", ["setItem"]);
-    const modules = initRuleComponentModules(collect, storage);
+    const store = jasmine.createSpy();
+    const modules = initRuleComponentModules(collect, store);
     const { click } = modules;
     const element = createNode("div", { id: "click" });
     const elements = [element];
@@ -27,10 +27,10 @@ describe("Personalization::actions::click", () => {
       meta
     };
 
-    return click(settings, storage).then(() => {
+    return click(settings, store).then(() => {
       const key = elements[0].getAttribute("data-alloy-key");
 
-      expect(storage.setItem).toHaveBeenCalledWith(key, meta);
+      expect(store).toHaveBeenCalledWith(key, meta);
     });
   });
 });
