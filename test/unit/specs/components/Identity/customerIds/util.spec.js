@@ -61,6 +61,30 @@ describe("Identity::identityUtil", () => {
         validateCustomerIds(objToTest);
       }).not.toThrow();
     });
+
+    it("should throw an error when primary is not a boolean", () => {
+      const objToTest = {
+        email: {
+          id: "tester",
+          primary: "wrong type"
+        }
+      };
+      expect(() => {
+        validateCustomerIds(objToTest);
+      }).toThrow();
+    });
+
+    it("should not throw an error when primary is a boolean", () => {
+      const objToTest = {
+        email: {
+          id: "tester",
+          primary: true
+        }
+      };
+      expect(() => {
+        validateCustomerIds(objToTest);
+      }).not.toThrow();
+    });
   });
 
   describe("normalizeCustomerIds", () => {
@@ -104,6 +128,42 @@ describe("Identity::identityUtil", () => {
         },
         crm: {
           id: "1234",
+          authenticatedState: AUTH_STATES.AMBIGUOUS
+        }
+      };
+      expect(normalizeCustomerIds(objToTest)).toEqual(normalizedObj);
+    });
+
+    it("should pass through the primary prop", () => {
+      const objToTest = {
+        email: {
+          id: "tester",
+          authenticatedState: AUTH_STATES.LOGGEDOUT,
+          primary: true
+        },
+        crm: {
+          id: "1234",
+          authenticatedState: AUTH_STATES.AMBIGUOUS
+        },
+        custom: {
+          id: "abc",
+          primary: false
+        }
+      };
+
+      const normalizedObj = {
+        email: {
+          id: "tester",
+          authenticatedState: AUTH_STATES.LOGGEDOUT,
+          primary: true
+        },
+        crm: {
+          id: "1234",
+          authenticatedState: AUTH_STATES.AMBIGUOUS
+        },
+        custom: {
+          id: "abc",
+          primary: false,
           authenticatedState: AUTH_STATES.AMBIGUOUS
         }
       };

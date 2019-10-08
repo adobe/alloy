@@ -39,6 +39,7 @@ export { default as isFunction } from "./isFunction";
 export { default as isInteger } from "./isInteger";
 export { default as isNonEmptyArray } from "./isNonEmptyArray";
 export { default as isNonEmptyString } from "./isNonEmptyString";
+export { default as isNil } from "./isNil";
 export { default as isNumber } from "./isNumber";
 export { default as isObject } from "./isObject";
 export { default as isString } from "./isString";
