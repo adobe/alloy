@@ -1,5 +1,5 @@
 import { AUTH_STATES } from "../constants";
-import { isObject, values, includes } from "../../../utils";
+import { isObject, includes, keys, values } from "../../../utils";
 
 const ERROR_MESSAGE = "Invalid customer ID format.";
 const NOT_AN_OBJECT_ERROR = "Each namespace should be an object.";
@@ -9,7 +9,7 @@ const validateCustomerIds = customerIds => {
   if (!isObject(customerIds)) {
     throw new Error(`${ERROR_MESSAGE} ${NOT_AN_OBJECT_ERROR}`);
   }
-  Object.keys(customerIds).forEach(customerId => {
+  keys(customerIds).forEach(customerId => {
     if (!isObject(customerIds[customerId])) {
       throw new Error(`${ERROR_MESSAGE} ${NOT_AN_OBJECT_ERROR}`);
     }
@@ -20,7 +20,7 @@ const validateCustomerIds = customerIds => {
 };
 
 const sortObjectKeyNames = object => {
-  return Object.keys(object)
+  return keys(object)
     .sort()
     .reduce((newObject, key) => {
       newObject[key] = object[key];
@@ -30,15 +30,20 @@ const sortObjectKeyNames = object => {
 
 const normalizeCustomerIds = customerIds => {
   const sortedCustomerIds = sortObjectKeyNames(customerIds);
-  return Object.keys(sortedCustomerIds).reduce((normalizedIds, customerId) => {
-    const { id, authState } = sortedCustomerIds[customerId];
-    const authStates = values(AUTH_STATES);
+  // TODO: This requires a change to the docs to list the possible values.
+  // Alternatively, maybe we should expose the enum on the instance.
+  const authStates = values(AUTH_STATES);
+
+  return keys(sortedCustomerIds).reduce((normalizedIds, customerId) => {
+    const { id, authenticatedState } = sortedCustomerIds[customerId];
+
     normalizedIds[customerId] = {
       id,
-      authState: includes(authStates, authState)
-        ? authState
-        : AUTH_STATES.UNKNOWN
+      authenticatedState: includes(authStates, authenticatedState)
+        ? authenticatedState // Set the auth state to the string value like `authenticated`.
+        : AUTH_STATES.AMBIGUOUS
     };
+
     return normalizedIds;
   }, {});
 };

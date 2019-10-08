@@ -64,7 +64,7 @@ describe("Identity::identityUtil", () => {
   });
 
   describe("normalizeCustomerIds", () => {
-    it("should add an authState if missing", () => {
+    it("should add an authenticatedState if missing", () => {
       const objToTest = {
         email: {
           id: "tester"
@@ -76,11 +76,11 @@ describe("Identity::identityUtil", () => {
       const normalizedObj = {
         email: {
           id: "tester",
-          authState: AUTH_STATES.UNKNOWN
+          authenticatedState: AUTH_STATES.AMBIGUOUS
         },
         crm: {
           id: "1234",
-          authState: AUTH_STATES.UNKNOWN
+          authenticatedState: AUTH_STATES.AMBIGUOUS
         }
       };
       expect(normalizeCustomerIds(objToTest)).toEqual(normalizedObj);
@@ -90,21 +90,21 @@ describe("Identity::identityUtil", () => {
       const objToTest = {
         email: {
           id: "tester",
-          authState: "login"
+          authenticatedState: "login"
         },
         crm: {
           id: "1234",
-          authState: "logout"
+          authenticatedState: "logout"
         }
       };
       const normalizedObj = {
         email: {
           id: "tester",
-          authState: AUTH_STATES.UNKNOWN
+          authenticatedState: AUTH_STATES.AMBIGUOUS
         },
         crm: {
           id: "1234",
-          authState: AUTH_STATES.UNKNOWN
+          authenticatedState: AUTH_STATES.AMBIGUOUS
         }
       };
       expect(normalizeCustomerIds(objToTest)).toEqual(normalizedObj);

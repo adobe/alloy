@@ -1,7 +1,7 @@
 const AUTH_STATES = {
-  UNKNOWN: 0,
-  AUTHENTICATED: 1,
-  LOGGED_OUT: 2
+  AMBIGUOUS: "ambiguous",
+  AUTHENTICATED: "authenticated",
+  LOGGEDOUT: "loggedOut"
 };
 
 const COOKIE_NAMES = {
