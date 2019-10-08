@@ -83,12 +83,13 @@
       alloy("setCustomerIds", {
         emailHash: {
           id: "me@gmail.com",
-          authState: 0,
-          hash: true //TODO: document customer ID hashing syntax
+          authenticatedState: "ambiguous",
+          hash: true, //TODO: document customer ID hashing syntax
+          primary: true
         },
         crm: {
           id: "1234",
-          authState: 0
+          authenticatedState: "ambiguous"
         }
       }).then(function() {
         console.log("Sandbox: Set customer IDs event has completed.");
