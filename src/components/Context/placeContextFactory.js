@@ -12,14 +12,12 @@ governing permissions and limitations under the License.
 import { toISOStringLocal } from "../../utils";
 
 export default dateProvider => {
-  return event => {
+  return () => {
     const date = dateProvider();
     const placeContext = {
       localTime: toISOStringLocal(date),
       localTimezoneOffset: date.getTimezoneOffset()
     };
-    event.mergeXdm({
-      placeContext
-    });
+    return { placeContext };
   };
 };

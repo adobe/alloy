@@ -11,17 +11,15 @@ governing permissions and limitations under the License.
 */
 
 import implementationDetailsFactory from "../../../../../src/components/Context/implementationDetailsFactory";
+import { deepAssign } from "../../../../../src/utils";
 
-describe("Context::versionFactory", () => {
+describe("Context::implementationDetails", () => {
   const version = "1.2.3";
-  let event;
-  beforeEach(() => {
-    event = jasmine.createSpyObj("event", ["mergeXdm"]);
-  });
 
   it("works", () => {
-    implementationDetailsFactory(version)(event);
-    expect(event.mergeXdm).toHaveBeenCalledWith({
+    const xdm = {};
+    deepAssign(xdm, implementationDetailsFactory(version)(xdm));
+    expect(xdm).toEqual({
       implementationDetails: {
         name: "https://ns.adobe.com/experience/alloy",
         version: "1.2.3",

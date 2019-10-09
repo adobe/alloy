@@ -10,39 +10,47 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { deepAssign, flatMap, isString, isFunction } from "../../utils";
+
 export default (config, logger, availableContexts, requiredContexts) => {
-  let configuredContexts;
+  let { context: configuredContexts } = config;
+
+  if (!Array.isArray(configuredContexts)) {
+    logger.warn("Invalid configured context. Please specify an array.");
+    configuredContexts = [];
+  }
+
+  const contexts = flatMap(
+    requiredContexts.concat(configuredContexts),
+    context => {
+      if (isString(context)) {
+        if (availableContexts[context]) {
+          return [availableContexts[context]];
+        }
+        logger.warn(`Invalid context: '${context}' is not available.`);
+        return [];
+      }
+      if (isFunction(context)) {
+        return [context];
+      }
+      logger.warn(`Invalid context: String or Function expected`);
+      return [];
+    }
+  );
+
   return {
     namespace: "Context",
     lifecycle: {
-      onComponentsRegistered() {
-        let configuredContextNames = [];
-
-        if (Array.isArray(config.context)) {
-          configuredContextNames = config.context;
-        } else {
-          logger.warn(
-            `Invalid configured context. Please specify an array of strings.`
-          );
-        }
-
-        configuredContexts = configuredContextNames
-          .filter(configuredContextName => {
-            if (!availableContexts[configuredContextName]) {
-              logger.warn(
-                `Configured context ${configuredContextName} is not available.`
-              );
-              return false;
-            }
-            return true;
-          })
-          .map(
-            configuredContextName => availableContexts[configuredContextName]
-          )
-          .concat(requiredContexts);
-      },
       onBeforeEvent({ event }) {
-        configuredContexts.forEach(context => context(event));
+        const xdm = {};
+        contexts.forEach(context => {
+          try {
+            deepAssign(xdm, context(xdm));
+          } catch (error) {
+            logger.warn(error);
+          }
+        });
+        event.mergeXdm(xdm);
       }
     }
   };

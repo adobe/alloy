@@ -5,30 +5,14 @@ describe("Context::createComponent", () => {
     log() {},
     warn() {}
   };
-  const context1 = payload => {
-    payload.addContext1({
-      a: "1"
-    });
-  };
-  const context2 = payload => {
-    payload.addContext2({
-      b: "2"
-    });
-  };
-  const requiredContext = payload => {
-    payload.addRequiredContext({
-      c: "3"
-    });
-  };
+  const context1 = () => ({ a: "1" });
+  const context2 = () => ({ b: "2" });
+  const requiredContext = () => ({ c: "3" });
   const availableContexts = { context1, context2 };
   let event;
 
   beforeEach(() => {
-    event = jasmine.createSpyObj("event", [
-      "addContext1",
-      "addContext2",
-      "addRequiredContext"
-    ]);
+    event = jasmine.createSpyObj("event", ["mergeXdm"]);
   });
 
   it("enables the configured contexts", () => {
@@ -36,24 +20,18 @@ describe("Context::createComponent", () => {
     const component = createComponent(config, logger, availableContexts, [
       requiredContext
     ]);
-    component.lifecycle.onComponentsRegistered();
     component.lifecycle.onBeforeEvent({ event });
 
-    expect(event.addContext1).toHaveBeenCalledWith({ a: "1" });
-    expect(event.addContext2).toHaveBeenCalledWith({ b: "2" });
-    expect(event.addRequiredContext).toHaveBeenCalledWith({ c: "3" });
+    expect(event.mergeXdm).toHaveBeenCalledWith({ a: "1", b: "2", c: "3" });
   });
   it("ignores unknown contexts", () => {
     const config = { context: ["unknowncontext", "context1"] };
     const component = createComponent(config, logger, availableContexts, [
       requiredContext
     ]);
-    component.lifecycle.onComponentsRegistered();
     component.lifecycle.onBeforeEvent({ event });
 
-    expect(event.addContext1).toHaveBeenCalledWith({ a: "1" });
-    expect(event.addContext2).not.toHaveBeenCalled();
-    expect(event.addRequiredContext).toHaveBeenCalledWith({ c: "3" });
+    expect(event.mergeXdm).toHaveBeenCalledWith({ a: "1", c: "3" });
   });
 
   it("can disable non-required contexts", () => {
@@ -61,12 +39,9 @@ describe("Context::createComponent", () => {
     const component = createComponent(config, logger, availableContexts, [
       requiredContext
     ]);
-    component.lifecycle.onComponentsRegistered();
     component.lifecycle.onBeforeEvent({ event });
 
-    expect(event.addContext1).not.toHaveBeenCalled();
-    expect(event.addContext2).not.toHaveBeenCalled();
-    expect(event.addRequiredContext).toHaveBeenCalledWith({ c: "3" });
+    expect(event.mergeXdm).toHaveBeenCalledWith({ c: "3" });
   });
 
   it("disables non-required contexts when given a non-array config", () => {
@@ -74,11 +49,8 @@ describe("Context::createComponent", () => {
     const component = createComponent(config, logger, availableContexts, [
       requiredContext
     ]);
-    component.lifecycle.onComponentsRegistered();
     component.lifecycle.onBeforeEvent({ event });
 
-    expect(event.addContext1).not.toHaveBeenCalled();
-    expect(event.addContext2).not.toHaveBeenCalled();
-    expect(event.addRequiredContext).toHaveBeenCalledWith({ c: "3" });
+    expect(event.mergeXdm).toHaveBeenCalledWith({ c: "3" });
   });
 });
