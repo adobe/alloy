@@ -11,10 +11,8 @@ governing permissions and limitations under the License.
 */
 
 export default dateProvider => {
-  return event => {
+  return () => {
     const date = dateProvider();
-    event.mergeXdm({
-      timestamp: date.toISOString()
-    });
+    return { timestamp: date.toISOString() };
   };
 };

@@ -13,10 +13,10 @@ governing permissions and limitations under the License.
 export default (window, topFrameSetProvider) => {
   let topFrameSet;
 
-  return event => {
+  return () => {
     topFrameSet = topFrameSet || topFrameSetProvider();
 
-    event.mergeXdm({
+    return {
       web: {
         webPageDetails: {
           URL: window.location.href || window.location
@@ -25,6 +25,6 @@ export default (window, topFrameSetProvider) => {
           URL: topFrameSet.document.referrer
         }
       }
-    });
+    };
   };
 };

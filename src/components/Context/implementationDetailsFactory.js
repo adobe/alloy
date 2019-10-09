@@ -1,11 +1,11 @@
 export default version => {
-  return event => {
-    event.mergeXdm({
+  return () => {
+    return {
       implementationDetails: {
         name: "https://ns.adobe.com/experience/alloy",
         version,
         environment: "web"
       }
-    });
+    };
   };
 };

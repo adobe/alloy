@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 export default window => {
-  return event => {
+  return () => {
     const { innerWidth, innerHeight } = window;
     const environment = {
       type: "browser",
@@ -21,8 +21,6 @@ export default window => {
       }
     };
 
-    event.mergeXdm({
-      environment
-    });
+    return { environment };
   };
 };
