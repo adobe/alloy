@@ -10,16 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const createLogger = (console, logController, prefix) => {
+export default (console, getLogEnabled, prefix) => {
   const process = (level, ...rest) => {
-    if (logController.logEnabled) {
+    if (getLogEnabled()) {
       console[level](prefix, ...rest);
     }
   };
 
   return {
     get enabled() {
-      return logController.logEnabled;
+      return getLogEnabled();
     },
     /**
      * Outputs a message to the web console.
@@ -42,19 +42,10 @@ const createLogger = (console, logController, prefix) => {
      * Outputs an error message to the web console.
      * @param {...*} arg Any argument to be logged.
      */
-    error: process.bind(null, "error"),
+    error: process.bind(null, "error")
     /**
      * Creates a new logger with an additional prefix.
      * @param {String} additionalPrefix
      */
-    spawn(additionalPrefix) {
-      return createLogger(
-        console,
-        logController,
-        `${prefix} ${additionalPrefix}`
-      );
-    }
   };
 };
-
-export default createLogger;

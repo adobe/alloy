@@ -15,7 +15,7 @@ import handleErrorFactory from "../../../../src/core/handleErrorFactory";
 describe("handleErrorFactory", () => {
   it("converts non-error to error and throws", () => {
     const handleError = handleErrorFactory({
-      namespace: "testnamespace",
+      instanceNamespace: "testinstanceNamespace",
       getErrorsEnabled() {
         return true;
       }
@@ -23,12 +23,12 @@ describe("handleErrorFactory", () => {
 
     expect(() => {
       handleError("Bad thing happened.");
-    }).toThrowError("[testnamespace] Bad thing happened.");
+    }).toThrowError("[testinstanceNamespace] Bad thing happened.");
   });
 
-  it("rethrows error with namespace prepended", () => {
+  it("rethrows error with instanceNamespace prepended", () => {
     const handleError = handleErrorFactory({
-      namespace: "testnamespace",
+      instanceNamespace: "testinstanceNamespace",
       getErrorsEnabled() {
         return true;
       }
@@ -36,13 +36,13 @@ describe("handleErrorFactory", () => {
 
     expect(() => {
       handleError(new Error("Bad thing happened."));
-    }).toThrowError("[testnamespace] Bad thing happened.");
+    }).toThrowError("[testinstanceNamespace] Bad thing happened.");
   });
 
   it("logs error instead of throwing if errors are not enabled", () => {
     const logger = jasmine.createSpyObj("logger", ["error"]);
     const handleError = handleErrorFactory({
-      namespace: "testnamespace",
+      instanceNamespace: "testinstanceNamespace",
       getErrorsEnabled() {
         return false;
       },

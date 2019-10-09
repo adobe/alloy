@@ -17,7 +17,6 @@ import {
   storageFactory,
   cookieJar
 } from "../utils";
-import createLogger from "./createLogger";
 import createCookieProxy from "./createCookieProxy";
 import createComponentNamespacedCookieJar from "./createComponentNamespacedCookieJar";
 import createLogController from "./createLogController";
@@ -38,9 +37,10 @@ import cookieJarToolFactory from "./tools/cookieJarToolFactory";
 import enableOptInToolFactory from "./tools/enableOptInToolFactory";
 import loggerToolFactory from "./tools/loggerToolFactory";
 import createNetworkStrategy from "./network/createNetworkStrategy";
+import createLogger from "./createLogger";
 
 // eslint-disable-next-line no-underscore-dangle
-const namespaces = window.__alloyNS;
+const instanceNamespaces = window.__alloyNS;
 
 const createNamespacedStorage = storageFactory(window);
 const memoizedGetTopLevelDomain = memoize(getTopLevelCookieDomain);
@@ -56,13 +56,16 @@ console = turbine.logger;
 ({ console } = window);
 // #endif
 
-if (namespaces) {
-  namespaces.forEach(namespace => {
-    const logController = createLogController(
-      namespace,
+if (instanceNamespaces) {
+  instanceNamespaces.forEach(instanceNamespace => {
+    const logController = createLogController({
+      console,
+      locationSearch: window.location.search,
+      createLogger,
+      instanceNamespace,
       createNamespacedStorage
-    );
-    const logger = createLogger(console, logController, `[${namespace}]`);
+    });
+    const { setLogEnabled, logger } = logController;
     const componentRegistry = createComponentRegistry();
     const optIn = createOptIn();
     const lifecycle = createLifecycle(componentRegistry);
@@ -79,7 +82,10 @@ if (namespaces) {
     };
 
     const logCommand = options => {
-      logController.logEnabled = options.enabled;
+      setLogEnabled(options.enabled, {
+        persist: true,
+        highPriority: true
+      });
     };
 
     const configureCommand = options => {
@@ -88,10 +94,9 @@ if (namespaces) {
         componentCreators,
         createConfig,
         coreConfigValidators,
-        logCommand,
         logger,
-        setErrorsEnabled,
-        window
+        setLogEnabled,
+        setErrorsEnabled
       });
       return initializeComponents({
         config,
@@ -106,7 +111,7 @@ if (namespaces) {
             getTopLevelDomain
           ),
           enableOptIn: enableOptInToolFactory(optIn),
-          logger: loggerToolFactory(logger),
+          logger: loggerToolFactory(logController.createComponentLogger),
           network: networkToolFactory(
             createNetwork,
             lifecycle,
@@ -119,7 +124,7 @@ if (namespaces) {
     };
 
     const handleError = handleErrorFactory({
-      namespace,
+      instanceNamespace,
       getErrorsEnabled,
       logger
     });
@@ -133,7 +138,7 @@ if (namespaces) {
 
     const instance = instanceFactory(executeCommand);
 
-    const queue = window[namespace].q;
+    const queue = window[instanceNamespace].q;
     queue.push = instance;
     queue.forEach(instance);
   });

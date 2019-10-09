@@ -14,15 +14,15 @@ import loggerToolFactory from "../../../../../src/core/tools/loggerToolFactory";
 
 describe("loggerToolFactory", () => {
   it("returns logger tool", () => {
-    const spawnedLogger = {};
-    const logger = {
-      spawn: jasmine.createSpy().and.returnValue(spawnedLogger)
-    };
+    const componentLogger = {};
+    const createComponentLogger = jasmine
+      .createSpy()
+      .and.returnValue(componentLogger);
     const componentCreator = {
       namespace: "testnamespace"
     };
-    const tool = loggerToolFactory(logger)()(componentCreator);
-    expect(logger.spawn).toHaveBeenCalledWith("[testnamespace]");
-    expect(tool).toBe(spawnedLogger);
+    const tool = loggerToolFactory(createComponentLogger)()(componentCreator);
+    expect(createComponentLogger).toHaveBeenCalledWith("testnamespace");
+    expect(tool).toBe(componentLogger);
   });
 });

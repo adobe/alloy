@@ -12,9 +12,9 @@ governing permissions and limitations under the License.
 
 import { toError } from "../utils";
 
-export default ({ namespace, getErrorsEnabled, logger }) => error => {
+export default ({ instanceNamespace, getErrorsEnabled, logger }) => error => {
   const err = toError(error);
-  err.message = `[${namespace}] ${err.message}`;
+  err.message = `[${instanceNamespace}] ${err.message}`;
   if (getErrorsEnabled()) {
     throw err;
   } else {
