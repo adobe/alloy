@@ -28,7 +28,7 @@ import {
   click
 } from "../helper";
 
-export default (collect, storage) => {
+export default (collect, store) => {
   return {
     libraryLoaded,
     setHtml: createAction(collect, setHtml),
@@ -46,6 +46,6 @@ export default (collect, storage) => {
     replaceHtml: createAction(collect, replaceHtml),
     prependHtml: createAction(collect, prependHtml),
     appendHtml: createAction(collect, appendHtml),
-    click: settings => click(settings, storage)
+    click: settings => click(settings, store)
   };
 };
