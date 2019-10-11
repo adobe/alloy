@@ -27,7 +27,7 @@ export default ({
   });
   config.validate();
   setErrorsEnabled(config.errorsEnabled);
-  setLogEnabled(config.logEnabled, { persist: false, highPriority: false });
+  setLogEnabled(config.logEnabled, { fromConfig: true });
   // toJson is expensive so we short circuit if logging is disabled
   if (logger.enabled) {
     logger.log("Computed configuration:", config.toJSON());

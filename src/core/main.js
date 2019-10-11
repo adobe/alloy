@@ -82,10 +82,7 @@ if (instanceNamespaces) {
     };
 
     const logCommand = options => {
-      setLogEnabled(options.enabled, {
-        persist: true,
-        highPriority: true
-      });
+      setLogEnabled(options.enabled, { fromConfig: false });
     };
 
     const configureCommand = options => {

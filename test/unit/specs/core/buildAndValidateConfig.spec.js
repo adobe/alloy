@@ -87,7 +87,7 @@ describe("buildAndValidateConfig", () => {
     expect(setErrorsEnabled).toHaveBeenCalledWith(true);
   });
 
-  it("calls log command based on config", () => {
+  it("sets log enabled based on config", () => {
     config.logEnabled = true;
     buildAndValidateConfig({
       options,
@@ -98,10 +98,7 @@ describe("buildAndValidateConfig", () => {
       setLogEnabled,
       setErrorsEnabled
     });
-    expect(setLogEnabled).toHaveBeenCalledWith(true, {
-      persist: false,
-      highPriority: false
-    });
+    expect(setLogEnabled).toHaveBeenCalledWith(true, { fromConfig: true });
   });
 
   it("logs and returns computed configuration", () => {

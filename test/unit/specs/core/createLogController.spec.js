@@ -19,6 +19,7 @@ describe("createLogController", () => {
   let locationSearch;
   let logger;
   let createLogger;
+  let getLogEnabled;
   let sessionStorage;
   let createNamespacedStorage;
 
@@ -26,7 +27,10 @@ describe("createLogController", () => {
     console = { log() {} };
     locationSearch = "";
     logger = { log() {} };
-    createLogger = jasmine.createSpy().and.returnValue(logger);
+    createLogger = jasmine.createSpy().and.callFake((_, _getLogEnabled) => {
+      getLogEnabled = _getLogEnabled;
+      return logger;
+    });
     sessionStorage = {
       getItem: jasmine.createSpy().and.returnValue(null),
       setItem: jasmine.createSpy()
@@ -55,7 +59,6 @@ describe("createLogController", () => {
       instanceNamespace,
       createNamespacedStorage
     });
-    const getLogEnabled = createLogger.calls.argsFor(0)[1];
     expect(getLogEnabled()).toBe(false);
   });
 
@@ -68,7 +71,6 @@ describe("createLogController", () => {
       instanceNamespace,
       createNamespacedStorage
     });
-    const getLogEnabled = createLogger.calls.argsFor(0)[1];
     expect(getLogEnabled()).toBe(false);
   });
 
@@ -81,11 +83,10 @@ describe("createLogController", () => {
       instanceNamespace,
       createNamespacedStorage
     });
-    const getLogEnabled = createLogger.calls.argsFor(0)[1];
     expect(getLogEnabled()).toBe(true);
   });
 
-  it("persists changes to logEnabled if persist is true", () => {
+  it("persists changes to logEnabled if not set from config", () => {
     const logController = createLogController({
       console,
       locationSearch,
@@ -94,13 +95,12 @@ describe("createLogController", () => {
       createNamespacedStorage
     });
 
-    logController.setLogEnabled(true, { persist: true });
+    logController.setLogEnabled(true, { fromConfig: false });
     expect(sessionStorage.setItem).toHaveBeenCalledWith("log", "true");
-    const getLogEnabled = createLogger.calls.argsFor(0)[1];
     expect(getLogEnabled()).toBe(true);
   });
 
-  it("does not persist changes to logEnabled if persist is false", () => {
+  it("does not persist changes to logEnabled if set from config", () => {
     const logController = createLogController({
       console,
       locationSearch,
@@ -109,13 +109,12 @@ describe("createLogController", () => {
       createNamespacedStorage
     });
 
-    logController.setLogEnabled(true, { persist: false });
+    logController.setLogEnabled(true, { fromConfig: true });
     expect(sessionStorage.setItem).not.toHaveBeenCalled();
-    const getLogEnabled = createLogger.calls.argsFor(0)[1];
     expect(getLogEnabled()).toBe(true);
   });
 
-  it("does not change logEnabled with low priority if it was changed previously with high priority", () => {
+  it("does not change logEnabled from config if previously changed from something other than config", () => {
     const logController = createLogController({
       console,
       locationSearch,
@@ -124,15 +123,14 @@ describe("createLogController", () => {
       createNamespacedStorage
     });
 
-    logController.setLogEnabled(true, { highPriority: true, persist: true });
-    logController.setLogEnabled(false, { highPriority: false, persist: true });
+    logController.setLogEnabled(true, { fromConfig: false });
+    logController.setLogEnabled(false, { fromConfig: true });
     expect(sessionStorage.setItem).toHaveBeenCalledWith("log", "true");
     expect(sessionStorage.setItem).not.toHaveBeenCalledWith("log", "false");
-    const getLogEnabled = createLogger.calls.argsFor(0)[1];
     expect(getLogEnabled()).toBe(true);
   });
 
-  it("sets logEnabled to true with high priority if query string parameter set to true", () => {
+  it("sets logEnabled to true if query string parameter set to true", () => {
     locationSearch = "?alloy_log=true";
     const logController = createLogController({
       console,
@@ -142,14 +140,14 @@ describe("createLogController", () => {
       createNamespacedStorage
     });
 
-    logController.setLogEnabled(false, { highPriority: false, persist: true });
+    // Make sure setting logEnabled from config can't override it.
+    logController.setLogEnabled(false, { fromConfig: true });
     expect(sessionStorage.setItem).toHaveBeenCalledWith("log", "true");
-    expect(sessionStorage.setItem).not.toHaveBeenCalledWith("log", "false");
-    const getLogEnabled = createLogger.calls.argsFor(0)[1];
+    expect(sessionStorage.setItem.calls.count()).toBe(1);
     expect(getLogEnabled()).toBe(true);
   });
 
-  it("sets logEnabled to false with high priority if query string parameter set to false", () => {
+  it("sets logEnabled to false if query string parameter set to false", () => {
     locationSearch = "?alloy_log=false";
     const logController = createLogController({
       console,
@@ -159,10 +157,10 @@ describe("createLogController", () => {
       createNamespacedStorage
     });
 
-    logController.setLogEnabled(true, { highPriority: false, persist: true });
+    // Make sure setting logEnabled from config can't override it.
+    logController.setLogEnabled(true, { fromConfig: true });
     expect(sessionStorage.setItem).toHaveBeenCalledWith("log", "false");
-    expect(sessionStorage.setItem).not.toHaveBeenCalledWith("log", "true");
-    const getLogEnabled = createLogger.calls.argsFor(0)[1];
+    expect(sessionStorage.setItem.calls.count()).toBe(1);
     expect(getLogEnabled()).toBe(false);
   });
 
@@ -197,11 +195,9 @@ describe("createLogController", () => {
 
     expect(createLogger).toHaveBeenCalledWith(
       console,
-      jasmine.any(Function),
+      getLogEnabled,
       "[alloy123] [Personalization]"
     );
-    const getLogEnabled = createLogger.calls.mostRecent().args[1];
-    expect(getLogEnabled()).toBe(false);
     expect(result).toBe(componentLogger);
   });
 });

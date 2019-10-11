@@ -25,27 +25,24 @@ export default ({
   const storage = createNamespacedStorage(`instance.${instanceNamespace}.`);
 
   let logEnabled = storage.session.getItem("log") === "true";
-  let logEnabledSetWithHighPriority = false;
+  let logEnabledWritableFromConfig = true;
 
   const getLogEnabled = () => logEnabled;
-  const setLogEnabled = (value, { persist, highPriority }) => {
-    if (highPriority) {
-      logEnabledSetWithHighPriority = true;
+  const setLogEnabled = (value, { fromConfig }) => {
+    if (!fromConfig || logEnabledWritableFromConfig) {
+      logEnabled = value;
     }
 
-    if (highPriority || !logEnabledSetWithHighPriority) {
+    if (!fromConfig) {
       // Web storage only allows strings, so we explicitly convert to string.
-      if (persist) {
-        storage.session.setItem("log", value.toString());
-      }
-      logEnabled = value;
+      storage.session.setItem("log", value.toString());
+      logEnabledWritableFromConfig = false;
     }
   };
 
   if (parsedQueryString[logQueryParam] !== undefined) {
     setLogEnabled(stringToBoolean(parsedQueryString[logQueryParam]), {
-      persist: true,
-      highPriority: true
+      fromConfig: false
     });
   }
 
