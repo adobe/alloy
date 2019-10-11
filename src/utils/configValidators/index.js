@@ -18,6 +18,7 @@ import domainValidator from "./domain";
 import integerValidator from "./integer";
 import nonEmptyValidator from "./nonEmpty";
 import numberValidator from "./number";
+import regexpValidator from "./regexp";
 import requiredValidator from "./required";
 import stringValidator from "./string";
 import createExpected from "./createExpected";
@@ -30,6 +31,9 @@ const baseValidator = (...args) => requiredValidator(...args);
 
 const domain = function domain() {
   return chain(this, domainValidator);
+};
+const regexp = function regexp() {
+  return chain(this, regexpValidator);
 };
 const nonEmpty = function nonEmpty() {
   return chain(this, nonEmptyValidator);
@@ -52,7 +56,7 @@ const number = function number() {
   return chain(this, numberValidator, { minimum, integer, unique });
 };
 const string = function string() {
-  return chain(this, stringValidator, { domain, nonEmpty, unique });
+  return chain(this, stringValidator, { regexp, domain, nonEmpty, unique });
 };
 
 // Use this to change the message that is returned.  This is useful for complex validators

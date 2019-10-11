@@ -10,28 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, boolean } from "../../utils/configValidators";
+import regexp from "../../../../../src/utils/configValidators/regexp";
 
-export default () => {
-  return {
-    propertyId: {
-      validate: string().unique()
-    },
-    edgeDomain: {
-      defaultValue: "alpha.konductor.adobedc.net",
-      validate: string().domain()
-    },
-    imsOrgId: {
-      validate: string().unique()
-    },
-    clickCollectionEnabled: {
-      defaultValue: true,
-      validate: boolean()
-    },
-    downloadLinkQualifier: {
-      defaultValue:
-        "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$",
-      validate: string().regexp()
-    }
-  };
-};
+describe("configValidators::regexp", () => {
+  ["steel|bronze", "/a/", "/^[a-z0-9+]:///i"].forEach(value => {
+    it(`validates '${value}'`, () => {
+      expect(regexp("myKey", value, undefined)).toBe("");
+    });
+  });
+  ["[", "*"].forEach(value => {
+    it(`rejects ${value}`, () => {
+      expect(regexp("myKey", value, undefined)).toBeTruthy();
+    });
+  });
+});

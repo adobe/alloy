@@ -14,13 +14,38 @@ export default function Links() {
     <div>
       <h2>Links</h2>
       <p>
-        This page tests collecting events on link clicking. For example, this
-        link:{" "}
-        <a onClick={adobeLink} href="http://www.adobe.com">
-          Adobe
-        </a>{" "}
-        should trigger a sendBeacon call in browsers that support beacons
+        This page shows a few different ways link clicks can be handled in
+        Alloy.
       </p>
+      <p>
+        When clicking on this <a href="https://example.com">exit link</a>, Alloy
+        records and transmits an exit-link web interaction event.
+      </p>
+      <p>
+        When clicking on this{" "}
+        <a href="download.zip" target="_blank">
+          download link
+        </a>
+        , Alloy records and transmits a download-link web interaction event.
+      </p>
+      <p>
+        When clicking on this{" "}
+        <a onClick={adobeLink} href="http://www.adobe.com">
+          custom link
+        </a>
+        , Alloy is instructed to collect a custom event through a sendBeacon
+        call (in browsers that support beacons).
+      </p>
+      <p>
+        In addition when clicking on any of the internal links (e.g. navigation
+        menu), Alloy records and transmits a web interaction link (of type
+        other) click event.
+      </p>
+      <br />
+      <i>
+        <b>TIP:</b>&nbsp;&nbsp;You can view the source of this page to gain more
+        insight on how the different links work.
+      </i>
     </div>
   );
 }
