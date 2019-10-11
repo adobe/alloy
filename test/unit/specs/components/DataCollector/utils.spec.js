@@ -157,10 +157,7 @@ describe("DataCollector::utils", () => {
       });
     });
     it("Returns false if the link does not match the download link qualifying regular expression", () => {
-      const downloadLinks = [
-        "download.mod",
-        "http://example.com/download.png"
-      ];
+      const downloadLinks = ["download.mod", "http://example.com/download.png"];
       const downloadLinkQualifier = configValidators().downloadLinkQualifier
         .defaultValue;
       downloadLinks.forEach(downloadLink => {
@@ -191,10 +188,7 @@ describe("DataCollector::utils", () => {
           hostname: "adobe.com"
         }
       };
-      const clickedLinks = [
-        "https://adobe.com",
-        "http://adobe.com/index.html"
-      ];
+      const clickedLinks = ["https://adobe.com", "http://adobe.com/index.html"];
       clickedLinks.forEach(clickedLink => {
         expect(isExitLink(mockWindow, clickedLink)).toBe(false);
       });
