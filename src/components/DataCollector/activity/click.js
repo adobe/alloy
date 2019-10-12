@@ -42,9 +42,10 @@ const createClickHandler = (window, config, logger, collect) => {
     }
     if (linkUrl && isSupportedAnchorElement(clickedObj)) {
       const linkType = determineLinkType(window, config, linkUrl, clickedObj);
+      // TODO: Update link name from the clicked element context
       const linkName = "Link Click";
-      // TODO: Update name (link name) and support exit, other, and download link types
       collect({
+        documentUnloading: linkType === "exit",
         xdm: {
           eventType: "web.webinteraction.linkClicks",
           web: {

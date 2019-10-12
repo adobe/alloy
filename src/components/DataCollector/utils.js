@@ -56,7 +56,7 @@ const isDownloadLink = (downloadLinkQualifier, linkUrl, clickedObj) => {
 };
 
 const isExitLink = (window, linkUrl) => {
-  const currentHostname = window.location.hostname;
+  const currentHostname = window.location.hostname.toLowerCase();
   if (linkUrl.toLowerCase().indexOf(currentHostname) >= 0) {
     return false;
   }
