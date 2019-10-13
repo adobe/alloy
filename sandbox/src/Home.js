@@ -62,7 +62,7 @@ function HomeWithHistory({ history }) {
 
       <section>
         <div>
-          <h1>Alloy: Getting Started</h1>
+          <h1>Getting Started with Alloy</h1>
           <h3>Installation</h3>
           <p>
             The first step in implemented the Adobe Experience Platform SDK is
@@ -109,10 +109,8 @@ function HomeWithHistory({ history }) {
             creating a global function, also loads additional code contained{" "}
             <br />
             within an external file (alloy.js) hosted on a server. By default,
-            this code is loaded asynchronously
-            <br />
-            to allow your webpage to be as performant as possible. This is the
-            recommended implementation.
+            this code is loaded asynchronously to allow your webpage to be as
+            performant as possible. This is the recommended implementation.
           </p>
           <a
             href="https://launch.gitbook.io/adobe-experience-platform-web-sdk/"

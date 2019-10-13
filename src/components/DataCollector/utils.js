@@ -50,8 +50,23 @@ const isSupportedAnchorElement = element => {
   return false;
 };
 
+const isDownloadLink = (downloadLinkQualifier, linkUrl, clickedObj) => {
+  const re = new RegExp(downloadLinkQualifier);
+  return clickedObj.download ? true : re.test(linkUrl.toLowerCase());
+};
+
+const isExitLink = (window, linkUrl) => {
+  const currentHostname = window.location.hostname.toLowerCase();
+  if (linkUrl.toLowerCase().indexOf(currentHostname) >= 0) {
+    return false;
+  }
+  return true;
+};
+
 export {
   urlStartsWithScheme,
   getAbsoluteUrlFromAnchorElement,
-  isSupportedAnchorElement
+  isSupportedAnchorElement,
+  isDownloadLink,
+  isExitLink
 };

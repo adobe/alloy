@@ -30,9 +30,7 @@ export default function EventMerge() {
   return (
     <div>
       <h2>Event Merge</h2>
-      <h3>
-        This is the Event Merge view, part of the Single Page Application.
-      </h3>
+      <p>This is the Event Merge view, part of the Single Page Application.</p>
       <p>
         On this view, we are sending two events at different times, merged
         together using an event merge ID.

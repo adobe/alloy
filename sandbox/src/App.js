@@ -31,25 +31,22 @@ function BasicExample() {
             <Link to="/">Home</Link>
           </li>
           <li>
-            <Link to="/about">About Us</Link>
-          </li>
-          <li>
-            <Link to="/orgTwo">Organization Two</Link>
+            <Link to="/optIn">Opt-In</Link>
           </li>
           <li>
             <Link to="/links">Links</Link>
           </li>
           <li>
-            <Link to="/eventMerge">EventMerge</Link>
+            <Link to="/eventMerge">Event-Merge</Link>
           </li>
           <li>
-            <Link to="/optIn">OptIn</Link>
+            <Link to="/largePayload">Large Payload</Link>
           </li>
           <li>
-            <Link to="/largePayload">LargePayload</Link>
+            <Link to="/orgTwo">Multiple Orgs</Link>
           </li>
           <li>
-            <Link to="/DualTag">DualTag</Link>
+            <Link to="/DualTag">Dual Tag</Link>
           </li>
         </ul>
 

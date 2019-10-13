@@ -12,8 +12,12 @@ governing permissions and limitations under the License.
 import {
   urlStartsWithScheme,
   getAbsoluteUrlFromAnchorElement,
-  isSupportedAnchorElement
+  isSupportedAnchorElement,
+  isDownloadLink,
+  isExitLink
 } from "../../../../../src/components/DataCollector/utils";
+
+import configValidators from "../../../../../src/components/DataCollector/createConfigValidators";
 
 const initAnchorState = (window, element, anchorState) => {
   element.href = anchorState["element.href"];
@@ -128,6 +132,65 @@ describe("DataCollector::utils", () => {
       ];
       invalidAnchorElements.forEach(element => {
         expect(isSupportedAnchorElement(element)).toBe(false);
+      });
+    });
+  });
+  describe("isDownloadLink", () => {
+    it("Returns true if the clicked element has a download attribute", () => {
+      const clickedElement = {
+        download: "filename"
+      };
+      expect(isDownloadLink("", "", clickedElement)).toBe(true);
+    });
+    it("Returns true if the link matches the download link qualifying regular expression", () => {
+      const downloadLinks = [
+        "download.pdf",
+        "http://example.com/download.zip",
+        "https://example.com/download.docx"
+      ];
+      const downloadLinkQualifier = configValidators().downloadLinkQualifier
+        .defaultValue;
+      downloadLinks.forEach(downloadLink => {
+        expect(isDownloadLink(downloadLinkQualifier, downloadLink, {})).toBe(
+          true
+        );
+      });
+    });
+    it("Returns false if the link does not match the download link qualifying regular expression", () => {
+      const downloadLinks = ["download.mod", "http://example.com/download.png"];
+      const downloadLinkQualifier = configValidators().downloadLinkQualifier
+        .defaultValue;
+      downloadLinks.forEach(downloadLink => {
+        expect(isDownloadLink(downloadLinkQualifier, downloadLink, {})).toBe(
+          false
+        );
+      });
+    });
+  });
+  describe("isExitLink", () => {
+    it("Returns true if the link leads away from the current hostname", () => {
+      const mockWindow = {
+        location: {
+          hostname: "adobe.com"
+        }
+      };
+      const clickedLinks = [
+        "https://example.com",
+        "http://example.com/index.html"
+      ];
+      clickedLinks.forEach(clickedLink => {
+        expect(isExitLink(mockWindow, clickedLink)).toBe(true);
+      });
+    });
+    it("Returns false if the link leads to the current hostname", () => {
+      const mockWindow = {
+        location: {
+          hostname: "adobe.com"
+        }
+      };
+      const clickedLinks = ["https://adobe.com", "http://adobe.com/index.html"];
+      clickedLinks.forEach(clickedLink => {
+        expect(isExitLink(mockWindow, clickedLink)).toBe(false);
       });
     });
   });

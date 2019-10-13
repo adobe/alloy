@@ -3,11 +3,11 @@ import React from "react";
 export default function OrgTwo() {
   return (
     <div>
-      <h2>Organization Two</h2>
-      <h3>
+      <h2>Multiple Organizations</h2>
+      <p>
         This view is managed by a partnering company that owns a different Org
         ID.
-      </h3>
+      </p>
       <p>
         For that reason, we have created a second instance of Alloy, and
         configurered it using the Org and Property IDs of Organization Two.

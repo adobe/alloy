@@ -10,28 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, boolean } from "../../utils/configValidators";
+import createExpected from "./createExpected";
+import isValidRegExp from "../isValidRegExp";
 
-export default () => {
-  return {
-    propertyId: {
-      validate: string().unique()
-    },
-    edgeDomain: {
-      defaultValue: "alpha.konductor.adobedc.net",
-      validate: string().domain()
-    },
-    imsOrgId: {
-      validate: string().unique()
-    },
-    clickCollectionEnabled: {
-      defaultValue: true,
-      validate: boolean()
-    },
-    downloadLinkQualifier: {
-      defaultValue:
-        "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$",
-      validate: string().regexp()
-    }
-  };
+const expected = createExpected("a regular expression");
+
+export default (key, value) => {
+  return expected(isValidRegExp(value), key, value);
 };

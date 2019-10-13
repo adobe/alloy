@@ -12,10 +12,22 @@ governing permissions and limitations under the License.
 
 import {
   getAbsoluteUrlFromAnchorElement,
-  isSupportedAnchorElement
+  isSupportedAnchorElement,
+  isDownloadLink,
+  isExitLink
 } from "../utils";
 
-const createClickHandler = (window, logger, collect) => {
+const determineLinkType = (window, config, linkUrl, clickedObj) => {
+  let linkType = "other";
+  if (isDownloadLink(config.downloadLinkQualifier, linkUrl, clickedObj)) {
+    linkType = "download";
+  } else if (isExitLink(window, linkUrl)) {
+    linkType = "exit";
+  }
+  return linkType;
+};
+
+const createClickHandler = (window, config, logger, collect) => {
   return event => {
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
     let clickedObj = event.target;
@@ -29,14 +41,17 @@ const createClickHandler = (window, logger, collect) => {
       }
     }
     if (linkUrl && isSupportedAnchorElement(clickedObj)) {
-      // TODO: Update name (link name) and support exit, other, and download link types
+      const linkType = determineLinkType(window, config, linkUrl, clickedObj);
+      // TODO: Update link name from the clicked element context
+      const linkName = "Link Click";
       collect({
+        documentUnloading: linkType === "exit",
         xdm: {
           eventType: "web.webinteraction.linkClicks",
           web: {
             webinteraction: {
-              name: "Link Click",
-              type: "other",
+              name: linkName,
+              type: linkType,
               URL: linkUrl,
               linkClicks: {
                 value: 1
@@ -54,6 +69,6 @@ export default (config, logger, collect) => {
   if (!enabled) {
     return;
   }
-  const clickHandler = createClickHandler(window, logger, collect);
+  const clickHandler = createClickHandler(window, config, logger, collect);
   document.addEventListener("click", clickHandler, true);
 };

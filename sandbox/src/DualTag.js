@@ -15,10 +15,10 @@ export default function DualTag() {
     <div>
       {loadLaunch()}
       <h2>Dual Tagging</h2>
-      <h3>
+      <p>
         This page loads a launch library containing Analytics, ECID, DIL, and
         Target.
-      </h3>
+      </p>
       <p>
         This is for testing interactions between alloy and the legacy libraries.
         In particular we are looking for conflicts in personalization, ecid, and
