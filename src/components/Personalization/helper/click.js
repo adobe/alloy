@@ -10,21 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { uuid } from "../../../utils";
-import { awaitSelector } from "../../../utils/dom";
-import ALLOY_KEY from "../../../constants/clickCollectionAttribute";
-import { selectNodesWithEq, setAttribute } from "./dom";
-
 export default (settings, store) => {
   const { selector, meta } = settings;
 
-  return awaitSelector(selector, selectNodesWithEq).then(elements => {
-    const key = uuid();
-
-    store(key, meta);
-
-    elements.forEach(element => {
-      setAttribute(element, ALLOY_KEY, key);
-    });
-  });
+  store(selector, meta);
 };

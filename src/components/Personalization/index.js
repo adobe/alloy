@@ -39,14 +39,14 @@ const createCollect = collect => {
 };
 
 const createStore = storage => {
-  return (key, value) => {
-    storage[key] = value;
+  return (selector, meta) => {
+    storage.push({ selector, meta });
   };
 };
 
 const createPersonalization = ({ config, logger }) => {
   const { authoringModeEnabled, prehidingStyle } = config;
-  const storage = {};
+  const storage = [];
   let ruleComponentModules;
 
   return {

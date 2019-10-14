@@ -1,36 +1,18 @@
-import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
-import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import { noop } from "../../../../../../src/utils";
 
 describe("Personalization::actions::click", () => {
-  beforeEach(() => {
-    cleanUpDomChanges("click");
-  });
-
-  afterEach(() => {
-    cleanUpDomChanges("click");
-  });
-
   it("should set click tracking attribute", () => {
-    const collect = jasmine.createSpy();
+    const collect = noop();
     const store = jasmine.createSpy();
     const modules = initRuleComponentModules(collect, store);
     const { click } = modules;
-    const element = createNode("div", { id: "click" });
-    const elements = [element];
-
-    appendNode(document.body, element);
-
+    const selector = "#click";
     const meta = { a: 1 };
-    const settings = {
-      selector: "#click",
-      meta
-    };
+    const settings = { selector, meta };
 
-    return click(settings, store).then(() => {
-      const key = elements[0].getAttribute("data-alloy-key");
+    click(settings, store);
 
-      expect(store).toHaveBeenCalledWith(key, meta);
-    });
+    expect(store).toHaveBeenCalledWith(selector, meta);
   });
 });
