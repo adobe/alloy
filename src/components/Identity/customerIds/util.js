@@ -54,9 +54,12 @@ const normalizeCustomerIds = customerIds => {
       id,
       authenticatedState: includes(authStates, authenticatedState)
         ? authenticatedState // Set the auth state to the string value like `authenticated`.
-        : AUTH_STATES.AMBIGUOUS,
-      ...(primary !== undefined && { primary })
+        : AUTH_STATES.AMBIGUOUS
     };
+
+    if (primary !== undefined) {
+      normalizedIds[customerId].primary = primary;
+    }
 
     return normalizedIds;
   }, {});
