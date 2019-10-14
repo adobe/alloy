@@ -36,10 +36,9 @@ const createContext = ({ config, logger }) => {
       web,
       device,
       environment,
-      placeContext,
-      implementationDetails
+      placeContext
     },
-    [timestamp]
+    [timestamp, implementationDetails]
   );
 };
 
@@ -47,13 +46,7 @@ createContext.namespace = "Context";
 createContext.abbreviation = "CO";
 createContext.configValidators = {
   context: {
-    defaultValue: [
-      "web",
-      "device",
-      "environment",
-      "placeContext",
-      "implementationDetails"
-    ]
+    defaultValue: ["web", "device", "environment", "placeContext"]
   }
 };
 
