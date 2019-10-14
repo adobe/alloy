@@ -18,10 +18,9 @@ describe("buildAndValidateConfig", () => {
   let config;
   let createConfig;
   let coreConfigValidators;
-  let logCommand;
   let logger;
+  let setLogEnabled;
   let setErrorsEnabled;
-  let window;
 
   beforeEach(() => {
     options = {};
@@ -48,17 +47,12 @@ describe("buildAndValidateConfig", () => {
         defaultValue: true
       }
     };
-    logCommand = jasmine.createSpy();
     logger = {
       enabled: false,
       log: jasmine.createSpy()
     };
+    setLogEnabled = jasmine.createSpy();
     setErrorsEnabled = jasmine.createSpy();
-    window = {
-      location: {
-        search: ""
-      }
-    };
   });
 
   it("adds validators and validates options", () => {
@@ -67,10 +61,9 @@ describe("buildAndValidateConfig", () => {
       componentCreators,
       createConfig,
       coreConfigValidators,
-      logCommand,
       logger,
-      setErrorsEnabled,
-      window
+      setLogEnabled,
+      setErrorsEnabled
     });
     expect(createConfig).toHaveBeenCalledWith(options);
     expect(config.addValidators).toHaveBeenCalledWith(coreConfigValidators);
@@ -87,47 +80,25 @@ describe("buildAndValidateConfig", () => {
       componentCreators,
       createConfig,
       configValidators: coreConfigValidators,
-      logCommand,
       logger,
-      setErrorsEnabled,
-      window
+      setLogEnabled,
+      setErrorsEnabled
     });
     expect(setErrorsEnabled).toHaveBeenCalledWith(true);
   });
 
-  it("calls log command based on config", () => {
+  it("sets log enabled based on config", () => {
     config.logEnabled = true;
     buildAndValidateConfig({
       options,
       componentCreators,
       createConfig,
       configValidators: coreConfigValidators,
-      logCommand,
       logger,
-      setErrorsEnabled,
-      window
+      setLogEnabled,
+      setErrorsEnabled
     });
-    expect(logCommand).toHaveBeenCalledWith({
-      enabled: true
-    });
-  });
-
-  it("calls log command based on querystring (and takes priority over config)", () => {
-    config.logEnabled = false;
-    window.location.search = "?alloy_log=true";
-    buildAndValidateConfig({
-      options,
-      componentCreators,
-      createConfig,
-      configValidators: coreConfigValidators,
-      logCommand,
-      logger,
-      setErrorsEnabled,
-      window
-    });
-    expect(logCommand).toHaveBeenCalledWith({
-      enabled: true
-    });
+    expect(setLogEnabled).toHaveBeenCalledWith(true, { fromConfig: true });
   });
 
   it("logs and returns computed configuration", () => {
@@ -138,10 +109,9 @@ describe("buildAndValidateConfig", () => {
       componentCreators,
       createConfig,
       configValidators: coreConfigValidators,
-      logCommand,
       logger,
-      setErrorsEnabled,
-      window
+      setLogEnabled,
+      setErrorsEnabled
     });
     expect(logger.log).toHaveBeenCalledWith("Computed configuration:", {
       foo: "bar"
@@ -154,10 +124,9 @@ describe("buildAndValidateConfig", () => {
       componentCreators,
       createConfig,
       configValidators: coreConfigValidators,
-      logCommand,
       logger,
-      setErrorsEnabled,
-      window
+      setLogEnabled,
+      setErrorsEnabled
     });
     expect(result).toBe(config);
   });

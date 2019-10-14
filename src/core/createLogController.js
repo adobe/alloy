@@ -10,24 +10,51 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (instanceNamespace, createNamespacedStorage) => {
-  // Segregate whether logging is enabled by the SDK instance name.
-  // This way consumers can log one instance at a time.
-  // TODO: Figure out how this plays out with segregating Web Storage
-  // in the rest of the SDK. Is it segregated by Org ID or Property ID
-  // in the rest of the SDK?
+import { queryString, stringToBoolean } from "../utils";
+import logQueryParam from "../constants/logQueryParam";
+
+export default ({
+  console,
+  locationSearch,
+  createLogger,
+  instanceNamespace,
+  createNamespacedStorage
+}) => {
+  const loggerPrefix = `[${instanceNamespace}]`;
+  const parsedQueryString = queryString.parse(locationSearch);
   const storage = createNamespacedStorage(`instance.${instanceNamespace}.`);
 
-  let logEnabled = storage.persistent.getItem("log") === "true";
+  let logEnabled = storage.session.getItem("log") === "true";
+  let logEnabledWritableFromConfig = true;
+
+  const getLogEnabled = () => logEnabled;
+  const setLogEnabled = (value, { fromConfig }) => {
+    if (!fromConfig || logEnabledWritableFromConfig) {
+      logEnabled = value;
+    }
+
+    if (!fromConfig) {
+      // Web storage only allows strings, so we explicitly convert to string.
+      storage.session.setItem("log", value.toString());
+      logEnabledWritableFromConfig = false;
+    }
+  };
+
+  if (parsedQueryString[logQueryParam] !== undefined) {
+    setLogEnabled(stringToBoolean(parsedQueryString[logQueryParam]), {
+      fromConfig: false
+    });
+  }
 
   return {
-    get logEnabled() {
-      return logEnabled;
-    },
-    set logEnabled(value) {
-      // Web storage only allows strings, so we explicitly convert to string.
-      storage.persistent.setItem("log", value.toString());
-      logEnabled = value;
+    setLogEnabled,
+    logger: createLogger(console, getLogEnabled, loggerPrefix),
+    createComponentLogger(componentNamespace) {
+      return createLogger(
+        console,
+        getLogEnabled,
+        `${loggerPrefix} [${componentNamespace}]`
+      );
     }
   };
 };

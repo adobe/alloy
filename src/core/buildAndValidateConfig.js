@@ -10,18 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { queryString, stringToBoolean } from "../utils";
-import logQueryParam from "../constants/logQueryParam";
-
 export default ({
   options,
   componentCreators,
   createConfig,
   coreConfigValidators,
-  logCommand,
   logger,
-  setErrorsEnabled,
-  window
+  setLogEnabled,
+  setErrorsEnabled
 }) => {
   const config = createConfig(options);
   config.addValidators(coreConfigValidators);
@@ -31,14 +27,10 @@ export default ({
   });
   config.validate();
   setErrorsEnabled(config.errorsEnabled);
-  const parsedQueryString = queryString.parse(window.location.search);
-  logCommand({
-    enabled:
-      parsedQueryString[logQueryParam] !== undefined
-        ? stringToBoolean(parsedQueryString[logQueryParam])
-        : config.logEnabled
-  });
+  setLogEnabled(config.logEnabled, { fromConfig: true });
   // toJson is expensive so we short circuit if logging is disabled
-  if (logger.enabled) logger.log("Computed configuration:", config.toJSON());
+  if (logger.enabled) {
+    logger.log("Computed configuration:", config.toJSON());
+  }
   return config;
 };

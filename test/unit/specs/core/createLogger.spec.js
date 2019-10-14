@@ -14,50 +14,32 @@ import createLogger from "../../../../src/core/createLogger";
 
 const logMethods = ["log", "info", "warn", "error"];
 const prefix = "testprefix";
-const spawnPrefix = "testspawnprefix";
 const message = "test message";
 
 describe("createLogger", () => {
   let console;
-  let logController;
+  let logEnabled = false;
   let logger;
 
   beforeEach(() => {
     console = jasmine.createSpyObj("console", logMethods);
-    logController = {};
-    logger = createLogger(console, logController, prefix);
+    const getLogEnabled = () => logEnabled;
+    logger = createLogger(console, getLogEnabled, prefix);
   });
 
-  const testLogMethods = expectedPrefix => {
-    logMethods.forEach(logMethod => {
-      it(`logs message if debugging is enabled and ${logMethod} is called`, () => {
-        logController.logEnabled = true;
-        logger[logMethod](message);
+  logMethods.forEach(logMethod => {
+    it(`logs message if debugging is enabled and ${logMethod} is called`, () => {
+      logEnabled = true;
+      logger[logMethod](message);
 
-        expect(console[logMethod]).toHaveBeenCalledWith(
-          expectedPrefix,
-          message
-        );
-      });
-
-      it(`does not log a message if debugging is disabled and ${logMethod} is called`, () => {
-        logController.logEnabled = false;
-        logger[logMethod](message);
-
-        expect(console[logMethod]).not.toHaveBeenCalled();
-      });
-    });
-  };
-
-  describe("with top-level logger", () => {
-    testLogMethods(prefix);
-  });
-
-  describe("with spawned logger", () => {
-    beforeEach(() => {
-      logger = logger.spawn(spawnPrefix);
+      expect(console[logMethod]).toHaveBeenCalledWith(prefix, message);
     });
 
-    testLogMethods(`${prefix} ${spawnPrefix}`);
+    it(`does not log a message if debugging is disabled and ${logMethod} is called`, () => {
+      logEnabled = false;
+      logger[logMethod](message);
+
+      expect(console[logMethod]).not.toHaveBeenCalled();
+    });
   });
 });

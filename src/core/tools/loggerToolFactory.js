@@ -13,6 +13,6 @@ governing permissions and limitations under the License.
 /**
  * Tool-specific dependencies => config => componentCreator => result
  */
-export default logger => () => componentCreator => {
-  return logger.spawn(`[${componentCreator.namespace}]`);
+export default createComponentLogger => () => componentCreator => {
+  return createComponentLogger(componentCreator.namespace);
 };
