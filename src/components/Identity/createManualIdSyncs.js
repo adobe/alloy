@@ -10,7 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isObject, isInteger, isNonEmptyString, find } from "../../utils";
+import {
+  isObject,
+  isInteger,
+  isNonEmptyString,
+  isBoolean,
+  find
+} from "../../utils";
 
 const createSyncIdsByUrl = idSyncsProcessor => data => {
   const { idSyncs = [] } = data;
@@ -20,7 +26,7 @@ const createSyncIdsByUrl = idSyncsProcessor => data => {
     isInteger(idSync.id) &&
     isObject(idSync.spec) &&
     isNonEmptyString(idSync.spec.url) &&
-    typeof idSync.spec.hideReferrer === "boolean" &&
+    isBoolean(idSync.spec.hideReferrer) &&
     (idSync.spec.ttlMinutes === undefined || isInteger(idSync.spec.ttlMinutes));
 
   const invalidIdSync = find(idSyncs, idSync => !isIdSyncValid(idSync));
