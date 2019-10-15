@@ -15,7 +15,6 @@ import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
 import { string, boolean } from "../../utils/configValidators";
 
-const ABBREVIATION = "PE";
 const DECISIONS_HANDLE = "personalization:decisions";
 const EVENT_COMMAND = "event";
 
@@ -95,7 +94,7 @@ const createPersonalization = ({ config, logger }) => {
 };
 
 createPersonalization.namespace = "Personalization";
-createPersonalization.abbreviation = ABBREVIATION;
+createPersonalization.abbreviation = "PE";
 
 createPersonalization.configValidators = {
   prehidingStyle: {
