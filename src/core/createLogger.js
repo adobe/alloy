@@ -43,9 +43,5 @@ export default (console, getLogEnabled, prefix) => {
      * @param {...*} arg Any argument to be logged.
      */
     error: process.bind(null, "error")
-    /**
-     * Creates a new logger with an additional prefix.
-     * @param {String} additionalPrefix
-     */
   };
 };
