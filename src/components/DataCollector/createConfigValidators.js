@@ -18,7 +18,7 @@ export default () => {
       validate: string().unique()
     },
     edgeDomain: {
-      defaultValue: "alpha.konductor.adobedc.net",
+      defaultValue: "beta.adobedc.net",
       validate: string().domain()
     },
     imsOrgId: {
