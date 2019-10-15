@@ -37,6 +37,14 @@ const createCollect = collect => {
     });
 };
 
+const createStore = () => {
+  const storage = [];
+
+  return (selector, meta) => {
+    storage.push({ selector, meta });
+  };
+};
+
 const createPersonalization = ({ config, logger }) => {
   const { authoringModeEnabled, prehidingStyle } = config;
   let ruleComponentModules;
@@ -45,8 +53,10 @@ const createPersonalization = ({ config, logger }) => {
     lifecycle: {
       onComponentsRegistered(tools) {
         const { componentRegistry } = tools;
-        const collect = componentRegistry.getCommand(EVENT_COMMAND);
-        ruleComponentModules = initRuleComponentModules(createCollect(collect));
+        const event = componentRegistry.getCommand(EVENT_COMMAND);
+        const collect = createCollect(event);
+        const store = createStore();
+        ruleComponentModules = initRuleComponentModules(collect, store);
       },
       onBeforeEvent({ event, isViewStart }) {
         if (authoringModeEnabled) {
