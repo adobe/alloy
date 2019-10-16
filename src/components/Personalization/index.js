@@ -13,10 +13,13 @@ governing permissions and limitations under the License.
 import { isNonEmptyArray } from "../../utils";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
-import { string, boolean } from "../../utils/configValidators";
+import { string } from "../../utils/configValidators";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 const EVENT_COMMAND = "event";
+
+// This is used for Target VEC integration
+const isAuthoringMode = () => document.location.href.indexOf("mboxEdit") !== -1;
 
 const executeFragments = (fragments, modules, logger) => {
   fragments.forEach(fragment => {
@@ -46,7 +49,8 @@ const createStore = () => {
 };
 
 const createPersonalization = ({ config, logger }) => {
-  const { authoringModeEnabled, prehidingStyle } = config;
+  const { prehidingStyle } = config;
+  const authoringModeEnabled = isAuthoringMode();
   let ruleComponentModules;
 
   return {
@@ -100,10 +104,6 @@ createPersonalization.configValidators = {
   prehidingStyle: {
     defaultValue: undefined,
     validate: string().nonEmpty()
-  },
-  authoringModeEnabled: {
-    defaultValue: false,
-    validate: boolean()
   }
 };
 
