@@ -20,7 +20,8 @@ export default () => {
     addIdentity: (namespaceCode, identity) => {
       content.xdm = content.xdm || {};
       content.xdm.identityMap = content.xdm.identityMap || {};
-      content.xdm.identityMap[namespaceCode] = content.xdm.identityMap[namespaceCode] || [];
+      content.xdm.identityMap[namespaceCode] =
+        content.xdm.identityMap[namespaceCode] || [];
       content.xdm.identityMap[namespaceCode].push(identity);
     },
     addEvent(event) {

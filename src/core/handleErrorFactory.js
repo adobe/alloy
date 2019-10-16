@@ -12,9 +12,12 @@ governing permissions and limitations under the License.
 
 import { toError } from "../utils";
 
+const suppressionNote =
+  "Note: Errors can be suppressed via the errorsEnabled configuration option.";
+
 export default ({ instanceNamespace, getErrorsEnabled, logger }) => error => {
   const err = toError(error);
-  err.message = `[${instanceNamespace}] ${err.message}`;
+  err.message = `[${instanceNamespace}] ${err.message}\n${suppressionNote}`;
   if (getErrorsEnabled()) {
     throw err;
   } else {
