@@ -28,6 +28,9 @@ export default (idSyncs, manualIdSyncs, cookieJar, config, logger, network) => {
     let ecid = cookieJar.get(EXPERIENCE_CLOUD_ID);
     if (!ecid && migrateIds) {
       ecid = migration(imsOrgId).readEcidFromAmcvCookie();
+      if (ecid) {
+        cookieJar.set(EXPERIENCE_CLOUD_ID, ecid);
+      }
     }
     return ecid;
   };

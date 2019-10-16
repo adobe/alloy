@@ -34,7 +34,9 @@ const createSyncIdsByUrl = idSyncsProcessor => data => {
   if (invalidIdSync) {
     return Promise.reject(
       new Error(
-        `An invalid ID sync with the ID of ${invalidIdSync.id} was passed to syncIdsByUrl.`
+        `An invalid ID sync with the ID of ${
+          invalidIdSync.id
+        } was passed to syncIdsByUrl.`
       )
     );
   }
