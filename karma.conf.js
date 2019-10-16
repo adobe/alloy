@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 const puppeteer = require("puppeteer");
 const rollupConfig = require("./rollup.test.config");
 
-process.env.CHROME_BIN = puppeteer.executablePath();
+process.env.CHROME_BIN || 9876 = puppeteer.executablePath();
 
 module.exports = config => {
   config.set({
@@ -61,7 +61,7 @@ module.exports = config => {
     },
 
     // web server port
-    port: 9876,
+//     port: 9876,
 
     // enable / disable colors in the output (reporters and logs)
     colors: true,
