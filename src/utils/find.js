@@ -18,7 +18,7 @@ governing permissions and limitations under the License.
  * @returns {*}
  */
 export default (arr, predicate) => {
-  for (let i = 0; i < arr.length; i += 1) {
+  for (let i = 0; i < arr.length; i++) {      // i++ will execute faster than i+=1
     const item = arr[i];
     if (predicate(item, i, arr)) {
       return item;
