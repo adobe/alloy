@@ -14,7 +14,6 @@ const addIdsContext = (payload, ecid) => {
 export default (idSyncs, manualIdSyncs, cookieJar, config, logger, network) => {
   let optIn;
   let deferredForEcid;
-  let network;
   let lifecycle;
   let customerIds;
   let alreadyQueriedForIdSyncs = false;
