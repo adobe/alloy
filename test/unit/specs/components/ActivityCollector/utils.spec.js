@@ -15,9 +15,9 @@ import {
   isSupportedAnchorElement,
   isDownloadLink,
   isExitLink
-} from "../../../../../src/components/DataCollector/utils";
+} from "../../../../../src/components/ActivityCollector/utils";
 
-import configValidators from "../../../../../src/components/DataCollector/createConfigValidators";
+import configValidators from "../../../../../src/components/ActivityCollector/createConfigValidators";
 
 const initAnchorState = (window, element, anchorState) => {
   element.href = anchorState["element.href"];

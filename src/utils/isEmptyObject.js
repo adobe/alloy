@@ -10,19 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "../../utils/configValidators";
+import isObject from "./isObject";
 
-export default () => {
-  return {
-    propertyId: {
-      validate: string().unique()
-    },
-    edgeDomain: {
-      defaultValue: "alpha.konductor.adobedc.net",
-      validate: string().domain()
-    },
-    imsOrgId: {
-      validate: string().unique()
-    }
-  };
-};
+/**
+ * Returns whether the value is an empty object.
+ * @param {*} value
+ * @returns {boolean}
+ */
+export default value => isObject(value) && Object.keys(value).length === 0;

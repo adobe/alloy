@@ -14,9 +14,7 @@ import createEvent from "./createEvent";
 import createConfigValidators from "./createConfigValidators";
 import { clone } from "../../utils";
 
-import createClickActivityCollector from "./activity/click";
-
-const createDataCollector = ({ config, logger, network }) => {
+const createDataCollector = ({ config, network }) => {
   const { imsOrgId } = config;
   let lifecycle;
   let optIn;
@@ -52,9 +50,10 @@ const createDataCollector = ({ config, logger, network }) => {
       });
   };
 
-  const createEventHandler = options => {
-    const event = createEvent();
-    const { viewStart = false, documentUnloading = false, xdm, data } = options;
+  const createEventHandler = (options, event = createEvent()) => {
+    const { viewStart = false, xdm, data } = options;
+    const documentUnloading =
+      options.documentUnloading || event.isDocumentUnloading();
 
     return lifecycle
       .onBeforeEvent({
@@ -74,8 +73,6 @@ const createDataCollector = ({ config, logger, network }) => {
       })
       .then(() => makeServerCall(event, documentUnloading));
   };
-
-  createClickActivityCollector(config, logger, createEventHandler);
 
   return {
     lifecycle: {
