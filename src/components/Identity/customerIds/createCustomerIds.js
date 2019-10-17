@@ -82,7 +82,7 @@ export default (cookieJar, lifecycle, network, optIn) => {
 
       return hash(originalIds, normalizedIds).then(hashedIds => {
         setState(customerIdChanged, hashedIds);
-        lifecycle
+        return lifecycle
           .onBeforeEvent({
             event,
             options: {},

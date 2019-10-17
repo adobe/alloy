@@ -27,21 +27,20 @@ describe("Identity::createCustomerIds", () => {
       set: jasmine.createSpy()
     };
     lifecycle = {
-      onBeforeEvent: jasmine
-        .createSpy()
-        .and.returnValue(() => Promise.resolve()),
+      onBeforeEvent: jasmine.createSpy().and.returnValue(Promise.resolve()),
       onBeforeDataCollection: jasmine
         .createSpy()
-        .and.returnValue(() => Promise.resolve())
+        .and.returnValue(Promise.resolve())
     };
     payload = {
       addEvent: jasmine.createSpy(),
       addIdentity: jasmine.createSpy(),
-      mergeMeta: jasmine.createSpy()
+      mergeMeta: jasmine.createSpy(),
+      expectsResponse: false
     };
     network = {
       createPayload: jasmine.createSpy().and.returnValue(payload),
-      sendRequest: () => Promise.resolve({})
+      sendRequest: jasmine.createSpy().and.returnValue(Promise.resolve({}))
     };
     optIn = {
       whenOptedIn: () => Promise.resolve()
@@ -83,10 +82,18 @@ describe("Identity::createCustomerIds", () => {
         network,
         optIn
       );
-      const test = customerIds.sync(idsWithHash);
-      test.then(() => {
-        expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith();
-        expect(lifecycle.onBeforeDataCollection).toHaveBeenCalledWith(payload);
+      return customerIds.sync(idsWithHash).then(() => {
+        // Normally we would test that the event passed to onBeforeEvent
+        // was the event created by createEvent(), but createEvent() is
+        // imported directly from the DataCollector component so we can't
+        // mock it. This should probably all change once Konductor opens
+        // up an endpoint specific to setting customer IDs.
+        expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith(
+          jasmine.any(Object)
+        );
+        expect(lifecycle.onBeforeDataCollection).toHaveBeenCalledWith({
+          payload
+        });
       });
     });
     it("should create a network payload and trigger sendRequest", () => {
@@ -96,10 +103,8 @@ describe("Identity::createCustomerIds", () => {
         network,
         optIn
       );
-      const test = customerIds.sync(idsWithHash);
-      expect(network.createPayload).toHaveBeenCalled();
-      test.then(() => {
-        expect(network.sendRequest).toHaveBeenCalled();
+      return customerIds.sync(idsWithHash).then(() => {
+        expect(network.sendRequest).toHaveBeenCalledWith(payload, false);
       });
     });
   });
@@ -111,19 +116,18 @@ describe("Identity::createCustomerIds", () => {
         network,
         optIn
       );
-      const test = customerIds.sync(idsWithHash);
-      test.then(() => {
+      return customerIds.sync(idsWithHash).then(() => {
         customerIds.addToPayload(payload);
 
         expect(payload.addIdentity.calls.count()).toBe(2);
         expect(payload.addIdentity).toHaveBeenCalledWith("Email_LC_SHA256", {
           id:
             "81d1a7135b9722577fb4f094a2004296d6230512d37b68e64b73f050b919f7c4",
-          authState: "ambiguous"
+          authenticatedState: "ambiguous"
         });
         expect(payload.addIdentity).toHaveBeenCalledWith("crm", {
           id: "1234",
-          authState: "ambiguous"
+          authenticatedState: "ambiguous"
         });
         expect(payload.mergeMeta).toHaveBeenCalledWith({
           identity: { customerIdChanged: true }
@@ -139,8 +143,7 @@ describe("Identity::createCustomerIds", () => {
         network,
         optIn
       );
-      const test = customerIds.sync(idsWithHash);
-      test.then(() => {
+      return customerIds.sync(idsWithHash).then(() => {
         customerIds.addToPayload(payload);
         expect(payload.mergeMeta).toHaveBeenCalledWith({
           identity: { customerIdChanged: false }
