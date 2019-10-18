@@ -27,35 +27,34 @@ const determineLinkType = (window, config, linkUrl, clickedObj) => {
   return linkType;
 };
 
-export default (window, config, clickedObject) => {
-  let linkName;
-  let linkType;
-  let clickedObj = clickedObject;
-  let linkUrl = getAbsoluteUrlFromAnchorElement(window, clickedObj);
-  let isValidLink = false;
-  // Search parent elements for an anchor element
-  // TODO: Replace with generic DOM tool that can fetch configured properties
-  while (clickedObj && clickedObj !== document.body && !linkUrl) {
-    clickedObj = clickedObj.parentElement || clickedObj.parentNode;
-    if (clickedObj) {
-      linkUrl = getAbsoluteUrlFromAnchorElement(window, clickedObj);
+export default (window, config) => {
+  return (event, targetObject) => {
+    let linkName;
+    let linkType;
+    let clickedObject = targetObject;
+    let linkUrl;
+    let isValidLink = false;
+    // Search parent elements for an anchor element
+    // TODO: Replace with generic DOM tool that can fetch configured properties
+    do {
+      linkUrl = getAbsoluteUrlFromAnchorElement(window, clickedObject);
+      if (!linkUrl) {
+        clickedObject = clickedObject.parentNode;
+      }
+    } while (!linkUrl && clickedObject);
+    if (linkUrl && isSupportedAnchorElement(clickedObject)) {
+      isValidLink = true;
+      linkType = determineLinkType(window, config, linkUrl, clickedObject);
+      // TODO: Update link name from the clicked element context
+      linkName = "Link Click";
     }
-  }
-  if (linkUrl && isSupportedAnchorElement(clickedObj)) {
-    isValidLink = true;
-    linkType = determineLinkType(window, config, linkUrl, clickedObj);
-    // TODO: Update link name from the clicked element context
-    linkName = "Link Click";
-  }
-  return {
-    isValid() {
-      return isValidLink;
-    },
-    populateEvent(event) {
+
+    if (isValidLink) {
       if (linkType === "exit") {
         event.documentUnloading();
       }
       event.mergeXdm({
+        eventType: "web.webinteraction.linkClicks",
         web: {
           webinteraction: {
             name: linkName,

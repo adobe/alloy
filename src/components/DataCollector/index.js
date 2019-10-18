@@ -19,7 +19,7 @@ const createDataCollector = ({ config, network }) => {
   let lifecycle;
   let optIn;
 
-  const makeServerCall = (event, documentUnloading) => {
+  const makeServerCall = event => {
     const payload = network.createPayload();
     payload.addEvent(event);
     payload.mergeMeta({
@@ -34,7 +34,7 @@ const createDataCollector = ({ config, network }) => {
         return network.sendRequest(
           payload,
           payload.expectsResponse,
-          documentUnloading
+          event.isDocumentUnloading()
         );
       })
       .then(response => {
@@ -51,16 +51,16 @@ const createDataCollector = ({ config, network }) => {
   };
 
   const createEventHandler = (options, event = createEvent()) => {
-    const { viewStart = false, xdm, data } = options;
-    const documentUnloading =
-      options.documentUnloading || event.isDocumentUnloading();
+    const { viewStart = false, xdm, data, documentUnloading } = options;
+    if (documentUnloading) {
+      event.documentUnloading();
+    }
 
     return lifecycle
       .onBeforeEvent({
         event,
         options,
-        isViewStart: viewStart,
-        isDocumentUnloading: documentUnloading
+        isViewStart: viewStart
       })
       .then(() => {
         // We merge the user's data after onBeforeEvent so that
@@ -71,7 +71,7 @@ const createDataCollector = ({ config, network }) => {
         event.data = data;
         return optIn.whenOptedIn();
       })
-      .then(() => makeServerCall(event, documentUnloading));
+      .then(() => makeServerCall(event));
   };
 
   return {

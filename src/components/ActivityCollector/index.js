@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createClickActivityCollector from "./createClickActivityCollector";
+import attachClickActivityCollector from "./attachClickActivityCollector";
 import createConfigValidators from "./createConfigValidators";
 import createLinkClick from "./createLinkClick";
 
@@ -22,14 +22,12 @@ const createActivityCollector = ({ config }) => {
       onComponentsRegistered(tools) {
         const { lifecycle, componentRegistry } = tools;
         const collect = componentRegistry.getCommand(EVENT_COMMAND);
-        createClickActivityCollector(config, collect, lifecycle);
+        attachClickActivityCollector(config, collect, lifecycle);
         // TODO: createScrollActivityCollector ...
       },
-      onClick(event, clickedObject) {
-        const linkClick = createLinkClick(window, config, clickedObject);
-        if (linkClick.isValid()) {
-          linkClick.populateEvent(event);
-        }
+      onClick({ event, clickedObject }) {
+        const linkClick = createLinkClick(window, config);
+        linkClick(event, clickedObject);
       }
     }
   };

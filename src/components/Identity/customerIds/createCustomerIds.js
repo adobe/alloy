@@ -86,8 +86,7 @@ export default (cookieJar, lifecycle, network, optIn) => {
           .onBeforeEvent({
             event,
             options: {},
-            isViewStart: false,
-            documentUnloading: false
+            isViewStart: false
           }) // FIXME: We shouldn't need an event.
           .then(() => optIn.whenOptedIn())
           .then(() => makeServerCall(payload));
