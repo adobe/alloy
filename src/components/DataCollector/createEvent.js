@@ -12,10 +12,12 @@ governing permissions and limitations under the License.
 
 // TODO move this dependency to utils
 import { createMerger } from "../../utils";
+import isEmptyObject from "../../utils/isEmptyObject";
 
 export default () => {
   const content = {};
   let expectsResponse = false;
+  let documentUnloading = false;
 
   return {
     set data(data) {
@@ -24,11 +26,20 @@ export default () => {
     mergeXdm: createMerger(content, "xdm"),
     mergeMeta: createMerger(content, "meta"),
     mergeQuery: createMerger(content, "query"),
+    documentUnloading() {
+      documentUnloading = true;
+    },
+    isDocumentUnloading() {
+      return documentUnloading;
+    },
     expectResponse() {
       expectsResponse = true;
     },
     get expectsResponse() {
       return expectsResponse;
+    },
+    isEmpty() {
+      return isEmptyObject(content);
     },
     toJSON() {
       return content;

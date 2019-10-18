@@ -10,19 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "../../utils/configValidators";
+import { string, boolean } from "../../utils/configValidators";
 
 export default () => {
   return {
-    propertyId: {
-      validate: string().unique()
+    clickCollectionEnabled: {
+      defaultValue: true,
+      validate: boolean()
     },
-    edgeDomain: {
-      defaultValue: "beta.adobedc.net",
-      validate: string().domain()
-    },
-    imsOrgId: {
-      validate: string().unique()
+    downloadLinkQualifier: {
+      defaultValue:
+        "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$",
+      validate: string().regexp()
     }
   };
 };

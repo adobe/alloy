@@ -14,14 +14,12 @@ import createEvent from "./createEvent";
 import createConfigValidators from "./createConfigValidators";
 import { clone } from "../../utils";
 
-import createClickActivityCollector from "./activity/click";
-
-const createDataCollector = ({ config, logger, network }) => {
+const createDataCollector = ({ config, network }) => {
   const { imsOrgId } = config;
   let lifecycle;
   let optIn;
 
-  const makeServerCall = (event, documentUnloading) => {
+  const makeServerCall = event => {
     const payload = network.createPayload();
     payload.addEvent(event);
     payload.mergeMeta({
@@ -36,7 +34,7 @@ const createDataCollector = ({ config, logger, network }) => {
         return network.sendRequest(
           payload,
           payload.expectsResponse,
-          documentUnloading
+          event.isDocumentUnloading()
         );
       })
       .then(response => {
@@ -52,16 +50,17 @@ const createDataCollector = ({ config, logger, network }) => {
       });
   };
 
-  const createEventHandler = options => {
-    const event = createEvent();
-    const { viewStart = false, documentUnloading = false, xdm, data } = options;
+  const createEventHandler = (options, event = createEvent()) => {
+    const { viewStart = false, xdm, data, documentUnloading } = options;
+    if (documentUnloading) {
+      event.documentUnloading();
+    }
 
     return lifecycle
       .onBeforeEvent({
         event,
         options,
-        isViewStart: viewStart,
-        isDocumentUnloading: documentUnloading
+        isViewStart: viewStart
       })
       .then(() => {
         // We merge the user's data after onBeforeEvent so that
@@ -72,10 +71,8 @@ const createDataCollector = ({ config, logger, network }) => {
         event.data = data;
         return optIn.whenOptedIn();
       })
-      .then(() => makeServerCall(event, documentUnloading));
+      .then(() => makeServerCall(event));
   };
-
-  createClickActivityCollector(config, logger, createEventHandler);
 
   return {
     lifecycle: {

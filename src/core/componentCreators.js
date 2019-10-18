@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createDataCollector from "../components/DataCollector";
+import createActivityCollector from "../components/ActivityCollector";
 import createIdentity from "../components/Identity";
 import createAudiences from "../components/Audiences";
 import createPersonalization from "../components/Personalization";
@@ -23,6 +24,7 @@ import createLibraryInfo from "../components/LibraryInfo";
 // TODO: Figure out how sub-components will be made available/registered
 export default [
   createDataCollector,
+  createActivityCollector,
   createIdentity,
   createAudiences,
   createPersonalization,

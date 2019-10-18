@@ -16,7 +16,8 @@ const hookNames = [
   "onBeforeEvent",
   "onResponse",
   "onResponseError",
-  "onBeforeDataCollection"
+  "onBeforeDataCollection",
+  "onClick"
 ];
 
 const createHook = (componentRegistry, hookName) => {
