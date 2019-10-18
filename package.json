@@ -4,10 +4,8 @@
   "description": "Client-Side SDK for Unified Data Collection",
   "main": "src/core/main.js",
   "scripts": {
-    "prepush-msg": "echo 'Running pre-push scripts...' && exit 0",
-    "precommit-msg": "echo 'Running pre-commit scripts...' && exit 0",
     "clean": "rimraf dist",
-    "lint": "eslint \"*.js\" \"src/**/*.js\" \"test/**/*.js\"",
+    "lint": "eslint --fix \"*.js\" \"{src,test}/**/*.js\"",
     "format": "prettier --write \"*.{html,js}\" \"{sandbox,src,test}/**/*.{html,js}\"",
     "test": "karma start --single-run",
     "test:report": "karma start --single-run --reporters allure",
@@ -37,21 +35,36 @@
     "checkbundlesize": "npm run build:prod:standalone:minified && bundlesize",
     "mockserver": "mockserver -serverPort 1080 -jvmOptions \"-Dmockserver.enableCORSForAllResponses=true\""
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "echo 'Running pre-commit scripts...' && lint-staged",
+      "pre-push": "echo 'Running pre-push scripts...' && npm run test"
+    }
+  },
+  "lint-staged": {
+    "./*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "./{src,test}/**/*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "./*.{html,js}": [
+      "prettier --write",
+      "git add"
+    ],
+    "./{sandbox,src,test}/**/*.{html,js}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git@git.corp.adobe.com:Activation/a-tag.git"
   },
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
-  "pre-commit": [
-    "precommit-msg",
-    "format",
-    "lint"
-  ],
-  "pre-push": [
-    "prepush-msg",
-    "test"
-  ],
   "bundlesize": [
     {
       "path": "./dist/standalone/alloy.min.js"
@@ -85,6 +98,7 @@
     "eslint-plugin-testcafe": "^0.2.1",
     "glob": "^7.1.3",
     "http-server": "^0.11.1",
+    "husky": "^3.0.9",
     "istanbul-instrumenter-loader": "^3.0.1",
     "jasmine-core": "^3.4.0",
     "karma": "^4.0.0",
@@ -97,9 +111,8 @@
     "karma-rollup-preprocessor": "^7.0.0",
     "karma-sauce-launcher": "^2.0.2",
     "karma-spec-reporter": "0.0.32",
+    "lint-staged": "^9.4.2",
     "npm-run-all": "^4.1.5",
-    "pre-commit": "^1.2.2",
-    "pre-push": "^0.1.1",
     "prettier": "^1.16.4",
     "promise-polyfill": "^8.1.0",
     "puppeteer": "^1.16.0",
