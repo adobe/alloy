@@ -56,7 +56,6 @@ export default (window, config, clickedObject) => {
         event.documentUnloading();
       }
       event.mergeXdm({
-        eventType: "web.webinteraction.linkClicks",
         web: {
           webinteraction: {
             name: linkName,
