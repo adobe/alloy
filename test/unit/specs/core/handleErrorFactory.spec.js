@@ -12,6 +12,10 @@ governing permissions and limitations under the License.
 
 import handleErrorFactory from "../../../../src/core/handleErrorFactory";
 
+const expectedMessageWithoutSuppressionNote =
+  "[testinstanceNamespace] Bad thing happened.";
+const expectedMessageWithSuppressionNote = `${expectedMessageWithoutSuppressionNote}\nNote: Errors can be suppressed by setting the errorsEnabled configuration option to false.`;
+
 describe("handleErrorFactory", () => {
   it("converts non-error to error and throws", () => {
     const handleError = handleErrorFactory({
@@ -23,7 +27,7 @@ describe("handleErrorFactory", () => {
 
     expect(() => {
       handleError("Bad thing happened.");
-    }).toThrowError("[testinstanceNamespace] Bad thing happened.");
+    }).toThrowError(expectedMessageWithSuppressionNote);
   });
 
   it("rethrows error with instanceNamespace prepended", () => {
@@ -36,7 +40,7 @@ describe("handleErrorFactory", () => {
 
     expect(() => {
       handleError(new Error("Bad thing happened."));
-    }).toThrowError("[testinstanceNamespace] Bad thing happened.");
+    }).toThrowError(expectedMessageWithSuppressionNote);
   });
 
   it("logs error instead of throwing if errors are not enabled", () => {
@@ -51,6 +55,7 @@ describe("handleErrorFactory", () => {
 
     const error = new Error("Bad thing happened.");
     handleError(error);
-    expect(logger.error).toHaveBeenCalledWith(error);
+    const loggedError = logger.error.calls.argsFor(0)[0];
+    expect(loggedError.message).toBe(expectedMessageWithoutSuppressionNote);
   });
 });
