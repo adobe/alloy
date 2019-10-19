@@ -15,9 +15,9 @@ import createEvent from "../DataCollector/createEvent";
 const createClickHandler = (collect, lifecycle) => {
   return clickEvent => {
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
-    const clickedObj = clickEvent.target;
+    const clickedObject = clickEvent.target;
     const event = createEvent();
-    lifecycle.onClick(event, clickedObj).then(() => {
+    lifecycle.onClick({ event, clickedObject }).then(() => {
       if (!event.isEmpty()) {
         collect({}, event);
       }
