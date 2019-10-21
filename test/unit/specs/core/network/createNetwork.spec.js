@@ -27,7 +27,7 @@ describe("createNetwork", () => {
   let networkStrategy;
 
   beforeEach(() => {
-    logger = jasmine.createSpyObj(logger, ["log"]);
+    logger = jasmine.createSpyObj("logger", ["log"]);
     logger.enabled = true;
     lifecycle = {
       onBeforeSend: jasmine.createSpy().and.returnValue(Promise.resolve()),
