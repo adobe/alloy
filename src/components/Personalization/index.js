@@ -35,7 +35,7 @@ const createCollect = collect => {
   return payload =>
     collect({
       meta: {
-        personalization: Object.assign({}, payload)
+        personalization: { ...payload }
       }
     });
 };
