@@ -14,7 +14,7 @@ import { string } from "../../utils/configValidators";
 
 export default () => {
   return {
-    propertyId: {
+    configId: {
       validate: string().unique()
     },
     edgeDomain: {

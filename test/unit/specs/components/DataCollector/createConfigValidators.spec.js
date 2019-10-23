@@ -14,23 +14,23 @@ import createConfig from "../../../../../src/core/createConfig";
 
 describe("DataCollector::createConfigValidators", () => {
   [
-    { propertyId: "", imsOrgId: "" },
+    { configId: "", imsOrgId: "" },
     {
-      propertyId: "myproperty1",
+      configId: "myproperty1",
       imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
     },
     {
-      propertyId: "myproperty1",
+      configId: "myproperty1",
       edgeDomain: "stats.firstparty.com",
       imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
     },
     {
-      propertyId: "myproperty1",
+      configId: "myproperty1",
       edgeDomain: "STATS.FIRSTPARY.COM",
       imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
     },
     {
-      propertyId: "myproperty1",
+      configId: "myproperty1",
       edgeDomain: "STATS.FIRSTPARY.COM",
       prehidingStyle: "#foo",
       imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
@@ -45,10 +45,10 @@ describe("DataCollector::createConfigValidators", () => {
 
   [
     {},
-    { propertyId: "myproperty1", edgeDomain: "" },
-    { propertyId: "myproperty1", edgeDomain: "stats firstparty.com" },
+    { configId: "myproperty1", edgeDomain: "" },
+    { configId: "myproperty1", edgeDomain: "stats firstparty.com" },
     {
-      propertyId: "myproperty1",
+      configId: "myproperty1",
       edgeDomain: "stats firstparty.com",
       prehidingStyle: ""
     }
@@ -60,11 +60,11 @@ describe("DataCollector::createConfigValidators", () => {
     });
   });
 
-  it("invalidates duplicate propertyIds", () => {
+  it("invalidates duplicate configIds", () => {
     const validators = createConfigValidators();
-    const config1 = createConfig({ propertyId: "property1", imsOrgId: "ims1" });
-    const config2 = createConfig({ propertyId: "property2", imsOrgId: "ims2" });
-    const config3 = createConfig({ propertyId: "property1", imsOrgId: "ims3" });
+    const config1 = createConfig({ configId: "property1", imsOrgId: "ims1" });
+    const config2 = createConfig({ configId: "property2", imsOrgId: "ims2" });
+    const config3 = createConfig({ configId: "property1", imsOrgId: "ims3" });
     config1.addValidators(validators);
     config2.addValidators(validators);
     config3.addValidators(validators);
@@ -75,9 +75,9 @@ describe("DataCollector::createConfigValidators", () => {
 
   it("invalidates duplicate imsOrgIds", () => {
     const validators = createConfigValidators();
-    const config1 = createConfig({ propertyId: "a", imsOrgId: "a" });
-    const config2 = createConfig({ propertyId: "b", imsOrgId: "b" });
-    const config3 = createConfig({ propertyId: "c", imsOrgId: "a" });
+    const config1 = createConfig({ configId: "a", imsOrgId: "a" });
+    const config2 = createConfig({ configId: "b", imsOrgId: "b" });
+    const config3 = createConfig({ configId: "c", imsOrgId: "a" });
     config1.addValidators(validators);
     config2.addValidators(validators);
     config3.addValidators(validators);
