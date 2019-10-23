@@ -39,7 +39,7 @@ const plugins = [
 if (argv.reporters && argv.reporters.split(",").includes("coverage")) {
   plugins.unshift(
     istanbul({
-      exclude: ["test/unit/**/*.spec.js", "node_modules/**"].concat(
+      exclude: ["test/unit/**", "node_modules/**"].concat(
         ignorePatterns.map(ignorePattern => path.join("src", ignorePattern))
       )
     })
