@@ -22,6 +22,8 @@ export default (
   createComponentNamespacedCookieJar,
   getTopLevelDomain
 ) => config => {
+  // Due to some security software flagging the `@` sign in the ORG ID
+  // as a security vulnerability, we are replacing it with an `_`.
   const cookieName = `${ALLOY_COOKIE_NAME}_${config.imsOrgId.replace(
     "@",
     "_"
