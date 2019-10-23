@@ -1,4 +1,4 @@
-import { AUTH_STATES } from "../constants";
+import * as AUTH_STATES from "../constants/authStates";
 import {
   isObject,
   includes,

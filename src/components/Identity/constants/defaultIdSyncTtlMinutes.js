@@ -10,9 +10,4 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createNode } from "../../../../utils/dom";
-import { DIV } from "../../../../constants/tagNames";
-
-export default content => {
-  return createNode(DIV, {}, { innerHTML: content });
-};
+export default 10080; // 7 days

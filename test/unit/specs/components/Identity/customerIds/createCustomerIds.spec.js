@@ -1,7 +1,5 @@
 import createCustomerIds from "../../../../../../src/components/Identity/customerIds/createCustomerIds";
-import { COOKIE_NAMES } from "../../../../../../src/components/Identity/constants";
-
-const { CUSTOMER_ID_HASH } = COOKIE_NAMES;
+import { CUSTOMER_ID_HASH } from "../../../../../../src/components/Identity/constants/cookieNames";
 
 describe("Identity::createCustomerIds", () => {
   let lifecycle;

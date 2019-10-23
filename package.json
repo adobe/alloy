@@ -2,11 +2,12 @@
   "name": "@adobe/alloy",
   "version": "0.0.1-alpha.8",
   "description": "Client-Side SDK for Unified Data Collection",
-  "main": "src/core/main.js",
+  "main": "src/core/index.js",
   "scripts": {
     "clean": "rimraf dist",
     "lint": "eslint --fix \"*.js\" \"src/**/*.js\" \"test/**/*.js\"",
     "format": "prettier --write \"*.{html,js}\" \"{sandbox,src,test}/**/*.{html,js}\"",
+    "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
     "test": "karma start --single-run",
     "test:report": "karma start --single-run --reporters allure",
     "test:slreport": "karma start karma-saucelabs.conf.js --reporters allure",
@@ -38,7 +39,7 @@
   "husky": {
     "hooks": {
       "pre-commit": "echo 'Running pre-commit scripts...' && lint-staged",
-      "pre-push": "echo 'Running pre-push scripts...' && npm run test"
+      "pre-push": "echo 'Running pre-push scripts...' && npm run checkthattestfilesexist && npm run test"
     }
   },
   "lint-staged": {
@@ -112,6 +113,7 @@
     "prettier": "^1.16.4",
     "promise-polyfill": "^8.1.0",
     "puppeteer": "^1.16.0",
+    "recursive-readdir": "^2.2.2",
     "request": "^2.88.0",
     "rollup": "^1.1.2",
     "rollup-plugin-babel": "^4.3.2",

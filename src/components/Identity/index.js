@@ -16,9 +16,7 @@ import createIdSyncs from "./createIdSyncs";
 import createManualIdSyncs from "./createManualIdSyncs";
 import createCustomerIds from "./customerIds/createCustomerIds";
 
-import { COOKIE_NAMES } from "./constants";
-
-const { EXPERIENCE_CLOUD_ID } = COOKIE_NAMES;
+import { EXPERIENCE_CLOUD_ID } from "./constants/cookieNames";
 
 const addIdsContext = (payload, ecid) => {
   payload.addIdentity(EXPERIENCE_CLOUD_ID, {

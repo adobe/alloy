@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { createNode, selectNodes } from "../../../utils/dom";
-import { IMG, SRC } from "../../../utils/dom/constants";
+import { IMG, SRC } from "../../../constants/tagNames";
 import { getAttribute } from "./dom";
 
 export const isImage = element => element.tagName === IMG;
