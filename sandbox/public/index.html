@@ -57,8 +57,6 @@
         viewStart: true,
         xdm: {
           _myorg: {
-            // Using a promise to demonstrate they are supported.
-            type: Promise.resolve("page-view"),
             url: location.href,
             name: location.pathname.substring(1) || "home"
           },
