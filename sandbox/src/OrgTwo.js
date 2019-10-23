@@ -19,7 +19,7 @@ export default function OrgTwo() {
         <code>
           {`
                 organizationTwo("configure", {
-                    propertyId: 8888888,
+                  configId: 8888888,
                     log: true
                 });
             `}
@@ -27,7 +27,7 @@ export default function OrgTwo() {
       </pre>
       <p>
         By going to the Network tab in your Developer Tools, you should see
-        requests ending with <i>?propertyId=8888888</i>
+        requests ending with <i>?configId=8888888</i>
       </p>
     </div>
   );

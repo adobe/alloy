@@ -15,7 +15,7 @@ import createNetwork from "../../../../../src/core/network/createNetwork";
 describe("createNetwork", () => {
   const config = {
     edgeDomain: "alloy.mysite.com",
-    propertyId: "mypropertyid"
+    configId: "myconfigId"
   };
 
   let logger;
@@ -44,7 +44,7 @@ describe("createNetwork", () => {
     return network.sendRequest({}, true, false).then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
         jasmine.stringMatching(
-          /^https:\/\/alloy\.mysite\.com\/ee\/v1\/interact\?propertyId=mypropertyid&requestId=[0-9a-f-]+$/
+          /^https:\/\/alloy\.mysite\.com\/ee\/v1\/interact\?configId=myconfigId&requestId=[0-9a-f-]+$/
         ),
         "{}",
         false
@@ -56,7 +56,7 @@ describe("createNetwork", () => {
     return network.sendRequest({}, false, undefined, "myrequestid").then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
         jasmine.stringMatching(
-          /^https:\/\/alloy\.mysite\.com\/ee\/v1\/collect\?propertyId=mypropertyid&requestId=[0-9a-f-]+$/
+          /^https:\/\/alloy\.mysite\.com\/ee\/v1\/collect\?configId=myconfigId&requestId=[0-9a-f-]+$/
         ),
         "{}",
         false
@@ -68,7 +68,7 @@ describe("createNetwork", () => {
     return network.sendRequest({}, false, true, "myrequestid").then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
         jasmine.stringMatching(
-          /^https:\/\/alloy\.mysite\.com\/ee\/v1\/collect\?propertyId=mypropertyid&requestId=[0-9a-f-]+$/
+          /^https:\/\/alloy\.mysite\.com\/ee\/v1\/collect\?configId=myconfigId&requestId=[0-9a-f-]+$/
         ),
         "{}",
         true
@@ -80,7 +80,7 @@ describe("createNetwork", () => {
     return network.sendRequest({}, true, true, "myrequestid").then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
         jasmine.stringMatching(
-          /^https:\/\/alloy\.mysite\.com\/ee\/v1\/collect\?propertyId=mypropertyid&requestId=[0-9a-f-]+$/
+          /^https:\/\/alloy\.mysite\.com\/ee\/v1\/collect\?configId=myconfigId&requestId=[0-9a-f-]+$/
         ),
         "{}",
         true
