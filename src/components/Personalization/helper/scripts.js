@@ -21,7 +21,7 @@ const isInlineScript = element =>
 const isRemoteScript = element =>
   is(element, SCRIPT) && getAttribute(element, SRC);
 
-const getInlineScripts = fragment => {
+export const getInlineScripts = fragment => {
   const scripts = selectNodes(SCRIPT, fragment);
   const result = [];
   const { length } = scripts;
@@ -47,7 +47,7 @@ const getInlineScripts = fragment => {
   return result;
 };
 
-const getRemoteScriptsUrls = fragment => {
+export const getRemoteScriptsUrls = fragment => {
   const scripts = selectNodes(SCRIPT, fragment);
   const result = [];
   const { length } = scripts;
@@ -73,14 +73,10 @@ const getRemoteScriptsUrls = fragment => {
   return result;
 };
 
-export const executeInlineScripts = (container, fragment, func) => {
-  const scripts = getInlineScripts(fragment);
-
+export const executeInlineScripts = (container, scripts, func) => {
   scripts.forEach(script => func(container, script));
 };
 
-export const executeRemoteScripts = fragment => {
-  const urls = getRemoteScriptsUrls(fragment);
-
+export const executeRemoteScripts = urls => {
   return Promise.all(urls.map(loadScript));
 };
