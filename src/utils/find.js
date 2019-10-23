@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 /**
- * Returns the first item in the array that satisfies the provided testing funciton.
+ * Returns the first item in the array that satisfies the provided testing function.
  * @param {Array} arr The array to search.
  * @param {Function} predicate Function that will be called for each item. Arguments
  * will be the item, the item index, then the array itself.
