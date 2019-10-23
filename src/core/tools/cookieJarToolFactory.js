@@ -22,7 +22,10 @@ export default (
   createComponentNamespacedCookieJar,
   getTopLevelDomain
 ) => config => {
-  const cookieName = `${ALLOY_COOKIE_NAME}_${config.imsOrgId}`;
+  const cookieName = `${ALLOY_COOKIE_NAME}_${config.imsOrgId.replace(
+    "@",
+    "_"
+  )}`;
   const cookieProxy = createCookieProxy(
     cookieName,
     ALLOY_COOKIE_TTL_IN_DAYS,
