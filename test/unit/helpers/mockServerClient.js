@@ -17,10 +17,10 @@ var mockServerClient;
         var url = 'http://' + host + ':' + port + path;
 
         return {
-            then: function (sucess, error) {
+            then: function (success, error) {
                 try {
                     var xmlhttp = new XMLHttpRequest();
-                    xmlhttp.addEventListener("load", (function (sucess, error) {
+                    xmlhttp.addEventListener("load", (function (success, error) {
                         return function () {
                             if (error && this.status >= 400 && this.status < 600) {
                                 if (this.statusCode === 404) {
@@ -29,13 +29,13 @@ var mockServerClient;
                                     error(this.responseText);
                                 }
                             } else {
-                                sucess && sucess({
+                                success && success({
                                     statusCode: this.status,
                                     body: this.responseText
                                 });
                             }
                         };
-                    })(sucess, error));
+                    })(success, error));
                     xmlhttp.open('PUT', url);
                     xmlhttp.setRequestHeader("Content-Type", "application/json; charset=utf-8");
                     xmlhttp.send(body);
@@ -73,7 +73,7 @@ var mockServerClient;
         })(contextPath);
 
         /**
-         * The default headers added to to the mocked response when using mockSimpleResponse(...)
+         * The default headers added to the mocked response when using mockSimpleResponse(...)
          */
         var defaultResponseHeaders = [
             {"name": "Content-Type", "values": ["application/json; charset=utf-8"]},
@@ -285,7 +285,7 @@ var mockServerClient;
          */
         var mockWithCallback = function (requestMatcher, requestHandler, times) {
             return {
-                then: function (sucess, error) {
+                then: function (success, error) {
                     try {
                         var webSocketClient = WebSocketClient(host, port, cleanedContextPath);
                         webSocketClient.requestCallback(function (request) {
@@ -299,7 +299,7 @@ var mockServerClient;
                             };
                         });
                         webSocketClient.clientIdCallback(function (clientId) {
-                            return makeRequest(host, port, "/expectation", createExpectationWithCallback(requestMatcher, clientId, times)).then(sucess, error)
+                            return makeRequest(host, port, "/expectation", createExpectationWithCallback(requestMatcher, clientId, times)).then(success, error)
                         });
                     } catch (e) {
                         error && error(e);
@@ -421,7 +421,7 @@ var mockServerClient;
                 atLeast = 1;
             }
             return {
-                then: function (sucess, error) {
+                then: function (success, error) {
                     request.headers = arrayUniqueConcatenate(request.headers, defaultRequestHeaders);
                     return makeRequest(host, port, "/verify", {
                         "httpRequest": request,
@@ -431,13 +431,13 @@ var mockServerClient;
                         }
                     }).then(
                         function () {
-                            sucess && sucess();
+                            success && success();
                         },
                         function (result) {
                             if (!result.statusCode || result.statusCode !== 202) {
                                 error && error(result);
                             } else {
-                                error && sucess(result);
+                                error && success(result);
                             }
                         }
                     );
@@ -472,18 +472,18 @@ var mockServerClient;
                 requestSequence.push(requestMatcher);
             }
             return {
-                then: function (sucess, error) {
+                then: function (success, error) {
                     return makeRequest(host, port, "/verifySequence", {
                         "httpRequests": requestSequence
                     }).then(
                         function () {
-                            sucess && sucess();
+                            success && success();
                         },
                         function (result) {
                             if (!result.statusCode || result.statusCode !== 202) {
                                 error && error(result);
                             } else {
-                                error && sucess(result);
+                                error && success(result);
                             }
                         }
                     );
@@ -536,10 +536,10 @@ var mockServerClient;
          */
         var retrieveRecordedRequests = function (pathOrRequestMatcher) {
             return {
-                then: function (sucess, error) {
+                then: function (success, error) {
                     makeRequest(host, port, "/retrieve?type=REQUESTS&format=JSON", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
                         .then(function (result) {
-                            sucess(result.body && JSON.parse(result.body));
+                            success(result.body && JSON.parse(result.body));
                         });
                 }
             };
@@ -558,10 +558,10 @@ var mockServerClient;
          */
         var retrieveActiveExpectations = function (pathOrRequestMatcher) {
             return {
-                then: function (sucess, error) {
+                then: function (success, error) {
                     return makeRequest(host, port, "/retrieve?type=ACTIVE_EXPECTATIONS&format=JSON", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
                         .then(function (result) {
-                            sucess(result.body && JSON.parse(result.body));
+                            success(result.body && JSON.parse(result.body));
                         });
                 }
             };
@@ -580,10 +580,10 @@ var mockServerClient;
          */
         var retrieveRecordedExpectations = function (pathOrRequestMatcher) {
             return {
-                then: function (sucess, error) {
+                then: function (success, error) {
                     return makeRequest(host, port, "/retrieve?type=RECORDED_EXPECTATIONS&format=JSON", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
                         .then(function (result) {
-                            sucess(result.body && JSON.parse(result.body));
+                            success(result.body && JSON.parse(result.body));
                         });
                 }
             };
@@ -601,10 +601,10 @@ var mockServerClient;
          */
         var retrieveLogMessages = function (pathOrRequestMatcher) {
             return {
-                then: function (sucess, error) {
+                then: function (success, error) {
                     return makeRequest(host, port, "/retrieve?type=LOGS", addDefaultRequestMatcherHeaders(pathOrRequestMatcher))
                         .then(function (result) {
-                            sucess(result.body && result.body.split("------------------------------------"));
+                            success(result.body && result.body.split("------------------------------------"));
                         });
                 }
             };

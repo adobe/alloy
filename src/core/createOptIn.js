@@ -82,7 +82,7 @@ export default () => {
     /**
      * Returns a promise that is resolved once the user opts into all purposes.
      * If the user has already opted in, the promise will already be resolved.
-     * The user user opts into no purposes, the promise will be rejected.
+     * The user opts into no purposes, the promise will be rejected.
      */
     // TODO Once we support opting into specific purposes, this
     // method will accept an array of purpose names as an argument and

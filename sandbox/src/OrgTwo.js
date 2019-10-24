@@ -10,7 +10,7 @@ export default function OrgTwo() {
       </p>
       <p>
         For that reason, we have created a second instance of Alloy, and
-        configurered it using the Org and Property IDs of Organization Two.
+        configured it using the Org and Property IDs of Organization Two.
       </p>
       <p>
         Alloy instance is called: <i>organizationTwo</i>
