@@ -10,20 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import libraryVersion from "../../constants/libraryVersion";
-
-const createLibraryInfo = () => {
-  return {
-    commands: {
-      getLibraryInfo() {
-        return {
-          version: libraryVersion
-        };
+export default version => {
+  return event => {
+    event.mergeXdm({
+      implementationDetails: {
+        name: "https://ns.adobe.com/experience/alloy",
+        version,
+        environment: "web"
       }
-    }
+    });
   };
 };
-
-createLibraryInfo.namespace = "LibraryInfo";
-createLibraryInfo.abbreviation = "LI";
-export default createLibraryInfo;

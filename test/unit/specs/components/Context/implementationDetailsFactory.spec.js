@@ -10,20 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import libraryVersion from "../../constants/libraryVersion";
+import implementationDetailsFactory from "../../../../../src/components/Context/implementationDetailsFactory";
 
-const createLibraryInfo = () => {
-  return {
-    commands: {
-      getLibraryInfo() {
-        return {
-          version: libraryVersion
-        };
+describe("Context::versionFactory", () => {
+  const version = "1.2.3";
+  let event;
+  beforeEach(() => {
+    event = jasmine.createSpyObj("event", ["mergeXdm"]);
+  });
+
+  it("works", () => {
+    implementationDetailsFactory(version)(event);
+    expect(event.mergeXdm).toHaveBeenCalledWith({
+      implementationDetails: {
+        name: "https://ns.adobe.com/experience/alloy",
+        version: "1.2.3",
+        environment: "web"
       }
-    }
-  };
-};
-
-createLibraryInfo.namespace = "LibraryInfo";
-createLibraryInfo.abbreviation = "LI";
-export default createLibraryInfo;
+    });
+  });
+});
