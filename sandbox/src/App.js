@@ -48,6 +48,9 @@ function BasicExample() {
           <li>
             <Link to="/DualTag">Dual Tag</Link>
           </li>
+          <li>
+            <a href="http://localhost:3000/legacy.html">legacy</a>
+          </li>
         </ul>
 
         <hr />
