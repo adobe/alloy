@@ -27,6 +27,11 @@ export default () => {
       userData = value;
     },
     mergeXdm: createMerger(content, "xdm"),
+    applyCallback(callback) {
+      const xdm = clone(Object(content.xdm));
+      callback(xdm);
+      content.xdm = xdm;
+    },
     mergeMeta: createMerger(content, "meta"),
     mergeQuery: createMerger(content, "query"),
     documentUnloading() {

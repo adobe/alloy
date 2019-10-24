@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "../../utils/configValidators";
+import { string, callback } from "../../utils/configValidators";
 
 export default () => {
   return {
@@ -23,6 +23,10 @@ export default () => {
     },
     imsOrgId: {
       validate: string().unique()
+    },
+    onBeforeEventSend: {
+      defaultValue: () => undefined,
+      validate: callback()
     }
   };
 };

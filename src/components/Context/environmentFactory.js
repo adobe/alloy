@@ -10,8 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { deepAssign } from "../../utils";
+
 export default window => {
-  return () => {
+  return xdm => {
     const { innerWidth, innerHeight } = window;
     const environment = {
       type: "browser",
@@ -21,6 +23,6 @@ export default window => {
       }
     };
 
-    return { environment };
+    deepAssign(xdm, { environment });
   };
 };

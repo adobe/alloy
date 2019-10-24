@@ -10,46 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { deepAssign, flatMap, isString, isFunction } from "../../utils";
+import { flatMap } from "../../utils";
 
 export default (config, logger, availableContexts, requiredContexts) => {
-  let { context: configuredContexts } = config;
+  const { context: configuredContexts } = config;
 
-  if (!Array.isArray(configuredContexts)) {
-    logger.warn("Invalid configured context. Please specify an array.");
-    configuredContexts = [];
-  }
-
-  const contexts = flatMap(
-    requiredContexts.concat(configuredContexts),
-    context => {
-      if (isString(context)) {
-        if (availableContexts[context]) {
-          return [availableContexts[context]];
-        }
-        logger.warn(`Invalid context: '${context}' is not available.`);
-        return [];
-      }
-      if (isFunction(context)) {
-        return [context];
-      }
-      logger.warn(`Invalid context: String or Function expected`);
-      return [];
+  const contexts = flatMap(configuredContexts, (context, i) => {
+    if (availableContexts[context]) {
+      return [availableContexts[context]];
     }
-  );
+    logger.warn(`Invalid context[${i}]: '${context}' is not available.`);
+    return [];
+  }).concat(requiredContexts);
 
   return {
     namespace: "Context",
     lifecycle: {
       onBeforeEvent({ event }) {
         const xdm = {};
-        contexts.forEach(context => {
-          try {
-            deepAssign(xdm, context(xdm));
-          } catch (error) {
-            logger.warn(error);
-          }
-        });
+        contexts.forEach(context => context(xdm));
         event.mergeXdm(xdm);
       }
     }

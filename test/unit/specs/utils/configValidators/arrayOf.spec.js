@@ -10,11 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { deepAssign } from "../../utils";
+import { arrayOf, string } from "../../../../../src/utils/configValidators";
 
-export default dateProvider => {
-  return xdm => {
-    const timestamp = dateProvider().toISOString();
-    deepAssign(xdm, { timestamp });
-  };
-};
+describe("configValidators::arrayOf", () => {
+  [["foo", undefined], [true, "bar"], "non-array"].forEach(value => {
+    it(`rejects ${JSON.stringify(value)}`, () => {
+      const validator = arrayOf(string());
+      expect(validator("key", value)).toBeTruthy();
+    });
+  });
+
+  [["foo"], ["foo", "bar"], []].forEach(value => {
+    it(`accepts ${JSON.stringify(value)}`, () => {
+      const validator = arrayOf(string());
+      expect(validator("key", value)).toBeFalsy();
+    });
+  });
+});

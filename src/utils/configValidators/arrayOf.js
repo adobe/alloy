@@ -9,12 +9,23 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import createExpected from "./createExpected";
 
-import { deepAssign } from "../../utils";
+const arrayExpected = createExpected("an array");
+const elementExpected = createExpected(
+  "all elements of the array to be defined"
+);
 
-export default dateProvider => {
-  return xdm => {
-    const timestamp = dateProvider().toISOString();
-    deepAssign(xdm, { timestamp });
-  };
+export default elementValidator => (key, currentValue) => {
+  return (
+    arrayExpected(Array.isArray(currentValue), key, currentValue) ||
+    currentValue.reduce((error, value, i) => {
+      const arrayKey = `${key}[${i}]`;
+      return (
+        error ||
+        elementExpected(value != null, arrayKey, value) ||
+        elementValidator(arrayKey, value)
+      );
+    }, "")
+  );
 };

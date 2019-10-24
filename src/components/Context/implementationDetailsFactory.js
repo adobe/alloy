@@ -9,15 +9,15 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { deepAssign } from "../../utils";
 
 export default version => {
-  return () => {
-    return {
-      implementationDetails: {
-        name: "https://ns.adobe.com/experience/alloy",
-        version,
-        environment: "web"
-      }
+  return xdm => {
+    const implementationDetails = {
+      name: "https://ns.adobe.com/experience/alloy",
+      version,
+      environment: "web"
     };
+    deepAssign(xdm, { implementationDetails });
   };
 };

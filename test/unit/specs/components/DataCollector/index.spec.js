@@ -16,7 +16,6 @@ describe("Event Command", () => {
   let event;
   let eventManager;
   let eventCommand;
-
   beforeEach(() => {
     event = jasmine.createSpyObj("event", [
       "documentUnloading",

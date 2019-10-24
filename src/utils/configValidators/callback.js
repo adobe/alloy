@@ -9,12 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import isFunction from "../isFunction";
+import createExpected from "./createExpected";
 
-import { deepAssign } from "../../utils";
+const expected = createExpected("a function");
 
-export default dateProvider => {
-  return xdm => {
-    const timestamp = dateProvider().toISOString();
-    deepAssign(xdm, { timestamp });
-  };
+export default (key, value) => {
+  return expected(isFunction(value), key, value);
 };
