@@ -18,11 +18,18 @@ import {
   insertBefore
 } from "./dom";
 import { loadImages } from "./images";
-import { executeInlineScripts, executeRemoteScripts } from "./scripts";
+import {
+  getInlineScripts,
+  getRemoteScriptsUrls,
+  executeInlineScripts,
+  executeRemoteScripts
+} from "./scripts";
 
 export default (container, html) => {
   const fragment = createFragment(html);
   const elements = getChildNodes(fragment);
+  const scripts = getInlineScripts(fragment);
+  const scriptsUrls = getRemoteScriptsUrls(fragment);
   const { length } = elements;
   let i = length - 1;
 
@@ -39,7 +46,7 @@ export default (container, html) => {
     i -= 1;
   }
 
-  executeInlineScripts(container, fragment, appendNode);
+  executeInlineScripts(container, scripts, appendNode);
 
-  return executeRemoteScripts(fragment);
+  return executeRemoteScripts(scriptsUrls);
 };

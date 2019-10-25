@@ -12,20 +12,26 @@ governing permissions and limitations under the License.
 
 import { createFragment, getChildNodes, insertBefore } from "./dom";
 import { loadImages } from "./images";
-import { executeInlineScripts, executeRemoteScripts } from "./scripts";
+import {
+  getInlineScripts,
+  getRemoteScriptsUrls,
+  executeInlineScripts,
+  executeRemoteScripts
+} from "./scripts";
 
 export default (container, html) => {
   const fragment = createFragment(html);
   const elements = getChildNodes(fragment);
+  const scripts = getInlineScripts(fragment);
+  const scriptsUrls = getRemoteScriptsUrls(fragment);
 
-  // We have to proactively load images to avoid flicker
   loadImages(fragment);
 
   elements.forEach(element => {
     insertBefore(container, element);
   });
 
-  executeInlineScripts(container, fragment, insertBefore);
+  executeInlineScripts(container, scripts, insertBefore);
 
-  return executeRemoteScripts(fragment);
+  return executeRemoteScripts(scriptsUrls);
 };
