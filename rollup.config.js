@@ -70,7 +70,7 @@ if (buildTarget !== buildTargets.DEV) {
 }
 
 const config = {
-  input: "src/core/main.js",
+  input: "src/core/index.js",
   output: [
     {
       file: `${destDirectory}alloy${minifiedExtension}.js`,

@@ -2,7 +2,10 @@ import {
   validateCustomerIds,
   normalizeCustomerIds
 } from "../../../../../../src/components/Identity/customerIds/util";
-import { AUTH_STATES } from "../../../../../../src/components/Identity/constants";
+import {
+  AMBIGUOUS,
+  LOGGED_OUT
+} from "../../../../../../src/components/Identity/constants/authStates";
 
 describe("Identity::identityUtil", () => {
   describe("validateCustomerIds", () => {
@@ -100,11 +103,11 @@ describe("Identity::identityUtil", () => {
       const normalizedObj = {
         email: {
           id: "tester",
-          authenticatedState: AUTH_STATES.AMBIGUOUS
+          authenticatedState: AMBIGUOUS
         },
         crm: {
           id: "1234",
-          authenticatedState: AUTH_STATES.AMBIGUOUS
+          authenticatedState: AMBIGUOUS
         }
       };
       expect(normalizeCustomerIds(objToTest)).toEqual(normalizedObj);
@@ -124,11 +127,11 @@ describe("Identity::identityUtil", () => {
       const normalizedObj = {
         email: {
           id: "tester",
-          authenticatedState: AUTH_STATES.AMBIGUOUS
+          authenticatedState: AMBIGUOUS
         },
         crm: {
           id: "1234",
-          authenticatedState: AUTH_STATES.AMBIGUOUS
+          authenticatedState: AMBIGUOUS
         }
       };
       expect(normalizeCustomerIds(objToTest)).toEqual(normalizedObj);
@@ -138,12 +141,12 @@ describe("Identity::identityUtil", () => {
       const objToTest = {
         email: {
           id: "tester",
-          authenticatedState: AUTH_STATES.LOGGEDOUT,
+          authenticatedState: LOGGED_OUT,
           primary: true
         },
         crm: {
           id: "1234",
-          authenticatedState: AUTH_STATES.AMBIGUOUS
+          authenticatedState: AMBIGUOUS
         },
         custom: {
           id: "abc",
@@ -154,17 +157,17 @@ describe("Identity::identityUtil", () => {
       const normalizedObj = {
         email: {
           id: "tester",
-          authenticatedState: AUTH_STATES.LOGGEDOUT,
+          authenticatedState: LOGGED_OUT,
           primary: true
         },
         crm: {
           id: "1234",
-          authenticatedState: AUTH_STATES.AMBIGUOUS
+          authenticatedState: AMBIGUOUS
         },
         custom: {
           id: "abc",
           primary: false,
-          authenticatedState: AUTH_STATES.AMBIGUOUS
+          authenticatedState: AMBIGUOUS
         }
       };
       expect(normalizeCustomerIds(objToTest)).toEqual(normalizedObj);

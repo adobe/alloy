@@ -12,9 +12,8 @@ governing permissions and limitations under the License.
 
 import createIdentity from "../../../../../src/components/Identity";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
-import { COOKIE_NAMES } from "../../../../../src/components/Identity/constants";
+import { EXPERIENCE_CLOUD_ID } from "../../../../../src/components/Identity/constants/cookieNames";
 
-const { EXPERIENCE_CLOUD_ID } = COOKIE_NAMES;
 describe("Identity", () => {
   describe("reactor-specific functionality", () => {
     let identity;

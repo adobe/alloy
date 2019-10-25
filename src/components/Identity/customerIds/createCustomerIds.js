@@ -5,10 +5,8 @@ import {
   convertStringToSha256Buffer,
   clone
 } from "../../../utils";
-import { COOKIE_NAMES } from "../constants";
+import { CUSTOMER_ID_HASH } from "../constants/cookieNames";
 import createEvent from "../../DataCollector/createEvent";
-
-const { CUSTOMER_ID_HASH } = COOKIE_NAMES;
 
 export default (cookieJar, lifecycle, network, optIn) => {
   const updateChecksum = checksum => cookieJar.set(CUSTOMER_ID_HASH, checksum);

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createNode from "./dom/createNode";
-import { IMG } from "./dom/constants";
+import { IMG } from "../constants/tagNames";
 
 /**
  * Fires an image pixel from the current document's window.
