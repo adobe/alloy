@@ -37,8 +37,7 @@
     };
   }
 
-  function initHighlighter(routeName) {
-  }
+  function initHighlighter(routeName) {}
 
   var containerEl = document.querySelector(".contents");
   var router = new Router(containerEl, {
@@ -49,8 +48,6 @@
     onPostInit: function() {
       alloy("configure", {
         logEnabled: true,
-        edgeDomain:
-          "konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net",
         configId: "9999999",
         imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
       });
@@ -69,8 +66,6 @@
   router.register("/nologconfig", "nologconfig", {
     onPostInit: function() {
       alloy("configure", {
-        edgeDomain:
-          "konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net",
         configId: "9999999",
         imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
       });
@@ -81,8 +76,6 @@
     onPostInit: function() {
       alloy("configure", {
         logEnabled: false,
-        edgeDomain:
-          "konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net",
         configId: "9999999",
         imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
       });
