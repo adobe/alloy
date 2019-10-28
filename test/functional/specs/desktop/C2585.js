@@ -1,6 +1,7 @@
 import { t, Selector } from "testcafe";
+import testServerUrl from "../../src/constants/testServerUrl";
 
-const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html`;
+const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloySdk.html`;
 
 fixture`C2585`.page(urlCollector);
 

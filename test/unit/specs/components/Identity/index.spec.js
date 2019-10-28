@@ -11,12 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import createIdentity from "../../../../../src/components/Identity";
+import flushPromiseChains from "../../../helpers/flushPromiseChains";
+import { EXPERIENCE_CLOUD_ID } from "../../../../../src/components/Identity/constants/cookieNames";
 
 describe("Identity", () => {
   describe("reactor-specific functionality", () => {
     let identity;
     let reactorRegisterGetEcid;
-
     beforeEach(() => {
       reactorRegisterGetEcid = jasmine.createSpy();
 
@@ -57,6 +58,77 @@ describe("Identity", () => {
 
         const getEcid = reactorRegisterGetEcid.calls.first().args[0];
         expect(getEcid()).toBeUndefined();
+      });
+    });
+
+    describe("onResponse", () => {
+      let cookieJar;
+      let response;
+      beforeEach(() => {
+        cookieJar = {
+          get(key) {
+            return key === "ECID" ? "ABC" : null;
+          },
+          set: jasmine.createSpy()
+        };
+        response = {
+          getPayloadsByType: jasmine
+            .createSpy()
+            .and.returnValue([{ id: "ABC" }]),
+          toJSON: jasmine.createSpy()
+        };
+
+        identity = createIdentity({
+          config: {
+            reactorRegisterGetEcid
+          },
+          cookieJar
+        });
+        identity.lifecycle.onComponentsRegistered({
+          optIn: {
+            whenOptedIn() {
+              return Promise.resolve();
+            }
+          }
+        });
+      });
+      it("should get called with an object with a property named response in it", () => {
+        identity.lifecycle.onResponse({ response });
+        return flushPromiseChains().then(() => {
+          expect(response.getPayloadsByType).toHaveBeenCalledWith(
+            "identity:persist"
+          );
+          expect(cookieJar.set).toHaveBeenCalledWith(
+            EXPERIENCE_CLOUD_ID,
+            "ABC"
+          );
+          expect(response.getPayloadsByType).toHaveBeenCalledWith(
+            "identity:exchange"
+          );
+        });
+      });
+      it("should not set ECID if the response doesn't have id", () => {
+        response = {
+          getPayloadsByType: jasmine.createSpy().and.returnValue([]),
+          toJSON: jasmine.createSpy()
+        };
+        identity = createIdentity({
+          config: {
+            reactorRegisterGetEcid
+          },
+          cookieJar
+        });
+        identity.lifecycle.onComponentsRegistered({
+          optIn: {
+            whenOptedIn() {
+              return Promise.resolve();
+            }
+          }
+        });
+        identity.lifecycle.onResponse({ response });
+        return flushPromiseChains().then(() => {
+          expect(cookieJar.set).not.toHaveBeenCalled();
+        });
       });
     });
   });

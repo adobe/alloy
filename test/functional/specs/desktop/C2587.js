@@ -1,6 +1,7 @@
 import { t } from "testcafe";
+import testServerUrl from "../../src/constants/testServerUrl";
 
-const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/bogusCommand.html`;
+const urlCollector = `${testServerUrl}/test/functional/sandbox/html/bogusCommand.html`;
 
 fixture`C2587`.page(urlCollector);
 

@@ -13,11 +13,18 @@ governing permissions and limitations under the License.
 import { appendNode } from "../../../utils/dom";
 import { createFragment, getChildNodes } from "./dom";
 import { loadImages } from "./images";
-import { executeInlineScripts, executeRemoteScripts } from "./scripts";
+import {
+  getInlineScripts,
+  getRemoteScriptsUrls,
+  executeInlineScripts,
+  executeRemoteScripts
+} from "./scripts";
 
 export default (container, html) => {
   const fragment = createFragment(html);
   const elements = getChildNodes(fragment);
+  const scripts = getInlineScripts(fragment);
+  const scriptsUrls = getRemoteScriptsUrls(fragment);
 
   loadImages(fragment);
 
@@ -25,7 +32,7 @@ export default (container, html) => {
     appendNode(container, element);
   });
 
-  executeInlineScripts(container, fragment, appendNode);
+  executeInlineScripts(container, scripts, appendNode);
 
-  return executeRemoteScripts(fragment);
+  return executeRemoteScripts(scriptsUrls);
 };

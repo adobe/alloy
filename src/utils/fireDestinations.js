@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import fireImage from "./fireImage";
 import { appendNode, awaitSelector, createNode, removeNode } from "./dom";
-import { BODY, IFRAME } from "./dom/constants";
+import { BODY, IFRAME } from "../constants/tagNames";
 
 const fireOnPage = fireImage;
 

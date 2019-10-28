@@ -14,6 +14,7 @@ import createPayload from "./createPayload";
 import createResponse from "./createResponse";
 import { executeWithRetry, stackError, uuid } from "../../utils";
 import apiVersion from "../../constants/apiVersion";
+import edgeBasePath from "../../constants/edgeBasePath";
 
 export default (config, logger, lifecycle, networkStrategy) => {
   const handleResponse = (requestId, responseBody) => {
@@ -34,7 +35,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
     return lifecycle.onResponse({ response, requestId }).then(() => response);
   };
 
-  const { edgeDomain, propertyId } = config;
+  const { edgeDomain, configId } = config;
 
   return {
     /**
@@ -74,7 +75,7 @@ export default (config, logger, lifecycle, networkStrategy) => {
           }
           // #endif
 
-          const url = `${baseUrl}/${apiVersion}/${action}?propertyId=${propertyId}&requestId=${requestId}`;
+          const url = `${baseUrl}/${edgeBasePath}/${apiVersion}/${action}?configId=${configId}&requestId=${requestId}`;
           const responseHandlingMessage = reallyExpectsResponse
             ? ""
             : " (no response is expected)";

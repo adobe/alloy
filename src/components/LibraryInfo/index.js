@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import libraryVersion from "../../constants/libraryVersion";
+
 const createLibraryInfo = () => {
   return {
     commands: {
       getLibraryInfo() {
         return {
-          // The value will be swapped with the proper version
-          // at build time.
-          version: "{{version}}"
+          version: libraryVersion
         };
       }
     }

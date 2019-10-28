@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { createNode } from "../../../../utils/dom";
-import { DIV } from "../../../../utils/dom/constants";
+import { DIV } from "../../../../constants/tagNames";
 
 export default content => {
   return createNode(DIV, {}, { innerHTML: content });

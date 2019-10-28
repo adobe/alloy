@@ -12,7 +12,7 @@ Contributions are welcomed! Read the [Contributing Guide](.github/CONTRIBUTING.m
 
 To get started on development:
 
-1. Install [node.js](https://nodejs.org/).
+1. Install [node.js](https://nodejs.org/). If you already have node installed, be sure it is version 12.12.0 or higher.
 1. Clone the repository.
 1. After navigating into the project directory, install project dependencies by running `npm install`.
 

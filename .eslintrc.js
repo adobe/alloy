@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ["airbnb", "prettier", "plugin:testcafe/recommended"],
+  extends: ["airbnb-base", "prettier", "plugin:testcafe/recommended"],
   env: {
     browser: true,
     node: true,

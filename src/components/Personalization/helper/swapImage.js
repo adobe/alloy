@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { SRC } from "../../../utils/dom/constants";
+import { SRC } from "../../../constants/tagNames";
 import { setAttribute, removeAttribute } from "./dom";
 import { isImage, loadImage } from "./images";
 

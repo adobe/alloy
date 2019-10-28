@@ -3,14 +3,14 @@ import React from "react";
 export default function OrgTwo() {
   return (
     <div>
-      <h2>Organization Two</h2>
-      <h3>
+      <h2>Multiple Organizations</h2>
+      <p>
         This view is managed by a partnering company that owns a different Org
         ID.
-      </h3>
+      </p>
       <p>
         For that reason, we have created a second instance of Alloy, and
-        configurered it using the Org and Property IDs of Organization Two.
+        configured it using the Org and Property IDs of Organization Two.
       </p>
       <p>
         Alloy instance is called: <i>organizationTwo</i>
@@ -19,7 +19,7 @@ export default function OrgTwo() {
         <code>
           {`
                 organizationTwo("configure", {
-                    propertyId: 8888888,
+                  configId: 8888888,
                     log: true
                 });
             `}
@@ -27,7 +27,7 @@ export default function OrgTwo() {
       </pre>
       <p>
         By going to the Network tab in your Developer Tools, you should see
-        requests ending with <i>?propertyId=8888888</i>
+        requests ending with <i>?configId=8888888</i>
       </p>
     </div>
   );

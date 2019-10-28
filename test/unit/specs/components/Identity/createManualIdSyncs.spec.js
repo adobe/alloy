@@ -1,20 +1,4 @@
-import createCookieProxy from "../../../../../src/core/createCookieProxy";
-import createComponentNamespacedCookieJar from "../../../../../src/core/createComponentNamespacedCookieJar";
-import createIdSyncs from "../../../../../src/components/Identity/createIdSyncs";
 import createManualIdSyncs from "../../../../../src/components/Identity/createManualIdSyncs";
-
-const cookieProxy = createCookieProxy("identity", 180);
-const cookieJar = createComponentNamespacedCookieJar(
-  cookieProxy,
-  "component_name"
-);
-const config = {
-  idSyncEnabled: true
-};
-const logger = {
-  log() {},
-  error() {}
-};
 
 describe("Identity::createManualIdSyncs", () => {
   it("syncIdsByUrl throws an error if not all id syncs are valid", () => {
@@ -22,15 +6,11 @@ describe("Identity::createManualIdSyncs", () => {
       process: () => {},
       hasExpired: () => true
     };
-    const manualIdSyncs = createManualIdSyncs(
-      config,
-      logger,
-      cookieJar,
-      idSyncProcessor
-    );
+    const manualIdSyncs = createManualIdSyncs(idSyncProcessor);
     const data = {
       idSyncs: [
         {
+          type: "url",
           id: 500,
           spec: {
             url:
@@ -45,7 +25,7 @@ describe("Identity::createManualIdSyncs", () => {
           spec: {
             url:
               "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013271",
-            hideReferrer: 0,
+            hideReferrer: false,
             ttlMinutes: 120
           }
         },
@@ -55,7 +35,7 @@ describe("Identity::createManualIdSyncs", () => {
           spec: {
             url:
               "//idsync.rlcdn.com/365868.gif?partner_uid=7965389961572730520429094229693001327a",
-            hideReferrer: 0,
+            hideReferrer: false,
             ttlMinutes: 120
           }
         },
@@ -64,7 +44,7 @@ describe("Identity::createManualIdSyncs", () => {
           id: 502,
           spec: {
             url: 123,
-            hideReferrer: 0,
+            hideReferrer: false,
             ttlMinutes: 120
           }
         },
@@ -84,7 +64,7 @@ describe("Identity::createManualIdSyncs", () => {
           spec: {
             url:
               "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013274",
-            hideReferrer: 0,
+            hideReferrer: false,
             ttlMinutes: 120
           }
         }
@@ -108,15 +88,12 @@ describe("Identity::createManualIdSyncs", () => {
         expect(idSyncs[1].spec.url).toEqual(
           "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013274"
         );
+
+        return Promise.resolve("success");
       },
       hasExpired: () => true
     };
-    const manualIdSyncs = createManualIdSyncs(
-      config,
-      logger,
-      cookieJar,
-      idSyncProcessor
-    );
+    const manualIdSyncs = createManualIdSyncs(idSyncProcessor);
     const data = {
       idSyncs: [
         {
@@ -125,7 +102,7 @@ describe("Identity::createManualIdSyncs", () => {
           spec: {
             url:
               "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013271",
-            hideReferrer: 0,
+            hideReferrer: true,
             ttlMinutes: 120
           }
         },
@@ -135,53 +112,15 @@ describe("Identity::createManualIdSyncs", () => {
           spec: {
             url:
               "//idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013274",
-            hideReferrer: 0,
+            hideReferrer: false,
             ttlMinutes: 120
           }
         }
       ]
     };
 
-    manualIdSyncs.syncIdsByUrl(data);
-  });
-
-  it("syncIdsByUrl throws an error if not all id syncs succeeded", () => {
-    const idSyncProcessor = createIdSyncs(config, logger, cookieJar);
-    const manualIdSyncs = createManualIdSyncs(
-      config,
-      logger,
-      cookieJar,
-      idSyncProcessor
-    );
-    const data = {
-      idSyncs: [
-        {
-          type: "url",
-          id: 500,
-          spec: {
-            url:
-              "https://idsync.com/365868.gif?partner_uid=79653899615727305204290942296930013270",
-            hideReferrer: 0,
-            ttlMinutes: 120
-          }
-        },
-        {
-          type: "url",
-          id: 502,
-          spec: {
-            url:
-              "https://idsync.com/365868.gif?partner_uid=79653899615727305204290942296930013270",
-            hideReferrer: 0,
-            ttlMinutes: 120
-          }
-        }
-      ]
-    };
-
-    return manualIdSyncs.syncIdsByUrl(data).catch(result => {
-      expect(result.message).toEqual(
-        "The following ID sync IDs failed: 500, 502."
-      );
+    return manualIdSyncs.syncIdsByUrl(data).then(result => {
+      expect(result).toEqual("success");
     });
   });
 });

@@ -12,9 +12,9 @@ governing permissions and limitations under the License.
 
 import { assign, fireDestinations, convertTimes } from "../../utils";
 import { DAY, HOUR, MINUTE, MILLISECOND } from "../../utils/convertTimes";
-import { COOKIE_NAMES, DEFAULT_ID_SYNC_TTL_MINUTES } from "./constants";
+import { ID_SYNC_TIMESTAMP, ID_SYNC_CONTROL } from "./constants/cookieNames";
+import DEFAULT_ID_SYNC_TTL_MINUTES from "./constants/defaultIdSyncTtlMinutes";
 
-const { ID_SYNC_TIMESTAMP, ID_SYNC_CONTROL } = COOKIE_NAMES;
 const getControlObject = cookieJar => {
   const val = cookieJar.get(ID_SYNC_CONTROL) || "";
   const arr = val ? val.split("_") : [];

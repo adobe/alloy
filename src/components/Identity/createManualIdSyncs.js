@@ -10,32 +10,31 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isObject, isNumber, isNonEmptyString, find } from "../../utils";
+import {
+  isObject,
+  isInteger,
+  isNonEmptyString,
+  isBoolean,
+  find
+} from "../../utils";
 
-const createSyncIdsByUrl = (
-  config,
-  logger,
-  cookieJar,
-  idSyncsProcessor
-) => data => {
+const createSyncIdsByUrl = idSyncsProcessor => data => {
   const { idSyncs = [] } = data;
   const isIdSyncValid = (idSync = {}) =>
     isObject(idSync) &&
     idSync.type === "url" &&
-    isNumber(idSync.id) &&
+    isInteger(idSync.id) &&
     isObject(idSync.spec) &&
     isNonEmptyString(idSync.spec.url) &&
-    (idSync.spec.hideReferrer === 0 || idSync.spec.hideReferrer === 1) &&
-    (idSync.spec.ttlMinutes === undefined || isNumber(idSync.spec.ttlMinutes));
+    isBoolean(idSync.spec.hideReferrer) &&
+    (idSync.spec.ttlMinutes === undefined || isInteger(idSync.spec.ttlMinutes));
 
   const invalidIdSync = find(idSyncs, idSync => !isIdSyncValid(idSync));
 
   if (invalidIdSync) {
     return Promise.reject(
       new Error(
-        `An invalid ID sync with the ID of ${
-          invalidIdSync.id
-        } was passed to syncIdsByUrl.`
+        `An invalid ID sync with the ID of ${invalidIdSync.id} was passed to syncIdsByUrl.`
       )
     );
   }
@@ -43,13 +42,8 @@ const createSyncIdsByUrl = (
   return idSyncsProcessor.process(idSyncs);
 };
 
-export default (config, logger, cookieJar, idSyncsProcessor) => {
+export default idSyncsProcessor => {
   return {
-    syncIdsByUrl: createSyncIdsByUrl(
-      config,
-      logger,
-      cookieJar,
-      idSyncsProcessor
-    )
+    syncIdsByUrl: createSyncIdsByUrl(idSyncsProcessor)
   };
 };

@@ -16,9 +16,7 @@ import createIdSyncs from "./createIdSyncs";
 import createManualIdSyncs from "./createManualIdSyncs";
 import createCustomerIds from "./customerIds/createCustomerIds";
 
-import { COOKIE_NAMES } from "./constants";
-
-const { EXPERIENCE_CLOUD_ID } = COOKIE_NAMES;
+import { EXPERIENCE_CLOUD_ID } from "./constants/cookieNames";
 
 const addIdsContext = (payload, ecid) => {
   payload.addIdentity(EXPERIENCE_CLOUD_ID, {
@@ -26,22 +24,21 @@ const addIdsContext = (payload, ecid) => {
   });
 };
 
-const createIdentity = ({ config, logger, cookieJar }) => {
+const createIdentity = ({ config, logger, cookieJar, network }) => {
   // We avoid reading the ECID from the cookie right away, because we
   // need to wait for the user to opt in first.
   const getEcid = () => cookieJar.get(EXPERIENCE_CLOUD_ID);
   let optIn;
   let deferredForEcid;
-  let network;
   let lifecycle;
   let customerIds;
   const idSyncs = createIdSyncs(config, logger, cookieJar);
-  const manualIdSyncs = createManualIdSyncs(config, logger, cookieJar, idSyncs);
+  const manualIdSyncs = createManualIdSyncs(idSyncs);
   let alreadyQueriedForIdSyncs = false;
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
-        ({ lifecycle, network, optIn } = tools);
+        ({ lifecycle, optIn } = tools);
         customerIds = createCustomerIds(cookieJar, lifecycle, network, optIn);
 
         // #if _REACTOR
@@ -56,22 +53,31 @@ const createIdentity = ({ config, logger, cookieJar }) => {
       // Waiting for opt-in because we'll be reading the ECID from a cookie
       onBeforeEvent({ event }) {
         return optIn.whenOptedIn().then(() => {
+          const identityQuery = {
+            identity: {}
+          };
+          let sendIdentityQuery = false;
+
           if (
             !alreadyQueriedForIdSyncs &&
             config.idSyncEnabled &&
             idSyncs.hasExpired()
           ) {
             alreadyQueriedForIdSyncs = true;
-            const identityQuery = {
-              identity: {
-                exchange: true
-              }
-            };
+            identityQuery.identity.exchange = true;
+            sendIdentityQuery = true;
 
             if (config.idSyncContainerId !== undefined) {
               identityQuery.identity.containerId = config.idSyncContainerId;
             }
+          }
 
+          if (!config.thirdPartyCookiesEnabled) {
+            identityQuery.identity.thirdPartyCookiesEnabled = false;
+            sendIdentityQuery = true;
+          }
+
+          if (sendIdentityQuery) {
             event.mergeQuery(identityQuery);
           }
         });
@@ -153,6 +159,10 @@ createIdentity.configValidators = {
       .integer()
       .minimum(0)
       .expected("an integer greater than or equal to 0")
+  },
+  thirdPartyCookiesEnabled: {
+    defaultValue: true,
+    validate: boolean()
   }
 };
 

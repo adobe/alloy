@@ -1,46 +1,14 @@
+/*
+Copyright 2019 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+// eslint-disable-next-line no-unused-vars
 import fireDestinations from "../../../../src/utils/fireDestinations";
-import assign from "../../../../src/utils/assign";
-
-describe("fireDestinations", () => {
-  const logger = {
-    log() {},
-    error() {}
-  };
-
-  it("fires url destinations", done => {
-    const destinations = [
-      {
-        type: "url",
-        id: 2097728,
-        spec: {
-          url: "http://www.adobe.com?def=456",
-          hideReferrer: 1
-        }
-      }
-    ];
-
-    const urlDestinations = destinations
-      .filter(dest => dest.type === "url")
-      .map(dest =>
-        assign(
-          {
-            id: dest.id
-          },
-          dest.spec
-        )
-      );
-
-    fireDestinations({ logger, destinations: urlDestinations }).then(
-      firedDests => {
-        expect(firedDests.failed[0].id).toEqual(2097728);
-        expect(firedDests.failed[0].url).toEqual(
-          "http://www.adobe.com?def=456"
-        );
-        expect(firedDests.failed[0].hideReferrer).toEqual(1);
-        expect(firedDests.failed.length).toEqual(1);
-        expect(firedDests.succeeded.length).toEqual(0);
-        done();
-      }
-    );
-  });
-});

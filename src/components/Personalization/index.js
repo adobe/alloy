@@ -10,54 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray, uuid } from "../../utils";
+import { isNonEmptyArray } from "../../utils";
 import { initRuleComponentModules, executeRules } from "./turbine";
-import { hideContainers, showContainers, hideElements } from "./flicker";
-import { string, boolean } from "../../utils/configValidators";
+import { hideContainers, showContainers } from "./flicker";
+import { string } from "../../utils/configValidators";
 
-const PAGE_HANDLE = "personalization:page";
-const SESSION_ID_COOKIE = "SID";
-const SESSION_ID_TTL_IN_MINUTES = 31 * 60 * 1000;
+const DECISIONS_HANDLE = "personalization:decisions";
 const EVENT_COMMAND = "event";
 
-const isElementExists = event => event.moduleType === "elementExists";
-
-const getOrCreateSessionId = cookieJar => {
-  let cookieValue = cookieJar.get(SESSION_ID_COOKIE);
-  const now = Date.now();
-  const expires = now + SESSION_ID_TTL_IN_MINUTES;
-
-  if (!cookieValue || now > cookieValue.expires) {
-    cookieValue = { value: uuid(), expires };
-  } else {
-    cookieValue.expires = expires;
-  }
-
-  // We have to extend session ID lifetime
-  cookieJar.set(SESSION_ID_COOKIE, cookieValue);
-
-  return cookieValue.value;
-};
-
-const hideElementsForPage = fragments => {
-  fragments.forEach(fragment => {
-    const { rules = [] } = fragment;
-
-    rules.forEach(rule => {
-      const { events = [] } = rule;
-      const filteredEvents = events.filter(isElementExists);
-
-      filteredEvents.forEach(event => {
-        const { settings = {} } = event;
-        const { prehidingSelector } = settings;
-
-        if (prehidingSelector) {
-          hideElements(prehidingSelector);
-        }
-      });
-    });
-  });
-};
+// This is used for Target VEC integration
+const isAuthoringMode = () => document.location.href.indexOf("mboxEdit") !== -1;
 
 const executeFragments = (fragments, modules, logger) => {
   fragments.forEach(fragment => {
@@ -70,40 +32,41 @@ const executeFragments = (fragments, modules, logger) => {
 };
 
 const createCollect = collect => {
-  return payload => {
-    const id = uuid();
-    const timestamp = Date.now();
-    const notification = Object.assign({}, payload, { id, timestamp });
-    const personalization = { notification };
+  return payload =>
+    collect({
+      meta: {
+        personalization: { ...payload }
+      }
+    });
+};
 
-    collect({ meta: { personalization } });
+const createStore = () => {
+  const storage = [];
+
+  return (selector, meta) => {
+    storage.push({ selector, meta });
   };
 };
 
-const createPersonalization = ({ config, logger, cookieJar }) => {
-  const { authoringModeEnabled, prehidingStyle } = config;
+const createPersonalization = ({ config, logger }) => {
+  const { prehidingStyle } = config;
+  const authoringModeEnabled = isAuthoringMode();
   let ruleComponentModules;
-  let optIn;
 
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
         const { componentRegistry } = tools;
-        ({ optIn } = tools);
-        const collect = componentRegistry.getCommand(EVENT_COMMAND);
-        ruleComponentModules = initRuleComponentModules(createCollect(collect));
+        const event = componentRegistry.getCommand(EVENT_COMMAND);
+        const collect = createCollect(event);
+        const store = createStore();
+        ruleComponentModules = initRuleComponentModules(collect, store);
       },
       onBeforeEvent({ event, isViewStart }) {
         if (authoringModeEnabled) {
           logger.warn("Rendering is disabled, authoring mode.");
 
-          event.mergeQuery({
-            personalization: {
-              enabled: false
-            }
-          });
-
-          return Promise.resolve();
+          event.mergeQuery({ personalization: { enabled: false } });
         }
 
         if (!isViewStart) {
@@ -115,31 +78,17 @@ const createPersonalization = ({ config, logger, cookieJar }) => {
           // For viewStart we try to hide the personalization containers
           hideContainers(prehidingStyle);
         }
-
-        return optIn.whenOptedIn().then(() => {
-          const sessionId = getOrCreateSessionId(cookieJar);
-
-          // Session ID is required both for data fetching and
-          // data collection call
-          event.mergeMeta({ personalization: { sessionId } });
-        });
       },
       onResponse({ response }) {
         if (authoringModeEnabled) {
           return;
         }
 
-        const fragments = response.getPayloadsByType(PAGE_HANDLE);
-
-        // On response we first hide all the elements for
-        // personalization:page handle
-        hideElementsForPage(fragments);
-
-        // Once the all element are hidden
-        // we have to show the containers
-        showContainers();
+        const fragments = response.getPayloadsByType(DECISIONS_HANDLE);
 
         executeFragments(fragments, ruleComponentModules, logger);
+
+        showContainers();
       },
       onResponseError() {
         showContainers();
@@ -155,10 +104,6 @@ createPersonalization.configValidators = {
   prehidingStyle: {
     defaultValue: undefined,
     validate: string().nonEmpty()
-  },
-  authoringModeEnabled: {
-    defaultValue: false,
-    validate: boolean()
   }
 };
 

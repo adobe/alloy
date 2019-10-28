@@ -51,11 +51,11 @@ describe("Event Command", () => {
     sendRequestSpy = spyOn(network, "sendRequest").and.callThrough();
     const dataCollector = createDataCollector({
       config,
-      logger
+      logger,
+      network
     });
     dataCollector.lifecycle.onComponentsRegistered({
       lifecycle,
-      network,
       optIn
     });
     eventCommand = dataCollector.commands.event;
@@ -67,8 +67,7 @@ describe("Event Command", () => {
       expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith({
         event: jasmine.anything(),
         options,
-        isViewStart: false,
-        isDocumentUnloading: false
+        isViewStart: false
       });
     });
   });
@@ -78,19 +77,7 @@ describe("Event Command", () => {
       expect(onBeforeEventSpy).toHaveBeenCalledWith({
         event: jasmine.anything(),
         options,
-        isViewStart: true,
-        isDocumentUnloading: false
-      });
-    });
-  });
-  it("Extracts documentUnloading for onBeforeEvent", () => {
-    const options = { documentUnloading: true };
-    return eventCommand(options).then(() => {
-      expect(onBeforeEventSpy).toHaveBeenCalledWith({
-        event: jasmine.anything(),
-        options,
-        isViewStart: false,
-        isDocumentUnloading: true
+        isViewStart: true
       });
     });
   });
@@ -100,8 +87,7 @@ describe("Event Command", () => {
       expect(onBeforeEventSpy).toHaveBeenCalledWith({
         event: jasmine.anything(),
         options,
-        isViewStart: false,
-        isDocumentUnloading: false
+        isViewStart: false
       });
     });
   });
@@ -193,16 +179,6 @@ describe("Event Command", () => {
         jasmine.anything(),
         false,
         false
-      );
-    });
-  });
-
-  it("sends documentUnloading == true", () => {
-    return eventCommand({ documentUnloading: true }).then(() => {
-      expect(sendRequestSpy).toHaveBeenCalledWith(
-        jasmine.anything(),
-        false,
-        true
       );
     });
   });
