@@ -54,7 +54,7 @@ function HomeWithHistory({ history }) {
   return (
     <div>
       <section>
-        <div className="container">
+        <div className="personalization-container">
           <h2>Some awesome default content</h2>
           <br />
         </div>
