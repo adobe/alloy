@@ -13,11 +13,12 @@ governing permissions and limitations under the License.
 import { clone, noop } from "../utils";
 
 export default ({ createEvent, optIn, lifecycle, network, config }) => {
+  const { imsOrgId } = config;
+
   return {
     createEvent,
     sendEvent(event, options = {}) {
       const { isViewStart = false, applyUserProvidedData = noop } = options;
-      const { imsOrgId } = config;
 
       const payload = network.createPayload();
       payload.addEvent(event);

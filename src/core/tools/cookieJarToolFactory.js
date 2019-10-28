@@ -17,18 +17,17 @@ const { ALLOY_COOKIE_NAME, ALLOY_COOKIE_TTL_IN_DAYS } = cookieDetails;
 /**
  * Tool-specific dependencies => componentCreator => result
  */
-export default (
+export default ({
   config,
   createCookieProxy,
   createComponentNamespacedCookieJar,
-  getTopLevelDomain
-) => {
-  // Due to so  me security software flagging the `@` sign in the ORG ID
-  // as a security vulnerability, we are replacing it with an `_`.
-  const cookieName = `${ALLOY_COOKIE_NAME}_${config.imsOrgId.replace(
-    "@",
-    "_"
-  )}`;
+  getTopLevelDomain,
+  createOrgNamespacedCookieName
+}) => {
+  const cookieName = createOrgNamespacedCookieName(
+    ALLOY_COOKIE_NAME,
+    config.imsOrgId
+  );
   const cookieProxy = createCookieProxy(
     cookieName,
     ALLOY_COOKIE_TTL_IN_DAYS,

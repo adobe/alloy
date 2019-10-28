@@ -20,6 +20,7 @@ describe("cookieJarToolFactory", () => {
   let config;
   let componentAbbreviation;
   let componentNamespacedCookieJar;
+  let createOrgNamespacedCookieName;
 
   beforeEach(() => {
     cookieProxy = { get() {}, set() {} };
@@ -35,17 +36,19 @@ describe("cookieJarToolFactory", () => {
       imsOrgId: "ORG123"
     };
     componentAbbreviation = "TC";
+    createOrgNamespacedCookieName = () => "orgNamespacedCookieName";
   });
 
   it("returns cookie jar tool", () => {
-    const tool = cookieJarToolFactory(
+    const tool = cookieJarToolFactory({
       config,
       createCookieProxy,
       createComponentNamespacedCookieJar,
-      getTopLevelDomain
-    )(componentAbbreviation);
+      getTopLevelDomain,
+      createOrgNamespacedCookieName
+    })(componentAbbreviation);
     expect(createCookieProxy).toHaveBeenCalledWith(
-      "adobe_alloy_ORG123",
+      "orgNamespacedCookieName",
       180,
       "retrievedtopleveldomain.com"
     );
@@ -57,12 +60,13 @@ describe("cookieJarToolFactory", () => {
   });
 
   it("creates a shared cookie proxy for multiple components", () => {
-    const configuredTool = cookieJarToolFactory(
+    const configuredTool = cookieJarToolFactory({
       config,
       createCookieProxy,
       createComponentNamespacedCookieJar,
-      getTopLevelDomain
-    );
+      getTopLevelDomain,
+      createOrgNamespacedCookieName
+    });
     configuredTool(componentAbbreviation);
     configuredTool("T2");
     expect(createCookieProxy).toHaveBeenCalledTimes(1);
@@ -70,14 +74,15 @@ describe("cookieJarToolFactory", () => {
 
   it("uses the cookie domain provided in config", () => {
     config.cookieDomain = "example.com";
-    cookieJarToolFactory(
+    cookieJarToolFactory({
       config,
       createCookieProxy,
       createComponentNamespacedCookieJar,
-      getTopLevelDomain
-    )(componentAbbreviation);
+      getTopLevelDomain,
+      createOrgNamespacedCookieName
+    })(componentAbbreviation);
     expect(createCookieProxy).toHaveBeenCalledWith(
-      "adobe_alloy_ORG123",
+      "orgNamespacedCookieName",
       180,
       "example.com"
     );

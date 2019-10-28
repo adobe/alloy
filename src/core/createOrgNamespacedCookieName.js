@@ -10,8 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default {
-  ALLOY_COOKIE_NAME: "adobe_alloy", // TODO: Rename this cookie
-  ALLOY_OPT_IN_COOKIE_NAME: "adobe_alloy_optIn",
-  ALLOY_COOKIE_TTL_IN_DAYS: 180
-};
+// Due to security software flagging the `@` sign in the ORG ID
+// as a security vulnerability, we are replacing it with an `_`.
+export default (cookieNamePrefix, orgId) =>
+  `${cookieNamePrefix}_${orgId.replace("@", "_")}`;

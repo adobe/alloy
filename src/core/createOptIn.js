@@ -11,9 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { defer } from "../utils";
+import cookieDetails from "../constants/cookieDetails";
 
 // OptIn uses a different cookie than the rest of Alloy.
-const COOKIE_NAMESPACE = "alloy_optIn";
+const { ALLOY_OPT_IN_COOKIE_NAME } = cookieDetails;
 
 // The user has opted into all purposes.
 const ALL = "all";
@@ -24,12 +25,22 @@ const NONE = "none";
 // The user has yet to provide opt-in purposes.
 const PENDING = "pending";
 
-export default ({ enabled, logger, cookieJar }) => {
+export default ({
+  config,
+  logger,
+  cookieJar,
+  createOrgNamespacedCookieName
+}) => {
   const deferredsAwaitingResolution = [];
   let purposes = ALL;
 
-  if (enabled) {
-    purposes = cookieJar.get(COOKIE_NAMESPACE) || PENDING;
+  const cookieName = createOrgNamespacedCookieName(
+    ALLOY_OPT_IN_COOKIE_NAME,
+    config.imsOrgId
+  );
+
+  if (config.optInEnabled) {
+    purposes = cookieJar.get(cookieName) || PENDING;
   }
 
   if (purposes === PENDING) {
@@ -59,7 +70,7 @@ export default ({ enabled, logger, cookieJar }) => {
      */
     setPurposes(newPurposes) {
       purposes = newPurposes;
-      cookieJar.set(COOKIE_NAMESPACE, newPurposes);
+      cookieJar.set(cookieName, newPurposes);
       processDeferreds();
     },
     /**

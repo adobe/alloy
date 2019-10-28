@@ -36,6 +36,7 @@ import cookieJarToolFactory from "./tools/cookieJarToolFactory";
 import createNetworkStrategy from "./network/createNetworkStrategy";
 import createLogger from "./createLogger";
 import createEventManager from "./createEventManager";
+import createOrgNamespacedCookieName from "./createOrgNamespacedCookieName";
 
 // eslint-disable-next-line no-underscore-dangle
 const instanceNamespaces = window.__alloyNS;
@@ -93,9 +94,10 @@ if (instanceNamespaces) {
         setErrorsEnabled
       });
       const optIn = createOptIn({
-        enabled: config.optInEnabled,
+        config,
         logger,
-        cookieJar
+        cookieJar,
+        createOrgNamespacedCookieName
       });
       const network = createNetwork({
         config,
@@ -110,12 +112,13 @@ if (instanceNamespaces) {
         network,
         config
       });
-      const createCookieJarTool = cookieJarToolFactory(
+      const createCookieJarTool = cookieJarToolFactory({
         config,
         createCookieProxy,
         createComponentNamespacedCookieJar,
-        getTopLevelDomain
-      );
+        getTopLevelDomain,
+        createOrgNamespacedCookieName
+      });
 
       return initializeComponents({
         componentCreators,
