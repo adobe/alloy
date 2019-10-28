@@ -19,8 +19,8 @@ test("Regression: Throw error when configure is not the first command executed."
   const message = await t.getBrowserConsoleMessages();
 
   await t
-    .expect(message.warn)
+    .expect(message.log)
     .match(
-      /\[alloy] An error during configuration is preventing the event command from executing./
+      /The library must be configured first. Please do so by executing the configure command./
     );
 });

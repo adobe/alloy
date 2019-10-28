@@ -15,5 +15,5 @@ test("Regression: Throw error when executing command that doesn't exist", async 
   const message = await t.getBrowserConsoleMessages();
   await t
     .expect(message.error)
-    .match(/\[alloy] Resolve these configuration problems:/);
+    .match(/The boguscommand command does not exist./);
 });
