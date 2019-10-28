@@ -16,7 +16,6 @@ import { hideContainers, showContainers } from "./flicker";
 import { string } from "../../utils/configValidators";
 
 const DECISIONS_HANDLE = "personalization:decisions";
-const EVENT_COMMAND = "event";
 
 // This is used for Target VEC integration
 const isAuthoringMode = () => document.location.href.indexOf("mboxEdit") !== -1;
@@ -31,13 +30,14 @@ const executeFragments = (fragments, modules, logger) => {
   });
 };
 
-const createCollect = collect => {
-  return payload =>
-    collect({
-      meta: {
-        personalization: { ...payload }
-      }
+const createCollect = eventManager => {
+  return payload => {
+    const event = eventManager.createEvent();
+    event.mergeMeta({
+      personalization: { ...payload }
     });
+    eventManager.sendEvent(event);
+  };
 };
 
 const createStore = () => {
@@ -48,20 +48,15 @@ const createStore = () => {
   };
 };
 
-const createPersonalization = ({ config, logger }) => {
+const createPersonalization = ({ config, logger, eventManager }) => {
   const { prehidingStyle } = config;
   const authoringModeEnabled = isAuthoringMode();
-  let ruleComponentModules;
+  const collect = createCollect(eventManager);
+  const store = createStore();
+  const ruleComponentModules = initRuleComponentModules(collect, store);
 
   return {
     lifecycle: {
-      onComponentsRegistered(tools) {
-        const { componentRegistry } = tools;
-        const event = componentRegistry.getCommand(EVENT_COMMAND);
-        const collect = createCollect(event);
-        const store = createStore();
-        ruleComponentModules = initRuleComponentModules(collect, store);
-      },
       onBeforeEvent({ event, isViewStart }) {
         if (authoringModeEnabled) {
           logger.warn("Rendering is disabled, authoring mode.");

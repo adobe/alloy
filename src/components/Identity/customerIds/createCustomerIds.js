@@ -6,7 +6,7 @@ import {
   clone
 } from "../../../utils";
 import { CUSTOMER_ID_HASH } from "../constants/cookieNames";
-import createEvent from "../../DataCollector/createEvent";
+import createEvent from "../../../core/createEvent";
 
 export default (cookieJar, lifecycle, network, optIn) => {
   const updateChecksum = checksum => cookieJar.set(CUSTOMER_ID_HASH, checksum);

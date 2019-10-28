@@ -14,19 +14,17 @@ import attachClickActivityCollector from "./attachClickActivityCollector";
 import createConfigValidators from "./createConfigValidators";
 import createLinkClick from "./createLinkClick";
 
-const EVENT_COMMAND = "event";
+const createActivityCollector = ({ config, eventManager }) => {
+  const linkClick = createLinkClick(window, config, eventManager);
 
-const createActivityCollector = ({ config }) => {
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
-        const { lifecycle, componentRegistry } = tools;
-        const collect = componentRegistry.getCommand(EVENT_COMMAND);
-        attachClickActivityCollector(config, collect, lifecycle);
+        const { lifecycle } = tools;
+        attachClickActivityCollector(config, eventManager, lifecycle);
         // TODO: createScrollActivityCollector ...
       },
       onClick({ event, clickedObject }) {
-        const linkClick = createLinkClick(window, config);
         linkClick(event, clickedObject);
       }
     }

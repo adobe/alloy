@@ -16,7 +16,7 @@ import { executeWithRetry, stackError, uuid } from "../../utils";
 import apiVersion from "../../constants/apiVersion";
 import edgeBasePath from "../../constants/edgeBasePath";
 
-export default (config, logger, lifecycle, networkStrategy) => {
+export default ({ config, logger, lifecycle, networkStrategy }) => {
   const handleResponse = (requestId, responseBody) => {
     let parsedBody;
 

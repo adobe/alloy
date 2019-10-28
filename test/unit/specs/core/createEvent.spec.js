@@ -10,9 +10,5 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/**
- * Tool-specific dependencies => config => componentCreator => result
- */
-export default createComponentLogger => () => componentCreator => {
-  return createComponentLogger(componentCreator.namespace);
-};
+// eslint-disable-next-line no-unused-vars
+import createEvent from "../../../../src/core/createEvent";

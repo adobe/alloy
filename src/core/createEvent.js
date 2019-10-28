@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 // TODO move this dependency to utils
-import { createMerger } from "../../utils";
-import isEmptyObject from "../../utils/isEmptyObject";
+import { createMerger } from "../utils";
+import isEmptyObject from "../utils/isEmptyObject";
 
 export default () => {
   const content = {};

@@ -24,31 +24,28 @@ const addIdsContext = (payload, ecid) => {
   });
 };
 
-const createIdentity = ({ config, logger, cookieJar, network }) => {
+const createIdentity = ({ config, logger, cookieJar, network, optIn }) => {
   // We avoid reading the ECID from the cookie right away, because we
   // need to wait for the user to opt in first.
   const getEcid = () => cookieJar.get(EXPERIENCE_CLOUD_ID);
-  let optIn;
+  // #if _REACTOR
+  // This is a way for the ECID data element in the Reactor extension
+  // to get the ECID synchronously since data elements are required
+  // to be synchronous.
+  config.reactorRegisterGetEcid(() => {
+    return optIn.isOptedIn() ? getEcid() : undefined;
+  });
+  // #endif
   let deferredForEcid;
-  let lifecycle;
   let customerIds;
   const idSyncs = createIdSyncs(config, logger, cookieJar);
   const manualIdSyncs = createManualIdSyncs(idSyncs);
   let alreadyQueriedForIdSyncs = false;
+
   return {
     lifecycle: {
-      onComponentsRegistered(tools) {
-        ({ lifecycle, optIn } = tools);
+      onComponentsRegistered({ lifecycle }) {
         customerIds = createCustomerIds(cookieJar, lifecycle, network, optIn);
-
-        // #if _REACTOR
-        // This is a way for the ECID data element in the Reactor extension
-        // to get the ECID synchronously since data elements are required
-        // to be synchronous.
-        config.reactorRegisterGetEcid(() => {
-          return optIn.isOptedIn() ? getEcid() : undefined;
-        });
-        // #endif
       },
       // Waiting for opt-in because we'll be reading the ECID from a cookie
       onBeforeEvent({ event }) {

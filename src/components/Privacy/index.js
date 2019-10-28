@@ -19,19 +19,8 @@ const throwInvalidPurposesError = purposes => {
   );
 };
 
-const createPrivacy = ({ config, logger, enableOptIn, cookieJar }) => {
-  let optIn;
-
-  if (config.optInEnabled) {
-    enableOptIn(logger, cookieJar);
-  }
-
+const createPrivacy = ({ config, logger, optIn }) => {
   return {
-    lifecycle: {
-      onComponentsRegistered(tools) {
-        ({ optIn } = tools);
-      }
-    },
     commands: {
       optIn({ purposes }) {
         if (config.optInEnabled) {

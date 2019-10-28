@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 
 import { defer } from "../utils";
 
-const COOKIE_NAMESPACE = "optIn";
+// OptIn uses a different cookie than the rest of Alloy.
+const COOKIE_NAMESPACE = "alloy_optIn";
 
 // The user has opted into all purposes.
 const ALL = "all";
@@ -23,10 +24,17 @@ const NONE = "none";
 // The user has yet to provide opt-in purposes.
 const PENDING = "pending";
 
-export default () => {
+export default ({ enabled, logger, cookieJar }) => {
   const deferredsAwaitingResolution = [];
-  let cookieJar;
   let purposes = ALL;
+
+  if (enabled) {
+    purposes = cookieJar.get(COOKIE_NAMESPACE) || PENDING;
+  }
+
+  if (purposes === PENDING) {
+    logger.warn("Some commands may be delayed until the user opts in.");
+  }
 
   const processDeferreds = () => {
     if (purposes === ALL || purposes === NONE) {
@@ -44,21 +52,6 @@ export default () => {
   };
 
   return {
-    /**
-     * Only to be called by the Privacy component during startup. If opt-in
-     * isn't enabled, this method will not be called.
-     * @param {Object} logger A logger object.
-     * @param {Object} _cookieJar A cookie management object.
-     * to the Privacy component.
-     */
-    enable(logger, _cookieJar) {
-      cookieJar = _cookieJar;
-      purposes = cookieJar.get(COOKIE_NAMESPACE) || PENDING;
-
-      if (purposes === PENDING) {
-        logger.warn("Some commands may be delayed until the user opts in.");
-      }
-    },
     /**
      * Update the purposes the user has opted into. Only to be called by the
      * Privacy component.

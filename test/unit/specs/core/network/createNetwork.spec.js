@@ -37,7 +37,7 @@ describe("createNetwork", () => {
     networkStrategy = jasmine
       .createSpy()
       .and.returnValue(Promise.resolve(JSON.stringify(mockResponse)));
-    network = createNetwork(config, logger, lifecycle, networkStrategy);
+    network = createNetwork({ config, logger, lifecycle, networkStrategy });
   });
 
   it("can call interact", () => {

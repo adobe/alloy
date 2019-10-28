@@ -10,26 +10,24 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createEvent from "../DataCollector/createEvent";
-
-const createClickHandler = (collect, lifecycle) => {
+const createClickHandler = (eventManager, lifecycle) => {
   return clickEvent => {
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
     const clickedObject = clickEvent.target;
-    const event = createEvent();
+    const event = eventManager.createEvent();
     lifecycle.onClick({ event, clickedObject }).then(() => {
       if (!event.isEmpty()) {
-        collect({}, event);
+        eventManager.sendEvent(event);
       }
     });
   };
 };
 
-export default (config, collect, lifecycle) => {
+export default (config, eventManager, lifecycle) => {
   const enabled = config.get("clickCollectionEnabled");
   if (!enabled) {
     return;
   }
-  const clickHandler = createClickHandler(collect, lifecycle);
+  const clickHandler = createClickHandler(eventManager, lifecycle);
   document.addEventListener("click", clickHandler, true);
 };

@@ -10,78 +10,36 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createEvent from "./createEvent";
 import createConfigValidators from "./createConfigValidators";
-import { clone } from "../../utils";
 
-const createDataCollector = ({ config, network }) => {
-  const { imsOrgId } = config;
-  let lifecycle;
-  let optIn;
+const createDataCollector = ({ eventManager }) => {
+  return {
+    commands: {
+      event(options) {
+        const {
+          xdm,
+          data,
+          viewStart = false,
+          documentUnloading = false
+        } = options;
+        const event = eventManager.createEvent();
 
-  const makeServerCall = event => {
-    const payload = network.createPayload();
-    payload.addEvent(event);
-    payload.mergeMeta({
-      gateway: {
-        imsOrgId
-      }
-    });
-
-    return lifecycle
-      .onBeforeDataCollection({ payload })
-      .then(() => {
-        return network.sendRequest(
-          payload,
-          payload.expectsResponse,
-          event.isDocumentUnloading()
-        );
-      })
-      .then(response => {
-        const data = {
-          requestBody: clone(payload)
-        };
-
-        if (response) {
-          data.responseBody = clone(response);
+        if (documentUnloading) {
+          event.documentUnloading();
         }
 
-        return data;
-      });
-  };
-
-  const createEventHandler = (options, event = createEvent()) => {
-    const { viewStart = false, xdm, data, documentUnloading } = options;
-    if (documentUnloading) {
-      event.documentUnloading();
-    }
-
-    return lifecycle
-      .onBeforeEvent({
-        event,
-        options,
-        isViewStart: viewStart
-      })
-      .then(() => {
-        // We merge the user's data after onBeforeEvent so that
-        // it overlays on top of any data Alloy automatically
-        // provides. This allows the user to override the
-        // automatically collected data.
-        event.mergeXdm(xdm);
-        event.data = data;
-        return optIn.whenOptedIn();
-      })
-      .then(() => makeServerCall(event));
-  };
-
-  return {
-    lifecycle: {
-      onComponentsRegistered(tools) {
-        ({ lifecycle, optIn } = tools);
+        return eventManager.sendEvent(event, {
+          isViewStart: viewStart,
+          applyUserProvidedData() {
+            // We merge the user's data after onBeforeEvent so that
+            // it overlays on top of any data Alloy automatically
+            // provides. This allows the user to override the
+            // automatically collected data.
+            event.mergeXdm(xdm);
+            event.data = data;
+          }
+        });
       }
-    },
-    commands: {
-      event: createEventHandler
     }
   };
 };

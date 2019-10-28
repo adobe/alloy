@@ -18,7 +18,7 @@ describe("cookieJarToolFactory", () => {
   let createComponentNamespacedCookieJar;
   let getTopLevelDomain;
   let config;
-  let componentCreator;
+  let componentAbbreviation;
   let componentNamespacedCookieJar;
 
   beforeEach(() => {
@@ -34,17 +34,16 @@ describe("cookieJarToolFactory", () => {
     config = {
       imsOrgId: "ORG123"
     };
-    componentCreator = {
-      abbreviation: "TC"
-    };
+    componentAbbreviation = "TC";
   });
 
   it("returns cookie jar tool", () => {
     const tool = cookieJarToolFactory(
+      config,
       createCookieProxy,
       createComponentNamespacedCookieJar,
       getTopLevelDomain
-    )(config)(componentCreator);
+    )(componentAbbreviation);
     expect(createCookieProxy).toHaveBeenCalledWith(
       "adobe_alloy_ORG123",
       180,
@@ -59,25 +58,24 @@ describe("cookieJarToolFactory", () => {
 
   it("creates a shared cookie proxy for multiple components", () => {
     const configuredTool = cookieJarToolFactory(
+      config,
       createCookieProxy,
       createComponentNamespacedCookieJar,
       getTopLevelDomain
-    )(config);
-    const componentCreator2 = {
-      abbreviation: "T2"
-    };
-    configuredTool(componentCreator);
-    configuredTool(componentCreator2);
+    );
+    configuredTool(componentAbbreviation);
+    configuredTool("T2");
     expect(createCookieProxy).toHaveBeenCalledTimes(1);
   });
 
   it("uses the cookie domain provided in config", () => {
     config.cookieDomain = "example.com";
     cookieJarToolFactory(
+      config,
       createCookieProxy,
       createComponentNamespacedCookieJar,
       getTopLevelDomain
-    )(config)(componentCreator);
+    )(componentAbbreviation);
     expect(createCookieProxy).toHaveBeenCalledWith(
       "adobe_alloy_ORG123",
       180,
