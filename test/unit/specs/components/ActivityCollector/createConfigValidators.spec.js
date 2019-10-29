@@ -53,7 +53,7 @@ describe("ActivityCollector::createConfigValidators", () => {
     "clickCollectionEnabled",
     "downloadLinkQualifier" 
   ].forEach((cfgKey, i) => {
-    fit(`add default configuration key (${i})`, () => {
+    it(`add default configuration key (${i})`, () => {
       const configObj = createConfig({});
       configObj.addValidators(createConfigValidators());
       configObj.validate();
