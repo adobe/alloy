@@ -10,8 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (settings, store) => {
-  const { selector, meta } = settings;
+import { selectNodesWithEq } from "./selectNodesWithEq";
 
-  store({ selector, meta });
+// Using node selection vs matches selector, because of :eq()
+export default (selector, element) => {
+  // Find all nodes using document as context
+  const nodes = selectNodesWithEq(selector, document);
+  let result = false;
+
+  // Iterate through all the identified elements
+  // and reference compare with element
+  for (let i = 0; i < nodes.length; i += 1) {
+    if (nodes[i] === element) {
+      result = true;
+      break;
+    }
+  }
+
+  return result;
 };

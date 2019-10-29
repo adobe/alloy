@@ -13,21 +13,26 @@ governing permissions and limitations under the License.
 const createClickHandler = (eventManager, lifecycle) => {
   return clickEvent => {
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
-    const clickedObject = clickEvent.target;
+    const clickedElement = clickEvent.target;
     const event = eventManager.createEvent();
-    lifecycle.onClick({ event, clickedObject }).then(() => {
-      if (!event.isEmpty()) {
-        eventManager.sendEvent(event);
+    lifecycle.onClick({ event, clickedElement }).then(() => {
+      if (event.isEmpty()) {
+        return;
       }
+
+      eventManager.sendEvent(event);
     });
   };
 };
 
 export default (config, eventManager, lifecycle) => {
   const enabled = config.get("clickCollectionEnabled");
+
   if (!enabled) {
     return;
   }
+
   const clickHandler = createClickHandler(eventManager, lifecycle);
+
   document.addEventListener("click", clickHandler, true);
 };

@@ -15,7 +15,7 @@ import createConfigValidators from "./createConfigValidators";
 import createLinkClick from "./createLinkClick";
 
 const createActivityCollector = ({ config, eventManager }) => {
-  const linkClick = createLinkClick(window, config, eventManager);
+  const linkClick = createLinkClick(window, config);
 
   return {
     lifecycle: {
@@ -24,8 +24,8 @@ const createActivityCollector = ({ config, eventManager }) => {
         attachClickActivityCollector(config, eventManager, lifecycle);
         // TODO: createScrollActivityCollector ...
       },
-      onClick({ event, clickedObject }) {
-        linkClick(event, clickedObject);
+      onClick({ event, clickedElement }) {
+        linkClick(event, clickedElement);
       }
     }
   };

@@ -13,6 +13,6 @@ describe("Personalization::actions::click", () => {
 
     click(settings, store);
 
-    expect(store).toHaveBeenCalledWith(selector, meta);
+    expect(store).toHaveBeenCalledWith({ selector, meta });
   });
 });
