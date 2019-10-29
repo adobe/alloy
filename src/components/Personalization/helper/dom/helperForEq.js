@@ -10,22 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { selectNodesWithEq } from "./selectNodesWithEq";
+import { isNonEmptyString } from "../../../../utils";
 
-// Using node selection vs matches selector, because of :eq()
-export default (selector, element) => {
-  // Find all nodes using document as context
-  const nodes = selectNodesWithEq(selector, document);
-  let result = false;
+const EQ_START = ":eq(";
+const EQ_PATTERN = /:eq\((\d+)\)/g;
 
-  // Iterate through all the identified elements
-  // and reference compare with element
-  for (let i = 0; i < nodes.length; i += 1) {
-    if (nodes[i] === element) {
-      result = true;
-      break;
-    }
-  }
+export const isNotEqSelector = str => str.indexOf(EQ_START) === -1;
 
-  return result;
+export const splitWithEq = selector => {
+  return selector.split(EQ_PATTERN).filter(isNonEmptyString);
 };

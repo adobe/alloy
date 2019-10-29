@@ -16,9 +16,9 @@ import {
   selectNodes,
   removeNode
 } from "../../../../../../../src/utils/dom";
-import matchesSelector from "../../../../../../../src/components/Personalization/helper/dom/matchesSelector";
+import matchesSelectorWithEq from "../../../../../../../src/components/Personalization/helper/dom/matchesSelectorWithEq";
 
-describe("Personalization::DOM::matchesSelector", () => {
+describe("Personalization::DOM::matchesSelectorWithEq", () => {
   afterEach(() => {
     selectNodes(".eq").forEach(removeNode);
   });
@@ -30,7 +30,7 @@ describe("Personalization::DOM::matchesSelector", () => {
 
     const selector = "#noEq";
     const element = document.getElementById("noEq");
-    const result = matchesSelector(selector, element);
+    const result = matchesSelectorWithEq(selector, element);
 
     expect(result).toEqual(true);
   });
@@ -57,7 +57,7 @@ describe("Personalization::DOM::matchesSelector", () => {
 
     const selector = "#abc:eq(0) > div.b:eq(0) > div.c:eq(0)";
     const element = document.getElementById("one");
-    const result = matchesSelector(selector, element);
+    const result = matchesSelectorWithEq(selector, element);
 
     expect(result).toEqual(true);
   });
@@ -86,8 +86,8 @@ describe("Personalization::DOM::matchesSelector", () => {
     const two = document.getElementById("two");
     const three = document.getElementById("three");
 
-    expect(matchesSelector(selector, one)).toEqual(true);
-    expect(matchesSelector(selector, two)).toEqual(true);
-    expect(matchesSelector(selector, three)).toEqual(true);
+    expect(matchesSelectorWithEq(selector, one)).toEqual(true);
+    expect(matchesSelectorWithEq(selector, two)).toEqual(true);
+    expect(matchesSelectorWithEq(selector, three)).toEqual(true);
   });
 });

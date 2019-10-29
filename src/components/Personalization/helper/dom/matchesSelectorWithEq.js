@@ -10,29 +10,27 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import matchesSelectorWithEq from "../dom/matchesSelectorWithEq";
+import { isNotEqSelector } from "./helperForEq";
+import { selectNodesWithEq } from "./selectNodesWithEq";
 
-const collectIfMatches = (collect, clickedElement, value) => {
-  const { documentElement } = document;
-  const { selector, meta } = value;
-  let element = clickedElement;
+export default (selector, element) => {
+  if (isNotEqSelector(selector)) {
+    return element.matches(selector);
+  }
 
-  while (element && element !== documentElement) {
-    if (matchesSelectorWithEq(selector, element)) {
-      collect(meta);
+  // Using node selection vs matches selector, because of :eq()
+  // Find all nodes using document as context
+  const nodes = selectNodesWithEq(selector, document);
+  let result = false;
+
+  // Iterate through all the identified elements
+  // and reference compare with element
+  for (let i = 0; i < nodes.length; i += 1) {
+    if (nodes[i] === element) {
+      result = true;
       break;
     }
-
-    element = element.parentNode;
-  }
-};
-
-export default (collect, clickedElement, values) => {
-  if (values.length === 0) {
-    return;
   }
 
-  for (let i = 0; i < values.length; i += 1) {
-    collectIfMatches(collect, clickedElement, values[i]);
-  }
+  return result;
 };
