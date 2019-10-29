@@ -37,6 +37,10 @@ export default ({ createEvent, optIn, lifecycle, network, config }) => {
       payload.mergeMeta({
         gateway: {
           imsOrgId
+        },
+        // TODO: We should connect this to a new `debug` config.
+        collect: {
+          synchronousValidation: true
         }
       });
 
