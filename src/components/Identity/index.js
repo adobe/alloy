@@ -21,8 +21,16 @@ const createIdentity = ({ config, logger, cookieJar, optIn, eventManager }) => {
   // need to wait for the user to opt in first.
 
   const idSyncs = createIdSyncs(config, logger, cookieJar);
-  const manualIdSyncs = createManualIdSyncs(config, logger, cookieJar, idSyncs);
-  return createComponent(idSyncs, manualIdSyncs, cookieJar, config, logger, optIn, eventManager);
+  const manualIdSyncs = createManualIdSyncs(idSyncs);
+  return createComponent(
+    idSyncs,
+    manualIdSyncs,
+    cookieJar,
+    config,
+    logger,
+    optIn,
+    eventManager 
+  );
 };
 
 createIdentity.namespace = "Identity";
