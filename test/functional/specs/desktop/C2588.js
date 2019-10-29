@@ -15,7 +15,7 @@ test("Regression: Throw error when configure is executed multiple times.", async
   const message = await t.getBrowserConsoleMessages();
   await t
     .expect(message.error)
-    .contains(
-      "[alloy] Error: [alloy] The library has already been configured and may only be configured once."
+    .match(
+      /The library has already been configured and may only be configured once./
     );
 });
