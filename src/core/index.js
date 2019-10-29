@@ -24,6 +24,7 @@ import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
 import createNetwork from "./network/createNetwork";
 import createOptIn from "./createOptIn";
+import createEvent from "./createEvent";
 import executeCommandFactory from "./executeCommandFactory";
 import componentCreators from "./componentCreators";
 import buildAndValidateConfig from "./buildAndValidateConfig";
@@ -31,13 +32,11 @@ import initializeComponents from "./initializeComponents";
 import createConfig from "./createConfig";
 import coreConfigValidators from "./configValidators";
 import handleErrorFactory from "./handleErrorFactory";
-import networkToolFactory from "./tools/networkToolFactory";
-import configToolFactory from "./tools/configToolFactory";
 import cookieJarToolFactory from "./tools/cookieJarToolFactory";
-import enableOptInToolFactory from "./tools/enableOptInToolFactory";
-import loggerToolFactory from "./tools/loggerToolFactory";
 import createNetworkStrategy from "./network/createNetworkStrategy";
 import createLogger from "./createLogger";
+import createEventManager from "./createEventManager";
+import createOrgNamespacedCookieName from "./createOrgNamespacedCookieName";
 
 // eslint-disable-next-line no-underscore-dangle
 const instanceNamespaces = window.__alloyNS;
@@ -67,12 +66,11 @@ if (instanceNamespaces) {
     });
     const { setLogEnabled, logger } = logController;
     const componentRegistry = createComponentRegistry();
-    const optIn = createOptIn();
     const lifecycle = createLifecycle(componentRegistry);
+    const networkStrategy = createNetworkStrategy(window, logger);
     const getTopLevelDomain = () => {
       return memoizedGetTopLevelDomain(window, cookieJar);
     };
-    const networkStrategy = createNetworkStrategy(window, logger);
     let errorsEnabled = true;
     const getErrorsEnabled = () => {
       return errorsEnabled;
@@ -95,28 +93,47 @@ if (instanceNamespaces) {
         setLogEnabled,
         setErrorsEnabled
       });
-      return initializeComponents({
+      const optIn = createOptIn({
         config,
+        logger,
+        cookieJar,
+        createOrgNamespacedCookieName
+      });
+      const network = createNetwork({
+        config,
+        logger,
+        lifecycle,
+        networkStrategy
+      });
+      const eventManager = createEventManager({
+        createEvent,
+        optIn,
+        lifecycle,
+        network,
+        config
+      });
+      const createCookieJarTool = cookieJarToolFactory({
+        config,
+        createCookieProxy,
+        createComponentNamespacedCookieJar,
+        getTopLevelDomain,
+        createOrgNamespacedCookieName
+      });
+
+      return initializeComponents({
         componentCreators,
         lifecycle,
         componentRegistry,
-        tools: {
-          config: configToolFactory(),
-          cookieJar: cookieJarToolFactory(
-            createCookieProxy,
-            createComponentNamespacedCookieJar,
-            getTopLevelDomain
-          ),
-          enableOptIn: enableOptInToolFactory(optIn),
-          logger: loggerToolFactory(logController.createComponentLogger),
-          network: networkToolFactory(
-            createNetwork,
-            lifecycle,
-            logger,
-            networkStrategy
-          )
-        },
-        optIn
+        getImmediatelyAvailableTools(componentAbbreviation) {
+          return {
+            config,
+            optIn,
+            network,
+            eventManager,
+            cookieJar: createCookieJarTool(componentAbbreviation),
+            logger: logController.createComponentLogger(componentAbbreviation)
+          };
+        }
       });
     };
 

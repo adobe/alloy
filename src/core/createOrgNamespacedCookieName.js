@@ -10,9 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/**
- * Tool-specific dependencies => config => componentCreator => result
- */
-export default createComponentLogger => () => componentCreator => {
-  return createComponentLogger(componentCreator.namespace);
-};
+// Due to security software flagging the `@` sign in the ORG ID
+// as a security vulnerability, we are replacing it with an `_`.
+export default (cookieNamePrefix, orgId) =>
+  `${cookieNamePrefix}_${orgId.replace("@", "_")}`;

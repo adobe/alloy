@@ -10,13 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import configToolFactory from "../../../../../src/core/tools/configToolFactory";
+import createOrgNamespacedCookieName from "../../../../src/core/createOrgNamespacedCookieName";
 
-describe("configToolFactory", () => {
-  it("returns config tool", () => {
-    const config = {
-      a: "b"
-    };
-    expect(configToolFactory()(config)()).toBe(config);
+describe("createOrgNamespacedCookieName", () => {
+  it("creates a cookie name", () => {
+    expect(createOrgNamespacedCookieName("myprefix", "ABC@Adobe")).toBe(
+      "myprefix_ABC_Adobe"
+    );
   });
 });

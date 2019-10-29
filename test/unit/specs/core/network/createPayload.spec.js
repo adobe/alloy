@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createPayload from "../../../../../src/core/network/createPayload";
-import createEvent from "../../../../../src/components/DataCollector/createEvent";
+import createEvent from "../../../../../src/core/createEvent";
 
 describe("Payload", () => {
   const interactEvent = createEvent();

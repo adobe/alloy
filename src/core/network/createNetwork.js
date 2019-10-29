@@ -16,7 +16,7 @@ import { executeWithRetry, stackError, uuid } from "../../utils";
 import apiVersion from "../../constants/apiVersion";
 import edgeBasePath from "../../constants/edgeBasePath";
 
-export default (config, logger, lifecycle, networkStrategy) => {
+export default ({ config, logger, lifecycle, networkStrategy }) => {
   const handleResponse = (requestId, responseBody) => {
     let parsedBody;
 
@@ -49,15 +49,17 @@ export default (config, logger, lifecycle, networkStrategy) => {
      * with the returned response object.
      *
      * @param {Object} payload This will be JSON stringified and sent as the post body.
-     * @param {boolean} [expectsResponse=true] The endpoint and request mechanism
+     * @param {Object} [options]
+     * @param {boolean} [options.expectsResponse=true] The endpoint and request mechanism
      * will be determined by whether a response is expected.
-     * @param {boolean} [documentUnloading=false] This determines the network transport method.
+     * @param {boolean} [options.documentUnloading=false] This determines the network transport method.
      * When the document is unloading, sendBeacon is used, otherwise fetch is used.
      * @returns {Promise} a promise resolved with the response object once the response is
      * completely processed.  If expectsResponse==false, the promise will be resolved
      * with undefined.
      */
-    sendRequest(payload, expectsResponse = true, documentUnloading = false) {
+    sendRequest(payload, options = {}) {
+      const { expectsResponse = true, documentUnloading = false } = options;
       const requestId = uuid();
       if (documentUnloading) {
         logger.log(`No response requested due to document unloading.`);

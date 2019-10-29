@@ -10,194 +10,66 @@ governing permissions and limitations under the License.
 */
 
 import createDataCollector from "../../../../../src/components/DataCollector/index";
-import createPayload from "../../../../../src/core/network/createPayload";
-import { defer } from "../../../../../src/utils";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
-
-const logger = {
-  log() {},
-  warn() {}
-};
-const config = {
-  imsOrgId: "ABC123",
-  get() {}
-};
+import { noop } from "../../../../../src/utils";
 
 describe("Event Command", () => {
-  let lifecycle;
-  let network;
-  let optIn;
-  let onBeforeEventSpy;
-  let onBeforeDataCollectionSpy;
-  let sendRequestSpy;
+  let event;
+  let eventManager;
   let eventCommand;
+
   beforeEach(() => {
-    lifecycle = {
-      onBeforeEvent: () => Promise.resolve(),
-      onBeforeDataCollection: () => Promise.resolve()
+    event = jasmine.createSpyObj("event", ["documentUnloading", "mergeXdm"]);
+    eventManager = {
+      createEvent() {
+        return event;
+      },
+      sendEvent: jasmine
+        .createSpy()
+        .and.callFake((_event, { applyUserProvidedData = noop }) => {
+          applyUserProvidedData();
+          return Promise.resolve("sendEventResult");
+        })
     };
-    network = {
-      createPayload,
-      sendRequest: () => Promise.resolve({})
-    };
-    optIn = {
-      whenOptedIn: () => Promise.resolve()
-    };
-    onBeforeEventSpy = spyOn(lifecycle, "onBeforeEvent").and.callThrough();
-    onBeforeDataCollectionSpy = spyOn(
-      lifecycle,
-      "onBeforeDataCollection"
-    ).and.callThrough();
-    sendRequestSpy = spyOn(network, "sendRequest").and.callThrough();
     const dataCollector = createDataCollector({
-      config,
-      logger,
-      network
-    });
-    dataCollector.lifecycle.onComponentsRegistered({
-      lifecycle,
-      optIn
+      eventManager
     });
     eventCommand = dataCollector.commands.event;
   });
 
-  it("Calls onBeforeEvent", () => {
-    const options = {};
-    return eventCommand(options).then(() => {
-      expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith({
-        event: jasmine.anything(),
-        options,
-        isViewStart: false
+  it("sends event", () => {
+    const xdm = { a: "b" };
+    const data = { c: "d" };
+    const options = {
+      viewStart: true,
+      xdm,
+      data,
+      documentUnloading: true
+    };
+
+    return eventCommand(options).then(result => {
+      expect(event.documentUnloading).toHaveBeenCalled();
+      expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
+        isViewStart: true,
+        applyUserProvidedData: jasmine.any(Function)
       });
-    });
-  });
-  it("Extracts viewStart for onBeforeEvent", () => {
-    const options = { viewStart: true, documentUnloading: false };
-    return eventCommand(options).then(() => {
-      expect(onBeforeEventSpy).toHaveBeenCalledWith({
-        event: jasmine.anything(),
-        options,
-        isViewStart: true
-      });
-    });
-  });
-  it("Calls onBeforeEvent with a matching event", () => {
-    const options = { data: { a: 1 }, meta: { b: 2 } };
-    return eventCommand(options).then(() => {
-      expect(onBeforeEventSpy).toHaveBeenCalledWith({
-        event: jasmine.anything(),
-        options,
-        isViewStart: false
-      });
+      expect(event.mergeXdm).toHaveBeenCalledWith(xdm);
+      expect(event.data).toBe(data);
+      expect(result).toEqual("sendEventResult");
     });
   });
 
-  it("Allows other components to modify the event", () => {
-    onBeforeEventSpy.and.callFake(({ event }) => {
-      event.mergeXdm({ a: "changed" });
-      return Promise.resolve();
-    });
-    return eventCommand({ data: { a: 1 } }).then(() => {
-      expect(
-        network.sendRequest.calls
-          .argsFor(0)[0]
-          .toJSON()
-          .events[0].toJSON().xdm
-      ).toEqual({ a: "changed" });
-    });
-  });
-
-  it("Allows other components to hold up the event", () => {
-    const deferred = defer();
-    onBeforeEventSpy.and.returnValue(deferred.promise);
-    eventCommand({});
-    return flushPromiseChains()
-      .then(() => {
-        expect(onBeforeEventSpy).toHaveBeenCalled();
-        expect(sendRequestSpy).not.toHaveBeenCalled();
-        deferred.resolve();
-        return flushPromiseChains();
-      })
-      .then(() => {
-        expect(sendRequestSpy).toHaveBeenCalled();
-      });
-  });
-
-  it("Sends the event through to the Network Gateway", () => {
-    return eventCommand({ data: { a: 1 } }).then(() => {
-      expect(sendRequestSpy).toHaveBeenCalled();
-    });
-  });
-
-  it("Calls onBeforeDataCollection", () => {
+  it("does not call documentUnloading if documentUnloading is not defined", () => {
     return eventCommand({}).then(() => {
-      expect(onBeforeDataCollectionSpy).toHaveBeenCalled();
+      expect(event.documentUnloading).not.toHaveBeenCalled();
     });
   });
 
-  it("Waits for onBeforeDataCollection promises", () => {
-    const deferred = defer();
-    onBeforeDataCollectionSpy.and.returnValue(deferred.promise);
-    eventCommand({});
-    return flushPromiseChains()
-      .then(() => {
-        expect(onBeforeDataCollectionSpy).toHaveBeenCalled();
-        expect(sendRequestSpy).not.toHaveBeenCalled();
-        deferred.resolve();
-        return flushPromiseChains();
-      })
-      .then(() => {
-        expect(sendRequestSpy).toHaveBeenCalled();
+  it("sets isViewStart to false if viewStart is not defined", () => {
+    return eventCommand({}).then(() => {
+      expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
+        isViewStart: false,
+        applyUserProvidedData: jasmine.any(Function)
       });
-  });
-
-  it("Returns a promise resolved with the request and response", () => {
-    sendRequestSpy.and.returnValue(Promise.resolve({ my: "response" }));
-    return eventCommand({}).then(data => {
-      expect(data.requestBody).toBeDefined();
-      expect(data.responseBody).toEqual({ my: "response" });
-    });
-  });
-
-  it("sends expectsResponse == true", () => {
-    onBeforeEventSpy.and.callFake(({ event }) => {
-      event.expectResponse();
-      return Promise.resolve();
-    });
-    return eventCommand({}).then(() => {
-      expect(sendRequestSpy).toHaveBeenCalledWith(
-        jasmine.anything(),
-        true,
-        false
-      );
-    });
-  });
-
-  it("sends expectsResponse == false", () => {
-    return eventCommand({}).then(() => {
-      expect(sendRequestSpy).toHaveBeenCalledWith(
-        jasmine.anything(),
-        false,
-        false
-      );
-    });
-  });
-
-  describe("privacy", () => {
-    it("calls onBeforeEvent before consent and onBeforeDataCollection after", () => {
-      const deferred = defer();
-      optIn.whenOptedIn = () => deferred.promise;
-      eventCommand({});
-      return flushPromiseChains()
-        .then(() => {
-          expect(onBeforeEventSpy).toHaveBeenCalled();
-          expect(onBeforeDataCollectionSpy).not.toHaveBeenCalled();
-          deferred.resolve();
-          return flushPromiseChains();
-        })
-        .then(() => {
-          expect(onBeforeDataCollectionSpy).toHaveBeenCalled();
-        });
     });
   });
 });

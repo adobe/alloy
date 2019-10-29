@@ -13,31 +13,18 @@ governing permissions and limitations under the License.
 import { stackError } from "../utils";
 
 export default ({
-  config,
   componentCreators,
   lifecycle,
   componentRegistry,
-  tools,
-  optIn
+  getImmediatelyAvailableTools
 }) => {
-  const configuredTools = Object.keys(tools).reduce((accumulator, toolKey) => {
-    accumulator[toolKey] = tools[toolKey](config);
-    return accumulator;
-  }, {});
-
   componentCreators.forEach(createComponent => {
-    const { namespace } = createComponent;
-    const componentTools = Object.keys(configuredTools).reduce(
-      (accumulator, toolKey) => {
-        accumulator[toolKey] = configuredTools[toolKey](createComponent);
-        return accumulator;
-      },
-      {}
-    );
+    const { namespace, abbreviation } = createComponent;
     // TO-DOCUMENT: Helpers that we inject into factories.
+    const tools = getImmediatelyAvailableTools(abbreviation);
     let component;
     try {
-      component = createComponent(componentTools);
+      component = createComponent(tools);
     } catch (error) {
       throw stackError(
         `[${namespace}] An error occurred during component creation.`,
@@ -49,9 +36,7 @@ export default ({
 
   return lifecycle
     .onComponentsRegistered({
-      componentRegistry,
-      lifecycle,
-      optIn
+      lifecycle
     })
     .then(() => componentRegistry);
 };

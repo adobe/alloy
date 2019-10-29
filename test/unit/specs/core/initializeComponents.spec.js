@@ -15,11 +15,9 @@ import initializeComponents from "../../../../src/core/initializeComponents";
 describe("initializeComponents", () => {
   let lifecycle;
   let componentRegistry;
-  let optIn;
   let componentByNamespace;
   let componentCreators;
-  let tools;
-  let config;
+  let getImmediatelyAvailableTools;
 
   beforeEach(() => {
     lifecycle = {
@@ -29,9 +27,6 @@ describe("initializeComponents", () => {
     };
     componentRegistry = {
       register: jasmine.createSpy()
-    };
-    optIn = {
-      enable() {}
     };
     componentByNamespace = {
       Comp1: {},
@@ -49,31 +44,26 @@ describe("initializeComponents", () => {
     componentCreator2.abbreviation = "c2";
     componentCreators = [componentCreator1, componentCreator2];
 
-    tools = {
-      tool1(_config) {
-        return componentCreator => {
-          return { name: "tool1", config: _config, componentCreator };
-        };
-      },
-      tool2(_config) {
-        return componentCreator => {
-          return { name: "tool2", config: _config, componentCreator };
-        };
-      }
-    };
-    config = {
-      imsOrgId: "ORG1"
+    getImmediatelyAvailableTools = componentAbbreviation => {
+      return {
+        tool1: {
+          name: "tool1",
+          componentAbbreviation
+        },
+        tool2: {
+          name: "tool2",
+          componentAbbreviation
+        }
+      };
     };
   });
 
   it("creates and registers components", () => {
     const initializeComponentsPromise = initializeComponents({
-      config,
       componentCreators,
       lifecycle,
       componentRegistry,
-      tools,
-      optIn
+      getImmediatelyAvailableTools
     });
 
     componentCreators.forEach(componentCreator => {
@@ -81,13 +71,11 @@ describe("initializeComponents", () => {
       expect(componentCreator).toHaveBeenCalledWith({
         tool1: {
           name: "tool1",
-          config,
-          componentCreator
+          componentAbbreviation: componentCreator.abbreviation
         },
         tool2: {
           name: "tool2",
-          config,
-          componentCreator
+          componentAbbreviation: componentCreator.abbreviation
         }
       });
       expect(componentRegistry.register).toHaveBeenCalledWith(
@@ -96,9 +84,7 @@ describe("initializeComponents", () => {
       );
     });
     expect(lifecycle.onComponentsRegistered).toHaveBeenCalledWith({
-      componentRegistry,
-      lifecycle,
-      optIn
+      lifecycle
     });
 
     return initializeComponentsPromise.then(result => {
@@ -111,12 +97,10 @@ describe("initializeComponents", () => {
 
     expect(() => {
       initializeComponents({
-        config,
         componentCreators,
         lifecycle,
         componentRegistry,
-        tools,
-        optIn
+        getImmediatelyAvailableTools
       });
     }).toThrowError(/\[Comp2\] An error occurred during component creation./);
   });

@@ -37,11 +37,11 @@ describe("createNetwork", () => {
     networkStrategy = jasmine
       .createSpy()
       .and.returnValue(Promise.resolve(JSON.stringify(mockResponse)));
-    network = createNetwork(config, logger, lifecycle, networkStrategy);
+    network = createNetwork({ config, logger, lifecycle, networkStrategy });
   });
 
   it("can call interact", () => {
-    return network.sendRequest({}, true, false).then(() => {
+    return network.sendRequest({}).then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
         jasmine.stringMatching(
           /^https:\/\/alloy\.mysite\.com\/ee\/v1\/interact\?configId=myconfigId&requestId=[0-9a-f-]+$/
@@ -53,7 +53,7 @@ describe("createNetwork", () => {
   });
 
   it("can call collect", () => {
-    return network.sendRequest({}, false, undefined, "myrequestid").then(() => {
+    return network.sendRequest({}, { expectsResponse: false }).then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
         jasmine.stringMatching(
           /^https:\/\/alloy\.mysite\.com\/ee\/v1\/collect\?configId=myconfigId&requestId=[0-9a-f-]+$/
@@ -64,32 +64,36 @@ describe("createNetwork", () => {
     });
   });
 
-  it("can call when the document is unloading", () => {
-    return network.sendRequest({}, false, true, "myrequestid").then(() => {
-      expect(networkStrategy).toHaveBeenCalledWith(
-        jasmine.stringMatching(
-          /^https:\/\/alloy\.mysite\.com\/ee\/v1\/collect\?configId=myconfigId&requestId=[0-9a-f-]+$/
-        ),
-        "{}",
-        true
-      );
-    });
+  it("can call collect when the document is unloading", () => {
+    return network
+      .sendRequest({}, { expectsResponse: false, documentUnloading: true })
+      .then(() => {
+        expect(networkStrategy).toHaveBeenCalledWith(
+          jasmine.stringMatching(
+            /^https:\/\/alloy\.mysite\.com\/ee\/v1\/collect\?configId=myconfigId&requestId=[0-9a-f-]+$/
+          ),
+          "{}",
+          true
+        );
+      });
   });
 
   it("uses collect when a request expects a response and is an exit link", () => {
-    return network.sendRequest({}, true, true, "myrequestid").then(() => {
-      expect(networkStrategy).toHaveBeenCalledWith(
-        jasmine.stringMatching(
-          /^https:\/\/alloy\.mysite\.com\/ee\/v1\/collect\?configId=myconfigId&requestId=[0-9a-f-]+$/
-        ),
-        "{}",
-        true
-      );
-    });
+    return network
+      .sendRequest({}, { expectsResponse: true, documentUnloading: true })
+      .then(() => {
+        expect(networkStrategy).toHaveBeenCalledWith(
+          jasmine.stringMatching(
+            /^https:\/\/alloy\.mysite\.com\/ee\/v1\/collect\?configId=myconfigId&requestId=[0-9a-f-]+$/
+          ),
+          "{}",
+          true
+        );
+      });
   });
 
   it("sends the payload", () => {
-    return network.sendRequest({ id: "mypayload" }, true).then(() => {
+    return network.sendRequest({ id: "mypayload" }).then(() => {
       expect(JSON.parse(networkStrategy.calls.argsFor(0)[1])).toEqual({
         id: "mypayload"
       });
@@ -98,7 +102,7 @@ describe("createNetwork", () => {
 
   it("logs the request and response when response is expected", () => {
     const payload = { id: "mypayload2" };
-    return network.sendRequest(payload, true).then(() => {
+    return network.sendRequest(payload, { expectsResponse: true }).then(() => {
       expect(logger.log).toHaveBeenCalledWith(
         jasmine.stringMatching(/^Request .+: Sending request.$/),
         JSON.parse(JSON.stringify(payload))
@@ -112,7 +116,7 @@ describe("createNetwork", () => {
 
   it("logs only the request when no response is expected", () => {
     const payload = { id: "mypayload2" };
-    return network.sendRequest(payload, false).then(() => {
+    return network.sendRequest(payload, { expectsResponse: false }).then(() => {
       expect(logger.log).toHaveBeenCalledWith(
         jasmine.stringMatching(
           /^Request .+: Sending request \(no response is expected\).$/
@@ -124,7 +128,7 @@ describe("createNetwork", () => {
   });
 
   it("resolves the returned promise", () => {
-    return network.sendRequest({}, true).then(response => {
+    return network.sendRequest({}).then(response => {
       expect(response.getPayloadsByType).toEqual(jasmine.any(Function));
     });
   });
@@ -135,7 +139,7 @@ describe("createNetwork", () => {
       Promise.reject(new Error("lifecycleerror"))
     );
     return network
-      .sendRequest({}, true)
+      .sendRequest({})
       .then(() => {
         // If sendRequest resolves instead of rejects, we want this test to fail.
         throw Error("Expected sendRequest to reject promise.");
@@ -154,7 +158,7 @@ describe("createNetwork", () => {
   it("runs onResponseError hook and rejects the promise when response is invalid json", () => {
     networkStrategy.and.returnValue(Promise.resolve("badbody"));
     return network
-      .sendRequest({}, true)
+      .sendRequest({})
       .then(() => {
         // If sendRequest resolves instead of rejects, we want this test to fail.
         throw Error("Expected sendRequest to reject promise.");
@@ -190,7 +194,7 @@ describe("createNetwork", () => {
     networkStrategy.and.returnValue(
       Promise.resolve(JSON.stringify(myresponse))
     );
-    return network.sendRequest({}, true).then(() => {
+    return network.sendRequest({}).then(() => {
       expect(lifecycle.onResponse).toHaveBeenCalled();
     });
   });
@@ -198,7 +202,7 @@ describe("createNetwork", () => {
   it("doesn't try to parse the response on a beacon call", () => {
     networkStrategy.and.returnValue(Promise.resolve("bar"));
     // a failed promise will fail the test
-    return network.sendRequest({}, false);
+    return network.sendRequest({}, { expectsResponse: false });
   });
 
   it("retries failed requests until success", () => {
@@ -207,14 +211,14 @@ describe("createNetwork", () => {
         ? Promise.reject()
         : Promise.resolve(JSON.stringify(mockResponse));
     });
-    return network.sendRequest({}, true).then(() => {
+    return network.sendRequest({}).then(() => {
       expect(networkStrategy).toHaveBeenCalledTimes(3);
     });
   });
 
   it("retries failed requests until max retries met", () => {
     networkStrategy.and.returnValue(Promise.reject(new Error("bad thing")));
-    return network.sendRequest({}, true).catch(error => {
+    return network.sendRequest({}).catch(error => {
       expect(networkStrategy).toHaveBeenCalledTimes(4);
       expect(error.message).toBe(
         "Network request failed.\nCaused by: bad thing"

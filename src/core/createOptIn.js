@@ -11,8 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { defer } from "../utils";
+import cookieDetails from "../constants/cookieDetails";
 
-const COOKIE_NAMESPACE = "optIn";
+// OptIn uses a different cookie than the rest of Alloy.
+const { ALLOY_OPT_IN_COOKIE_NAME } = cookieDetails;
 
 // The user has opted into all purposes.
 const ALL = "all";
@@ -23,10 +25,27 @@ const NONE = "none";
 // The user has yet to provide opt-in purposes.
 const PENDING = "pending";
 
-export default () => {
+export default ({
+  config,
+  logger,
+  cookieJar,
+  createOrgNamespacedCookieName
+}) => {
   const deferredsAwaitingResolution = [];
-  let cookieJar;
   let purposes = ALL;
+
+  const cookieName = createOrgNamespacedCookieName(
+    ALLOY_OPT_IN_COOKIE_NAME,
+    config.imsOrgId
+  );
+
+  if (config.optInEnabled) {
+    purposes = cookieJar.get(cookieName) || PENDING;
+  }
+
+  if (purposes === PENDING) {
+    logger.warn("Some commands may be delayed until the user opts in.");
+  }
 
   const processDeferreds = () => {
     if (purposes === ALL || purposes === NONE) {
@@ -45,28 +64,13 @@ export default () => {
 
   return {
     /**
-     * Only to be called by the Privacy component during startup. If opt-in
-     * isn't enabled, this method will not be called.
-     * @param {Object} logger A logger object.
-     * @param {Object} _cookieJar A cookie management object.
-     * to the Privacy component.
-     */
-    enable(logger, _cookieJar) {
-      cookieJar = _cookieJar;
-      purposes = cookieJar.get(COOKIE_NAMESPACE) || PENDING;
-
-      if (purposes === PENDING) {
-        logger.warn("Some commands may be delayed until the user opts in.");
-      }
-    },
-    /**
      * Update the purposes the user has opted into. Only to be called by the
      * Privacy component.
      * @param {string} newPurposes Can be "all" or "none".
      */
     setPurposes(newPurposes) {
       purposes = newPurposes;
-      cookieJar.set(COOKIE_NAMESPACE, newPurposes);
+      cookieJar.set(cookieName, newPurposes);
       processDeferreds();
     },
     /**
