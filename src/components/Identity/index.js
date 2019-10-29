@@ -24,7 +24,7 @@ const addIdsContext = (payload, ecid) => {
   });
 };
 
-const createIdentity = ({ config, logger, cookieJar, network, optIn }) => {
+const createIdentity = ({ config, logger, cookieJar, optIn, eventManager }) => {
   // We avoid reading the ECID from the cookie right away, because we
   // need to wait for the user to opt in first.
   const getEcid = () => cookieJar.get(EXPERIENCE_CLOUD_ID);
@@ -37,16 +37,13 @@ const createIdentity = ({ config, logger, cookieJar, network, optIn }) => {
   });
   // #endif
   let deferredForEcid;
-  let customerIds;
+  const customerIds = createCustomerIds(cookieJar, eventManager);
   const idSyncs = createIdSyncs(config, logger, cookieJar);
   const manualIdSyncs = createManualIdSyncs(idSyncs);
   let alreadyQueriedForIdSyncs = false;
 
   return {
     lifecycle: {
-      onComponentsRegistered({ lifecycle }) {
-        customerIds = createCustomerIds(cookieJar, lifecycle, network, optIn);
-      },
       // Waiting for opt-in because we'll be reading the ECID from a cookie
       onBeforeEvent({ event }) {
         return optIn.whenOptedIn().then(() => {
