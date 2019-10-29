@@ -10,10 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
 import createConfigValidators from "../../../../../src/components/ActivityCollector/createConfigValidators";
 import createConfig from "../../../../../src/core/createConfig";
-import { config } from "rxjs";
 
 describe("ActivityCollector::createConfigValidators", () => {
   [
@@ -49,10 +47,7 @@ describe("ActivityCollector::createConfigValidators", () => {
     });
   });
 
-  [
-    "clickCollectionEnabled",
-    "downloadLinkQualifier" 
-  ].forEach((cfgKey, i) => {
+  ["clickCollectionEnabled", "downloadLinkQualifier"].forEach((cfgKey, i) => {
     it(`add default configuration key (${i})`, () => {
       const configObj = createConfig({});
       configObj.addValidators(createConfigValidators());
@@ -60,5 +55,4 @@ describe("ActivityCollector::createConfigValidators", () => {
       expect(configObj[cfgKey]).toBeDefined();
     });
   });
-
 });
