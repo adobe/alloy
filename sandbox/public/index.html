@@ -9,29 +9,14 @@
     />
     <meta name="theme-color" content="#000000" />
     <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
-<<<<<<< HEAD
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'
-    *.demdex.net; script-src 'self' 'unsafe-inline' assets.adobedtm.com
-    cdn.tt.omtrdc.net; style-src 'self' 'unsafe-inline' cdn.tt.omtrdc.net;
-    img-src * data:; <<<<<<< HEAD connect-src 'self' unifiedjslab.tt.omtrdc.net
-    *.demdex.net http://localhost:8080 https://alpha.konductor.adobedc.net
-    https://beta.adobedc.net https://edgegateway.azurewebsites.net
-    konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net"
-    ======= connect-src 'self' unifiedjslab.tt.omtrdc.net demdex.net
-    *.demdex.net http://localhost:8080 https://alpha.konductor.adobedc.net
-    https://edgegateway.azurewebsites.net
-    konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net"
-    >>>>>>> Adding migration v1 />
-=======
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self' *.demdex.net;
             script-src 'self' 'unsafe-inline' assets.adobedtm.com cdn.tt.omtrdc.net;
             style-src 'self' 'unsafe-inline' cdn.tt.omtrdc.net;
             img-src * data:;
-            connect-src 'self' unifiedjslab.tt.omtrdc.net *.demdex.net http://localhost:8080 https://alpha.konductor.adobedc.net https://edgegateway.azurewebsites.net konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net"
+            connect-src 'self' unifiedjslab.tt.omtrdc.net *.demdex.net http://localhost:8080 https://alpha.konductor.adobedc.net https://beta.adobedc.net https://edgegateway.azurewebsites.net konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net"
     />
->>>>>>> Updating sandbox to have a legacy visitor test page
 
     <title>Mock website hosting Alloy</title>
 
@@ -60,7 +45,7 @@
         // edgeDomain:
         //   "konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net",
         // optInEnabled: true,
-        propertyId: "9999999",
+        configId: "9999999",
         imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
         // errorsEnabled: false,
         logEnabled: true,
@@ -127,7 +112,7 @@
       // We use a different imsOrgId and configId.
       organizationTwo("configure", {
         // edgeDomain: "edgegateway.azurewebsites.net",
-        propertyId: "8888888",
+        configId: "8888888",
         imsOrgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
         logEnabled: true,
         clickCollectionEnabled: false
