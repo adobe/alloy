@@ -18,13 +18,12 @@ export default (idSyncs, manualIdSyncs, cookieJar, config, logger, network) => {
   const { migrateIds, imsOrgId } = config;
   const migration = createMigration(imsOrgId, migrateIds);
 
+  // TODO: Fetch from server if ECID is not available.
   const getEcid = () => {
-    let ecid = cookieJar.get(EXPERIENCE_CLOUD_ID);
-    if (!ecid) {
-      ecid = migration.readEcidFromAmcvCookie();
-      if (ecid) {
-        cookieJar.set(EXPERIENCE_CLOUD_ID, ecid);
-      }
+    const ecid =
+      cookieJar.get(EXPERIENCE_CLOUD_ID) || migration.readEcidFromAmcvCookie();
+    if (ecid) {
+      cookieJar.set(EXPERIENCE_CLOUD_ID, ecid);
     }
     return ecid;
   };
@@ -33,9 +32,7 @@ export default (idSyncs, manualIdSyncs, cookieJar, config, logger, network) => {
     lifecycle: {
       onComponentsRegistered(tools) {
         ({ lifecycle, optIn } = tools);
-        if (migrateIds) {
-          getEcid();
-        }
+        getEcid();
         customerIds = createCustomerIds(cookieJar, lifecycle, network, optIn);
 
         // #if _REACTOR
