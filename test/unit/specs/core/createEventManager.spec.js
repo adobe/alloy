@@ -10,20 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
 import createEventManager from "../../../../src/core/createEventManager";
-// import createPayload from "../../../../src/core/network/createPayload";
-// import { defer } from "../../../../src/utils";
-// import flushPromiseChains from "../../helpers/flushPromiseChains";
-
-// const logger = {
-//   log() {},
-//   warn() {}
-// };
-const config = {
-  imsOrgId: "ABC123",
-  get() {}
-};
+import { defer } from "../../../../src/utils";
+import flushPromiseChains from "../../helpers/flushPromiseChains";
 
 describe("createEventManager", () => {
   let event;
@@ -31,12 +20,16 @@ describe("createEventManager", () => {
   let lifecycle;
   let network;
   let optIn;
-  // let onBeforeEventSpy;
-  // let onBeforeDataCollectionSpy;
-  // let sendRequestSpy;
+  let config;
   let eventManager;
   beforeEach(() => {
-    event = { mergeXdm() {}, isDocumentUnloading: () => true };
+    event = {
+      mergeXdm() {},
+      isDocumentUnloading: () => false,
+      toJSON() {
+        return { xdm: {} };
+      }
+    };
     const createEvent = jasmine.createSpy().and.returnValue(event);
     lifecycle = {
       onBeforeEvent: jasmine.createSpy().and.returnValue(Promise.resolve()),
@@ -47,14 +40,20 @@ describe("createEventManager", () => {
     payload = {
       addEvent: jasmine.createSpy(),
       mergeMeta: jasmine.createSpy(),
-      expectsResponse: true
+      expectsResponse: false,
+      toJSON() {
+        return { meta: {} };
+      }
     };
     network = {
       createPayload: () => payload,
-      sendRequest: jasmine.createSpy().and.returnValue(Promise.resolve({}))
+      sendRequest: jasmine.createSpy().and.returnValue(Promise.resolve())
     };
     optIn = {
-      whenOptedIn: () => Promise.resolve()
+      whenOptedIn: jasmine.createSpy().and.returnValue(Promise.resolve())
+    };
+    config = {
+      imsOrgId: "ABC123"
     };
     eventManager = createEventManager({
       createEvent,
@@ -72,16 +71,38 @@ describe("createEventManager", () => {
   });
 
   describe("sendEvent", () => {
-    it("calls onBeforeEvent", () => {
-      const options = {
-        isViewStart: true
-      };
-      return eventManager.sendEvent(event, options).then(() => {
-        expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith({
-          event,
-          isViewStart: true
+    it("creates the payload and adds event and meta", () => {
+      return eventManager.sendEvent(event).then(() => {
+        expect(payload.addEvent).toHaveBeenCalledWith(event);
+        expect(payload.mergeMeta).toHaveBeenCalledWith({
+          gateway: {
+            imsOrgId: "ABC123"
+          }
         });
       });
+    });
+
+    it("allows other components to access event and pause the lifecycle", () => {
+      const deferred = defer();
+      const options = {
+        isViewStart: true,
+        applyUserProvidedData: jasmine.createSpy()
+      };
+      lifecycle.onBeforeEvent.and.returnValue(deferred.promise);
+      eventManager.sendEvent(event, options);
+      return flushPromiseChains()
+        .then(() => {
+          expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith({
+            event,
+            isViewStart: true
+          });
+          expect(options.applyUserProvidedData).not.toHaveBeenCalled();
+          deferred.resolve();
+          return flushPromiseChains();
+        })
+        .then(() => {
+          expect(network.sendRequest).toHaveBeenCalled();
+        });
     });
 
     it("applies user provided data", () => {
@@ -93,131 +114,99 @@ describe("createEventManager", () => {
       });
     });
 
-    it("calls onBeforeDataCollection", () => {
+    it("calls onBeforeEvent before consent and onBeforeDataCollection after", () => {
+      const deferred = defer();
+      optIn.whenOptedIn = () => deferred.promise;
+      eventManager.sendEvent(event);
+      return flushPromiseChains()
+        .then(() => {
+          expect(lifecycle.onBeforeEvent).toHaveBeenCalled();
+          expect(lifecycle.onBeforeDataCollection).not.toHaveBeenCalled();
+          deferred.resolve();
+          return flushPromiseChains();
+        })
+        .then(() => {
+          expect(lifecycle.onBeforeDataCollection).toHaveBeenCalled();
+        });
+    });
+
+    it("allows other components to access payload and pause the lifecycle", () => {
+      const deferred = defer();
+      lifecycle.onBeforeDataCollection.and.returnValue(deferred.promise);
+      eventManager.sendEvent(event);
+      return flushPromiseChains()
+        .then(() => {
+          expect(lifecycle.onBeforeDataCollection).toHaveBeenCalled();
+          expect(network.sendRequest).not.toHaveBeenCalled();
+          deferred.resolve();
+          return flushPromiseChains();
+        })
+        .then(() => {
+          expect(network.sendRequest).toHaveBeenCalled();
+        });
+    });
+
+    it("send payload through network", () => {
       return eventManager.sendEvent(event).then(() => {
-        expect(lifecycle.onBeforeDataCollection).toHaveBeenCalledWith({
-          payload
+        expect(network.sendRequest).toHaveBeenCalledWith(payload, {
+          expectsResponse: false,
+          documentUnloading: false
         });
       });
     });
 
-    it("calls sendRequest", () => {
+    it("sends payload through network with expectsResponse true", () => {
+      payload.expectsResponse = true;
       return eventManager.sendEvent(event).then(() => {
-        expect(network.sendRequest).toHaveBeenCalledWith(payload, true, true);
+        expect(network.sendRequest).toHaveBeenCalledWith(payload, {
+          expectsResponse: true,
+          documentUnloading: false
+        });
       });
     });
 
-    // it("resolves with response information", () => {
-    //
-    // });
-    //
-    // it("Allows other components to modify the event", () => {
-    //   onBeforeEventSpy.and.callFake(({ event }) => {
-    //     event.mergeXdm({ a: "changed" });
-    //     return Promise.resolve();
-    //   });
-    //   return eventCommand({ data: { a: 1 } }).then(() => {
-    //     expect(
-    //       network.sendRequest.calls
-    //         .argsFor(0)[0]
-    //         .toJSON()
-    //         .events[0].toJSON().xdm
-    //     ).toEqual({ a: "changed" });
-    //   });
-    // });
-    //
-    // it("Allows other components to hold up the event", () => {
-    //   const deferred = defer();
-    //   onBeforeEventSpy.and.returnValue(deferred.promise);
-    //   eventCommand({});
-    //   return flushPromiseChains()
-    //     .then(() => {
-    //       expect(onBeforeEventSpy).toHaveBeenCalled();
-    //       expect(sendRequestSpy).not.toHaveBeenCalled();
-    //       deferred.resolve();
-    //       return flushPromiseChains();
-    //     })
-    //     .then(() => {
-    //       expect(sendRequestSpy).toHaveBeenCalled();
-    //     });
-    // });
-    //
-    // it("Sends the event through to the Network Gateway", () => {
-    //   return eventCommand({ data: { a: 1 } }).then(() => {
-    //     expect(sendRequestSpy).toHaveBeenCalled();
-    //   });
-    // });
-    //
-    // it("Calls onBeforeDataCollection", () => {
-    //   return eventCommand({}).then(() => {
-    //     expect(onBeforeDataCollectionSpy).toHaveBeenCalled();
-    //   });
-    // });
-    //
-    // it("Waits for onBeforeDataCollection promises", () => {
-    //   const deferred = defer();
-    //   onBeforeDataCollectionSpy.and.returnValue(deferred.promise);
-    //   eventCommand({});
-    //   return flushPromiseChains()
-    //     .then(() => {
-    //       expect(onBeforeDataCollectionSpy).toHaveBeenCalled();
-    //       expect(sendRequestSpy).not.toHaveBeenCalled();
-    //       deferred.resolve();
-    //       return flushPromiseChains();
-    //     })
-    //     .then(() => {
-    //       expect(sendRequestSpy).toHaveBeenCalled();
-    //     });
-    // });
-    //
-    // it("Returns a promise resolved with the request and response", () => {
-    //   sendRequestSpy.and.returnValue(Promise.resolve({ my: "response" }));
-    //   return eventCommand({}).then(data => {
-    //     expect(data.requestBody).toBeDefined();
-    //     expect(data.responseBody).toEqual({ my: "response" });
-    //   });
-    // });
-    //
-    // it("sends expectsResponse == true", () => {
-    //   onBeforeEventSpy.and.callFake(({ event }) => {
-    //     event.expectResponse();
-    //     return Promise.resolve();
-    //   });
-    //   return eventCommand({}).then(() => {
-    //     expect(sendRequestSpy).toHaveBeenCalledWith(
-    //       jasmine.anything(),
-    //       true,
-    //       false
-    //     );
-    //   });
-    // });
-    //
-    // it("sends expectsResponse == false", () => {
-    //   return eventCommand({}).then(() => {
-    //     expect(sendRequestSpy).toHaveBeenCalledWith(
-    //       jasmine.anything(),
-    //       false,
-    //       false
-    //     );
-    //   });
-    // });
-    //
-    // describe("privacy", () => {
-    //   it("calls onBeforeEvent before consent and onBeforeDataCollection after", () => {
-    //     const deferred = defer();
-    //     optIn.whenOptedIn = () => deferred.promise;
-    //     eventCommand({});
-    //     return flushPromiseChains()
-    //       .then(() => {
-    //         expect(onBeforeEventSpy).toHaveBeenCalled();
-    //         expect(onBeforeDataCollectionSpy).not.toHaveBeenCalled();
-    //         deferred.resolve();
-    //         return flushPromiseChains();
-    //       })
-    //       .then(() => {
-    //         expect(onBeforeDataCollectionSpy).toHaveBeenCalled();
-    //       });
-    //   });
-    // });
+    it("sends payload through network with documentUnloading true", () => {
+      event.isDocumentUnloading = () => true;
+      return eventManager.sendEvent(event).then(() => {
+        expect(network.sendRequest).toHaveBeenCalledWith(payload, {
+          expectsResponse: false,
+          documentUnloading: true
+        });
+      });
+    });
+
+    it("returns request and response info", () => {
+      const response = { type: "response" };
+      network.sendRequest.and.returnValue(Promise.resolve(response));
+      return eventManager.sendEvent(event).then(result => {
+        expect(result.requestBody).toEqual(payload.toJSON());
+        expect(result.requestBody).not.toBe(payload);
+        expect(result.responseBody).toEqual(response);
+        expect(result.requestBody).not.toBe(response);
+      });
+    });
+
+    it("returns request info but not response info", () => {
+      return eventManager.sendEvent(event).then(result => {
+        expect(result.requestBody).toEqual(payload.toJSON());
+        expect(result.requestBody).not.toBe(payload);
+        expect(result.responseBody).toBeUndefined();
+      });
+    });
+
+    it("performs operations in order", () => {
+      const options = {
+        applyUserProvidedData: jasmine.createSpy()
+      };
+      return eventManager.sendEvent(event, options).then(() => {
+        expect(lifecycle.onBeforeEvent).toHaveBeenCalledBefore(
+          options.applyUserProvidedData
+        );
+        expect(options.applyUserProvidedData).toHaveBeenCalledBefore(
+          optIn.whenOptedIn
+        );
+        expect(optIn.whenOptedIn).toHaveBeenCalledBefore(network.sendRequest);
+      });
+    });
   });
 });

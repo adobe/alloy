@@ -41,11 +41,10 @@ export default ({ createEvent, optIn, lifecycle, network, config }) => {
           return lifecycle.onBeforeDataCollection({ payload });
         })
         .then(() => {
-          return network.sendRequest(
-            payload,
-            payload.expectsResponse,
-            event.isDocumentUnloading()
-          );
+          return network.sendRequest(payload, {
+            expectsResponse: payload.expectsResponse,
+            documentUnloading: event.isDocumentUnloading()
+          });
         })
         .then(response => {
           const returnData = {

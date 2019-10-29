@@ -102,7 +102,9 @@ describe("Identity::createCustomerIds", () => {
         optIn
       );
       return customerIds.sync(idsWithHash).then(() => {
-        expect(network.sendRequest).toHaveBeenCalledWith(payload, false);
+        expect(network.sendRequest).toHaveBeenCalledWith(payload, {
+          expectsResponse: false
+        });
       });
     });
   });

@@ -34,7 +34,9 @@ export default (cookieJar, lifecycle, network, optIn) => {
 
   const makeServerCall = payload => {
     return lifecycle.onBeforeDataCollection({ payload }).then(() => {
-      return network.sendRequest(payload, payload.expectsResponse);
+      return network.sendRequest(payload, {
+        expectsResponse: payload.expectsResponse
+      });
     });
   };
 
