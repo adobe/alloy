@@ -6,17 +6,9 @@ import {
   clone
 } from "../../../utils";
 import { CUSTOMER_ID_HASH } from "../constants/cookieNames";
-import createEvent from "../../../core/createEvent";
 
-export default (cookieJar, lifecycle, network, optIn) => {
+export default (cookieJar, eventManager) => {
   const updateChecksum = checksum => cookieJar.set(CUSTOMER_ID_HASH, checksum);
-
-  // TODO: FIXME: We shouldn't need an event.
-  const createPayload = event => {
-    const payload = network.createPayload();
-    payload.addEvent(event);
-    return payload;
-  };
 
   const hash = (originalIds, normalizedIds) => {
     const idNames = Object.keys(normalizedIds);
@@ -29,14 +21,6 @@ export default (cookieJar, lifecycle, network, optIn) => {
         finalIds[idsToHash[index]].id = convertBufferToHex(hashedId);
         return finalIds;
       }, normalizedIds);
-    });
-  };
-
-  const makeServerCall = payload => {
-    return lifecycle.onBeforeDataCollection({ payload }).then(() => {
-      return network.sendRequest(payload, {
-        expectsResponse: payload.expectsResponse
-      });
     });
   };
 
@@ -73,23 +57,15 @@ export default (cookieJar, lifecycle, network, optIn) => {
       const checksum = crc32(JSON.stringify(normalizedIds)).toString(36);
       const customerIdChanged = checksum !== cookieJar.get(CUSTOMER_ID_HASH);
 
-      const event = createEvent();
-      const payload = createPayload(event);
-
       if (customerIdChanged) {
         updateChecksum(checksum);
       }
 
       return hash(originalIds, normalizedIds).then(hashedIds => {
         setState(customerIdChanged, hashedIds);
-        return lifecycle
-          .onBeforeEvent({
-            event,
-            options: {},
-            isViewStart: false
-          }) // FIXME: We shouldn't need an event.
-          .then(() => optIn.whenOptedIn())
-          .then(() => makeServerCall(payload));
+        // FIXME: Konductor shouldn't require an event.
+        const event = eventManager.createEvent();
+        return eventManager.sendEvent(event);
       });
     }
   };

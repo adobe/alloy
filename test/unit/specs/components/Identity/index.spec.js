@@ -19,12 +19,14 @@ describe("Identity", () => {
     let reactorRegisterGetEcid;
     let optIn;
     let identity;
+    let eventManager;
     beforeEach(() => {
       reactorRegisterGetEcid = jasmine.createSpy();
       optIn = {
         isOptedIn: () => true,
         whenOptedIn: () => Promise.resolve()
       };
+      eventManager = {};
       identity = createIdentity({
         config: {
           reactorRegisterGetEcid
@@ -34,22 +36,19 @@ describe("Identity", () => {
             return key === "ECID" ? "ABC" : null;
           }
         },
-        optIn
+        optIn,
+        eventManager
       });
     });
 
     describe("getEcid", () => {
       it("returns ECID when user is opted in", () => {
-        identity.lifecycle.onComponentsRegistered({});
-
         const getEcid = reactorRegisterGetEcid.calls.first().args[0];
         expect(getEcid()).toBe("ABC");
       });
 
       it("returns undefined when user is not opted in", () => {
         optIn.isOptedIn = () => false;
-        identity.lifecycle.onComponentsRegistered({});
-
         const getEcid = reactorRegisterGetEcid.calls.first().args[0];
         expect(getEcid()).toBeUndefined();
       });
@@ -80,9 +79,9 @@ describe("Identity", () => {
             reactorRegisterGetEcid
           },
           cookieJar,
-          optIn
+          optIn,
+          eventManager
         });
-        identity.lifecycle.onComponentsRegistered({});
       });
       it("should get called with an object with a property named response in it", () => {
         identity.lifecycle.onResponse({ response });
@@ -111,7 +110,6 @@ describe("Identity", () => {
           cookieJar,
           optIn
         });
-        identity.lifecycle.onComponentsRegistered({});
         identity.lifecycle.onResponse({ response });
         return flushPromiseChains().then(() => {
           expect(cookieJar.set).not.toHaveBeenCalled();
