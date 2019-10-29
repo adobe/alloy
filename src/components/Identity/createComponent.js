@@ -1,8 +1,7 @@
 import createCustomerIds from "./customerIds/createCustomerIds";
 import { defer } from "../../utils";
 import { EXPERIENCE_CLOUD_ID } from "./constants/cookieNames";
-import migration from "./migration";
-import createEvent from "../DataCollector/createEvent";
+import createMigration from "./createMigration";
 
 const addIdsContext = (payload, ecid) => {
   payload.addIdentity(EXPERIENCE_CLOUD_ID, {
@@ -17,17 +16,12 @@ export default (idSyncs, manualIdSyncs, cookieJar, config, logger, network) => {
   let customerIds;
   let alreadyQueriedForIdSyncs = false;
   const { migrateIds, imsOrgId } = config;
+  const migration = createMigration(imsOrgId, migrateIds);
 
-  const createPayload = event => {
-    const payload = network.createPayload();
-    payload.addEvent(event);
-    return payload;
-  };
-
-  const readEcid = () => {
+  const getEcid = () => {
     let ecid = cookieJar.get(EXPERIENCE_CLOUD_ID);
-    if (!ecid && migrateIds) {
-      ecid = migration(imsOrgId).readEcidFromAmcvCookie();
+    if (!ecid) {
+      ecid = migration.readEcidFromAmcvCookie();
       if (ecid) {
         cookieJar.set(EXPERIENCE_CLOUD_ID, ecid);
       }
@@ -35,41 +29,12 @@ export default (idSyncs, manualIdSyncs, cookieJar, config, logger, network) => {
     return ecid;
   };
 
-  const makeServerCall = payload => {
-    return lifecycle.onBeforeDataCollection({ payload }).then(() => {
-      return network.sendRequest(payload, payload.expectsResponse);
-    });
-  };
-
-  const createEcidEvent = () => {
-    const event = createEvent();
-    const payload = createPayload(event);
-
-    return lifecycle
-      .onBeforeEvent({
-        event,
-        options: {},
-        isViewStart: false,
-        documentUnloading: false
-      }) // FIXME: We shouldn't need an event.
-      .then(() => optIn.whenOptedIn())
-      .then(() => makeServerCall(payload));
-  };
-
-  const getEcid = () => {
-    const ecid = readEcid();
-    if (ecid) {
-      return ecid;
-    }
-    return createEcidEvent();
-  };
-
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
         ({ lifecycle, optIn } = tools);
         if (migrateIds) {
-          getEcid(migrateIds);
+          getEcid();
         }
         customerIds = createCustomerIds(cookieJar, lifecycle, network, optIn);
 
@@ -118,7 +83,7 @@ export default (idSyncs, manualIdSyncs, cookieJar, config, logger, network) => {
       // TO-DOCUMENT: We wait for ECID before trigger any events.
       onBeforeDataCollection({ payload }) {
         return optIn.whenOptedIn().then(() => {
-          const ecid = readEcid();
+          const ecid = getEcid();
           let promise;
 
           if (ecid) {
@@ -130,7 +95,7 @@ export default (idSyncs, manualIdSyncs, cookieJar, config, logger, network) => {
             logger.log("Delaying request while retrieving ECID from server.");
             promise = deferredForEcid.promise.then(() => {
               logger.log("Resuming previously delayed request.");
-              addIdsContext(payload, readEcid());
+              addIdsContext(payload, getEcid());
             });
           } else {
             // We don't have an ECID and no request has gone out to fetch it.
@@ -147,13 +112,11 @@ export default (idSyncs, manualIdSyncs, cookieJar, config, logger, network) => {
       onResponse({ response }) {
         return optIn.whenOptedIn().then(() => {
           const ecidPayloads = response.getPayloadsByType("identity:persist");
-
+          let ecid;
           if (ecidPayloads.length > 0) {
-            const ecid = ecidPayloads[0].id;
+            ecid = ecidPayloads[0].id;
             cookieJar.set(EXPERIENCE_CLOUD_ID, ecid);
-            if (migrateIds) {
-              migration(imsOrgId).createAmcvCookie(ecid);
-            }
+            migration.createAmcvCookie(ecid);
             if (deferredForEcid) {
               deferredForEcid.resolve();
             }

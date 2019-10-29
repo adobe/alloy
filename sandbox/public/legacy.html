@@ -19,7 +19,7 @@
     />
 
     <title>Mock website hosting Alloy</title>
-    
+
     <style>
       body {
         margin: 0;
@@ -27,13 +27,21 @@
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
           "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
           "Helvetica Neue", sans-serif;
+        font-size: 1em;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        background-color: #333;
+        color: #eaeaea;
+      }
+
+      a {
+        color: #e7ca8d;
       }
 
       code {
         font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
           monospace;
+        color: #acecfe;
       }
 
       section {
@@ -57,42 +65,42 @@
       }
     </style>
   </head>
-  <script> 
+  <script>
     Visitor.getInstance("53A16ACB5CC1D3760A495C99@AdobeOrg", {});
   </script>
   <body>
-    <div>
-      <ul>
-        <li>
-          <a href="/">Home</a>
-        </li>
-        <li>
-          <a href="/about">About Us</a>
-        </li>
-        <li>
-          <a href="/orgTwo">Organization Two</a>
-        </li>
-        <li>
-          <a href="/links">Links</a>
-        </li>
-        <li>
-          <a href="/eventMerge">EventMerge</a>
-        </li>
-        <li>
-          <a href="/optIn">OptIn</a>
-        </li>
-        <li>
-          <a href="/largePayload">LargePayload</a>
-        </li>
-        <li>
-          <a href="/DualTag">DualTag</a>
-        </li>
-        <li>
-          <a href="http://localhost:3000/legacy.html">legacy</a>
-        </li>
-      </ul>
+    <div id="root">
+      <div>
+        <ul>
+          <li>
+            <a href="/">Home</a>
+          </li>
+          <li>
+            <a href="/optIn">OptIn</a>
+          </li>
+          <li>
+            <a href="/links">Links</a>
+          </li>
+          <li>
+            <a href="/eventMerge">Event-Merge</a>
+          </li>
+          <li>
+            <a href="/largePayload">Large Payload</a>
+          </li>
+          <li>
+            <a href="/orgTwo">Multiple Orgs</a>
+          </li>
+          <li>
+            <a href="/DualTag">DualTag</a>
+          </li>
+          <li>
+            <a href="/legacy.html">legacy</a>
+          </li>
+        </ul>
+        <hr />
+      </div>
     </div>
-    <hr />
+
     <h2>VisitorAPI on this page</h2>
   </body>
 </html>
