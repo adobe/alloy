@@ -77,6 +77,9 @@ describe("createEventManager", () => {
         expect(payload.mergeMeta).toHaveBeenCalledWith({
           gateway: {
             imsOrgId: "ABC123"
+          },
+          collect: {
+            synchronousValidation: true
           }
         });
       });
