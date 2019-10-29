@@ -49,7 +49,7 @@ export default ({ config, logger, lifecycle, networkStrategy }) => {
      * with the returned response object.
      *
      * @param {Object} payload This will be JSON stringified and sent as the post body.
-     * @param {Object} options
+     * @param {Object} [options]
      * @param {boolean} [options.expectsResponse=true] The endpoint and request mechanism
      * will be determined by whether a response is expected.
      * @param {boolean} [options.documentUnloading=false] This determines the network transport method.

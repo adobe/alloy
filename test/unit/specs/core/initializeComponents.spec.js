@@ -84,7 +84,6 @@ describe("initializeComponents", () => {
       );
     });
     expect(lifecycle.onComponentsRegistered).toHaveBeenCalledWith({
-      componentRegistry,
       lifecycle
     });
 

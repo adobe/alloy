@@ -186,7 +186,7 @@ describe("createEventManager", () => {
       });
     });
 
-    it("returns request info but not response info", () => {
+    it("returns request info but not response info if no response provided", () => {
       return eventManager.sendEvent(event).then(result => {
         expect(result.requestBody).toEqual(payload.toJSON());
         expect(result.requestBody).not.toBe(payload);
@@ -205,7 +205,12 @@ describe("createEventManager", () => {
         expect(options.applyUserProvidedData).toHaveBeenCalledBefore(
           optIn.whenOptedIn
         );
-        expect(optIn.whenOptedIn).toHaveBeenCalledBefore(network.sendRequest);
+        expect(optIn.whenOptedIn).toHaveBeenCalledBefore(
+          lifecycle.onBeforeDataCollection
+        );
+        expect(lifecycle.onBeforeDataCollection).toHaveBeenCalledBefore(
+          network.sendRequest
+        );
       });
     });
   });

@@ -36,10 +36,6 @@ export default ({
 
   return lifecycle
     .onComponentsRegistered({
-      // TODO: Remove componentRegistry after all components have removed their
-      // dependency. If any component needs access to another component,
-      // consider moving the needed functionality up to core.
-      componentRegistry,
       lifecycle
     })
     .then(() => componentRegistry);
