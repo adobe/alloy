@@ -18,7 +18,11 @@ describe("Event Command", () => {
   let eventCommand;
 
   beforeEach(() => {
-    event = jasmine.createSpyObj("event", ["documentUnloading", "mergeXdm"]);
+    event = jasmine.createSpyObj("event", [
+      "documentUnloading",
+      "setUserXdm",
+      "setUserData"
+    ]);
     eventManager = {
       createEvent() {
         return event;
@@ -48,12 +52,11 @@ describe("Event Command", () => {
 
     return eventCommand(options).then(result => {
       expect(event.documentUnloading).toHaveBeenCalled();
+      expect(event.setUserXdm).toHaveBeenCalledWith(xdm);
+      expect(event.setUserData).toHaveBeenCalledWith(data);
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
-        isViewStart: true,
-        applyUserProvidedData: jasmine.any(Function)
+        isViewStart: true
       });
-      expect(event.mergeXdm).toHaveBeenCalledWith(xdm);
-      expect(event.data).toBe(data);
       expect(result).toEqual("sendEventResult");
     });
   });
@@ -67,8 +70,7 @@ describe("Event Command", () => {
   it("sets isViewStart to false if viewStart is not defined", () => {
     return eventCommand({}).then(() => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
-        isViewStart: false,
-        applyUserProvidedData: jasmine.any(Function)
+        isViewStart: false
       });
     });
   });

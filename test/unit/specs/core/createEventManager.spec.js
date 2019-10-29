@@ -85,8 +85,7 @@ describe("createEventManager", () => {
     it("allows other components to access event and pause the lifecycle", () => {
       const deferred = defer();
       const options = {
-        isViewStart: true,
-        applyUserProvidedData: jasmine.createSpy()
+        isViewStart: true
       };
       lifecycle.onBeforeEvent.and.returnValue(deferred.promise);
       eventManager.sendEvent(event, options);
@@ -96,22 +95,13 @@ describe("createEventManager", () => {
             event,
             isViewStart: true
           });
-          expect(options.applyUserProvidedData).not.toHaveBeenCalled();
+          expect(optIn.whenOptedIn).not.toHaveBeenCalled();
           deferred.resolve();
           return flushPromiseChains();
         })
         .then(() => {
           expect(network.sendRequest).toHaveBeenCalled();
         });
-    });
-
-    it("applies user provided data", () => {
-      const options = {
-        applyUserProvidedData: jasmine.createSpy()
-      };
-      return eventManager.sendEvent(event, options).then(() => {
-        expect(options.applyUserProvidedData).toHaveBeenCalledWith(event);
-      });
     });
 
     it("calls onBeforeEvent before consent and onBeforeDataCollection after", () => {
@@ -195,14 +185,8 @@ describe("createEventManager", () => {
     });
 
     it("performs operations in order", () => {
-      const options = {
-        applyUserProvidedData: jasmine.createSpy()
-      };
-      return eventManager.sendEvent(event, options).then(() => {
+      return eventManager.sendEvent(event).then(() => {
         expect(lifecycle.onBeforeEvent).toHaveBeenCalledBefore(
-          options.applyUserProvidedData
-        );
-        expect(options.applyUserProvidedData).toHaveBeenCalledBefore(
           optIn.whenOptedIn
         );
         expect(optIn.whenOptedIn).toHaveBeenCalledBefore(

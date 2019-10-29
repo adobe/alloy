@@ -10,15 +10,27 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { clone, noop } from "../utils";
+import { clone } from "../utils";
 
 export default ({ createEvent, optIn, lifecycle, network, config }) => {
   const { imsOrgId } = config;
 
   return {
     createEvent,
+    /**
+     * Sends an event. This includes running the event and payload through
+     * the appropriate lifecycle hooks, sending the request to the server,
+     * and handling the response.
+     * @param {Object} event This will be JSON stringified and used inside
+     * the request payload.
+     * @param {Object} [options]
+     * @param {boolean} [options.isViewStart=false] Whether the event is a
+     * result of the start of a view. This will be passed to components
+     * so they can take appropriate action.
+     * @returns {*}
+     */
     sendEvent(event, options = {}) {
-      const { isViewStart = false, applyUserProvidedData = noop } = options;
+      const { isViewStart = false } = options;
 
       const payload = network.createPayload();
       payload.addEvent(event);
@@ -33,10 +45,7 @@ export default ({ createEvent, optIn, lifecycle, network, config }) => {
           event,
           isViewStart
         })
-        .then(() => {
-          applyUserProvidedData(event);
-          return optIn.whenOptedIn();
-        })
+        .then(() => optIn.whenOptedIn())
         .then(() => {
           return lifecycle.onBeforeDataCollection({ payload });
         })
