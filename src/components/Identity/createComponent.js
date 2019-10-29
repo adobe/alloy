@@ -1,10 +1,9 @@
 import createCustomerIds from "./customerIds/createCustomerIds";
 import { defer } from "../../utils";
-import { COOKIE_NAMES } from "./constants";
+import { EXPERIENCE_CLOUD_ID } from "./constants/cookieNames";
 import migration from "./migration";
 import createEvent from "../DataCollector/createEvent";
 
-const { EXPERIENCE_CLOUD_ID } = COOKIE_NAMES;
 const addIdsContext = (payload, ecid) => {
   payload.addIdentity(EXPERIENCE_CLOUD_ID, {
     id: ecid
