@@ -29,6 +29,7 @@ describe("Identity::createCustomerIds", () => {
       mergeMeta: jasmine.createSpy(),
       expectsResponse: false
     };
+    event = { type: "event" };
     eventManager = {
       createEvent: () => event,
       sendEvent: jasmine.createSpy().and.returnValue(Promise.resolve())
