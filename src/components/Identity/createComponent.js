@@ -18,6 +18,7 @@ export default (idSyncs, manualIdSyncs, cookieJar, config, logger, network) => {
   let customerIds;
   let alreadyQueriedForIdSyncs = false;
   const { migrateIds, imsOrgId } = config;
+
   const createPayload = event => {
     const payload = network.createPayload();
     payload.addEvent(event);
@@ -118,7 +119,7 @@ export default (idSyncs, manualIdSyncs, cookieJar, config, logger, network) => {
       // TO-DOCUMENT: We wait for ECID before trigger any events.
       onBeforeDataCollection({ payload }) {
         return optIn.whenOptedIn().then(() => {
-          let ecid = readEcid(migrateIds);
+          const ecid = readEcid();
           let promise;
 
           if (ecid) {
@@ -137,21 +138,7 @@ export default (idSyncs, manualIdSyncs, cookieJar, config, logger, network) => {
             // We won't apply the ECID to this request, but we'll set up a
             // promise so that future requests can know when the ECID has returned.
             deferredForEcid = defer();
-            if (migrateIds) {
-              promise = deferredForEcid.promise.then(() => {
-                logger.log("Resuming previously delayed request.");
-                addIdsContext(payload, readEcid());
-              });
-              migration(imsOrgId)
-                .getEcidFromDemdex()
-                .then(idFromDemdex => {
-                  ecid = idFromDemdex;
-                  cookieJar.set(EXPERIENCE_CLOUD_ID, ecid);
-                  deferredForEcid.resolve();
-                });
-            } else {
-              payload.expectResponse();
-            }
+            payload.expectResponse();
           }
           customerIds.addToPayload(payload);
           return promise;
@@ -162,14 +149,16 @@ export default (idSyncs, manualIdSyncs, cookieJar, config, logger, network) => {
         return optIn.whenOptedIn().then(() => {
           const ecidPayloads = response.getPayloadsByType("identity:persist");
 
-          if (ecidPayloads.length > 0 && !migrateIds) {
-            cookieJar.set(EXPERIENCE_CLOUD_ID, ecidPayloads[0].id);
-
+          if (ecidPayloads.length > 0) {
+            const ecid = ecidPayloads[0].id;
+            cookieJar.set(EXPERIENCE_CLOUD_ID, ecid);
+            if (migrateIds) {
+              migration(imsOrgId).createAmcvCookie(ecid);
+            }
             if (deferredForEcid) {
               deferredForEcid.resolve();
             }
           }
-
           idSyncs.process(response.getPayloadsByType("identity:exchange"));
         });
       }
