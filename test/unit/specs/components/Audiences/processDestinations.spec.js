@@ -3,7 +3,8 @@ import { cookieJar } from "../../../../../src/utils";
 
 describe("Audiences::processDestinations", () => {
   const config = {
-    destinationsEnabled: true
+    cookieActivationEnabled: true,
+    urlActivationEnabled: true
   };
   const logger = {
     log() {},

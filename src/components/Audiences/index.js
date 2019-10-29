@@ -17,17 +17,18 @@ const createAudiences = ({ config, logger }) => {
     lifecycle: {
       onBeforeEvent({ event, isViewStart }) {
         if (isViewStart) {
+          event.mergeQuery({
+            activation: {
+              url: config.urlActivationEnabled,
+              cookie: config.cookieActivationEnabled
+            }
+          });
           event.expectResponse();
         }
       },
       onResponse({ response }) {
         const destinations = response.getPayloadsByType("activation:push");
-
-        processDestinations({
-          destinations,
-          config,
-          logger
-        });
+        processDestinations({ destinations, logger });
       }
     },
     commands: {}
@@ -37,7 +38,10 @@ const createAudiences = ({ config, logger }) => {
 createAudiences.namespace = "Audiences";
 createAudiences.abbreviation = "AU";
 createAudiences.configValidators = {
-  destinationsEnabled: {
+  cookieActivationEnabled: {
+    defaultValue: true
+  },
+  urlActivationEnabled: {
     defaultValue: true
   }
 };
