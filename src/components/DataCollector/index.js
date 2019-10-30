@@ -28,16 +28,11 @@ const createDataCollector = ({ eventManager }) => {
           event.documentUnloading();
         }
 
+        event.setUserXdm(xdm);
+        event.setUserData(data);
+
         return eventManager.sendEvent(event, {
-          isViewStart: viewStart,
-          applyUserProvidedData() {
-            // We merge the user's data after onBeforeEvent so that
-            // it overlays on top of any data Alloy automatically
-            // provides. This allows the user to override the
-            // automatically collected data.
-            event.mergeXdm(xdm);
-            event.data = data;
-          }
+          isViewStart: viewStart
         });
       }
     }
