@@ -28,23 +28,23 @@ const determineLinkType = (window, config, linkUrl, clickedObj) => {
 };
 
 export default (window, config) => {
-  return (event, targetObject) => {
+  return (event, targetElement) => {
     let linkName;
     let linkType;
-    let clickedObject = targetObject;
+    let clickedElement = targetElement;
     let linkUrl;
     let isValidLink = false;
     // Search parent elements for an anchor element
     // TODO: Replace with generic DOM tool that can fetch configured properties
     do {
-      linkUrl = getAbsoluteUrlFromAnchorElement(window, clickedObject);
+      linkUrl = getAbsoluteUrlFromAnchorElement(window, clickedElement);
       if (!linkUrl) {
-        clickedObject = clickedObject.parentNode;
+        clickedElement = clickedElement.parentNode;
       }
-    } while (!linkUrl && clickedObject);
-    if (linkUrl && isSupportedAnchorElement(clickedObject)) {
+    } while (!linkUrl && clickedElement);
+    if (linkUrl && isSupportedAnchorElement(clickedElement)) {
       isValidLink = true;
-      linkType = determineLinkType(window, config, linkUrl, clickedObject);
+      linkType = determineLinkType(window, config, linkUrl, clickedElement);
       // TODO: Update link name from the clicked element context
       linkName = "Link Click";
     }

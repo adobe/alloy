@@ -11,18 +11,15 @@ governing permissions and limitations under the License.
 */
 
 import escape from "css.escape";
-import { isNonEmptyString } from "../../../../utils";
 import { selectNodes } from "../../../../utils/dom";
+import { isNotEqSelector, splitWithEq } from "./helperForEq";
 
 // Trying to match ID or CSS class
 const CSS_IDENTIFIER_PATTERN = /(#|\.)(-?\w+)/g;
 // This is required to remove leading " > " from parsed pieces
 const SIBLING_PATTERN = /^\s*>?\s*/;
-const EQ_START = ":eq(";
-const EQ_PATTERN = /:eq\((\d+)\)/g;
 
 const cleanUp = str => str.replace(SIBLING_PATTERN, "").trim();
-const isNotEqSelector = str => str.indexOf(EQ_START) === -1;
 
 // Here we use CSS.escape() to make sure we get
 // correct values for ID and CSS class
@@ -37,7 +34,7 @@ export const escapeIdentifiersInSelector = selector => {
 export const parseSelector = rawSelector => {
   const result = [];
   const selector = escapeIdentifiersInSelector(rawSelector.trim());
-  const parts = selector.split(EQ_PATTERN).filter(isNonEmptyString);
+  const parts = splitWithEq(selector);
   const { length } = parts;
   let i = 0;
 

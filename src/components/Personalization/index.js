@@ -11,14 +11,18 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray } from "../../utils";
+import { string } from "../../utils/configValidators";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
-import { string } from "../../utils/configValidators";
+import collectClicks from "./helper/clicks/collectClicks";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 
 // This is used for Target VEC integration
 const isAuthoringMode = () => document.location.href.indexOf("mboxEdit") !== -1;
+const mergeMeta = (event, meta) => {
+  event.mergeMeta({ personalization: { ...meta } });
+};
 
 const executeFragments = (fragments, modules, logger) => {
   fragments.forEach(fragment => {
@@ -31,20 +35,12 @@ const executeFragments = (fragments, modules, logger) => {
 };
 
 const createCollect = eventManager => {
-  return payload => {
+  return meta => {
     const event = eventManager.createEvent();
-    event.mergeMeta({
-      personalization: { ...payload }
-    });
+
+    mergeMeta(event, meta);
+
     eventManager.sendEvent(event);
-  };
-};
-
-const createStore = () => {
-  const storage = [];
-
-  return (selector, meta) => {
-    storage.push({ selector, meta });
   };
 };
 
@@ -52,7 +48,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const { prehidingStyle } = config;
   const authoringModeEnabled = isAuthoringMode();
   const collect = createCollect(eventManager);
-  const store = createStore();
+  const storage = [];
+  const store = value => storage.push(value);
   const ruleComponentModules = initRuleComponentModules(collect, store);
 
   return {
@@ -87,6 +84,11 @@ const createPersonalization = ({ config, logger, eventManager }) => {
       },
       onResponseError() {
         showContainers();
+      },
+      onClick({ event, clickedElement }) {
+        const merger = meta => mergeMeta(event, meta);
+
+        collectClicks(merger, clickedElement, storage);
       }
     }
   };

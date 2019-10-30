@@ -10,9 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as awaitSelector } from "./awaitSelector";
-export { default as appendNode } from "./appendNode";
-export { default as createNode } from "./createNode";
-export { default as matchesSelector } from "./matchesSelector";
-export { default as removeNode } from "./removeNode";
-export { default as selectNodes } from "./selectNodes";
+/**
+ * Returns true if element matches the selector.
+ * @param {String} selector
+ * @param {Node} [element]
+ * @returns {Boolean}
+ */
+export default (selector, element) => {
+  if (element.matches) {
+    return element.matches(selector);
+  }
+
+  // Making IE 11 happy
+  return element.msMatchesSelector(selector);
+};

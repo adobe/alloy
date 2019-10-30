@@ -10,9 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as awaitSelector } from "./awaitSelector";
-export { default as appendNode } from "./appendNode";
-export { default as createNode } from "./createNode";
-export { default as matchesSelector } from "./matchesSelector";
-export { default as removeNode } from "./removeNode";
-export { default as selectNodes } from "./selectNodes";
+import collectClicks from "./collectClicks";
+
+export default collectClicks;

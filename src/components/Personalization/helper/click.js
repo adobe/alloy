@@ -13,5 +13,5 @@ governing permissions and limitations under the License.
 export default (settings, store) => {
   const { selector, meta } = settings;
 
-  store(selector, meta);
+  store({ selector, meta });
 };
