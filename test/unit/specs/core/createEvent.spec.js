@@ -154,4 +154,47 @@ describe("createEvent", () => {
     event.setUserData({ foo: "bar" });
     expect(event.isEmpty()).toBeFalse();
   });
+
+  describe("applyCallback", () => {
+    it("can add fields to empty xdm", () => {
+      const callback = xdm => {
+        xdm.foo = "bar";
+      };
+      const subject = createEvent();
+      subject.applyCallback(callback);
+      expect(subject.toJSON()).toEqual({ xdm: { foo: "bar" } });
+    });
+
+    it("can add fields to an existing xdm", () => {
+      const callback = xdm => {
+        xdm.b = "2";
+      };
+      const subject = createEvent();
+      subject.mergeXdm({ a: "1" });
+      subject.applyCallback(callback);
+      expect(subject.toJSON()).toEqual({ xdm: { a: "1", b: "2" } });
+    });
+
+    it("can remove fields", () => {
+      const callback = xdm => {
+        delete xdm.a;
+      };
+      const subject = createEvent();
+      subject.mergeXdm({ a: "1", b: "2" });
+      subject.applyCallback(callback);
+      expect(subject.toJSON()).toEqual({ xdm: { b: "2" } });
+    });
+
+    it("doesn't merge when there is an exception", () => {
+      const callback = xdm => {
+        delete xdm.a;
+        xdm.c = "foo";
+        throw Error("Expected Error");
+      };
+      const subject = createEvent();
+      subject.mergeXdm({ a: "1", b: "2" });
+      expect(() => subject.applyCallback(callback)).toThrow();
+      expect(subject.toJSON()).toEqual({ xdm: { a: "1", b: "2" } });
+    });
+  });
 });

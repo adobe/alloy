@@ -30,7 +30,7 @@ import componentCreators from "./componentCreators";
 import buildAndValidateConfig from "./buildAndValidateConfig";
 import initializeComponents from "./initializeComponents";
 import createConfig from "./createConfig";
-import coreConfigValidators from "./configValidators";
+import createCoreConfigValidators from "./createConfigValidators";
 import handleErrorFactory from "./handleErrorFactory";
 import cookieJarToolFactory from "./tools/cookieJarToolFactory";
 import createNetworkStrategy from "./network/createNetworkStrategy";
@@ -54,6 +54,8 @@ console = turbine.logger;
 // #else
 ({ console } = window);
 // #endif
+
+const coreConfigValidators = createCoreConfigValidators();
 
 if (instanceNamespaces) {
   instanceNamespaces.forEach(instanceNamespace => {
@@ -110,7 +112,8 @@ if (instanceNamespaces) {
         optIn,
         lifecycle,
         network,
-        config
+        config,
+        logger
       });
       const createCookieJarTool = cookieJarToolFactory({
         config,

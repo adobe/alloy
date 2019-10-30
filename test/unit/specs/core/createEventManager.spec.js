@@ -22,13 +22,15 @@ describe("createEventManager", () => {
   let optIn;
   let config;
   let eventManager;
+  let logger;
   beforeEach(() => {
     event = {
       mergeXdm() {},
       isDocumentUnloading: () => false,
       toJSON() {
         return { xdm: {} };
-      }
+      },
+      applyCallback: jasmine.createSpy()
     };
     const createEvent = jasmine.createSpy().and.returnValue(event);
     lifecycle = {
@@ -53,14 +55,19 @@ describe("createEventManager", () => {
       whenOptedIn: jasmine.createSpy().and.returnValue(Promise.resolve())
     };
     config = {
-      imsOrgId: "ABC123"
+      imsOrgId: "ABC123",
+      onBeforeEventSend: jasmine.createSpy()
+    };
+    logger = {
+      warn: jasmine.createSpy()
     };
     eventManager = createEventManager({
       createEvent,
       optIn,
       lifecycle,
       network,
-      config
+      config,
+      logger
     });
   });
 
@@ -102,6 +109,29 @@ describe("createEventManager", () => {
         .then(() => {
           expect(network.sendRequest).toHaveBeenCalled();
         });
+    });
+
+    it("applies user provided data", () => {
+      const options = {
+        applyUserProvidedData: jasmine.createSpy()
+      };
+      return eventManager.sendEvent(event, options).then(() => {
+        expect(options.applyUserProvidedData).toHaveBeenCalledWith(event);
+      });
+    });
+
+    it("calls the onBeforeEventSend callback", () => {
+      return eventManager.sendEvent(event, {}).then(() => {
+        expect(event.applyCallback).toHaveBeenCalledWith(config.onBeforeEventSend);
+      });
+    });
+
+    it("handles errors in the onBeforeEventSend callback", () => {
+      const error = Error("onBeforeEventSend error");
+      event.applyCallback.and.throwError(error);
+      return eventManager.sendEvent(event, {}).then(() => {
+        expect(logger.warn).toHaveBeenCalledWith(error);
+      });
     });
 
     it("calls onBeforeEvent before consent and onBeforeDataCollection after", () => {

@@ -12,8 +12,8 @@ governing permissions and limitations under the License.
 
 import { clone } from "../utils";
 
-export default ({ createEvent, optIn, lifecycle, network, config }) => {
-  const { imsOrgId } = config;
+export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
+  const { imsOrgId, onBeforeEventSend } = config;
 
   return {
     createEvent,
@@ -45,7 +45,14 @@ export default ({ createEvent, optIn, lifecycle, network, config }) => {
           event,
           isViewStart
         })
-        .then(() => optIn.whenOptedIn())
+        .then(() => {
+          try {
+            event.applyCallback(onBeforeEventSend);
+          } catch (e) {
+            logger.warn(e);
+          }
+          return optIn.whenOptedIn();
+        })
         .then(() => {
           return lifecycle.onBeforeDataCollection({ payload });
         })
