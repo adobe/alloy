@@ -59,6 +59,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
           logger.warn("Rendering is disabled, authoring mode.");
 
           event.mergeQuery({ personalization: { enabled: false } });
+
+          return;
         }
 
         if (!isViewStart) {
