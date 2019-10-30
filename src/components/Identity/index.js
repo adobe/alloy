@@ -25,11 +25,11 @@ const createIdentity = ({ config, logger, cookieJar, optIn, eventManager }) => {
   return createComponent(
     idSyncs,
     manualIdSyncs,
-    cookieJar,
     config,
     logger,
+    cookieJar,
     optIn,
-    eventManager 
+    eventManager
   );
 };
 
