@@ -10,19 +10,23 @@ export default (imsOrgId, migrateIds) => {
   }
   return {
     getEcidFromAmcvCookie(identityCookieJar) {
-      const amcvCookieValue = cookieJar.get(`AMCV_${imsOrgId}`);
-      let ecid = "";
-      if (amcvCookieValue) {
-        const reg = /MCMID\|(\d+)\|/;
-        [, ecid] = amcvCookieValue.match(reg);
-        identityCookieJar.set(EXPERIENCE_CLOUD_ID, ecid);
+      let ecid = null;
+      if (migrateIds) {
+        const amcvCookieValue = cookieJar.get(`AMCV_${imsOrgId}`);
+        if (amcvCookieValue) {
+          const reg = /MCMID\|(\d+)\|/;
+          [, ecid] = amcvCookieValue.match(reg);
+          identityCookieJar.set(EXPERIENCE_CLOUD_ID, ecid);
+        }
       }
       return ecid;
     },
     createAmcvCookie(ecid) {
-      const amcvCookieValue = cookieJar.get(`AMCV_${imsOrgId}`);
-      if (!amcvCookieValue) {
-        cookieJar.set(`AMCV_${imsOrgId}`, `MCMID|${ecid}`);
+      if (migrateIds) {
+        const amcvCookieValue = cookieJar.get(`AMCV_${imsOrgId}`);
+        if (!amcvCookieValue) {
+          cookieJar.set(`AMCV_${imsOrgId}`, `MCMID|${ecid}`);
+        }
       }
     }
   };
