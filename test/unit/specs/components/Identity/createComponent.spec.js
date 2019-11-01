@@ -10,12 +10,5 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/**
- * Returns an array whose items are the provided object's own enumerable
- * property keys.
- * @param {Object} obj
- * @returns {Array}
- */
-export default obj => {
-  return Object.keys(obj);
-};
+// eslint-disable-next-line no-unused-vars
+import createComponent from "../../../../../src/components/Identity/createComponent";

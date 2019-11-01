@@ -47,7 +47,7 @@ const getStorageByType = (context, storageType, namespace) => {
 };
 
 export default context => additionalNamespace => {
-  const finalNamespace = baseNamespace + (additionalNamespace || "");
+  const finalNamespace = baseNamespace + additionalNamespace;
   return {
     session: getStorageByType(context, "sessionStorage", finalNamespace),
     persistent: getStorageByType(context, "localStorage", finalNamespace)
