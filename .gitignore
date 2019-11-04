@@ -68,3 +68,5 @@ typings
 TMP_DIR/
 
 bin/
+
+deploy_key
