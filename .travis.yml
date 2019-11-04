@@ -6,7 +6,6 @@ node_js:
 - '10'
 install:
 - npm i -g npm
-- npm install -g allure-commandline
 cache:
   directories:
   - node_modules
