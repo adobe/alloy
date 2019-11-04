@@ -159,44 +159,58 @@ describe("createEvent", () => {
 
   describe("applyCallback", () => {
     it("can add fields to empty xdm", () => {
-      const callback = xdm => {
-        xdm.foo = "bar";
+      const callback = ({ xdm, data }) => {
+        xdm.a = "1";
+        data.b = "2";
       };
       const subject = createEvent();
       subject.freeze(callback);
-      expect(subject.toJSON()).toEqual({ xdm: { foo: "bar" } });
+      expect(subject.toJSON()).toEqual({ xdm: { a: "1" }, data: { b: "2" } });
     });
 
     it("can add fields to an existing xdm", () => {
-      const callback = xdm => {
+      const callback = ({ xdm, data }) => {
         xdm.b = "2";
+        data.b = "2";
       };
       const subject = createEvent();
-      subject.mergeXdm({ a: "1" });
+      subject.setUserData({ a: "1" });
+      subject.setUserXdm({ a: "1" });
       subject.freeze(callback);
-      expect(subject.toJSON()).toEqual({ xdm: { a: "1", b: "2" } });
+      expect(subject.toJSON()).toEqual({
+        xdm: { a: "1", b: "2" },
+        data: { a: "1", b: "2" }
+      });
     });
 
     it("can remove fields", () => {
-      const callback = xdm => {
+      const callback = ({ xdm, data }) => {
         delete xdm.a;
+        delete data.a;
       };
       const subject = createEvent();
-      subject.mergeXdm({ a: "1", b: "2" });
+      subject.setUserXdm({ a: "1", b: "2" });
+      subject.setUserData({ a: "1", b: "2" });
       subject.freeze(callback);
-      expect(subject.toJSON()).toEqual({ xdm: { b: "2" } });
+      expect(subject.toJSON()).toEqual({ xdm: { b: "2" }, data: { b: "2" } });
     });
 
     it("doesn't merge when there is an exception", () => {
-      const callback = xdm => {
+      const callback = ({ xdm, data }) => {
         delete xdm.a;
-        xdm.c = "foo";
+        xdm.c = "3";
+        delete data.a;
+        data.c = "3";
         throw Error("Expected Error");
       };
       const subject = createEvent();
-      subject.mergeXdm({ a: "1", b: "2" });
+      subject.setUserXdm({ a: "1", b: "2" });
+      subject.setUserData({ a: "1", b: "2" });
       subject.freeze(callback);
-      expect(subject.toJSON()).toEqual({ xdm: { a: "1", b: "2" } });
+      expect(subject.toJSON()).toEqual({
+        xdm: { a: "1", b: "2" },
+        data: { a: "1", b: "2" }
+      });
     });
   });
 });

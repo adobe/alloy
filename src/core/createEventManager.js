@@ -19,7 +19,7 @@ export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
     try {
       onBeforeEventSend(xdm);
     } catch (e) {
-      logger.warn(e);
+      logger.error(e);
       throw e;
     }
   };

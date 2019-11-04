@@ -66,16 +66,20 @@ export default () => {
         content.data = userData;
       }
       const xdm = clone(Object(content.xdm));
+      const data = clone(Object(content.data));
       try {
-        lastChanceCallback(xdm);
+        lastChanceCallback({ xdm, data });
         // If onBeforeEventSend throws an exception,
         // we don't want to apply the changes it made
-        // so setting content.xdm is inside this try
+        // so setting content.xdm and content.data is inside this try
 
         // We only set content.xdm if content.xdm was already set or
         // if content.xdm was empty and the lastChanceCallback added items to it.
         if (content.xdm || !isEmptyObject(xdm)) {
           content.xdm = xdm;
+        }
+        if (content.data || !isEmptyObject(data)) {
+          content.data = data;
         }
       } catch (e) {
         // the callback should have already logged the exeception

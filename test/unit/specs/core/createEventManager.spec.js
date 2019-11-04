@@ -60,7 +60,7 @@ describe("createEventManager", () => {
       onBeforeEventSend: jasmine.createSpy()
     };
     logger = {
-      warn: jasmine.createSpy()
+      error: jasmine.createSpy()
     };
     eventManager = createEventManager({
       createEvent,
@@ -133,7 +133,7 @@ describe("createEventManager", () => {
       });
       config.onBeforeEventSend.and.throwError(error);
       return eventManager.sendEvent(event, {}).then(() => {
-        expect(logger.warn).toHaveBeenCalledWith(error);
+        expect(logger.error).toHaveBeenCalledWith(error);
       });
     });
 
