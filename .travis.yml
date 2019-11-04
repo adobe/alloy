@@ -43,4 +43,5 @@ deploy:
   provider: script
   skip-cleanup: true
   script: rsync -r --quiet --delete-after ${TRAVIS_BUILD_DIR}/public/* ${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_DIRECTORY}
-
+  on:
+    branch: master
