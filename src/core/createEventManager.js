@@ -15,9 +15,9 @@ import { clone } from "../utils";
 export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
   const { imsOrgId, onBeforeEventSend } = config;
 
-  const onBeforeEventSendWithLoggedExceptions = xdm => {
+  const onBeforeEventSendWithLoggedExceptions = (...args) => {
     try {
-      onBeforeEventSend(xdm);
+      onBeforeEventSend(...args);
     } catch (e) {
       logger.error(e);
       throw e;
