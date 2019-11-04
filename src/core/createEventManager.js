@@ -15,6 +15,15 @@ import { clone } from "../utils";
 export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
   const { imsOrgId, onBeforeEventSend } = config;
 
+  const onBeforeEventSendWithLoggedExceptions = xdm => {
+    try {
+      onBeforeEventSend(xdm);
+    } catch (e) {
+      logger.warn(e);
+      throw e;
+    }
+  };
+
   return {
     createEvent,
     /**
@@ -39,18 +48,13 @@ export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
           imsOrgId
         }
       });
-
       return lifecycle
         .onBeforeEvent({
           event,
           isViewStart
         })
         .then(() => {
-          try {
-            event.applyCallback(onBeforeEventSend);
-          } catch (e) {
-            logger.warn(e);
-          }
+          event.freeze(onBeforeEventSendWithLoggedExceptions);
           return optIn.whenOptedIn();
         })
         .then(() => {

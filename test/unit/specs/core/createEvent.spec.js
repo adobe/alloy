@@ -44,6 +44,7 @@ describe("createEvent", () => {
         type: "clue"
       }
     });
+    event.freeze(() => undefined);
     expect(event.toJSON()).toEqual({
       xdm: {
         fruit: {
@@ -65,6 +66,7 @@ describe("createEvent", () => {
   it("sets user data", () => {
     event.setUserData({ fruit: "apple" });
     event.setUserData({ veggie: "carrot" });
+    event.freeze(() => undefined);
     expect(event.toJSON()).toEqual({
       data: {
         veggie: "carrot"
@@ -161,7 +163,7 @@ describe("createEvent", () => {
         xdm.foo = "bar";
       };
       const subject = createEvent();
-      subject.applyCallback(callback);
+      subject.freeze(callback);
       expect(subject.toJSON()).toEqual({ xdm: { foo: "bar" } });
     });
 
@@ -171,7 +173,7 @@ describe("createEvent", () => {
       };
       const subject = createEvent();
       subject.mergeXdm({ a: "1" });
-      subject.applyCallback(callback);
+      subject.freeze(callback);
       expect(subject.toJSON()).toEqual({ xdm: { a: "1", b: "2" } });
     });
 
@@ -181,7 +183,7 @@ describe("createEvent", () => {
       };
       const subject = createEvent();
       subject.mergeXdm({ a: "1", b: "2" });
-      subject.applyCallback(callback);
+      subject.freeze(callback);
       expect(subject.toJSON()).toEqual({ xdm: { b: "2" } });
     });
 
@@ -193,7 +195,7 @@ describe("createEvent", () => {
       };
       const subject = createEvent();
       subject.mergeXdm({ a: "1", b: "2" });
-      expect(() => subject.applyCallback(callback)).toThrow();
+      subject.freeze(callback);
       expect(subject.toJSON()).toEqual({ xdm: { a: "1", b: "2" } });
     });
   });

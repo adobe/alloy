@@ -27,6 +27,7 @@ describe("createEventManager", () => {
     event = {
       mergeXdm() {},
       isDocumentUnloading: () => false,
+      freeze: jasmine.createSpy(),
       toJSON() {
         return { xdm: {} };
       },
@@ -111,24 +112,26 @@ describe("createEventManager", () => {
         });
     });
 
-    it("applies user provided data", () => {
-      const options = {
-        applyUserProvidedData: jasmine.createSpy()
-      };
-      return eventManager.sendEvent(event, options).then(() => {
-        expect(options.applyUserProvidedData).toHaveBeenCalledWith(event);
+    it("calls freeze on the event", () => {
+      const myxdm = { foo: "bar" };
+      event.freeze.and.callFake(callback => {
+        callback(myxdm);
       });
-    });
-
-    it("calls the onBeforeEventSend callback", () => {
       return eventManager.sendEvent(event, {}).then(() => {
-        expect(event.applyCallback).toHaveBeenCalledWith(config.onBeforeEventSend);
+        expect(config.onBeforeEventSend).toHaveBeenCalledWith(myxdm);
       });
     });
 
-    it("handles errors in the onBeforeEventSend callback", () => {
+    it("logs errors in the onBeforeEventSend callback", () => {
       const error = Error("onBeforeEventSend error");
-      event.applyCallback.and.throwError(error);
+      event.freeze.and.callFake(callback => {
+        try {
+          callback({ foo: "bar" });
+        } catch (e) {
+          // noop
+        }
+      });
+      config.onBeforeEventSend.and.throwError(error);
       return eventManager.sendEvent(event, {}).then(() => {
         expect(logger.warn).toHaveBeenCalledWith(error);
       });
