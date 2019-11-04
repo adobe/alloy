@@ -14,7 +14,7 @@ import createConfigValidators from "../../../../src/core/createConfigValidators"
 import createConfig from "../../../../src/core/createConfig";
 
 describe("configValidators", () => {
-  const baseConfig = {configId: "1234", imsOrgId: "org1"}
+  const baseConfig = { configId: "1234", imsOrgId: "org1" };
 
   describe("errorsEnabled", () => {
     it("validates errorsEnabled=undefined", () => {
