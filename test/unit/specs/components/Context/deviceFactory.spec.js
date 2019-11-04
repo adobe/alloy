@@ -1,5 +1,4 @@
 import deviceFactory from "../../../../../src/components/Context/deviceFactory";
-import { deepAssign } from "../../../../../src/utils";
 
 describe("Context::deviceFactory", () => {
   let window;
@@ -15,7 +14,7 @@ describe("Context::deviceFactory", () => {
 
   const run = () => {
     const xdm = {};
-    deepAssign(xdm, deviceFactory(window)(xdm));
+    deviceFactory(window)(xdm);
     return xdm;
   };
 

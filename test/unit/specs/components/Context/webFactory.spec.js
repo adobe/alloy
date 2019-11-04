@@ -1,5 +1,4 @@
 import webFactory from "../../../../../src/components/Context/webFactory";
-import { deepAssign } from "../../../../../src/utils";
 
 describe("Context::webFactory", () => {
   const window = {
@@ -11,7 +10,7 @@ describe("Context::webFactory", () => {
 
   it("works", () => {
     const xdm = {};
-    deepAssign(xdm, webFactory(window, topFrameSetProvider)(xdm));
+    webFactory(window, topFrameSetProvider)(xdm);
     expect(xdm).toEqual({
       web: {
         webPageDetails: {

@@ -1,5 +1,4 @@
 import environmentFactory from "../../../../../src/components/Context/environmentFactory";
-import { deepAssign } from "../../../../../src/utils";
 
 describe("Context::environmentFactory", () => {
   const mywindow = {
@@ -14,7 +13,7 @@ describe("Context::environmentFactory", () => {
       return date;
     };
     const xdm = {};
-    deepAssign(xdm, environmentFactory(mywindow, dateProvider)(xdm));
+    environmentFactory(mywindow, dateProvider)(xdm);
     expect(xdm).toEqual({
       environment: {
         type: "browser",

@@ -1,5 +1,4 @@
 import placeContextFactory from "../../../../../src/components/Context/placeContextFactory";
-import { deepAssign } from "../../../../../src/utils";
 
 describe("Context::placeContextFactory", () => {
   let dateProvider;
@@ -14,7 +13,7 @@ describe("Context::placeContextFactory", () => {
   it("adds placeContext", () => {
     spyOn(date, "getTimezoneOffset").and.returnValue(7 * 60);
     const xdm = {};
-    deepAssign(xdm, placeContextFactory(dateProvider)(xdm));
+    placeContextFactory(dateProvider)(xdm);
     expect(xdm).toEqual({
       placeContext: {
         localTime: "2019-03-25T21:56:18.000-07:00",
