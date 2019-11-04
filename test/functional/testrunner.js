@@ -64,19 +64,20 @@ if (isSL === false) {
         selectorTimeout: config.desktop.selectorTimeOut,
         assertionTimeout: config.desktop.assertionTimeout
       };
-      return runner
-        .src(suite)
-        .filter(testName => /^Regression/.test(testName))
-        .browsers(config.desktop.browser)
-        .reporter("allure")
-        .concurrency(config.desktop.concurrency)
-        .run(runOptions);
+      return (
+        runner
+          .src(suite)
+          .filter(testName => /^Regression/.test(testName))
+          .browsers(config.desktop.browser)
+          // .reporter("allure")
+          .concurrency(config.desktop.concurrency)
+          .run(runOptions)
+      );
     };
     const testFolder = config.desktop.testsFolder;
     const testsList = allFilesSync(testFolder);
-    runSuite(testsList)
-      .then(() => testcafe.close())
-      .then(() => createReport());
+    runSuite(testsList).then(() => testcafe.close());
+    // .then(() => createReport());
   });
 } else if (isSL === true) {
   createTestCafe().then(tc => {
