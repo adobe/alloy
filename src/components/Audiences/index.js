@@ -19,8 +19,8 @@ const createAudiences = ({ config, logger }) => {
         if (isViewStart) {
           event.mergeQuery({
             activation: {
-              url: config.urlActivationEnabled,
-              cookie: config.cookieActivationEnabled
+              url: config.urlDestinationsEnabled,
+              cookie: config.cookieDestinationsEnabled
             }
           });
           event.expectResponse();
@@ -38,10 +38,10 @@ const createAudiences = ({ config, logger }) => {
 createAudiences.namespace = "Audiences";
 createAudiences.abbreviation = "AU";
 createAudiences.configValidators = {
-  cookieActivationEnabled: {
+  cookieDestinationsEnabled: {
     defaultValue: true
   },
-  urlActivationEnabled: {
+  urlDestinationsEnabled: {
     defaultValue: true
   }
 };
