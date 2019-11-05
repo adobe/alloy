@@ -23,7 +23,7 @@ export default () => {
     },
     edgeBasePath: {
       defaultValue: "ee",
-      validate: string()
+      validate: string().nonEmpty()
     },
     imsOrgId: {
       validate: string().unique()
