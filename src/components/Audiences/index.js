@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { boolean } from "../../utils/configValidators";
 import processDestinations from "./processDestinations";
 
 const createAudiences = ({ config, logger }) => {
@@ -39,10 +40,12 @@ createAudiences.namespace = "Audiences";
 createAudiences.abbreviation = "AU";
 createAudiences.configValidators = {
   cookieDestinationsEnabled: {
-    defaultValue: true
+    defaultValue: true,
+    validate: boolean()
   },
   urlDestinationsEnabled: {
-    defaultValue: true
+    defaultValue: true,
+    validate: boolean()
   }
 };
 
