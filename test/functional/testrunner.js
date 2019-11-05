@@ -92,20 +92,17 @@ if (isSL === false) {
         selectorTimeout: config.desktop.selectorTimeOut,
         assertionTimeout: config.desktop.assertionTimeout
       };
-      return (
-        runner
-          .src(suite)
-          .filter(testName => /^Regression/.test(testName))
-          .browsers("saucelabs:Chrome@beta:Windows 10")
-          // .reporter("allure")
-          .concurrency(config.desktop.concurrency)
-          .run(runOptions)
-      );
+      return runner
+        .src(suite)
+        .filter(testName => /^Regression/.test(testName))
+        .browsers("saucelabs:Chrome@beta:Windows 10")
+        .reporter("spec")
+        .concurrency(config.desktop.concurrency)
+        .run(runOptions);
     };
     const testFolder = config.desktop.testsFolder;
     const testsList = allFilesSync(testFolder);
     runSuite(testsList).then(() => testcafe.close());
-    // .then(() => createReport());
   });
 } else {
   console.log("env is missing");

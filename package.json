@@ -126,6 +126,7 @@
     "testcafe": "^1.6.0",
     "testcafe-browser-provider-saucelabs": "^1.7.0",
     "testcafe-reporter-allure": "^1.0.5",
+    "testcafe-reporter-spec": "^2.1.1",
     "ua-parser": "^0.3.5",
     "url-parse": "^1.4.7"
   }
