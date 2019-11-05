@@ -18,7 +18,7 @@
     "test:watch:chrome": "karma start --browsers Chrome",
     "test:server": "http-server -a localhost -p 8080 -c-1",
     "testcafe": "node test/functional/testrunner.js",
-    "functional": "run-p --race test:server testcafe",
+    "functional": "run-p --race test:server functional:sl",
     "functional:sl": "node test/functional/testrunner.js --sl",
     "prebuild": "npm run clean && npm run format && npm run lint",
     "build": "rollup -c",
