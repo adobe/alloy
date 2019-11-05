@@ -51,6 +51,10 @@ describe("DataCollector::createConfigValidators", () => {
       configId: "myproperty1",
       edgeDomain: "stats firstparty.com",
       prehidingStyle: ""
+    },
+    {
+      configId: "myproperty1",
+      edgeBasePath: 123
     }
   ].forEach((cfg, i) => {
     it(`invalidates configuration (${i})`, () => {
