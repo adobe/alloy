@@ -44,7 +44,6 @@ export { default as isNil } from "./isNil";
 export { default as isNumber } from "./isNumber";
 export { default as isObject } from "./isObject";
 export { default as isString } from "./isString";
-export { default as keys } from "./keys";
 export { default as memoize } from "./memoize";
 export { default as noop } from "./noop";
 export { default as padStart } from "./padStart";

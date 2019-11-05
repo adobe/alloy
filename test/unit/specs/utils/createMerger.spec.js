@@ -10,5 +10,58 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
 import createMerger from "../../../../src/utils/createMerger";
+
+describe("createMerger", () => {
+  it("populates key if key doesn't exist", () => {
+    const content = {};
+    createMerger(content, "fruit")({
+      type: "apple"
+    });
+    expect(content).toEqual({
+      fruit: {
+        type: "apple"
+      }
+    });
+  });
+
+  it("deeply merges if key does exist", () => {
+    const content = {
+      foods: {
+        fruits: {
+          apple: {
+            calories: 95
+          },
+          banana: {
+            calories: 105
+          }
+        }
+      }
+    };
+    createMerger(content, "foods")({
+      fruits: {
+        banana: {
+          calories: 110
+        },
+        cherry: {
+          calories: 77
+        }
+      }
+    });
+    expect(content).toEqual({
+      foods: {
+        fruits: {
+          apple: {
+            calories: 95
+          },
+          banana: {
+            calories: 110
+          },
+          cherry: {
+            calories: 77
+          }
+        }
+      }
+    });
+  });
+});
