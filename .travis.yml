@@ -25,9 +25,7 @@ services:
 script:
 - npm install
 - npm run build:prod
-- npm run test
 - npm run test:saucelabs
-- npm run functional
 - npm run checkbundlesize
 notifications:
   slack:
