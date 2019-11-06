@@ -5,6 +5,7 @@
         "all"
       ],
       "saucelabs": [
+        "saucelabs:Chrome@beta:Windows 10",
         "saucelabs:Chrome@78.0:OS X 10.12",
         "saucelabs:Firefox@70.0:OS X 10.11",
         "saucelabs:Safari@latest:macOS 10.12",
