@@ -5,20 +5,18 @@
         "all"
       ],
       "saucelabs": [
-        "saucelabs:Chrome@78.0:OS X 10.11",
-        "saucelabs:Firefox@70.0:OS X 10.11",
-        "saucelabs:Safari@latest:macOS 10.12"
+        "saucelabs:Chrome@78.0:OS X 10.11"
       ],
       "test": "",
       "group": "desktop",
       "testClass": "",
       "testName": "",
-      "skipCriticalConsoleJsErrors": true,
+      "skipCriticalConsoleJsErrors": false,
       "quarantineMode": true,
       "speed": 0.5,
       "selectorTimeOut": 5000,
       "assertionTimeout": 5000,
-      "concurrency": 1
+      "concurrency": 2
     },
     "mobile": {
       "testsFolder": "test/functional/specs/mobile/",
