@@ -5,10 +5,11 @@
         "all"
       ],
       "saucelabs": [
-        "saucelabs:Internet Explorer@11.0:Windows 8",
-        "saucelabs:Chrome@61.0:macOS 10.14",
-        "saucelabs:Firefox@48.0:macOS 10.14",
-        "saucelabs:Safari@12.0:macOS 10.14"
+        "saucelabs:Chrome@78.0:OS X 10.12",
+        "saucelabs:Firefox@70.0:OS X 10.11",
+        "saucelabs:Safari@latest:macOS 10.12",
+        "saucelabs:Firefox@latest:Windows 7",
+        "saucelabs:Chrome@latest:Windows 7"
       ],
       "test": "",
       "group": "desktop",

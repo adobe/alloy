@@ -95,7 +95,7 @@ if (isSL === false) {
       return runner
         .src(suite)
         .filter(testName => /^Regression/.test(testName))
-        .browsers("saucelabs:Chrome@beta:Windows 10")
+        .browsers(config.desktop.saucelabs)
         .reporter("spec")
         .concurrency(config.desktop.concurrency)
         .run(runOptions);
