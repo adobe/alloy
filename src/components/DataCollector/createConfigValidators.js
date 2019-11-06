@@ -21,6 +21,10 @@ export default () => {
       defaultValue: "beta.adobedc.net",
       validate: string().domain()
     },
+    edgeBasePath: {
+      defaultValue: "ee",
+      validate: string().nonEmpty()
+    },
     imsOrgId: {
       validate: string().unique()
     }
