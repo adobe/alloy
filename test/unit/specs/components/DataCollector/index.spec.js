@@ -17,11 +17,11 @@ describe("Event Command", () => {
   let eventManager;
   let eventCommand;
   beforeEach(() => {
-    event = jasmine.createSpyObj("event", [
-      "documentUnloading",
-      "setUserXdm",
-      "setUserData"
-    ]);
+    event = jasmine.createSpyObj(
+      "event",
+      ["documentUnloading"],
+      ["userData", "userXdm"]
+    );
     eventManager = {
       createEvent() {
         return event;
@@ -51,8 +51,12 @@ describe("Event Command", () => {
 
     return eventCommand(options).then(result => {
       expect(event.documentUnloading).toHaveBeenCalled();
-      expect(event.setUserXdm).toHaveBeenCalledWith(xdm);
-      expect(event.setUserData).toHaveBeenCalledWith(data);
+      expect(
+        Object.getOwnPropertyDescriptor(event, "userXdm").set
+      ).toHaveBeenCalledWith(xdm);
+      expect(
+        Object.getOwnPropertyDescriptor(event, "userData").set
+      ).toHaveBeenCalledWith(data);
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         isViewStart: true
       });

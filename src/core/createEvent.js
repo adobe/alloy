@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { clone, isEmptyObject, createMerger } from "../utils";
+import { clone, isEmptyObject, createMerger, noop } from "../utils";
 
 export default () => {
   const content = {};
@@ -18,36 +18,27 @@ export default () => {
   let userData;
   let expectsResponse = false;
   let documentUnloading = false;
-  let frozen = false;
-
-  const guardFrozen = func => {
-    return (...args) => {
-      if (!frozen) {
-        return func(...args);
-      }
-      throw Error("This event cannot be modified after it is frozen.");
-    };
-  };
+  let lastChanceCallback = noop;
 
   const event = {
-    setUserXdm: guardFrozen(value => {
+    set userXdm(value) {
       userXdm = value;
-    }),
-    setUserData: guardFrozen(value => {
+    },
+    set userData(value) {
       userData = value;
-    }),
-    mergeXdm: guardFrozen(createMerger(content, "xdm")),
-    mergeMeta: guardFrozen(createMerger(content, "meta")),
-    mergeQuery: guardFrozen(createMerger(content, "query")),
-    documentUnloading: guardFrozen(() => {
+    },
+    mergeXdm: createMerger(content, "xdm"),
+    mergeMeta: createMerger(content, "meta"),
+    mergeQuery: createMerger(content, "query"),
+    documentUnloading() {
       documentUnloading = true;
-    }),
+    },
     isDocumentUnloading() {
       return documentUnloading;
     },
-    expectResponse: guardFrozen(() => {
+    expectResponse() {
       expectsResponse = true;
-    }),
+    },
     get expectsResponse() {
       return expectsResponse;
     },
@@ -58,7 +49,10 @@ export default () => {
         (!userData || isEmptyObject(userData))
       );
     },
-    freeze: guardFrozen(lastChanceCallback => {
+    set lastChanceCallback(value) {
+      lastChanceCallback = value;
+    },
+    toJSON() {
       if (userXdm) {
         event.mergeXdm(userXdm);
       }
@@ -84,9 +78,7 @@ export default () => {
       } catch (e) {
         // the callback should have already logged the exeception
       }
-      frozen = true;
-    }),
-    toJSON() {
+
       return content;
     }
   };

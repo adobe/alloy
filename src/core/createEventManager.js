@@ -39,10 +39,9 @@ export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
      * @returns {*}
      */
     sendEvent(event, options = {}) {
+      event.lastChanceCallback = onBeforeEventSendWithLoggedExceptions;
       const { isViewStart = false } = options;
-
       const payload = network.createPayload();
-      payload.addEvent(event);
       payload.mergeMeta({
         gateway: {
           imsOrgId
@@ -54,7 +53,9 @@ export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
           isViewStart
         })
         .then(() => {
-          event.freeze(onBeforeEventSendWithLoggedExceptions);
+          // it's important to add the event here because the payload object will call toJSON
+          // which applies the userData, userXdm, and lastChanceCallback
+          payload.addEvent(event);
           return optIn.whenOptedIn();
         })
         .then(() => {

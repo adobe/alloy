@@ -23,14 +23,14 @@ describe("createEventManager", () => {
   let config;
   let eventManager;
   let logger;
+  let lastChanceCallback;
   beforeEach(() => {
     event = {
       mergeXdm() {},
-      isDocumentUnloading: () => false,
-      freeze: jasmine.createSpy(),
-      toJSON() {
-        return { xdm: {} };
+      set lastChanceCallback(value) {
+        lastChanceCallback = value;
       },
+      isDocumentUnloading: () => false,
       applyCallback: jasmine.createSpy()
     };
     const createEvent = jasmine.createSpy().and.returnValue(event);
@@ -112,21 +112,21 @@ describe("createEventManager", () => {
         });
     });
 
-    it("calls freeze on the event", () => {
-      const myxdm = { foo: "bar" };
-      event.freeze.and.callFake(callback => {
-        callback(myxdm);
+    it("sets the onBeforeEventSend callback", () => {
+      const params = { xdm: { a: "1" }, data: { b: "2" } };
+      payload.addEvent.and.callFake(() => {
+        lastChanceCallback(params);
       });
       return eventManager.sendEvent(event, {}).then(() => {
-        expect(config.onBeforeEventSend).toHaveBeenCalledWith(myxdm);
+        expect(config.onBeforeEventSend).toHaveBeenCalledWith(params);
       });
     });
 
     it("logs errors in the onBeforeEventSend callback", () => {
       const error = Error("onBeforeEventSend error");
-      event.freeze.and.callFake(callback => {
+      payload.addEvent.and.callFake(() => {
         try {
-          callback({ foo: "bar" });
+          lastChanceCallback({ xdm: {}, data: {} });
         } catch (e) {
           // noop
         }

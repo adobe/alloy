@@ -26,8 +26,8 @@ const createDataCollector = ({ eventManager }) => {
           event.documentUnloading();
         }
 
-        event.setUserXdm(xdm);
-        event.setUserData(data);
+        event.userXdm = xdm;
+        event.userData = data;
 
         return eventManager.sendEvent(event, {
           isViewStart: viewStart
