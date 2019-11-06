@@ -12,21 +12,10 @@ governing permissions and limitations under the License.
 
 import { assign, cookieJar, fireDestinations } from "../../utils";
 
-export default ({ destinations, config, logger }) => {
-  if (!config.destinationsEnabled) {
-    return;
-  }
-
+const processUrls = (destinations, logger) => {
   const urlDestinations = destinations
     .filter(dest => dest.type === "url")
-    .map(dest =>
-      assign(
-        {
-          id: dest.id
-        },
-        dest.spec
-      )
-    );
+    .map(dest => assign({ id: dest.id }, dest.spec));
 
   if (urlDestinations.length) {
     fireDestinations({
@@ -34,15 +23,23 @@ export default ({ destinations, config, logger }) => {
       destinations: urlDestinations
     });
   }
+};
 
+const processCookies = destinations => {
   const cookieDestinations = destinations
     .filter(dest => dest.type === "cookie")
     .map(dest => dest.spec);
 
+  // TODO: Konductor might have to set those if CNAME provided?
   cookieDestinations.forEach(dest => {
     cookieJar.set(dest.name, dest.value || "", {
       domain: dest.domain || "",
       expires: dest.ttlDays ? dest.ttlDays : 10 // days
     });
   });
+};
+
+export default ({ destinations, logger }) => {
+  processUrls(destinations, logger);
+  processCookies(destinations);
 };

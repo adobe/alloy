@@ -55,8 +55,24 @@ function HomeWithHistory({ history }) {
     <div>
       <section>
         <div className="personalization-container">
-          <h2>Some awesome default content</h2>
+          <h2>Some awesome default content.</h2>
+          <div>
+            All visitors qualify for the offer{" "}
+            <span role="img" aria-label="">
+              👆
+            </span>
+          </div>
           <br />
+        </div>
+
+        <div className="personalization-container-2">
+          <h2>Some more awesome default content.</h2>
+          You only qualify for the offer{" "}
+          <span role="img" aria-label="">
+            👆
+          </span>{" "}
+          if you collect:
+          <pre>{JSON.stringify({ data: { nonXdmKey: "nonXdmValue" } })}</pre>
         </div>
       </section>
 
