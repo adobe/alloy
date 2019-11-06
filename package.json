@@ -20,7 +20,7 @@
     "testcafe": "node test/functional/testrunner.js",
     "functional": "run-p --race test:server functional:sl",
     "functional:sl": "node test/functional/testrunner.js --sl",
-    "functional:remote": "npm run clean && export SAUCE_JOB=\"alloy-ci (testcafe)\" && testcafe \"saucelabs:Chrome@78.0:OS X 10.11\" test/functional/specs/ --app \"http-server -a localhost -p 8080 -c-1\"",
+    "functional:remote": "export SAUCE_JOB=\"alloy-ci (testcafe)\" && testcafe \"saucelabs:Chrome@78.0:OS X 10.11\" test/functional/specs/ --app \"http-server -a localhost -p 8080 -c-1\"",
     "prebuild": "npm run clean && npm run format && npm run lint",
     "build": "rollup -c",
     "prebuild:prod": "npm run prebuild",
