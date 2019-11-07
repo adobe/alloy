@@ -24,6 +24,7 @@ services:
 script:
 - npm install
 - npm run build:prod
+- npm run functional:sl
 - npm run test:saucelabs
 - npm run checkbundlesize
 notifications:

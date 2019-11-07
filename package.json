@@ -19,7 +19,7 @@
     "test:server": "http-server -a localhost -p 8080 -c-1",
     "testcafe": "node test/functional/testrunner.js",
     "functional": "run-p --race test:server testcafe",
-    "functional:sl": "node test/functional/testrunner.js --sl",
+    "functional:sl": "node test/functional/testrunner.js --sl --app \"http-server -a localhost -p 8080 -c-1\"",
     "prebuild": "npm run clean && npm run format && npm run lint",
     "build": "rollup -c",
     "prebuild:prod": "npm run prebuild",
