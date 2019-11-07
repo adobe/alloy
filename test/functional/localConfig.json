@@ -5,7 +5,7 @@
         "chrome"
       ],
       "saucelabs": [
-        "saucelabs:Chrome@latest:OS X 10.11"
+        "saucelabs:Chrome@74.0:OS X 10.10"
       ],
       "test": "",
       "group": "desktop",
