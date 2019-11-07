@@ -19,6 +19,7 @@ import timestampFactory from "./timestampFactory";
 import implementationDetailsFactory from "./implementationDetailsFactory";
 import libraryVersion from "../../constants/libraryVersion";
 import createComponent from "./createComponent";
+import { arrayOf, string } from "../../utils/configValidators";
 
 const topFrameSetProvider = topFrameSetFactory(window);
 const web = webFactory(window, topFrameSetProvider);
@@ -28,25 +29,23 @@ const placeContext = placeContextFactory(() => new Date());
 const timestamp = timestampFactory(() => new Date());
 const implementationDetails = implementationDetailsFactory(libraryVersion);
 
+const optionalContexts = {
+  web,
+  device,
+  environment,
+  placeContext
+};
+const requiredContexts = [timestamp, implementationDetails];
 const createContext = ({ config, logger }) => {
-  return createComponent(
-    config,
-    logger,
-    {
-      web,
-      device,
-      environment,
-      placeContext
-    },
-    [timestamp, implementationDetails]
-  );
+  return createComponent(config, logger, optionalContexts, requiredContexts);
 };
 
 createContext.namespace = "Context";
 createContext.abbreviation = "CO";
 createContext.configValidators = {
   context: {
-    defaultValue: ["web", "device", "environment", "placeContext"]
+    defaultValue: Object.keys(optionalContexts),
+    validate: arrayOf(string())
   }
 };
 

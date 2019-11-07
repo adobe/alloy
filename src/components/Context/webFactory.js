@@ -10,21 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { deepAssign } from "../../utils";
+
 export default (window, topFrameSetProvider) => {
   let topFrameSet;
 
-  return event => {
+  return xdm => {
     topFrameSet = topFrameSet || topFrameSetProvider();
 
-    event.mergeXdm({
-      web: {
-        webPageDetails: {
-          URL: window.location.href || window.location
-        },
-        webReferrer: {
-          URL: topFrameSet.document.referrer
-        }
+    const web = {
+      webPageDetails: {
+        URL: window.location.href || window.location
+      },
+      webReferrer: {
+        URL: topFrameSet.document.referrer
       }
-    });
+    };
+    deepAssign(xdm, { web });
   };
 };

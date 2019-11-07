@@ -51,7 +51,16 @@
         logEnabled: true,
         prehidingStyle: ".personalization-container { opacity: 0 !important }",
         idSyncContainerId: 81,
-        migrateIds: true
+        migrateIds: true,
+        onBeforeEventSend({ xdm, data }) {
+          const urlSearchParams = new URLSearchParams(window.location.search);
+          if (urlSearchParams.has("title")) {
+            xdm.web.webPageDetails.name = urlSearchParams.get("title");
+          }
+          if (urlSearchParams.has("campaign")) {
+            data.campaign = urlSearchParams.get("campaign");
+          }
+        }
       });
 
       alloy("event", {

@@ -12,9 +12,11 @@ governing permissions and limitations under the License.
 import assign from "../assign";
 import booleanValidator from "./boolean";
 import chain from "./chain";
+import arrayOfValidator from "./arrayOf";
 import createMinimumValidator from "./createMinimum";
 import createUniqueValidator from "./createUnique";
 import domainValidator from "./domain";
+import callbackValidator from "./callback";
 import integerValidator from "./integer";
 import nonEmptyValidator from "./nonEmpty";
 import numberValidator from "./number";
@@ -58,6 +60,12 @@ const number = function number() {
 const string = function string() {
   return chain(this, stringValidator, { regexp, domain, nonEmpty, unique });
 };
+const callback = function func() {
+  return chain(this, callbackValidator);
+};
+const arrayOf = function arrayOf(elementValidator) {
+  return chain(this, arrayOfValidator(elementValidator));
+};
 
 // Use this to change the message that is returned.  This is useful for complex validators
 // where you don't want to just tell the user one thing at a time.  For example:
@@ -80,9 +88,13 @@ assign(baseValidator, { expected });
 const boundString = string.bind(baseValidator);
 const boundBoolean = boolean.bind(baseValidator);
 const boundNumber = number.bind(baseValidator);
+const boundCallback = callback.bind(baseValidator);
+const boundArrayOf = arrayOf.bind(baseValidator);
 
 export {
   boundString as string,
   boundBoolean as boolean,
-  boundNumber as number
+  boundNumber as number,
+  boundCallback as callback,
+  boundArrayOf as arrayOf
 };

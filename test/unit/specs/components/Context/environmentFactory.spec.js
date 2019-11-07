@@ -6,19 +6,15 @@ describe("Context::environmentFactory", () => {
     innerWidth: 1003,
     innerHeight: 1004
   };
-  let event;
-
-  beforeEach(() => {
-    event = jasmine.createSpyObj("event", ["mergeXdm"]);
-  });
 
   it("works", () => {
     const date = new Date(1553550978123);
     const dateProvider = () => {
       return date;
     };
-    environmentFactory(mywindow, dateProvider)(event);
-    expect(event.mergeXdm).toHaveBeenCalledWith({
+    const xdm = {};
+    environmentFactory(mywindow, dateProvider)(xdm);
+    expect(xdm).toEqual({
       environment: {
         type: "browser",
         browserDetails: {

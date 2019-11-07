@@ -10,39 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { flatMap } from "../../utils";
+
 export default (config, logger, availableContexts, requiredContexts) => {
-  let configuredContexts;
+  const { context: configuredContexts } = config;
+
+  const contexts = flatMap(configuredContexts, (context, i) => {
+    if (availableContexts[context]) {
+      return [availableContexts[context]];
+    }
+    logger.warn(`Invalid context[${i}]: '${context}' is not available.`);
+    return [];
+  }).concat(requiredContexts);
+
   return {
     namespace: "Context",
     lifecycle: {
-      onComponentsRegistered() {
-        let configuredContextNames = [];
-
-        if (Array.isArray(config.context)) {
-          configuredContextNames = config.context;
-        } else {
-          logger.warn(
-            `Invalid configured context. Please specify an array of strings.`
-          );
-        }
-
-        configuredContexts = configuredContextNames
-          .filter(configuredContextName => {
-            if (!availableContexts[configuredContextName]) {
-              logger.warn(
-                `Configured context ${configuredContextName} is not available.`
-              );
-              return false;
-            }
-            return true;
-          })
-          .map(
-            configuredContextName => availableContexts[configuredContextName]
-          )
-          .concat(requiredContexts);
-      },
       onBeforeEvent({ event }) {
-        configuredContexts.forEach(context => context(event));
+        const xdm = {};
+        contexts.forEach(context => context(xdm));
+        event.mergeXdm(xdm);
       }
     }
   };

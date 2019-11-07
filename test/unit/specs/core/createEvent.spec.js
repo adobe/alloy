@@ -20,14 +20,14 @@ describe("createEvent", () => {
   });
 
   it("deeply merges XDM with user-provided XDM merged last", () => {
-    event.setUserXdm({
+    event.userXdm = {
       fruit: {
         type: "apple"
       },
       veggie: {
         type: "carrot"
       }
-    });
+    };
     event.mergeXdm({
       fruit: {
         type: "strawberry"
@@ -63,8 +63,8 @@ describe("createEvent", () => {
   });
 
   it("sets user data", () => {
-    event.setUserData({ fruit: "apple" });
-    event.setUserData({ veggie: "carrot" });
+    event.userData = { fruit: "apple" };
+    event.userData = { veggie: "carrot" };
     expect(event.toJSON()).toEqual({
       data: {
         veggie: "carrot"
@@ -151,7 +151,64 @@ describe("createEvent", () => {
   it("reports whether the event is empty", () => {
     expect(event.isEmpty()).toBeTrue();
     event.expectResponse();
-    event.setUserData({ foo: "bar" });
+    event.userData = { foo: "bar" };
     expect(event.isEmpty()).toBeFalse();
+  });
+
+  describe("applyCallback", () => {
+    it("can add fields to empty xdm", () => {
+      const callback = ({ xdm, data }) => {
+        xdm.a = "1";
+        data.b = "2";
+      };
+      const subject = createEvent();
+      subject.lastChanceCallback = callback;
+      expect(subject.toJSON()).toEqual({ xdm: { a: "1" }, data: { b: "2" } });
+    });
+
+    it("can add fields to an existing xdm", () => {
+      const callback = ({ xdm, data }) => {
+        xdm.b = "2";
+        data.b = "2";
+      };
+      const subject = createEvent();
+      subject.userData = { a: "1" };
+      subject.userXdm = { a: "1" };
+      subject.lastChanceCallback = callback;
+      expect(subject.toJSON()).toEqual({
+        xdm: { a: "1", b: "2" },
+        data: { a: "1", b: "2" }
+      });
+    });
+
+    it("can remove fields", () => {
+      const callback = ({ xdm, data }) => {
+        delete xdm.a;
+        delete data.a;
+      };
+      const subject = createEvent();
+      subject.userXdm = { a: "1", b: "2" };
+      subject.userData = { a: "1", b: "2" };
+      subject.lastChanceCallback = callback;
+      expect(subject.toJSON()).toEqual({ xdm: { b: "2" }, data: { b: "2" } });
+    });
+
+    it("doesn't merge when there is an exception", () => {
+      const callback = ({ xdm, data }) => {
+        delete xdm.a;
+        xdm.c = "3";
+        delete data.a;
+        data.c = "3";
+        throw Error("Expected Error");
+      };
+      const subject = createEvent();
+      subject.userXdm = { a: "1", b: "2" };
+      subject.userData = { a: "1", b: "2" };
+      subject.lastChanceCallback = callback;
+      expect(subject.toJSON()).toEqual({
+        xdm: { a: "1", b: "2" },
+        data: { a: "1", b: "2" }
+      });
+    });
   });
 });

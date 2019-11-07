@@ -7,15 +7,11 @@ describe("Context::webFactory", () => {
   const topFrameSetProvider = () => {
     return { document: { referrer: "http://myreferrer.com" } };
   };
-  let event;
-
-  beforeEach(() => {
-    event = jasmine.createSpyObj("event", ["mergeXdm"]);
-  });
 
   it("works", () => {
-    webFactory(window, topFrameSetProvider)(event);
-    expect(event.mergeXdm).toHaveBeenCalledWith({
+    const xdm = {};
+    webFactory(window, topFrameSetProvider)(xdm);
+    expect(xdm).toEqual({
       web: {
         webPageDetails: {
           URL: "http://mylocation.com"

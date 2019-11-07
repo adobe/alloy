@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean } from "../utils/configValidators";
+import { boolean, string, callback } from "../utils/configValidators";
 
-export default {
+export default () => ({
   errorsEnabled: {
     validate: boolean(),
     defaultValue: true
@@ -20,5 +20,23 @@ export default {
   logEnabled: {
     validate: boolean(),
     defaultValue: false
+  },
+  configId: {
+    validate: string().unique()
+  },
+  edgeDomain: {
+    defaultValue: "beta.adobedc.net",
+    validate: string().domain()
+  },
+  edgeBasePath: {
+    defaultValue: "ee",
+    validate: string().nonEmpty()
+  },
+  imsOrgId: {
+    validate: string().unique()
+  },
+  onBeforeEventSend: {
+    defaultValue: () => undefined,
+    validate: callback()
   }
-};
+});

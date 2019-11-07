@@ -22,13 +22,16 @@ describe("createEventManager", () => {
   let optIn;
   let config;
   let eventManager;
+  let logger;
+  let lastChanceCallback;
   beforeEach(() => {
     event = {
       mergeXdm() {},
+      set lastChanceCallback(value) {
+        lastChanceCallback = value;
+      },
       isDocumentUnloading: () => false,
-      toJSON() {
-        return { xdm: {} };
-      }
+      applyCallback: jasmine.createSpy()
     };
     const createEvent = jasmine.createSpy().and.returnValue(event);
     lifecycle = {
@@ -53,14 +56,19 @@ describe("createEventManager", () => {
       whenOptedIn: jasmine.createSpy().and.returnValue(Promise.resolve())
     };
     config = {
-      imsOrgId: "ABC123"
+      imsOrgId: "ABC123",
+      onBeforeEventSend: jasmine.createSpy()
+    };
+    logger = {
+      error: jasmine.createSpy()
     };
     eventManager = createEventManager({
       createEvent,
       optIn,
       lifecycle,
       network,
-      config
+      config,
+      logger
     });
   });
 
@@ -105,6 +113,31 @@ describe("createEventManager", () => {
         .then(() => {
           expect(network.sendRequest).toHaveBeenCalled();
         });
+    });
+
+    it("sets the onBeforeEventSend callback", () => {
+      const params = { xdm: { a: "1" }, data: { b: "2" } };
+      payload.addEvent.and.callFake(() => {
+        lastChanceCallback(params);
+      });
+      return eventManager.sendEvent(event, {}).then(() => {
+        expect(config.onBeforeEventSend).toHaveBeenCalledWith(params);
+      });
+    });
+
+    it("logs errors in the onBeforeEventSend callback", () => {
+      const error = Error("onBeforeEventSend error");
+      payload.addEvent.and.callFake(() => {
+        try {
+          lastChanceCallback({ xdm: {}, data: {} });
+        } catch (e) {
+          // noop
+        }
+      });
+      config.onBeforeEventSend.and.throwError(error);
+      return eventManager.sendEvent(event, {}).then(() => {
+        expect(logger.error).toHaveBeenCalledWith(error);
+      });
     });
 
     it("calls onBeforeEvent before consent and onBeforeDataCollection after", () => {

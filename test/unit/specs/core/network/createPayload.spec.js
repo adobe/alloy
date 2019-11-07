@@ -51,4 +51,16 @@ describe("Payload", () => {
     payload.addEvent(collectEvent);
     expect(payload.expectsResponse).toBe(false);
   });
+
+  it("calls toJSON on the event when it is added to the payload", () => {
+    const payload = createPayload();
+    const event = {
+      toJSON: jasmine.createSpy(),
+      get expectsResponse() {
+        return true;
+      }
+    };
+    payload.addEvent(event);
+    expect(event.toJSON).toHaveBeenCalled();
+  });
 });

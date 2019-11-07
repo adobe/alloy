@@ -2,7 +2,6 @@ import deviceFactory from "../../../../../src/components/Context/deviceFactory";
 
 describe("Context::deviceFactory", () => {
   let window;
-  let event;
 
   beforeEach(() => {
     window = {
@@ -11,13 +10,17 @@ describe("Context::deviceFactory", () => {
         height: 800
       }
     };
-    event = jasmine.createSpyObj("event", ["mergeXdm"]);
   });
+
+  const run = () => {
+    const xdm = {};
+    deviceFactory(window)(xdm);
+    return xdm;
+  };
 
   it("handles the happy path", () => {
     window.screen.orientation = { type: "landscape-primary" };
-    deviceFactory(window)(event);
-    expect(event.mergeXdm).toHaveBeenCalledWith({
+    expect(run()).toEqual({
       device: {
         screenHeight: 800,
         screenWidth: 600,
@@ -28,8 +31,7 @@ describe("Context::deviceFactory", () => {
 
   it("handles portrait orientation type", () => {
     window.screen.orientation = { type: "portrait-secondary" };
-    deviceFactory(window)(event);
-    expect(event.mergeXdm).toHaveBeenCalledWith({
+    expect(run()).toEqual({
       device: {
         screenHeight: 800,
         screenWidth: 600,
@@ -42,8 +44,7 @@ describe("Context::deviceFactory", () => {
     window.matchMedia = query => ({
       matches: query === "(orientation: portrait)"
     });
-    deviceFactory(window)(event);
-    expect(event.mergeXdm).toHaveBeenCalledWith({
+    expect(run()).toEqual({
       device: {
         screenHeight: 800,
         screenWidth: 600,
@@ -56,8 +57,7 @@ describe("Context::deviceFactory", () => {
     window.matchMedia = query => ({
       matches: query === "(orientation: landscape)"
     });
-    deviceFactory(window)(event);
-    expect(event.mergeXdm).toHaveBeenCalledWith({
+    expect(run()).toEqual({
       device: {
         screenHeight: 800,
         screenWidth: 600,
@@ -81,8 +81,7 @@ describe("Context::deviceFactory", () => {
         window.screen.orientation = orientation;
       }
       window.matchMedia = () => ({ matches: false });
-      deviceFactory(window)(event);
-      expect(event.mergeXdm).toHaveBeenCalledWith({
+      expect(run()).toEqual({
         device: {
           screenHeight: 800,
           screenWidth: 600

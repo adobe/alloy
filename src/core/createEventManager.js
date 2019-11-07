@@ -12,8 +12,17 @@ governing permissions and limitations under the License.
 
 import { clone } from "../utils";
 
-export default ({ createEvent, optIn, lifecycle, network, config }) => {
-  const { imsOrgId } = config;
+export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
+  const { imsOrgId, onBeforeEventSend } = config;
+
+  const onBeforeEventSendWithLoggedExceptions = (...args) => {
+    try {
+      onBeforeEventSend(...args);
+    } catch (e) {
+      logger.error(e);
+      throw e;
+    }
+  };
 
   return {
     createEvent,
@@ -30,10 +39,9 @@ export default ({ createEvent, optIn, lifecycle, network, config }) => {
      * @returns {*}
      */
     sendEvent(event, options = {}) {
+      event.lastChanceCallback = onBeforeEventSendWithLoggedExceptions;
       const { isViewStart = false } = options;
-
       const payload = network.createPayload();
-      payload.addEvent(event);
       payload.mergeMeta({
         gateway: {
           imsOrgId
@@ -43,13 +51,17 @@ export default ({ createEvent, optIn, lifecycle, network, config }) => {
           synchronousValidation: true
         }
       });
-
       return lifecycle
         .onBeforeEvent({
           event,
           isViewStart
         })
-        .then(() => optIn.whenOptedIn())
+        .then(() => {
+          // it's important to add the event here because the payload object will call toJSON
+          // which applies the userData, userXdm, and lastChanceCallback
+          payload.addEvent(event);
+          return optIn.whenOptedIn();
+        })
         .then(() => {
           return lifecycle.onBeforeDataCollection({ payload });
         })

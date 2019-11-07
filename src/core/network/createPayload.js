@@ -26,18 +26,15 @@ export default () => {
     },
     addEvent(event) {
       content.events = content.events || [];
-      content.events.push(event);
+      expectsResponse = expectsResponse || event.expectsResponse;
+      content.events.push(event.toJSON());
     },
     mergeMeta: createMerger(content, "meta"),
     expectResponse() {
       expectsResponse = true;
     },
     get expectsResponse() {
-      return (
-        expectsResponse ||
-        (Array.isArray(content.events) &&
-          content.events.some(event => event.expectsResponse))
-      );
+      return expectsResponse;
     },
     toJSON() {
       return content;
