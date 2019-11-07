@@ -6,7 +6,6 @@ node_js:
 - '10'
 install:
 - npm i -g npm
-- npm install -g allure-commandline
 cache:
   directories:
   - node_modules
@@ -39,7 +38,6 @@ before_install:
 - ssh-add ./deploy_key
 deploy:
   provider: script
-  skip-cleanup: true
-  script: rsync -r --quiet --delete-after ${TRAVIS_BUILD_DIR}/public/* ${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_DIRECTORY}
+  script: bash scripts/deploy_sandbox.sh
   on:
     branch: master
