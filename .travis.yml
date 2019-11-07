@@ -3,9 +3,10 @@ sudo: required
 language:
 - node_js
 node_js:
-- '10'
+- 'stable'
 install:
 - npm i -g npm
+- npm i -g testcafe
 cache:
   directories:
   - node_modules
@@ -24,7 +25,7 @@ services:
 script:
 - npm install
 - npm run build:prod
-- npm run functional:sl
+- npm run runner:sl
 - npm run test:saucelabs
 - npm run checkbundlesize
 notifications:
