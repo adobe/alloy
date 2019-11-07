@@ -17,8 +17,6 @@ const path = require("path");
 
 const config = require("./localConfig");
 
-let testcafe = null;
-
 const allFilesSync = (dir, fileList = []) => {
   fs.readdirSync(dir).forEach(file => {
     const filePath = path.join(dir, file);
@@ -47,13 +45,13 @@ const browsers = isSauceLabs
   : config.desktop.browser;
 
 createTestCafe()
-  .then(tc => {
-    testcafe = tc;
+  .then(testcafe => {
     const runner = testcafe.createRunner();
     const testFolder = config.desktop.testsFolder;
     const testSuite = allFilesSync(testFolder);
 
     return runner
+      .startApp("npm run test:server", 4000)
       .src(testSuite)
       .filter(testName => /^Regression/.test(testName))
       .browsers(browsers)
