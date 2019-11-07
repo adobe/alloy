@@ -41,13 +41,13 @@
 
     <script>
       alloy("configure", {
-        // edgeDomain: "edgegateway.azurewebsites.net",
-        // edgeDomain:
-        //   "konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net",
+        // edgeDomain: "ENTER YOUR COLLECTION CNAME IF AVAILABLE",
         // optInEnabled: true,
+        // urlDestinationsEnabled: true,
+        // cookieDestinationsEnabled: false,
+        // errorsEnabled: false,
         configId: "9999999",
         imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
-        // errorsEnabled: false,
         logEnabled: true,
         prehidingStyle: ".personalization-container { opacity: 0 !important }",
         idSyncContainerId: 81,
@@ -66,10 +66,6 @@
       alloy("event", {
         viewStart: true,
         xdm: {
-          _myorg: {
-            url: location.href,
-            name: location.pathname.substring(1) || "home"
-          },
           // Demonstrates overriding automatically collected data
           device: {
             screenHeight: 1

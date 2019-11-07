@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { boolean } from "../../utils/configValidators";
 import processDestinations from "./processDestinations";
 
 const createAudiences = ({ config, logger }) => {
@@ -17,17 +18,18 @@ const createAudiences = ({ config, logger }) => {
     lifecycle: {
       onBeforeEvent({ event, isViewStart }) {
         if (isViewStart) {
+          event.mergeQuery({
+            activation: {
+              urlsEnabled: config.urlDestinationsEnabled,
+              cookiesEnabled: config.cookieDestinationsEnabled
+            }
+          });
           event.expectResponse();
         }
       },
       onResponse({ response }) {
         const destinations = response.getPayloadsByType("activation:push");
-
-        processDestinations({
-          destinations,
-          config,
-          logger
-        });
+        processDestinations({ destinations, logger });
       }
     },
     commands: {}
@@ -37,8 +39,13 @@ const createAudiences = ({ config, logger }) => {
 createAudiences.namespace = "Audiences";
 createAudiences.abbreviation = "AU";
 createAudiences.configValidators = {
-  destinationsEnabled: {
-    defaultValue: true
+  cookieDestinationsEnabled: {
+    defaultValue: true,
+    validate: boolean()
+  },
+  urlDestinationsEnabled: {
+    defaultValue: true,
+    validate: boolean()
   }
 };
 

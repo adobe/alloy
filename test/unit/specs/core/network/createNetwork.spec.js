@@ -15,6 +15,7 @@ import createNetwork from "../../../../../src/core/network/createNetwork";
 describe("createNetwork", () => {
   const config = {
     edgeDomain: "alloy.mysite.com",
+    edgeBasePath: "ee",
     configId: "myconfigId"
   };
 
@@ -90,6 +91,25 @@ describe("createNetwork", () => {
           true
         );
       });
+  });
+
+  it("supports custom edgeBasePath settings", () => {
+    const { edgeDomain, configId } = config;
+    network = createNetwork({
+      config: { edgeDomain, configId, edgeBasePath: "ee-beta-1" },
+      logger,
+      lifecycle,
+      networkStrategy
+    });
+    return network.sendRequest({}, { documentUnloading: true }).then(() => {
+      expect(networkStrategy).toHaveBeenCalledWith(
+        jasmine.stringMatching(
+          /^https:\/\/alloy\.mysite\.com\/ee-beta-1\/v1\/collect\?configId=myconfigId&requestId=[0-9a-f-]+$/
+        ),
+        "{}",
+        true
+      );
+    });
   });
 
   it("sends the payload", () => {

@@ -10,5 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
 import toArray from "../../../../src/utils/toArray";
+
+describe("toArray", () => {
+  it("does not convert value if already an array", () => {
+    const value = [];
+    expect(toArray(value)).toBe(value);
+  });
+
+  it("converts undefined to empty array", () => {
+    expect(toArray()).toEqual([]);
+  });
+
+  it("converts null to empty array", () => {
+    expect(toArray(null)).toEqual([]);
+  });
+
+  it("converts array-like value to array", () => {
+    const result = toArray(document.querySelectorAll("body"));
+    expect(Array.isArray(result)).toBe(true);
+    expect(result.length).toBe(1);
+    expect(result[0]).toBe(document.body);
+  });
+});

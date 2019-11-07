@@ -1,12 +1,5 @@
 import * as AUTH_STATES from "../constants/authStates";
-import {
-  isObject,
-  includes,
-  keys,
-  values,
-  isBoolean,
-  isNil
-} from "../../../utils";
+import { isObject, includes, values, isBoolean, isNil } from "../../../utils";
 
 const ERROR_MESSAGE = "Invalid customer ID format.";
 const NOT_AN_OBJECT_ERROR = "Each namespace should be an object.";
@@ -17,7 +10,7 @@ const validateCustomerIds = customerIds => {
   if (!isObject(customerIds)) {
     throw new Error(`${ERROR_MESSAGE} ${NOT_AN_OBJECT_ERROR}`);
   }
-  keys(customerIds).forEach(customerId => {
+  Object.keys(customerIds).forEach(customerId => {
     const { primary } = customerIds[customerId];
 
     if (!isObject(customerIds[customerId])) {
@@ -33,7 +26,7 @@ const validateCustomerIds = customerIds => {
 };
 
 const sortObjectKeyNames = object => {
-  return keys(object)
+  return Object.keys(object)
     .sort()
     .reduce((newObject, key) => {
       newObject[key] = object[key];
@@ -47,7 +40,7 @@ const normalizeCustomerIds = customerIds => {
   // Alternatively, maybe we should expose the enum on the instance.
   const authStates = values(AUTH_STATES);
 
-  return keys(sortedCustomerIds).reduce((normalizedIds, customerId) => {
+  return Object.keys(sortedCustomerIds).reduce((normalizedIds, customerId) => {
     const { id, authenticatedState, primary } = sortedCustomerIds[customerId];
 
     normalizedIds[customerId] = {
