@@ -24,7 +24,6 @@ describe("createEventManager", () => {
   let eventManager;
   let logger;
   let lastChanceCallback;
-  let createEvent;
   beforeEach(() => {
     event = {
       mergeXdm() {},
@@ -34,7 +33,7 @@ describe("createEventManager", () => {
       isDocumentUnloading: () => false,
       applyCallback: jasmine.createSpy()
     };
-    createEvent = jasmine.createSpy().and.returnValue(event);
+    const createEvent = jasmine.createSpy().and.returnValue(event);
     lifecycle = {
       onBeforeEvent: jasmine.createSpy().and.returnValue(Promise.resolve()),
       onBeforeDataCollection: jasmine
@@ -59,7 +58,9 @@ describe("createEventManager", () => {
     config = {
       imsOrgId: "ABC123",
       onBeforeEventSend: jasmine.createSpy(),
-      debug: true
+      debug: true,
+      datasetId: "DATASETID",
+      schemaId: "SCHEMAID"
     };
     logger = {
       error: jasmine.createSpy()
@@ -83,36 +84,6 @@ describe("createEventManager", () => {
   describe("sendEvent", () => {
     it("creates the payload and adds event and meta", () => {
       return eventManager.sendEvent(event).then(() => {
-        expect(payload.addEvent).toHaveBeenCalledWith(event);
-        expect(payload.mergeMeta).toHaveBeenCalledWith({
-          gateway: {
-            imsOrgId: "ABC123"
-          },
-          collect: {
-            synchronousValidation: true
-          }
-        });
-      });
-    });
-
-    it("adds datasetId and schemaId to meta if set in config", () => {
-      const configWithDatasetAndSchema = {
-        imsOrgId: "ABC123",
-        onBeforeEventSend: jasmine.createSpy(),
-        debug: true,
-        datasetId: "DATASETID",
-        schemaId: "SCHEMAID"
-      };
-
-      const eventManagerWithCollectInMeta = createEventManager({
-        createEvent,
-        optIn,
-        lifecycle,
-        network,
-        configWithDatasetAndSchema,
-        logger
-      });
-      return eventManagerWithCollectInMeta.sendEvent(event).then(() => {
         expect(payload.addEvent).toHaveBeenCalledWith(event);
         expect(payload.mergeMeta).toHaveBeenCalledWith({
           gateway: {
