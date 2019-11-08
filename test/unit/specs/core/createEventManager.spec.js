@@ -57,7 +57,10 @@ describe("createEventManager", () => {
     };
     config = {
       imsOrgId: "ABC123",
-      onBeforeEventSend: jasmine.createSpy()
+      onBeforeEventSend: jasmine.createSpy(),
+      debug: true,
+      datasetId: "DATASETID",
+      schemaId: "SCHEMAID"
     };
     logger = {
       error: jasmine.createSpy()
@@ -87,7 +90,9 @@ describe("createEventManager", () => {
             imsOrgId: "ABC123"
           },
           collect: {
-            synchronousValidation: true
+            synchronousValidation: true,
+            datasetId: "DATASETID",
+            schemaId: "SCHEMAID"
           }
         });
       });

@@ -60,7 +60,11 @@
           if (urlSearchParams.has("campaign")) {
             data.campaign = urlSearchParams.get("campaign");
           }
-        }
+        },
+        debug: true,
+        datasetId: "5db865ad86c04218a91f2185",
+        schemaId:
+          "https://ns.adobe.com/atag/schemas/ec93478f46500c25dc13dc1141091fdb"
       });
 
       alloy("event", {
@@ -70,25 +74,19 @@
           device: {
             screenHeight: 1
           }
-        },
-        data: {
-          nonXdmKey: "nonXdmValue",
-          // The following prop is a trait set in Audience Manager to
-          // return destinations.
-          name: "home"
         }
       }).then(function(data) {
         console.log("Sandbox: View start event has completed.", data);
       });
 
       alloy("setCustomerIds", {
-        emailHash: {
+        Email_LC_SHA256: {
           id: "me@gmail.com",
           authenticatedState: "ambiguous",
           hash: true, //TODO: document customer ID hashing syntax
           primary: true
         },
-        crm: {
+        HYP: {
           id: "1234",
           authenticatedState: "ambiguous"
         }

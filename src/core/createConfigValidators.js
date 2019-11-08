@@ -38,5 +38,17 @@ export default () => ({
   onBeforeEventSend: {
     defaultValue: () => undefined,
     validate: callback()
+  },
+  datasetId: {
+    defaultValue: undefined,
+    validate: string().nonEmpty()
+  },
+  schemaId: {
+    defaultValue: undefined,
+    validate: string().nonEmpty()
+  },
+  debug: {
+    defaultValue: false,
+    validate: boolean()
   }
 });

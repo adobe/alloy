@@ -14,6 +14,7 @@ governing permissions and limitations under the License.
 
 // Please keep in alphabetical order.
 export { default as assign } from "./assign";
+export { default as assignIf } from "./assignIf";
 export { default as clone } from "./clone";
 export { default as convertBufferToHex } from "./convertBufferToHex";
 export {
