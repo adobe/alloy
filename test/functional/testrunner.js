@@ -44,12 +44,13 @@ const browsers = isSauceLabs
   ? config.desktop.saucelabs
   : config.desktop.browser;
 
+let testcafe;
 createTestCafe()
-  .then(testcafe => {
+  .then(tc => {
+    testcafe = tc;
     const runner = testcafe.createRunner();
     const testFolder = config.desktop.testsFolder;
     const testSuite = allFilesSync(testFolder);
-
     return runner
       .startApp("npm run test:server", 4000)
       .src(testSuite)

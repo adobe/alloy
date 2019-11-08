@@ -64,7 +64,7 @@ module.exports = config => {
       },
       recordScreenshots: false,
       recordVideo: false,
-      startConnect: false,
+      startConnect: true,
       testName: "Alloy Tests",
       tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
       username: process.env.SAUCE_USERNAME

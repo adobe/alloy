@@ -10,7 +10,6 @@ cache:
   directories:
   - node_modules
 addons:
-  sauce_connect: true
   firefox: latest
   apt:
     sources:
@@ -24,8 +23,8 @@ services:
 script:
 - npm install
 - npm run build:prod
-- npm run test:saucelabs
 - npm run functional:sl
+- npm run test:saucelabs
 - npm run checkbundlesize
 notifications:
   slack:

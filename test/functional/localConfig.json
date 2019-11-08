@@ -16,7 +16,7 @@
       "speed": 0.5,
       "selectorTimeOut": 5000,
       "assertionTimeout": 5000,
-      "concurrency": 1
+      "concurrency": 2
     },
     "mobile": {
       "testsFolder": "test/functional/specs/mobile/",
