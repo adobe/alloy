@@ -15,8 +15,7 @@ export default version => {
   return xdm => {
     const implementationDetails = {
       name: "https://ns.adobe.com/experience/alloy",
-      version,
-      environment: "web"
+      version
     };
     deepAssign(xdm, { implementationDetails });
   };
