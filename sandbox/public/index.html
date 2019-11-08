@@ -60,7 +60,11 @@
           if (urlSearchParams.has("campaign")) {
             data.campaign = urlSearchParams.get("campaign");
           }
-        }
+        },
+        debug: true,
+        datasetId: "5db865ad86c04218a91f2185",
+        schemaId:
+          "https://ns.adobe.com/atag/schemas/ec93478f46500c25dc13dc1141091fdb"
       });
 
       alloy("event", {

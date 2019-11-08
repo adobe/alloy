@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { clone } from "../utils";
+import { clone, assignIf, isEmptyObject } from "../utils";
 
 export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
-  const { imsOrgId, onBeforeEventSend } = config;
+  const { imsOrgId, onBeforeEventSend, debug, datasetId, schemaId } = config;
 
   const onBeforeEventSendWithLoggedExceptions = (...args) => {
     try {
@@ -22,6 +22,24 @@ export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
       logger.error(e);
       throw e;
     }
+  };
+
+  const addMetaTo = payload => {
+    const meta = {
+      gateway: {
+        imsOrgId
+      }
+    };
+    const collect = Object.create(null);
+    assignIf(collect, { synchronousValidation: true }, () => debug);
+    assignIf(collect, { datasetId: config.datasetId }, () => datasetId);
+    assignIf(collect, { schemaId: config.schemaId }, () => schemaId);
+
+    if (!isEmptyObject(collect)) {
+      meta.collect = collect;
+    }
+
+    payload.mergeMeta(meta);
   };
 
   return {
@@ -42,15 +60,8 @@ export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
       event.lastChanceCallback = onBeforeEventSendWithLoggedExceptions;
       const { isViewStart = false } = options;
       const payload = network.createPayload();
-      payload.mergeMeta({
-        gateway: {
-          imsOrgId
-        },
-        // TODO: We should connect this to a new `debug` config.
-        collect: {
-          synchronousValidation: true
-        }
-      });
+      addMetaTo(payload);
+
       return lifecycle
         .onBeforeEvent({
           event,
