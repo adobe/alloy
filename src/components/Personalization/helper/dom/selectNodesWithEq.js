@@ -57,10 +57,11 @@ export const parseSelector = rawSelector => {
 /**
  * Returns an array of matched DOM nodes.
  * @param {String} selector that contains Sizzle "eq(...)" pseudo selector
- * @param {Node} doc, defaults to document
  * @returns {Array} an array of DOM nodes
  */
-export const selectNodesWithEq = (selector, doc = document) => {
+export const selectNodesWithEq = selector => {
+  const doc = document;
+
   if (isNotEqSelector(selector)) {
     return selectNodes(selector, doc);
   }
