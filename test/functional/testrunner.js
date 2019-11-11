@@ -14,11 +14,9 @@ require("dotenv").config();
 const createTestCafe = require("testcafe");
 const fs = require("fs");
 const path = require("path");
-require("events").EventEmitter.prototype._maxListeners = 1000;
-const { exec } = require("child_process");
+
 const config = require("./localConfig");
 
-let testcafe = null;
 const allFilesSync = (dir, fileList = []) => {
   fs.readdirSync(dir).forEach(file => {
     const filePath = path.join(dir, file);
@@ -32,80 +30,37 @@ const allFilesSync = (dir, fileList = []) => {
   });
 };
 
-cleanReports = () => {
-  return new Promise(resolve => {
-    exec("rm -rf allure", () => {
-      resolve();
-    });
-    exec("rm -rf reports", () => {
-      resolve();
-    });
-  });
+const runOptions = {
+  skipJsErrors: config.desktop.skipCriticalConsoleJsErrors,
+  quarantineMode: config.desktop.quarantineMode,
+  speed: config.desktop.speed,
+  debugMode: false,
+  selectorTimeout: config.desktop.selectorTimeOut,
+  assertionTimeout: config.desktop.assertionTimeout
 };
 
-createReport = () => {
-  exec(
-    "allure generate allure/allure-results --clean -o allure/allure-report",
-    () => {}
-  );
-};
+const isSauceLabs = process.argv.includes("--sl");
+const browsers = isSauceLabs
+  ? config.desktop.saucelabs
+  : config.desktop.browser;
 
-const isSL = process.argv.includes("--sl");
-if (isSL === false) {
-  createTestCafe().then(tc => {
+let testcafe;
+createTestCafe()
+  .then(tc => {
     testcafe = tc;
     const runner = testcafe.createRunner();
-    runSuite = suite => {
-      const runOptions = {
-        skipJsErrors: config.desktop.skipCriticalConsoleJsErrors,
-        quarantineMode: config.desktop.quarantineMode,
-        speed: config.desktop.speed,
-        debugMode: false,
-        selectorTimeout: config.desktop.selectorTimeOut,
-        assertionTimeout: config.desktop.assertionTimeout
-      };
-      return (
-        runner
-          .src(suite)
-          .filter(testName => /^Regression/.test(testName))
-          .browsers(config.desktop.browser)
-          // .reporter("allure")
-          .concurrency(config.desktop.concurrency)
-          .run(runOptions)
-      );
-    };
     const testFolder = config.desktop.testsFolder;
-    const testsList = allFilesSync(testFolder);
-    runSuite(testsList).then(() => testcafe.close());
-    // .then(() => createReport());
+    const testSuite = allFilesSync(testFolder);
+    return runner
+      .startApp("npm run test:server", 4000)
+      .src(testSuite)
+      .filter(testName => /^Regression/.test(testName))
+      .browsers(browsers)
+      .reporter("spec")
+      .concurrency(config.desktop.concurrency)
+      .run(runOptions);
+  })
+  .then(numberOfFailedTests => {
+    console.log("Failed tests: ", numberOfFailedTests);
+    testcafe.close();
   });
-} else if (isSL === true) {
-  createTestCafe().then(tc => {
-    testcafe = tc;
-    const runner = testcafe.createRunner();
-    runSuite = suite => {
-      const runOptions = {
-        skipJsErrors: config.desktop.skipCriticalConsoleJsErrors,
-        quarantineMode: config.desktop.quarantineMode,
-        speed: config.desktop.speed,
-        debugMode: false,
-        selectorTimeout: config.desktop.selectorTimeOut,
-        assertionTimeout: config.desktop.assertionTimeout
-      };
-      return runner
-        .src(suite)
-        .filter(testName => /^Regression/.test(testName))
-        .browsers(config.desktop.saucelabs)
-        .reporter("allure")
-        .concurrency(config.desktop.concurrency)
-        .run(runOptions);
-    };
-    const testFolder = config.desktop.testsFolder;
-    const testsList = allFilesSync(testFolder);
-    runSuite(testsList)
-      .then(() => testcafe.close())
-      .then(() => createReport());
-  });
-} else {
-  console.log("env is missing");
-}
