@@ -10,22 +10,27 @@ governing permissions and limitations under the License.
 */
 
 import createPrivacyComponent from "../../../../../src/components/Privacy/index";
-import createConfig from "../../../../../src/core/createConfig";
+import createConfig from "../../../../../src/core/config/createConfig";
+import createValidator from "../../../../../src/core/config/createValidator";
 
 describe("Privacy::index", () => {
   [{}, { optInEnabled: true }, { optInEnabled: false }].forEach(cfg => {
     it(`validates configuration (${JSON.stringify(cfg)})`, () => {
       const configObj = createConfig(cfg);
-      configObj.addValidators(createPrivacyComponent.configValidators);
-      configObj.validate();
+      const validator = createValidator(configObj);
+
+      validator.addValidators(createPrivacyComponent.configValidators);
+      validator.validate();
     });
   });
 
   [{ optInEnabled: "foo" }].forEach(cfg => {
     it(`invalidates configuration (${JSON.stringify(cfg)})`, () => {
       const configObj = createConfig(cfg);
-      configObj.addValidators(createPrivacyComponent.configValidators);
-      expect(() => configObj.validate()).toThrowError();
+      const validator = createValidator(configObj);
+
+      validator.addValidators(createPrivacyComponent.configValidators);
+      expect(() => validator.validate()).toThrowError();
     });
   });
 });

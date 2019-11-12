@@ -26,7 +26,7 @@ const createClickHandler = (eventManager, lifecycle) => {
 };
 
 export default (config, eventManager, lifecycle) => {
-  const enabled = config.get("clickCollectionEnabled");
+  const enabled = config.clickCollectionEnabled;
 
   if (!enabled) {
     return;

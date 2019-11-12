@@ -42,7 +42,6 @@ createIdentity.configValidators = {
     validate: boolean()
   },
   idSyncContainerId: {
-    defaultValue: undefined,
     validate: number()
       .integer()
       .minimum(0)

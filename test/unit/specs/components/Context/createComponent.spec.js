@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createComponent from "../../../../../src/components/Context/createComponent";
+import createConfig from "../../../../../src/core/config/createConfig";
 
 describe("Context::createComponent", () => {
   const logger = {
@@ -34,7 +35,7 @@ describe("Context::createComponent", () => {
   });
 
   it("enables the configured contexts", () => {
-    const config = { context: ["context1", "context2"] };
+    const config = createConfig({ context: ["context1", "context2"] });
     const component = createComponent(config, logger, availableContexts, [
       requiredContext
     ]);
@@ -43,7 +44,7 @@ describe("Context::createComponent", () => {
     expect(event.mergeXdm).toHaveBeenCalledWith({ a: "1", b: "2", c: "3" });
   });
   it("ignores unknown contexts", () => {
-    const config = { context: ["unknowncontext", "context1"] };
+    const config = createConfig({ context: ["unknowncontext", "context1"] });
     const component = createComponent(config, logger, availableContexts, [
       requiredContext
     ]);
@@ -53,7 +54,7 @@ describe("Context::createComponent", () => {
   });
 
   it("can disable non-required contexts", () => {
-    const config = { context: [] };
+    const config = createConfig({ context: [] });
     const component = createComponent(config, logger, availableContexts, [
       requiredContext
     ]);

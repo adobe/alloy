@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import createIdentity from "../../../../../src/components/Identity";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 import { EXPERIENCE_CLOUD_ID } from "../../../../../src/components/Identity/constants/cookieNames";
+import createConfig from "../../../../../src/core/config/createConfig";
 
 describe("Identity", () => {
   describe("reactor-specific functionality", () => {
@@ -28,9 +29,9 @@ describe("Identity", () => {
       };
       eventManager = {};
       identity = createIdentity({
-        config: {
+        config: createConfig({
           reactorRegisterGetEcid
-        },
+        }),
         cookieJar: {
           get(key) {
             return key === "ECID" ? "ABC" : null;
@@ -75,9 +76,9 @@ describe("Identity", () => {
           whenOptedIn: () => Promise.resolve()
         };
         identity = createIdentity({
-          config: {
+          config: createConfig({
             reactorRegisterGetEcid
-          },
+          }),
           cookieJar,
           optIn,
           eventManager
@@ -104,9 +105,9 @@ describe("Identity", () => {
           toJSON: jasmine.createSpy()
         };
         identity = createIdentity({
-          config: {
+          config: createConfig({
             reactorRegisterGetEcid
-          },
+          }),
           cookieJar,
           optIn
         });

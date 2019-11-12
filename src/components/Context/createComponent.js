@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { flatMap } from "../../utils";
 
 export default (config, logger, availableContexts, requiredContexts) => {
-  const { context: configuredContexts } = config;
+  const configuredContexts = config.context;
 
   const contexts = flatMap(configuredContexts, (context, i) => {
     if (availableContexts[context]) {

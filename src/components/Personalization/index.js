@@ -101,7 +101,6 @@ createPersonalization.abbreviation = "PE";
 
 createPersonalization.configValidators = {
   prehidingStyle: {
-    defaultValue: undefined,
     validate: string().nonEmpty()
   }
 };

@@ -79,7 +79,7 @@ export default ({ config, logger, lifecycle, networkStrategy }) => {
           let baseUrl = `https://${domain}`;
 
           // #if _DEV
-          if (config.get("localEdge")) {
+          if (config.localEdge) {
             baseUrl = `http://localhost:8080`;
           }
           // #endif
