@@ -24,35 +24,35 @@ export default ({
   const parsedQueryString = queryString.parse(locationSearch);
   const storage = createNamespacedStorage(`instance.${instanceNamespace}.`);
 
-  let logEnabled = storage.session.getItem("log") === "true";
-  let logEnabledWritableFromConfig = true;
+  let debugEnabled = storage.session.getItem("log") === "true";
+  let debugEnabledWritableFromConfig = true;
 
-  const getLogEnabled = () => logEnabled;
-  const setLogEnabled = (value, { fromConfig }) => {
-    if (!fromConfig || logEnabledWritableFromConfig) {
-      logEnabled = value;
+  const getDebugEnabled = () => debugEnabled;
+  const setDebugEnabled = (value, { fromConfig }) => {
+    if (!fromConfig || debugEnabledWritableFromConfig) {
+      debugEnabled = value;
     }
 
     if (!fromConfig) {
       // Web storage only allows strings, so we explicitly convert to string.
       storage.session.setItem("log", value.toString());
-      logEnabledWritableFromConfig = false;
+      debugEnabledWritableFromConfig = false;
     }
   };
 
   if (parsedQueryString[logQueryParam] !== undefined) {
-    setLogEnabled(stringToBoolean(parsedQueryString[logQueryParam]), {
+    setDebugEnabled(stringToBoolean(parsedQueryString[logQueryParam]), {
       fromConfig: false
     });
   }
 
   return {
-    setLogEnabled,
-    logger: createLogger(console, getLogEnabled, loggerPrefix),
+    setDebugEnabled,
+    logger: createLogger(console, getDebugEnabled, loggerPrefix),
     createComponentLogger(componentNamespace) {
       return createLogger(
         console,
-        getLogEnabled,
+        getDebugEnabled,
         `${loggerPrefix} [${componentNamespace}]`
       );
     }

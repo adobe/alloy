@@ -10,16 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (console, getLogEnabled, prefix) => {
+export default (console, getDebugEnabled, prefix) => {
   const process = (level, ...rest) => {
-    if (getLogEnabled()) {
+    if (getDebugEnabled()) {
       console[level](prefix, ...rest);
     }
   };
 
   return {
     get enabled() {
-      return getLogEnabled();
+      return getDebugEnabled();
     },
     /**
      * Outputs a message to the web console.

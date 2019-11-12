@@ -67,7 +67,7 @@ if (instanceNamespaces) {
       instanceNamespace,
       createNamespacedStorage
     });
-    const { setLogEnabled, logger } = logController;
+    const { setDebugEnabled, logger } = logController;
     const componentRegistry = createComponentRegistry();
     const lifecycle = createLifecycle(componentRegistry);
     const networkStrategy = createNetworkStrategy(window, logger);
@@ -82,8 +82,8 @@ if (instanceNamespaces) {
       errorsEnabled = value;
     };
 
-    const logCommand = options => {
-      setLogEnabled(options.enabled, { fromConfig: false });
+    const debugCommand = options => {
+      setDebugEnabled(options.enabled, { fromConfig: false });
     };
 
     const configureCommand = options => {
@@ -94,7 +94,7 @@ if (instanceNamespaces) {
         createConfigValidator,
         coreConfigValidators,
         logger,
-        setLogEnabled,
+        setDebugEnabled,
         setErrorsEnabled
       });
       const optIn = createOptIn({
@@ -151,7 +151,7 @@ if (instanceNamespaces) {
     const executeCommand = executeCommandFactory({
       logger,
       configureCommand,
-      logCommand,
+      debugCommand,
       handleError
     });
 

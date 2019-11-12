@@ -21,7 +21,7 @@ describe("buildAndValidateConfig", () => {
   let createConfigValidator;
   let coreConfigValidators;
   let logger;
-  let setLogEnabled;
+  let setDebugEnabled;
   let setErrorsEnabled;
 
   beforeEach(() => {
@@ -55,7 +55,7 @@ describe("buildAndValidateConfig", () => {
       enabled: false,
       log: jasmine.createSpy()
     };
-    setLogEnabled = jasmine.createSpy();
+    setDebugEnabled = jasmine.createSpy();
     setErrorsEnabled = jasmine.createSpy();
   });
 
@@ -67,7 +67,7 @@ describe("buildAndValidateConfig", () => {
       createConfigValidator,
       coreConfigValidators,
       logger,
-      setLogEnabled,
+      setDebugEnabled,
       setErrorsEnabled
     });
     expect(createConfig).toHaveBeenCalledWith(options);
@@ -87,14 +87,14 @@ describe("buildAndValidateConfig", () => {
       createConfigValidator,
       configValidators: coreConfigValidators,
       logger,
-      setLogEnabled,
+      setDebugEnabled,
       setErrorsEnabled
     });
     expect(setErrorsEnabled).toHaveBeenCalledWith(true);
   });
 
-  it("sets log enabled based on config", () => {
-    config.logEnabled = true;
+  it("sets debug enabled based on config", () => {
+    config.debugEnabled = true;
     buildAndValidateConfig({
       options,
       componentCreators,
@@ -102,10 +102,10 @@ describe("buildAndValidateConfig", () => {
       createConfigValidator,
       configValidators: coreConfigValidators,
       logger,
-      setLogEnabled,
+      setDebugEnabled,
       setErrorsEnabled
     });
-    expect(setLogEnabled).toHaveBeenCalledWith(true, { fromConfig: true });
+    expect(setDebugEnabled).toHaveBeenCalledWith(true, { fromConfig: true });
   });
 
   it("logs and returns computed configuration", () => {
@@ -118,7 +118,7 @@ describe("buildAndValidateConfig", () => {
       createConfigValidator,
       configValidators: coreConfigValidators,
       logger,
-      setLogEnabled,
+      setDebugEnabled,
       setErrorsEnabled
     });
     expect(logger.log).toHaveBeenCalledWith("Computed configuration:", {
@@ -134,7 +134,7 @@ describe("buildAndValidateConfig", () => {
       createConfigValidator,
       configValidators: coreConfigValidators,
       logger,
-      setLogEnabled,
+      setDebugEnabled,
       setErrorsEnabled
     });
     expect(result).toEqual(config);
