@@ -11,47 +11,29 @@ governing permissions and limitations under the License.
 */
 
 import isThirdPartyCookieSupported from "../../../../src/utils/isThirdPartyCookieSupported";
+import {
+  CHROME,
+  EDGE,
+  EDGE_CHROMIUM,
+  FIREFOX,
+  IE,
+  SAFARI,
+  UNKNOWN
+} from "../../../../src/constants/browser";
 
-const userAgentsWithSupport = [
-  // Chrome
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36",
-  "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.117 Safari/537.36",
-  // IE
-  "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; .NET4.0C; .NET4.0E; Tablet PC 2.0; rv:11.0) like Gecko",
-  "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko",
-  // Unknown
-  "Mozilla/5.0 (iPhone; CPU iPhone OS 12_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 [FBAN/FBIOS;FBAV/238.0.0.50.115;FBBV/171859800;FBDV/iPhone9,3;FBMD/iPhone;FBSN/iOS;FBSV/12.4.1;FBSS/2;FBID/phone;FBLC/en_US;FBOP/5;FBRV/172564136;FBCR/AT&T]"
-];
-
-const userAgentsWithoutSupport = [
-  // Firefox
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:69.0) Gecko/20100101 Firefox/69.0",
-  "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0",
-  // Safari
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Safari/605.1.15",
-  "Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13 Mobile/15E148 Safari/604.1"
-];
+const browsersWithSupport = [CHROME, IE, UNKNOWN];
+const browsersWithoutSupport = [EDGE, EDGE_CHROMIUM, FIREFOX, SAFARI];
 
 describe("isThirdPartyCookieSupported", () => {
-  userAgentsWithSupport.forEach(userAgent => {
-    it(`reports true for ${userAgent}`, () => {
-      const window = {
-        navigator: {
-          userAgent
-        }
-      };
-      expect(isThirdPartyCookieSupported(window)).toBeTrue();
+  browsersWithSupport.forEach(browser => {
+    it(`reports true for ${browser}`, () => {
+      expect(isThirdPartyCookieSupported(browser)).toBeTrue();
     });
   });
 
-  userAgentsWithoutSupport.forEach(userAgent => {
-    it(`reports false for ${userAgent}`, () => {
-      const window = {
-        navigator: {
-          userAgent
-        }
-      };
-      expect(isThirdPartyCookieSupported(window)).toBeFalse();
+  browsersWithoutSupport.forEach(browser => {
+    it(`reports false for ${browser}`, () => {
+      expect(isThirdPartyCookieSupported(browser)).toBeFalse();
     });
   });
 });

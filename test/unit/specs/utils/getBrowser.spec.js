@@ -10,19 +10,24 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getBrowser, {
+import getBrowser from "../../../../src/utils/getBrowser";
+import {
   EDGE,
+  EDGE_CHROMIUM,
   CHROME,
   FIREFOX,
   IE,
   SAFARI,
   UNKNOWN
-} from "../../../../src/utils/getBrowser";
+} from "../../../../src/constants/browser";
 
 const userAgentsByBrowser = {
   [EDGE]: [
     "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10136",
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36 Edge/17.17134"
+  ],
+  [EDGE_CHROMIUM]: [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3763.0 Safari/537.36 Edg/75.0.131.0"
   ],
   // Chrome on iOS will not be detected as Chrome. That is because Chrome on
   // iOS is just Safari wrapped in Chrome.
@@ -42,12 +47,9 @@ const userAgentsByBrowser = {
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Safari/605.1.15",
     "Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13 Mobile/15E148 Safari/604.1"
   ],
-  // Note that browsers like Opera will usually be reported as something like
-  // Chrome instead of Unknown because they contain other browser names in their
-  // user agent strings. For example, this one from Opera:
-  // Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36 OPR/64.0.3417.92
   [UNKNOWN]: [
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 12_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 [FBAN/FBIOS;FBAV/238.0.0.50.115;FBBV/171859800;FBDV/iPhone9,3;FBMD/iPhone;FBSN/iOS;FBSV/12.4.1;FBSS/2;FBID/phone;FBLC/en_US;FBOP/5;FBRV/172564136;FBCR/AT&T]"
+    "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 OPR/43.0.2442.991", // Opera
+    "Mozilla/5.0 (X11; Linux) KHTML/4.9.1 (like Gecko) Konqueror/4.9" // Konqueror
   ]
 };
 
