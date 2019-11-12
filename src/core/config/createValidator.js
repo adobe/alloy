@@ -23,38 +23,31 @@ const createConfigValidator = config => {
       return assign(validators, newValidators);
     },
     validate() {
-      const executeValidator = (validate, key, errors) => {
-        const { defaultValue } = validators[key];
-        const errorMessage = validate(key, config[key], defaultValue);
-
-        if (errorMessage) {
-          errors.push(errorMessage);
-        }
-      };
-
       const errors = Object.keys(validators).reduce((ac, key) => {
         const configValue = config[key];
-        const isConfigValueProvided = configValue !== undefined;
+        const isConfigValueProvided = configValue != null;
         const configValidator = validators[key];
         const hasDefault = configValidator.defaultValue !== undefined;
 
-        // 1: If no value provided, but there's a default, set default in config.
-        // TODO: It's weird that the validator sets defaults as well. This should happen
-        // when creating the config instead. Maybe pass `options` & `configValidators` to
-        // createConfig.
         if (!isConfigValueProvided && hasDefault) {
+          // no need to validate the defaultValue
           config[key] = configValidator.defaultValue;
-        }
+        } else if (
+          (isConfigValueProvided || configValidator.isRequired) &&
+          configValidator.validate
+        ) {
+          // We need to validate if the value was provided by the user,
+          // but also if there was no value provided and this config is required,
+          // the validator will give an error message.
+          const errorMessage = configValidator.validate(
+            key,
+            configValue,
+            configValidator.defaultValue
+          );
 
-        // 2: Validate.
-        if (configValidator.isRequired) {
-          if (!isConfigValueProvided) {
-            ac.push(`${key} is required.`);
-          } else if (configValidator.validate) {
-            executeValidator(configValidator.validate, key, ac);
+          if (errorMessage) {
+            ac.push(errorMessage);
           }
-        } else if (isConfigValueProvided && configValidator.validate) {
-          executeValidator(configValidator.validate, key, ac);
         }
 
         return ac;

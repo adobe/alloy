@@ -44,4 +44,20 @@ describe("createConfig", () => {
     cfg.d = "ABC";
     expect(cfg.d).toEqual("ABC");
   });
+
+  describe("changing config", () => {
+    it("does not change the provided options", () => {
+      const cfg = createConfig(testConfig);
+      cfg.d = "NEW VALUE";
+      expect(testConfig.d).toBe(undefined);
+    });
+  });
+
+  describe("changing provided options", () => {
+    it("does not change the config", () => {
+      const cfg = createConfig(testConfig);
+      testConfig.a = 456;
+      expect(cfg.a).toBe(123);
+    });
+  });
 });
