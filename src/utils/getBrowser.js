@@ -61,8 +61,10 @@ export default memoize(window => {
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     DEALINGS IN THE SOFTWARE.
     */
-    /* eslint-disable */
+    // Regular expression patterns were copied from
+    // https://github.com/DamonOehlman/detect-browser
     // These are only the browsers that Alloy officially supports.
+    /* eslint-disable */
     [EDGE]: /Edge\/([0-9\._]+)/,
     // Edge Chromium can dynamically change its user agent string based
     // on the host site:
