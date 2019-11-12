@@ -14,23 +14,25 @@ export default ({
   options,
   componentCreators,
   createConfig,
+  createConfigValidator,
   coreConfigValidators,
   logger,
   setLogEnabled,
   setErrorsEnabled
 }) => {
   const config = createConfig(options);
-  config.addValidators(coreConfigValidators);
+  const configValidator = createConfigValidator(config);
+  configValidator.addValidators(coreConfigValidators);
   componentCreators.forEach(createComponent => {
     const { configValidators } = createComponent;
-    config.addValidators(configValidators);
+    configValidator.addValidators(configValidators);
   });
-  config.validate();
+  configValidator.validate();
   setErrorsEnabled(config.errorsEnabled);
   setLogEnabled(config.logEnabled, { fromConfig: true });
   // toJson is expensive so we short circuit if logging is disabled
   if (logger.enabled) {
-    logger.log("Computed configuration:", config.toJSON());
+    logger.log("Computed configuration:", config);
   }
   return config;
 };

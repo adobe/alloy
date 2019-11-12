@@ -24,6 +24,7 @@ export default () => ({
     defaultValue: false
   },
   configId: {
+    isRequired: true,
     validate: string().unique()
   },
   edgeDomain: {
@@ -35,6 +36,7 @@ export default () => ({
     validate: string().nonEmpty()
   },
   imsOrgId: {
+    isRequired: true,
     validate: string().unique()
   },
   onBeforeEventSend: {
@@ -42,11 +44,9 @@ export default () => ({
     validate: callback()
   },
   datasetId: {
-    defaultValue: undefined,
     validate: string().nonEmpty()
   },
   schemaId: {
-    defaultValue: undefined,
     validate: string().nonEmpty()
   },
   debug: {
