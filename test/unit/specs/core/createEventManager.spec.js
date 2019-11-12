@@ -30,7 +30,7 @@ describe("createEventManager", () => {
       set lastChanceCallback(value) {
         lastChanceCallback = value;
       },
-      isDocumentUnloading: () => false,
+      isDocumentUnloading: false,
       applyCallback: jasmine.createSpy()
     };
     const createEvent = jasmine.createSpy().and.returnValue(event);
@@ -44,6 +44,7 @@ describe("createEventManager", () => {
       addEvent: jasmine.createSpy(),
       mergeMeta: jasmine.createSpy(),
       expectsResponse: false,
+      shouldUseIdThirdPartyDomain: false,
       toJSON() {
         return { meta: {} };
       }
@@ -181,7 +182,8 @@ describe("createEventManager", () => {
       return eventManager.sendEvent(event).then(() => {
         expect(network.sendRequest).toHaveBeenCalledWith(payload, {
           expectsResponse: false,
-          documentUnloading: false
+          documentUnloading: false,
+          useIdThirdPartyDomain: false
         });
       });
     });
@@ -191,17 +193,30 @@ describe("createEventManager", () => {
       return eventManager.sendEvent(event).then(() => {
         expect(network.sendRequest).toHaveBeenCalledWith(payload, {
           expectsResponse: true,
-          documentUnloading: false
+          documentUnloading: false,
+          useIdThirdPartyDomain: false
         });
       });
     });
 
     it("sends payload through network with documentUnloading true", () => {
-      event.isDocumentUnloading = () => true;
+      event.isDocumentUnloading = true;
       return eventManager.sendEvent(event).then(() => {
         expect(network.sendRequest).toHaveBeenCalledWith(payload, {
           expectsResponse: false,
-          documentUnloading: true
+          documentUnloading: true,
+          useIdThirdPartyDomain: false
+        });
+      });
+    });
+
+    it("sends payload through network with useIdThirdPartyDomain true", () => {
+      payload.shouldUseIdThirdPartyDomain = true;
+      return eventManager.sendEvent(event).then(() => {
+        expect(network.sendRequest).toHaveBeenCalledWith(payload, {
+          expectsResponse: false,
+          documentUnloading: false,
+          useIdThirdPartyDomain: true
         });
       });
     });

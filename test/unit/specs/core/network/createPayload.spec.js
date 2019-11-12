@@ -19,19 +19,25 @@ describe("Payload", () => {
   const collectEvent = createEvent();
 
   it("doesn't expect a response when empty", () => {
-    expect(createPayload().expectsResponse).toBe(false);
+    expect(createPayload().expectsResponse).toBeFalse();
   });
 
   it("doesn't expect a response with one collect event", () => {
     const payload = createPayload();
     payload.addEvent(collectEvent);
-    expect(payload.expectsResponse).toBe(false);
+    expect(payload.expectsResponse).toBeFalse();
+  });
+
+  it("expects a response when expectResponse is called", () => {
+    const payload = createPayload();
+    payload.expectResponse();
+    expect(payload.expectsResponse).toBeTrue();
   });
 
   it("expects a response with one interact event", () => {
     const payload = createPayload();
     payload.addEvent(interactEvent);
-    expect(payload.expectsResponse).toBe(true);
+    expect(payload.expectsResponse).toBeTrue();
   });
 
   it("expects a response with lots of events", () => {
@@ -40,7 +46,7 @@ describe("Payload", () => {
     payload.addEvent(collectEvent);
     payload.addEvent(interactEvent);
     payload.addEvent(collectEvent);
-    expect(payload.expectsResponse).toBe(true);
+    expect(payload.expectsResponse).toBeTrue();
   });
 
   it("doesn't expect a response with a bunch of collect Events", () => {
@@ -49,7 +55,18 @@ describe("Payload", () => {
     payload.addEvent(collectEvent);
     payload.addEvent(collectEvent);
     payload.addEvent(collectEvent);
-    expect(payload.expectsResponse).toBe(false);
+    expect(payload.expectsResponse).toBeFalse();
+  });
+
+  it("should not use ID third-party domain when useIdThirdPartyDomain is not called", () => {
+    const payload = createPayload();
+    expect(payload.shouldUseIdThirdPartyDomain).toBeFalse();
+  });
+
+  it("should use ID third-party domain when useIdThirdPartyDomain is called", () => {
+    const payload = createPayload();
+    payload.useIdThirdPartyDomain();
+    expect(payload.shouldUseIdThirdPartyDomain).toBeTrue();
   });
 
   it("calls toJSON on the event when it is added to the payload", () => {

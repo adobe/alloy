@@ -15,6 +15,7 @@ import { createMerger } from "../../utils";
 export default () => {
   const content = {};
   let expectsResponse = false;
+  let shouldUseIdThirdPartyDomain = false;
 
   return {
     addIdentity: (namespaceCode, identity) => {
@@ -30,6 +31,12 @@ export default () => {
       content.events.push(event.toJSON());
     },
     mergeMeta: createMerger(content, "meta"),
+    useIdThirdPartyDomain() {
+      shouldUseIdThirdPartyDomain = true;
+    },
+    get shouldUseIdThirdPartyDomain() {
+      return shouldUseIdThirdPartyDomain;
+    },
     expectResponse() {
       expectsResponse = true;
     },

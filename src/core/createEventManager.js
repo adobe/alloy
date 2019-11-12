@@ -79,7 +79,8 @@ export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
         .then(() => {
           return network.sendRequest(payload, {
             expectsResponse: payload.expectsResponse,
-            documentUnloading: event.isDocumentUnloading()
+            documentUnloading: event.isDocumentUnloading,
+            useIdThirdPartyDomain: payload.shouldUseIdThirdPartyDomain
           });
         })
         .then(response => {

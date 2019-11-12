@@ -10,27 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import flatMap from "../../../../src/utils/flatMap";
+import getBrowser, { CHROME, IE, UNKNOWN } from "./getBrowser";
+import includes from "./includes";
 
-const identity = item => item;
+// Users could have also disabled third-party cookies in Chrome or IE, but we
+// don't know. We also assume "unknown" browsers support third-party cookies,
+// though we don't really know that either. We're making best guesses.
+const browsersSupportingThirdPartyCookie = [CHROME, IE, UNKNOWN];
 
-describe("flatMap", () => {
-  it("handles empty array with identity function", () => {
-    expect(flatMap([], identity)).toEqual([]);
-  });
-
-  it("flattens arrays with identity function", () => {
-    expect(flatMap([[1], [2, 3], [], [4]], identity)).toEqual([1, 2, 3, 4]);
-  });
-
-  it("maps and flattens together", () => {
-    expect(flatMap([1, 2, 3], item => [item, item])).toEqual([
-      1,
-      1,
-      2,
-      2,
-      3,
-      3
-    ]);
-  });
-});
+export default window =>
+  includes(browsersSupportingThirdPartyCookie, getBrowser(window));

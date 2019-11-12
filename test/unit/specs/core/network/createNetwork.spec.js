@@ -93,6 +93,18 @@ describe("createNetwork", () => {
       });
   });
 
+  it("uses ID third-party domain when expected", () => {
+    return network.sendRequest({}, { useIdThirdPartyDomain: true }).then(() => {
+      expect(networkStrategy).toHaveBeenCalledWith(
+        jasmine.stringMatching(
+          /^https:\/\/adobedc\.demdex\.net\/ee\/v1\/interact\?configId=myconfigId&requestId=[0-9a-f-]+$/
+        ),
+        "{}",
+        false
+      );
+    });
+  });
+
   it("supports custom edgeBasePath settings", () => {
     const { edgeDomain, configId } = config;
     network = createNetwork({

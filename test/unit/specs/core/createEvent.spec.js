@@ -137,9 +137,9 @@ describe("createEvent", () => {
   });
 
   it("sets documentUnloading", () => {
-    expect(event.isDocumentUnloading()).toBeFalse();
+    expect(event.isDocumentUnloading).toBeFalse();
     event.documentUnloading();
-    expect(event.isDocumentUnloading()).toBeTrue();
+    expect(event.isDocumentUnloading).toBeTrue();
   });
 
   it("sets expectsResponse", () => {
