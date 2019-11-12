@@ -96,7 +96,7 @@ describe("createLogController", () => {
     });
 
     logController.setDebugEnabled(true, { fromConfig: false });
-    expect(sessionStorage.setItem).toHaveBeenCalledWith("log", "true");
+    expect(sessionStorage.setItem).toHaveBeenCalledWith("debug", "true");
     expect(getDebugEnabled()).toBe(true);
   });
 
@@ -125,13 +125,13 @@ describe("createLogController", () => {
 
     logController.setDebugEnabled(true, { fromConfig: false });
     logController.setDebugEnabled(false, { fromConfig: true });
-    expect(sessionStorage.setItem).toHaveBeenCalledWith("log", "true");
-    expect(sessionStorage.setItem).not.toHaveBeenCalledWith("log", "false");
+    expect(sessionStorage.setItem).toHaveBeenCalledWith("debug", "true");
+    expect(sessionStorage.setItem).not.toHaveBeenCalledWith("debug", "false");
     expect(getDebugEnabled()).toBe(true);
   });
 
   it("sets debugEnabled to true if query string parameter set to true", () => {
-    locationSearch = "?alloy_log=true";
+    locationSearch = "?alloy_debug=true";
     const logController = createLogController({
       console,
       locationSearch,
@@ -142,13 +142,13 @@ describe("createLogController", () => {
 
     // Make sure setting debugEnabled from config can't override it.
     logController.setDebugEnabled(false, { fromConfig: true });
-    expect(sessionStorage.setItem).toHaveBeenCalledWith("log", "true");
+    expect(sessionStorage.setItem).toHaveBeenCalledWith("debug", "true");
     expect(sessionStorage.setItem.calls.count()).toBe(1);
     expect(getDebugEnabled()).toBe(true);
   });
 
   it("sets debugEnabled to false if query string parameter set to false", () => {
-    locationSearch = "?alloy_log=false";
+    locationSearch = "?alloy_debug=false";
     const logController = createLogController({
       console,
       locationSearch,
@@ -159,7 +159,7 @@ describe("createLogController", () => {
 
     // Make sure setting debugEnabled from config can't override it.
     logController.setDebugEnabled(true, { fromConfig: true });
-    expect(sessionStorage.setItem).toHaveBeenCalledWith("log", "false");
+    expect(sessionStorage.setItem).toHaveBeenCalledWith("debug", "false");
     expect(sessionStorage.setItem.calls.count()).toBe(1);
     expect(getDebugEnabled()).toBe(false);
   });

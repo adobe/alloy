@@ -56,8 +56,8 @@ describe("createCoreConfigs", () => {
     });
   });
 
-  describe("logEnabled", () => {
-    it("validates logEnabled=undefined", () => {
+  describe("debugEnabled", () => {
+    it("validates debugEnabled=undefined", () => {
       const config = createConfig(baseConfig);
       const validator = createValidator(config);
 

@@ -13,7 +13,13 @@ governing permissions and limitations under the License.
 import { clone, assignIf, isEmptyObject } from "../utils";
 
 export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
-  const { imsOrgId, onBeforeEventSend, debug, datasetId, schemaId } = config;
+  const {
+    imsOrgId,
+    onBeforeEventSend,
+    debugEnabled,
+    datasetId,
+    schemaId
+  } = config;
 
   const onBeforeEventSendWithLoggedExceptions = (...args) => {
     try {
@@ -31,7 +37,7 @@ export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
       }
     };
     const collect = Object.create(null);
-    assignIf(collect, { synchronousValidation: true }, () => debug);
+    assignIf(collect, { synchronousValidation: true }, () => debugEnabled);
     assignIf(collect, { datasetId: config.datasetId }, () => datasetId);
     assignIf(collect, { schemaId: config.schemaId }, () => schemaId);
 

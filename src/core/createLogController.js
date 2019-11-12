@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { queryString, stringToBoolean } from "../utils";
-import logQueryParam from "../constants/logQueryParam";
+import debugQueryParam from "../constants/debugQueryParam";
 
 export default ({
   console,
@@ -24,7 +24,7 @@ export default ({
   const parsedQueryString = queryString.parse(locationSearch);
   const storage = createNamespacedStorage(`instance.${instanceNamespace}.`);
 
-  let debugEnabled = storage.session.getItem("log") === "true";
+  let debugEnabled = storage.session.getItem("debug") === "true";
   let debugEnabledWritableFromConfig = true;
 
   const getDebugEnabled = () => debugEnabled;
@@ -35,13 +35,13 @@ export default ({
 
     if (!fromConfig) {
       // Web storage only allows strings, so we explicitly convert to string.
-      storage.session.setItem("log", value.toString());
+      storage.session.setItem("debug", value.toString());
       debugEnabledWritableFromConfig = false;
     }
   };
 
-  if (parsedQueryString[logQueryParam] !== undefined) {
-    setDebugEnabled(stringToBoolean(parsedQueryString[logQueryParam]), {
+  if (parsedQueryString[debugQueryParam] !== undefined) {
+    setDebugEnabled(stringToBoolean(parsedQueryString[debugQueryParam]), {
       fromConfig: false
     });
   }
