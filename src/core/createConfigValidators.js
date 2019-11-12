@@ -11,6 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { boolean, string, callback } from "../utils/configValidators";
+import { EDGE_DOMAIN } from "../constants/domains";
+import EDGE_BASE_PATH from "../constants/edgeBasePath";
 
 export default () => ({
   errorsEnabled: {
@@ -25,11 +27,11 @@ export default () => ({
     validate: string().unique()
   },
   edgeDomain: {
-    defaultValue: "beta.adobedc.net",
+    defaultValue: EDGE_DOMAIN,
     validate: string().domain()
   },
   edgeBasePath: {
-    defaultValue: "ee",
+    defaultValue: EDGE_BASE_PATH,
     validate: string().nonEmpty()
   },
   imsOrgId: {

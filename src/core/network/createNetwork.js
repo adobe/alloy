@@ -14,6 +14,7 @@ import createPayload from "./createPayload";
 import createResponse from "./createResponse";
 import { executeWithRetry, stackError, uuid } from "../../utils";
 import apiVersion from "../../constants/apiVersion";
+import { ID_THIRD_PARTY_DOMAIN } from "../../constants/domains";
 
 export default ({ config, logger, lifecycle, networkStrategy }) => {
   const handleResponse = (requestId, responseBody) => {
@@ -58,7 +59,11 @@ export default ({ config, logger, lifecycle, networkStrategy }) => {
      * with undefined.
      */
     sendRequest(payload, options = {}) {
-      const { expectsResponse = true, documentUnloading = false } = options;
+      const {
+        expectsResponse = true,
+        documentUnloading = false,
+        useIdThirdPartyDomain = false
+      } = options;
       const requestId = uuid();
       if (documentUnloading) {
         logger.log(`No response requested due to document unloading.`);
@@ -67,8 +72,11 @@ export default ({ config, logger, lifecycle, networkStrategy }) => {
       return Promise.resolve()
         .then(() => {
           const action = reallyExpectsResponse ? "interact" : "collect";
+          const domain = useIdThirdPartyDomain
+            ? ID_THIRD_PARTY_DOMAIN
+            : edgeDomain;
 
-          let baseUrl = `https://${edgeDomain}`;
+          let baseUrl = `https://${domain}`;
 
           // #if _DEV
           if (config.get("localEdge")) {

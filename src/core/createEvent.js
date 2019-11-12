@@ -33,7 +33,7 @@ export default () => {
     documentUnloading() {
       documentUnloading = true;
     },
-    isDocumentUnloading() {
+    get isDocumentUnloading() {
       return documentUnloading;
     },
     expectResponse() {

@@ -2,6 +2,7 @@ import createCustomerIds from "./customerIds/createCustomerIds";
 import { defer } from "../../utils";
 import { EXPERIENCE_CLOUD_ID } from "./constants/cookieNames";
 import createMigration from "./createMigration";
+import isThirdPartyCookieSupported from "../../utils/isThirdPartyCookieSupported";
 
 const addIdsContext = (payload, ecid) => {
   payload.addIdentity(EXPERIENCE_CLOUD_ID, {
@@ -101,6 +102,12 @@ export default (
             // promise so that future requests can know when the ECID has returned.
             deferredForEcid = defer();
             payload.expectResponse();
+            if (
+              config.thirdPartyCookiesEnabled &&
+              isThirdPartyCookieSupported(window)
+            ) {
+              payload.useIdThirdPartyDomain();
+            }
           }
           customerIds.addToPayload(payload);
           return promise;
