@@ -11,7 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import createConfigValidators from "../../../../../src/components/ActivityCollector/createConfigValidators";
-import createConfig from "../../../../../src/core/createConfig";
+import createConfig from "../../../../../src/core/config/createConfig";
+import createValidator from "../../../../../src/core/config/createValidator";
 
 describe("ActivityCollector::createConfigValidators", () => {
   [
@@ -26,8 +27,10 @@ describe("ActivityCollector::createConfigValidators", () => {
   ].forEach((cfg, i) => {
     it(`validates configuration (${i})`, () => {
       const configObj = createConfig(cfg);
-      configObj.addValidators(createConfigValidators());
-      configObj.validate();
+      const configValidator = createValidator(configObj);
+
+      configValidator.addValidators(createConfigValidators());
+      configValidator.validate();
     });
   });
 
@@ -40,9 +43,11 @@ describe("ActivityCollector::createConfigValidators", () => {
   ].forEach((cfg, i) => {
     it(`invalidates configuration (${i})`, () => {
       const configObj = createConfig(cfg);
-      configObj.addValidators(createConfigValidators());
+      const configValidator = createValidator(configObj);
+
+      configValidator.addValidators(createConfigValidators());
       expect(() => {
-        configObj.validate();
+        configValidator.validate();
       }).toThrowError();
     });
   });
@@ -50,8 +55,10 @@ describe("ActivityCollector::createConfigValidators", () => {
   ["clickCollectionEnabled", "downloadLinkQualifier"].forEach((cfgKey, i) => {
     it(`add default configuration key (${i})`, () => {
       const configObj = createConfig({});
-      configObj.addValidators(createConfigValidators());
-      configObj.validate();
+      const configValidator = createValidator(configObj);
+
+      configValidator.addValidators(createConfigValidators());
+      configValidator.validate();
       expect(configObj[cfgKey]).toBeDefined();
     });
   });

@@ -29,8 +29,9 @@ import executeCommandFactory from "./executeCommandFactory";
 import componentCreators from "./componentCreators";
 import buildAndValidateConfig from "./buildAndValidateConfig";
 import initializeComponents from "./initializeComponents";
-import createConfig from "./createConfig";
-import createCoreConfigValidators from "./createConfigValidators";
+import createConfig from "./config/createConfig";
+import createConfigValidator from "./config/createValidator";
+import createCoreConfigs from "./config/createCoreConfigs";
 import handleErrorFactory from "./handleErrorFactory";
 import cookieJarToolFactory from "./tools/cookieJarToolFactory";
 import createNetworkStrategy from "./network/createNetworkStrategy";
@@ -55,7 +56,7 @@ console = turbine.logger;
 ({ console } = window);
 // #endif
 
-const coreConfigValidators = createCoreConfigValidators();
+const coreConfigValidators = createCoreConfigs();
 
 if (instanceNamespaces) {
   instanceNamespaces.forEach(instanceNamespace => {
@@ -90,6 +91,7 @@ if (instanceNamespaces) {
         options,
         componentCreators,
         createConfig,
+        createConfigValidator,
         coreConfigValidators,
         logger,
         setLogEnabled,

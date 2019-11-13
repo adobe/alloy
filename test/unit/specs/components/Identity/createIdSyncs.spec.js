@@ -1,6 +1,7 @@
 import createIdSyncs from "../../../../../src/components/Identity/createIdSyncs";
 import createCookieProxy from "../../../../../src/core/createCookieProxy";
 import createComponentNamespacedCookieJar from "../../../../../src/core/createComponentNamespacedCookieJar";
+import createConfig from "../../../../../src/core/config/createConfig";
 
 const cookieProxy = createCookieProxy("identity", 180);
 const cookieJar = createComponentNamespacedCookieJar(
@@ -10,9 +11,9 @@ const cookieJar = createComponentNamespacedCookieJar(
 const ID_SYNC_CONTROL = "idSyncControl";
 
 describe("Identity::createIdSyncs", () => {
-  const config = {
+  const config = createConfig({
     idSyncEnabled: true
-  };
+  });
   const logger = {
     log() {},
     error() {}

@@ -1,11 +1,12 @@
 import processDestinations from "../../../../../src/components/Audiences/processDestinations";
 import { cookieJar } from "../../../../../src/utils";
+import createConfig from "../../../../../src/core/config/createConfig";
 
 describe("Audiences::processDestinations", () => {
-  const config = {
+  const config = createConfig({
     cookieDestinationsEnabled: true,
     urlDestinationsEnabled: true
-  };
+  });
   const logger = {
     log() {},
     error() {}

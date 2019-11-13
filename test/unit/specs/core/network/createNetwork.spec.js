@@ -11,13 +11,14 @@ governing permissions and limitations under the License.
 */
 
 import createNetwork from "../../../../../src/core/network/createNetwork";
+import createConfig from "../../../../../src/core/config/createConfig";
 
 describe("createNetwork", () => {
-  const config = {
+  const config = createConfig({
     edgeDomain: "alloy.mysite.com",
     edgeBasePath: "ee",
     configId: "myconfigId"
-  };
+  });
 
   let logger;
 
@@ -108,7 +109,7 @@ describe("createNetwork", () => {
   it("supports custom edgeBasePath settings", () => {
     const { edgeDomain, configId } = config;
     network = createNetwork({
-      config: { edgeDomain, configId, edgeBasePath: "ee-beta-1" },
+      config: createConfig({ edgeDomain, configId, edgeBasePath: "ee-beta-1" }),
       logger,
       lifecycle,
       networkStrategy

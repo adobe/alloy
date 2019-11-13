@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createEventManager from "../../../../src/core/createEventManager";
+import createConfig from "../../../../src/core/config/createConfig";
 import { defer } from "../../../../src/utils";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
 
@@ -56,13 +57,13 @@ describe("createEventManager", () => {
     optIn = {
       whenOptedIn: jasmine.createSpy().and.returnValue(Promise.resolve())
     };
-    config = {
+    config = createConfig({
       imsOrgId: "ABC123",
       onBeforeEventSend: jasmine.createSpy(),
       debug: true,
       datasetId: "DATASETID",
       schemaId: "SCHEMAID"
-    };
+    });
     logger = {
       error: jasmine.createSpy()
     };

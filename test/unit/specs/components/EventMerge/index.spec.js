@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createEventMerge from "../../../../../src/components/EventMerge";
+import createConfig from "../../../../../src/core/config/createConfig";
 
 const uuidv4Regex = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
 
@@ -21,9 +22,9 @@ describe("EventMerge", () => {
   beforeAll(() => {
     reactorRegisterCreateEventMergeId = jasmine.createSpy();
     eventMerge = createEventMerge({
-      config: {
+      config: createConfig({
         reactorRegisterCreateEventMergeId
-      }
+      })
     });
   });
 

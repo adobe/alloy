@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import cookieJarToolFactory from "../../../../../src/core/tools/cookieJarToolFactory";
+import createConfig from "../../../../../src/core/config/createConfig";
 
 describe("cookieJarToolFactory", () => {
   let cookieProxy;
@@ -32,9 +33,9 @@ describe("cookieJarToolFactory", () => {
     getTopLevelDomain = jasmine
       .createSpy()
       .and.returnValue("retrievedtopleveldomain.com");
-    config = {
+    config = createConfig({
       imsOrgId: "ORG123"
-    };
+    });
     componentAbbreviation = "TC";
     createOrgNamespacedCookieName = () => "orgNamespacedCookieName";
   });

@@ -17,6 +17,8 @@ describe("buildAndValidateConfig", () => {
   let componentCreators;
   let config;
   let createConfig;
+  let validator;
+  let createConfigValidator;
   let coreConfigValidators;
   let logger;
   let setLogEnabled;
@@ -34,11 +36,13 @@ describe("buildAndValidateConfig", () => {
       }
     };
     componentCreators = [componentCreator];
-    config = {
+    validator = {
       addValidators: jasmine.createSpy(),
       validate: jasmine.createSpy().and.returnValue(true)
     };
+    config = options;
     createConfig = jasmine.createSpy().and.returnValue(config);
+    createConfigValidator = jasmine.createSpy().and.returnValue(validator);
     coreConfigValidators = {
       errorsEnabled: {
         validate() {
@@ -60,17 +64,18 @@ describe("buildAndValidateConfig", () => {
       options,
       componentCreators,
       createConfig,
+      createConfigValidator,
       coreConfigValidators,
       logger,
       setLogEnabled,
       setErrorsEnabled
     });
     expect(createConfig).toHaveBeenCalledWith(options);
-    expect(config.addValidators).toHaveBeenCalledWith(coreConfigValidators);
-    expect(config.addValidators).toHaveBeenCalledWith(
+    expect(validator.addValidators).toHaveBeenCalledWith(coreConfigValidators);
+    expect(validator.addValidators).toHaveBeenCalledWith(
       componentCreators[0].configValidators
     );
-    expect(config.validate).toHaveBeenCalled();
+    expect(validator.validate).toHaveBeenCalled();
   });
 
   it("sets errors enabled based on config", () => {
@@ -79,6 +84,7 @@ describe("buildAndValidateConfig", () => {
       options,
       componentCreators,
       createConfig,
+      createConfigValidator,
       configValidators: coreConfigValidators,
       logger,
       setLogEnabled,
@@ -93,6 +99,7 @@ describe("buildAndValidateConfig", () => {
       options,
       componentCreators,
       createConfig,
+      createConfigValidator,
       configValidators: coreConfigValidators,
       logger,
       setLogEnabled,
@@ -103,11 +110,12 @@ describe("buildAndValidateConfig", () => {
 
   it("logs and returns computed configuration", () => {
     logger.enabled = true;
-    config.toJSON = () => ({ foo: "bar" });
+    config.foo = "bar";
     buildAndValidateConfig({
       options,
       componentCreators,
       createConfig,
+      createConfigValidator,
       configValidators: coreConfigValidators,
       logger,
       setLogEnabled,
@@ -123,11 +131,12 @@ describe("buildAndValidateConfig", () => {
       options,
       componentCreators,
       createConfig,
+      createConfigValidator,
       configValidators: coreConfigValidators,
       logger,
       setLogEnabled,
       setErrorsEnabled
     });
-    expect(result).toBe(config);
+    expect(result).toEqual(config);
   });
 });

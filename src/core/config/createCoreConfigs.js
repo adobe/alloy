@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, string, callback } from "../utils/configValidators";
-import { EDGE_DOMAIN } from "../constants/domains";
-import EDGE_BASE_PATH from "../constants/edgeBasePath";
+import { boolean, string, callback } from "../../utils/configValidators";
+import { EDGE_DOMAIN } from "../../constants/domains";
+import EDGE_BASE_PATH from "../../constants/edgeBasePath";
 
 export default () => ({
   errorsEnabled: {
@@ -24,6 +24,7 @@ export default () => ({
     defaultValue: false
   },
   configId: {
+    isRequired: true,
     validate: string().unique()
   },
   edgeDomain: {
@@ -35,6 +36,7 @@ export default () => ({
     validate: string().nonEmpty()
   },
   imsOrgId: {
+    isRequired: true,
     validate: string().unique()
   },
   onBeforeEventSend: {
@@ -42,11 +44,9 @@ export default () => ({
     validate: callback()
   },
   datasetId: {
-    defaultValue: undefined,
     validate: string().nonEmpty()
   },
   schemaId: {
-    defaultValue: undefined,
     validate: string().nonEmpty()
   },
   debug: {

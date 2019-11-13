@@ -10,39 +10,48 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createConfigValidators from "../../../../src/core/createConfigValidators";
-import createConfig from "../../../../src/core/createConfig";
+import createCoreConfigs from "../../../../../src/core/config/createCoreConfigs";
+import createValidator from "../../../../../src/core/config/createValidator";
+import createConfig from "../../../../../src/core/config/createConfig";
 
-describe("configValidators", () => {
+describe("createCoreConfigs", () => {
   const baseConfig = { configId: "1234", imsOrgId: "org1" };
 
   describe("errorsEnabled", () => {
     it("validates errorsEnabled=undefined", () => {
       const config = createConfig(baseConfig);
-      config.addValidators(createConfigValidators());
-      config.validate();
-      expect(config.get("errorsEnabled")).toBe(true);
+      const validator = createValidator(config);
+
+      validator.addValidators(createCoreConfigs());
+      validator.validate();
+      expect(config.errorsEnabled).toBe(true);
     });
 
     it("validates errorsEnabled=true", () => {
       const config = createConfig({ errorsEnabled: true, ...baseConfig });
-      config.addValidators(createConfigValidators());
-      config.validate();
-      expect(config.get("errorsEnabled")).toBe(true);
+      const validator = createValidator(config);
+
+      validator.addValidators(createCoreConfigs());
+      validator.validate();
+      expect(config.errorsEnabled).toBe(true);
     });
 
     it("validates errorsEnabled=false", () => {
       const config = createConfig({ errorsEnabled: false, ...baseConfig });
-      config.addValidators(createConfigValidators());
-      config.validate();
-      expect(config.get("errorsEnabled")).toBe(false);
+      const validator = createValidator(config);
+
+      validator.addValidators(createCoreConfigs());
+      validator.validate();
+      expect(config.errorsEnabled).toBe(false);
     });
 
     it("validates errorsEnabled=123", () => {
       const config = createConfig({ errorsEnabled: 123, ...baseConfig });
-      config.addValidators(createConfigValidators());
+      const validator = createValidator(config);
+
+      validator.addValidators(createCoreConfigs());
       expect(() => {
-        config.validate();
+        validator.validate();
       }).toThrowError();
     });
   });
@@ -50,30 +59,38 @@ describe("configValidators", () => {
   describe("logEnabled", () => {
     it("validates logEnabled=undefined", () => {
       const config = createConfig(baseConfig);
-      config.addValidators(createConfigValidators());
-      config.validate();
-      expect(config.get("logEnabled")).toBe(false);
+      const validator = createValidator(config);
+
+      validator.addValidators(createCoreConfigs());
+      validator.validate();
+      expect(config.logEnabled).toBe(false);
     });
 
     it("validates logEnabled=true", () => {
       const config = createConfig({ logEnabled: true, ...baseConfig });
-      config.addValidators(createConfigValidators());
-      config.validate();
-      expect(config.get("logEnabled")).toBe(true);
+      const validator = createValidator(config);
+
+      validator.addValidators(createCoreConfigs());
+      validator.validate();
+      expect(config.logEnabled).toBe(true);
     });
 
     it("validates logEnabled=false", () => {
       const config = createConfig({ logEnabled: false, ...baseConfig });
-      config.addValidators(createConfigValidators());
-      config.validate();
-      expect(config.get("logEnabled")).toBe(false);
+      const validator = createValidator(config);
+
+      validator.addValidators(createCoreConfigs());
+      validator.validate();
+      expect(config.logEnabled).toBe(false);
     });
 
     it("validates logEnabled=123", () => {
       const config = createConfig({ logEnabled: 123, ...baseConfig });
-      config.addValidators(createConfigValidators());
+      const validator = createValidator(config);
+
+      validator.addValidators(createCoreConfigs());
       expect(() => {
-        config.validate();
+        validator.validate();
       }).toThrowError();
     });
   });
@@ -102,8 +119,10 @@ describe("configValidators", () => {
   ].forEach((cfg, i) => {
     it(`validates configuration (${i})`, () => {
       const configObj = createConfig(cfg);
-      configObj.addValidators(createConfigValidators());
-      configObj.validate();
+      const validator = createValidator(configObj);
+
+      validator.addValidators(createCoreConfigs());
+      validator.validate();
     });
   });
 
@@ -123,34 +142,46 @@ describe("configValidators", () => {
   ].forEach((cfg, i) => {
     it(`invalidates configuration (${i})`, () => {
       const configObj = createConfig(cfg);
-      configObj.addValidators(createConfigValidators());
-      expect(() => configObj.validate()).toThrowError();
+      const validator = createValidator(configObj);
+
+      validator.addValidators(createCoreConfigs());
+      expect(() => validator.validate()).toThrowError();
     });
   });
 
   it("invalidates duplicate configIds", () => {
-    const validators = createConfigValidators();
+    const validators = createCoreConfigs();
     const config1 = createConfig({ configId: "property1", imsOrgId: "ims1" });
     const config2 = createConfig({ configId: "property2", imsOrgId: "ims2" });
     const config3 = createConfig({ configId: "property1", imsOrgId: "ims3" });
-    config1.addValidators(validators);
-    config2.addValidators(validators);
-    config3.addValidators(validators);
-    config1.validate();
-    config2.validate();
-    expect(() => config3.validate()).toThrowError();
+
+    const validator1 = createValidator(config1);
+    const validator2 = createValidator(config2);
+    const validator3 = createValidator(config3);
+
+    validator1.addValidators(validators);
+    validator2.addValidators(validators);
+    validator3.addValidators(validators);
+    validator1.validate();
+    validator2.validate();
+    expect(() => validator3.validate()).toThrowError();
   });
 
   it("invalidates duplicate imsOrgIds", () => {
-    const validators = createConfigValidators();
+    const validators = createCoreConfigs();
     const config1 = createConfig({ configId: "a", imsOrgId: "a" });
     const config2 = createConfig({ configId: "b", imsOrgId: "b" });
     const config3 = createConfig({ configId: "c", imsOrgId: "a" });
-    config1.addValidators(validators);
-    config2.addValidators(validators);
-    config3.addValidators(validators);
-    config1.validate();
-    config2.validate();
-    expect(() => config3.validate()).toThrowError();
+
+    const validator1 = createValidator(config1);
+    const validator2 = createValidator(config2);
+    const validator3 = createValidator(config3);
+
+    validator1.addValidators(validators);
+    validator2.addValidators(validators);
+    validator3.addValidators(validators);
+    validator1.validate();
+    validator2.validate();
+    expect(() => validator3.validate()).toThrowError();
   });
 });

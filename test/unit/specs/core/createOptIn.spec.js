@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createOptIn from "../../../../src/core/createOptIn";
+import createConfig from "../../../../src/core/config/createConfig";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
 
 describe("createOptIn", () => {
@@ -20,10 +21,10 @@ describe("createOptIn", () => {
   let createOrgNamespacedCookieName;
 
   beforeEach(() => {
-    config = {
+    config = createConfig({
       optInEnabled: true,
       imsOrgId: "ABC@Adobe"
-    };
+    });
     logger = jasmine.createSpyObj("logger", ["warn"]);
     cookieJar = {
       get: jasmine.createSpy().and.returnValue(null),
