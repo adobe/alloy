@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, string, callback } from "../utils/configValidators";
-import { EDGE_DOMAIN } from "../constants/domains";
-import EDGE_BASE_PATH from "../constants/edgeBasePath";
+import { boolean, string, callback } from "../../utils/configValidators";
+import { EDGE_DOMAIN } from "../../constants/domains";
+import EDGE_BASE_PATH from "../../constants/edgeBasePath";
 
 export default () => ({
   errorsEnabled: {
