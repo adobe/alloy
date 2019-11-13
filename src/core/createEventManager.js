@@ -14,7 +14,7 @@ import { clone, assignIf, isEmptyObject } from "../utils";
 
 export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
   const {
-    imsOrgId,
+    orgId,
     onBeforeEventSend,
     debugEnabled,
     datasetId,
@@ -33,7 +33,7 @@ export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
   const addMetaTo = payload => {
     const meta = {
       gateway: {
-        imsOrgId
+        orgId
       }
     };
     const collect = Object.create(null);

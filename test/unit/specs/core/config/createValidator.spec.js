@@ -31,7 +31,7 @@ const testValidator1 = {
 };
 
 const testValidator2 = {
-  imsOrgId: {
+  orgId: {
     isRequired: true,
     validate: required
   }

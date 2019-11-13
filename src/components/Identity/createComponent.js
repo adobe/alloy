@@ -14,8 +14,8 @@ const addIdsContext = (payload, ecid) => {
 export default (idSyncs, config, logger, cookieJar, optIn, eventManager) => {
   let deferredForEcid;
   let alreadyQueriedForIdSyncs = false;
-  const { idMigrationEnabled, imsOrgId } = config;
-  const migration = createMigration(imsOrgId, idMigrationEnabled);
+  const { idMigrationEnabled, orgId } = config;
+  const migration = createMigration(orgId, idMigrationEnabled);
 
   // TODO: Fetch from server if ECID is not available.
   const getEcid = () => {

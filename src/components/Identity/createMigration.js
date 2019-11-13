@@ -1,12 +1,12 @@
 import { cookieJar } from "../../utils";
 import { EXPERIENCE_CLOUD_ID } from "./constants/cookieNames";
 
-export default (imsOrgId, idMigrationEnabled) => {
+export default (orgId, idMigrationEnabled) => {
   return {
     getEcidFromAmcvCookie(identityCookieJar) {
       let ecid = null;
       if (idMigrationEnabled) {
-        const amcvCookieValue = cookieJar.get(`AMCV_${imsOrgId}`);
+        const amcvCookieValue = cookieJar.get(`AMCV_${orgId}`);
         if (amcvCookieValue) {
           const reg = /(^|\|)MCMID\|(\d+)($|\|)/;
           const matches = amcvCookieValue.match(reg);
@@ -20,9 +20,9 @@ export default (imsOrgId, idMigrationEnabled) => {
     },
     createAmcvCookie(ecid) {
       if (idMigrationEnabled) {
-        const amcvCookieValue = cookieJar.get(`AMCV_${imsOrgId}`);
+        const amcvCookieValue = cookieJar.get(`AMCV_${orgId}`);
         if (!amcvCookieValue) {
-          cookieJar.set(`AMCV_${imsOrgId}`, `MCMID|${ecid}`);
+          cookieJar.set(`AMCV_${orgId}`, `MCMID|${ecid}`);
         }
       }
     }

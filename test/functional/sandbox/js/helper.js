@@ -49,7 +49,7 @@
       alloy("configure", {
         logEnabled: true,
         configId: "9999999",
-        imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+        orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
       });
     }
   });
@@ -67,7 +67,7 @@
     onPostInit: function() {
       alloy("configure", {
         configId: "9999999",
-        imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+        orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
       });
     }
   });
@@ -77,7 +77,7 @@
       alloy("configure", {
         logEnabled: false,
         configId: "9999999",
-        imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+        orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
       });
     }
   });

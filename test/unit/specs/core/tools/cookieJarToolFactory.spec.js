@@ -34,7 +34,7 @@ describe("cookieJarToolFactory", () => {
       .createSpy()
       .and.returnValue("retrievedtopleveldomain.com");
     config = createConfig({
-      imsOrgId: "ORG123"
+      orgId: "ORG123"
     });
     componentAbbreviation = "TC";
     createOrgNamespacedCookieName = () => "orgNamespacedCookieName";

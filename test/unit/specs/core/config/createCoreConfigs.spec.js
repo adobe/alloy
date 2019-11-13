@@ -15,7 +15,7 @@ import createValidator from "../../../../../src/core/config/createValidator";
 import createConfig from "../../../../../src/core/config/createConfig";
 
 describe("createCoreConfigs", () => {
-  const baseConfig = { configId: "1234", imsOrgId: "org1" };
+  const baseConfig = { configId: "1234", orgId: "org1" };
 
   describe("errorsEnabled", () => {
     it("validates errorsEnabled=undefined", () => {
@@ -96,25 +96,25 @@ describe("createCoreConfigs", () => {
   });
 
   [
-    { configId: "", imsOrgId: "" },
+    { configId: "", orgId: "" },
     {
       configId: "myproperty1",
-      imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+      orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
     },
     {
       configId: "myproperty1",
       edgeDomain: "stats.firstparty.com",
-      imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+      orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
     },
     {
       configId: "myproperty1",
       edgeDomain: "STATS.FIRSTPARY.COM",
-      imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+      orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
     },
     {
       configId: "myproperty1",
       edgeDomain: "STATS.FIRSTPARY.COM",
-      imsOrgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+      orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
     }
   ].forEach((cfg, i) => {
     it(`validates configuration (${i})`, () => {
@@ -151,9 +151,9 @@ describe("createCoreConfigs", () => {
 
   it("invalidates duplicate configIds", () => {
     const validators = createCoreConfigs();
-    const config1 = createConfig({ configId: "property1", imsOrgId: "ims1" });
-    const config2 = createConfig({ configId: "property2", imsOrgId: "ims2" });
-    const config3 = createConfig({ configId: "property1", imsOrgId: "ims3" });
+    const config1 = createConfig({ configId: "property1", orgId: "ims1" });
+    const config2 = createConfig({ configId: "property2", orgId: "ims2" });
+    const config3 = createConfig({ configId: "property1", orgId: "ims3" });
 
     const validator1 = createValidator(config1);
     const validator2 = createValidator(config2);
@@ -167,11 +167,11 @@ describe("createCoreConfigs", () => {
     expect(() => validator3.validate()).toThrowError();
   });
 
-  it("invalidates duplicate imsOrgIds", () => {
+  it("invalidates duplicate orgIds", () => {
     const validators = createCoreConfigs();
-    const config1 = createConfig({ configId: "a", imsOrgId: "a" });
-    const config2 = createConfig({ configId: "b", imsOrgId: "b" });
-    const config3 = createConfig({ configId: "c", imsOrgId: "a" });
+    const config1 = createConfig({ configId: "a", orgId: "a" });
+    const config2 = createConfig({ configId: "b", orgId: "b" });
+    const config3 = createConfig({ configId: "c", orgId: "a" });
 
     const validator1 = createValidator(config1);
     const validator2 = createValidator(config2);

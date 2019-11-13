@@ -58,7 +58,7 @@ describe("createEventManager", () => {
       whenOptedIn: jasmine.createSpy().and.returnValue(Promise.resolve())
     };
     config = createConfig({
-      imsOrgId: "ABC123",
+      orgId: "ABC123",
       onBeforeEventSend: jasmine.createSpy(),
       debugEnabled: true,
       datasetId: "DATASETID",
@@ -89,7 +89,7 @@ describe("createEventManager", () => {
         expect(payload.addEvent).toHaveBeenCalledWith(event);
         expect(payload.mergeMeta).toHaveBeenCalledWith({
           gateway: {
-            imsOrgId: "ABC123"
+            orgId: "ABC123"
           },
           collect: {
             synchronousValidation: true,

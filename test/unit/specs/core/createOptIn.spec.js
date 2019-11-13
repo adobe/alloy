@@ -23,7 +23,7 @@ describe("createOptIn", () => {
   beforeEach(() => {
     config = createConfig({
       optInEnabled: true,
-      imsOrgId: "ABC@Adobe"
+      orgId: "ABC@Adobe"
     });
     logger = jasmine.createSpyObj("logger", ["warn"]);
     cookieJar = {

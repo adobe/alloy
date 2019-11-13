@@ -36,7 +36,7 @@ export default ({
 
   const cookieName = createOrgNamespacedCookieName(
     ALLOY_OPT_IN_COOKIE_NAME,
-    config.imsOrgId
+    config.orgId
   );
 
   if (config.optInEnabled) {
