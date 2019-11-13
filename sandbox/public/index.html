@@ -15,7 +15,7 @@
             script-src 'self' 'unsafe-inline' assets.adobedtm.com cdn.tt.omtrdc.net;
             style-src 'self' 'unsafe-inline' cdn.tt.omtrdc.net;
             img-src * data:;
-            connect-src 'self' ws://localhost:3000 http://localhost:8080 unifiedjslab.tt.omtrdc.net *.demdex.net https://alpha.konductor.adobedc.net https://beta.adobedc.net https://edgegateway.azurewebsites.net konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net"
+            connect-src 'self' unifiedjslab.tt.omtrdc.net *.demdex.net http://localhost:8080 https://alpha.konductor.adobedc.net https://beta.adobedc.net https://edgegateway.azurewebsites.net konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net"
     />
 
     <title>Mock website hosting Alloy</title>
@@ -40,15 +40,6 @@
     <script src="alloy.js" async></script>
 
     <script>
-      function getUrlParameter(name) {
-        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
-        var results = regex.exec(location.search);
-        return results === null
-          ? ""
-          : decodeURIComponent(results[1].replace(/\+/g, " "));
-      }
-
       alloy("configure", {
         // edgeDomain: "ENTER YOUR COLLECTION CNAME IF AVAILABLE",
         // optInEnabled: true,
@@ -61,19 +52,15 @@
         prehidingStyle: ".personalization-container { opacity: 0 !important }",
         idSyncContainerId: 81,
         migrateIds: true,
-        onBeforeEventSend: function(options) {
-          const xdm = options.xdm;
-          const data = options.data;
-          const titleParam = getUrlParameter("title");
-          if (titleParam) {
-            xdm.web.webPageDetails.name = titleParam;
+        onBeforeEventSend({ xdm, data }) {
+          const urlSearchParams = new URLSearchParams(window.location.search);
+          if (urlSearchParams.has("title")) {
+            xdm.web.webPageDetails.name = urlSearchParams.get("title");
           }
-          const campaignParam = getUrlParameter("title");
-          if (campaignParam) {
-            data.campaign = campaignParam;
+          if (urlSearchParams.has("campaign")) {
+            data.campaign = urlSearchParams.get("campaign");
           }
         },
-        debug: true,
         datasetId: "5db865ad86c04218a91f2185",
         schemaId:
           "https://ns.adobe.com/atag/schemas/ec93478f46500c25dc13dc1141091fdb"
@@ -129,7 +116,7 @@
         // edgeDomain: "edgegateway.azurewebsites.net",
         configId: "8888888",
         imsOrgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
-        logEnabled: true,
+        debugEnabled: true,
         clickCollectionEnabled: false
       });
     </script>
