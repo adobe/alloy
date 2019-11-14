@@ -60,7 +60,7 @@ describe("createEventManager", () => {
     config = createConfig({
       imsOrgId: "ABC123",
       onBeforeEventSend: jasmine.createSpy(),
-      debug: true,
+      debugEnabled: true,
       datasetId: "DATASETID",
       schemaId: "SCHEMAID"
     });

@@ -17,7 +17,7 @@ export default ({
   createConfigValidator,
   coreConfigValidators,
   logger,
-  setLogEnabled,
+  setDebugEnabled,
   setErrorsEnabled
 }) => {
   const config = createConfig(options);
@@ -29,7 +29,7 @@ export default ({
   });
   configValidator.validate();
   setErrorsEnabled(config.errorsEnabled);
-  setLogEnabled(config.logEnabled, { fromConfig: true });
+  setDebugEnabled(config.debugEnabled, { fromConfig: true });
   // toJson is expensive so we short circuit if logging is disabled
   if (logger.enabled) {
     logger.log("Computed configuration:", config);

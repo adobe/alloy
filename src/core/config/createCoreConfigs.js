@@ -19,7 +19,7 @@ export default () => ({
     validate: boolean(),
     defaultValue: true
   },
-  logEnabled: {
+  debugEnabled: {
     validate: boolean(),
     defaultValue: false
   },
@@ -48,9 +48,5 @@ export default () => ({
   },
   schemaId: {
     validate: string().nonEmpty()
-  },
-  debug: {
-    defaultValue: false,
-    validate: boolean()
   }
 });

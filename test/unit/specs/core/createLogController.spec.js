@@ -19,7 +19,7 @@ describe("createLogController", () => {
   let locationSearch;
   let logger;
   let createLogger;
-  let getLogEnabled;
+  let getDebugEnabled;
   let sessionStorage;
   let createNamespacedStorage;
 
@@ -27,8 +27,8 @@ describe("createLogController", () => {
     console = { log() {} };
     locationSearch = "";
     logger = { log() {} };
-    createLogger = jasmine.createSpy().and.callFake((_, _getLogEnabled) => {
-      getLogEnabled = _getLogEnabled;
+    createLogger = jasmine.createSpy().and.callFake((_, _getDebugEnabled) => {
+      getDebugEnabled = _getDebugEnabled;
       return logger;
     });
     sessionStorage = {
@@ -51,7 +51,7 @@ describe("createLogController", () => {
     expect(createNamespacedStorage).toHaveBeenCalledWith("instance.alloy123.");
   });
 
-  it("returns false for getLogEnabled if storage item is not found", () => {
+  it("returns false for getDebugEnabled if storage item is not found", () => {
     createLogController({
       console,
       locationSearch,
@@ -59,10 +59,10 @@ describe("createLogController", () => {
       instanceNamespace,
       createNamespacedStorage
     });
-    expect(getLogEnabled()).toBe(false);
+    expect(getDebugEnabled()).toBe(false);
   });
 
-  it("returns false for getLogEnabled if storage item is false", () => {
+  it("returns false for getDebugEnabled if storage item is false", () => {
     sessionStorage.getItem = () => "false";
     createLogController({
       console,
@@ -71,10 +71,10 @@ describe("createLogController", () => {
       instanceNamespace,
       createNamespacedStorage
     });
-    expect(getLogEnabled()).toBe(false);
+    expect(getDebugEnabled()).toBe(false);
   });
 
-  it("returns true for getLogEnabled if storage item is true", () => {
+  it("returns true for getDebugEnabled if storage item is true", () => {
     sessionStorage.getItem = () => "true";
     createLogController({
       console,
@@ -83,10 +83,10 @@ describe("createLogController", () => {
       instanceNamespace,
       createNamespacedStorage
     });
-    expect(getLogEnabled()).toBe(true);
+    expect(getDebugEnabled()).toBe(true);
   });
 
-  it("persists changes to logEnabled if not set from config", () => {
+  it("persists changes to debugEnabled if not set from config", () => {
     const logController = createLogController({
       console,
       locationSearch,
@@ -95,12 +95,12 @@ describe("createLogController", () => {
       createNamespacedStorage
     });
 
-    logController.setLogEnabled(true, { fromConfig: false });
-    expect(sessionStorage.setItem).toHaveBeenCalledWith("log", "true");
-    expect(getLogEnabled()).toBe(true);
+    logController.setDebugEnabled(true, { fromConfig: false });
+    expect(sessionStorage.setItem).toHaveBeenCalledWith("debug", "true");
+    expect(getDebugEnabled()).toBe(true);
   });
 
-  it("does not persist changes to logEnabled if set from config", () => {
+  it("does not persist changes to debugEnabled if set from config", () => {
     const logController = createLogController({
       console,
       locationSearch,
@@ -109,12 +109,12 @@ describe("createLogController", () => {
       createNamespacedStorage
     });
 
-    logController.setLogEnabled(true, { fromConfig: true });
+    logController.setDebugEnabled(true, { fromConfig: true });
     expect(sessionStorage.setItem).not.toHaveBeenCalled();
-    expect(getLogEnabled()).toBe(true);
+    expect(getDebugEnabled()).toBe(true);
   });
 
-  it("does not change logEnabled from config if previously changed from something other than config", () => {
+  it("does not change debugEnabled from config if previously changed from something other than config", () => {
     const logController = createLogController({
       console,
       locationSearch,
@@ -123,15 +123,15 @@ describe("createLogController", () => {
       createNamespacedStorage
     });
 
-    logController.setLogEnabled(true, { fromConfig: false });
-    logController.setLogEnabled(false, { fromConfig: true });
-    expect(sessionStorage.setItem).toHaveBeenCalledWith("log", "true");
-    expect(sessionStorage.setItem).not.toHaveBeenCalledWith("log", "false");
-    expect(getLogEnabled()).toBe(true);
+    logController.setDebugEnabled(true, { fromConfig: false });
+    logController.setDebugEnabled(false, { fromConfig: true });
+    expect(sessionStorage.setItem).toHaveBeenCalledWith("debug", "true");
+    expect(sessionStorage.setItem).not.toHaveBeenCalledWith("debug", "false");
+    expect(getDebugEnabled()).toBe(true);
   });
 
-  it("sets logEnabled to true if query string parameter set to true", () => {
-    locationSearch = "?alloy_log=true";
+  it("sets debugEnabled to true if query string parameter set to true", () => {
+    locationSearch = "?alloy_debug=true";
     const logController = createLogController({
       console,
       locationSearch,
@@ -140,15 +140,15 @@ describe("createLogController", () => {
       createNamespacedStorage
     });
 
-    // Make sure setting logEnabled from config can't override it.
-    logController.setLogEnabled(false, { fromConfig: true });
-    expect(sessionStorage.setItem).toHaveBeenCalledWith("log", "true");
+    // Make sure setting debugEnabled from config can't override it.
+    logController.setDebugEnabled(false, { fromConfig: true });
+    expect(sessionStorage.setItem).toHaveBeenCalledWith("debug", "true");
     expect(sessionStorage.setItem.calls.count()).toBe(1);
-    expect(getLogEnabled()).toBe(true);
+    expect(getDebugEnabled()).toBe(true);
   });
 
-  it("sets logEnabled to false if query string parameter set to false", () => {
-    locationSearch = "?alloy_log=false";
+  it("sets debugEnabled to false if query string parameter set to false", () => {
+    locationSearch = "?alloy_debug=false";
     const logController = createLogController({
       console,
       locationSearch,
@@ -157,11 +157,11 @@ describe("createLogController", () => {
       createNamespacedStorage
     });
 
-    // Make sure setting logEnabled from config can't override it.
-    logController.setLogEnabled(true, { fromConfig: true });
-    expect(sessionStorage.setItem).toHaveBeenCalledWith("log", "false");
+    // Make sure setting debugEnabled from config can't override it.
+    logController.setDebugEnabled(true, { fromConfig: true });
+    expect(sessionStorage.setItem).toHaveBeenCalledWith("debug", "false");
     expect(sessionStorage.setItem.calls.count()).toBe(1);
-    expect(getLogEnabled()).toBe(false);
+    expect(getDebugEnabled()).toBe(false);
   });
 
   it("creates a logger", () => {
@@ -195,7 +195,7 @@ describe("createLogController", () => {
 
     expect(createLogger).toHaveBeenCalledWith(
       console,
-      getLogEnabled,
+      getDebugEnabled,
       "[alloy123] [Personalization]"
     );
     expect(result).toBe(componentLogger);

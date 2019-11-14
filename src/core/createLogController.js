@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { queryString, stringToBoolean } from "../utils";
-import logQueryParam from "../constants/logQueryParam";
+import debugQueryParam from "../constants/debugQueryParam";
 
 export default ({
   console,
@@ -24,35 +24,35 @@ export default ({
   const parsedQueryString = queryString.parse(locationSearch);
   const storage = createNamespacedStorage(`instance.${instanceNamespace}.`);
 
-  let logEnabled = storage.session.getItem("log") === "true";
-  let logEnabledWritableFromConfig = true;
+  let debugEnabled = storage.session.getItem("debug") === "true";
+  let debugEnabledWritableFromConfig = true;
 
-  const getLogEnabled = () => logEnabled;
-  const setLogEnabled = (value, { fromConfig }) => {
-    if (!fromConfig || logEnabledWritableFromConfig) {
-      logEnabled = value;
+  const getDebugEnabled = () => debugEnabled;
+  const setDebugEnabled = (value, { fromConfig }) => {
+    if (!fromConfig || debugEnabledWritableFromConfig) {
+      debugEnabled = value;
     }
 
     if (!fromConfig) {
       // Web storage only allows strings, so we explicitly convert to string.
-      storage.session.setItem("log", value.toString());
-      logEnabledWritableFromConfig = false;
+      storage.session.setItem("debug", value.toString());
+      debugEnabledWritableFromConfig = false;
     }
   };
 
-  if (parsedQueryString[logQueryParam] !== undefined) {
-    setLogEnabled(stringToBoolean(parsedQueryString[logQueryParam]), {
+  if (parsedQueryString[debugQueryParam] !== undefined) {
+    setDebugEnabled(stringToBoolean(parsedQueryString[debugQueryParam]), {
       fromConfig: false
     });
   }
 
   return {
-    setLogEnabled,
-    logger: createLogger(console, getLogEnabled, loggerPrefix),
+    setDebugEnabled,
+    logger: createLogger(console, getDebugEnabled, loggerPrefix),
     createComponentLogger(componentNamespace) {
       return createLogger(
         console,
-        getLogEnabled,
+        getDebugEnabled,
         `${loggerPrefix} [${componentNamespace}]`
       );
     }

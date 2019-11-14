@@ -56,36 +56,36 @@ describe("createCoreConfigs", () => {
     });
   });
 
-  describe("logEnabled", () => {
-    it("validates logEnabled=undefined", () => {
+  describe("debugEnabled", () => {
+    it("validates debugEnabled=undefined", () => {
       const config = createConfig(baseConfig);
       const validator = createValidator(config);
 
       validator.addValidators(createCoreConfigs());
       validator.validate();
-      expect(config.logEnabled).toBe(false);
+      expect(config.debugEnabled).toBe(false);
     });
 
-    it("validates logEnabled=true", () => {
-      const config = createConfig({ logEnabled: true, ...baseConfig });
+    it("validates debugEnabled=true", () => {
+      const config = createConfig({ debugEnabled: true, ...baseConfig });
       const validator = createValidator(config);
 
       validator.addValidators(createCoreConfigs());
       validator.validate();
-      expect(config.logEnabled).toBe(true);
+      expect(config.debugEnabled).toBe(true);
     });
 
-    it("validates logEnabled=false", () => {
-      const config = createConfig({ logEnabled: false, ...baseConfig });
+    it("validates debugEnabled=false", () => {
+      const config = createConfig({ debugEnabled: false, ...baseConfig });
       const validator = createValidator(config);
 
       validator.addValidators(createCoreConfigs());
       validator.validate();
-      expect(config.logEnabled).toBe(false);
+      expect(config.debugEnabled).toBe(false);
     });
 
-    it("validates logEnabled=123", () => {
-      const config = createConfig({ logEnabled: 123, ...baseConfig });
+    it("validates debugEnabled=123", () => {
+      const config = createConfig({ debugEnabled: 123, ...baseConfig });
       const validator = createValidator(config);
 
       validator.addValidators(createCoreConfigs());

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { isFunction } from "../utils";
 
-export default ({ logger, configureCommand, logCommand, handleError }) => {
+export default ({ logger, configureCommand, debugCommand, handleError }) => {
   let configurePromise;
 
   const getExecutor = (commandName, options) => {
@@ -35,9 +35,8 @@ export default ({ logger, configureCommand, logCommand, handleError }) => {
           `The library must be configured first. Please do so by executing the configure command.`
         );
       }
-
       if (commandName === "log") {
-        execute = () => logCommand(options);
+        execute = () => debugCommand(options);
       } else {
         execute = () => {
           return configurePromise.then(
