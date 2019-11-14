@@ -388,3 +388,7 @@ section.dark, footer.dark, header.dark {
 	font-size: 25px;
 	}
 }
+.navbar-brand svg {
+    width: 25px;
+    height: 25px;
+}
