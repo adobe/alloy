@@ -7,7 +7,6 @@ node_js:
 install:
 - npm i -g npm
 - npm i -g testcafe
-- npm install -g http-server
 cache:
   directories:
   - node_modules
@@ -25,7 +24,7 @@ services:
 script:
 - npm install
 - npm run build:prod
-- npm run functional:sl
+- npm run functional:ci
 - npm run test:saucelabs
 - npm run checkbundlesize
 notifications:
