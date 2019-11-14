@@ -100,13 +100,13 @@ describe("executeCommandFactory", () => {
     const configureCommand = jasmine
       .createSpy()
       .and.returnValue(Promise.resolve("configureResult"));
-    const logCommand = jasmine
+    const debugCommand = jasmine
       .createSpy()
       .and.returnValue(Promise.resolve("logResult"));
     const executeCommand = executeCommandFactory({
       logger,
       configureCommand,
-      logCommand,
+      debugCommand,
       handleError
     });
 
@@ -115,7 +115,7 @@ describe("executeCommandFactory", () => {
       executeCommand("log", { baz: "qux" })
     ]).then(([configureResult, logResult]) => {
       expect(configureCommand).toHaveBeenCalledWith({ foo: "bar" });
-      expect(logCommand).toHaveBeenCalledWith({ baz: "qux" });
+      expect(debugCommand).toHaveBeenCalledWith({ baz: "qux" });
       expect(configureResult).toEqual("configureResult");
       expect(logResult).toEqual("logResult");
     });
