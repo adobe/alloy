@@ -1,0 +1,11 @@
+#testimonial-carousel-2 .bg-wrap {
+    background-color: #ded8d0;
+}
+
+#testimonial-carousel-2 .bg {
+    background-image: url('../images/bg-58.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    opacity:0.1;
+}
