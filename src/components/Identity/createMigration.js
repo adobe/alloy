@@ -2,12 +2,6 @@ import { cookieJar } from "../../utils";
 import { EXPERIENCE_CLOUD_ID } from "./constants/cookieNames";
 
 export default (imsOrgId, idMigrationEnabled) => {
-  if (!idMigrationEnabled) {
-    return {
-      getEcidFromAmcvCookie() {},
-      createAmcvCookie() {}
-    };
-  }
   return {
     getEcidFromAmcvCookie(identityCookieJar) {
       let ecid = null;
