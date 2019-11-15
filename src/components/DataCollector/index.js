@@ -21,8 +21,8 @@ const createDataCollector = ({ eventManager }) => {
           data,
           viewStart = false,
           documentUnloading = false,
-          eventType,
-          eventMergeId
+          type,
+          mergeId
         } = options;
         const event = eventManager.createEvent();
 
@@ -30,16 +30,16 @@ const createDataCollector = ({ eventManager }) => {
           event.documentUnloading();
         }
 
-        if (eventType || eventMergeId) {
+        if (type || mergeId) {
           xdm = Object(xdm);
         }
 
-        if (eventType) {
-          assign(xdm, { eventType });
+        if (type) {
+          assign(xdm, { eventType: type });
         }
 
-        if (eventMergeId) {
-          assign(xdm, { eventMergeId });
+        if (mergeId) {
+          assign(xdm, { eventMergeId: mergeId });
         }
 
         event.userXdm = xdm;
