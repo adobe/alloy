@@ -77,4 +77,34 @@ describe("Event Command", () => {
       });
     });
   });
+
+  it("sets eventType and eventMergeId", () => {
+    return eventCommand({
+      type: "mytype",
+      mergeId: "mymergeid"
+    }).then(() => {
+      expect(
+        Object.getOwnPropertyDescriptor(event, "userXdm").set
+      ).toHaveBeenCalledWith({
+        eventType: "mytype",
+        eventMergeId: "mymergeid"
+      });
+    });
+  });
+
+  it("merges eventType and eventMergeId with the userXdm", () => {
+    return eventCommand({
+      xdm: { key: "value" },
+      type: "mytype",
+      mergeId: "mymergeid"
+    }).then(() => {
+      expect(
+        Object.getOwnPropertyDescriptor(event, "userXdm").set
+      ).toHaveBeenCalledWith({
+        key: "value",
+        eventType: "mytype",
+        eventMergeId: "mymergeid"
+      });
+    });
+  });
 });

@@ -1,3 +1,5 @@
+import { assign } from "../../utils";
+
 /*
 Copyright 2019 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -14,16 +16,30 @@ const createDataCollector = ({ eventManager }) => {
   return {
     commands: {
       event(options) {
+        let { xdm } = options;
         const {
-          xdm,
           data,
           viewStart = false,
-          documentUnloading = false
+          documentUnloading = false,
+          type,
+          mergeId
         } = options;
         const event = eventManager.createEvent();
 
         if (documentUnloading) {
           event.documentUnloading();
+        }
+
+        if (type || mergeId) {
+          xdm = Object(xdm);
+        }
+
+        if (type) {
+          assign(xdm, { eventType: type });
+        }
+
+        if (mergeId) {
+          assign(xdm, { eventMergeId: mergeId });
         }
 
         event.userXdm = xdm;
