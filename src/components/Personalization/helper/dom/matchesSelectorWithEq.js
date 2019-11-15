@@ -21,7 +21,7 @@ export default (selector, element) => {
 
   // Using node selection vs matches selector, because of :eq()
   // Find all nodes using document as context
-  const nodes = selectNodesWithEq(selector, document);
+  const nodes = selectNodesWithEq(selector);
   let result = false;
 
   // Iterate through all the identified elements
