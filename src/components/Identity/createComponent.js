@@ -2,7 +2,8 @@ import createCustomerIds from "./customerIds/createCustomerIds";
 import { defer } from "../../utils";
 import { EXPERIENCE_CLOUD_ID } from "./constants/cookieNames";
 import createMigration from "./createMigration";
-import isThirdPartyCookieSupported from "../../utils/isThirdPartyCookieSupported";
+import areThirdPartyCookiesSupported from "../../utils/areThirdPartyCookiesSupported";
+import getBrowser from "../../utils/getBrowser";
 
 const addIdsContext = (payload, ecid) => {
   payload.addIdentity(EXPERIENCE_CLOUD_ID, {
@@ -96,7 +97,7 @@ export default (idSyncs, config, logger, cookieJar, optIn, eventManager) => {
             payload.expectResponse();
             if (
               config.thirdPartyCookiesEnabled &&
-              isThirdPartyCookieSupported(window)
+              areThirdPartyCookiesSupported(getBrowser(window))
             ) {
               payload.useIdThirdPartyDomain();
             }

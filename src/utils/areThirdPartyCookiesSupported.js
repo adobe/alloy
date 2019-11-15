@@ -10,13 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getBrowser, { CHROME, IE, UNKNOWN } from "./getBrowser";
+import { CHROME, EDGE, EDGE_CHROMIUM, IE, UNKNOWN } from "../constants/browser";
 import includes from "./includes";
 
-// Users could have also disabled third-party cookies in Chrome or IE, but we
-// don't know. We also assume "unknown" browsers support third-party cookies,
+// Users could have also disabled third-party cookies within these browsers, but
+// we don't know. We also assume "unknown" browsers support third-party cookies,
 // though we don't really know that either. We're making best guesses.
-const browsersSupportingThirdPartyCookie = [CHROME, IE, UNKNOWN];
+const browsersSupportingThirdPartyCookie = [
+  CHROME,
+  EDGE,
+  EDGE_CHROMIUM,
+  IE,
+  UNKNOWN
+];
 
-export default window =>
-  includes(browsersSupportingThirdPartyCookie, getBrowser(window));
+export default browser => includes(browsersSupportingThirdPartyCookie, browser);

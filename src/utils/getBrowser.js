@@ -12,12 +12,15 @@ governing permissions and limitations under the License.
 
 import memoize from "./memoize";
 
-export const EDGE = "Edge";
-export const CHROME = "Chrome";
-export const FIREFOX = "Firefox";
-export const IE = "IE";
-export const SAFARI = "Safari";
-export const UNKNOWN = "Unknown";
+import {
+  EDGE,
+  EDGE_CHROMIUM,
+  CHROME,
+  FIREFOX,
+  IE,
+  SAFARI,
+  UNKNOWN
+} from "../constants/browser";
 
 const matchUserAgent = regexs => {
   return userAgent => {
@@ -35,13 +38,43 @@ const matchUserAgent = regexs => {
 
 export default memoize(window => {
   return matchUserAgent({
-    // The order here is important, since user agent strings of some browsers
-    // contain names of other browsers (for example, Edge's contains
-    // both "Chrome" and "Safari")
-    [EDGE]: /Edge/,
-    [CHROME]: /Chrome/,
-    [FIREFOX]: /Firefox/,
-    [IE]: /Trident/, // This only covers version 11, but that's all we support.
-    [SAFARI]: /Safari/
+    /*
+    The MIT License (MIT)
+
+    Copyright (c) 2019 Damon Oehlman damon.oehlman@gmail.com
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to
+    deal in the Software without restriction, including without limitation the
+    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+    sell copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+    */
+    // Regular expression patterns were copied from
+    // https://github.com/DamonOehlman/detect-browser
+    // These are only the browsers that Alloy officially supports.
+    /* eslint-disable */
+    [EDGE]: /Edge\/([0-9\._]+)/,
+    // Edge Chromium can dynamically change its user agent string based
+    // on the host site:
+    // https://winaero.com/blog/microsoft-edge-chromium-dynamically-changes-its-user-agent/
+    [EDGE_CHROMIUM]: /Edg\/([0-9\.]+)/,
+    [CHROME]: /(?!Chrom.*OPR)Chrom(?:e|ium)\/([0-9\.]+)(:?\s|$)/,
+    [FIREFOX]: /Firefox\/([0-9\.]+)(?:\s|$)/,
+    // This only covers version 11 of IE, but that's all we support.
+    [IE]: /Trident\/7\.0.*rv\:([0-9\.]+).*\).*Gecko$/,
+    [SAFARI]: /Version\/([0-9\._]+).*Safari/
+    /* eslint-enable */
   })(window.navigator.userAgent);
 });
