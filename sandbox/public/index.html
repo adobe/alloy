@@ -105,23 +105,6 @@
         console.log("Sandbox: Set customer IDs event has completed.");
       });
 
-      alloy("syncIdsByUrl", {
-        idSyncs: [
-          {
-            type: "url",
-            id: 500,
-            spec: {
-              url:
-                "https://idsync.rlcdn.com/365868.gif?partner_uid=79653899615727305204290942296930013270",
-              hideReferrer: false,
-              ttlMinutes: 120
-            }
-          }
-        ]
-      }).then(function(result) {
-        console.log("syncIdsByUrl result", result);
-      });
-
       // For Testing multiple instances.
       // We use a different imsOrgId and configId.
       organizationTwo("configure", {
