@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import { boolean, number } from "../../utils/configValidators";
 import createIdSyncs from "./createIdSyncs";
-import createManualIdSyncs from "./createManualIdSyncs";
 
 import createComponent from "./createComponent";
 
@@ -21,10 +20,9 @@ const createIdentity = ({ config, logger, cookieJar, optIn, eventManager }) => {
   // need to wait for the user to opt in first.
 
   const idSyncs = createIdSyncs(config, logger, cookieJar);
-  const manualIdSyncs = createManualIdSyncs(idSyncs);
+
   return createComponent(
     idSyncs,
-    manualIdSyncs,
     config,
     logger,
     cookieJar,

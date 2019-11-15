@@ -10,15 +10,7 @@ const addIdsContext = (payload, ecid) => {
   });
 };
 
-export default (
-  idSyncs,
-  manualIdSyncs,
-  config,
-  logger,
-  cookieJar,
-  optIn,
-  eventManager
-) => {
+export default (idSyncs, config, logger, cookieJar, optIn, eventManager) => {
   let deferredForEcid;
   let alreadyQueriedForIdSyncs = false;
   const { idMigrationEnabled, imsOrgId } = config;
@@ -138,11 +130,6 @@ export default (
       },
       setCustomerIds(options) {
         return optIn.whenOptedIn().then(() => customerIds.sync(options));
-      },
-      syncIdsByUrl(options) {
-        return optIn
-          .whenOptedIn()
-          .then(() => manualIdSyncs.syncIdsByUrl(options));
       }
     }
   };
