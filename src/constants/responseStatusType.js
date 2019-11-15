@@ -10,21 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default fetch => {
-  return (url, body) => {
-    return fetch(url, {
-      method: "POST",
-      cache: "no-cache",
-      headers: {
-        "Content-Type": "text/plain; charset=UTF-8"
-      },
-      referrer: "client",
-      body
-    }).then(response => {
-      return response.text().then(responseBody => ({
-        status: response.status,
-        body: responseBody
-      }));
-    });
-  };
-};
+/**
+ * Request was successful.
+ */
+export const SUCCESS = "success";
+
+/**
+ * Request failed and should not be retried.
+ */
+export const FATAL_ERROR = "fatalError";
+
+/**
+ * Request failed and can be retried.
+ */
+export const RETRYABLE_ERROR = "retryableError";

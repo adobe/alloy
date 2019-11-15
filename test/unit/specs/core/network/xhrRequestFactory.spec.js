@@ -58,7 +58,7 @@ describe("xhrRequest", () => {
     expect(request.withCredentials).toBe(false);
   });
 
-  it("rejects promise on error", () => {
+  it("rejects promise upon error", () => {
     const xhrPromise = xhrRequest(url, body);
     request.onerror(new Error("bad thing happened"));
     return xhrPromise.then(fail).catch(error => {
@@ -66,7 +66,7 @@ describe("xhrRequest", () => {
     });
   });
 
-  it("rejects promise on abort", () => {
+  it("rejects promise upon abort", () => {
     const xhrPromise = xhrRequest(url, body);
     request.onabort(new Error("bad thing happened"));
     return xhrPromise.then(fail).catch(error => {
@@ -79,37 +79,17 @@ describe("xhrRequest", () => {
     expect(request.send).toHaveBeenCalledWith(body);
   });
 
-  it("handles a 204 response", () => {
-    const xhrPromise = xhrRequest("https://example.com/endpoint", body);
-    request.readyState = 4;
-    request.status = 204;
-    request.onreadystatechange();
-    return xhrPromise.then(result => {
-      expect(result).toBeUndefined();
-    });
-  });
-
-  it("handles a 200 response", () => {
+  it("resolves returned promise upon network success", () => {
     const xhrPromise = xhrRequest("https://example.com/endpoint", body);
     request.readyState = 4;
     request.responseText = "response text";
-    request.status = 200;
+    request.status = 999;
     request.onreadystatechange();
     return xhrPromise.then(result => {
-      expect(result).toBe("response text");
-    });
-  });
-
-  it("handles a 500 response", () => {
-    const xhrPromise = xhrRequest("https://example.com/endpoint", body);
-    request.readyState = 4;
-    request.responseText = "response text";
-    request.status = 500;
-    request.onreadystatechange();
-    return xhrPromise.then(fail).catch(error => {
-      expect(error.message).toBe(
-        'Invalid response code 500. Response was "response text".'
-      );
+      expect(result).toEqual({
+        status: 999,
+        body: "response text"
+      });
     });
   });
 });

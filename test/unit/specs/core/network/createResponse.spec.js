@@ -31,6 +31,26 @@ const responseContent = {
       type: "type1",
       payload: "payload1c"
     }
+  ],
+  errors: [
+    {
+      code: "general:100",
+      message: "General error occurred."
+    },
+    {
+      code: "personalization:204",
+      message: "Personalization error occurred."
+    }
+  ],
+  warnings: [
+    {
+      code: "general:101",
+      message: "General warning."
+    },
+    {
+      code: "personalization:205",
+      message: "Personalization warning."
+    }
   ]
 };
 
@@ -38,13 +58,13 @@ describe("createResponse", () => {
   const response = createResponse(responseContent);
 
   describe("getPayloadsByType", () => {
-    it("handles undefined", () => {
-      const emptyResponse = createResponse(undefined);
+    it("handles undefined content", () => {
+      const emptyResponse = createResponse();
       expect(emptyResponse.getPayloadsByType("type1")).toEqual([]);
     });
 
-    it("handles a bad response", () => {
-      const emptyResponse = createResponse({ error: "bad response" });
+    it("handles content without handle key", () => {
+      const emptyResponse = createResponse({});
       expect(emptyResponse.getPayloadsByType("type1")).toEqual([]);
     });
 
@@ -62,6 +82,38 @@ describe("createResponse", () => {
         "payload1b",
         "payload1c"
       ]);
+    });
+  });
+
+  describe("getErrors", () => {
+    it("handles undefined content", () => {
+      const emptyResponse = createResponse();
+      expect(emptyResponse.getErrors()).toEqual([]);
+    });
+
+    it("handles content without errors key", () => {
+      const emptyResponse = createResponse({});
+      expect(emptyResponse.getErrors()).toEqual([]);
+    });
+
+    it("returns errors", () => {
+      expect(response.getErrors()).toBe(responseContent.errors);
+    });
+  });
+
+  describe("getWarnings", () => {
+    it("handles undefined content", () => {
+      const emptyResponse = createResponse();
+      expect(emptyResponse.getWarnings()).toEqual([]);
+    });
+
+    it("handles content without warnings key", () => {
+      const emptyResponse = createResponse({});
+      expect(emptyResponse.getWarnings()).toEqual([]);
+    });
+
+    it("returns warnings", () => {
+      expect(response.getWarnings()).toBe(responseContent.warnings);
     });
   });
 

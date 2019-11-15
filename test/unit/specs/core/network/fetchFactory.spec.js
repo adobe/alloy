@@ -13,11 +13,10 @@ governing permissions and limitations under the License.
 import fetchFactory from "../../../../../src/core/network/fetchFactory";
 
 describe("fetchFactory", () => {
-  it("handles a 200 response", () => {
+  it("resolves returned promise upon network success", () => {
     const nativeFetch = jasmine.createSpy().and.returnValue(
       Promise.resolve({
-        ok: true,
-        status: 200,
+        status: 999,
         text() {
           return Promise.resolve("content");
         }
@@ -25,35 +24,22 @@ describe("fetchFactory", () => {
     );
     const fetch = fetchFactory(nativeFetch);
     return fetch("http://example.com/endpoint", { a: "b" }).then(result => {
-      expect(result).toBe("content");
+      expect(result).toEqual({
+        status: 999,
+        body: "content"
+      });
     });
   });
 
-  it("handles a 204 response", () => {
-    const nativeFetch = jasmine.createSpy().and.returnValue(
-      Promise.resolve({
-        ok: true,
-        status: 204
-      })
-    );
-    const fetch = fetchFactory(nativeFetch);
-    return fetch("http://example.com/endpoint", { a: "b" }).then(result => {
-      expect(result).toBeUndefined();
-    });
-  });
-
-  it("handles a 500 response", () => {
-    const nativeFetch = jasmine.createSpy().and.returnValue(
-      Promise.resolve({
-        ok: false,
-        status: 500
-      })
-    );
+  it("rejects returned promise upon network failure", () => {
+    const nativeFetch = jasmine
+      .createSpy()
+      .and.returnValue(Promise.reject(new Error("No connection")));
     const fetch = fetchFactory(nativeFetch);
     return fetch("http://example.com/endpoint", { a: "b" })
       .then(fail)
       .catch(error => {
-        expect(error.message).toBe("Bad response code: 500");
+        expect(error.message).toBe("No connection");
       });
   });
 });

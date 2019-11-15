@@ -16,17 +16,10 @@ export default XMLHttpRequest => {
       const request = new XMLHttpRequest();
       request.onreadystatechange = () => {
         if (request.readyState === 4) {
-          if (request.status === 204) {
-            resolve();
-          } else if (request.status >= 200 && request.status < 300) {
-            resolve(request.responseText);
-          } else {
-            reject(
-              new Error(
-                `Invalid response code ${request.status}. Response was "${request.responseText}".`
-              )
-            );
-          }
+          resolve({
+            status: request.status,
+            body: request.responseText
+          });
         }
       };
       request.onloadstart = () => {
