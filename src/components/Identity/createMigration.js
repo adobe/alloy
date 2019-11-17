@@ -2,27 +2,36 @@ import { cookieJar } from "../../utils";
 import { EXPERIENCE_CLOUD_ID } from "./constants/cookieNames";
 
 export default (orgId, idMigrationEnabled) => {
+  const amcvCookieName = `AMCV_${orgId}`;
+
   return {
-    getEcidFromAmcvCookie(identityCookieJar) {
+    getEcidFromLegacyCookie(identityCookieJar) {
       let ecid = null;
+      const legacyItpCookieName = "s_ecid";
+
       if (idMigrationEnabled) {
-        const amcvCookieValue = cookieJar.get(`AMCV_${orgId}`);
-        if (amcvCookieValue) {
+        const legacyEcidCookieValue =
+          cookieJar.get(legacyItpCookieName) || cookieJar.get(amcvCookieName);
+
+        if (legacyEcidCookieValue) {
           const reg = /(^|\|)MCMID\|(\d+)($|\|)/;
-          const matches = amcvCookieValue.match(reg);
+          const matches = legacyEcidCookieValue.match(reg);
           // Destructuring arrays breaks in IE
           // eslint-disable-next-line prefer-destructuring
-          ecid = matches[2];
-          identityCookieJar.set(EXPERIENCE_CLOUD_ID, ecid);
+          if (matches) {
+            ecid = matches[2];
+            identityCookieJar.set(EXPERIENCE_CLOUD_ID, ecid);
+          }
         }
       }
+
       return ecid;
     },
     createAmcvCookie(ecid) {
       if (idMigrationEnabled) {
-        const amcvCookieValue = cookieJar.get(`AMCV_${orgId}`);
+        const amcvCookieValue = cookieJar.get(amcvCookieName);
         if (!amcvCookieValue) {
-          cookieJar.set(`AMCV_${orgId}`, `MCMID|${ecid}`);
+          cookieJar.set(amcvCookieName, `MCMID|${ecid}`);
         }
       }
     }

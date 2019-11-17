@@ -21,7 +21,7 @@ export default (idSyncs, config, logger, cookieJar, optIn, eventManager) => {
   const getEcid = () => {
     const ecid =
       cookieJar.get(EXPERIENCE_CLOUD_ID) ||
-      migration.getEcidFromAmcvCookie(cookieJar);
+      migration.getEcidFromLegacyCookie(cookieJar);
     return ecid;
   };
 

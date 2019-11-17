@@ -10,14 +10,14 @@ describe("createMigration(", () => {
   beforeEach(() => {
     cookieJar.remove("AMCV_TEST_ORG");
   });
-  describe("getEcidFromAmcvCookie", () => {
+  describe("getEcidFromLegacyCookie", () => {
     it("should not read AMCv cookie if idMigrationEnabled is false", () => {
       const migration = createMigration("TEST_ORG");
-      expect(migration.getEcidFromAmcvCookie()).toEqual(null);
+      expect(migration.getEcidFromLegacyCookie()).toEqual(null);
     });
     it("should return an empty string if no AMCV cookie is present", () => {
       const migration = createMigration("TEST_ORG", true);
-      expect(migration.getEcidFromAmcvCookie()).toEqual(null);
+      expect(migration.getEcidFromLegacyCookie()).toEqual(null);
     });
 
     [
@@ -29,7 +29,7 @@ describe("createMigration(", () => {
       it(`should return ECID if AMCV cookie is ${cookieValue}`, () => {
         cookieJar.set("AMCV_TEST_ORG", cookieValue);
         const migration = createMigration("TEST_ORG", true);
-        expect(migration.getEcidFromAmcvCookie(identityCookieJar)).toEqual(
+        expect(migration.getEcidFromLegacyCookie(identityCookieJar)).toEqual(
           "1234"
         );
       });
