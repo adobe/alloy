@@ -26,7 +26,7 @@ export default ({
 }) => {
   const cookieName = createOrgNamespacedCookieName(
     ALLOY_COOKIE_NAME,
-    config.imsOrgId
+    config.orgId
   );
   const cookieProxy = createCookieProxy(
     cookieName,

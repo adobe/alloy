@@ -35,7 +35,7 @@ export default () => ({
     defaultValue: EDGE_BASE_PATH,
     validate: string().nonEmpty()
   },
-  imsOrgId: {
+  orgId: {
     isRequired: true,
     validate: string().unique()
   },
