@@ -16,9 +16,9 @@ export default (orgId, idMigrationEnabled) => {
         if (legacyEcidCookieValue) {
           const reg = /(^|\|)MCMID\|(\d+)($|\|)/;
           const matches = legacyEcidCookieValue.match(reg);
-          // Destructuring arrays breaks in IE
-          // eslint-disable-next-line prefer-destructuring
+
           if (matches) {
+            // Destructuring arrays breaks in IE
             ecid = matches[2];
             identityCookieJar.set(EXPERIENCE_CLOUD_ID, ecid);
           }
