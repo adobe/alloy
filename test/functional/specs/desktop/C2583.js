@@ -11,11 +11,8 @@ test.meta({
 });
 
 test("Regression: Set the log option to true. Load the page. Execute an event command.", async t => {
-  await t.navigateTo(
-    "http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html"
-  );
   await t
-    .click(Selector("#logenabled-button"))
+    .click(Selector("#debugEnabled-button"))
     .click(Selector("#event-button"));
 
   const { log } = await t.getBrowserConsoleMessages();

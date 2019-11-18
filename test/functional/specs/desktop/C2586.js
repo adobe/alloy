@@ -1,6 +1,6 @@
 import { Selector } from "testcafe";
 
-const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html?alloy_log=true`;
+const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html?alloy_debug=true`;
 
 fixture`C2586`.page(urlCollector);
 
@@ -18,7 +18,7 @@ test("Regression: Toggle logging through the querystring parameter.", async t =>
 
 test("Regression: Toggle logging through the querystring parameter.", async t => {
   await t.navigateTo(
-    "http://127.0.0.1:8080/test/functional/sandbox/html/bogusCommand.html?alloy_log=false"
+    "http://127.0.0.1:8080/test/functional/sandbox/html/bogusCommand.html?alloy_debug=false"
   );
   const { log } = await t.getBrowserConsoleMessages();
   await t.expect(log.length).lte(0);

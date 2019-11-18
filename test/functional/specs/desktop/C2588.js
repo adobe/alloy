@@ -9,9 +9,6 @@ test.meta({
 });
 
 test("Regression: Throw error when configure is executed multiple times.", async t => {
-  await t.navigateTo(
-    "http://127.0.0.1:8080/test/functional/sandbox/html/multiConfig.html"
-  );
   const { error } = await t.getBrowserConsoleMessages();
   await t
     .expect(error)

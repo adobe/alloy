@@ -44,10 +44,10 @@
     onRoutePostInit: initHighlighter
   });
 
-  router.register("/logenabled", "logenabled", {
+  router.register("/debugEnabled", "debugEnabled", {
     onPostInit: function() {
       alloy("configure", {
-        logEnabled: true,
+        debugEnabled: true,
         configId: "9999999",
         orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
       });
@@ -58,7 +58,7 @@
     onPostInit: function() {
       alloy("configure", {
         errorsEnabled: false,
-        logEnabled: true
+        debugEnabled: true
       });
     }
   });
@@ -75,7 +75,7 @@
   router.register("/disablelog", "disablelog", {
     onPostInit: function() {
       alloy("configure", {
-        logEnabled: false,
+        debugEnabled: false,
         configId: "9999999",
         orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
       });
