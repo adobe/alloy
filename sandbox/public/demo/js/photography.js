@@ -1,15 +1,11 @@
 "use strict";
 
-window.addEventListener('load', function() {
+window.addEventListener("load", function() {
+  //------------------------------------------------------------------------
+  //						OWL CAROUSEL OPTIONS
+  //------------------------------------------------------------------------
 
-
-
-
-//------------------------------------------------------------------------
-//						OWL CAROUSEL OPTIONS
-//------------------------------------------------------------------------
-
-$('.carousel-single').owlCarousel({
+  $(".carousel-single").owlCarousel({
     loop: false,
     margin: 0,
     nav: true,
@@ -18,10 +14,7 @@ $('.carousel-single').owlCarousel({
     autoHeight: false,
     items: 1,
     dots: true,
-    navText: ['',''],
+    navText: ["", ""],
     rewind: true
-});
-
-
-
+  });
 });
