@@ -1,4 +1,4 @@
-import { t, Selector } from "testcafe";
+import { Selector } from "testcafe";
 import testServerUrl from "../../src/constants/testServerUrl";
 
 const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloySdk.html`;
@@ -11,15 +11,15 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Regression: Throw error when configure is not the first command executed.", async () => {
+test("Regression: Throw error when configure is not the first command executed.", async t => {
   // Note: unable to enable logging with url parameter or enabler logger config.
 
   await t.click(Selector("#logger-button"));
   await t.click(Selector("#event-button"));
-  const message = await t.getBrowserConsoleMessages();
+  const { log } = await t.getBrowserConsoleMessages();
 
   await t
-    .expect(message.log)
+    .expect(log)
     .match(
       /The library must be configured first. Please do so by executing the configure command./
     );

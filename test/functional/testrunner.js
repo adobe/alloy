@@ -51,14 +51,16 @@ createTestCafe()
     const runner = testcafe.createRunner();
     const testFolder = config.desktop.testsFolder;
     const testSuite = allFilesSync(testFolder);
-    return runner
-      .startApp("npm run test:server", 4000)
-      .src(testSuite)
-      .filter(testName => /^Regression/.test(testName))
-      .browsers(browsers)
-      .reporter("spec")
-      .concurrency(config.desktop.concurrency)
-      .run(runOptions);
+    return (
+      runner
+        .startApp("npm run test:server", 4000)
+        .src(testSuite)
+        .filter(testName => /^Regression/.test(testName))
+        .browsers(browsers)
+        // .reporter("allure")
+        .concurrency(config.desktop.concurrency)
+        .run(runOptions)
+    );
   })
   .then(numberOfFailedTests => {
     console.log("Failed tests: ", numberOfFailedTests);

@@ -1,8 +1,6 @@
 {
       "browsers": [
-        "saucelabs:Chrome@74.0:OS X 10.10",
-        "saucelabs:Firefox@latest:Windows 7",
-        "saucelabs:Safari@latest:OS X 10.11"
+        "saucelabs:Chrome@latest:OS X 10.11"
       ],
       "src": "test/functional/specs/desktop/*.js",
       "skipJsErrors": "true"

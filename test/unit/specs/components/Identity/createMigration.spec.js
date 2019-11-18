@@ -39,7 +39,9 @@ describe("createMigration(", () => {
       const cookieValue = "version|0.0.4";
       cookieJar.set("AMCV_NO_MID", cookieValue);
       const migration = createMigration("NO_MID", true);
-      expect(migration.getEcidFromLegacyCookie(identityCookieJar)).toEqual(null);
+      expect(migration.getEcidFromLegacyCookie(identityCookieJar)).toEqual(
+        null
+      );
     });
   });
   describe("createAmcvCookie", () => {

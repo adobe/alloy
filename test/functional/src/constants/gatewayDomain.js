@@ -1,1 +1,1 @@
-export default "https://alloyqe.azurewebsites.net/";
+export default "https://alloyio.com/";
