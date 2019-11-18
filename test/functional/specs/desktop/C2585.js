@@ -16,10 +16,10 @@ test("Regression: Throw error when configure is not the first command executed."
 
   await t.click(Selector("#logger-button"));
   await t.click(Selector("#event-button"));
-  const message = await t.getBrowserConsoleMessages();
+  const { log } = await t.getBrowserConsoleMessages();
 
   await t
-    .expect(message.log)
+    .expect(log)
     .match(
       /The library must be configured first. Please do so by executing the configure command./
     );

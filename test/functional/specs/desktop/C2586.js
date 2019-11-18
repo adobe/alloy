@@ -12,14 +12,14 @@ test.meta({
 
 test("Regression: Toggle logging through the querystring parameter.", async t => {
   await t.click(Selector("#event-button"));
-  const message = await t.getBrowserConsoleMessages();
-  await t.expect(message.log).match(/The library must be configured first./);
+  const { log } = await t.getBrowserConsoleMessages();
+  await t.expect(log).match(/The library must be configured first./);
 });
 
 test("Regression: Toggle logging through the querystring parameter.", async t => {
   await t.navigateTo(
     "http://127.0.0.1:8080/test/functional/sandbox/html/bogusCommand.html?alloy_log=false"
   );
-  const message = await t.getBrowserConsoleMessages();
-  await t.expect(message.log.length).lte(0);
+  const { log } = await t.getBrowserConsoleMessages();
+  await t.expect(log.length).lte(0);
 });

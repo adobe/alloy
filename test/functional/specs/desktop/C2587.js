@@ -11,8 +11,9 @@ test.meta({
 });
 
 test("Regression: Throw error when executing command that doesn't exist", async t => {
-  const message = await t.getBrowserConsoleMessages();
-  await t
-    .expect(message.error)
-    .match(/The boguscommand command does not exist./);
+  await t.navigateTo(
+    "http://127.0.0.1:8080/test/functional/sandbox/html/bogusCommand.html"
+  );
+  const { error } = await t.getBrowserConsoleMessages();
+  await t.expect(error).match(/The boguscommand command does not exist./);
 });
