@@ -1,4 +1,4 @@
-import { t, Selector } from "testcafe";
+import { Selector } from "testcafe";
 import testServerUrl from "../../src/constants/testServerUrl";
 
 const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloySdk.html`;
@@ -11,7 +11,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Regression: Set the log option to true. Load the page. Execute an event command.", async () => {
+test("Regression: Set the log option to true. Load the page. Execute an event command.", async t => {
   await t
     .click(Selector("#logenabled-button"))
     .click(Selector("#event-button"));
@@ -29,7 +29,7 @@ test("Regression: Set the log option to true. Load the page. Execute an event co
   await t.expect(message2.log).match(/\[alloy] Executing event command./);
 });
 
-test("Regression: Set the log option in the configuration to false. Refresh the browser. Execute an event command.", async () => {
+test("Regression: Set the log option in the configuration to false. Refresh the browser. Execute an event command.", async t => {
   await t
     .click(Selector("#disablelog-button"))
     .click(Selector("#event-button"));

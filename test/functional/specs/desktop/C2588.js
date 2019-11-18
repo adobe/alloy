@@ -1,4 +1,3 @@
-import { t } from "testcafe";
 import testServerUrl from "../../src/constants/testServerUrl";
 
 const urlCollector = `${testServerUrl}/test/functional/sandbox/html/multiConfig.html`;
@@ -11,7 +10,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Regression: Throw error when configure is executed multiple times.", async () => {
+test("Regression: Throw error when configure is executed multiple times.", async t => {
   const message = await t.getBrowserConsoleMessages();
   await t
     .expect(message.error)
