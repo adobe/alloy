@@ -15,7 +15,7 @@ describe("createMigration(", () => {
       const migration = createMigration("TEST_ORG");
       expect(migration.getEcidFromLegacyCookie()).toEqual(null);
     });
-    it("should return an empty string if no AMCV cookie is present", () => {
+    it("should return null if no AMCV cookie is present", () => {
       const migration = createMigration("TEST_ORG", true);
       expect(migration.getEcidFromLegacyCookie()).toEqual(null);
     });
@@ -33,6 +33,13 @@ describe("createMigration(", () => {
           "1234"
         );
       });
+    });
+
+    it("should return null if AMCV does not contain a MCMID", () => {
+      const cookieValue = "version|0.0.4";
+      cookieJar.set("AMCV_NO_MID", cookieValue);
+      const migration = createMigration("NO_MID", true);
+      expect(migration.getEcidFromLegacyCookie(identityCookieJar)).toEqual(null);
     });
   });
   describe("createAmcvCookie", () => {
