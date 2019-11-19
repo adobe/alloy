@@ -34,7 +34,7 @@
     "sandbox:build": "cd sandbox && npm run build",
     "dev": "npm-run-all --parallel build:watch sandbox",
     "checkbundlesize": "npm run build:prod:standalone:minified && bundlesize",
-    "mockserver": "mockserver -serverPort 1080 -jvmOptions \"-Dmockserver.enableCORSForAllResponses=true\""
+    "mockserver": "./scripts/mockServer.js"
   },
   "husky": {
     "hooks": {

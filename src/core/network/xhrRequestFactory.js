@@ -16,10 +16,14 @@ export default XMLHttpRequest => {
       const request = new XMLHttpRequest();
       request.onreadystatechange = () => {
         if (request.readyState === 4) {
-          resolve({
-            status: request.status,
-            body: request.responseText
-          });
+          if (request.status === 0) {
+            reject(new Error("Request aborted."));
+          } else {
+            resolve({
+              status: request.status,
+              body: request.responseText
+            });
+          }
         }
       };
       request.onloadstart = () => {

@@ -231,12 +231,6 @@ describe("createNetwork", () => {
     });
   });
 
-  it("doesn't try to parse the response on a beacon call", () => {
-    networkStrategy.and.returnValue(Promise.resolve());
-    // a failed promise will fail the test
-    return network.sendRequest({}, { expectsResponse: false });
-  });
-
   [429, 500, 599].forEach(status => {
     it(`retries requests for responses with status code ${status} until success`, () => {
       const fn = networkStrategy.and.callFake(() => {

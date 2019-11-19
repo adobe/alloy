@@ -134,8 +134,11 @@ describe("networkStrategyFactory", () => {
               .then(() =>
                 networkStrategy("http://localhost:1080/myapi", requestBody)
               )
-              .then(body => {
-                expect(body).toEqual("mybody");
+              .then(result => {
+                expect(result).toEqual({
+                  status: 200,
+                  body: "mybody"
+                });
               });
           }
         );
@@ -148,8 +151,11 @@ describe("networkStrategyFactory", () => {
             .then(() =>
               networkStrategy("http://localhost:1080/myapi", requestBody)
             )
-            .then(body => {
-              expect(body).toBeUndefined();
+            .then(result => {
+              expect(result).toEqual({
+                status: 204,
+                body: ""
+              });
             });
         }
       );
@@ -160,9 +166,11 @@ describe("networkStrategyFactory", () => {
             .then(() =>
               networkStrategy("http://localhost:1080/myapi", requestBody)
             )
-            .then(fail)
-            .catch(error => {
-              expect(error).toBeDefined();
+            .then(result => {
+              expect(result).toEqual({
+                status: code,
+                body: "mybody"
+              });
             });
         });
       });
@@ -207,7 +215,12 @@ describe("networkStrategyFactory", () => {
               true
             )
           )
-          .then(body => expect(body).toBeUndefined())
+          .then(result => {
+            expect(result).toEqual({
+              status: 204,
+              body: ""
+            });
+          })
           .then(() => {
             return eventually(() => {
               return client.verify(
@@ -224,7 +237,7 @@ describe("networkStrategyFactory", () => {
       });
 
       whenMockServerIsRunningIt("sends a large beacon", () => {
-        client
+        return client
           .mockAnyResponse({
             httpRequest: {
               method: "POST",
@@ -241,7 +254,12 @@ describe("networkStrategyFactory", () => {
               true
             )
           )
-          .then(body => expect(body).toBeUndefined())
+          .then(result =>
+            expect(result).toEqual({
+              status: 204,
+              body: ""
+            })
+          )
           .then(() =>
             client.verify(
               {

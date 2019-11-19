@@ -123,11 +123,6 @@ export default ({ config, logger, lifecycle, networkStrategy }) => {
               stringifiedPayload,
               documentUnloading
             ).then(result => {
-              // Will be the case when using sendBeacon.
-              if (!result) {
-                return undefined;
-              }
-
               const statusType = getResponseStatusType(result.status);
 
               if (statusType === SUCCESS) {
