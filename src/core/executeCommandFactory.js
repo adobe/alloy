@@ -35,7 +35,7 @@ export default ({ logger, configureCommand, debugCommand, handleError }) => {
           `The library must be configured first. Please do so by executing the configure command.`
         );
       }
-      if (commandName === "log") {
+      if (commandName === "debug") {
         execute = () => debugCommand(options);
       } else {
         execute = () => {

@@ -9,17 +9,17 @@ module.exports = config => {
     sl_chrome_73: {
       base: "SauceLabs",
       browserName: "chrome",
-      version: "73.0"
+      platform: "macOS 10.13"
     },
     sl_osx_safari_11: {
       base: "SauceLabs",
       browserName: "safari",
-      version: "11.1"
+      platform: "macOS 10.13"
     },
     sl_firefox_66: {
       base: "SauceLabs",
       browserName: "firefox",
-      version: "66.0"
+      platform: "macOS 10.13"
     },
     sl_ie_11: {
       base: "SauceLabs",

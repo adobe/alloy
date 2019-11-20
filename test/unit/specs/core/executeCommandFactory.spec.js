@@ -112,7 +112,7 @@ describe("executeCommandFactory", () => {
 
     return Promise.all([
       executeCommand("configure", { foo: "bar" }),
-      executeCommand("log", { baz: "qux" })
+      executeCommand("debug", { baz: "qux" })
     ]).then(([configureResult, logResult]) => {
       expect(configureCommand).toHaveBeenCalledWith({ foo: "bar" });
       expect(debugCommand).toHaveBeenCalledWith({ baz: "qux" });
