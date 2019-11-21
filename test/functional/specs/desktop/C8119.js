@@ -7,7 +7,7 @@ const linkPageWithoutClickHandler = `${testServerUrl}/test/functional/sandbox/ht
 
 const networkLogger = createNetworkLogger();
 
-fixture`C8119`
+fixture`C8119: Does not send information about link clicks if disabled.`
   .page(linkPageWithoutClickHandler)
   .requestHooks(
     networkLogger.gatewayEndpointLogs,

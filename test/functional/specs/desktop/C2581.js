@@ -7,7 +7,7 @@ const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloySdk.htm
 
 const networkLogger = createNetworkLogger();
 
-fixture`C2581`
+fixture`C2581: When ECID not available on client, allow the first request to be sent while queuing subsequent requests`
   .page(urlCollector)
   .requestHooks(
     networkLogger.adobedcEndpointLogs,
