@@ -21,13 +21,10 @@ export default fetch => {
       referrer: "client",
       body
     }).then(response => {
-      if (response.ok) {
-        if (response.status === 204) {
-          return undefined;
-        }
-        return response.text();
-      }
-      throw new Error(`Bad response code: ${response.status}`);
+      return response.text().then(responseBody => ({
+        status: response.status,
+        body: responseBody
+      }));
     });
   };
 };

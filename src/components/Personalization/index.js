@@ -84,7 +84,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
         showContainers();
       },
-      onResponseError() {
+      onRequestFailure() {
         showContainers();
       },
       onClick({ event, clickedElement }) {

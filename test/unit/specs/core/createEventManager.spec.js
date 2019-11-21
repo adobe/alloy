@@ -64,9 +64,7 @@ describe("createEventManager", () => {
       datasetId: "DATASETID",
       schemaId: "SCHEMAID"
     });
-    logger = {
-      error: jasmine.createSpy()
-    };
+    logger = jasmine.createSpyObj("logger", ["error", "warn"]);
     eventManager = createEventManager({
       createEvent,
       optIn,
@@ -222,22 +220,87 @@ describe("createEventManager", () => {
       });
     });
 
-    it("returns request and response info", () => {
-      const response = { type: "response" };
+    it("logs warnings on response", () => {
+      const response = {
+        getWarnings() {
+          return [
+            {
+              code: "general:100",
+              message: "General warning."
+            },
+            {
+              code: "personalization:204",
+              message: "Personalization warning."
+            }
+          ];
+        },
+        getErrors() {
+          return [];
+        }
+      };
+
       network.sendRequest.and.returnValue(Promise.resolve(response));
-      return eventManager.sendEvent(event).then(result => {
-        expect(result.requestBody).toEqual(payload.toJSON());
-        expect(result.requestBody).not.toBe(payload);
-        expect(result.responseBody).toEqual(response);
-        expect(result.requestBody).not.toBe(response);
+      return eventManager.sendEvent(event).then(() => {
+        expect(logger.warn).toHaveBeenCalledWith(
+          "Warning received from server: [Code general:100] General warning."
+        );
+        expect(logger.warn).toHaveBeenCalledWith(
+          "Warning received from server: [Code personalization:204] Personalization warning."
+        );
       });
     });
 
-    it("returns request info but not response info if no response provided", () => {
+    it("rejects returned promise with errors on response", () => {
+      const response = {
+        getWarnings() {
+          return [];
+        },
+        getErrors() {
+          return [
+            {
+              code: "general:100",
+              message: "General error occurred."
+            },
+            {
+              code: "personalization:204",
+              message: "Personalization error occurred."
+            }
+          ];
+        }
+      };
+
+      network.sendRequest.and.returnValue(Promise.resolve(response));
+      return eventManager
+        .sendEvent(event)
+        .then(fail)
+        .catch(error => {
+          expect(error.message).toEqual(
+            "The server responded with the following errors:\n" +
+              "• [Code general:100] General error occurred.\n" +
+              "• [Code personalization:204] Personalization error occurred."
+          );
+        });
+    });
+
+    it("returns promise resolved with nothing when there is a response", () => {
+      const response = {
+        getWarnings() {
+          return [];
+        },
+        getErrors() {
+          return [];
+        }
+      };
+      network.sendRequest.and.returnValue(Promise.resolve(response));
       return eventManager.sendEvent(event).then(result => {
-        expect(result.requestBody).toEqual(payload.toJSON());
-        expect(result.requestBody).not.toBe(payload);
-        expect(result.responseBody).toBeUndefined();
+        expect(result).toBeUndefined();
+      });
+    });
+
+    it("returns promise resolved with nothing when there is not a response", () => {
+      network.sendRequest.and.returnValue(Promise.resolve());
+      return eventManager.sendEvent(event).then(result => {
+        expect(result).toBeUndefined();
       });
     });
 

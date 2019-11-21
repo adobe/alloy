@@ -34,12 +34,20 @@ describe("createNetwork", () => {
     lifecycle = {
       onBeforeSend: jasmine.createSpy().and.returnValue(Promise.resolve()),
       onResponse: jasmine.createSpy().and.returnValue(Promise.resolve()),
-      onResponseError: jasmine.createSpy().and.returnValue(Promise.resolve())
+      onRequestFailure: jasmine.createSpy().and.returnValue(Promise.resolve())
     };
-    networkStrategy = jasmine
-      .createSpy()
-      .and.returnValue(Promise.resolve(JSON.stringify(mockResponse)));
-    network = createNetwork({ config, logger, lifecycle, networkStrategy });
+    networkStrategy = jasmine.createSpy().and.returnValue(
+      Promise.resolve({
+        status: 200,
+        body: JSON.stringify(mockResponse)
+      })
+    );
+    network = createNetwork({
+      config,
+      logger,
+      lifecycle,
+      networkStrategy
+    });
   });
 
   it("can call interact", () => {
@@ -160,26 +168,16 @@ describe("createNetwork", () => {
     });
   });
 
-  it("resolves the returned promise", () => {
-    return network.sendRequest({}).then(response => {
-      expect(response.getPayloadsByType).toEqual(jasmine.any(Function));
-    });
-  });
-
-  it("runs onResponseError hook and rejects the returned promise with network error rather than lifecycle error", () => {
+  it("runs onRequestFailure hook and rejects the returned promise with network error rather than lifecycle error", () => {
     networkStrategy.and.returnValue(Promise.reject(new Error("networkerror")));
-    lifecycle.onResponseError.and.returnValue(
+    lifecycle.onRequestFailure.and.returnValue(
       Promise.reject(new Error("lifecycleerror"))
     );
     return network
       .sendRequest({})
-      .then(() => {
-        // If sendRequest resolves instead of rejects, we want this test to fail.
-        throw Error("Expected sendRequest to reject promise.");
-      })
+      .then(fail)
       .catch(error => {
-        expect(lifecycle.onResponseError).toHaveBeenCalledWith({
-          error,
+        expect(lifecycle.onRequestFailure).toHaveBeenCalledWith({
           requestId: jasmine.anything()
         });
         expect(error.message).toEqual(
@@ -188,28 +186,26 @@ describe("createNetwork", () => {
       });
   });
 
-  it("runs onResponseError hook and rejects the promise when response is invalid json", () => {
-    networkStrategy.and.returnValue(Promise.resolve("badbody"));
+  it("runs onRequestFailure hook and rejects the promise when response is invalid json", () => {
+    networkStrategy.and.returnValue(
+      Promise.resolve({ status: 200, body: "badbody" })
+    );
     return network
       .sendRequest({})
-      .then(() => {
-        // If sendRequest resolves instead of rejects, we want this test to fail.
-        throw Error("Expected sendRequest to reject promise.");
-      })
+      .then(fail)
       .catch(error => {
-        expect(lifecycle.onResponseError).toHaveBeenCalledWith({
-          error,
+        expect(lifecycle.onRequestFailure).toHaveBeenCalledWith({
           requestId: jasmine.anything()
         });
         // The native parse error message is different based on the browser
         // so we'll just check to parts we control.
-        expect(error.message).toContain("Error parsing server response.\n");
+        expect(error.message).toContain("Unexpected server response.\n");
         expect(error.message).toContain("\nResponse body: badbody");
       });
   });
 
   it("allows components to handle the response", () => {
-    const myresponse = {
+    const myResponse = {
       requestId: "myrequestid",
       handle: [
         {
@@ -220,42 +216,81 @@ describe("createNetwork", () => {
     };
     lifecycle.onResponse.and.callFake(({ response, requestId }) => {
       const cleanResponse = response.toJSON();
-      expect(cleanResponse).toEqual(myresponse);
+      expect(cleanResponse).toEqual(myResponse);
       expect(requestId).toBeDefined();
       return Promise.resolve();
     });
     networkStrategy.and.returnValue(
-      Promise.resolve(JSON.stringify(myresponse))
+      Promise.resolve({
+        status: 200,
+        body: JSON.stringify(myResponse)
+      })
     );
     return network.sendRequest({}).then(() => {
       expect(lifecycle.onResponse).toHaveBeenCalled();
     });
   });
 
-  it("doesn't try to parse the response on a beacon call", () => {
-    networkStrategy.and.returnValue(Promise.resolve("bar"));
-    // a failed promise will fail the test
-    return network.sendRequest({}, { expectsResponse: false });
-  });
+  [429, 500, 599].forEach(status => {
+    it(`retries requests for responses with status code ${status} until success`, () => {
+      const fn = networkStrategy.and.callFake(() => {
+        const result =
+          fn.calls.count() < 3
+            ? { status, body: "Server fault" }
+            : { status: 200, body: JSON.stringify(mockResponse) };
 
-  it("retries failed requests until success", () => {
-    const fn = networkStrategy.and.callFake(() => {
-      return fn.calls.count() < 3
-        ? Promise.reject()
-        : Promise.resolve(JSON.stringify(mockResponse));
+        return Promise.resolve(result);
+      });
+      return network.sendRequest({}).then(() => {
+        expect(networkStrategy).toHaveBeenCalledTimes(3);
+      });
     });
-    return network.sendRequest({}).then(() => {
-      expect(networkStrategy).toHaveBeenCalledTimes(3);
-    });
-  });
 
-  it("retries failed requests until max retries met", () => {
-    networkStrategy.and.returnValue(Promise.reject(new Error("bad thing")));
-    return network.sendRequest({}).catch(error => {
-      expect(networkStrategy).toHaveBeenCalledTimes(4);
-      expect(error.message).toBe(
-        "Network request failed.\nCaused by: bad thing"
+    it(`retries requests for responses with status code ${status} until max retries met`, () => {
+      networkStrategy.and.returnValue(
+        Promise.resolve({ status, body: "Server fault" })
       );
+      return network.sendRequest({}).catch(error => {
+        expect(networkStrategy).toHaveBeenCalledTimes(4);
+        expect(error.message).toBe(
+          `Network request failed.\nCaused by: Unexpected response status code ${status}. Response was: Server fault`
+        );
+      });
+    });
+  });
+
+  [205, 400, 499].forEach(status => {
+    it(`does not retry requests for responses with status code ${status}`, () => {
+      const fn = networkStrategy.and.callFake(() => {
+        const result =
+          fn.calls.count() < 3
+            ? { status, body: "Server fault" }
+            : { status: 200, body: JSON.stringify(mockResponse) };
+
+        return Promise.resolve(result);
+      });
+      return network
+        .sendRequest({})
+        .then(fail)
+        .catch(error => {
+          expect(error.message).toBe(
+            `Network request failed.\nCaused by: Unexpected response status code ${status}. Response was: Server fault`
+          );
+        });
+    });
+  });
+
+  [200, 204].forEach(status => {
+    it(`does not retry requests for responses with status code ${status}`, () => {
+      networkStrategy.and.callFake(() => {
+        return Promise.resolve({
+          status: 200,
+          body: JSON.stringify(mockResponse)
+        });
+      });
+      return network.sendRequest({}).then(() => {
+        expect(networkStrategy).toHaveBeenCalledTimes(1);
+      });
     });
   });
 });

@@ -24,7 +24,7 @@ describe("createLifecycle", () => {
       "onComponentsRegistered",
       "onBeforeEvent",
       "onResponse",
-      "onResponseError",
+      "onRequestFailure",
       "onBeforeDataCollection"
     ].forEach(methodName => {
       expect(lifecycle[methodName]()).toEqual(jasmine.any(Promise));

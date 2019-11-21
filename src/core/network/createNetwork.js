@@ -12,19 +12,24 @@ governing permissions and limitations under the License.
 
 import createPayload from "./createPayload";
 import createResponse from "./createResponse";
-import { executeWithRetry, stackError, uuid } from "../../utils";
+import getResponseStatusType from "./getResponseStatusType";
+import { stackError, uuid } from "../../utils";
 import apiVersion from "../../constants/apiVersion";
 import { ID_THIRD_PARTY_DOMAIN } from "../../constants/domains";
+import { RETRYABLE_ERROR, SUCCESS } from "../../constants/responseStatusType";
 
 export default ({ config, logger, lifecycle, networkStrategy }) => {
   const handleResponse = (requestId, responseBody) => {
     let parsedBody;
 
     try {
+      // One of the cases where the response body is not JSON is when
+      // JAG throws an error. In this case, the response will be plain text
+      // explaining what went wrong.
       parsedBody = JSON.parse(responseBody);
     } catch (e) {
       throw new Error(
-        `Error parsing server response.\n${e}\nResponse body: ${responseBody}`
+        `Unexpected server response.\n${e}\nResponse body: ${responseBody}`
       );
     }
 
@@ -32,6 +37,14 @@ export default ({ config, logger, lifecycle, networkStrategy }) => {
 
     const response = createResponse(parsedBody);
 
+    // TODO Document that onResponse will be called when Konductor
+    // sends a well-formed response even if that response contains
+    // error objects. This is because even when there are error objects
+    // there can be "handle" payloads to act upon. Also document
+    // that onRequestFailure will be called when the network request
+    // itself failed (e.g., no internet connection), when JAG throws an
+    // error (the request never made it to Konductor), or when
+    // Konductor returns a malformed response.
     return lifecycle.onResponse({ response, requestId }).then(() => response);
   };
 
@@ -104,10 +117,29 @@ export default ({ config, logger, lifecycle, networkStrategy }) => {
             );
           }
 
-          return executeWithRetry(
-            () => networkStrategy(url, stringifiedPayload, documentUnloading),
-            3
-          );
+          const executeRequest = (retriesAttempted = 0) => {
+            return networkStrategy(
+              url,
+              stringifiedPayload,
+              documentUnloading
+            ).then(result => {
+              const statusType = getResponseStatusType(result.status);
+
+              if (statusType === SUCCESS) {
+                return result.body;
+              }
+
+              if (statusType === RETRYABLE_ERROR && retriesAttempted < 3) {
+                return executeRequest(retriesAttempted + 1);
+              }
+
+              throw new Error(
+                `Unexpected response status code ${result.status}. Response was: ${result.body}`
+              );
+            });
+          };
+
+          return executeRequest();
         })
         .catch(error => {
           throw stackError("Network request failed.", error);
@@ -122,12 +154,12 @@ export default ({ config, logger, lifecycle, networkStrategy }) => {
           return handleResponsePromise;
         })
         .catch(error => {
-          // The network error that just occurred is more important than
-          // any error that may occur in lifecycle.onResponseError(). For
-          // that reason, we make sure the network error is the one that
-          // bubbles up. We also wait until lifecycle.onResponseError is
+          // The error that we caught is more important than
+          // any error that may have occurred in lifecycle.onResponseError().
+          // For that reason, we make sure the caught error is the one that
+          // bubbles up. We also wait until lifecycle.onRequestFailure is
           // complete before returning, so that any error that may occur
-          // in lifecycle.onResponseError is properly suppressed if the
+          // in lifecycle.onRequestFailure is properly suppressed if the
           // user has errorsEnabled: false in the configuration.
           // We could use finally() here, but just to be safe, we don't,
           // because finally() is only recently supported natively and may
@@ -136,7 +168,7 @@ export default ({ config, logger, lifecycle, networkStrategy }) => {
             throw error;
           };
           return lifecycle
-            .onResponseError({ error, requestId })
+            .onRequestFailure({ requestId })
             .then(throwError, throwError);
         });
     }

@@ -13,37 +13,45 @@ governing permissions and limitations under the License.
 import { flatMap } from "../../utils";
 
 /**
- * Represents a gateway response with the addition to helper methods.
- *
- * @param {Object} respDto The raw JSON response from the edge gateway
- *  - Current schema:
- * {
- *      requestId: {String},
- *      handle: [
- *          { type, payload }
- *      ]
- * }
- *
- * @returns {Object<Response>} A Response object containing:
- *  - `getPayloadsByType`: returns matching fragments of the response by type
- *      - @param {String} type: A string with the current format: <namespace:action>
- *          example: "identity:persist"
+ * Creates a representation of a gateway response with the addition of
+ * helper methods.
+ * @returns Response
  */
-export default (content = { requestId: "", handle: [] }) => {
-  // TODO: Should we freeze the response to prevent change by Components?
-  // Object.freeze(response.handle.map(h => Object.freeze(h)));
+export default (content = {}) => {
+  const { handle = [], errors = [], warnings = [] } = content;
+
+  /**
+   * Response object.
+   * @typedef {Object} Response
+   */
   return {
+    /**
+     * Returns matching fragments of the response by type.
+     * @param {String} type A string with the current format: <namespace:action>
+     *
+     * @example
+     * getPayloadsByType("identity:persist")
+     */
     getPayloadsByType(type) {
-      const { handle = [] } = content;
       return flatMap(
         handle.filter(fragment => fragment.type === type),
         fragment => fragment.payload
       );
     },
+    /**
+     * Returns all errors.
+     */
+    getErrors() {
+      return errors;
+    },
+    /**
+     * Returns all warnings.
+     */
+    getWarnings() {
+      return warnings;
+    },
     toJSON() {
       return content;
     }
-    // TODO: Maybe consider the following API as well?
-    // - getPayloadsByAction
   };
 };

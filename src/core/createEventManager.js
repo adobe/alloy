@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { clone, assignIf, isEmptyObject } from "../utils";
+import { assignIf, isEmptyObject } from "../utils";
 
 export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
   const {
@@ -90,15 +90,31 @@ export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
           });
         })
         .then(response => {
-          const returnData = {
-            requestBody: clone(payload)
-          };
-
-          if (response) {
-            returnData.responseBody = clone(response);
+          if (!response) {
+            return;
           }
 
-          return returnData;
+          const warnings = response.getWarnings();
+          const errors = response.getErrors();
+
+          warnings.forEach(warning => {
+            logger.warn(
+              `Warning received from server: [Code ${warning.code}] ${warning.message}`
+            );
+          });
+
+          if (errors.length) {
+            const errorMessage = errors.reduce((memo, error) => {
+              return `${memo}\n• [Code ${error.code}] ${error.message}`;
+            }, "The server responded with the following errors:");
+            throw new Error(errorMessage);
+          }
+
+          // We don't want to expose the response to the customer, so
+          // we'll stop its propagation at this point. Later, we may wish
+          // to allow the response to propagate out of the event manager
+          // but not let it propagate beyond the components using the event
+          // manager.
         });
     }
   };
