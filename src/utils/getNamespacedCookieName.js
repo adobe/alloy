@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export const CUSTOMER_ID_HASH = "CIDH";
-export const EXPERIENCE_CLOUD_ID = "ECID";
-export const ID_SYNC_TIMESTAMP = "idSyncTimestamp";
-export const ID_SYNC_CONTROL = "idSyncControl";
+import { COOKIE_NAME_PREFIX } from "../constants/cookieDetails";
+import sanitizeOrgIdForCookieName from "./sanitizeOrgIdForCookieName";
+
+export default (orgId, key) =>
+  `${COOKIE_NAME_PREFIX}_${sanitizeOrgIdForCookieName(orgId)}_${key}`;

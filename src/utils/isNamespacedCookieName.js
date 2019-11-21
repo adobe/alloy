@@ -10,22 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default fetch => {
-  return (url, body) => {
-    return fetch(url, {
-      method: "POST",
-      cache: "no-cache",
-      credentials: "include", // To set the cookie header in the request.
-      headers: {
-        "Content-Type": "text/plain; charset=UTF-8"
-      },
-      referrer: "client",
-      body
-    }).then(response => {
-      return response.text().then(responseBody => ({
-        status: response.status,
-        body: responseBody
-      }));
-    });
-  };
-};
+import { COOKIE_NAME_PREFIX } from "../constants/cookieDetails";
+import sanitizeOrgIdForCookieName from "./sanitizeOrgIdForCookieName";
+
+/**
+ * Determines whether a cookie name is namespaced according to the contract
+ * defined by the server.
+ * @param {String} orgId The org ID configured for the Alloy instance.
+ * @param {String} name The cookie name.
+ * @returns {boolean}
+ */
+export default (orgId, name) =>
+  name.indexOf(
+    `${COOKIE_NAME_PREFIX}_${sanitizeOrgIdForCookieName(orgId)}_`
+  ) === 0;

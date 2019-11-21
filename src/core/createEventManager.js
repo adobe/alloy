@@ -11,9 +11,20 @@ governing permissions and limitations under the License.
 */
 
 import { assignIf, isEmptyObject } from "../utils";
+import { ID_THIRD_PARTY_DOMAIN } from "../constants/domains";
 
-export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
+export default ({
+  createEvent,
+  createResponse,
+  optIn,
+  lifecycle,
+  cookieTransfer,
+  network,
+  config,
+  logger
+}) => {
   const {
+    edgeDomain,
     orgId,
     onBeforeEventSend,
     debugEnabled,
@@ -83,11 +94,44 @@ export default ({ createEvent, optIn, lifecycle, network, config, logger }) => {
           return lifecycle.onBeforeDataCollection({ payload });
         })
         .then(() => {
-          return network.sendRequest(payload, {
+          const endpointDomain = payload.shouldUseIdThirdPartyDomain
+            ? ID_THIRD_PARTY_DOMAIN
+            : edgeDomain;
+          cookieTransfer.cookiesToPayload(payload, endpointDomain);
+          return network.sendRequest(payload, endpointDomain, {
             expectsResponse: payload.expectsResponse,
-            documentUnloading: event.isDocumentUnloading,
-            useIdThirdPartyDomain: payload.shouldUseIdThirdPartyDomain
+            documentUnloading: event.isDocumentUnloading
           });
+        })
+        .catch(error => {
+          // The error that we caught is more important than
+          // any error that may have occurred in lifecycle.onResponseError().
+          // For that reason, we make sure the caught error is the one that
+          // bubbles up. We also wait until lifecycle.onRequestFailure is
+          // complete before returning, so that any error that may occur
+          // in lifecycle.onRequestFailure is properly suppressed if the
+          // user has errorsEnabled: false in the configuration.
+          // We could use finally() here, but just to be safe, we don't,
+          // because finally() is only recently supported natively and may
+          // not exist in customer-provided promise polyfills.
+          const throwError = () => {
+            throw error;
+          };
+          return lifecycle.onRequestFailure().then(throwError, throwError);
+        })
+        .then(parsedBody => {
+          const response = createResponse(parsedBody);
+          cookieTransfer.responseToCookies(response);
+
+          // TODO Document that onResponse will be called when Konductor
+          // sends a well-formed response even if that response contains
+          // error objects. This is because even when there are error objects
+          // there can be "handle" payloads to act upon. Also document
+          // that onRequestFailure will be called when the network request
+          // itself failed (e.g., no internet connection), when JAG throws an
+          // error (the request never made it to Konductor), or when
+          // Konductor returns a malformed response.
+          return lifecycle.onResponse({ response }).then(() => response);
         })
         .then(response => {
           if (!response) {

@@ -10,22 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default fetch => {
-  return (url, body) => {
-    return fetch(url, {
-      method: "POST",
-      cache: "no-cache",
-      credentials: "include", // To set the cookie header in the request.
-      headers: {
-        "Content-Type": "text/plain; charset=UTF-8"
-      },
-      referrer: "client",
-      body
-    }).then(response => {
-      return response.text().then(responseBody => ({
-        status: response.status,
-        body: responseBody
-      }));
-    });
-  };
-};
+import isNamespacedCookieName from "../../../../src/utils/isNamespacedCookieName";
+
+describe("isNamespacedCookieName", () => {
+  it("returns true if it's a namespaced cookie name", () => {
+    const result = isNamespacedCookieName(
+      "ABC@CustomOrg",
+      "kndctr_ABC_CustomOrg_foo"
+    );
+    expect(result).toBeTrue();
+  });
+
+  it("returns false if it's not a namespaced cookie name", () => {
+    const result = isNamespacedCookieName(
+      "kndctr_DEF_CustomOrg_foo",
+      "ABC@CustomOrg"
+    );
+    expect(result).toBeFalse();
+  });
+});

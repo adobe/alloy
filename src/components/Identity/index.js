@@ -11,24 +11,18 @@ governing permissions and limitations under the License.
 */
 
 import { boolean, number } from "../../utils/configValidators";
-import createIdSyncs from "./createIdSyncs";
+// import createIdSyncs from "./createIdSyncs";
 
 import createComponent from "./createComponent";
 
-const createIdentity = ({ config, logger, cookieJar, optIn, eventManager }) => {
+const createIdentity = ({ config, logger, optIn, eventManager }) => {
   // We avoid reading the ECID from the cookie right away, because we
   // need to wait for the user to opt in first.
 
-  const idSyncs = createIdSyncs(config, logger, cookieJar);
+  // TODO: Reimplement ID syncs
+  // const idSyncs = createIdSyncs(config, logger, cookieJar);
 
-  return createComponent(
-    idSyncs,
-    config,
-    logger,
-    cookieJar,
-    optIn,
-    eventManager
-  );
+  return createComponent(config, logger, optIn, eventManager);
 };
 
 createIdentity.namespace = "Identity";
@@ -46,10 +40,6 @@ createIdentity.configValidators = {
       .expected("an integer greater than or equal to 0")
   },
   thirdPartyCookiesEnabled: {
-    defaultValue: true,
-    validate: boolean()
-  },
-  idMigrationEnabled: {
     defaultValue: true,
     validate: boolean()
   }

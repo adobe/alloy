@@ -1,27 +1,22 @@
 import createCustomerIds from "./customerIds/createCustomerIds";
-import { defer } from "../../utils";
-import { EXPERIENCE_CLOUD_ID } from "./constants/cookieNames";
-import createMigration from "./createMigration";
+import { defer, cookieJar, getNamespacedCookieName } from "../../utils";
+import { IDENTITY_COOKIE_KEY } from "../../constants/cookieDetails";
 import areThirdPartyCookiesSupported from "../../utils/areThirdPartyCookiesSupported";
 import getBrowser from "../../utils/getBrowser";
 
-const addIdsContext = (payload, ecid) => {
-  payload.addIdentity(EXPERIENCE_CLOUD_ID, {
-    id: ecid
-  });
-};
-
-export default (idSyncs, config, logger, cookieJar, optIn, eventManager) => {
+export default (config, logger, optIn, eventManager) => {
+  const { orgId } = config;
+  const identityCookieName = getNamespacedCookieName(
+    orgId,
+    IDENTITY_COOKIE_KEY
+  );
   let deferredForEcid;
-  let alreadyQueriedForIdSyncs = false;
-  const { idMigrationEnabled, orgId } = config;
-  const migration = createMigration(orgId, idMigrationEnabled);
+  // TODO: Reimplement ID syncs
+  // let alreadyQueriedForIdSyncs = false;
 
   // TODO: Fetch from server if ECID is not available.
   const getEcid = () => {
-    const ecid =
-      cookieJar.get(EXPERIENCE_CLOUD_ID) ||
-      migration.getEcidFromLegacyCookie(cookieJar);
+    const ecid = cookieJar.get(identityCookieName);
     return ecid;
   };
 
@@ -34,7 +29,7 @@ export default (idSyncs, config, logger, cookieJar, optIn, eventManager) => {
   });
   // #endif
 
-  const customerIds = createCustomerIds(cookieJar, eventManager);
+  const customerIds = createCustomerIds(eventManager);
 
   return {
     lifecycle: {
@@ -46,19 +41,20 @@ export default (idSyncs, config, logger, cookieJar, optIn, eventManager) => {
           };
           let sendIdentityQuery = false;
 
-          if (
-            !alreadyQueriedForIdSyncs &&
-            config.idSyncEnabled &&
-            idSyncs.hasExpired()
-          ) {
-            alreadyQueriedForIdSyncs = true;
-            identityQuery.identity.exchange = true;
-            sendIdentityQuery = true;
-
-            if (config.idSyncContainerId !== undefined) {
-              identityQuery.identity.containerId = config.idSyncContainerId;
-            }
-          }
+          // TODO: Reimplement ID syncs
+          // if (
+          //   !alreadyQueriedForIdSyncs &&
+          //   config.idSyncEnabled &&
+          //   idSyncs.hasExpired()
+          // ) {
+          //   alreadyQueriedForIdSyncs = true;
+          //   identityQuery.identity.exchange = true;
+          //   sendIdentityQuery = true;
+          //
+          //   if (config.idSyncContainerId !== undefined) {
+          //     identityQuery.identity.containerId = config.idSyncContainerId;
+          //   }
+          // }
 
           if (!config.thirdPartyCookiesEnabled) {
             identityQuery.identity.thirdPartyCookiesEnabled = false;
@@ -78,50 +74,46 @@ export default (idSyncs, config, logger, cookieJar, optIn, eventManager) => {
 
           let promise;
 
-          if (ecid) {
-            addIdsContext(payload, ecid);
-          } else if (deferredForEcid) {
-            // We don't have an ECID, but the first request has gone out to
-            // fetch it. We must wait for the response to come back with the
-            // ECID before we can apply it to this payload.
-            logger.log("Delaying request while retrieving ECID from server.");
-            promise = deferredForEcid.promise.then(() => {
-              logger.log("Resuming previously delayed request.");
-              addIdsContext(payload, getEcid());
-            });
-          } else {
-            // We don't have an ECID and no request has gone out to fetch it.
-            // We won't apply the ECID to this request, but we'll set up a
-            // promise so that future requests can know when the ECID has returned.
-            deferredForEcid = defer();
-            payload.expectResponse();
-            if (
-              config.thirdPartyCookiesEnabled &&
-              areThirdPartyCookiesSupported(getBrowser(window))
-            ) {
-              payload.useIdThirdPartyDomain();
+          if (!ecid) {
+            if (deferredForEcid) {
+              // We don't have an ECID, but the first request has gone out to
+              // fetch it. We must wait for the response to come back with the
+              // ECID before we can apply it to this payload.
+              logger.log("Delaying request while retrieving ECID from server.");
+              promise = deferredForEcid.promise.then(() => {
+                logger.log("Resuming previously delayed request.");
+              });
+            } else {
+              // We don't have an ECID and no request has gone out to fetch it.
+              // We won't apply the ECID to this request, but we'll set up a
+              // promise so that future requests can know when the ECID has returned.
+              deferredForEcid = defer();
+              payload.expectResponse();
+              if (
+                config.thirdPartyCookiesEnabled &&
+                areThirdPartyCookiesSupported(getBrowser(window))
+              ) {
+                payload.useIdThirdPartyDomain();
+              }
             }
           }
+
           customerIds.addToPayload(payload);
           return promise;
         });
       },
 
-      // Waiting for opt-in because we'll be writing the ECID to a cookie
-      onResponse({ response }) {
+      // Waiting for opt-in because we'll be reading the ECID from a cookie
+      onResponse() {
         return optIn.whenOptedIn().then(() => {
-          const ecidPayloads = response.getPayloadsByType("identity:persist");
-
-          if (ecidPayloads.length > 0) {
-            const ecid = ecidPayloads[0].id;
-            cookieJar.set(EXPERIENCE_CLOUD_ID, ecid);
-            migration.createAmcvCookie(ecid);
+          if (getEcid()) {
             if (deferredForEcid) {
               deferredForEcid.resolve();
             }
           }
 
-          idSyncs.process(response.getPayloadsByType("identity:exchange"));
+          // TODO: Reimplement ID syncs
+          // idSyncs.process(response.getPayloadsByType("identity:exchange"));
         });
       }
     },

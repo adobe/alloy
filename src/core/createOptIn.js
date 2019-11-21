@@ -11,10 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { defer } from "../utils";
-import cookieDetails from "../constants/cookieDetails";
-
-// OptIn uses a different cookie than the rest of Alloy.
-const { ALLOY_OPT_IN_COOKIE_NAME } = cookieDetails;
+import { OPT_IN_COOKIE_NAME } from "../constants/cookieDetails";
 
 // The user has opted into all purposes.
 const ALL = "all";
@@ -35,7 +32,7 @@ export default ({
   let purposes = ALL;
 
   const cookieName = createOrgNamespacedCookieName(
-    ALLOY_OPT_IN_COOKIE_NAME,
+    OPT_IN_COOKIE_NAME,
     config.orgId
   );
 

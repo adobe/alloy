@@ -10,22 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default fetch => {
-  return (url, body) => {
-    return fetch(url, {
-      method: "POST",
-      cache: "no-cache",
-      credentials: "include", // To set the cookie header in the request.
-      headers: {
-        "Content-Type": "text/plain; charset=UTF-8"
-      },
-      referrer: "client",
-      body
-    }).then(response => {
-      return response.text().then(responseBody => ({
-        status: response.status,
-        body: responseBody
-      }));
-    });
-  };
-};
+/**
+ * Whether a string ends with the characters of a specified string
+ * @param {String} str The string to search within.
+ * @param {String} suffix The string to search for.
+ * @returns {boolean}
+ */
+export default (str, suffix) => str.substr(-suffix.length) === suffix;
