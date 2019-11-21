@@ -10,5 +10,44 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
 import attachClickActivityCollector from "../../../../../src/components/ActivityCollector/attachClickActivityCollector";
+
+describe("ActivityCollector::attachClickActivityCollector", () => {
+  const cfg = {};
+  const mockEventManager = {
+    createEvent: () => {
+      return {
+        isEmpty: () => true
+      };
+    }
+  };
+  const mockLifeCycle = {
+    onClick: () => {
+      return Promise.resolve();
+    }
+  };
+  let clickHandler;
+  beforeEach(() => {
+    cfg.clickCollectionEnabled = true;
+    // eslint-disable-next-line no-unused-vars
+    spyOn(document, "addEventListener").and.callFake((name, handler, type) => {
+      clickHandler = handler;
+    });
+  });
+
+  it("Attaches click handler if clickCollectionEnabled is set to true", () => {
+    attachClickActivityCollector(cfg, mockEventManager, mockLifeCycle);
+    expect(document.addEventListener).toHaveBeenCalled();
+  });
+  it("Does not attach click handler if clickCollectionEnabled is set to false", () => {
+    cfg.clickCollectionEnabled = false;
+    attachClickActivityCollector(cfg, mockEventManager, mockLifeCycle);
+    expect(document.addEventListener).not.toHaveBeenCalled();
+  });
+  it("Publishes onClick lifecycle events at clicks when clickCollectionEnabled is set to true", () => {
+    spyOn(mockLifeCycle, "onClick").and.callThrough();
+    attachClickActivityCollector(cfg, mockEventManager, mockLifeCycle);
+    clickHandler({});
+    expect(mockLifeCycle.onClick).toHaveBeenCalled();
+  });
+});
