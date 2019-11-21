@@ -4,10 +4,10 @@ const createRequestLogger = endpoint => {
   return RequestLogger(endpoint, {
     logRequestHeaders: true,
     logRequestBody: true,
-    stringifyRequestBody: true,
     logResponseBody: true,
-    logResponseHeaders: true,
-    stringifyResponseBody: true
+    stringifyResponseBody: false,
+    stringifyRequestBody: true,
+    logResponseHeaders: true
   });
 };
 

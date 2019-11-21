@@ -1,18 +1,14 @@
 import { t, Selector } from "testcafe";
 import createNetworkLogger from "../../src/networkLogger";
 import { responseStatus } from "../../src/assertions/index";
-import testServerUrl from "../../src/constants/testServerUrl";
 
-const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloySdk.html`;
+const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html`;
 
 const networkLogger = createNetworkLogger();
 
 fixture`C2581: When ECID not available on client, allow the first request to be sent while queuing subsequent requests`
   .page(urlCollector)
-  .requestHooks(
-    networkLogger.adobedcEndpointLogs,
-    networkLogger.dpmEndpointLogs
-  );
+  .requestHooks(networkLogger.adobedcEndpointLogs);
 
 test.meta({
   ID: "C2581",
@@ -20,14 +16,13 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Regression: Load page with link. Click link. Verify no request sent.", async () => {
+test("Regression: Queue requests until we receive an ECID.", async () => {
   await t.click(Selector("#debugEnabled-button"));
   await t.click(Selector("#event-button"));
   await t.click(Selector("#event-button"));
   await t.click(Selector("#event-button"));
 
   await responseStatus(networkLogger.adobedcEndpointLogs.requests, 200);
-
   await t.expect(networkLogger.adobedcEndpointLogs.requests.length).eql(1);
-  // await t.expect(gatewayRequest).eql(undefined);
+  // Unable to inflate the response buffer. Second part of the test is currently on hold.
 });
