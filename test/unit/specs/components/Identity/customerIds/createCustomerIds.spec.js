@@ -12,7 +12,7 @@ describe("Identity::createCustomerIds", () => {
       Email_LC_SHA256: {
         id: "me@gmail.com",
         authState: "ambiguous",
-        hash: true
+        hashEnabled: true
       },
       crm: {
         id: "1234",
