@@ -12,7 +12,7 @@ export default (cookieJar, eventManager) => {
 
   const hash = (originalIds, normalizedIds) => {
     const idNames = Object.keys(normalizedIds);
-    const idsToHash = idNames.filter(idName => originalIds[idName].hash);
+    const idsToHash = idNames.filter(idName => originalIds[idName].hashEnabled);
     const idHashPromises = idsToHash.map(id =>
       convertStringToSha256Buffer(normalizedIds[id].id)
     );
