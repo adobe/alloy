@@ -50,9 +50,7 @@ export default (window, config) => {
     }
 
     if (isValidLink) {
-      if (linkType === "exit") {
-        event.documentUnloading();
-      }
+      event.documentUnloading();
       event.mergeXdm({
         eventType: "web.webinteraction.linkClicks",
         web: {
