@@ -14,15 +14,13 @@ import webFactory from "./webFactory";
 import deviceFactory from "./deviceFactory";
 import environmentFactory from "./environmentFactory";
 import placeContextFactory from "./placeContextFactory";
-import topFrameSetFactory from "./topFrameSetFactory";
 import timestampFactory from "./timestampFactory";
 import implementationDetailsFactory from "./implementationDetailsFactory";
 import libraryVersion from "../../constants/libraryVersion";
 import createComponent from "./createComponent";
 import { arrayOf, string } from "../../utils/configValidators";
 
-const topFrameSetProvider = topFrameSetFactory(window);
-const web = webFactory(window, topFrameSetProvider);
+const web = webFactory(window);
 const device = deviceFactory(window);
 const environment = environmentFactory(window);
 const placeContext = placeContextFactory(() => new Date());

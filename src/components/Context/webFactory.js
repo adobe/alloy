@@ -12,18 +12,14 @@ governing permissions and limitations under the License.
 
 import { deepAssign } from "../../utils";
 
-export default (window, topFrameSetProvider) => {
-  let topFrameSet;
-
+export default window => {
   return xdm => {
-    topFrameSet = topFrameSet || topFrameSetProvider();
-
     const web = {
       webPageDetails: {
         URL: window.location.href || window.location
       },
       webReferrer: {
-        URL: topFrameSet.document.referrer
+        URL: window.top.document.referrer
       }
     };
     deepAssign(xdm, { web });
