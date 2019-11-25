@@ -114,7 +114,7 @@ describe("createLogController", () => {
     expect(getDebugEnabled()).toBe(true);
   });
 
-  it("does not change debugEnabled from config if previously changed from something other than config", () => {
+  it("does not change debugEnabled from config if previously changed from something other than config on same page load", () => {
     const logController = createLogController({
       console,
       locationSearch,
@@ -127,6 +127,21 @@ describe("createLogController", () => {
     logController.setDebugEnabled(false, { fromConfig: true });
     expect(sessionStorage.setItem).toHaveBeenCalledWith("debug", "true");
     expect(sessionStorage.setItem).not.toHaveBeenCalledWith("debug", "false");
+    expect(getDebugEnabled()).toBe(true);
+  });
+
+  it("does not change debugEnabled from config if previously changed from something other than config on previous page load", () => {
+    sessionStorage.getItem = () => "true";
+    const logController = createLogController({
+      console,
+      locationSearch,
+      createLogger,
+      instanceNamespace,
+      createNamespacedStorage
+    });
+
+    logController.setDebugEnabled(false, { fromConfig: true });
+    expect(sessionStorage.setItem).not.toHaveBeenCalled();
     expect(getDebugEnabled()).toBe(true);
   });
 

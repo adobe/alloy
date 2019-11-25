@@ -24,8 +24,9 @@ export default ({
   const parsedQueryString = queryString.parse(locationSearch);
   const storage = createNamespacedStorage(`instance.${instanceNamespace}.`);
 
-  let debugEnabled = storage.session.getItem("debug") === "true";
-  let debugEnabledWritableFromConfig = true;
+  const debugSessionValue = storage.session.getItem("debug");
+  let debugEnabled = debugSessionValue === "true";
+  let debugEnabledWritableFromConfig = debugSessionValue === null;
 
   const getDebugEnabled = () => debugEnabled;
   const setDebugEnabled = (value, { fromConfig }) => {
