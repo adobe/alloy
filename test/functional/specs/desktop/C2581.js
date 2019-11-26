@@ -1,5 +1,6 @@
 import { t, Selector } from "testcafe";
 import createNetworkLogger from "../../src/networkLogger";
+import getBody from "../../src/networkLogger/getBody";
 import { responseStatus } from "../../src/assertions/index";
 
 const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html`;
@@ -23,6 +24,7 @@ test("Regression: Queue requests until we receive an ECID.", async () => {
   await t.click(Selector("#event-button"));
 
   await responseStatus(networkLogger.adobedcEndpointLogs.requests, 200);
+  console.log(getBody(networkLogger.adobedcEndpointLogs.requests[0]));
   await t.expect(networkLogger.adobedcEndpointLogs.requests.length).eql(1);
   // Unable to inflate the response buffer. Second part of the test is currently on hold.
 });
