@@ -4,7 +4,7 @@ import { responseStatus } from "../../src/assertions/index";
 
 const networkLogger = createNetworkLogger();
 
-fixture`C2560`
+fixture`C2560: Global function named alloy is accessible.`
   .page(gatewayDomain)
   .requestHooks(
     networkLogger.gatewayEndpointLogs,

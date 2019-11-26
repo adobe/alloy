@@ -3,7 +3,9 @@ import testServerUrl from "../../src/constants/testServerUrl";
 
 const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloySdk.html`;
 
-fixture`C2585`.page(urlCollector);
+fixture`C2585: Throws error when configure is not the first command executed.`.page(
+  urlCollector
+);
 
 test.meta({
   ID: "C2585",

@@ -2,7 +2,9 @@ import { Selector } from "testcafe";
 
 const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html?alloy_debug=true`;
 
-fixture`C2586`.page(urlCollector);
+fixture`C2586: Toggle logging through the querystring parameter.`.page(
+  urlCollector
+);
 
 test.meta({
   ID: "C2586",
@@ -16,7 +18,7 @@ test("Regression: Toggle logging through the querystring parameter.", async t =>
   await t.expect(log).match(/The library must be configured first./);
 });
 
-test("Regression: Toggle logging through the querystring parameter.", async t => {
+test("Regression: Set logging to false through querystring parameter..", async t => {
   await t.navigateTo(
     "http://127.0.0.1:8080/test/functional/sandbox/html/bogusCommand.html?alloy_debug=false"
   );

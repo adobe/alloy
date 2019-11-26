@@ -2,7 +2,9 @@ import testServerUrl from "../../src/constants/testServerUrl";
 
 const urlCollector = `${testServerUrl}/test/functional/sandbox/html/bogusCommand.html`;
 
-fixture`C2587`.page(urlCollector);
+fixture`C2587: Throw error when executing command that doesn't exist.`.page(
+  urlCollector
+);
 
 test.meta({
   ID: "C2587",
