@@ -24,7 +24,11 @@ test("Regression: Queue requests until we receive an ECID.", async () => {
   await t.click(Selector("#event-button"));
 
   await responseStatus(networkLogger.adobedcEndpointLogs.requests, 200);
-  console.log(getBody(networkLogger.adobedcEndpointLogs.requests[0]));
+
   await t.expect(networkLogger.adobedcEndpointLogs.requests.length).eql(1);
-  // Unable to inflate the response buffer. Second part of the test is currently on hold.
+
+  const ecidResponse = getBody(networkLogger.adobedcEndpointLogs.requests[0]);
+
+  const stringifyResponse = JSON.stringify(ecidResponse);
+  await t.expect(stringifyResponse).contains("ecid");
 });
