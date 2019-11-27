@@ -54,7 +54,7 @@ export default (window, config) => {
       event.mergeXdm({
         eventType: "web.webinteraction.linkClicks",
         web: {
-          webinteraction: {
+          webInteraction: {
             name: linkName,
             type: linkType,
             URL: linkUrl,
