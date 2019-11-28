@@ -14,21 +14,7 @@ export default (config, logger, optIn, eventManager) => {
   // TODO: Reimplement ID syncs
   // let alreadyQueriedForIdSyncs = false;
 
-  // TODO: Fetch from server if ECID is not available.
-  const getEcid = () => {
-    const ecid = cookieJar.get(identityCookieName);
-    return ecid;
-  };
-
-  // #if _REACTOR
-  // This is a way for the ECID data element in the Reactor extension
-  // to get the ECID synchronously since data elements are required
-  // to be synchronous.
-  config.reactorRegisterGetEcid(() => {
-    return optIn.isOptedIn() ? getEcid() : undefined;
-  });
-  // #endif
-
+  const hasEcid = () => Boolean(cookieJar.get(identityCookieName));
   const customerIds = createCustomerIds(eventManager);
 
   return {
@@ -70,11 +56,9 @@ export default (config, logger, optIn, eventManager) => {
       // TO-DOCUMENT: We wait for ECID before trigger any events.
       onBeforeDataCollection({ payload }) {
         return optIn.whenOptedIn().then(() => {
-          const ecid = getEcid();
-
           let promise;
 
-          if (!ecid) {
+          if (!hasEcid()) {
             if (deferredForEcid) {
               // We don't have an ECID, but the first request has gone out to
               // fetch it. We must wait for the response to come back with the
@@ -106,10 +90,8 @@ export default (config, logger, optIn, eventManager) => {
       // Waiting for opt-in because we'll be reading the ECID from a cookie
       onResponse() {
         return optIn.whenOptedIn().then(() => {
-          if (getEcid()) {
-            if (deferredForEcid) {
-              deferredForEcid.resolve();
-            }
+          if (deferredForEcid && hasEcid()) {
+            deferredForEcid.resolve();
           }
 
           // TODO: Reimplement ID syncs
@@ -118,9 +100,6 @@ export default (config, logger, optIn, eventManager) => {
       }
     },
     commands: {
-      getEcid() {
-        return optIn.whenOptedIn().then(getEcid);
-      },
       setCustomerIds(options) {
         return optIn.whenOptedIn().then(() => customerIds.sync(options));
       }
