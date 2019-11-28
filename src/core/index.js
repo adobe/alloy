@@ -123,7 +123,6 @@ if (instanceNamespaces) {
           return {
             config,
             optIn,
-            network,
             eventManager,
             logger: logController.createComponentLogger(componentAbbreviation)
           };
