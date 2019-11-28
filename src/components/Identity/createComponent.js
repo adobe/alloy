@@ -73,6 +73,10 @@ export default (config, logger, optIn, eventManager) => {
               // promise so that future requests can know when the ECID has returned.
               deferredForEcid = defer();
               payload.expectResponse();
+              // If third-party cookies are enabled by the customer and
+              // supported by the browser, we will send the request to a
+              // a third-party domain that allows for more accurate
+              // identification of the user through use of a third-party cookie.
               if (
                 config.thirdPartyCookiesEnabled &&
                 areThirdPartyCookiesSupported(getBrowser(window))
