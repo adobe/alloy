@@ -3,15 +3,14 @@ sudo: required
 language:
 - node_js
 node_js:
-- '10'
+- 'stable'
 install:
 - npm i -g npm
-- npm install -g allure-commandline
+- npm i -g testcafe
 cache:
   directories:
   - node_modules
 addons:
-  sauce_connect: true
   firefox: latest
   apt:
     sources:
@@ -24,19 +23,14 @@ services:
 - xvfb
 script:
 - npm install
-- npm run build
-- npm run test
+- npm run build:prod
+- npm run functional:ci
 - npm run test:saucelabs
-- npm run functional
 - npm run checkbundlesize
+
 notifications:
-  slack:
-    secure: WmlaV3SmsMF5h+47uN+G0jQLT3Ja1FQ9q1tW1bGTPAY/UDwp18qVgBeOzo4MaF9ISvcdk1rEK73xhlvdXrymShQKezFlx3W/ePBYKnGyBC8FuSoQEvb+GUNBwt1qzLg3CrHsdcOxGJxZg6UBWp7uBywe4cFbY5oQDOYwVkhrZVHxaJ9KR4lR0Dk/9vDLSVUnLtYiZxQfyg+WZIcCowAhIasp74ZdSFq9Bmamv3b/vdWQRuJRtIbmxjFKvm9T4zCHPAcRFNQ/yzAL7UINVEE8JF1ejIbdl3lVKkKCrMp8L8d7hAZGVClU9Vg3UQ+NK46eAC+qMnY5KPoKkrCsxBqUJ8RIp+D4NLTuYC5ItgUEsb9FTtDib/4XVHXnbLWVLQ+d1ySIVZvnVd/Uk+HkkYAEWs1ZFa+LM7vx0j4qkcoOZY0DTTGsO1D/dBnSiRlBbIuXDbTaAvtQoMxREf4Tu/IzRf0+QR0V/aR9sV61DXFeJdjbsEhfUrryY4DENCwRbhuqpNyI/of/YpRakXjtiVF89hs9XiXzBecfj6F1Hvl/5AHFr/Xa6UEXx/Q+DLvOSOIFAfgsLQA4f+crWz0DQpzGR8kNOKQ3H8m+BXHS/VOf1AmKZAQbPYyaJp/6Lg0jYNzpwdgw6hoYwNky2gAzZ2P1NxUS6FX1OpsvFkE5MyHnHiw=
+  slack: adobedx:AlI4WB2ojGDcqsBEVZ1EGsCR
+  
 before_install:
-- openssl aes-256-cbc -K $encrypted_b80eb6f5caca_key -iv $encrypted_b80eb6f5caca_iv
-  -in deploy_key.enc -out ./deploy_key -d
-- eval "$(ssh-agent -s)"
-- chmod 600 ./deploy_key
-- echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-- ssh-add ./deploy_key
-- ssh -i ./deploy_key root@138.68.163.126 pwd
+- stty cols 80
+
