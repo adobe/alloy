@@ -32,7 +32,6 @@ const createActivityCollector = ({ config, eventManager }) => {
 };
 
 createActivityCollector.namespace = "ActivityCollector";
-createActivityCollector.abbreviation = "AC";
 createActivityCollector.configValidators = createConfigValidators();
 
 export default createActivityCollector;

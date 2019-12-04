@@ -4,15 +4,13 @@ import { IDENTITY_COOKIE_KEY } from "../../constants/cookieDetails";
 import areThirdPartyCookiesSupported from "../../utils/areThirdPartyCookiesSupported";
 import getBrowser from "../../utils/getBrowser";
 
-export default (config, logger, optIn, eventManager) => {
+export default (processIdSyncs, config, logger, optIn, eventManager) => {
   const { orgId } = config;
   const identityCookieName = getNamespacedCookieName(
     orgId,
     IDENTITY_COOKIE_KEY
   );
   let deferredForEcid;
-  // TODO: Reimplement ID syncs
-  // let alreadyQueriedForIdSyncs = false;
 
   const hasEcid = () => Boolean(cookieJar.get(identityCookieName));
   const customerIds = createCustomerIds(eventManager);
@@ -27,20 +25,13 @@ export default (config, logger, optIn, eventManager) => {
           };
           let sendIdentityQuery = false;
 
-          // TODO: Reimplement ID syncs
-          // if (
-          //   !alreadyQueriedForIdSyncs &&
-          //   config.idSyncEnabled &&
-          //   idSyncs.hasExpired()
-          // ) {
-          //   alreadyQueriedForIdSyncs = true;
-          //   identityQuery.identity.exchange = true;
-          //   sendIdentityQuery = true;
-          //
-          //   if (config.idSyncContainerId !== undefined) {
-          //     identityQuery.identity.containerId = config.idSyncContainerId;
-          //   }
-          // }
+          // TODO: Are these things being moved to the Konductor/config service?
+          if (config.idSyncEnabled) {
+            identityQuery.identity.exchange = true;
+            if (config.idSyncContainerId !== undefined) {
+              identityQuery.identity.containerId = config.idSyncContainerId;
+            }
+          }
 
           if (!config.thirdPartyCookiesEnabled) {
             identityQuery.identity.thirdPartyCookiesEnabled = false;
@@ -92,14 +83,16 @@ export default (config, logger, optIn, eventManager) => {
       },
 
       // Waiting for opt-in because we'll be reading the ECID from a cookie
-      onResponse() {
+      onResponse({ response }) {
         return optIn.whenOptedIn().then(() => {
           if (deferredForEcid && hasEcid()) {
             deferredForEcid.resolve();
           }
 
-          // TODO: Reimplement ID syncs
-          // idSyncs.process(response.getPayloadsByType("identity:exchange"));
+          return processIdSyncs(
+            response.getPayloadsByType("identity:exchange"),
+            logger
+          );
         });
       }
     },

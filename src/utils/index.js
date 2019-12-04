@@ -28,8 +28,10 @@ export { default as defer } from "./defer";
 export { default as deepAssign } from "./deepAssign";
 export { default as endsWith } from "./endsWith";
 export { default as find } from "./find";
-export { default as fireDestinations } from "./fireDestinations";
 export { default as fireImage } from "./fireImage";
+export {
+  default as fireReferrerHideableImage
+} from "./fireReferrerHideableImage";
 export { default as flatMap } from "./flatMap";
 export { default as getApexDomain } from "./getApexDomain";
 export { default as getLastArrayItems } from "./getLastArrayItems";

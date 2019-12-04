@@ -36,23 +36,21 @@ describe("initializeComponents", () => {
       .createSpy()
       .and.returnValue(componentByNamespace.Comp1);
     componentCreator1.namespace = "Comp1";
-    componentCreator1.abbreviation = "c1";
     const componentCreator2 = jasmine
       .createSpy()
       .and.returnValue(componentByNamespace.Comp2);
     componentCreator2.namespace = "Comp2";
-    componentCreator2.abbreviation = "c2";
     componentCreators = [componentCreator1, componentCreator2];
 
-    getImmediatelyAvailableTools = componentAbbreviation => {
+    getImmediatelyAvailableTools = componentNamespace => {
       return {
         tool1: {
           name: "tool1",
-          componentAbbreviation
+          componentNamespace
         },
         tool2: {
           name: "tool2",
-          componentAbbreviation
+          componentNamespace
         }
       };
     };
@@ -71,11 +69,11 @@ describe("initializeComponents", () => {
       expect(componentCreator).toHaveBeenCalledWith({
         tool1: {
           name: "tool1",
-          componentAbbreviation: componentCreator.abbreviation
+          componentNamespace: componentCreator.namespace
         },
         tool2: {
           name: "tool2",
-          componentAbbreviation: componentCreator.abbreviation
+          componentNamespace: componentCreator.namespace
         }
       });
       expect(componentRegistry.register).toHaveBeenCalledWith(

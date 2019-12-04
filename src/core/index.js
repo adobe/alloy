@@ -119,12 +119,12 @@ if (instanceNamespaces) {
         componentCreators,
         lifecycle,
         componentRegistry,
-        getImmediatelyAvailableTools(componentAbbreviation) {
+        getImmediatelyAvailableTools(componentNamespace) {
           return {
             config,
             optIn,
             eventManager,
-            logger: logController.createComponentLogger(componentAbbreviation)
+            logger: logController.createComponentLogger(componentNamespace)
           };
         }
       });

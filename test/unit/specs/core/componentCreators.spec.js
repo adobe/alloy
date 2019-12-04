@@ -18,7 +18,6 @@ describe("componentCreators", () => {
     componentCreators.forEach(componentCreator => {
       expect(componentCreator).toEqual(jasmine.any(Function));
       expect(componentCreator.namespace).toEqual(jasmine.any(String));
-      expect(componentCreator.abbreviation).toEqual(jasmine.any(String));
 
       if (componentCreator.configValidators) {
         expect(componentCreator.configValidators).toEqual(jasmine.any(Object));
