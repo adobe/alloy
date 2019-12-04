@@ -33,7 +33,11 @@ describe("createCookieTransfer", () => {
         apexDomain
       });
       cookieTransfer.cookiesToPayload(payload, "edge.example.com");
-      expect(payload.mergeMeta).not.toHaveBeenCalled();
+      expect(payload.mergeMeta).toHaveBeenCalledWith({
+        state: {
+          domain: apexDomain
+        }
+      });
     });
 
     it("transfers eligible cookies to payload", () => {
@@ -49,30 +53,20 @@ describe("createCookieTransfer", () => {
       });
       cookieTransfer.cookiesToPayload(payload, endpointDomain);
       expect(payload.mergeMeta).toHaveBeenCalledWith({
-        state: [
-          {
-            key: "kndctr_ABC_CustomOrg_identity",
-            value: "XYZ@CustomOrg"
-          },
-          {
-            key: "kndctr_ABC_CustomOrg_optIn",
-            value: "all"
-          }
-        ]
+        state: {
+          domain: apexDomain,
+          entries: [
+            {
+              key: "kndctr_ABC_CustomOrg_identity",
+              value: "XYZ@CustomOrg"
+            },
+            {
+              key: "kndctr_ABC_CustomOrg_optIn",
+              value: "all"
+            }
+          ]
+        }
       });
-    });
-
-    it("does not add state to payload if no eligible cookies found", () => {
-      cookieJar.get.and.returnValue({
-        ineligible_cookie: "foo"
-      });
-      cookieTransfer = createCookieTransfer({
-        cookieJar,
-        orgId,
-        apexDomain
-      });
-      cookieTransfer.cookiesToPayload(payload, endpointDomain);
-      expect(payload.mergeMeta).not.toHaveBeenCalled();
     });
   });
 

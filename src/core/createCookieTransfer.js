@@ -29,39 +29,39 @@ export default ({ cookieJar, orgId, apexDomain }) => {
     cookiesToPayload(payload, endpointDomain) {
       const isEndpointFirstParty = endsWith(endpointDomain, apexDomain);
 
+      const state = {
+        domain: apexDomain
+      };
+
       // If the endpoint is first-party, there's no need to transfer cookies
       // to the payload since they'll be automatically passed through cookie
       // headers.
-      if (isEndpointFirstParty) {
-        return;
+      if (!isEndpointFirstParty) {
+        const cookies = cookieJar.get();
+
+        state.entries = Object.keys(cookies)
+          .filter(name => {
+            // We have a contract with the server that we will pass
+            // all cookies whose names are namespaced according to the
+            // logic in isNamespacedCookieName as well as any legacy
+            // cookie names (so that the server can handle migrating
+            // identities on websites previously using Visitor.js)
+            return (
+              isNamespacedCookieName(orgId, name) ||
+              includes(legacyCookieNames, name)
+            );
+          })
+          .map(qualifyingCookieName => {
+            return {
+              key: qualifyingCookieName,
+              value: cookies[qualifyingCookieName]
+            };
+          });
       }
 
-      const cookies = cookieJar.get();
-
-      const state = Object.keys(cookies)
-        .filter(name => {
-          // We have a contract with the server that we will pass
-          // all cookies whose names are namespaced according to the
-          // logic in isNamespacedCookieName as well as any legacy
-          // cookie names (so that the server can handle migrating
-          // identities on websites previously using Visitor.js)
-          return (
-            isNamespacedCookieName(orgId, name) ||
-            includes(legacyCookieNames, name)
-          );
-        })
-        .map(qualifyingCookieName => {
-          return {
-            key: qualifyingCookieName,
-            value: cookies[qualifyingCookieName]
-          };
-        });
-
-      if (state.length) {
-        payload.mergeMeta({
-          state
-        });
-      }
+      payload.mergeMeta({
+        state
+      });
     },
     /**
      * When receiving from a third-party endpoint, the endpoint won't be able to
