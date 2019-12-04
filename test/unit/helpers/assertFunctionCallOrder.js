@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 /**
  * Asserts that functions were called in a particular order.
- * @param {Array} orderedFunctions The arrey of functions in the order
+ * @param {Array} orderedFunctions The array of functions in the order
  * they should have been called.
  */
 export default orderedFunctions => {

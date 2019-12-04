@@ -1,7 +1,11 @@
 import createCustomerIds from "./customerIds/createCustomerIds";
-import { defer, cookieJar, getNamespacedCookieName } from "../../utils";
+import {
+  defer,
+  cookieJar,
+  getNamespacedCookieName,
+  areThirdPartyCookiesSupportedByDefault
+} from "../../utils";
 import { IDENTITY_COOKIE_KEY } from "../../constants/cookieDetails";
-import areThirdPartyCookiesSupported from "../../utils/areThirdPartyCookiesSupported";
 import getBrowser from "../../utils/getBrowser";
 
 export default (processIdSyncs, config, logger, optIn, eventManager) => {
@@ -70,7 +74,7 @@ export default (processIdSyncs, config, logger, optIn, eventManager) => {
               // identification of the user through use of a third-party cookie.
               if (
                 config.thirdPartyCookiesEnabled &&
-                areThirdPartyCookiesSupported(getBrowser(window))
+                areThirdPartyCookiesSupportedByDefault(getBrowser(window))
               ) {
                 payload.useIdThirdPartyDomain();
               }

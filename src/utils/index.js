@@ -13,6 +13,9 @@ governing permissions and limitations under the License.
 /* eslint-disable import/prefer-default-export */
 
 // Please keep in alphabetical order.
+export {
+  default as areThirdPartyCookiesSupportedByDefault
+} from "./areThirdPartyCookiesSupportedByDefault";
 export { default as assign } from "./assign";
 export { default as assignIf } from "./assignIf";
 export { default as clone } from "./clone";
