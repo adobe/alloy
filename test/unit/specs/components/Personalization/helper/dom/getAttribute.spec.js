@@ -12,3 +12,24 @@ governing permissions and limitations under the License.
 
 // eslint-disable-next-line no-unused-vars
 import getAttribute from "../../../../../../../src/components/Personalization/helper/dom/getAttribute";
+import createFragment from "../../../../../../../src/components/Personalization/helper/dom/createFragment";
+
+describe("Personalization::helper::dom", () => {
+  it("should get the element attribute", () => {
+    const element = createFragment(`<div id="foo">foo</div>`);
+    const name = "id";
+    const result = getAttribute(element.firstElementChild, name);
+
+    expect(result).toEqual("foo");
+  });
+});
+
+describe("Personalization::helper::dom", () => {
+  it("the element attribute should be null", () => {
+    const element = createFragment(`<div id="foo">foo</div>`);
+    const name = "title";
+    const result = getAttribute(element.firstElementChild, name);
+
+    expect(result).toBeNull();
+  });
+});
