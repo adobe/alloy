@@ -10,5 +10,5 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export const EDGE_DOMAIN = "beta.adobedc.net";
+export const EDGE_DOMAIN = "edge.adobedc.net";
 export const ID_THIRD_PARTY_DOMAIN = "adobedc.demdex.net";
