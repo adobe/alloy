@@ -30,6 +30,13 @@ script:
 
 notifications:
   slack: adobedx:AlI4WB2ojGDcqsBEVZ1EGsCR
+  email:
+  recipients:
+    - mowla@adobe.com
+    - khoury@adobe.com
+    - aahardy@adobe.com
+  on_success: always
+  on_failure: always
   
 before_install:
 - stty cols 80
