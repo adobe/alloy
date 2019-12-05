@@ -42,7 +42,6 @@ const processCookies = destinations => {
     dest => dest.type === "cookie"
   );
 
-  // TODO: Konductor might have to set those if CNAME provided?
   cookieDestinations.forEach(dest => {
     const { name, value, domain, ttlDays } = dest.spec;
     cookieJar.set(name, value || "", {

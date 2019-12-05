@@ -10,16 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { endsWith, includes, isNamespacedCookieName } from "../utils";
+import { endsWith, isNamespacedCookieName } from "../utils";
 import convertTimes, { DAY, SECOND } from "../utils/convertTimes";
 
 const STATE_STORE_HANDLE_TYPE = "state:store";
 
 export default ({ cookieJar, orgId, apexDomain }) => {
-  // For AMCV, we intentionally do not replace the @ sign that's
-  // found in the Org ID because it's never replaced when
-  // written or read by Visitor.js.
-  const legacyCookieNames = ["s_ecid", encodeURIComponent(`AMCV_${orgId}`)];
   return {
     /**
      * When sending to a third-party endpoint, the endpoint won't be able to
@@ -39,17 +35,14 @@ export default ({ cookieJar, orgId, apexDomain }) => {
       if (!isEndpointFirstParty) {
         const cookies = cookieJar.get();
 
-        state.entries = Object.keys(cookies)
+        const entries = Object.keys(cookies)
           .filter(name => {
             // We have a contract with the server that we will pass
             // all cookies whose names are namespaced according to the
             // logic in isNamespacedCookieName as well as any legacy
             // cookie names (so that the server can handle migrating
             // identities on websites previously using Visitor.js)
-            return (
-              isNamespacedCookieName(orgId, name) ||
-              includes(legacyCookieNames, name)
-            );
+            return isNamespacedCookieName(orgId, name);
           })
           .map(qualifyingCookieName => {
             return {
@@ -57,6 +50,10 @@ export default ({ cookieJar, orgId, apexDomain }) => {
               value: cookies[qualifyingCookieName]
             };
           });
+
+        if (entries.length) {
+          state.entries = entries;
+        }
       }
 
       payload.mergeMeta({

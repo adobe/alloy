@@ -73,6 +73,7 @@
     }
   ],
   "dependencies": {
+    "@adobe/reactor-cookie": "^1.0.0",
     "@adobe/reactor-load-script": "^1.1.1",
     "@adobe/reactor-object-assign": "^1.0.0",
     "@adobe/reactor-query-string": "^1.0.0",

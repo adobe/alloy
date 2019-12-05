@@ -40,6 +40,21 @@ describe("createCookieTransfer", () => {
       });
     });
 
+    it("does not set state.entries if there are no qualifying cookies", () => {
+      cookieJar.get.and.returnValue({});
+      cookieTransfer = createCookieTransfer({
+        cookieJar,
+        orgId,
+        apexDomain
+      });
+      cookieTransfer.cookiesToPayload(payload, endpointDomain);
+      expect(payload.mergeMeta).toHaveBeenCalledWith({
+        state: {
+          domain: apexDomain
+        }
+      });
+    });
+
     it("transfers eligible cookies to payload", () => {
       cookieJar.get.and.returnValue({
         kndctr_ABC_CustomOrg_identity: "XYZ@CustomOrg",
