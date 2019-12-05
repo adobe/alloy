@@ -44,6 +44,28 @@
     onRoutePostInit: initHighlighter
   });
 
+  router.register("/getLibraryInfo", "getLibraryInfo", {
+    onPostInit: function() {
+      alloy("getLibraryInfo").then(console.log);
+    }
+  });
+
+  router.register("/debugTrue", "debugTrue", {
+    onPostInit: function() {
+      alloy("debug", {
+        enabled: true
+      });
+    }
+  });
+
+  router.register("/debugFalse", "debugFalse", {
+    onPostInit: function() {
+      alloy("debug", {
+        enabled: false
+      });
+    }
+  });
+
   router.register("/debugEnabled", "debugEnabled", {
     onPostInit: function() {
       alloy("configure", {
