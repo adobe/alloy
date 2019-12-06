@@ -24,8 +24,8 @@ export default (window, logger) => {
       ? sendBeaconFactory(window.navigator, fetch, logger)
       : fetch;
 
-  return (url, body, documentUnloading) => {
-    const method = documentUnloading ? sendBeacon : fetch;
+  return (url, body, documentMayUnload) => {
+    const method = documentMayUnload ? sendBeacon : fetch;
     return method(url, body);
   };
 };

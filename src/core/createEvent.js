@@ -16,31 +16,31 @@ export default () => {
   const content = {};
   let userXdm;
   let userData;
-  let expectsResponse = false;
-  let documentUnloading = false;
+  let expectResponse = false;
+  let documentMayUnload = false;
   let lastChanceCallback = noop;
 
   const event = {
-    set userXdm(value) {
+    setUserXdm(value) {
       userXdm = value;
     },
-    set userData(value) {
+    setUserData(value) {
       userData = value;
     },
     mergeXdm: createMerger(content, "xdm"),
     mergeMeta: createMerger(content, "meta"),
     mergeQuery: createMerger(content, "query"),
-    documentUnloading() {
-      documentUnloading = true;
+    documentMayUnload() {
+      documentMayUnload = true;
     },
-    get isDocumentUnloading() {
-      return documentUnloading;
+    getDocumentMayUnload() {
+      return documentMayUnload;
     },
     expectResponse() {
-      expectsResponse = true;
+      expectResponse = true;
     },
-    get expectsResponse() {
-      return expectsResponse;
+    getExpectResponse() {
+      return expectResponse;
     },
     isEmpty() {
       return (
@@ -49,7 +49,7 @@ export default () => {
         (!userData || isEmptyObject(userData))
       );
     },
-    set lastChanceCallback(value) {
+    setLastChanceCallback(value) {
       lastChanceCallback = value;
     },
     validate() {
@@ -89,7 +89,7 @@ export default () => {
           content.data = data;
         }
       } catch (e) {
-        // the callback should have already logged the exeception
+        // the callback should have already logged the exception
       }
 
       return content;

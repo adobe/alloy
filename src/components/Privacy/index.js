@@ -13,36 +13,57 @@ governing permissions and limitations under the License.
 import { boolean } from "../../utils/configValidators";
 import { isString } from "../../utils";
 
-const throwInvalidPurposesError = purposes => {
+const ALL = "all";
+const NONE = "none";
+
+const throwInvalidOptInPurposesError = purposes => {
   throw new Error(
     `Opt-in purposes must be "all" or "none". Received: ${purposes}`
   );
 };
 
-const createPrivacy = ({ config, logger, optIn }) => {
+const throwInvalidOptOutPurposesError = purposes => {
+  throw new Error(`Opt-out purposes must be "all". Received: ${purposes}`);
+};
+
+const createPrivacy = ({ config, consent }) => {
   return {
     commands: {
       optIn({ purposes }) {
-        if (config.optInEnabled) {
-          if (isString(purposes)) {
-            const lowerCasePurposes = purposes.toLowerCase();
-
-            if (
-              lowerCasePurposes === optIn.ALL ||
-              lowerCasePurposes === optIn.NONE
-            ) {
-              optIn.setPurposes(purposes);
-            } else {
-              throwInvalidPurposesError(purposes);
-            }
-          } else {
-            throwInvalidPurposesError(purposes);
-          }
-        } else {
-          logger.warn(
+        if (!config.optInEnabled) {
+          throw new Error(
             "optInEnabled must be set to true before using the optIn command."
           );
         }
+
+        if (!isString(purposes)) {
+          throwInvalidOptInPurposesError(purposes);
+        }
+
+        const lowerCasePurposes = purposes.toLowerCase();
+
+        if (lowerCasePurposes !== ALL && lowerCasePurposes !== NONE) {
+          throwInvalidOptInPurposesError(purposes);
+        }
+
+        return consent.setOptInPurposes({
+          GENERAL: lowerCasePurposes === ALL
+        });
+      },
+      optOut({ purposes }) {
+        if (!isString(purposes)) {
+          throwInvalidOptOutPurposesError(purposes);
+        }
+
+        const lowerCasePurposes = purposes.toLowerCase();
+
+        if (lowerCasePurposes !== ALL) {
+          throwInvalidOptOutPurposesError(purposes);
+        }
+
+        return consent.setOptOutPurposes({
+          GENERAL: true
+        });
       }
     }
   };

@@ -15,7 +15,7 @@ import { getApexDomain, cookieJar } from "../../utils";
 // Maybe default the domain in the cookieJar to apex while allowing overrides.
 const apexDomain = getApexDomain(window, cookieJar);
 
-export default orgId => {
+export default ({ orgId, consent }) => {
   const amcvCookieName = `AMCV_${orgId}`;
 
   return {
@@ -40,13 +40,18 @@ export default orgId => {
     },
     createLegacyCookie(ecid) {
       const amcvCookieValue = cookieJar.get(amcvCookieName);
-      if (!amcvCookieValue) {
+
+      if (amcvCookieValue) {
+        return Promise.resolve();
+      }
+
+      return consent.whenConsented().then(() => {
         cookieJar.set(amcvCookieName, `MCMID|${ecid}`, {
           domain: apexDomain,
           // Without `expires` this will be a session cookie.
           expires: 390 // days, or 13 months.
         });
-      }
+      });
     }
   };
 };

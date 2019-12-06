@@ -20,14 +20,14 @@ describe("createEvent", () => {
   });
 
   it("deeply merges XDM with user-provided XDM merged last", () => {
-    event.userXdm = {
+    event.setUserXdm({
       fruit: {
         type: "apple"
       },
       veggie: {
         type: "carrot"
       }
-    };
+    });
     event.mergeXdm({
       fruit: {
         type: "strawberry"
@@ -63,8 +63,8 @@ describe("createEvent", () => {
   });
 
   it("sets user data", () => {
-    event.userData = { fruit: "apple" };
-    event.userData = { veggie: "carrot" };
+    event.setUserData({ fruit: "apple" });
+    event.setUserData({ veggie: "carrot" });
     expect(event.toJSON()).toEqual({
       data: {
         veggie: "carrot"
@@ -137,21 +137,21 @@ describe("createEvent", () => {
   });
 
   it("sets documentUnloading", () => {
-    expect(event.isDocumentUnloading).toBeFalse();
-    event.documentUnloading();
-    expect(event.isDocumentUnloading).toBeTrue();
+    expect(event.getDocumentMayUnload()).toBeFalse();
+    event.documentMayUnload();
+    expect(event.getDocumentMayUnload()).toBeTrue();
   });
 
   it("sets expectsResponse", () => {
-    expect(event.expectsResponse).toBeFalse();
+    expect(event.getExpectResponse()).toBeFalse();
     event.expectResponse();
-    expect(event.expectsResponse).toBeTrue();
+    expect(event.getExpectResponse()).toBeTrue();
   });
 
   it("reports whether the event is empty", () => {
     expect(event.isEmpty()).toBeTrue();
     event.expectResponse();
-    event.userData = { foo: "bar" };
+    event.setUserData({ foo: "bar" });
     expect(event.isEmpty()).toBeFalse();
   });
 
@@ -161,13 +161,13 @@ describe("createEvent", () => {
   });
 
   it("reports the event as invalid if event type is missing", () => {
-    event.userXdm = { a: "1" };
+    event.setUserXdm({ a: "1" });
     const warnings = event.validate();
     expect(warnings.length).toBeGreaterThan(0);
   });
 
   it("reports the event as valid if xdm event type is included", () => {
-    event.userXdm = { a: "1", eventType: "test" };
+    event.setUserXdm({ a: "1", eventType: "test" });
     const warnings = event.validate();
     expect(warnings.length).toBe(0);
   });
@@ -179,7 +179,7 @@ describe("createEvent", () => {
         data.b = "2";
       };
       const subject = createEvent();
-      subject.lastChanceCallback = callback;
+      subject.setLastChanceCallback(callback);
       expect(subject.toJSON()).toEqual({ xdm: { a: "1" }, data: { b: "2" } });
     });
 
@@ -189,9 +189,9 @@ describe("createEvent", () => {
         data.b = "2";
       };
       const subject = createEvent();
-      subject.userData = { a: "1" };
-      subject.userXdm = { a: "1" };
-      subject.lastChanceCallback = callback;
+      subject.setUserData({ a: "1" });
+      subject.setUserXdm({ a: "1" });
+      subject.setLastChanceCallback(callback);
       expect(subject.toJSON()).toEqual({
         xdm: { a: "1", b: "2" },
         data: { a: "1", b: "2" }
@@ -204,9 +204,9 @@ describe("createEvent", () => {
         delete data.a;
       };
       const subject = createEvent();
-      subject.userXdm = { a: "1", b: "2" };
-      subject.userData = { a: "1", b: "2" };
-      subject.lastChanceCallback = callback;
+      subject.setUserXdm({ a: "1", b: "2" });
+      subject.setUserData({ a: "1", b: "2" });
+      subject.setLastChanceCallback(callback);
       expect(subject.toJSON()).toEqual({ xdm: { b: "2" }, data: { b: "2" } });
     });
 
@@ -219,9 +219,9 @@ describe("createEvent", () => {
         throw Error("Expected Error");
       };
       const subject = createEvent();
-      subject.userXdm = { a: "1", b: "2" };
-      subject.userData = { a: "1", b: "2" };
-      subject.lastChanceCallback = callback;
+      subject.setUserXdm({ a: "1", b: "2" });
+      subject.setUserData({ a: "1", b: "2" });
+      subject.setLastChanceCallback(callback);
       expect(subject.toJSON()).toEqual({
         xdm: { a: "1", b: "2" },
         data: { a: "1", b: "2" }

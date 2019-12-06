@@ -17,6 +17,7 @@ module.exports = {
     "prefer-destructuring": "off"
   },
   globals: {
-    expectAsync: "readonly" // newer jasmine feature
+    expectAsync: "readonly", // newer jasmine feature
+    spyOnAllFunctions: "readonly" // newer jasmine feature
   }
 };

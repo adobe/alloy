@@ -15,8 +15,8 @@ import { getApexDomain, storageFactory, cookieJar } from "../utils";
 import createLogController from "./createLogController";
 import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
-import createNetwork from "./network/createNetwork";
-import createOptIn from "./createOptIn";
+import sendNetworkRequestFactory from "./network/sendNetworkRequestFactory";
+import createConsent from "./createConsent";
 import createEvent from "./createEvent";
 import createResponse from "./createResponse";
 import executeCommandFactory from "./executeCommandFactory";
@@ -27,11 +27,14 @@ import createConfig from "./config/createConfig";
 import createConfigValidator from "./config/createValidator";
 import createCoreConfigs from "./config/createCoreConfigs";
 import handleErrorFactory from "./handleErrorFactory";
-import createNetworkStrategy from "./network/createNetworkStrategy";
+import networkStrategyFactory from "./network/networkStrategyFactory";
 import createLogger from "./createLogger";
 import createEventManager from "./createEventManager";
-import createOrgNamespacedCookieName from "./createOrgNamespacedCookieName";
 import createCookieTransfer from "./createCookieTransfer";
+import createConsentRequestPayload from "./edgeNetwork/requestPayloads/createConsentRequestPayload";
+import createDataCollectionRequestPayload from "./edgeNetwork/requestPayloads/createDataCollectionRequestPayload";
+import sendEdgeNetworkRequestFactory from "./edgeNetwork/sendEdgeNetworkRequestFactory";
+import processWarningsAndErrors from "./edgeNetwork/processWarningsAndErrors";
 
 // eslint-disable-next-line no-underscore-dangle
 const instanceNamespaces = window.__alloyNS;
@@ -55,7 +58,7 @@ if (instanceNamespaces) {
     const { setDebugEnabled, logger } = logController;
     const componentRegistry = createComponentRegistry();
     const lifecycle = createLifecycle(componentRegistry);
-    const networkStrategy = createNetworkStrategy(window, logger);
+    const networkStrategy = networkStrategyFactory(window, logger);
     let errorsEnabled = true;
     const getErrorsEnabled = () => {
       return errorsEnabled;
@@ -79,31 +82,39 @@ if (instanceNamespaces) {
         setDebugEnabled,
         setErrorsEnabled
       });
-      const optIn = createOptIn({
-        config,
-        logger,
-        cookieJar,
-        createOrgNamespacedCookieName
-      });
       const cookieTransfer = createCookieTransfer({
         cookieJar,
         orgId: config.orgId,
         apexDomain
       });
-      const network = createNetwork({
-        config,
+      const sendNetworkRequest = sendNetworkRequestFactory({
         logger,
         networkStrategy
       });
-      const eventManager = createEventManager({
-        createEvent,
-        createResponse,
-        optIn,
+      const sendEdgeNetworkRequest = sendEdgeNetworkRequestFactory({
+        config,
+        logger,
         lifecycle,
         cookieTransfer,
-        network,
+        sendNetworkRequest,
+        createResponse,
+        processWarningsAndErrors
+      });
+      const consent = createConsent({
         config,
-        logger
+        logger,
+        lifecycle,
+        createConsentRequestPayload,
+        sendEdgeNetworkRequest
+      });
+      const eventManager = createEventManager({
+        config,
+        logger,
+        lifecycle,
+        consent,
+        createEvent,
+        createDataCollectionRequestPayload,
+        sendEdgeNetworkRequest
       });
 
       return initializeComponents({
@@ -113,7 +124,7 @@ if (instanceNamespaces) {
         getImmediatelyAvailableTools(componentNamespace) {
           return {
             config,
-            optIn,
+            consent,
             eventManager,
             logger: logController.createComponentLogger(componentNamespace)
           };

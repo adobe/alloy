@@ -10,18 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { stackError } from "../../utils";
+
 const createClickHandler = (eventManager, lifecycle) => {
   return clickEvent => {
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
     const clickedElement = clickEvent.target;
     const event = eventManager.createEvent();
-    lifecycle.onClick({ event, clickedElement }).then(() => {
-      if (event.isEmpty()) {
-        return;
-      }
+    return lifecycle
+      .onClick({ event, clickedElement })
+      .then(() => {
+        if (!event.isEmpty()) {
+          return Promise.resolve();
+        }
 
-      eventManager.sendEvent(event);
-    });
+        return eventManager.sendEvent(event);
+      })
+      .catch(error => {
+        throw stackError("Failed to track click", error);
+      });
   };
 };
 

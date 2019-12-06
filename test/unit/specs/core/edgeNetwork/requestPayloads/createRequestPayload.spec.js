@@ -10,9 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// Remember to also incorporate the org ID wherever cookies are read or written.
-export const COOKIE_NAME_PREFIX = "kndctr";
+// eslint-disable-next-line no-unused-vars
+import createPayload from "../../../../../../src/core/edgeNetwork/requestPayloads/createRequestPayload";
 
-export const IDENTITY_COOKIE_KEY = "identity";
-export const OPTIN_COOKIE_KEY = "optin";
-export const OPTOUT_COOKIE_KEY = "optout";
+// This module is tested thoroughly through the different types of request
+// payloads that leverage this module.

@@ -6,7 +6,7 @@ import {
   isEmptyObject
 } from "../../../utils";
 
-export default eventManager => {
+export default ({ eventManager, consent }) => {
   const hash = (originalIds, normalizedIds, logger) => {
     const idNames = Object.keys(normalizedIds);
     const idsToHash = idNames.filter(idName => originalIds[idName].hashEnabled);
@@ -58,9 +58,11 @@ export default eventManager => {
           return false;
         }
         setState(hashedIds);
-        // FIXME: Konductor shouldn't require an event.
         const event = eventManager.createEvent();
-        return eventManager.sendEvent(event);
+        return consent.whenConsented().then(() => {
+          // FIXME: Konductor shouldn't require an event.
+          return eventManager.sendEvent(event);
+        });
       });
     }
   };

@@ -10,16 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { cookieJar } from "../../../../../src/utils";
+import { cookieJar, defer } from "../../../../../src/utils";
 import createMigration from "../../../../../src/components/Identity/createMigration";
+import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("createMigration", () => {
   let migration;
+  let consentDeferred;
+  let consent;
 
   beforeEach(() => {
     cookieJar.remove("AMCV_TEST_ORG");
     cookieJar.remove("s_ecid");
-    migration = createMigration("TEST_ORG");
+    consentDeferred = defer();
+    consent = jasmine.createSpyObj("consent", {
+      whenConsented: consentDeferred.promise
+    });
+    migration = createMigration({
+      orgId: "TEST_ORG",
+      consent
+    });
   });
 
   describe("getEcidFromLegacyCookies", () => {
@@ -57,15 +67,32 @@ describe("createMigration", () => {
     });
   });
   describe("createLegacyCookie", () => {
-    it("should create an AMCV cookie with the value passed", () => {
+    it("waits for consent and creates an AMCV cookie with the value passed", () => {
       migration.createLegacyCookie("1234");
-      expect(cookieJar.get("AMCV_TEST_ORG")).toEqual("MCMID|1234");
+
+      return flushPromiseChains()
+        .then(() => {
+          expect(cookieJar.get("AMCV_TEST_ORG")).toBeUndefined();
+          consentDeferred.resolve();
+          return flushPromiseChains();
+        })
+        .then(() => {
+          expect(cookieJar.get("AMCV_TEST_ORG")).toEqual("MCMID|1234");
+        });
+    });
+    it("rejects returned promise if consent denied", () => {
+      consentDeferred.reject(new Error("Consent denied."));
+
+      return expectAsync(
+        migration.createLegacyCookie("123")
+      ).toBeRejectedWithError("Consent denied.");
     });
     it("should not write AMCV cookie if already present", () => {
       const cookieValue = "existing value";
       cookieJar.set("AMCV_TEST_ORG", cookieValue);
-      migration.createLegacyCookie("1234");
-      expect(cookieJar.get("AMCV_TEST_ORG")).toEqual(cookieValue);
+      return migration.createLegacyCookie("1234").then(() => {
+        expect(cookieJar.get("AMCV_TEST_ORG")).toEqual(cookieValue);
+      });
     });
   });
 });

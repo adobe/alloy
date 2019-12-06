@@ -10,8 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// TODO: Remove this once the opt-in cookie is managed by the server.
-// Due to security software flagging the `@` sign in the ORG ID
-// as a security vulnerability, we are replacing it with an `_`.
-export default (cookieNamePrefix, orgId) =>
-  `${cookieNamePrefix}_${orgId.replace("@", "_")}`;
+import createRequestPayload from "./createRequestPayload";
+
+export default () => {
+  return createRequestPayload(content => {
+    return {
+      addIdentity: (namespaceCode, identity) => {
+        content.identityMap = content.identityMap || {};
+        content.identityMap[namespaceCode] =
+          content.identityMap[namespaceCode] || [];
+        content.identityMap[namespaceCode].push(identity);
+      },
+      setPurposes(purposes) {
+        content.purposes = purposes;
+      }
+    };
+  });
+};

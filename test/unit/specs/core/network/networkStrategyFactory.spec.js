@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createNetworkStrategy from "../../../../../src/core/network/createNetworkStrategy";
+import networkStrategyFactory from "../../../../../src/core/network/networkStrategyFactory";
 
 const mockServerClient = window.mockServerClient || (() => {});
 
@@ -100,7 +100,7 @@ describe("networkStrategyFactory", () => {
     describe(name, () => {
       beforeEach(() => {
         if (mockServerRunning) {
-          networkStrategy = createNetworkStrategy(testingWindow, console);
+          networkStrategy = networkStrategyFactory(testingWindow, console);
           client = wrapInRealPromises(mockServerClient("localhost", 1080));
           return client.reset();
         }
