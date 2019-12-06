@@ -48,13 +48,17 @@ export default (rules, ruleComponentModules, logger) => {
   };
 
   const logActionError = (action, rule, e) => {
-    logger.error(getErrorMessage(action, rule, e.message, e.stack));
+    if (logger.enabled) {
+      logger.error(getErrorMessage(action, rule, e.message, e.stack));
+    }
   };
 
   const logRuleCompleted = rule => {
-    const ruleRespresentation = JSON.stringify(rule);
+    if (logger.enabled) {
+      const ruleRespresentation = JSON.stringify(rule);
 
-    logger.log(`Rule ${ruleRespresentation} fired.`);
+      logger.log(`Rule ${ruleRespresentation} fired.`);
+    }
   };
 
   const runActions = (rule, syntheticEvent) => {
