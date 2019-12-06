@@ -1,4 +1,5 @@
 import { Selector } from "testcafe";
+import createConsoleLogger from "../../src/consoleLogger";
 
 const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html`;
 
@@ -11,14 +12,14 @@ test.meta({
 });
 
 test("Regression: debug command with enable: true. getLibraryInfo. refresh. toggle and repeat.", async t => {
+  const logger = createConsoleLogger(t, "log");
   await t
     .click(Selector("#nologconfig-button"))
     .click(Selector("#debugtrue-button"))
     .click(Selector("#getlibraryinfo-button"));
 
-  let log = await t.getBrowserConsoleMessages();
-  await t.expect(log.log).match(/Executing getLibraryInfo command/);
-  let discard = log.log.length;
+  let newMessages = await logger.getNewMessages();
+  await t.expect(newMessages).match(/Executing getLibraryInfo command/);
 
   await t
     .navigateTo(
@@ -27,21 +28,19 @@ test("Regression: debug command with enable: true. getLibraryInfo. refresh. togg
     .click(Selector("#nologconfig-button"))
     .click(Selector("#getlibraryinfo-button"));
 
-  log = await t.getBrowserConsoleMessages();
+  newMessages = await logger.getNewMessages();
   await t
-    .expect(log.log.slice(discard))
+    .expect(newMessages)
     .match(/\[alloy] Executing getLibraryInfo command./);
-  discard = log.log.length;
 
   await t
     .click(Selector("#debugfalse-button"))
     .click(Selector("#getlibraryinfo-button"));
 
-  log = await t.getBrowserConsoleMessages();
+  newMessages = await logger.getNewMessages();
   await t
-    .expect(log.log.slice(discard))
+    .expect(newMessages)
     .notMatch(/\[alloy] Executing getLibraryInfo command./);
-  discard = log.log.length;
 
   await t
     .navigateTo(
@@ -50,8 +49,8 @@ test("Regression: debug command with enable: true. getLibraryInfo. refresh. togg
     .click(Selector("#nologconfig-button"))
     .click(Selector("#getlibraryinfo-button"));
 
-  log = await t.getBrowserConsoleMessages();
+  newMessages = await logger.getNewMessages();
   await t
-    .expect(log.log.slice(discard))
+    .expect(newMessages)
     .notMatch(/\[alloy] Executing getLibraryInfo command./);
 });
