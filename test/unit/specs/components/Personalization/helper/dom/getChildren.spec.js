@@ -12,3 +12,26 @@ governing permissions and limitations under the License.
 
 // eslint-disable-next-line no-unused-vars
 import getChildren from "../../../../../../../src/components/Personalization/helper/dom/getChildren";
+import createFragment from "../../../../../../../src/components/Personalization/helper/dom/createFragment";
+
+describe("Personalization::helper::dom::getChildren", () => {
+  it("the element's children array length should be 2", () => {
+    const element = createFragment(
+      `<div id="foo">foo</div><h1>hello there</h1>`
+    );
+    const result = getChildren(element);
+
+    expect(result.length).toEqual(2);
+    expect(result[0].tagName).toEqual("DIV");
+    expect(result[1].tagName).toEqual("H1");
+  });
+});
+
+describe("Personalization::helper::dom::getChildren", () => {
+  it("the children array length should be 0", () => {
+    const element = createFragment();
+    const result = getChildren(element);
+
+    expect(result.length).toEqual(0);
+  });
+});
