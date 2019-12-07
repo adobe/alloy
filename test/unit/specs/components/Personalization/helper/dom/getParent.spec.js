@@ -12,3 +12,27 @@ governing permissions and limitations under the License.
 
 // eslint-disable-next-line no-unused-vars
 import getParent from "../../../../../../../src/components/Personalization/helper/dom/getParent";
+import {
+  selectNodes,
+  removeNode,
+  appendNode,
+  createNode
+} from "../../../../../../../src/utils/dom";
+import { getElementById } from "../../../../../../../src/components/Personalization/helper/dom";
+
+describe("Personalization::DOM::getElementById", () => {
+  afterEach(() => {
+    selectNodes("#fooById").forEach(removeNode);
+  });
+
+  it("should return the parent node if exists", () => {
+    const parentNode = createNode("div", { id: "parentId" });
+    const childNode = createNode("div", { id: "childId" });
+    appendNode(parentNode, childNode);
+    appendNode(document.head, parentNode);
+    const result = getParent(getElementById("childId"));
+    expect(result).not.toBeNull();
+    expect(result.tagName).toEqual("DIV");
+    expect(result.id).toEqual("parentId");
+  });
+});
