@@ -22,7 +22,8 @@ import { getElementById } from "../../../../../../../src/components/Personalizat
 
 describe("Personalization::DOM::getElementById", () => {
   afterEach(() => {
-    selectNodes("#fooById").forEach(removeNode);
+    selectNodes("#parentId").forEach(removeNode);
+    selectNodes("#childId").forEach(removeNode);
   });
 
   it("should return the parent node if exists", () => {
