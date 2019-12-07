@@ -25,6 +25,7 @@ import {
 describe("Personalization::DOM::insertAfter", () => {
   afterEach(() => {
     selectNodes("#fooById").forEach(removeNode);
+    selectNodes("#divId").forEach(removeNode);
   });
 
   it("should insert after the node", () => {
