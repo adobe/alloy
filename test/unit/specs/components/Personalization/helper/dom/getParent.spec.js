@@ -29,9 +29,12 @@ describe("Personalization::DOM::getElementById", () => {
   it("should return the parent node if exists", () => {
     const parentNode = createNode("div", { id: "parentId" });
     const childNode = createNode("div", { id: "childId" });
+
     appendNode(parentNode, childNode);
     appendNode(document.head, parentNode);
+
     const result = getParent(getElementById("childId"));
+
     expect(result).not.toBeNull();
     expect(result.tagName).toEqual("DIV");
     expect(result.id).toEqual("parentId");
