@@ -12,3 +12,31 @@ governing permissions and limitations under the License.
 
 // eslint-disable-next-line no-unused-vars
 import insertAfter from "../../../../../../../src/components/Personalization/helper/dom/insertAfter";
+import {
+  selectNodes,
+  removeNode,
+  appendNode,
+  createNode
+} from "../../../../../../../src/utils/dom";
+import {
+  getElementById,
+  getNextSibling
+} from "../../../../../../../src/components/Personalization/helper/dom";
+
+describe("Personalization::DOM::insertAfter", () => {
+  afterEach(() => {
+    selectNodes("#fooById").forEach(removeNode);
+  });
+
+  it("should insert after the node", () => {
+    const firstElement = createNode("style", { id: "fooById" });
+    const nextElement = createNode("div", { id: "divId" });
+    appendNode(document.head, firstElement);
+    insertAfter(firstElement, nextElement);
+
+    const foo = getElementById("fooById");
+    const div = getNextSibling(foo);
+
+    expect(div.id).toEqual("divId");
+  });
+});
