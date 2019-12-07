@@ -12,3 +12,27 @@ governing permissions and limitations under the License.
 
 // eslint-disable-next-line no-unused-vars
 import getNextSibling from "../../../../../../../src/components/Personalization/helper/dom/getNextSibling";
+import createFragment from "../../../../../../../src/components/Personalization/helper/dom/createFragment";
+import getFirstChild from "../../../../../../../src/components/Personalization/helper/dom/getFirstChild";
+
+describe("Personalization::helper::dom::getNextSibling", () => {
+  it("the element's next sibling should be an H1 element", () => {
+    const element = createFragment(
+      `<div id="foo">foo</div><h1>hello there</h1>`
+    );
+    const firstElement = getFirstChild(element);
+    const nextSibling = getNextSibling(firstElement);
+
+    expect(nextSibling.tagName).toEqual("H1");
+  });
+});
+
+describe("Personalization::helper::dom::getNextSibling", () => {
+  it("the element's next sibling should be null", () => {
+    const element = createFragment(`<div id="foo">foo</div>`);
+    const firstElement = getFirstChild(element);
+    const nextSibling = getNextSibling(firstElement);
+
+    expect(nextSibling).toBeNull();
+  });
+});
