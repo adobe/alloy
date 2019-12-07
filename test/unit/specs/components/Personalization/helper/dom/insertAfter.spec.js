@@ -24,19 +24,19 @@ import {
 
 describe("Personalization::DOM::insertAfter", () => {
   afterEach(() => {
-    selectNodes("#fooById").forEach(removeNode);
-    selectNodes("#divId").forEach(removeNode);
+    selectNodes("#style1").forEach(removeNode);
+    selectNodes("#style2").forEach(removeNode);
   });
 
   it("should insert after the node", () => {
-    const firstElement = createNode("style", { id: "fooById" });
-    const nextElement = createNode("div", { id: "divId" });
-    appendNode(document.head, firstElement);
-    insertAfter(firstElement, nextElement);
+    const element1 = createNode("style", { id: "style1" });
+    const element2 = createNode("style", { id: "style2" });
+    appendNode(document.head, element1);
+    insertAfter(element1, element2);
 
-    const foo = getElementById("fooById");
-    const div = getNextSibling(foo);
+    const node1 = getElementById("style1");
+    const node2 = getNextSibling(node1);
 
-    expect(div.id).toEqual("divId");
+    expect(node2.id).toEqual("style2");
   });
 });
