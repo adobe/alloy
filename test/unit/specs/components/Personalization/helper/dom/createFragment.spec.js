@@ -10,5 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
 import createFragment from "../../../../../../../src/components/Personalization/helper/dom/createFragment";
+
+describe("Personalization::helper", () => {
+  it("createFragmentTest", () => {
+    const result = createFragment(`<div id="foo">foo</div>`);
+
+    expect(result.firstElementChild.id).toEqual("foo");
+  });
+});
