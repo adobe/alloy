@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { toArray } from "../../../../utils";
 
 export default element => {
-  const { childNodes } = element;
+  const { childNodes = [] } = element;
 
   return toArray(childNodes);
 };
