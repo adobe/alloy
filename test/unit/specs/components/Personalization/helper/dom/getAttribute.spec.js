@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import getAttribute from "../../../../../../../src/components/Personalization/helper/dom/getAttribute";
 import createFragment from "../../../../../../../src/components/Personalization/helper/dom/createFragment";
 
-describe("Personalization::helper::dom", () => {
+describe("Personalization::helper::dom::getAttribute", () => {
   it("should get the element attribute", () => {
     const element = createFragment(`<div id="foo">foo</div>`);
     const name = "id";
@@ -21,9 +21,7 @@ describe("Personalization::helper::dom", () => {
 
     expect(result).toEqual("foo");
   });
-});
 
-describe("Personalization::helper::dom", () => {
   it("the element attribute should be null", () => {
     const element = createFragment(`<div id="foo">foo</div>`);
     const name = "title";
