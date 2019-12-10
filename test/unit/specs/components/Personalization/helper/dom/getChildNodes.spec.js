@@ -24,6 +24,7 @@ describe("Personalization::helper::dom::getChildNodes", () => {
     expect(result[0].tagName).toEqual("DIV");
     expect(result[1].tagName).toEqual("H1");
   });
+
   it("the element child nodes array length should be 3", () => {
     const element = createFragment(
       `<div id="foo">foo</div><h1>hello there</h1><div id="div2"></div>`
@@ -35,6 +36,7 @@ describe("Personalization::helper::dom::getChildNodes", () => {
     expect(result[1].tagName).toEqual("H1");
     expect(result[2].id).toEqual("div2");
   });
+
   it("the child nodes element should be undefined", () => {
     const element = createFragment();
     const result = getChildNodes(element);
