@@ -19,6 +19,7 @@
     "test:server": "http-server ./ -a localhost -p 8080 -c-1",
     "testcafe": "testcafe",
     "functional:ci": "run-p --race test:server testcafe",
+    "functional:ci:int": "EDGE_ENV=ee-int run-p --race test:server testcafe",
     "functional:local": "node test/functional/testrunner.js",
     "functional:local:build": "npm run build:prod && node test/functional/testrunner.js",
     "functional:local:watch": "node test/functional/testrunner.js --watch",

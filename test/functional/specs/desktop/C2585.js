@@ -13,7 +13,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Regression: Throw error when configure is not the first command executed.", async t => {
+test("Test C2585: Throw error when configure is not the first command executed.", async t => {
   // Note: unable to enable logging with url parameter or enabler logger config.
 
   await t.click(Selector("#logger-button"));

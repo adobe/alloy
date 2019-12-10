@@ -20,7 +20,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Regression: Load page with link. Click link. Verify no request sent.", async () => {
+test("Test C8119: Load page with link. Click link. Verify no request sent.", async () => {
   await t.click(Selector("#alloy-link-test"));
   await responseStatus(networkLogger.gatewayEndpointLogs.requests, 200);
   const gatewayRequest = networkLogger.gatewayEndpointLogs.requests[0];

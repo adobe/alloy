@@ -11,7 +11,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Regression: debug command with enable: true. getLibraryInfo. refresh. toggle and repeat.", async t => {
+test("Test C2583: debug command with enable: true. getLibraryInfo. refresh. toggle and repeat.", async t => {
   const logger = createConsoleLogger(t, "log");
   await t
     .click(Selector("#nologconfig-button"))

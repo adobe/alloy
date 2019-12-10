@@ -17,6 +17,6 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C2560: Given user loads sandbox. The global function named alloy is accessible.", async () => {
+test("Regression: Given user loads sandbox. The global function named alloy is accessible.", async () => {
   await responseStatus(networkLogger.gatewayEndpointLogs.requests, 200);
 });

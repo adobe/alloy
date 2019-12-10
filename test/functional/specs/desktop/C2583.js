@@ -10,7 +10,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Regression: Set the log option to true. Load the page. Execute an event command.", async t => {
+test("Test C2583: Set the log option to true. Load the page. Execute an event command.", async t => {
   await t
     .click(Selector("#debugEnabled-button"))
     .click(Selector("#event-button"));
@@ -26,7 +26,7 @@ test("Regression: Set the log option to true. Load the page. Execute an event co
   await t.expect(log).match(/\[alloy] Executing event command./);
 });
 
-test("Regression: Set the log option in the configuration to false. Refresh the browser. Execute an event command.", async t => {
+test("Test C2583: Set the log option in the configuration to false. Refresh the browser. Execute an event command.", async t => {
   await t
     .click(Selector("#disablelog-button"))
     .click(Selector("#event-button"));
