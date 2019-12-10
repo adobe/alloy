@@ -15,9 +15,5 @@ import { toArray } from "../../../../utils";
 export default element => {
   const { childNodes } = element;
 
-  if (childNodes) {
-    return toArray(childNodes);
-  }
-
-  return [];
+  return toArray(childNodes);
 };
