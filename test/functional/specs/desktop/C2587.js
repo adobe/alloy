@@ -12,7 +12,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Regression: Throw error when executing command that doesn't exist", async t => {
+test("Test C2586: Throw error when executing command that doesn't exist", async t => {
   const { error } = await t.getBrowserConsoleMessages();
   await t.expect(error).match(/The boguscommand command does not exist./);
 });

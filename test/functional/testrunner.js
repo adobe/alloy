@@ -43,8 +43,10 @@ const isSauceLabs = process.argv.includes("--sl");
 const watch = process.argv.includes("--watch");
 let specId = "Test"; // Default string to find in spec title.
 
-if (process.argv[2] && process.argv[2].includes("=")) {
-  const parts = process.argv[2].split("=");
+const specIdArg = process.argv.find(arg => arg.includes("test="));
+
+if (specIdArg) {
+  const parts = specIdArg.split("=");
   specId = parts[1];
 }
 
