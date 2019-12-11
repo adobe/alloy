@@ -14,7 +14,7 @@ import getChildren from "../../../../../../../src/components/Personalization/hel
 import createFragment from "../../../../../../../src/components/Personalization/helper/dom/createFragment";
 
 describe("Personalization::helper::dom::getChildren", () => {
-  it("the element's children array length should be 2", () => {
+  it("returns an array of children", () => {
     const element = createFragment(
       `<div id="foo">foo</div><h1>hello there</h1>`
     );
@@ -25,7 +25,7 @@ describe("Personalization::helper::dom::getChildren", () => {
     expect(result[1].tagName).toEqual("H1");
   });
 
-  it("the children array length should be 0", () => {
+  it("returns empty array if there are not children", () => {
     const element = createFragment();
     const result = getChildren(element);
 
