@@ -28,7 +28,7 @@ describe("Personalization::DOM::insertAfter", () => {
     selectNodes("#style2").forEach(removeNode);
   });
 
-  it("should insert after the node", () => {
+  it("inserts a node after an element", () => {
     const element1 = createNode("style", { id: "style1" });
     const element2 = createNode("style", { id: "style2" });
     appendNode(document.head, element1);
