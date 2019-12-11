@@ -14,7 +14,7 @@ import getAttribute from "../../../../../../../src/components/Personalization/he
 import createFragment from "../../../../../../../src/components/Personalization/helper/dom/createFragment";
 
 describe("Personalization::helper::dom::getAttribute", () => {
-  it("should get the element attribute", () => {
+  it("returns element's attribute if exists", () => {
     const element = createFragment(`<div id="foo">foo</div>`);
     const name = "id";
     const result = getAttribute(element.firstElementChild, name);
@@ -22,7 +22,7 @@ describe("Personalization::helper::dom::getAttribute", () => {
     expect(result).toEqual("foo");
   });
 
-  it("the element attribute should be null", () => {
+  it("returns null if element doesn't have this attribute", () => {
     const element = createFragment(`<div id="foo">foo</div>`);
     const name = "title";
     const result = getAttribute(element.firstElementChild, name);
