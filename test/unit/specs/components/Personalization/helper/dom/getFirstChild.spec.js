@@ -14,7 +14,7 @@ import getFirstChild from "../../../../../../../src/components/Personalization/h
 import createFragment from "../../../../../../../src/components/Personalization/helper/dom/createFragment";
 
 describe("Personalization::helper::dom::getFirstChild", () => {
-  it("the element's first child node should be a div", () => {
+  it("returns the first child node of the element", () => {
     const element = createFragment(
       `<h1>hello there</h1><div id="foo">foo</div>`
     );
@@ -23,7 +23,7 @@ describe("Personalization::helper::dom::getFirstChild", () => {
     expect(result.tagName).toEqual("H1");
   });
 
-  it("the element's first child should be null", () => {
+  it("returns null if there are no child elements", () => {
     const element = createFragment();
     const result = getFirstChild(element);
 
