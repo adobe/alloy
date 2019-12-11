@@ -44,11 +44,4 @@ describe("Personalization::helper::dom::getChildNodes", () => {
     expect(result.length).toEqual(1);
     expect(result[0].tagName).toBeUndefined();
   });
-
-  it("the child nodes element is null", () => {
-    const element = createFragment(null);
-    const result = getChildNodes(element);
-
-    expect(result).toEqual([]);
-  });
 });
