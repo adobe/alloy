@@ -24,9 +24,7 @@ describe("Personalization::helper::dom::getNextSibling", () => {
 
     expect(nextSibling.tagName).toEqual("H1");
   });
-});
 
-describe("Personalization::helper::dom::getNextSibling", () => {
   it("the element's next sibling should be null", () => {
     const element = createFragment(`<div id="foo">foo</div>`);
     const firstElement = getFirstChild(element);
