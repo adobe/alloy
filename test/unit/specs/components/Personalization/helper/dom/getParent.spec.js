@@ -19,13 +19,13 @@ import {
 } from "../../../../../../../src/utils/dom";
 import { getElementById } from "../../../../../../../src/components/Personalization/helper/dom";
 
-describe("Personalization::DOM::getElementById", () => {
+describe("Personalization::DOM::getParent", () => {
   afterEach(() => {
     selectNodes("#parentId").forEach(removeNode);
     selectNodes("#childId").forEach(removeNode);
   });
 
-  it("should return the parent node if exists", () => {
+  it("returns the parent node if exists", () => {
     const parentNode = createNode("div", { id: "parentId" });
     const childNode = createNode("div", { id: "childId" });
 
@@ -34,7 +34,6 @@ describe("Personalization::DOM::getElementById", () => {
 
     const result = getParent(getElementById("childId"));
 
-    expect(result).not.toBeNull();
     expect(result.tagName).toEqual("DIV");
     expect(result.id).toEqual("parentId");
   });
