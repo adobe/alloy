@@ -1,6 +1,5 @@
-const edgeBasePath = `
-    window.edgeBasePath = "${process.env.EDGE_ENV}";
-`;
+const edgeEnv = process.env.EDGE_ENV || "";
+const edgeBasePath = `window.edgeBasePath = ${edgeEnv};`;
 
 export default ({ title = "", url, requestHooks = [] }) => {
   return fixture(title)
