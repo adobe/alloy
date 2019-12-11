@@ -24,9 +24,7 @@ describe("Personalization::helper::dom::getChildren", () => {
     expect(result[0].tagName).toEqual("DIV");
     expect(result[1].tagName).toEqual("H1");
   });
-});
 
-describe("Personalization::helper::dom::getChildren", () => {
   it("the children array length should be 0", () => {
     const element = createFragment();
     const result = getChildren(element);
