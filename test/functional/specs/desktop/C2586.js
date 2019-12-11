@@ -1,10 +1,12 @@
 import { Selector } from "testcafe";
+import fixtureFactory from "../../src/fixtureFactory";
 
 const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html?alloy_debug=true`;
 
-fixture`C2586: Toggle logging through the querystring parameter.`.page(
-  urlCollector
-);
+fixtureFactory({
+  title: "C2586: Toggle logging through the querystring parameter.",
+  url: urlCollector
+});
 
 test.meta({
   ID: "C2586",

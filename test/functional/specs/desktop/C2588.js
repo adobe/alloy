@@ -1,8 +1,11 @@
+import fixtureFactory from "../../src/fixtureFactory";
+
 const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/multiConfig.html`;
 
-fixture`C2588: Throws error when configure is executed multiple times.`.page(
-  urlCollector
-);
+fixtureFactory({
+  title: "C2588: Throws error when configure is executed multiple times.",
+  url: urlCollector
+});
 
 test.meta({
   ID: "C2588",

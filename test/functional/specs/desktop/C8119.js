@@ -2,17 +2,20 @@ import { t, Selector } from "testcafe";
 import createNetworkLogger from "../../src/networkLogger";
 import { responseStatus } from "../../src/assertions/index";
 import testServerUrl from "../../src/constants/testServerUrl";
+import fixtureFactory from "../../src/fixtureFactory";
 
 const linkPageWithoutClickHandler = `${testServerUrl}/test/functional/sandbox/html/linkPageWithoutClickHandler.html`;
 
 const networkLogger = createNetworkLogger();
 
-fixture`C8119: Does not send information about link clicks if disabled.`
-  .page(linkPageWithoutClickHandler)
-  .requestHooks(
+fixtureFactory({
+  title: "C8119: Does not send information about link clicks if disabled.",
+  url: linkPageWithoutClickHandler,
+  requestHooks: [
     networkLogger.gatewayEndpointLogs,
     networkLogger.sandboxEndpointLogs
-  );
+  ]
+});
 
 test.meta({
   ID: "C8119",

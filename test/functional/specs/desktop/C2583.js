@@ -1,8 +1,12 @@
 import { Selector } from "testcafe";
+import fixtureFactory from "../../src/fixtureFactory";
 
 const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html`;
 
-fixture`C2583: Toggle logging through configuration`.page(urlCollector);
+fixtureFactory({
+  title: "C2583: Toggle logging through configuration",
+  url: urlCollector
+});
 
 test.meta({
   ID: "C2583",
