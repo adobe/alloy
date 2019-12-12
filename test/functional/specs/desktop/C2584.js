@@ -1,9 +1,13 @@
 import { Selector } from "testcafe";
 import createConsoleLogger from "../../src/consoleLogger";
+import fixtureFactory from "../../src/fixtureFactory";
 
 const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html`;
 
-fixture`C2584: Toggle logging through debug command`.page(urlCollector);
+fixtureFactory({
+  title: "C2584: Toggle logging through debug command",
+  url: urlCollector
+});
 
 test.meta({
   ID: "C2584",
@@ -11,7 +15,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Regression: debug command with enable: true. getLibraryInfo. refresh. toggle and repeat.", async t => {
+test("Test C2584: debug command with enable: true. getLibraryInfo. refresh. toggle and repeat.", async t => {
   const logger = createConsoleLogger(t, "log");
   await t
     .click(Selector("#nologconfig-button"))

@@ -40,6 +40,16 @@ const runOptions = {
 };
 
 const isSauceLabs = process.argv.includes("--sl");
+const watch = process.argv.includes("--watch");
+let specId = "Test"; // Default string to find in spec title.
+
+const specIdArg = process.argv.find(arg => arg.includes("test="));
+
+if (specIdArg) {
+  const parts = specIdArg.split("=");
+  specId = parts[1];
+}
+
 const browsers = isSauceLabs
   ? config.desktop.saucelabs
   : config.desktop.browser;
@@ -48,14 +58,17 @@ let testcafe;
 createTestCafe()
   .then(tc => {
     testcafe = tc;
-    const runner = testcafe.createRunner();
+    // const runner = testcafe.createRunner();
+    const runner = watch
+      ? testcafe.createLiveModeRunner()
+      : testcafe.createRunner();
     const testFolder = config.desktop.testsFolder;
     const testSuite = allFilesSync(testFolder);
     return (
       runner
         .startApp("npm run test:server", 4000)
         .src(testSuite)
-        .filter(testName => /^Regression/.test(testName))
+        .filter(testName => testName.includes(specId))
         .browsers(browsers)
         // .reporter("allure")
         .concurrency(config.desktop.concurrency)

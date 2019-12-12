@@ -2,17 +2,20 @@ import { t, Selector } from "testcafe";
 import createNetworkLogger from "../../src/networkLogger";
 import { responseStatus } from "../../src/assertions/index";
 import testServerUrl from "../../src/constants/testServerUrl";
+import fixtureFactory from "../../src/fixtureFactory";
 
 const linkPageWithoutClickHandler = `${testServerUrl}/test/functional/sandbox/html/linkPageWithoutClickHandler.html`;
 
 const networkLogger = createNetworkLogger();
 
-fixture`C8119: Does not send information about link clicks if disabled.`
-  .page(linkPageWithoutClickHandler)
-  .requestHooks(
+fixtureFactory({
+  title: "C8119: Does not send information about link clicks if disabled.",
+  url: linkPageWithoutClickHandler,
+  requestHooks: [
     networkLogger.gatewayEndpointLogs,
     networkLogger.sandboxEndpointLogs
-  );
+  ]
+});
 
 test.meta({
   ID: "C8119",
@@ -20,7 +23,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Regression: Load page with link. Click link. Verify no request sent.", async () => {
+test("Test C8119: Load page with link. Click link. Verify no request sent.", async () => {
   await t.click(Selector("#alloy-link-test"));
   await responseStatus(networkLogger.gatewayEndpointLogs.requests, 200);
   const gatewayRequest = networkLogger.gatewayEndpointLogs.requests[0];
