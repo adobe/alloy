@@ -10,5 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
 import getAttribute from "../../../../../../../src/components/Personalization/helper/dom/getAttribute";
+import createFragment from "../../../../../../../src/components/Personalization/helper/dom/createFragment";
+
+describe("Personalization::helper::dom::getAttribute", () => {
+  it("returns element's attribute if exists", () => {
+    const element = createFragment(`<div id="foo">foo</div>`);
+    const name = "id";
+    const result = getAttribute(element.firstElementChild, name);
+
+    expect(result).toEqual("foo");
+  });
+
+  it("returns null if element doesn't have this attribute", () => {
+    const element = createFragment(`<div id="foo">foo</div>`);
+    const name = "title";
+    const result = getAttribute(element.firstElementChild, name);
+
+    expect(result).toBeNull();
+  });
+});
