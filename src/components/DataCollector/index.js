@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 */
 
 const CONFIG_DOC_URI =
-  "https://launch.gitbook.io/adobe-experience-platform-web-sdk/fundamentals/executing-commands";
+  "https://www.adobe.io/apis/experienceplatform/home/services/web-sdk.html#!api-specification/markdown/narrative/edge/fundamentals/executing-commands.md";
 
 const createDataCollector = ({ eventManager, logger }) => {
   return {

@@ -57,8 +57,10 @@ export default () => {
       if (event.isEmpty()) {
         warnings.push("No event xdm or event data specified.");
       }
-      event.toJSON();
-      if (content.xdm && !content.xdm.eventType) {
+      if (
+        (content.xdm && !content.xdm.eventType) ||
+        (userXdm && !userXdm.eventType)
+      ) {
         warnings.push("No type or xdm.eventType specified.");
       }
       return warnings;
