@@ -155,6 +155,23 @@ describe("createEvent", () => {
     expect(event.isEmpty()).toBeFalse();
   });
 
+  it("reports the event as invalid if empty", () => {
+    const warnings = event.validate();
+    expect(warnings.length).toBeGreaterThan(0);
+  });
+
+  it("reports the event as invalid if event type is missing", () => {
+    event.userXdm = { a: "1" };
+    const warnings = event.validate();
+    expect(warnings.length).toBeGreaterThan(0);
+  });
+
+  it("reports the event as valid if xdm event type is included", () => {
+    event.userXdm = { a: "1", eventType: "test" };
+    const warnings = event.validate();
+    expect(warnings.length).toBe(0);
+  });
+
   describe("applyCallback", () => {
     it("can add fields to empty xdm", () => {
       const callback = ({ xdm, data }) => {

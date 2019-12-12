@@ -52,6 +52,17 @@ export default () => {
     set lastChanceCallback(value) {
       lastChanceCallback = value;
     },
+    validate() {
+      const warnings = [];
+      if (event.isEmpty()) {
+        warnings.push("No event xdm or event data specified.");
+      }
+      event.toJSON();
+      if (content.xdm && !content.xdm.eventType) {
+        warnings.push("No type or xdm.eventType specified.");
+      }
+      return warnings;
+    },
     toJSON() {
       if (userXdm) {
         event.mergeXdm(userXdm);
