@@ -34,5 +34,5 @@ test("Test C2581: Queue requests until we receive an ECID.", async () => {
   const ecidResponse = getBody(networkLogger.adobedcEndpointLogs.requests[0]);
 
   const stringifyResponse = JSON.stringify(ecidResponse);
-  await t.expect(stringifyResponse).contains("ecid");
+  await t.expect(stringifyResponse).contains("ECID");
 });
