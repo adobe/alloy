@@ -117,11 +117,12 @@ export default (processIdSyncs, config, logger, optIn, eventManager) => {
 
             const ecidPayload = find(
               identityResultPayloads,
-              payload => payload.namespace === ecidNamespace
+              payload =>
+                payload.namespace && payload.namespace.code === ecidNamespace
             );
 
             if (ecidPayload) {
-              migration.createLegacyCookies(ecidPayload.value);
+              migration.createLegacyCookie(ecidPayload.id);
             }
           }
 

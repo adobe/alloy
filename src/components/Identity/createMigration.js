@@ -12,14 +12,13 @@ governing permissions and limitations under the License.
 
 import { cookieJar } from "../../utils";
 
-const secidCookieName = "s_ecid";
-
 export default orgId => {
   const amcvCookieName = `AMCV_${orgId}`;
 
   return {
     getEcidFromLegacyCookies() {
       let ecid = null;
+      const secidCookieName = "s_ecid";
 
       const legacyEcidCookieValue =
         cookieJar.get(secidCookieName) || cookieJar.get(amcvCookieName);
@@ -36,13 +35,10 @@ export default orgId => {
 
       return ecid;
     },
-    createLegacyCookies(ecid) {
-      const legacyCookieValue = `MCMID|${ecid}`;
-      if (!cookieJar.get(secidCookieName)) {
-        cookieJar.set(secidCookieName, legacyCookieValue);
-      }
-      if (!cookieJar.get(amcvCookieName)) {
-        cookieJar.set(amcvCookieName, legacyCookieValue);
+    createLegacyCookie(ecid) {
+      const amcvCookieValue = cookieJar.get(amcvCookieName);
+      if (!amcvCookieValue) {
+        cookieJar.set(amcvCookieName, `MCMID|${ecid}`);
       }
     }
   };

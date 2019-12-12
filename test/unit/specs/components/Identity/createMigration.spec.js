@@ -56,26 +56,16 @@ describe("createMigration", () => {
       expect(migration.getEcidFromLegacyCookies()).toBeNull();
     });
   });
-  describe("createLegacyCookies", () => {
+  describe("createLegacyCookie", () => {
     it("should create an AMCV cookie with the value passed", () => {
-      migration.createLegacyCookies("1234");
+      migration.createLegacyCookie("1234");
       expect(cookieJar.get("AMCV_TEST_ORG")).toEqual("MCMID|1234");
-    });
-    it("should create an s_ecid cookie with the value passed", () => {
-      migration.createLegacyCookies("1234");
-      expect(cookieJar.get("s_ecid")).toEqual("MCMID|1234");
     });
     it("should not write AMCV cookie if already present", () => {
       const cookieValue = "existing value";
       cookieJar.set("AMCV_TEST_ORG", cookieValue);
-      migration.createLegacyCookies("1234");
+      migration.createLegacyCookie("1234");
       expect(cookieJar.get("AMCV_TEST_ORG")).toEqual(cookieValue);
-    });
-    it("should not write s_ecid cookie if already present", () => {
-      const cookieValue = "existing value";
-      cookieJar.set("s_ecid", cookieValue);
-      migration.createLegacyCookies("1234");
-      expect(cookieJar.get("s_ecid")).toEqual(cookieValue);
     });
   });
 });
