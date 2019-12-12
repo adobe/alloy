@@ -10,5 +10,32 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
 import removeAttribute from "../../../../../../../src/components/Personalization/helper/dom/removeAttribute";
+import {
+  createNode,
+  removeNode,
+  selectNodes
+} from "../../../../../../../src/utils/dom";
+import {
+  getAttribute,
+  setAttribute
+} from "../../../../../../../src/components/Personalization/helper/dom";
+
+describe("Personalization::DOM::setAttribute", () => {
+  afterEach(() => {
+    selectNodes("#fooById").forEach(removeNode);
+  });
+
+  it("should remove the element's attribute", () => {
+    const element = createNode("style", { id: "fooById" });
+    setAttribute(element, "innerText", "dummyValue");
+
+    const attr = getAttribute(element, "innerText");
+    expect(attr).toEqual("dummyValue");
+
+    removeAttribute(element, "innerText");
+    const removedAttr = getAttribute(element, "innerText");
+
+    expect(removedAttr).toBeNull();
+  });
+});
