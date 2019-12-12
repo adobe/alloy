@@ -10,5 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
 import getChildren from "../../../../../../../src/components/Personalization/helper/dom/getChildren";
+import createFragment from "../../../../../../../src/components/Personalization/helper/dom/createFragment";
+
+describe("Personalization::helper::dom::getChildren", () => {
+  it("returns an array of children", () => {
+    const element = createFragment(
+      `<div id="foo">foo</div><h1>hello there</h1>`
+    );
+    const result = getChildren(element);
+
+    expect(result.length).toEqual(2);
+    expect(result[0].tagName).toEqual("DIV");
+    expect(result[1].tagName).toEqual("H1");
+  });
+
+  it("returns empty array if there are not children", () => {
+    const element = createFragment();
+    const result = getChildren(element);
+
+    expect(result.length).toEqual(0);
+  });
+});
