@@ -20,11 +20,11 @@ import { getAttribute } from "../../../../../../../src/components/Personalizatio
 
 describe("Personalization::DOM::setAttribute", () => {
   afterEach(() => {
-    selectNodes("#fooById").forEach(removeNode);
+    selectNodes("#fooId").forEach(removeNode);
   });
 
   it("should set the attribute for the element", () => {
-    const element = createNode("style", { id: "fooById" });
+    const element = createNode("div", { id: "fooId" });
     setAttribute(element, "innerText", "dummyValue");
 
     const attr = getAttribute(element, "innerText");

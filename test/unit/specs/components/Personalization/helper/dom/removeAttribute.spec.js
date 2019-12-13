@@ -21,13 +21,13 @@ import {
   setAttribute
 } from "../../../../../../../src/components/Personalization/helper/dom";
 
-describe("Personalization::DOM::setAttribute", () => {
+describe("Personalization::DOM::removeAttribute", () => {
   afterEach(() => {
-    selectNodes("#fooById").forEach(removeNode);
+    selectNodes("#fooId").forEach(removeNode);
   });
 
   it("should remove the element's attribute", () => {
-    const element = createNode("style", { id: "fooById" });
+    const element = createNode("div", { id: "fooId" });
     setAttribute(element, "innerText", "dummyValue");
 
     const attr = getAttribute(element, "innerText");
