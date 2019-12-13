@@ -18,6 +18,7 @@ describe("Personalization::turbine::executeRules", () => {
     const event = "event";
     const actionSpy = jasmine.createSpy();
     const logger = jasmine.createSpyObj("logger", ["error", "log"]);
+    logger.enabled = true;
     const rules = [
       {
         actions: [
@@ -48,6 +49,7 @@ describe("Personalization::turbine::executeRules", () => {
     const action = "action";
     const event = "event";
     const logger = jasmine.createSpyObj("logger", ["error", "log"]);
+    logger.enabled = true;
     const rules = [
       {
         actions: [

@@ -39,17 +39,26 @@ export default (rules, ruleComponentModules, logger) => {
   };
 
   const getErrorMessage = (ruleComponent, rule, errorMessage, errorStack) => {
-    return `Failed to execute ${ruleComponent.moduleType} for ${
-      rule.name
-    } rule. ${errorMessage} ${errorStack ? `\n ${errorStack}` : ""}`;
+    const ruleRespresentation = JSON.stringify(rule);
+
+    return `Failed to execute ${
+      ruleComponent.moduleType
+    } for ${ruleRespresentation} rule.
+    ${errorMessage} ${errorStack ? `\n ${errorStack}` : ""}`;
   };
 
   const logActionError = (action, rule, e) => {
-    logger.error(getErrorMessage(action, rule, e.message, e.stack));
+    if (logger.enabled) {
+      logger.error(getErrorMessage(action, rule, e.message, e.stack));
+    }
   };
 
   const logRuleCompleted = rule => {
-    logger.log(`Rule ${rule.name} fired.`);
+    if (logger.enabled) {
+      const ruleRespresentation = JSON.stringify(rule);
+
+      logger.log(`Rule ${ruleRespresentation} fired.`);
+    }
   };
 
   const runActions = (rule, syntheticEvent) => {
