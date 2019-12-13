@@ -10,5 +10,33 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
 import insertAfter from "../../../../../../../src/components/Personalization/helper/dom/insertAfter";
+import {
+  selectNodes,
+  removeNode,
+  appendNode,
+  createNode
+} from "../../../../../../../src/utils/dom";
+import {
+  getElementById,
+  getNextSibling
+} from "../../../../../../../src/components/Personalization/helper/dom";
+
+describe("Personalization::DOM::insertAfter", () => {
+  afterEach(() => {
+    selectNodes("#style1").forEach(removeNode);
+    selectNodes("#style2").forEach(removeNode);
+  });
+
+  it("inserts a node after an element", () => {
+    const element1 = createNode("style", { id: "style1" });
+    const element2 = createNode("style", { id: "style2" });
+    appendNode(document.head, element1);
+    insertAfter(element1, element2);
+
+    const node1 = getElementById("style1");
+    const node2 = getNextSibling(node1);
+
+    expect(node2.id).toEqual("style2");
+  });
+});
