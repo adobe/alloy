@@ -11,7 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { getApexDomain, cookieJar } from "../../utils";
-
+// TODO: We are already retrieving the apex in core; find a way to reuse it.
+// Maybe default the domain in the cookieJar to apex while allowing overrides.
 const apexDomain = getApexDomain(window, cookieJar);
 
 export default orgId => {
@@ -41,7 +42,9 @@ export default orgId => {
       const amcvCookieValue = cookieJar.get(amcvCookieName);
       if (!amcvCookieValue) {
         cookieJar.set(amcvCookieName, `MCMID|${ecid}`, {
-          domain: apexDomain
+          domain: apexDomain,
+          // Without `expires` this will be a session cookie.
+          expires: 390 // days, or 13 months.
         });
       }
     }
