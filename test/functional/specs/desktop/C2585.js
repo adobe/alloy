@@ -1,11 +1,14 @@
 import { Selector } from "testcafe";
 import testServerUrl from "../../src/constants/testServerUrl";
+import fixtureFactory from "../../src/fixtureFactory";
 
 const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloySdk.html`;
 
-fixture`C2585: Throws error when configure is not the first command executed.`.page(
-  urlCollector
-);
+fixtureFactory({
+  title:
+    "C2585: Throws error when configure is not the first command executed.",
+  url: urlCollector
+});
 
 test.meta({
   ID: "C2585",
@@ -13,7 +16,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Regression: Throw error when configure is not the first command executed.", async t => {
+test("Test C2585: Throw error when configure is not the first command executed.", async t => {
   // Note: unable to enable logging with url parameter or enabler logger config.
 
   await t.click(Selector("#logger-button"));

@@ -1,10 +1,12 @@
 import { Selector } from "testcafe";
+import fixtureFactory from "../../src/fixtureFactory";
 
 const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html?alloy_debug=true`;
 
-fixture`C2586: Toggle logging through the querystring parameter.`.page(
-  urlCollector
-);
+fixtureFactory({
+  title: "C2586: Toggle logging through the querystring parameter.",
+  url: urlCollector
+});
 
 test.meta({
   ID: "C2586",
@@ -12,13 +14,13 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Regression: Toggle logging through the querystring parameter.", async t => {
+test("Test C2586: Toggle logging through the querystring parameter.", async t => {
   await t.click(Selector("#event-button"));
   const { log } = await t.getBrowserConsoleMessages();
   await t.expect(log).match(/The library must be configured first./);
 });
 
-test("Regression: Set logging to false through querystring parameter..", async t => {
+test("Test C2586: Set logging to false through querystring parameter..", async t => {
   await t.navigateTo(
     "http://127.0.0.1:8080/test/functional/sandbox/html/bogusCommand.html?alloy_debug=false"
   );

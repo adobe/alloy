@@ -22,6 +22,7 @@ describe("Event Command", () => {
       ["documentUnloading"],
       ["userData", "userXdm"]
     );
+    event.validate = () => [];
     eventManager = {
       createEvent() {
         return event;
@@ -33,6 +34,7 @@ describe("Event Command", () => {
           return Promise.resolve("sendEventResult");
         })
     };
+
     const dataCollector = createDataCollector({
       eventManager
     });

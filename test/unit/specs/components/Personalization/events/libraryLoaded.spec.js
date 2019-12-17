@@ -10,5 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
 import libraryLoaded from "../../../../../../src/components/Personalization/events/libraryLoaded";
+
+describe("Personalization::events", () => {
+  it("should invoke trigger()", () => {
+    const settings = {};
+    const trigger = jasmine.createSpy();
+
+    libraryLoaded(settings, trigger);
+
+    expect(trigger).toHaveBeenCalled();
+  });
+});

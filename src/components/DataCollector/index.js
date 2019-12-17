@@ -12,7 +12,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const createDataCollector = ({ eventManager }) => {
+const CONFIG_DOC_URI =
+  "https://www.adobe.io/apis/experienceplatform/home/services/web-sdk.html#!api-specification/markdown/narrative/edge/fundamentals/executing-commands.md";
+
+const createDataCollector = ({ eventManager, logger }) => {
   return {
     commands: {
       event(options) {
@@ -44,6 +47,15 @@ const createDataCollector = ({ eventManager }) => {
 
         event.userXdm = xdm;
         event.userData = data;
+
+        const warnings = event.validate();
+        if (warnings.length) {
+          logger.warn(
+            `Invalid event command options:\n\t - ${warnings.join(
+              "\n\t - "
+            )}\nFor documentation covering the event command see: ${CONFIG_DOC_URI}`
+          );
+        }
 
         return eventManager.sendEvent(event, {
           isViewStart: viewStart

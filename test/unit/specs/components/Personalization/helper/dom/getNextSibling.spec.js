@@ -10,5 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
 import getNextSibling from "../../../../../../../src/components/Personalization/helper/dom/getNextSibling";
+import createFragment from "../../../../../../../src/components/Personalization/helper/dom/createFragment";
+import getFirstChild from "../../../../../../../src/components/Personalization/helper/dom/getFirstChild";
+
+describe("Personalization::helper::dom::getNextSibling", () => {
+  it("returns the element next sibling", () => {
+    const element = createFragment(
+      `<div id="foo">foo</div><h1>hello there</h1>`
+    );
+    const firstElement = getFirstChild(element);
+    const nextSibling = getNextSibling(firstElement);
+
+    expect(nextSibling.tagName).toEqual("H1");
+  });
+
+  it("returns null if the element doesn't have a sibling node", () => {
+    const element = createFragment(`<div id="foo">foo</div>`);
+    const firstElement = getFirstChild(element);
+    const nextSibling = getNextSibling(firstElement);
+
+    expect(nextSibling).toBeNull();
+  });
+});

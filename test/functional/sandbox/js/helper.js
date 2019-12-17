@@ -44,12 +44,35 @@
     onRoutePostInit: initHighlighter
   });
 
+  router.register("/getLibraryInfo", "getLibraryInfo", {
+    onPostInit: function() {
+      alloy("getLibraryInfo").then(console.log);
+    }
+  });
+
+  router.register("/debugTrue", "debugTrue", {
+    onPostInit: function() {
+      alloy("debug", {
+        enabled: true
+      });
+    }
+  });
+
+  router.register("/debugFalse", "debugFalse", {
+    onPostInit: function() {
+      alloy("debug", {
+        enabled: false
+      });
+    }
+  });
+
   router.register("/debugEnabled", "debugEnabled", {
     onPostInit: function() {
       alloy("configure", {
         debugEnabled: true,
         configId: "9999999",
-        orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+        orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
+        edgeBasePath: window.edgeBasePath
       });
     }
   });
@@ -58,7 +81,8 @@
     onPostInit: function() {
       alloy("configure", {
         errorsEnabled: false,
-        debugEnabled: true
+        debugEnabled: true,
+        edgeBasePath: window.edgeBasePath
       });
     }
   });
@@ -67,7 +91,8 @@
     onPostInit: function() {
       alloy("configure", {
         configId: "9999999",
-        orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+        orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
+        edgeBasePath: window.edgeBasePath
       });
     }
   });
@@ -77,7 +102,8 @@
       alloy("configure", {
         debugEnabled: false,
         configId: "9999999",
-        orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+        orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
+        edgeBasePath: window.edgeBasePath
       });
     }
   });
