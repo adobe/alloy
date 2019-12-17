@@ -41,7 +41,6 @@ const createContext = ({ config, logger }) => {
 };
 
 createContext.namespace = "Context";
-createContext.abbreviation = "CO";
 createContext.configValidators = {
   context: {
     defaultValue: Object.keys(optionalContexts),

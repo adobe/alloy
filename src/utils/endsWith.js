@@ -10,18 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import componentCreators from "../../../../src/core/componentCreators";
-
-describe("componentCreators", () => {
-  it("is an array of component creators", () => {
-    expect(componentCreators).toEqual(jasmine.any(Array));
-    componentCreators.forEach(componentCreator => {
-      expect(componentCreator).toEqual(jasmine.any(Function));
-      expect(componentCreator.namespace).toEqual(jasmine.any(String));
-
-      if (componentCreator.configValidators) {
-        expect(componentCreator.configValidators).toEqual(jasmine.any(Object));
-      }
-    });
-  });
-});
+/**
+ * Whether a string ends with the characters of a specified string
+ * @param {String} str The string to search within.
+ * @param {String} suffix The string to search for.
+ * @returns {boolean}
+ */
+export default (str, suffix) => str.substr(-suffix.length) === suffix;

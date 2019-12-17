@@ -1,40 +1,32 @@
 import createCustomerIds from "./customerIds/createCustomerIds";
-import { defer } from "../../utils";
-import { EXPERIENCE_CLOUD_ID } from "./constants/cookieNames";
-import createMigration from "./createMigration";
-import areThirdPartyCookiesSupported from "../../utils/areThirdPartyCookiesSupported";
+import {
+  defer,
+  cookieJar,
+  getNamespacedCookieName,
+  areThirdPartyCookiesSupportedByDefault,
+  find
+} from "../../utils";
+import { IDENTITY_COOKIE_KEY } from "../../constants/cookieDetails";
 import getBrowser from "../../utils/getBrowser";
+import createMigration from "./createMigration";
+import ecidNamespace from "../../constants/ecidNamespace";
 
-const addIdsContext = (payload, ecid) => {
-  payload.addIdentity(EXPERIENCE_CLOUD_ID, {
+const addEcidToPayload = (payload, ecid) => {
+  payload.addIdentity(ecidNamespace, {
     id: ecid
   });
 };
 
-export default (idSyncs, config, logger, cookieJar, optIn, eventManager) => {
-  let deferredForEcid;
-  let alreadyQueriedForIdSyncs = false;
+export default (processIdSyncs, config, logger, optIn, eventManager) => {
   const { idMigrationEnabled, orgId } = config;
-  const migration = createMigration(orgId, idMigrationEnabled);
-
-  // TODO: Fetch from server if ECID is not available.
-  const getEcid = () => {
-    const ecid =
-      cookieJar.get(EXPERIENCE_CLOUD_ID) ||
-      migration.getEcidFromLegacyCookie(cookieJar);
-    return ecid;
-  };
-
-  // #if _REACTOR
-  // This is a way for the ECID data element in the Reactor extension
-  // to get the ECID synchronously since data elements are required
-  // to be synchronous.
-  config.reactorRegisterGetEcid(() => {
-    return optIn.isOptedIn() ? getEcid() : undefined;
-  });
-  // #endif
-
-  const customerIds = createCustomerIds(cookieJar, eventManager);
+  const identityCookieName = getNamespacedCookieName(
+    orgId,
+    IDENTITY_COOKIE_KEY
+  );
+  let deferredForEcid;
+  const migration = createMigration(orgId);
+  const hasIdentityCookie = () => Boolean(cookieJar.get(identityCookieName));
+  const customerIds = createCustomerIds(eventManager);
 
   return {
     lifecycle: {
@@ -42,93 +34,114 @@ export default (idSyncs, config, logger, cookieJar, optIn, eventManager) => {
       onBeforeEvent({ event }) {
         return optIn.whenOptedIn().then(() => {
           const identityQuery = {
-            identity: {}
+            fetch: [ecidNamespace]
           };
-          let sendIdentityQuery = false;
 
-          if (
-            !alreadyQueriedForIdSyncs &&
-            config.idSyncEnabled &&
-            idSyncs.hasExpired()
-          ) {
-            alreadyQueriedForIdSyncs = true;
-            identityQuery.identity.exchange = true;
-            sendIdentityQuery = true;
-
+          // TODO: Are these things being moved to the Konductor/config service?
+          if (config.idSyncEnabled) {
+            identityQuery.exchange = true;
             if (config.idSyncContainerId !== undefined) {
-              identityQuery.identity.containerId = config.idSyncContainerId;
+              identityQuery.containerId = config.idSyncContainerId;
             }
           }
 
           if (!config.thirdPartyCookiesEnabled) {
-            identityQuery.identity.thirdPartyCookiesEnabled = false;
-            sendIdentityQuery = true;
+            identityQuery.thirdPartyCookiesEnabled = false;
           }
 
-          if (sendIdentityQuery) {
-            event.mergeQuery(identityQuery);
-          }
+          event.mergeQuery({
+            identity: identityQuery
+          });
         });
       },
       // Waiting for opt-in because we'll be reading the ECID from a cookie
       // TO-DOCUMENT: We wait for ECID before trigger any events.
       onBeforeDataCollection({ payload }) {
         return optIn.whenOptedIn().then(() => {
-          const ecid = getEcid();
-
           let promise;
 
-          if (ecid) {
-            addIdsContext(payload, ecid);
-          } else if (deferredForEcid) {
-            // We don't have an ECID, but the first request has gone out to
-            // fetch it. We must wait for the response to come back with the
-            // ECID before we can apply it to this payload.
-            logger.log("Delaying request while retrieving ECID from server.");
-            promise = deferredForEcid.promise.then(() => {
-              logger.log("Resuming previously delayed request.");
-              addIdsContext(payload, getEcid());
-            });
-          } else {
-            // We don't have an ECID and no request has gone out to fetch it.
-            // We won't apply the ECID to this request, but we'll set up a
-            // promise so that future requests can know when the ECID has returned.
-            deferredForEcid = defer();
-            payload.expectResponse();
-            if (
-              config.thirdPartyCookiesEnabled &&
-              areThirdPartyCookiesSupported(getBrowser(window))
-            ) {
-              payload.useIdThirdPartyDomain();
+          if (!hasIdentityCookie()) {
+            const ecidToMigrate =
+              idMigrationEnabled && migration.getEcidFromLegacyCookies();
+
+            if (ecidToMigrate) {
+              // We don't have an identity cookie, but we do have an ECID
+              // from a legacy cookie that we can explicitly provide
+              // to the server, which is sufficient until the identity cookie
+              // gets set.
+              addEcidToPayload(payload, ecidToMigrate);
+            } else if (deferredForEcid) {
+              // We don't have an identity cookie, but the first request has
+              // been sent to get it. We must wait for the response to the first
+              // request to come back and a cookie set before we can let this
+              // request go out.
+              logger.log("Delaying request while retrieving ECID from server.");
+              promise = deferredForEcid.promise.then(() => {
+                logger.log("Resuming previously delayed request.");
+              });
+            } else {
+              // We don't have an identity cookie and no request has gone out
+              // to get it. We'll let this request go out to fetch the cookie,
+              // but we'll set up a promise so that future requests can
+              // know when the cookie has been set. We don't let additional
+              // requests to go out in the meantime because a new ECID would
+              // be minted for each request (each request would be seen as a
+              // new visitor).
+              deferredForEcid = defer();
+              payload.expectResponse();
+              // If third-party cookies are enabled by the customer and
+              // supported by the browser, we will send the request to a
+              // a third-party domain that allows for more accurate
+              // identification of the user through use of a third-party cookie.
+              if (
+                config.thirdPartyCookiesEnabled &&
+                areThirdPartyCookiesSupportedByDefault(getBrowser(window))
+              ) {
+                payload.useIdThirdPartyDomain();
+              }
             }
           }
+
           customerIds.addToPayload(payload);
           return promise;
         });
       },
 
-      // Waiting for opt-in because we'll be writing the ECID to a cookie
+      // Waiting for opt-in because we'll be reading the ECID from a cookie
       onResponse({ response }) {
         return optIn.whenOptedIn().then(() => {
-          const ecidPayloads = response.getPayloadsByType("identity:persist");
+          if (idMigrationEnabled) {
+            const identityResultPayloads = response.getPayloadsByType(
+              "identity:result"
+            );
 
-          if (ecidPayloads.length > 0) {
-            const ecid = ecidPayloads[0].id;
-            cookieJar.set(EXPERIENCE_CLOUD_ID, ecid);
-            migration.createAmcvCookie(ecid);
-            if (deferredForEcid) {
-              deferredForEcid.resolve();
+            const ecidPayload = find(
+              identityResultPayloads,
+              payload =>
+                payload.namespace && payload.namespace.code === ecidNamespace
+            );
+
+            if (ecidPayload) {
+              migration.createLegacyCookie(ecidPayload.id);
             }
           }
 
-          idSyncs.process(response.getPayloadsByType("identity:exchange"));
+          // If we were queuing requests until we received the identity cookie,
+          // and now we have the identity cookie, we can let the queued
+          // requests go out. Technically, we should always have an identity
+          // cookie at this point, but we check just to be sure.
+          if (deferredForEcid && hasIdentityCookie()) {
+            deferredForEcid.resolve();
+          }
+
+          return processIdSyncs(
+            response.getPayloadsByType("identity:exchange"),
+            logger
+          );
         });
       }
     },
     commands: {
-      getEcid() {
-        return optIn.whenOptedIn().then(getEcid);
-      },
       setCustomerIds(options) {
         return optIn.whenOptedIn().then(() => customerIds.sync(options));
       }

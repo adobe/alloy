@@ -10,18 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import componentCreators from "../../../../src/core/componentCreators";
+import { COOKIE_NAME_PREFIX } from "../constants/cookieDetails";
+import sanitizeOrgIdForCookieName from "./sanitizeOrgIdForCookieName";
 
-describe("componentCreators", () => {
-  it("is an array of component creators", () => {
-    expect(componentCreators).toEqual(jasmine.any(Array));
-    componentCreators.forEach(componentCreator => {
-      expect(componentCreator).toEqual(jasmine.any(Function));
-      expect(componentCreator.namespace).toEqual(jasmine.any(String));
-
-      if (componentCreator.configValidators) {
-        expect(componentCreator.configValidators).toEqual(jasmine.any(Object));
-      }
-    });
-  });
-});
+/**
+ * Determines whether a cookie name is namespaced according to the contract
+ * defined by the server.
+ * @param {String} orgId The org ID configured for the Alloy instance.
+ * @param {String} name The cookie name.
+ * @returns {boolean}
+ */
+export default (orgId, name) =>
+  name.indexOf(
+    `${COOKIE_NAME_PREFIX}_${sanitizeOrgIdForCookieName(orgId)}_`
+  ) === 0;

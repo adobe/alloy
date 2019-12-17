@@ -19,9 +19,9 @@ export default ({
   getImmediatelyAvailableTools
 }) => {
   componentCreators.forEach(createComponent => {
-    const { namespace, abbreviation } = createComponent;
+    const { namespace } = createComponent;
     // TO-DOCUMENT: Helpers that we inject into factories.
-    const tools = getImmediatelyAvailableTools(abbreviation);
+    const tools = getImmediatelyAvailableTools(namespace);
     let component;
     try {
       component = createComponent(tools);

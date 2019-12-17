@@ -1,15 +1,11 @@
 import { normalizeCustomerIds, validateCustomerIds } from "./util";
 import {
-  crc32,
   convertBufferToHex,
   convertStringToSha256Buffer,
   clone
 } from "../../../utils";
-import { CUSTOMER_ID_HASH } from "../constants/cookieNames";
 
-export default (cookieJar, eventManager) => {
-  const updateChecksum = checksum => cookieJar.set(CUSTOMER_ID_HASH, checksum);
-
+export default eventManager => {
   const hash = (originalIds, normalizedIds) => {
     const idNames = Object.keys(normalizedIds);
     const idsToHash = idNames.filter(idName => originalIds[idName].hashEnabled);
@@ -25,12 +21,10 @@ export default (cookieJar, eventManager) => {
   };
 
   const state = {
-    haveChanged: false,
     ids: {},
     hasIds: false
   };
-  const setState = (customerIdChanged, normalizedIds) => {
-    state.haveChanged = customerIdChanged;
+  const setState = normalizedIds => {
     state.ids = {
       ...state.ids,
       ...normalizedIds
@@ -39,30 +33,20 @@ export default (cookieJar, eventManager) => {
   };
   const customerIds = {
     addToPayload(payload) {
-      const currentState = clone(state);
-      if (currentState.hasIds) {
-        Object.keys(currentState.ids).forEach(name => {
-          payload.addIdentity(name, currentState.ids[name]);
+      if (state.hasIds) {
+        const ids = clone(state.ids);
+        Object.keys(ids).forEach(name => {
+          payload.addIdentity(name, ids[name]);
         });
-        payload.mergeMeta({
-          identity: { customerIdChanged: currentState.haveChanged }
-        });
-        state.haveChanged = false;
       }
     },
     sync(originalIds) {
       validateCustomerIds(originalIds);
 
       const normalizedIds = normalizeCustomerIds(originalIds);
-      const checksum = crc32(JSON.stringify(normalizedIds)).toString(36);
-      const customerIdChanged = checksum !== cookieJar.get(CUSTOMER_ID_HASH);
-
-      if (customerIdChanged) {
-        updateChecksum(checksum);
-      }
 
       return hash(originalIds, normalizedIds).then(hashedIds => {
-        setState(customerIdChanged, hashedIds);
+        setState(hashedIds);
         // FIXME: Konductor shouldn't require an event.
         const event = eventManager.createEvent();
         return eventManager.sendEvent(event);

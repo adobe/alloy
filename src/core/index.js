@@ -11,20 +11,14 @@ governing permissions and limitations under the License.
 */
 
 import instanceFactory from "./instanceFactory";
-import {
-  getTopLevelCookieDomain,
-  memoize,
-  storageFactory,
-  cookieJar
-} from "../utils";
-import createCookieProxy from "./createCookieProxy";
-import createComponentNamespacedCookieJar from "./createComponentNamespacedCookieJar";
+import { getApexDomain, storageFactory, cookieJar } from "../utils";
 import createLogController from "./createLogController";
 import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
 import createNetwork from "./network/createNetwork";
 import createOptIn from "./createOptIn";
 import createEvent from "./createEvent";
+import createResponse from "./createResponse";
 import executeCommandFactory from "./executeCommandFactory";
 import componentCreators from "./componentCreators";
 import buildAndValidateConfig from "./buildAndValidateConfig";
@@ -33,17 +27,16 @@ import createConfig from "./config/createConfig";
 import createConfigValidator from "./config/createValidator";
 import createCoreConfigs from "./config/createCoreConfigs";
 import handleErrorFactory from "./handleErrorFactory";
-import cookieJarToolFactory from "./tools/cookieJarToolFactory";
 import createNetworkStrategy from "./network/createNetworkStrategy";
 import createLogger from "./createLogger";
 import createEventManager from "./createEventManager";
 import createOrgNamespacedCookieName from "./createOrgNamespacedCookieName";
+import createCookieTransfer from "./createCookieTransfer";
 
 // eslint-disable-next-line no-underscore-dangle
 const instanceNamespaces = window.__alloyNS;
 
 const createNamespacedStorage = storageFactory(window);
-const memoizedGetTopLevelDomain = memoize(getTopLevelCookieDomain);
 
 let console;
 
@@ -57,6 +50,7 @@ console = turbine.logger;
 // #endif
 
 const coreConfigValidators = createCoreConfigs();
+const apexDomain = getApexDomain(window, cookieJar);
 
 if (instanceNamespaces) {
   instanceNamespaces.forEach(instanceNamespace => {
@@ -71,9 +65,6 @@ if (instanceNamespaces) {
     const componentRegistry = createComponentRegistry();
     const lifecycle = createLifecycle(componentRegistry);
     const networkStrategy = createNetworkStrategy(window, logger);
-    const getTopLevelDomain = () => {
-      return memoizedGetTopLevelDomain(window, cookieJar);
-    };
     let errorsEnabled = true;
     const getErrorsEnabled = () => {
       return errorsEnabled;
@@ -103,40 +94,37 @@ if (instanceNamespaces) {
         cookieJar,
         createOrgNamespacedCookieName
       });
+      const cookieTransfer = createCookieTransfer({
+        cookieJar,
+        orgId: config.orgId,
+        apexDomain
+      });
       const network = createNetwork({
         config,
         logger,
-        lifecycle,
         networkStrategy
       });
       const eventManager = createEventManager({
         createEvent,
+        createResponse,
         optIn,
         lifecycle,
+        cookieTransfer,
         network,
         config,
         logger
-      });
-      const createCookieJarTool = cookieJarToolFactory({
-        config,
-        createCookieProxy,
-        createComponentNamespacedCookieJar,
-        getTopLevelDomain,
-        createOrgNamespacedCookieName
       });
 
       return initializeComponents({
         componentCreators,
         lifecycle,
         componentRegistry,
-        getImmediatelyAvailableTools(componentAbbreviation) {
+        getImmediatelyAvailableTools(componentNamespace) {
           return {
             config,
             optIn,
-            network,
             eventManager,
-            cookieJar: createCookieJarTool(componentAbbreviation),
-            logger: logController.createComponentLogger(componentAbbreviation)
+            logger: logController.createComponentLogger(componentNamespace)
           };
         }
       });

@@ -10,18 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import componentCreators from "../../../../src/core/componentCreators";
-
-describe("componentCreators", () => {
-  it("is an array of component creators", () => {
-    expect(componentCreators).toEqual(jasmine.any(Array));
-    componentCreators.forEach(componentCreator => {
-      expect(componentCreator).toEqual(jasmine.any(Function));
-      expect(componentCreator.namespace).toEqual(jasmine.any(String));
-
-      if (componentCreator.configValidators) {
-        expect(componentCreator.configValidators).toEqual(jasmine.any(Object));
-      }
-    });
-  });
-});
+/**
+ * Asserts that functions were called in a particular order.
+ * @param {Array} orderedFunctions The array of functions in the order
+ * they should have been called.
+ */
+export default orderedFunctions => {
+  for (let i = 0; i < orderedFunctions.length - 1; i += 1) {
+    const fn = orderedFunctions[i];
+    const nextFn = orderedFunctions[i + 1];
+    expect(fn).toHaveBeenCalledBefore(nextFn);
+  }
+};

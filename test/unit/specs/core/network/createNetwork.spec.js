@@ -14,8 +14,8 @@ import createNetwork from "../../../../../src/core/network/createNetwork";
 import createConfig from "../../../../../src/core/config/createConfig";
 
 describe("createNetwork", () => {
+  const edgeDomain = "alloy.mysite.com";
   const config = createConfig({
-    edgeDomain: "alloy.mysite.com",
     edgeBasePath: "ee",
     configId: "myconfigId"
   });
@@ -24,18 +24,12 @@ describe("createNetwork", () => {
 
   const mockResponse = { requestId: "myrequestid", handle: [] };
 
-  let lifecycle;
   let network;
   let networkStrategy;
 
   beforeEach(() => {
     logger = jasmine.createSpyObj("logger", ["log"]);
     logger.enabled = true;
-    lifecycle = {
-      onBeforeSend: jasmine.createSpy().and.returnValue(Promise.resolve()),
-      onResponse: jasmine.createSpy().and.returnValue(Promise.resolve()),
-      onRequestFailure: jasmine.createSpy().and.returnValue(Promise.resolve())
-    };
     networkStrategy = jasmine.createSpy().and.returnValue(
       Promise.resolve({
         status: 200,
@@ -45,13 +39,12 @@ describe("createNetwork", () => {
     network = createNetwork({
       config,
       logger,
-      lifecycle,
       networkStrategy
     });
   });
 
   it("can call interact", () => {
-    return network.sendRequest({}).then(() => {
+    return network.sendRequest({}, edgeDomain).then(() => {
       expect(networkStrategy).toHaveBeenCalledWith(
         jasmine.stringMatching(
           /^https:\/\/alloy\.mysite\.com\/ee\/v1\/interact\?configId=myconfigId&requestId=[0-9a-f-]+$/
@@ -63,20 +56,25 @@ describe("createNetwork", () => {
   });
 
   it("can call collect", () => {
-    return network.sendRequest({}, { expectsResponse: false }).then(() => {
-      expect(networkStrategy).toHaveBeenCalledWith(
-        jasmine.stringMatching(
-          /^https:\/\/alloy\.mysite\.com\/ee\/v1\/collect\?configId=myconfigId&requestId=[0-9a-f-]+$/
-        ),
-        "{}",
-        false
-      );
-    });
+    return network
+      .sendRequest({}, edgeDomain, { expectsResponse: false })
+      .then(() => {
+        expect(networkStrategy).toHaveBeenCalledWith(
+          jasmine.stringMatching(
+            /^https:\/\/alloy\.mysite\.com\/ee\/v1\/collect\?configId=myconfigId&requestId=[0-9a-f-]+$/
+          ),
+          "{}",
+          false
+        );
+      });
   });
 
   it("can call collect when the document is unloading", () => {
     return network
-      .sendRequest({}, { expectsResponse: false, documentUnloading: true })
+      .sendRequest({}, edgeDomain, {
+        expectsResponse: false,
+        documentUnloading: true
+      })
       .then(() => {
         expect(networkStrategy).toHaveBeenCalledWith(
           jasmine.stringMatching(
@@ -90,7 +88,10 @@ describe("createNetwork", () => {
 
   it("uses collect when a request expects a response and is an exit link", () => {
     return network
-      .sendRequest({}, { expectsResponse: true, documentUnloading: true })
+      .sendRequest({}, edgeDomain, {
+        expectsResponse: true,
+        documentUnloading: true
+      })
       .then(() => {
         expect(networkStrategy).toHaveBeenCalledWith(
           jasmine.stringMatching(
@@ -102,39 +103,28 @@ describe("createNetwork", () => {
       });
   });
 
-  it("uses ID third-party domain when expected", () => {
-    return network.sendRequest({}, { useIdThirdPartyDomain: true }).then(() => {
-      expect(networkStrategy).toHaveBeenCalledWith(
-        jasmine.stringMatching(
-          /^https:\/\/adobedc\.demdex\.net\/ee\/v1\/interact\?configId=myconfigId&requestId=[0-9a-f-]+$/
-        ),
-        "{}",
-        false
-      );
-    });
-  });
-
   it("supports custom edgeBasePath settings", () => {
-    const { edgeDomain, configId } = config;
+    const { configId } = config;
     network = createNetwork({
-      config: createConfig({ edgeDomain, configId, edgeBasePath: "ee-beta-1" }),
+      config: createConfig({ configId, edgeBasePath: "ee-beta-1" }),
       logger,
-      lifecycle,
       networkStrategy
     });
-    return network.sendRequest({}, { documentUnloading: true }).then(() => {
-      expect(networkStrategy).toHaveBeenCalledWith(
-        jasmine.stringMatching(
-          /^https:\/\/alloy\.mysite\.com\/ee-beta-1\/v1\/collect\?configId=myconfigId&requestId=[0-9a-f-]+$/
-        ),
-        "{}",
-        true
-      );
-    });
+    return network
+      .sendRequest({}, edgeDomain, { documentUnloading: true })
+      .then(() => {
+        expect(networkStrategy).toHaveBeenCalledWith(
+          jasmine.stringMatching(
+            /^https:\/\/alloy\.mysite\.com\/ee-beta-1\/v1\/collect\?configId=myconfigId&requestId=[0-9a-f-]+$/
+          ),
+          "{}",
+          true
+        );
+      });
   });
 
   it("sends the payload", () => {
-    return network.sendRequest({ id: "mypayload" }).then(() => {
+    return network.sendRequest({ id: "mypayload" }, edgeDomain).then(() => {
       expect(JSON.parse(networkStrategy.calls.argsFor(0)[1])).toEqual({
         id: "mypayload"
       });
@@ -143,92 +133,60 @@ describe("createNetwork", () => {
 
   it("logs the request and response when response is expected", () => {
     const payload = { id: "mypayload2" };
-    return network.sendRequest(payload, { expectsResponse: true }).then(() => {
-      expect(logger.log).toHaveBeenCalledWith(
-        jasmine.stringMatching(/^Request .+: Sending request.$/),
-        JSON.parse(JSON.stringify(payload))
-      );
-      expect(logger.log).toHaveBeenCalledWith(
-        jasmine.stringMatching(/^Request .+: Received response.$/),
-        mockResponse
-      );
-    });
+    return network
+      .sendRequest(payload, edgeDomain, { expectsResponse: true })
+      .then(() => {
+        expect(logger.log).toHaveBeenCalledWith(
+          jasmine.stringMatching(/^Request .+: Sending request.$/),
+          JSON.parse(JSON.stringify(payload))
+        );
+        expect(logger.log).toHaveBeenCalledWith(
+          jasmine.stringMatching(/^Request .+: Received response.$/),
+          mockResponse
+        );
+      });
   });
 
   it("logs only the request when no response is expected", () => {
     const payload = { id: "mypayload2" };
-    return network.sendRequest(payload, { expectsResponse: false }).then(() => {
-      expect(logger.log).toHaveBeenCalledWith(
-        jasmine.stringMatching(
-          /^Request .+: Sending request \(no response is expected\).$/
-        ),
-        JSON.parse(JSON.stringify(payload))
-      );
-      expect(logger.log.calls.count()).toBe(1);
-    });
+    return network
+      .sendRequest(payload, edgeDomain, { expectsResponse: false })
+      .then(() => {
+        expect(logger.log).toHaveBeenCalledWith(
+          jasmine.stringMatching(
+            /^Request .+: Sending request \(no response is expected\).$/
+          ),
+          JSON.parse(JSON.stringify(payload))
+        );
+        expect(logger.log.calls.count()).toBe(1);
+      });
   });
 
-  it("runs onRequestFailure hook and rejects the returned promise with network error rather than lifecycle error", () => {
+  it("rejects the promise when a network error occurs", () => {
     networkStrategy.and.returnValue(Promise.reject(new Error("networkerror")));
-    lifecycle.onRequestFailure.and.returnValue(
-      Promise.reject(new Error("lifecycleerror"))
-    );
     return network
       .sendRequest({})
       .then(fail)
       .catch(error => {
-        expect(lifecycle.onRequestFailure).toHaveBeenCalledWith({
-          requestId: jasmine.anything()
-        });
         expect(error.message).toEqual(
           "Network request failed.\nCaused by: networkerror"
         );
       });
   });
 
-  it("runs onRequestFailure hook and rejects the promise when response is invalid json", () => {
+  it("rejects the promise when response is invalid json", () => {
     networkStrategy.and.returnValue(
       Promise.resolve({ status: 200, body: "badbody" })
     );
     return network
-      .sendRequest({})
+      .sendRequest({}, edgeDomain)
       .then(fail)
       .catch(error => {
-        expect(lifecycle.onRequestFailure).toHaveBeenCalledWith({
-          requestId: jasmine.anything()
-        });
         // The native parse error message is different based on the browser
-        // so we'll just check to parts we control.
+        // so we'll just check the parts we control.
         expect(error.message).toContain("Unexpected server response.\n");
         expect(error.message).toContain("\nResponse body: badbody");
       });
-  });
-
-  it("allows components to handle the response", () => {
-    const myResponse = {
-      requestId: "myrequestid",
-      handle: [
-        {
-          type: "mytype",
-          payload: { id: "myfragmentid" }
-        }
-      ]
-    };
-    lifecycle.onResponse.and.callFake(({ response, requestId }) => {
-      const cleanResponse = response.toJSON();
-      expect(cleanResponse).toEqual(myResponse);
-      expect(requestId).toBeDefined();
-      return Promise.resolve();
-    });
-    networkStrategy.and.returnValue(
-      Promise.resolve({
-        status: 200,
-        body: JSON.stringify(myResponse)
-      })
-    );
-    return network.sendRequest({}).then(() => {
-      expect(lifecycle.onResponse).toHaveBeenCalled();
-    });
   });
 
   [429, 500, 599].forEach(status => {
@@ -241,7 +199,7 @@ describe("createNetwork", () => {
 
         return Promise.resolve(result);
       });
-      return network.sendRequest({}).then(() => {
+      return network.sendRequest({}, edgeDomain).then(() => {
         expect(networkStrategy).toHaveBeenCalledTimes(3);
       });
     });
@@ -250,7 +208,7 @@ describe("createNetwork", () => {
       networkStrategy.and.returnValue(
         Promise.resolve({ status, body: "Server fault" })
       );
-      return network.sendRequest({}).catch(error => {
+      return network.sendRequest({}, edgeDomain).catch(error => {
         expect(networkStrategy).toHaveBeenCalledTimes(4);
         expect(error.message).toBe(
           `Network request failed.\nCaused by: Unexpected response status code ${status}. Response was: Server fault`
@@ -270,7 +228,7 @@ describe("createNetwork", () => {
         return Promise.resolve(result);
       });
       return network
-        .sendRequest({})
+        .sendRequest({}, edgeDomain)
         .then(fail)
         .catch(error => {
           expect(error.message).toBe(
@@ -288,7 +246,7 @@ describe("createNetwork", () => {
           body: JSON.stringify(mockResponse)
         });
       });
-      return network.sendRequest({}).then(() => {
+      return network.sendRequest({}, edgeDomain).then(() => {
         expect(networkStrategy).toHaveBeenCalledTimes(1);
       });
     });

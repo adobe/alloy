@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getTopLevelCookieDomain from "../../../../src/utils/getTopLevelCookieDomain";
+import getApexDomain from "../../../../src/utils/getApexDomain";
 
 const mockWindowWithHostname = hostname => {
   return {
@@ -28,7 +28,7 @@ describe("getTld", () => {
       set() {},
       remove() {}
     };
-    expect(getTopLevelCookieDomain(window, cookieJar)).toBe("");
+    expect(getApexDomain(window, cookieJar)).toBe("");
   });
 
   it("returns the first host that allows a cookie to be set", () => {
@@ -46,7 +46,7 @@ describe("getTld", () => {
       remove: jasmine.createSpy()
     };
 
-    expect(getTopLevelCookieDomain(window, cookieJar)).toBe("c.co.uk");
+    expect(getApexDomain(window, cookieJar)).toBe("c.co.uk");
     expect(cookieJar.remove).toHaveBeenCalled();
   });
 
@@ -65,7 +65,7 @@ describe("getTld", () => {
       remove: jasmine.createSpy()
     };
 
-    expect(getTopLevelCookieDomain(window, cookieJar)).toBe("10.30.34.68");
+    expect(getApexDomain(window, cookieJar)).toBe("10.30.34.68");
     expect(cookieJar.remove).toHaveBeenCalled();
   });
 });

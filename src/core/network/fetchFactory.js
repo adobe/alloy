@@ -15,6 +15,7 @@ export default fetch => {
     return fetch(url, {
       method: "POST",
       cache: "no-cache",
+      credentials: "include", // To set the cookie header in the request.
       headers: {
         "Content-Type": "text/plain; charset=UTF-8"
       },

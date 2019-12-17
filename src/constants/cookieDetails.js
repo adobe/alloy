@@ -10,8 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default {
-  ALLOY_COOKIE_NAME: "adobe_alloy", // TODO: Rename this cookie
-  ALLOY_OPT_IN_COOKIE_NAME: "adobe_alloy_optIn",
-  ALLOY_COOKIE_TTL_IN_DAYS: 180
-};
+export const IDENTITY_COOKIE_KEY = "identity";
+
+// Remember to also incorporate the org ID wherever cookies are read or written.
+export const COOKIE_NAME_PREFIX = "kndctr";
+
+// TODO: Currently the opt-in cookie is not managed by Konductor and therefore
+// does not use the same cookie prefix. This will change once Konductor
+// starts managing it.
+export const OPT_IN_COOKIE_NAME = "adobe_alloy_optIn";

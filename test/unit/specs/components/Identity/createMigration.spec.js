@@ -1,23 +1,30 @@
+/*
+Copyright 2019 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
 import { cookieJar } from "../../../../../src/utils";
 import createMigration from "../../../../../src/components/Identity/createMigration";
 
-const identityCookieJar = {
-  set() {},
-  get() {},
-  remove() {}
-};
-describe("createMigration(", () => {
+describe("createMigration", () => {
+  let migration;
+
   beforeEach(() => {
     cookieJar.remove("AMCV_TEST_ORG");
+    cookieJar.remove("s_ecid");
+    migration = createMigration("TEST_ORG");
   });
-  describe("getEcidFromLegacyCookie", () => {
-    it("should not read AMCv cookie if idMigrationEnabled is false", () => {
-      const migration = createMigration("TEST_ORG");
-      expect(migration.getEcidFromLegacyCookie()).toEqual(null);
-    });
-    it("should return null if no AMCV cookie is present", () => {
-      const migration = createMigration("TEST_ORG", true);
-      expect(migration.getEcidFromLegacyCookie()).toEqual(null);
+
+  describe("getEcidFromLegacyCookies", () => {
+    it("should return null if no AMCV cookie or s_ecid cookie is present", () => {
+      expect(migration.getEcidFromLegacyCookies()).toBeNull();
     });
 
     [
@@ -28,40 +35,36 @@ describe("createMigration(", () => {
     ].forEach(cookieValue => {
       it(`should return ECID if AMCV cookie is ${cookieValue}`, () => {
         cookieJar.set("AMCV_TEST_ORG", cookieValue);
-        const migration = createMigration("TEST_ORG", true);
-        expect(migration.getEcidFromLegacyCookie(identityCookieJar)).toEqual(
-          "1234"
-        );
+        expect(migration.getEcidFromLegacyCookies()).toEqual("1234");
+      });
+
+      it(`should return ECID if s_ecid cookie is ${cookieValue}`, () => {
+        cookieJar.set("s_ecid", cookieValue);
+        expect(migration.getEcidFromLegacyCookies()).toEqual("1234");
       });
     });
 
-    it("should return null if AMCV does not contain a MCMID", () => {
+    it("should return null if AMCV does not contain MCMID", () => {
       const cookieValue = "version|0.0.4";
       cookieJar.set("AMCV_NO_MID", cookieValue);
-      const migration = createMigration("NO_MID", true);
-      expect(migration.getEcidFromLegacyCookie(identityCookieJar)).toEqual(
-        null
-      );
+      expect(migration.getEcidFromLegacyCookies()).toBeNull();
+    });
+
+    it("should return null if s_ecid does not contain MCMID", () => {
+      const cookieValue = "version|0.0.4";
+      cookieJar.set("s_ecid", cookieValue);
+      expect(migration.getEcidFromLegacyCookies()).toBeNull();
     });
   });
-  describe("createAmcvCookie", () => {
-    it("should not change AMCV cookie if idMigrationEnabled is false", () => {
-      const previousCookieVal = cookieJar.get("AMCV_TEST_ORG");
-      const migration = createMigration("TEST_ORG");
-      migration.createAmcvCookie("1234");
-      expect(cookieJar.get("AMCV_TEST_ORG")).toEqual(previousCookieVal);
-    });
+  describe("createLegacyCookie", () => {
     it("should create an AMCV cookie with the value passed", () => {
-      const migration = createMigration("TEST_ORG", true);
-      migration.createAmcvCookie("1234");
+      migration.createLegacyCookie("1234");
       expect(cookieJar.get("AMCV_TEST_ORG")).toEqual("MCMID|1234");
     });
-    it("should not write if an AMCV cookie is present", () => {
-      const cookieValue =
-        "-1891778711|MCIDTS|18199|MCMID|83938241987308959172561495939786191343|MCAAMLH-1572973109|9|MCAAMB-1572973109|RKhpRz8krg2tLO6pguXWp5olkAcUniQYPHaMWWgdJ3xzPWQmdj0y|MCOPTOUT-1572375509s|NONE|MCAID|NONE|MCSYNCSOP|411-18188|vVersion|2.4.0";
+    it("should not write AMCV cookie if already present", () => {
+      const cookieValue = "existing value";
       cookieJar.set("AMCV_TEST_ORG", cookieValue);
-      const migration = createMigration("TEST_ORG", true);
-      migration.createAmcvCookie("1234");
+      migration.createLegacyCookie("1234");
       expect(cookieJar.get("AMCV_TEST_ORG")).toEqual(cookieValue);
     });
   });

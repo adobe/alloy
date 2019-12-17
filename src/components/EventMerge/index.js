@@ -28,7 +28,6 @@ const createEventMerge = ({ config }) => {
 };
 
 createEventMerge.namespace = "EventMerge";
-createEventMerge.abbreviation = "EM";
 createEventMerge.configValidators = {};
 
 // #if _REACTOR

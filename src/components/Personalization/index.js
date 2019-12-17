@@ -97,7 +97,6 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 };
 
 createPersonalization.namespace = "Personalization";
-createPersonalization.abbreviation = "PE";
 
 createPersonalization.configValidators = {
   prehidingStyle: {

@@ -11,15 +11,21 @@ governing permissions and limitations under the License.
 */
 
 import { boolean } from "../../utils/configValidators";
-import processDestinations from "./processDestinations";
+import { fireReferrerHideableImage } from "../../utils";
+import processDestinationsFactory from "./processDestinationsFactory";
 
 const createAudiences = ({ config, logger }) => {
+  const processDestinations = processDestinationsFactory({
+    fireReferrerHideableImage,
+    logger
+  });
   return {
     lifecycle: {
       onBeforeEvent({ event, isViewStart }) {
         if (isViewStart) {
           event.mergeQuery({
             activation: {
+              // TODO: Is this moving to a backend configuration?
               urlsEnabled: config.urlDestinationsEnabled,
               cookiesEnabled: config.cookieDestinationsEnabled
             }
@@ -29,7 +35,7 @@ const createAudiences = ({ config, logger }) => {
       },
       onResponse({ response }) {
         const destinations = response.getPayloadsByType("activation:push");
-        processDestinations({ destinations, logger });
+        return processDestinations(destinations);
       }
     },
     commands: {}
@@ -37,7 +43,6 @@ const createAudiences = ({ config, logger }) => {
 };
 
 createAudiences.namespace = "Audiences";
-createAudiences.abbreviation = "AU";
 createAudiences.configValidators = {
   cookieDestinationsEnabled: {
     defaultValue: true,

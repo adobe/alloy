@@ -33,3 +33,14 @@ Thank you for your interest in contributing!
 ## Requesting Write Access (Adobe Employees)
 
 For Adobe Employees that would like write access to this repository, please follow the instructions found in the [GitHub Adobe Org Management document](https://git.corp.adobe.com/OpenSourceAdvisoryBoard/handbook/blob/master/GitHub-Adobe-Org-Management.md#request-access-to-our-adobe-github-org). When you must indicate a team to which your user should be added, please enter `adobe|UnifiedJS`.
+
+## Temporary Workaround for Environments
+
+1. When configuring Alloy, set`edgeDomain` to `konductor.int.gslb.eegw.adobedc.net`.
+2. Open `src/constants/domains.js` and change `adobedc.demdex.net` to `adobedc-int.demdex.net`.
+3. Run the sandbox.
+4. Clear your cookies.
+5. Refresh the browser. You'll get an error in the console, but you should now have some cookies set (at least one named something like `kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_identity`).
+6. Open `src/core/network/createNetwork.js` and remove `/${edgeBasePath}` from the url literal string template.
+7. Refresh the browser. Alloy should now function as expected. If you clear your cookies later, you'll need to add back `/${edgeBasePath}` and start fom step 5 again.
+

@@ -16,9 +16,9 @@ import getLastArrayItems from "./getLastArrayItems";
 const cookieName = `${namespace}getTld`;
 
 /**
- * Retrieves the top-most domain that is able to accept cookies. This will
- * be the top-most domain that is not a "public suffix" as outlined
- * in https://publicsuffix.org/
+ * Of the current web page's hostname, this is the top-most domain that is
+ * not a "public suffix" as outlined in https://publicsuffix.org/. In other
+ * words, this is top-most domain that is able to accept cookies.
  * @param {Object} window
  * @param {Object} cookieJar
  * @returns {string}

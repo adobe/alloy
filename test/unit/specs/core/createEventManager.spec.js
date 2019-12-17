@@ -14,11 +14,18 @@ import createEventManager from "../../../../src/core/createEventManager";
 import createConfig from "../../../../src/core/config/createConfig";
 import { defer } from "../../../../src/utils";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
+import assertFunctionCallOrder from "../../helpers/assertFunctionCallOrder";
+import {
+  EDGE_DOMAIN,
+  ID_THIRD_PARTY_DOMAIN
+} from "../../../../src/constants/domains";
 
 describe("createEventManager", () => {
   let event;
+  let response;
   let payload;
   let lifecycle;
+  let cookieTransfer;
   let network;
   let optIn;
   let config;
@@ -35,12 +42,23 @@ describe("createEventManager", () => {
       applyCallback: jasmine.createSpy()
     };
     const createEvent = jasmine.createSpy().and.returnValue(event);
+    response = {
+      getErrors: jasmine.createSpy().and.returnValue([]),
+      getWarnings: jasmine.createSpy().and.returnValue([])
+    };
+    const createResponse = () => response;
     lifecycle = {
       onBeforeEvent: jasmine.createSpy().and.returnValue(Promise.resolve()),
       onBeforeDataCollection: jasmine
         .createSpy()
-        .and.returnValue(Promise.resolve())
+        .and.returnValue(Promise.resolve()),
+      onRequestFailure: jasmine.createSpy().and.returnValue(Promise.resolve()),
+      onResponse: jasmine.createSpy().and.returnValue(Promise.resolve())
     };
+    cookieTransfer = jasmine.createSpyObj("cookieTransfer", [
+      "cookiesToPayload",
+      "responseToCookies"
+    ]);
     payload = {
       addEvent: jasmine.createSpy(),
       mergeMeta: jasmine.createSpy(),
@@ -58,6 +76,7 @@ describe("createEventManager", () => {
       whenOptedIn: jasmine.createSpy().and.returnValue(Promise.resolve())
     };
     config = createConfig({
+      edgeDomain: EDGE_DOMAIN,
       orgId: "ABC123",
       onBeforeEventSend: jasmine.createSpy(),
       debugEnabled: true,
@@ -67,8 +86,10 @@ describe("createEventManager", () => {
     logger = jasmine.createSpyObj("logger", ["error", "warn"]);
     eventManager = createEventManager({
       createEvent,
+      createResponse,
       optIn,
       lifecycle,
+      cookieTransfer,
       network,
       config,
       logger
@@ -177,23 +198,54 @@ describe("createEventManager", () => {
         });
     });
 
-    it("send payload through network", () => {
+    it("transfers cookies to payload using edge domain", () => {
       return eventManager.sendEvent(event).then(() => {
-        expect(network.sendRequest).toHaveBeenCalledWith(payload, {
+        expect(cookieTransfer.cookiesToPayload).toHaveBeenCalledWith(
+          payload,
+          EDGE_DOMAIN
+        );
+      });
+    });
+
+    it("transfers cookies to payload using ID third-party domain", () => {
+      payload.shouldUseIdThirdPartyDomain = () => true;
+      return eventManager.sendEvent(event).then(() => {
+        expect(cookieTransfer.cookiesToPayload).toHaveBeenCalledWith(
+          payload,
+          ID_THIRD_PARTY_DOMAIN
+        );
+      });
+    });
+
+    it("send payload through network using edge domain", () => {
+      return eventManager.sendEvent(event).then(() => {
+        expect(network.sendRequest).toHaveBeenCalledWith(payload, EDGE_DOMAIN, {
           expectsResponse: false,
-          documentUnloading: false,
-          useIdThirdPartyDomain: false
+          documentUnloading: false
         });
+      });
+    });
+
+    it("send payload through network using ID third-party domain", () => {
+      payload.shouldUseIdThirdPartyDomain = () => true;
+      return eventManager.sendEvent(event).then(() => {
+        expect(network.sendRequest).toHaveBeenCalledWith(
+          payload,
+          ID_THIRD_PARTY_DOMAIN,
+          {
+            expectsResponse: false,
+            documentUnloading: false
+          }
+        );
       });
     });
 
     it("sends payload through network with expectsResponse true", () => {
       payload.expectsResponse = true;
       return eventManager.sendEvent(event).then(() => {
-        expect(network.sendRequest).toHaveBeenCalledWith(payload, {
+        expect(network.sendRequest).toHaveBeenCalledWith(payload, EDGE_DOMAIN, {
           expectsResponse: true,
-          documentUnloading: false,
-          useIdThirdPartyDomain: false
+          documentUnloading: false
         });
       });
     });
@@ -201,45 +253,74 @@ describe("createEventManager", () => {
     it("sends payload through network with documentUnloading true", () => {
       event.isDocumentUnloading = true;
       return eventManager.sendEvent(event).then(() => {
-        expect(network.sendRequest).toHaveBeenCalledWith(payload, {
+        expect(network.sendRequest).toHaveBeenCalledWith(payload, EDGE_DOMAIN, {
           expectsResponse: false,
-          documentUnloading: true,
-          useIdThirdPartyDomain: false
+          documentUnloading: true
         });
       });
     });
 
-    it("sends payload through network with useIdThirdPartyDomain true", () => {
-      payload.shouldUseIdThirdPartyDomain = true;
+    it("transfers response to cookies", () => {
       return eventManager.sendEvent(event).then(() => {
-        expect(network.sendRequest).toHaveBeenCalledWith(payload, {
-          expectsResponse: false,
-          documentUnloading: false,
-          useIdThirdPartyDomain: true
-        });
+        expect(cookieTransfer.responseToCookies).toHaveBeenCalledWith(response);
       });
+    });
+
+    it("calls lifecycle.onRequestFailure, allows components to pause lifecycle, and rejects promise on request failure", () => {
+      const deferred = defer();
+      const error = new Error("Unexpected response.");
+      network.sendRequest.and.throwError(error);
+      lifecycle.onRequestFailure.and.returnValue(deferred.promise);
+      const onError = jasmine.createSpy();
+      eventManager
+        .sendEvent(event)
+        .then(fail)
+        .catch(onError);
+
+      return flushPromiseChains()
+        .then(() => {
+          expect(lifecycle.onRequestFailure).toHaveBeenCalled();
+          expect(onError).not.toHaveBeenCalled();
+          deferred.resolve();
+          return flushPromiseChains();
+        })
+        .then(() => {
+          expect(onError).toHaveBeenCalledWith(error);
+        });
+    });
+
+    it("calls lifecycle.onResponse and allows components to pause lifecycle on request success", () => {
+      const deferred = defer();
+      network.sendRequest.and.returnValue(Promise.resolve({}));
+      lifecycle.onResponse.and.returnValue(deferred.promise);
+      const onComplete = jasmine.createSpy();
+      eventManager.sendEvent(event).then(onComplete);
+      return flushPromiseChains()
+        .then(() => {
+          expect(lifecycle.onResponse).toHaveBeenCalledWith({
+            response
+          });
+          expect(onComplete).not.toHaveBeenCalled();
+          deferred.resolve();
+          return flushPromiseChains();
+        })
+        .then(() => {
+          expect(onComplete).toHaveBeenCalled();
+        });
     });
 
     it("logs warnings on response", () => {
-      const response = {
-        getWarnings() {
-          return [
-            {
-              code: "general:100",
-              message: "General warning."
-            },
-            {
-              code: "personalization:204",
-              message: "Personalization warning."
-            }
-          ];
+      response.getWarnings.and.returnValue([
+        {
+          code: "general:100",
+          message: "General warning."
         },
-        getErrors() {
-          return [];
+        {
+          code: "personalization:204",
+          message: "Personalization warning."
         }
-      };
+      ]);
 
-      network.sendRequest.and.returnValue(Promise.resolve(response));
       return eventManager.sendEvent(event).then(() => {
         expect(logger.warn).toHaveBeenCalledWith(
           "Warning received from server: [Code general:100] General warning."
@@ -251,25 +332,16 @@ describe("createEventManager", () => {
     });
 
     it("rejects returned promise with errors on response", () => {
-      const response = {
-        getWarnings() {
-          return [];
+      response.getErrors.and.returnValue([
+        {
+          code: "general:100",
+          message: "General error occurred."
         },
-        getErrors() {
-          return [
-            {
-              code: "general:100",
-              message: "General error occurred."
-            },
-            {
-              code: "personalization:204",
-              message: "Personalization error occurred."
-            }
-          ];
+        {
+          code: "personalization:204",
+          message: "Personalization error occurred."
         }
-      };
-
-      network.sendRequest.and.returnValue(Promise.resolve(response));
+      ]);
       return eventManager
         .sendEvent(event)
         .then(fail)
@@ -283,15 +355,11 @@ describe("createEventManager", () => {
     });
 
     it("returns promise resolved with nothing when there is a response", () => {
-      const response = {
-        getWarnings() {
-          return [];
-        },
-        getErrors() {
-          return [];
-        }
+      const responseBody = {
+        warnings: [],
+        errors: []
       };
-      network.sendRequest.and.returnValue(Promise.resolve(response));
+      network.sendRequest.and.returnValue(Promise.resolve(responseBody));
       return eventManager.sendEvent(event).then(result => {
         expect(result).toBeUndefined();
       });
@@ -304,18 +372,35 @@ describe("createEventManager", () => {
       });
     });
 
-    it("performs operations in order", () => {
+    it("performs operations in order on successful request", () => {
       return eventManager.sendEvent(event).then(() => {
-        expect(lifecycle.onBeforeEvent).toHaveBeenCalledBefore(
-          optIn.whenOptedIn
-        );
-        expect(optIn.whenOptedIn).toHaveBeenCalledBefore(
-          lifecycle.onBeforeDataCollection
-        );
-        expect(lifecycle.onBeforeDataCollection).toHaveBeenCalledBefore(
-          network.sendRequest
-        );
+        assertFunctionCallOrder([
+          lifecycle.onBeforeEvent,
+          optIn.whenOptedIn,
+          lifecycle.onBeforeDataCollection,
+          cookieTransfer.cookiesToPayload,
+          network.sendRequest,
+          cookieTransfer.responseToCookies,
+          lifecycle.onResponse
+        ]);
       });
+    });
+
+    it("performs operations in order on failed request", () => {
+      network.sendRequest.and.throwError(new Error("Unexpected response."));
+      return eventManager
+        .sendEvent(event)
+        .then(fail)
+        .catch(() => {
+          assertFunctionCallOrder([
+            lifecycle.onBeforeEvent,
+            optIn.whenOptedIn,
+            lifecycle.onBeforeDataCollection,
+            cookieTransfer.cookiesToPayload,
+            network.sendRequest,
+            lifecycle.onRequestFailure
+          ]);
+        });
     });
   });
 });

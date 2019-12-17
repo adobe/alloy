@@ -11,14 +11,12 @@ governing permissions and limitations under the License.
 */
 
 import createPayload from "./createPayload";
-import createResponse from "./createResponse";
 import getResponseStatusType from "./getResponseStatusType";
 import { stackError, uuid } from "../../utils";
 import apiVersion from "../../constants/apiVersion";
-import { ID_THIRD_PARTY_DOMAIN } from "../../constants/domains";
 import { RETRYABLE_ERROR, SUCCESS } from "../../constants/responseStatusType";
 
-export default ({ config, logger, lifecycle, networkStrategy }) => {
+export default ({ config, logger, networkStrategy }) => {
   const handleResponse = (requestId, responseBody) => {
     let parsedBody;
 
@@ -35,20 +33,10 @@ export default ({ config, logger, lifecycle, networkStrategy }) => {
 
     logger.log(`Request ${requestId}: Received response.`, parsedBody);
 
-    const response = createResponse(parsedBody);
-
-    // TODO Document that onResponse will be called when Konductor
-    // sends a well-formed response even if that response contains
-    // error objects. This is because even when there are error objects
-    // there can be "handle" payloads to act upon. Also document
-    // that onRequestFailure will be called when the network request
-    // itself failed (e.g., no internet connection), when JAG throws an
-    // error (the request never made it to Konductor), or when
-    // Konductor returns a malformed response.
-    return lifecycle.onResponse({ response, requestId }).then(() => response);
+    return parsedBody;
   };
 
-  const { edgeDomain, edgeBasePath, configId } = config;
+  const { edgeBasePath, configId } = config;
 
   return {
     /**
@@ -62,6 +50,8 @@ export default ({ config, logger, lifecycle, networkStrategy }) => {
      * with the returned response object.
      *
      * @param {Object} payload This will be JSON stringified and sent as the post body.
+     * @param {String} endpointDomain The domain of the endpoint to which the
+     * request should be sent.
      * @param {Object} [options]
      * @param {boolean} [options.expectsResponse=true] The endpoint and request mechanism
      * will be determined by whether a response is expected.
@@ -71,12 +61,8 @@ export default ({ config, logger, lifecycle, networkStrategy }) => {
      * completely processed.  If expectsResponse==false, the promise will be resolved
      * with undefined.
      */
-    sendRequest(payload, options = {}) {
-      const {
-        expectsResponse = true,
-        documentUnloading = false,
-        useIdThirdPartyDomain = false
-      } = options;
+    sendRequest(payload, endpointDomain, options = {}) {
+      const { expectsResponse = true, documentUnloading = false } = options;
       const requestId = uuid();
       if (documentUnloading) {
         logger.log(`No response requested due to document unloading.`);
@@ -85,11 +71,7 @@ export default ({ config, logger, lifecycle, networkStrategy }) => {
       return Promise.resolve()
         .then(() => {
           const action = reallyExpectsResponse ? "interact" : "collect";
-          const domain = useIdThirdPartyDomain
-            ? ID_THIRD_PARTY_DOMAIN
-            : edgeDomain;
-
-          let baseUrl = `https://${domain}`;
+          let baseUrl = `https://${endpointDomain}`;
 
           // #if _DEV
           if (config.localEdge) {
@@ -152,24 +134,6 @@ export default ({ config, logger, lifecycle, networkStrategy }) => {
           }
 
           return handleResponsePromise;
-        })
-        .catch(error => {
-          // The error that we caught is more important than
-          // any error that may have occurred in lifecycle.onResponseError().
-          // For that reason, we make sure the caught error is the one that
-          // bubbles up. We also wait until lifecycle.onRequestFailure is
-          // complete before returning, so that any error that may occur
-          // in lifecycle.onRequestFailure is properly suppressed if the
-          // user has errorsEnabled: false in the configuration.
-          // We could use finally() here, but just to be safe, we don't,
-          // because finally() is only recently supported natively and may
-          // not exist in customer-provided promise polyfills.
-          const throwError = () => {
-            throw error;
-          };
-          return lifecycle
-            .onRequestFailure({ requestId })
-            .then(throwError, throwError);
         });
     }
   };

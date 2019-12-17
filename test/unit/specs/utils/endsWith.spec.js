@@ -10,18 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import componentCreators from "../../../../src/core/componentCreators";
+import endsWith from "../../../../src/utils/endsWith";
 
-describe("componentCreators", () => {
-  it("is an array of component creators", () => {
-    expect(componentCreators).toEqual(jasmine.any(Array));
-    componentCreators.forEach(componentCreator => {
-      expect(componentCreator).toEqual(jasmine.any(Function));
-      expect(componentCreator.namespace).toEqual(jasmine.any(String));
+const str = "The quick brown fox.";
 
-      if (componentCreator.configValidators) {
-        expect(componentCreator.configValidators).toEqual(jasmine.any(Object));
-      }
+describe("endsWith", () => {
+  ["The quick brown fox.", "fox."].forEach(suffix => {
+    it(`returns true when suffix is ${suffix}`, () => {
+      expect(endsWith(str, suffix)).toBeTrue();
+    });
+  });
+
+  ["Extra The quick brown fox.", "bogus."].forEach(suffix => {
+    it(`returns false when suffix is ${suffix}`, () => {
+      expect(endsWith(str, suffix)).toBeFalse();
     });
   });
 });

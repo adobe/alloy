@@ -10,5 +10,4 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
-import fireDestinations from "../../../../src/utils/fireDestinations";
+export default orgId => orgId.replace("@", "_");

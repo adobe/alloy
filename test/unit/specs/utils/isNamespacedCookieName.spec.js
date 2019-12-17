@@ -10,18 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import componentCreators from "../../../../src/core/componentCreators";
+import isNamespacedCookieName from "../../../../src/utils/isNamespacedCookieName";
 
-describe("componentCreators", () => {
-  it("is an array of component creators", () => {
-    expect(componentCreators).toEqual(jasmine.any(Array));
-    componentCreators.forEach(componentCreator => {
-      expect(componentCreator).toEqual(jasmine.any(Function));
-      expect(componentCreator.namespace).toEqual(jasmine.any(String));
+describe("isNamespacedCookieName", () => {
+  it("returns true if it's a namespaced cookie name", () => {
+    const result = isNamespacedCookieName(
+      "ABC@CustomOrg",
+      "kndctr_ABC_CustomOrg_foo"
+    );
+    expect(result).toBeTrue();
+  });
 
-      if (componentCreator.configValidators) {
-        expect(componentCreator.configValidators).toEqual(jasmine.any(Object));
-      }
-    });
+  it("returns false if it's not a namespaced cookie name", () => {
+    const result = isNamespacedCookieName(
+      "kndctr_DEF_CustomOrg_foo",
+      "ABC@CustomOrg"
+    );
+    expect(result).toBeFalse();
   });
 });
