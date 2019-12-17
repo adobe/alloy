@@ -11,9 +11,7 @@ function HomeWithHistory({ history }) {
       window[instanceName]("event", {
         viewStart: true,
         xdm: {
-          eventType: "page-view",
-          url: window.location.href,
-          name: loc.pathname.substring(1)
+          eventType: "page-view"
         }
       });
     }
