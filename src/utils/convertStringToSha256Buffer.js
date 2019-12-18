@@ -10,6 +10,9 @@ const encodeText = str => {
 export default message => {
   const data = encodeText(message);
   const crypto = window.msCrypto || window.crypto;
+  if (!crypto.subtle) {
+    return false;
+  }
   const result = crypto.subtle.digest("SHA-256", data);
   if (result.then) {
     return result;

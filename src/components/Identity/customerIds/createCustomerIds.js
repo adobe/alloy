@@ -2,19 +2,27 @@ import { normalizeCustomerIds, validateCustomerIds } from "./util";
 import {
   convertBufferToHex,
   convertStringToSha256Buffer,
-  clone
+  clone,
+  isEmptyObject
 } from "../../../utils";
 
 export default eventManager => {
-  const hash = (originalIds, normalizedIds) => {
+  const hash = (originalIds, normalizedIds, logger) => {
     const idNames = Object.keys(normalizedIds);
     const idsToHash = idNames.filter(idName => originalIds[idName].hashEnabled);
     const idHashPromises = idsToHash.map(id =>
-      convertStringToSha256Buffer(normalizedIds[id].id)
+      convertStringToSha256Buffer(normalizedIds[id].id.trim().toLowerCase())
     );
     return Promise.all(idHashPromises).then(hashedIds => {
       return hashedIds.reduce((finalIds, hashedId, index) => {
-        finalIds[idsToHash[index]].id = convertBufferToHex(hashedId);
+        if (!hashedId) {
+          delete finalIds[idsToHash[index]];
+          logger.warn(
+            `Unable to hash identity ${idsToHash[index]} due to lack of browser support.`
+          );
+        } else {
+          finalIds[idsToHash[index]].id = convertBufferToHex(hashedId);
+        }
         return finalIds;
       }, normalizedIds);
     });
@@ -40,12 +48,15 @@ export default eventManager => {
         });
       }
     },
-    sync(originalIds) {
+    sync(originalIds, logger) {
       validateCustomerIds(originalIds);
 
       const normalizedIds = normalizeCustomerIds(originalIds);
 
-      return hash(originalIds, normalizedIds).then(hashedIds => {
+      return hash(originalIds, normalizedIds, logger).then(hashedIds => {
+        if (isEmptyObject(hashedIds)) {
+          return false;
+        }
         setState(hashedIds);
         // FIXME: Konductor shouldn't require an event.
         const event = eventManager.createEvent();

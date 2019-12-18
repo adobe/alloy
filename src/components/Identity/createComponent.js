@@ -143,7 +143,9 @@ export default (processIdSyncs, config, logger, optIn, eventManager) => {
     },
     commands: {
       setCustomerIds(options) {
-        return optIn.whenOptedIn().then(() => customerIds.sync(options));
+        return optIn
+          .whenOptedIn()
+          .then(() => customerIds.sync(options, logger));
       }
     }
   };
