@@ -42,5 +42,5 @@ For Adobe Employees that would like write access to this repository, please foll
 4. Clear your cookies.
 5. Refresh the browser. You'll get an error in the console, but you should now have some cookies set (at least one named something like `kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_identity`).
 6. Open `src/core/network/createNetwork.js` and remove `/${edgeBasePath}` from the url literal string template.
-7. Refresh the browser. Alloy should now function as expected. If you clear your cookies later, you'll need to add back `/${edgeBasePath}` and start fom step 5 again.
+7. Refresh the browser. Alloy should now function as expected.
 
