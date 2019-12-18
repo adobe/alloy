@@ -18,7 +18,7 @@ export default eventManager => {
         if (!hashedId) {
           delete finalIds[idsToHash[index]];
           logger.warn(
-            `This browser doesn't support hashing, alloy couldn't hash ${idsToHash[index]}`
+            `Unable to hash identity ${idsToHash[index]} due to lack of browser support.`
           );
         } else {
           finalIds[idsToHash[index]].id = convertBufferToHex(hashedId);
