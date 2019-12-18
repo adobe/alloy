@@ -36,21 +36,22 @@ export default (processIdSyncs, config, logger, optIn, eventManager) => {
           const identityQuery = {
             fetch: [ecidNamespace]
           };
+          const configOverridesMeta = {};
 
-          // TODO: Are these things being moved to the Konductor/config service?
           if (config.idSyncEnabled) {
-            identityQuery.exchange = true;
-            if (config.idSyncContainerId !== undefined) {
-              identityQuery.containerId = config.idSyncContainerId;
+            configOverridesMeta.idSync = {
+              enabled: true
+            };
+            if (config.containerId !== undefined) {
+              configOverridesMeta.idSync.containerId = 40;
             }
-          }
-
-          if (!config.thirdPartyCookiesEnabled) {
-            identityQuery.thirdPartyCookiesEnabled = false;
           }
 
           event.mergeQuery({
             identity: identityQuery
+          });
+          event.mergeMeta({
+            configOverrides: configOverridesMeta
           });
         });
       },

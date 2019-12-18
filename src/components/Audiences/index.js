@@ -23,11 +23,10 @@ const createAudiences = ({ config, logger }) => {
     lifecycle: {
       onBeforeEvent({ event, isViewStart }) {
         if (isViewStart) {
-          event.mergeQuery({
+          event.mergeMeta({
             activation: {
-              // TODO: Is this moving to a backend configuration?
-              urlsEnabled: config.urlDestinationsEnabled,
-              cookiesEnabled: config.cookieDestinationsEnabled
+              urlDestinationsEnabled: config.urlDestinationsEnabled,
+              storedDestinationsEnabled: config.cookieDestinationsEnabled
             }
           });
           event.expectResponse();
