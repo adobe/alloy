@@ -79,7 +79,7 @@ export default ({ config, logger, networkStrategy }) => {
           }
           // #endif
 
-          const url = `${baseUrl}/${edgeBasePath}/${apiVersion}/${action}?configId=${configId}&requestId=${requestId}`;
+          const url = `${baseUrl}/${apiVersion}/${action}?configId=${configId}&requestId=${requestId}`;
           const responseHandlingMessage = reallyExpectsResponse
             ? ""
             : " (no response is expected)";

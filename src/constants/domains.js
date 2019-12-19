@@ -11,4 +11,4 @@ governing permissions and limitations under the License.
 */
 
 export const EDGE_DOMAIN = "edge.adobedc.net";
-export const ID_THIRD_PARTY_DOMAIN = "adobedc.demdex.net";
+export const ID_THIRD_PARTY_DOMAIN = "adobedc-int.demdex.net";
