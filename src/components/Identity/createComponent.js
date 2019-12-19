@@ -26,7 +26,7 @@ export default (processIdSyncs, config, logger, optIn, eventManager) => {
   let deferredForEcid;
   const migration = createMigration(orgId);
   const hasIdentityCookie = () => Boolean(cookieJar.get(identityCookieName));
-  const customerIds = createCustomerIds(eventManager);
+  const customerIds = createCustomerIds({ eventManager, logger });
 
   return {
     lifecycle: {
@@ -143,9 +143,7 @@ export default (processIdSyncs, config, logger, optIn, eventManager) => {
     },
     commands: {
       setCustomerIds(options) {
-        return optIn
-          .whenOptedIn()
-          .then(() => customerIds.sync(options, logger));
+        return optIn.whenOptedIn().then(() => customerIds.sync(options));
       }
     }
   };

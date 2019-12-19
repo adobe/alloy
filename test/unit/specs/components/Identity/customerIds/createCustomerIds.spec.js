@@ -5,6 +5,7 @@ describe("Identity::createCustomerIds", () => {
   let idsWithHash;
   let event;
   let eventManager;
+  let logger;
   beforeEach(() => {
     idsWithHash = {
       Email_LC_SHA256: {
@@ -28,15 +29,16 @@ describe("Identity::createCustomerIds", () => {
       createEvent: () => event,
       sendEvent: jasmine.createSpy().and.returnValue(Promise.resolve())
     };
+    logger = jasmine.createSpyObj("logger", ["warn"]);
   });
   it("should have addToPayload and sync methods", () => {
-    const customerIds = createCustomerIds(eventManager);
+    const customerIds = createCustomerIds({ eventManager, logger });
     expect(customerIds.addToPayload).toBeDefined();
     expect(customerIds.sync).toBeDefined();
   });
   describe("sync", () => {
     it("should send an event", () => {
-      const customerIds = createCustomerIds(eventManager);
+      const customerIds = createCustomerIds({ eventManager, logger });
       return customerIds.sync(idsWithHash).then(() => {
         expect(eventManager.sendEvent).toHaveBeenCalledWith(event);
       });
@@ -44,7 +46,7 @@ describe("Identity::createCustomerIds", () => {
   });
   describe("addToPayload", () => {
     it("should add identity to payload", () => {
-      const customerIds = createCustomerIds(eventManager);
+      const customerIds = createCustomerIds({ eventManager, logger });
       return customerIds.sync(idsWithHash).then(() => {
         customerIds.addToPayload(payload);
 
