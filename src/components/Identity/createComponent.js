@@ -49,7 +49,9 @@ export default (processIdSyncs, config, logger, optIn, eventManager) => {
             configOverrides.idSyncContainerId = config.idSyncContainerId;
           }
 
-          payload.mergeConfigOverrides({ identity: configOverrides });
+          if (Object.keys(configOverrides).length) {
+            payload.mergeConfigOverrides({ identity: configOverrides });
+          }
         });
       },
       // Waiting for opt-in because we'll be reading the ECID from a cookie
