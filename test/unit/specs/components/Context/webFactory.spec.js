@@ -2,15 +2,17 @@ import webFactory from "../../../../../src/components/Context/webFactory";
 
 describe("Context::webFactory", () => {
   const window = {
-    location: { href: "http://mylocation.com" }
-  };
-  const topFrameSetProvider = () => {
-    return { document: { referrer: "http://myreferrer.com" } };
+    location: { href: "http://mylocation.com" },
+    top: {
+      document: {
+        referrer: "http://myreferrer.com"
+      }
+    }
   };
 
   it("works", () => {
     const xdm = {};
-    webFactory(window, topFrameSetProvider)(xdm);
+    webFactory(window)(xdm);
     expect(xdm).toEqual({
       web: {
         webPageDetails: {
