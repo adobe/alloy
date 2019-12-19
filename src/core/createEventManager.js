@@ -57,7 +57,7 @@ export default ({
       configOverrides.dataCollection = dataCollection;
     }
 
-    payload.mergeMeta({ configOverrides });
+    payload.mergeConfigOverrides(configOverrides);
   };
 
   return {

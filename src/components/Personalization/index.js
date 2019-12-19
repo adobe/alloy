@@ -52,11 +52,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const store = value => storage.push(value);
   const ruleComponentModules = initRuleComponentModules(collect, store);
   const disablePersonalization = payload => {
-    payload.mergeMeta({
-      configOverrides: {
-        personalization: { enabled: false }
-      }
-    });
+    payload.mergeConfigOverrides({ personalization: { enabled: false } });
   };
 
   return {

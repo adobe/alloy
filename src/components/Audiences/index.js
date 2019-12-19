@@ -15,29 +15,17 @@ import { fireReferrerHideableImage } from "../../utils";
 import processDestinationsFactory from "./processDestinationsFactory";
 
 const getConfigOverrides = config => {
-  const areConfigsProvided = values => values.some(val => val !== undefined);
+  const configOverrides = {};
 
-  if (
-    areConfigsProvided([
-      config.urlDestinationsEnabled,
-      config.cookieDestinationsEnabled
-    ])
-  ) {
-    const configOverrides = { activation: {} };
-
-    if (config.urlDestinationsEnabled !== undefined) {
-      configOverrides.activation.urlDestinationsEnabled =
-        config.urlDestinationsEnabled;
-    }
-    if (config.cookieDestinationsEnabled !== undefined) {
-      configOverrides.activation.storedDestinationsEnabled =
-        config.cookieDestinationsEnabled;
-    }
-
-    return configOverrides;
+  if (config.urlDestinationsEnabled !== undefined) {
+    configOverrides.urlDestinationsEnabled = config.urlDestinationsEnabled;
+  }
+  if (config.cookieDestinationsEnabled !== undefined) {
+    configOverrides.storedDestinationsEnabled =
+      config.cookieDestinationsEnabled;
   }
 
-  return undefined;
+  return Object.keys(configOverrides).length ? configOverrides : undefined;
 };
 
 const createAudiences = ({ config, logger }) => {
@@ -53,8 +41,9 @@ const createAudiences = ({ config, logger }) => {
 
           if (configOverrides) {
             event.expectResponse();
-            // TODO: Consider abstracting `configOverrides` to payload.
-            payload.mergeMeta({ configOverrides });
+            payload.mergeConfigOverrides({
+              activation: configOverrides
+            });
           }
         }
       },

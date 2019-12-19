@@ -33,27 +33,23 @@ export default (processIdSyncs, config, logger, optIn, eventManager) => {
       // Waiting for opt-in because we'll be reading the ECID from a cookie
       onBeforeEvent({ event, payload }) {
         return optIn.whenOptedIn().then(() => {
-          const identityQuery = {
-            fetch: [ecidNamespace]
-          };
-          const configOverrides = {};
-
-          // TODO: We need to be able to set those 2 configs independently.
-          if (config.idSyncEnabled !== undefined) {
-            configOverrides.identity = {
-              idSyncEnabled: config.idSyncEnabled
-            };
-            if (config.idSyncContainerId !== undefined) {
-              configOverrides.identity.idSyncContainerId =
-                config.idSyncContainerId;
-            }
-          }
-
           event.mergeQuery({
-            identity: identityQuery
+            identity: {
+              fetch: [ecidNamespace]
+            }
           });
 
-          payload.mergeMeta({ configOverrides });
+          const configOverrides = {};
+
+          if (config.idSyncEnabled !== undefined) {
+            configOverrides.idSyncEnabled = config.idSyncEnabled;
+          }
+
+          if (config.idSyncContainerId !== undefined) {
+            configOverrides.idSyncContainerId = config.idSyncContainerId;
+          }
+
+          payload.mergeConfigOverrides({ identity: configOverrides });
         });
       },
       // Waiting for opt-in because we'll be reading the ECID from a cookie

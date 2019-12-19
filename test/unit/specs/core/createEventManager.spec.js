@@ -61,7 +61,7 @@ describe("createEventManager", () => {
     ]);
     payload = {
       addEvent: jasmine.createSpy(),
-      mergeMeta: jasmine.createSpy(),
+      mergeConfigOverrides: jasmine.createSpy(),
       expectsResponse: false,
       shouldUseIdThirdPartyDomain: false,
       toJSON() {
@@ -106,11 +106,9 @@ describe("createEventManager", () => {
     it("creates the payload and adds event and meta", () => {
       return eventManager.sendEvent(event).then(() => {
         expect(payload.addEvent).toHaveBeenCalledWith(event);
-        expect(payload.mergeMeta).toHaveBeenCalledWith({
-          gateway: {
-            orgId: "ABC123"
-          },
-          collect: {
+        expect(payload.mergeConfigOverrides).toHaveBeenCalledWith({
+          orgId: "ABC123",
+          dataCollection: {
             synchronousValidation: true,
             datasetId: "DATASETID",
             schemaId: "SCHEMAID"
@@ -130,7 +128,8 @@ describe("createEventManager", () => {
         .then(() => {
           expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith({
             event,
-            isViewStart: true
+            isViewStart: true,
+            payload
           });
           expect(optIn.whenOptedIn).not.toHaveBeenCalled();
           deferred.resolve();
