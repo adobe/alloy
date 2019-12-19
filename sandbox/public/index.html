@@ -56,6 +56,10 @@
         // cookieDestinationsEnabled: false,
         // errorsEnabled: false,
         // thirdPartyCookiesEnabled: false,
+        edgeDomain:
+          location.host.indexOf("alloyio.com") !== -1
+            ? "firstparty.alloyio.com"
+            : undefined,
         configId: "9999999",
         orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
         debugEnabled: true,

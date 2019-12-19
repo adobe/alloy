@@ -10,7 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { cookieJar } from "../../utils";
+import { getApexDomain, cookieJar } from "../../utils";
+// TODO: We are already retrieving the apex in core; find a way to reuse it.
+// Maybe default the domain in the cookieJar to apex while allowing overrides.
+const apexDomain = getApexDomain(window, cookieJar);
 
 export default orgId => {
   const amcvCookieName = `AMCV_${orgId}`;
@@ -38,7 +41,11 @@ export default orgId => {
     createLegacyCookie(ecid) {
       const amcvCookieValue = cookieJar.get(amcvCookieName);
       if (!amcvCookieValue) {
-        cookieJar.set(amcvCookieName, `MCMID|${ecid}`);
+        cookieJar.set(amcvCookieName, `MCMID|${ecid}`, {
+          domain: apexDomain,
+          // Without `expires` this will be a session cookie.
+          expires: 390 // days, or 13 months.
+        });
       }
     }
   };
