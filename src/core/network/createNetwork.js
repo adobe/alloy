@@ -36,7 +36,7 @@ export default ({ config, logger, networkStrategy }) => {
     return parsedBody;
   };
 
-  const { configId } = config;
+  const { edgeBasePath, configId } = config;
 
   return {
     /**
@@ -79,7 +79,7 @@ export default ({ config, logger, networkStrategy }) => {
           }
           // #endif
 
-          const url = `${baseUrl}/${apiVersion}/${action}?configId=${configId}&requestId=${requestId}`;
+          const url = `${baseUrl}/${edgeBasePath}/${apiVersion}/${action}?configId=${configId}&requestId=${requestId}`;
           const responseHandlingMessage = reallyExpectsResponse
             ? ""
             : " (no response is expected)";
