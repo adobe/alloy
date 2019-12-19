@@ -36,7 +36,7 @@ export default ({ config, logger, networkStrategy }) => {
     return parsedBody;
   };
 
-  const { edgeBasePath, configId } = config;
+  const { configId } = config;
 
   return {
     /**
