@@ -42,21 +42,22 @@ export default ({
   };
 
   const addMetaTo = payload => {
-    const meta = {
-      gateway: {
-        orgId
-      }
-    };
-    const collect = Object.create(null);
-    assignIf(collect, { synchronousValidation: true }, () => debugEnabled);
-    assignIf(collect, { datasetId: config.datasetId }, () => datasetId);
-    assignIf(collect, { schemaId: config.schemaId }, () => schemaId);
+    const configOverrides = { orgId };
 
-    if (!isEmptyObject(collect)) {
-      meta.collect = collect;
+    const dataCollection = Object.create(null);
+    assignIf(
+      dataCollection,
+      { synchronousValidation: true },
+      () => debugEnabled
+    );
+    assignIf(dataCollection, { datasetId: config.datasetId }, () => datasetId);
+    assignIf(dataCollection, { schemaId: config.schemaId }, () => schemaId);
+
+    if (!isEmptyObject(dataCollection)) {
+      configOverrides.dataCollection = dataCollection;
     }
 
-    payload.mergeMeta(meta);
+    payload.mergeMeta({ configOverrides });
   };
 
   return {
@@ -82,7 +83,8 @@ export default ({
       return lifecycle
         .onBeforeEvent({
           event,
-          isViewStart
+          isViewStart,
+          payload
         })
         .then(() => {
           // it's important to add the event here because the payload object will call toJSON

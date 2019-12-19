@@ -27,12 +27,12 @@ const createIdentity = ({ config, logger, optIn, eventManager }) => {
 createIdentity.namespace = "Identity";
 
 createIdentity.configValidators = {
-  // TODO: Are these moving to Konductor/config service?
   idSyncEnabled: {
-    defaultValue: true,
+    defaultValue: undefined,
     validate: boolean()
   },
   idSyncContainerId: {
+    defaultValue: undefined,
     validate: number()
       .integer()
       .minimum(0)
