@@ -41,6 +41,10 @@ createIdentity.configValidators = {
   thirdPartyCookiesEnabled: {
     defaultValue: true,
     validate: boolean()
+  },
+  idMigrationEnabled: {
+    defaultValue: true,
+    validate: boolean()
   }
 };
 
