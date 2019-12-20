@@ -17,7 +17,7 @@ import {
   isExitLink
 } from "../../../../../src/components/ActivityCollector/utils";
 
-import configValidators from "../../../../../src/components/ActivityCollector/createConfigValidators";
+import configValidators from "../../../../../src/components/ActivityCollector/configValidators";
 
 const initAnchorState = (window, element, anchorState) => {
   element.href = anchorState["element.href"];
@@ -148,8 +148,8 @@ describe("DataCollector::utils", () => {
         "http://example.com/download.zip",
         "https://example.com/download.docx"
       ];
-      const downloadLinkQualifier = configValidators().downloadLinkQualifier
-        .defaultValue;
+      const downloadLinkQualifier =
+        configValidators.downloadLinkQualifier.defaultValue;
       downloadLinks.forEach(downloadLink => {
         expect(isDownloadLink(downloadLinkQualifier, downloadLink, {})).toBe(
           true
@@ -158,8 +158,8 @@ describe("DataCollector::utils", () => {
     });
     it("Returns false if the link does not match the download link qualifying regular expression", () => {
       const downloadLinks = ["download.mod", "http://example.com/download.png"];
-      const downloadLinkQualifier = configValidators().downloadLinkQualifier
-        .defaultValue;
+      const downloadLinkQualifier =
+        configValidators.downloadLinkQualifier.defaultValue;
       downloadLinks.forEach(downloadLink => {
         expect(isDownloadLink(downloadLinkQualifier, downloadLink, {})).toBe(
           false

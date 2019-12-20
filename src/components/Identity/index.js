@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, number } from "../../utils/configValidators";
 import { fireReferrerHideableImage } from "../../utils";
 import processIdSyncsFactory from "./processIdSyncsFactory";
+import configValidators from "./configValidators";
 
 import createComponent from "./createComponent";
 
@@ -25,34 +25,6 @@ const createIdentity = ({ config, logger, optIn, eventManager }) => {
 };
 
 createIdentity.namespace = "Identity";
-
-createIdentity.configValidators = {
-  idSyncEnabled: {
-    defaultValue: undefined,
-    validate: boolean()
-  },
-  idSyncContainerId: {
-    defaultValue: undefined,
-    validate: number()
-      .integer()
-      .minimum(0)
-      .expected("an integer greater than or equal to 0")
-  },
-  thirdPartyCookiesEnabled: {
-    defaultValue: true,
-    validate: boolean()
-  },
-  idMigrationEnabled: {
-    defaultValue: true,
-    validate: boolean()
-  }
-};
-
-// #if _REACTOR
-// Not much need to validate since we are our own consumer.
-createIdentity.configValidators.reactorRegisterGetEcid = {
-  defaultValue: () => {}
-};
-// #endif
+createIdentity.configValidators = configValidators;
 
 export default createIdentity;
