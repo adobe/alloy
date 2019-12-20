@@ -51,21 +51,22 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const storage = [];
   const store = value => storage.push(value);
   const ruleComponentModules = initRuleComponentModules(collect, store);
+  const disablePersonalization = payload => {
+    payload.mergeConfigOverrides({ personalization: { enabled: false } });
+  };
 
   return {
     lifecycle: {
-      onBeforeEvent({ event, isViewStart }) {
+      onBeforeEvent({ event, isViewStart, payload }) {
         if (authoringModeEnabled) {
           logger.warn("Rendering is disabled, authoring mode.");
-
-          event.mergeQuery({ personalization: { enabled: false } });
-
+          disablePersonalization(payload);
           return;
         }
 
         if (!isViewStart) {
           // If NOT isViewStart disable personalization
-          event.mergeQuery({ personalization: { enabled: false } });
+          disablePersonalization(payload);
         } else {
           event.expectResponse();
 

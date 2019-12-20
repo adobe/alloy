@@ -38,16 +38,7 @@ const instanceNamespaces = window.__alloyNS;
 
 const createNamespacedStorage = storageFactory(window);
 
-let console;
-
-// #if _REACTOR
-// When running within the Reactor extension, we want logging to be
-// toggled when Reactor logging is toggled. The easiest way to do
-// this is to pipe our log messages through the Reactor logger.
-console = turbine.logger;
-// #else
-({ console } = window);
-// #endif
+const { console } = window;
 
 const coreConfigValidators = createCoreConfigs();
 const apexDomain = getApexDomain(window, cookieJar);

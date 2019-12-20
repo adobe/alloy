@@ -31,27 +31,27 @@ export default (processIdSyncs, config, logger, optIn, eventManager) => {
   return {
     lifecycle: {
       // Waiting for opt-in because we'll be reading the ECID from a cookie
-      onBeforeEvent({ event }) {
+      onBeforeEvent({ event, payload }) {
         return optIn.whenOptedIn().then(() => {
-          const identityQuery = {
-            fetch: [ecidNamespace]
-          };
-
-          // TODO: Are these things being moved to the Konductor/config service?
-          if (config.idSyncEnabled) {
-            identityQuery.exchange = true;
-            if (config.idSyncContainerId !== undefined) {
-              identityQuery.containerId = config.idSyncContainerId;
-            }
-          }
-
-          if (!config.thirdPartyCookiesEnabled) {
-            identityQuery.thirdPartyCookiesEnabled = false;
-          }
-
           event.mergeQuery({
-            identity: identityQuery
+            identity: {
+              fetch: [ecidNamespace]
+            }
           });
+
+          const configOverrides = {};
+
+          if (config.idSyncEnabled !== undefined) {
+            configOverrides.idSyncEnabled = config.idSyncEnabled;
+          }
+
+          if (config.idSyncContainerId !== undefined) {
+            configOverrides.idSyncContainerId = config.idSyncContainerId;
+          }
+
+          if (Object.keys(configOverrides).length) {
+            payload.mergeConfigOverrides({ identity: configOverrides });
+          }
         });
       },
       // Waiting for opt-in because we'll be reading the ECID from a cookie

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import attachClickActivityCollector from "./attachClickActivityCollector";
-import createConfigValidators from "./createConfigValidators";
+import configValidators from "./configValidators";
 import createLinkClick from "./createLinkClick";
 
 const createActivityCollector = ({ config, eventManager }) => {
@@ -32,6 +32,6 @@ const createActivityCollector = ({ config, eventManager }) => {
 };
 
 createActivityCollector.namespace = "ActivityCollector";
-createActivityCollector.configValidators = createConfigValidators();
+createActivityCollector.configValidators = configValidators;
 
 export default createActivityCollector;

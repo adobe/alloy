@@ -14,6 +14,20 @@ import { boolean } from "../../utils/configValidators";
 import { fireReferrerHideableImage } from "../../utils";
 import processDestinationsFactory from "./processDestinationsFactory";
 
+const getConfigOverrides = config => {
+  const configOverrides = {};
+
+  if (config.urlDestinationsEnabled !== undefined) {
+    configOverrides.urlDestinationsEnabled = config.urlDestinationsEnabled;
+  }
+  if (config.cookieDestinationsEnabled !== undefined) {
+    configOverrides.storedDestinationsEnabled =
+      config.cookieDestinationsEnabled;
+  }
+
+  return Object.keys(configOverrides).length ? configOverrides : undefined;
+};
+
 const createAudiences = ({ config, logger }) => {
   const processDestinations = processDestinationsFactory({
     fireReferrerHideableImage,
@@ -21,16 +35,16 @@ const createAudiences = ({ config, logger }) => {
   });
   return {
     lifecycle: {
-      onBeforeEvent({ event, isViewStart }) {
+      onBeforeEvent({ event, isViewStart, payload }) {
         if (isViewStart) {
-          event.mergeQuery({
-            activation: {
-              // TODO: Is this moving to a backend configuration?
-              urlsEnabled: config.urlDestinationsEnabled,
-              cookiesEnabled: config.cookieDestinationsEnabled
-            }
-          });
-          event.expectResponse();
+          const configOverrides = getConfigOverrides(config);
+
+          if (configOverrides) {
+            event.expectResponse();
+            payload.mergeConfigOverrides({
+              activation: configOverrides
+            });
+          }
         }
       },
       onResponse({ response }) {
@@ -45,11 +59,11 @@ const createAudiences = ({ config, logger }) => {
 createAudiences.namespace = "Audiences";
 createAudiences.configValidators = {
   cookieDestinationsEnabled: {
-    defaultValue: true,
+    defaultValue: undefined,
     validate: boolean()
   },
   urlDestinationsEnabled: {
-    defaultValue: true,
+    defaultValue: undefined,
     validate: boolean()
   }
 };

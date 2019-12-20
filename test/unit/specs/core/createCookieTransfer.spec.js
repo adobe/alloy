@@ -21,7 +21,7 @@ describe("createCookieTransfer", () => {
   let cookieTransfer;
 
   beforeEach(() => {
-    payload = jasmine.createSpyObj("payload", ["mergeMeta"]);
+    payload = jasmine.createSpyObj("payload", ["mergeState"]);
     cookieJar = jasmine.createSpyObj("cookieJar", ["get", "set"]);
   });
 
@@ -33,10 +33,8 @@ describe("createCookieTransfer", () => {
         apexDomain
       });
       cookieTransfer.cookiesToPayload(payload, "edge.example.com");
-      expect(payload.mergeMeta).toHaveBeenCalledWith({
-        state: {
-          domain: apexDomain
-        }
+      expect(payload.mergeState).toHaveBeenCalledWith({
+        domain: apexDomain
       });
     });
 
@@ -48,10 +46,8 @@ describe("createCookieTransfer", () => {
         apexDomain
       });
       cookieTransfer.cookiesToPayload(payload, endpointDomain);
-      expect(payload.mergeMeta).toHaveBeenCalledWith({
-        state: {
-          domain: apexDomain
-        }
+      expect(payload.mergeState).toHaveBeenCalledWith({
+        domain: apexDomain
       });
     });
 
@@ -67,20 +63,18 @@ describe("createCookieTransfer", () => {
         apexDomain
       });
       cookieTransfer.cookiesToPayload(payload, endpointDomain);
-      expect(payload.mergeMeta).toHaveBeenCalledWith({
-        state: {
-          domain: apexDomain,
-          entries: [
-            {
-              key: "kndctr_ABC_CustomOrg_identity",
-              value: "XYZ@CustomOrg"
-            },
-            {
-              key: "kndctr_ABC_CustomOrg_optIn",
-              value: "all"
-            }
-          ]
-        }
+      expect(payload.mergeState).toHaveBeenCalledWith({
+        domain: apexDomain,
+        entries: [
+          {
+            key: "kndctr_ABC_CustomOrg_identity",
+            value: "XYZ@CustomOrg"
+          },
+          {
+            key: "kndctr_ABC_CustomOrg_optIn",
+            value: "all"
+          }
+        ]
       });
     });
   });

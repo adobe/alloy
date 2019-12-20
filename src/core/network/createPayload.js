@@ -30,7 +30,8 @@ export default () => {
       expectsResponse = expectsResponse || event.expectsResponse;
       content.events.push(event.toJSON());
     },
-    mergeMeta: createMerger(content, "meta"),
+    mergeConfigOverrides: createMerger(content, "meta.configOverrides"),
+    mergeState: createMerger(content, "meta.state"),
     useIdThirdPartyDomain() {
       shouldUseIdThirdPartyDomain = true;
     },

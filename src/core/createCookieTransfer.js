@@ -56,9 +56,7 @@ export default ({ cookieJar, orgId, apexDomain }) => {
         }
       }
 
-      payload.mergeMeta({
-        state
-      });
+      payload.mergeState(state);
     },
     /**
      * When receiving from a third-party endpoint, the endpoint won't be able to
