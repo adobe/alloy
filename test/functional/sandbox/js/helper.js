@@ -120,6 +120,19 @@
     }
   });
 
+  router.register("/C2592", "event-command", {
+    onPostInit: function() {
+      alloy("event", {
+        // TODO: Change data to match final XDM schema.
+        xdm: {
+          key: "value"
+        }
+      }).catch(ex => {
+        console.log(ex);
+      });
+    }
+  });
+
   var initRouter = router.init.bind(router);
   window.addEventListener("load", initRouter);
   window.addEventListener("hashchange", initRouter);
