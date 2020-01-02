@@ -20,7 +20,7 @@ const createClickHandler = (eventManager, lifecycle) => {
     return lifecycle
       .onClick({ event, clickedElement })
       .then(() => {
-        if (!event.isEmpty()) {
+        if (event.isEmpty()) {
           return Promise.resolve();
         }
 
