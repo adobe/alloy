@@ -28,13 +28,13 @@ describe("Personalization::DOM::removeAttribute", () => {
 
   it("should remove the element's attribute", () => {
     const element = createNode("div", { id: "fooId" });
-    setAttribute(element, "innerText", "dummyValue");
+    setAttribute(element, "data-foo", "dummyValue");
 
-    const attr = getAttribute(element, "innerText");
+    const attr = getAttribute(element, "data-foo");
     expect(attr).toEqual("dummyValue");
 
-    removeAttribute(element, "innerText");
-    const removedAttr = getAttribute(element, "innerText");
+    removeAttribute(element, "data-foo");
+    const removedAttr = getAttribute(element, "data-foo");
 
     expect(removedAttr).toBeNull();
   });
