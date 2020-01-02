@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray } from "../../utils";
-import { string } from "../../utils/configValidators";
+import { string } from "../../utils/schema";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
 import collectClicks from "./helper/clicks/collectClicks";
@@ -100,9 +100,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 createPersonalization.namespace = "Personalization";
 
 createPersonalization.configValidators = {
-  prehidingStyle: {
-    validate: string().nonEmpty()
-  }
+  prehidingStyle: string().nonEmpty()
 };
 
 export default createPersonalization;

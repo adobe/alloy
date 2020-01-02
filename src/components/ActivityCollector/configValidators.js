@@ -10,16 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, boolean } from "../../utils/configValidators";
+import { string, boolean } from "../../utils/schema";
 
 export default {
-  clickCollectionEnabled: {
-    defaultValue: true,
-    validate: boolean()
-  },
-  downloadLinkQualifier: {
-    defaultValue:
-      "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$",
-    validate: string().regexp()
-  }
+    clickCollectionEnabled: boolean().default(true),
+    downloadLinkQualifier: string()
+      .regexp()
+      .default(
+        "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$"
+      )
 };

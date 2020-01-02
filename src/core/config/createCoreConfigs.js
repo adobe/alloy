@@ -10,43 +10,27 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, string, callback } from "../../utils/configValidators";
+import { boolean, string, callback } from "../../utils/schema";
+import { noop } from "../../utils";
 import { EDGE_DOMAIN } from "../../constants/domains";
 import EDGE_BASE_PATH from "../../constants/edgeBasePath";
 
 export default () => ({
-  errorsEnabled: {
-    validate: boolean(),
-    defaultValue: true
-  },
-  debugEnabled: {
-    validate: boolean(),
-    defaultValue: false
-  },
-  configId: {
-    isRequired: true,
-    validate: string().unique()
-  },
-  edgeDomain: {
-    defaultValue: EDGE_DOMAIN,
-    validate: string().domain()
-  },
-  edgeBasePath: {
-    defaultValue: EDGE_BASE_PATH,
-    validate: string().nonEmpty()
-  },
-  orgId: {
-    isRequired: true,
-    validate: string().unique()
-  },
-  onBeforeEventSend: {
-    defaultValue: () => undefined,
-    validate: callback()
-  },
-  datasetId: {
-    validate: string().nonEmpty()
-  },
-  schemaId: {
-    validate: string().nonEmpty()
-  }
+  errorsEnabled: boolean().default(true),
+  debugEnabled: boolean().default(false),
+  configId: string()
+    .unique()
+    .required(),
+  edgeDomain: string()
+    .domain()
+    .default(EDGE_DOMAIN),
+  edgeBasePath: string()
+    .nonEmpty()
+    .default(EDGE_BASE_PATH),
+  orgId: string()
+    .unique()
+    .required(),
+  onBeforeEventSend: callback().default(noop),
+  datasetId: string().nonEmpty(),
+  schemaId: string().nonEmpty()
 });

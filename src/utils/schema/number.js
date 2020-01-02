@@ -10,20 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, number, callback } from "../../utils/schema";
+import isNumber from "../isNumber";
+import assert from "./assert";
 
-const configValidators = {
-  idSyncEnabled: boolean(),
-  idSyncContainerId: number()
-    .integer()
-    .minimum(0),
-  thirdPartyCookiesEnabled: boolean().default(true),
-  idMigrationEnabled: boolean().default(true)
+export default (path, value) => {
+  return assert(isNumber(value), path, value, "a number");
 };
-
-// #if _REACTOR
-// Not much need to validate since we are our own consumer.
-configValidators.reactorRegisterGetEcid = callback().default(() => {});
-// #endif
-
-export default configValidators;

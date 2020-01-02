@@ -9,21 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import assert from "./assert";
 
-import { boolean, number, callback } from "../../utils/schema";
-
-const configValidators = {
-  idSyncEnabled: boolean(),
-  idSyncContainerId: number()
-    .integer()
-    .minimum(0),
-  thirdPartyCookiesEnabled: boolean().default(true),
-  idMigrationEnabled: boolean().default(true)
+export default (type, minimum) => (path, value) => {
+  return assert(
+    value >= minimum,
+    path,
+    value,
+    `${type} greater than or equal to ${minimum}`
+  );
 };
-
-// #if _REACTOR
-// Not much need to validate since we are our own consumer.
-configValidators.reactorRegisterGetEcid = callback().default(() => {});
-// #endif
-
-export default configValidators;

@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { uuid } from "../../utils";
+import { callback } from "../../utils/schema";
 
 const createEventMerge = ({ config }) => {
   // #if _REACTOR
@@ -32,9 +33,9 @@ createEventMerge.configValidators = {};
 
 // #if _REACTOR
 // Not much need to validate since we are our own consumer.
-createEventMerge.configValidators.reactorRegisterCreateEventMergeId = {
-  defaultValue: () => {}
-};
+createEventMerge.configValidators.reactorRegisterCreateEventMergeId = callback().default(
+  () => {}
+);
 // #endif
 
 export default createEventMerge;

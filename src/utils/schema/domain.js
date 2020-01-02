@@ -9,21 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import assert from "./assert";
 
-import { boolean, number, callback } from "../../utils/schema";
+const DOMAIN_REGEX = /^[a-z0-9.]{1,}$/i;
 
-const configValidators = {
-  idSyncEnabled: boolean(),
-  idSyncContainerId: number()
-    .integer()
-    .minimum(0),
-  thirdPartyCookiesEnabled: boolean().default(true),
-  idMigrationEnabled: boolean().default(true)
+export default (path, value) => {
+  return assert(DOMAIN_REGEX.test(value), path, value, "a valid domain");
 };
-
-// #if _REACTOR
-// Not much need to validate since we are our own consumer.
-configValidators.reactorRegisterGetEcid = callback().default(() => {});
-// #endif
-
-export default configValidators;

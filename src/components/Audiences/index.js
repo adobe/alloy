@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean } from "../../utils/configValidators";
+import { boolean } from "../../utils/schema";
 import { fireReferrerHideableImage } from "../../utils";
 import processDestinationsFactory from "./processDestinationsFactory";
 
@@ -58,14 +58,8 @@ const createAudiences = ({ config, logger }) => {
 
 createAudiences.namespace = "Audiences";
 createAudiences.configValidators = {
-  cookieDestinationsEnabled: {
-    defaultValue: undefined,
-    validate: boolean()
-  },
-  urlDestinationsEnabled: {
-    defaultValue: undefined,
-    validate: boolean()
-  }
+  cookieDestinationsEnabled: boolean(),
+  urlDestinationsEnabled: boolean()
 };
 
 export default createAudiences;

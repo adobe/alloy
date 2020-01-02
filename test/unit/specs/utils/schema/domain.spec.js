@@ -10,20 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, number, callback } from "../../utils/schema";
+import { string } from "../../../../../src/utils/schema";
+import describeTransformer from "./describeTransformer";
 
-const configValidators = {
-  idSyncEnabled: boolean(),
-  idSyncContainerId: number()
-    .integer()
-    .minimum(0),
-  thirdPartyCookiesEnabled: boolean().default(true),
-  idMigrationEnabled: boolean().default(true)
-};
-
-// #if _REACTOR
-// Not much need to validate since we are our own consumer.
-configValidators.reactorRegisterGetEcid = callback().default(() => {});
-// #endif
-
-export default configValidators;
+describe("schema::domain", () => {
+  describeTransformer("domain", string().domain(), [
+    { value: "stats.adobe.com" },
+    { value: "https://stats.adobe.com", error: true }
+  ]);
+});
