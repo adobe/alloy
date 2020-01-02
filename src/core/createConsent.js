@@ -47,6 +47,19 @@ const createConsentState = ({
   let optInPreferencesByPurpose;
   let optOutPreferencesByPurpose;
 
+  /**
+   * That user's current consent status.
+   * @typedef {Object} ConsentStatus
+   * @property {boolean} consented Whether the user has consented. This will be
+   * undefined if opt-in is enabled and the user hasn't provided their
+   * preferences.
+   * @property {String} deniedConsentReason If consented is false, this will
+   * contain the reason consent was denied.
+   */
+
+  /**
+   * @returns ConsentStatus
+   */
   const getStatus = () => {
     // We look for any purpose being true rather than just looking for the
     // "general" purpose being true because it gives us some flexibility in the
