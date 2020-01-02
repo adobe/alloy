@@ -215,8 +215,6 @@ export default ({
           consentState.refreshFromCookies();
         })
         .catch(error => {
-          // Even if there was an error, the consent cookies may
-          // have been successfully set.
           consentState.refreshFromCookies();
           throw error;
         });
@@ -251,8 +249,6 @@ export default ({
           consentState.refreshFromCookies();
         })
         .catch(error => {
-          // Even if there was an error, the consent cookies may
-          // have been successfully set.
           consentState.refreshFromCookies();
           throw error;
         });
