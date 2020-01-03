@@ -16,7 +16,7 @@ describe("validation::createUnique", () => {
     it(`should accept ${JSON.stringify(values)}`, () => {
       const validator = string().unique();
       values.forEach(value => {
-        expect(validator("mykey", value)).toEqual(value);
+        expect(validator(value, "mykey")).toEqual(value);
       });
     });
   });
@@ -26,9 +26,9 @@ describe("validation::createUnique", () => {
       const validator = string().unique();
       values.forEach((value, i) => {
         if (i + 1 === values.length) {
-          expect(() => validator("mykey", value)).toThrowError();
+          expect(() => validator(value, "mykey")).toThrowError();
         } else {
-          expect(validator("mykey", value)).toEqual(value);
+          expect(validator(value, "mykey")).toEqual(value);
         }
       });
     });
@@ -39,7 +39,7 @@ describe("validation::createUnique", () => {
       const validator = string()
         .unique()
         .required();
-      expect(() => validator("key", value)).toThrowError();
+      expect(() => validator(value, "key")).toThrowError();
     });
   });
 });

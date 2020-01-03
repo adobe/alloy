@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import isFunction from "../isFunction";
 import assert from "./assert";
 
-export default (key, value) => {
-  assert(isFunction(value), key, value, "a function");
+export default (value, path) => {
+  assert(isFunction(value), value, path, "a function");
   return value;
 };

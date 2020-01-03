@@ -13,7 +13,7 @@ import assert from "./assert";
 
 const DOMAIN_REGEX = /^[a-z0-9.]{1,}$/i;
 
-export default (path, value) => {
-  assert(DOMAIN_REGEX.test(value), path, value, "a valid domain");
+export default (value, path) => {
+  assert(DOMAIN_REGEX.test(value), value, path, "a valid domain");
   return value;
 };

@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import isInteger from "../isInteger";
 import assert from "./assert";
 
-export default (path, value) => {
-  assert(isInteger(value), path, value, "an integer");
+export default (value, path) => {
+  assert(isInteger(value), value, path, "an integer");
   return value;
 };

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import isString from "../isString";
 import assert from "./assert";
 
-export default (path, value) => {
-  assert(isString(value), path, value, "a string");
+export default (value, path) => {
+  assert(isString(value), value, path, "a string");
   return value;
 };

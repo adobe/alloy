@@ -11,12 +11,12 @@ governing permissions and limitations under the License.
 */
 import assert from "./assert";
 
-export default elementTransformer => (path, value) => {
-  assert(Array.isArray(value), path, value, "an array");
+export default elementTransformer => (value, path) => {
+  assert(Array.isArray(value), value, path, "an array");
   const errors = [];
   const transformedArray = value.map((subValue, i) => {
     try {
-      return elementTransformer(`${path}[${i}]`, subValue);
+      return elementTransformer(subValue, `${path}[${i}]`);
     } catch (e) {
       errors.push(e.message);
       return undefined;

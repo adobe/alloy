@@ -21,13 +21,13 @@ describe("validation::chain", () => {
     validator2.and.returnValue("validator2return");
     validator3.and.returnValue("validator3return");
     const subject = chain(chain(validator1, validator2), validator3);
-    expect(subject("myKey", "myCurrentValue")).toEqual("validator3return");
+    expect(subject("myCurrentValue", "myKey")).toEqual("validator3return");
     expect(validator1).toHaveBeenCalledTimes(1);
-    expect(validator1).toHaveBeenCalledWith("myKey", "myCurrentValue");
+    expect(validator1).toHaveBeenCalledWith("myCurrentValue", "myKey");
     expect(validator2).toHaveBeenCalledTimes(1);
-    expect(validator2).toHaveBeenCalledWith("myKey", "validator1return");
+    expect(validator2).toHaveBeenCalledWith("validator1return", "myKey");
     expect(validator3).toHaveBeenCalledTimes(1);
-    expect(validator3).toHaveBeenCalledWith("myKey", "validator2return");
+    expect(validator3).toHaveBeenCalledWith("validator2return", "myKey");
   });
 
   it("short circuits evaluation", () => {
@@ -38,7 +38,7 @@ describe("validation::chain", () => {
     validator2.and.throwError("My Error!");
     validator3.and.returnValue("validator3return");
     const subject = chain(chain(validator1, validator2), validator3);
-    expect(() => subject("myKey", "myCurrentValue")).toThrow(
+    expect(() => subject("myCurrentValue", "myKey")).toThrow(
       Error("My Error!")
     );
     expect(validator3).not.toHaveBeenCalled();

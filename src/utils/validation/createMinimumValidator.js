@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 import assert from "./assert";
 
-export default (type, minimum) => (path, value) => {
+export default (type, minimum) => (value, path) => {
   assert(
     value >= minimum,
-    path,
     value,
+    path,
     `${type} greater than or equal to ${minimum}`
   );
   return value;

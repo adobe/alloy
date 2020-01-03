@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import assert from "./assert";
 
-export default (path, value) => {
-  assert(value.length > 0, path, value, "a non-empty string");
+export default (value, path) => {
+  assert(value.length > 0, value, path, "a non-empty string");
   return value;
 };

@@ -1,8 +1,8 @@
 import isObject from "../isObject";
 import assert from "./assert";
 
-export default schema => (path, value) => {
-  assert(isObject(value), path, value, "an object");
+export default schema => (value, path) => {
+  assert(isObject(value), value, path, "an object");
 
   const errors = [];
   const transformedObject = {};
@@ -11,7 +11,7 @@ export default schema => (path, value) => {
     const subSchema = schema[subKey];
     const subPath = path ? `${path}.${subKey}` : subKey;
     try {
-      const transformedValue = subSchema(subPath, subValue);
+      const transformedValue = subSchema(subValue, subPath);
       if (transformedValue !== undefined) {
         transformedObject[subKey] = transformedValue;
       }

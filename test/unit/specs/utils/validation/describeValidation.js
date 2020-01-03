@@ -15,13 +15,18 @@ export default (description, validator, specObjects) => {
     specObjects.forEach(({ value, expected = value, error }) => {
       if (error) {
         it(`rejects ${JSON.stringify(value)}`, () => {
-          expect(() => validator("mykey", value)).toThrowError();
+          try {
+            validator(value, "mykey");
+            fail();
+          } catch (e) {
+            // expect(e.message).toContain(`'mykey'`)
+          }
         });
       } else {
         it(`transforms \`${JSON.stringify(value)}\` to \`${JSON.stringify(
           expected
         )}\``, () => {
-          expect(validator("mykey", value)).toEqual(expected || value);
+          expect(validator(value, "mykey")).toEqual(expected);
         });
       }
     });

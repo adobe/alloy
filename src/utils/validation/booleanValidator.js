@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import isBoolean from "../isBoolean";
 import assert from "./assert";
 
-export default (path, value) => {
-  assert(isBoolean(value), path, value, "true or false");
+export default (value, path) => {
+  assert(isBoolean(value), value, path, "true or false");
   return value;
 };

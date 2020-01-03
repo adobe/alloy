@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (isValid, path, value, message) => {
+export default (isValid, value, path, message) => {
   if (!isValid) {
     throw new Error(`'${path}': Expected ${message}, but got '${value}'.`);
   }

@@ -15,10 +15,10 @@ import regexpValidator from "./regexpValidator";
 import requiredValidator from "./requiredValidator";
 import stringValidator from "./stringValidator";
 
-const base = (_, value) => value;
+const base = value => value;
 const optionalChain = (first, second, additionalMethods) => {
-  const secondWithNullCheck = (path, value) =>
-    value == null ? value : second(path, value);
+  const secondWithNullCheck = (value, path) =>
+    value == null ? value : second(value, path);
   return chain(first, secondWithNullCheck, additionalMethods);
 };
 

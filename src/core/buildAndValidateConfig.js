@@ -26,7 +26,7 @@ const buildSchema = (coreConfigValidators, componentCreators) => {
 
 const transformOptions = (schema, options) => {
   try {
-    return objectOf(schema)("", options);
+    return objectOf(schema)(options);
   } catch (e) {
     throw new Error(
       `Resolve these configuration problems:\n\t - ${e.message

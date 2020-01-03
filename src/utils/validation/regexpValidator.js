@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import assert from "./assert";
 import isValidRegExp from "../isValidRegExp";
 
-export default (path, value) => {
-  assert(isValidRegExp(value), path, value, "a regular expression");
+export default (value, path) => {
+  assert(isValidRegExp(value), value, path, "a regular expression");
   return value;
 };

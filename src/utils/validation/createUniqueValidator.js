@@ -14,11 +14,11 @@ import assert from "./assert";
 
 export default () => {
   const values = [];
-  return (path, value) => {
+  return (value, path) => {
     assert(
       values.indexOf(value) === -1,
-      path,
       value,
+      path,
       "a unique value across instances"
     );
     values.push(value);

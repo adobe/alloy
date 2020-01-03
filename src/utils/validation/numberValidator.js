@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import isNumber from "../isNumber";
 import assert from "./assert";
 
-export default (path, value) => {
-  assert(isNumber(value), path, value, "a number");
+export default (value, path) => {
+  assert(isNumber(value), value, path, "a number");
   return value;
 };
