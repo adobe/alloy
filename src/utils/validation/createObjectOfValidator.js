@@ -1,19 +1,31 @@
+/*
+Copyright 2020 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
 import isObject from "../isObject";
-import assert from "./assertValid";
+import assertValid from "./assertValid";
 
 export default schema => (value, path) => {
-  assert(isObject(value), value, path, "an object");
+  assertValid(isObject(value), value, path, "an object");
 
   const errors = [];
-  const transformedObject = {};
+  const validatedObject = {};
   Object.keys(schema).forEach(subKey => {
     const subValue = value[subKey];
     const subSchema = schema[subKey];
     const subPath = path ? `${path}.${subKey}` : subKey;
     try {
-      const transformedValue = subSchema(subValue, subPath);
-      if (transformedValue !== undefined) {
-        transformedObject[subKey] = transformedValue;
+      const validatedValue = subSchema(subValue, subPath);
+      if (validatedValue !== undefined) {
+        validatedObject[subKey] = validatedValue;
       }
     } catch (e) {
       errors.push(e.message);
@@ -23,5 +35,5 @@ export default schema => (value, path) => {
   if (errors.length) {
     throw new Error(errors.join("\n"));
   }
-  return transformedObject;
+  return validatedObject;
 };

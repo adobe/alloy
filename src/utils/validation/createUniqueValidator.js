@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import assert from "./assertValid";
+import assertValid from "./assertValid";
 
 export default () => {
   const values = [];
   return (value, path) => {
-    assert(
+    assertValid(
       values.indexOf(value) === -1,
       value,
       path,

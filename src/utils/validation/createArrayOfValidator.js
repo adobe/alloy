@@ -9,14 +9,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import assert from "./assertValid";
+import assertValid from "./assertValid";
 
-export default elementTransformer => (value, path) => {
-  assert(Array.isArray(value), value, path, "an array");
+export default elementValidator => (value, path) => {
+  assertValid(Array.isArray(value), value, path, "an array");
   const errors = [];
-  const transformedArray = value.map((subValue, i) => {
+  const validatedArray = value.map((subValue, i) => {
     try {
-      return elementTransformer(subValue, `${path}[${i}]`);
+      return elementValidator(subValue, `${path}[${i}]`);
     } catch (e) {
       errors.push(e.message);
       return undefined;
@@ -25,5 +25,5 @@ export default elementTransformer => (value, path) => {
   if (errors.length) {
     throw new Error(errors.join("\n"));
   }
-  return transformedArray;
+  return validatedArray;
 };

@@ -11,9 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import isNumber from "../isNumber";
-import assert from "./assertValid";
+import assertValid from "./assertValid";
 
 export default (value, path) => {
-  assert(isNumber(value), value, path, "a number");
+  assertValid(isNumber(value), value, path, "a number");
   return value;
 };

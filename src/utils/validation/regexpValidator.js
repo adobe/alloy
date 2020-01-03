@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import assert from "./assertValid";
+import assertValid from "./assertValid";
 import isValidRegExp from "../isValidRegExp";
 
 export default (value, path) => {
-  assert(isValidRegExp(value), value, path, "a regular expression");
+  assertValid(isValidRegExp(value), value, path, "a regular expression");
   return value;
 };

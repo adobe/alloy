@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import assert from "./assertValid";
+import assertValid from "./assertValid";
 
 export default (value, path) => {
-  assert(value.length > 0, value, path, "a non-empty string");
+  assertValid(value.length > 0, value, path, "a non-empty string");
   return value;
 };

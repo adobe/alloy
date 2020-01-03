@@ -13,9 +13,9 @@ governing permissions and limitations under the License.
 import assign from "../assign";
 
 export default (first, second, additionalMethods = {}) => {
-  const newSchema = (value, path) => {
+  const validator = (value, path) => {
     return second(first(value, path), path);
   };
-  assign(newSchema, first, additionalMethods);
-  return newSchema;
+  assign(validator, first, additionalMethods);
+  return validator;
 };

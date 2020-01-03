@@ -32,6 +32,7 @@ import stringValidator from "./stringValidator";
 const base = value => value;
 
 // The 'default' and 'required' methods are available after any data-type method
+// Don't use the nullSafeChain because they need to handle the null or undefined case
 base.default = function _default(defaultValue) {
   return chain(this, createDefaultValidator(defaultValue));
 };
@@ -62,7 +63,7 @@ const unique = function createUnique() {
   return nullSafeChain(this, createUniqueValidator());
 };
 
-// exposed validators
+// data-type validators.  These are the first functions that are called to create a validator.
 const arrayOf = function arrayOf(elementValidator) {
   return nullSafeChain(this, createArrayOfValidator(elementValidator));
 };
