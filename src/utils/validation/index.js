@@ -1,4 +1,17 @@
+/*
+Copyright 2020 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
 import chain from "./chain";
+import nullSafeChain from "./nullSafeChain";
 
 import booleanValidator from "./booleanValidator";
 import callbackValidator from "./callbackValidator";
@@ -15,13 +28,10 @@ import regexpValidator from "./regexpValidator";
 import requiredValidator from "./requiredValidator";
 import stringValidator from "./stringValidator";
 
+// The base validator does no validation and just returns the value unchanged
 const base = value => value;
-const optionalChain = (first, second, additionalMethods) => {
-  const secondWithNullCheck = (value, path) =>
-    value == null ? value : second(value, path);
-  return chain(first, secondWithNullCheck, additionalMethods);
-};
 
+// The 'default' and 'required' methods are available after any data-type method
 base.default = function _default(defaultValue) {
   return chain(this, createDefaultValidator(defaultValue));
 };
@@ -31,49 +41,49 @@ base.required = function required() {
 
 // helper validators
 const domain = function domain() {
-  return optionalChain(this, domainValidator);
+  return nullSafeChain(this, domainValidator);
 };
 const minimumInteger = function minimumInteger(minValue) {
-  return optionalChain(this, createMinimumValidator("an integer", minValue));
+  return nullSafeChain(this, createMinimumValidator("an integer", minValue));
 };
 const minimumNumber = function minimumNumber(minValue) {
-  return optionalChain(this, createMinimumValidator("a number", minValue));
+  return nullSafeChain(this, createMinimumValidator("a number", minValue));
 };
 const integer = function integer() {
-  return optionalChain(this, integerValidator, { minimum: minimumInteger });
+  return nullSafeChain(this, integerValidator, { minimum: minimumInteger });
 };
 const nonEmpty = function nonEmpty() {
-  return optionalChain(this, nonEmptyValidator);
+  return nullSafeChain(this, nonEmptyValidator);
 };
 const regexp = function regexp() {
-  return optionalChain(this, regexpValidator);
+  return nullSafeChain(this, regexpValidator);
 };
 const unique = function createUnique() {
-  return optionalChain(this, createUniqueValidator());
+  return nullSafeChain(this, createUniqueValidator());
 };
 
 // exposed validators
 const arrayOf = function arrayOf(elementValidator) {
-  return optionalChain(this, createArrayOfValidator(elementValidator));
+  return nullSafeChain(this, createArrayOfValidator(elementValidator));
 };
 const boolean = function boolean() {
-  return optionalChain(this, booleanValidator);
+  return nullSafeChain(this, booleanValidator);
 };
 const callback = function callback() {
-  return optionalChain(this, callbackValidator);
+  return nullSafeChain(this, callbackValidator);
 };
 const number = function number() {
-  return optionalChain(this, numberValidator, {
+  return nullSafeChain(this, numberValidator, {
     minimum: minimumNumber,
     integer,
     unique
   });
 };
 const objectOf = function objectOf(schema) {
-  return optionalChain(this, createObjectOfValidator(schema));
+  return nullSafeChain(this, createObjectOfValidator(schema));
 };
 const string = function string() {
-  return optionalChain(this, stringValidator, {
+  return nullSafeChain(this, stringValidator, {
     regexp,
     domain,
     nonEmpty,
