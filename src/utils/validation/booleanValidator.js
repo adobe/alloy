@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import isBoolean from "../isBoolean";
-import assert from "./assert";
+import assert from "./assertValid";
 
 export default (value, path) => {
   assert(isBoolean(value), value, path, "true or false");

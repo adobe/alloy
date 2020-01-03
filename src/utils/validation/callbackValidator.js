@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import isFunction from "../isFunction";
-import assert from "./assert";
+import assert from "./assertValid";
 
 export default (value, path) => {
   assert(isFunction(value), value, path, "a function");

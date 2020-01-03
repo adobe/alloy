@@ -1,5 +1,5 @@
 import isObject from "../isObject";
-import assert from "./assert";
+import assert from "./assertValid";
 
 export default schema => (value, path) => {
   assert(isObject(value), value, path, "an object");

@@ -10,22 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (description, validator, specObjects) => {
-  describe(description, () => {
-    specObjects.forEach(({ value, expected = value, error }) => {
-      if (error) {
-        it(`rejects ${JSON.stringify(value)}`, () => {
-          expect(() => validator(value, "mykey")).toThrowMatching(e => {
-            return /'mykey[^']*'(:| is)/.test(e.message);
-          });
-        });
-      } else {
-        it(`transforms \`${JSON.stringify(value)}\` to \`${JSON.stringify(
-          expected
-        )}\``, () => {
-          expect(validator(value, "mykey")).toEqual(expected);
-        });
-      }
+import assertValid from "../../../../../src/utils/validation/assertValid";
+
+describe("validation::assertValid", () => {
+  it("throws an error when it is invalid", () => {
+    expect(() =>
+      assertValid(false, "myValue", "myPath", "myMessage")
+    ).toThrowMatching(e => {
+      expect(e.message).toEqual(
+        "'myPath': Expected myMessage, but got 'myValue'."
+      );
+      return true;
     });
   });
-};
+
+  it("does not throw an error when it is valid", () => {
+    expect(assertValid(true, "myValue", "myPath", "myMessage")).toBeUndefined();
+  });
+});
