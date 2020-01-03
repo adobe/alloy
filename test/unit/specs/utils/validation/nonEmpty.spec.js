@@ -10,40 +10,36 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { number } from "../../../../../src/utils/schema";
+import { string } from "../../../../../src/utils/validation";
 import describeTransformer from "./describeTransformer";
 
-describe("schema::integer()", () => {
-  describeTransformer("optional integer", number().integer(), [
-    { value: 42.01, error: true },
-    { value: -1.1, error: true },
-    { value: NaN, error: true },
-    { value: 0 },
-    { value: 42 },
-    { value: -1 }
+describe("validation::nonEmpty", () => {
+  describeTransformer("optional nonEmpty", string().nonEmpty(), [
+    { value: "key" },
+    { value: "", error: true },
+    { value: null },
+    { value: undefined }
   ]);
-
   describeTransformer(
-    "required integer",
-    number()
-      .integer()
+    "required nonEmpty",
+    string()
+      .nonEmpty()
       .required(),
     [
+      { value: "abc" },
       { value: null, error: true },
-      { value: undefined, error: true },
-      { value: 10 }
+      { value: undefined, error: true }
     ]
   );
-
   describeTransformer(
-    "default integer",
-    number()
-      .integer()
-      .default(12345),
+    "default nonEmpty",
+    string()
+      .nonEmpty()
+      .default("mydefault"),
     [
-      { value: null, expected: 12345 },
-      { value: undefined, expected: 12345 },
-      { value: 10, expected: 10 }
+      { value: null, expected: "mydefault" },
+      { value: undefined, expected: "mydefault" },
+      { value: "abc" }
     ]
   );
 });

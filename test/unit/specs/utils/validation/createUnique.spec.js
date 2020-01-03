@@ -9,9 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { string } from "../../../../../src/utils/schema";
+import { string } from "../../../../../src/utils/validation";
 
-describe("schema::createUnique", () => {
+describe("validation::createUnique", () => {
   [["a"], ["a", "b", "c"]].forEach(values => {
     it(`should accept ${JSON.stringify(values)}`, () => {
       const validator = string().unique();

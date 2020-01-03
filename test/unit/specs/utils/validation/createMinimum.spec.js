@@ -10,39 +10,48 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { objectOf, string } from "../../../../../src/utils/schema";
+import { number } from "../../../../../src/utils/validation";
 import describeTransformer from "./describeTransformer";
 
-describe("schema::objectOf", () => {
+describe("validation::minimum", () => {
   describeTransformer(
-    "optional object with various values",
-    objectOf({
-      a: string().required(),
-      b: string().default("b default"),
-      c: string()
-    }),
+    "optional minimum",
+    number()
+      .integer()
+      .minimum(4),
     [
-      { value: {}, error: true },
-      { value: { a: "1" }, expected: { a: "1", b: "b default" } },
-      { value: { a: "1", b: "2", c: "3" } },
-      { value: undefined },
+      { value: 3, error: true },
+      { value: 4 },
+      { value: 5 },
       { value: null },
-      { value: { a: 123 }, error: true },
-      { value: 123, error: true }
+      { value: undefined }
     ]
   );
 
   describeTransformer(
-    "nested object",
-    objectOf({
-      a: objectOf({
-        aa: string().required()
-      }).required()
-    }),
+    "required minimum",
+    number()
+      .integer()
+      .minimum(1)
+      .required(),
     [
-      { value: {}, error: true },
-      { value: { a: {} }, error: true },
-      { value: { a: { aa: "11" } } }
+      { value: null, error: true },
+      { value: undefined, error: true },
+      { value: 0, error: true },
+      { value: 1 }
+    ]
+  );
+
+  describeTransformer(
+    "default minimum",
+    number()
+      .integer()
+      .minimum(10)
+      .default(42),
+    [
+      { value: null, expected: 42 },
+      { value: undefined, expected: 42 },
+      { value: 0, error: true }
     ]
   );
 });

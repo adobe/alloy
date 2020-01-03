@@ -10,7 +10,7 @@ governing permissions and limitations under the License.
 */
 
 import createPrivacyComponent from "../../../../../src/components/Privacy/index";
-import { objectOf } from "../../../../../src/utils/schema";
+import { objectOf } from "../../../../../src/utils/validation";
 
 describe("Privacy::index", () => {
   [{}, { optInEnabled: true }, { optInEnabled: false }].forEach(cfg => {

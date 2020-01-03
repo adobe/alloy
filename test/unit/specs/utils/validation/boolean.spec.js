@@ -9,29 +9,35 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { string } from "../../../../../src/utils/schema";
+
+import { boolean } from "../../../../../src/utils/validation";
 import describeTransformer from "./describeTransformer";
 
-describe("schema::string", () => {
-  describeTransformer("optional string", string(), [
-    { value: false, error: true },
+describe("validation::boolean", () => {
+  describeTransformer("optional boolean", boolean(), [
+    { value: "", error: true },
+    { value: "true", error: true },
+    { value: [1], error: true },
+    { value: {}, error: true },
     { value: 0, error: true },
-    { value: [], error: true },
-    { value: () => {}, error: true },
+    { value: 42, error: true },
+    { value: true },
+    { value: false },
     { value: null },
     { value: undefined }
   ]);
 
-  describeTransformer("required string", string().required(), [
+  describeTransformer("required boolean", boolean().required(), [
+    { value: true },
+    { value: false },
     { value: null, error: true },
-    { value: undefined, error: true },
-    { value: "" },
-    { value: "hello" }
+    { value: undefined, error: true }
   ]);
 
-  describeTransformer("default string", string().default("default"), [
-    { value: null, expected: "default" },
-    { value: undefined, expected: "default" },
-    { value: "hello" }
+  describeTransformer("default true boolean", boolean().default(true), [
+    { value: null, expected: true },
+    { value: undefined, expected: true },
+    { value: true },
+    { value: false }
   ]);
 });

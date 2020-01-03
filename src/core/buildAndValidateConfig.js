@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { assign } from "../utils";
-import { objectOf } from "../utils/schema";
+import { objectOf } from "../utils/validation";
 
 const CONFIG_DOC_URI = "https://adobe.ly/2M4ErNE";
 

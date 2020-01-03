@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean } from "../../utils/schema";
+import { boolean } from "../../utils/validation";
 import { isString } from "../../utils";
 
 const throwInvalidPurposesError = purposes => {

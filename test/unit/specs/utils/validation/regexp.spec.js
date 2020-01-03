@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "../../../../../src/utils/schema";
+import { string } from "../../../../../src/utils/validation";
 import describeTransformer from "./describeTransformer";
 
-describe("schema::regexp", () => {
+describe("validation::regexp", () => {
   describeTransformer("optional regexp", string().regexp(), [
     { value: "steel|bronze" },
     { value: "/a/" },

@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import chain from "../../../../../src/utils/schema/chain";
+import chain from "../../../../../src/utils/validation/chain";
 
-describe("schema::chain", () => {
+describe("validation::chain", () => {
   it("calls the validators with the correct params", () => {
     const validator1 = jasmine.createSpy();
     const validator2 = jasmine.createSpy();

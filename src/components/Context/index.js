@@ -18,7 +18,7 @@ import timestampFactory from "./timestampFactory";
 import implementationDetailsFactory from "./implementationDetailsFactory";
 import libraryVersion from "../../constants/libraryVersion";
 import createComponent from "./createComponent";
-import { arrayOf, string } from "../../utils/schema";
+import { arrayOf, string } from "../../utils/validation";
 
 const web = webFactory(window);
 const device = deviceFactory(window);

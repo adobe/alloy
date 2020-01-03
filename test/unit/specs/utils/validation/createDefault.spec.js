@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "../../../../../src/utils/schema";
+import { string } from "../../../../../src/utils/validation";
 import describeTransformer from "./describeTransformer";
 
-describe("schema::default", () => {
+describe("validation::default", () => {
   describeTransformer("default string", string().default("my default"), [
     { value: null, expected: "my default" },
     { value: undefined, expected: "my default" },

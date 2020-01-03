@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createCoreConfigs from "../../../../../src/core/config/createCoreConfigs";
-import { objectOf } from "../../../../../src/utils/schema";
+import { objectOf } from "../../../../../src/utils/validation";
 
 describe("createCoreConfigs", () => {
   const baseConfig = { configId: "1234", orgId: "org1" };

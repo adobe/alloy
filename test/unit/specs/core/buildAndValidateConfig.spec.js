@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import buildAndValidateConfig from "../../../../src/core/buildAndValidateConfig";
 import createConfig from "../../../../src/core/config/createConfig";
-import { boolean } from "../../../../src/utils/schema";
+import { boolean } from "../../../../src/utils/validation";
 
 describe("buildAndValidateConfig", () => {
   let options;

@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { callback } from "../../../../../src/utils/schema";
+import { callback } from "../../../../../src/utils/validation";
 import describeTransformer from "./describeTransformer";
 
-describe("schema::callback", () => {
+describe("validation::callback", () => {
   describeTransformer("optional callback", callback(), [
     { value: "", error: true },
     { value: "true", error: true },

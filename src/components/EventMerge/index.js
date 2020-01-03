@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { uuid } from "../../utils";
-import { callback } from "../../utils/schema";
+import { callback } from "../../utils/validation";
 
 const createEventMerge = ({ config }) => {
   // #if _REACTOR

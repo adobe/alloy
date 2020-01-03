@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Adobe. All rights reserved.
+Copyright 2019 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,14 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "../../../../../src/utils/schema";
+import { string } from "../../../../../src/utils/validation";
 import describeTransformer from "./describeTransformer";
 
-describe("schema::required", () => {
-  describeTransformer("required string", string().required(), [
-    { value: null, error: true },
-    { value: undefined, error: true },
-    { value: "" },
-    { value: "hello" }
+describe("validation::domain", () => {
+  describeTransformer("domain", string().domain(), [
+    { value: "stats.adobe.com" },
+    { value: "https://stats.adobe.com", error: true }
   ]);
 });

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, number, callback } from "../../utils/schema";
+import { boolean, number, callback } from "../../utils/validation";
 
 const configValidators = {
   idSyncEnabled: boolean(),

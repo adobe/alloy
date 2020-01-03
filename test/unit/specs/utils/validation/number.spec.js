@@ -10,34 +10,31 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean } from "../../../../../src/utils/schema";
+import { number } from "../../../../../src/utils/validation";
 import describeTransformer from "./describeTransformer";
 
-describe("schema::boolean", () => {
-  describeTransformer("optional boolean", boolean(), [
+describe("validation::number", () => {
+  describeTransformer("optional number", number(), [
+    { value: true, error: true },
     { value: "", error: true },
-    { value: "true", error: true },
+    { value: "42", error: true },
     { value: [1], error: true },
     { value: {}, error: true },
-    { value: 0, error: true },
-    { value: 42, error: true },
-    { value: true },
-    { value: false },
-    { value: null },
-    { value: undefined }
+    { value: NaN, error: true },
+    { value: 0 },
+    { value: 0.01 },
+    { value: Infinity }
   ]);
 
-  describeTransformer("required boolean", boolean().required(), [
-    { value: true },
-    { value: false },
+  describeTransformer("required number", number().required(), [
     { value: null, error: true },
-    { value: undefined, error: true }
+    { value: undefined, error: true },
+    { value: 123 }
   ]);
 
-  describeTransformer("default true boolean", boolean().default(true), [
-    { value: null, expected: true },
-    { value: undefined, expected: true },
-    { value: true },
-    { value: false }
+  describeTransformer("default number", number().default(-1), [
+    { value: null, expected: -1 },
+    { value: undefined, expected: -1 },
+    { value: 123 }
   ]);
 });

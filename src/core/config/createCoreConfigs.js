@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, string, callback } from "../../utils/schema";
+import { boolean, string, callback } from "../../utils/validation";
 import { noop } from "../../utils";
 import { EDGE_DOMAIN } from "../../constants/domains";
 import EDGE_BASE_PATH from "../../constants/edgeBasePath";

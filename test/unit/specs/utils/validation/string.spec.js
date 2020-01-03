@@ -9,32 +9,29 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-import { number } from "../../../../../src/utils/schema";
+import { string } from "../../../../../src/utils/validation";
 import describeTransformer from "./describeTransformer";
 
-describe("schema::number", () => {
-  describeTransformer("optional number", number(), [
-    { value: true, error: true },
-    { value: "", error: true },
-    { value: "42", error: true },
-    { value: [1], error: true },
-    { value: {}, error: true },
-    { value: NaN, error: true },
-    { value: 0 },
-    { value: 0.01 },
-    { value: Infinity }
+describe("validation::string", () => {
+  describeTransformer("optional string", string(), [
+    { value: false, error: true },
+    { value: 0, error: true },
+    { value: [], error: true },
+    { value: () => {}, error: true },
+    { value: null },
+    { value: undefined }
   ]);
 
-  describeTransformer("required number", number().required(), [
+  describeTransformer("required string", string().required(), [
     { value: null, error: true },
     { value: undefined, error: true },
-    { value: 123 }
+    { value: "" },
+    { value: "hello" }
   ]);
 
-  describeTransformer("default number", number().default(-1), [
-    { value: null, expected: -1 },
-    { value: undefined, expected: -1 },
-    { value: 123 }
+  describeTransformer("default string", string().default("default"), [
+    { value: null, expected: "default" },
+    { value: undefined, expected: "default" },
+    { value: "hello" }
   ]);
 });
