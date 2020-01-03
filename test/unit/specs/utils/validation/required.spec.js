@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { string } from "../../../../../src/utils/validation";
-import describeTransformer from "./describeTransformer";
+import describeValidation from "./describeValidation";
 
 describe("validation::required", () => {
-  describeTransformer("required string", string().required(), [
+  describeValidation("required string", string().required(), [
     { value: null, error: true },
     { value: undefined, error: true },
     { value: "" },

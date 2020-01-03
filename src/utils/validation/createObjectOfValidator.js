@@ -2,9 +2,6 @@ import isObject from "../isObject";
 import assert from "./assert";
 
 export default schema => (path, value) => {
-  if (value == null) {
-    return value;
-  }
   assert(isObject(value), path, value, "an object");
 
   const errors = [];

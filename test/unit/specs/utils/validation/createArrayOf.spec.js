@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { arrayOf, string } from "../../../../../src/utils/validation";
-import describeTransformer from "./describeTransformer";
+import describeValidation from "./describeValidation";
 
 describe("validation::arrayOf", () => {
-  describeTransformer(
+  describeValidation(
     "optional array with required values",
     arrayOf(string().required()),
     [
@@ -29,7 +29,7 @@ describe("validation::arrayOf", () => {
     ]
   );
 
-  describeTransformer(
+  describeValidation(
     "optional array with optional values",
     arrayOf(string().default("hello")),
     [
@@ -40,7 +40,7 @@ describe("validation::arrayOf", () => {
     ]
   );
 
-  describeTransformer(
+  describeValidation(
     "required array with optional values",
     arrayOf(string()).required(),
     [

@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { boolean } from "../../../../../src/utils/validation";
-import describeTransformer from "./describeTransformer";
+import describeValidation from "./describeValidation";
 
 describe("validation::boolean", () => {
-  describeTransformer("optional boolean", boolean(), [
+  describeValidation("optional boolean", boolean(), [
     { value: "", error: true },
     { value: "true", error: true },
     { value: [1], error: true },
@@ -27,14 +27,14 @@ describe("validation::boolean", () => {
     { value: undefined }
   ]);
 
-  describeTransformer("required boolean", boolean().required(), [
+  describeValidation("required boolean", boolean().required(), [
     { value: true },
     { value: false },
     { value: null, error: true },
     { value: undefined, error: true }
   ]);
 
-  describeTransformer("default true boolean", boolean().default(true), [
+  describeValidation("default true boolean", boolean().default(true), [
     { value: null, expected: true },
     { value: undefined, expected: true },
     { value: true },

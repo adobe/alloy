@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { number } from "../../../../../src/utils/validation";
-import describeTransformer from "./describeTransformer";
+import describeValidation from "./describeValidation";
 
 describe("validation::integer()", () => {
-  describeTransformer("optional integer", number().integer(), [
+  describeValidation("optional integer", number().integer(), [
     { value: 42.01, error: true },
     { value: -1.1, error: true },
     { value: NaN, error: true },
@@ -23,7 +23,7 @@ describe("validation::integer()", () => {
     { value: -1 }
   ]);
 
-  describeTransformer(
+  describeValidation(
     "required integer",
     number()
       .integer()
@@ -35,7 +35,7 @@ describe("validation::integer()", () => {
     ]
   );
 
-  describeTransformer(
+  describeValidation(
     "default integer",
     number()
       .integer()

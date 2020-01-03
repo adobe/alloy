@@ -9,13 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import assert from "./assert";
 
-export default (type, minimum) => (path, value) => {
-  return assert(
-    value >= minimum,
-    path,
-    value,
-    `${type} greater than or equal to ${minimum}`
-  );
+export default (path, value) => {
+  assert(value.length > 0, path, value, "a non-empty string");
+  return value;
 };

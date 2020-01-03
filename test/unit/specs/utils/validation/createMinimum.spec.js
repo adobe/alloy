@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { number } from "../../../../../src/utils/validation";
-import describeTransformer from "./describeTransformer";
+import describeValidation from "./describeValidation";
 
 describe("validation::minimum", () => {
-  describeTransformer(
+  describeValidation(
     "optional minimum",
     number()
       .integer()
@@ -28,7 +28,7 @@ describe("validation::minimum", () => {
     ]
   );
 
-  describeTransformer(
+  describeValidation(
     "required minimum",
     number()
       .integer()
@@ -42,7 +42,7 @@ describe("validation::minimum", () => {
     ]
   );
 
-  describeTransformer(
+  describeValidation(
     "default minimum",
     number()
       .integer()

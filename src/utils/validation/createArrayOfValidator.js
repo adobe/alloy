@@ -9,22 +9,21 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
 import assert from "./assert";
 
-export default () => {
-  const values = [];
-  return (path, value) => {
-    if (value == null) {
-      return value;
+export default elementTransformer => (path, value) => {
+  assert(Array.isArray(value), path, value, "an array");
+  const errors = [];
+  const transformedArray = value.map((subValue, i) => {
+    try {
+      return elementTransformer(`${path}[${i}]`, subValue);
+    } catch (e) {
+      errors.push(e.message);
+      return undefined;
     }
-    assert(
-      values.indexOf(value) === -1,
-      path,
-      value,
-      "a unique value across instances"
-    );
-    values.push(value);
-    return value;
-  };
+  });
+  if (errors.length) {
+    throw new Error(errors.join("\n"));
+  }
+  return transformedArray;
 };

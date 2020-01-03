@@ -9,10 +9,19 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 import assert from "./assert";
 
-const DOMAIN_REGEX = /^[a-z0-9.]{1,}$/i;
-
-export default (path, value) => {
-  return assert(DOMAIN_REGEX.test(value), path, value, "a valid domain");
+export default () => {
+  const values = [];
+  return (path, value) => {
+    assert(
+      values.indexOf(value) === -1,
+      path,
+      value,
+      "a unique value across instances"
+    );
+    values.push(value);
+    return value;
+  };
 };

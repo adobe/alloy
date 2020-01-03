@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { number } from "../../../../../src/utils/validation";
-import describeTransformer from "./describeTransformer";
+import describeValidation from "./describeValidation";
 
 describe("validation::number", () => {
-  describeTransformer("optional number", number(), [
+  describeValidation("optional number", number(), [
     { value: true, error: true },
     { value: "", error: true },
     { value: "42", error: true },
@@ -26,13 +26,13 @@ describe("validation::number", () => {
     { value: Infinity }
   ]);
 
-  describeTransformer("required number", number().required(), [
+  describeValidation("required number", number().required(), [
     { value: null, error: true },
     { value: undefined, error: true },
     { value: 123 }
   ]);
 
-  describeTransformer("default number", number().default(-1), [
+  describeValidation("default number", number().default(-1), [
     { value: null, expected: -1 },
     { value: undefined, expected: -1 },
     { value: 123 }

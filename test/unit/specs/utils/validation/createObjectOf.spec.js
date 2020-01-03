@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { objectOf, string } from "../../../../../src/utils/validation";
-import describeTransformer from "./describeTransformer";
+import describeValidation from "./describeValidation";
 
 describe("validation::objectOf", () => {
-  describeTransformer(
+  describeValidation(
     "optional object with various values",
     objectOf({
       a: string().required(),
@@ -32,7 +32,7 @@ describe("validation::objectOf", () => {
     ]
   );
 
-  describeTransformer(
+  describeValidation(
     "nested object",
     objectOf({
       a: objectOf({

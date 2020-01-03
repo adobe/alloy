@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { string } from "../../../../../src/utils/validation";
-import describeTransformer from "./describeTransformer";
+import describeValidation from "./describeValidation";
 
 describe("validation::regexp", () => {
-  describeTransformer("optional regexp", string().regexp(), [
+  describeValidation("optional regexp", string().regexp(), [
     { value: "steel|bronze" },
     { value: "/a/" },
     { value: "/^[a-z0-9+]:///i" },
@@ -24,7 +24,7 @@ describe("validation::regexp", () => {
     { value: undefined }
   ]);
 
-  describeTransformer(
+  describeValidation(
     "required regexp",
     string()
       .regexp()
@@ -36,7 +36,7 @@ describe("validation::regexp", () => {
     ]
   );
 
-  describeTransformer(
+  describeValidation(
     "default regexp",
     string()
       .regexp()

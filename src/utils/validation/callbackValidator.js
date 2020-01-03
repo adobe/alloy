@@ -9,10 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-import isInteger from "../isInteger";
+import isFunction from "../isFunction";
 import assert from "./assert";
 
-export default (path, value) => {
-  return assert(isInteger(value), path, value, "an integer");
+export default (key, value) => {
+  assert(isFunction(value), key, value, "a function");
+  return value;
 };

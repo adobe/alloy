@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { callback } from "../../../../../src/utils/validation";
-import describeTransformer from "./describeTransformer";
+import describeValidation from "./describeValidation";
 
 describe("validation::callback", () => {
-  describeTransformer("optional callback", callback(), [
+  describeValidation("optional callback", callback(), [
     { value: "", error: true },
     { value: "true", error: true },
     { value: [1], error: true },
@@ -24,7 +24,7 @@ describe("validation::callback", () => {
     { value: function func() {} }
   ]);
 
-  describeTransformer("required callback", callback().required(), [
+  describeValidation("required callback", callback().required(), [
     { value: () => undefined },
     { value: null, error: true },
     { value: undefined, error: true }
@@ -32,13 +32,9 @@ describe("validation::callback", () => {
 
   const func1 = () => {};
   const func2 = () => {};
-  describeTransformer(
-    "callback with default value",
-    callback().default(func1),
-    [
-      { value: null, expected: func1 },
-      { value: undefined, expected: func1 },
-      { value: func2, expected: func2 }
-    ]
-  );
+  describeValidation("callback with default value", callback().default(func1), [
+    { value: null, expected: func1 },
+    { value: undefined, expected: func1 },
+    { value: func2, expected: func2 }
+  ]);
 });

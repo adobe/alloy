@@ -14,5 +14,6 @@ import assert from "./assert";
 import isValidRegExp from "../isValidRegExp";
 
 export default (path, value) => {
-  return assert(isValidRegExp(value), path, value, "a regular expression");
+  assert(isValidRegExp(value), path, value, "a regular expression");
+  return value;
 };

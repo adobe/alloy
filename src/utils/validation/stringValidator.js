@@ -9,15 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import isString from "../isString";
+import assert from "./assert";
 
-import { string } from "../../../../../src/utils/validation";
-import describeValidation from "./describeValidation";
-
-describe("validation::domain", () => {
-  describeValidation("domain", string().domain(), [
-    { value: "stats.adobe.com" },
-    { value: "https://stats.adobe.com", error: true },
-    { value: "stats.adobe.com\n", error: true },
-    { value: "stats.adobe.com\nbad", error: true }
-  ]);
-});
+export default (path, value) => {
+  assert(isString(value), path, value, "a string");
+  return value;
+};

@@ -10,9 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNumber from "../isNumber";
+import isBoolean from "../isBoolean";
 import assert from "./assert";
 
 export default (path, value) => {
-  return assert(isNumber(value), path, value, "a number");
+  assert(isBoolean(value), path, value, "true or false");
+  return value;
 };

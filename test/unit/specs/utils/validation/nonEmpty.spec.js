@@ -11,16 +11,16 @@ governing permissions and limitations under the License.
 */
 
 import { string } from "../../../../../src/utils/validation";
-import describeTransformer from "./describeTransformer";
+import describeValidation from "./describeValidation";
 
 describe("validation::nonEmpty", () => {
-  describeTransformer("optional nonEmpty", string().nonEmpty(), [
+  describeValidation("optional nonEmpty", string().nonEmpty(), [
     { value: "key" },
     { value: "", error: true },
     { value: null },
     { value: undefined }
   ]);
-  describeTransformer(
+  describeValidation(
     "required nonEmpty",
     string()
       .nonEmpty()
@@ -31,7 +31,7 @@ describe("validation::nonEmpty", () => {
       { value: undefined, error: true }
     ]
   );
-  describeTransformer(
+  describeValidation(
     "default nonEmpty",
     string()
       .nonEmpty()

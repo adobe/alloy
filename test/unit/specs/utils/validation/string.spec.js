@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { string } from "../../../../../src/utils/validation";
-import describeTransformer from "./describeTransformer";
+import describeValidation from "./describeValidation";
 
 describe("validation::string", () => {
-  describeTransformer("optional string", string(), [
+  describeValidation("optional string", string(), [
     { value: false, error: true },
     { value: 0, error: true },
     { value: [], error: true },
@@ -22,14 +22,14 @@ describe("validation::string", () => {
     { value: undefined }
   ]);
 
-  describeTransformer("required string", string().required(), [
+  describeValidation("required string", string().required(), [
     { value: null, error: true },
     { value: undefined, error: true },
     { value: "" },
     { value: "hello" }
   ]);
 
-  describeTransformer("default string", string().default("default"), [
+  describeValidation("default string", string().default("default"), [
     { value: null, expected: "default" },
     { value: undefined, expected: "default" },
     { value: "hello" }

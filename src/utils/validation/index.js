@@ -1,74 +1,84 @@
 import chain from "./chain";
 
-import booleanTransformer from "./boolean";
-import callbackTransformer from "./callback";
-import createArrayOfTransformer from "./createArrayOf";
-import createDefaultTransformer from "./createDefault";
-import createMinimumTransformer from "./createMinimum";
-import createObjectOfTransformer from "./createObjectOf";
-import createUniqueTransformer from "./createUnique";
-import domainTransformer from "./domain";
-import integerTransformer from "./integer";
-import nonEmptyTransformer from "./nonEmpty";
-import numberTransformer from "./number";
-import regexpTransformer from "./regexp";
-import requiredTransformer from "./required";
-import stringTransformer from "./string";
+import booleanValidator from "./booleanValidator";
+import callbackValidator from "./callbackValidator";
+import createArrayOfValidator from "./createArrayOfValidator";
+import createDefaultValidator from "./createDefaultValidator";
+import createMinimumValidator from "./createMinimumValidator";
+import createObjectOfValidator from "./createObjectOfValidator";
+import createUniqueValidator from "./createUniqueValidator";
+import domainValidator from "./domainValidator";
+import integerValidator from "./integerValidator";
+import nonEmptyValidator from "./nonEmptyValidator";
+import numberValidator from "./numberValidator";
+import regexpValidator from "./regexpValidator";
+import requiredValidator from "./requiredValidator";
+import stringValidator from "./stringValidator";
 
 const base = (_, value) => value;
+const optionalChain = (first, second, additionalMethods) => {
+  const secondWithNullCheck = (path, value) =>
+    value == null ? value : second(path, value);
+  return chain(first, secondWithNullCheck, additionalMethods);
+};
 
 base.default = function _default(defaultValue) {
-  return chain(this, createDefaultTransformer(defaultValue));
+  return chain(this, createDefaultValidator(defaultValue));
 };
 base.required = function required() {
-  return chain(this, requiredTransformer);
+  return chain(this, requiredValidator);
 };
 
 // helper validators
 const domain = function domain() {
-  return chain(this, domainTransformer);
+  return optionalChain(this, domainValidator);
 };
 const minimumInteger = function minimumInteger(minValue) {
-  return chain(this, createMinimumTransformer("an integer", minValue));
+  return optionalChain(this, createMinimumValidator("an integer", minValue));
 };
 const minimumNumber = function minimumNumber(minValue) {
-  return chain(this, createMinimumTransformer("a number", minValue));
+  return optionalChain(this, createMinimumValidator("a number", minValue));
 };
 const integer = function integer() {
-  return chain(this, integerTransformer, { minimum: minimumInteger });
+  return optionalChain(this, integerValidator, { minimum: minimumInteger });
 };
 const nonEmpty = function nonEmpty() {
-  return chain(this, nonEmptyTransformer);
+  return optionalChain(this, nonEmptyValidator);
 };
 const regexp = function regexp() {
-  return chain(this, regexpTransformer);
+  return optionalChain(this, regexpValidator);
 };
 const unique = function createUnique() {
-  return chain(this, createUniqueTransformer());
+  return optionalChain(this, createUniqueValidator());
 };
 
 // exposed validators
 const arrayOf = function arrayOf(elementValidator) {
-  return chain(this, createArrayOfTransformer(elementValidator));
+  return optionalChain(this, createArrayOfValidator(elementValidator));
 };
 const boolean = function boolean() {
-  return chain(this, booleanTransformer);
+  return optionalChain(this, booleanValidator);
 };
 const callback = function callback() {
-  return chain(this, callbackTransformer);
+  return optionalChain(this, callbackValidator);
 };
 const number = function number() {
-  return chain(this, numberTransformer, {
+  return optionalChain(this, numberValidator, {
     minimum: minimumNumber,
     integer,
     unique
   });
 };
 const objectOf = function objectOf(schema) {
-  return chain(this, createObjectOfTransformer(schema));
+  return optionalChain(this, createObjectOfValidator(schema));
 };
 const string = function string() {
-  return chain(this, stringTransformer, { regexp, domain, nonEmpty, unique });
+  return optionalChain(this, stringValidator, {
+    regexp,
+    domain,
+    nonEmpty,
+    unique
+  });
 };
 
 const boundArrayOf = arrayOf.bind(base);

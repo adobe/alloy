@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { string } from "../../../../../src/utils/validation";
-import describeTransformer from "./describeTransformer";
+import describeValidation from "./describeValidation";
 
 describe("validation::default", () => {
-  describeTransformer("default string", string().default("my default"), [
+  describeValidation("default string", string().default("my default"), [
     { value: null, expected: "my default" },
     { value: undefined, expected: "my default" },
     { value: "" },
