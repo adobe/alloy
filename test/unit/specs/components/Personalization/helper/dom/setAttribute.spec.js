@@ -25,9 +25,9 @@ describe("Personalization::DOM::setAttribute", () => {
 
   it("should set the attribute for the element", () => {
     const element = createNode("div", { id: "fooId" });
-    setAttribute(element, "innerText", "dummyValue");
+    setAttribute(element, "foo-data", "dummyValue");
 
-    const attr = getAttribute(element, "innerText");
+    const attr = getAttribute(element, "foo-data");
 
     expect(attr).toEqual("dummyValue");
   });
