@@ -16,19 +16,20 @@ const createNetworkLogger = () => {
   const sandboxEndpoint = /alloyqe\.azurewebsites/;
   const adobedcDemdex = /adobedc\.demdex/;
   const dpmDemdex = /dpm\.demdex/;
+  const edgeEndpoint = /v1\/(interact|collect)\?configId=/;
 
-  const gatewayEndpointLogs = createRequestLogger(gatewayEndpoint, {
-    logRequestBody: true
-  });
+  const gatewayEndpointLogs = createRequestLogger(gatewayEndpoint);
   const sandboxEndpointLogs = createRequestLogger(sandboxEndpoint);
   const adobedcEndpointLogs = createRequestLogger(adobedcDemdex);
   const dpmEndpointLogs = createRequestLogger(dpmDemdex);
+  const edgeEndpointLogs = createRequestLogger(edgeEndpoint);
 
   const clearLogs = async () => {
     await gatewayEndpointLogs.clear();
     await sandboxEndpointLogs.clear();
     await adobedcEndpointLogs.clear();
     await dpmEndpointLogs.clear();
+    await edgeEndpointLogs.clear();
   };
 
   return {
@@ -36,6 +37,7 @@ const createNetworkLogger = () => {
     sandboxEndpointLogs,
     adobedcEndpointLogs,
     dpmEndpointLogs,
+    edgeEndpointLogs,
     clearLogs
   };
 };

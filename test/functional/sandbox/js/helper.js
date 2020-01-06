@@ -111,7 +111,8 @@
   router.register("/event", "event", {
     onPostInit: function() {
       alloy("event", {
-        data: {
+        // TODO: Change data to match final XDM schema.
+        xdm: {
           key: "value"
         }
       }).catch(ex => {
