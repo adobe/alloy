@@ -10,12 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createOrgNamespacedCookieName from "../../../../src/core/createOrgNamespacedCookieName";
+import parseConsentCookie from "../../../../src/core/parseConsentCookie";
 
-describe("createOrgNamespacedCookieName", () => {
-  it("creates a cookie name", () => {
-    expect(createOrgNamespacedCookieName("myprefix", "ABC@Adobe")).toBe(
-      "myprefix_ABC_Adobe"
-    );
+describe("parseConsentCookie", () => {
+  it("throws an error if cookie is an unexpected format", () => {
+    expect(() => {
+      parseConsentCookie("foo");
+    }).toThrowError("Invalid consent cookie value: foo");
+  });
+
+  it("returns preferences by purpose", () => {
+    expect(parseConsentCookie("foo=true;bar=false")).toEqual({
+      foo: true,
+      bar: false
+    });
   });
 });

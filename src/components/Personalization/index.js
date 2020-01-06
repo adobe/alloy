@@ -68,7 +68,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
           // If NOT isViewStart disable personalization
           disablePersonalization(payload);
         } else {
-          event.expectResponse();
+          event.getExpectResponse();
 
           // For viewStart we try to hide the personalization containers
           hideContainers(prehidingStyle);

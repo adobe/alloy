@@ -29,7 +29,7 @@ const createDataCollector = ({ eventManager, logger }) => {
         const event = eventManager.createEvent();
 
         if (documentUnloading) {
-          event.documentUnloading();
+          event.documentMayUnload();
         }
 
         if (type || mergeId) {
@@ -44,8 +44,8 @@ const createDataCollector = ({ eventManager, logger }) => {
           assign(xdm, { eventMergeId: mergeId });
         }
 
-        event.userXdm = xdm;
-        event.userData = data;
+        event.setUserXdm(xdm);
+        event.setUserData(data);
 
         const warnings = event.validate();
         if (warnings.length) {

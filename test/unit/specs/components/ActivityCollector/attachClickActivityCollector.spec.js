@@ -14,21 +14,19 @@ import attachClickActivityCollector from "../../../../../src/components/Activity
 
 describe("ActivityCollector::attachClickActivityCollector", () => {
   const cfg = {};
-  const mockEventManager = {
-    createEvent: () => {
-      return {
-        isEmpty: () => true
-      };
-    }
-  };
-  const mockLifeCycle = {
-    onClick: () => {
-      return Promise.resolve();
-    }
-  };
+  let eventManager;
+  let lifecycle;
   let clickHandler;
   beforeEach(() => {
     cfg.clickCollectionEnabled = true;
+    eventManager = jasmine.createSpyObj("eventManager", {
+      createEvent: {
+        isEmpty: () => true
+      }
+    });
+    lifecycle = jasmine.createSpyObj("lifecycle", {
+      onClick: Promise.resolve()
+    });
     // eslint-disable-next-line no-unused-vars
     spyOn(document, "addEventListener").and.callFake((name, handler, type) => {
       clickHandler = handler;
@@ -36,18 +34,26 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
   });
 
   it("Attaches click handler if clickCollectionEnabled is set to true", () => {
-    attachClickActivityCollector(cfg, mockEventManager, mockLifeCycle);
+    attachClickActivityCollector(cfg, eventManager, lifecycle);
     expect(document.addEventListener).toHaveBeenCalled();
   });
   it("Does not attach click handler if clickCollectionEnabled is set to false", () => {
     cfg.clickCollectionEnabled = false;
-    attachClickActivityCollector(cfg, mockEventManager, mockLifeCycle);
+    attachClickActivityCollector(cfg, eventManager, lifecycle);
     expect(document.addEventListener).not.toHaveBeenCalled();
   });
   it("Publishes onClick lifecycle events at clicks when clickCollectionEnabled is set to true", () => {
-    spyOn(mockLifeCycle, "onClick").and.callThrough();
-    attachClickActivityCollector(cfg, mockEventManager, mockLifeCycle);
+    attachClickActivityCollector(cfg, eventManager, lifecycle);
     clickHandler({});
-    expect(mockLifeCycle.onClick).toHaveBeenCalled();
+    expect(lifecycle.onClick).toHaveBeenCalled();
+  });
+  it("Augments error that occurs inside onClick lifecycle", () => {
+    lifecycle.onClick.and.returnValue(
+      Promise.reject(new Error("Bad thing happened."))
+    );
+    attachClickActivityCollector(cfg, eventManager, lifecycle);
+    expectAsync(clickHandler({})).toBeRejectedWithError(
+      "Failed to track click\nCaused by: Bad thing happened."
+    );
   });
 });
