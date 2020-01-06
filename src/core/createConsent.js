@@ -169,7 +169,7 @@ export default ({
     logger.warn("Some commands may be delayed until the user opts in.");
   } else if (!initialConsentStatus.consented) {
     logger.warn(
-      `Some commands may be fail. ${initialConsentStatus.deniedConsentReason}`
+      `Some commands may fail. ${initialConsentStatus.deniedConsentReason}`
     );
   }
 
