@@ -111,18 +111,6 @@
   router.register("/event", "event", {
     onPostInit: function() {
       alloy("event", {
-        data: {
-          key: "value"
-        }
-      }).catch(ex => {
-        console.log(ex);
-      });
-    }
-  });
-
-  router.register("/C2592", "event-command", {
-    onPostInit: function() {
-      alloy("event", {
         // TODO: Change data to match final XDM schema.
         xdm: {
           key: "value"
