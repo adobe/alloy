@@ -9,14 +9,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import assertValid from "./assertValid";
 
-import { string, boolean } from "../../utils/validation";
-
-export default {
-  clickCollectionEnabled: boolean().default(true),
-  downloadLinkQualifier: string()
-    .regexp()
-    .default(
-      "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$"
-    )
+export default (typeName, minimum) => (value, path) => {
+  assertValid(
+    value >= minimum,
+    value,
+    path,
+    `${typeName} greater than or equal to ${minimum}`
+  );
+  return value;
 };

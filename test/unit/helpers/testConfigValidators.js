@@ -9,9 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-import createConfig from "../../../src/core/config/createConfig";
-import createValidator from "../../../src/core/config/createValidator";
+import { objectOf } from "../../../src/utils/validation";
 
 export default ({
   configValidators,
@@ -21,34 +19,22 @@ export default ({
 }) => {
   validConfigurations.forEach((cfg, i) => {
     it(`validates configuration (${i})`, () => {
-      const configObj = createConfig(cfg);
-      const configValidator = createValidator(configObj);
-
-      configValidator.addValidators(configValidators);
-      configValidator.validate();
+      objectOf(configValidators)(cfg);
     });
   });
 
   invalidConfigurations.forEach((cfg, i) => {
     it(`invalidates configuration (${i})`, () => {
-      const configObj = createConfig(cfg);
-      const configValidator = createValidator(configObj);
-
-      configValidator.addValidators(configValidators);
       expect(() => {
-        configValidator.validate();
+        objectOf(configValidators)(cfg);
       }).toThrowError();
     });
   });
 
   it("provides default values", () => {
-    const configObj = createConfig({});
-    const configValidator = createValidator(configObj);
-
-    configValidator.addValidators(configValidators);
-    configValidator.validate();
+    const config = objectOf(configValidators)({});
     Object.keys(defaultValues).forEach(key => {
-      expect(configObj[key]).toBe(defaultValues[key]);
+      expect(config[key]).toBe(defaultValues[key]);
     });
   });
 };

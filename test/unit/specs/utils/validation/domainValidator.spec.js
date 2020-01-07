@@ -10,13 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, boolean } from "../../utils/validation";
+import { string } from "../../../../../src/utils/validation";
+import describeValidation from "./describeValidation";
 
-export default {
-  clickCollectionEnabled: boolean().default(true),
-  downloadLinkQualifier: string()
-    .regexp()
-    .default(
-      "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$"
-    )
-};
+describe("validation::domain", () => {
+  describeValidation("domain", string().domain(), [
+    { value: "stats.adobe.com" },
+    { value: "https://stats.adobe.com", error: true },
+    { value: "stats.adobe.com\n", error: true },
+    { value: "stats.adobe.com\nbad", error: true }
+  ]);
+});

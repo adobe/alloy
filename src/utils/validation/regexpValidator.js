@@ -10,13 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, boolean } from "../../utils/validation";
+import assertValid from "./assertValid";
+import isValidRegExp from "../isValidRegExp";
 
-export default {
-  clickCollectionEnabled: boolean().default(true),
-  downloadLinkQualifier: string()
-    .regexp()
-    .default(
-      "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$"
-    )
+export default (value, path) => {
+  assertValid(isValidRegExp(value), value, path, "a regular expression");
+  return value;
 };

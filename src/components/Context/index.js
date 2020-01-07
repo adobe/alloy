@@ -18,7 +18,7 @@ import timestampFactory from "./timestampFactory";
 import implementationDetailsFactory from "./implementationDetailsFactory";
 import libraryVersion from "../../constants/libraryVersion";
 import createComponent from "./createComponent";
-import { arrayOf, string } from "../../utils/configValidators";
+import { arrayOf, string } from "../../utils/validation";
 
 const web = webFactory(window);
 const device = deviceFactory(window);
@@ -40,10 +40,7 @@ const createContext = ({ config, logger }) => {
 
 createContext.namespace = "Context";
 createContext.configValidators = {
-  context: {
-    defaultValue: Object.keys(optionalContexts),
-    validate: arrayOf(string())
-  }
+  context: arrayOf(string()).default(Object.keys(optionalContexts))
 };
 
 export default createContext;

@@ -10,13 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, boolean } from "../../utils/validation";
+import assertValid from "./assertValid";
 
-export default {
-  clickCollectionEnabled: boolean().default(true),
-  downloadLinkQualifier: string()
-    .regexp()
-    .default(
-      "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$"
-    )
+export default () => {
+  const values = [];
+  return (value, path) => {
+    assertValid(
+      values.indexOf(value) === -1,
+      value,
+      path,
+      "a unique value across instances"
+    );
+    values.push(value);
+    return value;
+  };
 };

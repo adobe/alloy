@@ -24,7 +24,6 @@ import componentCreators from "./componentCreators";
 import buildAndValidateConfig from "./buildAndValidateConfig";
 import initializeComponents from "./initializeComponents";
 import createConfig from "./config/createConfig";
-import createConfigValidator from "./config/createValidator";
 import createCoreConfigs from "./config/createCoreConfigs";
 import handleErrorFactory from "./handleErrorFactory";
 import networkStrategyFactory from "./network/networkStrategyFactory";
@@ -75,9 +74,8 @@ if (instanceNamespaces) {
       const config = buildAndValidateConfig({
         options,
         componentCreators,
-        createConfig,
-        createConfigValidator,
         coreConfigValidators,
+        createConfig,
         logger,
         setDebugEnabled,
         setErrorsEnabled

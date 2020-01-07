@@ -10,35 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, number } from "../../utils/configValidators";
+import { boolean, number, callback } from "../../utils/validation";
 
 const configValidators = {
-  idSyncEnabled: {
-    defaultValue: undefined,
-    validate: boolean()
-  },
-  idSyncContainerId: {
-    defaultValue: undefined,
-    validate: number()
-      .integer()
-      .minimum(0)
-      .expected("an integer greater than or equal to 0")
-  },
-  thirdPartyCookiesEnabled: {
-    defaultValue: true,
-    validate: boolean()
-  },
-  idMigrationEnabled: {
-    defaultValue: true,
-    validate: boolean()
-  }
+  idSyncEnabled: boolean(),
+  idSyncContainerId: number()
+    .integer()
+    .minimum(0),
+  thirdPartyCookiesEnabled: boolean().default(true),
+  idMigrationEnabled: boolean().default(true)
 };
 
 // #if _REACTOR
 // Not much need to validate since we are our own consumer.
-configValidators.reactorRegisterGetEcid = {
-  defaultValue: () => {}
-};
+configValidators.reactorRegisterGetEcid = callback().default(() => {});
 // #endif
 
 export default configValidators;

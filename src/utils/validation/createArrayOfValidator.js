@@ -9,14 +9,21 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import assertValid from "./assertValid";
 
-import { string, boolean } from "../../utils/validation";
-
-export default {
-  clickCollectionEnabled: boolean().default(true),
-  downloadLinkQualifier: string()
-    .regexp()
-    .default(
-      "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$"
-    )
+export default elementValidator => (value, path) => {
+  assertValid(Array.isArray(value), value, path, "an array");
+  const errors = [];
+  const validatedArray = value.map((subValue, i) => {
+    try {
+      return elementValidator(subValue, `${path}[${i}]`);
+    } catch (e) {
+      errors.push(e.message);
+      return undefined;
+    }
+  });
+  if (errors.length) {
+    throw new Error(errors.join("\n"));
+  }
+  return validatedArray;
 };

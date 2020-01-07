@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean } from "../../utils/configValidators";
+import { boolean } from "../../utils/validation";
 import { isString } from "../../utils";
 
 const ALL = "all";
@@ -72,10 +72,7 @@ const createPrivacy = ({ config, consent }) => {
 createPrivacy.namespace = "Privacy";
 
 createPrivacy.configValidators = {
-  optInEnabled: {
-    defaultValue: false,
-    validate: boolean()
-  }
+  optInEnabled: boolean().default(false)
 };
 
 export default createPrivacy;

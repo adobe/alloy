@@ -9,14 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import assertValid from "./assertValid";
 
-import { string, boolean } from "../../utils/validation";
+const DOMAIN_REGEX = /^[a-z0-9.]{1,}$/i;
 
-export default {
-  clickCollectionEnabled: boolean().default(true),
-  downloadLinkQualifier: string()
-    .regexp()
-    .default(
-      "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$"
-    )
+export default (value, path) => {
+  assertValid(DOMAIN_REGEX.test(value), value, path, "a valid domain");
+  return value;
 };
