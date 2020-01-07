@@ -11,20 +11,17 @@ governing permissions and limitations under the License.
 */
 
 import { assignIf, isEmptyObject } from "../utils";
-import { ID_THIRD_PARTY_DOMAIN } from "../constants/domains";
 
 export default ({
-  createEvent,
-  createResponse,
-  optIn,
-  lifecycle,
-  cookieTransfer,
-  network,
   config,
-  logger
+  logger,
+  lifecycle,
+  consent,
+  createEvent,
+  createDataCollectionRequestPayload,
+  sendEdgeNetworkRequest
 }) => {
   const {
-    edgeDomain,
     orgId,
     onBeforeEventSend,
     debugEnabled,
@@ -42,21 +39,22 @@ export default ({
   };
 
   const addMetaTo = payload => {
-    const meta = {
-      gateway: {
-        orgId
-      }
-    };
-    const collect = Object.create(null);
-    assignIf(collect, { synchronousValidation: true }, () => debugEnabled);
-    assignIf(collect, { datasetId: config.datasetId }, () => datasetId);
-    assignIf(collect, { schemaId: config.schemaId }, () => schemaId);
+    const configOverrides = { orgId };
 
-    if (!isEmptyObject(collect)) {
-      meta.collect = collect;
+    const dataCollection = Object.create(null);
+    assignIf(
+      dataCollection,
+      { synchronousValidation: true },
+      () => debugEnabled
+    );
+    assignIf(dataCollection, { datasetId: config.datasetId }, () => datasetId);
+    assignIf(dataCollection, { schemaId: config.schemaId }, () => schemaId);
+
+    if (!isEmptyObject(dataCollection)) {
+      configOverrides.dataCollection = dataCollection;
     }
 
-    payload.mergeMeta(meta);
+    payload.mergeConfigOverrides(configOverrides);
   };
 
   return {
@@ -74,91 +72,37 @@ export default ({
      * @returns {*}
      */
     sendEvent(event, options = {}) {
-      event.lastChanceCallback = onBeforeEventSendWithLoggedExceptions;
+      event.setLastChanceCallback(onBeforeEventSendWithLoggedExceptions);
       const { isViewStart = false } = options;
-      const payload = network.createPayload();
+      const payload = createDataCollectionRequestPayload();
       addMetaTo(payload);
 
       return lifecycle
         .onBeforeEvent({
           event,
-          isViewStart
+          isViewStart,
+          payload
         })
         .then(() => {
           // it's important to add the event here because the payload object will call toJSON
           // which applies the userData, userXdm, and lastChanceCallback
           payload.addEvent(event);
-          return optIn.whenOptedIn();
+          return consent.whenConsented();
         })
         .then(() => {
-          return lifecycle.onBeforeDataCollection({ payload });
+          return lifecycle.onBeforeDataCollectionRequest({ payload });
         })
         .then(() => {
-          const endpointDomain = payload.shouldUseIdThirdPartyDomain
-            ? ID_THIRD_PARTY_DOMAIN
-            : edgeDomain;
-          cookieTransfer.cookiesToPayload(payload, endpointDomain);
-          return network.sendRequest(payload, endpointDomain, {
-            expectsResponse: payload.expectsResponse,
-            documentUnloading: event.isDocumentUnloading
+          const documentMayUnload = event.getDocumentMayUnload();
+          const expectResponse = payload.getExpectResponse();
+          const reallyExpectResponse = documentMayUnload
+            ? false
+            : expectResponse;
+          const action = reallyExpectResponse ? "interact" : "collect";
+          return sendEdgeNetworkRequest({
+            payload,
+            action
           });
-        })
-        .catch(error => {
-          // The error that we caught is more important than
-          // any error that may have occurred in lifecycle.onResponseError().
-          // For that reason, we make sure the caught error is the one that
-          // bubbles up. We also wait until lifecycle.onRequestFailure is
-          // complete before returning, so that any error that may occur
-          // in lifecycle.onRequestFailure is properly suppressed if the
-          // user has errorsEnabled: false in the configuration.
-          // We could use finally() here, but just to be safe, we don't,
-          // because finally() is only recently supported natively and may
-          // not exist in customer-provided promise polyfills.
-          const throwError = () => {
-            throw error;
-          };
-          return lifecycle.onRequestFailure().then(throwError, throwError);
-        })
-        .then(parsedBody => {
-          const response = createResponse(parsedBody);
-          cookieTransfer.responseToCookies(response);
-
-          // TODO Document that onResponse will be called when Konductor
-          // sends a well-formed response even if that response contains
-          // error objects. This is because even when there are error objects
-          // there can be "handle" payloads to act upon. Also document
-          // that onRequestFailure will be called when the network request
-          // itself failed (e.g., no internet connection), when JAG throws an
-          // error (the request never made it to Konductor), or when
-          // Konductor returns a malformed response.
-          return lifecycle.onResponse({ response }).then(() => response);
-        })
-        .then(response => {
-          if (!response) {
-            return;
-          }
-
-          const warnings = response.getWarnings();
-          const errors = response.getErrors();
-
-          warnings.forEach(warning => {
-            logger.warn(
-              `Warning received from server: [Code ${warning.code}] ${warning.message}`
-            );
-          });
-
-          if (errors.length) {
-            const errorMessage = errors.reduce((memo, error) => {
-              return `${memo}\n• [Code ${error.code}] ${error.message}`;
-            }, "The server responded with the following errors:");
-            throw new Error(errorMessage);
-          }
-
-          // We don't want to expose the response to the customer, so
-          // we'll stop its propagation at this point. Later, we may wish
-          // to allow the response to propagate out of the event manager
-          // but not let it propagate beyond the components using the event
-          // manager.
         });
     }
   };

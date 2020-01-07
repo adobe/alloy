@@ -14,9 +14,10 @@ governing permissions and limitations under the License.
 const hookNames = [
   "onComponentsRegistered",
   "onBeforeEvent",
+  "onBeforeDataCollectionRequest",
+  "onBeforeConsentRequest",
   "onResponse",
   "onRequestFailure",
-  "onBeforeDataCollection",
   "onClick"
 ];
 

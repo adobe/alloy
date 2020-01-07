@@ -10,5 +10,34 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
 import setStyle from "../../../../../../../src/components/Personalization/helper/dom/setStyle";
+import {
+  selectNodes,
+  removeNode,
+  createNode
+} from "../../../../../../../src/utils/dom";
+import { getAttribute } from "../../../../../../../src/components/Personalization/helper/dom";
+
+describe("Personalization::DOM::setStyle", () => {
+  afterEach(() => {
+    selectNodes("#fooDivId").forEach(removeNode);
+  });
+
+  it("sets style with priority to the element", () => {
+    const element = createNode("div", { id: "fooDivId" });
+    setStyle(element, "padding", "15px", "important");
+
+    const style = getAttribute(element, "style");
+
+    expect(style).toEqual("padding: 15px !important;");
+  });
+
+  it("sets style to the element, without priority", () => {
+    const element = createNode("div", { id: "fooDivId" });
+    setStyle(element, "padding", "15px");
+
+    const style = getAttribute(element, "style");
+
+    expect(style).toEqual("padding: 15px;");
+  });
+});

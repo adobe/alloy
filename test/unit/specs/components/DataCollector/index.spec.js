@@ -17,12 +17,12 @@ describe("Event Command", () => {
   let eventManager;
   let eventCommand;
   beforeEach(() => {
-    event = jasmine.createSpyObj(
-      "event",
-      ["documentUnloading"],
-      ["userData", "userXdm"]
-    );
-    event.validate = () => [];
+    event = jasmine.createSpyObj("event", {
+      documentMayUnload: undefined,
+      setUserData: undefined,
+      setUserXdm: undefined,
+      validate: []
+    });
     eventManager = {
       createEvent() {
         return event;
@@ -52,13 +52,9 @@ describe("Event Command", () => {
     };
 
     return eventCommand(options).then(result => {
-      expect(event.documentUnloading).toHaveBeenCalled();
-      expect(
-        Object.getOwnPropertyDescriptor(event, "userXdm").set
-      ).toHaveBeenCalledWith(xdm);
-      expect(
-        Object.getOwnPropertyDescriptor(event, "userData").set
-      ).toHaveBeenCalledWith(data);
+      expect(event.documentMayUnload).toHaveBeenCalled();
+      expect(event.setUserXdm).toHaveBeenCalledWith(xdm);
+      expect(event.setUserData).toHaveBeenCalledWith(data);
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         isViewStart: true
       });
@@ -66,9 +62,9 @@ describe("Event Command", () => {
     });
   });
 
-  it("does not call documentUnloading if documentUnloading is not defined", () => {
+  it("does not call documentMayUnload if documentUnloading is not defined", () => {
     return eventCommand({}).then(() => {
-      expect(event.documentUnloading).not.toHaveBeenCalled();
+      expect(event.documentMayUnload).not.toHaveBeenCalled();
     });
   });
 
@@ -85,9 +81,7 @@ describe("Event Command", () => {
       type: "mytype",
       mergeId: "mymergeid"
     }).then(() => {
-      expect(
-        Object.getOwnPropertyDescriptor(event, "userXdm").set
-      ).toHaveBeenCalledWith({
+      expect(event.setUserXdm).toHaveBeenCalledWith({
         eventType: "mytype",
         eventMergeId: "mymergeid"
       });
@@ -100,9 +94,7 @@ describe("Event Command", () => {
       type: "mytype",
       mergeId: "mymergeid"
     }).then(() => {
-      expect(
-        Object.getOwnPropertyDescriptor(event, "userXdm").set
-      ).toHaveBeenCalledWith({
+      expect(event.setUserXdm).toHaveBeenCalledWith({
         key: "value",
         eventType: "mytype",
         eventMergeId: "mymergeid"

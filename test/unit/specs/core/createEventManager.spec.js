@@ -11,72 +11,23 @@ governing permissions and limitations under the License.
 */
 
 import createEventManager from "../../../../src/core/createEventManager";
+import realCreateDataCollectionRequestPayload from "../../../../src/core/edgeNetwork/requestPayloads/createDataCollectionRequestPayload";
+import realCreateEvent from "../../../../src/core/createEvent";
 import createConfig from "../../../../src/core/config/createConfig";
 import { defer } from "../../../../src/utils";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
-import assertFunctionCallOrder from "../../helpers/assertFunctionCallOrder";
-import {
-  EDGE_DOMAIN,
-  ID_THIRD_PARTY_DOMAIN
-} from "../../../../src/constants/domains";
 
 describe("createEventManager", () => {
-  let event;
-  let response;
-  let payload;
-  let lifecycle;
-  let cookieTransfer;
-  let network;
-  let optIn;
   let config;
-  let eventManager;
   let logger;
-  let lastChanceCallback;
+  let lifecycle;
+  let consent;
+  let event;
+  let requestPayload;
+  let sendEdgeNetworkRequest;
+  let eventManager;
   beforeEach(() => {
-    event = {
-      mergeXdm() {},
-      set lastChanceCallback(value) {
-        lastChanceCallback = value;
-      },
-      isDocumentUnloading: false,
-      applyCallback: jasmine.createSpy()
-    };
-    const createEvent = jasmine.createSpy().and.returnValue(event);
-    response = {
-      getErrors: jasmine.createSpy().and.returnValue([]),
-      getWarnings: jasmine.createSpy().and.returnValue([])
-    };
-    const createResponse = () => response;
-    lifecycle = {
-      onBeforeEvent: jasmine.createSpy().and.returnValue(Promise.resolve()),
-      onBeforeDataCollection: jasmine
-        .createSpy()
-        .and.returnValue(Promise.resolve()),
-      onRequestFailure: jasmine.createSpy().and.returnValue(Promise.resolve()),
-      onResponse: jasmine.createSpy().and.returnValue(Promise.resolve())
-    };
-    cookieTransfer = jasmine.createSpyObj("cookieTransfer", [
-      "cookiesToPayload",
-      "responseToCookies"
-    ]);
-    payload = {
-      addEvent: jasmine.createSpy(),
-      mergeMeta: jasmine.createSpy(),
-      expectsResponse: false,
-      shouldUseIdThirdPartyDomain: false,
-      toJSON() {
-        return { meta: {} };
-      }
-    };
-    network = {
-      createPayload: () => payload,
-      sendRequest: jasmine.createSpy().and.returnValue(Promise.resolve())
-    };
-    optIn = {
-      whenOptedIn: jasmine.createSpy().and.returnValue(Promise.resolve())
-    };
     config = createConfig({
-      edgeDomain: EDGE_DOMAIN,
       orgId: "ABC123",
       onBeforeEventSend: jasmine.createSpy(),
       debugEnabled: true,
@@ -84,15 +35,34 @@ describe("createEventManager", () => {
       schemaId: "SCHEMAID"
     });
     logger = jasmine.createSpyObj("logger", ["error", "warn"]);
+    lifecycle = jasmine.createSpyObj("lifecycle", {
+      onBeforeEvent: Promise.resolve(),
+      onBeforeDataCollectionRequest: Promise.resolve()
+    });
+    consent = jasmine.createSpyObj("consent", {
+      whenConsented: Promise.resolve()
+    });
+    event = realCreateEvent();
+    spyOnAllFunctions(event);
+    const createEvent = () => {
+      return event;
+    };
+    requestPayload = realCreateDataCollectionRequestPayload();
+    spyOnAllFunctions(requestPayload);
+    const createDataCollectionRequestPayload = () => {
+      return requestPayload;
+    };
+    sendEdgeNetworkRequest = jasmine
+      .createSpy("sendEdgeNetworkRequest")
+      .and.returnValue(Promise.resolve());
     eventManager = createEventManager({
-      createEvent,
-      createResponse,
-      optIn,
-      lifecycle,
-      cookieTransfer,
-      network,
       config,
-      logger
+      logger,
+      lifecycle,
+      consent,
+      createEvent,
+      createDataCollectionRequestPayload,
+      sendEdgeNetworkRequest
     });
   });
 
@@ -105,12 +75,10 @@ describe("createEventManager", () => {
   describe("sendEvent", () => {
     it("creates the payload and adds event and meta", () => {
       return eventManager.sendEvent(event).then(() => {
-        expect(payload.addEvent).toHaveBeenCalledWith(event);
-        expect(payload.mergeMeta).toHaveBeenCalledWith({
-          gateway: {
-            orgId: "ABC123"
-          },
-          collect: {
+        expect(requestPayload.addEvent).toHaveBeenCalledWith(event);
+        expect(requestPayload.mergeConfigOverrides).toHaveBeenCalledWith({
+          orgId: "ABC123",
+          dataCollection: {
             synchronousValidation: true,
             datasetId: "DATASETID",
             schemaId: "SCHEMAID"
@@ -130,277 +98,120 @@ describe("createEventManager", () => {
         .then(() => {
           expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith({
             event,
-            isViewStart: true
+            isViewStart: true,
+            payload: requestPayload
           });
-          expect(optIn.whenOptedIn).not.toHaveBeenCalled();
+          expect(consent.whenConsented).not.toHaveBeenCalled();
           deferred.resolve();
           return flushPromiseChains();
         })
         .then(() => {
-          expect(network.sendRequest).toHaveBeenCalled();
+          expect(sendEdgeNetworkRequest).toHaveBeenCalled();
         });
     });
 
-    it("sets the onBeforeEventSend callback", () => {
-      const params = { xdm: { a: "1" }, data: { b: "2" } };
-      payload.addEvent.and.callFake(() => {
-        lastChanceCallback(params);
+    it("sets the lastChanceCallback, which wraps config.onBeforeEventSend, on the event", () => {
+      let wrappedLastChanceCallback;
+      event.setLastChanceCallback.and.callFake(callback => {
+        wrappedLastChanceCallback = callback;
       });
       return eventManager.sendEvent(event, {}).then(() => {
-        expect(config.onBeforeEventSend).toHaveBeenCalledWith(params);
+        wrappedLastChanceCallback();
+        expect(config.onBeforeEventSend).toHaveBeenCalled();
       });
     });
 
-    it("logs errors in the onBeforeEventSend callback", () => {
-      const error = Error("onBeforeEventSend error");
-      payload.addEvent.and.callFake(() => {
-        try {
-          lastChanceCallback({ xdm: {}, data: {} });
-        } catch (e) {
-          // noop
-        }
-      });
+    it("logs errors in the config.onBeforeEventSend callback", () => {
+      const error = new Error("onBeforeEventSend error");
       config.onBeforeEventSend.and.throwError(error);
+
+      let wrappedLastChanceCallback;
+      event.setLastChanceCallback.and.callFake(callback => {
+        wrappedLastChanceCallback = callback;
+      });
+
       return eventManager.sendEvent(event, {}).then(() => {
+        expect(() => {
+          wrappedLastChanceCallback();
+        }).toThrowError("onBeforeEventSend error");
         expect(logger.error).toHaveBeenCalledWith(error);
       });
     });
 
-    it("calls onBeforeEvent before consent and onBeforeDataCollection after", () => {
+    it("calls onBeforeEvent before consent and onBeforeDataCollectionRequest after", () => {
       const deferred = defer();
-      optIn.whenOptedIn = () => deferred.promise;
+      consent.whenConsented = () => deferred.promise;
       eventManager.sendEvent(event);
       return flushPromiseChains()
         .then(() => {
           expect(lifecycle.onBeforeEvent).toHaveBeenCalled();
-          expect(lifecycle.onBeforeDataCollection).not.toHaveBeenCalled();
+          expect(
+            lifecycle.onBeforeDataCollectionRequest
+          ).not.toHaveBeenCalled();
           deferred.resolve();
           return flushPromiseChains();
         })
         .then(() => {
-          expect(lifecycle.onBeforeDataCollection).toHaveBeenCalled();
+          expect(lifecycle.onBeforeDataCollectionRequest).toHaveBeenCalled();
         });
     });
 
     it("allows other components to access payload and pause the lifecycle", () => {
       const deferred = defer();
-      lifecycle.onBeforeDataCollection.and.returnValue(deferred.promise);
+      lifecycle.onBeforeDataCollectionRequest.and.returnValue(deferred.promise);
       eventManager.sendEvent(event);
       return flushPromiseChains()
         .then(() => {
-          expect(lifecycle.onBeforeDataCollection).toHaveBeenCalled();
-          expect(network.sendRequest).not.toHaveBeenCalled();
+          expect(lifecycle.onBeforeDataCollectionRequest).toHaveBeenCalled();
+          expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
           deferred.resolve();
           return flushPromiseChains();
         })
         .then(() => {
-          expect(network.sendRequest).toHaveBeenCalled();
+          expect(sendEdgeNetworkRequest).toHaveBeenCalled();
         });
     });
 
-    it("transfers cookies to payload using edge domain", () => {
+    it("sends request using interact endpoint if a response is expected and the document won't unload", () => {
+      requestPayload.getExpectResponse.and.returnValue(true);
+      event.getDocumentMayUnload.and.returnValue(false);
       return eventManager.sendEvent(event).then(() => {
-        expect(cookieTransfer.cookiesToPayload).toHaveBeenCalledWith(
-          payload,
-          EDGE_DOMAIN
-        );
-      });
-    });
-
-    it("transfers cookies to payload using ID third-party domain", () => {
-      payload.shouldUseIdThirdPartyDomain = () => true;
-      return eventManager.sendEvent(event).then(() => {
-        expect(cookieTransfer.cookiesToPayload).toHaveBeenCalledWith(
-          payload,
-          ID_THIRD_PARTY_DOMAIN
-        );
-      });
-    });
-
-    it("send payload through network using edge domain", () => {
-      return eventManager.sendEvent(event).then(() => {
-        expect(network.sendRequest).toHaveBeenCalledWith(payload, EDGE_DOMAIN, {
-          expectsResponse: false,
-          documentUnloading: false
+        expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
+          payload: requestPayload,
+          action: "interact"
         });
       });
     });
 
-    it("send payload through network using ID third-party domain", () => {
-      payload.shouldUseIdThirdPartyDomain = () => true;
+    it("sends request using collect endpoint if a response is not expected and the document won't unload", () => {
+      requestPayload.getExpectResponse.and.returnValue(false);
+      event.getDocumentMayUnload.and.returnValue(false);
       return eventManager.sendEvent(event).then(() => {
-        expect(network.sendRequest).toHaveBeenCalledWith(
-          payload,
-          ID_THIRD_PARTY_DOMAIN,
-          {
-            expectsResponse: false,
-            documentUnloading: false
-          }
-        );
-      });
-    });
-
-    it("sends payload through network with expectsResponse true", () => {
-      payload.expectsResponse = true;
-      return eventManager.sendEvent(event).then(() => {
-        expect(network.sendRequest).toHaveBeenCalledWith(payload, EDGE_DOMAIN, {
-          expectsResponse: true,
-          documentUnloading: false
+        expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
+          payload: requestPayload,
+          action: "collect"
         });
       });
     });
 
-    it("sends payload through network with documentUnloading true", () => {
-      event.isDocumentUnloading = true;
+    it("sends request using collect endpoint if a response is expected and the document may unload", () => {
+      requestPayload.getExpectResponse.and.returnValue(true);
+      event.getDocumentMayUnload.and.returnValue(true);
       return eventManager.sendEvent(event).then(() => {
-        expect(network.sendRequest).toHaveBeenCalledWith(payload, EDGE_DOMAIN, {
-          expectsResponse: false,
-          documentUnloading: true
+        expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
+          payload: requestPayload,
+          action: "collect"
         });
       });
     });
 
-    it("transfers response to cookies", () => {
-      return eventManager.sendEvent(event).then(() => {
-        expect(cookieTransfer.responseToCookies).toHaveBeenCalledWith(response);
-      });
-    });
-
-    it("calls lifecycle.onRequestFailure, allows components to pause lifecycle, and rejects promise on request failure", () => {
-      const deferred = defer();
-      const error = new Error("Unexpected response.");
-      network.sendRequest.and.throwError(error);
-      lifecycle.onRequestFailure.and.returnValue(deferred.promise);
-      const onError = jasmine.createSpy();
-      eventManager
-        .sendEvent(event)
-        .then(fail)
-        .catch(onError);
-
-      return flushPromiseChains()
-        .then(() => {
-          expect(lifecycle.onRequestFailure).toHaveBeenCalled();
-          expect(onError).not.toHaveBeenCalled();
-          deferred.resolve();
-          return flushPromiseChains();
-        })
-        .then(() => {
-          expect(onError).toHaveBeenCalledWith(error);
-        });
-    });
-
-    it("calls lifecycle.onResponse and allows components to pause lifecycle on request success", () => {
-      const deferred = defer();
-      network.sendRequest.and.returnValue(Promise.resolve({}));
-      lifecycle.onResponse.and.returnValue(deferred.promise);
-      const onComplete = jasmine.createSpy();
-      eventManager.sendEvent(event).then(onComplete);
-      return flushPromiseChains()
-        .then(() => {
-          expect(lifecycle.onResponse).toHaveBeenCalledWith({
-            response
-          });
-          expect(onComplete).not.toHaveBeenCalled();
-          deferred.resolve();
-          return flushPromiseChains();
-        })
-        .then(() => {
-          expect(onComplete).toHaveBeenCalled();
-        });
-    });
-
-    it("logs warnings on response", () => {
-      response.getWarnings.and.returnValue([
-        {
-          code: "general:100",
-          message: "General warning."
-        },
-        {
-          code: "personalization:204",
-          message: "Personalization warning."
-        }
-      ]);
-
-      return eventManager.sendEvent(event).then(() => {
-        expect(logger.warn).toHaveBeenCalledWith(
-          "Warning received from server: [Code general:100] General warning."
-        );
-        expect(logger.warn).toHaveBeenCalledWith(
-          "Warning received from server: [Code personalization:204] Personalization warning."
-        );
-      });
-    });
-
-    it("rejects returned promise with errors on response", () => {
-      response.getErrors.and.returnValue([
-        {
-          code: "general:100",
-          message: "General error occurred."
-        },
-        {
-          code: "personalization:204",
-          message: "Personalization error occurred."
-        }
-      ]);
-      return eventManager
-        .sendEvent(event)
-        .then(fail)
-        .catch(error => {
-          expect(error.message).toEqual(
-            "The server responded with the following errors:\n" +
-              "• [Code general:100] General error occurred.\n" +
-              "• [Code personalization:204] Personalization error occurred."
-          );
-        });
-    });
-
-    it("returns promise resolved with nothing when there is a response", () => {
-      const responseBody = {
-        warnings: [],
-        errors: []
-      };
-      network.sendRequest.and.returnValue(Promise.resolve(responseBody));
-      return eventManager.sendEvent(event).then(result => {
-        expect(result).toBeUndefined();
-      });
-    });
-
-    it("returns promise resolved with nothing when there is not a response", () => {
-      network.sendRequest.and.returnValue(Promise.resolve());
-      return eventManager.sendEvent(event).then(result => {
-        expect(result).toBeUndefined();
-      });
-    });
-
-    it("performs operations in order on successful request", () => {
-      return eventManager.sendEvent(event).then(() => {
-        assertFunctionCallOrder([
-          lifecycle.onBeforeEvent,
-          optIn.whenOptedIn,
-          lifecycle.onBeforeDataCollection,
-          cookieTransfer.cookiesToPayload,
-          network.sendRequest,
-          cookieTransfer.responseToCookies,
-          lifecycle.onResponse
-        ]);
-      });
-    });
-
-    it("performs operations in order on failed request", () => {
-      network.sendRequest.and.throwError(new Error("Unexpected response."));
-      return eventManager
-        .sendEvent(event)
-        .then(fail)
-        .catch(() => {
-          assertFunctionCallOrder([
-            lifecycle.onBeforeEvent,
-            optIn.whenOptedIn,
-            lifecycle.onBeforeDataCollection,
-            cookieTransfer.cookiesToPayload,
-            network.sendRequest,
-            lifecycle.onRequestFailure
-          ]);
-        });
+    it("fails returned promise if request fails", () => {
+      sendEdgeNetworkRequest.and.returnValue(
+        Promise.reject(new Error("no connection"))
+      );
+      return expectAsync(eventManager.sendEvent(event)).toBeRejectedWithError(
+        "no connection"
+      );
     });
   });
 });

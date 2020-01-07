@@ -11,14 +11,12 @@ governing permissions and limitations under the License.
 */
 
 import buildAndValidateConfig from "../../../../src/core/buildAndValidateConfig";
+import createConfig from "../../../../src/core/config/createConfig";
+import { boolean } from "../../../../src/utils/validation";
 
 describe("buildAndValidateConfig", () => {
   let options;
   let componentCreators;
-  let config;
-  let createConfig;
-  let validator;
-  let createConfigValidator;
   let coreConfigValidators;
   let logger;
   let setDebugEnabled;
@@ -28,28 +26,12 @@ describe("buildAndValidateConfig", () => {
     options = {};
     const componentCreator = () => {};
     componentCreator.configValidators = {
-      idSyncEnabled: {
-        defaultValue: true,
-        validate() {
-          return "";
-        }
-      }
+      idSyncEnabled: boolean().default(true)
     };
     componentCreators = [componentCreator];
-    validator = {
-      addValidators: jasmine.createSpy(),
-      validate: jasmine.createSpy().and.returnValue(true)
-    };
-    config = options;
-    createConfig = jasmine.createSpy().and.returnValue(config);
-    createConfigValidator = jasmine.createSpy().and.returnValue(validator);
     coreConfigValidators = {
-      errorsEnabled: {
-        validate() {
-          return "";
-        },
-        defaultValue: true
-      }
+      debugEnabled: boolean().default(false),
+      errorsEnabled: boolean()
     };
     logger = {
       enabled: false,
@@ -60,32 +42,26 @@ describe("buildAndValidateConfig", () => {
   });
 
   it("adds validators and validates options", () => {
-    buildAndValidateConfig({
-      options,
-      componentCreators,
-      createConfig,
-      createConfigValidator,
-      coreConfigValidators,
-      logger,
-      setDebugEnabled,
-      setErrorsEnabled
-    });
-    expect(createConfig).toHaveBeenCalledWith(options);
-    expect(validator.addValidators).toHaveBeenCalledWith(coreConfigValidators);
-    expect(validator.addValidators).toHaveBeenCalledWith(
-      componentCreators[0].configValidators
-    );
-    expect(validator.validate).toHaveBeenCalled();
+    expect(() => {
+      buildAndValidateConfig({
+        options: { idSyncEnabled: "invalid value" },
+        componentCreators,
+        coreConfigValidators,
+        createConfig,
+        logger,
+        setDebugEnabled,
+        setErrorsEnabled
+      });
+    }).toThrowError();
   });
 
   it("sets errors enabled based on config", () => {
-    config.errorsEnabled = true;
+    options.errorsEnabled = true;
     buildAndValidateConfig({
       options,
       componentCreators,
+      coreConfigValidators,
       createConfig,
-      createConfigValidator,
-      configValidators: coreConfigValidators,
       logger,
       setDebugEnabled,
       setErrorsEnabled
@@ -94,13 +70,12 @@ describe("buildAndValidateConfig", () => {
   });
 
   it("sets debug enabled based on config", () => {
-    config.debugEnabled = true;
+    options.debugEnabled = true;
     buildAndValidateConfig({
       options,
       componentCreators,
+      coreConfigValidators,
       createConfig,
-      createConfigValidator,
-      configValidators: coreConfigValidators,
       logger,
       setDebugEnabled,
       setErrorsEnabled
@@ -110,19 +85,19 @@ describe("buildAndValidateConfig", () => {
 
   it("logs and returns computed configuration", () => {
     logger.enabled = true;
-    config.foo = "bar";
+    options.foo = "bar";
     buildAndValidateConfig({
       options,
       componentCreators,
+      coreConfigValidators,
       createConfig,
-      createConfigValidator,
-      configValidators: coreConfigValidators,
       logger,
       setDebugEnabled,
       setErrorsEnabled
     });
     expect(logger.log).toHaveBeenCalledWith("Computed configuration:", {
-      foo: "bar"
+      debugEnabled: false,
+      idSyncEnabled: true
     });
   });
 
@@ -130,13 +105,12 @@ describe("buildAndValidateConfig", () => {
     const result = buildAndValidateConfig({
       options,
       componentCreators,
+      coreConfigValidators,
       createConfig,
-      createConfigValidator,
-      configValidators: coreConfigValidators,
       logger,
       setDebugEnabled,
       setErrorsEnabled
     });
-    expect(result).toEqual(config);
+    expect(result).toEqual({ idSyncEnabled: true, debugEnabled: false });
   });
 });

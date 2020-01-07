@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray } from "../../utils";
-import { string } from "../../utils/configValidators";
+import { string } from "../../utils/validation";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
 import collectClicks from "./helper/clicks/collectClicks";
@@ -51,23 +51,24 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const storage = [];
   const store = value => storage.push(value);
   const ruleComponentModules = initRuleComponentModules(collect, store);
+  const disablePersonalization = payload => {
+    payload.mergeConfigOverrides({ personalization: { enabled: false } });
+  };
 
   return {
     lifecycle: {
-      onBeforeEvent({ event, isViewStart }) {
+      onBeforeEvent({ event, isViewStart, payload }) {
         if (authoringModeEnabled) {
           logger.warn("Rendering is disabled, authoring mode.");
-
-          event.mergeQuery({ personalization: { enabled: false } });
-
+          disablePersonalization(payload);
           return;
         }
 
         if (!isViewStart) {
           // If NOT isViewStart disable personalization
-          event.mergeQuery({ personalization: { enabled: false } });
+          disablePersonalization(payload);
         } else {
-          event.expectResponse();
+          event.getExpectResponse();
 
           // For viewStart we try to hide the personalization containers
           hideContainers(prehidingStyle);
@@ -99,9 +100,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 createPersonalization.namespace = "Personalization";
 
 createPersonalization.configValidators = {
-  prehidingStyle: {
-    validate: string().nonEmpty()
-  }
+  prehidingStyle: string().nonEmpty()
 };
 
 export default createPersonalization;

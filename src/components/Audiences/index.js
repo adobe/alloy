@@ -10,9 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean } from "../../utils/configValidators";
+import { boolean } from "../../utils/validation";
 import { fireReferrerHideableImage } from "../../utils";
 import processDestinationsFactory from "./processDestinationsFactory";
+
+const getConfigOverrides = config => {
+  const configOverrides = {};
+
+  if (config.urlDestinationsEnabled !== undefined) {
+    configOverrides.urlDestinationsEnabled = config.urlDestinationsEnabled;
+  }
+  if (config.cookieDestinationsEnabled !== undefined) {
+    configOverrides.storedDestinationsEnabled =
+      config.cookieDestinationsEnabled;
+  }
+
+  return Object.keys(configOverrides).length ? configOverrides : undefined;
+};
 
 const createAudiences = ({ config, logger }) => {
   const processDestinations = processDestinationsFactory({
@@ -21,16 +35,16 @@ const createAudiences = ({ config, logger }) => {
   });
   return {
     lifecycle: {
-      onBeforeEvent({ event, isViewStart }) {
+      onBeforeEvent({ event, isViewStart, payload }) {
         if (isViewStart) {
-          event.mergeQuery({
-            activation: {
-              // TODO: Is this moving to a backend configuration?
-              urlsEnabled: config.urlDestinationsEnabled,
-              cookiesEnabled: config.cookieDestinationsEnabled
-            }
-          });
-          event.expectResponse();
+          const configOverrides = getConfigOverrides(config);
+
+          if (configOverrides) {
+            event.expectResponse();
+            payload.mergeConfigOverrides({
+              activation: configOverrides
+            });
+          }
         }
       },
       onResponse({ response }) {
@@ -44,14 +58,8 @@ const createAudiences = ({ config, logger }) => {
 
 createAudiences.namespace = "Audiences";
 createAudiences.configValidators = {
-  cookieDestinationsEnabled: {
-    defaultValue: true,
-    validate: boolean()
-  },
-  urlDestinationsEnabled: {
-    defaultValue: true,
-    validate: boolean()
-  }
+  cookieDestinationsEnabled: boolean(),
+  urlDestinationsEnabled: boolean()
 };
 
 export default createAudiences;

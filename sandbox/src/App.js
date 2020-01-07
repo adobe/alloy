@@ -13,13 +13,13 @@ governing permissions and limitations under the License.
 import React from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
-import About from "./About";
 import Home from "./Home";
-import OrgTwo from "./OrgTwo";
+import OptIn from "./OptIn";
+import OptOut from "./OptOut";
 import Links from "./Links";
 import EventMerge from "./EventMerge";
-import OptIn from "./OptIn";
 import LargePayload from "./LargePayload";
+import OrgTwo from "./OrgTwo";
 import DualTag from "./DualTag";
 
 function BasicExample() {
@@ -34,6 +34,9 @@ function BasicExample() {
             <Link to="/optIn">Opt-In</Link>
           </li>
           <li>
+            <Link to="/optOut">Opt-Out</Link>
+          </li>
+          <li>
             <Link to="/links">Links</Link>
           </li>
           <li>
@@ -46,7 +49,7 @@ function BasicExample() {
             <Link to="/orgTwo">Multiple Orgs</Link>
           </li>
           <li>
-            <Link to="/DualTag">Dual Tag</Link>
+            <Link to="/dualTag">Dual Tag</Link>
           </li>
           <li>
             <a href="/legacy.html">legacy</a>
@@ -56,13 +59,13 @@ function BasicExample() {
         <hr />
 
         <Route exact path="/" component={Home} />
-        <Route path="/about" component={About} />
-        <Route path="/orgTwo" component={OrgTwo} />
+        <Route path="/optIn" component={OptIn} />
+        <Route path="/optOut" component={OptOut} />
         <Route path="/links" component={Links} />
         <Route path="/eventMerge" component={EventMerge} />
-        <Route path="/optIn" component={OptIn} />
         <Route path="/largePayload" component={LargePayload} />
-        <Route path="/DualTag" component={DualTag} />
+        <Route path="/orgTwo" component={OrgTwo} />
+        <Route path="/dualTag" component={DualTag} />
       </div>
     </Router>
   );

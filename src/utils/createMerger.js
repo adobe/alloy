@@ -15,12 +15,16 @@ import deepAssign from "./deepAssign";
 /**
  * Creates a function that, when passed an object of updates, will merge
  * the updates onto the current value of a payload property.
- * @param content
- * @param key
+ * @param {Object} content The base object to modify
+ * @param {String } key The property to merge updates into. This
+ * can be a dot-notation property path.
  * @returns {Function}
  */
 export default (content, key) => updates => {
-  // eslint-disable-next-line no-param-reassign
-  content[key] = content[key] || {};
-  deepAssign(content[key], updates);
+  const propertyPath = key.split(".");
+  const hostObjectForUpdates = propertyPath.reduce((obj, propertyName) => {
+    obj[propertyName] = obj[propertyName] || {};
+    return obj[propertyName];
+  }, content);
+  deepAssign(hostObjectForUpdates, updates);
 };

@@ -16,7 +16,7 @@ import sendBeaconFactory from "../../../../../src/core/network/sendBeaconFactory
 // way the blob is constructed (see
 // https://github.com/bpampuch/pdfmake/pull/297/files for a workaround).
 // Fortunately, if navigator.sendBeacon doesn't exist (IE 11), sendBeaconFactory
-// should never be used (see createNetworkStrategy.js), so we can skip
+// should never be used (see networkStrategyFactory.js), so we can skip
 // these tests altogether.
 const guardForSendBeaconAvailability = spec => {
   return window.navigator.sendBeacon

@@ -12,12 +12,11 @@ governing permissions and limitations under the License.
 
 import createLinkClick from "../../../../../src/components/ActivityCollector/createLinkClick";
 import createEvent from "../../../../../src/core/createEvent";
-import createConfigValidators from "../../../../../src/components/ActivityCollector/createConfigValidators";
+import configValidators from "../../../../../src/components/ActivityCollector/configValidators";
 
 describe("ActivityCollector::createLinkClick", () => {
-  const cfgValidators = createConfigValidators();
   const config = {
-    downloadLinkQualifier: cfgValidators.downloadLinkQualifier.defaultValue
+    downloadLinkQualifier: configValidators.downloadLinkQualifier.defaultValue
   };
   const mockWindow = {
     location: {
