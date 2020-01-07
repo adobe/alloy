@@ -26,7 +26,7 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
   let deferredForEcid;
   const migration = createMigration({ orgId, consent });
   const hasIdentityCookie = () => Boolean(cookieJar.get(identityCookieName));
-  const customerIds = createCustomerIds({ eventManager, consent });
+  const customerIds = createCustomerIds({ eventManager, consent, logger });
 
   // TO-DOCUMENT: We wait for ECID before trigger any events.
   const accommodateIdentityOnRequest = payload => {
@@ -145,7 +145,7 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
     },
     commands: {
       setCustomerIds(options) {
-        return customerIds.sync(options, logger);
+        return customerIds.sync(options);
       }
     }
   };

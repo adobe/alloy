@@ -6,8 +6,8 @@ import {
   isEmptyObject
 } from "../../../utils";
 
-export default ({ eventManager, consent }) => {
-  const hash = (originalIds, normalizedIds, logger) => {
+export default ({ eventManager, consent, logger }) => {
+  const hash = (originalIds, normalizedIds) => {
     const idNames = Object.keys(normalizedIds);
     const idsToHash = idNames.filter(idName => originalIds[idName].hashEnabled);
     const idHashPromises = idsToHash.map(id =>
@@ -48,12 +48,12 @@ export default ({ eventManager, consent }) => {
         });
       }
     },
-    sync(originalIds, logger) {
+    sync(originalIds) {
       validateCustomerIds(originalIds);
 
       const normalizedIds = normalizeCustomerIds(originalIds);
 
-      return hash(originalIds, normalizedIds, logger).then(hashedIds => {
+      return hash(originalIds, normalizedIds).then(hashedIds => {
         if (isEmptyObject(hashedIds)) {
           return false;
         }

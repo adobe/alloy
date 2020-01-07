@@ -6,11 +6,13 @@ describe("Identity::createCustomerIds", () => {
   let payload;
   let event;
   let eventManager;
+  let logger;
   let consentDeferred;
   let consent;
   beforeEach(() => {
     payload = jasmine.createSpyObj("payload", ["addIdentity"]);
     event = { type: "event" };
+    logger = jasmine.createSpyObj("logger", ["warn"]);
     eventManager = jasmine.createSpyObj("eventManager", {
       createEvent: event,
       sendEvent: Promise.resolve()
@@ -21,13 +23,13 @@ describe("Identity::createCustomerIds", () => {
     });
   });
   it("has addToPayload and sync methods", () => {
-    const customerIds = createCustomerIds(eventManager);
+    const customerIds = createCustomerIds({ eventManager, consent, logger });
     expect(customerIds.addToPayload).toBeDefined();
     expect(customerIds.sync).toBeDefined();
   });
 
   it("waits for consent before sending an event", () => {
-    const customerIds = createCustomerIds({ eventManager, consent });
+    const customerIds = createCustomerIds({ eventManager, consent, logger });
 
     // We can't use a hashEnabled identity in this test case due to the
     // async nature of convertStringToSha256Buffer unless we were to mock
@@ -51,7 +53,7 @@ describe("Identity::createCustomerIds", () => {
   });
 
   it("rejects returned promise when sending an event if consent denied", () => {
-    const customerIds = createCustomerIds({ eventManager, consent });
+    const customerIds = createCustomerIds({ eventManager, consent, logger });
 
     consentDeferred.reject(new Error("Consent rejected."));
 
@@ -81,7 +83,7 @@ describe("Identity::createCustomerIds", () => {
       }
     };
     consentDeferred.resolve();
-    const customerIds = createCustomerIds({ eventManager, consent });
+    const customerIds = createCustomerIds({ eventManager, consent, logger });
     return customerIds.sync(ids).then(() => {
       customerIds.addToPayload(payload);
 
