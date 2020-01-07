@@ -121,7 +121,7 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
           );
 
           if (ecidPayload) {
-            promises.push(migration.createLegacyCookie(ecidPayload.value));
+            promises.push(migration.createLegacyCookie(ecidPayload.id));
           }
         }
 
