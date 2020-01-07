@@ -12,8 +12,22 @@ governing permissions and limitations under the License.
 
 import chain from "./chain";
 
-export default (first, second, additionalMethods) => {
-  const secondWithNullCheck = (value, path) =>
-    value == null ? value : second(value, path);
-  return chain(first, secondWithNullCheck, additionalMethods);
+/**
+ * This augments `chain` with a null check done before running the rightValidator.
+ * See chain for more info.
+ *
+ * For most validators, we want the validation to be optional (i.e. allow null or
+ * undefined values). To accomplish this, the validator needs to have a check
+ * at the begining of the function, short circuiting the validation logic and
+ * returning value if value is null or undefined. `default` and `required` do not
+ * want this null check though. Indeed, `default` should return the default value
+ * if value is null, and `required` should throw an error if value is null.
+ *
+ * So to keep from having to have a null check in front of most validators, this
+ * function allows you to chain a rightValidator that needs to have a null check.
+ */
+export default (leftValidator, rightValidator, additionalMethods) => {
+  const rightValidatorWithNullCheck = (value, path) =>
+    value == null ? value : rightValidator(value, path);
+  return chain(leftValidator, rightValidatorWithNullCheck, additionalMethods);
 };

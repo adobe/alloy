@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+// See comments on chain and nullSafeChain to understand what is going on here.
 import chain from "./chain";
 import nullSafeChain from "./nullSafeChain";
 
