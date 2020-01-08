@@ -1,6 +1,6 @@
 const zlib = require("zlib");
 
-const getBody = request => {
+const getResponseBody = request => {
   const encoding = request.response.headers["content-encoding"];
   const bodyBuffer = request.response.body;
   let decompressedBody;
@@ -17,4 +17,4 @@ const getBody = request => {
   return decompressedBody.toString();
 };
 
-export default getBody;
+export default getResponseBody;

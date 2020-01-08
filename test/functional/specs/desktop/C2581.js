@@ -1,6 +1,6 @@
 import { t, Selector } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
-import getBody from "../../helpers/networkLogger/getBody";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import { responseStatus } from "../../helpers/assertions/index";
 import fixtureFactory from "../../helpers/fixtureFactory";
 
@@ -31,7 +31,9 @@ test("Test C2581: Queue requests until we receive an ECID.", async () => {
 
   await t.expect(networkLogger.adobedcEndpointLogs.requests.length).eql(1);
 
-  const ecidResponse = getBody(networkLogger.adobedcEndpointLogs.requests[0]);
+  const ecidResponse = getResponseBody(
+    networkLogger.adobedcEndpointLogs.requests[0]
+  );
 
   const stringifyResponse = JSON.stringify(ecidResponse);
   await t.expect(stringifyResponse).contains("ECID");
