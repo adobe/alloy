@@ -1,7 +1,7 @@
 // import { t, Selector } from "testcafe";
-// import createNetworkLogger from "../../src/networkLogger";
-// import { responseStatus } from "../../src/assertions/index";
-// import testServerUrl from "../../src/constants/testServerUrl";
+// import createNetworkLogger from "../../helpers/networkLogger";
+// import { responseStatus } from "../../helpers/assertions/index";
+// import testServerUrl from "../../helpers/constants/testServerUrl";
 
 // const linkPageWithClickHandler = `${testServerUrl}/test/functional/sandbox/html/linkPageWithClickHandler.html`;
 

@@ -1,6 +1,6 @@
 import { Selector } from "testcafe";
-import createConsoleLogger from "../../src/consoleLogger";
-import fixtureFactory from "../../src/fixtureFactory";
+import createConsoleLogger from "../../helpers/consoleLogger";
+import fixtureFactory from "../../helpers/fixtureFactory";
 
 const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html`;
 

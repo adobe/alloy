@@ -1,5 +1,5 @@
 import { t, ClientFunction } from "testcafe";
-import fixtureFactory from "../../src/fixtureFactory";
+import fixtureFactory from "../../helpers/fixtureFactory";
 
 const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/C2560.html`;
 

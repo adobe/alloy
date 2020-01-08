@@ -1,8 +1,8 @@
 import { t, Selector } from "testcafe";
-import createNetworkLogger from "../../src/networkLogger";
-import getBody from "../../src/networkLogger/getBody";
-import { responseStatus } from "../../src/assertions/index";
-import fixtureFactory from "../../src/fixtureFactory";
+import createNetworkLogger from "../../helpers/networkLogger";
+import getBody from "../../helpers/networkLogger/getBody";
+import { responseStatus } from "../../helpers/assertions/index";
+import fixtureFactory from "../../helpers/fixtureFactory";
 
 const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html`;
 

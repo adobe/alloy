@@ -1,8 +1,8 @@
 import { t, Selector } from "testcafe";
-import createNetworkLogger from "../../src/networkLogger";
-import { responseStatus } from "../../src/assertions/index";
-import testServerUrl from "../../src/constants/testServerUrl";
-import fixtureFactory from "../../src/fixtureFactory";
+import createNetworkLogger from "../../helpers/networkLogger";
+import { responseStatus } from "../../helpers/assertions/index";
+import testServerUrl from "../../helpers/constants/testServerUrl";
+import fixtureFactory from "../../helpers/fixtureFactory";
 
 const linkPageWithoutClickHandler = `${testServerUrl}/test/functional/sandbox/html/linkPageWithoutClickHandler.html`;
 

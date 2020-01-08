@@ -1,8 +1,8 @@
 import { t, Selector } from "testcafe";
-import createNetworkLogger from "../../src/networkLogger";
-import { responseStatus } from "../../src/assertions/index";
-import fixtureFactory from "../../src/fixtureFactory";
-import testServerUrl from "../../src/constants/testServerUrl";
+import createNetworkLogger from "../../helpers/networkLogger";
+import { responseStatus } from "../../helpers/assertions/index";
+import fixtureFactory from "../../helpers/fixtureFactory";
+import testServerUrl from "../../helpers/constants/testServerUrl";
 
 const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloySdk.html`;
 const networkLogger = createNetworkLogger();
