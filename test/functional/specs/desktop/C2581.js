@@ -3,8 +3,9 @@ import createNetworkLogger from "../../helpers/networkLogger";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import { responseStatus } from "../../helpers/assertions/index";
 import fixtureFactory from "../../helpers/fixtureFactory";
+import testServerUrl from "../../helpers/constants/testServerUrl";
 
-const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html`;
+const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloySdk.html`;
 
 const networkLogger = createNetworkLogger();
 

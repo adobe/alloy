@@ -1,7 +1,8 @@
 import { Selector } from "testcafe";
 import fixtureFactory from "../../helpers/fixtureFactory";
+import testServerUrl from "../../helpers/constants/testServerUrl";
 
-const urlCollector = `http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html?alloy_debug=true`;
+const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloySdk.html?alloy_debug=true`;
 
 fixtureFactory({
   title: "C2586: Toggle logging through the querystring parameter.",
@@ -22,7 +23,7 @@ test("Test C2586: Toggle logging through the querystring parameter.", async t =>
 
 test("Test C2586: Set logging to false through querystring parameter..", async t => {
   await t.navigateTo(
-    "http://127.0.0.1:8080/test/functional/sandbox/html/bogusCommand.html?alloy_debug=false"
+    `${testServerUrl}/test/functional/sandbox/html/bogusCommand.html?alloy_debug=false`
   );
   const { log } = await t.getBrowserConsoleMessages();
   await t.expect(log.length).lte(0);
