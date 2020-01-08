@@ -13,7 +13,6 @@
       "testName": "",
       "skipCriticalConsoleJsErrors": true,
       "quarantineMode": true,
-      "speed": 0.5,
       "selectorTimeOut": 5000,
       "assertionTimeout": 5000,
       "concurrency": 2
