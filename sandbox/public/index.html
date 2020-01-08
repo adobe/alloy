@@ -51,7 +51,7 @@
 
       alloy("configure", {
         // edgeDomain: "konductor.int.gslb.eegw.adobedc.net",
-        // optInEnabled: true,
+        optInEnabled: true,
         // urlDestinationsEnabled: true,
         // cookieDestinationsEnabled: false,
         // errorsEnabled: false,
@@ -73,7 +73,7 @@
           if (titleParam) {
             xdm.web.webPageDetails.name = titleParam;
           }
-          const campaignParam = getUrlParameter("title");
+          const campaignParam = getUrlParameter("campaign");
           if (campaignParam) {
             data.campaign = campaignParam;
           }
