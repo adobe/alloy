@@ -2,7 +2,7 @@
     "desktop": {
       "testsFolder": "test/functional/specs/desktop/",
       "browser": [
-        "chrome"
+        "chrome", "safari"
       ],
       "saucelabs": [
         "saucelabs:Chrome@74.0:OS X 10.10"
