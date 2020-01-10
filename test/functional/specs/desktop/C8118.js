@@ -2,17 +2,17 @@ import { t, Selector } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
 import testServerUrl from "../../helpers/constants/testServerUrl";
+import fixtureFactory from "../../helpers/fixtureFactory";
 
 const linkPageWithClickHandler = `${testServerUrl}/test/functional/sandbox/html/linkPageWithClickHandler.html`;
 
 const networkLogger = createNetworkLogger();
 
-fixture`C8118`
-  .page(linkPageWithClickHandler)
-  .requestHooks(
-    networkLogger.edgeEndpointLogs,
-    networkLogger.sandboxEndpointLogs
-  );
+fixtureFactory({
+  title: "C8118: Send information about link clicks.",
+  url: linkPageWithClickHandler,
+  requestHooks: [networkLogger.edgeEndpointLogs]
+});
 
 test.meta({
   ID: "C8118",

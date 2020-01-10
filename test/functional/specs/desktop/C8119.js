@@ -11,10 +11,7 @@ const networkLogger = createNetworkLogger();
 fixtureFactory({
   title: "C8119: Does not send information about link clicks if disabled.",
   url: linkPageWithoutClickHandler,
-  requestHooks: [
-    networkLogger.gatewayEndpointLogs,
-    networkLogger.sandboxEndpointLogs
-  ]
+  requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({
@@ -25,7 +22,7 @@ test.meta({
 
 test("Test C8119: Load page with link. Click link. Verify no request sent.", async () => {
   await t.click(Selector("#alloy-link-test"));
-  await responseStatus(networkLogger.gatewayEndpointLogs.requests, 200);
-  const gatewayRequest = networkLogger.gatewayEndpointLogs.requests[0];
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  const gatewayRequest = networkLogger.edgeEndpointLogs.requests[0];
   await t.expect(gatewayRequest).eql(undefined);
 });

@@ -13,7 +13,7 @@ fixtureFactory({
   title:
     "C2581: When ECID not available on client, allow the first request to be sent while queuing subsequent requests",
   url: urlCollector,
-  requestHooks: [networkLogger.adobedcEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({
@@ -28,12 +28,12 @@ test("Test C2581: Queue requests until we receive an ECID.", async () => {
   await t.click(Selector("#event-button"));
   await t.click(Selector("#event-button"));
 
-  await responseStatus(networkLogger.adobedcEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
-  await t.expect(networkLogger.adobedcEndpointLogs.requests.length).eql(1);
+  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   const ecidResponse = getResponseBody(
-    networkLogger.adobedcEndpointLogs.requests[0]
+    networkLogger.edgeEndpointLogs.requests[0]
   );
 
   const stringifyResponse = JSON.stringify(ecidResponse);
