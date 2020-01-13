@@ -1,5 +1,5 @@
-import testServerUrl from "../../src/constants/testServerUrl";
-import fixtureFactory from "../../src/fixtureFactory";
+import testServerUrl from "../../helpers/constants/testServerUrl";
+import fixtureFactory from "../../helpers/fixtureFactory";
 
 const urlCollector = `${testServerUrl}/test/functional/sandbox/html/bogusCommand.html`;
 

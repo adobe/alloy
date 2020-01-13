@@ -54,28 +54,22 @@ const browsers = isSauceLabs
   ? config.desktop.saucelabs
   : config.desktop.browser;
 
-let testcafe;
-createTestCafe()
-  .then(tc => {
-    testcafe = tc;
-    // const runner = testcafe.createRunner();
-    const runner = watch
-      ? testcafe.createLiveModeRunner()
-      : testcafe.createRunner();
-    const testFolder = config.desktop.testsFolder;
-    const testSuite = allFilesSync(testFolder);
-    return (
-      runner
-        .startApp("npm run test:server", 4000)
-        .src(testSuite)
-        .filter(testName => testName.includes(specId))
-        .browsers(browsers)
-        // .reporter("allure")
-        .concurrency(config.desktop.concurrency)
-        .run(runOptions)
-    );
-  })
-  .then(numberOfFailedTests => {
-    console.log("Failed tests: ", numberOfFailedTests);
-    testcafe.close();
-  });
+(async () => {
+  const testcafe = await createTestCafe();
+  const runner = watch
+    ? testcafe.createLiveModeRunner()
+    : testcafe.createRunner();
+
+  const testFolder = config.desktop.testsFolder;
+  const testSuite = allFilesSync(testFolder);
+
+  const failedCount = await runner
+    .startApp("npm run test:server", 4000)
+    .src(testSuite)
+    .filter(testName => testName.includes(specId))
+    .browsers(browsers)
+    .run(runOptions);
+
+  testcafe.close();
+  process.exit(failedCount ? 1 : 0);
+})();

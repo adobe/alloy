@@ -1,17 +1,14 @@
-import createNetworkLogger from "../../src/networkLogger";
-import gatewayDomain from "../../src/constants/gatewayDomain";
-import { responseStatus } from "../../src/assertions/index";
-import fixtureFactory from "../../src/fixtureFactory";
+import { t, ClientFunction } from "testcafe";
+import fixtureFactory from "../../helpers/fixtureFactory";
+import testServerUrl from "../../helpers/constants/testServerUrl";
 
-const networkLogger = createNetworkLogger();
+const urlCollector = `${testServerUrl}/test/functional/sandbox/html/C2560.html`;
+
+const getAlloyFunction = ClientFunction(() => !!window.alloy);
 
 fixtureFactory({
   title: "C2560: Global function named alloy is accessible.",
-  url: gatewayDomain,
-  requestHooks: [
-    networkLogger.gatewayEndpointLogs,
-    networkLogger.sandboxEndpointLogs
-  ]
+  url: urlCollector
 });
 
 test.meta({
@@ -20,6 +17,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Regression: Given user loads sandbox. The global function named alloy is accessible.", async () => {
-  await responseStatus(networkLogger.gatewayEndpointLogs.requests, 200);
+test("Test C2560: The global function named alloy is accessible.", async () => {
+  const alloy = await getAlloyFunction();
+  await t.expect(alloy).ok();
 });
