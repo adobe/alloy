@@ -108,9 +108,23 @@
     }
   });
 
+  router.register("/destinationsEnabled", "destinationsEnabled", {
+    onPostInit: function() {
+      alloy("configure", {
+        configId: "9999999",
+        orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
+        edgeBasePath: window.edgeBasePath,
+        debugEnabled: true,
+        urlDestinationsEnabled: true,
+        cookieDestinationsEnabled: true
+      });
+    }
+  });
+
   router.register("/event", "event", {
     onPostInit: function() {
       alloy("event", {
+        viewStart: true,
         // TODO: Change data to match final XDM schema.
         xdm: {
           key: "value"
