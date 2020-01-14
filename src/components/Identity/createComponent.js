@@ -42,6 +42,11 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
         // to the server, which is sufficient until the identity cookie
         // gets set.
         addEcidToPayload(payload, ecidToMigrate);
+
+        // Even though we have an ECID from a legacy cookie, we still want
+        // the server to set the newer identity cookie, so we'll expect
+        // a response from the server.
+        payload.expectResponse();
       } else if (deferredForEcid) {
         // We don't have an identity cookie, but the first request has
         // been sent to get it. We must wait for the response to the first
