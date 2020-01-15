@@ -24,9 +24,10 @@ test("Test C2595: Event command passes the org ID on the request.", async () => 
   await t.click(Selector("#event-button"));
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
-
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   const request = networkLogger.edgeEndpointLogs.requests[0].request.body;
-  await t.expect(request).contains("orgId");
+  const stringifyRequest = JSON.parse(request);
+
+  await t.expect(stringifyRequest.meta.configOverrides.orgId).ok();
 });
