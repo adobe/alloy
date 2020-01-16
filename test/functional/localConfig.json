@@ -2,7 +2,7 @@
     "desktop": {
       "testsFolder": "test/functional/specs/desktop/",
       "browser": [
-        "chrome", "safari"
+        "chrome"
       ],
       "saucelabs": [
         "saucelabs:Chrome@74.0:OS X 10.10"
@@ -12,7 +12,7 @@
       "testClass": "",
       "testName": "",
       "skipCriticalConsoleJsErrors": true,
-      "quarantineMode": true,
+      "quarantineMode": false,
       "selectorTimeOut": 5000,
       "assertionTimeout": 5000,
       "concurrency": 2
@@ -34,4 +34,3 @@
       "concurrency": 10
     }
   }
-  

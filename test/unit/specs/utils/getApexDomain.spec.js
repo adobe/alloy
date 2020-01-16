@@ -52,20 +52,7 @@ describe("getTld", () => {
 
   it("tries all segments of the hostname if necessary", () => {
     const window = mockWindowWithHostname("10.30.34.68");
-    let storedValue;
-    const cookieJar = {
-      get() {
-        return storedValue;
-      },
-      set(name, value, options) {
-        if (options.domain === "10.30.34.68") {
-          storedValue = value;
-        }
-      },
-      remove: jasmine.createSpy()
-    };
-
+    const cookieJar = {};
     expect(getApexDomain(window, cookieJar)).toBe("10.30.34.68");
-    expect(cookieJar.remove).toHaveBeenCalled();
   });
 });
