@@ -99,6 +99,7 @@ describe("createEventManager", () => {
           expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith({
             event,
             isViewStart: true,
+            scopes: undefined,
             payload: requestPayload
           });
           expect(consent.whenConsented).not.toHaveBeenCalled();

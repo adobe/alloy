@@ -73,7 +73,7 @@ export default ({
      */
     sendEvent(event, options = {}) {
       event.setLastChanceCallback(onBeforeEventSendWithLoggedExceptions);
-      const { isViewStart = false } = options;
+      const { isViewStart = false, scopes } = options;
       const payload = createDataCollectionRequestPayload();
       addMetaTo(payload);
 
@@ -81,6 +81,7 @@ export default ({
         .onBeforeEvent({
           event,
           isViewStart,
+          scopes,
           payload
         })
         .then(() => {

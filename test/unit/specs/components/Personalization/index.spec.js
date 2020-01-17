@@ -33,10 +33,7 @@ describe("Personalization", () => {
   };
 
   beforeEach(() => {
-    event = jasmine.createSpyObj("event", [
-      "expectResponse",
-      "getExpectResponse"
-    ]);
+    event = jasmine.createSpyObj("event", ["expectResponse", "mergeQuery"]);
   });
 
   it("expects a response if event is a view start", () => {
