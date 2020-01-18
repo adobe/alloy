@@ -1,8 +1,11 @@
 import { t, Selector, RequestLogger } from "testcafe";
 import testServerUrl from "../../helpers/constants/testServerUrl";
 import fixtureFactory from "../../helpers/fixtureFactory";
+import baseConfig from "../../helpers/constants/baseConfig";
+import addAnchorToBody from "../../helpers/dom/addAnchorToBody";
+import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
-const linkPageWithClickHandler = `${testServerUrl}/test/functional/sandbox/html/linkPageWithClickHandler.html`;
+const fixtureUrl = `${testServerUrl}/test/functional/sandbox/html/alloyTestPage.html`;
 
 const requestLogger = RequestLogger(/v1\/(interact|collect)\?configId=/, {
   logRequestBody: true
@@ -10,7 +13,7 @@ const requestLogger = RequestLogger(/v1\/(interact|collect)\?configId=/, {
 
 fixtureFactory({
   title: "C8118: Send information about link clicks.",
-  url: linkPageWithClickHandler,
+  url: fixtureUrl,
   requestHooks: [requestLogger]
 });
 
@@ -21,6 +24,14 @@ test.meta({
 });
 
 test("Test C8118: Load page with link. Click link. Verify request.", async () => {
+  await configureAlloyInstance("alloy", baseConfig);
+  await addAnchorToBody({
+    text: "Test Link",
+    attributes: {
+      href: "blank.html",
+      id: "alloy-link-test"
+    }
+  });
   await t.click(Selector("#alloy-link-test"));
   await t.expect(requestLogger.count(() => true)).gt(0);
   const gatewayRequest = requestLogger.requests[0];
