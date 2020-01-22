@@ -33,21 +33,7 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
     let promise;
 
     if (!hasIdentityCookie()) {
-      const ecidToMigrate =
-        idMigrationEnabled && migration.getEcidFromLegacyCookies();
-
-      if (ecidToMigrate) {
-        // We don't have an identity cookie, but we do have an ECID
-        // from a legacy cookie that we can explicitly provide
-        // to the server, which is sufficient until the identity cookie
-        // gets set.
-        addEcidToPayload(payload, ecidToMigrate);
-
-        // Even though we have an ECID from a legacy cookie, we still want
-        // the server to set the newer identity cookie, so we'll expect
-        // a response from the server.
-        payload.expectResponse();
-      } else if (deferredForEcid) {
+      if (deferredForEcid) {
         // We don't have an identity cookie, but the first request has
         // been sent to get it. We must wait for the response to the first
         // request to come back and a cookie set before we can let this
@@ -57,6 +43,9 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
           logger.log("Resuming previously delayed request.");
         });
       } else {
+        const ecidToMigrate =
+          idMigrationEnabled && migration.getEcidFromLegacyCookies();
+
         // We don't have an identity cookie and no request has gone out
         // to get it. We'll let this request go out to fetch the cookie,
         // but we'll set up a promise so that future requests can
@@ -66,14 +55,23 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
         // new visitor).
         deferredForEcid = defer();
         payload.expectResponse();
-        // If third-party cookies are enabled by the customer and
-        // supported by the browser, we will send the request to a
-        // a third-party domain that allows for more accurate
-        // identification of the user through use of a third-party cookie.
-        if (
+
+        if (ecidToMigrate) {
+          // We don't have an identity cookie, but we do have an ECID
+          // from a legacy cookie that we can explicitly provide
+          // to the server. Since we have an ECID, it might be reasonable to
+          // allow other requests to go out in parallel, but to make sure
+          // there aren't unforeseen problems, we will hold back other
+          // requests until the identity cookie gets set.
+          addEcidToPayload(payload, ecidToMigrate);
+        } else if (
           config.thirdPartyCookiesEnabled &&
           areThirdPartyCookiesSupportedByDefault(getBrowser(window))
         ) {
+          // If third-party cookies are enabled by the customer and
+          // supported by the browser, we will send the request to a
+          // a third-party domain that allows for more accurate
+          // identification of the user through use of a third-party cookie.
           payload.useIdThirdPartyDomain();
         }
       }
