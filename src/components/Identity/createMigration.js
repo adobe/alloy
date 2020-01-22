@@ -45,7 +45,7 @@ export default ({ orgId, consent }) => {
         return Promise.resolve();
       }
 
-      return consent.whenConsented().then(() => {
+      return consent.awaitConsent().then(() => {
         cookieJar.set(amcvCookieName, `MCMID|${ecid}`, {
           domain: apexDomain,
           // Without `expires` this will be a session cookie.

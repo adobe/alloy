@@ -13,13 +13,13 @@ import createPrivacyComponent from "../../../../../src/components/Privacy/index"
 import { objectOf } from "../../../../../src/utils/validation";
 
 describe("Privacy::index", () => {
-  [{}, { optInEnabled: true }, { optInEnabled: false }].forEach(cfg => {
+  [{}, { consentEnabled: true }, { consentEnabled: false }].forEach(cfg => {
     it(`validates configuration (${JSON.stringify(cfg)})`, () => {
       objectOf(createPrivacyComponent.configValidators)(cfg);
     });
   });
 
-  [{ optInEnabled: "foo" }].forEach(cfg => {
+  [{ consentEnabled: "foo" }].forEach(cfg => {
     it(`invalidates configuration (${JSON.stringify(cfg)})`, () => {
       expect(() => {
         objectOf(createPrivacyComponent.configValidators)(cfg);

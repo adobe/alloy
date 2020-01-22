@@ -21,7 +21,7 @@ export default ({ fireReferrerHideableImage, logger, consent }) => idSyncs => {
     return Promise.resolve();
   }
 
-  return consent.whenConsented().then(() => {
+  return consent.awaitConsent().then(() => {
     return Promise.all(
       urlIdSyncs.map(idSync => {
         return fireReferrerHideableImage(idSync.spec)

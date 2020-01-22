@@ -16,7 +16,7 @@ describe("Identity::processIdSyncsFactory", () => {
     logger = jasmine.createSpyObj("logger", ["log", "error"]);
     consentDeferred = defer();
     consent = jasmine.createSpyObj("consent", {
-      whenConsented: consentDeferred.promise
+      awaitConsent: consentDeferred.promise
     });
     processIdSyncs = processIdSyncsFactory({
       fireReferrerHideableImage,

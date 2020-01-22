@@ -14,5 +14,4 @@ governing permissions and limitations under the License.
 export const COOKIE_NAME_PREFIX = "kndctr";
 
 export const IDENTITY_COOKIE_KEY = "identity";
-export const OPTIN_COOKIE_KEY = "optin";
-export const OPTOUT_COOKIE_KEY = "optout";
+export const CONSENT_COOKIE_KEY = "consent";

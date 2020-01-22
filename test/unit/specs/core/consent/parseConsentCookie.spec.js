@@ -10,20 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createRequestPayload from "./createRequestPayload";
+import parseConsentCookie from "../../../../../src/core/consent/parseConsentCookie";
 
-export default () => {
-  return createRequestPayload(content => {
-    return {
-      addIdentity: (namespaceCode, identity) => {
-        content.identityMap = content.identityMap || {};
-        content.identityMap[namespaceCode] =
-          content.identityMap[namespaceCode] || [];
-        content.identityMap[namespaceCode].push(identity);
-      },
-      setConsentLevel(consentByPurpose) {
-        content.consentLevel = consentByPurpose;
-      }
-    };
+describe("parseConsentCookie", () => {
+  it("returns preferences by purpose", () => {
+    expect(parseConsentCookie("foo=in;bar=out")).toEqual({
+      foo: "in",
+      bar: "out"
+    });
   });
-};
+});

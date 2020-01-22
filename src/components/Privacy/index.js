@@ -16,54 +16,48 @@ import { isString } from "../../utils";
 const ALL = "all";
 const NONE = "none";
 
-const throwInvalidOptInPurposesError = purposes => {
+const throwInvalidPurposesError = purposes => {
   throw new Error(
-    `Opt-in purposes must be "all" or "none". Received: ${purposes}`
+    `Consent purposes must be "all" or "none". Received: ${purposes}`
   );
-};
-
-const throwInvalidOptOutPurposesError = purposes => {
-  throw new Error(`Opt-out purposes must be "all". Received: ${purposes}`);
 };
 
 const createPrivacy = ({ config, consent }) => {
   return {
     commands: {
-      optIn({ purposes }) {
-        if (!config.optInEnabled) {
+      setConsent({ purposes }) {
+        if (!config.consentEnabled) {
           throw new Error(
-            "optInEnabled must be set to true before using the optIn command."
+            "consentEnabled must be set to true before using the setConsent command."
           );
         }
 
         if (!isString(purposes)) {
-          throwInvalidOptInPurposesError(purposes);
+          throwInvalidPurposesError(purposes);
         }
 
         const lowerCasePurposes = purposes.toLowerCase();
 
         if (lowerCasePurposes !== ALL && lowerCasePurposes !== NONE) {
-          throwInvalidOptInPurposesError(purposes);
+          throwInvalidPurposesError(purposes);
         }
 
-        return consent.setOptInPurposes({
-          GENERAL: lowerCasePurposes === ALL
+        return consent.setConsent({
+          general: lowerCasePurposes === ALL ? "in" : "out"
         });
-      },
-      optOut({ purposes }) {
-        if (!isString(purposes)) {
-          throwInvalidOptOutPurposesError(purposes);
+      }
+    },
+    lifecycle: {
+      onResponse({ response }) {
+        consent.requestComplete();
+        // TODO: Rather that looking for the privacy:consent payload on
+        // the response, we should instead get rid of the lifecycle.onResponse
+        // lifecycle method and be able to register a response handler from
+        // inside lifecycle.onBeforeConsentRequest
+        // Also, what should we do if the consent request fails?
+        if (response.getPayloadsByType("privacy:consent").length) {
+          consent.consentRequestComplete();
         }
-
-        const lowerCasePurposes = purposes.toLowerCase();
-
-        if (lowerCasePurposes !== ALL) {
-          throwInvalidOptOutPurposesError(purposes);
-        }
-
-        return consent.setOptOutPurposes({
-          GENERAL: true
-        });
       }
     }
   };
@@ -72,7 +66,7 @@ const createPrivacy = ({ config, consent }) => {
 createPrivacy.namespace = "Privacy";
 
 createPrivacy.configValidators = {
-  optInEnabled: boolean().default(false)
+  consentEnabled: boolean().default(false)
 };
 
 export default createPrivacy;
