@@ -4,7 +4,7 @@
 
 Alloy is the web SDK for the Adobe Experience Platform. It allows for streaming data into the platform, syncing identities, personalizing content, and more. This repository is currently under active development and is not yet intended for general consumption.
 
-For documentation on how to use Alloy, please see the [documentation](https://app.gitbook.com/@launch/s/adobe-experience-platform-web-sdk).
+For documentation on how to use Alloy, please see the [documentation](https://adobe.ly/36dGGp6).
 
 ## Contributing
 
@@ -32,7 +32,7 @@ Thank you for your interest in contributing!
 
 ## Linking to Documentation
 
-If you are writing code that logs a message referring the user to a particular piece of [documentation](https://app.gitbook.com/@launch/s/adobe-experience-platform-web-sdk), please link to the documentation using an `adobe.ly` URL. To make an `adobe.ly` URL, go to [Bitly](https://bitly.com/) and shorten the documentation URL. Bitly should provide you with a short url using the `adobe.ly` domain.
+If you are writing code that logs a message referring the user to a particular piece of [documentation](https://adobe.ly/36dGGp6), please link to the documentation using an `adobe.ly` URL. To make an `adobe.ly` URL, go to [Bitly](https://bitly.com/) and shorten the documentation URL. Bitly should provide you with a short url using the `adobe.ly` domain.
 
 If you need to change the documentation URL that the `adobe.ly` URL redirects to, please open an issue in this repository requesting the change. 
 
