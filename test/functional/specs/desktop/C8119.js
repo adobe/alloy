@@ -1,4 +1,4 @@
-import { t, Selector } from "testcafe";
+import { t, Selector, ClientFunction } from "testcafe";
 import testServerUrl from "../../helpers/constants/testServerUrl";
 import fixtureFactory from "../../helpers/fixtureFactory";
 import baseConfig from "../../helpers/constants/baseConfig";
@@ -21,6 +21,7 @@ test.meta({
 });
 
 test("Test C8119: Load page with link. Click link. Verify no event sent.", async () => {
+  const getLocation = ClientFunction(() => document.location.href.toString());
   const logger = createConsoleLogger(t, "log");
   const testConfig = {
     clickCollectionEnabled: false,
@@ -42,6 +43,7 @@ test("Test C8119: Load page with link. Click link. Verify no event sent.", async
     }
   });
   await t.click(Selector("#alloy-link-test"));
+  await t.expect(getLocation()).contains("blank.html");
   const newMessages = await logger.getNewMessages();
   await t.expect(newMessages.length).eql(0);
 });

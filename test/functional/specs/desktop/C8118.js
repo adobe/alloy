@@ -1,4 +1,4 @@
-import { t, Selector } from "testcafe";
+import { t, Selector, ClientFunction } from "testcafe";
 import testServerUrl from "../../helpers/constants/testServerUrl";
 import fixtureFactory from "../../helpers/fixtureFactory";
 import baseConfig from "../../helpers/constants/baseConfig";
@@ -20,6 +20,7 @@ test.meta({
 });
 
 test("Test C8118: Load page with link. Click link. Verify event.", async () => {
+  const getLocation = ClientFunction(() => document.location.href.toString());
   const logger = createConsoleLogger(t, "log");
   const testConfig = {
     onBeforeEventSend(options) {
@@ -40,6 +41,7 @@ test("Test C8118: Load page with link. Click link. Verify event.", async () => {
     }
   });
   await t.click(Selector("#alloy-link-test"));
+  await t.expect(getLocation()).contains("blank.html");
   const newMessages = await logger.getNewMessages();
   const destinationUrl = newMessages[0];
   await t.expect(destinationUrl).contains("blank.html");
