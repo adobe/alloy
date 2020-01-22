@@ -1,20 +1,16 @@
-import { t, Selector, RequestLogger } from "testcafe";
+import { t, Selector } from "testcafe";
 import testServerUrl from "../../helpers/constants/testServerUrl";
 import fixtureFactory from "../../helpers/fixtureFactory";
 import baseConfig from "../../helpers/constants/baseConfig";
 import addAnchorToBody from "../../helpers/dom/addAnchorToBody";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
+import createConsoleLogger from "../../helpers/consoleLogger";
 
 const fixtureUrl = `${testServerUrl}/test/functional/sandbox/html/alloyTestPage.html`;
 
-const requestLogger = RequestLogger(/v1\/(interact|collect)\?configId=/, {
-  logRequestBody: true
-});
-
 fixtureFactory({
-  title: "C8118: Send information about link clicks.",
-  url: fixtureUrl,
-  requestHooks: [requestLogger]
+  title: "C8118: Send event with information about link clicks.",
+  url: fixtureUrl
 });
 
 test.meta({
@@ -23,8 +19,19 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C8118: Load page with link. Click link. Verify request.", async () => {
-  await configureAlloyInstance("alloy", baseConfig);
+test("Test C8118: Load page with link. Click link. Verify event.", async () => {
+  const logger = createConsoleLogger(t, "log");
+  const testConfig = {
+    onBeforeEventSend(options) {
+      try {
+        // eslint-disable-next-line no-console
+        console.log(options.xdm.web.webInteraction.URL);
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
+    }
+  };
+  Object.assign(testConfig, baseConfig);
+  await configureAlloyInstance("alloy", testConfig);
   await addAnchorToBody({
     text: "Test Link",
     attributes: {
@@ -33,9 +40,7 @@ test("Test C8118: Load page with link. Click link. Verify request.", async () =>
     }
   });
   await t.click(Selector("#alloy-link-test"));
-  await t.expect(requestLogger.count(() => true)).gt(0);
-  const gatewayRequest = requestLogger.requests[0];
-  const requestBody = JSON.parse(gatewayRequest.request.body);
-  const destinationUrl = requestBody.events[0].xdm.web.webInteraction.URL;
+  const newMessages = await logger.getNewMessages();
+  const destinationUrl = newMessages[0];
   await t.expect(destinationUrl).contains("blank.html");
 });
