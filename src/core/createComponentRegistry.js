@@ -92,6 +92,9 @@ export default () => {
     getCommand(commandName) {
       return commandsByName[commandName];
     },
+    getCommandNames() {
+      return Object.keys(commandsByName);
+    },
     getLifecycleCallbacks(hookName) {
       return lifecycleCallbacksByName[hookName] || [];
     }

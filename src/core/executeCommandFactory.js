@@ -43,7 +43,9 @@ export default ({ logger, configureCommand, debugCommand, handleError }) => {
             componentRegistry => {
               const command = componentRegistry.getCommand(commandName);
               if (!isFunction(command)) {
-                throw new Error(`The ${commandName} command does not exist.`);
+                throw new Error(
+                  `The ${commandName} command does not exist. List of available commands: ${componentRegistry.getCommandNames()}.`
+                );
               }
               return command(options);
             },
