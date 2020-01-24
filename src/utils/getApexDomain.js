@@ -26,23 +26,17 @@ const cookieName = `${namespace}getTld`;
 export default (window, cookieJar) => {
   let topLevelCookieDomain = "";
 
-  const hostname = window.location.hostname.toLowerCase();
-  // If hostname is an IP Address, just use that. This is useful for testing
-  if (hostname.match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)) {
-    return hostname;
-  }
   // If hostParts.length === 1, we may be on localhost.
-  const hostParts = hostname.split(".");
+  const hostParts = window.location.hostname.toLowerCase().split(".");
   let i = 1;
 
   while (i < hostParts.length && !cookieJar.get(cookieName)) {
     i += 1;
     topLevelCookieDomain = getLastArrayItems(hostParts, i).join(".");
-    cookieJar.set(cookieName, cookieName, {
-      domain: topLevelCookieDomain
-    });
+    cookieJar.set(cookieName, cookieName, { domain: topLevelCookieDomain });
   }
 
   cookieJar.remove(cookieName, { domain: topLevelCookieDomain });
+
   return topLevelCookieDomain;
 };
