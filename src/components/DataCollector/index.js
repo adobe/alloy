@@ -1,4 +1,5 @@
 import { assign } from "../../utils";
+import validateUserEvent from "./validateUserEvent";
 
 /*
 Copyright 2019 Adobe. All rights reserved.
@@ -47,7 +48,7 @@ const createDataCollector = ({ eventManager, logger }) => {
         event.setUserXdm(xdm);
         event.setUserData(data);
 
-        const warnings = event.validate();
+        const warnings = validateUserEvent(event);
         if (warnings.length) {
           logger.warn(
             `Invalid event command options:\n\t - ${warnings.join(
