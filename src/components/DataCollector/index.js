@@ -1,5 +1,5 @@
 import { assign } from "../../utils";
-import validateUserEvent from "./validateUserEvent";
+import validateUserEventOptions from "./validateUserEventOptions";
 
 /*
 Copyright 2019 Adobe. All rights reserved.
@@ -19,6 +19,14 @@ const createDataCollector = ({ eventManager, logger }) => {
   return {
     commands: {
       event(options) {
+        const warnings = validateUserEventOptions(options);
+        if (warnings.length) {
+          logger.warn(
+            `Invalid event command options:\n\t - ${warnings.join(
+              "\n\t - "
+            )}\nFor documentation covering the event command see: ${CONFIG_DOC_URI}`
+          );
+        }
         let { xdm } = options;
         const {
           data,
@@ -47,15 +55,6 @@ const createDataCollector = ({ eventManager, logger }) => {
 
         event.setUserXdm(xdm);
         event.setUserData(data);
-
-        const warnings = validateUserEvent(event);
-        if (warnings.length) {
-          logger.warn(
-            `Invalid event command options:\n\t - ${warnings.join(
-              "\n\t - "
-            )}\nFor documentation covering the event command see: ${CONFIG_DOC_URI}`
-          );
-        }
 
         return eventManager.sendEvent(event, {
           isViewStart: viewStart

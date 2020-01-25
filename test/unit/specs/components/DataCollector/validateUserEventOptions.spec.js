@@ -9,29 +9,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import validateUserEvent from "../../../../../src/components/DataCollector/validateUserEvent";
-import createEvent from "../../../../../src/core/createEvent";
+import validateUserEventOptions from "../../../../../src/components/DataCollector/validateUserEventOptions";
 
-describe("DataCollector::validateUserEvent", () => {
-  let event;
-  beforeEach(() => {
-    event = createEvent();
-  });
-
-  it("reports the event as invalid if empty", () => {
-    const warnings = validateUserEvent(event);
+describe("DataCollector::validateUserEventOptions", () => {
+  it("reports the options as invalid if empty", () => {
+    const warnings = validateUserEventOptions({});
     expect(warnings.length).toBeGreaterThan(0);
   });
 
-  it("reports the event as invalid if event type is missing", () => {
-    event.setUserXdm({ a: "1" });
-    const warnings = validateUserEvent(event);
+  it("reports the options as invalid if event type is missing", () => {
+    const warnings = validateUserEventOptions({
+      xdm: { a: "1" }
+    });
     expect(warnings.length).toBeGreaterThan(0);
   });
 
   it("reports the event as valid if xdm event type is included", () => {
-    event.setUserXdm({ a: "1", eventType: "test" });
-    const warnings = validateUserEvent(event);
+    const warnings = validateUserEventOptions({
+      xdm: {
+        a: "1",
+        eventType: "test"
+      }
+    });
     expect(warnings.length).toBe(0);
   });
 });

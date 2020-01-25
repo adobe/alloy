@@ -11,16 +11,16 @@ governing permissions and limitations under the License.
 */
 
 /**
- * Verifies that the user generated event is valid.
- * @param {*} event The user event to validate
- * @returns {Array} Array of warnings if the event is invalid
+ * Verifies user provided event options.
+ * @param {*} options The user event options to validate
+ * @returns {Array} Array of warnings if the options are invalid
  */
-export default event => {
+export default options => {
   const warnings = [];
-  if (event.isEmpty()) {
+  const { xdm } = options;
+  if (!xdm && !options.data) {
     warnings.push("No event xdm or event data specified.");
-  }
-  if (event.getUserXdm() && !event.getUserXdm().eventType) {
+  } else if (xdm && !xdm.eventType && !options.type) {
     warnings.push("No type or xdm.eventType specified.");
   }
   return warnings;
