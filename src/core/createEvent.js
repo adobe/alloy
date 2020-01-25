@@ -27,12 +27,6 @@ export default () => {
     setUserData(value) {
       userData = value;
     },
-    getUserXdm() {
-      return userXdm;
-    },
-    getUserData() {
-      return userData;
-    },
     mergeXdm: createMerger(content, "xdm"),
     mergeMeta: createMerger(content, "meta"),
     mergeQuery: createMerger(content, "query"),
