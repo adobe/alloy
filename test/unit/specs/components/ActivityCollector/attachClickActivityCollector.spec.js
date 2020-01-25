@@ -19,11 +19,16 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
   let clickHandler;
   beforeEach(() => {
     cfg.clickCollectionEnabled = true;
-    eventManager = jasmine.createSpyObj("eventManager", {
-      createEvent: {
-        isEmpty: () => true
+    eventManager = {
+      createEvent: () => {
+        return {
+          isEmpty: () => true
+        };
+      },
+      sendEvent: () => {
+        return Promise.resolve();
       }
-    });
+    };
     lifecycle = jasmine.createSpyObj("lifecycle", {
       onClick: Promise.resolve()
     });
@@ -55,5 +60,24 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
     expectAsync(clickHandler({})).toBeRejectedWithError(
       "Failed to track click\nCaused by: Bad thing happened."
     );
+  });
+  it("Sends populated events", () => {
+    eventManager.createEvent = () => {
+      return {
+        isEmpty: () => false
+      };
+    };
+    spyOn(eventManager, "sendEvent").and.callThrough();
+    attachClickActivityCollector(cfg, eventManager, lifecycle);
+    clickHandler({}).then(() => {
+      expect(eventManager.sendEvent).toHaveBeenCalled();
+    });
+  });
+  it("Does not send empty events", () => {
+    spyOn(eventManager, "sendEvent").and.callThrough();
+    attachClickActivityCollector(cfg, eventManager, lifecycle);
+    clickHandler({}).then(() => {
+      expect(eventManager.sendEvent).not.toHaveBeenCalled();
+    });
   });
 });
