@@ -38,14 +38,32 @@ describe("Personalization::helper::scripts", () => {
     expect(inlineScripts.length).toEqual(1);
   });
 
+  it("should return null if inlineScript doesn't have text code", () => {
+    const fragmentHTML =
+      "<script></script><script src='http://foo.com' ></script>";
+    const fragment = createFragment(fragmentHTML);
+
+    const inlineScripts = getInlineScripts(fragment);
+    expect(inlineScripts.length).toEqual(0);
+  });
+
   it("should get a remote script", () => {
     const fragmentHTML =
       "<div id='fooDiv'><script src='http://foo.com' ></script><script>console.log('test');</script></div>";
     const fragment = createFragment(fragmentHTML);
-
     const remoteScripts = getRemoteScriptsUrls(fragment);
+
     expect(remoteScripts.length).toEqual(1);
     expect(remoteScripts[0]).toEqual("http://foo.com");
+  });
+
+  it("should get a empty array if remote script doesn't have url attr", () => {
+    const fragmentHTML =
+      "<div id='fooDiv'><script src='' ></script><script>console.log('test');</script></div>";
+    const fragment = createFragment(fragmentHTML);
+    const remoteScripts = getRemoteScriptsUrls(fragment);
+
+    expect(remoteScripts.length).toEqual(0);
   });
 
   it("should execute inline script", () => {
