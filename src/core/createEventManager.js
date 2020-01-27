@@ -44,7 +44,7 @@ export default ({
   const addMetaTo = payload => {
     const configOverrides = { orgId };
 
-    const dataCollection = Object.create(null);
+    const dataCollection = Object.create({});
     assignIf(
       dataCollection,
       { synchronousValidation: true },
