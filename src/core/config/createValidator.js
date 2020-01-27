@@ -15,7 +15,7 @@ import { assign } from "../../utils";
 const CONFIG_DOC_URI = "https://adobe.ly/2M4ErNE";
 
 const createConfigValidator = config => {
-  const validators = Object.create({});
+  const validators = {};
 
   const validator = {
     addValidators(newValidators) {
