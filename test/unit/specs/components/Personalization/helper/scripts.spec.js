@@ -13,8 +13,7 @@ governing permissions and limitations under the License.
 import {
   getInlineScripts,
   getRemoteScriptsUrls,
-  executeInlineScripts,
-  executeRemoteScripts
+  executeInlineScripts
 } from "../../../../../../src/components/Personalization/helper/scripts";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 import { createFragment } from "../../../../../../src/components/Personalization/helper/dom";
@@ -78,20 +77,5 @@ describe("Personalization::helper::scripts", () => {
     executeInlineScripts(container, inlineScripts, func);
 
     expect(func).toHaveBeenCalledWith(container, inlineScripts[0]);
-  });
-
-  it("should load remote script", () => {
-    const fragmentHTML = "<script src='http://foo.com/' ></script>";
-    const fragment = createFragment(fragmentHTML);
-    const urls = getRemoteScriptsUrls(fragment);
-    const promises = executeRemoteScripts(urls);
-
-    return promises
-      .then(arr => {
-        expect(arr[0].src).toEqual("http://foo.com/");
-      })
-      .catch(() => {
-        fail("should not fail");
-      });
   });
 });
