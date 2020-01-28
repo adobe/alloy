@@ -46,10 +46,35 @@ const getStorageByType = (context, storageType, namespace) => {
   };
 };
 
+const buildMemoryStorage = namespace => {
+  const storage = {};
+  return {
+    /**
+     * Reads a value from storage.
+     * @param {string} name The name of the item to be read.
+     * @returns {string}
+     */
+    getItem(name) {
+      return storage[namespace + name];
+    },
+    /**
+     * Saves a value to storage.
+     * @param {string} name The name of the item to be saved.
+     * @param {string} value The value of the item to be saved.
+     * @returns {boolean} Whether the item was successfully saved to storage.
+     */
+    setItem(name, value) {
+      storage[namespace + name] = value;
+      return true;
+    }
+  };
+};
+
 export default context => additionalNamespace => {
   const finalNamespace = baseNamespace + additionalNamespace;
   return {
     session: getStorageByType(context, "sessionStorage", finalNamespace),
-    persistent: getStorageByType(context, "localStorage", finalNamespace)
+    persistent: getStorageByType(context, "localStorage", finalNamespace),
+    memory: buildMemoryStorage(finalNamespace)
   };
 };
