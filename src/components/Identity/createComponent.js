@@ -23,7 +23,7 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
     orgId,
     IDENTITY_COOKIE_KEY
   );
-  let deferredForEcid;
+  let deferredForIdentityCookie;
   const migration = createMigration({ orgId, consent });
   const hasIdentityCookie = () => Boolean(cookieJar.get(identityCookieName));
   const customerIds = createCustomerIds({ eventManager, consent, logger });
@@ -33,42 +33,60 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
     let promise;
 
     if (!hasIdentityCookie()) {
-      const ecidToMigrate =
-        idMigrationEnabled && migration.getEcidFromLegacyCookies();
-
-      if (ecidToMigrate) {
-        // We don't have an identity cookie, but we do have an ECID
-        // from a legacy cookie that we can explicitly provide
-        // to the server, which is sufficient until the identity cookie
-        // gets set.
-        addEcidToPayload(payload, ecidToMigrate);
-      } else if (deferredForEcid) {
+      if (deferredForIdentityCookie) {
         // We don't have an identity cookie, but the first request has
         // been sent to get it. We must wait for the response to the first
         // request to come back and a cookie set before we can let this
         // request go out.
         logger.log("Delaying request while retrieving ECID from server.");
-        promise = deferredForEcid.promise.then(() => {
+        promise = deferredForIdentityCookie.promise.then(() => {
           logger.log("Resuming previously delayed request.");
         });
       } else {
-        // We don't have an identity cookie and no request has gone out
-        // to get it. We'll let this request go out to fetch the cookie,
-        // but we'll set up a promise so that future requests can
-        // know when the cookie has been set. We don't let additional
-        // requests to go out in the meantime because a new ECID would
-        // be minted for each request (each request would be seen as a
-        // new visitor).
-        deferredForEcid = defer();
+        const ecidToMigrate =
+          idMigrationEnabled && migration.getEcidFromLegacyCookies();
+
+        // For Alloy+Konductor communication to be as robust as possible and
+        // to ensure we don't mint new ECIDs for requests that would otherwise
+        // be sent in parallel, we'll let this request go out to fetch the
+        // cookie, but we'll set up a promise so that future requests can
+        // know when the cookie has been set.
+        deferredForIdentityCookie = defer();
+
+        // payload.expectsResponse() forces the request to go to the
+        // /interact endpoint. Why can't we go to the /collect endpoint
+        // to get the identity cookie?
+        // There are a couple cases where first-party cookies can't be
+        // set when hitting /collect:
+        //
+        // 1. If Alloy calls /collect when Konductor is on a different
+        // domain (e.g., edge.adobedc.net), Konductor can't set cookies
+        // on its own through HTTP headers and won't send a response body
+        // so it can't tell Alloy to write a cookie on its behalf.
+        // 2. Alloy may use sendBeacon() to send requests to /collect,
+        // in which case the HTTP response will usually be ignored by
+        // the browser.
         payload.expectResponse();
-        // If third-party cookies are enabled by the customer and
-        // supported by the browser, we will send the request to a
-        // a third-party domain that allows for more accurate
-        // identification of the user through use of a third-party cookie.
+
+        if (ecidToMigrate) {
+          // We have an ECID, but we still want to establish an
+          // identity cookie before allowing other requests to be sent.
+          addEcidToPayload(payload, ecidToMigrate);
+        }
+
         if (
           config.thirdPartyCookiesEnabled &&
           areThirdPartyCookiesSupportedByDefault(getBrowser(window))
         ) {
+          // If third-party cookies are enabled by the customer and
+          // supported by the browser, we will send the request to a
+          // a third-party identification domain that allows for more accurate
+          // identification of the user through use of a third-party cookie.
+          // If we have an ECID to migrate, we still want to hit the
+          // third-party domain because the third-party identification domain
+          // will use our ECID to set the third-party cookie if the third-party
+          // cookie isn't already set, which provides for better cross-domain
+          // identification for future requests.
           payload.useIdThirdPartyDomain();
         }
       }
@@ -129,8 +147,8 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
         // and now we have the identity cookie, we can let the queued
         // requests go out. Technically, we should always have an identity
         // cookie at this point, but we check just to be sure.
-        if (deferredForEcid && hasIdentityCookie()) {
-          deferredForEcid.resolve();
+        if (deferredForIdentityCookie && hasIdentityCookie()) {
+          deferredForIdentityCookie.resolve();
         }
 
         promises.push(
