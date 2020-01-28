@@ -85,7 +85,8 @@ describe("Personalization::helper::scripts", () => {
     const fragment = createFragment(fragmentHTML);
     const urls = getRemoteScriptsUrls(fragment);
     const promises = executeRemoteScripts(urls);
-    promises
+
+    return promises
       .then(arr => {
         expect(arr[0].src).toEqual("http://foo.com/");
       })
