@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 import assertValid from "./assertValid";
 
-const DOMAIN_REGEX = /^[a-z0-9.]{1,}$/i;
+const DOMAIN_REGEX = /^[a-z0-9.-]{1,}$/i;
 
 export default (value, path) => {
   assertValid(DOMAIN_REGEX.test(value), value, path, "a valid domain");
