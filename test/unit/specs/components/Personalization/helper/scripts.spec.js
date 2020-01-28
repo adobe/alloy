@@ -10,5 +10,72 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
-import scripts from "../../../../../../src/components/Personalization/helper/scripts";
+import {
+  getInlineScripts,
+  getRemoteScriptsUrls,
+  executeInlineScripts
+} from "../../../../../../src/components/Personalization/helper/scripts";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import { createFragment } from "../../../../../../src/components/Personalization/helper/dom";
+import { DIV } from "../../../../../../src/constants/tagNames";
+import { createNode } from "../../../../../../src/utils/dom";
+
+describe("Personalization::helper::scripts", () => {
+  beforeEach(() => {
+    cleanUpDomChanges("fooDiv");
+  });
+
+  afterEach(() => {
+    cleanUpDomChanges("fooDiv");
+  });
+
+  it("should get an inline script", () => {
+    const fragmentHTML =
+      "<script>console.log('test');</script><script src='http://foo.com' ></script>";
+    const fragment = createFragment(fragmentHTML);
+
+    const inlineScripts = getInlineScripts(fragment);
+    expect(inlineScripts.length).toEqual(1);
+  });
+
+  it("should return null if inlineScript doesn't have text code", () => {
+    const fragmentHTML =
+      "<script></script><script src='http://foo.com' ></script>";
+    const fragment = createFragment(fragmentHTML);
+
+    const inlineScripts = getInlineScripts(fragment);
+    expect(inlineScripts.length).toEqual(0);
+  });
+
+  it("should get a remote script", () => {
+    const fragmentHTML =
+      "<div id='fooDiv'><script src='http://foo.com' ></script><script>console.log('test');</script></div>";
+    const fragment = createFragment(fragmentHTML);
+    const remoteScripts = getRemoteScriptsUrls(fragment);
+
+    expect(remoteScripts.length).toEqual(1);
+    expect(remoteScripts[0]).toEqual("http://foo.com");
+  });
+
+  it("should get a empty array if remote script doesn't have url attr", () => {
+    const fragmentHTML =
+      "<div id='fooDiv'><script src='' ></script><script>console.log('test');</script></div>";
+    const fragment = createFragment(fragmentHTML);
+    const remoteScripts = getRemoteScriptsUrls(fragment);
+
+    expect(remoteScripts.length).toEqual(0);
+  });
+
+  it("should execute inline script", () => {
+    const fragmentHTML =
+      "<script>console.log('test');</script><script src='http://foo.com' ></script>";
+    const fragment = createFragment(fragmentHTML);
+    const inlineScripts = getInlineScripts(fragment);
+    const func = jasmine.createSpy();
+    const container = createNode(DIV);
+
+    executeInlineScripts(container, inlineScripts, func);
+
+    expect(func).toHaveBeenCalledWith(container, inlineScripts[0]);
+  });
+});

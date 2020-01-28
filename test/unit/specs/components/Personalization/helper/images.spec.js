@@ -10,5 +10,40 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
-import images from "../../../../../../src/components/Personalization/helper/images";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import {
+  createFragment,
+  getChildNodes
+} from "../../../../../../src/components/Personalization/helper/dom";
+import {
+  isImage,
+  loadImage
+} from "../../../../../../src/components/Personalization/helper/images";
+import { IMG } from "../../../../../../src/constants/tagNames";
+import { createNode } from "../../../../../../src/utils/dom";
+
+describe("Personalization::helper::images", () => {
+  beforeEach(() => {
+    cleanUpDomChanges("fooImage");
+  });
+
+  afterEach(() => {
+    cleanUpDomChanges("fooImage");
+  });
+
+  it("should verify if it is an image", () => {
+    const fragmentHTML = "<img id='fooImage' src='http://foo.com' />";
+    const fragment = createFragment(fragmentHTML);
+    const imageNode = getChildNodes(fragment)[0];
+
+    expect(isImage(fragment)).toBeFalse();
+    expect(isImage(imageNode)).toBeTrue();
+  });
+
+  it("should create an image node", () => {
+    const result = loadImage("http://foo.com");
+    const image = createNode(IMG, { src: "http://foo.com" });
+
+    expect(result).toEqual(image);
+  });
+});
