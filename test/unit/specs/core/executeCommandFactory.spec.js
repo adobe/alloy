@@ -57,7 +57,10 @@ describe("executeCommandFactory", () => {
 
   it("rejects promise if command doesn't exist", () => {
     const componentRegistry = {
-      getCommand() {}
+      getCommand() {},
+      getCommandNames() {
+        return ["genuine"];
+      }
     };
     const configureCommand = () => Promise.resolve(componentRegistry);
     const executeCommand = executeCommandFactory({
@@ -69,7 +72,9 @@ describe("executeCommandFactory", () => {
     return executeCommand("bogus")
       .then(fail)
       .catch(error => {
-        expect(error.message).toBe("The bogus command does not exist.");
+        expect(error.message).toBe(
+          "The bogus command does not exist. List of available commands: genuine."
+        );
       });
   });
 
