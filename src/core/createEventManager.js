@@ -21,13 +21,7 @@ export default ({
   createDataCollectionRequestPayload,
   sendEdgeNetworkRequest
 }) => {
-  const {
-    orgId,
-    onBeforeEventSend,
-    debugEnabled,
-    datasetId,
-    schemaId
-  } = config;
+  const { orgId, onBeforeEventSend, debugEnabled } = config;
 
   const onBeforeEventSendWithLoggedExceptions = (...args) => {
     try {
@@ -47,8 +41,6 @@ export default ({
       { synchronousValidation: true },
       () => debugEnabled
     );
-    assignIf(dataCollection, { datasetId: config.datasetId }, () => datasetId);
-    assignIf(dataCollection, { schemaId: config.schemaId }, () => schemaId);
 
     if (!isEmptyObject(dataCollection)) {
       configOverrides.dataCollection = dataCollection;

@@ -10,13 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, number, callback } from "../../utils/validation";
+import { boolean, callback } from "../../utils/validation";
 
 const configValidators = {
-  idSyncEnabled: boolean(),
-  idSyncContainerId: number()
-    .integer()
-    .minimum(0),
   thirdPartyCookiesEnabled: boolean().default(true),
   idMigrationEnabled: boolean().default(true)
 };
