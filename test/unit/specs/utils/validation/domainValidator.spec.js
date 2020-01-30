@@ -16,6 +16,7 @@ import describeValidation from "./describeValidation";
 describe("validation::domain", () => {
   describeValidation("domain", string().domain(), [
     { value: "stats.adobe.com" },
+    { value: "stats-edge.adobe.com" },
     { value: "https://stats.adobe.com", error: true },
     { value: "stats.adobe.com\n", error: true },
     { value: "stats.adobe.com\nbad", error: true }
