@@ -65,7 +65,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@git.corp.adobe.com:Activation/a-tag.git"
+    "url": "https://github.com/adobe/alloy.git"
   },
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
