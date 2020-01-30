@@ -27,9 +27,7 @@ test("Test C2584: debug command with enable: true. getLibraryInfo. refresh. togg
   await t.expect(newMessages).match(/Executing getLibraryInfo command/);
 
   await t
-    .navigateTo(
-      "http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html"
-    )
+    .navigateTo(`${testServerUrl}/test/functional/sandbox/html/alloySdk.html`)
     .click(Selector("#nologconfig-button"))
     .click(Selector("#getlibraryinfo-button"));
 
@@ -48,9 +46,7 @@ test("Test C2584: debug command with enable: true. getLibraryInfo. refresh. togg
     .notMatch(/\[alloy] Executing getLibraryInfo command./);
 
   await t
-    .navigateTo(
-      "http://127.0.0.1:8080/test/functional/sandbox/html/alloySdk.html"
-    )
+    .navigateTo(`${testServerUrl}/test/functional/sandbox/html/alloySdk.html`)
     .click(Selector("#nologconfig-button"))
     .click(Selector("#getlibraryinfo-button"));
 
