@@ -22,7 +22,7 @@ test("Test C13816: Throws error when configure has no options", async t => {
   await t
     .expect(configureErrorMessage)
     .ok("Configure didn't throw an exception.");
-  await t.expect(configureErrorMessage).match(/orgId/);
-  await t.expect(configureErrorMessage).match(/configId/);
-  await t.expect(configureErrorMessage).match(/documentation/);
+  await t.expect(configureErrorMessage).contains("orgId");
+  await t.expect(configureErrorMessage).contains("configId");
+  await t.expect(configureErrorMessage).contains("documentation");
 });
