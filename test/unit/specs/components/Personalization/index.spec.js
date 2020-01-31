@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
 import createPersonalization from "../../../../../src/components/Personalization";
 import createConfig from "../../../../../src/core/config/createConfig";
 import {
@@ -260,7 +259,7 @@ describe("Personalization", () => {
     expect(result.length).toEqual(0);
   });
 
-  fit("expects getDecision to return scope decisions, one scope - multiple decisions", () => {
+  it("expects getDecision to return scope decisions, one scope - multiple decisions", () => {
     const isViewStart = true;
     const scopes = ["Foo5"];
 
@@ -273,7 +272,6 @@ describe("Personalization", () => {
     responseSecondEvent.getPayloadsByType.and.returnValue(
       SAME_SCOPE_MULTIPLE_DECISIONS
     );
-
     const personalization = createPersonalization({
       config,
       logger,
