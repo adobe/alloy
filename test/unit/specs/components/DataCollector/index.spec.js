@@ -11,18 +11,22 @@ governing permissions and limitations under the License.
 
 import createDataCollector from "../../../../../src/components/DataCollector/index";
 import { noop } from "../../../../../src/utils";
+import createEvent from "../../../../../src/core/createEvent";
 
 describe("Event Command", () => {
   let event;
+  let logger;
   let eventManager;
   let eventCommand;
   beforeEach(() => {
-    event = jasmine.createSpyObj("event", {
-      documentMayUnload: undefined,
-      setUserData: undefined,
-      setUserXdm: undefined,
-      validate: []
+    event = createEvent();
+    spyOn(event, "documentMayUnload").and.callThrough();
+    spyOn(event, "setUserData").and.callThrough();
+    spyOn(event, "setUserXdm").and.callThrough();
+    logger = jasmine.createSpyObj("logger", {
+      warn: undefined
     });
+
     eventManager = {
       createEvent() {
         return event;
@@ -36,7 +40,8 @@ describe("Event Command", () => {
     };
 
     const dataCollector = createDataCollector({
-      eventManager
+      eventManager,
+      logger
     });
     eventCommand = dataCollector.commands.event;
   });
@@ -46,6 +51,7 @@ describe("Event Command", () => {
     const data = { c: "d" };
     const options = {
       viewStart: true,
+      type: "test",
       xdm,
       data,
       documentUnloading: true
