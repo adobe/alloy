@@ -10,15 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import CONFIG_DOC_URI from "../../constants/docUri";
-import { isNonEmptyArray, assign } from "../../utils";
+import { isNonEmptyArray } from "../../utils";
 import { string } from "../../utils/validation";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
 import collectClicks from "./helper/clicks/collectClicks";
 
 const DECISIONS_HANDLE = "personalization:decisions";
-
+const ALL_SCOPES = "all_scopes";
 // This is used for Target VEC integration
 const isAuthoringMode = () => document.location.href.indexOf("mboxEdit") !== -1;
 const mergeMeta = (event, meta) => {
@@ -27,6 +26,46 @@ const mergeMeta = (event, meta) => {
 
 const mergeQuery = (event, details) => {
   event.mergeQuery({ personalization: { ...details } });
+};
+
+const storeDecisions = (storage, decisions) => {
+  if (!decisions) {
+    return;
+  }
+
+  const filteredDecisions = {};
+
+  decisions.forEach(decision => {
+    const key = decision.scope || ALL_SCOPES;
+
+    if (!filteredDecisions[key]) {
+      filteredDecisions[key] = [];
+    }
+
+    filteredDecisions[key].push(decision);
+
+    return filteredDecisions;
+  });
+
+  Object.keys(filteredDecisions).forEach(scope => {
+    storage[scope] = filteredDecisions[scope];
+  });
+};
+
+const filterDecisions = (storage, scopes) => {
+  const decisions = [];
+
+  if (scopes.length === 0) {
+    return storage[ALL_SCOPES] || [];
+  }
+
+  scopes.forEach(s => {
+    if (storage[s]) {
+      decisions.push(...storage[s]);
+    }
+  });
+
+  return decisions;
 };
 
 const executeFragments = (fragments, modules, logger) => {
@@ -49,23 +88,12 @@ const createCollect = eventManager => {
   };
 };
 
-const validateEvent = (event, logger) => {
-  const warnings = event.validate();
-
-  if (warnings.length) {
-    logger.warn(
-      `Invalid getDecisions command options:\n\t - ${warnings.join(
-        "\n\t - "
-      )}\nFor documentation covering the getDecisions command see: ${CONFIG_DOC_URI}`
-    );
-  }
-};
-
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { prehidingStyle } = config;
   const authoringModeEnabled = isAuthoringMode();
   const collect = createCollect(eventManager);
   const storage = [];
+  const decisionsStorage = {};
   const store = value => storage.push(value);
   const ruleComponentModules = initRuleComponentModules(collect, store);
 
@@ -81,6 +109,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
         if (isViewStart) {
           event.expectResponse();
+          mergeQuery(event, { scopes });
 
           // For viewStart we try to hide the personalization containers
           hideContainers(prehidingStyle);
@@ -100,11 +129,13 @@ const createPersonalization = ({ config, logger, eventManager }) => {
           return;
         }
 
-        const fragments = response.getPayloadsByType(DECISIONS_HANDLE);
+        const decisions = response.getPayloadsByType(DECISIONS_HANDLE);
 
-        executeFragments(fragments, ruleComponentModules, logger);
+        executeFragments(decisions, ruleComponentModules, logger);
 
         showContainers();
+
+        storeDecisions(decisionsStorage, decisions);
       },
       onRequestFailure() {
         showContainers();
@@ -117,34 +148,10 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     },
 
     commands: {
-      getDecisions(options) {
-        let { xdm } = options;
-        const {
-          scopes = [],
-          data,
-          type: eventType,
-          mergeId: eventMergeId
-        } = options;
-        const event = eventManager.createEvent();
+      getDecisions(options = {}) {
+        const { scopes = [] } = options;
 
-        if (eventType || eventMergeId) {
-          xdm = Object(xdm);
-        }
-
-        if (eventType) {
-          assign(xdm, { eventType });
-        }
-
-        if (eventMergeId) {
-          assign(xdm, { eventMergeId });
-        }
-
-        event.setUserXdm(xdm);
-        event.setUserData(data);
-
-        validateEvent(event, logger);
-
-        return eventManager.sendEvent(event, { scopes });
+        return filterDecisions(decisionsStorage, scopes);
       }
     }
   };
