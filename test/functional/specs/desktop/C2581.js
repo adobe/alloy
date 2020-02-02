@@ -52,9 +52,9 @@ test("Test C2581: Queue requests until we receive an ECID.", async () => {
     identityCookieName
   );
 
-  const hasIdentityCookieHeader = responseHeader["set-cookie"].includes(
-    identityCookieName
-  );
+  const hasIdentityCookieHeader = responseHeader["set-cookie"]
+    ? responseHeader["set-cookie"].includes(identityCookieName)
+    : false;
 
   // Check that the identity cookie/state is either in the body or header.
   await t.expect(hasIdentityCookieInBody || hasIdentityCookieHeader).eql(true);
