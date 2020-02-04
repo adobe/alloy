@@ -20,7 +20,7 @@ import {
   SCOPES_FOO4_FOO5_DECISIONS
 } from "./responsesMock/eventResponses";
 
-fdescribe("Personalization", () => {
+describe("Personalization", () => {
   let event;
   const config = createConfig({ prehidingStyle: "" });
 
