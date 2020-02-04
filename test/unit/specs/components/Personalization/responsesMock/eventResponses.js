@@ -1,4 +1,4 @@
-export const SCOPES_DECISIONS = [
+export const SCOPES_FOO1_FOO2_DECISIONS = [
   {
     id: "TNT:ABC:A",
     scope: "Foo1",
@@ -44,7 +44,7 @@ export const SCOPES_DECISIONS = [
   }
 ];
 
-export const SCOPES_DECISIONS_2 = [
+export const SCOPES_FOO1_FOO3_DECISIONS = [
   {
     id: "TNT:ABC:A3",
     scope: "Foo3",
@@ -90,7 +90,7 @@ export const SCOPES_DECISIONS_2 = [
   }
 ];
 
-export const SCOPES_DECISIONS_3 = [
+export const SCOPES_FOO4_FOO5_DECISIONS = [
   {
     id: "TNT:ABC:A4",
     scope: "Foo4",

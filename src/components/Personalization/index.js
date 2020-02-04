@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray } from "../../utils";
+import { isNonEmptyArray, groupBy } from "../../utils";
 import { string } from "../../utils/validation";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
 import collectClicks from "./helper/clicks/collectClicks";
 
 const DECISIONS_HANDLE = "personalization:decisions";
-const ALL_SCOPES = "all_scopes";
+const PAGE_WIDE_SCOPE = "page_wide_scope";
 // This is used for Target VEC integration
 const isAuthoringMode = () => document.location.href.indexOf("mboxEdit") !== -1;
 const mergeMeta = (event, meta) => {
@@ -33,19 +33,10 @@ const storeDecisions = (storage, decisions) => {
     return;
   }
 
-  const filteredDecisions = {};
-
-  decisions.forEach(decision => {
-    const key = decision.scope || ALL_SCOPES;
-
-    if (!filteredDecisions[key]) {
-      filteredDecisions[key] = [];
-    }
-
-    filteredDecisions[key].push(decision);
-
-    return filteredDecisions;
-  });
+  const filteredDecisions = groupBy(
+    decisions,
+    decision => decision.scope || PAGE_WIDE_SCOPE
+  );
 
   Object.keys(filteredDecisions).forEach(scope => {
     storage[scope] = filteredDecisions[scope];
@@ -54,10 +45,6 @@ const storeDecisions = (storage, decisions) => {
 
 const filterDecisions = (storage, scopes) => {
   const decisions = [];
-
-  if (scopes.length === 0) {
-    return storage[ALL_SCOPES] || [];
-  }
 
   scopes.forEach(s => {
     if (storage[s]) {
@@ -107,18 +94,15 @@ const createPersonalization = ({ config, logger, eventManager }) => {
           return;
         }
 
-        if (isViewStart) {
+        if (isViewStart || scopes) {
           event.expectResponse();
           mergeQuery(event, { scopes });
 
           // For viewStart we try to hide the personalization containers
-          hideContainers(prehidingStyle);
-          return;
-        }
+          if (isViewStart) {
+            hideContainers(prehidingStyle);
+          }
 
-        if (scopes) {
-          event.expectResponse();
-          mergeQuery(event, { scopes });
           return;
         }
 
@@ -149,9 +133,18 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
     commands: {
       getDecisions(options = {}) {
-        const { scopes = [] } = options;
+        const { viewStart, scopes = [] } = options;
+        if (viewStart || scopes) {
+          if (viewStart) {
+            scopes.push(PAGE_WIDE_SCOPE);
+          }
 
-        return filterDecisions(decisionsStorage, scopes);
+          return filterDecisions(decisionsStorage, scopes);
+        }
+
+        throw new Error(
+          "Invalid getDecisions command options parameter. Please consult the documentation."
+        );
       }
     }
   };
