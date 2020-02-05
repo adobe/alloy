@@ -19,7 +19,7 @@ import collectClicks from "./helper/clicks/collectClicks";
 const DECISIONS_HANDLE = "personalization:decisions";
 const PAGE_WIDE_SCOPE = "page_wide_scope";
 const GET_DECISIONS_OPTIONS_SCHEMA = {
-  viewStart: boolean().default(null),
+  viewStart: boolean().default(false),
   scopes: arrayOf(string()).default([])
 };
 // This is used for Target VEC integration
