@@ -66,7 +66,6 @@ describe("Personalization", () => {
 
   it("expects getDecisions to return empty array since for default scopes we don't have any decision stored", () => {
     const isViewStart = true;
-    const scopes = [];
 
     const response = {
       getPayloadsByType() {
@@ -78,10 +77,12 @@ describe("Personalization", () => {
       logger,
       eventManager
     });
-    personalization.lifecycle.onBeforeEvent({ event, isViewStart, scopes });
+    personalization.lifecycle.onBeforeEvent({ event, isViewStart });
     personalization.lifecycle.onResponse({ response });
 
-    const result = personalization.commands.getDecisions({ scopes });
+    const result = personalization.commands.getDecisions({
+      viewStart: isViewStart
+    });
 
     expect(result).toEqual([]);
   });

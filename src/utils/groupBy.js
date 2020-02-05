@@ -17,15 +17,17 @@ governing permissions and limitations under the License.
  * @returns {Object}
  */
 export default (arr, keyGetter) => {
-  const map = {};
+  const result = {};
 
   arr.forEach(item => {
     const key = keyGetter(item);
-    if (!map[key]) {
-      map[key] = [];
+
+    if (!result[key]) {
+      result[key] = [];
     }
-    map[key].push(item);
+
+    result[key].push(item);
   });
 
-  return map;
+  return result;
 };

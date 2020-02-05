@@ -11,13 +11,17 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray, groupBy } from "../../utils";
-import { string } from "../../utils/validation";
+import { string, boolean, arrayOf, objectOf } from "../../utils/validation";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
 import collectClicks from "./helper/clicks/collectClicks";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 const PAGE_WIDE_SCOPE = "page_wide_scope";
+const GET_DECISIONS_OPTIONS_SCHEMA = {
+  viewStart: boolean().default(null),
+  scopes: arrayOf(string()).default([])
+};
 // This is used for Target VEC integration
 const isAuthoringMode = () => document.location.href.indexOf("mboxEdit") !== -1;
 const mergeMeta = (event, meta) => {
@@ -55,9 +59,9 @@ const filterDecisions = (storage, scopes) => {
   return decisions;
 };
 
-const executeFragments = (fragments, modules, logger) => {
-  fragments.forEach(fragment => {
-    const { rules = [] } = fragment;
+const executeDecisions = (decisions, modules, logger) => {
+  decisions.forEach(decision => {
+    const { rules = [] } = decision;
 
     if (isNonEmptyArray(rules)) {
       executeRules(rules, modules, logger);
@@ -75,6 +79,17 @@ const createCollect = eventManager => {
   };
 };
 
+const validateOptions = options => {
+  const validate = objectOf(GET_DECISIONS_OPTIONS_SCHEMA);
+  const { viewStart, scopes } = validate(options);
+
+  if (viewStart == null && scopes.length === 0) {
+    throw new Error(
+      "Invalid getDecisions command options parameter. Please consult the documentation."
+    );
+  }
+};
+
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { prehidingStyle } = config;
   const authoringModeEnabled = isAuthoringMode();
@@ -90,23 +105,20 @@ const createPersonalization = ({ config, logger, eventManager }) => {
         if (authoringModeEnabled) {
           logger.warn("Rendering is disabled, authoring mode.");
 
+          // If we are in authoring mode we disable personalization
           mergeQuery(event, { enabled: false });
           return;
+        }
+
+        // For viewStart we try to hide the personalization containers
+        if (isViewStart) {
+          hideContainers(prehidingStyle);
         }
 
         if (isViewStart || scopes) {
           event.expectResponse();
           mergeQuery(event, { scopes });
-
-          // For viewStart we try to hide the personalization containers
-          if (isViewStart) {
-            hideContainers(prehidingStyle);
-          }
-
-          return;
         }
-
-        mergeQuery(event, { enabled: false });
       },
       onResponse({ response }) {
         if (authoringModeEnabled) {
@@ -115,7 +127,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
         const decisions = response.getPayloadsByType(DECISIONS_HANDLE);
 
-        executeFragments(decisions, ruleComponentModules, logger);
+        executeDecisions(decisions, ruleComponentModules, logger);
 
         showContainers();
 
@@ -133,18 +145,15 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
     commands: {
       getDecisions(options = {}) {
-        const { viewStart, scopes = [] } = options;
-        if (viewStart || scopes) {
-          if (viewStart) {
-            scopes.push(PAGE_WIDE_SCOPE);
-          }
+        validateOptions(options);
 
-          return filterDecisions(decisionsStorage, scopes);
+        const { viewStart, scopes = [] } = options;
+
+        if (viewStart) {
+          scopes.push(PAGE_WIDE_SCOPE);
         }
 
-        throw new Error(
-          "Invalid getDecisions command options parameter. Please consult the documentation."
-        );
+        return filterDecisions(decisionsStorage, scopes);
       }
     }
   };
