@@ -19,7 +19,7 @@ export default ({ config, consentState, logger }) => {
   const deferreds = [];
 
   const processConsent = () => {
-    if (consentEnabled && consentState.isPending()) {
+    if (consentState.isPending()) {
       return;
     }
 
@@ -31,7 +31,7 @@ export default ({ config, consentState, logger }) => {
     // either "tracking" or "personalization" were set to false. This buys us
     // time to release a new version of Alloy that appropriately behaves
     // according to the more granular purposes and for customers to upgrade.
-    const proceed = !consentEnabled || consentState.hasConsentedToAllPurposes();
+    const proceed = consentState.hasConsentedToAllPurposes();
 
     while (deferreds.length) {
       const deferred = deferreds.shift();
@@ -44,29 +44,21 @@ export default ({ config, consentState, logger }) => {
     }
   };
 
-  consentState.onChange(processConsent);
-
   if (consentEnabled) {
+    consentState.onChange(processConsent);
+
     if (consentState.isPending()) {
       logger.warn("Some commands may be delayed until the user consents.");
     } else if (!consentState.hasConsentedToAllPurposes()) {
       logger.warn(`Some commands may fail. ${DECLINED_CONSENT}`);
     }
+    return () => {
+      const deferred = defer();
+      deferreds.push(deferred);
+      processConsent();
+      return deferred.promise;
+    };
   }
-  /**
-   * Returns a promise that is resolved once the user consents to all
-   * purposes. If the user has already consented to all purposes, the
-   * promise will already be resolved. If the user consents to no purposes,
-   * the promise will be rejected.
-   */
-  // TODO Once we support consenting to specific purposes, this
-  // method will accept an array of purpose names as an argument and
-  // will return a promise that will be resolved once the user has consented
-  // to the specified purposes.
-  return () => {
-    const deferred = defer();
-    deferreds.push(deferred);
-    processConsent();
-    return deferred.promise;
-  };
+
+  return () => Promise.resolve();
 };

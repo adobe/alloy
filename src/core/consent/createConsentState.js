@@ -14,12 +14,6 @@ import parseConsentCookie from "./parseConsentCookie";
 import { CONSENT_COOKIE_KEY } from "../../constants/cookieDetails";
 import { IN } from "../../constants/consentStatus";
 
-const hasConsentedToAllPurposes = consentByPurpose => {
-  return (
-    consentByPurpose && values(consentByPurpose).every(value => value === IN)
-  );
-};
-
 const getPersistedConsent = cookieName => {
   const cookieValue = cookieJar.get(cookieName);
   if (cookieValue) {
@@ -71,7 +65,8 @@ export default ({ config }) => {
     // will return whether the user has consented into those purposes.
     hasConsentedToAllPurposes() {
       return (
-        Boolean(consentByPurpose) && hasConsentedToAllPurposes(consentByPurpose)
+        Boolean(consentByPurpose) &&
+        values(consentByPurpose).every(value => value === IN)
       );
     },
     onChange(onChangeHandler) {

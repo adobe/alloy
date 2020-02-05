@@ -12,9 +12,12 @@ governing permissions and limitations under the License.
 
 import { boolean } from "../../utils/validation";
 import { isString } from "../../utils";
+import { IN, OUT } from "../../constants/consentStatus";
 
 const ALL = "all";
 const NONE = "none";
+
+const CONSENT_HANDLE = "privacy:consent";
 
 const throwInvalidPurposesError = purposes => {
   throw new Error(
@@ -43,7 +46,7 @@ const createPrivacy = ({ config, consent }) => {
         }
 
         return consent.setConsent({
-          general: lowerCasePurposes === ALL ? "in" : "out"
+          general: lowerCasePurposes === ALL ? IN : OUT
         });
       }
     },
@@ -55,7 +58,7 @@ const createPrivacy = ({ config, consent }) => {
         // lifecycle method and be able to register a response handler from
         // inside lifecycle.onBeforeConsentRequest
         // Also, what should we do if the consent request fails?
-        if (response.getPayloadsByType("privacy:consent").length) {
+        if (response.getPayloadsByType(CONSENT_HANDLE).length) {
           consent.consentRequestComplete();
         }
       }

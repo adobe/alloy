@@ -21,6 +21,9 @@ export default ({
 }) => {
   const queue = createTaskQueue();
   const setConsent = consentByPurpose => {
+    // This is due to a restriction in Audience Manager that once a user
+    // has consented to no purposes (opted-out), consent can't be changed.
+    // There are plans to change this in the future.
     if (
       !consentState.isPending() &&
       !consentState.hasConsentedToAllPurposes()
