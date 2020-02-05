@@ -64,7 +64,7 @@ describe("Personalization", () => {
     expect(event.expectResponse).not.toHaveBeenCalled();
   });
 
-  it("expects getDecisions to return empty array since for default scopes we don't have any decision stored", () => {
+  it("expects getDecisions to return empty array when there are no decisions in storage for page wide scope", () => {
     const isViewStart = true;
 
     const response = {
@@ -87,8 +87,7 @@ describe("Personalization", () => {
     expect(result).toEqual([]);
   });
 
-  // expects to return decisions only for Foo1 scope
-  it("expects getDecisions to return a decision since we have stored in memory only one that matches ", () => {
+  it("expects getDecisions to return an array of decisions for the scopes provided", () => {
     const isViewStart = true;
     const scopes = ["Foo1", "Foo3"];
 
@@ -111,8 +110,7 @@ describe("Personalization", () => {
     expect(result[0].scope).toEqual("Foo1");
   });
 
-  // expects getDecisions to return decisions only for Foo1 and Foo3 scopes
-  it("expects getDecisions to return multiple decisions for multiple scopes when not overwritten by later response", () => {
+  it("expects getDecisions to return decisions for multiple scopes when storage is not overwritten by latest response", () => {
     const isViewStart = true;
     const scopes = ["Foo1", "Foo3"];
 
@@ -172,7 +170,7 @@ describe("Personalization", () => {
     expect(result[0].scope).toEqual(scopes[0]);
   });
 
-  it("expects getDecisions to return empty array when it is invoked for specific scope but in memory we have stored only PAGE_WIDE_SCOPE decisions", () => {
+  it("expects getDecisions to return empty array when there are no decisions for that specific scope in the storage", () => {
     const isViewStart = true;
     const scopes = ["Foo1", "Foo3"];
 
@@ -194,9 +192,8 @@ describe("Personalization", () => {
     expect(result.length).toEqual(0);
   });
 
-  it("expects getDecisions to return the default scope decisions when only parameter viewStart is passed", () => {
+  it("expects getDecisions to return only the page wide scope decisions when only parameter viewStart is passed", () => {
     const isViewStart = true;
-    const scopes = [];
 
     const response = {
       getPayloadsByType() {
@@ -213,7 +210,7 @@ describe("Personalization", () => {
       logger,
       eventManager
     });
-    personalization.lifecycle.onBeforeEvent({ event, isViewStart, scopes });
+    personalization.lifecycle.onBeforeEvent({ event, isViewStart });
     personalization.lifecycle.onResponse({ response });
     personalization.lifecycle.onResponse({ response: responseSecondEvent });
 
@@ -224,7 +221,7 @@ describe("Personalization", () => {
     expect(result[0].id).toEqual("TNT:activity1:experience1");
   });
 
-  it("expects getDecisions to return the default and specified scope decisions when parameter viewStart and scopes is passed", () => {
+  it("expects getDecisions to return page wide scope and specific scopes decisions when parameter viewStart and scopes is passed", () => {
     const isViewStart = true;
     const scopes = ["Foo1", "Foo3"];
 
@@ -256,7 +253,7 @@ describe("Personalization", () => {
     expect(result.length).toEqual(3);
   });
 
-  it("expects getDecisions to return empty array if event didn't get any decision", () => {
+  it("expects getDecisions to return empty array if the storage is empty", () => {
     const isViewStart = true;
     const scopes = ["Foo1", "Foo3"];
 
@@ -278,7 +275,7 @@ describe("Personalization", () => {
     expect(result.length).toEqual(0);
   });
 
-  it("expects getDecisions to return all decisions for the scope stored during multiple responses", () => {
+  it("expects getDecisions to return all decisions for a specific scope stored during multiple responses", () => {
     const isViewStart = true;
     const scopes = ["Foo5"];
 
