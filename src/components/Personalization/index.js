@@ -15,6 +15,12 @@ import { string, boolean, arrayOf, objectOf } from "../../utils/validation";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
 import collectClicks from "./helper/clicks/collectClicks";
+import {
+  DOM_ACTION,
+  HTML_ITEM_CONTENT,
+  JSON_CONTENT_ITEM,
+  REDIRECT_ITEM
+} from "../../constants/schemas";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 const PAGE_WIDE_SCOPE = "page_wide_scope";
@@ -22,6 +28,12 @@ const GET_DECISIONS_OPTIONS_SCHEMA = {
   viewStart: boolean().default(false),
   scopes: arrayOf(string()).default([])
 };
+const ALL_SCHEMAS = [
+  DOM_ACTION,
+  HTML_ITEM_CONTENT,
+  JSON_CONTENT_ITEM,
+  REDIRECT_ITEM
+];
 // This is used for Target VEC integration
 const isAuthoringMode = () => document.location.href.indexOf("mboxEdit") !== -1;
 const mergeMeta = (event, meta) => {
@@ -113,21 +125,24 @@ const createPersonalization = ({ config, logger, eventManager }) => {
           mergeQuery(event, { enabled: false });
           return;
         }
+        const hasScopes = scopes.length > 0;
+        const queryDetails = {};
 
         // For viewStart we try to hide the personalization containers
         if (isViewStart) {
           hideContainers(prehidingStyle);
         }
 
-        const hasScopes = scopes.length > 0;
-
         if (isViewStart || hasScopes) {
           event.expectResponse();
+          queryDetails.accepts = ALL_SCHEMAS;
         }
 
         if (hasScopes) {
-          mergeQuery(event, { scopes });
+          queryDetails.scopes = scopes;
         }
+
+        mergeQuery(event, queryDetails);
       },
       onResponse({ response }) {
         if (authoringModeEnabled) {
