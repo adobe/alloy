@@ -30,7 +30,5 @@ export default () => ({
   orgId: string()
     .unique()
     .required(),
-  onBeforeEventSend: callback().default(noop),
-  datasetId: string().nonEmpty(),
-  schemaId: string().nonEmpty()
+  onBeforeEventSend: callback().default(noop)
 });

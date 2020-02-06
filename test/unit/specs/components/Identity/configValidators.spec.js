@@ -19,12 +19,6 @@ describe("Identity config validators", () => {
     validConfigurations: [
       {},
       {
-        idSyncEnabled: true
-      },
-      {
-        idSyncContainerId: 42
-      },
-      {
         thirdPartyCookiesEnabled: false
       },
       {
@@ -33,12 +27,6 @@ describe("Identity config validators", () => {
     ],
     invalidConfigurations: [
       {
-        idSyncEnabled: "false"
-      },
-      {
-        idSyncContainerId: "adobe"
-      },
-      {
         thirdPartyCookiesEnabled: 42
       },
       {
@@ -46,8 +34,6 @@ describe("Identity config validators", () => {
       }
     ],
     defaultValues: {
-      idSyncEnabled: undefined,
-      idSyncContainerId: undefined,
       thirdPartyCookiesEnabled: true,
       idMigrationEnabled: true
     }

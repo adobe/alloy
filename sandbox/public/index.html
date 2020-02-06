@@ -52,8 +52,6 @@
       alloy("configure", {
         // edgeDomain: "konductor.int.gslb.eegw.adobedc.net",
         // optInEnabled: true,
-        // urlDestinationsEnabled: true,
-        // cookieDestinationsEnabled: false,
         // errorsEnabled: false,
         // thirdPartyCookiesEnabled: false,
         edgeDomain:
@@ -64,7 +62,6 @@
         orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
         debugEnabled: true,
         prehidingStyle: ".personalization-container { opacity: 0 !important }",
-        idSyncContainerId: 81,
         idMigrationEnabled: true,
         onBeforeEventSend: function(options) {
           const xdm = options.xdm;
@@ -77,10 +74,7 @@
           if (campaignParam) {
             data.campaign = campaignParam;
           }
-        },
-        datasetId: "5db865ad86c04218a91f2185",
-        schemaId:
-          "https://ns.adobe.com/atag/schemas/ec93478f46500c25dc13dc1141091fdb"
+        }
       });
 
       alloy("event", {

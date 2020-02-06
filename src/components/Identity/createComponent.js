@@ -98,26 +98,12 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
 
   return {
     lifecycle: {
-      onBeforeEvent({ event, payload }) {
+      onBeforeEvent({ event }) {
         event.mergeQuery({
           identity: {
             fetch: [ecidNamespace]
           }
         });
-
-        const configOverrides = {};
-
-        if (config.idSyncEnabled !== undefined) {
-          configOverrides.idSyncEnabled = config.idSyncEnabled;
-        }
-
-        if (config.idSyncContainerId !== undefined) {
-          configOverrides.idSyncContainerId = config.idSyncContainerId;
-        }
-
-        if (Object.keys(configOverrides).length) {
-          payload.mergeConfigOverrides({ identity: configOverrides });
-        }
       },
       onBeforeDataCollectionRequest({ payload }) {
         return accommodateIdentityOnRequest(payload);
