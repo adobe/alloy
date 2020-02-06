@@ -18,12 +18,14 @@ import booleanValidator from "./booleanValidator";
 import callbackValidator from "./callbackValidator";
 import createArrayOfValidator from "./createArrayOfValidator";
 import createDefaultValidator from "./createDefaultValidator";
+import createLiteralValidator from "./createLiteralValidator";
 import createMinimumValidator from "./createMinimumValidator";
+import createNonEmptyValidator from "./createNonEmptyValidator";
 import createObjectOfValidator from "./createObjectOfValidator";
+import createOrValidator from "./createOrValidator";
 import createUniqueValidator from "./createUniqueValidator";
 import domainValidator from "./domainValidator";
 import integerValidator from "./integerValidator";
-import nonEmptyValidator from "./nonEmptyValidator";
 import numberValidator from "./numberValidator";
 import regexpValidator from "./regexpValidator";
 import requiredValidator from "./requiredValidator";
@@ -54,8 +56,14 @@ const minimumNumber = function minimumNumber(minValue) {
 const integer = function integer() {
   return nullSafeChain(this, integerValidator, { minimum: minimumInteger });
 };
-const nonEmpty = function nonEmpty() {
-  return nullSafeChain(this, nonEmptyValidator);
+const nonEmptyString = function nonEmptyString() {
+  return nullSafeChain(this, createNonEmptyValidator("a non-empty string"));
+};
+const nonEmptyArray = function nonEmptyArray() {
+  return nullSafeChain(this, createNonEmptyValidator("a non-empty array"));
+};
+const or = function or(validators, message) {
+  return nullSafeChain(this, createOrValidator(validators, message));
 };
 const regexp = function regexp() {
   return nullSafeChain(this, regexpValidator);
@@ -66,13 +74,18 @@ const unique = function createUnique() {
 
 // data-type validators.  These are the first functions that are called to create a validator.
 const arrayOf = function arrayOf(elementValidator) {
-  return nullSafeChain(this, createArrayOfValidator(elementValidator));
+  return nullSafeChain(this, createArrayOfValidator(elementValidator), {
+    nonEmpty: nonEmptyArray
+  });
 };
 const boolean = function boolean() {
   return nullSafeChain(this, booleanValidator);
 };
 const callback = function callback() {
   return nullSafeChain(this, callbackValidator);
+};
+const literal = function literal(literalValue) {
+  return nullSafeChain(this, createLiteralValidator(literalValue));
 };
 const number = function number() {
   return nullSafeChain(this, numberValidator, {
@@ -82,13 +95,13 @@ const number = function number() {
   });
 };
 const objectOf = function objectOf(schema) {
-  return nullSafeChain(this, createObjectOfValidator(schema));
+  return nullSafeChain(this, createObjectOfValidator(schema), { or });
 };
 const string = function string() {
   return nullSafeChain(this, stringValidator, {
     regexp,
     domain,
-    nonEmpty,
+    nonEmpty: nonEmptyString,
     unique
   });
 };
@@ -96,6 +109,7 @@ const string = function string() {
 const boundArrayOf = arrayOf.bind(base);
 const boundBoolean = boolean.bind(base);
 const boundCallback = callback.bind(base);
+const boundLiteral = literal.bind(base);
 const boundNumber = number.bind(base);
 const boundObjectOf = objectOf.bind(base);
 const boundString = string.bind(base);
@@ -104,6 +118,7 @@ export {
   boundArrayOf as arrayOf,
   boundBoolean as boolean,
   boundCallback as callback,
+  boundLiteral as literal,
   boundNumber as number,
   boundObjectOf as objectOf,
   boundString as string
