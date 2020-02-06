@@ -10,23 +10,58 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray } from "../../utils";
-import { string } from "../../utils/validation";
+import { isNonEmptyArray, groupBy } from "../../utils";
+import { string, boolean, arrayOf, objectOf } from "../../utils/validation";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
 import collectClicks from "./helper/clicks/collectClicks";
 
 const DECISIONS_HANDLE = "personalization:decisions";
-
+const PAGE_WIDE_SCOPE = "page_wide_scope";
+const GET_DECISIONS_OPTIONS_SCHEMA = {
+  viewStart: boolean().default(false),
+  scopes: arrayOf(string()).default([])
+};
 // This is used for Target VEC integration
 const isAuthoringMode = () => document.location.href.indexOf("mboxEdit") !== -1;
 const mergeMeta = (event, meta) => {
   event.mergeMeta({ personalization: { ...meta } });
 };
 
-const executeFragments = (fragments, modules, logger) => {
-  fragments.forEach(fragment => {
-    const { rules = [] } = fragment;
+const mergeQuery = (event, details) => {
+  event.mergeQuery({ personalization: { ...details } });
+};
+
+const storeDecisions = (storage, decisions) => {
+  if (!decisions) {
+    return;
+  }
+
+  const filteredDecisions = groupBy(
+    decisions,
+    decision => decision.scope || PAGE_WIDE_SCOPE
+  );
+
+  Object.keys(filteredDecisions).forEach(scope => {
+    storage[scope] = filteredDecisions[scope];
+  });
+};
+
+const filterDecisions = (storage, scopes) => {
+  const decisions = [];
+
+  scopes.forEach(s => {
+    if (storage[s]) {
+      decisions.push(...storage[s]);
+    }
+  });
+
+  return decisions;
+};
+
+const executeDecisions = (decisions, modules, logger) => {
+  decisions.forEach(decision => {
+    const { rules = [] } = decision;
 
     if (isNonEmptyArray(rules)) {
       executeRules(rules, modules, logger);
@@ -44,34 +79,49 @@ const createCollect = eventManager => {
   };
 };
 
+const validateOptions = options => {
+  const validate = objectOf(GET_DECISIONS_OPTIONS_SCHEMA);
+  const result = validate(options);
+  const { viewStart, scopes } = result;
+
+  if (!viewStart && scopes.length === 0) {
+    throw new Error(
+      "Invalid getDecisions command options parameter: " +
+        "'viewStart' must be set to true or scopes must be defined."
+    );
+  }
+
+  return result;
+};
+
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { prehidingStyle } = config;
   const authoringModeEnabled = isAuthoringMode();
   const collect = createCollect(eventManager);
   const storage = [];
+  const decisionsStorage = {};
   const store = value => storage.push(value);
   const ruleComponentModules = initRuleComponentModules(collect, store);
-  const disablePersonalization = payload => {
-    payload.mergeConfigOverrides({ personalization: { enabled: false } });
-  };
 
   return {
     lifecycle: {
-      onBeforeEvent({ event, isViewStart, payload }) {
+      onBeforeEvent({ event, isViewStart, scopes }) {
         if (authoringModeEnabled) {
           logger.warn("Rendering is disabled, authoring mode.");
-          disablePersonalization(payload);
+
+          // If we are in authoring mode we disable personalization
+          mergeQuery(event, { enabled: false });
           return;
         }
 
-        if (!isViewStart) {
-          // If NOT isViewStart disable personalization
-          disablePersonalization(payload);
-        } else {
-          event.expectResponse();
-
-          // For viewStart we try to hide the personalization containers
+        // For viewStart we try to hide the personalization containers
+        if (isViewStart) {
           hideContainers(prehidingStyle);
+        }
+
+        if (isViewStart || scopes) {
+          event.expectResponse();
+          mergeQuery(event, { scopes });
         }
       },
       onResponse({ response }) {
@@ -79,11 +129,13 @@ const createPersonalization = ({ config, logger, eventManager }) => {
           return;
         }
 
-        const fragments = response.getPayloadsByType(DECISIONS_HANDLE);
+        const decisions = response.getPayloadsByType(DECISIONS_HANDLE);
 
-        executeFragments(fragments, ruleComponentModules, logger);
+        executeDecisions(decisions, ruleComponentModules, logger);
 
         showContainers();
+
+        storeDecisions(decisionsStorage, decisions);
       },
       onRequestFailure() {
         showContainers();
@@ -92,6 +144,20 @@ const createPersonalization = ({ config, logger, eventManager }) => {
         const merger = meta => mergeMeta(event, meta);
 
         collectClicks(merger, clickedElement, storage);
+      }
+    },
+
+    commands: {
+      getDecisions(options = {}) {
+        const { viewStart, scopes } = validateOptions(options);
+        // Cloning scopes to avoid changing input options
+        const localScopes = [...scopes];
+
+        if (viewStart) {
+          localScopes.push(PAGE_WIDE_SCOPE);
+        }
+
+        return filterDecisions(decisionsStorage, localScopes);
       }
     }
   };
