@@ -49,7 +49,9 @@ describe("Personalization", () => {
       logger,
       eventManager
     });
+
     personalization.lifecycle.onBeforeEvent({ event, isViewStart, payload });
+
     expect(event.expectResponse).toHaveBeenCalled();
   });
 
@@ -60,13 +62,14 @@ describe("Personalization", () => {
       logger,
       eventManager
     });
+
     personalization.lifecycle.onBeforeEvent({ event, isViewStart, payload });
+
     expect(event.expectResponse).not.toHaveBeenCalled();
   });
 
   it("expects getDecisions to return empty array when there are no decisions in storage for page wide scope", () => {
     const isViewStart = true;
-
     const response = {
       getPayloadsByType() {
         return SCOPES_FOO1_FOO2_DECISIONS;
@@ -77,7 +80,7 @@ describe("Personalization", () => {
       logger,
       eventManager
     });
-    personalization.lifecycle.onBeforeEvent({ event, isViewStart });
+
     personalization.lifecycle.onResponse({ response });
 
     const result = personalization.commands.getDecisions({
@@ -88,9 +91,7 @@ describe("Personalization", () => {
   });
 
   it("expects getDecisions to return an array of decisions for the scopes provided", () => {
-    const isViewStart = true;
     const scopes = ["Foo1", "Foo3"];
-
     const response = {
       getPayloadsByType() {
         return SCOPES_FOO1_FOO2_DECISIONS;
@@ -101,7 +102,7 @@ describe("Personalization", () => {
       logger,
       eventManager
     });
-    personalization.lifecycle.onBeforeEvent({ event, isViewStart, scopes });
+
     personalization.lifecycle.onResponse({ response });
 
     const result = personalization.commands.getDecisions({ scopes });
@@ -111,15 +112,14 @@ describe("Personalization", () => {
   });
 
   it("expects getDecisions to return decisions for multiple scopes when storage is not overwritten by latest response", () => {
-    const isViewStart = true;
     const scopes = ["Foo1", "Foo3"];
 
-    const responseFirstEvent = {
+    const first = {
       getPayloadsByType() {
         return SCOPES_FOO1_FOO3_DECISIONS;
       }
     };
-    const responseSecondEvent = {
+    const second = {
       getPayloadsByType() {
         return SCOPES_FOO4_FOO5_DECISIONS;
       }
@@ -129,9 +129,8 @@ describe("Personalization", () => {
       logger,
       eventManager
     });
-    personalization.lifecycle.onBeforeEvent({ event, isViewStart, scopes });
-    personalization.lifecycle.onResponse({ response: responseFirstEvent });
-    personalization.lifecycle.onResponse({ response: responseSecondEvent });
+    personalization.lifecycle.onResponse({ response: first });
+    personalization.lifecycle.onResponse({ response: second });
 
     const result = personalization.commands.getDecisions({ scopes });
 
@@ -140,15 +139,13 @@ describe("Personalization", () => {
   });
 
   it("expects getDecisions to return the most recent decision for the scope that was overwritten by the last response", () => {
-    const isViewStart = true;
     const scopes = ["Foo1"];
-
-    const responseFirstEvent = {
+    const first = {
       getPayloadsByType() {
         return SCOPES_FOO1_FOO2_DECISIONS;
       }
     };
-    const responseSecondEvent = {
+    const second = {
       getPayloadsByType() {
         return SCOPES_FOO1_FOO3_DECISIONS;
       }
@@ -158,9 +155,9 @@ describe("Personalization", () => {
       logger,
       eventManager
     });
-    personalization.lifecycle.onBeforeEvent({ event, isViewStart, scopes });
-    personalization.lifecycle.onResponse({ response: responseFirstEvent });
-    personalization.lifecycle.onResponse({ response: responseSecondEvent });
+
+    personalization.lifecycle.onResponse({ response: first });
+    personalization.lifecycle.onResponse({ response: second });
 
     const result = personalization.commands.getDecisions({ scopes });
 
@@ -171,9 +168,7 @@ describe("Personalization", () => {
   });
 
   it("expects getDecisions to return empty array when there are no decisions for that specific scope in the storage", () => {
-    const isViewStart = true;
     const scopes = ["Foo1", "Foo3"];
-
     const response = {
       getPayloadsByType() {
         return NO_SCOPES_DECISIONS;
@@ -184,7 +179,6 @@ describe("Personalization", () => {
       logger,
       eventManager
     });
-    personalization.lifecycle.onBeforeEvent({ event, isViewStart, scopes });
     personalization.lifecycle.onResponse({ response });
     const result = personalization.commands.getDecisions({ scopes });
 
@@ -194,13 +188,12 @@ describe("Personalization", () => {
 
   it("expects getDecisions to return only the page wide scope decisions when only parameter viewStart is passed", () => {
     const isViewStart = true;
-
-    const response = {
+    const first = {
       getPayloadsByType() {
         return NO_SCOPES_DECISIONS;
       }
     };
-    const responseSecondEvent = {
+    const second = {
       getPayloadsByType() {
         return SCOPES_FOO1_FOO3_DECISIONS;
       }
@@ -210,11 +203,12 @@ describe("Personalization", () => {
       logger,
       eventManager
     });
-    personalization.lifecycle.onBeforeEvent({ event, isViewStart });
-    personalization.lifecycle.onResponse({ response });
-    personalization.lifecycle.onResponse({ response: responseSecondEvent });
+    personalization.lifecycle.onResponse({ response: first });
+    personalization.lifecycle.onResponse({ response: second });
 
-    const result = personalization.commands.getDecisions({ viewStart: true });
+    const result = personalization.commands.getDecisions({
+      viewStart: isViewStart
+    });
 
     expect(Array.isArray(result)).toBeTrue();
     expect(result.length).toEqual(1);
@@ -224,13 +218,12 @@ describe("Personalization", () => {
   it("expects getDecisions to return page wide scope and specific scopes decisions when parameter viewStart and scopes is passed", () => {
     const isViewStart = true;
     const scopes = ["Foo1", "Foo3"];
-
-    const response = {
+    const first = {
       getPayloadsByType() {
         return NO_SCOPES_DECISIONS;
       }
     };
-    const responseSecondEvent = {
+    const second = {
       getPayloadsByType() {
         return SCOPES_FOO1_FOO3_DECISIONS;
       }
@@ -240,12 +233,11 @@ describe("Personalization", () => {
       logger,
       eventManager
     });
-    personalization.lifecycle.onBeforeEvent({ event, isViewStart, scopes });
-    personalization.lifecycle.onResponse({ response });
-    personalization.lifecycle.onResponse({ response: responseSecondEvent });
+    personalization.lifecycle.onResponse({ response: first });
+    personalization.lifecycle.onResponse({ response: second });
 
     const result = personalization.commands.getDecisions({
-      viewStart: true,
+      viewStart: isViewStart,
       scopes
     });
 
@@ -254,7 +246,6 @@ describe("Personalization", () => {
   });
 
   it("expects getDecisions to return empty array if the storage is empty", () => {
-    const isViewStart = true;
     const scopes = ["Foo1", "Foo3"];
 
     const response = {
@@ -267,8 +258,9 @@ describe("Personalization", () => {
       logger,
       eventManager
     });
-    personalization.lifecycle.onBeforeEvent({ event, isViewStart, scopes });
+
     personalization.lifecycle.onResponse({ response });
+
     const result = personalization.commands.getDecisions({ scopes });
 
     expect(Array.isArray(result)).toBeTrue();
@@ -276,15 +268,13 @@ describe("Personalization", () => {
   });
 
   it("expects getDecisions to return all decisions for a specific scope stored during multiple responses", () => {
-    const isViewStart = true;
     const scopes = ["Foo5"];
-
-    const response = {
+    const first = {
       getPayloadsByType() {
         return NO_SCOPES_DECISIONS;
       }
     };
-    const responseSecondEvent = {
+    const second = {
       getPayloadsByType() {
         return SAME_SCOPE_MULTIPLE_DECISIONS;
       }
@@ -294,9 +284,9 @@ describe("Personalization", () => {
       logger,
       eventManager
     });
-    personalization.lifecycle.onBeforeEvent({ event, isViewStart, scopes });
-    personalization.lifecycle.onResponse({ response });
-    personalization.lifecycle.onResponse({ response: responseSecondEvent });
+
+    personalization.lifecycle.onResponse({ response: first });
+    personalization.lifecycle.onResponse({ response: second });
 
     const result = personalization.commands.getDecisions({ scopes });
 
@@ -304,5 +294,15 @@ describe("Personalization", () => {
     expect(result.length).toEqual(2);
     expect(result[0].id).toEqual("TNT:ABC:A4");
     expect(result[1].id).toEqual("TNT:ABC:A5");
+  });
+
+  it("expects getDecisions to throw an error when options is missing", () => {
+    const personalization = createPersonalization({
+      config,
+      logger,
+      eventManager
+    });
+
+    expect(() => personalization.commands.getDecisions()).toThrow();
   });
 });

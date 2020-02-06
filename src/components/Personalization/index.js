@@ -81,13 +81,17 @@ const createCollect = eventManager => {
 
 const validateOptions = options => {
   const validate = objectOf(GET_DECISIONS_OPTIONS_SCHEMA);
-  const { viewStart, scopes } = validate(options);
+  const result = validate(options);
+  const { viewStart, scopes } = result;
 
-  if (viewStart == null && scopes.length === 0) {
+  if (!viewStart && scopes.length === 0) {
     throw new Error(
-      "Invalid getDecisions command options parameter. Please consult the documentation."
+      "Invalid getDecisions command options parameter: " +
+        "'viewStart' must be set to true or scopes must be defined."
     );
   }
+
+  return result;
 };
 
 const createPersonalization = ({ config, logger, eventManager }) => {
@@ -145,15 +149,15 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
     commands: {
       getDecisions(options = {}) {
-        validateOptions(options);
-
-        const { viewStart, scopes = [] } = options;
+        const { viewStart, scopes } = validateOptions(options);
+        // Cloning scopes to avoid changing input options
+        const localScopes = [...scopes];
 
         if (viewStart) {
-          scopes.push(PAGE_WIDE_SCOPE);
+          localScopes.push(PAGE_WIDE_SCOPE);
         }
 
-        return filterDecisions(decisionsStorage, scopes);
+        return filterDecisions(decisionsStorage, localScopes);
       }
     }
   };

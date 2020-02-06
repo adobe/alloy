@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 /**
  * Group an array by a key getter provided
  * @param {Array} arr Array to iterate over.
- * @param {*} keyGetter The key getter by which to group.
+ * @param {Function} keyGetter The key getter by which to group.
  * @returns {Object}
  */
 export default (arr, keyGetter) => {
