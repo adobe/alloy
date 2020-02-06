@@ -62,7 +62,8 @@ describe("Event Command", () => {
       expect(event.setUserXdm).toHaveBeenCalledWith(xdm);
       expect(event.setUserData).toHaveBeenCalledWith(data);
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
-        isViewStart: true
+        isViewStart: true,
+        scopes: []
       });
       expect(result).toEqual("sendEventResult");
     });
@@ -77,7 +78,8 @@ describe("Event Command", () => {
   it("sets isViewStart to false if viewStart is not defined", () => {
     return eventCommand({}).then(() => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
-        isViewStart: false
+        isViewStart: false,
+        scopes: []
       });
     });
   });

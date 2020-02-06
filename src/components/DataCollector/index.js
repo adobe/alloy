@@ -33,7 +33,8 @@ const createDataCollector = ({ eventManager, logger }) => {
           viewStart = false,
           documentUnloading = false,
           type,
-          mergeId
+          mergeId,
+          scopes = []
         } = options;
         const event = eventManager.createEvent();
 
@@ -57,7 +58,8 @@ const createDataCollector = ({ eventManager, logger }) => {
         event.setUserData(data);
 
         return eventManager.sendEvent(event, {
-          isViewStart: viewStart
+          isViewStart: viewStart,
+          scopes
         });
       }
     }

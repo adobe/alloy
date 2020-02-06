@@ -105,7 +105,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
   return {
     lifecycle: {
-      onBeforeEvent({ event, isViewStart, scopes }) {
+      onBeforeEvent({ event, isViewStart, scopes = [] }) {
         if (authoringModeEnabled) {
           logger.warn("Rendering is disabled, authoring mode.");
 
@@ -119,8 +119,13 @@ const createPersonalization = ({ config, logger, eventManager }) => {
           hideContainers(prehidingStyle);
         }
 
-        if (isViewStart || scopes) {
+        const hasScopes = scopes.length > 0;
+
+        if (isViewStart || hasScopes) {
           event.expectResponse();
+        }
+
+        if (hasScopes) {
           mergeQuery(event, { scopes });
         }
       },
