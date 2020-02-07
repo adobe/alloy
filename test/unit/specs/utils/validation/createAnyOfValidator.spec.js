@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import {
+  anyOf,
   objectOf,
   boolean,
   arrayOf,
@@ -19,25 +20,24 @@ import {
 } from "../../../../../src/utils/validation";
 import describeValidation from "./describeValidation";
 
-describe("validation:or", () => {
+describe("validation:anyOf", () => {
   describeValidation(
     "require one or the other",
-    objectOf({
-      viewStart: boolean(),
-      scopes: arrayOf(string()).nonEmpty()
-    })
-      .required()
-      .or(
-        [
-          objectOf({ viewStart: literal(true).required() }),
-          objectOf({
-            scopes: arrayOf(string())
-              .nonEmpty()
-              .required()
-          })
-        ],
-        "either viewStart set to true or scopes set to a nonEmpty array"
-      ),
+    anyOf(
+      [
+        objectOf({
+          viewStart: literal(true).required(),
+          scopes: arrayOf(string())
+        }).required(),
+        objectOf({
+          viewStart: boolean(),
+          scopes: arrayOf(string())
+            .nonEmpty()
+            .required()
+        }).required()
+      ],
+      "either viewStart set to true or scopes set to a nonEmpty array"
+    ),
     [
       { value: undefined, error: true },
       { value: null, error: true },
@@ -48,7 +48,9 @@ describe("validation:or", () => {
       { value: { scopes: [] }, error: true },
       { value: { scopes: ["a"] }, error: false },
       { value: { scopes: "bar" }, error: true },
-      { value: { viewStart: true, scopes: ["a", "b"] }, error: false }
+      { value: { viewStart: true, scopes: ["a", "b"] }, error: false },
+      { value: { viewStart: true, scopes: "foo" }, error: true },
+      { value: { viewStart: "foo", scopes: ["a"] }, error: true }
     ]
   );
 });

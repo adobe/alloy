@@ -22,7 +22,7 @@ import createLiteralValidator from "./createLiteralValidator";
 import createMinimumValidator from "./createMinimumValidator";
 import createNonEmptyValidator from "./createNonEmptyValidator";
 import createObjectOfValidator from "./createObjectOfValidator";
-import createOrValidator from "./createOrValidator";
+import createAnyOfValidator from "./createAnyOfValidator";
 import createUniqueValidator from "./createUniqueValidator";
 import domainValidator from "./domainValidator";
 import integerValidator from "./integerValidator";
@@ -62,9 +62,6 @@ const nonEmptyString = function nonEmptyString() {
 const nonEmptyArray = function nonEmptyArray() {
   return nullSafeChain(this, createNonEmptyValidator("a non-empty array"));
 };
-const or = function or(validators, message) {
-  return nullSafeChain(this, createOrValidator(validators, message));
-};
 const regexp = function regexp() {
   return nullSafeChain(this, regexpValidator);
 };
@@ -72,7 +69,12 @@ const unique = function createUnique() {
   return nullSafeChain(this, createUniqueValidator());
 };
 
-// data-type validators.  These are the first functions that are called to create a validator.
+// top-level validators.  These are the first functions that are called to create a validator.
+const anyOf = function anyOf(validators, message) {
+  // use chain here because we don't want to accept null or undefined unless at least
+  // one of the validators accept null or undefined.
+  return chain(this, createAnyOfValidator(validators, message));
+};
 const arrayOf = function arrayOf(elementValidator) {
   return nullSafeChain(this, createArrayOfValidator(elementValidator), {
     nonEmpty: nonEmptyArray
@@ -95,7 +97,7 @@ const number = function number() {
   });
 };
 const objectOf = function objectOf(schema) {
-  return nullSafeChain(this, createObjectOfValidator(schema), { or });
+  return nullSafeChain(this, createObjectOfValidator(schema));
 };
 const string = function string() {
   return nullSafeChain(this, stringValidator, {
@@ -106,6 +108,7 @@ const string = function string() {
   });
 };
 
+const boundAnyOf = anyOf.bind(base);
 const boundArrayOf = arrayOf.bind(base);
 const boundBoolean = boolean.bind(base);
 const boundCallback = callback.bind(base);
@@ -115,6 +118,7 @@ const boundObjectOf = objectOf.bind(base);
 const boundString = string.bind(base);
 
 export {
+  boundAnyOf as anyOf,
   boundArrayOf as arrayOf,
   boundBoolean as boolean,
   boundCallback as callback,
