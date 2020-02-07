@@ -10,17 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray, groupBy } from "../../utils";
+import { isNonEmptyArray, groupBy, values } from "../../utils";
 import { string, boolean, arrayOf, objectOf } from "../../utils/validation";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
 import collectClicks from "./helper/clicks/collectClicks";
-import {
-  DOM_ACTION,
-  HTML_CONTENT_ITEM,
-  JSON_CONTENT_ITEM,
-  REDIRECT_ITEM
-} from "../../constants/schemas";
+import * as schemasEnum from "../../constants/schemas";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 const PAGE_WIDE_SCOPE = "page_wide_scope";
@@ -28,12 +23,7 @@ const GET_DECISIONS_OPTIONS_SCHEMA = {
   viewStart: boolean().default(false),
   scopes: arrayOf(string()).default([])
 };
-const ALL_SCHEMAS = [
-  DOM_ACTION,
-  HTML_CONTENT_ITEM,
-  JSON_CONTENT_ITEM,
-  REDIRECT_ITEM
-];
+const allSchemas = values(schemasEnum);
 // This is used for Target VEC integration
 const isAuthoringMode = () => document.location.href.indexOf("mboxEdit") !== -1;
 const mergeMeta = (event, meta) => {
@@ -135,7 +125,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
         if (isViewStart || hasScopes) {
           event.expectResponse();
-          queryDetails.accepts = ALL_SCHEMAS;
+          queryDetails.accepts = allSchemas;
         }
 
         if (hasScopes) {

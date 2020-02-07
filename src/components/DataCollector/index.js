@@ -57,8 +57,9 @@ const createDataCollector = ({ eventManager, logger }) => {
         event.setUserXdm(xdm);
         event.setUserData(data);
 
-        const details = {};
-        details.isViewStart = viewStart;
+        const details = {
+          isViewStart: viewStart
+        };
 
         if (scopes.length > 0) {
           details.scopes = scopes;

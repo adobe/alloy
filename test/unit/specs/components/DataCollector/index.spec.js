@@ -69,21 +69,12 @@ describe("Event Command", () => {
   });
 
   it("sends event with scopes parameter when scopes is not empty", () => {
-    const xdm = { a: "b" };
-    const data = { c: "d" };
     const options = {
       viewStart: true,
-      type: "test",
-      xdm,
-      data,
-      documentUnloading: true,
       scopes: ["Foo1", "Foo2"]
     };
 
     return eventCommand(options).then(result => {
-      expect(event.documentMayUnload).toHaveBeenCalled();
-      expect(event.setUserXdm).toHaveBeenCalledWith(xdm);
-      expect(event.setUserData).toHaveBeenCalledWith(data);
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         isViewStart: true,
         scopes: ["Foo1", "Foo2"]
@@ -93,21 +84,12 @@ describe("Event Command", () => {
   });
 
   it("sends event without scopes parameter when scopes is empty", () => {
-    const xdm = { a: "b" };
-    const data = { c: "d" };
     const options = {
       viewStart: true,
-      type: "test",
-      xdm,
-      data,
-      documentUnloading: true,
       scopes: []
     };
 
     return eventCommand(options).then(result => {
-      expect(event.documentMayUnload).toHaveBeenCalled();
-      expect(event.setUserXdm).toHaveBeenCalledWith(xdm);
-      expect(event.setUserData).toHaveBeenCalledWith(data);
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         isViewStart: true
       });
