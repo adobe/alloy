@@ -17,7 +17,7 @@ import { hideContainers, showContainers } from "./flicker";
 import collectClicks from "./helper/clicks/collectClicks";
 import {
   DOM_ACTION,
-  HTML_ITEM_CONTENT,
+  HTML_CONTENT_ITEM,
   JSON_CONTENT_ITEM,
   REDIRECT_ITEM
 } from "../../constants/schemas";
@@ -30,7 +30,7 @@ const GET_DECISIONS_OPTIONS_SCHEMA = {
 };
 const ALL_SCHEMAS = [
   DOM_ACTION,
-  HTML_ITEM_CONTENT,
+  HTML_CONTENT_ITEM,
   JSON_CONTENT_ITEM,
   REDIRECT_ITEM
 ];
