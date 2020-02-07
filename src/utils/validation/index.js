@@ -120,8 +120,8 @@ const boundString = string.bind(base);
 // compound validators
 const boundEnumOf = function boundEnumOf(...values) {
   return boundAnyOf(
-    values.map(value => boundLiteral(value)),
-    `one of these values: ${JSON.stringify(values)}`
+    values.map(boundLiteral),
+    `one of these values: [${Array.prototype.toString.call(values)}]`
   );
 };
 
