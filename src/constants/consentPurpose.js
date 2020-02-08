@@ -10,6 +10,5 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export const IN = "in";
-export const OUT = "out";
-export const PENDING = "pending";
+// eslint-disable-next-line import/prefer-default-export
+export const GENERAL = "general";

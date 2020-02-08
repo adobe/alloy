@@ -104,7 +104,6 @@ if (instanceNamespaces) {
         processWarningsAndErrors
       });
       const awaitConsent = awaitConsentFactory({
-        config,
         consentState,
         logger
       });

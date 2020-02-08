@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import createConsentState from "../../../../../src/core/consent/createConsentState";
 import { cookieJar } from "../../../../../src/utils";
+import { IN, PENDING } from "../../../../../src/constants/consentStatus";
 
 describe("createConsentState", () => {
   const consentCookieName = "kndctr_ABC_Adobe_consent";
@@ -20,7 +21,8 @@ describe("createConsentState", () => {
   beforeEach(() => {
     cookieJar.remove(consentCookieName);
     config = {
-      orgId: "ABC@Adobe"
+      orgId: "ABC@Adobe",
+      defaultConsent: PENDING
     };
   });
 
@@ -30,20 +32,26 @@ describe("createConsentState", () => {
       expect(consentState.isPending()).toBeTrue();
     });
 
-    it("returns false if consent cookie has all purposes set to true", () => {
-      cookieJar.set(consentCookieName, "tracking=in;personalization=in");
+    it("returns false if consent cookie is not set and default consent is set to IN", () => {
+      config.defaultConsent = IN;
       const consentState = createConsentState({ config });
       expect(consentState.isPending()).toBeFalse();
     });
 
-    it("returns false if the consent cookie has all purposes set to false", () => {
-      cookieJar.set(consentCookieName, "tracking=out;personalization=out");
+    it("returns false if consent cookie has GENERAL purpose set to IN", () => {
+      cookieJar.set(consentCookieName, "general=in");
+      const consentState = createConsentState({ config });
+      expect(consentState.isPending()).toBeFalse();
+    });
+
+    it("returns false if the consent cookie has GENERAL purpose set to OUT", () => {
+      cookieJar.set(consentCookieName, "general=out");
       const consentState = createConsentState({ config });
       expect(consentState.isPending()).toBeFalse();
     });
 
     it("returns true if suspended", () => {
-      cookieJar.set(consentCookieName, "tracking=in;personalization=in");
+      cookieJar.set(consentCookieName, "general=in");
       const consentState = createConsentState({ config });
       consentState.suspend();
       expect(consentState.isPending()).toBeTrue();
@@ -52,14 +60,14 @@ describe("createConsentState", () => {
     it("reflects updated cookie after unsuspend is called", () => {
       const consentState = createConsentState({ config });
       consentState.suspend();
-      cookieJar.set(consentCookieName, "tracking=in;personalization=in");
+      cookieJar.set(consentCookieName, "general=in");
       consentState.unsuspend();
       expect(consentState.isPending()).toBeFalse();
     });
 
     it("reflects updated cookie after updateFromCookies is called if unsuspended", () => {
       const consentState = createConsentState({ config });
-      cookieJar.set(consentCookieName, "tracking=in;personalization=in");
+      cookieJar.set(consentCookieName, "general=in");
       consentState.updateFromCookies();
       expect(consentState.isPending()).toBeFalse();
     });
@@ -67,7 +75,7 @@ describe("createConsentState", () => {
     it("does not reflect updated cookie after updateFromCookies is called if suspended", () => {
       const consentState = createConsentState({ config });
       consentState.suspend();
-      cookieJar.set(consentCookieName, "tracking=in;personalization=in");
+      cookieJar.set(consentCookieName, "general=in");
       consentState.updateFromCookies();
       expect(consentState.isPending()).toBeTrue();
     });
@@ -79,20 +87,20 @@ describe("createConsentState", () => {
       expect(consentState.hasConsentedToAllPurposes()).toBeFalse();
     });
 
-    it('returns true if consent cookie has all purposes set to "in"', () => {
-      cookieJar.set(consentCookieName, "tracking=in;personalization=in");
+    it("returns true if consent cookie has GENERAL purpose set to IN", () => {
+      cookieJar.set(consentCookieName, "general=in");
       const consentState = createConsentState({ config });
       expect(consentState.hasConsentedToAllPurposes()).toBeTrue();
     });
 
-    it('returns false if consent cookie has any purposes set to "out"', () => {
-      cookieJar.set(consentCookieName, "tracking=in;personalization=out");
+    it("returns false if consent cookie has GENERAL purpose set to OUT", () => {
+      cookieJar.set(consentCookieName, "general=out");
       const consentState = createConsentState({ config });
       expect(consentState.hasConsentedToAllPurposes()).toBeFalse();
     });
 
     it("returns false if suspended", () => {
-      cookieJar.set(consentCookieName, "tracking=in;personalization=in");
+      cookieJar.set(consentCookieName, "general=in");
       const consentState = createConsentState({ config });
       consentState.suspend();
       expect(consentState.hasConsentedToAllPurposes()).toBeFalse();
@@ -101,14 +109,14 @@ describe("createConsentState", () => {
     it("reflects updated cookie after unsuspend is called", () => {
       const consentState = createConsentState({ config });
       consentState.suspend();
-      cookieJar.set(consentCookieName, "tracking=in;personalization=in");
+      cookieJar.set(consentCookieName, "general=in");
       consentState.unsuspend();
       expect(consentState.hasConsentedToAllPurposes()).toBeTrue();
     });
 
     it("reflects updated cookie after updateFromCookies is called if unsuspended", () => {
       const consentState = createConsentState({ config });
-      cookieJar.set(consentCookieName, "tracking=in;personalization=in");
+      cookieJar.set(consentCookieName, "general=in");
       consentState.updateFromCookies();
       expect(consentState.hasConsentedToAllPurposes()).toBeTrue();
     });
@@ -116,7 +124,7 @@ describe("createConsentState", () => {
     it("does not reflect updated cookie after updateFromCookies is called if suspended", () => {
       const consentState = createConsentState({ config });
       consentState.suspend();
-      cookieJar.set(consentCookieName, "tracking=in;personalization=in");
+      cookieJar.set(consentCookieName, "general=in");
       consentState.updateFromCookies();
       expect(consentState.hasConsentedToAllPurposes()).toBeFalse();
     });

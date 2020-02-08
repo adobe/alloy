@@ -10,66 +10,67 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean } from "../../utils/validation";
-import { isString } from "../../utils";
+import { objectOf, string } from "../../utils/validation";
 import { IN, OUT } from "../../constants/consentStatus";
-
-const ALL = "all";
-const NONE = "none";
 
 const CONSENT_HANDLE = "privacy:consent";
 
-const throwInvalidPurposesError = purposes => {
-  throw new Error(
-    `Consent purposes must be "all" or "none". Received: ${purposes}`
-  );
-};
+const validateSetConsentOptions = objectOf({
+  value: string().required()
+});
 
-const createPrivacy = ({ config, consent }) => {
+const createPrivacy = ({ consent }) => {
   return {
     commands: {
-      setConsent({ purposes }) {
-        if (!config.consentEnabled) {
+      setConsent(options) {
+        const { value } = validateSetConsentOptions(options);
+
+        const lowerCaseValue = value.toLowerCase();
+
+        if (lowerCaseValue !== IN && lowerCaseValue !== OUT) {
           throw new Error(
-            "consentEnabled must be set to true before using the setConsent command."
+            `Consent must be ${IN} or ${OUT}. Received: ${value}`
           );
         }
 
-        if (!isString(purposes)) {
-          throwInvalidPurposesError(purposes);
-        }
-
-        const lowerCasePurposes = purposes.toLowerCase();
-
-        if (lowerCasePurposes !== ALL && lowerCasePurposes !== NONE) {
-          throwInvalidPurposesError(purposes);
-        }
-
         return consent.setConsent({
-          general: lowerCasePurposes === ALL ? IN : OUT
+          general: value
         });
       }
     },
     lifecycle: {
       onResponse({ response }) {
+        // Notify consent that a request was complete because the consent
+        // cookie may have changed.
         consent.requestComplete();
         // TODO: Rather that looking for the privacy:consent payload on
         // the response, we should instead get rid of the lifecycle.onResponse
         // lifecycle method and be able to register a response handler from
         // inside lifecycle.onBeforeConsentRequest
-        // Also, what should we do if the consent request fails?
+        // Relevant issue:
+        // https://jira.corp.adobe.com/browse/CORE-40512
         if (response.getPayloadsByType(CONSENT_HANDLE).length) {
           consent.consentRequestComplete();
         }
+      },
+      onRequestFailure() {
+        // Even when we get a failure HTTP status code, the consent cookie can
+        // still get updated. This could happen, for example, if the user is
+        // opted out in AudienceManager, but no consent cookie exists on the
+        // client. The request will be sent and the server will respond with a
+        // 403 Forbidden and a consent cookie.
+        // TODO: We can't determine if onRequestFailure was called due to a
+        // setConsent call failure, because we can't look to see if the response
+        // includes a consent handle like we did in lifecycle.onResponse.
+        // Relevant issues:
+        // https://jira.corp.adobe.com/browse/CORE-40512
+        // https://jira.corp.adobe.com/browse/CORE-40772
+        consent.requestComplete();
       }
     }
   };
 };
 
 createPrivacy.namespace = "Privacy";
-
-createPrivacy.configValidators = {
-  consentEnabled: boolean().default(false)
-};
 
 export default createPrivacy;

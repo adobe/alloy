@@ -14,10 +14,12 @@ import { boolean, string, callback } from "../../utils/validation";
 import { noop } from "../../utils";
 import { EDGE_DOMAIN } from "../../constants/domains";
 import EDGE_BASE_PATH from "../../constants/edgeBasePath";
+import { IN } from "../../constants/consentStatus";
 
 export default () => ({
   errorsEnabled: boolean().default(true),
   debugEnabled: boolean().default(false),
+  defaultConsent: string().default(IN),
   configId: string()
     .unique()
     .required(),

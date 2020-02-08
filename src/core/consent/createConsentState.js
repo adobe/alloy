@@ -12,33 +12,47 @@ governing permissions and limitations under the License.
 import { cookieJar, getNamespacedCookieName, values } from "../../utils";
 import parseConsentCookie from "./parseConsentCookie";
 import { CONSENT_COOKIE_KEY } from "../../constants/cookieDetails";
-import { IN } from "../../constants/consentStatus";
+import { IN, PENDING } from "../../constants/consentStatus";
+import * as consentPurposeEnum from "../../constants/consentPurpose";
+
+const GENERAL = consentPurposeEnum.GENERAL;
+const consentPurposes = values(consentPurposeEnum);
 
 const getPersistedConsent = cookieName => {
   const cookieValue = cookieJar.get(cookieName);
-  if (cookieValue) {
-    return parseConsentCookie(cookieValue);
-  }
-  return undefined;
+  return cookieValue ? parseConsentCookie(cookieValue) : {};
 };
 
 export default ({ config }) => {
-  const { orgId } = config;
+  const { orgId, defaultConsent } = config;
   const consentCookieName = getNamespacedCookieName(orgId, CONSENT_COOKIE_KEY);
   const onChangeHandlers = [];
   let consentByPurpose;
   let suspended = false;
 
-  const setConsentByPurpose = _consentByPurpose => {
-    consentByPurpose = _consentByPurpose;
+  const notifyOnChangeHandlers = () => {
     onChangeHandlers.forEach(onChangeHandler => {
       onChangeHandler();
     });
   };
+
   const updateFromCookies = () => {
     if (!suspended) {
-      setConsentByPurpose(getPersistedConsent(consentCookieName));
+      const persistedConsentByPurpose = getPersistedConsent(consentCookieName);
+      consentByPurpose = consentPurposes.reduce((memo, purpose) => {
+        memo[purpose] = persistedConsentByPurpose[purpose] || defaultConsent;
+        return memo;
+      }, {});
+      notifyOnChangeHandlers();
     }
+  };
+
+  const setToPending = () => {
+    consentByPurpose = consentPurposes.reduce((memo, purpose) => {
+      memo[purpose] = PENDING;
+      return memo;
+    }, {});
+    notifyOnChangeHandlers();
   };
 
   updateFromCookies();
@@ -47,7 +61,7 @@ export default ({ config }) => {
     suspend() {
       if (!suspended) {
         suspended = true;
-        setConsentByPurpose(undefined);
+        setToPending();
       }
     },
     unsuspend() {
@@ -57,17 +71,17 @@ export default ({ config }) => {
       }
     },
     updateFromCookies,
+    // TODO Once we support consenting to specific purposes, this
+    // method will accept an array of purpose names as an argument and
+    // will return whether the user has consented into those purposes.
     isPending() {
-      return consentByPurpose === undefined;
+      return consentByPurpose[GENERAL] === PENDING;
     },
     // TODO Once we support consenting to specific purposes, this
     // method will accept an array of purpose names as an argument and
     // will return whether the user has consented into those purposes.
     hasConsentedToAllPurposes() {
-      return (
-        Boolean(consentByPurpose) &&
-        values(consentByPurpose).every(value => value === IN)
-      );
+      return consentByPurpose[GENERAL] === IN;
     },
     onChange(onChangeHandler) {
       onChangeHandlers.push(onChangeHandler);

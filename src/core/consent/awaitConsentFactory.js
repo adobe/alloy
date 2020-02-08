@@ -14,8 +14,7 @@ import { defer } from "../../utils";
 
 const DECLINED_CONSENT = "The user declined consent.";
 
-export default ({ config, consentState, logger }) => {
-  const { consentEnabled } = config;
+export default ({ consentState, logger }) => {
   const deferreds = [];
 
   const processConsent = () => {
@@ -44,21 +43,18 @@ export default ({ config, consentState, logger }) => {
     }
   };
 
-  if (consentEnabled) {
-    consentState.onChange(processConsent);
+  consentState.onChange(processConsent);
 
-    if (consentState.isPending()) {
-      logger.warn("Some commands may be delayed until the user consents.");
-    } else if (!consentState.hasConsentedToAllPurposes()) {
-      logger.warn(`Some commands may fail. ${DECLINED_CONSENT}`);
-    }
-    return () => {
-      const deferred = defer();
-      deferreds.push(deferred);
-      processConsent();
-      return deferred.promise;
-    };
+  if (consentState.isPending()) {
+    logger.warn("Some commands may be delayed until the user consents.");
+  } else if (!consentState.hasConsentedToAllPurposes()) {
+    logger.warn(`Some commands may fail. ${DECLINED_CONSENT}`);
   }
 
-  return () => Promise.resolve();
+  return () => {
+    const deferred = defer();
+    deferreds.push(deferred);
+    processConsent();
+    return deferred.promise;
+  };
 };

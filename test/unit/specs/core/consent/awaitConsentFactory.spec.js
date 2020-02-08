@@ -14,7 +14,6 @@ import awaitConsentFactory from "../../../../../src/core/consent/awaitConsentFac
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("awaitConsentFactory", () => {
-  let config;
   let consentState;
   let logger;
 
@@ -26,9 +25,6 @@ describe("awaitConsentFactory", () => {
   };
 
   beforeEach(() => {
-    config = {
-      consentEnabled: true
-    };
     consentState = jasmine.createSpyObj("consentState", {
       isPending: true,
       hasConsentedToAllPurposes: false,
@@ -37,11 +33,9 @@ describe("awaitConsentFactory", () => {
     logger = jasmine.createSpyObj("logger", ["warn"]);
   });
 
-  it("does not resolve promise if consent is enabled and consent is pending", () => {
-    config.consentEnabled = true;
+  it("does not resolve promise if consent is pending", () => {
     consentState.isPending.and.returnValue(true);
     const awaitConsent = awaitConsentFactory({
-      config,
       consentState,
       logger
     });
@@ -58,28 +52,10 @@ describe("awaitConsentFactory", () => {
     });
   });
 
-  it("resolves promise if consent is not enabled", () => {
-    config.consentEnabled = false;
-    const awaitConsent = awaitConsentFactory({
-      config,
-      consentState,
-      logger
-    });
-
-    const onFulfilled = jasmine.createSpy("onFulfilled");
-    awaitConsent().then(onFulfilled);
-
-    return flushPromiseChains().then(() => {
-      expect(onFulfilled).toHaveBeenCalled();
-    });
-  });
-
-  it("resolves promise if consent is enabled and user consented to all purposes", () => {
-    config.consentEnabled = true;
+  it("resolves promise if user consented to all purposes", () => {
     consentState.isPending.and.returnValue(false);
     consentState.hasConsentedToAllPurposes.and.returnValue(true);
     const awaitConsent = awaitConsentFactory({
-      config,
       consentState,
       logger
     });
@@ -92,12 +68,10 @@ describe("awaitConsentFactory", () => {
     });
   });
 
-  it("rejects promise if consent is enabled and user consented to no purposes", () => {
-    config.consentEnabled = true;
+  it("rejects promise if user consented to no purposes", () => {
     consentState.isPending.and.returnValue(false);
     consentState.hasConsentedToAllPurposes.and.returnValue(false);
     const awaitConsent = awaitConsentFactory({
-      config,
       consentState,
       logger
     });
@@ -113,7 +87,6 @@ describe("awaitConsentFactory", () => {
   it("processes consent when consent state changes", () => {
     consentState.isPending.and.returnValue(true);
     const awaitConsent = awaitConsentFactory({
-      config,
       consentState,
       logger
     });
@@ -137,7 +110,6 @@ describe("awaitConsentFactory", () => {
   it("logs a warning if consent is pending", () => {
     consentState.isPending.and.returnValue(true);
     awaitConsentFactory({
-      config,
       consentState,
       logger
     });
@@ -150,7 +122,6 @@ describe("awaitConsentFactory", () => {
     consentState.isPending.and.returnValue(false);
     consentState.hasConsentedToAllPurposes.and.returnValue(false);
     awaitConsentFactory({
-      config,
       consentState,
       logger
     });

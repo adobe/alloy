@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import createCoreConfigs from "../../../../../src/core/config/createCoreConfigs";
 import { objectOf } from "../../../../../src/utils/validation";
+import { IN, OUT } from "../../../../../src/constants/consentStatus";
 
 describe("createCoreConfigs", () => {
   const baseConfig = { configId: "1234", orgId: "org1" };
@@ -72,6 +73,34 @@ describe("createCoreConfigs", () => {
     it("validates debugEnabled=123", () => {
       expect(() => {
         objectOf(createCoreConfigs())({ debugEnabled: 123, ...baseConfig });
+      }).toThrowError();
+    });
+  });
+
+  describe("defaultConsent", () => {
+    it("validates defaultConsent=undefined", () => {
+      const config = objectOf(createCoreConfigs())(baseConfig);
+      expect(config.defaultConsent).toBe(IN);
+    });
+
+    it("validates defaultConsent=in", () => {
+      const config = objectOf(createCoreConfigs())({
+        defaultConsent: "in",
+        ...baseConfig
+      });
+      expect(config.defaultConsent).toBe(IN);
+    });
+    it("validates defaultConsent=false", () => {
+      const config = objectOf(createCoreConfigs())({
+        defaultConsent: "out",
+        ...baseConfig
+      });
+      expect(config.defaultConsent).toBe(OUT);
+    });
+
+    it("validates defaultConsent=123", () => {
+      expect(() => {
+        objectOf(createCoreConfigs())({ defaultConsent: 123, ...baseConfig });
       }).toThrowError();
     });
   });
