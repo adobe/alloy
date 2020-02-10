@@ -10,11 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray, groupBy } from "../../utils";
+import { isNonEmptyArray, groupBy, values } from "../../utils";
 import { string, boolean, arrayOf, objectOf } from "../../utils/validation";
 import { initRuleComponentModules, executeRules } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
 import collectClicks from "./helper/clicks/collectClicks";
+import * as schemasEnum from "../../constants/schemas";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 const PAGE_WIDE_SCOPE = "page_wide_scope";
@@ -22,6 +23,7 @@ const GET_DECISIONS_OPTIONS_SCHEMA = {
   viewStart: boolean().default(false),
   scopes: arrayOf(string()).default([])
 };
+const allSchemas = values(schemasEnum);
 // This is used for Target VEC integration
 const isAuthoringMode = () => document.location.href.indexOf("mboxEdit") !== -1;
 const mergeMeta = (event, meta) => {
@@ -105,7 +107,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
   return {
     lifecycle: {
-      onBeforeEvent({ event, isViewStart, scopes }) {
+      onBeforeEvent({ event, isViewStart, scopes = [] }) {
         if (authoringModeEnabled) {
           logger.warn("Rendering is disabled, authoring mode.");
 
@@ -113,16 +115,24 @@ const createPersonalization = ({ config, logger, eventManager }) => {
           mergeQuery(event, { enabled: false });
           return;
         }
+        const hasScopes = scopes.length > 0;
+        const queryDetails = {};
 
         // For viewStart we try to hide the personalization containers
         if (isViewStart) {
           hideContainers(prehidingStyle);
         }
 
-        if (isViewStart || scopes) {
+        if (isViewStart || hasScopes) {
           event.expectResponse();
-          mergeQuery(event, { scopes });
+          queryDetails.accepts = allSchemas;
         }
+
+        if (hasScopes) {
+          queryDetails.scopes = scopes;
+        }
+
+        mergeQuery(event, queryDetails);
       },
       onResponse({ response }) {
         if (authoringModeEnabled) {
