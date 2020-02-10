@@ -15,10 +15,9 @@ backup()
 usage()
 {
 	echo "Usage:"
-    echo "$0 getip [adobedc]"
-	echo "$0 add [host] [ip]"
+    echo "$0 start [adobedc]"
 	echo "$0 remove [host]"
-	echo "$0 update [host] [ip]"
+	echo "$0 update [host]"
 	echo "$0 check [host]"
 	echo "$0 rollback (reverts the last change)"
 	echo "$0 import [file or url] [--append] (replaces or appends the host file with the new one)"
@@ -36,45 +35,38 @@ isroot()
 
 # Check that we're in a BASH shell
 if test -z "$BASH" ; then
-  echo "update-hosts.sh must be run in the BASH shell... Aborting."; echo;
+  echo "proxy.sh must be run in the BASH shell... Aborting."; echo;
   exit 192
 fi
 
 case $1 in
-getip)
-    host edge.adobedc.net
-   ;;
-add)
+start)
 	isroot
+	LOCALHOST="127.0.0.1"
+	LOCALALLOY="localalloy.com"
+	FIRSTPARTYALLOY="firstparty.localalloy.com"
 
-	# Do we have enough arguments?
-	if [ ! $# == 3 ]; then
-		echo "Missing arguments: $0 add [host] [ip]"; echo;
+	EDGEIP=$(host edge.adobedc.net | awk '/has address/ { print $4; exit }')
+	echo $EDGEIP;
+	if [[ ! $EDGEIP =~ $IPREGEX ]]; then
+		echo "Invalid IP address: $EDGEIP"; echo;
 		exit 192
 	fi
 
-	# Does the host look valid?
-	if [[ ! $2 =~ $DOMAINREGEX ]]; then
-		echo "Invalid hostname: $2"; echo;
-		exit 192
-	fi
-
-	# Does the IP look valid?
-	if [[ ! $3 =~ $IPREGEX ]]; then
-		echo "Invalid IP address: $3"; echo;
-		exit 192
-	fi
-
-	# Check to see if the host is already in the file
-	REGEX="$2$"
-	if [ $(cat $HOSTSFILE | grep '$REGEX' | wc -l | sed 's/^ *//g') != 0 ]; then
-	  echo "The host $2 is already in the hosts file."; echo;
+	if [ $(cat $HOSTSFILE | grep $LOCALALLOY | wc -l | sed 's/^ *//g') != 0 ]; then
+	  echo "The host $LOCALALLOY is already in the hosts file."; echo;
 	  exit 192
 	fi
 
-	echo -e "$3\t$2" >> $HOSTSFILE
-	echo "Added $2"; echo
-	;;
+	if [ $(cat $HOSTSFILE | grep $FIRSTPARTYALLOY | wc -l | sed 's/^ *//g') != 0 ]; then
+	  echo "The host $FIRSTPARTYALLOY is already in the hosts file."; echo;
+	  exit 192
+	fi
+
+	echo -e "$LOCALHOST\t$LOCALALLOY" >> $HOSTSFILE
+	echo -e "$EDGEIP\t$FIRSTPARTYALLOY" >> $HOSTSFILE
+	echo "Added $LOCALALLOY & $FIRSTPARTYALLOY"; echo
+   ;;
 check)
 	# Do we have enough arguments?
 	if [ ! $# == 2 ]; then
@@ -112,33 +104,28 @@ remove)
 	echo "$2 entry removed."; echo
 	;;
 update)
-	# Do we have enough arguments?
-	if [ ! $# == 3 ]; then
-		echo "Missing arguments: $0 update [host] [ip]"; echo
+	isroot
+
+	FIRSTPARTYALLOY="firstparty.localalloy.com"
+	EDGEIP=$(host edge.adobedc.net | awk '/has address/ { print $4; exit }')
+	echo $EDGEIP;
+	
+	if [[ ! $EDGEIP =~ $IPREGEX ]]; then
+		echo "Invalid IP address: $EDGEIP"; echo;
 		exit 192
 	fi
 
-	isroot
-
 	# Does the IP look valid?
-	if [[ ! $3 =~ $IPREGEX ]]; then
+	if [[ ! $EDGEIP =~ $IPREGEX ]]; then
 		echo "Invalid IP address: $3"; echo;
 		exit 192
 	fi
+	
+	$0 remove $FIRSTPARTYALLOY
 
-	# Does the host look valid?
-	if [[ ! $2 =~ $DOMAINREGEX ]]; then
-		echo "Invalid hostname: $2"; echo;
-		exit 192
-	fi
-
-	backup
-
-	$0 remove $2
-
-	$0 add $2 $3
-
-	echo "$2 entry updated to $3"; echo
+	# $0 add $EDGEIP $FIRSTPARTYALLOY
+	echo -e "$EDGEIP\t$FIRSTPARTYALLOY" >> $HOSTSFILE
+	echo "$FIRSTPARTYALLOY entry updated to $EDGEIP"; echo
 	;;
 import)
 	TEMPFILE="./hostsimport.$(date +%s).tmp"
