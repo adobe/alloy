@@ -15,12 +15,11 @@ backup()
 usage()
 {
 	echo "Usage:"
-    echo "$0 start [adobedc]"
+    echo "$0 start"
 	echo "$0 remove [host]"
 	echo "$0 update [host]"
 	echo "$0 check [host]"
 	echo "$0 rollback (reverts the last change)"
-	echo "$0 import [file or url] [--append] (replaces or appends the host file with the new one)"
 	echo
 }
 
@@ -45,17 +44,15 @@ start)
 	LOCALHOST="127.0.0.1"
 	LOCALALLOY="localalloy.com"
 	FIRSTPARTYALLOY="firstparty.localalloy.com"
-
 	EDGEIP=$(host edge.adobedc.net | awk '/has address/ { print $4; exit }')
-	echo $EDGEIP;
+
 	if [[ ! $EDGEIP =~ $IPREGEX ]]; then
-		echo "Invalid IP address: $EDGEIP"; echo;
+		echo "Invalid Edge IP Address: $EDGEIP"; echo;
 		exit 192
 	fi
 
 	if [ $(cat $HOSTSFILE | grep $LOCALALLOY | wc -l | sed 's/^ *//g') != 0 ]; then
 	  echo "The host $LOCALALLOY is already in the hosts file."; echo;
-	  exit 192
 	fi
 
 	if [ $(cat $HOSTSFILE | grep $FIRSTPARTYALLOY | wc -l | sed 's/^ *//g') != 0 ]; then
@@ -108,7 +105,6 @@ update)
 
 	FIRSTPARTYALLOY="firstparty.localalloy.com"
 	EDGEIP=$(host edge.adobedc.net | awk '/has address/ { print $4; exit }')
-	echo $EDGEIP;
 	
 	if [[ ! $EDGEIP =~ $IPREGEX ]]; then
 		echo "Invalid IP address: $EDGEIP"; echo;
@@ -126,54 +122,6 @@ update)
 	# $0 add $EDGEIP $FIRSTPARTYALLOY
 	echo -e "$EDGEIP\t$FIRSTPARTYALLOY" >> $HOSTSFILE
 	echo "$FIRSTPARTYALLOY entry updated to $EDGEIP"; echo
-	;;
-import)
-	TEMPFILE="./hostsimport.$(date +%s).tmp"
-	APPEND=0
-
-	# Do we have enough arguments?
-	if [ ! $# -gt 1 ]; then
-		echo "Missing arguments: $0 import [file] {--append}"; echo
-		exit 192
-	fi
-
-	isroot
-
-	if [ ! -z $3 ]; then
-		if [ $3 == "--append" ]; then
-			APPEND=1
-		fi
-	fi
-
-	# Check the file type and fetch it if needed.
-	
-	if [[ $2 =~ $URLREGEX ]]
-		then
-			echo "curl -s -o $TEMPFILE $2"
-		else
-			TEMPFILE=$2
-	fi
-
-	if [ -f $TEMPFILE ]; 
-		then
-			backup
-
-			IMPORTPREFIX="\n\n## IMPORTED FROM: $2\n\n";
-
-			if [ $APPEND == 0 ]
-				then
-					echo -e "$(head -n 11 $HOSTSFILE)$(echo $IMPORTPREFIX)$(cat $TEMPFILE)" > $HOSTSFILE
-					echo "$2 has been imported in to $HOSTSFILE."; 
-				else
-					echo -e $IMPORTPREFIX >> $HOSTSFILE
-					cat $TEMPFILE >> $HOSTSFILE
-					echo "$2 has been appended on to $HOSTSFILE."; 
-			fi
-		else
-			echo "Invalid import file."
-	fi
-
-	echo
 	;;
 export)
 	# Do we have enough arguments?

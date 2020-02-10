@@ -1,5 +1,14 @@
 Configuring local proxy with SSL on MacOS using proxy bash script.
 
+Local Proxy Script - 
+1) Update the "proxy.sh" permissions: "chmod +x proxy.sh"
+2) Run the script using sudu: "sudo ./proxy.sh"
+3) Options available: 
+
+a) "sudo ./proxy.sh start" - The start command retrieves the edge.adobedc.net IP address and assigns it to "firstparty.localalloy.com". It also creates a local proxy to "localally.com". 
+b) "sudo ./proxy.sh update firstparty.localalloy.com" - Updates "firstparty.localalloy.com" to the latest IP address.
+c) Backup and restore host file. 
+
 Generate SSL certs - 
 1) Navigate to scripts/cert/generate-ssl.sh
 2) The options.conf file contains the domain domain names to included in the certificate.
@@ -13,14 +22,6 @@ Example use:
   http-server --ssl --cert ~/.localhost-ssl/localhost.crt --key ~/.localhost-ssl/localhost.key
 }"
 
-Local Proxy Script - 
-1) Update the "proxy.sh" permissions: "chmod +x proxy.sh"
-2) Run the script using sudu: "sudo ./proxy.sh"
-3) Options available: 
-
-a) Retrieve adobedc ip. 
-b) Add, remove and update local host files.
-c) Backup and restore host file. 
 
 --
 
