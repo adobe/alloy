@@ -10,35 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import executeRules from "../../../../../../src/components/Personalization/turbine/executeRules";
+import executeActions from "../../../../../../src/components/Personalization/turbine/executeActions";
 
-describe("Personalization::turbine::executeRules", () => {
+describe("Personalization::turbine::executeActions", () => {
   it("should execute actions", () => {
-    const action = "action";
-    const event = "event";
     const actionSpy = jasmine.createSpy();
     const logger = jasmine.createSpyObj("logger", ["error", "log"]);
     logger.enabled = true;
-    const rules = [
-      {
-        actions: [
-          {
-            moduleType: action
-          }
-        ],
-        events: [
-          {
-            moduleType: event
-          }
-        ]
-      }
-    ];
-    const ruleComponentModules = {
-      [action]: actionSpy,
-      [event]: (_, trigger) => trigger()
+    const actions = [{ type: "foo" }];
+    const modules = {
+      foo: actionSpy
     };
 
-    executeRules(rules, ruleComponentModules, logger);
+    executeActions(actions, modules, logger);
 
     expect(actionSpy).toHaveBeenCalled();
     expect(logger.log.calls.count()).toEqual(1);
@@ -46,32 +30,16 @@ describe("Personalization::turbine::executeRules", () => {
   });
 
   it("should log error when execute actions fails", () => {
-    const action = "action";
-    const event = "event";
     const logger = jasmine.createSpyObj("logger", ["error", "log"]);
     logger.enabled = true;
-    const rules = [
-      {
-        actions: [
-          {
-            moduleType: action
-          }
-        ],
-        events: [
-          {
-            moduleType: event
-          }
-        ]
-      }
-    ];
-    const ruleComponentModules = {
-      [action]: () => {
+    const actions = [{ type: "foo" }];
+    const modules = {
+      foo: () => {
         throw new Error();
-      },
-      [event]: (_, trigger) => trigger()
+      }
     };
 
-    executeRules(rules, ruleComponentModules, logger);
+    executeActions(actions, modules, logger);
 
     expect(logger.log).not.toHaveBeenCalled();
     expect(logger.error.calls.count()).toEqual(1);
@@ -79,12 +47,38 @@ describe("Personalization::turbine::executeRules", () => {
 
   it("should log nothing when there are no actions", () => {
     const logger = jasmine.createSpyObj("logger", ["error", "log"]);
-    const rules = [];
-    const ruleComponentModules = {};
+    const actions = [];
+    const modules = {};
 
-    executeRules(rules, ruleComponentModules, logger);
+    executeActions(actions, modules, logger);
 
     expect(logger.log).not.toHaveBeenCalled();
+    expect(logger.error).not.toHaveBeenCalled();
+  });
+
+  it("should log error when there are no actions types", () => {
+    const logger = jasmine.createSpyObj("logger", ["error", "log"]);
+    logger.enabled = true;
+    const actions = [{ type: "foo1" }];
+    const modules = {
+      foo: () => {}
+    };
+
+    executeActions(actions, modules, logger);
+
+    expect(logger.error).toHaveBeenCalled();
+  });
+
+  it("should not invoke logger when logger is disabled", () => {
+    const logger = jasmine.createSpyObj("logger", ["error", "log"]);
+    logger.enabled = false;
+    const actions = [{ type: "foo1" }];
+    const modules = {
+      foo: () => {}
+    };
+
+    executeActions(actions, modules, logger);
+
     expect(logger.error).not.toHaveBeenCalled();
   });
 });

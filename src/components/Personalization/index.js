@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray, groupBy, values } from "../../utils";
+import { isNonEmptyArray, groupBy, values, assign } from "../../utils";
 import { string, boolean, arrayOf, objectOf } from "../../utils/validation";
-import { initRuleComponentModules, executeRules } from "./turbine";
+import { initDomActionsModules, executeActions } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
 import collectClicks from "./helper/clicks/collectClicks";
-import * as schemasEnum from "../../constants/schemas";
+import * as SCHEMAS from "../../constants/schemas";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 const PAGE_WIDE_SCOPE = "page_wide_scope";
@@ -23,7 +23,7 @@ const GET_DECISIONS_OPTIONS_SCHEMA = {
   viewStart: boolean().default(false),
   scopes: arrayOf(string()).default([])
 };
-const allSchemas = values(schemasEnum);
+const allSchemas = values(SCHEMAS);
 // This is used for Target VEC integration
 const isAuthoringMode = () => document.location.href.indexOf("mboxEdit") !== -1;
 const mergeMeta = (event, meta) => {
@@ -52,21 +52,30 @@ const storeDecisions = (storage, decisions) => {
 const filterDecisions = (storage, scopes) => {
   const decisions = [];
 
-  scopes.forEach(s => {
-    if (storage[s]) {
-      decisions.push(...storage[s]);
+  scopes.forEach(scope => {
+    if (storage[scope]) {
+      decisions.push(...storage[scope]);
     }
   });
 
   return decisions;
 };
 
+const buildActions = (decision, items) => {
+  const meta = { decisionId: decision.id };
+
+  return items.map(item => assign({}, item.data, { meta }));
+};
+
 const executeDecisions = (decisions, modules, logger) => {
   decisions.forEach(decision => {
-    const { rules = [] } = decision;
+    const group = groupBy(decision.items, item => item.schema);
+    const items = group[SCHEMAS.DOM_ACTION];
 
-    if (isNonEmptyArray(rules)) {
-      executeRules(rules, modules, logger);
+    if (isNonEmptyArray(items)) {
+      const actions = buildActions(decision, items);
+
+      executeActions(actions, modules, logger);
     }
   });
 };
@@ -103,7 +112,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const storage = [];
   const decisionsStorage = {};
   const store = value => storage.push(value);
-  const ruleComponentModules = initRuleComponentModules(collect, store);
+  const modules = initDomActionsModules(collect, store);
 
   return {
     lifecycle: {
@@ -141,7 +150,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
         const decisions = response.getPayloadsByType(DECISIONS_HANDLE);
 
-        executeDecisions(decisions, ruleComponentModules, logger);
+        executeDecisions(decisions, modules, logger);
 
         showContainers();
 
