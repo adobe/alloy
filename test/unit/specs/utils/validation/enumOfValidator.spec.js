@@ -10,22 +10,32 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { literal } from "../../../../../src/utils/validation";
+import { enumOf } from "../../../../../src/utils/validation";
 import describeValidation from "./describeValidation";
 
-describe("validation:literal", () => {
-  describeValidation("literal optional string", literal("hello"), [
+describe("validation:enumOf", () => {
+  describeValidation("optional enum", enumOf("in", 1234, 0.1, false), [
     { value: undefined, error: false },
+    { value: 1234, error: false },
+    { value: "in", error: false },
     { value: null, error: false },
-    { value: "hello", error: false },
-    { value: {}, error: true },
+    { value: 0.1, error: false },
+    { value: false, error: false },
+    { value: "out", error: true },
     { value: "", error: true },
-    { value: "goodbye", error: true }
+    { value: {}, error: true },
+    { value: [], error: true }
   ]);
-  describeValidation("literal required integer", literal(42).required(), [
-    { value: 42, error: false },
-    { value: 41, error: true },
+  describeValidation("required enum", enumOf("in", "pending").required(), [
+    { value: "in", error: false },
+    { value: "pending", error: false },
     { value: null, error: true },
-    { value: undefined, error: true }
+    { value: undefined, error: true },
+    { value: 0.1, error: true },
+    { value: false, error: true },
+    { value: "out", error: true },
+    { value: "", error: true },
+    { value: {}, error: true },
+    { value: [], error: true }
   ]);
 });

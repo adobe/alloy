@@ -117,6 +117,14 @@ const boundNumber = number.bind(base);
 const boundObjectOf = objectOf.bind(base);
 const boundString = string.bind(base);
 
+// compound validators
+const boundEnumOf = function boundEnumOf(...values) {
+  return boundAnyOf(
+    values.map(boundLiteral),
+    `one of these values: [${JSON.stringify(values)}]`
+  );
+};
+
 export {
   boundAnyOf as anyOf,
   boundArrayOf as arrayOf,
@@ -125,5 +133,6 @@ export {
   boundLiteral as literal,
   boundNumber as number,
   boundObjectOf as objectOf,
-  boundString as string
+  boundString as string,
+  boundEnumOf as enumOf
 };
