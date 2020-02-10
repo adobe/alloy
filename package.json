@@ -16,7 +16,7 @@
     "allure:generate": "allure generate allure/allure-results/ -o allure/allure-report/",
     "test:watch": "karma start",
     "test:watch:chrome": "karma start --browsers Chrome",
-    "test:server": "http-server ./ -a localhost -p 8080 -c-1",
+    "test:server": "http-server ./ -a localalloy.com -p 8080 -c-1",
     "testcafe": "EDGE_ENV=\"'ee'\" testcafe",
     "functional:ci": "run-p --race test:server testcafe",
     "functional:ci:int": "EDGE_ENV=\"'ee-int'\" run-p --race test:server testcafe",
