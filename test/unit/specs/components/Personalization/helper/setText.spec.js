@@ -1,5 +1,5 @@
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::setText", () => {
@@ -13,7 +13,7 @@ describe("Personalization::actions::setText", () => {
 
   it("should set personalized text", () => {
     const collect = jasmine.createSpy();
-    const modules = initRuleComponentModules(collect);
+    const modules = initDomActionsModules(collect);
     const { setText } = modules;
     const element = createNode("div", { id: "setText" });
     element.textContent = "foo";
