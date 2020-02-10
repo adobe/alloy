@@ -68,6 +68,35 @@ describe("Event Command", () => {
     });
   });
 
+  it("sends event with scopes parameter when scopes is not empty", () => {
+    const options = {
+      viewStart: true,
+      scopes: ["Foo1", "Foo2"]
+    };
+
+    return eventCommand(options).then(result => {
+      expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
+        isViewStart: true,
+        scopes: ["Foo1", "Foo2"]
+      });
+      expect(result).toEqual("sendEventResult");
+    });
+  });
+
+  it("sends event without scopes parameter when scopes is empty", () => {
+    const options = {
+      viewStart: true,
+      scopes: []
+    };
+
+    return eventCommand(options).then(result => {
+      expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
+        isViewStart: true
+      });
+      expect(result).toEqual("sendEventResult");
+    });
+  });
+
   it("does not call documentMayUnload if documentUnloading is not defined", () => {
     return eventCommand({}).then(() => {
       expect(event.documentMayUnload).not.toHaveBeenCalled();
