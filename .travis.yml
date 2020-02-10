@@ -4,6 +4,9 @@ language:
 - node_js
 node_js:
 - 'stable'
+before_install:
+  - stty cols 80
+  - sudo ./scripts/proxy.sh start
 install:
 - npm i -g npm
 - npm i -g testcafe
@@ -21,8 +24,6 @@ script:
 - npm install
 - npm run build:prod
 - npm run functional:ci
-- npm run test:saucelabs
-- npm run checkbundlesize
 
 notifications:
   slack: adobedx:AlI4WB2ojGDcqsBEVZ1EGsCR
@@ -33,7 +34,5 @@ notifications:
     - aahardy@adobe.com
   on_success: always
   on_failure: always
-  
-before_install:
-- stty cols 80
+
 
