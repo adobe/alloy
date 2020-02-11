@@ -1,11 +1,12 @@
-import { t, Selector, ClientFunction } from "testcafe";
+import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import { responseStatus } from "../../helpers/assertions/index";
 import fixtureFactory from "../../helpers/fixtureFactory";
 import testServerUrl from "../../helpers/constants/testServerUrl";
+import { getPayloadsByType } from "../../helpers/utils";
 
-const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloySdk.html`;
+const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloyTestPage.html`;
 const networkLogger = createNetworkLogger();
 
 fixtureFactory({
@@ -32,14 +33,18 @@ const apiCalls = ClientFunction(() => {
     debugEnabled: true,
     idMigrationEnabled: true
   });
+
+  return window.alloy("event", {
+    viewStart: true,
+    // TODO: Change data to match final XDM schema.
+    xdm: {
+      key: "value"
+    }
+  });
 });
 
 test("Test C14394: When ID migration is enabled and no identity cookie is found but legacy AMCV cookie is found, the ECID will be sent on the request", async () => {
   await apiCalls();
-
-  // NOTE: I assume a click is needed to get a response body. Putting the same event call in apiCalls() results in an undefined response body.
-  await t.click(Selector("#event-button"));
-
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
@@ -55,8 +60,10 @@ test("Test C14394: When ID migration is enabled and no identity cookie is found 
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
 
-  await t.expect(response.handle[0].type).eql("identity:result");
-  await t
-    .expect(response.handle[0].payload[0].id)
-    .eql("16908443662402872073525706953453086963");
+  const payloads = getPayloadsByType("identity:result", response);
+  const ecidPayload = payloads.filter(
+    payload => payload.namespace.code === "ECID"
+  )[0];
+
+  await t.expect(ecidPayload.id).eql("16908443662402872073525706953453086963");
 });
