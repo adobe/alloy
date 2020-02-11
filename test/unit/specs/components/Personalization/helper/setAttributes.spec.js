@@ -1,5 +1,5 @@
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::setAttribute", () => {
@@ -13,7 +13,7 @@ describe("Personalization::actions::setAttribute", () => {
 
   it("should set element attribute", () => {
     const collect = jasmine.createSpy();
-    const modules = initRuleComponentModules(collect);
+    const modules = initDomActionsModules(collect);
     const { setAttribute } = modules;
     const element = createNode("div", { id: "setAttribute" });
     const elements = [element];

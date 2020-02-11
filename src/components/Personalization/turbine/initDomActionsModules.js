@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import { removeNode } from "../../../utils/dom";
-import libraryLoaded from "../events/libraryLoaded";
 import {
   createAction,
   setHtml,
@@ -30,7 +29,6 @@ import {
 
 export default (collect, store) => {
   return {
-    libraryLoaded,
     setHtml: createAction(collect, setHtml),
     customCode: createAction(collect, setHtml),
     setText: createAction(collect, setText),

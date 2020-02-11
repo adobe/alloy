@@ -1,5 +1,5 @@
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
-import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::setHtml", () => {
@@ -15,7 +15,7 @@ describe("Personalization::actions::setHtml", () => {
 
   it("should set personalized content", () => {
     const collect = jasmine.createSpy();
-    const modules = initRuleComponentModules(collect);
+    const modules = initDomActionsModules(collect);
     const { setHtml } = modules;
     const element = createNode("div", { id: "setHtml" });
     element.innerHTML = "foo";
@@ -40,7 +40,7 @@ describe("Personalization::actions::setHtml", () => {
 
   it("should execute inline JavaScript", () => {
     const collect = jasmine.createSpy();
-    const modules = initRuleComponentModules(collect);
+    const modules = initDomActionsModules(collect);
     const { setHtml } = modules;
     const element = createNode("div", { id: "setHtml" });
     element.innerHTML = "foo";
