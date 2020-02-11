@@ -29,6 +29,22 @@ describe("Personalization::turbine::executeActions", () => {
     expect(logger.error).not.toHaveBeenCalled();
   });
 
+  it("should not invoke logger.log when logger is not enabled", () => {
+    const actionSpy = jasmine.createSpy();
+    const logger = jasmine.createSpyObj("logger", ["error", "log"]);
+    logger.enabled = false;
+    const actions = [{ type: "foo" }];
+    const modules = {
+      foo: actionSpy
+    };
+
+    executeActions(actions, modules, logger);
+
+    expect(actionSpy).toHaveBeenCalled();
+    expect(logger.log.calls.count()).toEqual(0);
+    expect(logger.error).not.toHaveBeenCalled();
+  });
+
   it("should log error when execute actions fails", () => {
     const logger = jasmine.createSpyObj("logger", ["error", "log"]);
     logger.enabled = true;
