@@ -3,7 +3,7 @@ import {
   appendNode,
   createNode
 } from "../../../../../../src/utils/dom";
-import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::insertBefore", () => {
@@ -17,7 +17,7 @@ describe("Personalization::actions::insertBefore", () => {
 
   it("should insert before personalized content", () => {
     const collect = jasmine.createSpy();
-    const modules = initRuleComponentModules(collect);
+    const modules = initDomActionsModules(collect);
     const { insertBefore } = modules;
     const child = createNode(
       "div",

@@ -3,7 +3,7 @@ import {
   appendNode,
   createNode
 } from "../../../../../../src/utils/dom";
-import { initRuleComponentModules } from "../../../../../../src/components/Personalization/turbine";
+import { initDomActionsModules } from "../../../../../../src/components/Personalization/turbine";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::replaceHtml", () => {
@@ -17,7 +17,7 @@ describe("Personalization::actions::replaceHtml", () => {
 
   it("should replace element with personalized content", () => {
     const collect = jasmine.createSpy();
-    const modules = initRuleComponentModules(collect);
+    const modules = initDomActionsModules(collect);
     const { replaceHtml } = modules;
     const child = createNode(
       "div",

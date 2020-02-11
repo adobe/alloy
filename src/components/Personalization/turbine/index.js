@@ -10,7 +10,5 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export {
-  default as initRuleComponentModules
-} from "./initRuleComponentModules";
-export { default as executeRules } from "./executeRules";
+export { default as initDomActionsModules } from "./initDomActionsModules";
+export { default as executeActions } from "./executeActions";

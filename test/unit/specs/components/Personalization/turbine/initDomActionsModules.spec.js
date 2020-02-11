@@ -10,13 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import initRuleComponentModules from "../../../../../../src/components/Personalization/turbine/initRuleComponentModules";
+import initDomActionsModules from "../../../../../../src/components/Personalization/turbine/initDomActionsModules";
 
 const buildSet = () => {
   const result = new Set();
 
   // This is to make IE 11 happy
-  result.add("libraryLoaded");
   result.add("setHtml");
   result.add("customCode");
   result.add("setText");
@@ -39,9 +38,9 @@ const buildSet = () => {
 
 const STANDARD_MODULES = buildSet();
 
-describe("Personalization::turbine::initRuleComponentModules", () => {
+describe("Personalization::turbine::initDomActionsModules", () => {
   it("should have all the required modules", () => {
-    const result = initRuleComponentModules(() => {});
+    const result = initDomActionsModules(() => {});
     const keys = Object.keys(result);
 
     expect(keys.length).toEqual(STANDARD_MODULES.size);
