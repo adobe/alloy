@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray, groupBy, values, assign } from "../../utils";
-import { string, boolean, arrayOf, objectOf } from "../../utils/validation";
+import { string, arrayOf, objectOf } from "../../utils/validation";
 import { initDomActionsModules, executeActions } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
 import collectClicks from "./helper/clicks/collectClicks";
@@ -20,7 +20,6 @@ import * as SCHEMAS from "../../constants/schemas";
 const DECISIONS_HANDLE = "personalization:decisions";
 const PAGE_WIDE_SCOPE = "page_wide_scope";
 const GET_DECISIONS_OPTIONS_SCHEMA = {
-  viewStart: boolean().default(false),
   scopes: arrayOf(string()).default([])
 };
 const allSchemas = values(SCHEMAS);
@@ -93,12 +92,12 @@ const createCollect = eventManager => {
 const validateOptions = options => {
   const validate = objectOf(GET_DECISIONS_OPTIONS_SCHEMA);
   const result = validate(options);
-  const { viewStart, scopes } = result;
+  const { scopes } = result;
 
-  if (!viewStart && scopes.length === 0) {
+  if (scopes.length === 0) {
     throw new Error(
       "Invalid getDecisions command options parameter: " +
-        "'viewStart' must be set to true or scopes must be defined."
+        "Scopes must be defined."
     );
   }
 
@@ -168,13 +167,9 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
     commands: {
       getDecisions(options = {}) {
-        const { viewStart, scopes } = validateOptions(options);
+        const { scopes } = validateOptions(options);
         // Cloning scopes to avoid changing input options
         const localScopes = [...scopes];
-
-        if (viewStart) {
-          localScopes.push(PAGE_WIDE_SCOPE);
-        }
 
         return filterDecisions(decisionsStorage, localScopes);
       }
