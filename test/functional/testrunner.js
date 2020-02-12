@@ -63,10 +63,18 @@ const browsers = isSauceLabs
   const testFolder = config.desktop.testsFolder;
   const testSuite = allFilesSync(testFolder);
 
+  const pageSnippet = `!function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
+    []).push(o),n[o]=function(){var u=arguments;return new Promise(
+    function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
+    (window,["alloy"]);`;
+
   const failedCount = await runner
-    .startApp("npm run test:server", 4000)
     .src(testSuite)
     .filter(testName => testName.includes(specId))
+    .clientScripts(
+      { content: pageSnippet },
+      { path: process.cwd() + "/dist/standalone/alloy.js" }
+    )
     .browsers(browsers)
     .run(runOptions);
 

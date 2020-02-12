@@ -8,11 +8,11 @@ import debugEnabledConfig from "../../helpers/constants/debugEnabledConfig";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
 const networkLogger = createNetworkLogger();
-const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloyTestPage.html`;
+const urlCollector = `${testServerUrl}/alloyTestPage.html`;
 
 const corsHeader = {
   "access-control-allow-credentials": true,
-  "access-control-allow-origin": testServerUrl
+  "access-control-allow-origin": "https://alloyio.com"
 };
 
 const mockWithNoIdentityCookie = new RequestMock()
