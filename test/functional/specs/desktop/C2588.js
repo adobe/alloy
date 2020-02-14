@@ -1,11 +1,12 @@
 import fixtureFactory from "../../helpers/fixtureFactory";
 import testServerUrl from "../../helpers/constants/testServerUrl";
 
-const urlCollector = `${testServerUrl}/test/functional/sandbox/html/multiConfig.html`;
+import debugEnabledConfig from "../../helpers/constants/debugEnabledConfig";
+import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
 fixtureFactory({
   title: "C2588: Throws error when configure is executed multiple times.",
-  url: urlCollector
+  url: `${testServerUrl}/alloyTestPage.html`
 });
 
 test.meta({
@@ -14,7 +15,17 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C2586: Throw error when configure is executed multiple times.", async t => {
+test("Test C2588: Throw error when configure is executed multiple times.", async t => {
+  await configureAlloyInstance("alloy", {
+    errorsEnabled: false,
+    ...debugEnabledConfig
+  });
+
+  await configureAlloyInstance("alloy", {
+    errorsEnabled: false,
+    ...debugEnabledConfig
+  });
+
   const { error } = await t.getBrowserConsoleMessages();
   await t
     .expect(error)

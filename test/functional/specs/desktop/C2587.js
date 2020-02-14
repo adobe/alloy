@@ -6,7 +6,7 @@ import debugEnabledConfig from "../../helpers/constants/debugEnabledConfig";
 
 fixtureFactory({
   title: "C2587: Throw error when executing command that doesn't exist.",
-  url: `${testServerUrl}/test/functional/sandbox/html/alloyTestPage.html`
+  url: `${testServerUrl}/alloyTestPage.html`
 });
 
 test.meta({
