@@ -1,13 +1,16 @@
-import { Selector } from "testcafe";
+import { ClientFunction } from "testcafe";
 import createConsoleLogger from "../../helpers/consoleLogger";
 import fixtureFactory from "../../helpers/fixtureFactory";
 import testServerUrl from "../../helpers/constants/testServerUrl";
 
-const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloySdk.html`;
+import baseConfig from "../../helpers/constants/baseConfig";
+import configureAlloyInstance from "../../helpers/configureAlloyInstance";
+
+const url = `${testServerUrl}/alloyTestPage.html`;
 
 fixtureFactory({
   title: "C2584: Toggle logging through debug command",
-  url: urlCollector
+  url
 });
 
 test.meta({
@@ -16,42 +19,36 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
+const debugCommand = ClientFunction(enabled => {
+  return new Promise(resolve => {
+    window.alloy("debug", { enabled }).then(() => resolve());
+  });
+});
+
+const getLibraryInfoCommand = ClientFunction(() => {
+  return new Promise(resolve => {
+    window.alloy("getLibraryInfo").then(() => resolve());
+  });
+});
+
 test("Test C2584: debug command with enable: true. getLibraryInfo. refresh. toggle and repeat.", async t => {
   const logger = createConsoleLogger(t, "log");
-  await t
-    .click(Selector("#nologconfig-button"))
-    .click(Selector("#debugtrue-button"))
-    .click(Selector("#getlibraryinfo-button"));
+  await configureAlloyInstance("alloy", baseConfig);
 
-  let newMessages = await logger.getNewMessages();
+  await debugCommand(true);
+  await getLibraryInfoCommand();
+
+  const newMessages = await logger.getNewMessages();
   await t.expect(newMessages).match(/Executing getLibraryInfo command/);
 
-  await t
-    .navigateTo(`${testServerUrl}/test/functional/sandbox/html/alloySdk.html`)
-    .click(Selector("#nologconfig-button"))
-    .click(Selector("#getlibraryinfo-button"));
+  await t.navigateTo(url);
+  await configureAlloyInstance("alloy", baseConfig);
+  await debugCommand(false);
+  await getLibraryInfoCommand();
 
-  newMessages = await logger.getNewMessages();
-  await t
-    .expect(newMessages)
-    .match(/\[alloy] Executing getLibraryInfo command./);
+  const messagesAfterRefresh = await logger.getNewMessages();
 
   await t
-    .click(Selector("#debugfalse-button"))
-    .click(Selector("#getlibraryinfo-button"));
-
-  newMessages = await logger.getNewMessages();
-  await t
-    .expect(newMessages)
-    .notMatch(/\[alloy] Executing getLibraryInfo command./);
-
-  await t
-    .navigateTo(`${testServerUrl}/test/functional/sandbox/html/alloySdk.html`)
-    .click(Selector("#nologconfig-button"))
-    .click(Selector("#getlibraryinfo-button"));
-
-  newMessages = await logger.getNewMessages();
-  await t
-    .expect(newMessages)
+    .expect(messagesAfterRefresh)
     .notMatch(/\[alloy] Executing getLibraryInfo command./);
 });
