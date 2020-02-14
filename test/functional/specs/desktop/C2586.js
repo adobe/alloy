@@ -1,12 +1,13 @@
-import { Selector } from "testcafe";
+import { ClientFunction } from "testcafe";
 import fixtureFactory from "../../helpers/fixtureFactory";
 import testServerUrl from "../../helpers/constants/testServerUrl";
 
-const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloySdk.html?alloy_debug=true`;
+import baseConfig from "../../helpers/constants/baseConfig";
+import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
 fixtureFactory({
   title: "C2586: Toggle logging through the querystring parameter.",
-  url: urlCollector
+  url: `${testServerUrl}/alloyTestPage.html?alloy_debug=true`
 });
 
 test.meta({
@@ -15,16 +16,16 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C2586: Toggle logging through the querystring parameter.", async t => {
-  await t.click(Selector("#event-button"));
-  const { log } = await t.getBrowserConsoleMessages();
-  await t.expect(log).match(/The library must be configured first./);
+const getLibraryInfoCommand = ClientFunction(() => {
+  return new Promise(resolve => {
+    window.alloy("getLibraryInfo").then(() => resolve());
+  });
 });
 
-test("Test C2586: Set logging to false through querystring parameter..", async t => {
-  await t.navigateTo(
-    `${testServerUrl}/test/functional/sandbox/html/bogusCommand.html?alloy_debug=false`
-  );
+test("Test C2586: Toggle logging through the querystring parameter.", async t => {
+  await configureAlloyInstance("alloy", baseConfig);
+  await getLibraryInfoCommand();
+
   const { log } = await t.getBrowserConsoleMessages();
-  await t.expect(log.length).lte(0);
+  await t.expect(log).match(/Executing getLibraryInfo command/);
 });
