@@ -2,13 +2,11 @@ import { t, ClientFunction } from "testcafe";
 import fixtureFactory from "../../helpers/fixtureFactory";
 import testServerUrl from "../../helpers/constants/testServerUrl";
 
-const fixtureUrl = `${testServerUrl}/test/functional/sandbox/html/alloyTestPage.html`;
-
 const getAlloyFunction = ClientFunction(() => !!window.alloy);
 
 fixtureFactory({
   title: "C2560: Global function named alloy is accessible.",
-  url: fixtureUrl
+  url: `${testServerUrl}/alloyTestPage.html`
 });
 
 test.meta({
