@@ -1,9 +1,7 @@
 import fixtureFactory from "../helpers/fixtureFactory";
-import testServerUrl from "../helpers/constants/testServerUrl";
 
 fixtureFactory({
-  title: "C13816: Throws error when configure has no options",
-  url: `${testServerUrl}/alloyTestPage.html`
+  title: "C13816: Throws error when configure has no options"
 });
 
 test.meta({

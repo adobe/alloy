@@ -1,12 +1,10 @@
 import { ClientFunction } from "testcafe";
-import testServerUrl from "../helpers/constants/testServerUrl";
 import fixtureFactory from "../helpers/fixtureFactory";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
 
 fixtureFactory({
-  title: "C2587: Throw error when executing command that doesn't exist.",
-  url: `${testServerUrl}/alloyTestPage.html`
+  title: "C2587: Throw error when executing command that doesn't exist."
 });
 
 test.meta({

@@ -1,5 +1,4 @@
 import { t, Selector, ClientFunction } from "testcafe";
-import testServerUrl from "../helpers/constants/testServerUrl";
 import fixtureFactory from "../helpers/fixtureFactory";
 import baseConfig from "../helpers/constants/baseConfig";
 import addAnchorToBody from "../helpers/dom/addAnchorToBody";
@@ -8,8 +7,7 @@ import createConsoleLogger from "../helpers/consoleLogger";
 
 fixtureFactory({
   title:
-    "C8119: Does not send event with information about link clicks if disabled.",
-  url: `${testServerUrl}/alloyTestPage.html`
+    "C8119: Does not send event with information about link clicks if disabled."
 });
 
 test.meta({

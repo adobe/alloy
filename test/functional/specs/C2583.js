@@ -1,14 +1,11 @@
 import { ClientFunction } from "testcafe";
 import fixtureFactory from "../helpers/fixtureFactory";
-import testServerUrl from "../helpers/constants/testServerUrl";
-
 import debugDisabledConfig from "../helpers/constants/debugDisabledConfig";
 import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 
 fixtureFactory({
-  title: "C2583: Toggle logging through configuration",
-  url: `${testServerUrl}/alloyTestPage.html`
+  title: "C2583: Toggle logging through configuration"
 });
 
 test.meta({

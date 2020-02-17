@@ -1,11 +1,8 @@
 import { ClientFunction } from "testcafe";
-import testServerUrl from "../helpers/constants/testServerUrl";
 import fixtureFactory from "../helpers/fixtureFactory";
 
 fixtureFactory({
-  title:
-    "C2585: Throws error when configure is not the first command executed.",
-  url: `${testServerUrl}/alloyTestPage.html`
+  title: "C2585: Throws error when configure is not the first command executed."
 });
 
 test.meta({

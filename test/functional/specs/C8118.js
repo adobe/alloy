@@ -1,5 +1,4 @@
 import { t, Selector, ClientFunction } from "testcafe";
-import testServerUrl from "../helpers/constants/testServerUrl";
 import fixtureFactory from "../helpers/fixtureFactory";
 import baseConfig from "../helpers/constants/baseConfig";
 import addAnchorToBody from "../helpers/dom/addAnchorToBody";
@@ -7,8 +6,7 @@ import configureAlloyInstance from "../helpers/configureAlloyInstance";
 import createConsoleLogger from "../helpers/consoleLogger";
 
 fixtureFactory({
-  title: "C8118: Send event with information about link clicks.",
-  url: `${testServerUrl}/alloyTestPage.html`
+  title: "C8118: Send event with information about link clicks."
 });
 
 test.meta({

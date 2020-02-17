@@ -2,13 +2,11 @@ import { t, ClientFunction, RequestMock } from "testcafe";
 import createNetworkLogger from "../helpers/networkLogger";
 import getResponseBody from "../helpers/networkLogger/getResponseBody";
 import fixtureFactory from "../helpers/fixtureFactory";
-import testServerUrl from "../helpers/constants/testServerUrl";
 
 import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 
 const networkLogger = createNetworkLogger();
-const urlCollector = `${testServerUrl}/alloyTestPage.html`;
 
 const corsHeader = {
   "access-control-allow-credentials": true,
@@ -43,7 +41,6 @@ const mockWithIdentityCookie = new RequestMock()
 
 fixtureFactory({
   title: "C2581: Queue events when no ECID available on client",
-  url: urlCollector,
   requestHooks: [
     networkLogger.edgeCollectEndpointLogs,
     networkLogger.edgeInteractEndpointLogs

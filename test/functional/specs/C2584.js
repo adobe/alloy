@@ -2,15 +2,13 @@ import { ClientFunction } from "testcafe";
 import createConsoleLogger from "../helpers/consoleLogger";
 import fixtureFactory from "../helpers/fixtureFactory";
 import testServerUrl from "../helpers/constants/testServerUrl";
-
 import baseConfig from "../helpers/constants/baseConfig";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 
 const url = `${testServerUrl}/alloyTestPage.html`;
 
 fixtureFactory({
-  title: "C2584: Toggle logging through debug command",
-  url
+  title: "C2584: Toggle logging through debug command"
 });
 
 test.meta({

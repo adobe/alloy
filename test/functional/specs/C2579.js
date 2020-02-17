@@ -1,6 +1,5 @@
 import { RequestLogger, t, ClientFunction } from "testcafe";
 import fixtureFactory from "../helpers/fixtureFactory";
-import testServerUrl from "../helpers/constants/testServerUrl";
 
 const networkLoggerConfig = {
   logRequestBody: true,
@@ -17,7 +16,6 @@ const networkLogger2 = RequestLogger(
 
 fixtureFactory({
   title: "C2579: Isolates multiple SDK instances",
-  url: `${testServerUrl}/alloyTestPage.html`,
   requestHooks: [networkLogger1, networkLogger2]
 });
 

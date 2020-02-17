@@ -2,8 +2,6 @@ import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../helpers/networkLogger";
 import { responseStatus } from "../helpers/assertions/index";
 import fixtureFactory from "../helpers/fixtureFactory";
-import testServerUrl from "../helpers/constants/testServerUrl";
-
 import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 
@@ -11,7 +9,6 @@ const networkLogger = createNetworkLogger();
 
 fixtureFactory({
   title: "C2592: Event command sends a request",
-  url: `${testServerUrl}/alloyTestPage.html`,
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
