@@ -1,8 +1,6 @@
 import { RequestLogger, t, ClientFunction } from "testcafe";
-import fixtureFactory from "../../helpers/fixtureFactory";
-import testServerUrl from "../../helpers/constants/testServerUrl";
+import fixtureFactory from "../helpers/fixtureFactory";
 
-const urlCollector = `${testServerUrl}/test/functional/sandbox/html/dualInstanceSdk.html`;
 const networkLoggerConfig = {
   logRequestBody: true,
   stringifyRequestBody: true
@@ -18,7 +16,6 @@ const networkLogger2 = RequestLogger(
 
 fixtureFactory({
   title: "C2579: Isolates multiple SDK instances",
-  url: urlCollector,
   requestHooks: [networkLogger1, networkLogger2]
 });
 
@@ -40,7 +37,7 @@ const getIdentityCookieValue = request => {
 };
 
 const instance1Config = ClientFunction(() =>
-  window.instance1("configure", {
+  window.alloy("configure", {
     configId: "9999999",
     orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
     edgeBasePath: window.edgeBasePath,
@@ -48,7 +45,7 @@ const instance1Config = ClientFunction(() =>
   })
 );
 const instance1Event = ClientFunction(() =>
-  window.instance1("event", { data: { key: "value" } })
+  window.alloy("event", { data: { key: "value" } })
 );
 const instance2Config = ClientFunction(() =>
   window.instance2("configure", {

@@ -1,18 +1,16 @@
 import { t, ClientFunction, RequestMock } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import fixtureFactory from "../../helpers/fixtureFactory";
-import testServerUrl from "../../helpers/constants/testServerUrl";
+import createNetworkLogger from "../helpers/networkLogger";
+import getResponseBody from "../helpers/networkLogger/getResponseBody";
+import fixtureFactory from "../helpers/fixtureFactory";
 
-import debugEnabledConfig from "../../helpers/constants/debugEnabledConfig";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
+import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
+import configureAlloyInstance from "../helpers/configureAlloyInstance";
 
 const networkLogger = createNetworkLogger();
-const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloyTestPage.html`;
 
 const corsHeader = {
   "access-control-allow-credentials": true,
-  "access-control-allow-origin": testServerUrl
+  "access-control-allow-origin": "https://alloyio.com"
 };
 
 const mockWithNoIdentityCookie = new RequestMock()
@@ -43,7 +41,6 @@ const mockWithIdentityCookie = new RequestMock()
 
 fixtureFactory({
   title: "C2581: Queue events when no ECID available on client",
-  url: urlCollector,
   requestHooks: [
     networkLogger.edgeCollectEndpointLogs,
     networkLogger.edgeInteractEndpointLogs

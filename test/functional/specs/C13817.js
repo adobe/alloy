@@ -1,11 +1,7 @@
-import fixtureFactory from "../../helpers/fixtureFactory";
-import testServerUrl from "../../helpers/constants/testServerUrl";
-
-const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloySdk.html`;
+import fixtureFactory from "../helpers/fixtureFactory";
 
 fixtureFactory({
-  title: "C13817: Throws error when running command after bad configure",
-  url: urlCollector
+  title: "C13817: Throws error when running command after bad configure"
 });
 
 test.meta({

@@ -1,7 +1,8 @@
 {
-      "browsers": [
-        "saucelabs:Chrome@latest:OS X 10.11"
-      ],
-      "src": "test/functional/specs/desktop/*.js",
-      "skipJsErrors": "true"
-    }
+  "src": "test/functional/specs/*.js",
+  "skipJsErrors": "true",
+  "clientScripts": [
+    { "path": "test/functional/helpers/alloyPageSnippet/index.js" },
+    { "path": "dist/standalone/alloy.js" }
+  ]
+}
