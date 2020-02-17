@@ -1,5 +1,5 @@
-import fixtureFactory from "../../helpers/fixtureFactory";
-import testServerUrl from "../../helpers/constants/testServerUrl";
+import fixtureFactory from "../helpers/fixtureFactory";
+import testServerUrl from "../helpers/constants/testServerUrl";
 
 fixtureFactory({
   title: "C13816: Throws error when configure has no options",

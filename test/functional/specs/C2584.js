@@ -1,10 +1,10 @@
 import { ClientFunction } from "testcafe";
-import createConsoleLogger from "../../helpers/consoleLogger";
-import fixtureFactory from "../../helpers/fixtureFactory";
-import testServerUrl from "../../helpers/constants/testServerUrl";
+import createConsoleLogger from "../helpers/consoleLogger";
+import fixtureFactory from "../helpers/fixtureFactory";
+import testServerUrl from "../helpers/constants/testServerUrl";
 
-import baseConfig from "../../helpers/constants/baseConfig";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
+import baseConfig from "../helpers/constants/baseConfig";
+import configureAlloyInstance from "../helpers/configureAlloyInstance";
 
 const url = `${testServerUrl}/alloyTestPage.html`;
 

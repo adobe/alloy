@@ -1,6 +1,6 @@
 import { ClientFunction } from "testcafe";
-import testServerUrl from "../../helpers/constants/testServerUrl";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import testServerUrl from "../helpers/constants/testServerUrl";
+import fixtureFactory from "../helpers/fixtureFactory";
 
 fixtureFactory({
   title:

@@ -1,8 +1,8 @@
-import fixtureFactory from "../../helpers/fixtureFactory";
-import testServerUrl from "../../helpers/constants/testServerUrl";
+import fixtureFactory from "../helpers/fixtureFactory";
+import testServerUrl from "../helpers/constants/testServerUrl";
 
-import debugEnabledConfig from "../../helpers/constants/debugEnabledConfig";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
+import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
+import configureAlloyInstance from "../helpers/configureAlloyInstance";
 
 fixtureFactory({
   title: "C2588: Throws error when configure is executed multiple times.",

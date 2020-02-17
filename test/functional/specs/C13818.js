@@ -1,8 +1,8 @@
 import { RequestLogger, ClientFunction } from "testcafe";
-import fixtureFactory from "../../helpers/fixtureFactory";
-import testServerUrl from "../../helpers/constants/testServerUrl";
-import baseConfig from "../../helpers/constants/baseConfig";
-import alternateConfig from "../../helpers/constants/alternateConfig";
+import fixtureFactory from "../helpers/fixtureFactory";
+import testServerUrl from "../helpers/constants/testServerUrl";
+import baseConfig from "../helpers/constants/baseConfig";
+import alternateConfig from "../helpers/constants/alternateConfig";
 
 const networkLoggerConfig = {
   logRequestBody: true,

@@ -1,5 +1,5 @@
-import fixtureFactory from "../../helpers/fixtureFactory";
-import testServerUrl from "../../helpers/constants/testServerUrl";
+import fixtureFactory from "../helpers/fixtureFactory";
+import testServerUrl from "../helpers/constants/testServerUrl";
 
 fixtureFactory({
   title: "C13817: Throws error when running command after bad configure",

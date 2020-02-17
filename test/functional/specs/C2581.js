@@ -1,11 +1,11 @@
 import { t, ClientFunction, RequestMock } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import fixtureFactory from "../../helpers/fixtureFactory";
-import testServerUrl from "../../helpers/constants/testServerUrl";
+import createNetworkLogger from "../helpers/networkLogger";
+import getResponseBody from "../helpers/networkLogger/getResponseBody";
+import fixtureFactory from "../helpers/fixtureFactory";
+import testServerUrl from "../helpers/constants/testServerUrl";
 
-import debugEnabledConfig from "../../helpers/constants/debugEnabledConfig";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
+import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
+import configureAlloyInstance from "../helpers/configureAlloyInstance";
 
 const networkLogger = createNetworkLogger();
 const urlCollector = `${testServerUrl}/alloyTestPage.html`;
