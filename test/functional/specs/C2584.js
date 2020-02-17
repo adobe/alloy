@@ -18,15 +18,11 @@ test.meta({
 });
 
 const debugCommand = ClientFunction(enabled => {
-  return new Promise(resolve => {
-    window.alloy("debug", { enabled }).then(() => resolve());
-  });
+  return window.alloy("debug", { enabled });
 });
 
 const getLibraryInfoCommand = ClientFunction(() => {
-  return new Promise(resolve => {
-    window.alloy("getLibraryInfo").then(() => resolve());
-  });
+  return window.alloy("getLibraryInfo");
 });
 
 test("Test C2584: debug command with enable: true. getLibraryInfo. refresh. toggle and repeat.", async t => {
