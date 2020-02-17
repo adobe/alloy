@@ -16,13 +16,11 @@
     "allure:generate": "allure generate allure/allure-results/ -o allure/allure-report/",
     "test:watch": "karma start",
     "test:watch:chrome": "karma start --browsers Chrome",
-
     "functional:ci": "EDGE_ENV=\"'ee'\" testcafe 'saucelabs:Chrome@latest:OS X 10.11'",
     "functional:local": "EDGE_ENV=\"'ee'\" testcafe chrome",
     "functional:local:headless": "EDGE_ENV=\"'ee'\" testcafe chrome:headless",
     "functional:local:build": "EDGE_ENV=\"'ee'\" npm run build:prod && testcafe chrome",
     "functional:local:watch": "EDGE_ENV=\"'ee'\" testcafe chrome --live",
-    
     "prebuild": "npm run clean && npm run format && npm run lint",
     "build": "rollup -c",
     "prebuild:prod": "npm run prebuild",
