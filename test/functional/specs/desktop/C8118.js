@@ -6,11 +6,9 @@ import addAnchorToBody from "../../helpers/dom/addAnchorToBody";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createConsoleLogger from "../../helpers/consoleLogger";
 
-const fixtureUrl = `${testServerUrl}/test/functional/sandbox/html/alloyTestPage.html`;
-
 fixtureFactory({
   title: "C8118: Send event with information about link clicks.",
-  url: fixtureUrl
+  url: `${testServerUrl}/alloyTestPage.html`
 });
 
 test.meta({

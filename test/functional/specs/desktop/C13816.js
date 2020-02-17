@@ -1,11 +1,9 @@
 import fixtureFactory from "../../helpers/fixtureFactory";
 import testServerUrl from "../../helpers/constants/testServerUrl";
 
-const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloySdk.html`;
-
 fixtureFactory({
   title: "C13816: Throws error when configure has no options",
-  url: urlCollector
+  url: `${testServerUrl}/alloyTestPage.html`
 });
 
 test.meta({

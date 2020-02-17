@@ -4,7 +4,6 @@ import testServerUrl from "../../helpers/constants/testServerUrl";
 import baseConfig from "../../helpers/constants/baseConfig";
 import alternateConfig from "../../helpers/constants/alternateConfig";
 
-const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloySdk.html`;
 const networkLoggerConfig = {
   logRequestBody: true,
   stringifyRequestBody: true
@@ -21,7 +20,7 @@ const networkLogger2 = RequestLogger(
 fixtureFactory({
   title:
     "C13818: Changing the options object after configure doesn't change the computed config",
-  url: urlCollector,
+  url: `${testServerUrl}/alloyTestPage.html`,
   requestHooks: [networkLogger1, networkLogger2]
 });
 
