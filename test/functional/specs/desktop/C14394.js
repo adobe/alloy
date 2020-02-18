@@ -4,7 +4,7 @@ import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import { responseStatus } from "../../helpers/assertions/index";
 import fixtureFactory from "../../helpers/fixtureFactory";
 import testServerUrl from "../../helpers/constants/testServerUrl";
-import { getPayloadsByType } from "../../helpers/utils";
+import createResponse from "../../../../src/core/createResponse";
 
 const urlCollector = `${testServerUrl}/test/functional/sandbox/html/alloyTestPage.html`;
 const networkLogger = createNetworkLogger();
@@ -60,7 +60,9 @@ test("Test C14394: When ID migration is enabled and no identity cookie is found 
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
 
-  const payloads = getPayloadsByType("identity:result", response);
+  const payloads = createResponse(response).getPayloadsByType(
+    "identity:result"
+  );
   const ecidPayload = payloads.filter(
     payload => payload.namespace.code === "ECID"
   )[0];
