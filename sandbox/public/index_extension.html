@@ -23,7 +23,7 @@
       var dataLayer = {
         // Demonstrates overriding automatically collected data
         device: {
-          screenHeight: 1
+          screenHeight: 666
         }
       };
     </script>
@@ -38,8 +38,9 @@
       (document, document.location.href.indexOf("mboxEdit") !== -1, ".personalization-container { opacity: 0 !important }", 3000);
     </script>
 
+    <!-- Using UnifiedEdgeQEOnly, property alloyio.com -->
     <script
-      src="//assets.adobedtm.com/1281f6ff0c59/c2b711dc1596/launch-c80198ec8c6d-development.js"
+      src="//assets.adobedtm.com/4b26fd82417d/e34bddb5ee87/launch-b1dd2c004c8c-development.js"
       async
     ></script>
   </head>
@@ -47,6 +48,7 @@
     <div id="root">
       <button class="optInButton">Opt In</button>
       <button class="optOutButton">Opt Out</button>
+      <button class="setCustomerIds">Set Customer IDs</button>
 
       <div class="personalization-container">
         <h2>Some awesome default content</h2>
