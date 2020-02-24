@@ -10,16 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, string, callback } from "../../utils/validation";
+import {
+  boolean,
+  string,
+  callback,
+  objectOf,
+  enumOf
+} from "../../utils/validation";
 import { noop } from "../../utils";
 import { EDGE_DOMAIN } from "../../constants/domains";
 import EDGE_BASE_PATH from "../../constants/edgeBasePath";
-import { IN } from "../../constants/consentStatus";
+import { IN, PENDING } from "../../constants/consentStatus";
+import { GENERAL } from "../../constants/consentPurpose";
 
 export default () => ({
   errorsEnabled: boolean().default(true),
   debugEnabled: boolean().default(false),
-  defaultConsent: string().default(IN),
+  defaultConsent: objectOf({
+    [GENERAL]: enumOf(IN, PENDING).default(IN)
+  }).default({ [GENERAL]: IN }),
   configId: string()
     .unique()
     .required(),

@@ -10,32 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { objectOf, string } from "../../utils/validation";
+import { objectOf, enumOf } from "../../utils/validation";
 import { IN, OUT } from "../../constants/consentStatus";
+import { GENERAL } from "../../constants/consentPurpose";
 
 const CONSENT_HANDLE = "privacy:consent";
 
 const validateSetConsentOptions = objectOf({
-  value: string().required()
-});
+  [GENERAL]: enumOf(IN, OUT).required()
+}).required();
 
 const createPrivacy = ({ consent }) => {
   return {
     commands: {
       setConsent(options) {
-        const { value } = validateSetConsentOptions(options);
-
-        const lowerCaseValue = value.toLowerCase();
-
-        if (lowerCaseValue !== IN && lowerCaseValue !== OUT) {
-          throw new Error(
-            `Consent must be ${IN} or ${OUT}. Received: ${value}`
-          );
-        }
-
-        return consent.setConsent({
-          general: value
-        });
+        return consent.setConsent(validateSetConsentOptions(options));
       }
     },
     lifecycle: {

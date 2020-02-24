@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 
 import createPrivacyComponent from "../../../../../src/components/Privacy/index";
 import { IN } from "../../../../../src/constants/consentStatus";
+import { GENERAL } from "../../../../../src/constants/consentPurpose";
 
 describe("Privacy::index", () => {
   let setConsentPromise;
@@ -29,11 +30,11 @@ describe("Privacy::index", () => {
   describe("setConsent", () => {
     it("notifies consent of consent preferences", () => {
       const promise = privacy.commands.setConsent({
-        value: "in"
+        [GENERAL]: IN
       });
 
       expect(consent.setConsent).toHaveBeenCalledWith({
-        general: IN
+        [GENERAL]: IN
       });
       expect(promise).toBe(setConsentPromise);
     });

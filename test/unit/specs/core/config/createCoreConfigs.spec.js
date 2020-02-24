@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 
 import createCoreConfigs from "../../../../../src/core/config/createCoreConfigs";
 import { objectOf } from "../../../../../src/utils/validation";
-import { IN, OUT } from "../../../../../src/constants/consentStatus";
+import { IN, OUT, PENDING } from "../../../../../src/constants/consentStatus";
+import { GENERAL } from "../../../../../src/constants/consentPurpose";
 
 describe("createCoreConfigs", () => {
   const baseConfig = { configId: "1234", orgId: "org1" };
@@ -80,27 +81,40 @@ describe("createCoreConfigs", () => {
   describe("defaultConsent", () => {
     it("validates defaultConsent=undefined", () => {
       const config = objectOf(createCoreConfigs())(baseConfig);
-      expect(config.defaultConsent).toBe(IN);
+      expect(config.defaultConsent).toEqual({ [GENERAL]: IN });
     });
-
-    it("validates defaultConsent=in", () => {
+    it("validates defaultConsent={}", () => {
       const config = objectOf(createCoreConfigs())({
-        defaultConsent: "in",
+        defaultConsent: {},
         ...baseConfig
       });
-      expect(config.defaultConsent).toBe(IN);
+      expect(config.defaultConsent).toEqual({ [GENERAL]: IN });
     });
-    it("validates defaultConsent=false", () => {
+    it("validates defaultConsent={general:'in'}", () => {
       const config = objectOf(createCoreConfigs())({
-        defaultConsent: "out",
+        defaultConsent: { [GENERAL]: IN },
         ...baseConfig
       });
-      expect(config.defaultConsent).toBe(OUT);
+      expect(config.defaultConsent).toEqual({ [GENERAL]: IN });
     });
-
+    it("validates defaultConsent={general:'pending'}", () => {
+      const config = objectOf(createCoreConfigs())({
+        defaultConsent: { [GENERAL]: PENDING },
+        ...baseConfig
+      });
+      expect(config.defaultConsent).toEqual({ [GENERAL]: PENDING });
+    });
     it("validates defaultConsent=123", () => {
       expect(() => {
         objectOf(createCoreConfigs())({ defaultConsent: 123, ...baseConfig });
+      }).toThrowError();
+    });
+    it("validates defaultConsent={general:'out'}", () => {
+      expect(() => {
+        objectOf(createCoreConfigs())({
+          defaultConsent: { [GENERAL]: OUT },
+          ...baseConfig
+        });
       }).toThrowError();
     });
   });

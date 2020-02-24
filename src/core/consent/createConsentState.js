@@ -40,7 +40,8 @@ export default ({ config }) => {
     if (!suspended) {
       const persistedConsentByPurpose = getPersistedConsent(consentCookieName);
       consentByPurpose = consentPurposes.reduce((memo, purpose) => {
-        memo[purpose] = persistedConsentByPurpose[purpose] || defaultConsent;
+        memo[purpose] =
+          persistedConsentByPurpose[purpose] || defaultConsent[purpose];
         return memo;
       }, {});
       notifyOnChangeHandlers();
