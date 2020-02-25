@@ -24,7 +24,7 @@ Several npm scripts have been provided for assisting in development. Each script
 * `lint` Analyzes code for potential errors.
 * `format` Formats code to match agreed-upon style guidelines.
 
-For functional testing, please see the [functional testing documentation](test/docs/alloy_qe_func.png).
+For functional testing, please see the [functional testing documentation](test/docs/HOWTO.md).
 
 When you attempt to commit code changes, several of the above tasks will be run automatically to help ensure that your changes pass tests and are consistent with agreed-upon standards.
 
@@ -39,9 +39,3 @@ If you need to change the documentation URL that the `adobe.ly` URL redirects to
 ## Requesting Write Access (Adobe Employees)
 
 For Adobe Employees that would like write access to this repository, please follow the instructions found in the [GitHub Adobe Org Management document](https://git.corp.adobe.com/OpenSourceAdvisoryBoard/handbook/blob/master/GitHub-Adobe-Org-Management.md#request-access-to-our-adobe-github-org). When you must indicate a team to which your user should be added, please enter `adobe|UnifiedJS`.
-
-## Temporary Workaround for Environments
-
-1. When configuring Alloy, set`edgeDomain` to `konductor.int.gslb.eegw.adobedc.net`.
-2. Open `src/constants/domains.js` and change `adobedc.demdex.net` to `adobedc-int.demdex.net`.
-3. Open `src/core/network/createNetwork.js` and remove `/${edgeBasePath}` from the url literal string template.
