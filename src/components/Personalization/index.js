@@ -19,9 +19,11 @@ import * as SCHEMAS from "../../constants/schemas";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 const PAGE_WIDE_SCOPE = "page_wide_scope";
-const GET_DECISIONS_OPTIONS_SCHEMA = {
-  scopes: arrayOf(string()).default([])
-};
+const GET_DECISIONS_VALIDATOR = objectOf({
+  scopes: arrayOf(string().required())
+    .nonEmpty()
+    .required()
+}).required();
 const allSchemas = values(SCHEMAS);
 // This is used for Target VEC integration
 const isAuthoringMode = () => document.location.href.indexOf("mboxEdit") !== -1;
@@ -89,21 +91,6 @@ const createCollect = eventManager => {
   };
 };
 
-const validateOptions = options => {
-  const validate = objectOf(GET_DECISIONS_OPTIONS_SCHEMA);
-  const result = validate(options);
-  const { scopes } = result;
-
-  if (scopes.length === 0) {
-    throw new Error(
-      "Invalid getDecisions command options parameter: " +
-        "Scopes must be defined."
-    );
-  }
-
-  return result;
-};
-
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { prehidingStyle } = config;
   const authoringModeEnabled = isAuthoringMode();
@@ -166,8 +153,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     },
 
     commands: {
-      getDecisions(options = {}) {
-        const { scopes } = validateOptions(options);
+      getDecisions(options) {
+        const { scopes } = GET_DECISIONS_VALIDATOR(options);
         // Cloning scopes to avoid changing input options
         const localScopes = [...scopes];
 
