@@ -10,8 +10,6 @@ governing permissions and limitations under the License.
 */
 
 import createPrivacyComponent from "../../../../../src/components/Privacy/index";
-import { IN } from "../../../../../src/constants/consentStatus";
-import { GENERAL } from "../../../../../src/constants/consentPurpose";
 
 describe("Privacy::index", () => {
   let setConsentPromise;
@@ -30,11 +28,11 @@ describe("Privacy::index", () => {
   describe("setConsent", () => {
     it("notifies consent of consent preferences", () => {
       const promise = privacy.commands.setConsent({
-        [GENERAL]: IN
+        general: "in"
       });
 
       expect(consent.setConsent).toHaveBeenCalledWith({
-        [GENERAL]: IN
+        general: "in"
       });
       expect(promise).toBe(setConsentPromise);
     });

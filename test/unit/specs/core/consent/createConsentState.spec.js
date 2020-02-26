@@ -12,8 +12,6 @@ governing permissions and limitations under the License.
 
 import createConsentState from "../../../../../src/core/consent/createConsentState";
 import { cookieJar } from "../../../../../src/utils";
-import { IN, PENDING } from "../../../../../src/constants/consentStatus";
-import { GENERAL } from "../../../../../src/constants/consentPurpose";
 
 describe("createConsentState", () => {
   const consentCookieName = "kndctr_ABC_Adobe_consent";
@@ -23,7 +21,7 @@ describe("createConsentState", () => {
     cookieJar.remove(consentCookieName);
     config = {
       orgId: "ABC@Adobe",
-      defaultConsent: { [GENERAL]: PENDING }
+      defaultConsent: { general: "pending" }
     };
   });
 
@@ -34,7 +32,7 @@ describe("createConsentState", () => {
     });
 
     it("returns false if consent cookie is not set and default consent is set to IN", () => {
-      config.defaultConsent = { [GENERAL]: IN };
+      config.defaultConsent = { general: "in" };
       const consentState = createConsentState({ config });
       expect(consentState.isPending()).toBeFalse();
     });

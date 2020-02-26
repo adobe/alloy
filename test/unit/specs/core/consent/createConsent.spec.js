@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import createConsent from "../../../../../src/core/consent/createConsent";
-import { IN } from "../../../../../src/constants/consentStatus";
 import { defer } from "../../../../../src/utils";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
@@ -69,7 +68,7 @@ describe("createConsent", () => {
 
     return expectAsync(
       consent.setConsent({
-        general: IN
+        general: "in"
       })
     ).toBeRejectedWithError(
       "The user previously declined consent, which cannot be changed."
@@ -83,7 +82,7 @@ describe("createConsent", () => {
       return requestDeferred.promise;
     });
     consent.setConsent({
-      general: IN
+      general: "in"
     });
 
     return flushPromiseChains().then(() => {
@@ -106,7 +105,7 @@ describe("createConsent", () => {
     );
 
     const consentByPurpose = {
-      general: IN
+      general: "in"
     };
 
     consent.setConsent(consentByPurpose);
@@ -131,7 +130,7 @@ describe("createConsent", () => {
   it("resolves promise if request succeeds", () => {
     return expectAsync(
       consent.setConsent({
-        general: IN
+        general: "in"
       })
     ).toBeResolvedTo(undefined);
   });
@@ -142,7 +141,7 @@ describe("createConsent", () => {
     );
     return expectAsync(
       consent.setConsent({
-        general: IN
+        general: "in"
       })
     ).toBeRejectedWithError("Error occurred.");
   });
