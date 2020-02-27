@@ -29,11 +29,53 @@
           : decodeURIComponent(results[1].replace(/\+/g, " "));
       }
 
+      function generateEmail(length, domain) {
+        const chars = [..."abcdefghijklmnopqrstuvwxyz0123456789"];
+        return [...Array(length)].map(i=>chars[Math.random()*chars.length|0]).join`` + '@' + domain;
+      }
+
+      var email = generateEmail(15,"alloye2etest.com");
+
+      // function to get email sha-256 cryptographic value
+      async function get_email_sha256(str) {
+        const buf = await crypto.subtle.digest("SHA-256", new TextEncoder("utf-8").encode(str));
+        return Array.prototype.map.call(new Uint8Array(buf), x=>(('00'+x.toString(16)).slice(-2))).join('');
+      }
+
+      function isSetCustomerIds() {
+        return (getUrlParameter("setCustomerIds") == "true");
+      }
+
       alloy("configure", {
+        // TO-DO: remove temporary workaround for collect call with identityMap until thirdPartyCookiesEnabled default behavior is fixed
+        thirdPartyCookiesEnabled: isSetCustomerIds() ? true : false,
         edgeDomain: "firstparty.alloyio.com",
         configId: getUrlParameter("configId"),
         orgId: "555B08345D76A68D0A495E79@AdobeOrg"
       });
+
+      if (isSetCustomerIds()) {
+        var emailPromise = Promise.resolve(get_email_sha256(email));
+        emailPromise.then(function(result) {
+            window.e2e_email_lc_sha256 = result;
+        });
+        console.log("setCustomerIds option is enabled");
+        alloy("setCustomerIds", {
+          Email_LC_SHA256: {
+            id: email,
+            authenticatedState: "ambiguous",
+            hashEnabled: true,
+            primary: true
+          },
+          HYP: {
+            id: "9997",
+            authenticatedState: "ambiguous"
+          }
+        }).then(function() {
+          console.log("Email SHA-256 value: ", e2e_email_lc_sha256);
+          console.log("Sandbox: Set customer IDs event has completed.");
+        });
+      }
 
       alloy("event", {
         viewStart: true
