@@ -12,4 +12,4 @@ Or if you want to use headless browsers, run:
 
 ## How to run a single test locally?
 
-`npm run functional:local:headless -t "test/functional/specs/desktop/C13818.js"`
+`npm run functional:local:headless -t "test/functional/specs/C13818.js"`
