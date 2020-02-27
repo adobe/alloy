@@ -65,5 +65,11 @@ test("Test C14402: When ID migration is enabled and no legacy AMCV cookie is fou
 
   const documentCookie = await getDocumentCookie();
 
-  await t.expect(documentCookie.indexOf(`MCMID|${ecidPayload.id}`)).gt(-1);
+  await t
+    .expect(
+      documentCookie.indexOf(
+        `AMCV_53A16ACB5CC1D3760A495C99%40AdobeOrg=MCMID|${ecidPayload.id}`
+      )
+    )
+    .gt(-1);
 });

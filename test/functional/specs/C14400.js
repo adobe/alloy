@@ -11,7 +11,7 @@ const { ecidRegex } = generalConstants;
 
 fixtureFactory({
   title:
-    "C14400: When ID migration is disabled and no identity cookie is found but legacy s_ecid cookie is found, the ECID should not sent on the request",
+    "C14400: When ID migration is disabled and no identity cookie is found but legacy s_ecid cookie is found, the ECID should not be sent on the request",
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
@@ -46,7 +46,7 @@ const getDocumentCookie = ClientFunction(() => {
   return document.cookie;
 });
 
-test("Test C14400: When ID migration is disabled and no identity cookie is found but legacy s_ecid cookie is found, the ECID should not sent on the request", async () => {
+test("Test C14400: When ID migration is disabled and no identity cookie is found but legacy s_ecid cookie is found, the ECID should not be sent on the request", async () => {
   await apiCalls();
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
@@ -73,5 +73,11 @@ test("Test C14400: When ID migration is disabled and no identity cookie is found
 
   const documentCookie = await getDocumentCookie();
 
-  await t.expect(documentCookie.indexOf(`MCMID|${ecidPayload.id}`)).eql(-1);
+  await t
+    .expect(
+      documentCookie.indexOf(
+        `AMCV_53A16ACB5CC1D3760A495C99%40AdobeOrg=MCMID|${ecidPayload.id}`
+      )
+    )
+    .eql(-1);
 });
