@@ -20,6 +20,7 @@ import createArrayOfValidator from "./createArrayOfValidator";
 import createDefaultValidator from "./createDefaultValidator";
 import createLiteralValidator from "./createLiteralValidator";
 import createMinimumValidator from "./createMinimumValidator";
+import createNoUnknownFieldsValidator from "./createNoUnknownFieldsValidator";
 import createNonEmptyValidator from "./createNonEmptyValidator";
 import createObjectOfValidator from "./createObjectOfValidator";
 import createAnyOfValidator from "./createAnyOfValidator";
@@ -97,7 +98,12 @@ const number = function number() {
   });
 };
 const objectOf = function objectOf(schema) {
-  return nullSafeChain(this, createObjectOfValidator(schema));
+  const noUnknownFields = function noUnknownFields() {
+    return nullSafeChain(this, createNoUnknownFieldsValidator(schema));
+  };
+  return nullSafeChain(this, createObjectOfValidator(schema), {
+    noUnknownFields
+  });
 };
 const string = function string() {
   return nullSafeChain(this, stringValidator, {

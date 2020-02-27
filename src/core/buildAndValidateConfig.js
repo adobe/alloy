@@ -26,7 +26,9 @@ const buildSchema = (coreConfigValidators, componentCreators) => {
 
 const transformOptions = (schema, options) => {
   try {
-    const validator = objectOf(schema).required();
+    const validator = objectOf(schema)
+      .noUnknownFields()
+      .required();
     return validator(options);
   } catch (e) {
     throw new Error(
