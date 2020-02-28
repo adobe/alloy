@@ -33,12 +33,7 @@ const apiCalls = ClientFunction(() => {
   });
 
   return window.alloy("event", {
-    viewStart: true,
-    xdm: {
-      device: {
-        screenHeight: 1
-      }
-    }
+    viewStart: true
   });
 });
 
@@ -74,10 +69,8 @@ test("Test C14400: When ID migration is disabled and no identity cookie is found
   const documentCookie = await getDocumentCookie();
 
   await t
-    .expect(
-      documentCookie.indexOf(
-        `AMCV_53A16ACB5CC1D3760A495C99%40AdobeOrg=MCMID|${ecidPayload.id}`
-      )
-    )
-    .eql(-1);
+    .expect(documentCookie)
+    .notContains(
+      `AMCV_53A16ACB5CC1D3760A495C99%40AdobeOrg=MCMID|${ecidPayload.id}`
+    );
 });

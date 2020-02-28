@@ -32,12 +32,7 @@ const apiCalls = ClientFunction(() => {
   });
 
   return window.alloy("event", {
-    viewStart: true,
-    xdm: {
-      device: {
-        screenHeight: 1
-      }
-    }
+    viewStart: true
   });
 });
 
