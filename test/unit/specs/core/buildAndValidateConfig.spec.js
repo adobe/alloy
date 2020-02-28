@@ -85,7 +85,6 @@ describe("buildAndValidateConfig", () => {
 
   it("logs and returns computed configuration", () => {
     logger.enabled = true;
-    options.foo = "bar";
     buildAndValidateConfig({
       options,
       componentCreators,
@@ -99,6 +98,22 @@ describe("buildAndValidateConfig", () => {
       debugEnabled: false,
       idSyncEnabled: true
     });
+  });
+
+  it("throws an error for unknown fields", () => {
+    logger.enabled = true;
+    options.foo = "bar";
+    expect(() =>
+      buildAndValidateConfig({
+        options,
+        componentCreators,
+        coreConfigValidators,
+        createConfig,
+        logger,
+        setDebugEnabled,
+        setErrorsEnabled
+      })
+    ).toThrowError();
   });
 
   it("returns config", () => {
