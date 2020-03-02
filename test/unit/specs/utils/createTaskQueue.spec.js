@@ -15,6 +15,17 @@ import { defer } from "../../../../src/utils";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
 
 describe("createTaskQueue", () => {
+  it("executes a single task once even when it throws an error", () => {
+    const queue = createTaskQueue();
+    const task1 = jasmine
+      .createSpy("task1")
+      .and.returnValue(Promise.reject(Error("myerror")));
+    return queue.addTask(task1).then(fail, e => {
+      expect(e.message).toEqual("myerror");
+      expect(task1).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it("executes tasks in sequence when first task succeeds", () => {
     const queue = createTaskQueue();
     const task1Deferred = defer();

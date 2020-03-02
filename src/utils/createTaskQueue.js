@@ -34,9 +34,10 @@ export default () => {
         return task();
       };
 
-      lastPromiseInQueue = lastPromiseInQueue
-        .then(lastPromiseFulfilledHandler)
-        .catch(lastPromiseFulfilledHandler);
+      lastPromiseInQueue = lastPromiseInQueue.then(
+        lastPromiseFulfilledHandler,
+        lastPromiseFulfilledHandler
+      );
 
       return new Promise((resolve, reject) => {
         lastPromiseInQueue.then(resolve, reject);
