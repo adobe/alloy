@@ -29,11 +29,69 @@
           : decodeURIComponent(results[1].replace(/\+/g, " "));
       }
 
+      function generateEmail(length, domain) {
+        const chars = [..."abcdefghijklmnopqrstuvwxyz0123456789"];
+        return (
+          [...Array(length)].map(i => chars[(Math.random() * chars.length) | 0])
+            .join`` +
+          "@" +
+          domain
+        );
+      }
+
+      const email = generateEmail(15, "alloye2etest.com");
+      const namespaceUserId = new Date().getTime();
+      const isSetCustomerIds = getUrlParameter("setCustomerIds") === "true";
+
+      // function to get email sha-256 cryptographic value
+      async function getEmailSha256(str) {
+        const buf = await crypto.subtle.digest(
+          "SHA-256",
+          new TextEncoder("utf-8").encode(str)
+        );
+        return Array.prototype.map
+          .call(new Uint8Array(buf), x => ("00" + x.toString(16)).slice(-2))
+          .join("");
+      }
+
       alloy("configure", {
+        // TO-DO: remove temporary workaround for collect call with identityMap until thirdPartyCookiesEnabled default behavior is fixed
+        thirdPartyCookiesEnabled: isSetCustomerIds,
         edgeDomain: "firstparty.alloyio.com",
         configId: getUrlParameter("configId"),
         orgId: "555B08345D76A68D0A495E79@AdobeOrg"
       });
+
+      if (isSetCustomerIds) {
+        var emailPromise = Promise.resolve(getEmailSha256(email));
+        emailPromise.then(function(result) {
+          window.e2eParamsObj = {
+            email_lc_sha256: result,
+            namespaceUserId: namespaceUserId
+          };
+        });
+        console.log("setCustomerIds option is enabled");
+        alloy("setCustomerIds", {
+          Email_LC_SHA256: {
+            id: email,
+            authenticatedState: "ambiguous",
+            hashEnabled: true,
+            primary: true
+          },
+          HYP: {
+            id: namespaceUserId,
+            authenticatedState: "ambiguous"
+          }
+        }).then(function() {
+          console.log(
+            "Email SHA-256 value: ",
+            e2eParamsObj["email_lc_sha256"],
+            " and namespace user ID: ",
+            e2eParamsObj["namespaceUserId"]
+          );
+          console.log("Sandbox: Set customer IDs event has completed.");
+        });
+      }
 
       alloy("event", {
         viewStart: true
