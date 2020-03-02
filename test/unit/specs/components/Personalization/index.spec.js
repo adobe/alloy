@@ -68,28 +68,6 @@ describe("Personalization", () => {
     expect(event.expectResponse).not.toHaveBeenCalled();
   });
 
-  it("expects getDecisions to return empty array when there are no decisions in storage for page wide scope", () => {
-    const isViewStart = true;
-    const response = {
-      getPayloadsByType() {
-        return SCOPES_FOO1_FOO2_DECISIONS;
-      }
-    };
-    const personalization = createPersonalization({
-      config,
-      logger,
-      eventManager
-    });
-
-    personalization.lifecycle.onResponse({ response });
-
-    const result = personalization.commands.getDecisions({
-      viewStart: isViewStart
-    });
-
-    expect(result).toEqual([]);
-  });
-
   it("expects getDecisions to return an array of decisions for the scopes provided", () => {
     const scopes = ["Foo1", "Foo3"];
     const response = {
@@ -184,65 +162,6 @@ describe("Personalization", () => {
 
     expect(Array.isArray(result)).toBeTrue();
     expect(result.length).toEqual(0);
-  });
-
-  it("expects getDecisions to return only the page wide scope decisions when only parameter viewStart is passed", () => {
-    const isViewStart = true;
-    const first = {
-      getPayloadsByType() {
-        return NO_SCOPES_DECISIONS;
-      }
-    };
-    const second = {
-      getPayloadsByType() {
-        return SCOPES_FOO1_FOO3_DECISIONS;
-      }
-    };
-    const personalization = createPersonalization({
-      config,
-      logger,
-      eventManager
-    });
-    personalization.lifecycle.onResponse({ response: first });
-    personalization.lifecycle.onResponse({ response: second });
-
-    const result = personalization.commands.getDecisions({
-      viewStart: isViewStart
-    });
-
-    expect(Array.isArray(result)).toBeTrue();
-    expect(result.length).toEqual(1);
-    expect(result[0].id).toEqual("TNT:activity1:experience1");
-  });
-
-  it("expects getDecisions to return page wide scope and specific scopes decisions when parameter viewStart and scopes is passed", () => {
-    const isViewStart = true;
-    const scopes = ["Foo1", "Foo3"];
-    const first = {
-      getPayloadsByType() {
-        return NO_SCOPES_DECISIONS;
-      }
-    };
-    const second = {
-      getPayloadsByType() {
-        return SCOPES_FOO1_FOO3_DECISIONS;
-      }
-    };
-    const personalization = createPersonalization({
-      config,
-      logger,
-      eventManager
-    });
-    personalization.lifecycle.onResponse({ response: first });
-    personalization.lifecycle.onResponse({ response: second });
-
-    const result = personalization.commands.getDecisions({
-      viewStart: isViewStart,
-      scopes
-    });
-
-    expect(Array.isArray(result)).toBeTrue();
-    expect(result.length).toEqual(3);
   });
 
   it("expects getDecisions to return empty array if the storage is empty", () => {
