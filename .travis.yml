@@ -15,12 +15,16 @@ addons:
   chrome: stable
   sonarcloud:
     organization: adobeinc
+before_install:
+- stty cols 80
+- npm install -g @lhci/cli@0.3.x
 services:
 - xvfb
 script:
 - npm install
 - npm run build:prod
 - npm run functional:ci
+- lhci autorun --config=./lighthouserc.json
 - npm run test:saucelabs
 - npm run checkbundlesize
 
@@ -34,6 +38,3 @@ notifications:
   on_success: always
   on_failure: always
   
-before_install:
-- stty cols 80
-
