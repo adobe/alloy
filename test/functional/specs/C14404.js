@@ -1,10 +1,14 @@
 import fixtureFactory from "../helpers/fixtureFactory";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 import baseConfig from "../helpers/constants/baseConfig";
+import createNetworkLogger from "../helpers/networkLogger";
+
+const networkLogger = createNetworkLogger();
 
 fixtureFactory({
   title:
-    "C14404: User cannot consent to all purposes after consenting to no purposes"
+    "C14404: User cannot consent to all purposes after consenting to no purposes",
+  requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({
@@ -41,4 +45,6 @@ test("Test C14404: User cannot consent to all purposes after consenting to no pu
     .expect(eventErrorMessage)
     .ok("Expected the event command to be rejected");
   await t.expect(eventErrorMessage).contains("The user declined consent.");
+  // make sure no event requests went out
+  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
 });
