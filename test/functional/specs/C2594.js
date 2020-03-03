@@ -7,7 +7,7 @@ fixtureFactory({
 });
 
 test.meta({
-  ID: "C2560",
+  ID: "C2594",
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
@@ -23,7 +23,6 @@ test("Test C2594: event command rejects promise if user consents to no purposes"
       .alloy("event", { data: { a: 1 } })
       .then(() => undefined, e => e.message)
   );
-  console.log(errorMessage);
   await t.expect(errorMessage).ok("Expected the event command to be rejected");
   await t.expect(errorMessage).contains("The user declined consent.");
 });
