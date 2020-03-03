@@ -6,28 +6,27 @@ import createNetworkLogger from "../helpers/networkLogger";
 const networkLogger = createNetworkLogger();
 
 fixtureFactory({
-  title: "C2594: event command rejects promise if user consents to no purposes",
+  title: "C14406: Unidentified user can consent to no purposes",
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({
-  ID: "C2594",
+  ID: "C14406",
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
 
-test("Test C2594: event command rejects promise if user consents to no purposes", async t => {
+test("Test C14406: Unidentified user can consent to no purposes", async t => {
   await configureAlloyInstance("alloy", {
     defaultConsent: { general: "pending" },
     ...baseConfig
   });
-  const errorMessagePromise = t.eval(() =>
+  await t.eval(() => window.alloy("setConsent", { general: "out" }));
+  const errorMessage = await t.eval(() =>
     window
       .alloy("event", { data: { a: 1 } })
       .then(() => undefined, e => e.message)
   );
-  await t.eval(() => window.alloy("setConsent", { general: "out" }));
-  const errorMessage = await errorMessagePromise;
 
   await t.expect(errorMessage).ok("Expected the event command to be rejected");
   await t.expect(errorMessage).contains("The user declined consent.");
