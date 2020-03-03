@@ -4,8 +4,7 @@
         "url": [
           "https://alloyio.com/"
         ],
-        "numberOfRuns": 2,
-        "staticDistDir": "./public"
+        "numberOfRuns": 2
       },
       "assert": {
         "preset": "lighthouse:recommended",

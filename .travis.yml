@@ -1,5 +1,4 @@
 dist: xenial
-sudo: required
 language:
 - node_js
 node_js:
@@ -30,11 +29,6 @@ script:
 
 notifications:
   slack: adobedx:AlI4WB2ojGDcqsBEVZ1EGsCR
-  email:
-  recipients:
-    - mowla@adobe.com
-    - khoury@adobe.com
-    - aahardy@adobe.com
   on_success: always
   on_failure: always
   
