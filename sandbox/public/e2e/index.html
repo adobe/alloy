@@ -40,7 +40,7 @@
       }
 
       const email = generateEmail(15, "alloye2etest.com");
-      const namespaceUserId = new Date().getTime();
+      const namespaceUserId = new Date().getTime().toString();
       const isSetCustomerIds = getUrlParameter("setCustomerIds") === "true";
 
       // function to get email sha-256 cryptographic value
