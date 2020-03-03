@@ -1,8 +1,6 @@
-/*
-import { t, ClientFunction } from "testcafe";
 import fixtureFactory from "../helpers/fixtureFactory";
-
-const getAlloyFunction = ClientFunction(() => !!window.alloy);
+import configureAlloyInstance from "../helpers/configureAlloyInstance";
+import baseConfig from "../helpers/constants/baseConfig";
 
 fixtureFactory({
   title: "C2594: event command rejects promise if user consents to no purposes"
@@ -14,8 +12,18 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C2594: event command rejects promise if user consents to no purposes", async () => {
-  const alloy = await getAlloyFunction();
-  await t.expect(alloy).ok();
+test("Test C2594: event command rejects promise if user consents to no purposes", async t => {
+  await configureAlloyInstance("alloy", {
+    defaultConsent: { general: "pending" },
+    ...baseConfig
+  });
+  await t.eval(() => window.alloy("setConsent", { general: "out" }));
+  const errorMessage = await t.eval(() =>
+    window
+      .alloy("event", { data: { a: 1 } })
+      .then(() => undefined, e => e.message)
+  );
+  console.log(errorMessage);
+  await t.expect(errorMessage).ok("Expected the event command to be rejected");
+  await t.expect(errorMessage).contains("The user declined consent.");
 });
-*/

@@ -19,8 +19,7 @@ import createComponent from "./createComponent";
 const createIdentity = ({ config, logger, consent, eventManager }) => {
   const processIdSyncs = processIdSyncsFactory({
     fireReferrerHideableImage,
-    logger,
-    consent
+    logger
   });
   return createComponent(processIdSyncs, config, logger, consent, eventManager);
 };
