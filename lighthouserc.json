@@ -2,25 +2,22 @@
     "ci": {
       "collect": {
         "url": [
-          "https://alloyio.com/"
+          "https://alloyio.com/functional-test/alloyPerf.html"
         ],
         "numberOfRuns": 2
       },
       "assert": {
-        "preset": "lighthouse:performance",
         "assertions": {
-          "categories.pwa": "off",
-          "bypass": ["error", {"minScore": 0}],
-          "offline-start-url": ["error", {"minScore": 0}],
-          "service-worker": ["error", {"minScore": 0}],
-          "works-offline": ["error", {"minScore": 0}],
-          "redirects-http": ["warn", {"minScore": 0}],
-          "render-blocking-resources": ["warn", {"maxLength": 1}],
-          "uses-http2": ["warn", {"minScore": 0}]
-        },
+          "categories:performance": ["error", {"minScore": 0.8}],
+          "first-contentful-paint": ["error", {"maxNumericValue": 2000}],
+          "interactive": ["error", {"maxNumericValue": 5200}],
+          "speed-index": ["error", {"maxNumericValue": 4300}],
+          "resource-summary:script:size": ["error", {"maxNumericValue": 170000}],
+          "resource-summary:total:size": ["error", {"maxNumericValue": 300000}]
+        }
+      },
       "upload": {
         "target": "temporary-public-storage"
       }
     }
   }
-}
