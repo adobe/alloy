@@ -7,28 +7,20 @@
         "numberOfRuns": 2
       },
       "assert": {
-        "preset": "lighthouse:recommended",
+        "preset": "lighthouse:performance",
         "assertions": {
-          "first-contentful-paint": [
-            "warn",
-            {
-              "maxNumericValue": 2500,
-              "aggregationMethod": "optimistic"
-            }
-          ],
-          "interactive": [
-            "warn",
-            {
-              "maxNumericValue": 5000,
-              "aggregationMethod": "optimistic"
-            }
-          ],
-          "uses-long-cache-ttl": "off",
-          "uses-http2": "off"
-        }
-      },
+          "categories.pwa": "off",
+          "bypass": ["error", {"minScore": 0}],
+          "offline-start-url": ["error", {"minScore": 0}],
+          "service-worker": ["error", {"minScore": 0}],
+          "works-offline": ["error", {"minScore": 0}],
+          "redirects-http": ["warn", {"minScore": 0}],
+          "render-blocking-resources": ["warn", {"maxLength": 1}],
+          "uses-http2": ["warn", {"minScore": 0}]
+        },
       "upload": {
         "target": "temporary-public-storage"
       }
     }
   }
+}
