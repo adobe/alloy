@@ -54,7 +54,7 @@
           location.host.indexOf("alloyio.com") !== -1
             ? "firstparty.alloyio.com"
             : undefined,
-        configId: "9999999",
+        configId: "8888888",
         orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
         debugEnabled: true,
         prehidingStyle: ".personalization-container { opacity: 0 !important }",
@@ -74,6 +74,7 @@
 
       alloy("event", {
         viewStart: true,
+        scopes: ["alloy-location-1", "alloy-location-2"],
         xdm: {
           // Demonstrates overriding automatically collected data
           device: {
@@ -103,7 +104,7 @@
       // We use a different orgId and configId.
       organizationTwo("configure", {
         // edgeDomain: "edgegateway.azurewebsites.net",
-        configId: "8888888",
+        configId: "9999999",
         orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
         debugEnabled: true,
         clickCollectionEnabled: false
