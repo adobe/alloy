@@ -10,7 +10,7 @@ const networkLogger1 = RequestLogger(
   networkLoggerConfig
 );
 const networkLogger2 = RequestLogger(
-  /v1\/(interact|collect)\?configId=8888888/,
+  /v1\/(interact|collect)\?configId=60928f59-0406-4353-bfe3-22ed633c4f67/,
   networkLoggerConfig
 );
 
@@ -41,7 +41,8 @@ const instance1Config = ClientFunction(() =>
     configId: "9999999",
     orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
     edgeBasePath: window.edgeBasePath,
-    idMigrationEnabled: false
+    idMigrationEnabled: false,
+    debugEnabled: true
   })
 );
 const instance1Event = ClientFunction(() =>
@@ -49,10 +50,11 @@ const instance1Event = ClientFunction(() =>
 );
 const instance2Config = ClientFunction(() =>
   window.instance2("configure", {
-    configId: "8888888",
-    orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
+    configId: "60928f59-0406-4353-bfe3-22ed633c4f67",
+    orgId: "334F60F35E1597910A495EC2@AdobeOrg",
     edgeBasePath: window.edgeBasePath,
-    idMigrationEnabled: false
+    idMigrationEnabled: false,
+    debugEnabled: true
   })
 );
 const instance2Event = ClientFunction(() =>
