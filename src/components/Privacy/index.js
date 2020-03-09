@@ -18,7 +18,9 @@ const CONSENT_HANDLE = "privacy:consent";
 
 const validateSetConsentOptions = objectOf({
   [GENERAL]: enumOf(IN, OUT).required()
-}).required();
+})
+  .noUnknownFields()
+  .required();
 
 const createPrivacy = ({ consent }) => {
   return {

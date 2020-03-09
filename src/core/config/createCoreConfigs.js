@@ -28,7 +28,9 @@ export default () => ({
   debugEnabled: boolean().default(false),
   defaultConsent: objectOf({
     [GENERAL]: enumOf(IN, PENDING).default(IN)
-  }).default({ [GENERAL]: IN }),
+  })
+    .noUnknownFields()
+    .default({ [GENERAL]: IN }),
   configId: string()
     .unique()
     .required(),
