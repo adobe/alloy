@@ -16,7 +16,6 @@ test.meta({
 test("Test C14412: While user is changing consent preferences, other requests should be queued", async t => {
   await configureAlloyInstance("alloy", {
     defaultConsent: { general: "pending" },
-    debugEnabled: true,
     ...baseConfig
   });
   await t.eval(() => window.alloy("setConsent", { general: "in" }));

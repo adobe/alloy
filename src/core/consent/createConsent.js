@@ -80,7 +80,13 @@ export default ({
     // lifecycle.onResponse notify consent of a consent response so that
     // the consent state can be unsuspended and sendEdgeNetworkRequest
     // can finish its process.
-    consentRequestComplete: consentState.unsuspend,
+    consentRequestComplete() {
+      if (queue.length === 0) {
+        // If we have more setConsent requests that need to run, run them
+        // before unsuspending the consent.
+        consentState.unsuspend();
+      }
+    },
     /**
      * Only to be called by the Privacy component when any request is complete.
      */
