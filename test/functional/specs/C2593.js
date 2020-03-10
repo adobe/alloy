@@ -23,7 +23,7 @@ const setConsentToIn = ClientFunction(() => {
 });
 // execute an event command with no request sent
 const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("event");
+  return { promise: window.alloy("event") };
 });
 
 test("Test C2593: Event command consents to all purposes", async () => {
@@ -33,7 +33,7 @@ test("Test C2593: Event command consents to all purposes", async () => {
     ...environmentContextConfig
   });
   // trigger alloy event
-  const promise = triggerAlloyEvent();
+  const promise = (await triggerAlloyEvent()).promise;
 
   // set consent to in
   await setConsentToIn();
