@@ -18,6 +18,19 @@ function HomeWithHistory({ history }) {
     previousPath = loc.pathname;
   });
 
+  const getDecisions = () => {
+    window
+      .alloy("getDecisions", {
+        scopes: ["alloy-location-1", "alloy-location-2"]
+      })
+      .then((decisions = []) => {
+        decisions.forEach(decision => {
+          const domLocation = document.querySelector(`.${decision.scope}`);
+          domLocation.innerHTML = decision.items[0].data.content;
+        });
+      });
+  };
+
   return (
     <div>
       <section>
@@ -32,15 +45,16 @@ function HomeWithHistory({ history }) {
           <br />
         </div>
 
-        <div className="personalization-container-2">
-          <h2>Some more awesome default content.</h2>
-          You only qualify for the offer{" "}
-          <span role="img" aria-label="">
-            👆
-          </span>{" "}
-          <br></br>
-          if you qualify for the <strong>`Shopping Cart Visitor`</strong>{" "}
-          Segment. (ID: 16754409):
+        <div className="personalization-decisions">
+          <div className="alloy-location-1">
+            <h2>Placeholder for Decision 1</h2>
+          </div>
+          <div className="alloy-location-2">
+            <h2>Placeholder for Decision 2</h2>
+          </div>
+          <div>
+            <button onClick={getDecisions}>Render Available Decisions</button>
+          </div>
         </div>
       </section>
     </div>
