@@ -2,20 +2,10 @@ import { t, ClientFunction } from "testcafe";
 
 export default {
   getViewportSize: ClientFunction(() => {
-    const viewportDiv = document.createElement("div");
-    viewportDiv.style.cssText =
-      "position: fixed;top: 0;left: 0;bottom: 0;right: 0;";
-    document.documentElement.insertBefore(
-      viewportDiv,
-      document.documentElement.firstChild
-    );
-    const viewportSize = {
-      width: viewportDiv.offsetWidth,
-      height: viewportDiv.offsetHeight
+    return {
+      width: window.top.innerWidth,
+      height: window.top.innerHeight
     };
-    document.documentElement.removeChild(viewportDiv);
-
-    return viewportSize;
   }),
   testRequestExpectedViewport: async (jsonRequest, expectedViewport) => {
     await t

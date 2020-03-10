@@ -63,8 +63,14 @@ test("C2660 - Context data is captured before user consents.", async () => {
   await event1.promise;
   await event2.promise;
 
-  // reset to original size
-  await t.resizeWindow(originalViewport.width, originalViewport.height);
+  /*
+    // reset to original size
+    NOTE: the height is resized to slightly less than the original size
+    due to a yet undetermined sequence or timing issue that occurs when
+    running the whole suite on certain machines, browser, or display
+    settings
+  */
+  await t.resizeWindow(originalViewport.width, originalViewport.height - 100);
 
   // expect that we made two requests
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
