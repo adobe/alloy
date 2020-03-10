@@ -4,7 +4,9 @@ import {
   cookieJar,
   getNamespacedCookieName,
   areThirdPartyCookiesSupportedByDefault,
-  find
+  find,
+  isObject,
+  isFunction
 } from "../../utils";
 import { IDENTITY_COOKIE_KEY } from "../../constants/cookieDetails";
 import getBrowser from "../../utils/getBrowser";
@@ -23,17 +25,78 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
     orgId,
     IDENTITY_COOKIE_KEY
   );
+  let deferredForOptInOld;
+  let deferredForVisitorECID;
   let deferredForIdentityCookie;
   const migration = createMigration({ orgId, consent });
   const hasIdentityCookie = () => Boolean(cookieJar.get(identityCookieName));
   const customerIds = createCustomerIds({ eventManager, consent, logger });
+  const Visitor = window.Visitor;
+  const doesVisitorExist =
+    isFunction(Visitor) && isFunction(Visitor.getInstance);
 
   // TO-DOCUMENT: We wait for ECID before trigger any events.
   const accommodateIdentityOnRequest = payload => {
     let promise;
 
+    const getVisitorECID = () => {
+      logger.log(
+        "Delaying request while using Visitor to retrieve ECID from server."
+      );
+
+      const visitor = Visitor.getInstance(orgId, {});
+
+      visitor.getMarketingCloudVisitorID(ecid => {
+        if (!ecid) {
+          return;
+        }
+
+        payload.expectResponse();
+        addEcidToPayload(payload, ecid);
+
+        if (
+          config.thirdPartyCookiesEnabled &&
+          areThirdPartyCookiesSupportedByDefault(getBrowser(window))
+        ) {
+          payload.useIdThirdPartyDomain();
+        }
+
+        logger.log(
+          "Resuming previously delayed request that was waiting for ECID from Visitor."
+        );
+
+        const deferred = deferredForOptInOld || deferredForVisitorECID;
+
+        deferred.resolve();
+      }, true);
+    };
+
     if (!hasIdentityCookie()) {
-      if (deferredForIdentityCookie) {
+      if (doesVisitorExist && !deferredForOptInOld && !deferredForVisitorECID) {
+        if (isObject(window.adobe) && isObject(window.adobe.optIn)) {
+          const optInOld = window.adobe.optIn;
+
+          deferredForOptInOld = defer();
+          logger.log(
+            "Delaying request while waiting for legacy opt in to let Visitor retrieve ECID from server."
+          );
+          promise = deferredForOptInOld.promise;
+
+          optInOld.fetchPermissions(() => {
+            if (optInOld.isApproved([optInOld.Categories.ECID])) {
+              logger.log(
+                "Received legacy opt in approval to let Visitor retrieve ECID from server."
+              );
+
+              getVisitorECID();
+            }
+          }, true);
+        } else {
+          deferredForVisitorECID = defer();
+          promise = deferredForVisitorECID.promise;
+          getVisitorECID();
+        }
+      } else if (deferredForIdentityCookie) {
         // We don't have an identity cookie, but the first request has
         // been sent to get it. We must wait for the response to the first
         // request to come back and a cookie set before we can let this
