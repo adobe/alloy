@@ -59,7 +59,7 @@ const instance2Event = ClientFunction(() =>
   window.instance2("event", { data: { key: "value" } })
 );
 
-test.skip("Test C2579: Separate ECIDs are used for multiple SDK instances.", async () => {
+test("Test C2579: Separate ECIDs are used for multiple SDK instances.", async () => {
   await instance1Config();
   await instance2Config();
   await instance1Event();
