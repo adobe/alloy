@@ -54,10 +54,6 @@ describe("createConsent", () => {
     expect(consent.awaitConsent).toBe(awaitConsent);
   });
 
-  it("exposes consentRequestComplete", () => {
-    expect(consent.consentRequestComplete).toBe(consentState.unsuspend);
-  });
-
   it("exposes requestComplete", () => {
     expect(consent.requestComplete).toBe(consentState.updateFromCookies);
   });
@@ -85,12 +81,48 @@ describe("createConsent", () => {
       general: "in"
     });
 
-    return flushPromiseChains().then(() => {
-      expect(consentState.suspend).toHaveBeenCalled();
-      expect(consentState.unsuspend).not.toHaveBeenCalled();
-      consent.consentRequestComplete();
-      expect(consentState.unsuspend).toHaveBeenCalled();
-    });
+    return flushPromiseChains()
+      .then(() => {
+        expect(consentState.suspend).toHaveBeenCalled();
+        expect(consentState.unsuspend).not.toHaveBeenCalled();
+        requestDeferred.resolve();
+        consent.consentRequestComplete();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(consentState.unsuspend).toHaveBeenCalled();
+      });
+  });
+
+  it("suspends consent state until all set-consent requests complete", () => {
+    const setConsentDeferred1 = defer();
+    const setConsentDeferred2 = defer();
+
+    sendEdgeNetworkRequest.and.returnValues(
+      setConsentDeferred1.promise,
+      setConsentDeferred2.promise
+    );
+
+    consent.setConsent({ general: "in" });
+    consent.setConsent({ general: "out" });
+
+    return flushPromiseChains()
+      .then(() => {
+        expect(consentState.suspend).toHaveBeenCalled();
+        expect(consentState.unsuspend).not.toHaveBeenCalled();
+        setConsentDeferred1.resolve();
+        consent.consentRequestComplete();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(consentState.unsuspend).not.toHaveBeenCalled();
+        setConsentDeferred2.resolve();
+        consent.consentRequestComplete();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(consentState.unsuspend).toHaveBeenCalled();
+      });
   });
 
   it("waits for onBeforeConsentRequest, sets consent level, then sends request", () => {
