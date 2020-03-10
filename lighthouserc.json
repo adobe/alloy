@@ -1,23 +1,33 @@
 {
-    "ci": {
-      "collect": {
-        "url": [
-          "https://alloyio.com/functional-test/alloyPerf.html"
-        ],
-        "numberOfRuns": 2
-      },
-      "assert": {
-        "assertions": {
-          "categories:performance": ["error", {"minScore": 0.8}],
-          "first-contentful-paint": ["error", {"maxNumericValue": 2000}],
-          "interactive": ["error", {"maxNumericValue": 5200}],
-          "speed-index": ["error", {"maxNumericValue": 4300}],
-          "resource-summary:script:size": ["error", {"maxNumericValue": 170000}],
-          "resource-summary:total:size": ["error", {"maxNumericValue": 300000}]
-        }
-      },
-      "upload": {
-        "target": "temporary-public-storage"
+  "ci": {
+    "collect": {
+      "url": [
+        "https://alloyio.com/functional-test/alloyPerf.html"
+      ],
+      "numberOfRuns": 2
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", {"minScore": 0.8}],
+        "first-contentful-paint": ["error", {"maxNumericValue": 2000}],
+        "interactive": ["error", {"maxNumericValue": 5200}],
+        "speed-index": ["error", {"maxNumericValue": 4300}],
+        "resource-summary:script:size": ["error", {"maxNumericValue": 170000}],
+        "resource-summary:total:size": ["error", {"maxNumericValue": 300000}]
+      }
+    },
+    "upload": {
+      "target": "lhci",
+      "token": "b6b07729-f48d-4c18-ac55-cd5668826a38",
+      "serverBaseUrl": "https://alloyio.com:9001"
+    },
+    "server": {
+      "port": 9001,
+      "storage": {
+        "storageMethod": "sql",
+        "sqlDialect": "sqllite",
+        "sqlDatabasePath": "lhci.db"
       }
     }
   }
+}
