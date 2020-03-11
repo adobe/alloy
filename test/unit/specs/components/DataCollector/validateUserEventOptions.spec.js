@@ -12,25 +12,37 @@ governing permissions and limitations under the License.
 import validateUserEventOptions from "../../../../../src/components/DataCollector/validateUserEventOptions";
 
 describe("DataCollector::validateUserEventOptions", () => {
-  it("reports the options as invalid if empty", () => {
-    const warnings = validateUserEventOptions({});
-    expect(warnings.length).toBeGreaterThan(0);
-  });
-
-  it("reports the options as invalid if event type is missing", () => {
-    const warnings = validateUserEventOptions({
-      xdm: { a: "1" }
+  it("returns array of errors if the event options are invalid", () => {
+    [
+      undefined,
+      {},
+      { xdm: [] },
+      { xdm: {} },
+      { xdm: { test: "" } },
+      { xdm: { eventType: "" } },
+      { type: "", xdm: { test: "" } },
+      { data: [] },
+      { data: {} },
+      { viewStart: "" },
+      { viewStart: true },
+      { scopes: {} },
+      { scopes: [] },
+      { scopes: [""] }
+    ].forEach(options => {
+      const errors = validateUserEventOptions(options);
+      expect(errors.length).toBeGreaterThan(0);
     });
-    expect(warnings.length).toBeGreaterThan(0);
   });
-
-  it("reports the event as valid if xdm event type is included", () => {
-    const warnings = validateUserEventOptions({
-      xdm: {
-        a: "1",
-        eventType: "test"
-      }
+  it("returns empty array if the event options valid", () => {
+    [
+      { xdm: { eventType: "test" } },
+      { type: "test", xdm: { test: "" } },
+      { data: { test: "" } },
+      { viewStart: true, data: { test: "" } },
+      { scopes: ["test"] }
+    ].forEach(options => {
+      const errors = validateUserEventOptions(options);
+      expect(errors.length).toBe(0);
     });
-    expect(warnings.length).toBe(0);
   });
 });

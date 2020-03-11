@@ -15,14 +15,14 @@ governing permissions and limitations under the License.
 
 import CONFIG_DOC_URI from "../../constants/docUri";
 
-const createDataCollector = ({ eventManager, logger }) => {
+const createDataCollector = ({ eventManager }) => {
   return {
     commands: {
       event(options) {
-        const warnings = validateUserEventOptions(options);
-        if (warnings.length) {
-          logger.warn(
-            `Invalid event command options:\n\t - ${warnings.join(
+        const errors = validateUserEventOptions(options);
+        if (errors.length) {
+          throw new Error(
+            `Invalid event command options:\n\t - ${errors.join(
               "\n\t - "
             )}\nFor documentation covering the event command see: ${CONFIG_DOC_URI}`
           );

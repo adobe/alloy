@@ -83,28 +83,14 @@ describe("Event Command", () => {
     });
   });
 
-  it("sends event without scopes parameter when scopes is empty", () => {
-    const options = {
-      viewStart: true,
-      scopes: []
-    };
-
-    return eventCommand(options).then(result => {
-      expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
-        isViewStart: true
-      });
-      expect(result).toEqual("sendEventResult");
-    });
-  });
-
   it("does not call documentMayUnload if documentUnloading is not defined", () => {
-    return eventCommand({}).then(() => {
+    return eventCommand({ data: { test: "" } }).then(() => {
       expect(event.documentMayUnload).not.toHaveBeenCalled();
     });
   });
 
   it("sets isViewStart to false if viewStart is not defined", () => {
-    return eventCommand({}).then(() => {
+    return eventCommand({ data: { test: "" } }).then(() => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         isViewStart: false
       });
@@ -114,7 +100,8 @@ describe("Event Command", () => {
   it("sets eventType and eventMergeId", () => {
     return eventCommand({
       type: "mytype",
-      mergeId: "mymergeid"
+      mergeId: "mymergeid",
+      data: { test: "" }
     }).then(() => {
       expect(event.setUserXdm).toHaveBeenCalledWith({
         eventType: "mytype",
