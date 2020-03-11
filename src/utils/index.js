@@ -26,6 +26,7 @@ export {
 export { default as convertTimes } from "./convertTimes";
 export { default as cookieJar } from "./cookieJar";
 export { default as createMerger } from "./createMerger";
+export { default as createTaskQueue } from "./createTaskQueue";
 export { default as crc32 } from "./crc32";
 export { default as defer } from "./defer";
 export { default as deepAssign } from "./deepAssign";

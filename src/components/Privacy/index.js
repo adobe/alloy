@@ -10,69 +10,58 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean } from "../../utils/validation";
-import { isString } from "../../utils";
+import { objectOf, enumOf } from "../../utils/validation";
+import { IN, OUT } from "../../constants/consentStatus";
+import { GENERAL } from "../../constants/consentPurpose";
 
-const ALL = "all";
-const NONE = "none";
+const CONSENT_HANDLE = "privacy:consent";
 
-const throwInvalidOptInPurposesError = purposes => {
-  throw new Error(
-    `Opt-in purposes must be "all" or "none". Received: ${purposes}`
-  );
-};
+const validateSetConsentOptions = objectOf({
+  [GENERAL]: enumOf(IN, OUT).required()
+})
+  .noUnknownFields()
+  .required();
 
-const throwInvalidOptOutPurposesError = purposes => {
-  throw new Error(`Opt-out purposes must be "all". Received: ${purposes}`);
-};
-
-const createPrivacy = ({ config, consent }) => {
+const createPrivacy = ({ consent }) => {
   return {
     commands: {
-      optIn({ purposes }) {
-        if (!config.optInEnabled) {
-          throw new Error(
-            "optInEnabled must be set to true before using the optIn command."
-          );
+      setConsent(options) {
+        return consent.setConsent(validateSetConsentOptions(options));
+      }
+    },
+    lifecycle: {
+      onResponse({ response }) {
+        // Notify consent that a request was complete because the consent
+        // cookie may have changed.
+        consent.requestComplete();
+        // TODO: Rather that looking for the privacy:consent payload on
+        // the response, we should instead get rid of the lifecycle.onResponse
+        // lifecycle method and be able to register a response handler from
+        // inside lifecycle.onBeforeConsentRequest
+        // Relevant issue:
+        // https://jira.corp.adobe.com/browse/CORE-40512
+        if (response.getPayloadsByType(CONSENT_HANDLE).length) {
+          consent.consentRequestComplete();
         }
-
-        if (!isString(purposes)) {
-          throwInvalidOptInPurposesError(purposes);
-        }
-
-        const lowerCasePurposes = purposes.toLowerCase();
-
-        if (lowerCasePurposes !== ALL && lowerCasePurposes !== NONE) {
-          throwInvalidOptInPurposesError(purposes);
-        }
-
-        return consent.setOptInPurposes({
-          GENERAL: lowerCasePurposes === ALL
-        });
       },
-      optOut({ purposes }) {
-        if (!isString(purposes)) {
-          throwInvalidOptOutPurposesError(purposes);
-        }
-
-        const lowerCasePurposes = purposes.toLowerCase();
-
-        if (lowerCasePurposes !== ALL) {
-          throwInvalidOptOutPurposesError(purposes);
-        }
-
-        return consent.setOptOutPurposes({
-          GENERAL: true
-        });
+      onRequestFailure() {
+        // Even when we get a failure HTTP status code, the consent cookie can
+        // still get updated. This could happen, for example, if the user is
+        // opted out in AudienceManager, but no consent cookie exists on the
+        // client. The request will be sent and the server will respond with a
+        // 403 Forbidden and a consent cookie.
+        // TODO: We can't determine if onRequestFailure was called due to a
+        // setConsent call failure, because we can't look to see if the response
+        // includes a consent handle like we did in lifecycle.onResponse.
+        // Relevant issues:
+        // https://jira.corp.adobe.com/browse/CORE-40512
+        // https://jira.corp.adobe.com/browse/CORE-40772
+        consent.requestComplete();
       }
     }
   };
 };
 
 createPrivacy.namespace = "Privacy";
-
-createPrivacy.configValidators = {
-  optInEnabled: boolean().default(false)
-};
 
 export default createPrivacy;

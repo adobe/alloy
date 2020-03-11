@@ -18,14 +18,6 @@ function HomeWithHistory({ history }) {
     previousPath = loc.pathname;
   });
 
-  const executeOptInCommand = purposes => () => {
-    window
-      .alloy("optIn", {
-        purposes
-      })
-      .catch(console.error);
-  };
-
   const getDecisions = () => {
     window
       .alloy("getDecisions", {
@@ -62,25 +54,6 @@ function HomeWithHistory({ history }) {
           </div>
           <div>
             <button onClick={getDecisions}>Render Available Decisions</button>
-          </div>
-        </div>
-      </section>
-
-      <section>
-        <div>
-          <h2>Opt-In</h2>
-          <p>To test Opt-In on load, set the `optInEnabled` config to true.</p>
-          <div>
-            <button onClick={executeOptInCommand("all")}>
-              OptIn to all purposes
-            </button>
-            <span>should trigger queued up commands.</span>
-          </div>
-          <div>
-            <button onClick={executeOptInCommand("none")}>
-              OptIn to no purposes
-            </button>
-            <span>should stop most commands and throw an error.</span>
           </div>
         </div>
       </section>

@@ -16,7 +16,7 @@ import createLogController from "./createLogController";
 import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
 import sendNetworkRequestFactory from "./network/sendNetworkRequestFactory";
-import createConsent from "./createConsent";
+import createConsent from "./consent/createConsent";
 import createEvent from "./createEvent";
 import createResponse from "./createResponse";
 import executeCommandFactory from "./executeCommandFactory";
@@ -34,6 +34,8 @@ import createConsentRequestPayload from "./edgeNetwork/requestPayloads/createCon
 import createDataCollectionRequestPayload from "./edgeNetwork/requestPayloads/createDataCollectionRequestPayload";
 import sendEdgeNetworkRequestFactory from "./edgeNetwork/sendEdgeNetworkRequestFactory";
 import processWarningsAndErrors from "./edgeNetwork/processWarningsAndErrors";
+import createConsentState from "./consent/createConsentState";
+import awaitConsentFactory from "./consent/awaitConsentFactory";
 
 // eslint-disable-next-line no-underscore-dangle
 const instanceNamespaces = window.__alloyNS;
@@ -89,6 +91,9 @@ if (instanceNamespaces) {
         logger,
         networkStrategy
       });
+      const consentState = createConsentState({
+        config
+      });
       const sendEdgeNetworkRequest = sendEdgeNetworkRequestFactory({
         config,
         logger,
@@ -98,12 +103,16 @@ if (instanceNamespaces) {
         createResponse,
         processWarningsAndErrors
       });
+      const awaitConsent = awaitConsentFactory({
+        consentState,
+        logger
+      });
       const consent = createConsent({
-        config,
-        logger,
         lifecycle,
         createConsentRequestPayload,
-        sendEdgeNetworkRequest
+        sendEdgeNetworkRequest,
+        consentState,
+        awaitConsent
       });
       const eventManager = createEventManager({
         config,

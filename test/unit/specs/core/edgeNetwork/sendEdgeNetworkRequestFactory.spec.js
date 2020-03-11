@@ -14,6 +14,7 @@ import sendEdgeNetworkRequestFactory from "../../../../../src/core/edgeNetwork/s
 import createConfig from "../../../../../src/core/config/createConfig";
 import { defer } from "../../../../../src/utils";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
+import assertFunctionCallOrder from "../../../helpers/assertFunctionCallOrder";
 
 describe("sendEdgeNetworkRequestFactory", () => {
   const config = createConfig({
@@ -144,14 +145,18 @@ describe("sendEdgeNetworkRequestFactory", () => {
       });
   });
 
-  it("transfers cookies from response if a parsed body exists", () => {
+  it("if a parsedBody exists, transfers cookies from response before lifecycle.onResponse", () => {
     networkResult.parsedBody = {};
     return sendEdgeNetworkRequest({ payload, action }).then(() => {
       expect(cookieTransfer.responseToCookies).toHaveBeenCalledWith(response);
+      assertFunctionCallOrder([
+        cookieTransfer.responseToCookies,
+        lifecycle.onResponse
+      ]);
     });
   });
 
-  it("does not transfer cookies from response if a parsed body does not exist", () => {
+  it("if a parsedBody does not exist, does not transfer cookies from response", () => {
     networkResult.parsedBody = undefined;
     return sendEdgeNetworkRequest({ payload, action }).then(() => {
       expect(cookieTransfer.responseToCookies).not.toHaveBeenCalled();
@@ -185,7 +190,7 @@ describe("sendEdgeNetworkRequestFactory", () => {
     });
   });
 
-  it("calls lifecyc;e.onRequestFailure and waits for it to complete if response is unsuccessful", () => {
+  it("calls lifecycle.onRequestFailure and waits for it to complete if response is unsuccessful", () => {
     networkResult.success = false;
     networkResult.statusCode = 500;
     networkResult.body = "Server fault";

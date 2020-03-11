@@ -10,21 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { fireReferrerHideableImage } from "../../utils";
-import processIdSyncsFactory from "./processIdSyncsFactory";
-import configValidators from "./configValidators";
+import parseConsentCookie from "../../../../../src/core/consent/parseConsentCookie";
 
-import createComponent from "./createComponent";
-
-const createIdentity = ({ config, logger, consent, eventManager }) => {
-  const processIdSyncs = processIdSyncsFactory({
-    fireReferrerHideableImage,
-    logger
+describe("parseConsentCookie", () => {
+  it("returns preferences by purpose", () => {
+    expect(parseConsentCookie("foo=in;bar=out")).toEqual({
+      foo: "in",
+      bar: "out"
+    });
   });
-  return createComponent(processIdSyncs, config, logger, consent, eventManager);
-};
-
-createIdentity.namespace = "Identity";
-createIdentity.configValidators = configValidators;
-
-export default createIdentity;
+});

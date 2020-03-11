@@ -14,8 +14,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 import Home from "./Home";
-import OptIn from "./OptIn";
-import OptOut from "./OptOut";
+import Consent from "./Consent";
 import Links from "./Links";
 import EventMerge from "./EventMerge";
 import LargePayload from "./LargePayload";
@@ -31,10 +30,7 @@ function BasicExample() {
             <Link to="/">Home</Link>
           </li>
           <li>
-            <Link to="/optIn">Opt-In</Link>
-          </li>
-          <li>
-            <Link to="/optOut">Opt-Out</Link>
+            <Link to="/consent">Consent</Link>
           </li>
           <li>
             <Link to="/links">Links</Link>
@@ -59,8 +55,7 @@ function BasicExample() {
         <hr />
 
         <Route exact path="/" component={Home} />
-        <Route path="/optIn" component={OptIn} />
-        <Route path="/optOut" component={OptOut} />
+        <Route path="/consent" component={Consent} />
         <Route path="/links" component={Links} />
         <Route path="/eventMerge" component={EventMerge} />
         <Route path="/largePayload" component={LargePayload} />

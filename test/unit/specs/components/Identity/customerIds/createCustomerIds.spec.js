@@ -19,7 +19,7 @@ describe("Identity::createCustomerIds", () => {
     });
     consentDeferred = defer();
     consent = jasmine.createSpyObj("consent", {
-      whenConsented: consentDeferred.promise
+      awaitConsent: consentDeferred.promise
     });
   });
   it("has addToPayload and sync methods", () => {

@@ -38,7 +38,7 @@ describe("createEventManager", () => {
       onBeforeDataCollectionRequest: Promise.resolve()
     });
     consent = jasmine.createSpyObj("consent", {
-      whenConsented: Promise.resolve()
+      awaitConsent: Promise.resolve()
     });
     event = realCreateEvent();
     spyOnAllFunctions(event);
@@ -98,7 +98,7 @@ describe("createEventManager", () => {
             scopes: undefined,
             payload: requestPayload
           });
-          expect(consent.whenConsented).not.toHaveBeenCalled();
+          expect(consent.awaitConsent).not.toHaveBeenCalled();
           deferred.resolve();
           return flushPromiseChains();
         })
@@ -137,7 +137,7 @@ describe("createEventManager", () => {
 
     it("calls onBeforeEvent before consent and onBeforeDataCollectionRequest after", () => {
       const deferred = defer();
-      consent.whenConsented = () => deferred.promise;
+      consent.awaitConsent = () => deferred.promise;
       eventManager.sendEvent(event);
       return flushPromiseChains()
         .then(() => {

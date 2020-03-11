@@ -44,9 +44,9 @@ describe("createConsentRequestPayload", () => {
     payload.addIdentity("IDNS", {
       id: "ABC123"
     });
-    payload.setPurposes({
-      purpose1: true,
-      purpose2: false
+    payload.setConsentLevel({
+      purpose1: "in",
+      purpose2: "out"
     });
     expect(payload.toJSON()).toEqual({
       meta: {
@@ -64,9 +64,9 @@ describe("createConsentRequestPayload", () => {
           }
         ]
       },
-      purposes: {
-        purpose1: true,
-        purpose2: false
+      consentLevel: {
+        purpose1: "in",
+        purpose2: "out"
       }
     });
   });

@@ -59,7 +59,7 @@ export default ({ eventManager, consent, logger }) => {
         }
         setState(hashedIds);
         const event = eventManager.createEvent();
-        return consent.whenConsented().then(() => {
+        return consent.awaitConsent().then(() => {
           // FIXME: Konductor shouldn't require an event.
           return eventManager.sendEvent(event);
         });

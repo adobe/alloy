@@ -10,22 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { stringToBoolean } from "../utils";
-
 /**
  * Parses a consent cookie.
  * @param {string} cookieValue Must be in the format a=b;c=d
  * @returns {Object} An object where the keys are purpose names and the values
- * are whether the user consented to those purposes.
+ * are the consent status for the purpose.
  */
 export default cookieValue => {
   const categoryPairs = cookieValue.split(";");
-  return categoryPairs.reduce((preferencesByPurpose, categoryPair) => {
+  return categoryPairs.reduce((consentByPurpose, categoryPair) => {
     const [name, value] = categoryPair.split("=");
-    if (!name || (value !== "true" && value !== "false")) {
-      throw new Error(`Invalid consent cookie value: ${cookieValue}`);
-    }
-    preferencesByPurpose[name] = stringToBoolean(value);
-    return preferencesByPurpose;
+    consentByPurpose[name] = value;
+    return consentByPurpose;
   }, {});
 };

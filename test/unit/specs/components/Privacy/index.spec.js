@@ -10,20 +10,89 @@ governing permissions and limitations under the License.
 */
 
 import createPrivacyComponent from "../../../../../src/components/Privacy/index";
-import { objectOf } from "../../../../../src/utils/validation";
 
 describe("Privacy::index", () => {
-  [{}, { optInEnabled: true }, { optInEnabled: false }].forEach(cfg => {
-    it(`validates configuration (${JSON.stringify(cfg)})`, () => {
-      objectOf(createPrivacyComponent.configValidators)(cfg);
+  let setConsentPromise;
+  let consent;
+  let privacy;
+
+  beforeEach(() => {
+    consent = jasmine.createSpyObj("consent", {
+      setConsent: setConsentPromise,
+      requestComplete: undefined,
+      consentRequestComplete: undefined
+    });
+    privacy = createPrivacyComponent({ consent });
+  });
+
+  describe("setConsent", () => {
+    it("notifies consent of consent preferences", () => {
+      const promise = privacy.commands.setConsent({
+        general: "in"
+      });
+
+      expect(consent.setConsent).toHaveBeenCalledWith({
+        general: "in"
+      });
+      expect(promise).toBe(setConsentPromise);
     });
   });
 
-  [{ optInEnabled: "foo" }].forEach(cfg => {
-    it(`invalidates configuration (${JSON.stringify(cfg)})`, () => {
-      expect(() => {
-        objectOf(createPrivacyComponent.configValidators)(cfg);
-      }).toThrowError();
+  describe("lifecycle", () => {
+    describe("onResponse", () => {
+      it("notifies consent of a completed non-consent request", () => {
+        const response = {
+          getPayloadsByType() {
+            return [];
+          }
+        };
+
+        privacy.lifecycle.onResponse({ response });
+
+        expect(consent.requestComplete).toHaveBeenCalled();
+        expect(consent.consentRequestComplete).not.toHaveBeenCalled();
+      });
+
+      it("notifies consent of a completed consent request", () => {
+        const response = {
+          getPayloadsByType(type) {
+            return type === "privacy:consent" ? [{}] : [];
+          }
+        };
+
+        privacy.lifecycle.onResponse({ response });
+
+        expect(consent.requestComplete).toHaveBeenCalled();
+        expect(consent.consentRequestComplete).toHaveBeenCalled();
+      });
+    });
+
+    describe("onRequestFailure", () => {
+      it("notifies consent of a completed non-consent request", () => {
+        const response = {
+          getPayloadsByType() {
+            return [];
+          }
+        };
+
+        privacy.lifecycle.onResponse({ response });
+
+        expect(consent.requestComplete).toHaveBeenCalled();
+        expect(consent.consentRequestComplete).not.toHaveBeenCalled();
+      });
+
+      it("notifies consent of a completed consent request", () => {
+        const response = {
+          getPayloadsByType(type) {
+            return type === "privacy:consent" ? [{}] : [];
+          }
+        };
+
+        privacy.lifecycle.onResponse({ response });
+
+        expect(consent.requestComplete).toHaveBeenCalled();
+        expect(consent.consentRequestComplete).toHaveBeenCalled();
+      });
     });
   });
 });

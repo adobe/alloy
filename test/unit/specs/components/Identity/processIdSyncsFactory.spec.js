@@ -1,31 +1,28 @@
 import processIdSyncsFactory from "../../../../../src/components/Identity/processIdSyncsFactory";
-import { defer } from "../../../../../src/utils";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("Identity::processIdSyncsFactory", () => {
   let fireReferrerHideableImage;
   let logger;
   let processIdSyncs;
-  let consent;
-  let consentDeferred;
 
   beforeEach(() => {
     fireReferrerHideableImage = jasmine
       .createSpy()
       .and.returnValue(Promise.resolve());
     logger = jasmine.createSpyObj("logger", ["log", "error"]);
-    consentDeferred = defer();
-    consent = jasmine.createSpyObj("consent", {
-      whenConsented: consentDeferred.promise
-    });
     processIdSyncs = processIdSyncsFactory({
       fireReferrerHideableImage,
-      logger,
-      consent
+      logger
     });
   });
 
-  it("waits for consent, calls fireReferrerHideableImage for all ID syncs of type URL, and logs results", () => {
+  it("handles no ID syncs", () => {
+    return processIdSyncs([]).then(() => {
+      expect(fireReferrerHideableImage).not.toHaveBeenCalled();
+    });
+  });
+
+  it("calls fireReferrerHideableImage for all ID syncs of type URL, and logs results", () => {
     fireReferrerHideableImage.and.callFake(({ url }) => {
       return url === "http://test.zyx" ? Promise.resolve() : Promise.reject();
     });
@@ -58,52 +55,21 @@ describe("Identity::processIdSyncsFactory", () => {
       }
     ];
 
-    processIdSyncs(identities);
-
-    return flushPromiseChains()
-      .then(() => {
-        expect(fireReferrerHideableImage).not.toHaveBeenCalled();
-        consentDeferred.resolve();
-        return flushPromiseChains();
-      })
-      .then(() => {
-        expect(fireReferrerHideableImage).toHaveBeenCalledWith({
-          url: "http://test.abc",
-          hideReferrer: true
-        });
-        expect(fireReferrerHideableImage).toHaveBeenCalledWith({
-          url: "http://test.zyx",
-          hideReferrer: false
-        });
-        expect(logger.log).toHaveBeenCalledWith(
-          "ID sync succeeded: http://test.zyx"
-        );
-        expect(logger.error).toHaveBeenCalledWith(
-          "ID sync failed: http://test.abc"
-        );
+    return processIdSyncs(identities).then(() => {
+      expect(fireReferrerHideableImage).toHaveBeenCalledWith({
+        url: "http://test.abc",
+        hideReferrer: true
       });
-  });
-
-  it("rejects returned promise if consent denied", () => {
-    fireReferrerHideableImage.and.callFake(({ url }) => {
-      return url === "http://test.zyx" ? Promise.resolve() : Promise.reject();
+      expect(fireReferrerHideableImage).toHaveBeenCalledWith({
+        url: "http://test.zyx",
+        hideReferrer: false
+      });
+      expect(logger.log).toHaveBeenCalledWith(
+        "ID sync succeeded: http://test.zyx"
+      );
+      expect(logger.error).toHaveBeenCalledWith(
+        "ID sync failed: http://test.abc"
+      );
     });
-
-    const identities = [
-      {
-        type: "url",
-        id: 2097728,
-        spec: {
-          url: "http://test.abc",
-          hideReferrer: true
-        }
-      }
-    ];
-
-    consentDeferred.reject(new Error("Consent denied."));
-
-    return expectAsync(processIdSyncs(identities)).toBeRejectedWithError(
-      "Consent denied."
-    );
   });
 });

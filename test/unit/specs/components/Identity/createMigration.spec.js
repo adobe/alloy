@@ -24,7 +24,7 @@ describe("createMigration", () => {
     cookieJar.remove("s_ecid");
     consentDeferred = defer();
     consent = jasmine.createSpyObj("consent", {
-      whenConsented: consentDeferred.promise
+      awaitConsent: consentDeferred.promise
     });
     migration = createMigration({
       orgId: "TEST_ORG",
