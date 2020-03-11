@@ -30,11 +30,11 @@ test.meta({
 
 const apiCalls = ClientFunction((configObject, alternateConfigObject) => {
   configObject.edgeBasePath = window.edgeBasePath;
-  window.alloy("configure", configObject).then(() => {
+  return window.alloy("configure", configObject).then(() => {
     Object.keys(alternateConfigObject).forEach(key => {
       configObject[key] = alternateConfigObject[key];
     });
-    window.alloy("event", { data: { key: "value" } });
+    return window.alloy("event", { data: { key: "value" } });
   });
 });
 
