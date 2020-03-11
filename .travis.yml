@@ -21,11 +21,7 @@ services:
 - xvfb
 script:
 - npm install
-- npm run build:prod
-- npm run functional:ci
 - lhci autorun --config=./lighthouserc.json
-- npm run test:saucelabs
-- npm run checkbundlesize
 
 notifications:
   slack: adobedx:AlI4WB2ojGDcqsBEVZ1EGsCR
