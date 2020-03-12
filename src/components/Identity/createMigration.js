@@ -21,6 +21,26 @@ export default ({ orgId, consent, logger }) => {
   const doesVisitorExist =
     isFunction(Visitor) && isFunction(Visitor.getInstance);
 
+  const getEcidFromLegacyCookies = () => {
+    let ecid = null;
+    const secidCookieName = "s_ecid";
+
+    const legacyEcidCookieValue =
+      cookieJar.get(secidCookieName) || cookieJar.get(amcvCookieName);
+
+    if (legacyEcidCookieValue) {
+      const reg = /(^|\|)MCMID\|(\d+)($|\|)/;
+      const matches = legacyEcidCookieValue.match(reg);
+
+      if (matches) {
+        // Destructuring arrays breaks in IE
+        ecid = matches[2];
+      }
+    }
+
+    return ecid;
+  };
+
   const awaitVisitorOptIn = () => {
     return new Promise(resolve => {
       if (isObject(window.adobe) && isObject(window.adobe.optIn)) {
@@ -63,7 +83,7 @@ export default ({ orgId, consent, logger }) => {
 
   return {
     getEcidFromLegacy() {
-      const ecid = this.getEcidFromLegacyCookies();
+      const ecid = getEcidFromLegacyCookies();
 
       if (ecid) {
         return Promise.resolve(ecid);
@@ -73,25 +93,6 @@ export default ({ orgId, consent, logger }) => {
         return getVisitorECID();
       }
       return Promise.resolve();
-    },
-    getEcidFromLegacyCookies() {
-      let ecid = null;
-      const secidCookieName = "s_ecid";
-
-      const legacyEcidCookieValue =
-        cookieJar.get(secidCookieName) || cookieJar.get(amcvCookieName);
-
-      if (legacyEcidCookieValue) {
-        const reg = /(^|\|)MCMID\|(\d+)($|\|)/;
-        const matches = legacyEcidCookieValue.match(reg);
-
-        if (matches) {
-          // Destructuring arrays breaks in IE
-          ecid = matches[2];
-        }
-      }
-
-      return ecid;
     },
     createLegacyCookie(ecid) {
       const amcvCookieValue = cookieJar.get(amcvCookieName);

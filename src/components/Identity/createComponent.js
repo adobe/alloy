@@ -43,9 +43,6 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
           logger.log("Resuming previously delayed request.");
         });
       } else {
-        const ecidToMigratePromise =
-          idMigrationEnabled && migration.getEcidFromLegacy();
-
         // For Alloy+Konductor communication to be as robust as possible and
         // to ensure we don't mint new ECIDs for requests that would otherwise
         // be sent in parallel, we'll let this request go out to fetch the
@@ -68,9 +65,11 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
         // the browser.
         payload.expectResponse();
 
-        if (ecidToMigratePromise) {
-          promise = ecidToMigratePromise.then(ecidToMigrate => {
-            addEcidToPayload(payload, ecidToMigrate);
+        if (idMigrationEnabled) {
+          promise = migration.getEcidFromLegacy().then(ecidToMigrate => {
+            if (ecidToMigrate) {
+              addEcidToPayload(payload, ecidToMigrate);
+            }
           });
         }
 
