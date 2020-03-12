@@ -84,6 +84,9 @@
     <h1>Visitor Consent</h1>
     <button onclick="adobe.optIn.approveAll();">Approve Visitor</button>
     <button onclick="optInToAlloy();">Approve Alloy</button>
+    <button onclick="adobe.optIn.approveAll(); optInToAlloy()">
+      Approve Both
+    </button>
     <button onclick="sendEvent();">Send Event 2</button>
   </body>
 </html>
