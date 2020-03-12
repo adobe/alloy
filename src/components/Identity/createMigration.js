@@ -54,6 +54,22 @@ export default ({ orgId, consent, logger }) => {
 
   return {
     getEcidFromLegacy() {
+      const ecid = this.getEcidFromLegacyCookies();
+
+      if (ecid) {
+        return new Promise(resolve => {
+          resolve(ecid);
+        });
+      }
+
+      if (doesVisitorExist) {
+        return getVisitorECID();
+      }
+      return new Promise(resolve => {
+        resolve();
+      });
+    },
+    getEcidFromLegacyCookies() {
       let ecid = null;
       const secidCookieName = "s_ecid";
 
@@ -70,18 +86,7 @@ export default ({ orgId, consent, logger }) => {
         }
       }
 
-      if (ecid) {
-        return new Promise(resolve => {
-          resolve(ecid);
-        });
-      }
-
-      if (doesVisitorExist) {
-        return getVisitorECID();
-      }
-      return new Promise(resolve => {
-        resolve();
-      });
+      return ecid;
     },
     createLegacyCookie(ecid) {
       const amcvCookieValue = cookieJar.get(amcvCookieName);
