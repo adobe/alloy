@@ -45,9 +45,18 @@ export default ({ orgId, consent, logger }) => {
 
   const getVisitorECID = () => {
     return awaitVisitorOptIn().then(() => {
+      logger.log(
+        "Delaying request while using Visitor to retrieve ECID from server."
+      );
+
       return new Promise(resolve => {
         const visitor = Visitor.getInstance(orgId, {});
-        visitor.getMarketingCloudVisitorID(resolve, true);
+        visitor.getMarketingCloudVisitorID(ecid => {
+          logger.log(
+            "Resuming previously delayed request that was waiting for ECID from Visitor."
+          );
+          resolve(ecid);
+        }, true);
       });
     });
   };
@@ -57,17 +66,13 @@ export default ({ orgId, consent, logger }) => {
       const ecid = this.getEcidFromLegacyCookies();
 
       if (ecid) {
-        return new Promise(resolve => {
-          resolve(ecid);
-        });
+        return Promise.resolve(ecid);
       }
 
       if (doesVisitorExist) {
         return getVisitorECID();
       }
-      return new Promise(resolve => {
-        resolve();
-      });
+      return Promise.resolve();
     },
     getEcidFromLegacyCookies() {
       let ecid = null;
