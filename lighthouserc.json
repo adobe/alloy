@@ -8,10 +8,10 @@
     },
     "collect": {
       "url": [
-        "https://alloyio.com/functional-test/alloyPerf.html",
-        "http://alloyio.com/index.html"
+        "https://alloyio.com/perf/standalone.html",
+        "https://alloyio.com/perf/launch.html"
       ],
-      "numberOfRuns": 2
+      "numberOfRuns": 1
     }
   }
 }
