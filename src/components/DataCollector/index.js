@@ -15,17 +15,18 @@ governing permissions and limitations under the License.
 
 import CONFIG_DOC_URI from "../../constants/docUri";
 
-const createDataCollector = ({ eventManager }) => {
+const createDataCollector = ({ eventManager, logger }) => {
   return {
     commands: {
       event(options) {
         const errors = validateUserEventOptions(options);
         if (errors.length) {
-          throw new Error(
+          logger.warn(
             `Invalid event command options:\n\t - ${errors.join(
               "\n\t - "
             )}\nFor documentation covering the event command see: ${CONFIG_DOC_URI}`
           );
+          return Promise.resolve();
         }
         let { xdm } = options;
         const {

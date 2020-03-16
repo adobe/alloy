@@ -30,15 +30,11 @@ export default options => {
         .required()
         .nonEmpty()
     ).nonEmpty()
-  })
-    .required()
-    .nonEmpty();
+  }).required();
   const errors = [];
   try {
-    const { type, xdm, data, scopes } = eventOptionsValidator(options);
-    if (!xdm && !data && !scopes) {
-      errors.push("No event xdm, data, or scopes specified.");
-    } else if (xdm && !xdm.eventType && !type) {
+    const { type, xdm } = eventOptionsValidator(options);
+    if (xdm && !xdm.eventType && !type) {
       errors.push("No type or xdm.eventType specified.");
     }
   } catch (e) {

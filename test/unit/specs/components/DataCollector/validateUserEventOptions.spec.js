@@ -15,7 +15,6 @@ describe("DataCollector::validateUserEventOptions", () => {
   it("returns array of errors if the event options are invalid", () => {
     [
       undefined,
-      {},
       { xdm: [] },
       { xdm: {} },
       { xdm: { test: "" } },
@@ -24,7 +23,6 @@ describe("DataCollector::validateUserEventOptions", () => {
       { data: [] },
       { data: {} },
       { viewStart: "" },
-      { viewStart: true },
       { scopes: {} },
       { scopes: [] },
       { scopes: [""] }
@@ -35,8 +33,10 @@ describe("DataCollector::validateUserEventOptions", () => {
   });
   it("returns empty array if the event options valid", () => {
     [
+      {},
       { xdm: { eventType: "test" } },
       { type: "test", xdm: { test: "" } },
+      { viewStart: true },
       { data: { test: "" } },
       { viewStart: true, data: { test: "" } },
       { scopes: ["test"] }

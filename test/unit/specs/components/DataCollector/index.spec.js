@@ -84,13 +84,13 @@ describe("Event Command", () => {
   });
 
   it("does not call documentMayUnload if documentUnloading is not defined", () => {
-    return eventCommand({ data: { test: "" } }).then(() => {
+    return eventCommand({}).then(() => {
       expect(event.documentMayUnload).not.toHaveBeenCalled();
     });
   });
 
   it("sets isViewStart to false if viewStart is not defined", () => {
-    return eventCommand({ data: { test: "" } }).then(() => {
+    return eventCommand({}).then(() => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         isViewStart: false
       });
@@ -100,8 +100,7 @@ describe("Event Command", () => {
   it("sets eventType and eventMergeId", () => {
     return eventCommand({
       type: "mytype",
-      mergeId: "mymergeid",
-      data: { test: "" }
+      mergeId: "mymergeid"
     }).then(() => {
       expect(event.setUserXdm).toHaveBeenCalledWith({
         eventType: "mytype",
