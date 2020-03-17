@@ -27,7 +27,5 @@ test("Test C14411: User cannot consent to no purposes after consenting to no pur
   await t
     .expect(setConsentErrorMessage)
     .ok("Expected the setConsent command to be rejected");
-  await t
-    .expect(setConsentErrorMessage)
-    .contains("The user previously declined consent, which cannot be changed.");
+  await t.expect(setConsentErrorMessage).contains("User is opted out");
 });

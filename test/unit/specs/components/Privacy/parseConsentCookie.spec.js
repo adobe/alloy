@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import parseConsentCookie from "../../../../../src/core/consent/parseConsentCookie";
+import parseConsentCookie from "../../../../../src/components/Privacy/parseConsentCookie";
 
 describe("parseConsentCookie", () => {
   it("returns preferences by purpose", () => {

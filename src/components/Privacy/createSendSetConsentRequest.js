@@ -10,14 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "../../../../../src/utils/validation";
-import describeValidation from "../../../helpers/describeValidation";
-
-describe("validation::required", () => {
-  describeValidation("required string", string().required(), [
-    { value: null, error: true },
-    { value: undefined, error: true },
-    { value: "" },
-    { value: "hello" }
-  ]);
-});
+export default ({
+  lifecycle,
+  createConsentRequestPayload,
+  sendEdgeNetworkRequest
+}) => consentByPurpose => {
+  const payload = createConsentRequestPayload();
+  return lifecycle
+    .onBeforeConsentRequest({
+      payload
+    })
+    .then(() => {
+      payload.setConsentLevel(consentByPurpose);
+      return sendEdgeNetworkRequest({
+        payload,
+        action: "privacy/set-consent"
+      });
+    })
+    .then(() => {
+      // Don't let response data disseminate beyond this
+      // point unless necessary.
+    });
+};

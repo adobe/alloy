@@ -10,42 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import awaitConsentFactory from "../../../../../src/core/consent/awaitConsentFactory";
+import createConsentStateMachine from "../../../../../src/core/consent/createConsentStateMachine";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
-describe("awaitConsentFactory", () => {
-  let consentState;
-  let logger;
-
-  const triggerConsentStateChange = () => {
-    consentState.onChange.calls.allArgs().forEach(callArgs => {
-      const callback = callArgs[0];
-      callback();
-    });
-  };
+describe("createConsentStateMachine", () => {
+  let subject;
 
   beforeEach(() => {
-    consentState = jasmine.createSpyObj("consentState", {
-      isPending: true,
-      hasConsentedToAllPurposes: false,
-      onChange: undefined
-    });
-    logger = jasmine.createSpyObj("logger", ["warn"]);
+    subject = createConsentStateMachine();
   });
 
   it("does not resolve promise if consent is pending", () => {
-    consentState.isPending.and.returnValue(true);
-    const awaitConsent = awaitConsentFactory({
-      consentState,
-      logger
-    });
-
-    expect(logger.warn).toHaveBeenCalledWith(
-      "Some commands may be delayed until the user consents."
-    );
-
+    subject.pending();
     const onFulfilled = jasmine.createSpy("onFulfilled");
-    awaitConsent().then(onFulfilled);
+    subject.awaitConsent().then(onFulfilled);
 
     return flushPromiseChains().then(() => {
       expect(onFulfilled).not.toHaveBeenCalled();
@@ -53,15 +31,9 @@ describe("awaitConsentFactory", () => {
   });
 
   it("resolves promise if user consented to all purposes", () => {
-    consentState.isPending.and.returnValue(false);
-    consentState.hasConsentedToAllPurposes.and.returnValue(true);
-    const awaitConsent = awaitConsentFactory({
-      consentState,
-      logger
-    });
-
+    subject.in();
     const onFulfilled = jasmine.createSpy("onFulfilled");
-    awaitConsent().then(onFulfilled);
+    subject.awaitConsent().then(onFulfilled);
 
     return flushPromiseChains().then(() => {
       expect(onFulfilled).toHaveBeenCalled();
@@ -69,37 +41,24 @@ describe("awaitConsentFactory", () => {
   });
 
   it("rejects promise if user consented to no purposes", () => {
-    consentState.isPending.and.returnValue(false);
-    consentState.hasConsentedToAllPurposes.and.returnValue(false);
-    const awaitConsent = awaitConsentFactory({
-      consentState,
-      logger
-    });
-
+    subject.out();
     const onRejected = jasmine.createSpy("onRejected");
-    awaitConsent().catch(onRejected);
+    subject.awaitConsent().catch(onRejected);
 
     return flushPromiseChains().then(() => {
       expect(onRejected).toHaveBeenCalled();
     });
   });
 
-  it("processes consent when consent state changes", () => {
-    consentState.isPending.and.returnValue(true);
-    const awaitConsent = awaitConsentFactory({
-      consentState,
-      logger
-    });
-
+  it("resolves queued promises when consent set to in", () => {
+    subject.pending();
     const onFulfilled = jasmine.createSpy("onFulfilled");
-    awaitConsent().then(onFulfilled);
+    subject.awaitConsent().then(onFulfilled);
 
     return flushPromiseChains()
       .then(() => {
         expect(onFulfilled).not.toHaveBeenCalled();
-        consentState.isPending.and.returnValue(false);
-        consentState.hasConsentedToAllPurposes.and.returnValue(true);
-        triggerConsentStateChange();
+        subject.in();
         return flushPromiseChains();
       })
       .then(() => {
@@ -107,6 +66,23 @@ describe("awaitConsentFactory", () => {
       });
   });
 
+  it("rejects queued promises when consent set to out", () => {
+    subject.pending();
+    const onFulfilled = jasmine.createSpy("onFulfilled");
+    subject.awaitConsent().catch(onFulfilled);
+
+    return flushPromiseChains()
+      .then(() => {
+        expect(onFulfilled).not.toHaveBeenCalled();
+        subject.out();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(onFulfilled).toHaveBeenCalled();
+      });
+  });
+
+  /*
   it("logs a warning if consent is pending", () => {
     consentState.isPending.and.returnValue(true);
     awaitConsentFactory({
@@ -129,4 +105,5 @@ describe("awaitConsentFactory", () => {
       "Some commands may fail. The user declined consent."
     );
   });
+  */
 });

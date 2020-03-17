@@ -31,6 +31,7 @@ export { default as crc32 } from "./crc32";
 export { default as defer } from "./defer";
 export { default as deepAssign } from "./deepAssign";
 export { default as endsWith } from "./endsWith";
+export { default as finallyHelper } from "./finallyHelper";
 export { default as find } from "./find";
 export { default as fireImage } from "./fireImage";
 export {
