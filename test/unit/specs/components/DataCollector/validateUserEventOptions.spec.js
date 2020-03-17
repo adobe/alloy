@@ -12,26 +12,39 @@ governing permissions and limitations under the License.
 import validateUserEventOptions from "../../../../../src/components/DataCollector/validateUserEventOptions";
 
 describe("DataCollector::validateUserEventOptions", () => {
-  it("returns array of errors if the event options are invalid", () => {
+  it("returns array of errors for invalid options", () => {
     [
       undefined,
       { xdm: [] },
+      { viewStart: "" },
+      { data: [] },
+      { scopes: {} }
+    ].forEach(options => {
+      const { errors } = validateUserEventOptions(options);
+      expect(errors.length).toBeGreaterThan(
+        0,
+        `options: ${JSON.stringify(options)} should cause error`
+      );
+    });
+  });
+  it("returns array of warnings for invalid options", () => {
+    [
+      { data: {} },
       { xdm: {} },
       { xdm: { test: "" } },
       { xdm: { eventType: "" } },
       { type: "", xdm: { test: "" } },
-      { data: [] },
-      { data: {} },
-      { viewStart: "" },
-      { scopes: {} },
       { scopes: [] },
       { scopes: [""] }
     ].forEach(options => {
-      const errors = validateUserEventOptions(options);
-      expect(errors.length).toBeGreaterThan(0);
+      const { warnings } = validateUserEventOptions(options);
+      expect(warnings.length).toBeGreaterThan(
+        0,
+        `options: ${JSON.stringify(options)} should cause warning`
+      );
     });
   });
-  it("returns empty array if the event options valid", () => {
+  it("returns no errors or warnings if the event options are valid", () => {
     [
       {},
       { xdm: { eventType: "test" } },
@@ -41,8 +54,15 @@ describe("DataCollector::validateUserEventOptions", () => {
       { viewStart: true, data: { test: "" } },
       { scopes: ["test"] }
     ].forEach(options => {
-      const errors = validateUserEventOptions(options);
-      expect(errors.length).toBe(0);
+      const { errors, warnings } = validateUserEventOptions(options);
+      expect(errors.length).toBe(
+        0,
+        `options: ${JSON.stringify(options)} should not cause error`
+      );
+      expect(warnings.length).toBe(
+        0,
+        `options: ${JSON.stringify(options)} should not cause warning`
+      );
     });
   });
 });

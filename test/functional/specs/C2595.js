@@ -20,9 +20,7 @@ test.meta({
 
 const triggerAlloyEvent = ClientFunction(() => {
   return new Promise(resolve => {
-    window
-      .alloy("event", { xdm: { key: "value", eventType: "test" } })
-      .then(() => resolve());
+    window.alloy("event", { xdm: { key: "value" } }).then(() => resolve());
   });
 });
 

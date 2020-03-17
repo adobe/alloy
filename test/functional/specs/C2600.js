@@ -22,7 +22,6 @@ test.meta({
 const triggerAlloyEvent = ClientFunction(() => {
   return window.alloy("event", {
     xdm: {
-      eventType: "test",
       web: {
         webPageDetails: {
           URL: "https://alloyio.com/functional-test/alloyTestPage.html"
