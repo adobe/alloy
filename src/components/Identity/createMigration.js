@@ -10,7 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { getApexDomain, cookieJar, isObject, isFunction } from "../../utils";
+import { getApexDomain, cookieJar, isFunction } from "../../utils";
+import getVisitorECID from "./visitorService/getVisitorECID";
+
 // TODO: We are already retrieving the apex in core; find a way to reuse it.
 // Maybe default the domain in the cookieJar to apex while allowing overrides.
 const apexDomain = getApexDomain(window, cookieJar);
@@ -41,46 +43,6 @@ export default ({ orgId, consent, logger }) => {
     return ecid;
   };
 
-  const awaitVisitorOptIn = () => {
-    return new Promise(resolve => {
-      if (isObject(window.adobe) && isObject(window.adobe.optIn)) {
-        const optInOld = window.adobe.optIn;
-        logger.log(
-          "Delaying request while waiting for legacy opt in to let Visitor retrieve ECID from server."
-        );
-        optInOld.fetchPermissions(() => {
-          if (optInOld.isApproved([optInOld.Categories.ECID])) {
-            logger.log(
-              "Received legacy opt in approval to let Visitor retrieve ECID from server."
-            );
-
-            resolve();
-          }
-        }, true);
-      } else {
-        resolve();
-      }
-    });
-  };
-
-  const getVisitorECID = () => {
-    return awaitVisitorOptIn().then(() => {
-      logger.log(
-        "Delaying request while using Visitor to retrieve ECID from server."
-      );
-
-      return new Promise(resolve => {
-        const visitor = Visitor.getInstance(orgId, {});
-        visitor.getMarketingCloudVisitorID(ecid => {
-          logger.log(
-            "Resuming previously delayed request that was waiting for ECID from Visitor."
-          );
-          resolve(ecid);
-        }, true);
-      });
-    });
-  };
-
   return {
     getEcidFromLegacy() {
       const ecid = getEcidFromLegacyCookies();
@@ -90,7 +52,7 @@ export default ({ orgId, consent, logger }) => {
       }
 
       if (doesVisitorExist) {
-        return getVisitorECID();
+        return getVisitorECID({ logger, orgId });
       }
       return Promise.resolve();
     },
