@@ -16,12 +16,25 @@ import configValidators from "./configValidators";
 
 import createComponent from "./createComponent";
 
-const createIdentity = ({ config, logger, consent, eventManager }) => {
+const createIdentity = ({
+  config,
+  logger,
+  consent,
+  eventManager,
+  sendEdgeNetworkRequest
+}) => {
   const processIdSyncs = processIdSyncsFactory({
     fireReferrerHideableImage,
     logger
   });
-  return createComponent(processIdSyncs, config, logger, consent, eventManager);
+  return createComponent(
+    processIdSyncs,
+    config,
+    logger,
+    consent,
+    eventManager,
+    sendEdgeNetworkRequest
+  );
 };
 
 createIdentity.namespace = "Identity";

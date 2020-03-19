@@ -1,24 +1,20 @@
 import createCustomerIds from "./customerIds/createCustomerIds";
-import {
-  defer,
-  cookieJar,
-  getNamespacedCookieName,
-  areThirdPartyCookiesSupportedByDefault,
-  find
-} from "../../utils";
+import { defer, cookieJar, getNamespacedCookieName, find } from "../../utils";
 import { IDENTITY_COOKIE_KEY } from "../../constants/cookieDetails";
-import getBrowser from "../../utils/getBrowser";
 import createMigration from "./createMigration";
 import ecidNamespace from "../../constants/ecidNamespace";
+import getEcidCommand from "./getEcidCommand";
+import configurePayload from "./configurePayload";
 
-const addEcidToPayload = (payload, ecid) => {
-  payload.addIdentity(ecidNamespace, {
-    id: ecid
-  });
-};
-
-export default (processIdSyncs, config, logger, consent, eventManager) => {
-  const { idMigrationEnabled, orgId } = config;
+export default (
+  processIdSyncs,
+  config,
+  logger,
+  consent,
+  eventManager,
+  sendEdgeNetworkRequest
+) => {
+  const { idMigrationEnabled, orgId, thirdPartyCookiesEnabled } = config;
   const identityCookieName = getNamespacedCookieName(
     orgId,
     IDENTITY_COOKIE_KEY
@@ -27,6 +23,7 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
   const migration = createMigration({ orgId, consent });
   const hasIdentityCookie = () => Boolean(cookieJar.get(identityCookieName));
   const customerIds = createCustomerIds({ eventManager, consent, logger });
+  let ecid;
 
   // TO-DOCUMENT: We wait for ECID before trigger any events.
   const accommodateIdentityOnRequest = payload => {
@@ -43,9 +40,6 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
           logger.log("Resuming previously delayed request.");
         });
       } else {
-        const ecidToMigrate =
-          idMigrationEnabled && migration.getEcidFromLegacyCookies();
-
         // For Alloy+Konductor communication to be as robust as possible and
         // to ensure we don't mint new ECIDs for requests that would otherwise
         // be sent in parallel, we'll let this request go out to fetch the
@@ -67,28 +61,12 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
         // in which case the HTTP response will usually be ignored by
         // the browser.
         payload.expectResponse();
-
-        if (ecidToMigrate) {
-          // We have an ECID, but we still want to establish an
-          // identity cookie before allowing other requests to be sent.
-          addEcidToPayload(payload, ecidToMigrate);
-        }
-
-        if (
-          config.thirdPartyCookiesEnabled &&
-          areThirdPartyCookiesSupportedByDefault(getBrowser(window))
-        ) {
-          // If third-party cookies are enabled by the customer and
-          // supported by the browser, we will send the request to a
-          // a third-party identification domain that allows for more accurate
-          // identification of the user through use of a third-party cookie.
-          // If we have an ECID to migrate, we still want to hit the
-          // third-party domain because the third-party identification domain
-          // will use our ECID to set the third-party cookie if the third-party
-          // cookie isn't already set, which provides for better cross-domain
-          // identification for future requests.
-          payload.useIdThirdPartyDomain();
-        }
+        configurePayload(
+          payload,
+          migration,
+          idMigrationEnabled,
+          thirdPartyCookiesEnabled
+        );
       }
     }
 
@@ -125,7 +103,8 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
           );
 
           if (ecidPayload) {
-            promises.push(migration.createLegacyCookie(ecidPayload.id));
+            ecid = ecidPayload.id;
+            promises.push(migration.createLegacyCookie(ecid));
           }
         }
 
@@ -150,6 +129,27 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
     commands: {
       setCustomerIds(options) {
         return customerIds.sync(options);
+      },
+      getEcid() {
+        if (ecid) {
+          return ecid;
+        }
+        if (deferredForIdentityCookie) {
+          // Should execute only after the first call resloves
+          return accommodateIdentityOnRequest().then(() => ecid);
+        }
+        if (!hasIdentityCookie()) {
+          // Should defer all calls if an
+          deferredForIdentityCookie = defer();
+        }
+        return getEcidCommand(
+          sendEdgeNetworkRequest,
+          migration,
+          idMigrationEnabled,
+          thirdPartyCookiesEnabled,
+          consent,
+          customerIds
+        ).then(() => ecid);
       }
     }
   };

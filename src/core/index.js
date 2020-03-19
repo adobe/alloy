@@ -133,6 +133,7 @@ if (instanceNamespaces) {
             config,
             consent,
             eventManager,
+            sendEdgeNetworkRequest,
             logger: logController.createComponentLogger(componentNamespace)
           };
         }
