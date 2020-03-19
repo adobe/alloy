@@ -133,8 +133,16 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
         // and now we have the identity cookie, we can let the queued
         // requests go out. Technically, we should always have an identity
         // cookie at this point, but we check just to be sure.
-        if (deferredForIdentityCookie && hasIdentityCookie()) {
-          deferredForIdentityCookie.resolve();
+        if (deferredForIdentityCookie) {
+          if (hasIdentityCookie()) {
+            deferredForIdentityCookie.resolve();
+          } else {
+            // This logic assumes that the code setting the cookie is working as expected and that
+            // the cookie was missing from the response.
+            const noIdentityCookieErrorMsg = `An identity was not set properly. Please verify that the org ID ${orgId} 
+            configured in Alloy matches the org ID specified in the edge configuration.`;
+            return deferredForIdentityCookie.reject(noIdentityCookieErrorMsg);
+          }
         }
 
         promises.push(
