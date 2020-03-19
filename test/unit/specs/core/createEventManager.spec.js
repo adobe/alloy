@@ -74,12 +74,6 @@ describe("createEventManager", () => {
     it("creates the payload and adds event and meta", () => {
       return eventManager.sendEvent(event).then(() => {
         expect(requestPayload.addEvent).toHaveBeenCalledWith(event);
-        expect(requestPayload.mergeConfigOverrides).toHaveBeenCalledWith({
-          orgId: "ABC123",
-          dataCollection: {
-            synchronousValidation: true
-          }
-        });
       });
     });
 
