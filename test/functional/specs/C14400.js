@@ -25,11 +25,11 @@ const apiCalls = ClientFunction(() => {
   document.cookie = "s_ecid=MCMID%7C16908443662402872073525706953453086963";
 
   window.alloy("configure", {
-    configId: "9999999",
-    orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
+    idMigrationEnabled: false,
+    configId: "60928f59-0406-4353-bfe3-22ed633c4f67",
+    orgId: "334F60F35E1597910A495EC2@AdobeOrg",
     edgeBasePath: window.edgeBasePath,
-    debugEnabled: true,
-    idMigrationEnabled: false
+    debugEnabled: true
   });
 
   return window.alloy("event", {
@@ -71,6 +71,6 @@ test("Test C14400: When ID migration is disabled and no identity cookie is found
   await t
     .expect(documentCookie)
     .notContains(
-      `AMCV_53A16ACB5CC1D3760A495C99%40AdobeOrg=MCMID|${ecidPayload.id}`
+      `AMCV_334F60F35E1597910A495EC2%40AdobeOrg=MCMID|${ecidPayload.id}`
     );
 });
