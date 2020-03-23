@@ -58,6 +58,9 @@
         configId: "9999999",
         orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
         debugEnabled: true,
+        idMigrationEnabled: !(
+          location.href.indexOf("idMigrationEnabled=false") >= 0
+        ),
         prehidingStyle: ".personalization-container { opacity: 0 !important }",
         onBeforeEventSend: function(options) {
           const xdm = options.xdm;

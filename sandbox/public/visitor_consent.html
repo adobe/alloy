@@ -44,7 +44,10 @@
         orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
         debugEnabled: true,
         prehidingStyle: ".personalization-container { opacity: 0 !important }",
-        defaultConsent: { general: "pending" }
+        defaultConsent: { general: "pending" },
+        idMigrationEnabled: !(
+          location.href.indexOf("idMigrationEnabled=false") >= 0
+        )
       });
 
       alloy("event", {
