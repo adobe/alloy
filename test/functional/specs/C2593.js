@@ -17,10 +17,6 @@ test.meta({
   SEVERITY: "P0",
   TEST_RUN: "REGRESSION"
 });
-
-const setConsentToIn = ClientFunction(() => {
-  return window.alloy("setConsent", { general: "in" });
-});
 // execute an event command with no request sent
 const triggerAlloyEvent = ClientFunction(() => {
   return { promise: window.alloy("event") };
@@ -36,9 +32,9 @@ test("Test C2593: Event command consents to all purposes", async () => {
   const promise = (await triggerAlloyEvent()).promise;
 
   // set consent to in
-  await setConsentToIn();
-  await promise;
+  await t.eval(() => window.alloy("setConsent", { general: "in" }));
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 204);
+  await promise;
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, 204);
 });
