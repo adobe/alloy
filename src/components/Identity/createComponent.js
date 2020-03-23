@@ -124,10 +124,11 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
           } else {
             // This logic assumes that the code setting the cookie is working as expected and that
             // the cookie was missing from the response.
-            const error = new Error(`An identity was not set properly. Please verify that the org ID ${orgId} 
-            configured in Alloy matches the org ID specified in the edge configuration.`);
-            deferredForIdentityCookie.reject(error);
-            return Promise.reject(error);
+            const noIdentityCookieError = new Error(
+              `An identity was not set properly. Please verify that the org ID ${orgId} configured in Alloy matches the org ID specified in the edge configuration.`
+            );
+            deferredForIdentityCookie.reject(noIdentityCookieError);
+            return Promise.reject(noIdentityCookieError);
           }
         }
 
