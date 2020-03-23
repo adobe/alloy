@@ -1,16 +1,18 @@
-import { t } from "testcafe";
+import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../helpers/networkLogger";
 import { responseStatus } from "../helpers/assertions";
 import fixtureFactory from "../helpers/fixtureFactory";
 import baseConfig from "../helpers/constants/baseConfig";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
+import createResponse from "../../../src/core/createResponse";
+import getResponseBody from "../helpers/networkLogger/getResponseBody";
 
 const networkLogger = createNetworkLogger();
 
 fixtureFactory({
   title:
     "C28754 - Consenting to no purposes should result in no data handles in the response.",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.setConsentEndpointLogs]
 });
 
 test.meta({
@@ -19,23 +21,34 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
+const setConsentOut = ClientFunction(() => {
+  return window.alloy("setConsent", { general: "out" });
+});
+
 test("C28754 - Consenting to no purposes should result in no data handles in the response.", async () => {
   await configureAlloyInstance("alloy", {
     defaultConsent: { general: "pending" },
     ...baseConfig
   });
 
-  await t.eval(() => window.alloy("setConsent", { general: "out" }));
+  // Revoke consent.
+  await setConsentOut();
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
-  const errorMessage = await t.eval(() =>
-    window
-      .alloy("event", { data: { a: 1 } })
-      .then(() => undefined, e => e.message)
+  await responseStatus(networkLogger.setConsentEndpointLogs.requests, 200);
+
+  const response = JSON.parse(
+    getResponseBody(networkLogger.setConsentEndpointLogs.requests[0])
   );
 
-  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
+  const alloyResponse = createResponse(response);
 
-  await t.expect(errorMessage).ok("Expected the event command to be rejected");
-  await t.expect(errorMessage).contains("user declined consent");
+  const idSyncsPayload = alloyResponse.getPayloadsByType("identity:exchange");
+  const personalizationPayload = alloyResponse.getPayloadsByType(
+    "personalization:decisions"
+  );
+  const audiencesPayload = alloyResponse.getPayloadsByType("activation:push");
+
+  await t.expect(idSyncsPayload).eql([]);
+  await t.expect(personalizationPayload).eql([]);
+  await t.expect(audiencesPayload).eql([]);
 });
