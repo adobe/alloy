@@ -22,15 +22,15 @@ describe("awaitVisitorOptIn", () => {
   });
 
   describe("No legacy opt in object is present", () => {
-    it("should return promise resolved with nonexistence message", () => {
+    it("should return promise resolved with undefined", () => {
       return expectAsync(awaitVisitorOptIn({ logger })).toBeResolvedTo(
-        "Legacy opt in object does not exist."
+        undefined
       );
     });
   });
 
-  describe("Legacy opt in object is present", () => {
-    it("should return promise resolved with success message", () => {
+  describe("Legacy opt in object is present and gives approval", () => {
+    it("should return promise resolved with undefined", () => {
       window.adobe = {
         optIn: {
           fetchPermissions(callback) {
@@ -46,7 +46,29 @@ describe("awaitVisitorOptIn", () => {
       };
 
       return expectAsync(awaitVisitorOptIn({ logger })).toBeResolvedTo(
-        "Received legacy opt in approval to let Visitor retrieve ECID from server."
+        undefined
+      );
+    });
+  });
+
+  describe("Legacy opt in object is present and gives denial", () => {
+    it("should return promise rejected with undefined", () => {
+      window.adobe = {
+        optIn: {
+          fetchPermissions(callback) {
+            setTimeout(callback, 10);
+          },
+          isApproved() {
+            return false;
+          },
+          Categories: {
+            ECID: "ecid"
+          }
+        }
+      };
+
+      return expectAsync(awaitVisitorOptIn({ logger })).toBeRejectedWith(
+        undefined
       );
     });
   });

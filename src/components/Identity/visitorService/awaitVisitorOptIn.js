@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { isObject } from "../../../utils";
 
 export default ({ logger }) => {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     if (isObject(window.adobe) && isObject(window.adobe.optIn)) {
       const optInOld = window.adobe.optIn;
       logger.log(
@@ -21,15 +21,15 @@ export default ({ logger }) => {
       );
       optInOld.fetchPermissions(() => {
         if (optInOld.isApproved([optInOld.Categories.ECID])) {
-          const message =
-            "Received legacy opt in approval to let Visitor retrieve ECID from server.";
-
-          logger.log(message);
-          resolve(message);
+          logger.log(
+            "Received legacy opt in approval to let Visitor retrieve ECID from server."
+          );
+          resolve();
         }
+        reject();
       }, true);
     } else {
-      resolve("Legacy opt in object does not exist.");
+      resolve();
     }
   });
 };
