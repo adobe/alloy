@@ -58,9 +58,13 @@
             screenHeight: 1
           }
         }
-      }).then(function(data) {
-        console.log("Sandbox: View start event has completed.", data);
-      });
+      })
+        .then(function(data) {
+          console.log("Sandbox: View start event has completed.", data);
+        })
+        .catch(function(error) {
+          console.log(`Error: ${error.message}`);
+        });
 
       const optInToAlloy = () => {
         alloy("setConsent", {
@@ -91,5 +95,6 @@
       Approve Both
     </button>
     <button onclick="sendEvent();">Send Event 2</button>
+    <button onclick="adobe.optIn.denyAll();">Deny Visitor</button>
   </body>
 </html>

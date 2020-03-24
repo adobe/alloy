@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getVisitorECID from "../../../../../../src/components/Identity/visitorService/getVisitorECID";
+import getVisitorECID from "../../../../../../src/components/Identity/visitorService/getVisitorEcid";
 
 const logger = {
   log() {}
@@ -20,7 +20,9 @@ const Visitor = () => {};
 Visitor.getInstance = () => {
   return {
     getMarketingCloudVisitorID(cb) {
-      cb("ecid123");
+      setTimeout(() => {
+        cb("ecid123");
+      }, 0);
     }
   };
 };

@@ -38,7 +38,7 @@ describe("awaitVisitorOptIn", () => {
       window.adobe = {
         optIn: {
           fetchPermissions(callback) {
-            setTimeout(callback, 10);
+            setTimeout(callback, 0);
           },
           isApproved() {
             return true;
@@ -56,11 +56,11 @@ describe("awaitVisitorOptIn", () => {
   });
 
   describe("Legacy opt in object is present and gives denial", () => {
-    it("should return promise rejected with undefined", () => {
+    it('should return promise rejected with new Error("Legacy opt-in was declined.")', () => {
       window.adobe = {
         optIn: {
           fetchPermissions(callback) {
-            setTimeout(callback, 10);
+            setTimeout(callback, 0);
           },
           isApproved() {
             return false;
@@ -71,8 +71,8 @@ describe("awaitVisitorOptIn", () => {
         }
       };
 
-      return expectAsync(awaitVisitorOptIn({ logger })).toBeRejectedWith(
-        undefined
+      return expectAsync(awaitVisitorOptIn({ logger })).toBeRejectedWithError(
+        "Legacy opt-in was declined."
       );
     });
   });

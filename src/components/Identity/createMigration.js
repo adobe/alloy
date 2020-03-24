@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { getApexDomain, cookieJar, isFunction } from "../../utils";
-import getVisitorECID from "./visitorService/getVisitorECID";
+import getVisitorECID from "./visitorService/getVisitorEcid";
 import awaitVisitorOptIn from "./visitorService/awaitVisitorOptIn";
 
 // TODO: We are already retrieving the apex in core; find a way to reuse it.
