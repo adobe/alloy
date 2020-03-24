@@ -24,7 +24,7 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
     IDENTITY_COOKIE_KEY
   );
   let deferredForIdentityCookie;
-  const migration = createMigration({ orgId, consent });
+  const migration = createMigration({ orgId, consent, logger });
   const hasIdentityCookie = () => Boolean(cookieJar.get(identityCookieName));
   const customerIds = createCustomerIds({ eventManager, consent, logger });
 
@@ -43,9 +43,6 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
           logger.log("Resuming previously delayed request.");
         });
       } else {
-        const ecidToMigrate =
-          idMigrationEnabled && migration.getEcidFromLegacyCookies();
-
         // For Alloy+Konductor communication to be as robust as possible and
         // to ensure we don't mint new ECIDs for requests that would otherwise
         // be sent in parallel, we'll let this request go out to fetch the
@@ -68,10 +65,12 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
         // the browser.
         payload.expectResponse();
 
-        if (ecidToMigrate) {
-          // We have an ECID, but we still want to establish an
-          // identity cookie before allowing other requests to be sent.
-          addEcidToPayload(payload, ecidToMigrate);
+        if (idMigrationEnabled) {
+          promise = migration.getEcidFromLegacy().then(ecidToMigrate => {
+            if (ecidToMigrate) {
+              addEcidToPayload(payload, ecidToMigrate);
+            }
+          });
         }
 
         if (
