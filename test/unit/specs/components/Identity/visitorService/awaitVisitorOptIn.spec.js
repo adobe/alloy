@@ -21,6 +21,10 @@ describe("awaitVisitorOptIn", () => {
     window.adobe = undefined;
   });
 
+  afterAll(() => {
+    window.adobe = undefined;
+  });
+
   describe("No legacy opt in object is present", () => {
     it("should return promise resolved with undefined", () => {
       return expectAsync(awaitVisitorOptIn({ logger })).toBeResolvedTo(

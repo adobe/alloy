@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import { getApexDomain, cookieJar, isFunction } from "../../utils";
 import getVisitorECID from "./visitorService/getVisitorECID";
+import awaitVisitorOptIn from "./visitorService/awaitVisitorOptIn";
 
 // TODO: We are already retrieving the apex in core; find a way to reuse it.
 // Maybe default the domain in the cookieJar to apex while allowing overrides.
@@ -52,7 +53,7 @@ export default ({ orgId, consent, logger }) => {
       }
 
       if (doesVisitorExist) {
-        return getVisitorECID({ logger, orgId });
+        return getVisitorECID({ logger, orgId, awaitVisitorOptIn });
       }
       return Promise.resolve();
     },

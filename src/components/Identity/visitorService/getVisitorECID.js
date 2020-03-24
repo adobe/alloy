@@ -11,9 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { isFunction } from "../../../utils";
-import awaitVisitorOptIn from "./awaitVisitorOptIn";
 
-export default ({ logger, orgId }) => {
+export default ({ logger, orgId, awaitVisitorOptIn }) => {
   const Visitor = window.Visitor;
   if (isFunction(Visitor) && isFunction(Visitor.getInstance)) {
     return awaitVisitorOptIn({ logger }).then(() => {
