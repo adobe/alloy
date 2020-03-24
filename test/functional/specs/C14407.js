@@ -4,6 +4,7 @@ import getResponseBody from "../helpers/networkLogger/getResponseBody";
 import fixtureFactory from "../helpers/fixtureFactory";
 import cookies from "../helpers/cookies";
 import alloyEvent from "../helpers/alloyEvent";
+import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
 
 const networkLogger = createNetworkLogger();
 
@@ -23,15 +24,13 @@ const setConsentIn = ClientFunction(() => {
 });
 
 test("C14407 - Consenting to all purposes should be persisted.", async () => {
-  const imsOrgId = "53A16ACB5CC1D3760A495C99@AdobeOrg";
+  const imsOrgId = "334F60F35E1597910A495EC2@AdobeOrg";
   await cookies.clear();
   // await apiCalls(imsOrgId);
 
   const configure = await alloyEvent("configure", {
-    configId: "9999999",
-    orgId: imsOrgId,
-    debugEnabled: true,
-    idMigrationEnabled: false
+    idMigrationEnabled: false,
+    ...debugEnabledConfig
   });
 
   await configure.promise;
