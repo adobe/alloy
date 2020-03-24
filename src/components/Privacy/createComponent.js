@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, finallyHelper } from "../../utils";
+import { assign } from "../../utils";
 
 export default ({
   readStoredConsent,
@@ -36,12 +36,22 @@ export default ({
       setConsent(options) {
         const validatedOptions = validateSetConsentOptions(options);
         consent.suspend();
-        return taskQueue.addTask(() =>
-          finallyHelper(
-            sendSetConsentRequest(validatedOptions),
-            readCookieIfQueueEmpty
-          )
-        );
+        return taskQueue
+          .addTask(() => sendSetConsentRequest(validatedOptions))
+          .catch(error => {
+            readCookieIfQueueEmpty();
+            if (
+              error &&
+              error.message &&
+              error.message.includes("User is opted out")
+            ) {
+              throw new Error(
+                "The user previously declined consent, which cannot be changed."
+              );
+            }
+            throw error;
+          })
+          .then(readCookieIfQueueEmpty);
       }
     },
     lifecycle: {

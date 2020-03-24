@@ -31,7 +31,9 @@ test("Test C14404: User cannot consent to all purposes after consenting to no pu
   await t
     .expect(setConsentErrorMessage)
     .ok("Expected the setConsent command to be rejected");
-  await t.expect(setConsentErrorMessage).contains("User is opted out");
+  await t
+    .expect(setConsentErrorMessage)
+    .contains("The user previously declined consent, which cannot be changed.");
 
   // make sure the instance still has no consent
   const eventErrorMessage = await t.eval(() =>
