@@ -5,7 +5,7 @@ const responseStatus = async (networkLogs, status) => {
     const req = networkLogs[i];
     // TODO: Check why some requests don't have responses.
     // TODO: It looks like test cafe might not be handling gzip correctly.
-    if (!req.response) {
+    if (req.response) {
       // eslint-disable-next-line no-await-in-loop
       await t
         .expect(req.response.statusCode === status)
