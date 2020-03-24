@@ -40,78 +40,78 @@
     <script src="alloy.js" async></script>
 
     <script>
-            function getUrlParameter(name) {
-              name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-              var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
-              var results = regex.exec(location.search);
-              return results === null
-                ? ""
-                : decodeURIComponent(results[1].replace(/\+/g, " "));
-            }
+      function getUrlParameter(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        var results = regex.exec(location.search);
+        return results === null
+          ? ""
+          : decodeURIComponent(results[1].replace(/\+/g, " "));
+      }
 
-            alloy("configure", {
-              // defaultConsent: { general: "pending" },
-              edgeDomain:
-                location.host.indexOf("alloyio.com") !== -1
-                  ? "firstparty.alloyio.com"
-                  : undefined,
-              configId: "9999999",
-              orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
-              debugEnabled: true,
-              idMigrationEnabled: !(
-      1          getUrlParameter("idMigrationEnabled") === "false"
-              ),
-              prehidingStyle: ".personalization-container { opacity: 0 !important }",
-              onBeforeEventSend: function(options) {
-                const xdm = options.xdm;
-                const data = options.data;
-                const titleParam = getUrlParameter("title");
-                if (titleParam) {
-                  xdm.web.webPageDetails.name = titleParam;
-                }
-                const campaignParam = getUrlParameter("campaign");
-                if (campaignParam) {
-                  data.campaign = campaignParam;
-                }
-              }
-            });
+      alloy("configure", {
+        // defaultConsent: { general: "pending" },
+        edgeDomain:
+          location.host.indexOf("alloyio.com") !== -1
+            ? "firstparty.alloyio.com"
+            : undefined,
+        configId: "9999999",
+        orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
+        debugEnabled: true,
+        idMigrationEnabled: !(
+          getUrlParameter("idMigrationEnabled") === "false"
+        ),
+        prehidingStyle: ".personalization-container { opacity: 0 !important }",
+        onBeforeEventSend: function(options) {
+          const xdm = options.xdm;
+          const data = options.data;
+          const titleParam = getUrlParameter("title");
+          if (titleParam) {
+            xdm.web.webPageDetails.name = titleParam;
+          }
+          const campaignParam = getUrlParameter("campaign");
+          if (campaignParam) {
+            data.campaign = campaignParam;
+          }
+        }
+      });
 
-            alloy("event", {
-              viewStart: true,
-              xdm: {
-                // Demonstrates overriding automatically collected data
-                device: {
-                  screenHeight: 1
-                }
-              }
-            }).then(function(data) {
-              console.log("Sandbox: View start event has completed.", data);
-            });
+      alloy("event", {
+        viewStart: true,
+        xdm: {
+          // Demonstrates overriding automatically collected data
+          device: {
+            screenHeight: 1
+          }
+        }
+      }).then(function(data) {
+        console.log("Sandbox: View start event has completed.", data);
+      });
 
-            alloy("setCustomerIds", {
-              Email_LC_SHA256: {
-                id: "me@gmail.com",
-                authenticatedState: "ambiguous",
-                hashEnabled: true, //TODO: document customer ID hashing syntax
-                primary: true
-              },
-              HYP: {
-                id: "1234",
-                authenticatedState: "ambiguous"
-              }
-            }).then(function() {
-              console.log("Sandbox: Set customer IDs event has completed.");
-            });
+      alloy("setCustomerIds", {
+        Email_LC_SHA256: {
+          id: "me@gmail.com",
+          authenticatedState: "ambiguous",
+          hashEnabled: true, //TODO: document customer ID hashing syntax
+          primary: true
+        },
+        HYP: {
+          id: "1234",
+          authenticatedState: "ambiguous"
+        }
+      }).then(function() {
+        console.log("Sandbox: Set customer IDs event has completed.");
+      });
 
-            // For Testing multiple instances.
-            // We use a different orgId and configId.
-            organizationTwo("configure", {
-              // edgeDomain: "edgegateway.azurewebsites.net",
-              configId: "8888888",
-              orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
-              debugEnabled: true,
-              clickCollectionEnabled: false
-            });
+      // For Testing multiple instances.
+      // We use a different orgId and configId.
+      organizationTwo("configure", {
+        // edgeDomain: "edgegateway.azurewebsites.net",
+        configId: "8888888",
+        orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
+        debugEnabled: true,
+        clickCollectionEnabled: false
+      });
     </script>
   </head>
   <body>
