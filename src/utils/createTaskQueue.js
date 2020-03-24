@@ -30,18 +30,22 @@ export default () => {
       queueLength += 1;
 
       const lastPromiseFulfilledHandler = () => {
-        queueLength -= 1;
-        return task();
+        return task()
+          .catch(error => {
+            queueLength -= 1;
+            throw error;
+          })
+          .then(result => {
+            queueLength -= 1;
+            return result;
+          });
       };
 
       lastPromiseInQueue = lastPromiseInQueue.then(
         lastPromiseFulfilledHandler,
         lastPromiseFulfilledHandler
       );
-
-      return new Promise((resolve, reject) => {
-        lastPromiseInQueue.then(resolve, reject);
-      });
+      return lastPromiseInQueue;
     },
     /**
      * How many tasks are in the queue. This includes the task
