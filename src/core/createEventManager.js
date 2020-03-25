@@ -10,8 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assignIf, isEmptyObject } from "../utils";
-
 export default ({
   config,
   logger,
@@ -21,7 +19,7 @@ export default ({
   createDataCollectionRequestPayload,
   sendEdgeNetworkRequest
 }) => {
-  const { orgId, onBeforeEventSend, debugEnabled } = config;
+  const { onBeforeEventSend } = config;
 
   const onBeforeEventSendWithLoggedExceptions = (...args) => {
     try {
@@ -30,23 +28,6 @@ export default ({
       logger.error(e);
       throw e;
     }
-  };
-
-  const addMetaTo = payload => {
-    const configOverrides = { orgId };
-
-    const dataCollection = Object.create(null);
-    assignIf(
-      dataCollection,
-      { synchronousValidation: true },
-      () => debugEnabled
-    );
-
-    if (!isEmptyObject(dataCollection)) {
-      configOverrides.dataCollection = dataCollection;
-    }
-
-    payload.mergeConfigOverrides(configOverrides);
   };
 
   return {
@@ -67,7 +48,6 @@ export default ({
       event.setLastChanceCallback(onBeforeEventSendWithLoggedExceptions);
       const { isViewStart = false, scopes } = options;
       const payload = createDataCollectionRequestPayload();
-      addMetaTo(payload);
 
       return lifecycle
         .onBeforeEvent({

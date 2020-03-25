@@ -13,9 +13,9 @@ const corsHeader = {
   "access-control-allow-origin": "https://alloyio.com"
 };
 
-const mockWithNoIdentityCookie = new RequestMock()
-  .onRequestTo(/v1\/interact\?configId=/)
-  .respond("{}", 200, corsHeader);
+const mockWithoutResponse = new RequestMock().onRequestTo(
+  /v1\/interact\?configId=/
+);
 
 const mockWithIdentityCookie = new RequestMock()
   .onRequestTo(/v1\/interact\?configId=/)
@@ -27,7 +27,7 @@ const mockWithIdentityCookie = new RequestMock()
           type: "state:store",
           payload: [
             {
-              key: "kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_identity",
+              key: "kndctr_334F60F35E1597910A495EC2_AdobeOrg_identity",
               value: "CgoKA25ldxIBMBgACg8KBnN5bmNlZBIBMRi",
               maxAge: 34128000
             }
@@ -63,10 +63,9 @@ const triggerAlloyEvents = ClientFunction(() => {
   });
 });
 
-const identityCookieName = "kndctr_53A16ACB5CC1D3760A495C99_AdobeOrg_identity";
+const identityCookieName = "kndctr_334F60F35E1597910A495EC2_AdobeOrg_identity";
 
-// Test with a mock interact response that does NOT contain an identity cookie.
-test.requestHooks(mockWithNoIdentityCookie)(
+test.requestHooks(mockWithoutResponse)(
   "Test C2581: Queue requests until we receive an ECID.",
   async () => {
     await configureAlloyInstance("alloy", debugEnabledConfig);
@@ -79,7 +78,6 @@ test.requestHooks(mockWithNoIdentityCookie)(
   }
 );
 
-// Test with a mock interact response that DOES contain an identity cookie.
 test.requestHooks(mockWithIdentityCookie)(
   "Test C2581: Request are triggered once ECID is available.",
   async () => {

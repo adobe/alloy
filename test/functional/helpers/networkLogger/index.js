@@ -18,6 +18,7 @@ const createNetworkLogger = () => {
   const edgeEndpoint = /v1\/(interact|collect)\?configId=/;
   const edgeCollectEndpoint = /v1\/collect\?configId=/;
   const edgeInteractEndpoint = /v1\/interact\?configId=/;
+  const setConsentEndpoint = /v1\/privacy\/set-consent\?configId=/;
 
   const gatewayEndpointLogs = createRequestLogger(gatewayEndpoint);
   const adobedcDemdexLogs = createRequestLogger(adobedcDemdex);
@@ -25,6 +26,7 @@ const createNetworkLogger = () => {
   const edgeEndpointLogs = createRequestLogger(edgeEndpoint);
   const edgeCollectEndpointLogs = createRequestLogger(edgeCollectEndpoint);
   const edgeInteractEndpointLogs = createRequestLogger(edgeInteractEndpoint);
+  const setConsentEndpointLogs = createRequestLogger(setConsentEndpoint);
 
   const clearLogs = async () => {
     await gatewayEndpointLogs.clear();
@@ -33,6 +35,7 @@ const createNetworkLogger = () => {
     await edgeEndpointLogs.clear();
     await edgeCollectEndpointLogs.clear();
     await edgeInteractEndpointLogs.clear();
+    await setConsentEndpointLogs.clear();
   };
 
   return {
@@ -42,6 +45,7 @@ const createNetworkLogger = () => {
     edgeEndpointLogs,
     edgeCollectEndpointLogs,
     edgeInteractEndpointLogs,
+    setConsentEndpointLogs,
     clearLogs
   };
 };

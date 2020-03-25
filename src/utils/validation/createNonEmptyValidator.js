@@ -11,8 +11,14 @@ governing permissions and limitations under the License.
 */
 
 import assertValid from "./assertValid";
+import isObject from "../isObject";
+import isEmptyObject from "../isEmptyObject";
 
 export default message => (value, path) => {
-  assertValid(value.length > 0, value, path, message);
+  if (isObject(value)) {
+    assertValid(!isEmptyObject(value), value, path, message);
+  } else {
+    assertValid(value.length > 0, value, path, message);
+  }
   return value;
 };

@@ -36,6 +36,7 @@ const getIdentityCookieValue = request => {
   return identityEntry.value;
 };
 
+// TODO: Use a real config ID since 9999999 is going away.
 const instance1Config = ClientFunction(() =>
   window.alloy("configure", {
     configId: "9999999",

@@ -1,4 +1,4 @@
 export default {
-  configId: "9999999",
-  orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+  configId: "60928f59-0406-4353-bfe3-22ed633c4f67",
+  orgId: "334F60F35E1597910A495EC2@AdobeOrg"
 };

@@ -63,6 +63,9 @@ const nonEmptyString = function nonEmptyString() {
 const nonEmptyArray = function nonEmptyArray() {
   return nullSafeChain(this, createNonEmptyValidator("a non-empty array"));
 };
+const nonEmptyObject = function nonEmptyObject() {
+  return nullSafeChain(this, createNonEmptyValidator("a non-empty object"));
+};
 const regexp = function regexp() {
   return nullSafeChain(this, regexpValidator);
 };
@@ -102,7 +105,8 @@ const objectOf = function objectOf(schema) {
     return nullSafeChain(this, createNoUnknownFieldsValidator(schema));
   };
   return nullSafeChain(this, createObjectOfValidator(schema), {
-    noUnknownFields
+    noUnknownFields,
+    nonEmpty: nonEmptyObject
   });
 };
 const string = function string() {

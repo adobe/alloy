@@ -10,18 +10,55 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { string, objectOf, boolean, arrayOf } from "../../utils/validation";
+
+/**
+ * @typedef {Object} OptionsValidationResults
+ * @property {Array} errors - Errors from invalid options
+ * @property {Array} warnings - Warnings from invalid options
+ */
+
 /**
  * Verifies user provided event options.
  * @param {*} options The user event options to validate
- * @returns {Array} Array of warnings if the options are invalid
+ * @returns {OptionsValidationResults} Errors and warnings from invalid options
  */
 export default options => {
-  const warnings = [];
-  const { xdm } = options;
-  if (!xdm && !options.data) {
-    warnings.push("No event xdm or event data specified.");
-  } else if (xdm && !xdm.eventType && !options.type) {
-    warnings.push("No type or xdm.eventType specified.");
+  const eventOptionsErrorValidator = objectOf({
+    viewStart: boolean(),
+    type: string(),
+    xdm: objectOf({
+      eventType: string()
+    }),
+    data: objectOf({}),
+    scopes: arrayOf(string())
+  }).required();
+  const errors = [];
+  try {
+    eventOptionsErrorValidator(options);
+  } catch (e) {
+    errors.push(e);
   }
-  return warnings;
+  const eventOptionsWarningValidator = objectOf({
+    type: string().nonEmpty(),
+    xdm: objectOf({
+      eventType: string().nonEmpty()
+    }).nonEmpty(),
+    data: objectOf({}).nonEmpty(),
+    scopes: arrayOf(
+      string()
+        .required()
+        .nonEmpty()
+    ).nonEmpty()
+  }).required();
+  const warnings = [];
+  try {
+    const { type, xdm } = eventOptionsWarningValidator(options);
+    if (xdm && !xdm.eventType && !type) {
+      warnings.push("No type or xdm.eventType specified.");
+    }
+  } catch (e) {
+    warnings.push(e);
+  }
+  return { errors, warnings };
 };

@@ -19,13 +19,16 @@ const createDataCollector = ({ eventManager, logger }) => {
   return {
     commands: {
       event(options) {
-        const warnings = validateUserEventOptions(options);
+        const { errors, warnings } = validateUserEventOptions(options);
+        const validationProblems = errors.length > 0 ? errors : warnings;
+        const invalidOptionsMessage = `Invalid event command options:\n\t - ${validationProblems.join(
+          "\n\t - "
+        )}\nFor documentation covering the event command see: ${CONFIG_DOC_URI}`;
+        if (errors.length) {
+          throw new Error(invalidOptionsMessage);
+        }
         if (warnings.length) {
-          logger.warn(
-            `Invalid event command options:\n\t - ${warnings.join(
-              "\n\t - "
-            )}\nFor documentation covering the event command see: ${CONFIG_DOC_URI}`
-          );
+          logger.warn(invalidOptionsMessage);
         }
         let { xdm } = options;
         const {
