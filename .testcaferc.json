@@ -2,7 +2,6 @@
   "src": "test/functional/specs/*.js",
   "skipJsErrors": "true",
   "clientScripts": [
-    { "path": "test/functional/helpers/alloyPageSnippet/index.js" },
-    { "path": "dist/standalone/alloy.js" }
+    { "path": "test/functional/helpers/alloyPageSnippet/index.js" }
   ]
 }

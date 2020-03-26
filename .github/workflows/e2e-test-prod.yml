@@ -1,9 +1,10 @@
 name: PROD E2E TESTS
 
-# Run the tests every 8 hours
+# Run on PR against master
 on:
-  schedule:
-   - cron:  '0 */8 * * *'
+  pull_request:
+    branches:
+    - master
 
 jobs:
   build:
@@ -12,10 +13,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build & Test Alloy PROD
-      uses: actions/setup-node@v1
+    - uses: actions/setup-node@v1
       with:
-        node-version: "stable"
-    - run: npm i -g testcafe
-    - run: npm run build:prod
-    - run: npm run functional:local
+        node-version: 12.x
+    - name: Run TestCafe tests
+      uses: DevExpress/testcafe-action@latest
+      with:
+          args: "chrome"
+    env:
+      GIT_ENV: productionsss
