@@ -1,0 +1,21 @@
+name: PROD E2E TESTS
+
+# Run the tests every 8 hours
+on:
+  schedule:
+   - cron:  '0 */8 * * *'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build & Test Alloy PROD
+      uses: actions/setup-node@v1
+      with:
+        node-version: "stable"
+    - run: npm i -g testcafe
+    - run: npm run build:prod
+    - run: npm run functional:local
