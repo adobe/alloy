@@ -5,6 +5,7 @@ import fixtureFactory from "../helpers/fixtureFactory";
 import cookies from "../helpers/cookies";
 import alloyEvent from "../helpers/alloyEvent";
 import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
+import getConsentCookieName from "../helpers/getConsentCookieName";
 
 const networkLogger = createNetworkLogger();
 
@@ -45,10 +46,7 @@ test("C14407 - Consenting to all purposes should be persisted.", async () => {
 
   await event1.promise;
 
-  const cookieName = `kndctr_${imsOrgId.replace(
-    /[@]+?/,
-    "_"
-  )}_consent`.toString();
+  const cookieName = getConsentCookieName(imsOrgId);
 
   const consentCheck = await cookies.get(cookieName);
 

@@ -4,6 +4,7 @@ import getResponseBody from "../helpers/networkLogger/getResponseBody";
 import fixtureFactory from "../helpers/fixtureFactory";
 import cookies from "../helpers/cookies";
 import alloyEvent from "../helpers/alloyEvent";
+import getConsentCookieName from "../helpers/getConsentCookieName";
 
 const networkLogger = createNetworkLogger();
 
@@ -45,10 +46,7 @@ test("C14409 - Consenting to no purposes should be persisted.", async () => {
 
   await event1.promise;
 
-  const cookieName = `kndctr_${imsOrgId.replace(
-    /[@]+?/,
-    "_"
-  )}_consent`.toString();
+  const cookieName = getConsentCookieName(imsOrgId);
 
   const consentCheck = await cookies.get(cookieName);
 
