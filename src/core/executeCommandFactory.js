@@ -11,12 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import { isFunction } from "../utils";
+import validateCommandOptions from "./validateCommandOptions";
 
 export default ({ logger, configureCommand, debugCommand, handleError }) => {
   let configurePromise;
 
   const getExecutor = (commandName, options) => {
-    let execute;
+    let executor;
 
     if (commandName === "configure") {
       if (configurePromise) {
@@ -24,8 +25,7 @@ export default ({ logger, configureCommand, debugCommand, handleError }) => {
           "The library has already been configured and may only be configured once."
         );
       }
-
-      execute = () => {
+      executor = () => {
         configurePromise = configureCommand(options);
         return configurePromise;
       };
@@ -36,20 +36,21 @@ export default ({ logger, configureCommand, debugCommand, handleError }) => {
         );
       }
       if (commandName === "debug") {
-        execute = () => debugCommand(options);
+        executor = () => debugCommand(options);
       } else {
-        execute = () => {
+        executor = () => {
           return configurePromise.then(
             componentRegistry => {
               const command = componentRegistry.getCommand(commandName);
-              if (!isFunction(command)) {
+              if (!command || !isFunction(command.run)) {
                 throw new Error(
                   `The ${commandName} command does not exist. List of available commands: ${componentRegistry
                     .getCommandNames()
                     .join(", ")}.`
                 );
               }
-              return command(options);
+              validateCommandOptions({ command, options, logger });
+              return command.run(options);
             },
             () => {
               logger.warn(
@@ -69,16 +70,16 @@ export default ({ logger, configureCommand, debugCommand, handleError }) => {
       }
     }
 
-    return execute;
+    return executor;
   };
 
   return (commandName, options = {}) => {
     return new Promise(resolve => {
       // We have to wrap the getExecutor() call in the promise so the promise
       // will be rejected if getExecutor() throws errors.
-      const execute = getExecutor(commandName, options);
+      const executor = getExecutor(commandName, options);
       logger.log(`Executing ${commandName} command.`, "Options:", options);
-      resolve(execute());
+      resolve(executor());
     }).catch(handleError);
   };
 };
