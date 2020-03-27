@@ -6,6 +6,7 @@ import cookies from "../helpers/cookies";
 import alloyEvent from "../helpers/alloyEvent";
 import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
 import getConsentCookieName from "../helpers/getConsentCookieName";
+import createResponse from "../../../src/core/createResponse";
 
 const networkLogger = createNetworkLogger();
 
@@ -58,23 +59,21 @@ test("C14407 - Consenting to all purposes should be persisted.", async () => {
     .expect(networkLogger.edgeEndpointLogs.requests[0].response.statusCode)
     .eql(200);
 
-  const body = getResponseBody(networkLogger.edgeEndpointLogs.requests[0]);
-  const bodyObject = JSON.parse(body);
+  const request = JSON.parse(
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+  );
 
   // read state:store handles from response (i.e. 'set a cookie')
-  const cookiesToSet = {};
+  await t.expect("handle" in request).ok();
+  await t.expect(request.handle.length).gt(0);
 
-  await t.expect("handle" in bodyObject).ok();
-  await t.expect(bodyObject.handle.length).gt(0);
-
-  await bodyObject.handle.map(handle => {
-    if (handle.type !== "state:store") return handle;
-    handle.payload.map(payload => {
-      cookiesToSet[payload.key] = payload;
-      return payload;
-    });
-    return handle;
-  });
+  const storePayloads = createResponse(request).getPayloadsByType(
+    "state:store"
+  );
+  const cookiesToSet = storePayloads.reduce((memo, storePayload) => {
+    memo[storePayload.key] = storePayload;
+    return memo;
+  }, {});
 
   // expect that konductor cookie handle matches cookie name
   await t.expect(cookieName in cookiesToSet).ok();
