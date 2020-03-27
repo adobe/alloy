@@ -1,18 +1,23 @@
 import { RequestLogger, ClientFunction } from "testcafe";
 import fixtureFactory from "../helpers/fixtureFactory";
-import baseConfig from "../helpers/constants/baseConfig";
-import alternateConfig from "../helpers/constants/alternateConfig";
+
+import {
+  orgMainConfigMain,
+  orgAltConfigAlt
+} from "../helpers/constants/configParts";
 
 const networkLoggerConfig = {
   logRequestBody: true,
   stringifyRequestBody: true
 };
 const networkLogger1 = RequestLogger(
-  new RegExp(`v1\\/(interact|collect)\\?configId=${baseConfig.configId}`),
+  new RegExp(
+    `v1\\/(interact|collect)\\?configId=${orgMainConfigMain.configId}`
+  ),
   networkLoggerConfig
 );
 const networkLogger2 = RequestLogger(
-  new RegExp(`v1\\/(interact|collect)\\?configId=${alternateConfig.configId}`),
+  new RegExp(`v1\\/(interact|collect)\\?configId=${orgAltConfigAlt.configId}`),
   networkLoggerConfig
 );
 
@@ -29,7 +34,6 @@ test.meta({
 });
 
 const apiCalls = ClientFunction((configObject, alternateConfigObject) => {
-  configObject.edgeBasePath = window.edgeBasePath;
   return window.alloy("configure", configObject).then(() => {
     Object.keys(alternateConfigObject).forEach(key => {
       configObject[key] = alternateConfigObject[key];
@@ -39,7 +43,7 @@ const apiCalls = ClientFunction((configObject, alternateConfigObject) => {
 });
 
 test("Test C13818: Changing the options object after configure doesn't change the computed config", async t => {
-  await apiCalls(baseConfig, alternateConfig);
+  await apiCalls(orgMainConfigMain, orgAltConfigAlt);
 
   await t.expect(networkLogger1.requests.length).eql(1);
   await t.expect(networkLogger2.requests.length).eql(0);
