@@ -2,14 +2,22 @@ import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../helpers/networkLogger";
 import { responseStatus } from "../helpers/assertions/index";
 import fixtureFactory from "../helpers/fixtureFactory";
-import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
+import {
+  compose,
+  orgMainConfigMain,
+  debugEnabled
+} from "../helpers/constants/configParts";
 
 const networkLogger = createNetworkLogger();
+const config = compose(
+  orgMainConfigMain,
+  debugEnabled
+);
 
 fixtureFactory({
   title: "C2592: Event command sends a request",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs, networkLogger.demdexProxy]
 });
 
 test.meta({
@@ -25,7 +33,7 @@ const triggerAlloyEvent = ClientFunction(() => {
 });
 
 test("Test C2592: Event command sends a request.", async () => {
-  await configureAlloyInstance("alloy", debugEnabledConfig);
+  await configureAlloyInstance("alloy", config);
   await triggerAlloyEvent();
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
