@@ -14,14 +14,14 @@ export default {
   get: ClientFunction(name => {
     const cookies = document.cookie
       .split(";")
-      .map(function(c) {
+      .map(c => {
         const ct = c.trim();
         const index = ct.indexOf("=");
         return [ct.slice(0, index), ct.slice(index + 1)].map(
           decodeURIComponent
         );
       })
-      .reduce(function(a, b) {
+      .reduce((a, b) => {
         try {
           a[b[0]] = JSON.parse(b[1]);
         } catch (e) {
