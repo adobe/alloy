@@ -20,7 +20,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const setConsentToNone = ClientFunction(() => {
+const setConsentToOut = ClientFunction(() => {
   return window.alloy("setConsent", { general: "out" });
 });
 
@@ -43,7 +43,7 @@ test("C14409 - Consenting to no purposes should be persisted.", async () => {
   });
 
   // apply user consent
-  await setConsentToNone();
+  await setConsentToOut();
 
   await event1.promise;
 
