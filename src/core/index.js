@@ -96,7 +96,6 @@ if (instanceNamespaces) {
       });
       const sendEdgeNetworkRequest = sendEdgeNetworkRequestFactory({
         config,
-        logger,
         lifecycle,
         cookieTransfer,
         sendNetworkRequest,
@@ -108,7 +107,6 @@ if (instanceNamespaces) {
         logger
       });
       const consent = createConsent({
-        lifecycle,
         createConsentRequestPayload,
         sendEdgeNetworkRequest,
         consentState,

@@ -15,13 +15,66 @@ import processIdSyncsFactory from "./processIdSyncsFactory";
 import configValidators from "./configValidators";
 
 import createComponent from "./createComponent";
+import handleEcidForIdMigrationFactory from "./handleEcidForIdMigrationFactory";
+import createMigration from "./createMigration";
+import handleResponseForIdSyncsFactory from "./handleResponseForIdSyncsFactory";
+import syncRequestWithIdentityRetrievalFactory from "./syncRequestWithIdentityRetrievalFactory";
+import createCustomerIds from "./customerIds/createCustomerIds";
+import addEcidQueryToEvent from "./addEcidQueryToEvent";
+import hasIdentityCookieFactory from "./hasIdentityCookieFactory";
+import setDomainForInitialIdentityPayloadFactory from "./setDomainForInitialIdentityPayloadFactory";
+import addEcidFromLegacyToPayloadFactory from "./addEcidFromLegacyToPayloadFactory";
+import addEcidToPayload from "./addEcidToPayload";
+import awaitIdentityCookieFactory from "./awaitIdentityCookieFactory";
+import getEcidFromResponse from "./getEcidFromResponse";
 
 const createIdentity = ({ config, logger, consent, eventManager }) => {
+  const { orgId, idMigrationEnabled, thirdPartyCookiesEnabled } = config;
+  const customerIds = createCustomerIds({ eventManager, consent, logger });
+  const migration = createMigration({ orgId, consent, logger });
+  const hasIdentityCookie = hasIdentityCookieFactory({ orgId });
+  const setDomainForInitialIdentityPayload = setDomainForInitialIdentityPayloadFactory(
+    {
+      thirdPartyCookiesEnabled
+    }
+  );
+  const addEcidFromLegacyToPayload = addEcidFromLegacyToPayloadFactory({
+    idMigrationEnabled,
+    migration,
+    addEcidToPayload
+  });
+  const awaitIdentityCookie = awaitIdentityCookieFactory({
+    orgId,
+    hasIdentityCookie
+  });
+  const syncRequestWithIdentityRetrieval = syncRequestWithIdentityRetrievalFactory(
+    {
+      hasIdentityCookie,
+      setDomainForInitialIdentityPayload,
+      addEcidFromLegacyToPayload,
+      awaitIdentityCookie,
+      logger
+    }
+  );
   const processIdSyncs = processIdSyncsFactory({
     fireReferrerHideableImage,
     logger
   });
-  return createComponent(processIdSyncs, config, logger, consent, eventManager);
+  const handleEcidForIdMigration = handleEcidForIdMigrationFactory({
+    idMigrationEnabled,
+    migration
+  });
+  const handleResponseForIdSyncs = handleResponseForIdSyncsFactory({
+    processIdSyncs
+  });
+  return createComponent({
+    addEcidQueryToEvent,
+    customerIds,
+    syncRequestWithIdentityRetrieval,
+    handleEcidForIdMigration,
+    handleResponseForIdSyncs,
+    getEcidFromResponse
+  });
 };
 
 createIdentity.namespace = "Identity";

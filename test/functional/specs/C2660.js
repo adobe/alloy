@@ -79,7 +79,7 @@ test("C2660 - Context data is captured before user consents.", async () => {
   const jsonResponses = [];
   await Promise.all(
     networkLogger.edgeEndpointLogs.requests.map(async request => {
-      await t.expect(request.response.statusCode).eql(204);
+      await t.expect(request.response.statusCode).eql(200);
       const stringifyRequest = JSON.parse(request.request.body);
       jsonResponses.push(stringifyRequest);
       await t.expect(stringifyRequest.events[0].xdm.environment).ok();

@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 import { createTaskQueue } from "../../utils";
 
 export default ({
-  lifecycle,
   createConsentRequestPayload,
   sendEdgeNetworkRequest,
   consentState,
@@ -36,21 +35,14 @@ export default ({
     consentState.suspend();
 
     const payload = createConsentRequestPayload();
-    return lifecycle
-      .onBeforeConsentRequest({
-        payload
-      })
-      .then(() => {
-        payload.setConsentLevel(consentByPurpose);
-        return sendEdgeNetworkRequest({
-          payload,
-          action: "privacy/set-consent"
-        });
-      })
-      .then(() => {
-        // Don't let response data disseminate beyond this
-        // point unless necessary.
-      });
+    payload.setConsentLevel(consentByPurpose);
+    return sendEdgeNetworkRequest({
+      payload,
+      action: "privacy/set-consent"
+    }).then(() => {
+      // Don't let response data disseminate beyond this
+      // point unless necessary.
+    });
   };
 
   return {

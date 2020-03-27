@@ -10,21 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getResponseStatusType from "./getResponseStatusType";
+import isRetryableHttpStatusCode from "./isRetryableHttpStatusCode";
 import { stackError } from "../../utils";
-import { RETRYABLE_ERROR, SUCCESS } from "../../constants/responseStatusType";
 
 export default ({ logger, networkStrategy }) => {
   /**
-   * Send the request to either interact or collect based on expectsResponse.
-   * When the response is returned it will call the lifecycle method "onResponse"
-   * with the returned response object.
+   * Send a network request and returns details about the response.
    *
    * @param {Object} payload This will be JSON stringified and sent as the post body.
-   * @param {String} endpointDomain The domain of the endpoint to which the
-   * request should be sent.
-   * @param {String} action The server action which should be triggered (passed
-   * as part of the URL).
+   * @param {String} url The URL to which the request should be sent.
+   * @param {String} requestID A unique ID for the request.
    */
   return ({ payload, url, requestId }) => {
     const stringifiedPayload = JSON.stringify(payload);
@@ -45,9 +40,10 @@ export default ({ logger, networkStrategy }) => {
 
     const executeRequest = (retriesAttempted = 0) => {
       return networkStrategy(url, stringifiedPayload).then(response => {
-        const statusType = getResponseStatusType(response.status);
-
-        if (statusType === RETRYABLE_ERROR && retriesAttempted < 3) {
+        if (
+          isRetryableHttpStatusCode(response.status) &&
+          retriesAttempted < 3
+        ) {
           return executeRequest(retriesAttempted + 1);
         }
 
@@ -68,12 +64,6 @@ export default ({ logger, networkStrategy }) => {
         );
 
         return {
-          // Every response with a successful status code that has a body
-          // must be a parsable body. If it isn't, it's an unexpected
-          // body and we should consider it a failure.
-          success: Boolean(
-            statusType === SUCCESS && (!response.body || parsedBody)
-          ),
           statusCode: response.status,
           body: response.body,
           parsedBody

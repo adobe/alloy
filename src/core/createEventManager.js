@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { createCallbackAggregator } from "../utils";
+
 export default ({
   config,
   logger,
@@ -49,12 +51,17 @@ export default ({
       const { isViewStart = false, scopes } = options;
       const payload = createDataCollectionRequestPayload();
 
+      const onResponseCallbackAggregator = createCallbackAggregator();
+      const onRequestFailureCallbackAggregator = createCallbackAggregator();
+
       return lifecycle
         .onBeforeEvent({
           event,
           isViewStart,
           scopes,
-          payload
+          payload,
+          onResponse: onResponseCallbackAggregator.add,
+          onRequestFailure: onRequestFailureCallbackAggregator.add
         })
         .then(() => {
           // it's important to add the event here because the payload object will call toJSON
@@ -63,19 +70,25 @@ export default ({
           return consent.awaitConsent();
         })
         .then(() => {
-          return lifecycle.onBeforeDataCollectionRequest({ payload });
+          return lifecycle.onBeforeDataCollectionRequest({
+            payload,
+            onResponse: onResponseCallbackAggregator.add,
+            onRequestFailure: onRequestFailureCallbackAggregator.add
+          });
         })
         .then(() => {
           const documentMayUnload = event.getDocumentMayUnload();
-          const expectResponse = payload.getExpectResponse();
-          const reallyExpectResponse = documentMayUnload
-            ? false
-            : expectResponse;
-          const action = reallyExpectResponse ? "interact" : "collect";
+          const action = documentMayUnload ? "collect" : "interact";
           return sendEdgeNetworkRequest({
             payload,
-            action
+            action,
+            onResponseBeforeFullErrorProcessing:
+              onResponseCallbackAggregator.call,
+            onRequestFailure: onRequestFailureCallbackAggregator.call
           });
+        })
+        .then(() => {
+          // Don't return anything from the response to the customer...yet.
         });
     }
   };

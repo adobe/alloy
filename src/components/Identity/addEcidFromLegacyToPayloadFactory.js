@@ -1,5 +1,5 @@
 /*
-Copyright 2019 Adobe. All rights reserved.
+Copyright 2020 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,17 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/**
- * Request was successful.
- */
-export const SUCCESS = "success";
+export default ({ idMigrationEnabled, migration, addEcidToPayload }) => {
+  return payload => {
+    if (!idMigrationEnabled) {
+      return Promise.resolve();
+    }
 
-/**
- * Request failed and should not be retried.
- */
-export const FATAL_ERROR = "fatalError";
-
-/**
- * Request failed and can be retried.
- */
-export const RETRYABLE_ERROR = "retryableError";
+    return migration.getEcidFromLegacy().then(ecidToMigrate => {
+      if (ecidToMigrate) {
+        addEcidToPayload(payload, ecidToMigrate);
+      }
+    });
+  };
+};

@@ -78,6 +78,8 @@ test.requestHooks(mockWithoutResponse)(
   }
 );
 
+// FIXME: Need to figure out how to check that the response from the first
+// request comes back before the other two requests go out.
 test.requestHooks(mockWithIdentityCookie)(
   "Test C2581: Request are triggered once ECID is available.",
   async () => {

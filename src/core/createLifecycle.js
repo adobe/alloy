@@ -12,12 +12,22 @@ governing permissions and limitations under the License.
 
 // TO-DOCUMENT: Lifecycle hooks and their params.
 const hookNames = [
+  // Called after all components have been registered.
   "onComponentsRegistered",
+  // Called before an event is sent on a data collection request
   "onBeforeEvent",
+  // Called before each data collection request
+  // (`interact` or `collect` endpoints)
   "onBeforeDataCollectionRequest",
-  "onBeforeConsentRequest",
+  // Called before each request is made to the edge.
+  "onBeforeRequest",
+  // Called after each response is returned from the edge.
   "onResponse",
+  // Called after a network request to the edge fails. Either the request
+  // didn't make it to the edge, didn't make it to Konductor, or Konductor
+  // failed to return a regularly-structured response.
   "onRequestFailure",
+  // A user clicked on an element.
   "onClick"
 ];
 
