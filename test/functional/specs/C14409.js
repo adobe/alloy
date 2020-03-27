@@ -75,6 +75,18 @@ test("C14409 - Consenting to no purposes should be persisted.", async () => {
     return memo;
   }, {});
 
+  // Reload and reconfigure alloy
+  await t.eval(() => document.location.reload());
+
+  const reconfigure = await alloyEvent("configure", {
+    configId: "9999999",
+    orgId: imsOrgId,
+    debugEnabled: true,
+    idMigrationEnabled: false
+  });
+
+  await reconfigure.promise;
+
   const errorMessage = await t.eval(() =>
     window
       .alloy("event", { data: { a: 1 } })
