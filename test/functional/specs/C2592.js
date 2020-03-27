@@ -17,7 +17,7 @@ const config = compose(
 
 fixtureFactory({
   title: "C2592: Event command sends a request",
-  requestHooks: [networkLogger.edgeEndpointLogs, networkLogger.demdexProxy]
+  requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({
