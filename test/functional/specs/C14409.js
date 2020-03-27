@@ -76,6 +76,8 @@ test("C14409 - Consenting to no purposes should be persisted.", async () => {
   }, {});
 
   // Reload and reconfigure alloy
+  // [TODO] Navigate to a different subdomain when it is available
+  // https://github.com/DevExpress/testcafe/blob/a4f6a4ac3627ebeb29b344ed3a1793627dd87909/docs/articles/documentation/test-api/actions/navigate.md
   await t.eval(() => document.location.reload());
 
   const reconfigure = await alloyEvent("configure", {
