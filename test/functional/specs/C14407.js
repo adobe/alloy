@@ -78,7 +78,6 @@ test("C14407 - Consenting to all purposes should be persisted.", async () => {
   // expect that konductor cookie handle matches cookie name
   await t.expect(cookieName in cookiesToSet).ok();
 
-  // expect that the cookie max age is greater than 0
   await t.expect("maxAge" in cookiesToSet[cookieName]).ok();
-  await t.expect(cookiesToSet[cookieName].maxAge).gt(0);
+  await t.expect(cookiesToSet[cookieName].maxAge).eql(15552000);
 });

@@ -101,7 +101,6 @@ test("C14409 - Consenting to no purposes should be persisted.", async () => {
   await t.expect(errorMessage).ok("Expected the event command to be rejected");
   await t.expect(errorMessage).contains("The user declined consent.");
 
-  // expect that the cookie max age is greater than 0
   await t.expect("maxAge" in cookiesToSet[cookieName]).ok();
-  await t.expect(cookiesToSet[cookieName].maxAge).gt(0);
+  await t.expect(cookiesToSet[cookieName].maxAge).eql(15552000);
 });
