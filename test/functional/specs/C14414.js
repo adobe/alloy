@@ -1,7 +1,16 @@
 import { RequestHook } from "testcafe";
 import fixtureFactory from "../helpers/fixtureFactory";
-import baseConfig from "../helpers/constants/baseConfig";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
+import {
+  compose,
+  orgMainConfigMain,
+  consentPending
+} from "../helpers/constants/configParts";
+
+const config = compose(
+  orgMainConfigMain,
+  consentPending
+);
 
 class SequentialHook extends RequestHook {
   constructor(...args) {
@@ -40,11 +49,7 @@ test.meta({
 });
 
 test("Test C14414: Requests are queued while consent changes are pending", async t => {
-  await configureAlloyInstance("alloy", {
-    defaultConsent: { general: "pending" },
-    debugEnabled: true,
-    ...baseConfig
-  });
+  await configureAlloyInstance("alloy", config);
   await t.eval(() => {
     window.alloy("setConsent", { general: "in" });
     return undefined;

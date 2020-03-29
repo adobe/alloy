@@ -8,6 +8,8 @@ import migrationEnabled from "./migrationEnabled";
 import migrationDisabled from "./migrationDisabled";
 import errorsEnabled from "./errorsEnabled";
 import errorsDisabled from "./errorsDisabled";
+import consentIn from "./consentIn";
+import consentPending from "./consentPending";
 
 const compose = (...objects) => Object.assign({}, ...objects);
 
@@ -22,5 +24,7 @@ export {
   migrationEnabled,
   migrationDisabled,
   errorsEnabled,
-  errorsDisabled
+  errorsDisabled,
+  consentIn,
+  consentPending
 };

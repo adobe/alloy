@@ -1,6 +1,15 @@
 import fixtureFactory from "../helpers/fixtureFactory";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
-import baseConfig from "../helpers/constants/baseConfig";
+import {
+  compose,
+  orgMainConfigMain,
+  consentPending
+} from "../helpers/constants/configParts";
+
+const config = compose(
+  orgMainConfigMain,
+  consentPending
+);
 
 fixtureFactory({
   title:
@@ -14,10 +23,7 @@ test.meta({
 });
 
 test("Test C14411: User cannot consent to no purposes after consenting to no purposes", async t => {
-  await configureAlloyInstance("alloy", {
-    defaultConsent: { general: "pending" },
-    ...baseConfig
-  });
+  await configureAlloyInstance("alloy", config);
   await t.eval(() => window.alloy("setConsent", { general: "out" }));
   const setConsentErrorMessage = await t.eval(() =>
     window
