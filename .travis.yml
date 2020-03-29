@@ -17,12 +17,20 @@ addons:
     organization: adobeinc
 services:
 - xvfb
-script:
-- npm install
-- npm run build:prod
-- npm run functional:ci
-- npm run test:saucelabs
-- npm run checkbundlesize
+
+jobs:
+  - name: test integration env
+    script:
+    - npm install
+    - npm run build:prod
+    - npm run functional:ci
+    - npm run test:saucelabs
+    - npm run checkbundlesize
+  - name: test production env
+    script:
+    - npm install
+    - npm run functional:local:prod
+    if: env(TRAVIS_EVENT_TYPE) = cron
 
 notifications:
   slack: adobedx:AlI4WB2ojGDcqsBEVZ1EGsCR
