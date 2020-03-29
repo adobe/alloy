@@ -2,7 +2,21 @@
   "src": "test/functional/specs/*.js",
   "skipJsErrors": "true",
   "clientScripts": [
-    { "path": "test/functional/helpers/alloyPageSnippet/index.js" },
-    { "path": "dist/standalone/alloy.js" }
+    { 
+      "path": "test/functional/helpers/alloyPageSnippet/index.js",
+      "page": "https://alloyio.com/functional-test/alloyTestPage.html"
+    },
+    { 
+      "path": "dist/standalone/alloy.js",
+      "page": "https://alloyio.com/functional-test/alloyTestPage.html"
+    },
+    { 
+      "path": "test/functional/helpers/alloyPageSnippet/index.js",
+      "page": "https://alloyio.com/functional-test/alloyTestPage.html?alloy_debug=true"
+    },
+    { 
+      "path": "dist/standalone/alloy.js",
+      "page": "https://alloyio.com/functional-test/alloyTestPage.html?alloy_debug=true"
+    }
   ]
 }

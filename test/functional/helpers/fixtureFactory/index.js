@@ -1,10 +1,9 @@
-import testServerUrl from "../constants/testServerUrl";
+import testServer from "../constants/testServer";
 import createNetworkLogger from "../networkLogger";
 
 const networkLogger = createNetworkLogger();
 
-// TODO: Switch to a different page for PROD testing.
-const defaultUrl = `${testServerUrl}/alloyTestPage.html`;
+const defaultUrl = `${testServer.domain}/${testServer.page}`;
 
 export default ({ title = "", url = defaultUrl, requestHooks = [] }) => {
   return fixture(title)

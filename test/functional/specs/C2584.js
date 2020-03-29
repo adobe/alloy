@@ -1,11 +1,11 @@
 import { ClientFunction } from "testcafe";
 import createConsoleLogger from "../helpers/consoleLogger";
 import fixtureFactory from "../helpers/fixtureFactory";
-import testServerUrl from "../helpers/constants/testServerUrl";
+import testServer from "../helpers/constants/testServer";
 import baseConfig from "../helpers/constants/baseConfig";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 
-const url = `${testServerUrl}/alloyTestPage.html`;
+const url = `${testServer.domain}/${testServer.page}`;
 
 fixtureFactory({
   title: "C2584: Toggle logging through debug command"

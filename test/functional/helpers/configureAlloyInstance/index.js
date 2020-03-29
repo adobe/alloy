@@ -10,7 +10,7 @@ const configureAlloyInstance = ClientFunction((instanceName, cfg) => {
     finalConfig = instanceName;
   }
 
-  window[finalInstanceName]("configure", finalConfig);
+  return window[finalInstanceName]("configure", finalConfig);
 });
 
 export default configureAlloyInstance;
