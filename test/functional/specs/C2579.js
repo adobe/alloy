@@ -9,6 +9,8 @@ import {
   migrationDisabled
 } from "../helpers/constants/configParts";
 
+import { configId } from "../helpers/edgeInfo";
+
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 
 const mainConfig = compose(
@@ -30,10 +32,11 @@ const networkLogger1 = RequestLogger(
   /v1\/(interact|collect)\?configId=9999999/,
   networkLoggerConfig
 );
-const networkLogger2 = RequestLogger(
-  /v1\/(interact|collect)\?configId=60928f59-0406-4353-bfe3-22ed633c4f67/,
-  networkLoggerConfig
-);
+
+const networkLogger2 = RequestLogger(request => {
+  const regEx = new RegExp(`v1\\/(interact|collect)\\?configId=${configId}`);
+  return regEx.test(request.url);
+}, networkLoggerConfig);
 
 fixtureFactory({
   title: "C2579: Isolates multiple SDK instances",
