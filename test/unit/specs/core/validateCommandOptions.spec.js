@@ -15,10 +15,8 @@ import validateCommandOptions from "../../../../src/core/validateCommandOptions"
 describe("validateCommandOptions", () => {
   let command;
   let options;
-  let logger;
 
   beforeEach(() => {
-    logger = { warn: jasmine.createSpy() };
     options = {};
     command = {
       commandName: "TEST",
@@ -26,32 +24,30 @@ describe("validateCommandOptions", () => {
     };
   });
 
+  it("supports commands not implementing command options validation.", () => {
+    expect(() => {
+      validateCommandOptions({ command, options });
+    }).not.toThrowError();
+  });
   it("should throw exception if command options validator throw exception.", () => {
     command.optionsValidator = () => {
       throw new Error("Invalid Options");
     };
     expect(() => {
-      validateCommandOptions({ command, options, logger });
+      validateCommandOptions({ command, options });
     }).toThrowError();
   });
-  it("should throw exception if error provided by command options validator.", () => {
+  it("should include custom documentation URI in error message if provided by command options validator.", () => {
     command.optionsValidator = () => {
-      const errors = ["Invalid Options"];
-      return { errors };
-    };
-    expect(() => {
-      validateCommandOptions({ command, options, logger });
-    }).toThrowError();
-  });
-  it("should include custom documentation URI in warning if provided by command options validator.", () => {
-    command.optionsValidator = () => {
-      const warnings = ["Somewhat Invalid Options"];
-      return { warnings };
+      throw new Error("Invalid Options");
     };
     command.documentationUri = "https://example.com";
-    validateCommandOptions({ command, options, logger });
-    expect(logger.warn).toHaveBeenCalledWith(
-      jasmine.stringMatching(/example.com/gm)
-    );
+    let errorMessage;
+    try {
+      validateCommandOptions({ command, options });
+    } catch (e) {
+      errorMessage = e.message;
+    }
+    expect(errorMessage).toMatch(/example.com/gm);
   });
 });

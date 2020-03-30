@@ -49,8 +49,12 @@ export default ({ logger, configureCommand, debugCommand, handleError }) => {
                     .join(", ")}.`
                 );
               }
-              validateCommandOptions({ command, options, logger });
-              return command.run(options);
+              const validatedOptions = validateCommandOptions({
+                command,
+                options,
+                logger
+              });
+              return command.run(validatedOptions);
             },
             () => {
               logger.warn(

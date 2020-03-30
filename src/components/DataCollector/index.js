@@ -13,15 +13,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import EVENT_COMMAND_DOC_URI from "../../constants/docUri";
-
 const createDataCollector = ({ eventManager }) => {
   return {
     commands: {
       event: {
-        documentationUri: EVENT_COMMAND_DOC_URI,
-        optionsValidator: options => {
-          return validateUserEventOptions(options);
+        documentationUri: "https://adobe.ly/2r0uUjh",
+        optionsValidator: ({ options, logger }) => {
+          return validateUserEventOptions({ options, logger });
         },
         run: options => {
           let { xdm } = options;

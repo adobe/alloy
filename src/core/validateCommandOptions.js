@@ -13,27 +13,20 @@ governing permissions and limitations under the License.
 const COMMAND_DOC_URI = "https://adobe.ly/2UH0qO7";
 
 export default ({ command, options, logger }) => {
-  if (!command.optionsValidator) {
-    return;
+  const {
+    commandName,
+    documentationUri = COMMAND_DOC_URI,
+    optionsValidator
+  } = command;
+  let validatedOptions = options;
+  if (optionsValidator) {
+    try {
+      validatedOptions = optionsValidator({ options, logger });
+    } catch (validationError) {
+      const invalidOptionsMessage = `Invalid ${commandName} command options:\n\t - ${validationError}
+      \nFor command documentation see: ${documentationUri}`;
+      throw new Error(invalidOptionsMessage);
+    }
   }
-  let errors = [];
-  let warnings = [];
-  try {
-    const validationResult = command.optionsValidator(options);
-    errors = validationResult.errors || errors;
-    warnings = validationResult.warnings || warnings;
-  } catch (e) {
-    errors.push(e);
-  }
-  const validationProblems = errors.length > 0 ? errors : warnings;
-  const { commandName, documentationUri = COMMAND_DOC_URI } = command;
-  const invalidOptionsMessage = `Invalid ${commandName} command options:\n\t - ${validationProblems.join(
-    "\n\t - "
-  )}\nFor command documentation see: ${documentationUri}`;
-  if (errors.length) {
-    throw new Error(invalidOptionsMessage);
-  }
-  if (warnings.length) {
-    logger.warn(invalidOptionsMessage);
-  }
+  return validatedOptions;
 };
