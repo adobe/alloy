@@ -1,9 +1,7 @@
 dist: xenial
-sudo: required
-language:
-- node_js
-node_js:
-- 'stable'
+os: linux
+language: node_js
+node_js: 'stable'
 install:
 - npm i -g npm
 - npm i -g testcafe
@@ -19,18 +17,14 @@ services:
 - xvfb
 
 jobs:
-  - name: test integration env
-    script:
-    - npm install
-    - npm run build:prod
-    - npm run functional:ci
-    - npm run test:saucelabs
-    - npm run checkbundlesize
-  - name: test production env
-    script:
-    - npm install
-    - npm run functional:local:prod
-    if: env(TRAVIS_EVENT_TYPE) = cron
+  include:
+      script:
+      - npm install
+      - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then npm run functional:cron:prod; fi
+      - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run build:prod; fi
+      - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run functional:ci; fi
+      - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run test:saucelabs; fi
+      - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run checkbundlesize; fi
 
 notifications:
   slack: adobedx:AlI4WB2ojGDcqsBEVZ1EGsCR
@@ -44,4 +38,3 @@ notifications:
   
 before_install:
 - stty cols 80
-

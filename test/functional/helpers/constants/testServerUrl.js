@@ -5,7 +5,4 @@ const pageName = {
   prod: "latestAlloyTestPage.html"
 };
 
-export default {
-  domain: "https://alloyio.com/functional-test",
-  page: pageName[env]
-};
+export default `https://alloyio.com/functional-test/${pageName[env]}`;

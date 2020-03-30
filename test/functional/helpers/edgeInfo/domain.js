@@ -12,10 +12,6 @@ const domains = {
 };
 
 export default {
-  getThirdParty() {
-    return domains[env].third;
-  },
-  getFirstParty() {
-    return domains[env].first;
-  }
+  thirdParty: domains[env].third,
+  firstParty: domains[env].first
 };

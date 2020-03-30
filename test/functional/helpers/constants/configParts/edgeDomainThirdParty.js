@@ -1,5 +1,5 @@
 import { domain } from "../../edgeInfo";
 
 export default {
-  edgeDomain: domain.getThirdParty()
+  edgeDomain: domain.thirdParty
 };
