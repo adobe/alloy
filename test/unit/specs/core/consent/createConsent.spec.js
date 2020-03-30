@@ -40,28 +40,32 @@ describe("createConsent", () => {
     expect(state.in).not.toHaveBeenCalled();
     expect(state.out).toHaveBeenCalled();
     expect(state.pending).not.toHaveBeenCalled();
-    expect(logger.warn).toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledWith(
+      "Some commands may fail. The user declined consent."
+    );
   });
   it("sets consent to pending", () => {
     subject.setConsent({ general: "pending" });
     expect(state.in).not.toHaveBeenCalled();
     expect(state.out).not.toHaveBeenCalled();
     expect(state.pending).toHaveBeenCalled();
-    expect(logger.warn).toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledWith(
+      "Some commands may be delayed until the user consents."
+    );
   });
-  [{}, { unknownPurpose: "in" }, { general: "unknownValue" }].forEach(value => {
-    it(`setting consent to ${JSON.stringify(value)} does nothing`, () => {
-      subject.setConsent(value);
-      expect(state.in).not.toHaveBeenCalled();
-      expect(state.out).not.toHaveBeenCalled();
-      expect(state.pending).not.toHaveBeenCalled();
-    });
+  it("logs unknown consent values", () => {
+    subject.setConsent({ general: "foo" });
+    expect(state.in).not.toHaveBeenCalled();
+    expect(state.out).not.toHaveBeenCalled();
+    expect(state.pending).not.toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledWith("Unknown consent value: foo");
   });
-  it("sets consent to pending", () => {
+  it("suspends", () => {
     subject.suspend();
     expect(state.in).not.toHaveBeenCalled();
     expect(state.out).not.toHaveBeenCalled();
     expect(state.pending).toHaveBeenCalled();
+    expect(logger.warn).not.toHaveBeenCalled();
   });
   it("calls await consent", () => {
     state.awaitConsent.and.returnValue("mypromise");

@@ -1,8 +1,8 @@
-import createSendSetConsentRequest from "../../../../../src/components/Privacy/createSendSetConsentRequest";
+import sendSetConsentRequestFactory from "../../../../../src/components/Privacy/sendSetConsentRequestFactory";
 import { defer } from "../../../../../src/utils";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
-describe("Privacy:createSendSetConsentRequest", () => {
+describe("Privacy:sendSetConsentRequestFactory", () => {
   let lifecycle;
   let createConsentRequestPayload;
   let sendEdgeNetworkRequest;
@@ -17,7 +17,7 @@ describe("Privacy:createSendSetConsentRequest", () => {
     sendEdgeNetworkRequest = jasmine.createSpy("sendEdgeNetworkRequest");
     payload = jasmine.createSpyObj("payload", ["setConsentLevel"]);
     createConsentRequestPayload.and.returnValue(payload);
-    sendSetConsentRequest = createSendSetConsentRequest({
+    sendSetConsentRequest = sendSetConsentRequestFactory({
       lifecycle,
       createConsentRequestPayload,
       sendEdgeNetworkRequest

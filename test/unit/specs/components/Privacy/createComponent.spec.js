@@ -29,7 +29,9 @@ describe("privacy:createComponent", () => {
     defaultConsent = { general: "in" };
     consent = jasmine.createSpyObj("consent", ["setConsent", "suspend"]);
     sendSetConsentRequest = jasmine.createSpy("sendSetConsentRequest");
-    validateSetConsentOptions = jasmine.createSpy("validateSetConsentOptions");
+    validateSetConsentOptions = jasmine
+      .createSpy("validateSetConsentOptions")
+      .and.callFake(options => options);
   });
 
   const build = () => {
@@ -63,9 +65,9 @@ describe("privacy:createComponent", () => {
     validateSetConsentOptions.and.returnValue({ general: "in" });
     sendSetConsentRequest.and.returnValue(Promise.resolve());
     component.commands.setConsent("unvalidated");
+    expect(validateSetConsentOptions).toHaveBeenCalledWith("unvalidated");
     expect(consent.suspend).toHaveBeenCalled();
     return flushPromiseChains().then(() => {
-      expect(validateSetConsentOptions).toHaveBeenCalledWith("unvalidated");
       expect(sendSetConsentRequest).toHaveBeenCalledWith({ general: "in" });
       expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
     });
@@ -75,9 +77,8 @@ describe("privacy:createComponent", () => {
     defaultConsent = { general: "pending" };
     readStoredConsent.and.returnValues({}, { general: "in" });
     build();
-    validateSetConsentOptions.and.returnValue({ general: "in" });
     sendSetConsentRequest.and.returnValue(Promise.reject());
-    component.commands.setConsent("unvalidated");
+    component.commands.setConsent({ general: "in" });
     return flushPromiseChains().then(() => {
       expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
     });
@@ -87,10 +88,9 @@ describe("privacy:createComponent", () => {
     defaultConsent = { general: "pending" };
     readStoredConsent.and.returnValues({}, { general: "in" });
     build();
-    validateSetConsentOptions.and.returnValue({ general: "in" });
     const deferredConsentRequest = defer();
     sendSetConsentRequest.and.returnValue(deferredConsentRequest.promise);
-    component.commands.setConsent("unvalidated");
+    component.commands.setConsent({ general: "in" });
     return flushPromiseChains()
       .then(() => {
         expect(sendSetConsentRequest).toHaveBeenCalledWith({ general: "in" });
@@ -107,21 +107,17 @@ describe("privacy:createComponent", () => {
     defaultConsent = { general: "pending" };
     readStoredConsent.and.returnValues({}, { general: "out" });
     build();
-    validateSetConsentOptions.and.returnValues(
-      { general: "in" },
-      { general: "out" }
-    );
     const deferredConsentRequest1 = defer();
     const deferredConsentRequest2 = defer();
     sendSetConsentRequest.and.returnValues(
       deferredConsentRequest1.promise,
       deferredConsentRequest2.promise
     );
-    component.commands.setConsent("unvalidated1");
+    component.commands.setConsent({ general: "in" });
     return flushPromiseChains()
       .then(() => {
         expect(sendSetConsentRequest).toHaveBeenCalledWith({ general: "in" });
-        component.commands.setConsent("unvalidated2");
+        component.commands.setConsent({ general: "out" });
         deferredConsentRequest1.resolve();
         return flushPromiseChains();
       })
@@ -146,7 +142,7 @@ describe("privacy:createComponent", () => {
   it("checks the cookie after an error response", () => {
     readStoredConsent.and.returnValues({}, { general: "out" });
     build();
-    component.lifecycle.onResponseFailure();
+    component.lifecycle.onRequestFailure();
     expect(consent.setConsent).toHaveBeenCalledWith({ general: "out" });
   });
 });

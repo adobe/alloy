@@ -81,29 +81,4 @@ describe("createConsentStateMachine", () => {
         expect(onFulfilled).toHaveBeenCalled();
       });
   });
-
-  /*
-  it("logs a warning if consent is pending", () => {
-    consentState.isPending.and.returnValue(true);
-    awaitConsentFactory({
-      consentState,
-      logger
-    });
-    expect(logger.warn).toHaveBeenCalledWith(
-      "Some commands may be delayed until the user consents."
-    );
-  });
-
-  it("logs a warning if user consented to no purposes", () => {
-    consentState.isPending.and.returnValue(false);
-    consentState.hasConsentedToAllPurposes.and.returnValue(false);
-    awaitConsentFactory({
-      consentState,
-      logger
-    });
-    expect(logger.warn).toHaveBeenCalledWith(
-      "Some commands may fail. The user declined consent."
-    );
-  });
-  */
 });

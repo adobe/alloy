@@ -40,6 +40,10 @@ export default ({
           .addTask(() => sendSetConsentRequest(validatedOptions))
           .catch(error => {
             readCookieIfQueueEmpty();
+            // This check re-writes the error message from Konductor to be more clear.
+            // We could check for this before sending the request, but if we let the
+            // request go out and Konductor adds this feature, customers don't need to
+            // update Alloy to get the functionality.
             if (
               error &&
               error.message &&
@@ -62,7 +66,7 @@ export default ({
       // opted out in AudienceManager, but no consent cookie exists on the
       // client. The request will be sent and the server will respond with a
       // 403 Forbidden and a consent cookie.
-      onResponseFailure: readCookieIfQueueEmpty
+      onRequestFailure: readCookieIfQueueEmpty
     }
   };
 };
