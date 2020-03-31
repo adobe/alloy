@@ -101,6 +101,30 @@ describe("executeCommandFactory", () => {
     });
   });
 
+  it("executes component commands", () => {
+    const runCommandSpy = jasmine.createSpy();
+    const testCommand = {
+      run: runCommandSpy,
+      optionsValidator: () => "options"
+    };
+    const componentRegistry = {
+      getCommand: () => testCommand,
+      getCommandNames() {
+        return ["test"];
+      }
+    };
+    const configureCommand = () => Promise.resolve(componentRegistry);
+    const executeCommand = executeCommandFactory({
+      logger,
+      configureCommand,
+      handleError
+    });
+    executeCommand("configure");
+    executeCommand("test").then(() => {
+      expect(runCommandSpy.toHaveBeenCalledWith("option"));
+    });
+  });
+
   it("executes the core commands", () => {
     const configureCommand = jasmine
       .createSpy()
