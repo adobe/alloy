@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { enumOf } from "../../../../../src/utils/validation";
-import describeValidation from "./describeValidation";
+import describeValidation from "../../../helpers/describeValidation";
 
 describe("validation:enumOf", () => {
   describeValidation("optional enum", enumOf("in", 1234, 0.1, false), [

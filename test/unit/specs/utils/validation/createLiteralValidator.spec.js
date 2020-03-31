@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { literal } from "../../../../../src/utils/validation";
-import describeValidation from "./describeValidation";
+import describeValidation from "../../../helpers/describeValidation";
 
 describe("validation:literal", () => {
   describeValidation("literal optional string", literal("hello"), [

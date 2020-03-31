@@ -17,6 +17,7 @@ import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
 import sendNetworkRequestFactory from "./network/sendNetworkRequestFactory";
 import createConsent from "./consent/createConsent";
+import createConsentStateMachine from "./consent/createConsentStateMachine";
 import createEvent from "./createEvent";
 import createResponse from "./createResponse";
 import executeCommandFactory from "./executeCommandFactory";
@@ -30,12 +31,9 @@ import networkStrategyFactory from "./network/networkStrategyFactory";
 import createLogger from "./createLogger";
 import createEventManager from "./createEventManager";
 import createCookieTransfer from "./createCookieTransfer";
-import createConsentRequestPayload from "./edgeNetwork/requestPayloads/createConsentRequestPayload";
 import createDataCollectionRequestPayload from "./edgeNetwork/requestPayloads/createDataCollectionRequestPayload";
 import sendEdgeNetworkRequestFactory from "./edgeNetwork/sendEdgeNetworkRequestFactory";
 import processWarningsAndErrors from "./edgeNetwork/processWarningsAndErrors";
-import createConsentState from "./consent/createConsentState";
-import awaitConsentFactory from "./consent/awaitConsentFactory";
 
 // eslint-disable-next-line no-underscore-dangle
 const instanceNamespaces = window.__alloyNS;
@@ -91,9 +89,6 @@ if (instanceNamespaces) {
         logger,
         networkStrategy
       });
-      const consentState = createConsentState({
-        config
-      });
       const sendEdgeNetworkRequest = sendEdgeNetworkRequestFactory({
         config,
         logger,
@@ -103,16 +98,10 @@ if (instanceNamespaces) {
         createResponse,
         processWarningsAndErrors
       });
-      const awaitConsent = awaitConsentFactory({
-        consentState,
-        logger
-      });
+      const generalConsentState = createConsentStateMachine();
       const consent = createConsent({
-        lifecycle,
-        createConsentRequestPayload,
-        sendEdgeNetworkRequest,
-        consentState,
-        awaitConsent
+        generalConsentState,
+        logger
       });
       const eventManager = createEventManager({
         config,
@@ -133,7 +122,9 @@ if (instanceNamespaces) {
             config,
             consent,
             eventManager,
-            logger: logController.createComponentLogger(componentNamespace)
+            logger: logController.createComponentLogger(componentNamespace),
+            lifecycle,
+            sendEdgeNetworkRequest
           };
         }
       });

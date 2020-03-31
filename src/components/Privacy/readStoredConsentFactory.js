@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "../../../../../src/utils/validation";
-import describeValidation from "../../../helpers/describeValidation";
+import { getNamespacedCookieName } from "../../utils";
+import { CONSENT_COOKIE_KEY } from "../../constants/cookieDetails";
 
-describe("validation::required", () => {
-  describeValidation("required string", string().required(), [
-    { value: null, error: true },
-    { value: undefined, error: true },
-    { value: "" },
-    { value: "hello" }
-  ]);
-});
+export default ({ parseConsentCookie, orgId, cookieJar }) => {
+  const consentCookieName = getNamespacedCookieName(orgId, CONSENT_COOKIE_KEY);
+
+  return () => {
+    const cookieValue = cookieJar.get(consentCookieName);
+    return cookieValue ? parseConsentCookie(cookieValue) : {};
+  };
+};

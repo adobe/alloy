@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createConsentRequestPayload from "../../../../../../src/core/edgeNetwork/requestPayloads/createConsentRequestPayload";
+import createConsentRequestPayload from "../../../../../src/components/Privacy/createConsentRequestPayload";
 
 describe("createConsentRequestPayload", () => {
   it("should not use ID third-party domain when useIdThirdPartyDomain is not called", () => {

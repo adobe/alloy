@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { callback } from "../../../../../src/utils/validation";
-import describeValidation from "./describeValidation";
+import describeValidation from "../../../helpers/describeValidation";
 
 describe("validation::callback", () => {
   describeValidation("optional callback", callback(), [
