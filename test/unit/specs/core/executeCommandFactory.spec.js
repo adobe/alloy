@@ -120,8 +120,8 @@ describe("executeCommandFactory", () => {
       handleError
     });
     executeCommand("configure");
-    executeCommand("test").then(() => {
-      expect(runCommandSpy.toHaveBeenCalledWith("option"));
+    return executeCommand("test").then(() => {
+      expect(runCommandSpy).toHaveBeenCalledWith("options");
     });
   });
 
