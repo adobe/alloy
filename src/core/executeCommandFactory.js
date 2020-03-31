@@ -51,8 +51,7 @@ export default ({ logger, configureCommand, debugCommand, handleError }) => {
               }
               const validatedOptions = validateCommandOptions({
                 command,
-                options,
-                logger
+                options
               });
               return command.run(validatedOptions);
             },

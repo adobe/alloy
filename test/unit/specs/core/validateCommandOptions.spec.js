@@ -29,7 +29,7 @@ describe("validateCommandOptions", () => {
       validateCommandOptions({ command, options });
     }).not.toThrowError();
   });
-  it("should throw exception if command options validator throw exception.", () => {
+  it("should throw exception if command options validator throws exception.", () => {
     command.optionsValidator = () => {
       throw new Error("Invalid Options");
     };

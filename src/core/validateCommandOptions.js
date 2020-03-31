@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 const COMMAND_DOC_URI = "https://adobe.ly/2UH0qO7";
 
-export default ({ command, options, logger }) => {
+export default ({ command, options }) => {
   const {
     commandName,
     documentationUri = COMMAND_DOC_URI,
@@ -21,10 +21,9 @@ export default ({ command, options, logger }) => {
   let validatedOptions = options;
   if (optionsValidator) {
     try {
-      validatedOptions = optionsValidator({ options, logger });
+      validatedOptions = optionsValidator(options);
     } catch (validationError) {
-      const invalidOptionsMessage = `Invalid ${commandName} command options:\n\t - ${validationError}
-      \nFor command documentation see: ${documentationUri}`;
+      const invalidOptionsMessage = `Invalid ${commandName} command options:\n\t - ${validationError} For command documentation see: ${documentationUri}`;
       throw new Error(invalidOptionsMessage);
     }
   }

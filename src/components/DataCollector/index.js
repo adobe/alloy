@@ -13,12 +13,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const createDataCollector = ({ eventManager }) => {
+const createDataCollector = ({ eventManager, logger }) => {
   return {
     commands: {
       event: {
         documentationUri: "https://adobe.ly/2r0uUjh",
-        optionsValidator: ({ options, logger }) => {
+        optionsValidator: options => {
           return validateUserEventOptions({ options, logger });
         },
         run: options => {
