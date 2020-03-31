@@ -5,6 +5,20 @@ import { responseStatus } from "../helpers/assertions";
 import fixtureFactory from "../helpers/fixtureFactory";
 import createResponse from "../../../src/core/createResponse";
 
+import configureAlloyInstance from "../helpers/configureAlloyInstance";
+import {
+  compose,
+  orgMainConfigMain,
+  debugEnabled,
+  migrationEnabled
+} from "../helpers/constants/configParts";
+
+const config = compose(
+  orgMainConfigMain,
+  debugEnabled,
+  migrationEnabled
+);
+
 const networkLogger = createNetworkLogger();
 
 fixtureFactory({
@@ -19,28 +33,21 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const apiCalls = ClientFunction(() => {
+const setEcidCookie = ClientFunction(() => {
   document.cookie = "s_ecid=MCMID%7C16908443662402872073525706953453086963";
-
-  window.alloy("configure", {
-    configId: "60928f59-0406-4353-bfe3-22ed633c4f67",
-    orgId: "334F60F35E1597910A495EC2@AdobeOrg",
-    edgeBasePath: window.edgeBasePath,
-    debugEnabled: true,
-    idMigrationEnabled: true
-  });
-
-  return window.alloy("event", {
-    viewStart: true
-  });
 });
 
-const getDocumentCookie = ClientFunction(() => {
-  return document.cookie;
+const triggerAlloyEvent = ClientFunction(() => {
+  return window.alloy("event", { viewStart: true });
 });
+
+const getDocumentCookie = ClientFunction(() => document.cookie);
 
 test("Test C14399: When ID migration is enabled and no identity cookie is found but legacy s_ecid cookie is found, the ECID will be sent on the request", async () => {
-  await apiCalls();
+  await setEcidCookie();
+  await configureAlloyInstance(config);
+  await triggerAlloyEvent();
+
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
