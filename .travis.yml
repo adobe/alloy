@@ -24,7 +24,6 @@ jobs:
       - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run build:prod; fi
       - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run functional:ci; fi
       - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run test:saucelabs; fi
-      - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run checkbundlesize; fi
 
 notifications:
   slack: adobedx:AlI4WB2ojGDcqsBEVZ1EGsCR
