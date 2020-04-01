@@ -11,9 +11,14 @@ governing permissions and limitations under the License.
 */
 
 import { isFunction } from "../utils";
-import validateCommandOptions from "./validateCommandOptions";
 
-export default ({ logger, configureCommand, debugCommand, handleError }) => {
+export default ({
+  logger,
+  configureCommand,
+  debugCommand,
+  handleError,
+  validateCommandOptions
+}) => {
   let configurePromise;
 
   const getExecutor = (commandName, options) => {

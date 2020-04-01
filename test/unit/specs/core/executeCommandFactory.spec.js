@@ -103,9 +103,11 @@ describe("executeCommandFactory", () => {
 
   it("executes component commands", () => {
     const runCommandSpy = jasmine.createSpy();
+    const validateCommandOptionsSpy = jasmine
+      .createSpy()
+      .and.returnValue("post-validation-options");
     const testCommand = {
-      run: runCommandSpy,
-      optionsValidator: () => "options"
+      run: runCommandSpy
     };
     const componentRegistry = {
       getCommand: () => testCommand,
@@ -117,11 +119,16 @@ describe("executeCommandFactory", () => {
     const executeCommand = executeCommandFactory({
       logger,
       configureCommand,
-      handleError
+      handleError,
+      validateCommandOptions: validateCommandOptionsSpy
     });
     executeCommand("configure");
-    return executeCommand("test").then(() => {
-      expect(runCommandSpy).toHaveBeenCalledWith("options");
+    return executeCommand("test", "pre-validation-options").then(() => {
+      expect(validateCommandOptionsSpy).toHaveBeenCalledWith({
+        command: testCommand,
+        options: "pre-validation-options"
+      });
+      expect(runCommandSpy).toHaveBeenCalledWith("post-validation-options");
     });
   });
 

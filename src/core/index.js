@@ -21,6 +21,7 @@ import createConsentStateMachine from "./consent/createConsentStateMachine";
 import createEvent from "./createEvent";
 import createResponse from "./createResponse";
 import executeCommandFactory from "./executeCommandFactory";
+import validateCommandOptions from "./validateCommandOptions";
 import componentCreators from "./componentCreators";
 import buildAndValidateConfig from "./buildAndValidateConfig";
 import initializeComponents from "./initializeComponents";
@@ -140,7 +141,8 @@ if (instanceNamespaces) {
       logger,
       configureCommand,
       debugCommand,
-      handleError
+      handleError,
+      validateCommandOptions
     });
 
     const instance = instanceFactory(executeCommand);
