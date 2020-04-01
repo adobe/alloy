@@ -15,10 +15,10 @@ import libraryVersion from "../../constants/libraryVersion";
 const createLibraryInfo = () => {
   return {
     commands: {
-      getLibraryInfo() {
-        return {
-          version: libraryVersion
-        };
+      getLibraryInfo: {
+        run: () => {
+          return { version: libraryVersion };
+        }
       }
     }
   };

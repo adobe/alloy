@@ -128,4 +128,25 @@ describe("createTaskQueue", () => {
         expect(task2OnFulfilled).toHaveBeenCalledWith("task2Result");
       });
   });
+
+  it("accurately reports the size of the queue", () => {
+    const queue = createTaskQueue();
+    const task1Deferred = defer();
+    const task2Deferred = defer();
+    expect(queue.length).toEqual(0);
+    queue.addTask(() => task1Deferred.promise);
+    expect(queue.length).toEqual(1);
+    queue.addTask(() => task2Deferred.promise);
+    expect(queue.length).toEqual(2);
+    task1Deferred.resolve();
+    return flushPromiseChains()
+      .then(() => {
+        expect(queue.length).toEqual(1);
+        task2Deferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(queue.length).toEqual(0);
+      });
+  });
 });

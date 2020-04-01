@@ -1,7 +1,17 @@
 import fixtureFactory from "../helpers/fixtureFactory";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
-import baseConfig from "../helpers/constants/baseConfig";
 import createNetworkLogger from "../helpers/networkLogger";
+
+import {
+  compose,
+  orgMainConfigMain,
+  consentPending
+} from "../helpers/constants/configParts";
+
+const config = compose(
+  orgMainConfigMain,
+  consentPending
+);
 
 const networkLogger = createNetworkLogger();
 
@@ -17,10 +27,7 @@ test.meta({
 });
 
 test("Test C2594: event command rejects promise if user consents to no purposes", async t => {
-  await configureAlloyInstance("alloy", {
-    defaultConsent: { general: "pending" },
-    ...baseConfig
-  });
+  await configureAlloyInstance("alloy", config);
   const errorMessagePromise = t.eval(() =>
     window
       .alloy("event", { data: { a: 1 } })

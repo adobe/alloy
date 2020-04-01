@@ -1,6 +1,17 @@
 import fixtureFactory from "../helpers/fixtureFactory";
-import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
+import {
+  compose,
+  errorsDisabled,
+  debugEnabled,
+  orgMainConfigMain
+} from "../helpers/constants/configParts";
+
+const config = compose(
+  orgMainConfigMain,
+  errorsDisabled,
+  debugEnabled
+);
 
 fixtureFactory({
   title: "C2588: Throws error when configure is executed multiple times."
@@ -13,15 +24,9 @@ test.meta({
 });
 
 test("Test C2588: Throw error when configure is executed multiple times.", async t => {
-  await configureAlloyInstance("alloy", {
-    errorsEnabled: false,
-    ...debugEnabledConfig
-  });
+  await configureAlloyInstance("alloy", config);
 
-  await configureAlloyInstance("alloy", {
-    errorsEnabled: false,
-    ...debugEnabledConfig
-  });
+  await configureAlloyInstance("alloy", config);
 
   const { error } = await t.getBrowserConsoleMessages();
   await t

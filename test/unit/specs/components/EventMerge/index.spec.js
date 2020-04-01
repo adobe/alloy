@@ -31,9 +31,9 @@ describe("EventMerge", () => {
   describe("commands", () => {
     describe("createEventMergeId", () => {
       it("returns a UUID v4-compliant Id", () => {
-        expect(uuidv4Regex.test(eventMerge.commands.createEventMergeId())).toBe(
-          true
-        );
+        expect(
+          uuidv4Regex.test(eventMerge.commands.createEventMergeId.run())
+        ).toBe(true);
       });
     });
   });

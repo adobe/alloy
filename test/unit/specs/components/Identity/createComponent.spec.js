@@ -96,7 +96,7 @@ describe("Identity::createComponent", () => {
 
   it("sets customer IDs", () => {
     const ids = { type: "customerIds" };
-    component.commands.setCustomerIds(ids);
+    component.commands.setCustomerIds.run(ids);
     expect(customerIds.sync).toHaveBeenCalledWith(ids);
   });
 });

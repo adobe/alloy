@@ -48,7 +48,7 @@ describe("Personalization", () => {
 
     personalization.lifecycle.onResponse({ response });
 
-    const result = personalization.commands.getDecisions({ scopes });
+    const result = personalization.commands.getDecisions.run({ scopes });
 
     expect(result.length).toEqual(1);
     expect(result[0].scope).toEqual("Foo1");
@@ -75,7 +75,7 @@ describe("Personalization", () => {
     personalization.lifecycle.onResponse({ response: first });
     personalization.lifecycle.onResponse({ response: second });
 
-    const result = personalization.commands.getDecisions({ scopes });
+    const result = personalization.commands.getDecisions.run({ scopes });
 
     expect(Array.isArray(result)).toBeTrue();
     expect(result.length).toEqual(2);
@@ -102,7 +102,7 @@ describe("Personalization", () => {
     personalization.lifecycle.onResponse({ response: first });
     personalization.lifecycle.onResponse({ response: second });
 
-    const result = personalization.commands.getDecisions({ scopes });
+    const result = personalization.commands.getDecisions.run({ scopes });
 
     expect(Array.isArray(result)).toBeTrue();
     expect(result.length).toEqual(1);
@@ -123,7 +123,7 @@ describe("Personalization", () => {
       eventManager
     });
     personalization.lifecycle.onResponse({ response });
-    const result = personalization.commands.getDecisions({ scopes });
+    const result = personalization.commands.getDecisions.run({ scopes });
 
     expect(Array.isArray(result)).toBeTrue();
     expect(result.length).toEqual(0);
@@ -145,7 +145,7 @@ describe("Personalization", () => {
 
     personalization.lifecycle.onResponse({ response });
 
-    const result = personalization.commands.getDecisions({ scopes });
+    const result = personalization.commands.getDecisions.run({ scopes });
 
     expect(Array.isArray(result)).toBeTrue();
     expect(result.length).toEqual(0);
@@ -172,7 +172,7 @@ describe("Personalization", () => {
     personalization.lifecycle.onResponse({ response: first });
     personalization.lifecycle.onResponse({ response: second });
 
-    const result = personalization.commands.getDecisions({ scopes });
+    const result = personalization.commands.getDecisions.run({ scopes });
 
     expect(Array.isArray(result)).toBeTrue();
     expect(result.length).toEqual(2);
@@ -187,6 +187,8 @@ describe("Personalization", () => {
       eventManager
     });
 
-    expect(() => personalization.commands.getDecisions()).toThrow();
+    expect(() =>
+      personalization.commands.getDecisions.validateOptions()
+    ).toThrow();
   });
 });

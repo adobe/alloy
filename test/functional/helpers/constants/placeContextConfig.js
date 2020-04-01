@@ -1,7 +1,6 @@
-import baseConfig from "./baseConfig";
+import orgMainConfigMain from "./configParts/orgMainConfigMain";
 
 export default {
-  debugEnabled: true,
   context: ["placeContext"],
-  ...baseConfig
+  ...orgMainConfigMain
 };

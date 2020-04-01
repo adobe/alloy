@@ -58,10 +58,12 @@ export default () => {
 
     Object.keys(componentCommandsByName).forEach(commandName => {
       const command = componentCommandsByName[commandName];
-      commandsByName[commandName] = wrapForErrorHandling(
-        command,
+      command.commandName = commandName;
+      command.run = wrapForErrorHandling(
+        command.run,
         `[${namespace}] An error occurred while executing the ${commandName} command.`
       );
+      commandsByName[commandName] = command;
     });
   };
 

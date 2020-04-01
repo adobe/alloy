@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { objectOf, string } from "../../../../../src/utils/validation";
-import describeValidation from "./describeValidation";
+import describeValidation from "../../../helpers/describeValidation";
 
 describe("validation::noUnknownFields", () => {
   describeValidation("optional", objectOf({ a: string() }).noUnknownFields(), [

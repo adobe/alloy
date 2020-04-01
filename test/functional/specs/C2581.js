@@ -1,10 +1,19 @@
 import { t, ClientFunction } from "testcafe";
 import fixtureFactory from "../helpers/fixtureFactory";
 
-import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 import SequentialHook from "../helpers/requestHooks/sequentialHook";
 import cookies from "../helpers/cookies";
+import {
+  compose,
+  orgMainConfigMain,
+  debugEnabled
+} from "../helpers/constants/configParts";
+
+const debugEnabledConfig = compose(
+  orgMainConfigMain,
+  debugEnabled
+);
 
 const interactHook = new SequentialHook(/v1\/interact\?/);
 

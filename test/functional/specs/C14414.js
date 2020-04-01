@@ -1,7 +1,16 @@
 import fixtureFactory from "../helpers/fixtureFactory";
-import baseConfig from "../helpers/constants/baseConfig";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 import SequentialHook from "../helpers/requestHooks/sequentialHook";
+import {
+  compose,
+  orgMainConfigMain,
+  consentPending
+} from "../helpers/constants/configParts";
+
+const config = compose(
+  orgMainConfigMain,
+  consentPending
+);
 
 const setConsentHook = new SequentialHook(/v1\/privacy\/set-consent\?/);
 
@@ -17,11 +26,7 @@ test.meta({
 });
 
 test("Test C14414: Requests are queued while consent changes are pending", async t => {
-  await configureAlloyInstance("alloy", {
-    defaultConsent: { general: "pending" },
-    debugEnabled: true,
-    ...baseConfig
-  });
+  await configureAlloyInstance("alloy", config);
   await t.eval(() => {
     window.alloy("setConsent", { general: "in" });
     return undefined;

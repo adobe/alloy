@@ -57,7 +57,7 @@ describe("Event Command", () => {
       documentUnloading: true
     };
 
-    return eventCommand(options).then(result => {
+    return eventCommand.run(options).then(result => {
       expect(event.documentMayUnload).toHaveBeenCalled();
       expect(event.setUserXdm).toHaveBeenCalledWith(xdm);
       expect(event.setUserData).toHaveBeenCalledWith(data);
@@ -74,7 +74,7 @@ describe("Event Command", () => {
       scopes: ["Foo1", "Foo2"]
     };
 
-    return eventCommand(options).then(result => {
+    return eventCommand.run(options).then(result => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         isViewStart: true,
         scopes: ["Foo1", "Foo2"]
@@ -84,13 +84,13 @@ describe("Event Command", () => {
   });
 
   it("does not call documentMayUnload if documentUnloading is not defined", () => {
-    return eventCommand({}).then(() => {
+    return eventCommand.run({}).then(() => {
       expect(event.documentMayUnload).not.toHaveBeenCalled();
     });
   });
 
   it("sets isViewStart to false if viewStart is not defined", () => {
-    return eventCommand({}).then(() => {
+    return eventCommand.run({}).then(() => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         isViewStart: false
       });
@@ -98,28 +98,32 @@ describe("Event Command", () => {
   });
 
   it("sets eventType and eventMergeId", () => {
-    return eventCommand({
-      type: "mytype",
-      mergeId: "mymergeid"
-    }).then(() => {
-      expect(event.setUserXdm).toHaveBeenCalledWith({
-        eventType: "mytype",
-        eventMergeId: "mymergeid"
+    return eventCommand
+      .run({
+        type: "mytype",
+        mergeId: "mymergeid"
+      })
+      .then(() => {
+        expect(event.setUserXdm).toHaveBeenCalledWith({
+          eventType: "mytype",
+          eventMergeId: "mymergeid"
+        });
       });
-    });
   });
 
   it("merges eventType and eventMergeId with the userXdm", () => {
-    return eventCommand({
-      xdm: { key: "value" },
-      type: "mytype",
-      mergeId: "mymergeid"
-    }).then(() => {
-      expect(event.setUserXdm).toHaveBeenCalledWith({
-        key: "value",
-        eventType: "mytype",
-        eventMergeId: "mymergeid"
+    return eventCommand
+      .run({
+        xdm: { key: "value" },
+        type: "mytype",
+        mergeId: "mymergeid"
+      })
+      .then(() => {
+        expect(event.setUserXdm).toHaveBeenCalledWith({
+          key: "value",
+          eventType: "mytype",
+          eventMergeId: "mymergeid"
+        });
       });
-    });
   });
 });

@@ -17,9 +17,11 @@ import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
 import sendNetworkRequestFactory from "./network/sendNetworkRequestFactory";
 import createConsent from "./consent/createConsent";
+import createConsentStateMachine from "./consent/createConsentStateMachine";
 import createEvent from "./createEvent";
 import createResponse from "./createResponse";
 import executeCommandFactory from "./executeCommandFactory";
+import validateCommandOptions from "./validateCommandOptions";
 import componentCreators from "./componentCreators";
 import buildAndValidateConfig from "./buildAndValidateConfig";
 import initializeComponents from "./initializeComponents";
@@ -30,12 +32,9 @@ import networkStrategyFactory from "./network/networkStrategyFactory";
 import createLogger from "./createLogger";
 import createEventManager from "./createEventManager";
 import createCookieTransfer from "./createCookieTransfer";
-import createConsentRequestPayload from "./edgeNetwork/requestPayloads/createConsentRequestPayload";
 import createDataCollectionRequestPayload from "./edgeNetwork/requestPayloads/createDataCollectionRequestPayload";
 import sendEdgeNetworkRequestFactory from "./edgeNetwork/sendEdgeNetworkRequestFactory";
 import processWarningsAndErrors from "./edgeNetwork/processWarningsAndErrors";
-import createConsentState from "./consent/createConsentState";
-import awaitConsentFactory from "./consent/awaitConsentFactory";
 import validateNetworkResponseIsWellFormed from "./edgeNetwork/validateNetworkResponseIsWellFormed";
 import isRetryableHttpStatusCode from "./network/isRetryableHttpStatusCode";
 
@@ -94,9 +93,6 @@ if (instanceNamespaces) {
         networkStrategy,
         isRetryableHttpStatusCode
       });
-      const consentState = createConsentState({
-        config
-      });
       const sendEdgeNetworkRequest = sendEdgeNetworkRequestFactory({
         config,
         lifecycle,
@@ -106,15 +102,10 @@ if (instanceNamespaces) {
         processWarningsAndErrors,
         validateNetworkResponseIsWellFormed
       });
-      const awaitConsent = awaitConsentFactory({
-        consentState,
-        logger
-      });
+      const generalConsentState = createConsentStateMachine();
       const consent = createConsent({
-        createConsentRequestPayload,
-        sendEdgeNetworkRequest,
-        consentState,
-        awaitConsent
+        generalConsentState,
+        logger
       });
       const eventManager = createEventManager({
         config,
@@ -135,7 +126,9 @@ if (instanceNamespaces) {
             config,
             consent,
             eventManager,
-            logger: logController.createComponentLogger(componentNamespace)
+            logger: logController.createComponentLogger(componentNamespace),
+            lifecycle,
+            sendEdgeNetworkRequest
           };
         }
       });
@@ -151,7 +144,8 @@ if (instanceNamespaces) {
       logger,
       configureCommand,
       debugCommand,
-      handleError
+      handleError,
+      validateCommandOptions
     });
 
     const instance = instanceFactory(executeCommand);

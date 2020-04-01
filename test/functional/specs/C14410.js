@@ -1,6 +1,6 @@
 import { ClientFunction } from "testcafe";
 import fixtureFactory from "../helpers/fixtureFactory";
-import baseConfig from "../helpers/constants/baseConfig";
+import orgMainConfigMain from "../helpers/constants/configParts/orgMainConfigMain";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 
 fixtureFactory({
@@ -29,7 +29,7 @@ const getErrorMessageFromSetConsent = ClientFunction(consent =>
 test("Test C14410: Configuring default consent for unknown purposes fails", async t => {
   const errorMessage = getErrorMessageFromConfigure({
     defaultConsent: { analytics: "pending" },
-    ...baseConfig
+    ...orgMainConfigMain
   });
   await t
     .expect(errorMessage)
@@ -42,7 +42,7 @@ test("Test C14410: Configuring default consent for unknown purposes fails", asyn
 test("Test C14410: Configuring default consent to 'out' fails", async t => {
   const errorMessage = getErrorMessageFromConfigure({
     defaultConsent: { general: "out" },
-    ...baseConfig
+    ...orgMainConfigMain
   });
   await t
     .expect(errorMessage)
@@ -54,7 +54,7 @@ test("Test C14410: Configuring default consent to 'out' fails", async t => {
 test("Test C14410: Setting consent for unknown purposes fails", async t => {
   await configureAlloyInstance("alloy", {
     defaultConsent: { general: "pending" },
-    ...baseConfig
+    ...orgMainConfigMain
   });
   const errorMessage = getErrorMessageFromSetConsent({ analytics: "in" });
   await t
@@ -66,7 +66,7 @@ test("Test C14410: Setting consent for unknown purposes fails", async t => {
 test("Test C14410: Setting consent to 'pending' fails", async t => {
   await configureAlloyInstance("alloy", {
     defaultConsent: { general: "pending" },
-    ...baseConfig
+    ...orgMainConfigMain
   });
   const errorMessage = getErrorMessageFromSetConsent({ general: "pending" });
   await t
