@@ -14,7 +14,6 @@ governing permissions and limitations under the License.
 */
 
 const createDataCollector = ({ eventManager, logger }) => {
-  debugger;
   return {
     commands: {
       event: {

@@ -34,7 +34,7 @@ import createEventManager from "./createEventManager";
 import createCookieTransfer from "./createCookieTransfer";
 import createDataCollectionRequestPayload from "./edgeNetwork/requestPayloads/createDataCollectionRequestPayload";
 import sendEdgeNetworkRequestFactory from "./edgeNetwork/sendEdgeNetworkRequestFactory";
-import processWarningsAndErrors from "./edgeNetwork/processWarningsAndErrors";
+import processWarningsAndErrorsFactory from "./edgeNetwork/processWarningsAndErrorsFactory";
 import validateNetworkResponseIsWellFormed from "./edgeNetwork/validateNetworkResponseIsWellFormed";
 import isRetryableHttpStatusCode from "./network/isRetryableHttpStatusCode";
 
@@ -92,6 +92,9 @@ if (instanceNamespaces) {
         logger,
         networkStrategy,
         isRetryableHttpStatusCode
+      });
+      const processWarningsAndErrors = processWarningsAndErrorsFactory({
+        logger
       });
       const sendEdgeNetworkRequest = sendEdgeNetworkRequestFactory({
         config,
