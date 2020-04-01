@@ -1,8 +1,8 @@
 export default ({
   addEcidQueryToEvent,
   customerIds,
-  syncRequestWithIdentityRetrieval,
-  handleEcidForIdMigration,
+  ensureRequestHasIdentity,
+  createLegacyIdentityCookie,
   handleResponseForIdSyncs,
   getEcidFromResponse
 }) => {
@@ -18,15 +18,20 @@ export default ({
       },
       onBeforeRequest({ payload, onResponse }) {
         customerIds.addToPayload(payload);
-        return syncRequestWithIdentityRetrieval({ payload, onResponse });
+        return ensureRequestHasIdentity({ payload, onResponse });
       },
       onResponse({ response }) {
-        // Only data collection calls will have an ECID in the response.
-        ecid = getEcidFromResponse(response);
-        return Promise.all([
-          handleEcidForIdMigration(ecid),
-          handleResponseForIdSyncs(response)
-        ]);
+        if (!ecid) {
+          ecid = getEcidFromResponse(response);
+
+          // Only data collection calls will have an ECID in the response.
+          // https://jira.corp.adobe.com/browse/EXEG-1234
+          if (ecid) {
+            createLegacyIdentityCookie(ecid);
+          }
+        }
+
+        return handleResponseForIdSyncs(response);
       }
     },
     commands: {

@@ -24,14 +24,6 @@ describe("createConsentRequestPayload", () => {
     expect(payload.getUseIdThirdPartyDomain()).toBeTrue();
   });
 
-  it("should have a expectResponse method", () => {
-    // It doesn't do anything in this case, but Identity currently
-    // calls expectResponse because it doesn't know what type of payload
-    // object it is (data collection vs. consent).
-    const payload = createConsentRequestPayload();
-    expect(payload.expectResponse).toEqual(jasmine.any(Function));
-  });
-
   it("serializes properly", () => {
     const payload = createConsentRequestPayload();
     payload.mergeConfigOverrides({

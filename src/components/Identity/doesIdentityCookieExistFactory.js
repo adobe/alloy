@@ -10,10 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ idMigrationEnabled, migration }) => {
-  return ecid => {
-    return idMigrationEnabled && ecid
-      ? migration.createLegacyCookie(ecid)
-      : Promise.resolve();
-  };
+import { cookieJar, getNamespacedCookieName } from "../../utils";
+import { IDENTITY_COOKIE_KEY } from "../../constants/cookieDetails";
+
+export default ({ orgId }) => {
+  const identityCookieName = getNamespacedCookieName(
+    orgId,
+    IDENTITY_COOKIE_KEY
+  );
+  /**
+   * Returns whether the identity cookie exists.
+   */
+  return () => Boolean(cookieJar.get(identityCookieName));
 };

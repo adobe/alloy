@@ -10,12 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ getEcidFromLegacy, addEcidToPayload }) => {
-  return payload => {
-    return getEcidFromLegacy().then(ecidToMigrate => {
-      if (ecidToMigrate) {
-        addEcidToPayload(payload, ecidToMigrate);
+import addEcidQueryToEvent from "../../../../../src/components/Identity/addEcidQueryToEvent";
+
+describe("Identity::addEcidQueryToEvent", () => {
+  it("adds an ECID query to the event", () => {
+    const event = jasmine.createSpyObj("event", ["mergeQuery"]);
+    addEcidQueryToEvent(event);
+    expect(event.mergeQuery).toHaveBeenCalledWith({
+      identity: {
+        fetch: ["ECID"]
       }
     });
-  };
-};
+  });
+});

@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 import { ID_THIRD_PARTY_DOMAIN } from "../../constants/domains";
 import apiVersion from "../../constants/apiVersion";
 import { createCallbackAggregator, noop, uuid } from "../../utils";
-import { NO_CONTENT } from "../../constants/httpStatusCode";
 
 export default ({
   config,
@@ -21,7 +20,8 @@ export default ({
   cookieTransfer,
   sendNetworkRequest,
   createResponse,
-  processWarningsAndErrors
+  processWarningsAndErrors,
+  validateNetworkResponseIsWellFormed
 }) => {
   const { edgeDomain, edgeBasePath, configId } = config;
 
@@ -32,8 +32,8 @@ export default ({
   return ({
     payload,
     action,
-    onResponseBeforeFullErrorProcessing = noop,
-    onRequestFailure = noop
+    runOnResponseCallbacks = noop,
+    runOnRequestFailureCallbacks = noop
   }) => {
     const endpointDomain = payload.getUseIdThirdPartyDomain()
       ? ID_THIRD_PARTY_DOMAIN
@@ -43,11 +43,11 @@ export default ({
 
     const onResponseCallbackAggregator = createCallbackAggregator();
     onResponseCallbackAggregator.add(lifecycle.onResponse);
-    onResponseCallbackAggregator.add(onResponseBeforeFullErrorProcessing);
+    onResponseCallbackAggregator.add(runOnResponseCallbacks);
 
     const onRequestFailureCallbackAggregator = createCallbackAggregator();
     onRequestFailureCallbackAggregator.add(lifecycle.onRequestFailure);
-    onRequestFailureCallbackAggregator.add(onRequestFailure);
+    onRequestFailureCallbackAggregator.add(runOnRequestFailureCallbacks);
 
     cookieTransfer.cookiesToPayload(payload, endpointDomain);
 
@@ -60,16 +60,10 @@ export default ({
       .then(() => {
         return sendNetworkRequest({ payload, url, requestId });
       })
-      .then(result => {
-        if (result.statusCode !== NO_CONTENT && !result.parsedBody) {
-          const messageSuffix = result.body
-            ? `response body: ${result.body}`
-            : `no response body.`;
-          throw new Error(
-            `Unexpected server response with status code ${result.statusCode} and ${messageSuffix}`
-          );
-        }
-        return result;
+      .then(networkResponse => {
+        // Will throw an error if malformed.
+        validateNetworkResponseIsWellFormed(networkResponse);
+        return networkResponse;
       })
       .catch(error => {
         // Catch errors that came from sendNetworkRequest (like if there's
@@ -82,10 +76,10 @@ export default ({
           .call({ error })
           .then(throwError, throwError);
       })
-      .then(result => {
-        // Note that result.parsedBody may be undefined if it was a
+      .then(networkResponse => {
+        // Note that networkResponse.parsedBody may be undefined if it was a
         // 204 No Content response. That's fine.
-        const response = createResponse(result.parsedBody);
+        const response = createResponse(networkResponse.parsedBody);
         cookieTransfer.responseToCookies(response);
 
         return onResponseCallbackAggregator.call({ response }).then(() => {

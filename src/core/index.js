@@ -36,6 +36,8 @@ import sendEdgeNetworkRequestFactory from "./edgeNetwork/sendEdgeNetworkRequestF
 import processWarningsAndErrors from "./edgeNetwork/processWarningsAndErrors";
 import createConsentState from "./consent/createConsentState";
 import awaitConsentFactory from "./consent/awaitConsentFactory";
+import validateNetworkResponseIsWellFormed from "./edgeNetwork/validateNetworkResponseIsWellFormed";
+import isRetryableHttpStatusCode from "./network/isRetryableHttpStatusCode";
 
 // eslint-disable-next-line no-underscore-dangle
 const instanceNamespaces = window.__alloyNS;
@@ -89,7 +91,8 @@ if (instanceNamespaces) {
       });
       const sendNetworkRequest = sendNetworkRequestFactory({
         logger,
-        networkStrategy
+        networkStrategy,
+        isRetryableHttpStatusCode
       });
       const consentState = createConsentState({
         config
@@ -100,7 +103,8 @@ if (instanceNamespaces) {
         cookieTransfer,
         sendNetworkRequest,
         createResponse,
-        processWarningsAndErrors
+        processWarningsAndErrors,
+        validateNetworkResponseIsWellFormed
       });
       const awaitConsent = awaitConsentFactory({
         consentState,

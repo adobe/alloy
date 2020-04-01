@@ -10,12 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ getEcidFromLegacy, addEcidToPayload }) => {
-  return payload => {
-    return getEcidFromLegacy().then(ecidToMigrate => {
-      if (ecidToMigrate) {
-        addEcidToPayload(payload, ecidToMigrate);
-      }
-    });
-  };
+import { cookieJar } from "../../../src/utils";
+
+export default () => {
+  Object.keys(cookieJar.get()).forEach(cookieName => {
+    cookieJar.remove(cookieName);
+  });
 };

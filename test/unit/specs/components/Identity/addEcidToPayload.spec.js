@@ -10,13 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { cookieJar, getNamespacedCookieName } from "../../utils";
-import { IDENTITY_COOKIE_KEY } from "../../constants/cookieDetails";
+import addEcidToPayload from "../../../../../src/components/Identity/addEcidToPayload";
 
-export default ({ orgId }) => {
-  const identityCookieName = getNamespacedCookieName(
-    orgId,
-    IDENTITY_COOKIE_KEY
-  );
-  return () => Boolean(cookieJar.get(identityCookieName));
-};
+describe("Identity:addEcidToPayload", () => {
+  it("adds ECID to payload", () => {
+    const payload = jasmine.createSpyObj("payload", ["addIdentity"]);
+    addEcidToPayload(payload, "user@adobe");
+    expect(payload.addIdentity).toHaveBeenCalledWith("ECID", {
+      id: "user@adobe"
+    });
+  });
+});

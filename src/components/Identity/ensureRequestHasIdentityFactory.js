@@ -12,15 +12,23 @@ governing permissions and limitations under the License.
 
 // TO-DOCUMENT: We queue subsequent requests until we have an identity cookie.
 export default ({
-  hasIdentityCookie,
+  doesIdentityCookieExist,
   setDomainForInitialIdentityPayload,
   addEcidFromLegacyToPayload,
   awaitIdentityCookie,
   logger
 }) => {
   let identityCookiePromise;
+  /**
+   * Ensures that if no identity cookie exists, we only let one request be
+   * sent without an identity until its response returns. In the meantime,
+   * we queue all other requests, otherwise the requests could result in
+   * multiple ECIDs being minted for the user. Once the response to the first
+   * request returns, we can let the queued requests be sent, since they
+   * will have the newly minted ECID that was returned on the first response.
+   */
   return ({ payload, onResponse }) => {
-    if (hasIdentityCookie()) {
+    if (doesIdentityCookieExist()) {
       return Promise.resolve();
     }
 

@@ -12,18 +12,20 @@ governing permissions and limitations under the License.
 
 import createConsentState from "../../../../../src/core/consent/createConsentState";
 import { cookieJar } from "../../../../../src/utils";
+import removeAllCookies from "../../../helpers/removeAllCookies";
 
 describe("createConsentState", () => {
   const consentCookieName = "kndctr_ABC_Adobe_consent";
   let config;
 
   beforeEach(() => {
-    cookieJar.remove(consentCookieName);
     config = {
       orgId: "ABC@Adobe",
       defaultConsent: { general: "pending" }
     };
   });
+
+  afterEach(removeAllCookies);
 
   describe("isPending", () => {
     it("returns true if consent cookie is not set", () => {
