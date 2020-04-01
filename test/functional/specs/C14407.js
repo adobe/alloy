@@ -1,12 +1,9 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../helpers/networkLogger";
-import getResponseBody from "../helpers/networkLogger/getResponseBody";
 import fixtureFactory from "../helpers/fixtureFactory";
 import cookies from "../helpers/cookies";
 import alloyEvent from "../helpers/alloyEvent";
 import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
-import getConsentCookieName from "../helpers/getConsentCookieName";
-import createResponse from "../../../src/core/createResponse";
 
 const networkLogger = createNetworkLogger();
 
@@ -25,59 +22,44 @@ const setConsentIn = ClientFunction(() => {
   return window.alloy("setConsent", { general: "in" });
 });
 
+const triggerAlloyEvent = ClientFunction(() => {
+  return new Promise(resolve => {
+    window.alloy("event", { xdm: { key: "value" } }).then(() => resolve());
+  });
+});
+
 test("C14407 - Consenting to all purposes should be persisted.", async () => {
   const imsOrgId = "334F60F35E1597910A495EC2@AdobeOrg";
   await cookies.clear();
-  // await apiCalls(imsOrgId);
 
+  // configure alloy with default consent set to pending
   const configure = await alloyEvent("configure", {
+    configId: "9999999",
+    orgId: imsOrgId,
+    defaultConsent: { general: "pending" },
     idMigrationEnabled: false,
     ...debugEnabledConfig
   });
 
   await configure.promise;
 
-  // send alloy event
-  const event1 = await alloyEvent({
-    viewStart: true
-  });
-
-  // apply user consent
+  // set consent to in
   await setConsentIn();
 
-  await event1.promise;
+  // reload the page and reconfigure alloy after page reload
+  await t.eval(() => document.location.reload());
 
-  const cookieName = getConsentCookieName(imsOrgId);
+  const reconfigure = await alloyEvent("configure", {
+    configId: "9999999",
+    orgId: imsOrgId,
+    debugEnabled: true,
+    idMigrationEnabled: false
+  });
 
-  const consentCheck = await cookies.get(cookieName);
+  await reconfigure.promise;
 
-  await t.expect(consentCheck).eql("general=in");
+  await triggerAlloyEvent();
 
-  // test konductor response
-  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
-  await t
-    .expect(networkLogger.edgeEndpointLogs.requests[0].response.statusCode)
-    .eql(200);
-
-  const request = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
-  );
-
-  // read state:store handles from response (i.e. 'set a cookie')
-  await t.expect("handle" in request).ok();
-  await t.expect(request.handle.length).gt(0);
-
-  const storePayloads = createResponse(request).getPayloadsByType(
-    "state:store"
-  );
-  const cookiesToSet = storePayloads.reduce((memo, storePayload) => {
-    memo[storePayload.key] = storePayload;
-    return memo;
-  }, {});
-
-  // expect that konductor cookie handle matches cookie name
-  await t.expect(cookieName in cookiesToSet).ok();
-
-  await t.expect("maxAge" in cookiesToSet[cookieName]).ok();
-  await t.expect(cookiesToSet[cookieName].maxAge).eql(15552000);
+  await t.eval(() => window.alloy("setConsent", { general: "in" }));
+  await t.eval(() => window.alloy("event", { data: { key: "value" } }));
 });
