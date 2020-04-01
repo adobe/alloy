@@ -158,8 +158,10 @@ export default (processIdSyncs, config, logger, consent, eventManager) => {
       }
     },
     commands: {
-      setCustomerIds(options) {
-        return customerIds.sync(options);
+      setCustomerIds: {
+        run: options => {
+          return customerIds.sync(options);
+        }
       }
     }
   };

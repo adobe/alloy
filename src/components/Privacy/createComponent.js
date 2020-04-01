@@ -33,29 +33,31 @@ export default ({
 
   return {
     commands: {
-      setConsent(options) {
-        const validatedOptions = validateSetConsentOptions(options);
-        consent.suspend();
-        return taskQueue
-          .addTask(() => sendSetConsentRequest(validatedOptions))
-          .catch(error => {
-            readCookieIfQueueEmpty();
-            // This check re-writes the error message from Konductor to be more clear.
-            // We could check for this before sending the request, but if we let the
-            // request go out and Konductor adds this feature, customers don't need to
-            // update Alloy to get the functionality.
-            if (
-              error &&
-              error.message &&
-              error.message.includes("User is opted out")
-            ) {
-              throw new Error(
-                "The user previously declined consent, which cannot be changed."
-              );
-            }
-            throw error;
-          })
-          .then(readCookieIfQueueEmpty);
+      setConsent: {
+        optionsValidator: validateSetConsentOptions,
+        run: options => {
+          consent.suspend();
+          return taskQueue
+            .addTask(() => sendSetConsentRequest(options))
+            .catch(error => {
+              readCookieIfQueueEmpty();
+              // This check re-writes the error message from Konductor to be more clear.
+              // We could check for this before sending the request, but if we let the
+              // request go out and Konductor adds this feature, customers don't need to
+              // update Alloy to get the functionality.
+              if (
+                error &&
+                error.message &&
+                error.message.includes("User is opted out")
+              ) {
+                throw new Error(
+                  "The user previously declined consent, which cannot be changed."
+                );
+              }
+              throw error;
+            })
+            .then(readCookieIfQueueEmpty);
+        }
       }
     },
     lifecycle: {

@@ -10,4 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default "https://adobe.ly/2r0uUjh";
+const COMMAND_DOC_URI = "https://adobe.ly/2UH0qO7";
+
+export default ({ command, options }) => {
+  const {
+    commandName,
+    documentationUri = COMMAND_DOC_URI,
+    optionsValidator
+  } = command;
+  let validatedOptions = options;
+  if (optionsValidator) {
+    try {
+      validatedOptions = optionsValidator(options);
+    } catch (validationError) {
+      const invalidOptionsMessage = `Invalid ${commandName} command options:\n\t - ${validationError} For command documentation see: ${documentationUri}`;
+      throw new Error(invalidOptionsMessage);
+    }
+  }
+  return validatedOptions;
+};

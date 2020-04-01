@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import validateUserEventOptions from "../../../../../src/components/DataCollector/validateUserEventOptions";
 
 describe("DataCollector::validateUserEventOptions", () => {
-  it("returns array of errors for invalid options", () => {
+  it("throws error for invalid options", () => {
     [
       undefined,
       { xdm: [] },
@@ -20,31 +20,22 @@ describe("DataCollector::validateUserEventOptions", () => {
       { data: [] },
       { scopes: {} }
     ].forEach(options => {
-      const { errors } = validateUserEventOptions(options);
-      expect(errors.length).toBeGreaterThan(
-        0,
-        `options: ${JSON.stringify(options)} should cause error`
-      );
+      expect(() => {
+        validateUserEventOptions({ options });
+      }).toThrowError();
     });
   });
-  it("returns array of warnings for invalid options", () => {
-    [
-      { data: {} },
-      { xdm: {} },
-      { xdm: { test: "" } },
-      { xdm: { eventType: "" } },
-      { type: "", xdm: { test: "" } },
-      { scopes: [] },
-      { scopes: [""] }
-    ].forEach(options => {
-      const { warnings } = validateUserEventOptions(options);
-      expect(warnings.length).toBeGreaterThan(
-        0,
-        `options: ${JSON.stringify(options)} should cause warning`
-      );
-    });
+  it("logs warning when event type is required and missing", () => {
+    const options = { xdm: { test: "" } };
+    const logger = {
+      warn: jasmine.createSpy()
+    };
+    validateUserEventOptions({ options, logger });
+    expect(logger.warn).toHaveBeenCalledWith(
+      "No type or xdm.eventType specified."
+    );
   });
-  it("returns no errors or warnings if the event options are valid", () => {
+  it("does not throw errors when event options are valid", () => {
     [
       {},
       { xdm: { eventType: "test" } },
@@ -54,15 +45,9 @@ describe("DataCollector::validateUserEventOptions", () => {
       { viewStart: true, data: { test: "" } },
       { scopes: ["test"] }
     ].forEach(options => {
-      const { errors, warnings } = validateUserEventOptions(options);
-      expect(errors.length).toBe(
-        0,
-        `options: ${JSON.stringify(options)} should not cause error`
-      );
-      expect(warnings.length).toBe(
-        0,
-        `options: ${JSON.stringify(options)} should not cause warning`
-      );
+      expect(() => {
+        validateUserEventOptions({ options });
+      }).not.toThrowError();
     });
   });
 });

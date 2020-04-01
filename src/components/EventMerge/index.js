@@ -23,7 +23,9 @@ const createEventMerge = ({ config }) => {
 
   return {
     commands: {
-      createEventMergeId: uuid
+      createEventMergeId: {
+        run: uuid
+      }
     }
   };
 };
