@@ -1,8 +1,8 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../helpers/networkLogger";
 import fixtureFactory from "../helpers/fixtureFactory";
-import cookies from "../helpers/cookies";
 import alloyEvent from "../helpers/alloyEvent";
+import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
 
 const networkLogger = createNetworkLogger();
 
@@ -21,21 +21,20 @@ const setConsentToOut = ClientFunction(() => {
   return window.alloy("setConsent", { general: "out" });
 });
 
-test("C14409 - Consenting to no purposes should be persisted.", async () => {
-  const imsOrgId = "53A16ACB5CC1D3760A495C99@AdobeOrg";
-  await cookies.clear();
-
-  // configure alloy
-  const configure = await alloyEvent("configure", {
+const imsOrgId = "53A16ACB5CC1D3760A495C99@AdobeOrg";
+const configure = () => {
+  return alloyEvent("configure", {
     configId: "9999999",
     orgId: imsOrgId,
-    debugEnabled: true,
-    idMigrationEnabled: false
+    defaultConsent: { general: "pending" },
+    idMigrationEnabled: false,
+    ...debugEnabledConfig
   });
+};
 
-  await configure.promise;
+test("C14409 - Consenting to no purposes should be persisted.", async () => {
+  await configure();
 
-  // set consent to out
   await setConsentToOut();
 
   // Reload page and reconfigure alloy
@@ -43,14 +42,7 @@ test("C14409 - Consenting to no purposes should be persisted.", async () => {
   // https://github.com/DevExpress/testcafe/blob/a4f6a4ac3627ebeb29b344ed3a1793627dd87909/docs/articles/documentation/test-api/actions/navigate.md
   await t.eval(() => document.location.reload());
 
-  const reconfigure = await alloyEvent("configure", {
-    configId: "9999999",
-    orgId: imsOrgId,
-    debugEnabled: true,
-    idMigrationEnabled: false
-  });
-
-  await reconfigure.promise;
+  await configure();
 
   // send event
   const errorMessage = await t.eval(() =>
