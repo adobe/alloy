@@ -87,7 +87,7 @@ const createCollect = eventManager => {
 
     mergeMeta(event, meta);
 
-    eventManager.sendEvent(event);
+    // eventManager.sendEvent(event);
   };
 };
 
@@ -128,12 +128,13 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
         mergeQuery(event, queryDetails);
       },
-      onResponse({ response }) {
+      onResponse({ response, returnValue }) {
         if (authoringModeEnabled) {
           return;
         }
 
         const decisions = response.getPayloadsByType(DECISIONS_HANDLE);
+        returnValue.decisions = decisions;
 
         executeDecisions(decisions, modules, logger);
 

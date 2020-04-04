@@ -86,22 +86,26 @@ export default ({
         // Note that result.parsedBody may be undefined if it was a
         // 204 No Content response. That's fine.
         const response = createResponse(result.parsedBody);
+        const returnValue = {};
         cookieTransfer.responseToCookies(response);
 
-        return onResponseCallbackAggregator.call({ response }).then(() => {
-          // This line's location is very important.
-          // As long as we received a properly structured response,
-          // we consider the response sucessful enough to call lifecycle
-          // onResponse methods. However, a structured response from the
-          // server may ALSO containing errors. Because of this, we make
-          // sure we call lifecycle onResponse methods, then later
-          // process the warnings and errors.
-          // If there are errors in the response body, an error will
-          // be thrown here which should ultimately reject the promise that
-          // was returned to the customer for the command they executed.
-          processWarningsAndErrors(response);
-          return response;
-        });
+        return onResponseCallbackAggregator
+          .call({ response, returnValue })
+          .then(() => {
+            // This line's location is very important.
+            // As long as we received a properly structured response,
+            // we consider the response sucessful enough to call lifecycle
+            // onResponse methods. However, a structured response from the
+            // server may ALSO containing errors. Because of this, we make
+            // sure we call lifecycle onResponse methods, then later
+            // process the warnings and errors.
+            // If there are errors in the response body, an error will
+            // be thrown here which should ultimately reject the promise that
+            // was returned to the customer for the command they executed.
+            processWarningsAndErrors(response);
+
+            return returnValue;
+          });
       });
   };
 };
