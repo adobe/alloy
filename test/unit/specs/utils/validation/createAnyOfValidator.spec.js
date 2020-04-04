@@ -18,7 +18,7 @@ import {
   string,
   literal
 } from "../../../../../src/utils/validation";
-import describeValidation from "./describeValidation";
+import describeValidation from "../../../helpers/describeValidation";
 
 describe("validation:anyOf", () => {
   describeValidation(

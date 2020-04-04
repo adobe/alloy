@@ -10,10 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { areThirdPartyCookiesSupportedByDefault } from "../../utils";
 import getBrowser from "../../utils/getBrowser";
 
-export default ({ thirdPartyCookiesEnabled }) => {
+export default ({
+  thirdPartyCookiesEnabled,
+  areThirdPartyCookiesSupportedByDefault
+}) => {
   return payload => {
     if (
       thirdPartyCookiesEnabled &&

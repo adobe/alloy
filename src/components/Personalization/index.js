@@ -153,12 +153,15 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     },
 
     commands: {
-      getDecisions(options) {
-        const { scopes } = GET_DECISIONS_VALIDATOR(options);
-        // Cloning scopes to avoid changing input options
-        const localScopes = [...scopes];
+      getDecisions: {
+        optionsValidator: GET_DECISIONS_VALIDATOR,
+        run: options => {
+          const { scopes } = options;
+          // Cloning scopes to avoid changing input options
+          const localScopes = [...scopes];
 
-        return filterDecisions(decisionsStorage, localScopes);
+          return filterDecisions(decisionsStorage, localScopes);
+        }
       }
     }
   };

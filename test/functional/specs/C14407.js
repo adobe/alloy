@@ -4,7 +4,19 @@ import getResponseBody from "../helpers/networkLogger/getResponseBody";
 import fixtureFactory from "../helpers/fixtureFactory";
 import cookies from "../helpers/cookies";
 import alloyEvent from "../helpers/alloyEvent";
-import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
+import configureAlloyInstance from "../helpers/configureAlloyInstance";
+import {
+  compose,
+  orgMainConfigMain,
+  migrationDisabled,
+  debugEnabled
+} from "../helpers/constants/configParts";
+
+const config = compose(
+  orgMainConfigMain,
+  migrationDisabled,
+  debugEnabled
+);
 
 const networkLogger = createNetworkLogger();
 
@@ -26,14 +38,8 @@ const setConsentIn = ClientFunction(() => {
 test("C14407 - Consenting to all purposes should be persisted.", async () => {
   const imsOrgId = "334F60F35E1597910A495EC2@AdobeOrg";
   await cookies.clear();
-  // await apiCalls(imsOrgId);
 
-  const configure = await alloyEvent("configure", {
-    idMigrationEnabled: false,
-    ...debugEnabledConfig
-  });
-
-  await configure.promise;
+  await configureAlloyInstance(config);
 
   // send alloy event
   const event1 = await alloyEvent({

@@ -82,9 +82,9 @@ export default ({
           return sendEdgeNetworkRequest({
             payload,
             action,
-            onResponseBeforeFullErrorProcessing:
-              onResponseCallbackAggregator.call,
-            onRequestFailure: onRequestFailureCallbackAggregator.call
+            runOnResponseCallbacks: onResponseCallbackAggregator.call,
+            runOnRequestFailureCallbacks:
+              onRequestFailureCallbackAggregator.call
           });
         })
         .then(returnValue => returnValue);

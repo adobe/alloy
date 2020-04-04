@@ -1,6 +1,15 @@
 import fixtureFactory from "../helpers/fixtureFactory";
-import baseConfig from "../helpers/constants/baseConfig";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
+import {
+  compose,
+  orgMainConfigMain,
+  consentPending
+} from "../helpers/constants/configParts";
+
+const config = compose(
+  orgMainConfigMain,
+  consentPending
+);
 
 fixtureFactory({
   title:
@@ -14,10 +23,7 @@ test.meta({
 });
 
 test("Test C14412: While user is changing consent preferences, other requests should be queued", async t => {
-  await configureAlloyInstance("alloy", {
-    defaultConsent: { general: "pending" },
-    ...baseConfig
-  });
+  await configureAlloyInstance("alloy", config);
   await t.eval(() => window.alloy("setConsent", { general: "in" }));
   await t.eval(() => {
     window.alloy("setConsent", { general: "out" });

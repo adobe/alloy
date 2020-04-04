@@ -101,6 +101,37 @@ describe("executeCommandFactory", () => {
     });
   });
 
+  it("executes component commands", () => {
+    const runCommandSpy = jasmine.createSpy();
+    const validateCommandOptionsSpy = jasmine
+      .createSpy()
+      .and.returnValue("post-validation-options");
+    const testCommand = {
+      run: runCommandSpy
+    };
+    const componentRegistry = {
+      getCommand: () => testCommand,
+      getCommandNames() {
+        return ["test"];
+      }
+    };
+    const configureCommand = () => Promise.resolve(componentRegistry);
+    const executeCommand = executeCommandFactory({
+      logger,
+      configureCommand,
+      handleError,
+      validateCommandOptions: validateCommandOptionsSpy
+    });
+    executeCommand("configure");
+    return executeCommand("test", "pre-validation-options").then(() => {
+      expect(validateCommandOptionsSpy).toHaveBeenCalledWith({
+        command: testCommand,
+        options: "pre-validation-options"
+      });
+      expect(runCommandSpy).toHaveBeenCalledWith("post-validation-options");
+    });
+  });
+
   it("executes the core commands", () => {
     const configureCommand = jasmine
       .createSpy()

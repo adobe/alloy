@@ -10,10 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isRetryableHttpStatusCode from "./isRetryableHttpStatusCode";
 import { stackError } from "../../utils";
 
-export default ({ logger, networkStrategy }) => {
+export default ({ logger, networkStrategy, isRetryableHttpStatusCode }) => {
   /**
    * Send a network request and returns details about the response.
    *

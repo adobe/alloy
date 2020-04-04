@@ -11,170 +11,64 @@ governing permissions and limitations under the License.
 */
 
 import createConsent from "../../../../../src/core/consent/createConsent";
-import { defer } from "../../../../../src/utils";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("createConsent", () => {
-  let lifecycle;
-  let payload;
-  let createConsentRequestPayload;
-  let sendEdgeNetworkRequest;
-  let consentState;
-  let awaitConsent;
-  let consent;
+  let state;
+  let subject;
+  let logger;
 
   beforeEach(() => {
-    lifecycle = jasmine.createSpyObj("lifecycle", {
-      onBeforeConsentRequest: Promise.resolve()
-    });
-
-    payload = jasmine.createSpyObj("payload", ["setConsentLevel"]);
-    createConsentRequestPayload = jasmine.createSpy().and.returnValue(payload);
-    sendEdgeNetworkRequest = jasmine
-      .createSpy()
-      .and.returnValue(Promise.resolve());
-    consentState = jasmine.createSpyObj("consentState", {
-      isPending: true,
-      hasConsentedToAllPurposes: false,
-      suspend: undefined,
-      unsuspend: undefined,
-      updateFromCookies: undefined
-    });
-    awaitConsent = jasmine.createSpy();
-    consent = createConsent({
-      lifecycle,
-      createConsentRequestPayload,
-      sendEdgeNetworkRequest,
-      consentState,
-      awaitConsent
-    });
+    state = jasmine.createSpyObj("state", [
+      "in",
+      "out",
+      "pending",
+      "awaitConsent"
+    ]);
+    logger = jasmine.createSpyObj("logger", ["warn"]);
+    subject = createConsent({ generalConsentState: state, logger });
   });
 
-  it("exposes awaitConsent", () => {
-    expect(consent.awaitConsent).toBe(awaitConsent);
+  it("sets consent to in", () => {
+    subject.setConsent({ general: "in" });
+    expect(state.in).toHaveBeenCalled();
+    expect(state.out).not.toHaveBeenCalled();
+    expect(state.pending).not.toHaveBeenCalled();
+    expect(logger.warn).not.toHaveBeenCalled();
   });
-
-  it("exposes requestComplete", () => {
-    expect(consent.requestComplete).toBe(consentState.updateFromCookies);
-  });
-
-  it("prevents setting consent if the user already consented to no purposes", () => {
-    consentState.isPending.and.returnValue(false);
-    consentState.hasConsentedToAllPurposes.and.returnValue(false);
-
-    return expectAsync(
-      consent.setConsent({
-        general: "in"
-      })
-    ).toBeRejectedWithError(
-      "The user previously declined consent, which cannot be changed."
+  it("sets consent to out", () => {
+    subject.setConsent({ general: "out" });
+    expect(state.in).not.toHaveBeenCalled();
+    expect(state.out).toHaveBeenCalled();
+    expect(state.pending).not.toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledWith(
+      "Some commands may fail. The user declined consent."
     );
   });
-
-  it("suspends consent state until request completes", () => {
-    const requestDeferred = defer();
-
-    sendEdgeNetworkRequest.and.callFake(() => {
-      return requestDeferred.promise;
-    });
-    consent.setConsent({
-      general: "in"
-    });
-
-    return flushPromiseChains()
-      .then(() => {
-        expect(consentState.suspend).toHaveBeenCalled();
-        expect(consentState.unsuspend).not.toHaveBeenCalled();
-        requestDeferred.resolve();
-        consent.consentRequestComplete();
-        return flushPromiseChains();
-      })
-      .then(() => {
-        expect(consentState.unsuspend).toHaveBeenCalled();
-      });
-  });
-
-  it("suspends consent state until all set-consent requests complete", () => {
-    const setConsentDeferred1 = defer();
-    const setConsentDeferred2 = defer();
-
-    sendEdgeNetworkRequest.and.returnValues(
-      setConsentDeferred1.promise,
-      setConsentDeferred2.promise
+  it("sets consent to pending", () => {
+    subject.setConsent({ general: "pending" });
+    expect(state.in).not.toHaveBeenCalled();
+    expect(state.out).not.toHaveBeenCalled();
+    expect(state.pending).toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledWith(
+      "Some commands may be delayed until the user consents."
     );
-
-    consent.setConsent({ general: "in" });
-    consent.setConsent({ general: "out" });
-
-    return flushPromiseChains()
-      .then(() => {
-        expect(consentState.suspend).toHaveBeenCalled();
-        expect(consentState.unsuspend).not.toHaveBeenCalled();
-        setConsentDeferred1.resolve();
-        consent.consentRequestComplete();
-        return flushPromiseChains();
-      })
-      .then(() => {
-        expect(consentState.unsuspend).not.toHaveBeenCalled();
-        setConsentDeferred2.resolve();
-        consent.consentRequestComplete();
-        return flushPromiseChains();
-      })
-      .then(() => {
-        expect(consentState.unsuspend).toHaveBeenCalled();
-      });
   });
-
-  it("waits for onBeforeConsentRequest, sets consent level, then sends request", () => {
-    const onBeforeConsentRequestDeferred = defer();
-    lifecycle.onBeforeConsentRequest.and.returnValue(
-      onBeforeConsentRequestDeferred.promise
-    );
-
-    const sendEdgeNetworkRequestDeferred = defer();
-    sendEdgeNetworkRequest.and.returnValue(
-      sendEdgeNetworkRequestDeferred.promise
-    );
-
-    const consentByPurpose = {
-      general: "in"
-    };
-
-    consent.setConsent(consentByPurpose);
-
-    return flushPromiseChains()
-      .then(() => {
-        expect(lifecycle.onBeforeConsentRequest).toHaveBeenCalled();
-        expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
-        expect(payload.setConsentLevel).not.toHaveBeenCalled();
-        onBeforeConsentRequestDeferred.resolve();
-        return flushPromiseChains();
-      })
-      .then(() => {
-        expect(payload.setConsentLevel).toHaveBeenCalledWith(consentByPurpose);
-        expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
-          payload,
-          action: "privacy/set-consent"
-        });
-      });
+  it("logs unknown consent values", () => {
+    subject.setConsent({ general: "foo" });
+    expect(state.in).not.toHaveBeenCalled();
+    expect(state.out).not.toHaveBeenCalled();
+    expect(state.pending).not.toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledWith("Unknown consent value: foo");
   });
-
-  it("resolves promise if request succeeds", () => {
-    return expectAsync(
-      consent.setConsent({
-        general: "in"
-      })
-    ).toBeResolvedTo(undefined);
+  it("suspends", () => {
+    subject.suspend();
+    expect(state.in).not.toHaveBeenCalled();
+    expect(state.out).not.toHaveBeenCalled();
+    expect(state.pending).toHaveBeenCalled();
+    expect(logger.warn).not.toHaveBeenCalled();
   });
-
-  it("rejects promise if request fails", () => {
-    sendEdgeNetworkRequest.and.returnValue(
-      Promise.reject(new Error("Error occurred."))
-    );
-    return expectAsync(
-      consent.setConsent({
-        general: "in"
-      })
-    ).toBeRejectedWithError("Error occurred.");
+  it("calls await consent", () => {
+    state.awaitConsent.and.returnValue("mypromise");
+    expect(subject.awaitConsent()).toEqual("mypromise");
   });
 });
