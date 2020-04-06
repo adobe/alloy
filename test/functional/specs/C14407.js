@@ -34,6 +34,10 @@ const setConsentIn = ClientFunction(() => {
   return window.alloy("setConsent", { general: "in" });
 });
 
+/*
+ * this can be used when a delay is necessary to ensure an event is
+ * registered, but not block on waiting for consent promise to resolve
+ */
 const sendEventWithDelay = ClientFunction((data, delay) => {
   return new Promise(resolve => {
     window.alloy("event", data);
