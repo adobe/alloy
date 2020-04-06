@@ -3,7 +3,6 @@ import createNetworkLogger from "../helpers/networkLogger";
 import getResponseBody from "../helpers/networkLogger/getResponseBody";
 import fixtureFactory from "../helpers/fixtureFactory";
 import cookies from "../helpers/cookies";
-import alloyEvent from "../helpers/alloyEvent";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 import {
   compose,
@@ -35,6 +34,15 @@ const setConsentIn = ClientFunction(() => {
   return window.alloy("setConsent", { general: "in" });
 });
 
+const sendEventWithDelay = ClientFunction((data, delay) => {
+  return new Promise(resolve => {
+    window.alloy("event", data);
+    setTimeout(() => {
+      resolve();
+    }, delay || 100);
+  });
+});
+
 test("C14407 - Consenting to all purposes should be persisted.", async () => {
   const imsOrgId = "334F60F35E1597910A495EC2@AdobeOrg";
   await cookies.clear();
@@ -42,14 +50,12 @@ test("C14407 - Consenting to all purposes should be persisted.", async () => {
   await configureAlloyInstance(config);
 
   // send alloy event
-  const event1 = await alloyEvent({
+  await sendEventWithDelay({
     viewStart: true
   });
 
   // apply user consent
   await setConsentIn();
-
-  await event1.promise;
 
   const cookieName = `kndctr_${imsOrgId.replace(
     /[@]+?/,

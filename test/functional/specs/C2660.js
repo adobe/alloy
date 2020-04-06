@@ -2,7 +2,6 @@ import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../helpers/networkLogger";
 import fixtureFactory from "../helpers/fixtureFactory";
 import environmentContextConfig from "../helpers/constants/environmentContextConfig";
-import alloyEvent from "../helpers/alloyEvent";
 import viewportHelper from "../helpers/window/viewport";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 
@@ -21,6 +20,15 @@ test.meta({
 
 const setConsentIn = ClientFunction(() => {
   return window.alloy("setConsent", { general: "in" });
+});
+
+const sendEventWithDelay = ClientFunction((data, delay) => {
+  return new Promise(resolve => {
+    window.alloy("event", data);
+    setTimeout(() => {
+      resolve();
+    }, delay || 100);
+  });
 });
 
 test("C2660 - Context data is captured before user consents.", async () => {
@@ -48,20 +56,16 @@ test("C2660 - Context data is captured before user consents.", async () => {
   };
 
   // send first event
-  const event1 = await alloyEvent(eventData);
+  await sendEventWithDelay(eventData, 100);
 
   // resize the viewport
   await t.resizeWindow(newViewport.width, newViewport.height);
 
   // send the second event
-  const event2 = await alloyEvent(eventData);
+  await sendEventWithDelay(eventData, 100);
 
   // apply user consent
   await setConsentIn();
-
-  // wait for events to complete
-  await event1.promise;
-  await event2.promise;
 
   /*
     // reset to original size
