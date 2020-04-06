@@ -66,9 +66,12 @@ const triggerAlloyEvents = ClientFunction(() => {
   return new Promise(resolve => {
     window
       .alloy("event", { viewStart: true, data: { key: "value" } })
-      .then(() => resolve());
-    window.alloy("event", { data: { key: "value" } });
-    window.alloy("event", { data: { key: "value" } });
+      .then(() => {
+        window.alloy("event", { data: { key: "value" } });
+        window.alloy("event", { data: { key: "value" } });
+
+        resolve();
+      });
   });
 });
 
