@@ -12,7 +12,23 @@ governing permissions and limitations under the License.
 
 import { ID_THIRD_PARTY_DOMAIN } from "../../constants/domains";
 import apiVersion from "../../constants/apiVersion";
-import { createCallbackAggregator, noop, uuid } from "../../utils";
+import {
+  createCallbackAggregator,
+  noop,
+  uuid,
+  assign,
+  isNil
+} from "../../utils";
+
+const notNil = value => !isNil(value);
+
+const processReturnValue = values => {
+  if (isNil(values)) {
+    return {};
+  }
+
+  return values.filter(notNil).reduce((acc, item) => assign(acc, item), {});
+};
 
 export default ({
   config,
@@ -81,8 +97,14 @@ export default ({
         // 204 No Content response. That's fine.
         const response = createResponse(networkResponse.parsedBody);
         cookieTransfer.responseToCookies(response);
-
-        return onResponseCallbackAggregator.call({ response }).then(() => {
+        const lifecycleOnResponsePromises = onResponseCallbackAggregator.call({
+          response
+        });
+        const consumerOnResponsePromises = runOnResponseCallbacks({ response });
+        return Promise.all([
+          lifecycleOnResponsePromises,
+          consumerOnResponsePromises
+        ]).then(segmentedReturnValues => {
           // This line's location is very important.
           // As long as we received a properly structured response,
           // we consider the response sucessful enough to call lifecycle
@@ -94,7 +116,11 @@ export default ({
           // be thrown here which should ultimately reject the promise that
           // was returned to the customer for the command they executed.
           processWarningsAndErrors(response);
-          return response;
+
+          const first = processReturnValue(...segmentedReturnValues[0]);
+          const second = processReturnValue(...segmentedReturnValues[1]);
+
+          return assign({}, first, second);
         });
       });
   };

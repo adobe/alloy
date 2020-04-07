@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { stackError } from "../../utils";
+import { stackError, noop } from "../../utils";
 
 const createClickHandler = (eventManager, lifecycle) => {
   return clickEvent => {
@@ -24,7 +24,7 @@ const createClickHandler = (eventManager, lifecycle) => {
           return Promise.resolve();
         }
 
-        return eventManager.sendEvent(event);
+        return eventManager.sendEvent(event).then(noop);
       })
       .catch(error => {
         throw stackError("Failed to track click", error);

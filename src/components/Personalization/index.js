@@ -87,7 +87,7 @@ const createCollect = eventManager => {
 
     mergeMeta(event, meta);
 
-    eventManager.sendEvent(event);
+    // eventManager.sendEvent(event);
   };
 };
 
@@ -140,6 +140,9 @@ const createPersonalization = ({ config, logger, eventManager }) => {
         showContainers();
 
         storeDecisions(decisionsStorage, decisions);
+
+        // eslint-disable-next-line consistent-return
+        return { decisions };
       },
       onRequestFailure() {
         showContainers();

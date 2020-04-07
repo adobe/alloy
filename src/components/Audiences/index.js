@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { fireReferrerHideableImage } from "../../utils";
+import { fireReferrerHideableImage, noop } from "../../utils";
 import processDestinationsFactory from "./processDestinationsFactory";
 
 const createAudiences = ({ logger }) => {
@@ -22,7 +22,7 @@ const createAudiences = ({ logger }) => {
     lifecycle: {
       onResponse({ response }) {
         const destinations = response.getPayloadsByType("activation:push");
-        return processDestinations(destinations);
+        return processDestinations(destinations).then(noop);
       }
     },
     commands: {}
