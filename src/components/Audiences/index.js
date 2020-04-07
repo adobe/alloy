@@ -22,6 +22,8 @@ const createAudiences = ({ logger }) => {
     lifecycle: {
       onResponse({ response }) {
         const destinations = response.getPayloadsByType("activation:push");
+        // we're now returning an object at onResponse
+        // here we need to add 'then(noop)' because we are not returning a value
         return processDestinations(destinations).then(noop);
       }
     },

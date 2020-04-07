@@ -12,23 +12,7 @@ governing permissions and limitations under the License.
 
 import { ID_THIRD_PARTY_DOMAIN } from "../../constants/domains";
 import apiVersion from "../../constants/apiVersion";
-import {
-  createCallbackAggregator,
-  noop,
-  uuid,
-  assign,
-  isNil
-} from "../../utils";
-
-const notNil = value => !isNil(value);
-
-const processReturnValue = values => {
-  if (isNil(values)) {
-    return {};
-  }
-
-  return values.filter(notNil).reduce((acc, item) => assign(acc, item), {});
-};
+import { createCallbackAggregator, noop, uuid, assign } from "../../utils";
 
 export default ({
   config,
@@ -97,31 +81,25 @@ export default ({
         // 204 No Content response. That's fine.
         const response = createResponse(networkResponse.parsedBody);
         cookieTransfer.responseToCookies(response);
-        const lifecycleOnResponsePromises = onResponseCallbackAggregator.call({
-          response
-        });
-        const consumerOnResponsePromises = runOnResponseCallbacks({ response });
-        return Promise.all([
-          lifecycleOnResponsePromises,
-          consumerOnResponsePromises
-        ]).then(segmentedReturnValues => {
-          // This line's location is very important.
-          // As long as we received a properly structured response,
-          // we consider the response sucessful enough to call lifecycle
-          // onResponse methods. However, a structured response from the
-          // server may ALSO containing errors. Because of this, we make
-          // sure we call lifecycle onResponse methods, then later
-          // process the warnings and errors.
-          // If there are errors in the response body, an error will
-          // be thrown here which should ultimately reject the promise that
-          // was returned to the customer for the command they executed.
-          processWarningsAndErrors(response);
+        return onResponseCallbackAggregator
+          .call({
+            response
+          })
+          .then(returnValues => {
+            // This line's location is very important.
+            // As long as we received a properly structured response,
+            // we consider the response sucessful enough to call lifecycle
+            // onResponse methods. However, a structured response from the
+            // server may ALSO containing errors. Because of this, we make
+            // sure we call lifecycle onResponse methods, then later
+            // process the warnings and errors.
+            // If there are errors in the response body, an error will
+            // be thrown here which should ultimately reject the promise that
+            // was returned to the customer for the command they executed.
+            processWarningsAndErrors(response);
 
-          const first = processReturnValue(...segmentedReturnValues[0]);
-          const second = processReturnValue(...segmentedReturnValues[1]);
-
-          return assign({}, first, second);
-        });
+            return assign({}, ...returnValues[0], ...returnValues[1]);
+          });
       });
   };
 };
