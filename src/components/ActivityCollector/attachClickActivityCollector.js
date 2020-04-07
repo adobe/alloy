@@ -23,8 +23,8 @@ const createClickHandler = (eventManager, lifecycle) => {
         if (event.isEmpty()) {
           return Promise.resolve();
         }
-        // we're now returning an object at onResponse
-        // here we need to add 'then(noop)' because we are not returning a value
+        // eventManager.sendEvent() will return a promise resolved to an
+        // object and we want to avoid returning any value to the customer
         return eventManager.sendEvent(event).then(noop);
       })
       .catch(error => {
