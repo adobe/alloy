@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { cookieJar } from "../../utils";
+import { cookieJar, noop } from "../../utils";
 
 const createResultLogMessage = (urlDestination, success) => {
   return `URL destination ${success ? "succeeded" : "failed"}: ${
@@ -34,7 +34,7 @@ const processUrls = (fireReferrerHideableImage, logger, destinations) => {
           logger.error(createResultLogMessage(urlDestination, false));
         });
     })
-  );
+  ).then(noop);
 };
 
 const processCookies = destinations => {

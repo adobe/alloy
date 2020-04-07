@@ -99,7 +99,13 @@ export default ({
             processWarningsAndErrors(response);
             // Merges all returned objects from all `onResponse` callbacks into
             // a single object that can later be returned to the customer.
-            return assign({}, ...returnValues[0], ...returnValues[1]);
+            const lifecycleReturnValues = returnValues[0] || [];
+            const consumerReturnValues = returnValues[1] || [];
+            return assign(
+              {},
+              ...lifecycleReturnValues,
+              ...consumerReturnValues
+            );
           });
       });
   };
