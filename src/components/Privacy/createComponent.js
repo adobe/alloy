@@ -31,7 +31,9 @@ export default ({
       // Only read cookies when there are no outstanding setConsent
       // requests. This helps with race conditions.
       const storedConsent = readStoredConsent();
-      consentObjects.forEach(() => consent.setConsent(storedConsent));
+      consentObjects.forEach(consentObject =>
+        consentObject.setConsent(storedConsent)
+      );
     }
   };
 
@@ -40,7 +42,7 @@ export default ({
       setConsent: {
         optionsValidator: validateSetConsentOptions,
         run: options => {
-          consentObjects.forEach(() => consent.suspend());
+          consentObjects.forEach(consentObject => consentObject.suspend());
           return taskQueue
             .addTask(() => sendSetConsentRequest(options))
             .catch(error => {
