@@ -16,7 +16,6 @@ export default () => {
   const content = {};
   let userXdm;
   let userData;
-  let expectResponse = false;
   let documentMayUnload = false;
   let lastChanceCallback = noop;
 
@@ -35,12 +34,6 @@ export default () => {
     },
     getDocumentMayUnload() {
       return documentMayUnload;
-    },
-    expectResponse() {
-      expectResponse = true;
-    },
-    getExpectResponse() {
-      return expectResponse;
     },
     isEmpty() {
       return (

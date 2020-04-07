@@ -10,17 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({
-  createConsentRequestPayload,
-  sendEdgeNetworkRequest
-}) => consentByPurpose => {
-  const payload = createConsentRequestPayload();
-  payload.setConsentLevel(consentByPurpose);
-  return sendEdgeNetworkRequest({
-    payload,
-    action: "privacy/set-consent"
-  }).then(() => {
-    // Don't let response data disseminate beyond this
-    // point unless necessary.
-  });
+import { find } from "../../utils";
+import ecidNamespace from "../../constants/ecidNamespace";
+
+export default response => {
+  const identityResultPayloads = response.getPayloadsByType("identity:result");
+  const ecidPayload = find(
+    identityResultPayloads,
+    payload => payload.namespace && payload.namespace.code === ecidNamespace
+  );
+  return ecidPayload ? ecidPayload.id : undefined;
 };

@@ -10,11 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import processWarningsAndErrors from "../../../../../src/core/edgeNetwork/processWarningsAndErrors";
+import processWarningsAndErrorsFactory from "../../../../../src/core/edgeNetwork/processWarningsAndErrorsFactory";
 
 describe("processWarningsAndErrors", () => {
   let response;
   let logger;
+  let processWarningsAndErrors;
 
   beforeEach(() => {
     response = {
@@ -26,6 +27,7 @@ describe("processWarningsAndErrors", () => {
       }
     };
     logger = jasmine.createSpyObj("logger", ["warn"]);
+    processWarningsAndErrors = processWarningsAndErrorsFactory({ logger });
   });
 
   it("logs warnings", () => {
@@ -40,7 +42,7 @@ describe("processWarningsAndErrors", () => {
       }
     ];
 
-    processWarningsAndErrors(response, logger);
+    processWarningsAndErrors(response);
 
     expect(logger.warn).toHaveBeenCalledWith(
       "Warning received from server: [Code general:100] General warning."
@@ -63,7 +65,7 @@ describe("processWarningsAndErrors", () => {
     ];
 
     expect(() => {
-      processWarningsAndErrors(response, logger);
+      processWarningsAndErrors(response);
     }).toThrowError(
       "The server responded with the following errors:\n" +
         "• [Code general:100] General error occurred.\n" +

@@ -1,6 +1,6 @@
-import { RequestHook } from "testcafe";
 import fixtureFactory from "../helpers/fixtureFactory";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
+import SequentialHook from "../helpers/requestHooks/sequentialHook";
 import {
   compose,
   orgMainConfigMain,
@@ -11,29 +11,6 @@ const config = compose(
   orgMainConfigMain,
   consentPending
 );
-
-class SequentialHook extends RequestHook {
-  constructor(...args) {
-    super(...args);
-    this.outstandingRequest = false;
-    this.allRequestsSequential = true;
-  }
-
-  async onRequest() {
-    if (this.outstandingRequest) {
-      this.allRequestsSequential = false;
-    }
-    this.outstandingRequest = true;
-  }
-
-  async onResponse() {
-    this.outstandingRequest = false;
-  }
-
-  haveRequestsBeenSequential() {
-    return this.allRequestsSequential;
-  }
-}
 
 const setConsentHook = new SequentialHook(/v1\/privacy\/set-consent\?/);
 

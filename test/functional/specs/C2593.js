@@ -37,5 +37,5 @@ test("Test C2593: Event command consents to all purposes", async () => {
   await triggerEventThenConsent();
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 204);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 });

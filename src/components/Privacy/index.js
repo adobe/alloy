@@ -18,12 +18,7 @@ import sendSetConsentRequestFactory from "./sendSetConsentRequestFactory";
 import parseConsentCookie from "./parseConsentCookie";
 import validateSetConsentOptions from "./validateSetConsentOptions";
 
-const createPrivacy = ({
-  config,
-  consent,
-  sendEdgeNetworkRequest,
-  lifecycle
-}) => {
+const createPrivacy = ({ config, consent, sendEdgeNetworkRequest }) => {
   const { orgId, defaultConsent } = config;
   const readStoredConsent = readStoredConsentFactory({
     parseConsentCookie,
@@ -32,7 +27,6 @@ const createPrivacy = ({
   });
   const taskQueue = createTaskQueue();
   const sendSetConsentRequest = sendSetConsentRequestFactory({
-    lifecycle,
     createConsentRequestPayload,
     sendEdgeNetworkRequest
   });

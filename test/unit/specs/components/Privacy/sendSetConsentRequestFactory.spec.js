@@ -1,16 +1,12 @@
 import sendSetConsentRequestFactory from "../../../../../src/components/Privacy/sendSetConsentRequestFactory";
-import { defer } from "../../../../../src/utils";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("Privacy:sendSetConsentRequestFactory", () => {
-  let lifecycle;
   let createConsentRequestPayload;
   let sendEdgeNetworkRequest;
   let payload;
   let sendSetConsentRequest;
 
   beforeEach(() => {
-    lifecycle = jasmine.createSpyObj("lifecycle", ["onBeforeConsentRequest"]);
     createConsentRequestPayload = jasmine.createSpy(
       "createConsentRequestPayload"
     );
@@ -18,34 +14,20 @@ describe("Privacy:sendSetConsentRequestFactory", () => {
     payload = jasmine.createSpyObj("payload", ["setConsentLevel"]);
     createConsentRequestPayload.and.returnValue(payload);
     sendSetConsentRequest = sendSetConsentRequestFactory({
-      lifecycle,
       createConsentRequestPayload,
       sendEdgeNetworkRequest
     });
   });
 
-  it("calls onBeforeConsentRequest and sends the request", () => {
-    const deferred = defer();
-    lifecycle.onBeforeConsentRequest.and.returnValue(deferred.promise);
+  it("sets consent level and on payload and sends the request", () => {
     sendEdgeNetworkRequest.and.returnValue(Promise.resolve());
-    const returnedPromise = sendSetConsentRequest({ general: "in" });
-    expect(lifecycle.onBeforeConsentRequest).toHaveBeenCalledWith({ payload });
-    return flushPromiseChains()
-      .then(() => {
-        expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
-        deferred.resolve();
-        return flushPromiseChains();
-      })
-      .then(() => {
-        expect(payload.setConsentLevel).toHaveBeenCalledWith({ general: "in" });
-        expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
-          payload,
-          action: "privacy/set-consent"
-        });
-        return returnedPromise;
-      })
-      .then(resolvedValue => {
-        expect(resolvedValue).toBeUndefined();
+    return sendSetConsentRequest({ general: "in" }).then(resolvedValue => {
+      expect(payload.setConsentLevel).toHaveBeenCalledWith({ general: "in" });
+      expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
+        payload,
+        action: "privacy/set-consent"
       });
+      expect(resolvedValue).toBeUndefined();
+    });
   });
 });

@@ -90,7 +90,9 @@ describe("createEventManager", () => {
             event,
             isViewStart: true,
             scopes: undefined,
-            payload: requestPayload
+            payload: requestPayload,
+            onResponse: jasmine.any(Function),
+            onRequestFailure: jasmine.any(Function)
           });
           expect(consent.awaitConsent).not.toHaveBeenCalled();
           deferred.resolve();
@@ -163,35 +165,93 @@ describe("createEventManager", () => {
         });
     });
 
-    it("sends request using interact endpoint if a response is expected and the document won't unload", () => {
-      requestPayload.getExpectResponse.and.returnValue(true);
-      event.getDocumentMayUnload.and.returnValue(false);
+    it("calls onResponse callbacks on response", () => {
+      const onResponseForOnBeforeEvent = jasmine.createSpy(
+        "onResponseForOnBeforeEvent"
+      );
+      const onResponseForOnBeforeDataCollection = jasmine.createSpy(
+        "onResponseForOnBeforeDataCollection"
+      );
+      lifecycle.onBeforeEvent.and.callFake(({ onResponse }) => {
+        onResponse(onResponseForOnBeforeEvent);
+        return Promise.resolve();
+      });
+      lifecycle.onBeforeDataCollectionRequest.and.callFake(({ onResponse }) => {
+        onResponse(onResponseForOnBeforeDataCollection);
+        return Promise.resolve();
+      });
+      const response = { type: "response" };
+      sendEdgeNetworkRequest.and.callFake(({ runOnResponseCallbacks }) => {
+        runOnResponseCallbacks({ response });
+        return Promise.resolve();
+      });
       return eventManager.sendEvent(event).then(() => {
-        expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
-          payload: requestPayload,
-          action: "interact"
+        expect(onResponseForOnBeforeEvent).toHaveBeenCalledWith({ response });
+        expect(onResponseForOnBeforeDataCollection).toHaveBeenCalledWith({
+          response
         });
       });
     });
 
-    it("sends request using collect endpoint if a response is not expected and the document won't unload", () => {
-      requestPayload.getExpectResponse.and.returnValue(false);
+    it("calls onRequestFailure callbacks on request failure", () => {
+      const onRequestFailureForOnBeforeEvent = jasmine.createSpy(
+        "onRequestFailureForOnBeforeEvent"
+      );
+      const onRequestFailureForOnBeforeDataCollection = jasmine.createSpy(
+        "onRequestFailureForOnBeforeDataCollection"
+      );
+      lifecycle.onBeforeEvent.and.callFake(({ onRequestFailure }) => {
+        onRequestFailure(onRequestFailureForOnBeforeEvent);
+        return Promise.resolve();
+      });
+      lifecycle.onBeforeDataCollectionRequest.and.callFake(
+        ({ onRequestFailure }) => {
+          onRequestFailure(onRequestFailureForOnBeforeDataCollection);
+          return Promise.resolve();
+        }
+      );
+      sendEdgeNetworkRequest.and.callFake(
+        ({ runOnRequestFailureCallbacks }) => {
+          const error = new Error();
+          runOnRequestFailureCallbacks({ error });
+          throw error;
+        }
+      );
+      return eventManager
+        .sendEvent(event)
+        .then(fail)
+        .catch(e => {
+          expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalledWith({
+            error: e
+          });
+          expect(
+            onRequestFailureForOnBeforeDataCollection
+          ).toHaveBeenCalledWith({
+            error: e
+          });
+        });
+    });
+
+    it("sends request using interact endpoint if the document will not unload", () => {
       event.getDocumentMayUnload.and.returnValue(false);
       return eventManager.sendEvent(event).then(() => {
         expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
           payload: requestPayload,
-          action: "collect"
+          action: "interact",
+          runOnResponseCallbacks: jasmine.any(Function),
+          runOnRequestFailureCallbacks: jasmine.any(Function)
         });
       });
     });
 
-    it("sends request using collect endpoint if a response is expected and the document may unload", () => {
-      requestPayload.getExpectResponse.and.returnValue(true);
+    it("sends request using collect endpoint if the document may unload", () => {
       event.getDocumentMayUnload.and.returnValue(true);
       return eventManager.sendEvent(event).then(() => {
         expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
           payload: requestPayload,
-          action: "collect"
+          action: "collect",
+          runOnResponseCallbacks: jasmine.any(Function),
+          runOnRequestFailureCallbacks: jasmine.any(Function)
         });
       });
     });

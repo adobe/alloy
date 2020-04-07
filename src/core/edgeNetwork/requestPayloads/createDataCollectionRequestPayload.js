@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 import createRequestPayload from "./createRequestPayload";
 
 export default () => {
-  let expectResponse = false;
   return createRequestPayload(content => {
     return {
       addIdentity: (namespaceCode, identity) => {
@@ -25,14 +24,7 @@ export default () => {
       },
       addEvent(event) {
         content.events = content.events || [];
-        expectResponse = expectResponse || event.getExpectResponse();
         content.events.push(event.toJSON());
-      },
-      expectResponse() {
-        expectResponse = true;
-      },
-      getExpectResponse() {
-        return expectResponse;
       }
     };
   });

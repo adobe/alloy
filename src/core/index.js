@@ -34,7 +34,9 @@ import createEventManager from "./createEventManager";
 import createCookieTransfer from "./createCookieTransfer";
 import createDataCollectionRequestPayload from "./edgeNetwork/requestPayloads/createDataCollectionRequestPayload";
 import sendEdgeNetworkRequestFactory from "./edgeNetwork/sendEdgeNetworkRequestFactory";
-import processWarningsAndErrors from "./edgeNetwork/processWarningsAndErrors";
+import processWarningsAndErrorsFactory from "./edgeNetwork/processWarningsAndErrorsFactory";
+import validateNetworkResponseIsWellFormed from "./edgeNetwork/validateNetworkResponseIsWellFormed";
+import isRetryableHttpStatusCode from "./network/isRetryableHttpStatusCode";
 
 // eslint-disable-next-line no-underscore-dangle
 const instanceNamespaces = window.__alloyNS;
@@ -88,16 +90,20 @@ if (instanceNamespaces) {
       });
       const sendNetworkRequest = sendNetworkRequestFactory({
         logger,
-        networkStrategy
+        networkStrategy,
+        isRetryableHttpStatusCode
+      });
+      const processWarningsAndErrors = processWarningsAndErrorsFactory({
+        logger
       });
       const sendEdgeNetworkRequest = sendEdgeNetworkRequestFactory({
         config,
-        logger,
         lifecycle,
         cookieTransfer,
         sendNetworkRequest,
         createResponse,
-        processWarningsAndErrors
+        processWarningsAndErrors,
+        validateNetworkResponseIsWellFormed
       });
       const generalConsentState = createConsentStateMachine();
       const consent = createConsent({

@@ -10,17 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({
-  createConsentRequestPayload,
-  sendEdgeNetworkRequest
-}) => consentByPurpose => {
-  const payload = createConsentRequestPayload();
-  payload.setConsentLevel(consentByPurpose);
-  return sendEdgeNetworkRequest({
-    payload,
-    action: "privacy/set-consent"
-  }).then(() => {
-    // Don't let response data disseminate beyond this
-    // point unless necessary.
+import addEcidToPayload from "../../../../../src/components/Identity/addEcidToPayload";
+
+describe("Identity:addEcidToPayload", () => {
+  it("adds ECID to payload", () => {
+    const payload = jasmine.createSpyObj("payload", ["addIdentity"]);
+    addEcidToPayload(payload, "user@adobe");
+    expect(payload.addIdentity).toHaveBeenCalledWith("ECID", {
+      id: "user@adobe"
+    });
   });
-};
+});

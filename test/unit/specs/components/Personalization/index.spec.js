@@ -21,7 +21,6 @@ import {
 } from "./responsesMock/eventResponses";
 
 describe("Personalization", () => {
-  let event;
   const config = createConfig({ prehidingStyle: "" });
 
   const logger = {
@@ -29,44 +28,10 @@ describe("Personalization", () => {
     warn() {}
   };
 
-  const payload = {
-    mergeConfigOverrides() {}
-  };
-
   const eventManager = {
     createEvent() {},
     sendEvent() {}
   };
-
-  beforeEach(() => {
-    event = jasmine.createSpyObj("event", ["expectResponse", "mergeQuery"]);
-  });
-
-  it("expects a response if event is a view start", () => {
-    const isViewStart = true;
-    const personalization = createPersonalization({
-      config,
-      logger,
-      eventManager
-    });
-
-    personalization.lifecycle.onBeforeEvent({ event, isViewStart, payload });
-
-    expect(event.expectResponse).toHaveBeenCalled();
-  });
-
-  it("does not expect a response if event is not a view start", () => {
-    const isViewStart = false;
-    const personalization = createPersonalization({
-      config,
-      logger,
-      eventManager
-    });
-
-    personalization.lifecycle.onBeforeEvent({ event, isViewStart, payload });
-
-    expect(event.expectResponse).not.toHaveBeenCalled();
-  });
 
   it("expects getDecisions to return an array of decisions for the scopes provided", () => {
     const scopes = ["Foo1", "Foo3"];

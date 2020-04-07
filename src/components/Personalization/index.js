@@ -119,7 +119,6 @@ const createPersonalization = ({ config, logger, eventManager }) => {
         }
 
         if (isViewStart || hasScopes) {
-          event.expectResponse();
           queryDetails.accepts = allSchemas;
         }
 

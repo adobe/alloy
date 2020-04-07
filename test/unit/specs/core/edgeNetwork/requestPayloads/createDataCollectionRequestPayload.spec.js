@@ -14,56 +14,18 @@ import createDataCollectionRequestPayload from "../../../../../../src/core/edgeN
 import createEvent from "../../../../../../src/core/createEvent";
 
 describe("createDataCollectionRequestPayload", () => {
-  const interactEvent = createEvent();
-  interactEvent.setUserXdm({
-    a: "b"
-  });
-  interactEvent.expectResponse();
-  const collectEvent = createEvent();
-  collectEvent.setUserXdm({
-    c: "d"
-  });
+  let interactEvent;
+  let collectEvent;
 
-  it("doesn't expect a response when empty", () => {
-    expect(
-      createDataCollectionRequestPayload().getExpectResponse()
-    ).toBeFalse();
-  });
-
-  it("doesn't expect a response with one collect event", () => {
-    const payload = createDataCollectionRequestPayload();
-    payload.addEvent(collectEvent);
-    expect(payload.getExpectResponse()).toBeFalse();
-  });
-
-  it("expects a response when expectResponse is called", () => {
-    const payload = createDataCollectionRequestPayload();
-    payload.expectResponse();
-    expect(payload.getExpectResponse()).toBeTrue();
-  });
-
-  it("expects a response with one interact event", () => {
-    const payload = createDataCollectionRequestPayload();
-    payload.addEvent(interactEvent);
-    expect(payload.getExpectResponse()).toBeTrue();
-  });
-
-  it("expects a response with a lot of events including at least one interact event", () => {
-    const payload = createDataCollectionRequestPayload();
-    payload.addEvent(collectEvent);
-    payload.addEvent(collectEvent);
-    payload.addEvent(interactEvent);
-    payload.addEvent(collectEvent);
-    expect(payload.getExpectResponse()).toBeTrue();
-  });
-
-  it("doesn't expect a response with a lot of collect Events", () => {
-    const payload = createDataCollectionRequestPayload();
-    payload.addEvent(collectEvent);
-    payload.addEvent(collectEvent);
-    payload.addEvent(collectEvent);
-    payload.addEvent(collectEvent);
-    expect(payload.getExpectResponse()).toBeFalse();
+  beforeEach(() => {
+    interactEvent = createEvent();
+    interactEvent.setUserXdm({
+      a: "b"
+    });
+    collectEvent = createEvent();
+    collectEvent.setUserXdm({
+      c: "d"
+    });
   });
 
   it("should not use ID third-party domain when useIdThirdPartyDomain is not called", () => {
@@ -80,10 +42,7 @@ describe("createDataCollectionRequestPayload", () => {
   it("calls toJSON on the event when it is added to the payload", () => {
     const payload = createDataCollectionRequestPayload();
     const event = {
-      toJSON: jasmine.createSpy(),
-      getExpectResponse() {
-        return true;
-      }
+      toJSON: jasmine.createSpy()
     };
     payload.addEvent(event);
     expect(event.toJSON).toHaveBeenCalled();

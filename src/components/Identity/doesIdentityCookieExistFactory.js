@@ -10,17 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({
-  createConsentRequestPayload,
-  sendEdgeNetworkRequest
-}) => consentByPurpose => {
-  const payload = createConsentRequestPayload();
-  payload.setConsentLevel(consentByPurpose);
-  return sendEdgeNetworkRequest({
-    payload,
-    action: "privacy/set-consent"
-  }).then(() => {
-    // Don't let response data disseminate beyond this
-    // point unless necessary.
-  });
+import { cookieJar, getNamespacedCookieName } from "../../utils";
+import { IDENTITY_COOKIE_KEY } from "../../constants/cookieDetails";
+
+export default ({ orgId }) => {
+  const identityCookieName = getNamespacedCookieName(
+    orgId,
+    IDENTITY_COOKIE_KEY
+  );
+  /**
+   * Returns whether the identity cookie exists.
+   */
+  return () => Boolean(cookieJar.get(identityCookieName));
 };

@@ -34,7 +34,7 @@ export default construct => {
     getUseIdThirdPartyDomain() {
       return useIdThirdPartyDomain;
     },
-    expectResponse() {},
+    addIdentity() {},
     toJSON() {
       return content;
     }

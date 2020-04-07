@@ -10,17 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({
-  createConsentRequestPayload,
-  sendEdgeNetworkRequest
-}) => consentByPurpose => {
-  const payload = createConsentRequestPayload();
-  payload.setConsentLevel(consentByPurpose);
-  return sendEdgeNetworkRequest({
-    payload,
-    action: "privacy/set-consent"
-  }).then(() => {
-    // Don't let response data disseminate beyond this
-    // point unless necessary.
+import isRetryableHttpStatusCode from "../../../../../src/core/network/isRetryableHttpStatusCode";
+
+describe("isRetryableHttpStatusCode", () => {
+  [429, 500, 599].forEach(statusCode => {
+    it(`returns true for ${statusCode}`, () => {
+      expect(isRetryableHttpStatusCode(statusCode)).toBeTrue();
+    });
   });
-};
+
+  [100, 199, 200, 299, 300, 399, 400, 499].forEach(statusCode => {
+    it(`returns false for ${statusCode}`, () => {
+      expect(isRetryableHttpStatusCode(statusCode)).toBeFalse();
+    });
+  });
+});
