@@ -23,6 +23,7 @@ describe("Identity::ensureRequestHasIdentityFactory", () => {
   let awaitIdentityCookie;
   let logger;
   let ensureRequestHasIdentity;
+  let identityCookiePromiseReference;
 
   beforeEach(() => {
     doesIdentityCookieExist = jasmine
@@ -40,12 +41,14 @@ describe("Identity::ensureRequestHasIdentityFactory", () => {
       .createSpy("awaitIdentityCookie")
       .and.returnValue(awaitIdentityCookieDeferred.promise);
     logger = jasmine.createSpyObj("logger", ["log"]);
+    identityCookiePromiseReference = {};
     ensureRequestHasIdentity = ensureRequestHasIdentityFactory({
       doesIdentityCookieExist,
       setDomainForInitialIdentityPayload,
       addEcidFromLegacyToPayload,
       awaitIdentityCookie,
-      logger
+      logger,
+      identityCookiePromiseReference
     });
   });
 

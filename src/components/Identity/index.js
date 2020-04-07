@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 
 import {
   fireReferrerHideableImage,
-  areThirdPartyCookiesSupportedByDefault
+  areThirdPartyCookiesSupportedByDefault,
+  memoize
 } from "../../utils";
 import processIdSyncsFactory from "./processIdSyncsFactory";
 import configValidators from "./configValidators";
@@ -29,6 +30,9 @@ import addEcidFromLegacyToPayloadFactory from "./addEcidFromLegacyToPayloadFacto
 import addEcidToPayload from "./addEcidToPayload";
 import awaitIdentityCookieFactory from "./awaitIdentityCookieFactory";
 import getEcidFromResponse from "./getEcidFromResponse";
+
+const memoizedIdentityCookiePromiseReference = memoize(() => ({}));
+const memoizedEcidReference = memoize(() => ({}));
 
 const createIdentity = ({ config, logger, consent, eventManager }) => {
   const { orgId, idMigrationEnabled, thirdPartyCookiesEnabled } = config;
@@ -49,12 +53,16 @@ const createIdentity = ({ config, logger, consent, eventManager }) => {
     orgId,
     doesIdentityCookieExist
   });
+  const identityCookiePromiseReference = memoizedIdentityCookiePromiseReference(
+    orgId
+  );
   const ensureRequestHasIdentity = ensureRequestHasIdentityFactory({
     doesIdentityCookieExist,
     setDomainForInitialIdentityPayload,
     addEcidFromLegacyToPayload,
     awaitIdentityCookie,
-    logger
+    logger,
+    identityCookiePromiseReference
   });
   const processIdSyncs = processIdSyncsFactory({
     fireReferrerHideableImage,
@@ -63,13 +71,15 @@ const createIdentity = ({ config, logger, consent, eventManager }) => {
   const handleResponseForIdSyncs = handleResponseForIdSyncsFactory({
     processIdSyncs
   });
+  const ecidReference = memoizedEcidReference(orgId);
   return createComponent({
     addEcidQueryToEvent,
     customerIds,
     ensureRequestHasIdentity,
     createLegacyIdentityCookie: migration.createLegacyIdentityCookie,
     handleResponseForIdSyncs,
-    getEcidFromResponse
+    getEcidFromResponse,
+    ecidReference
   });
 };
 

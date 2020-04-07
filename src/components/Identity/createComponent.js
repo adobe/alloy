@@ -4,10 +4,9 @@ export default ({
   ensureRequestHasIdentity,
   createLegacyIdentityCookie,
   handleResponseForIdSyncs,
-  getEcidFromResponse
+  getEcidFromResponse,
+  ecidReference
 }) => {
-  let ecid;
-
   return {
     lifecycle: {
       // TODO: It would probably be best to query on the data collection payload level
@@ -21,13 +20,13 @@ export default ({
         return ensureRequestHasIdentity({ payload, onResponse });
       },
       onResponse({ response }) {
-        if (!ecid) {
-          ecid = getEcidFromResponse(response);
+        if (!ecidReference.value) {
+          ecidReference.value = getEcidFromResponse(response);
 
           // Only data collection calls will have an ECID in the response.
           // https://jira.corp.adobe.com/browse/EXEG-1234
-          if (ecid) {
-            createLegacyIdentityCookie(ecid);
+          if (ecidReference.value) {
+            createLegacyIdentityCookie(ecidReference.value);
           }
         }
 
@@ -42,8 +41,8 @@ export default ({
       },
       getEcid: {
         run() {
-          if (ecid) {
-            return ecid;
+          if (ecidReference.value) {
+            return ecidReference.value;
           }
 
           // TODO: Make request for ECID and return the ECID back to the customer.

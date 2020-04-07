@@ -21,6 +21,7 @@ describe("privacy:createComponent", () => {
   let consent;
   let sendSetConsentRequest;
   let validateSetConsentOptions;
+  let consentObjects;
   let component;
 
   beforeEach(() => {
@@ -32,6 +33,7 @@ describe("privacy:createComponent", () => {
     validateSetConsentOptions = jasmine
       .createSpy("validateSetConsentOptions")
       .and.callFake(options => options);
+    consentObjects = [consent];
   });
 
   const build = () => {
@@ -41,7 +43,8 @@ describe("privacy:createComponent", () => {
       defaultConsent,
       consent,
       sendSetConsentRequest,
-      validateSetConsentOptions
+      validateSetConsentOptions,
+      consentObjects
     });
   };
 

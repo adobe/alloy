@@ -40,8 +40,6 @@ export default () => ({
   edgeBasePath: string()
     .nonEmpty()
     .default(EDGE_BASE_PATH),
-  orgId: string()
-    .unique()
-    .required(),
+  orgId: string().required(),
   onBeforeEventSend: callback().default(noop)
 });

@@ -176,7 +176,7 @@ describe("createCoreConfigs", () => {
     expect(() => validator("", config3)).toThrowError();
   });
 
-  it("invalidates duplicate orgIds", () => {
+  it("allows duplicate orgIds", () => {
     const validator = objectOf(createCoreConfigs());
     const config1 = { configId: "a", orgId: "a" };
     const config2 = { configId: "b", orgId: "b" };
@@ -184,6 +184,6 @@ describe("createCoreConfigs", () => {
 
     validator(config1);
     validator(config2);
-    expect(() => validator("", config3)).toThrowError();
+    validator(config3);
   });
 });

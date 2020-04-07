@@ -10,13 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createTaskQueue, cookieJar } from "../../utils";
+import { createTaskQueue, cookieJar, memoize } from "../../utils";
 import createComponent from "./createComponent";
 import createConsentRequestPayload from "./createConsentRequestPayload";
 import readStoredConsentFactory from "./readStoredConsentFactory";
 import sendSetConsentRequestFactory from "./sendSetConsentRequestFactory";
 import parseConsentCookie from "./parseConsentCookie";
 import validateSetConsentOptions from "./validateSetConsentOptions";
+
+const memoizedTaskQueue = memoize(() => createTaskQueue());
+const memoizedConsentObjects = memoize(() => []);
 
 const createPrivacy = ({ config, consent, sendEdgeNetworkRequest }) => {
   const { orgId, defaultConsent } = config;
@@ -25,11 +28,13 @@ const createPrivacy = ({ config, consent, sendEdgeNetworkRequest }) => {
     orgId,
     cookieJar
   });
-  const taskQueue = createTaskQueue();
+  const taskQueue = memoizedTaskQueue(orgId);
   const sendSetConsentRequest = sendSetConsentRequestFactory({
     createConsentRequestPayload,
     sendEdgeNetworkRequest
   });
+  const consentObjects = memoizedConsentObjects(orgId);
+  consentObjects.push(consent);
 
   return createComponent({
     readStoredConsent,
@@ -37,7 +42,8 @@ const createPrivacy = ({ config, consent, sendEdgeNetworkRequest }) => {
     defaultConsent,
     consent,
     sendSetConsentRequest,
-    validateSetConsentOptions
+    validateSetConsentOptions,
+    consentObjects
   });
 };
 

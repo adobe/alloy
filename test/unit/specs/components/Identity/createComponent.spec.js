@@ -19,6 +19,7 @@ describe("Identity::createComponent", () => {
   let createLegacyIdentityCookie;
   let handleResponseForIdSyncs;
   let getEcidFromResponse;
+  let ecidReference;
   let component;
 
   beforeEach(() => {
@@ -30,13 +31,15 @@ describe("Identity::createComponent", () => {
     );
     handleResponseForIdSyncs = jasmine.createSpy("handleResponseForIdSyncs");
     getEcidFromResponse = jasmine.createSpy("getEcidFromResponse");
+    ecidReference = {};
     component = createComponent({
       addEcidQueryToEvent,
       customerIds,
       ensureRequestHasIdentity,
       createLegacyIdentityCookie,
       handleResponseForIdSyncs,
-      getEcidFromResponse
+      getEcidFromResponse,
+      ecidReference
     });
   });
 

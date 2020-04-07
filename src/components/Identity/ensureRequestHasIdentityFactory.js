@@ -16,9 +16,9 @@ export default ({
   setDomainForInitialIdentityPayload,
   addEcidFromLegacyToPayload,
   awaitIdentityCookie,
-  logger
+  logger,
+  identityCookiePromiseReference
 }) => {
-  let identityCookiePromise;
   /**
    * Ensures that if no identity cookie exists, we only let one request be
    * sent without an identity until its response returns. In the meantime,
@@ -32,13 +32,13 @@ export default ({
       return Promise.resolve();
     }
 
-    if (identityCookiePromise) {
+    if (identityCookiePromiseReference.value) {
       // We don't have an identity cookie, but the first request has
       // been sent to get it. We must wait for the response to the first
       // request to come back and a cookie set before we can let this
       // request go out.
       logger.log("Delaying request while retrieving ECID from server.");
-      return identityCookiePromise.then(() => {
+      return identityCookiePromiseReference.value.then(() => {
         logger.log("Resuming previously delayed request.");
       });
     }
@@ -48,7 +48,7 @@ export default ({
     // be sent in parallel, we'll let this request go out to fetch the
     // cookie, but we'll set up a promise so that future requests can
     // know when the cookie has been set.
-    identityCookiePromise = awaitIdentityCookie(onResponse);
+    identityCookiePromiseReference.value = awaitIdentityCookie(onResponse);
     setDomainForInitialIdentityPayload(payload);
     return addEcidFromLegacyToPayload(payload);
   };
