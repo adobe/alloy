@@ -12,7 +12,20 @@ governing permissions and limitations under the License.
 
 import { ID_THIRD_PARTY_DOMAIN } from "../../constants/domains";
 import apiVersion from "../../constants/apiVersion";
-import { createCallbackAggregator, noop, uuid, assign } from "../../utils";
+import {
+  createCallbackAggregator,
+  noop,
+  uuid,
+  assign,
+  isNil,
+  isNonEmptyArray
+} from "../../utils";
+
+const notNil = value => !isNil(value) || isNonEmptyArray(value);
+const merge = (acc, value) => {
+  return Array.isArray(value) ? value.reduce(merge, acc) : assign(acc, value);
+};
+const mergeValues = values => values.filter(notNil).reduce(merge, {});
 
 export default ({
   config,
@@ -99,13 +112,8 @@ export default ({
             processWarningsAndErrors(response);
             // Merges all returned objects from all `onResponse` callbacks into
             // a single object that can later be returned to the customer.
-            const lifecycleReturnValues = returnValues[0] || [];
-            const consumerReturnValues = returnValues[1] || [];
-            return assign(
-              {},
-              ...lifecycleReturnValues,
-              ...consumerReturnValues
-            );
+
+            return mergeValues(returnValues);
           });
       });
   };
