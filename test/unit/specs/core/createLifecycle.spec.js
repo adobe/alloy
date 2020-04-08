@@ -33,10 +33,16 @@ describe("createLifecycle", () => {
     });
   });
 
-  it("calls all callbacks for a given lifecycle method", () => {
+  fit("calls all callbacks for a given lifecycle method", () => {
     const callbacks = [
-      jasmine.createSpy().and.returnValue("valueFromCallback1"),
-      jasmine.createSpy().and.returnValue(Promise.resolve("valueFromCallback2"))
+      jasmine
+        .createSpy()
+        .and.returnValue({ returnValue1: "valueFromCallback1" }),
+      jasmine
+        .createSpy()
+        .and.returnValue(
+          Promise.resolve({ returnValue2: "valueFromCallback2" })
+        )
     ];
     const componentRegistry = {
       getLifecycleCallbacks(hookName) {
@@ -48,7 +54,9 @@ describe("createLifecycle", () => {
       callbacks.forEach(callback => {
         expect(callback).toHaveBeenCalledWith("arg1", "arg2");
       });
-      expect(result).toBeUndefined();
+      expect(result).toBeInstanceOf(Array);
+      expect(result[0].returnValue1).toEqual("valueFromCallback1");
+      expect(result[1].returnValue2).toEqual("valueFromCallback2");
     });
   });
 
