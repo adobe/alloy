@@ -17,12 +17,12 @@ describe("Personalization::actions::customCode", () => {
     delete window.someEvar123;
   });
 
-  it("should set custom code in container", () => {
+  it("should set content in container that has children", () => {
     const collect = jasmine.createSpy();
     const modules = initDomActionsModules(collect);
     const { customCode } = modules;
     const element = createNode("div", { class: "customCode" });
-    element.innerHTML = "foo";
+    element.innerHTML = `<div id="inner"></div>`;
     const elements = [element];
 
     appendNode(document.body, element);
@@ -37,17 +37,18 @@ describe("Personalization::actions::customCode", () => {
     const event = { elements };
 
     return customCode(settings, event).then(() => {
-      expect(elements[0].innerHTML).toEqual("<p>Hola!</p>");
+      expect(elements[0].innerHTML).toEqual(
+        `<p>Hola!</p><div id="inner"></div>`
+      );
       expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 
-  it("should execute inline JavaScript", () => {
+  it("should set content in container that has NO children", () => {
     const collect = jasmine.createSpy();
     const modules = initDomActionsModules(collect);
     const { customCode } = modules;
     const element = createNode("div", { class: "customCode" });
-    element.innerHTML = "foo";
     const elements = [element];
 
     appendNode(document.body, element);
@@ -56,41 +57,14 @@ describe("Personalization::actions::customCode", () => {
     const settings = {
       selector: ".customCode",
       prehidingSelector: ".customCode",
-      content: "<script>window.someEvar123 = 1;</script>",
+      content: "<p>Hola!</p>",
       meta
     };
     const event = { elements };
 
     return customCode(settings, event).then(() => {
+      expect(elements[0].innerHTML).toEqual(`<p>Hola!</p>`);
       expect(collect).toHaveBeenCalledWith(meta);
-      expect(window.someEvar123).toEqual(1);
-    });
-  });
-
-  it("should append custom code if the container is an HTML HEAD container", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
-    const { customCode } = modules;
-    const headElement = createNode("style", { class: "customCode" });
-    const elements = [headElement];
-
-    appendNode(document.head, headElement);
-
-    const meta = { a: 1 };
-    const settings = {
-      selector: "head",
-      prehidingSelector: "head",
-      content: `<link class="customCode" href="foo">`,
-      meta
-    };
-    const event = { elements };
-
-    return customCode(settings, event).then(() => {
-      expect(collect).toHaveBeenCalledWith(meta);
-
-      expect(document.head.innerHTML).toContain(
-        `<style class="customCode"></style><link class="customCode" href="foo">`
-      );
     });
   });
 });

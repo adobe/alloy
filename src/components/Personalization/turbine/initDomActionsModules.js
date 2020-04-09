@@ -24,14 +24,13 @@ import {
   prependHtml,
   insertHtmlAfter,
   insertHtmlBefore,
-  click,
-  customCode
+  click
 } from "../helper";
 
 export default (collect, store) => {
   return {
     setHtml: createAction(collect, setHtml),
-    customCode: createAction(collect, customCode),
+    customCode: createAction(collect, prependHtml),
     setText: createAction(collect, setText),
     setAttribute: createAction(collect, setAttributes),
     setImageSource: createAction(collect, swapImage),

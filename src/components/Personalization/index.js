@@ -87,7 +87,7 @@ const createCollect = eventManager => {
 
     mergeMeta(event, meta);
 
-    eventManager.sendEvent(event);
+    // eventManager.sendEvent(event);
   };
 };
 
