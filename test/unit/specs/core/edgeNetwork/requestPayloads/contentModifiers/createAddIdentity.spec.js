@@ -9,12 +9,14 @@ describe("createAddIdentity", () => {
       id: "ABC123"
     });
     expect(content).toEqual({
-      identityMap: {
-        IDNS: [
-          {
-            id: "ABC123"
-          }
-        ]
+      xdm: {
+        identityMap: {
+          IDNS: [
+            {
+              id: "ABC123"
+            }
+          ]
+        }
       }
     });
   });
@@ -28,35 +30,39 @@ describe("createAddIdentity", () => {
       id: "ABC456"
     });
     expect(content).toEqual({
-      identityMap: {
-        IDNS: [
-          {
-            id: "ABC123"
-          },
-          {
-            id: "ABC456"
-          }
-        ]
+      xdm: {
+        identityMap: {
+          IDNS: [
+            {
+              id: "ABC123"
+            },
+            {
+              id: "ABC456"
+            }
+          ]
+        }
       }
     });
     addIdentity("IDNS2", {
       id: "ABC456"
     });
     expect(content).toEqual({
-      identityMap: {
-        IDNS: [
-          {
-            id: "ABC123"
-          },
-          {
-            id: "ABC456"
-          }
-        ],
-        IDNS2: [
-          {
-            id: "ABC456"
-          }
-        ]
+      xdm: {
+        identityMap: {
+          IDNS: [
+            {
+              id: "ABC123"
+            },
+            {
+              id: "ABC456"
+            }
+          ],
+          IDNS2: [
+            {
+              id: "ABC456"
+            }
+          ]
+        }
       }
     });
   });

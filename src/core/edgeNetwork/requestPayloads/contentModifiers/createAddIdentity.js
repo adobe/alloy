@@ -11,9 +11,10 @@ governing permissions and limitations under the License.
 */
 export default content => {
   return (namespaceCode, identity) => {
-    content.identityMap = content.identityMap || {};
-    content.identityMap[namespaceCode] =
-      content.identityMap[namespaceCode] || [];
-    content.identityMap[namespaceCode].push(identity);
+    content.xdm = content.xdm || {};
+    content.xdm.identityMap = content.xdm.identityMap || {};
+    content.xdm.identityMap[namespaceCode] =
+      content.xdm.identityMap[namespaceCode] || [];
+    content.xdm.identityMap[namespaceCode].push(identity);
   };
 };

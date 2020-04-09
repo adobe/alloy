@@ -30,12 +30,14 @@ describe("createIdentityPayload", () => {
       id: "ABC123"
     });
     expect(payload.toJSON()).toEqual({
-      identityMap: {
-        IDNS: [
-          {
-            id: "ABC123"
-          }
-        ]
+      xdm: {
+        identityMap: {
+          IDNS: [
+            {
+              id: "ABC123"
+            }
+          ]
+        }
       },
       query: { identity: { fetch: ["ECID"] } }
     });
