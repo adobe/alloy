@@ -76,6 +76,10 @@
         }
       });
 
+      alloy("getEcid").then(id => {
+        console.log("Sandbox: Get Ecid command has completed.,", id);
+      });
+
       alloy("event", {
         viewStart: true,
         scopes: ["alloy-location-1", "alloy-location-2"],

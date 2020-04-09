@@ -29,12 +29,20 @@ import addEcidFromLegacyToPayloadFactory from "./addEcidFromLegacyToPayloadFacto
 import addEcidToPayload from "./addEcidToPayload";
 import awaitIdentityCookieFactory from "./awaitIdentityCookieFactory";
 import getEcidFromResponse from "./getEcidFromResponse";
+import createGetEcid from "./getEcid/createGetEcid";
 
-const createIdentity = ({ config, logger, consent, eventManager }) => {
+const createIdentity = ({
+  config,
+  logger,
+  consent,
+  eventManager,
+  sendEdgeNetworkRequest
+}) => {
   const { orgId, idMigrationEnabled, thirdPartyCookiesEnabled } = config;
   const customerIds = createCustomerIds({ eventManager, consent, logger });
   const migration = createMigration({ idMigrationEnabled, orgId, logger });
   const doesIdentityCookieExist = doesIdentityCookieExistFactory({ orgId });
+  const getEcid = createGetEcid({ sendEdgeNetworkRequest, consent });
   const setDomainForInitialIdentityPayload = setDomainForInitialIdentityPayloadFactory(
     {
       thirdPartyCookiesEnabled,
@@ -69,7 +77,8 @@ const createIdentity = ({ config, logger, consent, eventManager }) => {
     ensureRequestHasIdentity,
     createLegacyIdentityCookie: migration.createLegacyIdentityCookie,
     handleResponseForIdSyncs,
-    getEcidFromResponse
+    getEcidFromResponse,
+    getEcid
   });
 };
 

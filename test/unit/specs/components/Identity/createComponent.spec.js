@@ -20,7 +20,7 @@ describe("Identity::createComponent", () => {
   let handleResponseForIdSyncs;
   let getEcidFromResponse;
   let component;
-
+  let getEcid;
   beforeEach(() => {
     addEcidQueryToEvent = jasmine.createSpy("addEcidQueryToEvent");
     customerIds = jasmine.createSpyObj("customerIds", ["addToPayload", "sync"]);
@@ -30,13 +30,16 @@ describe("Identity::createComponent", () => {
     );
     handleResponseForIdSyncs = jasmine.createSpy("handleResponseForIdSyncs");
     getEcidFromResponse = jasmine.createSpy("getEcidFromResponse");
+    const getEcidPromise = Promise.resolve();
+    getEcid = jasmine.createSpy("getEcid").and.returnValue(getEcidPromise);
     component = createComponent({
       addEcidQueryToEvent,
       customerIds,
       ensureRequestHasIdentity,
       createLegacyIdentityCookie,
       handleResponseForIdSyncs,
-      getEcidFromResponse
+      getEcidFromResponse,
+      getEcid
     });
   });
 
@@ -99,4 +102,10 @@ describe("Identity::createComponent", () => {
     component.commands.setCustomerIds.run(ids);
     expect(customerIds.sync).toHaveBeenCalledWith(ids);
   });
+
+  it("getEcid command should make a request if no ecid value is available", () => {
+    component.commands.getEcid.run();
+    expect(getEcid).toHaveBeenCalled();
+  });
+  it("");
 });

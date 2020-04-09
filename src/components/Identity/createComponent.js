@@ -4,10 +4,10 @@ export default ({
   ensureRequestHasIdentity,
   createLegacyIdentityCookie,
   handleResponseForIdSyncs,
-  getEcidFromResponse
+  getEcidFromResponse,
+  getEcid
 }) => {
   let ecid;
-
   return {
     lifecycle: {
       // TODO: It would probably be best to query on the data collection payload level
@@ -55,7 +55,9 @@ export default ({
           // https://jira.corp.adobe.com/browse/EXEG-1234), that's fine.
           // Rather than trying to coordinate using the ECID from that request's
           // response, we'll just make our own request anyway.
-          return undefined;
+          return getEcid().then(() => {
+            return ecid || undefined;
+          });
         }
       }
     }
