@@ -1,4 +1,4 @@
-import createAddIdentity from "../../../../../../../src/core/edgeNetwork/requestPayloads/contentModifiers/createAddIdenity";
+import createAddIdentity from "../../../../../../../src/core/edgeNetwork/requestPayloads/contentModifiers/createAddIdentity";
 
 describe("createAddIdentity", () => {
   it("should return a function to add identity", () => {
