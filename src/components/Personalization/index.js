@@ -11,19 +11,14 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray, groupBy, values, assign } from "../../utils";
-import { string, arrayOf, objectOf } from "../../utils/validation";
+import { string } from "../../utils/validation";
 import { initDomActionsModules, executeActions } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
 import collectClicks from "./helper/clicks/collectClicks";
 import * as SCHEMAS from "../../constants/schemas";
 
 const DECISIONS_HANDLE = "personalization:decisions";
-const PAGE_WIDE_SCOPE = "page_wide_scope";
-const GET_DECISIONS_VALIDATOR = objectOf({
-  scopes: arrayOf(string().required())
-    .nonEmpty()
-    .required()
-}).required();
+const PAGE_WIDE_SCOPE = "__view__";
 const allSchemas = values(SCHEMAS);
 // This is used for Target VEC integration
 const isAuthoringMode = () => document.location.href.indexOf("mboxEdit") !== -1;
@@ -34,32 +29,27 @@ const mergeMeta = (event, meta) => {
 const mergeQuery = (event, details) => {
   event.mergeQuery({ personalization: { ...details } });
 };
+const isNotDomAction = item => item.schema !== SCHEMAS.DOM_ACTION;
 
-const storeDecisions = (storage, decisions) => {
-  if (!decisions) {
-    return;
-  }
+const filterDecisionsItemsBySchema = decisions => {
+  return decisions.reduce((acc, decision) => {
+    const { items = [] } = decision;
+    const decisionItems = items.filter(isNotDomAction);
 
-  const filteredDecisions = groupBy(
-    decisions,
-    decision => decision.scope || PAGE_WIDE_SCOPE
-  );
+    if (isNonEmptyArray(decisionItems)) {
+      const newDecision = {};
+      newDecision.id = decision.id;
 
-  Object.keys(filteredDecisions).forEach(scope => {
-    storage[scope] = filteredDecisions[scope];
-  });
-};
+      if (decision.scope) {
+        newDecision.scope = decision.scope;
+      }
 
-const filterDecisions = (storage, scopes) => {
-  const decisions = [];
-
-  scopes.forEach(scope => {
-    if (storage[scope]) {
-      decisions.push(...storage[scope]);
+      newDecision.items = decisionItems;
+      acc.push(newDecision);
     }
-  });
 
-  return decisions;
+    return acc;
+  }, []);
 };
 
 const buildActions = (decision, items) => {
@@ -87,8 +77,14 @@ const createCollect = eventManager => {
 
     mergeMeta(event, meta);
 
-    // eventManager.sendEvent(event);
+    eventManager.sendEvent(event);
   };
+};
+const hasScopes = scopes => {
+  return scopes.length > 0;
+};
+const isPersonalizationDisabled = (renderDecisionsEnabled, decisionsScopes) => {
+  return !renderDecisionsEnabled && !hasScopes(decisionsScopes);
 };
 
 const createPersonalization = ({ config, logger, eventManager }) => {
@@ -96,13 +92,27 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const authoringModeEnabled = isAuthoringMode();
   const collect = createCollect(eventManager);
   const storage = [];
-  const decisionsStorage = {};
   const store = value => storage.push(value);
   const modules = initDomActionsModules(collect, store);
 
   return {
     lifecycle: {
-      onBeforeEvent({ event, isViewStart, scopes = [] }) {
+      onBeforeEvent({
+        event,
+        renderDecisionsEnabled,
+        decisionsScopes = [],
+        onResponse,
+        onRequestFailure
+      }) {
+        onRequestFailure(() => {
+          showContainers();
+        });
+
+        if (
+          isPersonalizationDisabled(renderDecisionsEnabled, decisionsScopes)
+        ) {
+          return;
+        }
         if (authoringModeEnabled) {
           logger.warn("Rendering is disabled, authoring mode.");
 
@@ -110,59 +120,46 @@ const createPersonalization = ({ config, logger, eventManager }) => {
           mergeQuery(event, { enabled: false });
           return;
         }
-        const hasScopes = scopes.length > 0;
+        onResponse(({ response }) => {
+          const decisions = response.getPayloadsByType(DECISIONS_HANDLE);
+
+          if (renderDecisionsEnabled) {
+            executeDecisions(
+              decisions,
+              renderDecisionsEnabled,
+              modules,
+              logger
+            );
+            showContainers();
+            const filteredDecisions = filterDecisionsItemsBySchema(decisions);
+            return { decisions: filteredDecisions };
+          }
+
+          return { decisions };
+        });
+
         const queryDetails = {};
 
         // For viewStart we try to hide the personalization containers
-        if (isViewStart) {
+        if (renderDecisionsEnabled) {
           hideContainers(prehidingStyle);
+
+          if (!decisionsScopes.includes(PAGE_WIDE_SCOPE)) {
+            decisionsScopes.push(PAGE_WIDE_SCOPE);
+          }
         }
 
-        if (isViewStart || hasScopes) {
+        if (renderDecisionsEnabled || hasScopes(decisionsScopes)) {
           queryDetails.accepts = allSchemas;
-        }
-
-        if (hasScopes) {
-          queryDetails.scopes = scopes;
+          queryDetails.scopes = decisionsScopes;
         }
 
         mergeQuery(event, queryDetails);
-      },
-      onResponse({ response }) {
-        if (authoringModeEnabled) {
-          return undefined;
-        }
-
-        const decisions = response.getPayloadsByType(DECISIONS_HANDLE);
-
-        executeDecisions(decisions, modules, logger);
-
-        showContainers();
-
-        storeDecisions(decisionsStorage, decisions);
-
-        return { decisions };
-      },
-      onRequestFailure() {
-        showContainers();
       },
       onClick({ event, clickedElement }) {
         const merger = meta => mergeMeta(event, meta);
 
         collectClicks(merger, clickedElement, storage);
-      }
-    },
-
-    commands: {
-      getDecisions: {
-        optionsValidator: GET_DECISIONS_VALIDATOR,
-        run: options => {
-          const { scopes } = options;
-          // Cloning scopes to avoid changing input options
-          const localScopes = [...scopes];
-
-          return filterDecisions(decisionsStorage, localScopes);
-        }
       }
     }
   };

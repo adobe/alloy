@@ -48,7 +48,7 @@ export default ({
      */
     sendEvent(event, options = {}) {
       event.setLastChanceCallback(onBeforeEventSendWithLoggedExceptions);
-      const { isViewStart = false, scopes } = options;
+      const { renderDecisionsEnabled = false, decisionsScopes } = options;
       const payload = createDataCollectionRequestPayload();
 
       const onResponseCallbackAggregator = createCallbackAggregator();
@@ -57,8 +57,8 @@ export default ({
       return lifecycle
         .onBeforeEvent({
           event,
-          isViewStart,
-          scopes,
+          renderDecisionsEnabled,
+          decisionsScopes,
           payload,
           onResponse: onResponseCallbackAggregator.add,
           onRequestFailure: onRequestFailureCallbackAggregator.add

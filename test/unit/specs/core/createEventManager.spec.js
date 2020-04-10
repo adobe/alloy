@@ -80,7 +80,7 @@ describe("createEventManager", () => {
     it("allows other components to access event and pause the lifecycle", () => {
       const deferred = defer();
       const options = {
-        isViewStart: true
+        renderDecisionsEnabled: true
       };
       lifecycle.onBeforeEvent.and.returnValue(deferred.promise);
       eventManager.sendEvent(event, options);
@@ -88,8 +88,8 @@ describe("createEventManager", () => {
         .then(() => {
           expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith({
             event,
-            isViewStart: true,
-            scopes: undefined,
+            renderDecisionsEnabled: true,
+            decisionsScopes: undefined,
             payload: requestPayload,
             onResponse: jasmine.any(Function),
             onRequestFailure: jasmine.any(Function)

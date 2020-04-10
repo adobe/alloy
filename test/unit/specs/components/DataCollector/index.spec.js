@@ -50,7 +50,7 @@ describe("Event Command", () => {
     const xdm = { a: "b" };
     const data = { c: "d" };
     const options = {
-      viewStart: true,
+      renderDecisions: true,
       type: "test",
       xdm,
       data,
@@ -62,22 +62,23 @@ describe("Event Command", () => {
       expect(event.setUserXdm).toHaveBeenCalledWith(xdm);
       expect(event.setUserData).toHaveBeenCalledWith(data);
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
-        isViewStart: true
+        renderDecisionsEnabled: true,
+        decisionsScopes: []
       });
       expect(result).toEqual("sendEventResult");
     });
   });
 
-  it("sends event with scopes parameter when scopes is not empty", () => {
+  it("sends event with decisionsScopes parameter when decisionsScopes is not empty", () => {
     const options = {
-      viewStart: true,
-      scopes: ["Foo1", "Foo2"]
+      renderDecisions: true,
+      decisionsScopes: ["Foo1", "Foo2"]
     };
 
     return eventCommand.run(options).then(result => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
-        isViewStart: true,
-        scopes: ["Foo1", "Foo2"]
+        renderDecisionsEnabled: true,
+        decisionsScopes: ["Foo1", "Foo2"]
       });
       expect(result).toEqual("sendEventResult");
     });
@@ -89,10 +90,11 @@ describe("Event Command", () => {
     });
   });
 
-  it("sets isViewStart to false if viewStart is not defined", () => {
+  it("sets renderDecisionsEnabled to false if renderDecisions is not defined", () => {
     return eventCommand.run({}).then(() => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
-        isViewStart: false
+        renderDecisionsEnabled: false,
+        decisionsScopes: []
       });
     });
   });
