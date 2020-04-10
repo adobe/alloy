@@ -1,8 +1,6 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../helpers/networkLogger";
 import fixtureFactory from "../helpers/fixtureFactory";
-import alloyEvent from "../helpers/alloyEvent";
-import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
 
 const networkLogger = createNetworkLogger();
 
@@ -21,16 +19,17 @@ const setConsentToOut = ClientFunction(() => {
   return window.alloy("setConsent", { general: "out" });
 });
 
-const imsOrgId = "53A16ACB5CC1D3760A495C99@AdobeOrg";
-const configure = () => {
-  return alloyEvent("configure", {
-    configId: "9999999",
-    orgId: imsOrgId,
-    defaultConsent: { general: "pending" },
-    idMigrationEnabled: false,
-    ...debugEnabledConfig
-  });
-};
+const configure = ClientFunction(() => {
+  return {
+    promise: window.alloy("configure", {
+      configId: "9999999",
+      orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
+      defaultConsent: { general: "pending" },
+      idMigrationEnabled: false,
+      debugEnabled: true
+    })
+  };
+});
 
 test("C14409 - Consenting to no purposes should be persisted.", async () => {
   await configure();
