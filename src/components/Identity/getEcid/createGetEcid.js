@@ -14,12 +14,10 @@ import createIdentityPayload from "./createIdentityPayload";
 
 const identityPayload = createIdentityPayload();
 
-export default ({ sendEdgeNetworkRequest, consent }) => {
+export default ({ sendEdgeNetworkRequest }) => {
   return () =>
-    consent.awaitConsent().then(() =>
-      sendEdgeNetworkRequest({
-        payload: identityPayload,
-        action: "identity/acquire"
-      })
-    );
+    sendEdgeNetworkRequest({
+      payload: identityPayload,
+      action: "identity/acquire"
+    });
 };

@@ -78,7 +78,8 @@ const createIdentity = ({
     createLegacyIdentityCookie: migration.createLegacyIdentityCookie,
     handleResponseForIdSyncs,
     getEcidFromResponse,
-    getEcid
+    getEcid,
+    consent
   });
 };
 
