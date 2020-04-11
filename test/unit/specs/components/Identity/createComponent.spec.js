@@ -25,6 +25,7 @@ describe("Identity::createComponent", () => {
   let getEcid;
   let consentDeferred;
   let consent;
+  let getEcidPromise;
   beforeEach(() => {
     addEcidQueryToEvent = jasmine.createSpy("addEcidQueryToEvent");
     customerIds = jasmine.createSpyObj("customerIds", ["addToPayload", "sync"]);
@@ -34,12 +35,14 @@ describe("Identity::createComponent", () => {
     );
     handleResponseForIdSyncs = jasmine.createSpy("handleResponseForIdSyncs");
     getEcidFromResponse = jasmine.createSpy("getEcidFromResponse");
-    const getEcidPromise = Promise.resolve();
+    getEcidPromise = defer();
     consentDeferred = defer();
     consent = jasmine.createSpyObj("consent", {
       awaitConsent: consentDeferred.promise
     });
-    getEcid = jasmine.createSpy("getEcid").and.returnValue(getEcidPromise);
+    getEcid = jasmine
+      .createSpy("getEcid")
+      .and.returnValue(getEcidPromise.promise);
     component = createComponent({
       addEcidQueryToEvent,
       customerIds,
@@ -113,15 +116,28 @@ describe("Identity::createComponent", () => {
   });
 
   it("getEcid command should make a request when ecid is not available", () => {
-    component.commands.getEcid.run();
+    let ecid;
+    component.commands.getEcid.run().then(id => {
+      ecid = id;
+    });
+
     return flushPromiseChains()
       .then(() => {
         expect(getEcid).not.toHaveBeenCalled();
+        expect(ecid).toBe(undefined);
         consentDeferred.resolve();
         return flushPromiseChains();
       })
       .then(() => {
         expect(getEcid).toHaveBeenCalled();
+        getEcidFromResponse.and.returnValue("user@adobe");
+        const response = { type: "response" };
+        component.lifecycle.onResponse({ response });
+        getEcidPromise.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(ecid).toBe("user@adobe");
       });
   });
 
@@ -129,16 +145,20 @@ describe("Identity::createComponent", () => {
     getEcidFromResponse.and.returnValue("user@adobe");
     const response = { type: "response" };
     component.lifecycle.onResponse({ response });
-    component.lifecycle.onResponse({ response });
-    component.commands.getEcid.run();
+    let ecid;
+    component.commands.getEcid.run().then(id => {
+      ecid = id;
+    });
     return flushPromiseChains()
       .then(() => {
         expect(getEcid).not.toHaveBeenCalled();
+        expect(ecid).toBe(undefined);
         consentDeferred.resolve();
         return flushPromiseChains();
       })
       .then(() => {
         expect(getEcid).not.toHaveBeenCalled();
+        expect(ecid).toBe("user@adobe");
       });
   });
 });

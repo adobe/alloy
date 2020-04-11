@@ -43,7 +43,7 @@ export default ({
       },
       getEcid: {
         run() {
-          consent.awaitConsent().then(() => {
+          return consent.awaitConsent().then(() => {
             if (ecid) {
               return ecid;
             }
