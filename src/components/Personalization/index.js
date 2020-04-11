@@ -80,9 +80,8 @@ const createCollect = eventManager => {
     eventManager.sendEvent(event);
   };
 };
-const hasScopes = scopes => {
-  return scopes.length > 0;
-};
+const hasScopes = scopes => isNonEmptyArray(scopes);
+
 const isPersonalizationDisabled = (renderDecisionsEnabled, decisionsScopes) => {
   return !renderDecisionsEnabled && !hasScopes(decisionsScopes);
 };
