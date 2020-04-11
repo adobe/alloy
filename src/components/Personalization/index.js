@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray, groupBy, values, assign } from "../../utils";
+import { isNonEmptyArray, groupBy, values, assign, noop } from "../../utils";
 import { string } from "../../utils/validation";
 import { initDomActionsModules, executeActions } from "./turbine";
 import { hideContainers, showContainers } from "./flicker";
@@ -101,8 +101,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
         event,
         renderDecisionsEnabled,
         decisionsScopes = [],
-        onResponse,
-        onRequestFailure
+        onResponse = noop,
+        onRequestFailure = noop
       }) {
         onRequestFailure(() => {
           showContainers();
@@ -113,6 +113,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
         ) {
           return;
         }
+
         if (authoringModeEnabled) {
           logger.warn("Rendering is disabled, authoring mode.");
 
@@ -120,6 +121,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
           mergeQuery(event, { enabled: false });
           return;
         }
+
         onResponse(({ response }) => {
           const decisions = response.getPayloadsByType(DECISIONS_HANDLE);
 

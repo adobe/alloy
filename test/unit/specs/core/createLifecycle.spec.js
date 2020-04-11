@@ -33,7 +33,7 @@ describe("createLifecycle", () => {
     });
   });
 
-  fit("calls all callbacks for a given lifecycle method", () => {
+  it("calls all callbacks for a given lifecycle method", () => {
     const callbacks = [
       jasmine
         .createSpy()

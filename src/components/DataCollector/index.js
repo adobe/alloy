@@ -25,10 +25,10 @@ const createDataCollector = ({ eventManager, logger }) => {
           let { xdm } = options;
           const {
             data,
-            renderDecisions = false,
             documentUnloading = false,
             type,
             mergeId,
+            renderDecisions = false,
             decisionsScopes = []
           } = options;
           const event = eventManager.createEvent();

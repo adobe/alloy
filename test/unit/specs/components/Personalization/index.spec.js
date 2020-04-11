@@ -10,185 +10,94 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { defer } from "../../../../../src/utils";
 import createPersonalization from "../../../../../src/components/Personalization";
 import createConfig from "../../../../../src/core/config/createConfig";
 import {
-  NO_SCOPES_DECISIONS,
-  SAME_SCOPE_MULTIPLE_DECISIONS,
-  SCOPES_FOO1_FOO2_DECISIONS,
-  SCOPES_FOO1_FOO3_DECISIONS,
-  SCOPES_FOO4_FOO5_DECISIONS
+  PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
+  PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS,
+  SCOPES_FOO1_FOO2_DECISIONS
 } from "./responsesMock/eventResponses";
 
 describe("Personalization", () => {
   const config = createConfig({ prehidingStyle: "" });
-
   const logger = {
     log() {},
     warn() {}
   };
-
   const eventManager = {
     createEvent() {},
     sendEvent() {}
   };
 
-  it("expects getDecisions to return an array of decisions for the scopes provided", () => {
-    const scopes = ["Foo1", "Foo3"];
-    const response = {
-      getPayloadsByType() {
-        return SCOPES_FOO1_FOO2_DECISIONS;
-      }
-    };
-    const personalization = createPersonalization({
-      config,
-      logger,
-      eventManager
-    });
+  let event;
+  let response;
 
-    personalization.lifecycle.onResponse({ response });
-
-    const result = personalization.commands.getDecisions.run({ scopes });
-
-    expect(result.length).toEqual(1);
-    expect(result[0].scope).toEqual("Foo1");
+  beforeEach(() => {
+    event = jasmine.createSpyObj("event", ["mergeQuery"]);
+    response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
   });
 
-  it("expects getDecisions to return decisions for multiple scopes when storage is not overwritten by latest response", () => {
-    const scopes = ["Foo1", "Foo3"];
+  it("should return an array of decisions in lifecycle::onResponse for provided decisions scopes", () => {
+    const decisionsScopes = ["Foo1", "Foo3"];
 
-    const first = {
-      getPayloadsByType() {
-        return SCOPES_FOO1_FOO3_DECISIONS;
-      }
-    };
-    const second = {
-      getPayloadsByType() {
-        return SCOPES_FOO4_FOO5_DECISIONS;
-      }
-    };
+    response.getPayloadsByType.and.returnValue(SCOPES_FOO1_FOO2_DECISIONS);
+
     const personalization = createPersonalization({
       config,
       logger,
       eventManager
     });
-    personalization.lifecycle.onResponse({ response: first });
-    personalization.lifecycle.onResponse({ response: second });
 
-    const result = personalization.commands.getDecisions.run({ scopes });
+    const deferred = defer();
+    const onResponse = func => {
+      deferred.resolve(func({ response }));
+    };
 
-    expect(Array.isArray(result)).toBeTrue();
-    expect(result.length).toEqual(2);
+    personalization.lifecycle.onBeforeEvent({
+      event,
+      decisionsScopes,
+      onResponse
+    });
+
+    return expectAsync(deferred.promise).toBeResolvedTo({
+      decisions: SCOPES_FOO1_FOO2_DECISIONS
+    });
   });
 
-  it("expects getDecisions to return the most recent decision for the scope that was overwritten by the last response", () => {
-    const scopes = ["Foo1"];
-    const first = {
-      getPayloadsByType() {
-        return SCOPES_FOO1_FOO2_DECISIONS;
-      }
-    };
-    const second = {
-      getPayloadsByType() {
-        return SCOPES_FOO1_FOO3_DECISIONS;
-      }
-    };
+  it("should return an array of not rendered decisions in lifecycle::onResponse for provided decision scopes and the page wide scope", () => {
+    const renderDecisionsEnabled = true;
+    const decisionsScopes = ["Foo1", "Foo3"];
+    const decisions = SCOPES_FOO1_FOO2_DECISIONS.concat(
+      PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
+    );
+    response.getPayloadsByType.and.returnValue(decisions);
+
+    const expectedResponse = SCOPES_FOO1_FOO2_DECISIONS.concat(
+      PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS
+    );
     const personalization = createPersonalization({
       config,
       logger,
       eventManager
     });
 
-    personalization.lifecycle.onResponse({ response: first });
-    personalization.lifecycle.onResponse({ response: second });
+    const deferred = defer();
+    const onResponse = func => {
+      const result = func({ response });
 
-    const result = personalization.commands.getDecisions.run({ scopes });
-
-    expect(Array.isArray(result)).toBeTrue();
-    expect(result.length).toEqual(1);
-    expect(result[0].id).toEqual("TNT:ABC:ABC1");
-    expect(result[0].scope).toEqual(scopes[0]);
-  });
-
-  it("expects getDecisions to return empty array when there are no decisions for that specific scope in the storage", () => {
-    const scopes = ["Foo1", "Foo3"];
-    const response = {
-      getPayloadsByType() {
-        return NO_SCOPES_DECISIONS;
-      }
+      deferred.resolve(result);
     };
-    const personalization = createPersonalization({
-      config,
-      logger,
-      eventManager
-    });
-    personalization.lifecycle.onResponse({ response });
-    const result = personalization.commands.getDecisions.run({ scopes });
 
-    expect(Array.isArray(result)).toBeTrue();
-    expect(result.length).toEqual(0);
-  });
-
-  it("expects getDecisions to return empty array if the storage is empty", () => {
-    const scopes = ["Foo1", "Foo3"];
-
-    const response = {
-      getPayloadsByType() {
-        return [];
-      }
-    };
-    const personalization = createPersonalization({
-      config,
-      logger,
-      eventManager
+    personalization.lifecycle.onBeforeEvent({
+      event,
+      renderDecisionsEnabled,
+      decisionsScopes,
+      onResponse
     });
 
-    personalization.lifecycle.onResponse({ response });
-
-    const result = personalization.commands.getDecisions.run({ scopes });
-
-    expect(Array.isArray(result)).toBeTrue();
-    expect(result.length).toEqual(0);
-  });
-
-  it("expects getDecisions to return all decisions for a specific scope stored during multiple responses", () => {
-    const scopes = ["Foo5"];
-    const first = {
-      getPayloadsByType() {
-        return NO_SCOPES_DECISIONS;
-      }
-    };
-    const second = {
-      getPayloadsByType() {
-        return SAME_SCOPE_MULTIPLE_DECISIONS;
-      }
-    };
-    const personalization = createPersonalization({
-      config,
-      logger,
-      eventManager
+    return expectAsync(deferred.promise).toBeResolvedTo({
+      decisions: expectedResponse
     });
-
-    personalization.lifecycle.onResponse({ response: first });
-    personalization.lifecycle.onResponse({ response: second });
-
-    const result = personalization.commands.getDecisions.run({ scopes });
-
-    expect(Array.isArray(result)).toBeTrue();
-    expect(result.length).toEqual(2);
-    expect(result[0].id).toEqual("TNT:ABC:A4");
-    expect(result[1].id).toEqual("TNT:ABC:A5");
-  });
-
-  it("expects getDecisions to throw an error when options is missing", () => {
-    const personalization = createPersonalization({
-      config,
-      logger,
-      eventManager
-    });
-
-    expect(() =>
-      personalization.commands.getDecisions.validateOptions()
-    ).toThrow();
   });
 });
