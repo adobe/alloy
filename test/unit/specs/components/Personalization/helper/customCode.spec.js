@@ -22,7 +22,7 @@ describe("Personalization::actions::customCode", () => {
     const modules = initDomActionsModules(collect);
     const { customCode } = modules;
     const element = createNode("div", { class: "customCode" });
-    element.innerHTML = `<div id="inner"></div>`;
+    element.innerHTML = `<div id="inner1"></div><div id="inner2"></div>`;
     const elements = [element];
 
     appendNode(document.body, element);
@@ -38,7 +38,7 @@ describe("Personalization::actions::customCode", () => {
 
     return customCode(settings, event).then(() => {
       expect(elements[0].innerHTML).toEqual(
-        `<p>Hola!</p><div id="inner"></div>`
+        `<p>Hola!</p><div id="inner1"></div><div id="inner2"></div>`
       );
       expect(collect).toHaveBeenCalledWith(meta);
     });
@@ -57,13 +57,13 @@ describe("Personalization::actions::customCode", () => {
     const settings = {
       selector: ".customCode",
       prehidingSelector: ".customCode",
-      content: "<p>Hola!</p>",
+      content: "<p>Hola!</p><div>Hello</div>",
       meta
     };
     const event = { elements };
 
     return customCode(settings, event).then(() => {
-      expect(elements[0].innerHTML).toEqual(`<p>Hola!</p>`);
+      expect(elements[0].innerHTML).toEqual(`<p>Hola!</p><div>Hello</div>`);
       expect(collect).toHaveBeenCalledWith(meta);
     });
   });
