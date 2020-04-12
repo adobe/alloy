@@ -16,16 +16,10 @@ import {
   createCallbackAggregator,
   noop,
   uuid,
-  assign,
-  isNil,
-  isNonEmptyArray
+  merge,
+  flatMap,
+  identity
 } from "../../utils";
-
-const notNil = value => !isNil(value) || isNonEmptyArray(value);
-const merge = (acc, value) => {
-  return Array.isArray(value) ? value.reduce(merge, acc) : assign(acc, value);
-};
-const mergeValues = values => values.filter(notNil).reduce(merge, {});
 
 export default ({
   config,
@@ -112,8 +106,8 @@ export default ({
             processWarningsAndErrors(response);
             // Merges all returned objects from all `onResponse` callbacks into
             // a single object that can later be returned to the customer.
-
-            return mergeValues(returnValues);
+            const values = flatMap(returnValues, identity);
+            return merge(values);
           });
       });
   };

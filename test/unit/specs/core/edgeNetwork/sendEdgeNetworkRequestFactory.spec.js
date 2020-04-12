@@ -395,7 +395,7 @@ describe("sendEdgeNetworkRequestFactory", () => {
 
   it("returns the object from lifecycle::onBeforeRequest", () => {
     lifecycle.onBeforeRequest.and.callFake(({ onResponse }) => {
-      onResponse(() => ({ a: 1 }));
+      onResponse(() => [{ a: 1 }]);
       return Promise.resolve();
     });
 
@@ -405,7 +405,7 @@ describe("sendEdgeNetworkRequestFactory", () => {
   });
 
   it("returns the object from lifecycle::onResponse", () => {
-    lifecycle.onResponse.and.returnValue({ a: 1 });
+    lifecycle.onResponse.and.returnValue([{ a: 1 }]);
 
     return expectAsync(
       sendEdgeNetworkRequest({ payload, action })
@@ -414,14 +414,14 @@ describe("sendEdgeNetworkRequestFactory", () => {
 
   it("returns the merged object from  lifecycle::onBeforeRequest & lifecycle::onResponse", () => {
     lifecycle.onBeforeRequest.and.callFake(({ onResponse }) => {
-      onResponse(() => [{ a: 1 }, undefined, [], {}]);
+      onResponse(() => [{ a: 1 }, { b: 1 }, undefined]);
       return Promise.resolve();
     });
 
-    lifecycle.onResponse.and.returnValue({ b: 2 });
+    lifecycle.onResponse.and.returnValue([{ c: 2 }]);
 
     return expectAsync(
       sendEdgeNetworkRequest({ payload, action })
-    ).toBeResolvedTo({ a: 1, b: 2 });
+    ).toBeResolvedTo({ a: 1, b: 1, c: 2 });
   });
 });
