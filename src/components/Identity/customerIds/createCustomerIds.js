@@ -19,7 +19,7 @@ export default ({ eventManager, consent, logger }) => {
         if (!hashedId) {
           delete finalIds[idsToHash[index]];
           logger.warn(
-            `Unable to hash identity ${idsToHash[index]} due to lack of browser support.`
+            `Unable to hash identity ${idsToHash[index]} due to lack of browser support. Provided ${idsToHash[index]} will not be sent to Adobe Experience Cloud`
           );
         } else {
           finalIds[idsToHash[index]].id = convertBufferToHex(hashedId);
