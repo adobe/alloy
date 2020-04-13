@@ -9,18 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-import createRequestPayload from "./createRequestPayload";
-import createAddIdentity from "./contentModifiers/createAddIdentity";
-
-export default () => {
-  return createRequestPayload(content => {
-    return {
-      addIdentity: createAddIdentity(content),
-      addEvent(event) {
-        content.events = content.events || [];
-        content.events.push(event.toJSON());
-      }
-    };
-  });
+export default content => {
+  return (namespaceCode, identity) => {
+    content.xdm = content.xdm || {};
+    content.xdm.identityMap = content.xdm.identityMap || {};
+    content.xdm.identityMap[namespaceCode] =
+      content.xdm.identityMap[namespaceCode] || [];
+    content.xdm.identityMap[namespaceCode].push(identity);
+  };
 };

@@ -11,6 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import createComponent from "../../../../../src/components/Identity/createComponent";
+import { defer } from "../../../../../src/utils";
+import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("Identity::createComponent", () => {
   let addEcidQueryToEvent;
@@ -20,7 +22,10 @@ describe("Identity::createComponent", () => {
   let handleResponseForIdSyncs;
   let getEcidFromResponse;
   let component;
-
+  let getEcid;
+  let consentDeferred;
+  let consent;
+  let getEcidPromise;
   beforeEach(() => {
     addEcidQueryToEvent = jasmine.createSpy("addEcidQueryToEvent");
     customerIds = jasmine.createSpyObj("customerIds", ["addToPayload", "sync"]);
@@ -30,13 +35,23 @@ describe("Identity::createComponent", () => {
     );
     handleResponseForIdSyncs = jasmine.createSpy("handleResponseForIdSyncs");
     getEcidFromResponse = jasmine.createSpy("getEcidFromResponse");
+    getEcidPromise = defer();
+    consentDeferred = defer();
+    consent = jasmine.createSpyObj("consent", {
+      awaitConsent: consentDeferred.promise
+    });
+    getEcid = jasmine
+      .createSpy("getEcid")
+      .and.returnValue(getEcidPromise.promise);
     component = createComponent({
       addEcidQueryToEvent,
       customerIds,
       ensureRequestHasIdentity,
       createLegacyIdentityCookie,
       handleResponseForIdSyncs,
-      getEcidFromResponse
+      getEcidFromResponse,
+      getEcid,
+      consent
     });
   });
 
@@ -98,5 +113,52 @@ describe("Identity::createComponent", () => {
     const ids = { type: "customerIds" };
     component.commands.setCustomerIds.run(ids);
     expect(customerIds.sync).toHaveBeenCalledWith(ids);
+  });
+
+  it("getEcid command should make a request when ecid is not available", () => {
+    let ecid;
+    component.commands.getEcid.run().then(id => {
+      ecid = id;
+    });
+
+    return flushPromiseChains()
+      .then(() => {
+        expect(getEcid).not.toHaveBeenCalled();
+        expect(ecid).toBe(undefined);
+        consentDeferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(getEcid).toHaveBeenCalled();
+        getEcidFromResponse.and.returnValue("user@adobe");
+        const response = { type: "response" };
+        component.lifecycle.onResponse({ response });
+        getEcidPromise.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(ecid).toBe("user@adobe");
+      });
+  });
+
+  it("getEcid command should not make a request when ecid is available", () => {
+    getEcidFromResponse.and.returnValue("user@adobe");
+    const response = { type: "response" };
+    component.lifecycle.onResponse({ response });
+    let ecid;
+    component.commands.getEcid.run().then(id => {
+      ecid = id;
+    });
+    return flushPromiseChains()
+      .then(() => {
+        expect(getEcid).not.toHaveBeenCalled();
+        expect(ecid).toBe(undefined);
+        consentDeferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(getEcid).not.toHaveBeenCalled();
+        expect(ecid).toBe("user@adobe");
+      });
   });
 });
