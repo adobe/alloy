@@ -17,3 +17,4 @@ export const DIV = "DIV";
 export const STYLE = "STYLE";
 export const SCRIPT = "SCRIPT";
 export const SRC = "src";
+export const HEAD = "HEAD";
