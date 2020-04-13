@@ -152,7 +152,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
         if (renderDecisionsEnabled || hasScopes(decisionsScopes)) {
           queryDetails.accepts = allSchemas;
-          queryDetails.scopes = decisionsScopes;
+          queryDetails.decisionsScopes = decisionsScopes;
         }
 
         mergeQuery(event, queryDetails);
