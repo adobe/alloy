@@ -35,12 +35,6 @@ export default ({
     runOnResponseCallbacks = noop,
     runOnRequestFailureCallbacks = noop
   }) => {
-    const endpointDomain = payload.getUseIdThirdPartyDomain()
-      ? ID_THIRD_PARTY_DOMAIN
-      : edgeDomain;
-    const requestId = uuid();
-    const url = `https://${endpointDomain}/${edgeBasePath}/${apiVersion}/${action}?configId=${configId}&requestId=${requestId}`;
-
     const onResponseCallbackAggregator = createCallbackAggregator();
     onResponseCallbackAggregator.add(lifecycle.onResponse);
     onResponseCallbackAggregator.add(runOnResponseCallbacks);
@@ -49,8 +43,6 @@ export default ({
     onRequestFailureCallbackAggregator.add(lifecycle.onRequestFailure);
     onRequestFailureCallbackAggregator.add(runOnRequestFailureCallbacks);
 
-    cookieTransfer.cookiesToPayload(payload, endpointDomain);
-
     return lifecycle
       .onBeforeRequest({
         payload,
@@ -58,6 +50,12 @@ export default ({
         onRequestFailure: onRequestFailureCallbackAggregator.add
       })
       .then(() => {
+        const endpointDomain = payload.getUseIdThirdPartyDomain()
+          ? ID_THIRD_PARTY_DOMAIN
+          : edgeDomain;
+        const requestId = uuid();
+        const url = `https://${endpointDomain}/${edgeBasePath}/${apiVersion}/${action}?configId=${configId}&requestId=${requestId}`;
+        cookieTransfer.cookiesToPayload(payload, endpointDomain);
         return sendNetworkRequest({ payload, url, requestId });
       })
       .then(networkResponse => {
