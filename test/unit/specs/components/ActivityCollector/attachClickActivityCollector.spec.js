@@ -67,7 +67,6 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
         isEmpty: () => false
       };
     };
-    spyOn(eventManager, "sendEvent").and.callThrough();
     attachClickActivityCollector(cfg, eventManager, lifecycle);
     clickHandler({}).then(() => {
       expect(eventManager.sendEvent).toHaveBeenCalled();
@@ -78,6 +77,17 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
     attachClickActivityCollector(cfg, eventManager, lifecycle);
     clickHandler({}).then(() => {
       expect(eventManager.sendEvent).not.toHaveBeenCalled();
+    });
+  });
+  it("returns undefined", () => {
+    eventManager.createEvent = () => {
+      return {
+        isEmpty: () => false
+      };
+    };
+    attachClickActivityCollector(cfg, eventManager, lifecycle);
+    clickHandler({}).then(result => {
+      expect(result).toBe(undefined);
     });
   });
 });

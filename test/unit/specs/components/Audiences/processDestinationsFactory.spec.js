@@ -102,4 +102,19 @@ describe("Audiences::processDestinationsFactory", () => {
       );
     });
   });
+  it("doesn't return a value", () => {
+    const destinations = [
+      {
+        type: "url",
+        id: 2097728,
+        spec: {
+          url: "http://test.abc",
+          hideReferrer: true
+        }
+      }
+    ];
+    return expectAsync(processDestinations(destinations)).toBeResolvedTo(
+      undefined
+    );
+  });
 });

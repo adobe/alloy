@@ -70,6 +70,20 @@ describe("Identity::createCustomerIds", () => {
     ).toBeRejectedWithError("Consent rejected.");
   });
 
+  it("does not return values", () => {
+    consentDeferred.resolve();
+    const customerIds = createCustomerIds({ eventManager, consent, logger });
+
+    return expectAsync(
+      customerIds.sync({
+        crm: {
+          id: "1234",
+          authState: "ambiguous"
+        }
+      })
+    ).toBeResolvedTo(undefined);
+  });
+
   it("hashes identities as necessary and adds them to a payload when requested", () => {
     const ids = {
       Email_LC_SHA256: {

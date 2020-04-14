@@ -12,14 +12,7 @@ governing permissions and limitations under the License.
 
 import { ID_THIRD_PARTY_DOMAIN } from "../../constants/domains";
 import apiVersion from "../../constants/apiVersion";
-import {
-  createCallbackAggregator,
-  noop,
-  uuid,
-  merge,
-  flatMap,
-  identity
-} from "../../utils";
+import { createCallbackAggregator, noop, uuid, assign } from "../../utils";
 
 export default ({
   config,
@@ -106,8 +99,15 @@ export default ({
             processWarningsAndErrors(response);
             // Merges all returned objects from all `onResponse` callbacks into
             // a single object that can later be returned to the customer.
-            const values = flatMap(returnValues, identity);
-            return merge(values);
+            const lifecycleOnResponseReturnValues = returnValues.shift() || [];
+            const consumerOnResponseReturnValues = returnValues.shift() || [];
+            const lifecycleOnBeforeRequestReturnValues = returnValues;
+            return assign(
+              {},
+              ...lifecycleOnResponseReturnValues,
+              ...consumerOnResponseReturnValues,
+              ...lifecycleOnBeforeRequestReturnValues
+            );
           });
       });
   };
