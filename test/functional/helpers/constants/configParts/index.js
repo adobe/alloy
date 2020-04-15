@@ -10,6 +10,8 @@ import errorsEnabled from "./errorsEnabled";
 import errorsDisabled from "./errorsDisabled";
 import consentIn from "./consentIn";
 import consentPending from "./consentPending";
+import thirdPartyCookiesEnabled from "./thirdPartyCookiesEnabled";
+import thirdPartyCookiesDisabled from "./thirdPartyCookiesDisabled";
 
 const compose = (...objects) => Object.assign({}, ...objects);
 
@@ -26,5 +28,7 @@ export {
   errorsEnabled,
   errorsDisabled,
   consentIn,
-  consentPending
+  consentPending,
+  thirdPartyCookiesEnabled,
+  thirdPartyCookiesDisabled
 };

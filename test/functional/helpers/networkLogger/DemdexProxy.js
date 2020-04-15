@@ -38,6 +38,10 @@ class DemdexProxy extends RequestHook {
   async onRequest({ requestOptions }) {
     transformProdToInt(requestOptions);
   }
+
+  async onResponse() {
+    // Do nothing. TestCafe will throw an error if we don't provide this.
+  }
 }
 
 export default DemdexProxy;
