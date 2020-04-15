@@ -43,7 +43,7 @@ test("C14407 - Consenting to all purposes should be persisted.", async () => {
 
   // send alloy event
   const event1 = await alloyEvent({
-    viewStart: true
+    renderDecisions: true
   });
 
   // apply user consent

@@ -20,13 +20,13 @@ import { string, objectOf, boolean, arrayOf } from "../../utils/validation";
  */
 export default ({ options, logger }) => {
   const eventOptionsValidator = objectOf({
-    viewStart: boolean(),
     type: string(),
     xdm: objectOf({
       eventType: string()
     }),
     data: objectOf({}),
-    scopes: arrayOf(string())
+    renderDecisions: boolean(),
+    decisionScopes: arrayOf(string())
   }).required();
   const validatedOptions = eventOptionsValidator(options);
   const { type, xdm } = validatedOptions;

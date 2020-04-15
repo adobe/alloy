@@ -29,7 +29,7 @@ const createDataCollector = ({ eventManager, logger }) => {
             type,
             mergeId,
             renderDecisions = false,
-            decisionsScopes = []
+            decisionScopes = []
           } = options;
           const event = eventManager.createEvent();
 
@@ -52,11 +52,10 @@ const createDataCollector = ({ eventManager, logger }) => {
           event.setUserXdm(xdm);
           event.setUserData(data);
 
-          const details = {
-            renderDecisionsEnabled: renderDecisions,
-            decisionsScopes
-          };
-          return eventManager.sendEvent(event, details);
+          return eventManager.sendEvent(event, {
+            renderDecisions,
+            decisionScopes
+          });
         }
       }
     }

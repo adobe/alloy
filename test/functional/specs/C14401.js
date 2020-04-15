@@ -41,7 +41,7 @@ const setAmcvCookie = ClientFunction(() => {
 });
 
 const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("event", { viewStart: true });
+  return window.alloy("event", { renderDecisions: true });
 });
 
 test("Test C14401: When ID migration is disabled and no identity cookie is found but legacy AMCV cookie is found, the ECID will not be sent on the request", async () => {

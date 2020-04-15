@@ -62,23 +62,23 @@ describe("Event Command", () => {
       expect(event.setUserXdm).toHaveBeenCalledWith(xdm);
       expect(event.setUserData).toHaveBeenCalledWith(data);
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
-        renderDecisionsEnabled: true,
-        decisionsScopes: []
+        renderDecisions: true,
+        decisionScopes: []
       });
       expect(result).toEqual("sendEventResult");
     });
   });
 
-  it("sends event with decisionsScopes parameter when decisionsScopes is not empty", () => {
+  it("sends event with decisionScopes parameter when decisionScopes is not empty", () => {
     const options = {
       renderDecisions: true,
-      decisionsScopes: ["Foo1", "Foo2"]
+      decisionScopes: ["Foo1", "Foo2"]
     };
 
     return eventCommand.run(options).then(result => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
-        renderDecisionsEnabled: true,
-        decisionsScopes: ["Foo1", "Foo2"]
+        renderDecisions: true,
+        decisionScopes: ["Foo1", "Foo2"]
       });
       expect(result).toEqual("sendEventResult");
     });
@@ -90,11 +90,11 @@ describe("Event Command", () => {
     });
   });
 
-  it("sets renderDecisionsEnabled to false if renderDecisions is not defined", () => {
+  it("sets renderDecisions to false if renderDecisions is not defined", () => {
     return eventCommand.run({}).then(() => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
-        renderDecisionsEnabled: false,
-        decisionsScopes: []
+        renderDecisions: false,
+        decisionScopes: []
       });
     });
   });

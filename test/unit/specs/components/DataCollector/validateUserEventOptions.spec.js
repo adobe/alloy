@@ -16,9 +16,9 @@ describe("DataCollector::validateUserEventOptions", () => {
     [
       undefined,
       { xdm: [] },
-      { viewStart: "" },
+      { renderDecisions: "" },
       { data: [] },
-      { scopes: {} }
+      { decisionScopes: {} }
     ].forEach(options => {
       expect(() => {
         validateUserEventOptions({ options });
@@ -40,10 +40,10 @@ describe("DataCollector::validateUserEventOptions", () => {
       {},
       { xdm: { eventType: "test" } },
       { type: "test", xdm: { test: "" } },
-      { viewStart: true },
+      { renderDecisions: true },
       { data: { test: "" } },
-      { viewStart: true, data: { test: "" } },
-      { scopes: ["test"] }
+      { renderDecisions: true, data: { test: "" } },
+      { decisionScopes: ["test"] }
     ].forEach(options => {
       expect(() => {
         validateUserEventOptions({ options });

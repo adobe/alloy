@@ -80,10 +80,10 @@ const createCollect = eventManager => {
     eventManager.sendEvent(event);
   };
 };
-const hasScopes = scopes => isNonEmptyArray(scopes);
+const hasScopes = decisionScopes => isNonEmptyArray(decisionScopes);
 
-const isPersonalizationDisabled = (renderDecisionsEnabled, decisionsScopes) => {
-  return !renderDecisionsEnabled && !hasScopes(decisionsScopes);
+const isPersonalizationDisabled = (renderDecisions, decisionScopes) => {
+  return !renderDecisions && !hasScopes(decisionScopes);
 };
 
 const createPersonalization = ({ config, logger, eventManager }) => {
@@ -98,8 +98,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     lifecycle: {
       onBeforeEvent({
         event,
-        renderDecisionsEnabled,
-        decisionsScopes = [],
+        renderDecisions,
+        decisionScopes = [],
         onResponse = noop,
         onRequestFailure = noop
       }) {
@@ -107,9 +107,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
           showContainers();
         });
 
-        if (
-          isPersonalizationDisabled(renderDecisionsEnabled, decisionsScopes)
-        ) {
+        if (isPersonalizationDisabled(renderDecisions, decisionScopes)) {
           return;
         }
 
@@ -124,13 +122,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
         onResponse(({ response }) => {
           const decisions = response.getPayloadsByType(DECISIONS_HANDLE);
 
-          if (renderDecisionsEnabled) {
-            executeDecisions(
-              decisions,
-              renderDecisionsEnabled,
-              modules,
-              logger
-            );
+          if (renderDecisions) {
+            executeDecisions(decisions, renderDecisions, modules, logger);
             showContainers();
             const filteredDecisions = filterDecisionsItemsBySchema(decisions);
             return { decisions: filteredDecisions };
@@ -141,18 +134,18 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
         const queryDetails = {};
 
-        // For viewStart we try to hide the personalization containers
-        if (renderDecisionsEnabled) {
+        // For renderDecisions we try to hide the personalization containers
+        if (renderDecisions) {
           hideContainers(prehidingStyle);
 
-          if (!decisionsScopes.includes(PAGE_WIDE_SCOPE)) {
-            decisionsScopes.push(PAGE_WIDE_SCOPE);
+          if (!decisionScopes.includes(PAGE_WIDE_SCOPE)) {
+            decisionScopes.push(PAGE_WIDE_SCOPE);
           }
         }
 
-        if (renderDecisionsEnabled || hasScopes(decisionsScopes)) {
+        if (renderDecisions || hasScopes(decisionScopes)) {
           queryDetails.accepts = allSchemas;
-          queryDetails.decisionsScopes = decisionsScopes;
+          queryDetails.decisionScopes = decisionScopes;
         }
 
         mergeQuery(event, queryDetails);

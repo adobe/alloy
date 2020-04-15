@@ -36,7 +36,7 @@ test.meta({
 });
 
 const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("event", { viewStart: true });
+  return window.alloy("event", { renderDecisions: true });
 });
 
 const getDocumentCookie = ClientFunction(() => document.cookie);

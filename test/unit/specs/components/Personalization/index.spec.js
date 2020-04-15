@@ -38,8 +38,8 @@ describe("Personalization", () => {
     response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
   });
 
-  it("should return an array of decisions in lifecycle::onResponse for provided decisions scopes", () => {
-    const decisionsScopes = ["Foo1", "Foo3"];
+  it("should return an array of decisions in lifecycle::onResponse for provided decisions decisionScopes", () => {
+    const decisionScopes = ["Foo1", "Foo3"];
 
     response.getPayloadsByType.and.returnValue(SCOPES_FOO1_FOO2_DECISIONS);
 
@@ -56,7 +56,7 @@ describe("Personalization", () => {
 
     personalization.lifecycle.onBeforeEvent({
       event,
-      decisionsScopes,
+      decisionScopes,
       onResponse
     });
 
@@ -65,9 +65,9 @@ describe("Personalization", () => {
     });
   });
 
-  it("should return an array of not rendered decisions in lifecycle::onResponse for provided decision scopes and the page wide scope", () => {
-    const renderDecisionsEnabled = true;
-    const decisionsScopes = ["Foo1", "Foo3"];
+  it("should return an array of not rendered decisions in lifecycle::onResponse for provided decision decisionScopes and the page wide scope", () => {
+    const renderDecisions = true;
+    const decisionScopes = ["Foo1", "Foo3"];
     const decisions = SCOPES_FOO1_FOO2_DECISIONS.concat(
       PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
     );
@@ -91,8 +91,8 @@ describe("Personalization", () => {
 
     personalization.lifecycle.onBeforeEvent({
       event,
-      renderDecisionsEnabled,
-      decisionsScopes,
+      renderDecisions,
+      decisionScopes,
       onResponse
     });
 
