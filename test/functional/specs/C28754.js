@@ -2,10 +2,19 @@ import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../helpers/networkLogger";
 import { responseStatus } from "../helpers/assertions";
 import fixtureFactory from "../helpers/fixtureFactory";
-import baseConfig from "../helpers/constants/baseConfig";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 import createResponse from "../../../src/core/createResponse";
 import getResponseBody from "../helpers/networkLogger/getResponseBody";
+import {
+  compose,
+  orgMainConfigMain,
+  consentPending
+} from "../helpers/constants/configParts";
+
+const config = compose(
+  orgMainConfigMain,
+  consentPending
+);
 
 const networkLogger = createNetworkLogger();
 
@@ -26,10 +35,7 @@ const setConsentOut = ClientFunction(() => {
 });
 
 test("C28754 - Consenting to no purposes should result in no data handles in the response.", async () => {
-  await configureAlloyInstance("alloy", {
-    defaultConsent: { general: "pending" },
-    ...baseConfig
-  });
+  await configureAlloyInstance("alloy", config);
 
   // Revoke consent.
   await setConsentOut();

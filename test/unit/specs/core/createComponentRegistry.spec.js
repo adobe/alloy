@@ -75,32 +75,38 @@ describe("createComponentRegistry", () => {
 
     it("handles a command that throws an error", () => {
       const registry = createComponentRegistry();
+      const runSpy = jasmine.createSpy().and.throwError("thrownError");
       const component = {
         commands: {
-          perform: jasmine.createSpy().and.throwError("thrownError")
+          perform: {
+            run: runSpy
+          }
         }
       };
       registry.register("CompOne", component);
       const command = registry.getCommand("perform");
       expect(() => {
-        command("arg1", "arg2");
+        command.run("arg1", "arg2");
       }).toThrowError(commandErrorRegex);
-      expect(component.commands.perform).toHaveBeenCalledWith("arg1", "arg2");
+      expect(runSpy).toHaveBeenCalledWith("arg1", "arg2");
     });
 
     it("handles a command that returns a promise that gets rejected", () => {
       const registry = createComponentRegistry();
+      const runSpy = jasmine
+        .createSpy()
+        .and.returnValue(Promise.reject(new Error("rejectedPromiseError")));
       const component = {
         commands: {
-          perform: jasmine
-            .createSpy()
-            .and.returnValue(Promise.reject(new Error("rejectedPromiseError")))
+          perform: {
+            run: runSpy
+          }
         }
       };
       registry.register("CompOne", component);
       const command = registry.getCommand("perform");
-      const result = command("arg1", "arg2");
-      expect(component.commands.perform).toHaveBeenCalledWith("arg1", "arg2");
+      const result = command.run("arg1", "arg2");
+      expect(runSpy).toHaveBeenCalledWith("arg1", "arg2");
       return result.then(fail).catch(error => {
         expect(error).toEqual(jasmine.any(Error));
         expect(error.message).toMatch(commandErrorRegex);

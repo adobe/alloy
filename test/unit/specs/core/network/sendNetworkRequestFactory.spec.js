@@ -25,6 +25,7 @@ describe("sendNetworkRequestFactory", () => {
 
   let sendNetworkRequest;
   let networkStrategy;
+  let isRetryableHttpStatusCode;
 
   beforeEach(() => {
     logger = jasmine.createSpyObj("logger", ["log"]);
@@ -35,23 +36,18 @@ describe("sendNetworkRequestFactory", () => {
         body: responseBodyJson
       })
     );
+    isRetryableHttpStatusCode = jasmine
+      .createSpy("isRetryableHttpStatusCode")
+      .and.returnValue(false);
+
     sendNetworkRequest = sendNetworkRequestFactory({
       logger,
-      networkStrategy
+      networkStrategy,
+      isRetryableHttpStatusCode
     });
   });
 
-  it("sends the payload", () => {
-    return sendNetworkRequest({
-      payload,
-      url,
-      requestId
-    }).then(() => {
-      expect(networkStrategy.calls.argsFor(0)).toEqual([url, payloadJson]);
-    });
-  });
-
-  it("logs the request", () => {
+  it("sends the request", () => {
     return sendNetworkRequest({
       payload,
       url,
@@ -61,49 +57,60 @@ describe("sendNetworkRequestFactory", () => {
         jasmine.stringMatching(/^Request .+: Sending request.$/),
         payload
       );
+      expect(networkStrategy).toHaveBeenCalledWith(url, payloadJson);
     });
   });
 
-  it("logs the response with parsable body", () => {
+  it("handles a response with a JSON body", () => {
     return sendNetworkRequest({
       payload,
       url,
       requestId
-    }).then(() => {
+    }).then(response => {
       expect(logger.log).toHaveBeenCalledWith(
         jasmine.stringMatching(
           /^Request .+: Received response with status code 200 and response body:$/
         ),
         responseBody
       );
+      expect(response).toEqual({
+        statusCode: 200,
+        body: responseBodyJson,
+        parsedBody: responseBody
+      });
     });
   });
 
-  it("logs the response with non-parsable body", () => {
+  it("handles a response with a non-JSON body", () => {
     networkStrategy.and.returnValue(
       Promise.resolve({
-        status: 500,
-        body: "invalidbody"
+        status: 200,
+        body: "non-JSON body"
       })
     );
     return sendNetworkRequest({
       payload,
       url,
       requestId
-    }).then(() => {
+    }).then(response => {
       expect(logger.log).toHaveBeenCalledWith(
         jasmine.stringMatching(
-          /^Request .+: Received response with status code 500 and response body:$/
+          /^Request .+: Received response with status code 200 and response body:$/
         ),
-        "invalidbody"
+        "non-JSON body"
       );
+      expect(response).toEqual({
+        statusCode: 200,
+        body: "non-JSON body",
+        parsedBody: undefined
+      });
     });
   });
 
-  it("logs the response with no body", () => {
+  it("handles a response with an empty body", () => {
     networkStrategy.and.returnValue(
       Promise.resolve({
-        status: 500,
+        status: 200,
         body: ""
       })
     );
@@ -111,13 +118,18 @@ describe("sendNetworkRequestFactory", () => {
       payload,
       url,
       requestId
-    }).then(() => {
+    }).then(response => {
       expect(logger.log).toHaveBeenCalledWith(
         jasmine.stringMatching(
-          /^Request .+: Received response with status code 500 and no response body\.$/
+          /^Request .+: Received response with status code 200 and no response body\.$/
         ),
         ""
       );
+      expect(response).toEqual({
+        statusCode: 200,
+        body: "",
+        parsedBody: undefined
+      });
     });
   });
 
@@ -141,9 +153,8 @@ describe("sendNetworkRequestFactory", () => {
       payload,
       url,
       requestId
-    }).then(result => {
-      expect(result).toEqual({
-        success: true,
+    }).then(response => {
+      expect(response).toEqual({
         statusCode: 200,
         body: responseBodyJson,
         parsedBody: responseBody
@@ -151,126 +162,35 @@ describe("sendNetworkRequestFactory", () => {
     });
   });
 
-  it("resolves the promise for successful status and invalid json", () => {
-    networkStrategy.and.returnValue(
-      Promise.resolve({ status: 200, body: "invalidbody" })
-    );
+  it(`retries certain status codes until success`, () => {
+    isRetryableHttpStatusCode.and.returnValues(true, true, false);
     return sendNetworkRequest({
       payload,
       url,
       requestId
-    }).then(result => {
-      expect(result).toEqual({
-        success: false,
+    }).then(response => {
+      expect(response).toEqual({
         statusCode: 200,
-        body: "invalidbody",
-        parsedBody: undefined
-      });
-    });
-  });
-
-  it("resolves the promise for unsuccessful status and valid json", () => {
-    networkStrategy.and.returnValue(
-      Promise.resolve({ status: 500, body: responseBodyJson })
-    );
-    return sendNetworkRequest({
-      payload,
-      url,
-      requestId
-    }).then(result => {
-      expect(result).toEqual({
-        success: false,
-        statusCode: 500,
         body: responseBodyJson,
         parsedBody: responseBody
       });
+      expect(networkStrategy).toHaveBeenCalledTimes(3);
     });
   });
 
-  it("resolves the promise for unsuccessful status and invalid json", () => {
-    networkStrategy.and.returnValue(
-      Promise.resolve({ status: 500, body: "invalidbody" })
-    );
+  it(`retries certain status codes until max retries met`, () => {
+    isRetryableHttpStatusCode.and.returnValues(true, true, true);
     return sendNetworkRequest({
       payload,
       url,
       requestId
-    }).then(result => {
-      expect(result).toEqual({
-        success: false,
-        statusCode: 500,
-        body: "invalidbody",
-        parsedBody: undefined
+    }).then(response => {
+      expect(response).toEqual({
+        statusCode: 200,
+        body: responseBodyJson,
+        parsedBody: responseBody
       });
-    });
-  });
-
-  // Retryable failure status codes
-  [429, 500, 599].forEach(status => {
-    it(`retries requests for responses with status code ${status} until success`, () => {
-      const fn = networkStrategy.and.callFake(() => {
-        const result =
-          fn.calls.count() < 3
-            ? { status, body: "Server fault" }
-            : { status: 200, body: responseBodyJson };
-
-        return Promise.resolve(result);
-      });
-      return sendNetworkRequest({
-        payload,
-        url,
-        requestId
-      }).then(() => {
-        expect(networkStrategy).toHaveBeenCalledTimes(3);
-      });
-    });
-
-    it(`retries requests for responses with status code ${status} until max retries met`, () => {
-      networkStrategy.and.returnValue(
-        Promise.resolve({ status, body: "Server fault" })
-      );
-      return sendNetworkRequest({
-        payload,
-        url,
-        requestId
-      }).then(() => {
-        expect(networkStrategy).toHaveBeenCalledTimes(4);
-      });
-    });
-  });
-
-  // Non-retryable failure status codes
-  [205, 400, 499].forEach(status => {
-    it(`does not retry requests for responses with status code ${status}`, () => {
-      networkStrategy.and.returnValue(
-        Promise.resolve({ status, body: "Server fault" })
-      );
-      return sendNetworkRequest({
-        payload,
-        url,
-        requestId
-      }).then(() => {
-        expect(networkStrategy).toHaveBeenCalledTimes(1);
-      });
-    });
-  });
-
-  // Success status codes
-  [200, 204].forEach(status => {
-    it(`does not retry requests for responses with status code ${status}`, () => {
-      networkStrategy.and.callFake(() => {
-        return Promise.resolve({
-          status,
-          body: responseBodyJson
-        });
-      });
-      return sendNetworkRequest({
-        payload,
-        url,
-        requestId
-      }).then(() => {
-        expect(networkStrategy).toHaveBeenCalledTimes(1);
-      });
+      expect(networkStrategy).toHaveBeenCalledTimes(4);
     });
   });
 });

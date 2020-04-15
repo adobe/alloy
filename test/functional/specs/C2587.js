@@ -1,7 +1,19 @@
 import { ClientFunction } from "testcafe";
 import fixtureFactory from "../helpers/fixtureFactory";
+
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
-import debugEnabledConfig from "../helpers/constants/debugEnabledConfig";
+import {
+  compose,
+  orgMainConfigMain,
+  debugEnabled,
+  errorsDisabled
+} from "../helpers/constants/configParts";
+
+const config = compose(
+  orgMainConfigMain,
+  debugEnabled,
+  errorsDisabled
+);
 
 fixtureFactory({
   title: "C2587: Throw error when executing command that doesn't exist."
@@ -18,10 +30,7 @@ const bogusCommand = ClientFunction(() => {
 });
 
 test.before(async () => {
-  await configureAlloyInstance("alloy", {
-    errorsEnabled: false,
-    ...debugEnabledConfig
-  });
+  await configureAlloyInstance("alloy", config);
   await bogusCommand();
 })(
   "Test C2587: Throw error when executing command that doesn't exist",

@@ -18,7 +18,10 @@ import awaitVisitorOptIn from "./visitorService/awaitVisitorOptIn";
 // Maybe default the domain in the cookieJar to apex while allowing overrides.
 const apexDomain = getApexDomain(window, cookieJar);
 
-export default ({ orgId, consent, logger }) => {
+/**
+ * Handles migration of ECID to and from Visitor.js.
+ */
+export default ({ idMigrationEnabled, orgId, logger }) => {
   const amcvCookieName = `AMCV_${orgId}`;
   const Visitor = window.Visitor;
   const doesVisitorExist =
@@ -46,31 +49,27 @@ export default ({ orgId, consent, logger }) => {
 
   return {
     getEcidFromLegacy() {
-      const ecid = getEcidFromLegacyCookies();
+      if (idMigrationEnabled) {
+        const ecid = getEcidFromLegacyCookies();
 
-      if (ecid) {
-        return Promise.resolve(ecid);
-      }
+        if (ecid) {
+          return Promise.resolve(ecid);
+        }
 
-      if (doesVisitorExist) {
-        return getVisitorECID({ logger, orgId, awaitVisitorOptIn });
+        if (doesVisitorExist) {
+          return getVisitorECID({ logger, orgId, awaitVisitorOptIn });
+        }
       }
       return Promise.resolve();
     },
-    createLegacyCookie(ecid) {
-      const amcvCookieValue = cookieJar.get(amcvCookieName);
-
-      if (amcvCookieValue) {
-        return Promise.resolve();
-      }
-
-      return consent.awaitConsent().then(() => {
+    createLegacyIdentityCookie(ecid) {
+      if (idMigrationEnabled && !cookieJar.get(amcvCookieName)) {
         cookieJar.set(amcvCookieName, `MCMID|${ecid}`, {
           domain: apexDomain,
           // Without `expires` this will be a session cookie.
           expires: 390 // days, or 13 months.
         });
-      });
+      }
     }
   };
 };

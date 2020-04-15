@@ -30,6 +30,7 @@ describe("sendEdgeNetworkRequestFactory", () => {
   let response;
   let createResponse;
   let processWarningsAndErrors;
+  let validateNetworkResponseIsWellFormed;
   let sendEdgeNetworkRequest;
   const payload = {
     getUseIdThirdPartyDomain() {
@@ -38,9 +39,84 @@ describe("sendEdgeNetworkRequestFactory", () => {
   };
   const action = "test-action";
 
+  /**
+   * Helper for testing handling of network request failures, particularly
+   * their interplay with lifecycle hooks.
+   */
+  const testRequestFailureHandling = ({
+    runOnRequestFailureCallbacks,
+    assertLifecycleCall
+  }) => {
+    const error = new Error("no connection");
+    sendNetworkRequest.and.returnValue(Promise.reject(error));
+    const errorHandler = jasmine.createSpy("errorHandler");
+    sendEdgeNetworkRequest({ payload, action, runOnRequestFailureCallbacks })
+      .then(fail)
+      .catch(errorHandler);
+    return flushPromiseChains()
+      .then(() => {
+        expect(errorHandler).not.toHaveBeenCalled();
+        assertLifecycleCall(error);
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(errorHandler).toHaveBeenCalledWith(error);
+      });
+  };
+
+  /**
+   * Helper for testing handling of malformed network responses, particularly
+   * their interplay with lifecycle hooks.
+   */
+  const testMalformedResponseHandling = ({
+    runOnRequestFailureCallbacks,
+    assertLifecycleCall
+  }) => {
+    const error = new Error("Unexpected response.");
+    validateNetworkResponseIsWellFormed.and.throwError(error);
+    const errorHandler = jasmine.createSpy("errorHandler");
+    sendEdgeNetworkRequest({ payload, action, runOnRequestFailureCallbacks })
+      .then(fail)
+      .catch(errorHandler);
+    return flushPromiseChains()
+      .then(() => {
+        expect(errorHandler).not.toHaveBeenCalled();
+        assertLifecycleCall(error);
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(errorHandler).toHaveBeenCalledWith(error);
+      });
+  };
+
+  /**
+   * Helper for testing handling of well-formed network responses, particularly
+   * their interplay with lifecycle hooks.
+   */
+  const testWellFormedResponseHandling = ({
+    runOnResponseCallbacks,
+    assertLifecycleCall
+  }) => {
+    const successHandler = jasmine.createSpy("successHandler");
+    sendEdgeNetworkRequest({ payload, action, runOnResponseCallbacks }).then(
+      successHandler
+    );
+    return flushPromiseChains()
+      .then(() => {
+        expect(successHandler).not.toHaveBeenCalled();
+        assertLifecycleCall();
+        expect(lifecycle.onResponse).toHaveBeenCalledWith({ response });
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(successHandler).toHaveBeenCalled();
+      });
+  };
+
   beforeEach(() => {
     logger = jasmine.createSpyObj("logger", ["log"]);
     lifecycle = jasmine.createSpyObj("lifecycle", {
+      onBeforeRequest: Promise.resolve(),
       onRequestFailure: Promise.resolve(),
       onResponse: Promise.resolve()
     });
@@ -49,9 +125,6 @@ describe("sendEdgeNetworkRequestFactory", () => {
       "responseToCookies"
     ]);
     networkResult = {
-      success: true,
-      statusCode: 200,
-      body: "{}",
       parsedBody: {}
     };
     sendNetworkRequest = jasmine
@@ -62,6 +135,9 @@ describe("sendEdgeNetworkRequestFactory", () => {
       .createSpy("createResponse")
       .and.returnValue(response);
     processWarningsAndErrors = jasmine.createSpy("processWarningsAndErrors");
+    validateNetworkResponseIsWellFormed = jasmine.createSpy(
+      "validateNetworkResponseIsWellFormed"
+    );
     sendEdgeNetworkRequest = sendEdgeNetworkRequestFactory({
       config,
       logger,
@@ -69,7 +145,8 @@ describe("sendEdgeNetworkRequestFactory", () => {
       cookieTransfer,
       sendNetworkRequest,
       createResponse,
-      processWarningsAndErrors
+      processWarningsAndErrors,
+      validateNetworkResponseIsWellFormed
     });
   });
 
@@ -119,34 +196,181 @@ describe("sendEdgeNetworkRequestFactory", () => {
     });
   });
 
-  it("calls lifecycle.onRequestFailure, waits for it to complete, then rejects promise if network request fails", () => {
+  it("calls lifecycle.onBeforeRequest and waits for it to complete before sending request", () => {
     const deferred = defer();
-    lifecycle.onRequestFailure.and.returnValue(deferred.promise);
-    sendNetworkRequest.and.returnValue(
-      Promise.reject(new Error("no connection"))
-    );
-    const errorHandler = jasmine.createSpy("errorHandler");
-    sendEdgeNetworkRequest({ payload, action })
-      .then(fail)
-      .catch(errorHandler);
+    lifecycle.onBeforeRequest.and.returnValue(deferred.promise);
+    const successHandler = jasmine.createSpy("successHandler");
+    sendEdgeNetworkRequest({ payload, action }).then(successHandler);
     return flushPromiseChains()
       .then(() => {
-        expect(lifecycle.onRequestFailure).toHaveBeenCalled();
-        expect(errorHandler).not.toHaveBeenCalled();
-        // We reject this deferred to simulate a component throwing an error
-        // during the lifecycle.onRequestFailure hook. This tests that the
-        // promise from sendEdgeNetworkRequest is rejected with the network
-        // error rather than the error coming from a component.
-        deferred.reject();
+        expect(lifecycle.onBeforeRequest).toHaveBeenCalledWith({
+          payload,
+          onResponse: jasmine.any(Function),
+          onRequestFailure: jasmine.any(Function)
+        });
+        expect(sendNetworkRequest).not.toHaveBeenCalled();
+        deferred.resolve();
         return flushPromiseChains();
       })
       .then(() => {
-        expect(errorHandler).toHaveBeenCalledWith(new Error("no connection"));
+        expect(successHandler).toHaveBeenCalled();
       });
   });
 
-  it("if a parsedBody exists, transfers cookies from response before lifecycle.onResponse", () => {
-    networkResult.parsedBody = {};
+  it("when network request fails, calls lifecycle.onRequestFailure, waits for it to complete, then rejects promise", () => {
+    const deferred = defer();
+    lifecycle.onRequestFailure.and.returnValue(deferred.promise);
+    return testRequestFailureHandling({
+      assertLifecycleCall(error) {
+        expect(lifecycle.onRequestFailure).toHaveBeenCalledWith({ error });
+        // We reject this deferred to simulate a component throwing an error
+        // during the lifecycle.onRequestFailure hook. This tests that the
+        // promise from sendEdgeNetworkRequest is still rejected with the
+        // network error rather than the error coming from a component.
+        deferred.reject();
+      }
+    });
+  });
+
+  it("when network request fails, calls lifecycle.onBeforeRequest's onRequestFailure callback, waits for it to complete, then rejects promise", () => {
+    const deferred = defer();
+    const requestFailureCallback = jasmine
+      .createSpy("requestFailureCallback")
+      .and.returnValue(deferred.promise);
+    lifecycle.onBeforeRequest.and.callFake(({ onRequestFailure }) => {
+      onRequestFailure(requestFailureCallback);
+      return Promise.resolve();
+    });
+    return testRequestFailureHandling({
+      assertLifecycleCall(error) {
+        expect(requestFailureCallback).toHaveBeenCalledWith({ error });
+        // We reject this deferred to simulate a component throwing an error
+        // during the lifecycle.onBeforeRequest's onRequestFailure callback.
+        // This tests that the promise from sendEdgeNetworkRequest is still
+        // rejected with the network error rather than the error coming from
+        // a component.
+        deferred.reject();
+      }
+    });
+  });
+
+  it("when network request fails, calls onRequestFailureCallbacks, waits for it to complete, then rejects promise", () => {
+    const deferred = defer();
+    const runOnRequestFailureCallbacks = jasmine
+      .createSpy("runOnRequestFailureCallbacks")
+      .and.returnValue(deferred.promise);
+    return testRequestFailureHandling({
+      runOnRequestFailureCallbacks,
+      assertLifecycleCall(error) {
+        expect(runOnRequestFailureCallbacks).toHaveBeenCalledWith({ error });
+        // We reject this deferred to simulate a component throwing an error
+        // during the runOnRequestFailureCallbacks call. This tests that the
+        // promise from sendEdgeNetworkRequest is still rejected with the
+        // network error rather than the error coming from a component.
+        deferred.reject();
+      }
+    });
+  });
+
+  it("when network response is malformed, calls lifecycle.onRequestFailure, waits for it to complete, then rejects promise", () => {
+    const deferred = defer();
+    lifecycle.onRequestFailure.and.returnValue(deferred.promise);
+
+    return testMalformedResponseHandling({
+      assertLifecycleCall(error) {
+        expect(lifecycle.onRequestFailure).toHaveBeenCalledWith({ error });
+        // We reject this deferred to simulate a component throwing an error
+        // during the lifecycle.onRequestFailure hook. This tests that the
+        // promise from sendEdgeNetworkRequest is still rejected with the
+        // network error rather than the error coming from a component.
+        deferred.reject();
+      }
+    });
+  });
+
+  it("when network response is malformed, calls lifecycle.onBeforeRequest's onRequestFailure callback, waits for it to complete, then rejects promise", () => {
+    const deferred = defer();
+    const requestFailureCallback = jasmine
+      .createSpy("requestFailureCallback")
+      .and.returnValue(deferred.promise);
+    lifecycle.onBeforeRequest.and.callFake(({ onRequestFailure }) => {
+      onRequestFailure(requestFailureCallback);
+      return Promise.resolve();
+    });
+    return testMalformedResponseHandling({
+      assertLifecycleCall(error) {
+        expect(requestFailureCallback).toHaveBeenCalledWith({ error });
+        // We reject this deferred to simulate a component throwing an error
+        // during the lifecycle.onBeforeRequest's onRequestFailure callback.
+        // This tests that the promise from sendEdgeNetworkRequest is still
+        // rejected with the network error rather than the error coming from
+        // a component.
+        deferred.reject();
+      }
+    });
+  });
+
+  it("when network response is malformed, calls runOnRequestFailureCallbacks, waits for it to complete, then rejects promise", () => {
+    const deferred = defer();
+    const runOnRequestFailureCallbacks = jasmine
+      .createSpy("runOnRequestFailureCallbacks")
+      .and.returnValue(deferred.promise);
+    return testMalformedResponseHandling({
+      runOnRequestFailureCallbacks,
+      assertLifecycleCall(error) {
+        expect(runOnRequestFailureCallbacks).toHaveBeenCalledWith({ error });
+        // We reject this deferred to simulate a component throwing an error
+        // during the runOnRequestFailureCallbacks call. This tests that the
+        // promise from sendEdgeNetworkRequest is still rejected with the
+        // network error rather than the error coming from a component.
+        deferred.reject();
+      }
+    });
+  });
+
+  it("when network response is well-formed, calls lifecycle.onResponse, waits for it to complete, then resolves promise", () => {
+    const deferred = defer();
+    lifecycle.onResponse.and.returnValue(deferred.promise);
+    return testWellFormedResponseHandling({
+      assertLifecycleCall() {
+        expect(lifecycle.onResponse).toHaveBeenCalledWith({ response });
+        deferred.resolve();
+      }
+    });
+  });
+
+  it("when network response is well-formed, calls lifecycle.onBeforeRequest's responseCallback callback, waits for it to complete, then resolves promise", () => {
+    const deferred = defer();
+    const responseCallback = jasmine
+      .createSpy("responseCallback")
+      .and.returnValue(deferred.promise);
+    lifecycle.onBeforeRequest.and.callFake(({ onResponse }) => {
+      onResponse(responseCallback);
+      return Promise.resolve();
+    });
+    return testWellFormedResponseHandling({
+      assertLifecycleCall() {
+        expect(responseCallback).toHaveBeenCalledWith({ response });
+        deferred.resolve();
+      }
+    });
+  });
+
+  it("when network response is well-formed, calls runOnResponseCallbacks, waits for it to complete, then resolves promise", () => {
+    const deferred = defer();
+    const runOnResponseCallbacks = jasmine
+      .createSpy("runOnResponseCallbacks")
+      .and.returnValue(deferred.promise);
+    return testWellFormedResponseHandling({
+      runOnResponseCallbacks,
+      assertLifecycleCall() {
+        expect(runOnResponseCallbacks).toHaveBeenCalledWith({ response });
+        deferred.resolve();
+      }
+    });
+  });
+
+  it("transfers cookies from response before lifecycle.onResponse", () => {
     return sendEdgeNetworkRequest({ payload, action }).then(() => {
       expect(cookieTransfer.responseToCookies).toHaveBeenCalledWith(response);
       assertFunctionCallOrder([
@@ -156,78 +380,9 @@ describe("sendEdgeNetworkRequestFactory", () => {
     });
   });
 
-  it("if a parsedBody does not exist, does not transfer cookies from response", () => {
-    networkResult.parsedBody = undefined;
-    return sendEdgeNetworkRequest({ payload, action }).then(() => {
-      expect(cookieTransfer.responseToCookies).not.toHaveBeenCalled();
-    });
-  });
-
-  it("calls lifecycle.onResponse and waits for it to complete if response is successful and has a parsed body", () => {
-    networkResult.success = true;
-    networkResult.parsedBody = {};
-    const deferred = defer();
-    lifecycle.onResponse.and.returnValue(deferred.promise);
-    const successHandler = jasmine.createSpy("successHandler");
-    sendEdgeNetworkRequest({ payload, action }).then(successHandler);
-    return flushPromiseChains()
-      .then(() => {
-        expect(lifecycle.onResponse).toHaveBeenCalledWith({ response });
-        expect(successHandler).not.toHaveBeenCalled();
-        deferred.resolve();
-        return flushPromiseChains();
-      })
-      .then(() => {
-        expect(successHandler).toHaveBeenCalled();
-      });
-  });
-
-  it("does not call lifecycle.onResponse if response is successful but does not have parsed body", () => {
-    networkResult.success = true;
-    networkResult.parsedBody = undefined;
-    return sendEdgeNetworkRequest({ payload, action }).then(() => {
-      expect(lifecycle.onResponse).not.toHaveBeenCalled();
-    });
-  });
-
-  it("calls lifecycle.onRequestFailure and waits for it to complete if response is unsuccessful", () => {
-    networkResult.success = false;
-    networkResult.statusCode = 500;
-    networkResult.body = "Server fault";
-    networkResult.parsedBody = undefined;
-    const deferred = defer();
-    lifecycle.onRequestFailure.and.returnValue(deferred.promise);
-    const errorHandler = jasmine.createSpy("errorHandler");
-    sendEdgeNetworkRequest({ payload, action })
-      .then(fail)
-      .catch(errorHandler);
-    return flushPromiseChains()
-      .then(() => {
-        expect(lifecycle.onRequestFailure).toHaveBeenCalled();
-        expect(errorHandler).not.toHaveBeenCalled();
-        deferred.resolve();
-        return flushPromiseChains();
-      })
-      .then(() => {
-        expect(errorHandler).toHaveBeenCalledWith(
-          new Error(
-            "Unexpected server response with status code 500 and response body: Server fault"
-          )
-        );
-      });
-  });
-
-  it("processes warnings and errors if the response has a parsed body", () => {
-    networkResult.parsedBody = {};
+  it("processes warnings and errors", () => {
     return sendEdgeNetworkRequest({ payload, action }).then(() => {
       expect(processWarningsAndErrors).toHaveBeenCalled();
-    });
-  });
-
-  it("does not processes warnings and errors if the response does not have a parsed body", () => {
-    networkResult.parsedBody = undefined;
-    return sendEdgeNetworkRequest({ payload, action }).then(() => {
-      expect(processWarningsAndErrors).not.toHaveBeenCalled();
     });
   });
 
@@ -236,27 +391,5 @@ describe("sendEdgeNetworkRequestFactory", () => {
     return expectAsync(
       sendEdgeNetworkRequest({ payload, action })
     ).toBeRejectedWithError("Invalid XDM");
-  });
-
-  it("rejects the promise if the response is unsuccessful and a body exists", () => {
-    networkResult.success = false;
-    networkResult.statusCode = 500;
-    networkResult.body = "Server fault";
-    return expectAsync(
-      sendEdgeNetworkRequest({ payload, action })
-    ).toBeRejectedWithError(
-      "Unexpected server response with status code 500 and response body: Server fault"
-    );
-  });
-
-  it("rejects the promise if the response is unsuccessful and a body does not exist", () => {
-    networkResult.success = false;
-    networkResult.statusCode = 500;
-    networkResult.body = "";
-    return expectAsync(
-      sendEdgeNetworkRequest({ payload, action })
-    ).toBeRejectedWithError(
-      "Unexpected server response with status code 500 and no response body."
-    );
   });
 });

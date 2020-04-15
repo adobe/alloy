@@ -1,6 +1,29 @@
 import { RequestLogger, t, ClientFunction } from "testcafe";
 import fixtureFactory from "../helpers/fixtureFactory";
 
+import {
+  compose,
+  orgMainConfigMain,
+  orgAltConfigAlt,
+  debugEnabled,
+  migrationDisabled
+} from "../helpers/constants/configParts";
+
+import { configId } from "../helpers/edgeInfo";
+
+import configureAlloyInstance from "../helpers/configureAlloyInstance";
+
+const mainConfig = compose(
+  orgMainConfigMain,
+  debugEnabled,
+  migrationDisabled
+);
+const altConfig = compose(
+  orgAltConfigAlt,
+  debugEnabled,
+  migrationDisabled
+);
+
 const networkLoggerConfig = {
   logRequestBody: true,
   stringifyRequestBody: true
@@ -9,10 +32,11 @@ const networkLogger1 = RequestLogger(
   /v1\/(interact|collect)\?configId=9999999/,
   networkLoggerConfig
 );
-const networkLogger2 = RequestLogger(
-  /v1\/(interact|collect)\?configId=60928f59-0406-4353-bfe3-22ed633c4f67/,
-  networkLoggerConfig
-);
+
+const networkLogger2 = RequestLogger(request => {
+  const regEx = new RegExp(`v1\\/(interact|collect)\\?configId=${configId}`);
+  return regEx.test(request.url);
+}, networkLoggerConfig);
 
 fixtureFactory({
   title: "C2579: Isolates multiple SDK instances",
@@ -36,28 +60,13 @@ const getIdentityCookieValue = request => {
   return identityEntry.value;
 };
 
-// TODO: Use a real config ID since 9999999 is going away.
-const instance1Config = ClientFunction(() =>
-  window.alloy("configure", {
-    configId: "9999999",
-    orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
-    edgeBasePath: window.edgeBasePath,
-    idMigrationEnabled: false,
-    debugEnabled: true
-  })
-);
+const instance1Config = () => configureAlloyInstance(altConfig);
+
 const instance1Event = ClientFunction(() =>
   window.alloy("event", { data: { key: "value" } })
 );
-const instance2Config = ClientFunction(() =>
-  window.instance2("configure", {
-    configId: "60928f59-0406-4353-bfe3-22ed633c4f67",
-    orgId: "334F60F35E1597910A495EC2@AdobeOrg",
-    edgeBasePath: window.edgeBasePath,
-    idMigrationEnabled: false,
-    debugEnabled: true
-  })
-);
+const instance2Config = () => configureAlloyInstance("instance2", mainConfig);
+
 const instance2Event = ClientFunction(() =>
   window.instance2("event", { data: { key: "value" } })
 );

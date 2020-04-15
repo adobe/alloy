@@ -17,9 +17,14 @@ test.meta({
   SEVERITY: "P0",
   TEST_RUN: "REGRESSION"
 });
-// execute an event command with no request sent
-const triggerAlloyEvent = ClientFunction(() => {
-  return { promise: window.alloy("event") };
+
+const triggerEventThenConsent = ClientFunction(() => {
+  return new Promise(resolve => {
+    const eventPromise = window.alloy("event", { xdm: { key: "value" } });
+    window.alloy("setConsent", { general: "in" }).then(() => {
+      eventPromise.then(resolve);
+    });
+  });
 });
 
 test("Test C2593: Event command consents to all purposes", async () => {
@@ -29,12 +34,8 @@ test("Test C2593: Event command consents to all purposes", async () => {
     ...environmentContextConfig
   });
   // trigger alloy event
-  const promise = (await triggerAlloyEvent()).promise;
+  await triggerEventThenConsent();
 
-  // set consent to in
-  await t.eval(() => window.alloy("setConsent", { general: "in" }));
-
-  await promise;
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 204);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 });

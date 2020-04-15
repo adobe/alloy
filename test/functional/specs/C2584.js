@@ -5,8 +5,6 @@ import testServerUrl from "../helpers/constants/testServerUrl";
 import baseConfig from "../helpers/constants/baseConfig";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 
-const url = `${testServerUrl}/alloyTestPage.html`;
-
 fixtureFactory({
   title: "C2584: Toggle logging through debug command"
 });
@@ -35,7 +33,7 @@ test("Test C2584: debug command with enable: true. getLibraryInfo. refresh. togg
   const newMessages = await logger.getNewMessages();
   await t.expect(newMessages).match(/Executing getLibraryInfo command/);
 
-  await t.navigateTo(url);
+  await t.navigateTo(testServerUrl);
   await configureAlloyInstance("alloy", baseConfig);
   await debugCommand(false);
   await getLibraryInfoCommand();

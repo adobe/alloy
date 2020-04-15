@@ -30,7 +30,7 @@ import {
 export default (collect, store) => {
   return {
     setHtml: createAction(collect, setHtml),
-    customCode: createAction(collect, setHtml),
+    customCode: createAction(collect, prependHtml),
     setText: createAction(collect, setText),
     setAttribute: createAction(collect, setAttributes),
     setImageSource: createAction(collect, swapImage),

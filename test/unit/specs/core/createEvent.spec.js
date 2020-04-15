@@ -142,15 +142,8 @@ describe("createEvent", () => {
     expect(event.getDocumentMayUnload()).toBeTrue();
   });
 
-  it("sets expectsResponse", () => {
-    expect(event.getExpectResponse()).toBeFalse();
-    event.expectResponse();
-    expect(event.getExpectResponse()).toBeTrue();
-  });
-
   it("reports whether the event is empty", () => {
     expect(event.isEmpty()).toBeTrue();
-    event.expectResponse();
     event.setUserData({ foo: "bar" });
     expect(event.isEmpty()).toBeFalse();
   });
