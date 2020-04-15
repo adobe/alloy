@@ -9,12 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-export const BODY = "BODY";
-export const IFRAME = "IFRAME";
-export const IMG = "IMG";
-export const DIV = "DIV";
-export const STYLE = "STYLE";
-export const SCRIPT = "SCRIPT";
-export const SRC = "src";
-export const HEAD = "HEAD";
+export default content => {
+  return (namespaceCode, identity) => {
+    content.xdm = content.xdm || {};
+    content.xdm.identityMap = content.xdm.identityMap || {};
+    content.xdm.identityMap[namespaceCode] =
+      content.xdm.identityMap[namespaceCode] || [];
+    content.xdm.identityMap[namespaceCode].push(identity);
+  };
+};

@@ -41,7 +41,11 @@ export default (container, html) => {
     const element = elements[i];
     const firstChild = getFirstChild(container);
 
-    insertBefore(firstChild, element);
+    if (firstChild) {
+      insertBefore(firstChild, element);
+    } else {
+      appendNode(container, element);
+    }
 
     i -= 1;
   }

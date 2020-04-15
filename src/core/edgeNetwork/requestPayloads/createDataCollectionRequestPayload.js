@@ -11,17 +11,12 @@ governing permissions and limitations under the License.
 */
 
 import createRequestPayload from "./createRequestPayload";
+import createAddIdentity from "./contentModifiers/createAddIdentity";
 
 export default () => {
   return createRequestPayload(content => {
     return {
-      addIdentity: (namespaceCode, identity) => {
-        content.xdm = content.xdm || {};
-        content.xdm.identityMap = content.xdm.identityMap || {};
-        content.xdm.identityMap[namespaceCode] =
-          content.xdm.identityMap[namespaceCode] || [];
-        content.xdm.identityMap[namespaceCode].push(identity);
-      },
+      addIdentity: createAddIdentity(content),
       addEvent(event) {
         content.events = content.events || [];
         content.events.push(event.toJSON());
