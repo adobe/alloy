@@ -393,31 +393,21 @@ describe("sendEdgeNetworkRequestFactory", () => {
     ).toBeRejectedWithError("Invalid XDM");
   });
 
-  it("returns the object from lifecycle::onBeforeRequest", () => {
-    lifecycle.onBeforeRequest.and.callFake(({ onResponse }) => {
-      onResponse(() => ({ a: 1 }));
-      onResponse(() => ({ b: 2 }));
-      onResponse(() => ({ c: 3 }));
-      onResponse(() => undefined);
-      return Promise.resolve();
-    });
+  it("returns the merged object from lifecycle::onResponse and runOnResponseCallbacks", () => {
+    const runOnResponseCallbacks = jasmine
+      .createSpy("runOnResponseCallbacks")
+      .and.returnValue(Promise.resolve([{ c: 2 }, { h: 9 }, undefined]));
 
-    return expectAsync(
-      sendEdgeNetworkRequest({ payload, action })
-    ).toBeResolvedTo({ a: 1, b: 2, c: 3 });
-  });
-
-  it("returns the object from lifecycle::onResponse", () => {
     lifecycle.onResponse.and.returnValue(
-      Promise.resolve([{ c: 2 }, { h: 9 }, undefined])
+      Promise.resolve([{ a: 2 }, { b: 8 }, undefined])
     );
 
     return expectAsync(
-      sendEdgeNetworkRequest({ payload, action })
-    ).toBeResolvedTo({ c: 2, h: 9 });
+      sendEdgeNetworkRequest({ payload, action, runOnResponseCallbacks })
+    ).toBeResolvedTo({ c: 2, h: 9, a: 2, b: 8 });
   });
 
-  it("returns the merged object from  lifecycle::onBeforeRequest & lifecycle::onResponse", () => {
+  it("returns the merged object from lifecycle::onBeforeRequest & lifecycle::onResponse", () => {
     lifecycle.onBeforeRequest.and.callFake(({ onResponse }) => {
       onResponse(() => ({ a: 1 }));
       onResponse(() => ({ b: 1 }));
