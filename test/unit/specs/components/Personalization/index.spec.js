@@ -51,7 +51,9 @@ describe("Personalization", () => {
 
     const deferred = defer();
     const onResponse = func => {
-      deferred.resolve(func({ response }));
+      const result = func({ response });
+
+      deferred.resolve(result);
     };
 
     personalization.lifecycle.onBeforeEvent({

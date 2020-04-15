@@ -5,7 +5,11 @@ const env = process.env.EDGE_ENV || "int";
 
 const path = require("path");
 
-const pageSnippetPath = path.join(__dirname, "..", "alloyPageSnippet/index.js");
+const pageSnippetPath = path.join(
+  __dirname,
+  "..",
+  "alloyPageSnippet/action.js"
+);
 const alloyLibraryPath = path.join(
   __dirname,
   "../../../../",

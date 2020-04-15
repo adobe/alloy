@@ -47,6 +47,7 @@ export const SCOPES_FOO1_FOO2_DECISIONS = [
 export const PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS = [
   {
     id: "TNT:activity1:experience1",
+    scope: "__view__",
     items: [
       {
         schema: "https://ns.adobe.com/personalization/dom-action",
@@ -88,6 +89,7 @@ export const PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS = [
 export const PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS = [
   {
     id: "TNT:activity1:experience1",
+    scope: "__view__",
     items: [
       {
         schema: "https://ns.adove.com/experience/item",

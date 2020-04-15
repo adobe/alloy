@@ -10,17 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "../../utils/validation";
-import createComponent from "./createComponent";
+import { isNonEmptyArray } from "../../utils";
 
-const createPersonalization = ({ config, logger, eventManager }) => {
-  return createComponent({ config, logger, eventManager });
+const AUTHORING_MODE_ENABLED =
+  document.location.href.indexOf("mboxEdit") !== -1;
+
+export const PAGE_WIDE_SCOPE = "__view__";
+export const hasScopes = scopes => isNonEmptyArray(scopes);
+export const isAuthoringModeEnabled = () => AUTHORING_MODE_ENABLED;
+
+export const isPersonalizationDisabled = ({
+  renderDecisions,
+  decisionScopes
+}) => {
+  if (renderDecisions) {
+    return false;
+  }
+
+  return !hasScopes(decisionScopes);
 };
-
-createPersonalization.namespace = "Personalization";
-
-createPersonalization.configValidators = {
-  prehidingStyle: string().nonEmpty()
-};
-
-export default createPersonalization;

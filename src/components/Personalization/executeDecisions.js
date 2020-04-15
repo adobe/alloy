@@ -10,17 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "../../utils/validation";
-import createComponent from "./createComponent";
+import { assign } from "../../utils";
+import { executeActions } from "./dom-actions";
 
-const createPersonalization = ({ config, logger, eventManager }) => {
-  return createComponent({ config, logger, eventManager });
+const buildActions = decision => {
+  const meta = { decisionId: decision.id };
+
+  return decision.items.map(item => assign({}, item.data, { meta }));
 };
 
-createPersonalization.namespace = "Personalization";
+export default (decisions, modules, logger) => {
+  decisions.forEach(decision => {
+    const actions = buildActions(decision);
 
-createPersonalization.configValidators = {
-  prehidingStyle: string().nonEmpty()
+    executeActions(actions, modules, logger);
+  });
 };
-
-export default createPersonalization;

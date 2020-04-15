@@ -1,25 +1,23 @@
-import { initDomActionsModules } from "./turbine";
+/*
+Copyright 2019 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+import { noop } from "../../utils";
+import { isAuthoringModeEnabled, isPersonalizationDisabled } from "./utils";
+import { initDomActionsModules } from "./dom-actions";
+import collectClicks from "./dom-actions/clicks/collectClicks";
 import { hideContainers, showContainers } from "./flicker";
-import collectClicks from "./helper/clicks/collectClicks";
-import { includes, noop } from "../../utils";
-import {
-  executeDecisions,
-  filterDecisionsItemsBySchema,
-  hasScopes,
-  allSchemas,
-  PAGE_WIDE_SCOPE,
-  getDecisions
-} from "./decisionsFactory";
-
-// This is used for Target VEC integration
-const isAuthoringMode = () => document.location.href.indexOf("mboxEdit") !== -1;
-const mergeMeta = (event, meta) => {
-  event.mergeMeta({ personalization: { ...meta } });
-};
-
-const mergeQuery = (event, details) => {
-  event.mergeQuery({ personalization: { ...details } });
-};
+import { mergeMeta, mergeQuery, createQueryDetails } from "./event";
+import extractDecisions from "./extractDecisions";
+import executeDecisions from "./executeDecisions";
 
 const createCollect = eventManager => {
   return meta => {
@@ -31,29 +29,8 @@ const createCollect = eventManager => {
   };
 };
 
-const isPersonalizationDisabled = (renderDecisions, decisionScopes) => {
-  return !renderDecisions && !hasScopes(decisionScopes);
-};
-
-const createQueryDetails = ({ renderDecisions, decisionScopes }) => {
-  const result = {};
-  const scopes = [...decisionScopes];
-
-  if (renderDecisions && !includes(scopes, PAGE_WIDE_SCOPE)) {
-    scopes.push(PAGE_WIDE_SCOPE);
-  }
-
-  if (renderDecisions || hasScopes(scopes)) {
-    result.accepts = allSchemas;
-    result.decisionScopes = scopes;
-  }
-
-  return result;
-};
-
 export default ({ config, logger, eventManager }) => {
   const { prehidingStyle } = config;
-  const authoringModeEnabled = isAuthoringMode();
   const collect = createCollect(eventManager);
   const storage = [];
   const store = value => storage.push(value);
@@ -68,15 +45,16 @@ export default ({ config, logger, eventManager }) => {
         onResponse = noop,
         onRequestFailure = noop
       }) {
-        if (isPersonalizationDisabled(renderDecisions, decisionScopes)) {
-          return;
-        }
-
-        if (authoringModeEnabled) {
+        if (isAuthoringModeEnabled()) {
           logger.warn("Rendering is disabled, authoring mode.");
 
           // If we are in authoring mode we disable personalization
           mergeQuery(event, { enabled: false });
+          return;
+        }
+
+        if (isPersonalizationDisabled({ renderDecisions, decisionScopes })) {
+          logger.info("Personalization is skipped.");
           return;
         }
 
@@ -91,16 +69,15 @@ export default ({ config, logger, eventManager }) => {
         );
 
         onResponse(({ response }) => {
-          const decisions = getDecisions(response);
+          const [renderableDecisions, decisions] = extractDecisions(response);
 
           if (renderDecisions) {
-            executeDecisions(decisions, renderDecisions, modules, logger);
+            executeDecisions(renderableDecisions, modules, logger);
             showContainers();
-            const filteredDecisions = filterDecisionsItemsBySchema(decisions);
-            return { decisions: filteredDecisions };
+            return { decisions };
           }
 
-          return { decisions };
+          return { decisions: [...renderableDecisions, ...decisions] };
         });
 
         onRequestFailure(() => {

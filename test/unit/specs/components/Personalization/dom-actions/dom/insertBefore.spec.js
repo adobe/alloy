@@ -10,17 +10,5 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "../../utils/validation";
-import createComponent from "./createComponent";
-
-const createPersonalization = ({ config, logger, eventManager }) => {
-  return createComponent({ config, logger, eventManager });
-};
-
-createPersonalization.namespace = "Personalization";
-
-createPersonalization.configValidators = {
-  prehidingStyle: string().nonEmpty()
-};
-
-export default createPersonalization;
+// eslint-disable-next-line no-unused-vars
+import insertBefore from "../../../../../../../src/components/Personalization/dom-actions/dom/insertBefore";
