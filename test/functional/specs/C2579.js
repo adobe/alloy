@@ -33,10 +33,10 @@ const networkLogger1 = RequestLogger(
   networkLoggerConfig
 );
 
-const networkLogger2 = RequestLogger(request => {
-  const regEx = new RegExp(`v1\\/(interact|collect)\\?configId=${configId}`);
-  return regEx.test(request.url);
-}, networkLoggerConfig);
+const networkLogger2 = RequestLogger(
+  new RegExp(`v1\\/(interact|collect)\\?configId=${configId}`),
+  networkLoggerConfig
+);
 
 fixtureFactory({
   title: "C2579: Isolates multiple SDK instances",
