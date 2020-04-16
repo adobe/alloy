@@ -1,5 +1,5 @@
 /*
-Copyright 2019 Adobe. All rights reserved.
+Copyright 2020 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -11,13 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import { noop } from "../../utils";
-import { isAuthoringModeEnabled, isPersonalizationDisabled } from "./utils";
+import { hasScopes, isAuthoringModeEnabled, getDecisionScopes } from "./utils";
 import { initDomActionsModules } from "./dom-actions";
 import collectClicks from "./dom-actions/clicks/collectClicks";
 import { hideContainers, showContainers } from "./flicker";
 import { mergeMeta, mergeQuery, createQueryDetails } from "./event";
-import extractDecisions from "./extractDecisions";
-import executeDecisions from "./executeDecisions";
 
 const createCollect = eventManager => {
   return meta => {
@@ -29,7 +27,7 @@ const createCollect = eventManager => {
   };
 };
 
-export default ({ config, logger, eventManager }) => {
+export default ({ config, logger, eventManager, onResponseHandler }) => {
   const { prehidingStyle } = config;
   const collect = createCollect(eventManager);
   const storage = [];
@@ -53,7 +51,9 @@ export default ({ config, logger, eventManager }) => {
           return;
         }
 
-        if (isPersonalizationDisabled({ renderDecisions, decisionScopes })) {
+        const scopes = getDecisionScopes(renderDecisions, decisionScopes);
+
+        if (!hasScopes(scopes)) {
           logger.info("Personalization is skipped.");
           return;
         }
@@ -63,22 +63,11 @@ export default ({ config, logger, eventManager }) => {
           hideContainers(prehidingStyle);
         }
 
-        mergeQuery(
-          event,
-          createQueryDetails({ renderDecisions, decisionScopes })
+        mergeQuery(event, createQueryDetails(scopes));
+
+        onResponse(({ response }) =>
+          onResponseHandler({ renderDecisions, response, modules, logger })
         );
-
-        onResponse(({ response }) => {
-          const [renderableDecisions, decisions] = extractDecisions(response);
-
-          if (renderDecisions) {
-            executeDecisions(renderableDecisions, modules, logger);
-            showContainers();
-            return { decisions };
-          }
-
-          return { decisions: [...renderableDecisions, ...decisions] };
-        });
 
         onRequestFailure(() => {
           showContainers();

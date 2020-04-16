@@ -10,22 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray } from "../../utils";
+import { includes, isNonEmptyArray } from "../../utils";
 
-const AUTHORING_MODE_ENABLED =
-  document.location.href.indexOf("mboxEdit") !== -1;
+const PAGE_WIDE_SCOPE = "__view__";
 
-export const PAGE_WIDE_SCOPE = "__view__";
 export const hasScopes = scopes => isNonEmptyArray(scopes);
-export const isAuthoringModeEnabled = () => AUTHORING_MODE_ENABLED;
 
-export const isPersonalizationDisabled = ({
-  renderDecisions,
-  decisionScopes
-}) => {
-  if (renderDecisions) {
-    return false;
+export const isAuthoringModeEnabled = (doc = document) =>
+  doc.location.href.indexOf("mboxEdit") !== -1;
+
+export const getDecisionScopes = (renderDecisions, decisionScopes) => {
+  const scopes = [...decisionScopes];
+
+  if (renderDecisions && !includes(scopes, PAGE_WIDE_SCOPE)) {
+    scopes.push(PAGE_WIDE_SCOPE);
   }
 
-  return !hasScopes(decisionScopes);
+  return scopes;
 };

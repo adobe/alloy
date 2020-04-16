@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import { assign } from "../../utils";
-import { executeActions } from "./dom-actions";
 
 const buildActions = decision => {
   const meta = { decisionId: decision.id };
@@ -19,7 +18,7 @@ const buildActions = decision => {
   return decision.items.map(item => assign({}, item.data, { meta }));
 };
 
-export default (decisions, modules, logger) => {
+export default (decisions, modules, logger, executeActions) => {
   decisions.forEach(decision => {
     const actions = buildActions(decision);
 

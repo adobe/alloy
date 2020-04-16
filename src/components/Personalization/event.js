@@ -10,8 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { includes, values } from "../../utils";
-import { PAGE_WIDE_SCOPE, hasScopes } from "./utils";
+import { values } from "../../utils";
 import * as SCHEMAS from "../../constants/schemas";
 
 const ALL_SCHEMAS = values(SCHEMAS);
@@ -24,18 +23,9 @@ export const mergeQuery = (event, details) => {
   event.mergeQuery({ personalization: { ...details } });
 };
 
-export const createQueryDetails = ({ renderDecisions, decisionScopes }) => {
-  const result = {};
-  const scopes = [...decisionScopes];
-
-  if (renderDecisions && !includes(scopes, PAGE_WIDE_SCOPE)) {
-    scopes.push(PAGE_WIDE_SCOPE);
-  }
-
-  if (renderDecisions || hasScopes(scopes)) {
-    result.accepts = ALL_SCHEMAS;
-    result.decisionScopes = scopes;
-  }
-
-  return result;
+export const createQueryDetails = ({ decisionScopes }) => {
+  return {
+    accepts: ALL_SCHEMAS,
+    decisionScopes
+  };
 };

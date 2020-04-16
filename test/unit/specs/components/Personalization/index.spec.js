@@ -14,7 +14,7 @@ import { defer } from "../../../../../src/utils";
 import createPersonalization from "../../../../../src/components/Personalization";
 import createConfig from "../../../../../src/core/config/createConfig";
 import {
-  PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
+  PAGE_WIDE_SCOPE_DECISIONS,
   PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS,
   SCOPES_FOO1_FOO2_DECISIONS
 } from "./responsesMock/eventResponses";
@@ -71,7 +71,7 @@ describe("Personalization", () => {
     const renderDecisions = true;
     const decisionScopes = ["Foo1", "Foo3"];
     const decisions = SCOPES_FOO1_FOO2_DECISIONS.concat(
-      PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
+      PAGE_WIDE_SCOPE_DECISIONS
     );
     response.getPayloadsByType.and.returnValue(decisions);
 

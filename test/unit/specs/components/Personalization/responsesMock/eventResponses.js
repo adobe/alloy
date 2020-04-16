@@ -44,7 +44,7 @@ export const SCOPES_FOO1_FOO2_DECISIONS = [
   }
 ];
 
-export const PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS = [
+export const PAGE_WIDE_SCOPE_DECISIONS = [
   {
     id: "TNT:activity1:experience1",
     scope: "__view__",
@@ -104,6 +104,34 @@ export const PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS = [
           id: "B",
           content: "Banner B ...."
         }
+      }
+    ]
+  }
+];
+export const PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS = [
+  {
+    id: "TNT:activity1:experience1",
+    scope: "__view__",
+    items: [
+      {
+        schema: "https://ns.adobe.com/personalization/dom-action",
+        data: [
+          {
+            type: "setHtml",
+            selector: "#foo",
+            content: "<div>Hola Mundo</div>"
+          }
+        ]
+      },
+      {
+        schema: "https://ns.adobe.com/personalization/dom-action",
+        data: [
+          {
+            type: "setHtml",
+            selector: "#foo2",
+            content: "<div>here is a target activity</div>"
+          }
+        ]
       }
     ]
   }

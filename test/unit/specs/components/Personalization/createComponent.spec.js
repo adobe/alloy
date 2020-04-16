@@ -1,5 +1,5 @@
 /*
-Copyright 2019 Adobe. All rights reserved.
+Copyright 2020 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -14,7 +14,7 @@ import { defer } from "../../../../../src/utils";
 import createComponent from "../../../../../src/components/Personalization/createComponent";
 import createConfig from "../../../../../src/core/config/createConfig";
 import {
-  PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
+  PAGE_WIDE_SCOPE_DECISIONS,
   PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS,
   SCOPES_FOO1_FOO2_DECISIONS
 } from "./responsesMock/eventResponses";
@@ -69,7 +69,7 @@ describe("Personalization", () => {
     const renderDecisions = true;
     const decisionScopes = ["Foo1", "Foo3"];
     const decisions = SCOPES_FOO1_FOO2_DECISIONS.concat(
-      PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
+      PAGE_WIDE_SCOPE_DECISIONS
     );
     response.getPayloadsByType.and.returnValue(decisions);
 

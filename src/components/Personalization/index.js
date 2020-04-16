@@ -12,9 +12,15 @@ governing permissions and limitations under the License.
 
 import { string } from "../../utils/validation";
 import createComponent from "./createComponent";
+import onResponseHandler from "./onResponseHandler";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
-  return createComponent({ config, logger, eventManager });
+  return createComponent({
+    config,
+    logger,
+    eventManager,
+    onResponseHandler
+  });
 };
 
 createPersonalization.namespace = "Personalization";
