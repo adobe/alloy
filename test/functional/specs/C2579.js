@@ -91,20 +91,4 @@ test("Test C2579: Separate ECIDs are used for multiple SDK instances.", async ()
   await t.expect(id2a).eql(undefined);
   await t.expect(id2b).notEql(undefined);
   await t.expect(id1b).notEql(id2b);
-
-  await t.eval(() => window.location.reload(true));
-
-  await instance1Config();
-  await instance2Config();
-  await instance1Event();
-  await instance2Event();
-
-  await t.expect(networkLogger1.requests.length).eql(3);
-  await t.expect(networkLogger2.requests.length).eql(3);
-
-  const id1c = getIdentityCookieValue(networkLogger1.requests[2]);
-  const id2c = getIdentityCookieValue(networkLogger2.requests[2]);
-
-  await t.expect(id1c).eql(id1b);
-  await t.expect(id2c).eql(id2b);
 });
