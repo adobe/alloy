@@ -42,16 +42,19 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
     attachClickActivityCollector(cfg, eventManager, lifecycle);
     expect(document.addEventListener).toHaveBeenCalled();
   });
+
   it("Does not attach click handler if clickCollectionEnabled is set to false", () => {
     cfg.clickCollectionEnabled = false;
     attachClickActivityCollector(cfg, eventManager, lifecycle);
     expect(document.addEventListener).not.toHaveBeenCalled();
   });
+
   it("Publishes onClick lifecycle events at clicks when clickCollectionEnabled is set to true", () => {
     attachClickActivityCollector(cfg, eventManager, lifecycle);
     clickHandler({});
     expect(lifecycle.onClick).toHaveBeenCalled();
   });
+
   it("Augments error that occurs inside onClick lifecycle", () => {
     lifecycle.onClick.and.returnValue(
       Promise.reject(new Error("Bad thing happened."))
@@ -61,6 +64,7 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
       "Failed to track click\nCaused by: Bad thing happened."
     );
   });
+
   it("Sends populated events", () => {
     eventManager.createEvent = () => {
       return {
@@ -69,15 +73,28 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
     };
     spyOn(eventManager, "sendEvent").and.callThrough();
     attachClickActivityCollector(cfg, eventManager, lifecycle);
-    clickHandler({}).then(() => {
+    return clickHandler({}).then(() => {
       expect(eventManager.sendEvent).toHaveBeenCalled();
     });
   });
+
   it("Does not send empty events", () => {
     spyOn(eventManager, "sendEvent").and.callThrough();
     attachClickActivityCollector(cfg, eventManager, lifecycle);
-    clickHandler({}).then(() => {
+    return clickHandler({}).then(() => {
       expect(eventManager.sendEvent).not.toHaveBeenCalled();
+    });
+  });
+
+  it("returns undefined", () => {
+    eventManager.createEvent = () => {
+      return {
+        isEmpty: () => false
+      };
+    };
+    attachClickActivityCollector(cfg, eventManager, lifecycle);
+    return clickHandler({}).then(result => {
+      expect(result).toBe(undefined);
     });
   });
 });

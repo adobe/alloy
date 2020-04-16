@@ -39,10 +39,7 @@ const createHook = (componentRegistry, hookName) => {
           resolve(callback(...args));
         });
       })
-    ).then(() => {
-      // Prevent potential callback return values from being exposed beyond
-      // this point. Return values from callbacks shouldn't be relied on.
-    });
+    );
   };
 };
 

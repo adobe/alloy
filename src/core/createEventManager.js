@@ -86,9 +86,6 @@ export default ({
             runOnRequestFailureCallbacks:
               onRequestFailureCallbackAggregator.call
           });
-        })
-        .then(() => {
-          // Don't return anything from the response to the customer...yet.
         });
     }
   };
