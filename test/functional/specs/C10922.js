@@ -33,19 +33,19 @@ const executeEventCommand = ClientFunction(() => {
   return window.alloy("event");
 });
 
-const idThirdPartyDomainRegex = /\.demdex\.net/;
+const demdexHostRegex = /\.demdex\.net/;
 
 const getHostForFirstRequest = () => {
   const firstRequest = networkLogger.edgeInteractEndpointLogs.requests[0];
   return firstRequest.request.headers.host;
 };
 
-const assertRequestWentToIdThirdPartyDomain = async () => {
-  await t.expect(getHostForFirstRequest()).match(idThirdPartyDomainRegex);
+const assertRequestWentToDemdex = async () => {
+  await t.expect(getHostForFirstRequest()).match(demdexHostRegex);
 };
 
-const assertRequestDidNotGoToIdThirdPartyDomain = async () => {
-  await t.expect(getHostForFirstRequest()).notMatch(idThirdPartyDomainRegex);
+const assertRequestDidNotGoToDemdex = async () => {
+  await t.expect(getHostForFirstRequest()).notMatch(demdexHostRegex);
 };
 
 // The names here match those listed in
@@ -62,7 +62,7 @@ const areThirdPartyCookiesSupportedByBrowserByDefault = () =>
   browsersSupportingThirdPartyCookiesByDefault.indexOf(t.browser.name) !== -1;
 
 fixtureFactory({
-  title: "C10922 - identification third-party domain usage",
+  title: "C10922 - demdex usage",
   requestHooks: [networkLogger.edgeInteractEndpointLogs]
 });
 
@@ -76,7 +76,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const permutationsUsingIdThirdPartyDomain = [
+const permutationsUsingDemdex = [
   {
     description: "third-party cookies enabled",
     config: compose(
@@ -96,9 +96,8 @@ const permutationsUsingIdThirdPartyDomain = [
     )
   },
   {
-    // If we have a identity to migrate, we still want to hit the
-    // third-party identification domain because the third-party identification
-    // domain will use our ECID to set the third-party cookie if the third-party
+    // If we have a identity to migrate, we still want to hit demdex because
+    // demdex will use our ECID to set the third-party cookie if the third-party
     // cookie isn't already set, which provides for better cross-domain
     // identification for future requests.
     description:
@@ -112,14 +111,14 @@ const permutationsUsingIdThirdPartyDomain = [
   }
 ];
 
-permutationsUsingIdThirdPartyDomain.forEach(permutation => {
-  test(`C10922 - identification third-party domain is used for first request when configured with ${permutation.description} and browser supports third-party cookies by default`, async () => {
+permutationsUsingDemdex.forEach(permutation => {
+  test(`C10922 - demdex is used for first request when configured with ${permutation.description} and browser supports third-party cookies by default`, async () => {
     await configureAlloyInstance("alloy", permutation.config);
     await executeEventCommand();
     if (areThirdPartyCookiesSupportedByBrowserByDefault()) {
-      await assertRequestWentToIdThirdPartyDomain();
+      await assertRequestWentToDemdex();
     } else {
-      await assertRequestDidNotGoToIdThirdPartyDomain();
+      await assertRequestDidNotGoToDemdex();
     }
     await networkLogger.clearLogs();
     await reloadPage();
@@ -127,11 +126,11 @@ permutationsUsingIdThirdPartyDomain.forEach(permutation => {
     await executeEventCommand();
     // The request should not have gone to the third-party domain
     // because we already have an identity cookie.
-    await assertRequestDidNotGoToIdThirdPartyDomain();
+    await assertRequestDidNotGoToDemdex();
   });
 });
 
-const permutationsNotUsingIdThirdPartyDomain = [
+const permutationsNotUsingDemdex = [
   {
     description: "third-party cookies disabled",
     config: compose(
@@ -162,10 +161,10 @@ const permutationsNotUsingIdThirdPartyDomain = [
   }
 ];
 
-permutationsNotUsingIdThirdPartyDomain.forEach(permutation => {
-  test(`C10922 - identification third-party domain is not used when configured with ${permutation.description}`, async () => {
+permutationsNotUsingDemdex.forEach(permutation => {
+  test(`C10922 - demdex is not used when configured with ${permutation.description}`, async () => {
     await configureAlloyInstance("alloy", permutation.config);
     await executeEventCommand();
-    await assertRequestDidNotGoToIdThirdPartyDomain();
+    await assertRequestDidNotGoToDemdex();
   });
 });

@@ -25,7 +25,7 @@ export default ({
       // supported by the browser, we will send the request to a
       // a third-party identification domain that allows for more accurate
       // identification of the user through use of a third-party cookie.
-      // If we have a identity to migrate, we still want to hit the
+      // If we have an identity to migrate, we still want to hit the
       // third-party identification domain because the third-party identification
       // domain will use our ECID to set the third-party cookie if the third-party
       // cookie isn't already set, which provides for better cross-domain
