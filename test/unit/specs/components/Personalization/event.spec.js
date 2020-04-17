@@ -11,13 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { createQueryDetails } from "../../../../../src/components/Personalization/event";
+import * as SCHEMAS from "../../../../../src/constants/schemas";
+import { values } from "../../../../../src/utils";
 
-const accepts = [
-  "https://ns.adobe.com/personalization/dom-action",
-  "https://ns.adobe.com/personalization/html-content-item",
-  "https://ns.adobe.com/personalization/json-content-item",
-  "https://ns.adobe.com/personalization/redirect-item"
-];
+const accepts = values(SCHEMAS);
 
 describe("Personalization::event", () => {
   it("create query details", () => {

@@ -24,7 +24,7 @@ import { mergeMeta, mergeQuery, createQueryDetails } from "./event";
 import createOnClickHandler from "./createOnClickHandler";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
-  const collect = createCollect(eventManager, mergeMeta);
+  const collect = createCollect({ eventManager, mergeMeta });
   const clickStorage = [];
   const modules = initDomActionsModules(collect, clickStorage.push);
   const executeDecisions = createExecuteDecisions({
