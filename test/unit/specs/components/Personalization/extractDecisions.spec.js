@@ -30,7 +30,11 @@ describe("Personalization::extractDecisions", () => {
       PAGE_WIDE_SCOPE_DECISIONS.concat(SCOPES_FOO1_FOO2_DECISIONS)
     );
 
-    const [domActionDecisions, decisions] = extractDecisions(response);
+    const [
+      domActionDecisions,
+      decisions,
+      unprocessedDecisions
+    ] = extractDecisions(response);
     expect(decisions).toEqual(
       PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS.concat(
         SCOPES_FOO1_FOO2_DECISIONS
@@ -38,6 +42,9 @@ describe("Personalization::extractDecisions", () => {
     );
     expect(domActionDecisions).toEqual(
       PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
+    );
+    expect(unprocessedDecisions).toEqual(
+      PAGE_WIDE_SCOPE_DECISIONS.concat(SCOPES_FOO1_FOO2_DECISIONS)
     );
   });
 });

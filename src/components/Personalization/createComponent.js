@@ -11,28 +11,21 @@ governing permissions and limitations under the License.
 */
 
 import { noop } from "../../utils";
-import { hasScopes, isAuthoringModeEnabled, getDecisionScopes } from "./utils";
-import { initDomActionsModules } from "./dom-actions";
-import collectClicks from "./dom-actions/clicks/collectClicks";
-import { hideContainers, showContainers } from "./flicker";
-import { mergeMeta, mergeQuery, createQueryDetails } from "./event";
 
-const createCollect = eventManager => {
-  return meta => {
-    const event = eventManager.createEvent();
-
-    mergeMeta(event, meta);
-
-    eventManager.sendEvent(event);
-  };
-};
-
-export default ({ config, logger, eventManager, onResponseHandler }) => {
+export default ({
+  config,
+  logger,
+  onResponseHandler,
+  onClickHandler,
+  hideContainers,
+  showContainers,
+  hasScopes,
+  isAuthoringModeEnabled,
+  getDecisionScopes,
+  mergeQuery,
+  createQueryDetails
+}) => {
   const { prehidingStyle } = config;
-  const collect = createCollect(eventManager);
-  const storage = [];
-  const store = value => storage.push(value);
-  const modules = initDomActionsModules(collect, store);
 
   return {
     lifecycle: {
@@ -66,7 +59,7 @@ export default ({ config, logger, eventManager, onResponseHandler }) => {
         mergeQuery(event, createQueryDetails(scopes));
 
         onResponse(({ response }) =>
-          onResponseHandler({ renderDecisions, response, modules, logger })
+          onResponseHandler({ renderDecisions, response })
         );
 
         onRequestFailure(() => {
@@ -75,9 +68,7 @@ export default ({ config, logger, eventManager, onResponseHandler }) => {
       },
 
       onClick({ event, clickedElement }) {
-        const merger = meta => mergeMeta(event, meta);
-
-        collectClicks(merger, clickedElement, storage);
+        onClickHandler({ event, clickedElement });
       }
     }
   };

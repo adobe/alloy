@@ -51,23 +51,19 @@ export const PAGE_WIDE_SCOPE_DECISIONS = [
     items: [
       {
         schema: "https://ns.adobe.com/personalization/dom-action",
-        data: [
-          {
-            type: "setHtml",
-            selector: "#foo",
-            content: "<div>Hola Mundo</div>"
-          }
-        ]
+        data: {
+          type: "setHtml",
+          selector: "#foo",
+          content: "<div>Hola Mundo</div>"
+        }
       },
       {
         schema: "https://ns.adobe.com/personalization/dom-action",
-        data: [
-          {
-            type: "setHtml",
-            selector: "#foo2",
-            content: "<div>here is a target activity</div>"
-          }
-        ]
+        data: {
+          type: "setHtml",
+          selector: "#foo2",
+          content: "<div>here is a target activity</div>"
+        }
       },
       {
         schema: "https://ns.adove.com/experience/item",
@@ -115,23 +111,19 @@ export const PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS = [
     items: [
       {
         schema: "https://ns.adobe.com/personalization/dom-action",
-        data: [
-          {
-            type: "setHtml",
-            selector: "#foo",
-            content: "<div>Hola Mundo</div>"
-          }
-        ]
+        data: {
+          type: "setHtml",
+          selector: "#foo",
+          content: "<div>Hola Mundo</div>"
+        }
       },
       {
         schema: "https://ns.adobe.com/personalization/dom-action",
-        data: [
-          {
-            type: "setHtml",
-            selector: "#foo2",
-            content: "<div>here is a target activity</div>"
-          }
-        ]
+        data: {
+          type: "setHtml",
+          selector: "#foo2",
+          content: "<div>here is a target activity</div>"
+        }
       }
     ]
   }
