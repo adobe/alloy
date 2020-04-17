@@ -161,7 +161,13 @@ describe("sendEdgeNetworkRequestFactory", () => {
   });
 
   it("transfers cookies to payload when sending to third-party domain", () => {
-    payload.getUseIdThirdPartyDomain = () => true;
+    payload.getUseIdThirdPartyDomain = () => false;
+    // Ensure that sendEdgeNetworkRequest waits until after
+    // lifecycle.onBeforeRequest to determine the endpoint domain.
+    lifecycle.onBeforeRequest.and.callFake(() => {
+      payload.getUseIdThirdPartyDomain = () => true;
+      return Promise.resolve();
+    });
     return sendEdgeNetworkRequest({ payload, action }).then(() => {
       expect(cookieTransfer.cookiesToPayload).toHaveBeenCalledWith(
         payload,
@@ -184,7 +190,13 @@ describe("sendEdgeNetworkRequestFactory", () => {
   });
 
   it("sends request to third-party domain", () => {
-    payload.getUseIdThirdPartyDomain = () => true;
+    payload.getUseIdThirdPartyDomain = () => false;
+    // Ensure that sendEdgeNetworkRequest waits until after
+    // lifecycle.onBeforeRequest to determine the endpoint domain.
+    lifecycle.onBeforeRequest.and.callFake(() => {
+      payload.getUseIdThirdPartyDomain = () => true;
+      return Promise.resolve();
+    });
     return sendEdgeNetworkRequest({ payload, action }).then(() => {
       expect(sendNetworkRequest).toHaveBeenCalledWith({
         payload,
