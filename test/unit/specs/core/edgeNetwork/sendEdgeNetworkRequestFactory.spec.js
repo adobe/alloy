@@ -404,4 +404,31 @@ describe("sendEdgeNetworkRequestFactory", () => {
       sendEdgeNetworkRequest({ payload, action })
     ).toBeRejectedWithError("Invalid XDM");
   });
+
+  it("returns the merged object from lifecycle::onResponse and runOnResponseCallbacks", () => {
+    const runOnResponseCallbacks = jasmine
+      .createSpy("runOnResponseCallbacks")
+      .and.returnValue(Promise.resolve([{ c: 2 }, { h: 9 }, undefined]));
+
+    lifecycle.onResponse.and.returnValue(
+      Promise.resolve([{ a: 2 }, { b: 8 }, undefined])
+    );
+
+    return expectAsync(
+      sendEdgeNetworkRequest({ payload, action, runOnResponseCallbacks })
+    ).toBeResolvedTo({ c: 2, h: 9, a: 2, b: 8 });
+  });
+
+  it("returns the merged object from lifecycle::onBeforeRequest & lifecycle::onResponse", () => {
+    lifecycle.onBeforeRequest.and.callFake(({ onResponse }) => {
+      onResponse(() => ({ a: 1 }));
+      onResponse(() => ({ b: 1 }));
+      onResponse(() => undefined);
+      return Promise.resolve();
+    });
+    lifecycle.onResponse.and.returnValue(Promise.resolve([{ c: 2 }]));
+    return expectAsync(
+      sendEdgeNetworkRequest({ payload, action })
+    ).toBeResolvedTo({ a: 1, b: 1, c: 2 });
+  });
 });

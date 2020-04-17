@@ -32,6 +32,5 @@
 <!--- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
 
 - [ ] I have signed the [Adobe Open Source CLA](https://opensource.adobe.com/cla.html) or I'm an Adobe employee.
-- [ ] I have submitted a [documentation](https://github.com/AdobeDocs/alloy-docs) pull request or no changes are needed.
 - [ ] I have made any necessary test changes and all tests pass.
 - [ ] I have run the Sandbox successfully.

@@ -130,7 +130,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
       },
       onResponse({ response }) {
         if (authoringModeEnabled) {
-          return;
+          return undefined;
         }
 
         const decisions = response.getPayloadsByType(DECISIONS_HANDLE);
@@ -140,6 +140,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
         showContainers();
 
         storeDecisions(decisionsStorage, decisions);
+
+        return { decisions };
       },
       onRequestFailure() {
         showContainers();

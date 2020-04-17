@@ -3,6 +3,7 @@ import {
   convertBufferToHex,
   convertStringToSha256Buffer,
   clone,
+  noop,
   isEmptyObject
 } from "../../../utils";
 
@@ -61,7 +62,9 @@ export default ({ eventManager, consent, logger }) => {
         const event = eventManager.createEvent();
         return consent.awaitConsent().then(() => {
           // FIXME: Konductor shouldn't require an event.
-          return eventManager.sendEvent(event);
+          // we're now returning an object at onResponse
+          // here we need to add 'then(noop)' because we are not returning a value
+          return eventManager.sendEvent(event).then(noop);
         });
       });
     }
