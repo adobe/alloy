@@ -28,7 +28,7 @@ import assign from "../assign";
  *
  * The validators also have methods to chain additional validation logic. For example, when you call
  * `string()` to start a validator chain, it returns a validator function but it also has methods
- * like `required` and `nonEmpty`. In action.js you can see that these methods are actually calling `chain`.
+ * like `required` and `nonEmpty`. In index.js you can see that these methods are actually calling `chain`.
  * Specifically in this function, the leftValidator is called first and then the return value of that is
  * sent to the rightValidator. For example, when calling `string().nonEmpty().required()` the following
  * chain is built up:
