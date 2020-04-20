@@ -4,9 +4,6 @@ language: node_js
 node_js: 'stable'
 install:
 - npm i -g npm
-cache:
-  directories:
-  - node_modules
 addons:
   sonarcloud:
     organization: adobeinc
