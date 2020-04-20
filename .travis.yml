@@ -16,7 +16,7 @@ services:
 jobs:
   include:
       script:
-      - npm install
+      - npm ci
       - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then npm run functional:cron:prod; fi
       - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run build:prod; fi
       - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run functional:ci; fi
