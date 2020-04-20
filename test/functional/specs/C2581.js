@@ -30,7 +30,7 @@ test.meta({
 
 const triggerAlloyEvents = ClientFunction(() => {
   return Promise.all([
-    window.alloy("event", { viewStart: true, data: { key: "value" } }),
+    window.alloy("event", { renderDecisions: true, data: { key: "value" } }),
     window.alloy("event", { data: { key: "value" } })
   ]);
 });

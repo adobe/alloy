@@ -9,7 +9,7 @@ function HomeWithHistory({ history }) {
         ? "organizationTwo"
         : "alloy";
       window[instanceName]("event", {
-        viewStart: true,
+        renderDecisions: true,
         xdm: {
           eventType: "page-view"
         }
@@ -21,7 +21,7 @@ function HomeWithHistory({ history }) {
   const getDecisions = () => {
     window
       .alloy("getDecisions", {
-        scopes: ["alloy-location-1", "alloy-location-2"]
+        decisionScopes: ["alloy-location-1", "alloy-location-2"]
       })
       .then((decisions = []) => {
         decisions.forEach(decision => {

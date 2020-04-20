@@ -26,31 +26,34 @@ describe("validation:anyOf", () => {
     anyOf(
       [
         objectOf({
-          viewStart: literal(true).required(),
-          scopes: arrayOf(string())
+          renderDecisions: literal(true).required(),
+          decisionScopes: arrayOf(string())
         }).required(),
         objectOf({
-          viewStart: boolean(),
-          scopes: arrayOf(string())
+          renderDecisions: boolean(),
+          decisionScopes: arrayOf(string())
             .nonEmpty()
             .required()
         }).required()
       ],
-      "either viewStart set to true or scopes set to a nonEmpty array"
+      "either renderDecisions set to true or decisionScopes set to a nonEmpty array"
     ),
     [
       { value: undefined, error: true },
       { value: null, error: true },
       { value: {}, error: true },
-      { value: { viewStart: true }, error: false },
-      { value: { viewStart: false }, error: true },
-      { value: { viewStart: "foo" }, error: true },
-      { value: { scopes: [] }, error: true },
-      { value: { scopes: ["a"] }, error: false },
-      { value: { scopes: "bar" }, error: true },
-      { value: { viewStart: true, scopes: ["a", "b"] }, error: false },
-      { value: { viewStart: true, scopes: "foo" }, error: true },
-      { value: { viewStart: "foo", scopes: ["a"] }, error: true }
+      { value: { renderDecisions: true }, error: false },
+      { value: { renderDecisions: false }, error: true },
+      { value: { renderDecisions: "foo" }, error: true },
+      { value: { decisionScopes: [] }, error: true },
+      { value: { decisionScopes: ["a"] }, error: false },
+      { value: { decisionScopes: "bar" }, error: true },
+      {
+        value: { renderDecisions: true, decisionScopes: ["a", "b"] },
+        error: false
+      },
+      { value: { renderDecisions: true, decisionScopes: "foo" }, error: true },
+      { value: { renderDecisions: "foo", decisionScopes: ["a"] }, error: true }
     ]
   );
 });
