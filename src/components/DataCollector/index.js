@@ -25,11 +25,11 @@ const createDataCollector = ({ eventManager, logger }) => {
           let { xdm } = options;
           const {
             data,
-            viewStart = false,
             documentUnloading = false,
             type,
             mergeId,
-            scopes = []
+            renderDecisions = false,
+            decisionScopes = []
           } = options;
           const event = eventManager.createEvent();
 
@@ -52,15 +52,10 @@ const createDataCollector = ({ eventManager, logger }) => {
           event.setUserXdm(xdm);
           event.setUserData(data);
 
-          const details = {
-            isViewStart: viewStart
-          };
-
-          if (scopes.length > 0) {
-            details.scopes = scopes;
-          }
-
-          return eventManager.sendEvent(event, details);
+          return eventManager.sendEvent(event, {
+            renderDecisions,
+            decisionScopes
+          });
         }
       }
     }

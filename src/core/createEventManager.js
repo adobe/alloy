@@ -41,14 +41,15 @@ export default ({
      * @param {Object} event This will be JSON stringified and used inside
      * the request payload.
      * @param {Object} [options]
-     * @param {boolean} [options.isViewStart=false] Whether the event is a
-     * result of the start of a view. This will be passed to components
+     * @param {boolean} [options.renderDecisions=false]
+     * @param {Array} [options.decisionScopes]
+     * This will be passed to components
      * so they can take appropriate action.
      * @returns {*}
      */
     sendEvent(event, options = {}) {
       event.setLastChanceCallback(onBeforeEventSendWithLoggedExceptions);
-      const { isViewStart = false, scopes } = options;
+      const { renderDecisions = false, decisionScopes } = options;
       const payload = createDataCollectionRequestPayload();
 
       const onResponseCallbackAggregator = createCallbackAggregator();
@@ -57,8 +58,8 @@ export default ({
       return lifecycle
         .onBeforeEvent({
           event,
-          isViewStart,
-          scopes,
+          renderDecisions,
+          decisionScopes,
           payload,
           onResponse: onResponseCallbackAggregator.add,
           onRequestFailure: onRequestFailureCallbackAggregator.add
