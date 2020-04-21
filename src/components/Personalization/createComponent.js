@@ -47,7 +47,6 @@ export default ({
         const scopes = getDecisionScopes(renderDecisions, decisionScopes);
 
         if (!hasScopes(scopes)) {
-          logger.info("Personalization is skipped.");
           return;
         }
 
