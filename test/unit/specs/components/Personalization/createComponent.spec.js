@@ -104,7 +104,6 @@ describe("Personalization", () => {
     });
 
     expect(isAuthoringModeEnabled).toHaveBeenCalled();
-    expect(logger.info).toHaveBeenCalledWith("Personalization is skipped.");
     expect(getDecisionScopes).toHaveBeenCalled();
     expect(hasScopes).toHaveBeenCalled();
 
