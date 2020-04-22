@@ -10,20 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign } from "../../utils";
+import { assign, flatMap } from "../../utils";
+
+const identity = item => item;
 
 const buildActions = decision => {
-  const meta = { decisionId: decision.id };
+  const meta = { id: decision.id, scope: decision.scope };
 
   return decision.items.map(item => assign({}, item.data, { meta }));
 };
 
-export default ({ modules, logger, executeActions }) => {
+export default ({ modules, logger, executeActions, collect }) => {
   return decisions => {
-    decisions.forEach(decision => {
+    const decisionPromise = decisions.map(decision => {
       const actions = buildActions(decision);
 
-      executeActions(actions, modules, logger);
+      return executeActions(actions, modules, logger);
+    });
+    return Promise.all(decisionPromise).then(meta => {
+      const metas = flatMap(meta, identity);
+      const decisionMetas = metas.map(item => item.meta);
+
+      collect({ decisions: decisionMetas });
     });
   };
 };

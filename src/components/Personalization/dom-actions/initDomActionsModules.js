@@ -27,23 +27,23 @@ import {
   click
 } from "./action";
 
-export default (collect, store) => {
+export default store => {
   return {
-    setHtml: createAction(collect, setHtml),
-    customCode: createAction(collect, prependHtml),
-    setText: createAction(collect, setText),
-    setAttribute: createAction(collect, setAttributes),
-    setImageSource: createAction(collect, swapImage),
-    setStyle: createAction(collect, setStyles),
-    move: createAction(collect, setStyles),
-    resize: createAction(collect, setStyles),
-    rearrange: createAction(collect, rearrangeChildren),
-    remove: createAction(collect, removeNode),
-    insertAfter: createAction(collect, insertHtmlAfter),
-    insertBefore: createAction(collect, insertHtmlBefore),
-    replaceHtml: createAction(collect, replaceHtml),
-    prependHtml: createAction(collect, prependHtml),
-    appendHtml: createAction(collect, appendHtml),
+    setHtml: createAction(setHtml),
+    customCode: createAction(prependHtml),
+    setText: createAction(setText),
+    setAttribute: createAction(setAttributes),
+    setImageSource: createAction(swapImage),
+    setStyle: createAction(setStyles),
+    move: createAction(setStyles),
+    resize: createAction(setStyles),
+    rearrange: createAction(rearrangeChildren),
+    remove: createAction(removeNode),
+    insertAfter: createAction(insertHtmlAfter),
+    insertBefore: createAction(insertHtmlBefore),
+    replaceHtml: createAction(replaceHtml),
+    prependHtml: createAction(prependHtml),
+    appendHtml: createAction(appendHtml),
     click: settings => click(settings, store)
   };
 };

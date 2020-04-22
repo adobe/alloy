@@ -41,16 +41,18 @@ const executeAction = (modules, type, args) => {
 };
 
 export default (actions, modules, logger) => {
-  actions.forEach(action => {
+  const actionPromises = actions.map(action => {
     const { type } = action;
 
-    try {
-      executeAction(modules, type, [action]);
-    } catch (e) {
-      logActionError(logger, action, e);
-      return;
-    }
-
-    logActionCompleted(logger, action);
+    return executeAction(modules, type, [action])
+      .then(result => {
+        logActionCompleted(logger, action);
+        return result;
+      })
+      .catch(error => {
+        logActionError(logger, action, error);
+        throw error;
+      });
   });
+  return Promise.all(actionPromises);
 };
