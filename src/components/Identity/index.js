@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 
 import {
   fireReferrerHideableImage,
-  areThirdPartyCookiesSupportedByDefault
+  areThirdPartyCookiesSupportedByDefault,
+  convertStringToSha256Buffer
 } from "../../utils";
 import processIdSyncsFactory from "./processIdSyncsFactory";
 import configValidators from "./configValidators";
@@ -39,7 +40,12 @@ const createIdentity = ({
   sendEdgeNetworkRequest
 }) => {
   const { orgId, idMigrationEnabled, thirdPartyCookiesEnabled } = config;
-  const customerIds = createCustomerIds({ eventManager, consent, logger });
+  const customerIds = createCustomerIds({
+    eventManager,
+    consent,
+    logger,
+    convertStringToSha256Buffer
+  });
   const migration = createMigration({ idMigrationEnabled, orgId, logger });
   const doesIdentityCookieExist = doesIdentityCookieExistFactory({ orgId });
   const getEcid = createGetEcid({ sendEdgeNetworkRequest, consent });

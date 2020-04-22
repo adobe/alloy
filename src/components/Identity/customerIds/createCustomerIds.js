@@ -1,13 +1,12 @@
 import { normalizeCustomerIds, validateCustomerIds } from "./util";
-import {
-  convertBufferToHex,
-  convertStringToSha256Buffer,
-  clone,
-  noop,
-  isEmptyObject
-} from "../../../utils";
+import { convertBufferToHex, clone, noop, isEmptyObject } from "../../../utils";
 
-export default ({ eventManager, consent, logger }) => {
+export default ({
+  eventManager,
+  consent,
+  logger,
+  convertStringToSha256Buffer
+}) => {
   const hash = (originalIds, normalizedIds) => {
     const idNames = Object.keys(normalizedIds);
     const idsToHash = idNames.filter(idName => originalIds[idName].hashEnabled);
@@ -19,7 +18,7 @@ export default ({ eventManager, consent, logger }) => {
         if (!hashedId) {
           delete finalIds[idsToHash[index]];
           logger.warn(
-            `Unable to hash identity ${idsToHash[index]} due to lack of browser support. Provided ${idsToHash[index]} will not be sent to Adobe Experience Cloud`
+            `Unable to hash identity ${idsToHash[index]} due to lack of browser support. Provided ${idsToHash[index]} will not be sent to Adobe Experience Cloud.`
           );
         } else {
           finalIds[idsToHash[index]].id = convertBufferToHex(hashedId);
