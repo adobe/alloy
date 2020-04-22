@@ -1,5 +1,8 @@
 import createCustomerIds from "../../../../../../src/components/Identity/customerIds/createCustomerIds";
-import { defer } from "../../../../../../src/utils";
+import {
+  defer,
+  convertStringToSha256Buffer
+} from "../../../../../../src/utils";
 import flushPromiseChains from "../../../../helpers/flushPromiseChains";
 
 describe("Identity::createCustomerIds", () => {
@@ -23,17 +26,23 @@ describe("Identity::createCustomerIds", () => {
     });
   });
   it("has addToPayload and sync methods", () => {
-    const customerIds = createCustomerIds({ eventManager, consent, logger });
+    const customerIds = createCustomerIds({
+      eventManager,
+      consent,
+      logger,
+      convertStringToSha256Buffer
+    });
     expect(customerIds.addToPayload).toBeDefined();
     expect(customerIds.sync).toBeDefined();
   });
 
   it("waits for consent before sending an event", () => {
-    const customerIds = createCustomerIds({ eventManager, consent, logger });
-
-    // We can't use a hashEnabled identity in this test case due to the
-    // async nature of convertStringToSha256Buffer unless we were to mock
-    // convertStringToSha256Buffer.
+    const customerIds = createCustomerIds({
+      eventManager,
+      consent,
+      logger,
+      convertStringToSha256Buffer
+    });
     customerIds.sync({
       crm: {
         id: "1234",
@@ -49,6 +58,83 @@ describe("Identity::createCustomerIds", () => {
       })
       .then(() => {
         expect(eventManager.sendEvent).toHaveBeenCalledWith(event);
+      });
+  });
+
+  it("logs a warning when browser doesn't support hashing", () => {
+    const sha256Buffer = jasmine
+      .createSpy("sha256Buffer")
+      .and.returnValue(false);
+    const customerIds = createCustomerIds({
+      eventManager,
+      consent,
+      logger,
+      convertStringToSha256Buffer: sha256Buffer
+    });
+    customerIds.sync({
+      crm: {
+        id: "1234",
+        authState: "ambiguous"
+      },
+      email_hash: {
+        id: "test@email.com",
+        hashEnabled: true
+      }
+    });
+
+    return flushPromiseChains()
+      .then(() => {
+        expect(eventManager.sendEvent).not.toHaveBeenCalled();
+        consentDeferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(sha256Buffer).toHaveBeenCalledWith("test@email.com");
+        expect(logger.warn).toHaveBeenCalledWith(
+          `Unable to hash identity email_hash due to lack of browser support. Provided email_hash will not be sent to Adobe Experience Cloud.`
+        );
+        expect(eventManager.sendEvent).toHaveBeenCalledWith(event);
+      });
+  });
+
+  it("should not send an event when hashing failed on all Ids", () => {
+    const sha256Buffer = jasmine
+      .createSpy("sha256Buffer")
+      .and.returnValue(false);
+    const customerIds = createCustomerIds({
+      eventManager,
+      consent,
+      logger,
+      convertStringToSha256Buffer: sha256Buffer
+    });
+
+    const identities = {
+      crm: {
+        id: "1234",
+        authState: "ambiguous",
+        hashEnabled: true
+      },
+      email_hash: {
+        id: "test@email.com",
+        hashEnabled: true
+      }
+    };
+    customerIds.sync(identities);
+
+    return flushPromiseChains()
+      .then(() => {
+        expect(eventManager.sendEvent).not.toHaveBeenCalled();
+        consentDeferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        Object.keys(identities).forEach(identity => {
+          expect(sha256Buffer).toHaveBeenCalledWith(identities[identity].id);
+          expect(logger.warn).toHaveBeenCalledWith(
+            `Unable to hash identity ${identity} due to lack of browser support. Provided ${identity} will not be sent to Adobe Experience Cloud.`
+          );
+        });
+        expect(eventManager.sendEvent).not.toHaveBeenCalled();
       });
   });
 
@@ -97,7 +183,12 @@ describe("Identity::createCustomerIds", () => {
       }
     };
     consentDeferred.resolve();
-    const customerIds = createCustomerIds({ eventManager, consent, logger });
+    const customerIds = createCustomerIds({
+      eventManager,
+      consent,
+      logger,
+      convertStringToSha256Buffer
+    });
     return customerIds.sync(ids).then(() => {
       customerIds.addToPayload(payload);
 
