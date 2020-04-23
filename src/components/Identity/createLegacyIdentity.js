@@ -10,9 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { getApexDomain, cookieJar, isFunction } from "../../utils";
-import getVisitorECID from "./visitorService/getVisitorEcid";
-import awaitVisitorOptIn from "./visitorService/awaitVisitorOptIn";
+import { getApexDomain, cookieJar } from "../../utils";
 
 // TODO: We are already retrieving the apex in core; find a way to reuse it.
 // Maybe default the domain in the cookieJar to apex while allowing overrides.
@@ -21,11 +19,16 @@ const apexDomain = getApexDomain(window, cookieJar);
 /**
  * Handles migration of ECID to and from Visitor.js.
  */
-export default ({ idMigrationEnabled, orgId, logger }) => {
+export default ({
+  config,
+  logger,
+  awaitVisitorOptIn,
+  getVisitor,
+  getEcidFromVisitor
+}) => {
+  const { idMigrationEnabled, orgId } = config;
   const amcvCookieName = `AMCV_${orgId}`;
-  const Visitor = window.Visitor;
-  const doesVisitorExist =
-    isFunction(Visitor) && isFunction(Visitor.getInstance);
+  const Visitor = getVisitor(window);
 
   const getEcidFromLegacyCookies = () => {
     let ecid = null;
@@ -48,7 +51,7 @@ export default ({ idMigrationEnabled, orgId, logger }) => {
   };
 
   return {
-    getEcidFromLegacy() {
+    getEcid() {
       if (idMigrationEnabled) {
         const ecid = getEcidFromLegacyCookies();
 
@@ -56,13 +59,13 @@ export default ({ idMigrationEnabled, orgId, logger }) => {
           return Promise.resolve(ecid);
         }
 
-        if (doesVisitorExist) {
-          return getVisitorECID({ logger, orgId, awaitVisitorOptIn });
+        if (Visitor) {
+          return getEcidFromVisitor({ logger, orgId, awaitVisitorOptIn });
         }
       }
       return Promise.resolve();
     },
-    createLegacyIdentityCookie(ecid) {
+    setEcid(ecid) {
       if (idMigrationEnabled && !cookieJar.get(amcvCookieName)) {
         cookieJar.set(amcvCookieName, `MCMID|${ecid}`, {
           domain: apexDomain,

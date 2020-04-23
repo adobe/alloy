@@ -10,21 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import addEcidFromLegacyToPayloadFactory from "../../../../../src/components/Identity/addEcidFromLegacyToPayloadFactory";
+import addLegacyEcidToPayloadFactory from "../../../../../src/components/Identity/addLegacyEcidToPayloadFactory";
 
-describe("Identity::addEcidFromLegacyToPayloadFactory", () => {
-  let getEcidFromLegacy;
+describe("Identity::addLegacyEcidToPayloadFactory", () => {
+  let getLegacyEcid;
   let addEcidToPayload;
   let payload;
-  let addEcidFromLegacyToPayload;
+  let addLegacyEcidToPayload;
 
   beforeEach(() => {
-    getEcidFromLegacy = jasmine
+    getLegacyEcid = jasmine
       .createSpy("getEcidFromLegacy")
       .and.returnValue(Promise.resolve("legacy@adobe"));
     addEcidToPayload = jasmine.createSpy("addEcidToPayload");
-    addEcidFromLegacyToPayload = addEcidFromLegacyToPayloadFactory({
-      getEcidFromLegacy,
+    addLegacyEcidToPayload = addLegacyEcidToPayloadFactory({
+      getLegacyEcid,
       addEcidToPayload
     });
     payload = {
@@ -33,14 +33,14 @@ describe("Identity::addEcidFromLegacyToPayloadFactory", () => {
   });
 
   it("does not add legacy ECID to payload if legacy ECID does not exist", () => {
-    getEcidFromLegacy.and.returnValue(Promise.resolve());
-    return addEcidFromLegacyToPayload(payload).then(() => {
+    getLegacyEcid.and.returnValue(Promise.resolve());
+    return addLegacyEcidToPayload(payload).then(() => {
       expect(addEcidToPayload).not.toHaveBeenCalled();
     });
   });
 
   it("adds legacy ECID to payload if legacy ECID exists", () => {
-    return addEcidFromLegacyToPayload(payload).then(() => {
+    return addLegacyEcidToPayload(payload).then(() => {
       expect(addEcidToPayload).toHaveBeenCalledWith(payload, "legacy@adobe");
     });
   });

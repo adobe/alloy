@@ -18,7 +18,7 @@ describe("Identity::createComponent", () => {
   let addEcidQueryToEvent;
   let customerIds;
   let ensureRequestHasIdentity;
-  let createLegacyIdentityCookie;
+  let setLegacyEcid;
   let handleResponseForIdSyncs;
   let getEcidFromResponse;
   let component;
@@ -30,9 +30,7 @@ describe("Identity::createComponent", () => {
     addEcidQueryToEvent = jasmine.createSpy("addEcidQueryToEvent");
     customerIds = jasmine.createSpyObj("customerIds", ["addToPayload", "sync"]);
     ensureRequestHasIdentity = jasmine.createSpy("ensureRequestHasIdentity");
-    createLegacyIdentityCookie = jasmine.createSpy(
-      "createLegacyIdentityCookie"
-    );
+    setLegacyEcid = jasmine.createSpy("setLegacyEcid");
     handleResponseForIdSyncs = jasmine.createSpy("handleResponseForIdSyncs");
     getEcidFromResponse = jasmine.createSpy("getEcidFromResponse");
     getEcidPromise = defer();
@@ -47,7 +45,7 @@ describe("Identity::createComponent", () => {
       addEcidQueryToEvent,
       customerIds,
       ensureRequestHasIdentity,
-      createLegacyIdentityCookie,
+      setLegacyEcid,
       handleResponseForIdSyncs,
       getEcidFromResponse,
       getEcid,
@@ -85,7 +83,7 @@ describe("Identity::createComponent", () => {
     const response = { type: "response" };
     component.lifecycle.onResponse({ response });
     expect(getEcidFromResponse).toHaveBeenCalledWith(response);
-    expect(createLegacyIdentityCookie).not.toHaveBeenCalled();
+    expect(setLegacyEcid).not.toHaveBeenCalled();
   });
 
   it("creates legacy identity cookie if response contains ECID", () => {
@@ -93,11 +91,11 @@ describe("Identity::createComponent", () => {
     const response = { type: "response" };
     component.lifecycle.onResponse({ response });
     expect(getEcidFromResponse).toHaveBeenCalledWith(response);
-    expect(createLegacyIdentityCookie).toHaveBeenCalledWith("user@adobe");
+    expect(setLegacyEcid).toHaveBeenCalledWith("user@adobe");
 
     component.lifecycle.onResponse({ response });
     expect(getEcidFromResponse).toHaveBeenCalledTimes(1);
-    expect(createLegacyIdentityCookie).toHaveBeenCalledTimes(1);
+    expect(setLegacyEcid).toHaveBeenCalledTimes(1);
   });
 
   it("handles ID syncs", () => {

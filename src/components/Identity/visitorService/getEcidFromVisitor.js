@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isFunction } from "../../../utils";
+import getVisitor from "./getVisitor";
 
 export default ({ logger, orgId, awaitVisitorOptIn }) => {
-  const Visitor = window.Visitor;
-  if (isFunction(Visitor) && isFunction(Visitor.getInstance)) {
+  const Visitor = getVisitor(window);
+  if (Visitor) {
     return awaitVisitorOptIn({ logger }).then(() => {
       logger.log(
         "Delaying request while using Visitor to retrieve ECID from server."
