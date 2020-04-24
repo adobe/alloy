@@ -18,6 +18,6 @@ export default ({ parseConsentCookie, orgId, cookieJar }) => {
 
   return () => {
     const cookieValue = cookieJar.get(consentCookieName);
-    return cookieValue ? parseConsentCookie(cookieValue) : {};
+    return cookieValue ? parseConsentCookie(cookieValue) : undefined;
   };
 };
