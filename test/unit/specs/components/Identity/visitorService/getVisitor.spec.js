@@ -13,11 +13,22 @@ governing permissions and limitations under the License.
 import getVisitor from "../../../../../../src/components/Identity/visitorService/getVisitor";
 
 describe("getVisitor", () => {
-  const mockWindow = {};
-  mockWindow.Visitor = jasmine.createSpy();
-  mockWindow.Visitor.getInstance = jasmine.createSpy();
+  let mockWindow;
 
-  it("Returns Visitor function if present and valid", () => {
+  beforeEach(() => {
+    mockWindow = {};
+  });
+
+  it("Returns Visitor function if Visitor is available and valid", () => {
+    mockWindow.Visitor = jasmine.createSpy();
+    mockWindow.Visitor.getInstance = jasmine.createSpy();
     expect(getVisitor(mockWindow)).toEqual(mockWindow.Visitor);
+  });
+  it("Returns false if Visitor is available but does not support getInstance", () => {
+    mockWindow.Visitor = jasmine.createSpy();
+    expect(getVisitor(mockWindow)).toBe(false);
+  });
+  it("Returns false if Visitor is not available", () => {
+    expect(getVisitor(mockWindow)).toBe(false);
   });
 });
