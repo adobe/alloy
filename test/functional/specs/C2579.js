@@ -9,7 +9,7 @@ import {
   migrationDisabled
 } from "../helpers/constants/configParts";
 
-import { configId } from "../helpers/edgeInfo";
+import { edgeConfigId } from "../helpers/edgeInfo";
 
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 
@@ -34,7 +34,7 @@ const networkLogger1 = RequestLogger(
 );
 
 const networkLogger2 = RequestLogger(
-  new RegExp(`v1\\/(interact|collect)\\?configId=${configId}`),
+  new RegExp(`v1\\/(interact|collect)\\?configId=${edgeConfigId}`),
   networkLoggerConfig
 );
 

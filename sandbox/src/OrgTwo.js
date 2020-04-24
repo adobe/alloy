@@ -19,7 +19,7 @@ export default function OrgTwo() {
         <code>
           {`
                 organizationTwo("configure", {
-                  configId: 8888888,
+                  edgeConfigId: 8888888,
                     log: true
                 });
             `}

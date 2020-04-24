@@ -23,7 +23,7 @@ export default ({
   processWarningsAndErrors,
   validateNetworkResponseIsWellFormed
 }) => {
-  const { edgeDomain, edgeBasePath, configId } = config;
+  const { edgeDomain, edgeBasePath, edgeConfigId } = config;
 
   /**
    * Sends a network request that is aware of payload interfaces,
@@ -54,7 +54,7 @@ export default ({
           ? ID_THIRD_PARTY_DOMAIN
           : edgeDomain;
         const requestId = uuid();
-        const url = `https://${endpointDomain}/${edgeBasePath}/${apiVersion}/${action}?configId=${configId}&requestId=${requestId}`;
+        const url = `https://${endpointDomain}/${edgeBasePath}/${apiVersion}/${action}?configId=${edgeConfigId}&requestId=${requestId}`;
         cookieTransfer.cookiesToPayload(payload, endpointDomain);
         return sendNetworkRequest({ payload, url, requestId });
       })

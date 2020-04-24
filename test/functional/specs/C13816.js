@@ -19,6 +19,6 @@ test("Test C13816: Throws error when configure has no options", async t => {
     .expect(configureErrorMessage)
     .ok("Configure didn't throw an exception.");
   await t.expect(configureErrorMessage).contains("orgId");
-  await t.expect(configureErrorMessage).contains("configId");
+  await t.expect(configureErrorMessage).contains("edgeConfigId");
   await t.expect(configureErrorMessage).contains("documentation");
 });

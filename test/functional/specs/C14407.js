@@ -26,7 +26,7 @@ const triggerAlloyEvent = ClientFunction(() => {
 const configure = ClientFunction(() => {
   return {
     promise: window.alloy("configure", {
-      configId: "9999999",
+      edgeConfigId: "9999999",
       orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
       defaultConsent: { general: "pending" },
       idMigrationEnabled: false,

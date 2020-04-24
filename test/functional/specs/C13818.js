@@ -12,12 +12,14 @@ const networkLoggerConfig = {
 };
 const networkLogger1 = RequestLogger(
   new RegExp(
-    `v1\\/(interact|collect)\\?configId=${orgMainConfigMain.configId}`
+    `v1\\/(interact|collect)\\?configId=${orgMainConfigMain.edgeConfigId}`
   ),
   networkLoggerConfig
 );
 const networkLogger2 = RequestLogger(
-  new RegExp(`v1\\/(interact|collect)\\?configId=${orgAltConfigAlt.configId}`),
+  new RegExp(
+    `v1\\/(interact|collect)\\?configId=${orgAltConfigAlt.edgeConfigId}`
+  ),
   networkLoggerConfig
 );
 
