@@ -1,4 +1,3 @@
-import { assign } from "../../utils";
 import validateUserEventOptions from "./validateUserEventOptions";
 
 /*
@@ -22,8 +21,8 @@ const createDataCollector = ({ eventManager, logger }) => {
           return validateUserEventOptions({ options, logger });
         },
         run: options => {
-          let { xdm } = options;
           const {
+            xdm,
             data,
             documentUnloading = false,
             type,
@@ -37,20 +36,20 @@ const createDataCollector = ({ eventManager, logger }) => {
             event.documentMayUnload();
           }
 
-          if (type || mergeId) {
-            xdm = Object(xdm);
-          }
+          event.setUserXdm(xdm);
+          event.setUserData(data);
 
           if (type) {
-            assign(xdm, { eventType: type });
+            event.mergeXdm({
+              eventType: type
+            });
           }
 
           if (mergeId) {
-            assign(xdm, { eventMergeId: mergeId });
+            event.mergeXdm({
+              eventMergeId: mergeId
+            });
           }
-
-          event.setUserXdm(xdm);
-          event.setUserData(data);
 
           return eventManager.sendEvent(event, {
             renderDecisions,

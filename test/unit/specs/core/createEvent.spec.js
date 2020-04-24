@@ -62,6 +62,46 @@ describe("createEvent", () => {
     });
   });
 
+  it("does not modify the original user XDM object", () => {
+    const dataLayer = {
+      fruit: {
+        type: "apple"
+      },
+      veggie: {
+        type: "carrot"
+      }
+    };
+    event.setUserXdm(dataLayer);
+    event.mergeXdm({
+      fruit: {
+        type: "strawberry"
+      },
+      sport: {
+        type: "basketball"
+      }
+    });
+    expect(dataLayer).toEqual({
+      fruit: {
+        type: "apple"
+      },
+      veggie: {
+        type: "carrot"
+      }
+    });
+  });
+
+  it("handles undefined user XDM", () => {
+    event.setUserXdm(undefined);
+    event.mergeXdm({
+      fruit: "apple"
+    });
+    expect(event.toJSON()).toEqual({
+      xdm: {
+        fruit: "apple"
+      }
+    });
+  });
+
   it("sets user data", () => {
     event.setUserData({ fruit: "apple" });
     event.setUserData({ veggie: "carrot" });
@@ -70,6 +110,11 @@ describe("createEvent", () => {
         veggie: "carrot"
       }
     });
+  });
+
+  it("handles undefined user data", () => {
+    event.setUserData(undefined);
+    expect(event.toJSON()).toEqual({});
   });
 
   it("deeply merges meta", () => {
