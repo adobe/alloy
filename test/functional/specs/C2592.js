@@ -40,7 +40,11 @@ test("Test C2592: Event command sends a request.", async () => {
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
-  const request = networkLogger.edgeEndpointLogs.requests[0].request.body;
+  const request = JSON.parse(
+    networkLogger.edgeEndpointLogs.requests[0].request.body
+  );
 
-  await t.expect(request).contains('"key":"value"');
+  await t.expect(request.events[0].xdm.key).eql("value");
+  await t.expect(request.meta.state.cookiesEnabled).eql(true);
+  await t.expect(request.meta.state.domain).ok();
 });

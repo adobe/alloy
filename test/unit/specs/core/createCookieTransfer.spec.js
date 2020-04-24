@@ -34,7 +34,8 @@ describe("createCookieTransfer", () => {
       });
       cookieTransfer.cookiesToPayload(payload, "edge.example.com");
       expect(payload.mergeState).toHaveBeenCalledWith({
-        domain: apexDomain
+        domain: apexDomain,
+        cookiesEnabled: true
       });
     });
 
@@ -47,7 +48,8 @@ describe("createCookieTransfer", () => {
       });
       cookieTransfer.cookiesToPayload(payload, endpointDomain);
       expect(payload.mergeState).toHaveBeenCalledWith({
-        domain: apexDomain
+        domain: apexDomain,
+        cookiesEnabled: true
       });
     });
 
@@ -65,6 +67,7 @@ describe("createCookieTransfer", () => {
       cookieTransfer.cookiesToPayload(payload, endpointDomain);
       expect(payload.mergeState).toHaveBeenCalledWith({
         domain: apexDomain,
+        cookiesEnabled: true,
         entries: [
           {
             key: "kndctr_ABC_CustomOrg_identity",

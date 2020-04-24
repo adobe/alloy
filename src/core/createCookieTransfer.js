@@ -26,7 +26,8 @@ export default ({ cookieJar, orgId, apexDomain }) => {
       const isEndpointFirstParty = endsWith(endpointDomain, apexDomain);
 
       const state = {
-        domain: apexDomain
+        domain: apexDomain,
+        cookiesEnabled: true
       };
 
       // If the endpoint is first-party, there's no need to transfer cookies
