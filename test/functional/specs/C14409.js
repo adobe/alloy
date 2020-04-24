@@ -46,7 +46,7 @@ test("C14409 - Consenting to no purposes should be persisted.", async () => {
   // send event
   const errorMessage = await t.eval(() =>
     window
-      .alloy("event", { data: { a: 1 } })
+      .alloy("sendEvent", { data: { a: 1 } })
       .then(() => undefined, e => e.message)
   );
 

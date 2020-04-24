@@ -18,7 +18,7 @@ test.meta({
 });
 
 const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("event", {});
+  return window.alloy("sendEvent", {});
 });
 
 const setConsentOut = ClientFunction(() => {

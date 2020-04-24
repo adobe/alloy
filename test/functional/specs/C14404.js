@@ -45,7 +45,7 @@ test("Test C14404: User cannot consent to all purposes after consenting to no pu
   // make sure the instance still has no consent
   const eventErrorMessage = await t.eval(() =>
     window
-      .alloy("event", { data: { a: 1 } })
+      .alloy("sendEvent", { data: { a: 1 } })
       .then(() => undefined, e => e.message)
   );
   await t

@@ -31,7 +31,7 @@ test("Test C14406: Unidentified user can consent to no purposes", async t => {
   await t.eval(() => window.alloy("setConsent", { general: "out" }));
   const errorMessage = await t.eval(() =>
     window
-      .alloy("event", { data: { a: 1 } })
+      .alloy("sendEvent", { data: { a: 1 } })
       .then(() => undefined, e => e.message)
   );
 

@@ -37,7 +37,7 @@ test("Test C14414: Requests are queued while consent changes are pending", async
   });
   const errorMessage = await t.eval(() =>
     window
-      .alloy("event", { data: { a: 1 } })
+      .alloy("sendEvent", { data: { a: 1 } })
       .then(() => undefined, e => e.message)
   );
 

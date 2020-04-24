@@ -38,7 +38,7 @@ const setEcidCookie = ClientFunction(() => {
 });
 
 const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("event", { renderDecisions: true });
+  return window.alloy("sendEvent", { renderDecisions: true });
 });
 
 const getDocumentCookie = ClientFunction(() => document.cookie);

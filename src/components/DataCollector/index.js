@@ -15,7 +15,7 @@ governing permissions and limitations under the License.
 const createDataCollector = ({ eventManager, logger }) => {
   return {
     commands: {
-      event: {
+      sendEvent: {
         documentationUri: "https://adobe.ly/2r0uUjh",
         optionsValidator: options => {
           return validateUserEventOptions({ options, logger });

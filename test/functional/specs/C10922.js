@@ -30,7 +30,7 @@ import setLegacyIdentityCookie from "../helpers/setLegacyIdentityCookie";
 const networkLogger = createNetworkLogger();
 
 const executeEventCommand = ClientFunction(() => {
-  return window.alloy("event");
+  return window.alloy("sendEvent");
 });
 
 const demdexHostRegex = /\.demdex\.net/;

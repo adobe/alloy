@@ -29,7 +29,7 @@ test.meta({
 });
 
 const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("event", { xdm: { key: "value" } });
+  return window.alloy("sendEvent", { xdm: { key: "value" } });
 });
 
 test("Test C2597 - Adds all context data to requests by default.", async () => {

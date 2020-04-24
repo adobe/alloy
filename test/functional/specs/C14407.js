@@ -20,7 +20,7 @@ const setConsentIn = ClientFunction(() => {
 });
 
 const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("event", {});
+  return window.alloy("sendEvent", {});
 });
 
 const configure = ClientFunction(() => {

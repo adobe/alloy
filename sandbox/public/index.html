@@ -80,7 +80,7 @@
         console.log("Sandbox: Get Ecid command has completed.,", id);
       });
 
-      alloy("event", {
+      alloy("sendEvent", {
         renderDecisions: true,
         decisionScopes: ["alloy-location-1", "alloy-location-2"],
         xdm: {

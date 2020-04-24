@@ -31,29 +31,29 @@ test.meta({
 
 const triggerAlloyEvent = ClientFunction(() => {
   return new Promise(resolve => {
-    window.alloy("event", { xdm: { key: "value" } }).then(() => resolve());
+    window.alloy("sendEvent", { xdm: { key: "value" } }).then(() => resolve());
   });
 });
 
-test("Test C2583: Set the log option to true. Load the page. Execute an event command.", async t => {
+test("Test C2583: Set the log option to true. Load the page. Execute a sendEvent command.", async t => {
   await configureAlloyInstance("alloy", debugEnabledConfig);
 
   await triggerAlloyEvent();
 
   const { log } = await t.getBrowserConsoleMessages();
 
-  await t.expect(log).match(/\[alloy] Executing event command./);
+  await t.expect(log).match(/\[alloy] Executing sendEvent command./);
 });
 
-test("Test C2583: Set the log option in the configuration to false. Refresh the browser. Execute an event command.", async t => {
+test("Test C2583: Set the log option in the configuration to false. Refresh the browser. Execute a sendEvent command.", async t => {
   await configureAlloyInstance("alloy", debugDisabledConfig);
   await triggerAlloyEvent();
 
   const { log } = await t.getBrowserConsoleMessages();
 
-  await t.expect(log).notContains("Executing event command.");
+  await t.expect(log).notContains("Executing sendEvent command.");
 
   await triggerAlloyEvent();
 
-  await t.expect(log).notContains("Executing event command.");
+  await t.expect(log).notContains("Executing sendEvent command.");
 });

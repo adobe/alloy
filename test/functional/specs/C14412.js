@@ -32,7 +32,7 @@ test("Test C14412: While user is changing consent preferences, other requests sh
   });
   const errorMessage = await t.eval(() =>
     window
-      .alloy("event", { data: { a: 1 } })
+      .alloy("sendEvent", { data: { a: 1 } })
       .then(() => undefined, e => e.message)
   );
 

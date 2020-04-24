@@ -8,7 +8,7 @@ function HomeWithHistory({ history }) {
       const instanceName = loc.pathname.includes("orgTwo")
         ? "organizationTwo"
         : "alloy";
-      window[instanceName]("event", {
+      window[instanceName]("sendEvent", {
         renderDecisions: true,
         xdm: {
           eventType: "page-view"
