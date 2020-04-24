@@ -25,9 +25,13 @@ export default ({
 
   const readCookieIfQueueEmpty = () => {
     if (taskQueue.length === 0) {
+      const storedConsent = readStoredConsent();
+
       // Only read cookies when there are no outstanding setConsent
       // requests. This helps with race conditions.
-      consent.setConsent(readStoredConsent());
+      if (storedConsent) {
+        consent.setConsent(storedConsent);
+      }
     }
   };
 
