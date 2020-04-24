@@ -45,6 +45,7 @@ export default ({
       },
       getEcid: {
         run() {
+          // const normalizedOptions = validateNamespace(options);
           return consent.awaitConsent().then(() => {
             if (ecid) {
               return ecid;

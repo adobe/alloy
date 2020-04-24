@@ -10,14 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createIdentityPayload from "./createIdentityPayload";
-
-const identityPayload = createIdentityPayload();
-
-export default ({ sendEdgeNetworkRequest }) => {
+export default ({ sendEdgeNetworkRequest, createIdentityPayload }) => {
   return () =>
     sendEdgeNetworkRequest({
-      payload: identityPayload,
+      payload: createIdentityPayload(),
       action: "identity/acquire"
     });
 };
