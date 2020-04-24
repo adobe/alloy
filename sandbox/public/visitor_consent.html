@@ -50,7 +50,7 @@
         )
       });
 
-      alloy("event", {
+      alloy("sendEvent", {
         renderDecisions: true,
         xdm: {
           // Demonstrates overriding automatically collected data
@@ -73,7 +73,7 @@
       };
 
       const sendEvent = () => {
-        alloy("event", {
+        alloy("sendEvent", {
           renderDecisions: true,
           xdm: {
             // Demonstrates overriding automatically collected data

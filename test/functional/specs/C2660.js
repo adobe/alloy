@@ -20,7 +20,7 @@ test.meta({
 });
 
 const sendEvent = ClientFunction(() => {
-  window.alloy("event");
+  window.alloy("sendEvent");
 });
 
 const changeHashAndConsent = ClientFunction(() => {

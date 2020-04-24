@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Links() {
   const adobeLink = () => {
-    window.alloy("event", {
+    window.alloy("sendEvent", {
       documentUnloading: true,
       xdm: {
         "activitystreams:href": "http://www.adobe.com"

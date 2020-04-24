@@ -14,7 +14,7 @@ test("Test C13817: Throws error when running command after bad configure", async
   const eventErrorMessage = await t.eval(() => {
     window.alloy("configure");
     return window
-      .alloy("event", { data: { key: "value" } })
+      .alloy("sendEvent", { data: { key: "value" } })
       .then(() => undefined, e => e.message);
   });
 

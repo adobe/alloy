@@ -30,7 +30,7 @@ test("Test C2594: event command rejects promise if user consents to no purposes"
   await configureAlloyInstance("alloy", config);
   const errorMessagePromise = t.eval(() =>
     window
-      .alloy("event", { data: { a: 1 } })
+      .alloy("sendEvent", { data: { a: 1 } })
       .then(() => undefined, e => e.message)
   );
   await t.eval(() => window.alloy("setConsent", { general: "out" }));
