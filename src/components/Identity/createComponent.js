@@ -2,7 +2,7 @@ export default ({
   addEcidQueryToEvent,
   customerIds,
   ensureRequestHasIdentity,
-  createLegacyIdentityCookie,
+  setLegacyEcid,
   handleResponseForIdSyncs,
   getEcidFromResponse,
   getEcid,
@@ -28,7 +28,7 @@ export default ({
           // Only data collection calls will have an ECID in the response.
           // https://jira.corp.adobe.com/browse/EXEG-1234
           if (ecid) {
-            createLegacyIdentityCookie(ecid);
+            setLegacyEcid(ecid);
           }
         }
 

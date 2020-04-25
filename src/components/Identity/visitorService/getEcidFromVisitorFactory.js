@@ -10,27 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isFunction } from "../../../utils";
+import getVisitor from "./getVisitor";
 
 export default ({ logger, orgId, awaitVisitorOptIn }) => {
-  const Visitor = window.Visitor;
-  if (isFunction(Visitor) && isFunction(Visitor.getInstance)) {
-    return awaitVisitorOptIn({ logger }).then(() => {
-      logger.log(
-        "Delaying request while using Visitor to retrieve ECID from server."
-      );
+  const Visitor = getVisitor(window);
+  return () => {
+    if (Visitor) {
+      return awaitVisitorOptIn({ logger }).then(() => {
+        logger.log(
+          "Delaying request while using Visitor to retrieve ECID from server."
+        );
 
-      return new Promise(resolve => {
-        const visitor = Visitor.getInstance(orgId, {});
-        visitor.getMarketingCloudVisitorID(ecid => {
-          logger.log(
-            "Resuming previously delayed request that was waiting for ECID from Visitor."
-          );
-          resolve(ecid);
-        }, true);
+        return new Promise(resolve => {
+          const visitor = Visitor.getInstance(orgId, {});
+          visitor.getMarketingCloudVisitorID(ecid => {
+            logger.log(
+              "Resuming previously delayed request that was waiting for ECID from Visitor."
+            );
+            resolve(ecid);
+          }, true);
+        });
       });
-    });
-  }
-
-  return Promise.resolve();
+    }
+    return Promise.resolve();
+  };
 };

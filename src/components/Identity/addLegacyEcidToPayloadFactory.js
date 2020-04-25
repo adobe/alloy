@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ getEcidFromLegacy, addEcidToPayload }) => {
+export default ({ getLegacyEcid, addEcidToPayload }) => {
   return payload => {
-    return getEcidFromLegacy().then(ecidToMigrate => {
+    return getLegacyEcid().then(ecidToMigrate => {
       if (ecidToMigrate) {
         addEcidToPayload(payload, ecidToMigrate);
       }

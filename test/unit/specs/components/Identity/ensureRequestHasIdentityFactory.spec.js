@@ -17,8 +17,8 @@ import { defer } from "../../../../../src/utils";
 describe("Identity::ensureRequestHasIdentityFactory", () => {
   let doesIdentityCookieExist;
   let setDomainForInitialIdentityPayload;
-  let addEcidFromLegacyToPayloadPromise;
-  let addEcidFromLegacyToPayload;
+  let addLegacyEcidToPayloadPromise;
+  let addLegacyEcidToPayload;
   let awaitIdentityCookieDeferred;
   let awaitIdentityCookie;
   let logger;
@@ -31,10 +31,10 @@ describe("Identity::ensureRequestHasIdentityFactory", () => {
     setDomainForInitialIdentityPayload = jasmine.createSpy(
       "setDomainForInitialIdentityPayload"
     );
-    addEcidFromLegacyToPayloadPromise = Promise.resolve();
-    addEcidFromLegacyToPayload = jasmine
-      .createSpy("addEcidFromLegacyToPayload")
-      .and.returnValue(addEcidFromLegacyToPayloadPromise);
+    addLegacyEcidToPayloadPromise = Promise.resolve();
+    addLegacyEcidToPayload = jasmine
+      .createSpy("addLegacyEcidToPayload")
+      .and.returnValue(addLegacyEcidToPayloadPromise);
     awaitIdentityCookieDeferred = defer();
     awaitIdentityCookie = jasmine
       .createSpy("awaitIdentityCookie")
@@ -43,7 +43,7 @@ describe("Identity::ensureRequestHasIdentityFactory", () => {
     ensureRequestHasIdentity = ensureRequestHasIdentityFactory({
       doesIdentityCookieExist,
       setDomainForInitialIdentityPayload,
-      addEcidFromLegacyToPayload,
+      addLegacyEcidToPayload,
       awaitIdentityCookie,
       logger
     });
@@ -67,7 +67,7 @@ describe("Identity::ensureRequestHasIdentityFactory", () => {
       expect(logger.log).not.toHaveBeenCalled();
       expect(awaitIdentityCookie).toHaveBeenCalledWith(onResponse1);
       expect(setDomainForInitialIdentityPayload).toHaveBeenCalledWith(payload1);
-      expect(addEcidFromLegacyToPayload).toHaveBeenCalledWith(payload1);
+      expect(addLegacyEcidToPayload).toHaveBeenCalledWith(payload1);
 
       const completeHandler = jasmine.createSpy("completeHandler");
       ensureRequestHasIdentity({
