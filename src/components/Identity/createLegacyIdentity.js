@@ -19,16 +19,9 @@ const apexDomain = getApexDomain(window, cookieJar);
 /**
  * Handles migration of ECID to and from Visitor.js.
  */
-export default ({
-  config,
-  logger,
-  awaitVisitorOptIn,
-  getVisitor,
-  getEcidFromVisitor
-}) => {
+export default ({ config, getEcidFromVisitor }) => {
   const { idMigrationEnabled, orgId } = config;
   const amcvCookieName = `AMCV_${orgId}`;
-  const Visitor = getVisitor(window);
 
   const getEcidFromLegacyCookies = () => {
     let ecid = null;
@@ -54,14 +47,10 @@ export default ({
     getEcid() {
       if (idMigrationEnabled) {
         const ecid = getEcidFromLegacyCookies();
-
         if (ecid) {
           return Promise.resolve(ecid);
         }
-
-        if (Visitor) {
-          return getEcidFromVisitor({ logger, orgId, awaitVisitorOptIn });
-        }
+        return getEcidFromVisitor();
       }
       return Promise.resolve();
     },

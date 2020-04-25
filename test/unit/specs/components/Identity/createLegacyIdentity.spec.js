@@ -20,7 +20,6 @@ describe("Identity::createLegacyIdentity", () => {
   const getEcidFromVisitor = jasmine
     .createSpy()
     .and.returnValue(Promise.resolve());
-  const awaitVisitorOptIn = {};
   const orgId = "TEST_ORG";
 
   const build = () => {
@@ -29,8 +28,6 @@ describe("Identity::createLegacyIdentity", () => {
         idMigrationEnabled,
         orgId
       },
-      awaitVisitorOptIn,
-      getVisitor: jasmine.createSpy().and.returnValue({}),
       getEcidFromVisitor
     });
   };
@@ -89,11 +86,7 @@ describe("Identity::createLegacyIdentity", () => {
     it("should request ECID from visitor ID Service if legacy ECID cookies are missing", () => {
       build();
       legacyIdentity.getEcid().then(() => {
-        return expect(getEcidFromVisitor).toHaveBeenCalledWith({
-          logger: undefined,
-          orgId,
-          awaitVisitorOptIn
-        });
+        return expect(getEcidFromVisitor).toHaveBeenCalled();
       });
     });
   });

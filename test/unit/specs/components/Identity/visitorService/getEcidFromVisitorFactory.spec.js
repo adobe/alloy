@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getEcidFromVisitor from "../../../../../../src/components/Identity/visitorService/getEcidFromVisitor";
+import getEcidFromVisitorFactory from "../../../../../../src/components/Identity/visitorService/getEcidFromVisitorFactory";
 
 const logger = {
   log() {}
@@ -40,9 +40,8 @@ describe("getEcidFromVisitor", () => {
 
   describe("Visitor does not exist", () => {
     it("should return promise resolved with undefined", () => {
-      return expectAsync(getEcidFromVisitor({ logger, orgId })).toBeResolvedTo(
-        undefined
-      );
+      const getEcidFromVisitor = getEcidFromVisitorFactory({ logger, orgId });
+      return expectAsync(getEcidFromVisitor()).toBeResolvedTo(undefined);
     });
   });
 
@@ -53,9 +52,12 @@ describe("getEcidFromVisitor", () => {
         return Promise.resolve();
       };
 
-      return expectAsync(
-        getEcidFromVisitor({ logger, orgId, awaitVisitorOptIn })
-      ).toBeResolvedTo("ecid123");
+      const getEcidFromVisitor = getEcidFromVisitorFactory({
+        logger,
+        orgId,
+        awaitVisitorOptIn
+      });
+      return expectAsync(getEcidFromVisitor()).toBeResolvedTo("ecid123");
     });
   });
 
@@ -66,9 +68,12 @@ describe("getEcidFromVisitor", () => {
         return Promise.reject();
       };
 
-      return expectAsync(
-        getEcidFromVisitor({ logger, orgId, awaitVisitorOptIn })
-      ).toBeRejectedWith(undefined);
+      const getEcidFromVisitor = getEcidFromVisitorFactory({
+        logger,
+        orgId,
+        awaitVisitorOptIn
+      });
+      return expectAsync(getEcidFromVisitor()).toBeRejectedWith(undefined);
     });
   });
 });

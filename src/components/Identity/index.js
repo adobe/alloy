@@ -21,8 +21,7 @@ import configValidators from "./configValidators";
 import createComponent from "./createComponent";
 import createLegacyIdentity from "./createLegacyIdentity";
 import awaitVisitorOptIn from "./visitorService/awaitVisitorOptIn";
-import getVisitor from "./visitorService/getVisitor";
-import getEcidFromVisitor from "./visitorService/getEcidFromVisitor";
+import getEcidFromVisitorFactory from "./visitorService/getEcidFromVisitorFactory";
 import handleResponseForIdSyncsFactory from "./handleResponseForIdSyncsFactory";
 import ensureRequestHasIdentityFactory from "./ensureRequestHasIdentityFactory";
 import createCustomerIds from "./customerIds/createCustomerIds";
@@ -49,11 +48,13 @@ const createIdentity = ({
     logger,
     convertStringToSha256Buffer
   });
+  const getEcidFromVisitor = getEcidFromVisitorFactory({
+    logger,
+    orgId,
+    awaitVisitorOptIn
+  });
   const legacyIdentity = createLegacyIdentity({
     config,
-    logger,
-    awaitVisitorOptIn,
-    getVisitor,
     getEcidFromVisitor
   });
   const doesIdentityCookieExist = doesIdentityCookieExistFactory({ orgId });

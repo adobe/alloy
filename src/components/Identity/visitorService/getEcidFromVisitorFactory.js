@@ -14,23 +14,24 @@ import getVisitor from "./getVisitor";
 
 export default ({ logger, orgId, awaitVisitorOptIn }) => {
   const Visitor = getVisitor(window);
-  if (Visitor) {
-    return awaitVisitorOptIn({ logger }).then(() => {
-      logger.log(
-        "Delaying request while using Visitor to retrieve ECID from server."
-      );
+  return () => {
+    if (Visitor) {
+      return awaitVisitorOptIn({ logger }).then(() => {
+        logger.log(
+          "Delaying request while using Visitor to retrieve ECID from server."
+        );
 
-      return new Promise(resolve => {
-        const visitor = Visitor.getInstance(orgId, {});
-        visitor.getMarketingCloudVisitorID(ecid => {
-          logger.log(
-            "Resuming previously delayed request that was waiting for ECID from Visitor."
-          );
-          resolve(ecid);
-        }, true);
+        return new Promise(resolve => {
+          const visitor = Visitor.getInstance(orgId, {});
+          visitor.getMarketingCloudVisitorID(ecid => {
+            logger.log(
+              "Resuming previously delayed request that was waiting for ECID from Visitor."
+            );
+            resolve(ecid);
+          }, true);
+        });
       });
-    });
-  }
-
-  return Promise.resolve();
+    }
+    return Promise.resolve();
+  };
 };
