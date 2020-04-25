@@ -14,7 +14,7 @@ governing permissions and limitations under the License.
 export default ({
   doesIdentityCookieExist,
   setDomainForInitialIdentityPayload,
-  addEcidFromLegacyToPayload,
+  addLegacyEcidToPayload,
   awaitIdentityCookie,
   logger
 }) => {
@@ -50,6 +50,6 @@ export default ({
     // know when the cookie has been set.
     identityCookiePromise = awaitIdentityCookie(onResponse);
     setDomainForInitialIdentityPayload(payload);
-    return addEcidFromLegacyToPayload(payload);
+    return addLegacyEcidToPayload(payload);
   };
 };
