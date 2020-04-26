@@ -14,8 +14,7 @@ describe("Personalization::actions::setHtml", () => {
   });
 
   it("should set personalized content", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { setHtml } = modules;
     const element = createNode("div", { id: "setHtml" });
     element.innerHTML = "foo";
@@ -34,13 +33,11 @@ describe("Personalization::actions::setHtml", () => {
 
     return setHtml(settings, event).then(() => {
       expect(elements[0].innerHTML).toEqual("bar");
-      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 
   it("should execute inline JavaScript", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { setHtml } = modules;
     const element = createNode("div", { id: "setHtml" });
     element.innerHTML = "foo";
@@ -58,7 +55,6 @@ describe("Personalization::actions::setHtml", () => {
     const event = { elements };
 
     return setHtml(settings, event).then(() => {
-      expect(collect).toHaveBeenCalledWith(meta);
       expect(window.someEvar123).toEqual(1);
     });
   });

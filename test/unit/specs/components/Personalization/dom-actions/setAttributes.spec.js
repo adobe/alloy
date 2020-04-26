@@ -12,8 +12,7 @@ describe("Personalization::actions::setAttribute", () => {
   });
 
   it("should set element attribute", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { setAttribute } = modules;
     const element = createNode("div", { id: "setAttribute" });
     const elements = [element];
@@ -30,7 +29,6 @@ describe("Personalization::actions::setAttribute", () => {
 
     return setAttribute(settings).then(() => {
       expect(elements[0].getAttribute("data-test")).toEqual("bar");
-      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

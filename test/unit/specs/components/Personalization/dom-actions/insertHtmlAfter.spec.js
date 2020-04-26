@@ -16,8 +16,7 @@ describe("Personalization::actions::insertAfter", () => {
   });
 
   it("should insert after personalized content", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { insertAfter } = modules;
     const child = createNode(
       "div",
@@ -41,7 +40,6 @@ describe("Personalization::actions::insertAfter", () => {
 
       expect(result[0].innerHTML).toEqual("AAA");
       expect(result[1].innerHTML).toEqual("BBB");
-      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

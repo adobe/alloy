@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, flatMap } from "../../utils";
+import { assign, flatMap, isNonEmptyArray } from "../../utils";
 
 const identity = item => item;
 
@@ -27,11 +27,13 @@ export default ({ modules, logger, executeActions, collect }) => {
 
       return executeActions(actions, modules, logger);
     });
-    return Promise.all(decisionPromise).then(meta => {
-      const metas = flatMap(meta, identity);
-      const decisionMetas = metas.map(item => item.meta);
+    return Promise.all(decisionPromise).then(result => {
+      if (isNonEmptyArray(result)) {
+        const metas = flatMap(result, identity);
+        const decisionMetas = metas.map(item => item.meta);
 
-      collect({ decisions: decisionMetas });
+        collect({ decisions: decisionMetas });
+      }
     });
   };
 };

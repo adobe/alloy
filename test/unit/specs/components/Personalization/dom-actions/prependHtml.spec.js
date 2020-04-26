@@ -16,8 +16,7 @@ describe("Personalization::actions::prependHtml", () => {
   });
 
   it("should prepend personalized content", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { prependHtml } = modules;
     const content = `<li>3</li>`;
     const element = createNode(
@@ -43,7 +42,6 @@ describe("Personalization::actions::prependHtml", () => {
       expect(result[0].innerHTML).toEqual("1");
       expect(result[1].innerHTML).toEqual("2");
       expect(result[2].innerHTML).toEqual("3");
-      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

@@ -18,8 +18,7 @@ describe("Personalization::actions::customCode", () => {
   });
 
   it("should set content in container that has children", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { customCode } = modules;
     const element = createNode("div", { class: "customCode" });
     element.innerHTML = `<div id="inner1"></div><div id="inner2"></div>`;
@@ -40,13 +39,11 @@ describe("Personalization::actions::customCode", () => {
       expect(elements[0].innerHTML).toEqual(
         `<p>Hola!</p><div id="inner1"></div><div id="inner2"></div>`
       );
-      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 
   it("should set content in container that has NO children", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { customCode } = modules;
     const element = createNode("div", { class: "customCode" });
     const elements = [element];
@@ -64,7 +61,6 @@ describe("Personalization::actions::customCode", () => {
 
     return customCode(settings, event).then(() => {
       expect(elements[0].innerHTML).toEqual(`<p>Hola!</p><div>Hello</div>`);
-      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

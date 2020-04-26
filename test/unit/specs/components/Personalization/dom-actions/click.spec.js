@@ -1,11 +1,9 @@
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
-import { noop } from "../../../../../../src/utils";
 
 describe("Personalization::actions::click", () => {
   it("should set click tracking attribute", () => {
-    const collect = noop();
     const store = jasmine.createSpy();
-    const modules = initDomActionsModules(collect, store);
+    const modules = initDomActionsModules(store);
     const { click } = modules;
     const selector = "#click";
     const meta = { a: 1 };

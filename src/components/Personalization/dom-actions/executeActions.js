@@ -30,13 +30,14 @@ const logActionCompleted = (logger, action) => {
   }
 };
 
-const executeAction = (modules, type, args) => {
+const executeAction = (logger, modules, type, args) => {
   const execute = modules[type];
 
   if (!execute) {
-    throw new Error(`DOM action "${type}" not found`);
+    const error = new Error(`DOM action "${type}" not found`);
+    logActionError(logger, args[0], error);
+    throw error;
   }
-
   return execute(...args);
 };
 
@@ -44,7 +45,7 @@ export default (actions, modules, logger) => {
   const actionPromises = actions.map(action => {
     const { type } = action;
 
-    return executeAction(modules, type, [action])
+    return executeAction(logger, modules, type, [action])
       .then(result => {
         logActionCompleted(logger, action);
         return result;

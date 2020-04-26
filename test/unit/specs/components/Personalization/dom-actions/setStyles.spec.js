@@ -12,8 +12,7 @@ describe("Personalization::actions::setStyle", () => {
   });
 
   it("should set styles", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { setStyle } = modules;
     const element = createNode("div", { id: "setStyle" });
     const elements = [element];
@@ -30,7 +29,6 @@ describe("Personalization::actions::setStyle", () => {
 
     return setStyle(settings).then(() => {
       expect(elements[0].style.getPropertyValue("font-size")).toEqual("33px");
-      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

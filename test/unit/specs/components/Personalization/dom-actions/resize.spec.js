@@ -12,8 +12,7 @@ describe("Personalization::actions::resize", () => {
   });
 
   it("should resize personalized content", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { resize } = modules;
     const element = createNode("div", { id: "resize" });
     const elements = [element];
@@ -31,7 +30,6 @@ describe("Personalization::actions::resize", () => {
     return resize(settings).then(() => {
       expect(elements[0].style.width).toEqual("100px");
       expect(elements[0].style.height).toEqual("100px");
-      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });
