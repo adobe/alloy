@@ -5,6 +5,8 @@ node_js: 'stable'
 install:
 - npm i -g npm
 addons:
+  chrome: stable
+  firefox: latest
   sonarcloud:
     organization: adobeinc
 services:
