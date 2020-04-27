@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 
 import createDataCollector from "../../../../../src/components/DataCollector/index";
 import { noop } from "../../../../../src/utils";
-import createEvent from "../../../../../src/core/createEvent";
 
 describe("Event Command", () => {
   let event;
@@ -19,10 +18,12 @@ describe("Event Command", () => {
   let eventManager;
   let eventCommand;
   beforeEach(() => {
-    event = createEvent();
-    spyOn(event, "documentMayUnload").and.callThrough();
-    spyOn(event, "setUserData").and.callThrough();
-    spyOn(event, "setUserXdm").and.callThrough();
+    event = jasmine.createSpyObj("event", [
+      "documentMayUnload",
+      "setUserData",
+      "setUserXdm",
+      "mergeXdm"
+    ]);
     logger = jasmine.createSpyObj("logger", {
       warn: undefined
     });
@@ -99,31 +100,25 @@ describe("Event Command", () => {
     });
   });
 
-  it("sets eventType and eventMergeId", () => {
+  it("merges eventType", () => {
     return eventCommand
       .run({
-        type: "mytype",
-        mergeId: "mymergeid"
+        type: "mytype"
       })
       .then(() => {
-        expect(event.setUserXdm).toHaveBeenCalledWith({
-          eventType: "mytype",
-          eventMergeId: "mymergeid"
+        expect(event.mergeXdm).toHaveBeenCalledWith({
+          eventType: "mytype"
         });
       });
   });
 
-  it("merges eventType and eventMergeId with the userXdm", () => {
+  it("merges eventMergeID", () => {
     return eventCommand
       .run({
-        xdm: { key: "value" },
-        type: "mytype",
         mergeId: "mymergeid"
       })
       .then(() => {
-        expect(event.setUserXdm).toHaveBeenCalledWith({
-          key: "value",
-          eventType: "mytype",
+        expect(event.mergeXdm).toHaveBeenCalledWith({
           eventMergeId: "mymergeid"
         });
       });
