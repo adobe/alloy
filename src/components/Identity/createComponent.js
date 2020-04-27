@@ -52,10 +52,10 @@ export default ({
         run: options => {
           return consent.awaitConsent().then(() => {
             if (ecid) {
-              return ecid;
+              return { ECID: ecid };
             }
             return getIdentity(options.namespaces).then(() => {
-              return ecid;
+              return { ECID: ecid };
             });
           });
         }
