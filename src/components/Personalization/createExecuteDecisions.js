@@ -32,9 +32,9 @@ export default ({ modules, logger, executeActions, collect }) => {
         const metas = flatMap(result, identity);
         return metas.map(item => item.meta);
       })
-      .then(metas => {
-        if (isNonEmptyArray(metas)) {
-          collect({ decisions: metas });
+      .then(decisionMetas => {
+        if (isNonEmptyArray(decisionMetas)) {
+          collect({ decisions: decisionMetas });
         }
       })
       .catch(error => {
