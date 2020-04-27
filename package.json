@@ -17,6 +17,7 @@
     "test:watch": "karma start",
     "test:watch:chrome": "karma start --browsers Chrome",
     "functional:ci": "EDGE_ENV=\"int\" testcafe chrome",
+    "functional:ci:sl": "EDGE_ENV=\"int\" testcafe 'saucelabs:internet explorer@11.285:Windows 10'",
     "functional:local": "EDGE_ENV=\"int\" testcafe chrome",
     "functional:cron:prod": "EDGE_ENV=\"prod\" testcafe chrome",
     "functional:local:allure": "EDGE_ENV=\"int\" testcafe chrome -r allure",
