@@ -40,7 +40,7 @@
           location.host.indexOf("alloyio.com") !== -1
             ? "firstparty.alloyio.com"
             : undefined,
-        configId: "9999999",
+        edgeConfigId: "9999999",
         orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
         debugEnabled: true,
         prehidingStyle: ".personalization-container { opacity: 0 !important }",
@@ -50,7 +50,7 @@
         )
       });
 
-      alloy("event", {
+      alloy("sendEvent", {
         renderDecisions: true,
         xdm: {
           // Demonstrates overriding automatically collected data
@@ -73,7 +73,7 @@
       };
 
       const sendEvent = () => {
-        alloy("event", {
+        alloy("sendEvent", {
           renderDecisions: true,
           xdm: {
             // Demonstrates overriding automatically collected data

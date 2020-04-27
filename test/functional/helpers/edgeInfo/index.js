@@ -1,4 +1,4 @@
-import configId from "./configId";
+import edgeConfigId from "./edgeConfigId";
 import domain from "./domain";
 
-export { domain, configId };
+export { domain, edgeConfigId };

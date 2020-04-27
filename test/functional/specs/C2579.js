@@ -9,7 +9,7 @@ import {
   migrationDisabled
 } from "../helpers/constants/configParts";
 
-import { configId } from "../helpers/edgeInfo";
+import { edgeConfigId } from "../helpers/edgeInfo";
 
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 
@@ -34,7 +34,7 @@ const networkLogger1 = RequestLogger(
 );
 
 const networkLogger2 = RequestLogger(
-  new RegExp(`v1\\/(interact|collect)\\?configId=${configId}`),
+  new RegExp(`v1\\/(interact|collect)\\?configId=${edgeConfigId}`),
   networkLoggerConfig
 );
 
@@ -63,12 +63,13 @@ const getIdentityCookieValue = request => {
 const instance1Config = () => configureAlloyInstance(altConfig);
 
 const instance1Event = ClientFunction(() =>
-  window.alloy("event", { data: { key: "value" } })
+  window.alloy("sendEvent", { data: { key: "value" } })
 );
+
 const instance2Config = () => configureAlloyInstance("instance2", mainConfig);
 
 const instance2Event = ClientFunction(() =>
-  window.instance2("event", { data: { key: "value" } })
+  window.instance2("sendEvent", { data: { key: "value" } })
 );
 
 test("Test C2579: Separate ECIDs are used for multiple SDK instances.", async () => {

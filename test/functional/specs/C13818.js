@@ -12,12 +12,14 @@ const networkLoggerConfig = {
 };
 const networkLogger1 = RequestLogger(
   new RegExp(
-    `v1\\/(interact|collect)\\?configId=${orgMainConfigMain.configId}`
+    `v1\\/(interact|collect)\\?configId=${orgMainConfigMain.edgeConfigId}`
   ),
   networkLoggerConfig
 );
 const networkLogger2 = RequestLogger(
-  new RegExp(`v1\\/(interact|collect)\\?configId=${orgAltConfigAlt.configId}`),
+  new RegExp(
+    `v1\\/(interact|collect)\\?configId=${orgAltConfigAlt.edgeConfigId}`
+  ),
   networkLoggerConfig
 );
 
@@ -38,7 +40,7 @@ const apiCalls = ClientFunction((configObject, alternateConfigObject) => {
     Object.keys(alternateConfigObject).forEach(key => {
       configObject[key] = alternateConfigObject[key];
     });
-    return window.alloy("event", { data: { key: "value" } });
+    return window.alloy("sendEvent", { data: { key: "value" } });
   });
 });
 

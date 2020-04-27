@@ -6,7 +6,7 @@ export default function EventMerge() {
   useEffect(() => {
     eventMergeIdPromise.current.then(eventMergeId => {
       window
-        .alloy("event", {
+        .alloy("sendEvent", {
           xdm: {
             key1: "value1",
             eventMergeId
@@ -16,7 +16,7 @@ export default function EventMerge() {
 
       setTimeout(() => {
         window
-          .alloy("event", {
+          .alloy("sendEvent", {
             xdm: {
               key2: "value2",
               eventMergeId

@@ -31,7 +31,7 @@ export default () => ({
   })
     .noUnknownFields()
     .default({ [GENERAL]: IN }),
-  configId: string()
+  edgeConfigId: string()
     .unique()
     .required(),
   edgeDomain: string()

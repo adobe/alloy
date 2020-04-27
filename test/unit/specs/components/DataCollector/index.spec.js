@@ -16,7 +16,7 @@ describe("Event Command", () => {
   let event;
   let logger;
   let eventManager;
-  let eventCommand;
+  let sendEventCommand;
   beforeEach(() => {
     event = jasmine.createSpyObj("event", [
       "documentMayUnload",
@@ -44,7 +44,7 @@ describe("Event Command", () => {
       eventManager,
       logger
     });
-    eventCommand = dataCollector.commands.event;
+    sendEventCommand = dataCollector.commands.sendEvent;
   });
 
   it("sends event", () => {
@@ -58,7 +58,7 @@ describe("Event Command", () => {
       documentUnloading: true
     };
 
-    return eventCommand.run(options).then(result => {
+    return sendEventCommand.run(options).then(result => {
       expect(event.documentMayUnload).toHaveBeenCalled();
       expect(event.setUserXdm).toHaveBeenCalledWith(xdm);
       expect(event.setUserData).toHaveBeenCalledWith(data);
@@ -76,7 +76,7 @@ describe("Event Command", () => {
       decisionScopes: ["Foo1", "Foo2"]
     };
 
-    return eventCommand.run(options).then(result => {
+    return sendEventCommand.run(options).then(result => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: true,
         decisionScopes: ["Foo1", "Foo2"]
@@ -86,13 +86,13 @@ describe("Event Command", () => {
   });
 
   it("does not call documentMayUnload if documentUnloading is not defined", () => {
-    return eventCommand.run({}).then(() => {
+    return sendEventCommand.run({}).then(() => {
       expect(event.documentMayUnload).not.toHaveBeenCalled();
     });
   });
 
   it("sets renderDecisions to false if renderDecisions is not defined", () => {
-    return eventCommand.run({}).then(() => {
+    return sendEventCommand.run({}).then(() => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: false,
         decisionScopes: []
@@ -101,7 +101,7 @@ describe("Event Command", () => {
   });
 
   it("merges eventType", () => {
-    return eventCommand
+    return sendEventCommand
       .run({
         type: "mytype"
       })
@@ -113,7 +113,7 @@ describe("Event Command", () => {
   });
 
   it("merges eventMergeID", () => {
-    return eventCommand
+    return sendEventCommand
       .run({
         mergeId: "mymergeid"
       })
