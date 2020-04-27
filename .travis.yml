@@ -5,6 +5,8 @@ node_js: 'stable'
 install:
 - npm i -g npm
 addons:
+  chrome: stable
+  firefox: latest
   sonarcloud:
     organization: adobeinc
 services:
@@ -17,6 +19,7 @@ jobs:
       - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then npm run functional:cron:prod; fi
       - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run build:prod; fi
       - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run functional:ci; fi
+      - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run functional:ci:sl; fi
       - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run test:saucelabs; fi
 
 notifications:

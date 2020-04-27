@@ -48,7 +48,7 @@ export default ({
               if (
                 error &&
                 error.message &&
-                error.message.includes("User is opted out")
+                error.message.indexOf("User is opted out") > -1
               ) {
                 throw new Error(
                   "The user previously declined consent, which cannot be changed."
