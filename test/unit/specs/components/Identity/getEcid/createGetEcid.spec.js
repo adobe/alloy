@@ -18,8 +18,7 @@ describe("Identity::createGetEcid", () => {
       createIdentityPayload
     });
     expect(typeof getEcid).toBe("function");
-    getEcid();
-
+    getEcid({ myOptions: {} });
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
       payload: samplePayload,
       action: "identity/acquire"
@@ -35,7 +34,10 @@ describe("Identity::createGetEcid", () => {
       createIdentityPayload
     });
     expect(typeof getEcid).toBe("function");
-    getEcid();
+    getEcid({ options: ["optionOne", "optionTwo"] });
+    expect(createIdentityPayload).toHaveBeenCalledWith({
+      options: ["optionOne", "optionTwo"]
+    });
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
       payload: payload1,
       action: "identity/acquire"
