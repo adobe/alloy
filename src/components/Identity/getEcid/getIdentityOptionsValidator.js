@@ -6,7 +6,7 @@ import { objectOf, literal, arrayOf } from "../../../utils/validation";
  */
 export default options => {
   const getIdentityOptionsValidator = objectOf({
-    namespaces: arrayOf(literal(["ECID"])).nonEmpty()
+    namespaces: arrayOf(literal("ECID")).nonEmpty()
   }).noUnknownFields();
   getIdentityOptionsValidator(options);
   // Return default options for now

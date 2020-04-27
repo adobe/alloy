@@ -25,7 +25,7 @@ describe("createIdentityPayload", () => {
   });
 
   it("serializes properly", () => {
-    const payload = createIdentityPayload();
+    const payload = createIdentityPayload(["ECID"]);
     payload.addIdentity("IDNS", {
       id: "ABC123"
     });
@@ -40,6 +40,25 @@ describe("createIdentityPayload", () => {
         }
       },
       query: { identity: { fetch: ["ECID"] } }
+    });
+  });
+
+  it("should accept an array of namespaces", () => {
+    const payload = createIdentityPayload(["NS1", "NS2", "NS3"]);
+    payload.addIdentity("IDNS", {
+      id: "ABC123"
+    });
+    expect(payload.toJSON()).toEqual({
+      xdm: {
+        identityMap: {
+          IDNS: [
+            {
+              id: "ABC123"
+            }
+          ]
+        }
+      },
+      query: { identity: { fetch: ["NS1", "NS2", "NS3"] } }
     });
   });
 });
