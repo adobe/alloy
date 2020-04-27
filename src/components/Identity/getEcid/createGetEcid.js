@@ -11,9 +11,9 @@ governing permissions and limitations under the License.
 */
 
 export default ({ sendEdgeNetworkRequest, createIdentityPayload }) => {
-  return () =>
+  return namespaces =>
     sendEdgeNetworkRequest({
-      payload: createIdentityPayload(),
+      payload: createIdentityPayload(namespaces),
       action: "identity/acquire"
     });
 };

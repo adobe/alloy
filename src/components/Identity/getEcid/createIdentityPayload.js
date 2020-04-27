@@ -13,10 +13,10 @@ governing permissions and limitations under the License.
 import createRequestPayload from "../../../core/edgeNetwork/requestPayloads/createRequestPayload";
 import createAddIdentity from "../../../core/edgeNetwork/requestPayloads/contentModifiers/createAddIdentity";
 
-export default () => {
+export default namespaces => {
   return createRequestPayload(content => {
     content.query = content.query || {};
-    content.query.identity = { fetch: ["ECID"] };
+    content.query.identity = { fetch: namespaces };
     return {
       addIdentity: createAddIdentity(content)
     };

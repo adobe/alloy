@@ -1,3 +1,5 @@
+import getIdentityOptionsValidator from "./getEcid/getIdentityOptionsValidator";
+
 export default ({
   addEcidQueryToEvent,
   identityManager,
@@ -44,13 +46,15 @@ export default ({
         }
       },
       getEcid: {
-        run() {
-          // const normalizedOptions = validateNamespace(options);
+        optionsValidator: options => {
+          return getIdentityOptionsValidator(options);
+        },
+        run: options => {
           return consent.awaitConsent().then(() => {
             if (ecid) {
               return ecid;
             }
-            return getEcid().then(() => {
+            return getEcid(options.namespaces).then(() => {
               return ecid;
             });
           });
