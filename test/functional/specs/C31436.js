@@ -37,5 +37,5 @@ test("C31436 Qualify for URL destinations via XDM Data.", async () => {
   await configureAlloyInstance("alloy", orgMainConfigMain);
   await triggerAlloyEvent();
 
-  await t.expect(destinationLogger.requests.length > 0).eql(true);
+  await t.expect(destinationLogger.requests.length).eql(1);
 });
