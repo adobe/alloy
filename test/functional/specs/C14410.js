@@ -28,7 +28,7 @@ const getErrorMessageFromSetConsent = ClientFunction(consent =>
 // an instance was already configured with that orgId.
 test("Test C14410: Configuring default consent for unknown purposes fails", async t => {
   const errorMessage = getErrorMessageFromConfigure({
-    defaultConsent: { analytics: "pending" },
+    defaultConsent: { purposes: { analytics: "pending" } },
     ...orgMainConfigMain
   });
   await t
@@ -36,41 +36,60 @@ test("Test C14410: Configuring default consent for unknown purposes fails", asyn
     .ok("Expected the configure command to be rejected");
   await t
     .expect(errorMessage)
-    .contains("'defaultConsent.analytics': Unknown field.");
+    .contains("'defaultConsent.purposes.analytics': Unknown field.");
 });
 
 test("Test C14410: Configuring default consent to 'out' fails", async t => {
   const errorMessage = getErrorMessageFromConfigure({
-    defaultConsent: { general: "out" },
+    defaultConsent: { purposes: { general: "out" } },
     ...orgMainConfigMain
   });
   await t
     .expect(errorMessage)
     .ok("Expected the configure command to be rejected");
-  await t.expect(errorMessage).contains("'defaultConsent.general':");
+  await t.expect(errorMessage).contains("'defaultConsent.purposes.general':");
   await t.expect(errorMessage).contains("'out'");
 });
 
 test("Test C14410: Setting consent for unknown purposes fails", async t => {
   await configureAlloyInstance("alloy", {
-    defaultConsent: { general: "pending" },
+    defaultConsent: { purposes: { general: "pending" } },
     ...orgMainConfigMain
   });
-  const errorMessage = getErrorMessageFromSetConsent({ analytics: "in" });
+  const errorMessage = getErrorMessageFromSetConsent({
+    purposes: { analytics: "in" }
+  });
   await t
     .expect(errorMessage)
     .ok("Expected the setConsent command to be rejected");
-  await t.expect(errorMessage).contains("'general' is a required option");
+  await t
+    .expect(errorMessage)
+    .contains("'purposes.general' is a required option");
 });
 
 test("Test C14410: Setting consent to 'pending' fails", async t => {
   await configureAlloyInstance("alloy", {
-    defaultConsent: { general: "pending" },
+    defaultConsent: { purposes: { general: "pending" } },
     ...orgMainConfigMain
   });
-  const errorMessage = getErrorMessageFromSetConsent({ general: "pending" });
+  const errorMessage = getErrorMessageFromSetConsent({
+    purposes: { general: "pending" }
+  });
   await t
     .expect(errorMessage)
     .ok("Expected the setConsent command to be rejected");
   await t.expect(errorMessage).contains("'pending'");
+});
+
+test("Test C14410: Setting consent with empty purposes object fails", async t => {
+  await configureAlloyInstance("alloy", {
+    ...orgMainConfigMain
+  });
+  const errorMessage = getErrorMessageFromSetConsent({
+    purposes: {}
+  });
+  await t
+    .expect(errorMessage)
+    .ok("Expected the setConsent command to be rejected");
+  await t.expect(errorMessage).contains("'purposes.general'");
 });

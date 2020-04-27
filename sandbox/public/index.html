@@ -50,7 +50,7 @@
       }
 
       alloy("configure", {
-        // defaultConsent: { general: "pending" },
+        // defaultConsent: { purposes: { general: "pending" } },
         edgeDomain:
           location.host.indexOf("alloyio.com") !== -1
             ? "firstparty.alloyio.com"

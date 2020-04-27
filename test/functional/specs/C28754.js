@@ -31,7 +31,11 @@ test.meta({
 });
 
 const setConsentOut = ClientFunction(() => {
-  return window.alloy("setConsent", { general: "out" });
+  return window.alloy("setConsent", {
+    purposes: {
+      general: "out"
+    }
+  });
 });
 
 test("C28754 - Consenting to no purposes should result in no data handles in the response.", async () => {

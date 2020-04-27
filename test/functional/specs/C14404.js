@@ -29,10 +29,20 @@ test.meta({
 
 test("Test C14404: User cannot consent to all purposes after consenting to no purposes", async t => {
   await configureAlloyInstance("alloy", config);
-  await t.eval(() => window.alloy("setConsent", { general: "out" }));
+  await t.eval(() => {
+    window.alloy("setConsent", {
+      purposes: {
+        general: "out"
+      }
+    });
+  });
   const setConsentErrorMessage = await t.eval(() =>
     window
-      .alloy("setConsent", { general: "in" })
+      .alloy("setConsent", {
+        purposes: {
+          general: "in"
+        }
+      })
       .then(() => undefined, e => e.message)
   );
   await t

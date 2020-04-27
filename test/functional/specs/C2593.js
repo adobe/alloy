@@ -21,19 +21,23 @@ test.meta({
 const triggerEventThenConsent = ClientFunction(() => {
   return new Promise(resolve => {
     const eventPromise = window.alloy("sendEvent", { xdm: { key: "value" } });
-    window.alloy("setConsent", { general: "in" }).then(() => {
-      eventPromise.then(resolve);
-    });
+    window
+      .alloy("setConsent", {
+        purposes: {
+          general: "in"
+        }
+      })
+      .then(() => {
+        eventPromise.then(resolve);
+      });
   });
 });
 
 test("Test C2593: Event command consents to all purposes", async () => {
-  // SDK installed and configured with defaultConsent: { general: "pending" }
   await configureAlloyInstance("alloy", {
-    defaultConsent: { general: "pending" },
+    defaultConsent: { purposes: { general: "pending" } },
     ...environmentContextConfig
   });
-  // trigger alloy event
   await triggerEventThenConsent();
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);

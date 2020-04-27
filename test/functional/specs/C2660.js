@@ -25,7 +25,11 @@ const sendEvent = ClientFunction(() => {
 
 const changeHashAndConsent = ClientFunction(() => {
   window.location.hash = "foo";
-  return window.alloy("setConsent", { general: "in" });
+  return window.alloy("setConsent", {
+    purposes: {
+      general: "in"
+    }
+  });
 });
 
 const getContextUrlFromRequest = request => {

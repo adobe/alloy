@@ -1,3 +1,3 @@
 export default {
-  defaultConsent: { general: "pending" }
+  defaultConsent: { purposes: { general: "pending" } }
 };

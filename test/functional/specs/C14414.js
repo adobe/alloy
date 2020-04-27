@@ -28,11 +28,19 @@ test.meta({
 test("Test C14414: Requests are queued while consent changes are pending", async t => {
   await configureAlloyInstance("alloy", config);
   await t.eval(() => {
-    window.alloy("setConsent", { general: "in" });
+    window.alloy("setConsent", {
+      purposes: {
+        general: "in"
+      }
+    });
     return undefined;
   });
   await t.eval(() => {
-    window.alloy("setConsent", { general: "out" });
+    window.alloy("setConsent", {
+      purposes: {
+        general: "out"
+      }
+    });
     return undefined;
   });
   const errorMessage = await t.eval(() =>

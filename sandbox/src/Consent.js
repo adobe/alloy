@@ -3,7 +3,9 @@ import React from "react";
 const executeSetConsentCommand = generalPurpose => () => {
   window
     .alloy("setConsent", {
-      general: generalPurpose
+      purposes: {
+        general: generalPurpose
+      }
     })
     .catch(console.error);
 };

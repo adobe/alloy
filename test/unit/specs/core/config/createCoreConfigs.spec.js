@@ -81,38 +81,49 @@ describe("createCoreConfigs", () => {
   describe("defaultConsent", () => {
     it("validates defaultConsent=undefined", () => {
       const config = objectOf(createCoreConfigs())(baseConfig);
-      expect(config.defaultConsent).toEqual({ [GENERAL]: IN });
+      expect(config.defaultConsent).toEqual({ purposes: { [GENERAL]: IN } });
     });
     it("validates defaultConsent={}", () => {
-      const config = objectOf(createCoreConfigs())({
-        defaultConsent: {},
-        ...baseConfig
-      });
-      expect(config.defaultConsent).toEqual({ [GENERAL]: IN });
+      expect(() => {
+        objectOf(createCoreConfigs())({
+          defaultConsent: {},
+          ...baseConfig
+        });
+      }).toThrowError();
     });
-    it("validates defaultConsent={general:'in'}", () => {
+    it("validates defaultConsent={ purposes: { general:'in' } }", () => {
       const config = objectOf(createCoreConfigs())({
-        defaultConsent: { [GENERAL]: IN },
+        defaultConsent: { purposes: { [GENERAL]: IN } },
         ...baseConfig
       });
-      expect(config.defaultConsent).toEqual({ [GENERAL]: IN });
+      expect(config.defaultConsent).toEqual({ purposes: { [GENERAL]: IN } });
     });
-    it("validates defaultConsent={general:'pending'}", () => {
+    it("validates defaultConsent={ purposes: { general:'pending' } }", () => {
       const config = objectOf(createCoreConfigs())({
-        defaultConsent: { [GENERAL]: PENDING },
+        defaultConsent: { purposes: { [GENERAL]: PENDING } },
         ...baseConfig
       });
-      expect(config.defaultConsent).toEqual({ [GENERAL]: PENDING });
+      expect(config.defaultConsent).toEqual({
+        purposes: { [GENERAL]: PENDING }
+      });
     });
     it("validates defaultConsent=123", () => {
       expect(() => {
         objectOf(createCoreConfigs())({ defaultConsent: 123, ...baseConfig });
       }).toThrowError();
     });
-    it("validates defaultConsent={general:'out'}", () => {
+    it("validates defaultConsent={ purposes: 123 }", () => {
       expect(() => {
         objectOf(createCoreConfigs())({
-          defaultConsent: { [GENERAL]: OUT },
+          defaultConsent: { purposes: 123 },
+          ...baseConfig
+        });
+      }).toThrowError();
+    });
+    it("validates defaultConsent={ purposes: { general:'out' } }", () => {
+      expect(() => {
+        objectOf(createCoreConfigs())({
+          defaultConsent: { purposes: { [GENERAL]: OUT } },
           ...baseConfig
         });
       }).toThrowError();

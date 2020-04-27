@@ -1,3 +1,3 @@
 export default {
-  defaultConsent: { general: "in" }
+  defaultConsent: { purposes: { general: "in" } }
 };

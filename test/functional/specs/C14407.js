@@ -16,7 +16,11 @@ test.meta({
 });
 
 const setConsentIn = ClientFunction(() => {
-  return window.alloy("setConsent", { general: "in" });
+  return window.alloy("setConsent", {
+    purposes: {
+      general: "in"
+    }
+  });
 });
 
 const triggerAlloyEvent = ClientFunction(() => {
@@ -28,7 +32,7 @@ const configure = ClientFunction(() => {
     promise: window.alloy("configure", {
       edgeConfigId: "9999999",
       orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
-      defaultConsent: { general: "pending" },
+      defaultConsent: { purposes: { general: "pending" } },
       idMigrationEnabled: false,
       debugEnabled: true
     })

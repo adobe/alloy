@@ -27,10 +27,18 @@ export default () => ({
   errorsEnabled: boolean().default(true),
   debugEnabled: boolean().default(false),
   defaultConsent: objectOf({
-    [GENERAL]: enumOf(IN, PENDING).default(IN)
+    purposes: objectOf({
+      [GENERAL]: enumOf(IN, PENDING).default(IN)
+    })
+      .noUnknownFields()
+      .required()
   })
     .noUnknownFields()
-    .default({ [GENERAL]: IN }),
+    .default({
+      purposes: {
+        [GENERAL]: IN
+      }
+    }),
   edgeConfigId: string()
     .unique()
     .required(),

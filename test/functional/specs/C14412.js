@@ -24,9 +24,19 @@ test.meta({
 
 test("Test C14412: While user is changing consent preferences, other requests should be queued", async t => {
   await configureAlloyInstance("alloy", config);
-  await t.eval(() => window.alloy("setConsent", { general: "in" }));
+  await t.eval(() =>
+    window.alloy("setConsent", {
+      purposes: {
+        general: "in"
+      }
+    })
+  );
   await t.eval(() => {
-    window.alloy("setConsent", { general: "out" });
+    window.alloy("setConsent", {
+      purposes: {
+        general: "out"
+      }
+    });
     // don't wait for setConsent to be done, but wait for the command to be run.
     return undefined;
   });

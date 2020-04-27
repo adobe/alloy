@@ -20,7 +20,11 @@ export default ({
   sendSetConsentRequest,
   validateSetConsentOptions
 }) => {
-  const consentByPurpose = assign({}, defaultConsent, readStoredConsent());
+  const consentByPurpose = assign(
+    {},
+    defaultConsent.purposes,
+    readStoredConsent()
+  );
   consent.setConsent(consentByPurpose);
 
   const readCookieIfQueueEmpty = () => {
@@ -42,7 +46,7 @@ export default ({
         run: options => {
           consent.suspend();
           return taskQueue
-            .addTask(() => sendSetConsentRequest(options))
+            .addTask(() => sendSetConsentRequest(options.purposes))
             .catch(error => {
               readCookieIfQueueEmpty();
               // This check re-writes the error message from Konductor to be more clear.

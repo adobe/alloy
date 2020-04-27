@@ -22,12 +22,16 @@ const triggerAlloyEvent = ClientFunction(() => {
 });
 
 const setConsentOut = ClientFunction(() => {
-  return window.alloy("setConsent", { general: "out" });
+  return window.alloy("setConsent", {
+    purposes: {
+      general: "out"
+    }
+  });
 });
 
 test("C25148 - When default consent is 'in', consent can be revoked", async () => {
   await configureAlloyInstance("alloy", {
-    defaultConsent: { general: "in" },
+    defaultConsent: { purposes: { general: "in" } },
     ...environmentContextConfig
   });
 
