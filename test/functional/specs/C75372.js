@@ -24,7 +24,7 @@ const sendEvent = ClientFunction(() => {
   // Using a merge ID is a decent test because it's one thing we know
   // gets merged with the XDM object.
   return window
-    .alloy("event", {
+    .alloy("sendEvent", {
       xdm: xdmDataLayer,
       data: nonXdmDataLayer,
       mergeId: "abc"
