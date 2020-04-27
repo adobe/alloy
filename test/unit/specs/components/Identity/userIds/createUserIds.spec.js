@@ -1,11 +1,11 @@
-import createCustomerIds from "../../../../../../src/components/Identity/customerIds/createCustomerIds";
+import createUserIds from "../../../../../../src/components/Identity/userIds/createUserIds";
 import {
   defer,
   convertStringToSha256Buffer
 } from "../../../../../../src/utils";
 import flushPromiseChains from "../../../../helpers/flushPromiseChains";
 
-describe("Identity::createCustomerIds", () => {
+describe("Identity::createUserIds", () => {
   let payload;
   let event;
   let eventManager;
@@ -26,24 +26,24 @@ describe("Identity::createCustomerIds", () => {
     });
   });
   it("has addToPayload and sync methods", () => {
-    const customerIds = createCustomerIds({
+    const userIds = createUserIds({
       eventManager,
       consent,
       logger,
       convertStringToSha256Buffer
     });
-    expect(customerIds.addToPayload).toBeDefined();
-    expect(customerIds.sync).toBeDefined();
+    expect(userIds.addToPayload).toBeDefined();
+    expect(userIds.sync).toBeDefined();
   });
 
   it("waits for consent before sending an event", () => {
-    const customerIds = createCustomerIds({
+    const userIds = createUserIds({
       eventManager,
       consent,
       logger,
       convertStringToSha256Buffer
     });
-    customerIds.sync({
+    userIds.sync({
       crm: {
         id: "1234",
         authState: "ambiguous"
@@ -65,13 +65,13 @@ describe("Identity::createCustomerIds", () => {
     const sha256Buffer = jasmine
       .createSpy("sha256Buffer")
       .and.returnValue(false);
-    const customerIds = createCustomerIds({
+    const userIds = createUserIds({
       eventManager,
       consent,
       logger,
       convertStringToSha256Buffer: sha256Buffer
     });
-    customerIds.sync({
+    userIds.sync({
       crm: {
         id: "1234",
         authState: "ambiguous"
@@ -101,7 +101,7 @@ describe("Identity::createCustomerIds", () => {
     const sha256Buffer = jasmine
       .createSpy("sha256Buffer")
       .and.returnValue(false);
-    const customerIds = createCustomerIds({
+    const userIds = createUserIds({
       eventManager,
       consent,
       logger,
@@ -119,7 +119,7 @@ describe("Identity::createCustomerIds", () => {
         hashEnabled: true
       }
     };
-    customerIds.sync(identities);
+    userIds.sync(identities);
 
     return flushPromiseChains()
       .then(() => {
@@ -139,7 +139,7 @@ describe("Identity::createCustomerIds", () => {
   });
 
   it("rejects returned promise when sending an event if consent denied", () => {
-    const customerIds = createCustomerIds({ eventManager, consent, logger });
+    const userIds = createUserIds({ eventManager, consent, logger });
 
     consentDeferred.reject(new Error("Consent rejected."));
 
@@ -147,7 +147,7 @@ describe("Identity::createCustomerIds", () => {
     // async nature of convertStringToSha256Buffer unless we were to mock
     // convertStringToSha256Buffer.
     return expectAsync(
-      customerIds.sync({
+      userIds.sync({
         crm: {
           id: "1234",
           authState: "ambiguous"
@@ -158,10 +158,10 @@ describe("Identity::createCustomerIds", () => {
 
   it("does not return values", () => {
     consentDeferred.resolve();
-    const customerIds = createCustomerIds({ eventManager, consent, logger });
+    const userIds = createUserIds({ eventManager, consent, logger });
 
     return expectAsync(
-      customerIds.sync({
+      userIds.sync({
         crm: {
           id: "1234",
           authState: "ambiguous"
@@ -183,14 +183,14 @@ describe("Identity::createCustomerIds", () => {
       }
     };
     consentDeferred.resolve();
-    const customerIds = createCustomerIds({
+    const userIds = createUserIds({
       eventManager,
       consent,
       logger,
       convertStringToSha256Buffer
     });
-    return customerIds.sync(ids).then(() => {
-      customerIds.addToPayload(payload);
+    return userIds.sync(ids).then(() => {
+      userIds.addToPayload(payload);
 
       expect(payload.addIdentity.calls.count()).toBe(2);
       expect(payload.addIdentity).toHaveBeenCalledWith("Email_LC_SHA256", {

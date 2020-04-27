@@ -1,22 +1,22 @@
 import * as AUTH_STATES from "../constants/authStates";
 import { isObject, includes, values, isBoolean, isNil } from "../../../utils";
 
-const ERROR_MESSAGE = "Invalid customer ID format.";
+const ERROR_MESSAGE = "Invalid user ID format.";
 const NOT_AN_OBJECT_ERROR = "Each namespace should be an object.";
 const NO_ID_ERROR = "Each namespace object should have an ID.";
 const PRIMARY_NOT_BOOLEAN = "The `primary` property should be true or false.";
 
-const validateCustomerIds = customerIds => {
-  if (!isObject(customerIds)) {
+const validateUserIds = userIds => {
+  if (!isObject(userIds)) {
     throw new Error(`${ERROR_MESSAGE} ${NOT_AN_OBJECT_ERROR}`);
   }
-  Object.keys(customerIds).forEach(customerId => {
-    const { primary } = customerIds[customerId];
+  Object.keys(userIds).forEach(userId => {
+    const { primary } = userIds[userId];
 
-    if (!isObject(customerIds[customerId])) {
+    if (!isObject(userIds[userId])) {
       throw new Error(`${ERROR_MESSAGE} ${NOT_AN_OBJECT_ERROR}`);
     }
-    if (!customerIds[customerId].id) {
+    if (!userIds[userId].id) {
       throw new Error(`${ERROR_MESSAGE} ${NO_ID_ERROR}`);
     }
     if (!isNil(primary) && !isBoolean(primary)) {
@@ -34,16 +34,16 @@ const sortObjectKeyNames = object => {
     }, {});
 };
 
-const normalizeCustomerIds = customerIds => {
-  const sortedCustomerIds = sortObjectKeyNames(customerIds);
+const normalizeUserIds = userIds => {
+  const sortedUserIds = sortObjectKeyNames(userIds);
   // TODO: This requires a change to the docs to list the possible values.
   // Alternatively, maybe we should expose the enum on the instance.
   const authStates = values(AUTH_STATES);
 
-  return Object.keys(sortedCustomerIds).reduce((normalizedIds, customerId) => {
-    const { id, authenticatedState, primary } = sortedCustomerIds[customerId];
+  return Object.keys(sortedUserIds).reduce((normalizedIds, userId) => {
+    const { id, authenticatedState, primary } = sortedUserIds[userId];
 
-    normalizedIds[customerId] = {
+    normalizedIds[userId] = {
       id,
       authenticatedState: includes(authStates, authenticatedState)
         ? authenticatedState // Set the auth state to the string value like `authenticated`.
@@ -51,11 +51,11 @@ const normalizeCustomerIds = customerIds => {
     };
 
     if (primary !== undefined) {
-      normalizedIds[customerId].primary = primary;
+      normalizedIds[userId].primary = primary;
     }
 
     return normalizedIds;
   }, {});
 };
 
-export { validateCustomerIds, normalizeCustomerIds };
+export { validateUserIds, normalizeUserIds };

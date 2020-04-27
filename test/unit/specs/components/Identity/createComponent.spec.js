@@ -16,7 +16,7 @@ import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("Identity::createComponent", () => {
   let addEcidQueryToEvent;
-  let customerIds;
+  let userIds;
   let ensureRequestHasIdentity;
   let setLegacyEcid;
   let handleResponseForIdSyncs;
@@ -28,7 +28,7 @@ describe("Identity::createComponent", () => {
   let getEcidPromise;
   beforeEach(() => {
     addEcidQueryToEvent = jasmine.createSpy("addEcidQueryToEvent");
-    customerIds = jasmine.createSpyObj("customerIds", ["addToPayload", "sync"]);
+    userIds = jasmine.createSpyObj("userIds", ["addToPayload", "sync"]);
     ensureRequestHasIdentity = jasmine.createSpy("ensureRequestHasIdentity");
     setLegacyEcid = jasmine.createSpy("setLegacyEcid");
     handleResponseForIdSyncs = jasmine.createSpy("handleResponseForIdSyncs");
@@ -43,7 +43,7 @@ describe("Identity::createComponent", () => {
       .and.returnValue(getEcidPromise.promise);
     component = createComponent({
       addEcidQueryToEvent,
-      customerIds,
+      userIds,
       ensureRequestHasIdentity,
       setLegacyEcid,
       handleResponseForIdSyncs,
@@ -59,11 +59,11 @@ describe("Identity::createComponent", () => {
     expect(addEcidQueryToEvent).toHaveBeenCalledWith(event);
   });
 
-  it("adds customer IDs to request payload", () => {
+  it("adds user IDs to request payload", () => {
     const payload = { type: "payload" };
     const onResponse = jasmine.createSpy("onResponse");
     component.lifecycle.onBeforeRequest({ payload, onResponse });
-    expect(customerIds.addToPayload).toHaveBeenCalledWith(payload);
+    expect(userIds.addToPayload).toHaveBeenCalledWith(payload);
   });
 
   it("ensures request has identity", () => {
@@ -107,10 +107,10 @@ describe("Identity::createComponent", () => {
     expect(result).toBe(idSyncsPromise);
   });
 
-  it("sets customer IDs", () => {
-    const ids = { type: "customerIds" };
-    component.commands.setCustomerIds.run(ids);
-    expect(customerIds.sync).toHaveBeenCalledWith(ids);
+  it("sets user IDs", () => {
+    const ids = { type: "userIds" };
+    component.commands.syncIdentity.run({ userIds: ids });
+    expect(userIds.sync).toHaveBeenCalledWith(ids);
   });
 
   it("getEcid command should make a request when ecid is not available", () => {

@@ -1,4 +1,4 @@
-import { normalizeCustomerIds, validateCustomerIds } from "./util";
+import { normalizeUserIds, validateUserIds } from "./util";
 import { convertBufferToHex, clone, noop, isEmptyObject } from "../../../utils";
 
 export default ({
@@ -39,7 +39,7 @@ export default ({
     };
     state.hasIds = !!Object.keys(state.ids).length;
   };
-  const customerIds = {
+  const userIds = {
     addToPayload(payload) {
       if (state.hasIds) {
         const ids = clone(state.ids);
@@ -49,9 +49,9 @@ export default ({
       }
     },
     sync(originalIds) {
-      validateCustomerIds(originalIds);
+      validateUserIds(originalIds);
 
-      const normalizedIds = normalizeCustomerIds(originalIds);
+      const normalizedIds = normalizeUserIds(originalIds);
 
       return hash(originalIds, normalizedIds).then(hashedIds => {
         if (isEmptyObject(hashedIds)) {
@@ -69,5 +69,5 @@ export default ({
     }
   };
 
-  return customerIds;
+  return userIds;
 };
