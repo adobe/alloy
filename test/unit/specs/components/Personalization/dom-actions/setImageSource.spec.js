@@ -13,8 +13,7 @@ describe("Personalization::actions::setImageSource", () => {
 
   it("should swap image", () => {
     const url = "http://foo.com/a.png";
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { setImageSource } = modules;
     const element = createNode("img", { id: "setImageSource", src: url });
     const elements = [element];
@@ -31,7 +30,6 @@ describe("Personalization::actions::setImageSource", () => {
 
     return setImageSource(settings).then(() => {
       expect(elements[0].getAttribute("src")).toEqual("http://foo.com/b.png");
-      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

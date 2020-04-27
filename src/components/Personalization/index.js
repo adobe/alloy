@@ -26,11 +26,12 @@ import createOnClickHandler from "./createOnClickHandler";
 const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeMeta });
   const clickStorage = [];
-  const modules = initDomActionsModules(collect, clickStorage.push);
+  const modules = initDomActionsModules(clickStorage.push);
   const executeDecisions = createExecuteDecisions({
     modules,
     logger,
-    executeActions
+    executeActions,
+    collect
   });
   const onResponseHandler = createOnResponseHandler({
     extractDecisions,

@@ -12,8 +12,7 @@ describe("Personalization::actions::setText", () => {
   });
 
   it("should set personalized text", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { setText } = modules;
     const element = createNode("div", { id: "setText" });
     element.textContent = "foo";
@@ -31,7 +30,6 @@ describe("Personalization::actions::setText", () => {
 
     return setText(settings).then(() => {
       expect(elements[0].textContent).toEqual("bar");
-      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

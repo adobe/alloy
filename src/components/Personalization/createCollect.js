@@ -16,6 +16,6 @@ export default ({ eventManager, mergeMeta }) => {
 
     mergeMeta(event, meta);
 
-    eventManager.sendEvent(event);
+    return eventManager.sendEvent(event);
   };
 };

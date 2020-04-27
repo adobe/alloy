@@ -16,8 +16,7 @@ describe("Personalization::actions::replaceHtml", () => {
   });
 
   it("should replace element with personalized content", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { replaceHtml } = modules;
     const child = createNode(
       "div",
@@ -41,7 +40,6 @@ describe("Personalization::actions::replaceHtml", () => {
 
       expect(result.length).toEqual(1);
       expect(result[0].innerHTML).toEqual("BBB");
-      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

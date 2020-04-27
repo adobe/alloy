@@ -16,8 +16,7 @@ describe("Personalization::actions::insertBefore", () => {
   });
 
   it("should insert before personalized content", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { insertBefore } = modules;
     const child = createNode(
       "div",
@@ -41,7 +40,6 @@ describe("Personalization::actions::insertBefore", () => {
 
       expect(result[0].innerHTML).toEqual("BBB");
       expect(result[1].innerHTML).toEqual("AAA");
-      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

@@ -16,8 +16,7 @@ describe("Personalization::actions::appendHtml", () => {
   });
 
   it("should append personalized content", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { appendHtml } = modules;
     const content = `<li>1</li>`;
     const element = createNode(
@@ -43,7 +42,6 @@ describe("Personalization::actions::appendHtml", () => {
       expect(result[0].innerHTML).toEqual("1");
       expect(result[1].innerHTML).toEqual("2");
       expect(result[2].innerHTML).toEqual("3");
-      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

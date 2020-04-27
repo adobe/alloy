@@ -15,9 +15,11 @@ import createExecuteDecisions from "../../../../../src/components/Personalizatio
 describe("Personalization::createExecuteDecisions", () => {
   const logger = {
     log() {},
-    warn() {}
+    warn() {},
+    error: jasmine.createSpy()
   };
   let executeActions;
+  let collect;
 
   const decisions = [
     {
@@ -33,24 +35,52 @@ describe("Personalization::createExecuteDecisions", () => {
           }
         }
       ]
+    },
+    {
+      id: 5,
+      scope: "__view__",
+      items: [
+        {
+          schema: "https://ns.adobe.com/personalization/dom-action",
+          data: {
+            type: "setHtml",
+            selector: "#foo2",
+            content: "<div>offer 2</div>"
+          }
+        }
+      ]
     }
   ];
-
+  const expectedAction = [
+    {
+      type: "setHtml",
+      selector: "#foo",
+      content: "<div>Hola Mundo</div>",
+      meta: {
+        id: decisions[0].id,
+        scope: "foo"
+      }
+    }
+  ];
+  const metas = [
+    {
+      id: decisions[0].id,
+      scope: decisions[0].scope
+    },
+    {
+      id: decisions[1].id,
+      scope: decisions[1].scope
+    }
+  ];
   beforeEach(() => {
-    executeActions = jasmine.createSpy().and.callThrough();
+    collect = jasmine.createSpy();
   });
 
-  it("should trigger executeActions when provided with an array of actions", () => {
-    const expectedAction = [
-      {
-        type: "setHtml",
-        selector: "#foo",
-        content: "<div>Hola Mundo</div>",
-        meta: {
-          decisionId: decisions[0].id
-        }
-      }
-    ];
+  it("should trigger executeActions and collect when provided with an array of actions", () => {
+    executeActions = jasmine
+      .createSpy()
+      .and.returnValues([{ meta: metas[0] }], [{ meta: metas[1] }]);
+
     const spy = jasmine.createSpy();
     const modules = {
       foo: spy
@@ -58,27 +88,56 @@ describe("Personalization::createExecuteDecisions", () => {
     const executeDecisions = createExecuteDecisions({
       modules,
       logger,
-      executeActions
+      executeActions,
+      collect
     });
-    executeDecisions(decisions);
-    expect(executeActions).toHaveBeenCalledWith(
-      expectedAction,
-      modules,
-      logger
-    );
+    return executeDecisions(decisions).then(() => {
+      expect(executeActions).toHaveBeenCalledWith(
+        expectedAction,
+        modules,
+        logger
+      );
+      expect(collect).toHaveBeenCalledWith({ decisions: metas });
+    });
   });
 
-  it("shouldn't trigger executeActions when provided with empty array of actions", () => {
+  it("shouldn't trigger executeActions and collect when provided with empty array of actions", () => {
     const actionSpy = jasmine.createSpy();
     const modules = {
       foo: actionSpy
     };
+    executeActions = jasmine.createSpy().and.callThrough();
     const executeDecisions = createExecuteDecisions({
       modules,
       logger,
-      executeActions
+      executeActions,
+      collect
     });
-    executeDecisions([]);
-    expect(executeActions).not.toHaveBeenCalled();
+    return executeDecisions([]).then(() => {
+      expect(executeActions).not.toHaveBeenCalled();
+      expect(collect).not.toHaveBeenCalled();
+    });
+  });
+  it("should log an error when collect call fails", () => {
+    const error = new Error("test error");
+    collect = jasmine.createSpy().and.throwError("test error");
+    const actionSpy = jasmine.createSpy();
+    const modules = {
+      foo: actionSpy
+    };
+    executeActions = jasmine
+      .createSpy()
+      .and.returnValues([{ meta: metas[0] }], [{ meta: metas[1] }]);
+    const executeDecisions = createExecuteDecisions({
+      modules,
+      logger,
+      executeActions,
+      collect
+    });
+    return executeDecisions(decisions).then(() => {
+      expect(executeActions).toHaveBeenCalled();
+      expect(collect).toThrowError();
+      expect(logger.error).toHaveBeenCalledWith(error);
+    });
   });
 });

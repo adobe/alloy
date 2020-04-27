@@ -12,8 +12,7 @@ describe("Personalization::actions::move", () => {
   });
 
   it("should move personalized content", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { move } = modules;
     const element = createNode("div", { id: "move" });
     const elements = [element];
@@ -31,7 +30,6 @@ describe("Personalization::actions::move", () => {
     move(settings).then(() => {
       expect(elements[0].style.left).toEqual("100px");
       expect(elements[0].style.top).toEqual("100px");
-      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

@@ -33,7 +33,7 @@ const renderContent = (elements, content, renderFunc) => {
   return Promise.all(executions);
 };
 
-export const createAction = (collect, renderFunc) => {
+export const createAction = renderFunc => {
   return settings => {
     const { selector, prehidingSelector, content, meta } = settings;
 
@@ -43,15 +43,15 @@ export const createAction = (collect, renderFunc) => {
       .then(elements => renderContent(elements, content, renderFunc))
       .then(
         () => {
-          // if everything is OK, notify and show elements
-          collect(meta);
+          // if everything is OK, show elements
           showElements(prehidingSelector);
+          return { meta };
         },
-        () => {
+        error => {
           // in case of awaiting timing or error, we need to remove the style tag
-          // hence showing the pre-hidden elements and notify
-          collect(meta);
+          // hence showing the pre-hidden elements
           showElements(prehidingSelector);
+          return { meta, error };
         }
       );
   };

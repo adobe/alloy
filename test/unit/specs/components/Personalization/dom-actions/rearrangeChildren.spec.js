@@ -16,8 +16,7 @@ describe("Personalization::actions::rearrange", () => {
   });
 
   it("should rearrange elements when from < to", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { rearrange } = modules;
     const content = `
       <li>1</li>
@@ -46,13 +45,11 @@ describe("Personalization::actions::rearrange", () => {
       expect(result[0].textContent).toEqual("2");
       expect(result[1].textContent).toEqual("3");
       expect(result[2].textContent).toEqual("1");
-      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 
   it("should rearrange elements when from > to", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { rearrange } = modules;
     const content = `
       <li>1</li>
@@ -81,7 +78,6 @@ describe("Personalization::actions::rearrange", () => {
       expect(result[0].textContent).toEqual("3");
       expect(result[1].textContent).toEqual("1");
       expect(result[2].textContent).toEqual("2");
-      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });

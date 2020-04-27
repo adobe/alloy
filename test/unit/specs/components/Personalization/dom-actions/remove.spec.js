@@ -16,8 +16,7 @@ describe("Personalization::actions::remove", () => {
   });
 
   it("should remove element", () => {
-    const collect = jasmine.createSpy();
-    const modules = initDomActionsModules(collect);
+    const modules = initDomActionsModules();
     const { remove } = modules;
     const content = `<div id="child"></div>`;
     const element = createNode("div", { id: "remove" }, { innerHTML: content });
@@ -35,7 +34,6 @@ describe("Personalization::actions::remove", () => {
       const result = selectNodes("#child");
 
       expect(result.length).toEqual(0);
-      expect(collect).toHaveBeenCalledWith(meta);
     });
   });
 });
