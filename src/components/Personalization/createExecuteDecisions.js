@@ -22,18 +22,23 @@ const buildActions = decision => {
 
 export default ({ modules, logger, executeActions, collect }) => {
   return decisions => {
-    const decisionPromise = decisions.map(decision => {
+    const decisionMetasPromise = decisions.map(decision => {
       const actions = buildActions(decision);
 
       return executeActions(actions, modules, logger);
     });
-    return Promise.all(decisionPromise).then(result => {
-      if (isNonEmptyArray(result)) {
+    return Promise.all(decisionMetasPromise)
+      .then(result => {
         const metas = flatMap(result, identity);
-        const decisionMetas = metas.map(item => item.meta);
-
-        collect({ decisions: decisionMetas });
-      }
-    });
+        return metas.map(item => item.meta);
+      })
+      .then(metas => {
+        if (isNonEmptyArray(metas)) {
+          collect({ decisions: metas });
+        }
+      })
+      .catch(error => {
+        logger.error(error);
+      });
   };
 };

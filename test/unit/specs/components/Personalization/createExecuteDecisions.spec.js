@@ -15,7 +15,8 @@ import createExecuteDecisions from "../../../../../src/components/Personalizatio
 describe("Personalization::createExecuteDecisions", () => {
   const logger = {
     log() {},
-    warn() {}
+    warn() {},
+    error: jasmine.createSpy()
   };
   let executeActions;
   let collect;
@@ -115,6 +116,28 @@ describe("Personalization::createExecuteDecisions", () => {
     return executeDecisions([]).then(() => {
       expect(executeActions).not.toHaveBeenCalled();
       expect(collect).not.toHaveBeenCalled();
+    });
+  });
+  it("should log an error when collect call fails", () => {
+    const error = new Error("test error");
+    collect = jasmine.createSpy().and.throwError("test error");
+    const actionSpy = jasmine.createSpy();
+    const modules = {
+      foo: actionSpy
+    };
+    executeActions = jasmine
+      .createSpy()
+      .and.returnValues([{ meta: metas[0] }], [{ meta: metas[1] }]);
+    const executeDecisions = createExecuteDecisions({
+      modules,
+      logger,
+      executeActions,
+      collect
+    });
+    return executeDecisions(decisions).then(() => {
+      expect(executeActions).toHaveBeenCalled();
+      expect(collect).toThrowError();
+      expect(logger.error).toHaveBeenCalledWith(error);
     });
   });
 });
