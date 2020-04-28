@@ -6,18 +6,19 @@ describe("Identity::createGetIdentity", () => {
   const samplePayload = {
     myPayload: { methodOne: () => {}, methodTwo: () => {} }
   };
+
   beforeEach(() => {
     sendEdgeNetworkRequest = jasmine.createSpy("sendEdgeNetworkRequest");
     createIdentityPayload = jasmine
       .createSpy("createIdentityPayload")
       .and.returnValue(samplePayload);
   });
+
   it("should return a function which calls sendEdgeNetworkRequest", () => {
     const getIdentity = createGetIdentity({
       sendEdgeNetworkRequest,
       createIdentityPayload
     });
-    expect(typeof getIdentity).toBe("function");
     getIdentity();
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
       payload: samplePayload,
@@ -25,7 +26,7 @@ describe("Identity::createGetIdentity", () => {
     });
   });
 
-  it("Each getIdentity call should create a new payload object", () => {
+  it("each getIdentity call should create a new payload object", () => {
     const payload1 = { type: "payload1" };
     const payload2 = { type: "payload2" };
     createIdentityPayload.and.returnValues(payload1, payload2);
@@ -33,11 +34,11 @@ describe("Identity::createGetIdentity", () => {
       sendEdgeNetworkRequest,
       createIdentityPayload
     });
-    expect(typeof getIdentity).toBe("function");
-    getIdentity({ options: ["optionOne", "optionTwo"] });
-    expect(createIdentityPayload).toHaveBeenCalledWith({
-      options: ["optionOne", "optionTwo"]
-    });
+    getIdentity(["optionOne", "optionTwo"]);
+    expect(createIdentityPayload).toHaveBeenCalledWith([
+      "optionOne",
+      "optionTwo"
+    ]);
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
       payload: payload1,
       action: "identity/acquire"

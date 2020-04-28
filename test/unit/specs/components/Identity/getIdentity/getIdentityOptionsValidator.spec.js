@@ -1,7 +1,7 @@
 import getIdentityOptionsValidator from "../../../../../../src/components/Identity/getIdentity/getIdentityOptionsValidator";
 
 describe("Identity::getIdentityOptionsValidator", () => {
-  it("Should throw an error when invalid options are passed", () => {
+  it("should throw an error when invalid options are passed", () => {
     expect(() => {
       getIdentityOptionsValidator({ key: ["item1", "item2"] });
     }).toThrow(new Error("'key': Unknown field."));
@@ -28,9 +28,10 @@ describe("Identity::getIdentityOptionsValidator", () => {
     expect(() => {
       getIdentityOptionsValidator();
     }).not.toThrow();
-    const validgetIdentityOptions = getIdentityOptionsValidator();
-    expect(validgetIdentityOptions).toEqual({ namespaces: ["ECID"] });
+    const validatedIdentityOptions = getIdentityOptionsValidator();
+    expect(validatedIdentityOptions).toEqual({ namespaces: ["ECID"] });
   });
+
   it("should not throw when supported namespace options are passed", () => {
     const ECID = "ECID";
     expect(() => {
