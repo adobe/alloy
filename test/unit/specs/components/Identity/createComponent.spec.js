@@ -26,6 +26,8 @@ describe("Identity::createComponent", () => {
   let consentDeferred;
   let consent;
   let getEcidPromise;
+  let validateSyncIdentityOptions;
+
   beforeEach(() => {
     addEcidQueryToEvent = jasmine.createSpy("addEcidQueryToEvent");
     userIds = jasmine.createSpyObj("userIds", ["addToPayload", "sync"]);
@@ -41,6 +43,7 @@ describe("Identity::createComponent", () => {
     getEcid = jasmine
       .createSpy("getEcid")
       .and.returnValue(getEcidPromise.promise);
+    validateSyncIdentityOptions = () => {};
     component = createComponent({
       addEcidQueryToEvent,
       userIds,
@@ -49,7 +52,8 @@ describe("Identity::createComponent", () => {
       handleResponseForIdSyncs,
       getEcidFromResponse,
       getEcid,
-      consent
+      consent,
+      validateSyncIdentityOptions
     });
   });
 
@@ -107,7 +111,13 @@ describe("Identity::createComponent", () => {
     expect(result).toBe(idSyncsPromise);
   });
 
-  it("sets user IDs", () => {
+  it("exposes options validator for syncIdentity command", () => {
+    expect(component.commands.syncIdentity.optionsValidator).toBe(
+      validateSyncIdentityOptions
+    );
+  });
+
+  it("syncIdentity sets user IDs", () => {
     const ids = { type: "userIds" };
     component.commands.syncIdentity.run({ userIds: ids });
     expect(userIds.sync).toHaveBeenCalledWith(ids);

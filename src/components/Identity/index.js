@@ -33,6 +33,7 @@ import addEcidToPayload from "./addEcidToPayload";
 import awaitIdentityCookieFactory from "./awaitIdentityCookieFactory";
 import getEcidFromResponse from "./getEcidFromResponse";
 import createGetEcid from "./getEcid/createGetEcid";
+import validateSyncIdentityOptions from "./validateSyncIdentityOptions";
 
 const createIdentity = ({
   config,
@@ -95,7 +96,8 @@ const createIdentity = ({
     handleResponseForIdSyncs,
     getEcidFromResponse,
     getEcid,
-    consent
+    consent,
+    validateSyncIdentityOptions
   });
 };
 

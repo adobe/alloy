@@ -6,7 +6,8 @@ export default ({
   handleResponseForIdSyncs,
   getEcidFromResponse,
   getEcid,
-  consent
+  consent,
+  validateSyncIdentityOptions
 }) => {
   let ecid;
   return {
@@ -37,6 +38,7 @@ export default ({
     },
     commands: {
       syncIdentity: {
+        optionsValidator: validateSyncIdentityOptions,
         run: options => {
           return userIds.sync(options.userIds);
         }
