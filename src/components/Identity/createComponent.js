@@ -1,12 +1,13 @@
 export default ({
   addEcidQueryToEvent,
-  customerIds,
+  identityManager,
   ensureRequestHasIdentity,
   setLegacyEcid,
   handleResponseForIdSyncs,
   getEcidFromResponse,
   getEcid,
-  consent
+  consent,
+  validateSyncIdentityOptions
 }) => {
   let ecid;
   return {
@@ -18,7 +19,7 @@ export default ({
         addEcidQueryToEvent(event);
       },
       onBeforeRequest({ payload, onResponse }) {
-        customerIds.addToPayload(payload);
+        identityManager.addToPayload(payload);
         return ensureRequestHasIdentity({ payload, onResponse });
       },
       onResponse({ response }) {
@@ -36,9 +37,10 @@ export default ({
       }
     },
     commands: {
-      setCustomerIds: {
+      syncIdentity: {
+        optionsValidator: validateSyncIdentityOptions,
         run: options => {
-          return customerIds.sync(options);
+          return identityManager.sync(options.identities);
         }
       },
       getEcid: {

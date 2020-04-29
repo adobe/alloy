@@ -1,21 +1,21 @@
 import {
-  validateCustomerIds,
-  normalizeCustomerIds
-} from "../../../../../../src/components/Identity/customerIds/util";
+  validateIdentities,
+  normalizeIdentities
+} from "../../../../../../src/components/Identity/identities/util";
 import {
   AMBIGUOUS,
   LOGGED_OUT
 } from "../../../../../../src/components/Identity/constants/authStates";
 
 describe("Identity::identityUtil", () => {
-  describe("validateCustomerIds", () => {
+  describe("validateIdentities", () => {
     it("should throw an error when input is not an object", () => {
       const idToTest = "email=qwerty@asdf.com";
       expect(() => {
-        validateCustomerIds(idToTest);
+        validateIdentities(idToTest);
       }).toThrow(
         new Error(
-          "Invalid customer ID format. Each namespace should be an object."
+          "Invalid identity format. Each namespace should be an object."
         )
       );
     });
@@ -25,10 +25,10 @@ describe("Identity::identityUtil", () => {
         authState: 0
       };
       expect(() => {
-        validateCustomerIds(objToTest);
+        validateIdentities(objToTest);
       }).toThrow(
         new Error(
-          "Invalid customer ID format. Each namespace should be an object."
+          "Invalid identity format. Each namespace should be an object."
         )
       );
     });
@@ -43,10 +43,10 @@ describe("Identity::identityUtil", () => {
         }
       };
       expect(() => {
-        validateCustomerIds(objToTest);
+        validateIdentities(objToTest);
       }).toThrow(
         new Error(
-          "Invalid customer ID format. Each namespace object should have an ID."
+          "Invalid identity format. Each namespace object should have an ID."
         )
       );
     });
@@ -61,7 +61,7 @@ describe("Identity::identityUtil", () => {
         }
       };
       expect(() => {
-        validateCustomerIds(objToTest);
+        validateIdentities(objToTest);
       }).not.toThrow();
     });
 
@@ -73,7 +73,7 @@ describe("Identity::identityUtil", () => {
         }
       };
       expect(() => {
-        validateCustomerIds(objToTest);
+        validateIdentities(objToTest);
       }).toThrow();
     });
 
@@ -85,12 +85,12 @@ describe("Identity::identityUtil", () => {
         }
       };
       expect(() => {
-        validateCustomerIds(objToTest);
+        validateIdentities(objToTest);
       }).not.toThrow();
     });
   });
 
-  describe("normalizeCustomerIds", () => {
+  describe("normalizeIdentities", () => {
     it("should add an authenticatedState if missing", () => {
       const objToTest = {
         email: {
@@ -110,7 +110,7 @@ describe("Identity::identityUtil", () => {
           authenticatedState: AMBIGUOUS
         }
       };
-      expect(normalizeCustomerIds(objToTest)).toEqual(normalizedObj);
+      expect(normalizeIdentities(objToTest)).toEqual(normalizedObj);
     });
 
     it("should add a valid authState if invalid authState is given", () => {
@@ -134,7 +134,7 @@ describe("Identity::identityUtil", () => {
           authenticatedState: AMBIGUOUS
         }
       };
-      expect(normalizeCustomerIds(objToTest)).toEqual(normalizedObj);
+      expect(normalizeIdentities(objToTest)).toEqual(normalizedObj);
     });
 
     it("should pass through the primary prop", () => {
@@ -170,7 +170,7 @@ describe("Identity::identityUtil", () => {
           authenticatedState: AMBIGUOUS
         }
       };
-      expect(normalizeCustomerIds(objToTest)).toEqual(normalizedObj);
+      expect(normalizeIdentities(objToTest)).toEqual(normalizedObj);
     });
   });
 });

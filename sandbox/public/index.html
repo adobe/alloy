@@ -93,19 +93,21 @@
         console.log("Sandbox: View start event has completed.", data);
       });
 
-      alloy("setCustomerIds", {
-        Email_LC_SHA256: {
-          id: "me@gmail.com",
-          authenticatedState: "ambiguous",
-          hashEnabled: true, //TODO: document customer ID hashing syntax
-          primary: true
-        },
-        HYP: {
-          id: "1234",
-          authenticatedState: "ambiguous"
+      alloy("syncIdentity", {
+        identities: {
+          Email_LC_SHA256: {
+            id: "me@gmail.com",
+            authenticatedState: "ambiguous",
+            hashEnabled: true, //TODO: document user ID hashing syntax
+            primary: true
+          },
+          HYP: {
+            id: "1234",
+            authenticatedState: "ambiguous"
+          }
         }
       }).then(function() {
-        console.log("Sandbox: Set customer IDs event has completed.");
+        console.log("Sandbox: Sync identity has completed.");
       });
 
       // For Testing multiple instances.

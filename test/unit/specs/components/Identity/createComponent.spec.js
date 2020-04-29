@@ -16,7 +16,7 @@ import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("Identity::createComponent", () => {
   let addEcidQueryToEvent;
-  let customerIds;
+  let identityManager;
   let ensureRequestHasIdentity;
   let setLegacyEcid;
   let handleResponseForIdSyncs;
@@ -26,9 +26,14 @@ describe("Identity::createComponent", () => {
   let consentDeferred;
   let consent;
   let getEcidPromise;
+  let validateSyncIdentityOptions;
+
   beforeEach(() => {
     addEcidQueryToEvent = jasmine.createSpy("addEcidQueryToEvent");
-    customerIds = jasmine.createSpyObj("customerIds", ["addToPayload", "sync"]);
+    identityManager = jasmine.createSpyObj("identityManager", [
+      "addToPayload",
+      "sync"
+    ]);
     ensureRequestHasIdentity = jasmine.createSpy("ensureRequestHasIdentity");
     setLegacyEcid = jasmine.createSpy("setLegacyEcid");
     handleResponseForIdSyncs = jasmine.createSpy("handleResponseForIdSyncs");
@@ -41,15 +46,17 @@ describe("Identity::createComponent", () => {
     getEcid = jasmine
       .createSpy("getEcid")
       .and.returnValue(getEcidPromise.promise);
+    validateSyncIdentityOptions = () => {};
     component = createComponent({
       addEcidQueryToEvent,
-      customerIds,
+      identityManager,
       ensureRequestHasIdentity,
       setLegacyEcid,
       handleResponseForIdSyncs,
       getEcidFromResponse,
       getEcid,
-      consent
+      consent,
+      validateSyncIdentityOptions
     });
   });
 
@@ -59,11 +66,11 @@ describe("Identity::createComponent", () => {
     expect(addEcidQueryToEvent).toHaveBeenCalledWith(event);
   });
 
-  it("adds customer IDs to request payload", () => {
+  it("adds identities to request payload", () => {
     const payload = { type: "payload" };
     const onResponse = jasmine.createSpy("onResponse");
     component.lifecycle.onBeforeRequest({ payload, onResponse });
-    expect(customerIds.addToPayload).toHaveBeenCalledWith(payload);
+    expect(identityManager.addToPayload).toHaveBeenCalledWith(payload);
   });
 
   it("ensures request has identity", () => {
@@ -107,10 +114,16 @@ describe("Identity::createComponent", () => {
     expect(result).toBe(idSyncsPromise);
   });
 
-  it("sets customer IDs", () => {
-    const ids = { type: "customerIds" };
-    component.commands.setCustomerIds.run(ids);
-    expect(customerIds.sync).toHaveBeenCalledWith(ids);
+  it("exposes options validator for syncIdentity command", () => {
+    expect(component.commands.syncIdentity.optionsValidator).toBe(
+      validateSyncIdentityOptions
+    );
+  });
+
+  it("syncIdentity syncs identities", () => {
+    const identities = { type: "identities" };
+    component.commands.syncIdentity.run({ identities });
+    expect(identityManager.sync).toHaveBeenCalledWith(identities);
   });
 
   it("getEcid command should make a request when ecid is not available", () => {

@@ -24,7 +24,7 @@ import awaitVisitorOptIn from "./visitorService/awaitVisitorOptIn";
 import getEcidFromVisitorFactory from "./visitorService/getEcidFromVisitorFactory";
 import handleResponseForIdSyncsFactory from "./handleResponseForIdSyncsFactory";
 import ensureRequestHasIdentityFactory from "./ensureRequestHasIdentityFactory";
-import createCustomerIds from "./customerIds/createCustomerIds";
+import createIdentityManager from "./identities/createIdentityManager";
 import addEcidQueryToEvent from "./addEcidQueryToEvent";
 import doesIdentityCookieExistFactory from "./doesIdentityCookieExistFactory";
 import setDomainForInitialIdentityPayloadFactory from "./setDomainForInitialIdentityPayloadFactory";
@@ -33,6 +33,7 @@ import addEcidToPayload from "./addEcidToPayload";
 import awaitIdentityCookieFactory from "./awaitIdentityCookieFactory";
 import getEcidFromResponse from "./getEcidFromResponse";
 import createGetEcid from "./getEcid/createGetEcid";
+import validateSyncIdentityOptions from "./validateSyncIdentityOptions";
 
 const createIdentity = ({
   config,
@@ -42,7 +43,7 @@ const createIdentity = ({
   sendEdgeNetworkRequest
 }) => {
   const { orgId, thirdPartyCookiesEnabled } = config;
-  const customerIds = createCustomerIds({
+  const identityManager = createIdentityManager({
     eventManager,
     consent,
     logger,
@@ -89,13 +90,14 @@ const createIdentity = ({
   });
   return createComponent({
     addEcidQueryToEvent,
-    customerIds,
+    identityManager,
     ensureRequestHasIdentity,
     setLegacyEcid: legacyIdentity.setEcid,
     handleResponseForIdSyncs,
     getEcidFromResponse,
     getEcid,
-    consent
+    consent,
+    validateSyncIdentityOptions
   });
 };
 
