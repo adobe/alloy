@@ -17,13 +17,13 @@ describeValidation(
   "Identity:validateSyncIdentityOptions",
   validateSyncIdentityOptions,
   [
-    { value: { userIds: { email: { id: "example@adobe.com" } } } },
+    { value: { identities: { email: { id: "example@adobe.com" } } } },
     { value: { foo: { email: { id: "example@adobe.com" } } }, error: true },
-    { value: { userIds: undefined }, error: true },
-    { value: { userIds: null }, error: true },
-    { value: { userIds: "foo" }, error: true },
+    { value: { identities: undefined }, error: true },
+    { value: { identities: null }, error: true },
+    { value: { identities: "foo" }, error: true },
     {
-      value: { userIds: { email: { id: "example@adobe.com" } }, foo: "bar" },
+      value: { identities: { email: { id: "example@adobe.com" } }, foo: "bar" },
       error: true
     },
     { value: "in", error: true },

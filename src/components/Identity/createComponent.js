@@ -1,6 +1,6 @@
 export default ({
   addEcidQueryToEvent,
-  userIds,
+  identityManager,
   ensureRequestHasIdentity,
   setLegacyEcid,
   handleResponseForIdSyncs,
@@ -19,7 +19,7 @@ export default ({
         addEcidQueryToEvent(event);
       },
       onBeforeRequest({ payload, onResponse }) {
-        userIds.addToPayload(payload);
+        identityManager.addToPayload(payload);
         return ensureRequestHasIdentity({ payload, onResponse });
       },
       onResponse({ response }) {
@@ -40,7 +40,7 @@ export default ({
       syncIdentity: {
         optionsValidator: validateSyncIdentityOptions,
         run: options => {
-          return userIds.sync(options.userIds);
+          return identityManager.sync(options.identities);
         }
       },
       getEcid: {
