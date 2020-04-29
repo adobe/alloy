@@ -28,7 +28,7 @@ test.meta({
 });
 
 const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("event", {
+  return window.alloy("sendEvent", {
     xdm: { web: { webPageDetails: { name: "C31436" } } }
   });
 });
