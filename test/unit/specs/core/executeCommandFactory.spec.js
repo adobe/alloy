@@ -73,7 +73,7 @@ describe("executeCommandFactory", () => {
       .then(fail)
       .catch(error => {
         expect(error.message).toBe(
-          "The bogus command does not exist. List of available commands: genuine."
+          "The bogus command does not exist. List of available commands: configure, setDebug, genuine."
         );
       });
   });
@@ -136,22 +136,22 @@ describe("executeCommandFactory", () => {
     const configureCommand = jasmine
       .createSpy()
       .and.returnValue(Promise.resolve("configureResult"));
-    const debugCommand = jasmine
+    const setDebugCommand = jasmine
       .createSpy()
       .and.returnValue(Promise.resolve("logResult"));
     const executeCommand = executeCommandFactory({
       logger,
       configureCommand,
-      debugCommand,
+      setDebugCommand,
       handleError
     });
 
     return Promise.all([
       executeCommand("configure", { foo: "bar" }),
-      executeCommand("debug", { baz: "qux" })
+      executeCommand("setDebug", { baz: "qux" })
     ]).then(([configureResult, logResult]) => {
       expect(configureCommand).toHaveBeenCalledWith({ foo: "bar" });
-      expect(debugCommand).toHaveBeenCalledWith({ baz: "qux" });
+      expect(setDebugCommand).toHaveBeenCalledWith({ baz: "qux" });
       expect(configureResult).toEqual("configureResult");
       expect(logResult).toEqual("logResult");
     });

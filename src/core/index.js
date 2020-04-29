@@ -69,7 +69,7 @@ if (instanceNamespaces) {
       errorsEnabled = value;
     };
 
-    const debugCommand = options => {
+    const setDebugCommand = options => {
       setDebugEnabled(options.enabled, { fromConfig: false });
     };
 
@@ -146,7 +146,7 @@ if (instanceNamespaces) {
     const executeCommand = executeCommandFactory({
       logger,
       configureCommand,
-      debugCommand,
+      setDebugCommand,
       handleError,
       validateCommandOptions
     });

@@ -10,12 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isFunction } from "../utils";
+import { isFunction, values } from "../utils";
+
+const coreCommands = {
+  CONFIGURE: "configure",
+  SET_DEBUG: "setDebug"
+};
 
 export default ({
   logger,
   configureCommand,
-  debugCommand,
+  setDebugCommand,
   handleError,
   validateCommandOptions
 }) => {
@@ -24,7 +29,7 @@ export default ({
   const getExecutor = (commandName, options) => {
     let executor;
 
-    if (commandName === "configure") {
+    if (commandName === coreCommands.CONFIGURE) {
       if (configurePromise) {
         throw new Error(
           "The library has already been configured and may only be configured once."
@@ -40,18 +45,19 @@ export default ({
           `The library must be configured first. Please do so by executing the configure command.`
         );
       }
-      if (commandName === "debug") {
-        executor = () => debugCommand(options);
+      if (commandName === coreCommands.SET_DEBUG) {
+        executor = () => setDebugCommand(options);
       } else {
         executor = () => {
           return configurePromise.then(
             componentRegistry => {
               const command = componentRegistry.getCommand(commandName);
               if (!command || !isFunction(command.run)) {
+                const commandNames = values(coreCommands)
+                  .concat(componentRegistry.getCommandNames())
+                  .join(", ");
                 throw new Error(
-                  `The ${commandName} command does not exist. List of available commands: ${componentRegistry
-                    .getCommandNames()
-                    .join(", ")}.`
+                  `The ${commandName} command does not exist. List of available commands: ${commandNames}.`
                 );
               }
               const validatedOptions = validateCommandOptions({
