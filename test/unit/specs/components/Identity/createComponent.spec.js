@@ -128,9 +128,11 @@ describe("Identity::createComponent", () => {
 
   it("getIdentity command should make a request when ecid is not available", () => {
     let ecid;
-    component.commands.getIdentity.run({ namespaces: ["ECID"] }).then(identity => {
-      ecid = identity.ECID;
-    });
+    component.commands.getIdentity
+      .run({ namespaces: ["ECID"] })
+      .then(identities => {
+        ecid = identities.ECID;
+      });
 
     return flushPromiseChains()
       .then(() => {
@@ -157,8 +159,8 @@ describe("Identity::createComponent", () => {
     const response = { type: "response" };
     component.lifecycle.onResponse({ response });
     let ecid;
-    component.commands.getIdentity.run().then(identity => {
-      ecid = identity.ECID;
+    component.commands.getIdentity.run().then(identities => {
+      ecid = identities.ECID;
     });
     return flushPromiseChains()
       .then(() => {
