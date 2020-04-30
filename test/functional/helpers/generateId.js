@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 export default () => {
   let id = "";
   for (let i = 0; i < 38; i += 1) {
-    id += Math.floor((Math.random() * 10) % 10);
+    id += Math.floor(Math.random() * 10);
   }
   return id;
 };

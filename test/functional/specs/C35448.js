@@ -29,7 +29,7 @@ const config = compose(
 
 const getEcid = ClientFunction(() => {
   return window.alloy("getIdentity", {}).then(result => {
-    return Promise.resolve(result.ECID);
+    return result.ECID;
   });
 });
 

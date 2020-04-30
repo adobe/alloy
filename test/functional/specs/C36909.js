@@ -36,7 +36,7 @@ const setConsent = ClientFunction(consent => {
 
 const getEcid = ClientFunction(() => {
   return window.alloy("getIdentity", {}).then(result => {
-    return Promise.resolve(result.ECID);
+    return result.ECID;
   });
 });
 
