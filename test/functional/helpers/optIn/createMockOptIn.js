@@ -21,7 +21,6 @@ export default ClientFunction(approved => {
         }, 500);
       },
       isApproved() {
-        console.log("isApproved is being called");
         return approved;
       },
       Categories: {
