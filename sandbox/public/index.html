@@ -76,7 +76,7 @@
         }
       });
 
-      alloy("getEcid", {}).then(id => {
+      alloy("getIdentity", { namespaces: ["ECID"] }).then(id => {
         console.log("Sandbox: Get Ecid command has completed.,", id);
       });
 

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createIdentityPayload from "../../../../../../src/components/Identity/getEcid/createIdentityPayload";
+import createIdentityPayload from "../../../../../../src/components/Identity/getIdentity/createIdentityPayload";
 
 describe("createIdentityPayload", () => {
   it("should not use ID third-party domain when useIdThirdPartyDomain is not called", () => {

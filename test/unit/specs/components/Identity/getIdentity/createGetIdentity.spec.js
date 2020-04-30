@@ -1,6 +1,6 @@
-import createGetEcid from "../../../../../../src/components/Identity/getEcid/createGetEcid";
+import createGetIdentity from "../../../../../../src/components/Identity/getIdentity/createGetIdentity";
 
-describe("Identity::createGetEcid", () => {
+describe("Identity::createGetIdentity", () => {
   let sendEdgeNetworkRequest;
   let createIdentityPayload;
   const samplePayload = {
@@ -13,28 +13,28 @@ describe("Identity::createGetEcid", () => {
       .and.returnValue(samplePayload);
   });
   it("should return a function which calls sendEdgeNetworkRequest", () => {
-    const getEcid = createGetEcid({
+    const getIdentity = createGetIdentity({
       sendEdgeNetworkRequest,
       createIdentityPayload
     });
-    expect(typeof getEcid).toBe("function");
-    getEcid({ myOptions: {} });
+    expect(typeof getIdentity).toBe("function");
+    getIdentity();
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
       payload: samplePayload,
       action: "identity/acquire"
     });
   });
 
-  it("Each getEcid call should create a new payload object", () => {
+  it("Each getIdentity call should create a new payload object", () => {
     const payload1 = { type: "payload1" };
     const payload2 = { type: "payload2" };
     createIdentityPayload.and.returnValues(payload1, payload2);
-    const getEcid = createGetEcid({
+    const getIdentity = createGetIdentity({
       sendEdgeNetworkRequest,
       createIdentityPayload
     });
-    expect(typeof getEcid).toBe("function");
-    getEcid({ options: ["optionOne", "optionTwo"] });
+    expect(typeof getIdentity).toBe("function");
+    getIdentity({ options: ["optionOne", "optionTwo"] });
     expect(createIdentityPayload).toHaveBeenCalledWith({
       options: ["optionOne", "optionTwo"]
     });
@@ -42,7 +42,7 @@ describe("Identity::createGetEcid", () => {
       payload: payload1,
       action: "identity/acquire"
     });
-    getEcid();
+    getIdentity();
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
       payload: payload2,
       action: "identity/acquire"

@@ -1,4 +1,4 @@
-import getIdentityOptionsValidator from "../../../../../../src/components/Identity/getEcid/getIdentityOptionsValidator";
+import getIdentityOptionsValidator from "../../../../../../src/components/Identity/getIdentity/getIdentityOptionsValidator";
 
 describe("Identity::getIdentityOptionsValidator", () => {
   it("Should throw an error when invalid options are passed", () => {
