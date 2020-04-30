@@ -32,8 +32,9 @@ import addLegacyEcidToPayloadFactory from "./addLegacyEcidToPayloadFactory";
 import addEcidToPayload from "./addEcidToPayload";
 import awaitIdentityCookieFactory from "./awaitIdentityCookieFactory";
 import getEcidFromResponse from "./getEcidFromResponse";
-import createGetEcid from "./getEcid/createGetEcid";
+import createGetIdentity from "./getIdentity/createGetIdentity";
 import validateSyncIdentityOptions from "./validateSyncIdentityOptions";
+import createIdentityPayload from "./getIdentity/createIdentityPayload";
 
 const createIdentity = ({
   config,
@@ -59,7 +60,10 @@ const createIdentity = ({
     getEcidFromVisitor
   });
   const doesIdentityCookieExist = doesIdentityCookieExistFactory({ orgId });
-  const getEcid = createGetEcid({ sendEdgeNetworkRequest, consent });
+  const getIdentity = createGetIdentity({
+    sendEdgeNetworkRequest,
+    createIdentityPayload
+  });
   const setDomainForInitialIdentityPayload = setDomainForInitialIdentityPayloadFactory(
     {
       thirdPartyCookiesEnabled,
@@ -95,7 +99,7 @@ const createIdentity = ({
     setLegacyEcid: legacyIdentity.setEcid,
     handleResponseForIdSyncs,
     getEcidFromResponse,
-    getEcid,
+    getIdentity,
     consent,
     validateSyncIdentityOptions
   });

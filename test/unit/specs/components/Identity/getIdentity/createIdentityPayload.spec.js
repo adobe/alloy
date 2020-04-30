@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createIdentityPayload from "../../../../../../src/components/Identity/getEcid/createIdentityPayload";
+import createIdentityPayload from "../../../../../../src/components/Identity/getIdentity/createIdentityPayload";
 
 describe("createIdentityPayload", () => {
   it("should not use ID third-party domain when useIdThirdPartyDomain is not called", () => {
@@ -25,7 +25,7 @@ describe("createIdentityPayload", () => {
   });
 
   it("serializes properly", () => {
-    const payload = createIdentityPayload();
+    const payload = createIdentityPayload(["ECID"]);
     payload.addIdentity("IDNS", {
       id: "ABC123"
     });
@@ -40,6 +40,25 @@ describe("createIdentityPayload", () => {
         }
       },
       query: { identity: { fetch: ["ECID"] } }
+    });
+  });
+
+  it("should accept an array of namespaces", () => {
+    const payload = createIdentityPayload(["NS1", "NS2", "NS3"]);
+    payload.addIdentity("IDNS", {
+      id: "ABC123"
+    });
+    expect(payload.toJSON()).toEqual({
+      xdm: {
+        identityMap: {
+          IDNS: [
+            {
+              id: "ABC123"
+            }
+          ]
+        }
+      },
+      query: { identity: { fetch: ["NS1", "NS2", "NS3"] } }
     });
   });
 });

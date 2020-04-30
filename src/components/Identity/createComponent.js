@@ -1,3 +1,5 @@
+import getIdentityOptionsValidator from "./getIdentity/getIdentityOptionsValidator";
+
 export default ({
   addEcidQueryToEvent,
   identityManager,
@@ -5,7 +7,7 @@ export default ({
   setLegacyEcid,
   handleResponseForIdSyncs,
   getEcidFromResponse,
-  getEcid,
+  getIdentity,
   consent,
   validateSyncIdentityOptions
 }) => {
@@ -43,14 +45,15 @@ export default ({
           return identityManager.sync(options.identities);
         }
       },
-      getEcid: {
-        run() {
+      getIdentity: {
+        optionsValidator: getIdentityOptionsValidator,
+        run: options => {
           return consent.awaitConsent().then(() => {
             if (ecid) {
-              return ecid;
+              return { ECID: ecid };
             }
-            return getEcid().then(() => {
-              return ecid;
+            return getIdentity(options.namespaces).then(() => {
+              return { ECID: ecid };
             });
           });
         }

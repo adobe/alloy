@@ -10,14 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createIdentityPayload from "./createIdentityPayload";
+import createRequestPayload from "../../../core/edgeNetwork/requestPayloads/createRequestPayload";
+import createAddIdentity from "../../../core/edgeNetwork/requestPayloads/contentModifiers/createAddIdentity";
 
-const identityPayload = createIdentityPayload();
-
-export default ({ sendEdgeNetworkRequest }) => {
-  return () =>
-    sendEdgeNetworkRequest({
-      payload: identityPayload,
-      action: "identity/acquire"
-    });
+export default namespaces => {
+  return createRequestPayload(content => {
+    content.query = content.query || {};
+    content.query.identity = { fetch: namespaces };
+    return {
+      addIdentity: createAddIdentity(content)
+    };
+  });
 };
