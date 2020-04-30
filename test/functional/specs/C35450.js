@@ -35,7 +35,9 @@ const setConsent = ClientFunction(consent => {
 });
 
 const getEcid = ClientFunction(() => {
-  return window.alloy("getEcid", {});
+  return window.alloy("getIdentity", {}).then(result => {
+    return Promise.resolve(result.ECID);
+  });
 });
 
 test("C35450 - When ID migration is enabled and Visitor and Alloy are both awaiting consent, when consent is given to both, Alloy waits for Visitor to get ECID and then uses this value.", async () => {

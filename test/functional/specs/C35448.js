@@ -28,7 +28,9 @@ const config = compose(
 );
 
 const getEcid = ClientFunction(() => {
-  return window.alloy("getEcid", {});
+  return window.alloy("getIdentity", {}).then(result => {
+    return Promise.resolve(result.ECID);
+  });
 });
 
 test("C35448 - When ID migration is enabled and Visitor is on the page, Alloy waits for Visitor to get ECID and then uses this value.", async () => {
