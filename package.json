@@ -129,7 +129,6 @@
     "start-server-and-test": "^1.10.6",
     "testcafe": "^1.8.4",
     "testcafe-browser-provider-browserstack": "^1.13.0-alpha.1",
-    "testcafe-browser-provider-saucelabs": "^1.7.0",
     "testcafe-reporter-allure": "^1.0.5",
     "ua-parser": "^0.3.5",
     "url-parse": "^1.4.7"
