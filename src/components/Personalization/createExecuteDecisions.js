@@ -20,6 +20,31 @@ const buildActions = decision => {
   return decision.items.map(item => assign({}, item.data, { meta }));
 };
 
+const dedupe = metas => {
+  const result = [];
+  const set = new Set();
+
+  metas.forEach(item => {
+    if (set.has(item.id)) {
+      return;
+    }
+
+    set.add(item.id);
+    result.push(item);
+  });
+
+  return result;
+};
+
+const collectMetas = (collect, decisionMetas) => {
+  const metas = flatMap(decisionMetas, identity);
+  const dedupedMetas = dedupe(metas.map(e => e.meta));
+
+  if (isNonEmptyArray(dedupedMetas)) {
+    collect({ decisions: dedupedMetas });
+  }
+};
+
 export default ({ modules, logger, executeActions, collect }) => {
   return decisions => {
     const decisionMetasPromise = decisions.map(decision => {
@@ -28,15 +53,7 @@ export default ({ modules, logger, executeActions, collect }) => {
       return executeActions(actions, modules, logger);
     });
     return Promise.all(decisionMetasPromise)
-      .then(result => {
-        const metas = flatMap(result, identity);
-        return metas.map(item => item.meta);
-      })
-      .then(decisionMetas => {
-        if (isNonEmptyArray(decisionMetas)) {
-          collect({ decisions: decisionMetas });
-        }
-      })
+      .then(result => collectMetas(collect, result))
       .catch(error => {
         logger.error(error);
       });

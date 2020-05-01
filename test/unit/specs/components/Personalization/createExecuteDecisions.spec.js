@@ -79,7 +79,10 @@ describe("Personalization::createExecuteDecisions", () => {
   it("should trigger executeActions and collect when provided with an array of actions", () => {
     executeActions = jasmine
       .createSpy()
-      .and.returnValues([{ meta: metas[0] }], [{ meta: metas[1] }]);
+      .and.returnValues(
+        [{ meta: metas[0] }, { meta: metas[0] }],
+        [{ meta: metas[1] }]
+      );
 
     const spy = jasmine.createSpy();
     const modules = {

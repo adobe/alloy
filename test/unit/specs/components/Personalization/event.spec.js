@@ -14,13 +14,13 @@ import { createQueryDetails } from "../../../../../src/components/Personalizatio
 import * as SCHEMAS from "../../../../../src/constants/schemas";
 import { values } from "../../../../../src/utils";
 
-const accepts = values(SCHEMAS);
+const schemas = values(SCHEMAS);
 
 describe("Personalization::event", () => {
   it("create query details", () => {
     const decisionScopes = ["__view__", "foo"];
     const result = createQueryDetails(decisionScopes);
 
-    expect(result).toEqual({ accepts, decisionScopes });
+    expect(result).toEqual({ schemas, decisionScopes });
   });
 });
