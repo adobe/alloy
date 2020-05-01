@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Client-Side SDK for Unified Data Collection",
   "main": "src/core/index.js",
   "scripts": {
