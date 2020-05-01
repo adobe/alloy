@@ -19,18 +19,17 @@ jobs:
       - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then npm run functional:cron:prod; fi
       - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run build:prod; fi
       - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run functional:ci; fi
-      - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run functional:ci:sl; fi
+      - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run functional:ci:bs; fi
       - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run test:saucelabs; fi
 
 notifications:
   slack: adobedx:AlI4WB2ojGDcqsBEVZ1EGsCR
   email:
-  recipients:
-    - mowla@adobe.com
-    - khoury@adobe.com
-    - aahardy@adobe.com
-  on_success: always
-  on_failure: always
+    recipients:
+      - mowla@adobe.com
+      - khoury@adobe.com
+      - aahardy@adobe.com
+    on_failure: always
   
 before_install:
 - stty cols 80

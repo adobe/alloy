@@ -17,7 +17,7 @@
     "test:watch": "karma start",
     "test:watch:chrome": "karma start --browsers Chrome",
     "functional:ci": "EDGE_ENV=\"int\" testcafe chrome",
-    "functional:ci:sl": "EDGE_ENV=\"int\" testcafe 'saucelabs:internet explorer@11.285:Windows 10'",
+    "functional:ci:bs": "EDGE_ENV=\"int\" testcafe 'browserstack:ie@11:Windows 10'",
     "functional:local": "EDGE_ENV=\"int\" testcafe chrome",
     "functional:cron:prod": "EDGE_ENV=\"prod\" testcafe chrome",
     "functional:local:allure": "EDGE_ENV=\"int\" testcafe chrome -r allure",
@@ -128,7 +128,7 @@
     "rollup-plugin-terser": "^5.1.2",
     "start-server-and-test": "^1.10.6",
     "testcafe": "^1.8.4",
-    "testcafe-browser-provider-saucelabs": "^1.7.0",
+    "testcafe-browser-provider-browserstack": "^1.13.0-alpha.1",
     "testcafe-reporter-allure": "^1.0.5",
     "ua-parser": "^0.3.5",
     "url-parse": "^1.4.7"
