@@ -20,23 +20,41 @@ const buildActions = decision => {
   return decision.items.map(item => assign({}, item.data, { meta }));
 };
 
+const processMetas = (collect, logger, actionResults) => {
+  const results = flatMap(actionResults, identity);
+  const finalMetas = [];
+  const set = new Set();
+
+  results.forEach(item => {
+    if (item.error) {
+      logger.warn(item);
+      return;
+    }
+
+    const { meta } = item;
+
+    if (set.has(meta.id)) {
+      return;
+    }
+
+    set.add(meta.id);
+    finalMetas.push(meta);
+  });
+
+  if (isNonEmptyArray(finalMetas)) {
+    collect({ decisions: finalMetas });
+  }
+};
+
 export default ({ modules, logger, executeActions, collect }) => {
   return decisions => {
-    const decisionMetasPromise = decisions.map(decision => {
+    const actionResultsPromises = decisions.map(decision => {
       const actions = buildActions(decision);
 
       return executeActions(actions, modules, logger);
     });
-    return Promise.all(decisionMetasPromise)
-      .then(result => {
-        const metas = flatMap(result, identity);
-        return metas.map(item => item.meta);
-      })
-      .then(decisionMetas => {
-        if (isNonEmptyArray(decisionMetas)) {
-          collect({ decisions: decisionMetas });
-        }
-      })
+    return Promise.all(actionResultsPromises)
+      .then(results => processMetas(collect, logger, results))
       .catch(error => {
         logger.error(error);
       });

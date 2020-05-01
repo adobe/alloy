@@ -25,7 +25,7 @@ export const mergeQuery = (event, details) => {
 
 export const createQueryDetails = decisionScopes => {
   return {
-    accepts: ALL_SCHEMAS,
+    schemas: ALL_SCHEMAS,
     decisionScopes
   };
 };
