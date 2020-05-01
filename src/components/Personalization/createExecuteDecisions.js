@@ -20,40 +20,41 @@ const buildActions = decision => {
   return decision.items.map(item => assign({}, item.data, { meta }));
 };
 
-const dedupe = metas => {
-  const result = [];
+const processMetas = (collect, logger, actionResults) => {
+  const results = flatMap(actionResults, identity);
+  const finalMetas = [];
   const set = new Set();
 
-  metas.forEach(item => {
-    if (set.has(item.id)) {
+  results.forEach(item => {
+    if (item.error) {
+      logger.warn(item);
       return;
     }
 
-    set.add(item.id);
-    result.push(item);
+    const { meta } = item;
+
+    if (set.has(meta.id)) {
+      return;
+    }
+
+    set.add(meta.id);
+    finalMetas.push(meta);
   });
 
-  return result;
-};
-
-const collectMetas = (collect, decisionMetas) => {
-  const metas = flatMap(decisionMetas, identity);
-  const dedupedMetas = dedupe(metas.map(e => e.meta));
-
-  if (isNonEmptyArray(dedupedMetas)) {
-    collect({ decisions: dedupedMetas });
+  if (isNonEmptyArray(finalMetas)) {
+    collect({ decisions: finalMetas });
   }
 };
 
 export default ({ modules, logger, executeActions, collect }) => {
   return decisions => {
-    const decisionMetasPromise = decisions.map(decision => {
+    const actionResultsPromises = decisions.map(decision => {
       const actions = buildActions(decision);
 
       return executeActions(actions, modules, logger);
     });
-    return Promise.all(decisionMetasPromise)
-      .then(result => collectMetas(collect, result))
+    return Promise.all(actionResultsPromises)
+      .then(results => processMetas(collect, logger, results))
       .catch(error => {
         logger.error(error);
       });

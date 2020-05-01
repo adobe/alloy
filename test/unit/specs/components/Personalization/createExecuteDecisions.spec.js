@@ -13,11 +13,7 @@ governing permissions and limitations under the License.
 import createExecuteDecisions from "../../../../../src/components/Personalization/createExecuteDecisions";
 
 describe("Personalization::createExecuteDecisions", () => {
-  const logger = {
-    log() {},
-    warn() {},
-    error: jasmine.createSpy()
-  };
+  const logger = jasmine.createSpyObj("logger", ["log", "warn", "error"]);
   let executeActions;
   let collect;
 
@@ -81,7 +77,7 @@ describe("Personalization::createExecuteDecisions", () => {
       .createSpy()
       .and.returnValues(
         [{ meta: metas[0] }, { meta: metas[0] }],
-        [{ meta: metas[1] }]
+        [{ meta: metas[1], error: "could not render this item" }]
       );
 
     const spy = jasmine.createSpy();
@@ -100,7 +96,11 @@ describe("Personalization::createExecuteDecisions", () => {
         modules,
         logger
       );
-      expect(collect).toHaveBeenCalledWith({ decisions: metas });
+      expect(logger.warn).toHaveBeenCalledWith({
+        meta: metas[1],
+        error: "could not render this item"
+      });
+      expect(collect).toHaveBeenCalledWith({ decisions: [metas[0]] });
     });
   });
 
