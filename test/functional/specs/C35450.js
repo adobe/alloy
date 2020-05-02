@@ -1,9 +1,9 @@
-import { ClientFunction } from "testcafe";
+import { ClientFunction, t } from "testcafe";
 import fixtureFactory from "../helpers/fixtureFactory";
-import createMockVisitor from "../helpers/visitorService/createMockVisitor";
-// import createMockOptIn from "../helpers/optIn/createMockOptIn";
+import { alloyWithVisitorTestPageUrl } from "../helpers/constants/testServerUrl";
+import getVisitorEcid from "../helpers/visitorService/getVisitorEcid";
+import createMockOptIn from "../helpers/optIn/createMockOptIn";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
-import generateId from "../helpers/generateId";
 import {
   compose,
   orgMainConfigMain,
@@ -14,7 +14,8 @@ import {
 
 fixtureFactory({
   title:
-    "C35450 - When ID migration is enabled and Visitor and Alloy are both awaiting consent, when consent is given to both, Alloy waits for Visitor to get ECID and then uses this value."
+    "C35450 - When ID migration is enabled and Visitor and Alloy are both awaiting consent, when consent is given to both, Alloy waits for Visitor to get ECID and then uses this value.",
+  url: alloyWithVisitorTestPageUrl
 });
 
 test.meta({
@@ -34,18 +35,16 @@ const setConsent = ClientFunction(consent => {
   return window.alloy("setConsent", consent);
 });
 
-// const getEcid = ClientFunction(() => {
-//   return window.alloy("getIdentity", {}).then(result => {
-//     return result.ECID;
-//   });
-// });
+const getAlloyEcid = ClientFunction(() => {
+  return window.alloy("getIdentity", {}).then(result => {
+    return result.ECID;
+  });
+});
 
 test("C35450 - When ID migration is enabled and Visitor and Alloy are both awaiting consent, when consent is given to both, Alloy waits for Visitor to get ECID and then uses this value.", async () => {
-  const ecid = generateId();
-  await createMockVisitor(ecid);
-  // await createMockOptIn(true);
+  await createMockOptIn(true);
   await configureAlloyInstance("alloy", config);
   await setConsent({ general: "in" });
-  // await getEcid
-  // await t.expect(getEcid()).eql(ecid);
+  const visitorEcid = await getVisitorEcid(orgMainConfigMain.orgId);
+  await t.expect(getAlloyEcid()).eql(visitorEcid);
 });

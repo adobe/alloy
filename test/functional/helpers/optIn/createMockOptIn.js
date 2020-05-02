@@ -18,7 +18,7 @@ export default ClientFunction(approved => {
       fetchPermissions(callback) {
         setTimeout(() => {
           callback();
-        }, 500);
+        }, 0);
       },
       isApproved() {
         return approved;

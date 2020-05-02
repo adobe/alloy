@@ -1,6 +1,6 @@
 import { ClientFunction, t } from "testcafe";
 import fixtureFactory from "../helpers/fixtureFactory";
-import createMockVisitor from "../helpers/visitorService/createMockVisitor";
+import { alloyWithVisitorTestPageUrl } from "../helpers/constants/testServerUrl";
 import createMockOptIn from "../helpers/optIn/createMockOptIn";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 import {
@@ -13,7 +13,8 @@ import {
 
 fixtureFactory({
   title:
-    "C36908 When ID migration is enabled and Visitor and Alloy are both awaiting consent, when Visitor is denied and Alloy is approved, an error occurs."
+    "C36908 When ID migration is enabled and Visitor and Alloy are both awaiting consent, when Visitor is denied and Alloy is approved, an error occurs.",
+  url: alloyWithVisitorTestPageUrl
 });
 
 test.meta({
@@ -34,8 +35,6 @@ const setConsent = ClientFunction(consent => {
 });
 
 test("C36908 When ID migration is enabled and Visitor and Alloy are both awaiting consent, when Visitor is denied and Alloy is approved, an error occurs.", async () => {
-  const ecid = "12345678909876543211234567890987654321";
-  await createMockVisitor(ecid);
   await createMockOptIn(false);
   await configureAlloyInstance("alloy", config);
   let errorMessage;
