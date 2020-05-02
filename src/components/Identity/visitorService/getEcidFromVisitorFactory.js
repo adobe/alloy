@@ -16,6 +16,8 @@ export default ({ logger, orgId, awaitVisitorOptIn }) => {
   const Visitor = getVisitor(window);
   return () => {
     if (Visitor) {
+      // Need to explicitly wait for optIn because visitor will call callback
+      // with invalid values prior to optIn being approved
       return awaitVisitorOptIn({ logger }).then(() => {
         logger.log(
           "Delaying request while using Visitor to retrieve ECID from server."

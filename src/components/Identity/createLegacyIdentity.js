@@ -48,8 +48,10 @@ export default ({ config, getEcidFromVisitor }) => {
       if (idMigrationEnabled) {
         const ecid = getEcidFromLegacyCookies();
         if (ecid) {
+          console.log("createLegacyIdentity, got ecid from legacy cookie");
           return Promise.resolve(ecid);
         }
+        console.log("createLegacyIdentity, getting  ecid from visitor");
         return getEcidFromVisitor();
       }
       return Promise.resolve();
