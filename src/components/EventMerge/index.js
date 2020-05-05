@@ -13,18 +13,24 @@ governing permissions and limitations under the License.
 import { uuid } from "../../utils";
 import { callback } from "../../utils/validation";
 
+const generateEventMergeIdResult = () => {
+  return {
+    eventMergeId: uuid()
+  };
+};
+
 const createEventMerge = ({ config }) => {
   // #if _REACTOR
   // This is a way for the Event Merge ID data element in the Reactor extension
   // to get an event merge ID synchronously since data elements are required
   // to be synchronous.
-  config.reactorRegisterCreateEventMergeId(uuid);
+  config.reactorRegisterCreateEventMergeId(generateEventMergeIdResult);
   // #endif
 
   return {
     commands: {
       createEventMergeId: {
-        run: uuid
+        run: generateEventMergeIdResult
       }
     }
   };

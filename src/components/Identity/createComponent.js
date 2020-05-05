@@ -42,20 +42,26 @@ export default ({
       syncIdentity: {
         optionsValidator: validateSyncIdentityOptions,
         run: options => {
-          return identityManager.sync(options.identities);
+          return identityManager.sync(options.identities).then(() => {
+            return {};
+          });
         }
       },
       getIdentity: {
         optionsValidator: getIdentityOptionsValidator,
         run: options => {
-          return consent.awaitConsent().then(() => {
-            if (ecid) {
-              return { ECID: ecid };
-            }
-            return getIdentity(options.namespaces).then(() => {
-              return { ECID: ecid };
+          return consent
+            .awaitConsent()
+            .then(() => {
+              return ecid ? undefined : getIdentity(options.namespaces);
+            })
+            .then(() => {
+              return {
+                identities: {
+                  ECID: ecid
+                }
+              };
             });
-          });
         }
       }
     }

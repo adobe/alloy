@@ -62,14 +62,14 @@ describe("privacy:createComponent", () => {
     defaultConsent = { general: "pending" };
     readStoredConsent.and.returnValues({}, { general: "in" });
     build();
-    validateSetConsentOptions.and.returnValue({ general: "in" });
     sendSetConsentRequest.and.returnValue(Promise.resolve());
-    component.commands.setConsent.run(validateSetConsentOptions("unvalidated"));
-    expect(validateSetConsentOptions).toHaveBeenCalledWith("unvalidated");
+    const onResolved = jasmine.createSpy("onResolved");
+    component.commands.setConsent.run({ general: "in" }).then(onResolved);
     expect(consent.suspend).toHaveBeenCalled();
     return flushPromiseChains().then(() => {
       expect(sendSetConsentRequest).toHaveBeenCalledWith({ general: "in" });
       expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
+      expect(onResolved).toHaveBeenCalledWith({});
     });
   });
 

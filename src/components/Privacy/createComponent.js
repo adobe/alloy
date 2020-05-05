@@ -60,7 +60,10 @@ export default ({
               }
               throw error;
             })
-            .then(readCookieIfQueueEmpty);
+            .then(() => {
+              readCookieIfQueueEmpty();
+              return {};
+            });
         }
       }
     },

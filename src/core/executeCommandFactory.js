@@ -94,6 +94,8 @@ export default ({
       const executor = getExecutor(commandName, options);
       logger.log(`Executing ${commandName} command.`, "Options:", options);
       resolve(executor());
-    }).catch(handleError);
+    }).catch(error => {
+      return handleError(error, commandName);
+    });
   };
 };

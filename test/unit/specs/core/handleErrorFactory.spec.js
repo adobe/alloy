@@ -12,50 +12,41 @@ governing permissions and limitations under the License.
 
 import handleErrorFactory from "../../../../src/core/handleErrorFactory";
 
-const expectedMessageWithoutSuppressionNote =
-  "[testinstanceNamespace] Bad thing happened.";
-const expectedMessageWithSuppressionNote = `${expectedMessageWithoutSuppressionNote}\nNote: Errors can be suppressed by setting the errorsEnabled configuration option to false.`;
+const expectedMessage = "[testinstanceNamespace] Bad thing happened.";
 
 describe("handleErrorFactory", () => {
   it("converts non-error to error and throws", () => {
     const handleError = handleErrorFactory({
-      instanceNamespace: "testinstanceNamespace",
-      getErrorsEnabled() {
-        return true;
-      }
+      instanceNamespace: "testinstanceNamespace"
     });
 
     expect(() => {
       handleError("Bad thing happened.");
-    }).toThrowError(expectedMessageWithSuppressionNote);
+    }).toThrowError(expectedMessage);
   });
 
   it("rethrows error with instanceNamespace prepended", () => {
     const handleError = handleErrorFactory({
-      instanceNamespace: "testinstanceNamespace",
-      getErrorsEnabled() {
-        return true;
-      }
+      instanceNamespace: "testinstanceNamespace"
     });
 
     expect(() => {
       handleError(new Error("Bad thing happened."));
-    }).toThrowError(expectedMessageWithSuppressionNote);
+    }).toThrowError(expectedMessage);
   });
 
-  it("logs error instead of throwing if errors are not enabled", () => {
-    const logger = jasmine.createSpyObj("logger", ["error"]);
+  it("logs an error and returns empty object if error is due to declined consent", () => {
+    const logger = jasmine.createSpyObj("logger", ["warn"]);
     const handleError = handleErrorFactory({
       instanceNamespace: "testinstanceNamespace",
-      getErrorsEnabled() {
-        return false;
-      },
       logger
     });
 
-    const error = new Error("Bad thing happened.");
-    handleError(error);
-    const loggedError = logger.error.calls.argsFor(0)[0];
-    expect(loggedError.message).toBe(expectedMessageWithoutSuppressionNote);
+    const error = new Error("User declined consent.");
+    error.code = "declinedConsent";
+    expect(handleError(error, "test")).toEqual({});
+    expect(logger.warn).toHaveBeenCalledWith(
+      "The test command could not complete because the user declined consent."
+    );
   });
 });

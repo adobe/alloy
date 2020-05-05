@@ -34,6 +34,7 @@ describe("executeCommandFactory", () => {
       .then(fail)
       .catch(error => {
         expect(error.message).toContain("The library must be configured first");
+        expect(handleError).toHaveBeenCalledWith(error, "event");
       });
   });
 
@@ -52,6 +53,7 @@ describe("executeCommandFactory", () => {
         expect(error.message).toContain(
           "The library has already been configured"
         );
+        expect(handleError).toHaveBeenCalledWith(error, "configure");
       });
   });
 
@@ -75,6 +77,7 @@ describe("executeCommandFactory", () => {
         expect(error.message).toBe(
           "The bogus command does not exist. List of available commands: configure, setDebug, genuine."
         );
+        expect(handleError).toHaveBeenCalledWith(error, "bogus");
       });
   });
 
@@ -98,6 +101,35 @@ describe("executeCommandFactory", () => {
       );
       expect(thenSpy).not.toHaveBeenCalled();
       expect(catchSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  it("reject promise if component command throws error", () => {
+    const runCommandSpy = jasmine
+      .createSpy()
+      .and.throwError(new Error("Unexpected error"));
+    const testCommand = {
+      run: runCommandSpy
+    };
+    const componentRegistry = {
+      getCommand: () => testCommand,
+      getCommandNames() {
+        return ["test"];
+      }
+    };
+    const configureCommand = () => Promise.resolve(componentRegistry);
+    const executeCommand = executeCommandFactory({
+      logger,
+      configureCommand,
+      handleError,
+      validateCommandOptions: options => options
+    });
+    executeCommand("configure");
+    return executeCommand("test", {}).catch(() => {
+      expect(handleError).toHaveBeenCalledWith(
+        new Error("Unexpected error"),
+        "test"
+      );
     });
   });
 

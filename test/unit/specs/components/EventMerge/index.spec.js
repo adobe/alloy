@@ -32,7 +32,9 @@ describe("EventMerge", () => {
     describe("createEventMergeId", () => {
       it("returns a UUID v4-compliant Id", () => {
         expect(
-          uuidv4Regex.test(eventMerge.commands.createEventMergeId.run())
+          uuidv4Regex.test(
+            eventMerge.commands.createEventMergeId.run().eventMergeId
+          )
         ).toBe(true);
       });
     });
@@ -42,7 +44,7 @@ describe("EventMerge", () => {
     it("registers a function for creating an event merge ID", () => {
       const createEventMergeId = reactorRegisterCreateEventMergeId.calls.first()
         .args[0];
-      expect(uuidv4Regex.test(createEventMergeId())).toBe(true);
+      expect(uuidv4Regex.test(createEventMergeId().eventMergeId)).toBe(true);
     });
   });
 });
