@@ -35,7 +35,7 @@ const formatFoundMessages = messages => {
  * Here is how you would test that, at the "warn log level, no messages
  * were logged:
  *
- * await logger.warn.expectNoMessages(/test/);
+ * await logger.warn.expectNoMessages();
  *
  * There is also a method directly on the logger that resets all messages at
  * all log levels:
