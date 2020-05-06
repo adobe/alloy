@@ -48,8 +48,7 @@ test("C2580: Command queueing test.", async () => {
   await getLibraryInfoCommand();
   await t.expect(getAlloyCommandQueueLength()).eql(2);
   const alloyLibrary = fs.readFileSync("dist/standalone/alloy.js", "utf-8");
-  const logger = createConsoleLogger(t, "log");
+  const logger = await createConsoleLogger();
   await injectScript(alloyLibrary);
-  const newMessages = await logger.getNewMessages();
-  await t.expect(newMessages).match(/Executing getLibraryInfo command/);
+  await logger.log.expectMessageMatching(/Executing getLibraryInfo command/);
 });
