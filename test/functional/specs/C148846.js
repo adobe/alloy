@@ -60,18 +60,6 @@ fixtureFactory({
   requestHooks: [networkLogger.edgeInteractEndpointLogs]
 });
 
-const assertCnameUseCases = async (secondRequest, cnameStateHandle) => {
-  // NOTE: This assertion is failing on IE 11; we need to debug it.
-  await t
-    .expect(secondRequest.request.headers.cookie)
-    .contains(identityCookieName);
-  await t.expect(cnameStateHandle.length).eql(0);
-  await t.expect(secondRequest.response.headers["set-cookie"]).ok();
-  await t
-    .expect(secondRequest.response.headers["set-cookie"][0])
-    .contains(identityCookieName);
-};
-
 test("C148846 - Setting edgeDomain to CNAME results in server calls to this CNAME", async () => {
   await configureAlloyInstance("alloy", config);
   await executeEventCommand();
@@ -106,15 +94,20 @@ test("C148846 - Setting edgeDomain to CNAME results in server calls to this CNAM
     // Expects the demdex state to contain the identity cookie.
     await t.expect(demdexStateHandle.length).gte(0);
     await t.expect(demdexResponseContainsIdentityCookie).ok();
-
-    // Expects the CNAME request header to contain the Konductor state cookies.
-    // Expects the CNAME response body to not contain the Konductor state.
-    // Expects the CNAME response header to contain the Konductor state.
-    await assertCnameUseCases(secondRequest, cnameStateHandle);
   } else {
     await t.expect(hostForFirstRequest).contains(domain.firstParty);
     await t.expect(hostForSecondRequest).contains(domain.firstParty);
-
-    await assertCnameUseCases(secondRequest, cnameStateHandle);
   }
+
+  // Expects the CNAME request header to contain the Konductor state cookies.
+  // Expects the CNAME response body to not contain the Konductor state.
+  // Expects the CNAME response header to contain the Konductor state.
+  await t
+    .expect(secondRequest.request.headers.cookie)
+    .contains(identityCookieName);
+  await t.expect(cnameStateHandle.length).eql(0);
+  await t.expect(secondRequest.response.headers["set-cookie"]).ok();
+  await t
+    .expect(secondRequest.response.headers["set-cookie"][0])
+    .contains(identityCookieName);
 });
