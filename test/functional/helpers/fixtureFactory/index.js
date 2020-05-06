@@ -14,20 +14,27 @@ const alloyLibraryPath = path.join(
 
 const networkLogger = createNetworkLogger();
 
-export default ({ title = "", url = testServerUrl, requestHooks = [] }) => {
+export default ({
+  title = "",
+  url = testServerUrl,
+  requestHooks = [],
+  includeAlloyLibrary = true
+}) => {
   const fixtureObject = fixture(title)
     .page(url)
     .requestHooks(...requestHooks.concat(networkLogger.demdexProxy));
 
+  const clientScripts = [];
   if (env === "int") {
-    fixtureObject.clientScripts([
-      {
-        path: pageSnippetPath
-      },
-      {
+    clientScripts.push({
+      path: pageSnippetPath
+    });
+    if (includeAlloyLibrary) {
+      clientScripts.push({
         path: alloyLibraryPath
-      }
-    ]);
+      });
+    }
+    fixtureObject.clientScripts(clientScripts);
   }
 
   return fixtureObject;
