@@ -21,7 +21,8 @@ describe("Context::implementationDetails", () => {
     expect(xdm).toEqual({
       implementationDetails: {
         name: "https://ns.adobe.com/experience/alloy",
-        version: "1.2.3"
+        version: "1.2.3",
+        environment: "browser"
       }
     });
   });
