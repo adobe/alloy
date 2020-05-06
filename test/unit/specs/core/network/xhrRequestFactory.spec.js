@@ -55,7 +55,7 @@ describe("xhrRequest", () => {
 
   it("disables credentials", () => {
     xhrRequest(url, body);
-    expect(request.withCredentials).toBe(false);
+    expect(request.withCredentials).toBe(true);
   });
 
   it("rejects promise upon error", () => {

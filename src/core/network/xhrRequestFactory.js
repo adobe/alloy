@@ -31,7 +31,7 @@ export default XMLHttpRequest => {
       };
       request.open("POST", url, true);
       request.setRequestHeader("Content-Type", "text/plain; charset=UTF-8");
-      request.withCredentials = false;
+      request.withCredentials = true;
       request.onerror = reject;
       request.onabort = reject;
       request.send(body);
