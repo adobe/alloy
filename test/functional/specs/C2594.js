@@ -1,22 +1,25 @@
 import fixtureFactory from "../helpers/fixtureFactory";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 import createNetworkLogger from "../helpers/networkLogger";
-
 import {
   compose,
   orgMainConfigMain,
-  consentPending
+  consentPending,
+  debugEnabled
 } from "../helpers/constants/configParts";
+import createConsoleLogger from "../helpers/consoleLogger";
 
 const config = compose(
   orgMainConfigMain,
-  consentPending
+  consentPending,
+  debugEnabled
 );
 
 const networkLogger = createNetworkLogger();
 
 fixtureFactory({
-  title: "C2594: event command rejects promise if user consents to no purposes",
+  title:
+    "C2594: event command resolves promise with empty object if user consents to no purposes",
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
@@ -26,18 +29,14 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C2594: event command rejects promise if user consents to no purposes", async t => {
+test("Test C2594: event command resolves promise with empty object if user consents to no purposes", async t => {
   await configureAlloyInstance("alloy", config);
-  const errorMessagePromise = t.eval(() =>
-    window
-      .alloy("sendEvent", { data: { a: 1 } })
-      .then(() => undefined, e => e.message)
-  );
+  const logger = await createConsoleLogger();
+  const sendEventPromise = t.eval(() => window.alloy("sendEvent"));
   await t.eval(() => window.alloy("setConsent", { general: "out" }));
-  const errorMessage = await errorMessagePromise;
-
-  await t.expect(errorMessage).ok("Expected the event command to be rejected");
-  await t.expect(errorMessage).contains("The user declined consent.");
+  const result = await sendEventPromise;
+  await t.expect(result).eql({});
+  await logger.warn.expectMessageMatching(/user declined consent/);
   // make sure no event requests were sent out
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
 });

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isFunction, values } from "../utils";
+import { isFunction, isObject, values } from "../utils";
 
 const coreCommands = {
   CONFIGURE: "configure",
@@ -94,6 +94,13 @@ export default ({
       const executor = getExecutor(commandName, options);
       logger.log(`Executing ${commandName} command.`, "Options:", options);
       resolve(executor());
-    }).catch(handleError);
+    })
+      .then(result => {
+        // We should always be returning an object from every command.
+        return isObject(result) ? result : {};
+      })
+      .catch(error => {
+        return handleError(error, commandName);
+      });
   };
 };

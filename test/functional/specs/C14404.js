@@ -5,12 +5,15 @@ import createNetworkLogger from "../helpers/networkLogger";
 import {
   compose,
   orgMainConfigMain,
-  consentPending
+  consentPending,
+  debugEnabled
 } from "../helpers/constants/configParts";
+import createConsoleLogger from "../helpers/consoleLogger";
 
 const config = compose(
   orgMainConfigMain,
-  consentPending
+  consentPending,
+  debugEnabled
 );
 
 const networkLogger = createNetworkLogger();
@@ -43,15 +46,9 @@ test("Test C14404: User cannot consent to all purposes after consenting to no pu
     .contains("The user previously declined consent, which cannot be changed.");
 
   // make sure the instance still has no consent
-  const eventErrorMessage = await t.eval(() =>
-    window
-      .alloy("sendEvent", { data: { a: 1 } })
-      .then(() => undefined, e => e.message)
-  );
-  await t
-    .expect(eventErrorMessage)
-    .ok("Expected the event command to be rejected");
-  await t.expect(eventErrorMessage).contains("The user declined consent.");
+  const logger = await createConsoleLogger();
+  await t.eval(() => window.alloy("sendEvent"));
+  await logger.warn.expectMessageMatching(/user declined consent/);
   // make sure no event requests went out
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
 });

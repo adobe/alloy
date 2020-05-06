@@ -1,6 +1,7 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../helpers/networkLogger";
 import fixtureFactory from "../helpers/fixtureFactory";
+import createConsoleLogger from "../helpers/consoleLogger";
 
 const networkLogger = createNetworkLogger();
 
@@ -42,15 +43,8 @@ test("C14409 - Consenting to no purposes should be persisted.", async () => {
   await t.eval(() => document.location.reload());
 
   await configure();
-
-  // send event
-  const errorMessage = await t.eval(() =>
-    window
-      .alloy("sendEvent", { data: { a: 1 } })
-      .then(() => undefined, e => e.message)
-  );
-
-  // check that the promise from the command is rejected and check the error message to make sure it was due to the user being opted out.
-  await t.expect(errorMessage).ok("Expected the event command to be rejected");
-  await t.expect(errorMessage).contains("The user declined consent.");
+  const logger = await createConsoleLogger();
+  await t.eval(() => window.alloy("sendEvent"));
+  await logger.warn.expectMessageMatching(/user declined consent/);
+  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
 });

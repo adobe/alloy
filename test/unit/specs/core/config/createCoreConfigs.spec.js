@@ -18,38 +18,6 @@ import { GENERAL } from "../../../../../src/constants/consentPurpose";
 describe("createCoreConfigs", () => {
   const baseConfig = { edgeConfigId: "1234", orgId: "org1" };
 
-  describe("errorsEnabled", () => {
-    it("validates errorsEnabled=undefined", () => {
-      const config = objectOf(createCoreConfigs())(baseConfig);
-      expect(config.errorsEnabled).toBe(true);
-    });
-
-    it("validates errorsEnabled=true", () => {
-      const config = objectOf(createCoreConfigs())({
-        errorsEnabled: true,
-        ...baseConfig
-      });
-      expect(config.errorsEnabled).toBe(true);
-    });
-
-    it("validates errorsEnabled=false", () => {
-      const config = objectOf(createCoreConfigs())({
-        errorsEnabled: false,
-        ...baseConfig
-      });
-      expect(config.errorsEnabled).toBe(false);
-    });
-
-    it("validates errorsEnabled=123", () => {
-      expect(() => {
-        objectOf(createCoreConfigs())({
-          errorsEnabled: 123,
-          ...baseConfig
-        });
-      }).toThrowError();
-    });
-  });
-
   describe("debugEnabled", () => {
     it("validates debugEnabled=undefined", () => {
       const config = objectOf(createCoreConfigs())(baseConfig);

@@ -61,13 +61,6 @@ if (instanceNamespaces) {
     const componentRegistry = createComponentRegistry();
     const lifecycle = createLifecycle(componentRegistry);
     const networkStrategy = networkStrategyFactory(window, logger);
-    let errorsEnabled = true;
-    const getErrorsEnabled = () => {
-      return errorsEnabled;
-    };
-    const setErrorsEnabled = value => {
-      errorsEnabled = value;
-    };
 
     const setDebugCommand = options => {
       setDebugEnabled(options.enabled, { fromConfig: false });
@@ -80,8 +73,7 @@ if (instanceNamespaces) {
         coreConfigValidators,
         createConfig,
         logger,
-        setDebugEnabled,
-        setErrorsEnabled
+        setDebugEnabled
       });
       const cookieTransfer = createCookieTransfer({
         cookieJar,
@@ -139,7 +131,6 @@ if (instanceNamespaces) {
 
     const handleError = handleErrorFactory({
       instanceNamespace,
-      getErrorsEnabled,
       logger
     });
 

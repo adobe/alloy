@@ -30,10 +30,10 @@ describe("Identity::createComponent", () => {
 
   beforeEach(() => {
     addEcidQueryToEvent = jasmine.createSpy("addEcidQueryToEvent");
-    identityManager = jasmine.createSpyObj("identityManager", [
-      "addToPayload",
-      "sync"
-    ]);
+    identityManager = jasmine.createSpyObj("identityManager", {
+      addToPayload: undefined,
+      sync: Promise.resolve()
+    });
     ensureRequestHasIdentity = jasmine.createSpy("ensureRequestHasIdentity");
     setLegacyEcid = jasmine.createSpy("setLegacyEcid");
     handleResponseForIdSyncs = jasmine.createSpy("handleResponseForIdSyncs");
@@ -122,22 +122,22 @@ describe("Identity::createComponent", () => {
 
   it("syncIdentity syncs identities", () => {
     const identities = { type: "identities" };
-    component.commands.syncIdentity.run({ identities });
-    expect(identityManager.sync).toHaveBeenCalledWith(identities);
+    return component.commands.syncIdentity.run({ identities }).then(result => {
+      expect(identityManager.sync).toHaveBeenCalledWith(identities);
+      expect(result).toBeUndefined();
+    });
   });
 
   it("getIdentity command should make a request when ecid is not available", () => {
-    let ecid;
+    const onResolved = jasmine.createSpy("onResolved");
     component.commands.getIdentity
       .run({ namespaces: ["ECID"] })
-      .then(identities => {
-        ecid = identities.ECID;
-      });
+      .then(onResolved);
 
     return flushPromiseChains()
       .then(() => {
         expect(getIdentity).not.toHaveBeenCalled();
-        expect(ecid).toBe(undefined);
+        expect(onResolved).not.toHaveBeenCalled();
         consentDeferred.resolve();
         return flushPromiseChains();
       })
@@ -150,7 +150,11 @@ describe("Identity::createComponent", () => {
         return flushPromiseChains();
       })
       .then(() => {
-        expect(ecid).toBe("user@adobe");
+        expect(onResolved).toHaveBeenCalledWith({
+          identity: {
+            ECID: "user@adobe"
+          }
+        });
       });
   });
 
@@ -158,20 +162,22 @@ describe("Identity::createComponent", () => {
     getEcidFromResponse.and.returnValue("user@adobe");
     const response = { type: "response" };
     component.lifecycle.onResponse({ response });
-    let ecid;
-    component.commands.getIdentity.run().then(identities => {
-      ecid = identities.ECID;
-    });
+    const onResolved = jasmine.createSpy("onResolved");
+    component.commands.getIdentity.run().then(onResolved);
     return flushPromiseChains()
       .then(() => {
         expect(getIdentity).not.toHaveBeenCalled();
-        expect(ecid).toBe(undefined);
+        expect(onResolved).not.toHaveBeenCalled();
         consentDeferred.resolve();
         return flushPromiseChains();
       })
       .then(() => {
         expect(getIdentity).not.toHaveBeenCalled();
-        expect(ecid).toBe("user@adobe");
+        expect(onResolved).toHaveBeenCalledWith({
+          identity: {
+            ECID: "user@adobe"
+          }
+        });
       });
   });
 });

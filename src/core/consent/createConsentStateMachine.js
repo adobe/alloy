@@ -13,6 +13,13 @@ governing permissions and limitations under the License.
 import { defer } from "../../utils";
 
 export const DECLINED_CONSENT = "The user declined consent.";
+export const DECLINED_CONSENT_ERROR_CODE = "declinedConsent";
+
+const createDeclinedConsentError = () => {
+  const error = new Error(DECLINED_CONSENT);
+  error.code = DECLINED_CONSENT_ERROR_CODE;
+  return error;
+};
 
 export default () => {
   const deferreds = [];
@@ -24,12 +31,12 @@ export default () => {
   };
   const discardAll = () => {
     while (deferreds.length) {
-      deferreds.shift().reject(new Error(DECLINED_CONSENT));
+      deferreds.shift().reject(createDeclinedConsentError());
     }
   };
 
   const awaitIn = () => Promise.resolve();
-  const awaitOut = () => Promise.reject(new Error(DECLINED_CONSENT));
+  const awaitOut = () => Promise.reject(createDeclinedConsentError());
   const awaitPending = () => {
     const deferred = defer();
     deferreds.push(deferred);

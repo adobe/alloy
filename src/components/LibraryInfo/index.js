@@ -17,7 +17,11 @@ const createLibraryInfo = () => {
     commands: {
       getLibraryInfo: {
         run: () => {
-          return { version: libraryVersion };
+          return {
+            libraryInfo: {
+              version: libraryVersion
+            }
+          };
         }
       }
     }

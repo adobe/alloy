@@ -34,6 +34,7 @@ describe("executeCommandFactory", () => {
       .then(fail)
       .catch(error => {
         expect(error.message).toContain("The library must be configured first");
+        expect(handleError).toHaveBeenCalledWith(error, "event");
       });
   });
 
@@ -52,6 +53,7 @@ describe("executeCommandFactory", () => {
         expect(error.message).toContain(
           "The library has already been configured"
         );
+        expect(handleError).toHaveBeenCalledWith(error, "configure");
       });
   });
 
@@ -75,6 +77,7 @@ describe("executeCommandFactory", () => {
         expect(error.message).toBe(
           "The bogus command does not exist. List of available commands: configure, setDebug, genuine."
         );
+        expect(handleError).toHaveBeenCalledWith(error, "bogus");
       });
   });
 
@@ -101,11 +104,10 @@ describe("executeCommandFactory", () => {
     });
   });
 
-  it("executes component commands", () => {
-    const runCommandSpy = jasmine.createSpy();
-    const validateCommandOptionsSpy = jasmine
+  it("reject promise if component command throws error", () => {
+    const runCommandSpy = jasmine
       .createSpy()
-      .and.returnValue("post-validation-options");
+      .and.throwError(new Error("Unexpected error"));
     const testCommand = {
       run: runCommandSpy
     };
@@ -120,15 +122,78 @@ describe("executeCommandFactory", () => {
       logger,
       configureCommand,
       handleError,
+      validateCommandOptions: options => options
+    });
+    executeCommand("configure");
+    return executeCommand("test", {}).catch(() => {
+      expect(handleError).toHaveBeenCalledWith(
+        new Error("Unexpected error"),
+        "test"
+      );
+    });
+  });
+
+  it("executes component commands", () => {
+    const validateCommandOptionsSpy = jasmine
+      .createSpy()
+      .and.returnValues(
+        "with-result-post-validation-options",
+        "without-result-post-validation-options"
+      );
+    const testCommandWithResult = jasmine.createSpyObj(
+      "testCommandWithResult",
+      {
+        run: { foo: "bar" }
+      }
+    );
+    const testCommandWithoutResult = jasmine.createSpyObj(
+      "testCommandWithoutResult",
+      {
+        run: undefined
+      }
+    );
+    const componentRegistry = {
+      getCommand: jasmine
+        .createSpy("getCommand")
+        .and.returnValues(testCommandWithResult, testCommandWithoutResult),
+      getCommandNames() {
+        return ["testCommandWithResult", "testCommandWithoutResult"];
+      }
+    };
+    const configureCommand = () => Promise.resolve(componentRegistry);
+    const executeCommand = executeCommandFactory({
+      logger,
+      configureCommand,
+      handleError,
       validateCommandOptions: validateCommandOptionsSpy
     });
     executeCommand("configure");
-    return executeCommand("test", "pre-validation-options").then(() => {
+    return Promise.all([
+      executeCommand(
+        "testCommandWithResult",
+        "with-result-pre-validation-options"
+      ),
+      executeCommand(
+        "testCommandWithoutResult",
+        "without-result-pre-validation-options"
+      )
+    ]).then(results => {
+      expect(results[0]).toEqual({ foo: "bar" });
+      expect(results[1]).toEqual({});
       expect(validateCommandOptionsSpy).toHaveBeenCalledWith({
-        command: testCommand,
-        options: "pre-validation-options"
+        command: testCommandWithResult,
+        options: "with-result-pre-validation-options"
       });
-      expect(runCommandSpy).toHaveBeenCalledWith("post-validation-options");
+      expect(validateCommandOptionsSpy).toHaveBeenCalledWith({
+        command: testCommandWithoutResult,
+        options: "without-result-pre-validation-options"
+      });
+      expect(testCommandWithResult.run).toHaveBeenCalledWith(
+        "with-result-post-validation-options"
+      );
+      expect(testCommandWithoutResult.run).toHaveBeenCalledWith(
+        "without-result-post-validation-options"
+      );
     });
   });
 
@@ -136,9 +201,7 @@ describe("executeCommandFactory", () => {
     const configureCommand = jasmine
       .createSpy()
       .and.returnValue(Promise.resolve("configureResult"));
-    const setDebugCommand = jasmine
-      .createSpy()
-      .and.returnValue(Promise.resolve("logResult"));
+    const setDebugCommand = jasmine.createSpy();
     const executeCommand = executeCommandFactory({
       logger,
       configureCommand,
@@ -149,11 +212,11 @@ describe("executeCommandFactory", () => {
     return Promise.all([
       executeCommand("configure", { foo: "bar" }),
       executeCommand("setDebug", { baz: "qux" })
-    ]).then(([configureResult, logResult]) => {
+    ]).then(([configureResult, setDebugResult]) => {
       expect(configureCommand).toHaveBeenCalledWith({ foo: "bar" });
       expect(setDebugCommand).toHaveBeenCalledWith({ baz: "qux" });
-      expect(configureResult).toEqual("configureResult");
-      expect(logResult).toEqual("logResult");
+      expect(configureResult).toEqual({});
+      expect(setDebugResult).toEqual({});
     });
   });
 });
