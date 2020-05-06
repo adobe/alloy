@@ -71,7 +71,7 @@ describe("createConsentStateMachine", () => {
 
   it("rejects queued promises when consent set to out", () => {
     subject.pending();
-    const onRejected = jasmine.createSpy("onFulfilled");
+    const onRejected = jasmine.createSpy("onRejected");
     subject.awaitConsent().catch(onRejected);
 
     return flushPromiseChains()
