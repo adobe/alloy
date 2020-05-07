@@ -22,6 +22,7 @@ import {
 import { domain } from "../helpers/edgeInfo";
 import getResponseBody from "../helpers/networkLogger/getResponseBody";
 import createResponse from "../../../src/core/createResponse";
+import areThirdPartyCookiesSupported from "../helpers/areThirdPartyCookiesSupported";
 
 const executeEventCommand = ClientFunction(() => {
   return window.alloy("sendEvent");
@@ -31,17 +32,7 @@ const demdexHostRegex = /\.demdex\.net/;
 
 const getHostFor = requestLogger => requestLogger.request.headers.host;
 
-const browsersSupportingThirdPartyCookiesByDefault = [
-  "Chrome",
-  "Chromium",
-  "Microsoft Edge",
-  "Internet Explorer"
-];
-
 const identityCookieName = "kndctr_334F60F35E1597910A495EC2_AdobeOrg_identity";
-
-const areThirdPartyCookiesSupportedByBrowserByDefault = () =>
-  browsersSupportingThirdPartyCookiesByDefault.indexOf(t.browser.name) !== -1;
 
 const config = compose(
   orgMainConfigMain,
@@ -86,7 +77,7 @@ test("C148846 - Setting edgeDomain to CNAME results in server calls to this CNAM
   const hostForFirstRequest = getHostFor(firstRequest);
   const hostForSecondRequest = getHostFor(secondRequest);
 
-  if (areThirdPartyCookiesSupportedByBrowserByDefault()) {
+  if (areThirdPartyCookiesSupported()) {
     await t.expect(hostForFirstRequest).match(demdexHostRegex);
     await t.expect(hostForSecondRequest).contains(domain.firstParty);
 

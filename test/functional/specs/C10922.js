@@ -26,6 +26,7 @@ import {
 } from "../helpers/constants/configParts";
 import reloadPage from "../helpers/reloadPage";
 import setLegacyIdentityCookie from "../helpers/setLegacyIdentityCookie";
+import areThirdPartyCookiesSupported from "../helpers/areThirdPartyCookiesSupported";
 
 const networkLogger = createNetworkLogger();
 
@@ -47,19 +48,6 @@ const assertRequestWentToDemdex = async () => {
 const assertRequestDidNotGoToDemdex = async () => {
   await t.expect(getHostForFirstRequest()).notMatch(demdexHostRegex);
 };
-
-// The names here match those listed in
-// https://github.com/lancedikson/bowser/blob/9ecf3e94c3269ef8bb4c8274dab6a31eea665aea/src/constants.js
-// which is the library that provides the value for t.browser.name.
-const browsersSupportingThirdPartyCookiesByDefault = [
-  "Chrome",
-  "Chromium",
-  "Microsoft Edge",
-  "Internet Explorer"
-];
-
-const areThirdPartyCookiesSupportedByBrowserByDefault = () =>
-  browsersSupportingThirdPartyCookiesByDefault.indexOf(t.browser.name) !== -1;
 
 fixtureFactory({
   title: "C10922 - demdex usage",
@@ -115,7 +103,7 @@ permutationsUsingDemdex.forEach(permutation => {
   test(`C10922 - demdex is used for first request when configured with ${permutation.description} and browser supports third-party cookies by default`, async () => {
     await configureAlloyInstance("alloy", permutation.config);
     await executeEventCommand();
-    if (areThirdPartyCookiesSupportedByBrowserByDefault()) {
+    if (areThirdPartyCookiesSupported()) {
       await assertRequestWentToDemdex();
     } else {
       await assertRequestDidNotGoToDemdex();
