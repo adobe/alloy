@@ -24,23 +24,18 @@ const getLibraryInfoCommand = ClientFunction(() => {
 });
 
 test("Test C2584: setDebug command with enable: true. getLibraryInfo. refresh. toggle and repeat.", async t => {
-  const logger = createConsoleLogger(t, "log");
+  const logger = await createConsoleLogger();
   await configureAlloyInstance("alloy", baseConfig);
 
   await debugCommand(true);
   await getLibraryInfoCommand();
-
-  const newMessages = await logger.getNewMessages();
-  await t.expect(newMessages).match(/Executing getLibraryInfo command/);
+  await logger.log.expectMessageMatching(/Executing getLibraryInfo command/);
 
   await t.navigateTo(testServerUrl);
   await configureAlloyInstance("alloy", baseConfig);
   await debugCommand(false);
+  await logger.reset();
   await getLibraryInfoCommand();
 
-  const messagesAfterRefresh = await logger.getNewMessages();
-
-  await t
-    .expect(messagesAfterRefresh)
-    .notMatch(/\[alloy] Executing getLibraryInfo command./);
+  await logger.log.expectNoMessages();
 });

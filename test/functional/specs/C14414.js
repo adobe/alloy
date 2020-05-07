@@ -4,12 +4,15 @@ import SequentialHook from "../helpers/requestHooks/sequentialHook";
 import {
   compose,
   orgMainConfigMain,
-  consentPending
+  consentPending,
+  debugEnabled
 } from "../helpers/constants/configParts";
+import createConsoleLogger from "../helpers/consoleLogger";
 
 const config = compose(
   orgMainConfigMain,
-  consentPending
+  consentPending,
+  debugEnabled
 );
 
 const setConsentHook = new SequentialHook(/v1\/privacy\/set-consent\?/);
@@ -28,21 +31,16 @@ test.meta({
 test("Test C14414: Requests are queued while consent changes are pending", async t => {
   await configureAlloyInstance("alloy", config);
   await t.eval(() => {
+    // Don't wait for setConsent to complete.
     window.alloy("setConsent", { general: "in" });
-    return undefined;
   });
   await t.eval(() => {
+    // Don't wait for setConsent to complete.
     window.alloy("setConsent", { general: "out" });
-    return undefined;
   });
-  const errorMessage = await t.eval(() =>
-    window
-      .alloy("sendEvent", { data: { a: 1 } })
-      .then(() => undefined, e => e.message)
-  );
-
-  await t.expect(errorMessage).ok("Expected the event command to be rejected");
-  await t.expect(errorMessage).contains("user declined consent");
+  const logger = await createConsoleLogger();
+  await t.eval(() => window.alloy("sendEvent"));
+  await logger.warn.expectMessageMatching(/user declined consent/);
   await t
     .expect(setConsentHook.haveRequestsBeenSequential())
     .ok("Set-consent requests were not sequential");

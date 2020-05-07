@@ -4,6 +4,7 @@ import baseConfig from "../helpers/constants/baseConfig";
 import addAnchorToBody from "../helpers/dom/addAnchorToBody";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
 import createConsoleLogger from "../helpers/consoleLogger";
+import { compose } from "../helpers/constants/configParts";
 
 fixtureFactory({
   title: "C8118: Send event with information about link clicks."
@@ -17,17 +18,18 @@ test.meta({
 
 test("Test C8118: Load page with link. Click link. Verify event.", async () => {
   const getLocation = ClientFunction(() => document.location.href.toString());
-  const logger = createConsoleLogger(t, "log");
-  const testConfig = {
-    onBeforeEventSend(options) {
-      try {
-        // eslint-disable-next-line no-console
-        console.log(options.xdm.web.webInteraction.URL);
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
+  const testConfig = compose(
+    baseConfig,
+    {
+      onBeforeEventSend(options) {
+        try {
+          // eslint-disable-next-line no-console
+          console.log(options.xdm.web.webInteraction.URL);
+          // eslint-disable-next-line no-empty
+        } catch (e) {}
+      }
     }
-  };
-  Object.assign(testConfig, baseConfig);
+  );
   await configureAlloyInstance("alloy", testConfig);
   await addAnchorToBody({
     text: "Test Link",
@@ -36,9 +38,8 @@ test("Test C8118: Load page with link. Click link. Verify event.", async () => {
       id: "alloy-link-test"
     }
   });
+  const logger = await createConsoleLogger();
   await t.click(Selector("#alloy-link-test"));
   await t.expect(getLocation()).contains("blank.html");
-  const newMessages = await logger.getNewMessages();
-  const destinationUrl = newMessages[0];
-  await t.expect(destinationUrl).contains("blank.html");
+  await logger.log.expectMessageMatching(/blank\.html/);
 });

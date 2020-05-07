@@ -15,7 +15,6 @@ const triggerAlloyEvent = ClientFunction(() => {
   return new Promise(resolve => {
     window
       .alloy("configure", {
-        errorsEnabled: false,
         debugEnabled: true
       })
       .catch(() => {

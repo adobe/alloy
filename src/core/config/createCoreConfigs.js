@@ -24,7 +24,6 @@ import { IN, PENDING } from "../../constants/consentStatus";
 import { GENERAL } from "../../constants/consentPurpose";
 
 export default () => ({
-  errorsEnabled: boolean().default(true),
   debugEnabled: boolean().default(false),
   defaultConsent: objectOf({
     [GENERAL]: enumOf(IN, PENDING).default(IN)

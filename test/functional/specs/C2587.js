@@ -5,14 +5,12 @@ import configureAlloyInstance from "../helpers/configureAlloyInstance";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled,
-  errorsDisabled
+  debugEnabled
 } from "../helpers/constants/configParts";
 
 const config = compose(
   orgMainConfigMain,
-  debugEnabled,
-  errorsDisabled
+  debugEnabled
 );
 
 fixtureFactory({
@@ -26,16 +24,13 @@ test.meta({
 });
 
 const bogusCommand = ClientFunction(() => {
-  window.alloy("bogusCommand");
+  return window.alloy("bogusCommand").then(() => {}, error => error.message);
 });
 
-test.before(async () => {
+test("Test C2587: Throw error when executing command that doesn't exist", async t => {
   await configureAlloyInstance("alloy", config);
-  await bogusCommand();
-})(
-  "Test C2587: Throw error when executing command that doesn't exist",
-  async t => {
-    const { error } = await t.getBrowserConsoleMessages();
-    await t.expect(error).match(/The bogusCommand command does not exist./);
-  }
-);
+  const errorMessage = await bogusCommand();
+  await t
+    .expect(errorMessage)
+    .match(/The bogusCommand command does not exist./);
+});

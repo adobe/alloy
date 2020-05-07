@@ -11,17 +11,20 @@ governing permissions and limitations under the License.
 */
 
 import { toError } from "../utils";
+import { DECLINED_CONSENT_ERROR_CODE } from "./consent/createConsentStateMachine";
 
-const suppressionNote =
-  "Note: Errors can be suppressed by setting the errorsEnabled configuration option to false.";
+export default ({ instanceNamespace, logger }) => (error, commandName) => {
+  // In the case of declined consent, we've opted to not reject the promise
+  // returned to the customer, but instead resolve the promise with an
+  // empty result object.
+  if (error.code === DECLINED_CONSENT_ERROR_CODE) {
+    logger.warn(
+      `The ${commandName} command could not fully complete because the user declined consent.`
+    );
+    return {};
+  }
 
-export default ({ instanceNamespace, getErrorsEnabled, logger }) => error => {
   const err = toError(error);
   err.message = `[${instanceNamespace}] ${err.message}`;
-  if (getErrorsEnabled()) {
-    err.message += `\n${suppressionNote}`;
-    throw err;
-  } else {
-    logger.error(err);
-  }
+  throw err;
 };

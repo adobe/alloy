@@ -6,8 +6,6 @@ import edgeDomainFirstParty from "./edgeDomainFirstParty";
 import edgeDomainThirdParty from "./edgeDomainThirdParty";
 import migrationEnabled from "./migrationEnabled";
 import migrationDisabled from "./migrationDisabled";
-import errorsEnabled from "./errorsEnabled";
-import errorsDisabled from "./errorsDisabled";
 import consentIn from "./consentIn";
 import consentPending from "./consentPending";
 import thirdPartyCookiesEnabled from "./thirdPartyCookiesEnabled";
@@ -25,8 +23,6 @@ export {
   edgeDomainThirdParty,
   migrationEnabled,
   migrationDisabled,
-  errorsEnabled,
-  errorsDisabled,
   consentIn,
   consentPending,
   thirdPartyCookiesEnabled,

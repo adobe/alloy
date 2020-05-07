@@ -13,6 +13,8 @@ governing permissions and limitations under the License.
 import createConsentStateMachine from "../../../../../src/core/consent/createConsentStateMachine";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
+const DECLINED_CONSENT_ERROR_CODE = "declinedConsent";
+
 describe("createConsentStateMachine", () => {
   let subject;
 
@@ -46,7 +48,8 @@ describe("createConsentStateMachine", () => {
     subject.awaitConsent().catch(onRejected);
 
     return flushPromiseChains().then(() => {
-      expect(onRejected).toHaveBeenCalled();
+      const error = onRejected.calls.argsFor(0)[0];
+      expect(error.code).toBe(DECLINED_CONSENT_ERROR_CODE);
     });
   });
 
@@ -68,17 +71,18 @@ describe("createConsentStateMachine", () => {
 
   it("rejects queued promises when consent set to out", () => {
     subject.pending();
-    const onFulfilled = jasmine.createSpy("onFulfilled");
-    subject.awaitConsent().catch(onFulfilled);
+    const onRejected = jasmine.createSpy("onRejected");
+    subject.awaitConsent().catch(onRejected);
 
     return flushPromiseChains()
       .then(() => {
-        expect(onFulfilled).not.toHaveBeenCalled();
+        expect(onRejected).not.toHaveBeenCalled();
         subject.out();
         return flushPromiseChains();
       })
       .then(() => {
-        expect(onFulfilled).toHaveBeenCalled();
+        const error = onRejected.calls.argsFor(0)[0];
+        expect(error.code).toBe(DECLINED_CONSENT_ERROR_CODE);
       });
   });
 });

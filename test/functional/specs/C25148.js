@@ -1,8 +1,13 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../helpers/networkLogger";
 import fixtureFactory from "../helpers/fixtureFactory";
-import environmentContextConfig from "../helpers/constants/environmentContextConfig";
 import configureAlloyInstance from "../helpers/configureAlloyInstance";
+import createConsoleLogger from "../helpers/consoleLogger";
+import {
+  compose,
+  debugEnabled,
+  orgMainConfigMain
+} from "../helpers/constants/configParts";
 
 const networkLogger = createNetworkLogger();
 
@@ -26,10 +31,13 @@ const setConsentOut = ClientFunction(() => {
 });
 
 test("C25148 - When default consent is 'in', consent can be revoked", async () => {
-  await configureAlloyInstance("alloy", {
-    defaultConsent: { general: "in" },
-    ...environmentContextConfig
-  });
+  await configureAlloyInstance(
+    "alloy",
+    compose(
+      orgMainConfigMain,
+      debugEnabled
+    )
+  );
 
   // trigger an event
   await triggerAlloyEvent();
@@ -38,16 +46,9 @@ test("C25148 - When default consent is 'in', consent can be revoked", async () =
   await setConsentOut();
 
   // trigger a second event
-  const promise = triggerAlloyEvent();
-
-  // catch the error message
-  let errMsg = "";
-  await promise.catch(e => {
-    errMsg = e.errMsg;
-  });
-
-  // ensure the error message matches the user declining consent
-  await t.expect(errMsg.match(/The user declined consent/)).ok();
+  const logger = await createConsoleLogger();
+  await triggerAlloyEvent();
+  await logger.warn.expectMessageMatching(/user declined consent/);
 
   // ensure only one event was sent
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);

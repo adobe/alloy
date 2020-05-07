@@ -48,14 +48,18 @@ export default ({
       getIdentity: {
         optionsValidator: getIdentityOptionsValidator,
         run: options => {
-          return consent.awaitConsent().then(() => {
-            if (ecid) {
-              return { ECID: ecid };
-            }
-            return getIdentity(options.namespaces).then(() => {
-              return { ECID: ecid };
+          return consent
+            .awaitConsent()
+            .then(() => {
+              return ecid ? undefined : getIdentity(options.namespaces);
+            })
+            .then(() => {
+              return {
+                identity: {
+                  ECID: ecid
+                }
+              };
             });
-          });
         }
       }
     }

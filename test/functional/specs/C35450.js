@@ -35,16 +35,22 @@ const setConsent = ClientFunction(consent => {
   return window.alloy("setConsent", consent);
 });
 
-const getAlloyEcid = ClientFunction(() => {
-  return window.alloy("getIdentity", {}).then(result => {
-    return result.ECID;
-  });
+const getIdentity = ClientFunction(() => {
+  return window.alloy("getIdentity");
 });
 
 test("C35450 - When ID migration is enabled and Visitor and Alloy are both awaiting consent, when consent is given to both, Alloy waits for Visitor to get ECID and then uses this value.", async () => {
   await createMockOptIn(true);
   await configureAlloyInstance("alloy", config);
   await setConsent({ general: "in" });
-  const visitorEcid = await getVisitorEcid(orgMainConfigMain.orgId);
-  await t.expect(getAlloyEcid()).eql(visitorEcid);
+  // Don't await the visitor ECID before executing the getIdentity command.
+  // This helps ensure that Alloy is actually waiting for Visitor.
+  const visitorEcidPromise = getVisitorEcid(orgMainConfigMain.orgId);
+  const identityResult = await getIdentity();
+  const visitorEcid = await visitorEcidPromise;
+  await t.expect(identityResult).eql({
+    identity: {
+      ECID: visitorEcid
+    }
+  });
 });
