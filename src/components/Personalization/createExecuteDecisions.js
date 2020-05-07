@@ -26,6 +26,10 @@ const processMetas = (collect, logger, actionResults) => {
   const set = new Set();
 
   results.forEach(item => {
+    // for click actions we don't return an item
+    if (!item) {
+      return;
+    }
     if (item.error) {
       logger.warn(item);
       return;

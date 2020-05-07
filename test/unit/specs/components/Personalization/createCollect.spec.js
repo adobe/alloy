@@ -18,7 +18,10 @@ describe("Personalization::createCollect", () => {
     id: 1,
     decisionId: "foo"
   };
-  const event = { type: "blah" };
+  const event = {
+    type: "blah",
+    mergeXdm: jasmine.createSpy()
+  };
 
   beforeEach(() => {
     eventManager = jasmine.createSpyObj("eventManager", {
@@ -32,6 +35,7 @@ describe("Personalization::createCollect", () => {
     const collect = createCollect({ eventManager, mergeMeta });
     collect(meta);
     expect(eventManager.createEvent).toHaveBeenCalled();
+    expect(event.mergeXdm).toHaveBeenCalledWith({ eventType: "display" });
     expect(mergeMeta).toHaveBeenCalledWith(event, meta);
     expect(eventManager.sendEvent).toHaveBeenCalled();
   });

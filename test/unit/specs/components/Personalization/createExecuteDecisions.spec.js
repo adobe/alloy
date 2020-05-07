@@ -143,4 +143,28 @@ describe("Personalization::createExecuteDecisions", () => {
       expect(logger.error).toHaveBeenCalledWith(error);
     });
   });
+
+  it("should not trigger collect when dom-action click", () => {
+    executeActions = jasmine
+      .createSpy()
+      .and.returnValues([undefined], [undefined]);
+    const spy = jasmine.createSpy();
+    const modules = {
+      foo: spy
+    };
+    const executeDecisions = createExecuteDecisions({
+      modules,
+      logger,
+      executeActions,
+      collect
+    });
+    return executeDecisions(decisions).then(() => {
+      expect(executeActions).toHaveBeenCalledWith(
+        expectedAction,
+        modules,
+        logger
+      );
+      expect(collect).not.toHaveBeenCalled();
+    });
+  });
 });

@@ -14,4 +14,5 @@ export default (settings, store) => {
   const { selector, meta } = settings;
 
   store({ selector, meta });
+  return Promise.resolve();
 };

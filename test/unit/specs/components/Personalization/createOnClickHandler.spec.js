@@ -14,8 +14,11 @@ import createOnClickHandler from "../../../../../src/components/Personalization/
 describe("Personalization::createOnClickHandler", () => {
   let mergeMeta;
   let collectClicks;
-  const event = { type: "blah" };
-  const clickStorage = {};
+  const event = {
+    type: "blah",
+    mergeXdm: jasmine.createSpy()
+  };
+  const clickStorage = [];
 
   beforeEach(() => {
     mergeMeta = jasmine.createSpy("mergeMeta");

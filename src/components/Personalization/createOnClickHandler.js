@@ -12,7 +12,10 @@ governing permissions and limitations under the License.
 
 export default ({ mergeMeta, collectClicks, clickStorage }) => {
   return ({ event, clickedElement }) => {
-    const merger = meta => mergeMeta(event, meta);
+    const merger = meta => {
+      event.mergeXdm({ eventType: "click" });
+      mergeMeta(event, meta);
+    };
 
     collectClicks(merger, clickedElement, clickStorage);
   };
