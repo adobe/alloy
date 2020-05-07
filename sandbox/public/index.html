@@ -76,7 +76,7 @@
         }
       });
 
-      alloy("getIdentity", { namespaces: ["ECID"] }).then(identities => {
+      alloy("getIdentity", { namespaces: ["ECID"] }).then(function(identities) {
         console.log(
           "Sandbox: Get Identity command has completed.,",
           identities.ECID
