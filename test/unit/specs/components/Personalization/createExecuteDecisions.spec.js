@@ -68,6 +68,10 @@ describe("Personalization::createExecuteDecisions", () => {
       scope: decisions[1].scope
     }
   ];
+  const modules = {
+    foo() {}
+  };
+
   beforeEach(() => {
     collect = jasmine.createSpy();
   });
@@ -79,11 +83,6 @@ describe("Personalization::createExecuteDecisions", () => {
         [{ meta: metas[0] }, { meta: metas[0] }],
         [{ meta: metas[1], error: "could not render this item" }]
       );
-
-    const spy = jasmine.createSpy();
-    const modules = {
-      foo: spy
-    };
     const executeDecisions = createExecuteDecisions({
       modules,
       logger,
@@ -105,10 +104,6 @@ describe("Personalization::createExecuteDecisions", () => {
   });
 
   it("shouldn't trigger executeActions and collect when provided with empty array of actions", () => {
-    const actionSpy = jasmine.createSpy();
-    const modules = {
-      foo: actionSpy
-    };
     executeActions = jasmine.createSpy().and.callThrough();
     const executeDecisions = createExecuteDecisions({
       modules,
@@ -124,10 +119,6 @@ describe("Personalization::createExecuteDecisions", () => {
   it("should log an error when collect call fails", () => {
     const error = new Error("test error");
     collect = jasmine.createSpy().and.throwError("test error");
-    const actionSpy = jasmine.createSpy();
-    const modules = {
-      foo: actionSpy
-    };
     executeActions = jasmine
       .createSpy()
       .and.returnValues([{ meta: metas[0] }], [{ meta: metas[1] }]);
@@ -141,6 +132,26 @@ describe("Personalization::createExecuteDecisions", () => {
       expect(executeActions).toHaveBeenCalled();
       expect(collect).toThrowError();
       expect(logger.error).toHaveBeenCalledWith(error);
+    });
+  });
+
+  it("should not trigger collect when dom-action click", () => {
+    executeActions = jasmine
+      .createSpy()
+      .and.returnValues([undefined], [undefined]);
+    const executeDecisions = createExecuteDecisions({
+      modules,
+      logger,
+      executeActions,
+      collect
+    });
+    return executeDecisions(decisions).then(() => {
+      expect(executeActions).toHaveBeenCalledWith(
+        expectedAction,
+        modules,
+        logger
+      );
+      expect(collect).not.toHaveBeenCalled();
     });
   });
 });

@@ -41,14 +41,12 @@ describe("Personalization::tracking::clicks", () => {
 
     appendNode(document.body, node);
 
-    const collect = jasmine.createSpy();
     const selector = "#abc:eq(0) > div.b:eq(0) > div.c";
     const meta = { a: 1 };
     const values = [{ selector, meta }];
     const element = document.getElementById("one");
+    const result = collectClicks(element, values);
 
-    collectClicks(collect, element, values);
-
-    expect(collect).toHaveBeenCalledWith(meta);
+    expect(result).toEqual([meta]);
   });
 });

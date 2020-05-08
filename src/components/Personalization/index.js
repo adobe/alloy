@@ -26,7 +26,8 @@ import createOnClickHandler from "./createOnClickHandler";
 const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeMeta });
   const clickStorage = [];
-  const modules = initDomActionsModules(clickStorage.push);
+  const store = value => clickStorage.push(value);
+  const modules = initDomActionsModules(store);
   const executeDecisions = createExecuteDecisions({
     modules,
     logger,
