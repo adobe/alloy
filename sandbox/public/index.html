@@ -76,10 +76,10 @@
         }
       });
 
-      alloy("getIdentity", { namespaces: ["ECID"] }).then(function(identities) {
+      alloy("getIdentity", { namespaces: ["ECID"] }).then(function(result) {
         console.log(
-          "Sandbox: Get Identity command has completed.,",
-          identities.ECID
+          "Sandbox: Get Identity command has completed.",
+          result.identity.ECID
         );
       });
 
@@ -97,7 +97,7 @@
       });
 
       alloy("syncIdentity", {
-        identities: {
+        identity: {
           Email_LC_SHA256: {
             id: "me@gmail.com",
             authenticatedState: "ambiguous",

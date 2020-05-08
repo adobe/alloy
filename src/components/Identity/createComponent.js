@@ -42,7 +42,7 @@ export default ({
       syncIdentity: {
         optionsValidator: validateSyncIdentityOptions,
         run: options => {
-          return identityManager.sync(options.identities);
+          return identityManager.sync(options.identity);
         }
       },
       getIdentity: {

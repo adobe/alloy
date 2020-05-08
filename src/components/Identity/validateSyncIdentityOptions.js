@@ -1,7 +1,7 @@
 import { objectOf } from "../../utils/validation";
 
 export default objectOf({
-  identities: objectOf({}).required()
+  identity: objectOf({}).required()
 })
   .noUnknownFields()
   .required();
