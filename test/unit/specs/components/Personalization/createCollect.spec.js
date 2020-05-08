@@ -19,7 +19,6 @@ describe("Personalization::createCollect", () => {
     decisionId: "foo"
   };
   const event = {
-    type: "blah",
     mergeXdm: jasmine.createSpy()
   };
 

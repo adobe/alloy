@@ -12,27 +12,36 @@ governing permissions and limitations under the License.
 
 import matchesSelectorWithEq from "../dom/matchesSelectorWithEq";
 
-const collectIfMatches = (collect, clickedElement, value) => {
+const getMetaIfMatches = (clickedElement, value) => {
   const { documentElement } = document;
   const { selector, meta } = value;
   let element = clickedElement;
 
   while (element && element !== documentElement) {
     if (matchesSelectorWithEq(selector, element)) {
-      collect(meta);
-      break;
+      return meta;
     }
 
     element = element.parentNode;
   }
+
+  return null;
 };
 
-export default (collect, clickedElement, values) => {
+export default (clickedElement, values) => {
   if (values.length === 0) {
-    return;
+    return [];
   }
 
+  const result = [];
+
   for (let i = 0; i < values.length; i += 1) {
-    collectIfMatches(collect, clickedElement, values[i]);
+    const meta = getMetaIfMatches(clickedElement, values[i]);
+
+    if (meta) {
+      result.push(meta);
+    }
   }
+
+  return result;
 };

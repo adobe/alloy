@@ -15,14 +15,19 @@ describe("Personalization::createOnClickHandler", () => {
   let mergeMeta;
   let collectClicks;
   const event = {
-    type: "blah",
-    mergeXdm: jasmine.createSpy()
+    mergeXdm: jasmine.createSpy("mergeXdm"),
+    mergeMeta: jasmine.createSpy("mergeMeta")
   };
   const clickStorage = [];
-
+  const metas = [
+    {
+      id: 1,
+      scope: "foo"
+    }
+  ];
   beforeEach(() => {
     mergeMeta = jasmine.createSpy("mergeMeta");
-    collectClicks = jasmine.createSpy("collectClicks");
+    collectClicks = jasmine.createSpy("collectClicks").and.returnValue(metas);
   });
 
   it("collects clicks", () => {
@@ -32,11 +37,11 @@ describe("Personalization::createOnClickHandler", () => {
       clickStorage
     });
     const clickedElement = "foo";
+
     handleOnClick({ event, clickedElement });
-    expect(collectClicks).toHaveBeenCalledWith(
-      jasmine.any(Function),
-      clickedElement,
-      clickStorage
-    );
+
+    expect(event.mergeXdm).toHaveBeenCalledWith({ eventType: "click" });
+    expect(mergeMeta).toHaveBeenCalledWith(event, { decisions: metas });
+    expect(collectClicks).toHaveBeenCalledWith(clickedElement, clickStorage);
   });
 });
