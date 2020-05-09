@@ -58,6 +58,7 @@ export default ({ modules, logger, executeActions, collect }) => {
 
       return executeActions(actions, modules, logger);
     });
+
     return Promise.all(actionResultsPromises)
       .then(results => processMetas(collect, logger, results))
       .catch(error => {

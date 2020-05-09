@@ -11,14 +11,20 @@ governing permissions and limitations under the License.
 */
 import { isNonEmptyArray } from "../../utils";
 
-export default ({ redirectDecisionHandler, domActionDecisionHandler }) => {
+export default ({
+  showContainers,
+  handleRedirectDecisions,
+  handleDomActionDecisions
+}) => {
   return ({ redirectDecisions, renderableDecisions }) => {
     if (isNonEmptyArray(redirectDecisions)) {
-      redirectDecisionHandler(redirectDecisions);
+      handleRedirectDecisions(redirectDecisions);
       return;
     }
+
     if (isNonEmptyArray(renderableDecisions)) {
-      domActionDecisionHandler(renderableDecisions);
+      handleDomActionDecisions(renderableDecisions);
+      showContainers();
     }
   };
 };

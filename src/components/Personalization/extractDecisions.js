@@ -11,13 +11,12 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray } from "../../utils";
-import * as SCHEMAS from "../../constants/schemas";
-
-const DECISIONS_HANDLE = "personalization:decisions";
-
-const isDomActionItem = item => item.schema === SCHEMAS.DOM_ACTION;
-const isRedirectItem = item => item.schema === SCHEMAS.REDIRECT_ITEM;
-const isPageWideScope = decision => decision.scope === "__view__";
+import {
+  getDecisions,
+  isPageWideScope,
+  isDomActionItem,
+  isRedirectItem
+} from "./utils";
 
 const splitItems = (items, predicate) => {
   const matched = [];
@@ -71,7 +70,7 @@ const splitDecisions = (decisions, domActionPredicate, redirectPredicate) => {
 };
 
 export default response => {
-  const decisions = response.getPayloadsByType(DECISIONS_HANDLE);
+  const decisions = getDecisions(response);
 
   return splitDecisions(decisions, isDomActionItem, isRedirectItem);
 };

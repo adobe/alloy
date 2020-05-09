@@ -11,10 +11,17 @@ governing permissions and limitations under the License.
 */
 
 import { includes, isNonEmptyArray } from "../../utils";
+import * as SCHEMAS from "../../constants/schemas";
 
 const PAGE_WIDE_SCOPE = "__view__";
+const DECISIONS_HANDLE = "personalization:decisions";
 
+export const isDomActionItem = item => item.schema === SCHEMAS.DOM_ACTION;
+export const isRedirectItem = item => item.schema === SCHEMAS.REDIRECT_ITEM;
+export const isPageWideScope = decision => decision.scope === PAGE_WIDE_SCOPE;
 export const hasScopes = scopes => isNonEmptyArray(scopes);
+export const getDecisions = response =>
+  response.getPayloadsByType(DECISIONS_HANDLE);
 
 export const isAuthoringModeEnabled = (doc = document) =>
   doc.location.href.indexOf("mboxEdit") !== -1;

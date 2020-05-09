@@ -13,12 +13,14 @@ governing permissions and limitations under the License.
 import createExecuteDecisions from "../../../../../src/components/Personalization/createExecuteDecisions";
 
 describe("Personalization::createExecuteDecisions", () => {
-  let redirectDecisionHandler;
-  let domActionDecisionHandler;
+  let handleRedirectDecisions;
+  let handleDomActionDecisions;
+  let showContainers;
 
   beforeEach(() => {
-    redirectDecisionHandler = jasmine.createSpy();
-    domActionDecisionHandler = jasmine.createSpy();
+    showContainers = jasmine.createSpy();
+    handleRedirectDecisions = jasmine.createSpy();
+    handleDomActionDecisions = jasmine.createSpy();
   });
 
   it("should trigger redirectDecisionHandler when provided with an array of redirect decisions", () => {
@@ -29,12 +31,16 @@ describe("Personalization::createExecuteDecisions", () => {
     ];
     const renderableDecisions = [];
     const executeDecisions = createExecuteDecisions({
-      redirectDecisionHandler,
-      domActionDecisionHandler
+      showContainers,
+      handleRedirectDecisions,
+      handleDomActionDecisions
     });
+
     executeDecisions({ redirectDecisions, renderableDecisions });
-    expect(redirectDecisionHandler).toHaveBeenCalledWith(redirectDecisions);
-    expect(domActionDecisionHandler).not.toHaveBeenCalled();
+
+    expect(handleRedirectDecisions).toHaveBeenCalledWith(redirectDecisions);
+    expect(handleDomActionDecisions).not.toHaveBeenCalled();
+    expect(showContainers).not.toHaveBeenCalled();
   });
 
   it("should trigger domActionDecisionHandler when provided with an array of renderable decisions", () => {
@@ -45,12 +51,15 @@ describe("Personalization::createExecuteDecisions", () => {
       }
     ];
     const executeDecisions = createExecuteDecisions({
-      redirectDecisionHandler,
-      domActionDecisionHandler
+      showContainers,
+      handleRedirectDecisions,
+      handleDomActionDecisions
     });
+
     executeDecisions({ redirectDecisions, renderableDecisions });
 
-    expect(redirectDecisionHandler).not.toHaveBeenCalled();
-    expect(domActionDecisionHandler).toHaveBeenCalledWith(renderableDecisions);
+    expect(handleRedirectDecisions).not.toHaveBeenCalled();
+    expect(handleDomActionDecisions).toHaveBeenCalledWith(renderableDecisions);
+    expect(showContainers).toHaveBeenCalled();
   });
 });

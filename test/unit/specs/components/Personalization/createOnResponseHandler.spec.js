@@ -25,7 +25,6 @@ describe("Personalization::onResponseHandler", () => {
   const unprocessedDecisions = PAGE_WIDE_SCOPE_DECISIONS;
   let extractDecisions;
   let executeDecisions;
-  let showContainers;
 
   beforeEach(() => {
     extractDecisions = jasmine
@@ -37,7 +36,6 @@ describe("Personalization::onResponseHandler", () => {
         unprocessedDecisions
       ]);
     executeDecisions = jasmine.createSpy("executeDecisions");
-    showContainers = jasmine.createSpy("showContainers");
   });
 
   it("should execute DOM ACTION decisions and return rest of decisions when renderDecisions is true", () => {
@@ -47,14 +45,12 @@ describe("Personalization::onResponseHandler", () => {
     const renderDecisions = true;
     const onResponse = createOnResponseHandler({
       extractDecisions,
-      executeDecisions,
-      showContainers
+      executeDecisions
     });
 
     const result = onResponse({ renderDecisions, response });
 
     expect(extractDecisions).toHaveBeenCalledWith(response);
-    expect(showContainers).toHaveBeenCalled();
     expect(executeDecisions).toHaveBeenCalledWith({
       redirectDecisions,
       renderableDecisions
@@ -69,14 +65,12 @@ describe("Personalization::onResponseHandler", () => {
     const renderDecisions = false;
     const onResponse = createOnResponseHandler({
       extractDecisions,
-      executeDecisions,
-      showContainers
+      executeDecisions
     });
 
     const result = onResponse({ renderDecisions, response });
 
     expect(extractDecisions).toHaveBeenCalledWith(response);
-    expect(showContainers).not.toHaveBeenCalled();
     expect(executeDecisions).not.toHaveBeenCalled();
     expect(result).toEqual(expectedResult);
   });

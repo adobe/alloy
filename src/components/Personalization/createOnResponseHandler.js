@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ extractDecisions, executeDecisions, showContainers }) => {
+export default ({ extractDecisions, executeDecisions }) => {
   return ({ renderDecisions, response }) => {
     const [
       redirectDecisions,
@@ -24,7 +24,6 @@ export default ({ extractDecisions, executeDecisions, showContainers }) => {
     }
 
     executeDecisions({ redirectDecisions, renderableDecisions });
-    showContainers();
 
     return { decisions: restOfDecisions };
   };

@@ -30,21 +30,21 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeMeta });
   const store = value => clickStorage.push(value);
   const modules = initDomActionsModules(store);
-  const redirectDecisionHandler = createRedirectDecisionHandler({ collect });
-  const domActionDecisionHandler = createDomActionDecisionHandler({
+  const handleRedirectDecisions = createRedirectDecisionHandler({ collect });
+  const handleDomActionDecisions = createDomActionDecisionHandler({
     modules,
     logger,
     executeActions,
     collect
   });
   const executeDecisions = createExecuteDecisions({
-    redirectDecisionHandler,
-    domActionDecisionHandler
+    showContainers,
+    handleRedirectDecisions,
+    handleDomActionDecisions
   });
   const onResponseHandler = createOnResponseHandler({
     extractDecisions,
-    executeDecisions,
-    showContainers
+    executeDecisions
   });
   const onClickHandler = createOnClickHandler({
     mergeMeta,
