@@ -22,17 +22,24 @@ import collectClicks from "./dom-actions/clicks/collectClicks";
 import { hasScopes, isAuthoringModeEnabled, getDecisionScopes } from "./utils";
 import { mergeMeta, mergeQuery, createQueryDetails } from "./event";
 import createOnClickHandler from "./createOnClickHandler";
+import createRedirectDecisionHandler from "./createRedirectDecisionHandler";
+import createDomActionDecisionHandler from "./createDomActionDecisionHandler";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
-  const collect = createCollect({ eventManager, mergeMeta });
   const clickStorage = [];
+  const collect = createCollect({ eventManager, mergeMeta });
   const store = value => clickStorage.push(value);
   const modules = initDomActionsModules(store);
-  const executeDecisions = createExecuteDecisions({
+  const redirectDecisionHandler = createRedirectDecisionHandler({ collect });
+  const domActionDecisionHandler = createDomActionDecisionHandler({
     modules,
     logger,
     executeActions,
     collect
+  });
+  const executeDecisions = createExecuteDecisions({
+    redirectDecisionHandler,
+    domActionDecisionHandler
   });
   const onResponseHandler = createOnResponseHandler({
     extractDecisions,

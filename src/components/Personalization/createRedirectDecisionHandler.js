@@ -9,16 +9,21 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { isNonEmptyArray } from "../../utils";
 
-export default ({ redirectDecisionHandler, domActionDecisionHandler }) => {
-  return ({ redirectDecisions, renderableDecisions }) => {
-    if (isNonEmptyArray(redirectDecisions)) {
-      redirectDecisionHandler(redirectDecisions);
-      return;
-    }
-    if (isNonEmptyArray(renderableDecisions)) {
-      domActionDecisionHandler(renderableDecisions);
-    }
+const getRedirectDetails = redirectDecisions => {
+  const decision = redirectDecisions[0];
+  const { items, id, scope } = decision;
+  const { content } = items[0].data;
+
+  return { content, meta: { id, scope } };
+};
+
+export default ({ collect, win = window }) => {
+  return redirectDecisions => {
+    const { content, meta } = getRedirectDetails(redirectDecisions);
+
+    return collect({ decisions: [meta] }, true).then(() => {
+      win.location.replace(content);
+    });
   };
 };

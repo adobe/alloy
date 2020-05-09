@@ -16,6 +16,8 @@ import * as SCHEMAS from "../../constants/schemas";
 const DECISIONS_HANDLE = "personalization:decisions";
 
 const isDomActionItem = item => item.schema === SCHEMAS.DOM_ACTION;
+const isRedirectItem = item => item.schema === SCHEMAS.REDIRECT_ITEM;
+const isPageWideScope = decision => decision.scope === "__view__";
 
 const splitItems = (items, predicate) => {
   const matched = [];
@@ -36,28 +38,40 @@ const createDecision = (decision, items) => {
   return { id: decision.id, scope: decision.scope, items };
 };
 
-const splitDecisions = (decisions, predicate) => {
-  const matchedDecisions = [];
-  const nonMatchedDecisions = [];
+const splitDecisions = (decisions, domActionPredicate, redirectPredicate) => {
+  const domActionDecisions = [];
+  const redirectDecisions = [];
+  const otherDecisions = [];
 
   decisions.forEach(decision => {
-    const { items = [] } = decision;
-    const [matchedItems, nonMatchedItems] = splitItems(items, predicate);
+    if (isPageWideScope(decision)) {
+      const { items = [] } = decision;
+      const [redirectItems, otherItems] = splitItems(items, redirectPredicate);
+      const [matchedItems, nonMatchedItems] = splitItems(
+        otherItems,
+        domActionPredicate
+      );
 
-    if (isNonEmptyArray(matchedItems)) {
-      matchedDecisions.push(createDecision(decision, matchedItems));
-    }
+      if (isNonEmptyArray(redirectItems)) {
+        redirectDecisions.push(createDecision(decision, redirectItems));
+      }
+      if (isNonEmptyArray(matchedItems)) {
+        domActionDecisions.push(createDecision(decision, matchedItems));
+      }
 
-    if (isNonEmptyArray(nonMatchedItems)) {
-      nonMatchedDecisions.push(createDecision(decision, nonMatchedItems));
+      if (isNonEmptyArray(nonMatchedItems)) {
+        otherDecisions.push(createDecision(decision, nonMatchedItems));
+      }
+    } else {
+      otherDecisions.push(decision);
     }
   });
 
-  return [matchedDecisions, nonMatchedDecisions, decisions];
+  return [redirectDecisions, domActionDecisions, otherDecisions, decisions];
 };
 
 export default response => {
   const decisions = response.getPayloadsByType(DECISIONS_HANDLE);
 
-  return splitDecisions(decisions, isDomActionItem);
+  return splitDecisions(decisions, isDomActionItem, isRedirectItem);
 };

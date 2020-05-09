@@ -11,9 +11,14 @@ governing permissions and limitations under the License.
 */
 
 export default ({ eventManager, mergeMeta }) => {
-  return meta => {
+  return (meta, documentMayUnload = false) => {
     const event = eventManager.createEvent();
     event.mergeXdm({ eventType: "display" });
+
+    if (documentMayUnload) {
+      event.documentMayUnload();
+    }
+
     mergeMeta(event, meta);
 
     return eventManager.sendEvent(event);

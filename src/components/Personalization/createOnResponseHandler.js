@@ -13,17 +13,19 @@ governing permissions and limitations under the License.
 export default ({ extractDecisions, executeDecisions, showContainers }) => {
   return ({ renderDecisions, response }) => {
     const [
+      redirectDecisions,
       renderableDecisions,
-      decisions,
+      restOfDecisions,
       unprocessedDecisions
     ] = extractDecisions(response);
 
-    if (renderDecisions) {
-      executeDecisions(renderableDecisions);
-      showContainers();
-      return { decisions };
+    if (!renderDecisions) {
+      return { decisions: unprocessedDecisions };
     }
 
-    return { decisions: unprocessedDecisions };
+    executeDecisions({ redirectDecisions, renderableDecisions });
+    showContainers();
+
+    return { decisions: restOfDecisions };
   };
 };
