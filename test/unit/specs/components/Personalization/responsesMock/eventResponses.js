@@ -128,3 +128,18 @@ export const PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS = [
     ]
   }
 ];
+export const REDIRECT_PAGE_WIDE_SCOPE_DECISION = [
+  {
+    id: "TNT:activity15:experience1",
+    scope: "__view__",
+    items: [
+      {
+        schema: "https://ns.adobe.com/personalization/redirect-item",
+        data: {
+          type: "redirect",
+          content: "http://example.com/redirect/offer"
+        }
+      }
+    ]
+  }
+];

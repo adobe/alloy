@@ -13,145 +13,44 @@ governing permissions and limitations under the License.
 import createExecuteDecisions from "../../../../../src/components/Personalization/createExecuteDecisions";
 
 describe("Personalization::createExecuteDecisions", () => {
-  const logger = jasmine.createSpyObj("logger", ["log", "warn", "error"]);
-  let executeActions;
-  let collect;
-
-  const decisions = [
-    {
-      id: 1,
-      scope: "foo",
-      items: [
-        {
-          schema: "https://ns.adobe.com/personalization/dom-action",
-          data: {
-            type: "setHtml",
-            selector: "#foo",
-            content: "<div>Hola Mundo</div>"
-          }
-        }
-      ]
-    },
-    {
-      id: 5,
-      scope: "__view__",
-      items: [
-        {
-          schema: "https://ns.adobe.com/personalization/dom-action",
-          data: {
-            type: "setHtml",
-            selector: "#foo2",
-            content: "<div>offer 2</div>"
-          }
-        }
-      ]
-    }
-  ];
-  const expectedAction = [
-    {
-      type: "setHtml",
-      selector: "#foo",
-      content: "<div>Hola Mundo</div>",
-      meta: {
-        id: decisions[0].id,
-        scope: "foo"
-      }
-    }
-  ];
-  const metas = [
-    {
-      id: decisions[0].id,
-      scope: decisions[0].scope
-    },
-    {
-      id: decisions[1].id,
-      scope: decisions[1].scope
-    }
-  ];
-  const modules = {
-    foo() {}
-  };
+  let redirectDecisionHandler;
+  let domActionDecisionHandler;
 
   beforeEach(() => {
-    collect = jasmine.createSpy();
+    redirectDecisionHandler = jasmine.createSpy();
+    domActionDecisionHandler = jasmine.createSpy();
   });
 
-  it("should trigger executeActions and collect when provided with an array of actions", () => {
-    executeActions = jasmine
-      .createSpy()
-      .and.returnValues(
-        [{ meta: metas[0] }, { meta: metas[0] }],
-        [{ meta: metas[1], error: "could not render this item" }]
-      );
+  it("should trigger redirectDecisionHandler when provided with an array of redirect decisions", () => {
+    const redirectDecisions = [
+      {
+        id: "foo"
+      }
+    ];
+    const renderableDecisions = [];
     const executeDecisions = createExecuteDecisions({
-      modules,
-      logger,
-      executeActions,
-      collect
+      redirectDecisionHandler,
+      domActionDecisionHandler
     });
-    return executeDecisions(decisions).then(() => {
-      expect(executeActions).toHaveBeenCalledWith(
-        expectedAction,
-        modules,
-        logger
-      );
-      expect(logger.warn).toHaveBeenCalledWith({
-        meta: metas[1],
-        error: "could not render this item"
-      });
-      expect(collect).toHaveBeenCalledWith({ decisions: [metas[0]] });
-    });
+    executeDecisions({ redirectDecisions, renderableDecisions });
+    expect(redirectDecisionHandler).toHaveBeenCalledWith(redirectDecisions);
+    expect(domActionDecisionHandler).not.toHaveBeenCalled();
   });
 
-  it("shouldn't trigger executeActions and collect when provided with empty array of actions", () => {
-    executeActions = jasmine.createSpy().and.callThrough();
+  it("should trigger domActionDecisionHandler when provided with an array of renderable decisions", () => {
+    const redirectDecisions = [];
+    const renderableDecisions = [
+      {
+        id: "foo"
+      }
+    ];
     const executeDecisions = createExecuteDecisions({
-      modules,
-      logger,
-      executeActions,
-      collect
+      redirectDecisionHandler,
+      domActionDecisionHandler
     });
-    return executeDecisions([]).then(() => {
-      expect(executeActions).not.toHaveBeenCalled();
-      expect(collect).not.toHaveBeenCalled();
-    });
-  });
-  it("should log an error when collect call fails", () => {
-    const error = new Error("test error");
-    collect = jasmine.createSpy().and.throwError("test error");
-    executeActions = jasmine
-      .createSpy()
-      .and.returnValues([{ meta: metas[0] }], [{ meta: metas[1] }]);
-    const executeDecisions = createExecuteDecisions({
-      modules,
-      logger,
-      executeActions,
-      collect
-    });
-    return executeDecisions(decisions).then(() => {
-      expect(executeActions).toHaveBeenCalled();
-      expect(collect).toThrowError();
-      expect(logger.error).toHaveBeenCalledWith(error);
-    });
-  });
+    executeDecisions({ redirectDecisions, renderableDecisions });
 
-  it("should not trigger collect when dom-action click", () => {
-    executeActions = jasmine
-      .createSpy()
-      .and.returnValues([undefined], [undefined]);
-    const executeDecisions = createExecuteDecisions({
-      modules,
-      logger,
-      executeActions,
-      collect
-    });
-    return executeDecisions(decisions).then(() => {
-      expect(executeActions).toHaveBeenCalledWith(
-        expectedAction,
-        modules,
-        logger
-      );
-      expect(collect).not.toHaveBeenCalled();
-    });
+    expect(redirectDecisionHandler).not.toHaveBeenCalled();
+    expect(domActionDecisionHandler).toHaveBeenCalledWith(renderableDecisions);
   });
 });

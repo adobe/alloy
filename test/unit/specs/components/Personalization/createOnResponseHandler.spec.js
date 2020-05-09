@@ -19,6 +19,7 @@ import createOnResponseHandler from "../../../../../src/components/Personalizati
 
 describe("Personalization::onResponseHandler", () => {
   const response = {};
+  const redirectDecisions = [];
   const renderableDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS;
   const decisions = PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS;
   const unprocessedDecisions = PAGE_WIDE_SCOPE_DECISIONS;
@@ -29,7 +30,12 @@ describe("Personalization::onResponseHandler", () => {
   beforeEach(() => {
     extractDecisions = jasmine
       .createSpy("extractDecisions")
-      .and.returnValue([renderableDecisions, decisions, unprocessedDecisions]);
+      .and.returnValue([
+        [],
+        renderableDecisions,
+        decisions,
+        unprocessedDecisions
+      ]);
     executeDecisions = jasmine.createSpy("executeDecisions");
     showContainers = jasmine.createSpy("showContainers");
   });
@@ -49,7 +55,10 @@ describe("Personalization::onResponseHandler", () => {
 
     expect(extractDecisions).toHaveBeenCalledWith(response);
     expect(showContainers).toHaveBeenCalled();
-    expect(executeDecisions).toHaveBeenCalledWith(renderableDecisions);
+    expect(executeDecisions).toHaveBeenCalledWith({
+      redirectDecisions,
+      renderableDecisions
+    });
     expect(result).toEqual(expectedResult);
   });
 
