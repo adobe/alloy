@@ -20,14 +20,60 @@ function HomeWithHistory({ history }) {
 
   const getDecisions = () => {
     window
-      .alloy("getDecisions", {
-        decisionScopes: ["alloy-location-1", "alloy-location-2"]
+      .alloy("sendEvent", {
+        renderDecisions: true,
+        decisionScopes: ["alloy-location-1", "alloy-location-2"],
+        xdm: {
+          // Demonstrates overriding automatically collected data
+          device: {
+            screenHeight: 1
+          }
+        }
       })
-      .then((decisions = []) => {
+      .then(({ decisions = [] }) => {
         decisions.forEach(decision => {
           const domLocation = document.querySelector(`.${decision.scope}`);
           domLocation.innerHTML = decision.items[0].data.content;
         });
+      });
+  };
+
+  const sendDataToSecondaryDataset = () => {
+    window.alloy("sendEvent", {
+      datasetId: "5eb9aaa6a3b16e18a818e06f"
+    });
+  };
+
+  const syncIdentity = () => {
+    window
+      .alloy("syncIdentity", {
+        identity: {
+          // TODO: Uncomment once fix is done in AAM.
+          // Email_LC_SHA256: {
+          //   id: "me@gmail.com",
+          //   authenticatedState: "ambiguous",
+          //   hashEnabled: true, //TODO: document user ID hashing syntax
+          //   primary: true
+          // },
+          HYP: {
+            id: "1234",
+            authenticatedState: "ambiguous"
+          }
+        }
+      })
+      .then(function() {
+        console.log("Sandbox: Sync identity has completed.");
+      });
+  };
+
+  const getIdentity = () => {
+    window
+      .alloy("getIdentity", { namespaces: ["ECID"] })
+      .then(function(result) {
+        console.log(
+          "Sandbox: Get Identity command has completed.",
+          result.identity.ECID
+        );
       });
   };
 
@@ -53,8 +99,28 @@ function HomeWithHistory({ history }) {
             <h2>Placeholder for Decision 2</h2>
           </div>
           <div>
-            <button onClick={getDecisions}>Render Available Decisions</button>
+            <button onClick={getDecisions}>Fetch & Render Decisions</button>
           </div>
+        </div>
+      </section>
+      <section>
+        <h1>Get Identity</h1>
+        <div>
+          <button onClick={getIdentity}>Get ECID</button>
+        </div>
+      </section>
+      <section>
+        <h1>Collect data into a specific Dataset</h1>
+        <div>
+          <button onClick={sendDataToSecondaryDataset}>
+            Send Event to Secondary Dataset
+          </button>
+        </div>
+      </section>
+      <section>
+        <h1>Sync Identity</h1>
+        <div>
+          <button onClick={syncIdentity}>Sync declared IDs to Identity</button>
         </div>
       </section>
     </div>

@@ -76,43 +76,6 @@
         }
       });
 
-      alloy("getIdentity", { namespaces: ["ECID"] }).then(function(result) {
-        console.log(
-          "Sandbox: Get Identity command has completed.",
-          result.identity.ECID
-        );
-      });
-
-      alloy("sendEvent", {
-        renderDecisions: true,
-        decisionScopes: ["alloy-location-1", "alloy-location-2"],
-        xdm: {
-          // Demonstrates overriding automatically collected data
-          device: {
-            screenHeight: 1
-          }
-        }
-      }).then(function(data) {
-        console.log("Sandbox: View start event has completed.", data);
-      });
-
-      alloy("syncIdentity", {
-        identity: {
-          Email_LC_SHA256: {
-            id: "me@gmail.com",
-            authenticatedState: "ambiguous",
-            hashEnabled: true, //TODO: document user ID hashing syntax
-            primary: true
-          },
-          HYP: {
-            id: "1234",
-            authenticatedState: "ambiguous"
-          }
-        }
-      }).then(function() {
-        console.log("Sandbox: Sync identity has completed.");
-      });
-
       // For Testing multiple instances.
       // We use a different orgId and edgeConfigId.
       organizationTwo("configure", {
