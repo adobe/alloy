@@ -1,4 +1,5 @@
 import getIdentityOptionsValidator from "./getIdentity/getIdentityOptionsValidator";
+import { noop } from "../../utils";
 
 export default ({
   addEcidQueryToEvent,
@@ -35,7 +36,7 @@ export default ({
           }
         }
 
-        return handleResponseForIdSyncs(response);
+        return handleResponseForIdSyncs(response).then(noop);
       }
     },
     commands: {
