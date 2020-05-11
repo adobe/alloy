@@ -10,11 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { isNonEmptyArray } from "../../utils";
+
 export default ({ mergeMeta, collectClicks, clickStorage }) => {
   return ({ event, clickedElement }) => {
     const clickMetas = collectClicks(clickedElement, clickStorage);
 
-    if (clickMetas.length) {
+    if (isNonEmptyArray(clickMetas)) {
       event.mergeXdm({ eventType: "click" });
       mergeMeta(event, { decisions: clickMetas });
     }
