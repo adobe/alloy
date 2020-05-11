@@ -41,7 +41,7 @@ test("Test C14410: Configuring default consent for unknown purposes fails", asyn
 
 test("Test C14410: Configuring default consent to 'out' fails", async t => {
   const errorMessage = getErrorMessageFromConfigure({
-    defaultConsent: { general: "out" },
+    defaultConsent: "out",
     ...orgMainConfigMain
   });
   await t
@@ -53,10 +53,14 @@ test("Test C14410: Configuring default consent to 'out' fails", async t => {
 
 test("Test C14410: Setting consent for unknown purposes fails", async t => {
   await configureAlloyInstance("alloy", {
-    defaultConsent: { general: "pending" },
+    defaultConsent: "pending",
     ...orgMainConfigMain
   });
-  const errorMessage = getErrorMessageFromSetConsent({ analytics: "in" });
+  const errorMessage = getErrorMessageFromSetConsent({
+    preferences: [
+      { standard: "Adobe", version: "1.0", value: { analytics: "in" } }
+    ]
+  });
   await t
     .expect(errorMessage)
     .ok("Expected the setConsent command to be rejected");
@@ -65,10 +69,14 @@ test("Test C14410: Setting consent for unknown purposes fails", async t => {
 
 test("Test C14410: Setting consent to 'pending' fails", async t => {
   await configureAlloyInstance("alloy", {
-    defaultConsent: { general: "pending" },
+    defaultConsent: "pending",
     ...orgMainConfigMain
   });
-  const errorMessage = getErrorMessageFromSetConsent({ general: "pending" });
+  const errorMessage = getErrorMessageFromSetConsent({
+    preferences: [
+      { standard: "Adobe", version: "1.0", value: { analytics: "in" } }
+    ]
+  });
   await t
     .expect(errorMessage)
     .ok("Expected the setConsent command to be rejected");

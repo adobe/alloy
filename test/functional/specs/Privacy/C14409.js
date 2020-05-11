@@ -25,7 +25,7 @@ const configure = ClientFunction(() => {
     promise: window.alloy("configure", {
       edgeConfigId: "9999999",
       orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
-      defaultConsent: { general: "pending" },
+      defaultConsent: "pending",
       idMigrationEnabled: false,
       debugEnabled: true
     })

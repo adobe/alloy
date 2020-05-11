@@ -11,6 +11,7 @@ import {
   migrationEnabled,
   consentPending
 } from "../../helpers/constants/configParts";
+import { CONSENT_IN } from "../../helpers/constants/consent";
 
 fixtureFactory({
   title:
@@ -42,7 +43,7 @@ const getIdentity = ClientFunction(() => {
 test("C35450 - When ID migration is enabled and Visitor and Alloy are both awaiting consent, when consent is given to both, Alloy waits for Visitor to get ECID and then uses this value.", async () => {
   await createMockOptIn(true);
   await configureAlloyInstance("alloy", config);
-  await setConsent({ general: "in" });
+  await setConsent(CONSENT_IN);
   // Don't await the visitor ECID before executing the getIdentity command.
   // This helps ensure that Alloy is actually waiting for Visitor.
   const visitorEcidPromise = getVisitorEcid(orgMainConfigMain.orgId);

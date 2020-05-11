@@ -8,6 +8,7 @@ import {
   consentPending,
   debugEnabled
 } from "../../helpers/constants/configParts";
+import { CONSENT_IN } from "../../helpers/constants/consent";
 
 const config = compose(
   orgMainConfigMain,
@@ -30,7 +31,7 @@ test.meta({
 
 test("Test C14405: Unidentified user can consent to all purposes", async t => {
   await configureAlloyInstance("alloy", config);
-  await t.eval(() => window.alloy("setConsent", { general: "in" }));
+  await t.eval(() => window.alloy("setConsent", CONSENT_IN));
   await t.eval(() => window.alloy("sendEvent", { xdm: { key: "value" } }));
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);

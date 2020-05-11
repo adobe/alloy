@@ -1,6 +1,7 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import fixtureFactory from "../../helpers/fixtureFactory";
+import { CONSENT_IN } from "../../helpers/constants/consent";
 
 const networkLogger = createNetworkLogger();
 
@@ -16,7 +17,7 @@ test.meta({
 });
 
 const setConsentIn = ClientFunction(() => {
-  return window.alloy("setConsent", { general: "in" });
+  return window.alloy("setConsent", CONSENT_IN);
 });
 
 const triggerAlloyEvent = ClientFunction(() => {
@@ -28,7 +29,7 @@ const configure = ClientFunction(() => {
     promise: window.alloy("configure", {
       edgeConfigId: "9999999",
       orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
-      defaultConsent: { general: "pending" },
+      defaultConsent: "pending",
       idMigrationEnabled: false,
       debugEnabled: true
     })

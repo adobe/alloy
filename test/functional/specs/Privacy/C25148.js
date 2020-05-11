@@ -8,6 +8,7 @@ import {
   debugEnabled,
   orgMainConfigMain
 } from "../../helpers/constants/configParts";
+import { CONSENT_OUT } from "../../helpers/constants/consent";
 
 const networkLogger = createNetworkLogger();
 
@@ -27,7 +28,7 @@ const triggerAlloyEvent = ClientFunction(() => {
 });
 
 const setConsentOut = ClientFunction(() => {
-  return window.alloy("setConsent", { general: "out" });
+  return window.alloy("setConsent", CONSENT_OUT);
 });
 
 test("C25148 - When default consent is 'in', consent can be revoked", async () => {
