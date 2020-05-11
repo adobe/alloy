@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { assign } from "../../utils";
+import { GENERAL } from "../../constants/consentPurpose";
 
 export default ({
   readStoredConsent,
@@ -20,7 +21,10 @@ export default ({
   sendSetConsentRequest,
   validateSetConsentOptions
 }) => {
-  const consentByPurpose = assign({}, defaultConsent, readStoredConsent());
+  const consentByPurpose = assign(
+    { [GENERAL]: defaultConsent },
+    readStoredConsent()
+  );
   consent.setConsent(consentByPurpose);
 
   const readCookieIfQueueEmpty = () => {
@@ -39,10 +43,10 @@ export default ({
     commands: {
       setConsent: {
         optionsValidator: validateSetConsentOptions,
-        run: options => {
+        run: ({ preferences }) => {
           consent.suspend();
           return taskQueue
-            .addTask(() => sendSetConsentRequest(options))
+            .addTask(() => sendSetConsentRequest(preferences))
             .catch(error => {
               readCookieIfQueueEmpty();
               // This check re-writes the error message from Konductor to be more clear.

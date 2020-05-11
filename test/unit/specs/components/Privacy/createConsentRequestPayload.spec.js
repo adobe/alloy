@@ -36,10 +36,15 @@ describe("createConsentRequestPayload", () => {
     payload.addIdentity("IDNS", {
       id: "ABC123"
     });
-    payload.setConsentLevel({
-      purpose1: "in",
-      purpose2: "out"
-    });
+    payload.setConsentPreferences([
+      {
+        standard: "Adobe",
+        version: "1.0",
+        value: {
+          general: "out"
+        }
+      }
+    ]);
     expect(payload.toJSON()).toEqual({
       meta: {
         configOverrides: {
@@ -56,10 +61,15 @@ describe("createConsentRequestPayload", () => {
           }
         ]
       },
-      consentLevel: {
-        purpose1: "in",
-        purpose2: "out"
-      }
+      consent: [
+        {
+          standard: "Adobe",
+          version: "1.0",
+          value: {
+            general: "out"
+          }
+        }
+      ]
     });
   });
 });
