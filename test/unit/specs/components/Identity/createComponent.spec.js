@@ -87,6 +87,8 @@ describe("Identity::createComponent", () => {
   });
 
   it("does not create legacy identity cookie if response does not contain ECID", () => {
+    const idSyncsPromise = Promise.resolve();
+    handleResponseForIdSyncs.and.returnValue(idSyncsPromise);
     const response = { type: "response" };
     component.lifecycle.onResponse({ response });
     expect(getEcidFromResponse).toHaveBeenCalledWith(response);
@@ -94,6 +96,8 @@ describe("Identity::createComponent", () => {
   });
 
   it("creates legacy identity cookie if response contains ECID", () => {
+    const idSyncsPromise = Promise.resolve();
+    handleResponseForIdSyncs.and.returnValue(idSyncsPromise);
     getEcidFromResponse.and.returnValue("user@adobe");
     const response = { type: "response" };
     component.lifecycle.onResponse({ response });
@@ -111,7 +115,7 @@ describe("Identity::createComponent", () => {
     const response = { type: "response" };
     const result = component.lifecycle.onResponse({ response });
     expect(handleResponseForIdSyncs).toHaveBeenCalledWith(response);
-    expect(result).toBe(idSyncsPromise);
+    expectAsync(result).toBeResolvedTo(response);
   });
 
   it("exposes options validator for syncIdentity command", () => {
@@ -129,6 +133,8 @@ describe("Identity::createComponent", () => {
   });
 
   it("getIdentity command should make a request when ecid is not available", () => {
+    const idSyncsPromise = Promise.resolve();
+    handleResponseForIdSyncs.and.returnValue(idSyncsPromise);
     const onResolved = jasmine.createSpy("onResolved");
     component.commands.getIdentity
       .run({ namespaces: ["ECID"] })
@@ -159,6 +165,8 @@ describe("Identity::createComponent", () => {
   });
 
   it("getIdentity command should not make a request when ecid is available", () => {
+    const idSyncsPromise = Promise.resolve();
+    handleResponseForIdSyncs.and.returnValue(idSyncsPromise);
     getEcidFromResponse.and.returnValue("user@adobe");
     const response = { type: "response" };
     component.lifecycle.onResponse({ response });
