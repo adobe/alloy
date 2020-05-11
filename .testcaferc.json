@@ -1,4 +1,4 @@
 {
-  "src": "test/functional/specs/*.js",
+  "src": "test/functional/specs/**/*.js",
   "skipJsErrors": "true"
 }

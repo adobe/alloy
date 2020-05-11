@@ -26,7 +26,8 @@ export default ({ options, logger }) => {
     }),
     data: objectOf({}),
     renderDecisions: boolean(),
-    decisionScopes: arrayOf(string())
+    decisionScopes: arrayOf(string()),
+    datasetId: string()
   }).required();
   const validatedOptions = eventOptionsValidator(options);
   const { type, xdm } = validatedOptions;
