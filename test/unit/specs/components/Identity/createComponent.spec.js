@@ -121,9 +121,9 @@ describe("Identity::createComponent", () => {
   });
 
   it("syncIdentity syncs identities", () => {
-    const identities = { type: "identities" };
-    return component.commands.syncIdentity.run({ identities }).then(result => {
-      expect(identityManager.sync).toHaveBeenCalledWith(identities);
+    const identity = { type: "identity" };
+    return component.commands.syncIdentity.run({ identity }).then(result => {
+      expect(identityManager.sync).toHaveBeenCalledWith(identity);
       expect(result).toBeUndefined();
     });
   });
