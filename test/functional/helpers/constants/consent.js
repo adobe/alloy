@@ -1,5 +1,5 @@
 export const CONSENT_IN = {
-  preferences: [
+  consent: [
     {
       standard: "Adobe",
       version: "1.0",
@@ -10,7 +10,7 @@ export const CONSENT_IN = {
   ]
 };
 export const CONSENT_OUT = {
-  preferences: [
+  consent: [
     {
       standard: "Adobe",
       version: "1.0",
