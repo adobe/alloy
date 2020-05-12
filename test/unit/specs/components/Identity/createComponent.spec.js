@@ -115,7 +115,7 @@ describe("Identity::createComponent", () => {
     const response = { type: "response" };
     const result = component.lifecycle.onResponse({ response });
     expect(handleResponseForIdSyncs).toHaveBeenCalledWith(response);
-    expectAsync(result).toBeResolvedTo(response);
+    return expectAsync(result).toBeResolvedTo(undefined);
   });
 
   it("exposes options validator for syncIdentity command", () => {
