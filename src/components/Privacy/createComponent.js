@@ -43,10 +43,10 @@ export default ({
     commands: {
       setConsent: {
         optionsValidator: validateSetConsentOptions,
-        run: ({ preferences }) => {
+        run: ({ consent: value }) => {
           consent.suspend();
           return taskQueue
-            .addTask(() => sendSetConsentRequest(preferences))
+            .addTask(() => sendSetConsentRequest(value))
             .catch(error => {
               readCookieIfQueueEmpty();
               // This check re-writes the error message from Konductor to be more clear.

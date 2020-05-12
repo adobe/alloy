@@ -1,5 +1,5 @@
 const createConsent = consent => ({
-  preferences: [
+  consent: [
     {
       standard: "Adobe",
       version: "1.0",

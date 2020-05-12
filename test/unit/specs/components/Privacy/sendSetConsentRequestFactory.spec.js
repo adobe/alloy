@@ -11,7 +11,7 @@ describe("Privacy:sendSetConsentRequestFactory", () => {
       "createConsentRequestPayload"
     );
     sendEdgeNetworkRequest = jasmine.createSpy("sendEdgeNetworkRequest");
-    payload = jasmine.createSpyObj("payload", ["setConsentPreferences"]);
+    payload = jasmine.createSpyObj("payload", ["setConsent"]);
     createConsentRequestPayload.and.returnValue(payload);
     sendSetConsentRequest = sendSetConsentRequestFactory({
       createConsentRequestPayload,
@@ -22,7 +22,7 @@ describe("Privacy:sendSetConsentRequestFactory", () => {
   it("sets consent level and on payload and sends the request", () => {
     sendEdgeNetworkRequest.and.returnValue(Promise.resolve());
     return sendSetConsentRequest("anything").then(resolvedValue => {
-      expect(payload.setConsentPreferences).toHaveBeenCalledWith("anything");
+      expect(payload.setConsent).toHaveBeenCalledWith("anything");
       expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
         payload,
         action: "privacy/set-consent"

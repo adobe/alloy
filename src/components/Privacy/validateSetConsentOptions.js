@@ -3,7 +3,7 @@ import { IN, OUT } from "../../constants/consentStatus";
 import { GENERAL } from "../../constants/consentPurpose";
 
 export default objectOf({
-  preferences: arrayOf(
+  consent: arrayOf(
     objectOf({
       standard: literal("Adobe").required(),
       version: literal("1.0").required(),

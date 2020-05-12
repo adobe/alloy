@@ -36,7 +36,7 @@ describe("createConsentRequestPayload", () => {
     payload.addIdentity("IDNS", {
       id: "ABC123"
     });
-    payload.setConsentPreferences([
+    payload.setConsent([
       {
         standard: "Adobe",
         version: "1.0",

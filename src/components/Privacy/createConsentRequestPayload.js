@@ -21,8 +21,8 @@ export default () => {
           content.identityMap[namespaceCode] || [];
         content.identityMap[namespaceCode].push(identity);
       },
-      setConsentPreferences(consentPreferences) {
-        content.consent = consentPreferences;
+      setConsent(consent) {
+        content.consent = consent;
       }
     };
   });

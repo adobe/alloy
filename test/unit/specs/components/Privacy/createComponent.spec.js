@@ -14,8 +14,8 @@ import createComponent from "../../../../../src/components/Privacy/createCompone
 import { createTaskQueue, defer } from "../../../../../src/utils";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
-const createConsentPreferences = generalConsent => ({
-  preferences: [
+const createConsent = generalConsent => ({
+  consent: [
     {
       standard: "Adobe",
       version: "1.0",
@@ -25,8 +25,8 @@ const createConsentPreferences = generalConsent => ({
     }
   ]
 });
-const CONSENT_IN = createConsentPreferences("in");
-const CONSENT_OUT = createConsentPreferences("out");
+const CONSENT_IN = createConsent("in");
+const CONSENT_OUT = createConsent("out");
 
 describe("privacy:createComponent", () => {
   let readStoredConsent;
@@ -81,9 +81,7 @@ describe("privacy:createComponent", () => {
     component.commands.setConsent.run(CONSENT_IN).then(onResolved);
     expect(consent.suspend).toHaveBeenCalled();
     return flushPromiseChains().then(() => {
-      expect(sendSetConsentRequest).toHaveBeenCalledWith(
-        CONSENT_IN.preferences
-      );
+      expect(sendSetConsentRequest).toHaveBeenCalledWith(CONSENT_IN.consent);
       expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
       expect(onResolved).toHaveBeenCalledWith(undefined);
     });
@@ -109,9 +107,7 @@ describe("privacy:createComponent", () => {
     component.commands.setConsent.run(CONSENT_IN);
     return flushPromiseChains()
       .then(() => {
-        expect(sendSetConsentRequest).toHaveBeenCalledWith(
-          CONSENT_IN.preferences
-        );
+        expect(sendSetConsentRequest).toHaveBeenCalledWith(CONSENT_IN.consent);
         expect(consent.setConsent).not.toHaveBeenCalledWith({ general: "in" });
         deferredConsentRequest.resolve();
         return flushPromiseChains();
@@ -134,17 +130,13 @@ describe("privacy:createComponent", () => {
     component.commands.setConsent.run(CONSENT_IN);
     return flushPromiseChains()
       .then(() => {
-        expect(sendSetConsentRequest).toHaveBeenCalledWith(
-          CONSENT_IN.preferences
-        );
+        expect(sendSetConsentRequest).toHaveBeenCalledWith(CONSENT_IN.consent);
         component.commands.setConsent.run(CONSENT_OUT);
         deferredConsentRequest1.resolve();
         return flushPromiseChains();
       })
       .then(() => {
-        expect(sendSetConsentRequest).toHaveBeenCalledWith(
-          CONSENT_OUT.preferences
-        );
+        expect(sendSetConsentRequest).toHaveBeenCalledWith(CONSENT_OUT.consent);
         deferredConsentRequest2.resolve();
         return flushPromiseChains();
       })
