@@ -6,6 +6,8 @@ import {
   consentPending
 } from "../../helpers/constants/configParts";
 
+const { CONSENT_OUT } = require("../../helpers/constants/consent");
+
 const config = compose(
   orgMainConfigMain,
   consentPending
@@ -24,11 +26,15 @@ test.meta({
 
 test("Test C14411: User cannot consent to no purposes after consenting to no purposes", async t => {
   await configureAlloyInstance("alloy", config);
-  await t.eval(() => window.alloy("setConsent", { general: "out" }));
-  const setConsentErrorMessage = await t.eval(() =>
-    window
-      .alloy("setConsent", { general: "out" })
-      .then(() => undefined, e => e.message)
+  await t.eval(() => window.alloy("setConsent", CONSENT_OUT), {
+    dependencies: { CONSENT_OUT }
+  });
+  const setConsentErrorMessage = await t.eval(
+    () =>
+      window
+        .alloy("setConsent", CONSENT_OUT)
+        .then(() => undefined, e => e.message),
+    { dependencies: { CONSENT_OUT } }
   );
   await t
     .expect(setConsentErrorMessage)

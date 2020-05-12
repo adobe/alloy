@@ -13,9 +13,9 @@ governing permissions and limitations under the License.
 export default ({
   createConsentRequestPayload,
   sendEdgeNetworkRequest
-}) => consentByPurpose => {
+}) => consent => {
   const payload = createConsentRequestPayload();
-  payload.setConsentLevel(consentByPurpose);
+  payload.setConsent(consent);
   return sendEdgeNetworkRequest({
     payload,
     action: "privacy/set-consent"

@@ -11,6 +11,7 @@ import {
   migrationDisabled,
   consentPending
 } from "../../helpers/constants/configParts";
+import { CONSENT_IN } from "../../helpers/constants/consent";
 
 fixtureFactory({
   title:
@@ -44,7 +45,7 @@ const getAlloyEcid = ClientFunction(() => {
 test("C36909 When ID migration is disabled and Visitor and Alloy are both awaiting consent, when Visitor is denied and Alloy is approved, Alloy goes ahead with getting an ECID", async () => {
   await createMockOptIn(false);
   await configureAlloyInstance("alloy", config);
-  await setConsent({ general: "in" });
+  await setConsent(CONSENT_IN);
   const visitorEcid = await getVisitorEcid(orgMainConfigMain.orgId);
   await t.expect(getAlloyEcid()).notEql(visitorEcid);
 });

@@ -5,6 +5,8 @@ import fixtureFactory from "../../helpers/fixtureFactory";
 import environmentContextConfig from "../../helpers/constants/environmentContextConfig";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
+const { CONSENT_IN } = require("../../helpers/constants/consent");
+
 const networkLogger = createNetworkLogger();
 
 fixtureFactory({
@@ -18,22 +20,23 @@ test.meta({
   TEST_RUN: "REGRESSION"
 });
 
-const triggerEventThenConsent = ClientFunction(() => {
-  return new Promise(resolve => {
-    const eventPromise = window.alloy("sendEvent", { xdm: { key: "value" } });
-    window.alloy("setConsent", { general: "in" }).then(() => {
-      eventPromise.then(resolve);
+const triggerEventThenConsent = ClientFunction(
+  () => {
+    return new Promise(resolve => {
+      const eventPromise = window.alloy("sendEvent", { xdm: { key: "value" } });
+      window.alloy("setConsent", CONSENT_IN).then(() => {
+        eventPromise.then(resolve);
+      });
     });
-  });
-});
+  },
+  { dependencies: { CONSENT_IN } }
+);
 
 test("Test C2593: Event command consents to all purposes", async () => {
-  // SDK installed and configured with defaultConsent: { general: "pending" }
   await configureAlloyInstance("alloy", {
-    defaultConsent: { general: "pending" },
+    defaultConsent: "pending",
     ...environmentContextConfig
   });
-  // trigger alloy event
   await triggerEventThenConsent();
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);

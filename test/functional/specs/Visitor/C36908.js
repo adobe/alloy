@@ -10,6 +10,7 @@ import {
   migrationEnabled,
   consentPending
 } from "../../helpers/constants/configParts";
+import { CONSENT_IN } from "../../helpers/constants/consent";
 
 fixtureFactory({
   title:
@@ -38,7 +39,7 @@ test("C36908 When ID migration is enabled and Visitor and Alloy are both awaitin
   await createMockOptIn(false);
   await configureAlloyInstance("alloy", config);
   let errorMessage;
-  await setConsent({ general: "in" }).catch(err => {
+  await setConsent(CONSENT_IN).catch(err => {
     errorMessage = err.errMsg;
   });
   await t.expect(errorMessage).match(/Legacy opt-in was declined./);

@@ -26,49 +26,45 @@ const getErrorMessageFromSetConsent = ClientFunction(consent =>
 // from the validation to make sure that only once instance has a particular orgId, the validation
 // state isn't reset, so when I had this all in one test, the third part here was failing because
 // an instance was already configured with that orgId.
-test("Test C14410: Configuring default consent for unknown purposes fails", async t => {
-  const errorMessage = getErrorMessageFromConfigure({
-    defaultConsent: { analytics: "pending" },
-    ...orgMainConfigMain
-  });
-  await t
-    .expect(errorMessage)
-    .ok("Expected the configure command to be rejected");
-  await t
-    .expect(errorMessage)
-    .contains("'defaultConsent.analytics': Unknown field.");
-});
 
 test("Test C14410: Configuring default consent to 'out' fails", async t => {
   const errorMessage = getErrorMessageFromConfigure({
-    defaultConsent: { general: "out" },
+    defaultConsent: "out",
     ...orgMainConfigMain
   });
   await t
     .expect(errorMessage)
     .ok("Expected the configure command to be rejected");
-  await t.expect(errorMessage).contains("'defaultConsent.general':");
+  await t.expect(errorMessage).contains("'defaultConsent':");
   await t.expect(errorMessage).contains("'out'");
 });
 
 test("Test C14410: Setting consent for unknown purposes fails", async t => {
   await configureAlloyInstance("alloy", {
-    defaultConsent: { general: "pending" },
+    defaultConsent: "pending",
     ...orgMainConfigMain
   });
-  const errorMessage = getErrorMessageFromSetConsent({ analytics: "in" });
+  const errorMessage = getErrorMessageFromSetConsent({
+    consent: [
+      { standard: "Adobe", version: "1.0", value: { analytics: "pending" } }
+    ]
+  });
   await t
     .expect(errorMessage)
     .ok("Expected the setConsent command to be rejected");
-  await t.expect(errorMessage).contains("'general' is a required option");
+  await t.expect(errorMessage).contains("general' is a required option");
 });
 
 test("Test C14410: Setting consent to 'pending' fails", async t => {
   await configureAlloyInstance("alloy", {
-    defaultConsent: { general: "pending" },
+    defaultConsent: "pending",
     ...orgMainConfigMain
   });
-  const errorMessage = getErrorMessageFromSetConsent({ general: "pending" });
+  const errorMessage = getErrorMessageFromSetConsent({
+    consent: [
+      { standard: "Adobe", version: "1.0", value: { general: "pending" } }
+    ]
+  });
   await t
     .expect(errorMessage)
     .ok("Expected the setConsent command to be rejected");

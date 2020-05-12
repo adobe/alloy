@@ -14,6 +14,20 @@ import createComponent from "../../../../../src/components/Privacy/createCompone
 import { createTaskQueue, defer } from "../../../../../src/utils";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
+const createConsent = generalConsent => ({
+  consent: [
+    {
+      standard: "Adobe",
+      version: "1.0",
+      value: {
+        general: generalConsent
+      }
+    }
+  ]
+});
+const CONSENT_IN = createConsent("in");
+const CONSENT_OUT = createConsent("out");
+
 describe("privacy:createComponent", () => {
   let readStoredConsent;
   let taskQueue;
@@ -26,7 +40,7 @@ describe("privacy:createComponent", () => {
   beforeEach(() => {
     readStoredConsent = jasmine.createSpy("readStoredConsent");
     taskQueue = createTaskQueue();
-    defaultConsent = { general: "in" };
+    defaultConsent = "in";
     consent = jasmine.createSpyObj("consent", ["setConsent", "suspend"]);
     sendSetConsentRequest = jasmine.createSpy("sendSetConsentRequest");
     validateSetConsentOptions = jasmine
@@ -46,7 +60,7 @@ describe("privacy:createComponent", () => {
   };
 
   it("uses the default consent", () => {
-    defaultConsent = { general: "pending" };
+    defaultConsent = "pending";
     readStoredConsent.and.returnValue({});
     build();
     expect(consent.setConsent).toHaveBeenCalledWith({ general: "pending" });
@@ -59,41 +73,41 @@ describe("privacy:createComponent", () => {
   });
 
   it("handles the setConsent command", () => {
-    defaultConsent = { general: "pending" };
+    defaultConsent = "pending";
     readStoredConsent.and.returnValues({}, { general: "in" });
     build();
     sendSetConsentRequest.and.returnValue(Promise.resolve());
     const onResolved = jasmine.createSpy("onResolved");
-    component.commands.setConsent.run({ general: "in" }).then(onResolved);
+    component.commands.setConsent.run(CONSENT_IN).then(onResolved);
     expect(consent.suspend).toHaveBeenCalled();
     return flushPromiseChains().then(() => {
-      expect(sendSetConsentRequest).toHaveBeenCalledWith({ general: "in" });
+      expect(sendSetConsentRequest).toHaveBeenCalledWith(CONSENT_IN.consent);
       expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
       expect(onResolved).toHaveBeenCalledWith(undefined);
     });
   });
 
   it("updates the consent object even after a request failure", () => {
-    defaultConsent = { general: "pending" };
+    defaultConsent = "pending";
     readStoredConsent.and.returnValues({}, { general: "in" });
     build();
     sendSetConsentRequest.and.returnValue(Promise.reject());
-    component.commands.setConsent.run({ general: "in" });
+    component.commands.setConsent.run(CONSENT_IN);
     return flushPromiseChains().then(() => {
       expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
     });
   });
 
   it("only updates the consent object after the response returns", () => {
-    defaultConsent = { general: "pending" };
+    defaultConsent = "pending";
     readStoredConsent.and.returnValues({}, { general: "in" });
     build();
     const deferredConsentRequest = defer();
     sendSetConsentRequest.and.returnValue(deferredConsentRequest.promise);
-    component.commands.setConsent.run({ general: "in" });
+    component.commands.setConsent.run(CONSENT_IN);
     return flushPromiseChains()
       .then(() => {
-        expect(sendSetConsentRequest).toHaveBeenCalledWith({ general: "in" });
+        expect(sendSetConsentRequest).toHaveBeenCalledWith(CONSENT_IN.consent);
         expect(consent.setConsent).not.toHaveBeenCalledWith({ general: "in" });
         deferredConsentRequest.resolve();
         return flushPromiseChains();
@@ -104,7 +118,7 @@ describe("privacy:createComponent", () => {
   });
 
   it("only calls setConsent once with multiple consent requests", () => {
-    defaultConsent = { general: "pending" };
+    defaultConsent = "pending";
     readStoredConsent.and.returnValues({}, { general: "out" });
     build();
     const deferredConsentRequest1 = defer();
@@ -113,21 +127,23 @@ describe("privacy:createComponent", () => {
       deferredConsentRequest1.promise,
       deferredConsentRequest2.promise
     );
-    component.commands.setConsent.run({ general: "in" });
+    component.commands.setConsent.run(CONSENT_IN);
     return flushPromiseChains()
       .then(() => {
-        expect(sendSetConsentRequest).toHaveBeenCalledWith({ general: "in" });
-        component.commands.setConsent.run({ general: "out" });
+        expect(sendSetConsentRequest).toHaveBeenCalledWith(CONSENT_IN.consent);
+        component.commands.setConsent.run(CONSENT_OUT);
         deferredConsentRequest1.resolve();
         return flushPromiseChains();
       })
       .then(() => {
-        expect(sendSetConsentRequest).toHaveBeenCalledWith({ general: "out" });
+        expect(sendSetConsentRequest).toHaveBeenCalledWith(CONSENT_OUT.consent);
         deferredConsentRequest2.resolve();
         return flushPromiseChains();
       })
       .then(() => {
         expect(consent.setConsent).not.toHaveBeenCalledWith({ general: "in" });
+        // one time to "pending", one time to "out"
+        expect(consent.setConsent).toHaveBeenCalledTimes(2);
         expect(consent.setConsent).toHaveBeenCalledWith({ general: "out" });
       });
   });

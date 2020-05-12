@@ -3,6 +3,8 @@ import createNetworkLogger from "../../helpers/networkLogger";
 import fixtureFactory from "../../helpers/fixtureFactory";
 import createConsoleLogger from "../../helpers/consoleLogger";
 
+const { CONSENT_OUT } = require("../../helpers/constants/consent");
+
 const networkLogger = createNetworkLogger();
 
 fixtureFactory({
@@ -16,16 +18,19 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const setConsentToOut = ClientFunction(() => {
-  return window.alloy("setConsent", { general: "out" });
-});
+const setConsentToOut = ClientFunction(
+  () => {
+    return window.alloy("setConsent", CONSENT_OUT);
+  },
+  { dependencies: { CONSENT_OUT } }
+);
 
 const configure = ClientFunction(() => {
   return {
     promise: window.alloy("configure", {
       edgeConfigId: "9999999",
       orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
-      defaultConsent: { general: "pending" },
+      defaultConsent: "pending",
       idMigrationEnabled: false,
       debugEnabled: true
     })

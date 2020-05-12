@@ -3,7 +3,15 @@ import React from "react";
 const executeSetConsentCommand = generalPurpose => () => {
   window
     .alloy("setConsent", {
-      general: generalPurpose
+      consent: [
+        {
+          standard: "Adobe",
+          version: "1.0",
+          value: {
+            general: generalPurpose
+          }
+        }
+      ]
     })
     .catch(console.error);
 };

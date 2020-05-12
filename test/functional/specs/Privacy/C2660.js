@@ -7,6 +7,8 @@ import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfig
 import { compose, consentPending } from "../../helpers/constants/configParts";
 import testServerUrl from "../../helpers/constants/testServerUrl";
 
+const { CONSENT_IN } = require("../../helpers/constants/consent");
+
 const networkLogger = createNetworkLogger();
 
 fixtureFactory({
@@ -24,10 +26,13 @@ const sendEvent = ClientFunction(() => {
   window.alloy("sendEvent");
 });
 
-const changeHashAndConsent = ClientFunction(() => {
-  window.location.hash = "foo";
-  return window.alloy("setConsent", { general: "in" });
-});
+const changeHashAndConsent = ClientFunction(
+  () => {
+    window.location.hash = "foo";
+    return window.alloy("setConsent", CONSENT_IN);
+  },
+  { dependencies: { CONSENT_IN } }
+);
 
 const getContextUrlFromRequest = request => {
   const parsedBody = JSON.parse(request.request.body);

@@ -5,12 +5,69 @@ describeValidation(
   "Privacy:validateSetConsentOptions",
   validateSetConsentOptions,
   [
-    { value: { general: "in" } },
-    { value: { general: "out" } },
-    { value: { foo: "in" }, error: true },
-    { value: { general: "foo" }, error: true },
-    { value: { general: "in", foo: "in" }, error: true },
-    { value: {}, error: true },
+    {
+      value: {
+        consent: [
+          { standard: "Adobe", version: "1.0", value: { general: "in" } }
+        ]
+      }
+    },
+    {
+      value: {
+        consent: [
+          { standard: "Adobe", version: "1.0", value: { general: "out" } }
+        ]
+      }
+    },
+    {
+      value: {
+        consent: [{ standard: "Adobe", version: "1.0", value: { foo: "in" } }]
+      },
+      error: true
+    },
+    {
+      value: {
+        consent: [
+          {
+            standard: "Adobe",
+            version: "1.0",
+            value: { general: "in", foo: "in" }
+          }
+        ]
+      },
+      error: true
+    },
+    {
+      value: {
+        consent: [
+          { standard: "Mine", version: "1.0", value: { general: "in" } }
+        ]
+      },
+      error: true
+    },
+    {
+      value: { consent: [{ version: "1.0", value: { general: "in" } }] },
+      error: true
+    },
+    {
+      value: {
+        consent: [
+          { standard: "Adobe", version: "2.0", value: { general: "in" } }
+        ]
+      },
+      error: true
+    },
+    {
+      value: { consent: [{ standard: "Adobe", value: { general: "in" } }] },
+      error: true
+    },
+    {
+      value: { consent: [{ standard: "Adobe", version: "1.0" }] },
+      error: true
+    },
+    { value: { consent: [] }, error: true },
+    { value: { consent: null }, error: true },
+    { value: { consent: undefined }, error: true },
     { value: "in", error: true },
     { value: undefined, error: true },
     { value: null, error: true }

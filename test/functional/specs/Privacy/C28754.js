@@ -11,6 +11,8 @@ import {
   consentPending
 } from "../../helpers/constants/configParts";
 
+const { CONSENT_OUT } = require("../../helpers/constants/consent");
+
 const config = compose(
   orgMainConfigMain,
   consentPending
@@ -30,9 +32,12 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const setConsentOut = ClientFunction(() => {
-  return window.alloy("setConsent", { general: "out" });
-});
+const setConsentOut = ClientFunction(
+  () => {
+    return window.alloy("setConsent", CONSENT_OUT);
+  },
+  { dependencies: { CONSENT_OUT } }
+);
 
 test("C28754 - Consenting to no purposes should result in no data handles in the response.", async () => {
   await configureAlloyInstance("alloy", config);
