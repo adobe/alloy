@@ -28,8 +28,7 @@ test.meta({
 
 const triggerAlloyEvent = ClientFunction(() => {
   return window.alloy("sendEvent", {
-    xdm: { key: "value" },
-    datasetId: "5eb83a3f634d1618a8a1d3df"
+    xdm: { key: "value" }
   });
 });
 
@@ -46,9 +45,6 @@ test("Test C2592: Event command sends a request.", async () => {
   );
 
   await t.expect(request.events[0].xdm.key).eql("value");
-  await t
-    .expect(request.events[0].meta.collect.datasetId)
-    .eql("5eb83a3f634d1618a8a1d3df");
   await t.expect(request.meta.state.cookiesEnabled).eql(true);
   await t.expect(request.meta.state.domain).ok();
 });
