@@ -1,7 +1,8 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import fixtureFactory from "../../helpers/fixtureFactory";
-import { CONSENT_IN } from "../../helpers/constants/consent";
+
+const { CONSENT_IN } = require("../../helpers/constants/consent");
 
 const networkLogger = createNetworkLogger();
 
@@ -16,9 +17,12 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const setConsentIn = ClientFunction(() => {
-  return window.alloy("setConsent", CONSENT_IN);
-});
+const setConsentIn = ClientFunction(
+  () => {
+    return window.alloy("setConsent", CONSENT_IN);
+  },
+  { dependencies: { CONSENT_IN } }
+);
 
 const triggerAlloyEvent = ClientFunction(() => {
   return window.alloy("sendEvent", {});

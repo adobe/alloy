@@ -4,7 +4,8 @@ import { responseStatus } from "../../helpers/assertions/index";
 import fixtureFactory from "../../helpers/fixtureFactory";
 import environmentContextConfig from "../../helpers/constants/environmentContextConfig";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
-import { CONSENT_IN } from "../../helpers/constants/consent";
+
+const { CONSENT_IN } = require("../../helpers/constants/consent");
 
 const networkLogger = createNetworkLogger();
 
@@ -19,14 +20,17 @@ test.meta({
   TEST_RUN: "REGRESSION"
 });
 
-const triggerEventThenConsent = ClientFunction(() => {
-  return new Promise(resolve => {
-    const eventPromise = window.alloy("sendEvent", { xdm: { key: "value" } });
-    window.alloy("setConsent", CONSENT_IN).then(() => {
-      eventPromise.then(resolve);
+const triggerEventThenConsent = ClientFunction(
+  () => {
+    return new Promise(resolve => {
+      const eventPromise = window.alloy("sendEvent", { xdm: { key: "value" } });
+      window.alloy("setConsent", CONSENT_IN).then(() => {
+        eventPromise.then(resolve);
+      });
     });
-  });
-});
+  },
+  { dependencies: { CONSENT_IN } }
+);
 
 test("Test C2593: Event command consents to all purposes", async () => {
   await configureAlloyInstance("alloy", {

@@ -1,14 +1,22 @@
-const createConsent = consent => ({
-  consent: [
+export const CONSENT_IN = {
+  preferences: [
     {
       standard: "Adobe",
       version: "1.0",
       value: {
-        general: consent
+        general: "in"
       }
     }
   ]
-});
-
-export const CONSENT_IN = createConsent("in");
-export const CONSENT_OUT = createConsent("out");
+};
+export const CONSENT_OUT = {
+  preferences: [
+    {
+      standard: "Adobe",
+      version: "1.0",
+      value: {
+        general: "out"
+      }
+    }
+  ]
+};

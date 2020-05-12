@@ -9,7 +9,8 @@ import {
   debugEnabled
 } from "../../helpers/constants/configParts";
 import createConsoleLogger from "../../helpers/consoleLogger";
-import { CONSENT_OUT, CONSENT_IN } from "../../helpers/constants/consent";
+
+const { CONSENT_OUT, CONSENT_IN } = require("../../helpers/constants/consent");
 
 const config = compose(
   orgMainConfigMain,
@@ -33,9 +34,15 @@ test.meta({
 
 test("Test C14404: User cannot consent to all purposes after consenting to no purposes", async t => {
   await configureAlloyInstance("alloy", config);
-  await t.eval(() => window.alloy("setConsent", CONSENT_OUT));
-  const setConsentErrorMessage = await t.eval(() =>
-    window.alloy("setConsent", CONSENT_IN).then(() => undefined, e => e.message)
+  await t.eval(() => window.alloy("setConsent", CONSENT_OUT), {
+    dependencies: { CONSENT_OUT }
+  });
+  const setConsentErrorMessage = await t.eval(
+    () =>
+      window
+        .alloy("setConsent", CONSENT_IN)
+        .then(() => undefined, e => e.message),
+    { dependencies: { CONSENT_IN } }
   );
   await t
     .expect(setConsentErrorMessage)

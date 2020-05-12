@@ -6,7 +6,8 @@ import flushPromiseChains from "../../helpers/flushPromiseChains";
 import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain";
 import { compose, consentPending } from "../../helpers/constants/configParts";
 import testServerUrl from "../../helpers/constants/testServerUrl";
-import { CONSENT_IN } from "../../helpers/constants/consent";
+
+const { CONSENT_IN } = require("../../helpers/constants/consent");
 
 const networkLogger = createNetworkLogger();
 
@@ -25,10 +26,13 @@ const sendEvent = ClientFunction(() => {
   window.alloy("sendEvent");
 });
 
-const changeHashAndConsent = ClientFunction(() => {
-  window.location.hash = "foo";
-  return window.alloy("setConsent", CONSENT_IN);
-});
+const changeHashAndConsent = ClientFunction(
+  () => {
+    window.location.hash = "foo";
+    return window.alloy("setConsent", CONSENT_IN);
+  },
+  { dependencies: { CONSENT_IN } }
+);
 
 const getContextUrlFromRequest = request => {
   const parsedBody = JSON.parse(request.request.body);

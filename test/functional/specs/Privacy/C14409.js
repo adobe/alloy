@@ -3,6 +3,8 @@ import createNetworkLogger from "../../helpers/networkLogger";
 import fixtureFactory from "../../helpers/fixtureFactory";
 import createConsoleLogger from "../../helpers/consoleLogger";
 
+const { CONSENT_OUT } = require("../../helpers/constants/consent");
+
 const networkLogger = createNetworkLogger();
 
 fixtureFactory({
@@ -16,9 +18,12 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const setConsentToOut = ClientFunction(() => {
-  return window.alloy("setConsent", { general: "out" });
-});
+const setConsentToOut = ClientFunction(
+  () => {
+    return window.alloy("setConsent", CONSENT_OUT);
+  },
+  { dependencies: { CONSENT_OUT } }
+);
 
 const configure = ClientFunction(() => {
   return {

@@ -8,7 +8,8 @@ import {
   debugEnabled
 } from "../../helpers/constants/configParts";
 import createConsoleLogger from "../../helpers/consoleLogger";
-import { CONSENT_OUT } from "../../helpers/constants/consent";
+
+const { CONSENT_OUT } = require("../../helpers/constants/consent");
 
 const config = compose(
   orgMainConfigMain,
@@ -32,7 +33,9 @@ test.meta({
 test("Test C14406: Unidentified user can consent to no purposes", async t => {
   const logger = await createConsoleLogger();
   await configureAlloyInstance("alloy", config);
-  await t.eval(() => window.alloy("setConsent", CONSENT_OUT));
+  await t.eval(() => window.alloy("setConsent", CONSENT_OUT), {
+    dependencies: { CONSENT_OUT }
+  });
   await t.eval(() => window.alloy("sendEvent"));
   await logger.warn.expectMessageMatching(/user declined consent/);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);

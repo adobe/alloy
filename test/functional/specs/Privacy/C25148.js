@@ -8,7 +8,8 @@ import {
   debugEnabled,
   orgMainConfigMain
 } from "../../helpers/constants/configParts";
-import { CONSENT_OUT } from "../../helpers/constants/consent";
+
+const { CONSENT_OUT } = require("../../helpers/constants/consent");
 
 const networkLogger = createNetworkLogger();
 
@@ -27,9 +28,12 @@ const triggerAlloyEvent = ClientFunction(() => {
   return window.alloy("sendEvent", {});
 });
 
-const setConsentOut = ClientFunction(() => {
-  return window.alloy("setConsent", CONSENT_OUT);
-});
+const setConsentOut = ClientFunction(
+  () => {
+    return window.alloy("setConsent", CONSENT_OUT);
+  },
+  { dependencies: { CONSENT_OUT } }
+);
 
 test("C25148 - When default consent is 'in', consent can be revoked", async () => {
   await configureAlloyInstance(

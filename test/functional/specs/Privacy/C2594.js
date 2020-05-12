@@ -8,7 +8,8 @@ import {
   debugEnabled
 } from "../../helpers/constants/configParts";
 import createConsoleLogger from "../../helpers/consoleLogger";
-import { CONSENT_OUT } from "../../helpers/constants/consent";
+
+const { CONSENT_OUT } = require("../../helpers/constants/consent");
 
 const config = compose(
   orgMainConfigMain,
@@ -34,7 +35,9 @@ test("Test C2594: event command resolves promise with empty object if user conse
   await configureAlloyInstance("alloy", config);
   const logger = await createConsoleLogger();
   const sendEventPromise = t.eval(() => window.alloy("sendEvent"));
-  await t.eval(() => window.alloy("setConsent", CONSENT_OUT));
+  await t.eval(() => window.alloy("setConsent", CONSENT_OUT), {
+    dependencies: { CONSENT_OUT }
+  });
   const result = await sendEventPromise;
   await t.expect(result).eql({});
   await logger.warn.expectMessageMatching(/user declined consent/);
