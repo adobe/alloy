@@ -38,12 +38,6 @@ function HomeWithHistory({ history }) {
       });
   };
 
-  const sendDataToSecondaryDataset = () => {
-    window.alloy("sendEvent", {
-      datasetId: "5eb9aaa6a3b16e18a818e06f"
-    });
-  };
-
   const syncIdentity = () => {
     window
       .alloy("syncIdentity", {
@@ -99,7 +93,9 @@ function HomeWithHistory({ history }) {
             <h2>Placeholder for Decision 2</h2>
           </div>
           <div>
-            <button onClick={getDecisions}>Fetch & Render Decisions</button>
+            <button onClick={getDecisions}>
+              Send Event, Fetch & Render Decisions
+            </button>
           </div>
         </div>
       </section>
@@ -107,14 +103,6 @@ function HomeWithHistory({ history }) {
         <h1>Get Identity</h1>
         <div>
           <button onClick={getIdentity}>Get ECID</button>
-        </div>
-      </section>
-      <section>
-        <h1>Collect data into a specific Dataset</h1>
-        <div>
-          <button onClick={sendDataToSecondaryDataset}>
-            Send Event to Secondary Dataset
-          </button>
         </div>
       </section>
       <section>
