@@ -31,10 +31,9 @@ test.meta({
 const triggerAlloyEvents = ClientFunction(() => {
   return Promise.all([
     window.alloy("sendEvent", {
-      renderDecisions: true,
-      data: { key: "value" }
+      renderDecisions: true
     }),
-    window.alloy("sendEvent", { data: { key: "value" } })
+    window.alloy("sendEvent")
   ]);
 });
 

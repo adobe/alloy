@@ -30,9 +30,7 @@ test.meta({
 });
 
 const triggerAlloyEvent = ClientFunction(() => {
-  return new Promise(resolve => {
-    window.alloy("sendEvent", { xdm: { key: "value" } }).then(() => resolve());
-  });
+  return window.alloy("sendEvent");
 });
 
 test("Test C2583: Set the log option to true. Load the page. Execute a sendEvent command.", async t => {

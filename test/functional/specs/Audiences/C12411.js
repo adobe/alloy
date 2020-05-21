@@ -29,7 +29,7 @@ test.meta({
 });
 
 const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("sendEvent", { xdm: { key: "value" } });
+  return window.alloy("sendEvent");
 });
 
 test("C12411 Response should return URL destinations if turned on in Blackbird", async () => {
