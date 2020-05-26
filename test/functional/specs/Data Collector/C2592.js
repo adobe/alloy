@@ -27,9 +27,7 @@ test.meta({
 });
 
 const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("sendEvent", {
-    xdm: { key: "value" }
-  });
+  return window.alloy("sendEvent");
 });
 
 test("Test C2592: Event command sends a request.", async () => {
@@ -44,7 +42,9 @@ test("Test C2592: Event command sends a request.", async () => {
     networkLogger.edgeEndpointLogs.requests[0].request.body
   );
 
-  await t.expect(request.events[0].xdm.key).eql("value");
+  await t
+    .expect(request.events[0].xdm.implementationDetails.name)
+    .eql("https://ns.adobe.com/experience/alloy");
   await t.expect(request.meta.state.cookiesEnabled).eql(true);
   await t.expect(request.meta.state.domain).ok();
 });

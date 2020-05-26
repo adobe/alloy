@@ -23,7 +23,7 @@ test.meta({
 const triggerEventThenConsent = ClientFunction(
   () => {
     return new Promise(resolve => {
-      const eventPromise = window.alloy("sendEvent", { xdm: { key: "value" } });
+      const eventPromise = window.alloy("sendEvent");
       window.alloy("setConsent", CONSENT_IN).then(() => {
         eventPromise.then(resolve);
       });

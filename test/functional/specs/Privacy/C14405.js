@@ -35,9 +35,11 @@ test("Test C14405: Unidentified user can consent to all purposes", async t => {
   await t.eval(() => window.alloy("setConsent", CONSENT_IN), {
     dependencies: { CONSENT_IN }
   });
-  await t.eval(() => window.alloy("sendEvent", { xdm: { key: "value" } }));
+  await t.eval(() => window.alloy("sendEvent"));
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
   const request = networkLogger.edgeEndpointLogs.requests[0].request.body;
-  await t.expect(request).contains('"key":"value"');
+  await t
+    .expect(request)
+    .contains('"name":"https://ns.adobe.com/experience/alloy"');
 });

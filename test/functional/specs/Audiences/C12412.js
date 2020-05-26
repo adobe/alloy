@@ -17,7 +17,7 @@ test.meta({
 });
 
 const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("sendEvent", { xdm: { key: "value" } });
+  return window.alloy("sendEvent");
 });
 
 const getDocumentCookie = ClientFunction(() => document.cookie);

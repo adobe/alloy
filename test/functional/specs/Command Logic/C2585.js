@@ -18,7 +18,7 @@ const triggerAlloyEvent = ClientFunction(() => {
         debugEnabled: true
       })
       .catch(() => {
-        window.alloy("sendEvent", { xdm: { key: "value" } }).catch(resolve);
+        window.alloy("sendEvent").catch(resolve);
       });
   });
 });

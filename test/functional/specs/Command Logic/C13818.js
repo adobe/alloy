@@ -40,7 +40,7 @@ const apiCalls = ClientFunction((configObject, alternateConfigObject) => {
     Object.keys(alternateConfigObject).forEach(key => {
       configObject[key] = alternateConfigObject[key];
     });
-    return window.alloy("sendEvent", { data: { key: "value" } });
+    return window.alloy("sendEvent");
   });
 });
 

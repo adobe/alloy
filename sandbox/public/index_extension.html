@@ -39,16 +39,28 @@
     </script>
 
     <!-- Using UnifiedEdgeQEOnly, property alloyio.com -->
-    <script
+    <!-- <script
       src="//assets.adobedtm.com/4b26fd82417d/e34bddb5ee87/launch-b1dd2c004c8c-development.js"
+      async
+    ></script> -->
+
+    <!-- Using Unified JS LAB, property alloyio.com -->
+    <script
+      src="//assets.adobedtm.com/1281f6ff0c59/c2b711dc1596/launch-c80198ec8c6d-development.js"
       async
     ></script>
   </head>
   <body>
     <div id="root">
-      <button class="consentAllPurposesButton">Consent to all purposes</button>
-      <button class="consentNoPurposesButton">Consent to no purposes</button>
+      <button class="optIn">Opt In</button>
+      <button class="optOut">Opt Out</button>
       <button class="syncIdentity">Sync identity</button>
+
+      <button class="sendEventWithMergeId1">Send event with merge ID 1</button>
+      <button class="sendEventWithMergeId2">Send event with merge ID 2</button>
+
+      <button class="resetMergeId1">Reset Merge ID 1</button>
+      <button class="resetMergeId2">Reset Merge ID 2</button>
 
       <div class="personalization-container">
         <h2>Some awesome default content</h2>
