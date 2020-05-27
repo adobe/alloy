@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { boolean, string, callback, enumOf } from "../../utils/validation";
 import { noop } from "../../utils";
-import { EDGE_DOMAIN } from "../../constants/domains";
+import { EDGE as EDGE_DOMAIN } from "../../constants/domain";
 import EDGE_BASE_PATH from "../../constants/edgeBasePath";
 import { IN, PENDING } from "../../constants/consentStatus";
 

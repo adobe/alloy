@@ -1,4 +1,4 @@
-import * as AUTH_STATES from "../constants/authStates";
+import * as AUTH_STATE from "../constants/authState";
 import { isObject, includes, values, isBoolean, isNil } from "../../../utils";
 
 const ERROR_MESSAGE = "Invalid identity format.";
@@ -44,7 +44,7 @@ const normalizeIdentities = identities => {
   const sortedIdentities = sortObjectKeyNames(identities);
   // TODO: This requires a change to the docs to list the possible values.
   // Alternatively, maybe we should expose the enum on the instance.
-  const authStates = values(AUTH_STATES);
+  const authStates = values(AUTH_STATE);
 
   return Object.keys(sortedIdentities).reduce(
     (normalizedIdentities, namespace) => {
@@ -54,7 +54,7 @@ const normalizeIdentities = identities => {
         id,
         authenticatedState: includes(authStates, authenticatedState)
           ? authenticatedState // Set the auth state to the string value like `authenticated`.
-          : AUTH_STATES.AMBIGUOUS
+          : AUTH_STATE.AMBIGUOUS
       };
 
       if (primary !== undefined) {

@@ -19,7 +19,7 @@ import {
   isImage,
   loadImage
 } from "../../../../../../src/components/Personalization/dom-actions/images";
-import { IMG } from "../../../../../../src/constants/tagNames";
+import { IMG } from "../../../../../../src/constants/tagName";
 import { createNode } from "../../../../../../src/utils/dom";
 
 describe("Personalization::helper::images", () => {

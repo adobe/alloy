@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import createComponent from "../../../../../src/components/Personalization/createComponent";
-import * as SCHEMAS from "../../../../../src/constants/schemas";
+import * as SCHEMA from "../../../../../src/components/Personalization/constants/schema";
 import { values } from "../../../../../src/utils";
 
-const ALL_SCHEMAS = values(SCHEMAS);
+const allSchemas = values(SCHEMA);
 
 describe("Personalization", () => {
   let logger;
@@ -119,7 +119,7 @@ describe("Personalization", () => {
     const renderDecisions = false;
     const decisionScopes = ["foo"];
     const eventQueryDetails = {
-      accepts: ALL_SCHEMAS,
+      accepts: allSchemas,
       decisionScopes
     };
     build();
@@ -149,7 +149,7 @@ describe("Personalization", () => {
     const renderDecisions = true;
     const decisionScopes = ["foo"];
     const eventQueryDetails = {
-      accepts: ALL_SCHEMAS,
+      accepts: allSchemas,
       decisionScopes
     };
     build();
@@ -179,7 +179,7 @@ describe("Personalization", () => {
     const renderDecisions = true;
     const decisionScopes = ["foo"];
     const eventQueryDetails = {
-      accepts: ALL_SCHEMAS,
+      accepts: allSchemas,
       decisionScopes
     };
     build();

@@ -5,7 +5,7 @@ import {
 import {
   AMBIGUOUS,
   LOGGED_OUT
-} from "../../../../../../src/components/Identity/constants/authStates";
+} from "../../../../../../src/components/Identity/constants/authState";
 
 describe("Identity::identityUtil", () => {
   describe("validateIdentities", () => {

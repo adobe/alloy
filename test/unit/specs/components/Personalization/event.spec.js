@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { createQueryDetails } from "../../../../../src/components/Personalization/event";
-import * as SCHEMAS from "../../../../../src/constants/schemas";
+import * as SCHEMA from "../../../../../src/components/Personalization/constants/schema";
 import { values } from "../../../../../src/utils";
 
-const schemas = values(SCHEMAS);
+const schemas = values(SCHEMA);
 
 describe("Personalization::event", () => {
   it("create query details", () => {

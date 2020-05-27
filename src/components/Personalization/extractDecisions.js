@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray } from "../../utils";
-import * as SCHEMAS from "../../constants/schemas";
+import * as SCHEMA from "./constants/schema";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 
-const isDomActionItem = item => item.schema === SCHEMAS.DOM_ACTION;
+const isDomActionItem = item => item.schema === SCHEMA.DOM_ACTION;
 
 const splitItems = (items, predicate) => {
   const matched = [];
