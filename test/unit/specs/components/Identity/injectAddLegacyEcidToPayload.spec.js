@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import addLegacyEcidToPayloadFactory from "../../../../../src/components/Identity/addLegacyEcidToPayloadFactory";
+import injectAddLegacyEcidToPayload from "../../../../../src/components/Identity/injectAddLegacyEcidToPayload";
 
-describe("Identity::addLegacyEcidToPayloadFactory", () => {
+describe("Identity::injectAddLegacyEcidToPayload", () => {
   let getLegacyEcid;
   let addEcidToPayload;
   let payload;
@@ -23,7 +23,7 @@ describe("Identity::addLegacyEcidToPayloadFactory", () => {
       .createSpy("getEcidFromLegacy")
       .and.returnValue(Promise.resolve("legacy@adobe"));
     addEcidToPayload = jasmine.createSpy("addEcidToPayload");
-    addLegacyEcidToPayload = addLegacyEcidToPayloadFactory({
+    addLegacyEcidToPayload = injectAddLegacyEcidToPayload({
       getLegacyEcid,
       addEcidToPayload
     });

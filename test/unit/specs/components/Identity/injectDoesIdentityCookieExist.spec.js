@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import doesIdentityCookieExistFactory from "../../../../../src/components/Identity/doesIdentityCookieExistFactory";
+import injectDoesIdentityCookieExist from "../../../../../src/components/Identity/injectDoesIdentityCookieExist";
 import removeAllCookies from "../../../helpers/removeAllCookies";
 import { cookieJar } from "../../../../../src/utils";
 
-describe("Identity::doesIdentityCookieExistFactory", () => {
+describe("Identity::injectDoesIdentityCookieExist", () => {
   afterEach(removeAllCookies);
 
   it("returns false if cookie does not exist", () => {
-    const doesIdentityCookieExist = doesIdentityCookieExistFactory({
+    const doesIdentityCookieExist = injectDoesIdentityCookieExist({
       orgId: "org@adobe"
     });
     expect(doesIdentityCookieExist()).toBeFalse();
@@ -26,7 +26,7 @@ describe("Identity::doesIdentityCookieExistFactory", () => {
 
   it("returns true if cookie exists", () => {
     cookieJar.set("kndctr_org_adobe_identity", "user@adobe");
-    const doesIdentityCookieExist = doesIdentityCookieExistFactory({
+    const doesIdentityCookieExist = injectDoesIdentityCookieExist({
       orgId: "org@adobe"
     });
     expect(doesIdentityCookieExist()).toBeTrue();

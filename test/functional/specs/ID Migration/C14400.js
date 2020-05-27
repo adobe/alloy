@@ -2,7 +2,7 @@ import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import { responseStatus } from "../../helpers/assertions";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import createResponse from "../../../../src/core/createResponse";
 import generalConstants from "../../helpers/constants/general";
 
@@ -23,7 +23,7 @@ const config = compose(
 const networkLogger = createNetworkLogger();
 const { ecidRegex } = generalConstants;
 
-fixtureFactory({
+createFixture({
   title:
     "C14400: When ID migration is disabled and no identity cookie is found but legacy s_ecid cookie is found, the ECID should not be sent on the request",
   requestHooks: [networkLogger.edgeEndpointLogs]

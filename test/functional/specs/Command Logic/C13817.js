@@ -1,6 +1,6 @@
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 
-fixtureFactory({
+createFixture({
   title: "C13817: Throws error when running command after bad configure"
 });
 

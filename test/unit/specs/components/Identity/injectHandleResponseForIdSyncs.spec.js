@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import handleResponseForIdSyncsFactory from "../../../../../src/components/Identity/handleResponseForIdSyncsFactory";
+import injectHandleResponseForIdSyncs from "../../../../../src/components/Identity/injectHandleResponseForIdSyncs";
 
-describe("Identity::handleResponseForIdSyncsFactory", () => {
+describe("Identity::injectHandleResponseForIdSyncs", () => {
   it("processes ID syncs", () => {
     const processIdSyncsPromise = Promise.resolve();
     const processIdSyncs = jasmine
@@ -26,7 +26,7 @@ describe("Identity::handleResponseForIdSyncsFactory", () => {
     const response = jasmine.createSpyObj("response", {
       getPayloadsByType: idSyncPayloads
     });
-    const handleResponseForIdSyncs = handleResponseForIdSyncsFactory({
+    const handleResponseForIdSyncs = injectHandleResponseForIdSyncs({
       processIdSyncs
     });
     const result = handleResponseForIdSyncs(response);

@@ -1,6 +1,6 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
 import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain";
@@ -11,7 +11,7 @@ const { CONSENT_IN } = require("../../helpers/constants/consent");
 
 const networkLogger = createNetworkLogger();
 
-fixtureFactory({
+createFixture({
   title: "C2660 - Context data is captured before user consents.",
   requestHooks: [networkLogger.edgeEndpointLogs]
 });

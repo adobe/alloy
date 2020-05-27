@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getEcidFromVisitorFactory from "../../../../../../src/components/Identity/visitorService/getEcidFromVisitorFactory";
+import injectGetEcidFromVisitor from "../../../../../../src/components/Identity/visitorService/injectGetEcidFromVisitor";
 
 const logger = {
   log() {}
@@ -40,7 +40,7 @@ describe("getEcidFromVisitor", () => {
 
   describe("Visitor does not exist", () => {
     it("should return promise resolved with undefined", () => {
-      const getEcidFromVisitor = getEcidFromVisitorFactory({ logger, orgId });
+      const getEcidFromVisitor = injectGetEcidFromVisitor({ logger, orgId });
       return expectAsync(getEcidFromVisitor()).toBeResolvedTo(undefined);
     });
   });
@@ -52,7 +52,7 @@ describe("getEcidFromVisitor", () => {
         return Promise.resolve();
       };
 
-      const getEcidFromVisitor = getEcidFromVisitorFactory({
+      const getEcidFromVisitor = injectGetEcidFromVisitor({
         logger,
         orgId,
         awaitVisitorOptIn
@@ -68,7 +68,7 @@ describe("getEcidFromVisitor", () => {
         return Promise.reject();
       };
 
-      const getEcidFromVisitor = getEcidFromVisitorFactory({
+      const getEcidFromVisitor = injectGetEcidFromVisitor({
         logger,
         orgId,
         awaitVisitorOptIn

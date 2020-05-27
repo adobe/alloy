@@ -1,5 +1,5 @@
 import { ClientFunction } from "testcafe";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
 import {
@@ -19,7 +19,7 @@ const debugDisabledConfig = compose(
   debugDisabled
 );
 
-fixtureFactory({
+createFixture({
   title: "C2583: Toggle logging through configuration"
 });
 

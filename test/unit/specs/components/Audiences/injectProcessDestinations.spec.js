@@ -1,7 +1,7 @@
-import processDestinationsFactory from "../../../../../src/components/Audiences/processDestinationsFactory";
+import injectProcessDestinations from "../../../../../src/components/Audiences/injectProcessDestinations";
 import { cookieJar } from "../../../../../src/utils";
 
-describe("Audiences::processDestinationsFactory", () => {
+describe("Audiences::injectProcessDestinations", () => {
   let logger;
   let fireReferrerHideableImage;
   let processDestinations;
@@ -11,7 +11,7 @@ describe("Audiences::processDestinationsFactory", () => {
       .createSpy()
       .and.returnValue(Promise.resolve());
     logger = jasmine.createSpyObj("logger", ["log", "error"]);
-    processDestinations = processDestinationsFactory({
+    processDestinations = injectProcessDestinations({
       fireReferrerHideableImage,
       logger
     });

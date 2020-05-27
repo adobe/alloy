@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import xhrRequestFactory from "../../../../../src/core/network/xhrRequestFactory";
+import injectSendXhrRequest from "../../../../../src/core/network/injectSendXhrRequest";
 
-describe("xhrRequest", () => {
+describe("sendXhrRequest", () => {
   const url = "https://example.com/endpoint";
   let request;
   let XMLHttpRequest;
-  let xhrRequest;
+  let sendXhrRequest;
   let body;
 
   beforeEach(() => {
@@ -29,24 +29,24 @@ describe("xhrRequest", () => {
     XMLHttpRequest = () => {
       return request;
     };
-    xhrRequest = xhrRequestFactory(XMLHttpRequest);
+    sendXhrRequest = injectSendXhrRequest(XMLHttpRequest);
     body = { a: "b" };
   });
 
   it("sets the response type during onloadstart", () => {
-    xhrRequest(url, body);
+    sendXhrRequest(url, body);
     expect(request.responseType).toBeUndefined();
     request.onloadstart();
     expect(request.responseType).toBe("text");
   });
 
   it("opens a POST", () => {
-    xhrRequest(url, body);
+    sendXhrRequest(url, body);
     expect(request.open).toHaveBeenCalledWith("POST", url, true);
   });
 
   it("sets content type", () => {
-    xhrRequest(url, body);
+    sendXhrRequest(url, body);
     expect(request.setRequestHeader).toHaveBeenCalledWith(
       "Content-Type",
       "text/plain; charset=UTF-8"
@@ -54,12 +54,12 @@ describe("xhrRequest", () => {
   });
 
   it("disables credentials", () => {
-    xhrRequest(url, body);
+    sendXhrRequest(url, body);
     expect(request.withCredentials).toBe(true);
   });
 
   it("rejects promise upon error", () => {
-    const xhrPromise = xhrRequest(url, body);
+    const xhrPromise = sendXhrRequest(url, body);
     request.onerror(new Error("bad thing happened"));
     return xhrPromise.then(fail).catch(error => {
       expect(error.message).toBe("bad thing happened");
@@ -67,7 +67,7 @@ describe("xhrRequest", () => {
   });
 
   it("rejects promise upon abort", () => {
-    const xhrPromise = xhrRequest(url, body);
+    const xhrPromise = sendXhrRequest(url, body);
     request.onabort(new Error("bad thing happened"));
     return xhrPromise.then(fail).catch(error => {
       expect(error.message).toBe("bad thing happened");
@@ -75,12 +75,12 @@ describe("xhrRequest", () => {
   });
 
   it("sends body", () => {
-    xhrRequest(url, body);
+    sendXhrRequest(url, body);
     expect(request.send).toHaveBeenCalledWith(body);
   });
 
   it("resolves returned promise upon network success", () => {
-    const xhrPromise = xhrRequest("https://example.com/endpoint", body);
+    const xhrPromise = sendXhrRequest("https://example.com/endpoint", body);
     request.readyState = 4;
     request.responseText = "response text";
     request.status = 999;

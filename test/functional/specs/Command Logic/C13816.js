@@ -1,6 +1,6 @@
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 
-fixtureFactory({
+createFixture({
   title: "C13816: Throws error when configure has no options"
 });
 

@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import handleErrorFactory from "../../../../src/core/handleErrorFactory";
+import injectHandleError from "../../../../src/core/injectHandleError";
 
 const expectedMessage = "[testinstanceNamespace] Bad thing happened.";
 
-describe("handleErrorFactory", () => {
+describe("injectHandleError", () => {
   it("converts non-error to error and throws", () => {
-    const handleError = handleErrorFactory({
+    const handleError = injectHandleError({
       instanceNamespace: "testinstanceNamespace"
     });
 
@@ -26,7 +26,7 @@ describe("handleErrorFactory", () => {
   });
 
   it("rethrows error with instanceNamespace prepended", () => {
-    const handleError = handleErrorFactory({
+    const handleError = injectHandleError({
       instanceNamespace: "testinstanceNamespace"
     });
 
@@ -37,7 +37,7 @@ describe("handleErrorFactory", () => {
 
   it("logs an error and returns empty object if error is due to declined consent", () => {
     const logger = jasmine.createSpyObj("logger", ["warn"]);
-    const handleError = handleErrorFactory({
+    const handleError = injectHandleError({
       instanceNamespace: "testinstanceNamespace",
       logger
     });

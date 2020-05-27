@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import sendNetworkRequestFactory from "../../../../../src/core/network/sendNetworkRequestFactory";
+import injectSendNetworkRequest from "../../../../../src/core/network/injectSendNetworkRequest";
 
-describe("sendNetworkRequestFactory", () => {
+describe("injectSendNetworkRequest", () => {
   const url = "https://example.com";
   const payload = { a: "b" };
   const payloadJson = JSON.stringify(payload);
@@ -40,7 +40,7 @@ describe("sendNetworkRequestFactory", () => {
       .createSpy("isRetryableHttpStatusCode")
       .and.returnValue(false);
 
-    sendNetworkRequest = sendNetworkRequestFactory({
+    sendNetworkRequest = injectSendNetworkRequest({
       logger,
       networkStrategy,
       isRetryableHttpStatusCode

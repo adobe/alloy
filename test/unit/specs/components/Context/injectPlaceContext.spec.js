@@ -10,18 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import implementationDetailsFactory from "../../../../../src/components/Context/implementationDetailsFactory";
+import injectPlaceContext from "../../../../../src/components/Context/injectPlaceContext";
 
-describe("Context::implementationDetails", () => {
-  const version = "1.2.3";
+describe("Context::injectPlaceContext", () => {
+  let dateProvider;
+  const date = new Date("March 25, 2019 21:56:18");
 
-  it("works", () => {
+  beforeEach(() => {
+    dateProvider = () => {
+      return date;
+    };
+  });
+
+  it("adds placeContext", () => {
+    spyOn(date, "getTimezoneOffset").and.returnValue(7 * 60);
     const xdm = {};
-    implementationDetailsFactory(version)(xdm);
+    injectPlaceContext(dateProvider)(xdm);
     expect(xdm).toEqual({
-      implementationDetails: {
-        name: "https://ns.adobe.com/experience/alloy",
-        version: "1.2.3"
+      placeContext: {
+        localTime: "2019-03-25T21:56:18.000-07:00",
+        localTimezoneOffset: 7 * 60
       }
     });
   });

@@ -10,16 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import setDomainForInitialIdentityPayloadFactory from "../../../../../src/components/Identity/setDomainForInitialIdentityPayloadFactory";
+import injectSetDomainForInitialIdentityPayload from "../../../../../src/components/Identity/injectSetDomainForInitialIdentityPayload";
 
-describe("Identity::setDomainForInitialIdentityPayloadFactory", () => {
+describe("Identity::injectSetDomainForInitialIdentityPayload", () => {
   let payload;
   let thirdPartyCookiesEnabled;
   let areThirdPartyCookiesSupportedByDefault;
   let setDomainForInitialIdentityPayload;
 
   const build = () => {
-    setDomainForInitialIdentityPayload = setDomainForInitialIdentityPayloadFactory(
+    setDomainForInitialIdentityPayload = injectSetDomainForInitialIdentityPayload(
       {
         thirdPartyCookiesEnabled,
         areThirdPartyCookiesSupportedByDefault

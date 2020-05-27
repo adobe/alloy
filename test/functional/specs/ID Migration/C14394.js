@@ -2,7 +2,7 @@ import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import { responseStatus } from "../../helpers/assertions";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import createResponse from "../../../../src/core/createResponse";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
@@ -21,7 +21,7 @@ const config = compose(
 
 const networkLogger = createNetworkLogger();
 
-fixtureFactory({
+createFixture({
   title:
     "C14394: When ID migration is enabled and no identity cookie is found but legacy identity cookie is found, the ECID will be sent on the request",
   requestHooks: [networkLogger.edgeEndpointLogs]

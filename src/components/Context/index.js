@@ -10,22 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import webFactory from "./webFactory";
-import deviceFactory from "./deviceFactory";
-import environmentFactory from "./environmentFactory";
-import placeContextFactory from "./placeContextFactory";
-import timestampFactory from "./timestampFactory";
-import implementationDetailsFactory from "./implementationDetailsFactory";
+import injectWeb from "./injectWeb";
+import injectDevice from "./injectDevice";
+import injectEnvironment from "./injectEnvironment";
+import injectPlaceContext from "./injectPlaceContext";
+import injectTimestamp from "./injectTimestamp";
+import injectImplementationDetails from "./injectImplementationDetails";
 import libraryVersion from "../../constants/libraryVersion";
 import createComponent from "./createComponent";
 import { arrayOf, string } from "../../utils/validation";
 
-const web = webFactory(window);
-const device = deviceFactory(window);
-const environment = environmentFactory(window);
-const placeContext = placeContextFactory(() => new Date());
-const timestamp = timestampFactory(() => new Date());
-const implementationDetails = implementationDetailsFactory(libraryVersion);
+const web = injectWeb(window);
+const device = injectDevice(window);
+const environment = injectEnvironment(window);
+const placeContext = injectPlaceContext(() => new Date());
+const timestamp = injectTimestamp(() => new Date());
+const implementationDetails = injectImplementationDetails(libraryVersion);
 
 const optionalContexts = {
   web,

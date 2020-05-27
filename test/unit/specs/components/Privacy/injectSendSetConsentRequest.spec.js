@@ -1,6 +1,6 @@
-import sendSetConsentRequestFactory from "../../../../../src/components/Privacy/sendSetConsentRequestFactory";
+import injectSendSetConsentRequest from "../../../../../src/components/Privacy/injectSendSetConsentRequest";
 
-describe("Privacy:sendSetConsentRequestFactory", () => {
+describe("Privacy:injectSendSetConsentRequest", () => {
   let createConsentRequestPayload;
   let sendEdgeNetworkRequest;
   let payload;
@@ -13,7 +13,7 @@ describe("Privacy:sendSetConsentRequestFactory", () => {
     sendEdgeNetworkRequest = jasmine.createSpy("sendEdgeNetworkRequest");
     payload = jasmine.createSpyObj("payload", ["setConsent"]);
     createConsentRequestPayload.and.returnValue(payload);
-    sendSetConsentRequest = sendSetConsentRequestFactory({
+    sendSetConsentRequest = injectSendSetConsentRequest({
       createConsentRequestPayload,
       sendEdgeNetworkRequest
     });

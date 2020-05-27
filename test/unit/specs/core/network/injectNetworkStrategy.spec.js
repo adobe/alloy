@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import networkStrategyFactory from "../../../../../src/core/network/networkStrategyFactory";
+import injectNetworkStrategy from "../../../../../src/core/network/injectNetworkStrategy";
 
 const mockServerClient = window.mockServerClient || (() => {});
 
@@ -55,7 +55,7 @@ const eventually = (
  * Run the mock server with `npm run mockserver`.  If this test sees there
  * is no mock server running, it will mark the tests as pending.
  */
-describe("networkStrategyFactory", () => {
+describe("injectNetworkStrategy", () => {
   const requestBody = JSON.stringify({ id: "myrequest" });
   const largeRequestBody = JSON.stringify({
     id: "mylargerequest",
@@ -100,7 +100,7 @@ describe("networkStrategyFactory", () => {
     describe(name, () => {
       beforeEach(() => {
         if (mockServerRunning) {
-          networkStrategy = networkStrategyFactory(testingWindow, console);
+          networkStrategy = injectNetworkStrategy(testingWindow, console);
           client = wrapInRealPromises(mockServerClient("localhost", 1080));
           return client.reset();
         }

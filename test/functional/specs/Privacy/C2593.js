@@ -1,7 +1,7 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import environmentContextConfig from "../../helpers/constants/environmentContextConfig";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
@@ -9,7 +9,7 @@ const { CONSENT_IN } = require("../../helpers/constants/consent");
 
 const networkLogger = createNetworkLogger();
 
-fixtureFactory({
+createFixture({
   title: "C2593: Event command sets consent to in.",
   requestHooks: [networkLogger.edgeEndpointLogs]
 });

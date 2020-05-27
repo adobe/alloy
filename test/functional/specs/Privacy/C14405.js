@@ -1,4 +1,4 @@
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createNetworkLogger from "../../helpers/networkLogger";
 
@@ -19,7 +19,7 @@ const config = compose(
 
 const networkLogger = createNetworkLogger();
 
-fixtureFactory({
+createFixture({
   title: "C14405: Unidentified user can consent to all purposes",
   requestHooks: [networkLogger.edgeEndpointLogs]
 });

@@ -1,12 +1,12 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 
 const { CONSENT_IN } = require("../../helpers/constants/consent");
 
 const networkLogger = createNetworkLogger();
 
-fixtureFactory({
+createFixture({
   title: "C14407 - Consenting to all purposes should be persisted.",
   requestHooks: [networkLogger.edgeEndpointLogs]
 });

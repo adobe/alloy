@@ -1,5 +1,5 @@
 import { ClientFunction } from "testcafe";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
@@ -13,7 +13,7 @@ const config = compose(
   debugEnabled
 );
 
-fixtureFactory({
+createFixture({
   title: "C2587: Throw error when executing command that doesn't exist."
 });
 

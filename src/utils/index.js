@@ -65,7 +65,7 @@ export {
   default as sanitizeOrgIdForCookieName
 } from "./sanitizeOrgIdForCookieName";
 export { default as stackError } from "./stackError";
-export { default as storageFactory } from "./storageFactory";
+export { default as injectStorage } from "./injectStorage";
 export { default as stringToBoolean } from "./stringToBoolean";
 export { default as toArray } from "./toArray";
 export { default as toError } from "./toError";

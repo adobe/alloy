@@ -1,4 +1,4 @@
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
@@ -13,7 +13,7 @@ const config = compose(
   consentPending
 );
 
-fixtureFactory({
+createFixture({
   title:
     "C14411: User cannot consent to no purposes after consenting to no purposes"
 });

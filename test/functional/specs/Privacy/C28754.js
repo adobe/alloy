@@ -1,7 +1,7 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createResponse from "../../../../src/core/createResponse";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
@@ -20,7 +20,7 @@ const config = compose(
 
 const networkLogger = createNetworkLogger();
 
-fixtureFactory({
+createFixture({
   title:
     "C28754 - Consenting to no purposes should result in no data handles in the response.",
   requestHooks: [networkLogger.setConsentEndpointLogs]

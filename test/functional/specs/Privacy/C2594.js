@@ -1,4 +1,4 @@
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createNetworkLogger from "../../helpers/networkLogger";
 import {
@@ -19,7 +19,7 @@ const config = compose(
 
 const networkLogger = createNetworkLogger();
 
-fixtureFactory({
+createFixture({
   title:
     "C2594: event command resolves promise with empty object if user consents to no purposes",
   requestHooks: [networkLogger.edgeEndpointLogs]

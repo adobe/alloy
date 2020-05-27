@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
@@ -46,7 +46,7 @@ test.meta({
 });
 
 const networkLogger = createNetworkLogger();
-fixtureFactory({
+createFixture({
   title: "C148846 - Setting edgeDomain to CNAME",
   requestHooks: [networkLogger.edgeInteractEndpointLogs]
 });

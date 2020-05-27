@@ -1,6 +1,6 @@
-import readStoredConsentFactory from "../../../../../src/components/Privacy/readStoredConsentFactory";
+import injectReadStoredConsent from "../../../../../src/components/Privacy/injectReadStoredConsent";
 
-describe("Privacy:readStoredConsentFactory", () => {
+describe("Privacy:injectReadStoredConsent", () => {
   let parseConsentCookie;
   const orgId = "myorgid@mycompany";
   let cookieJar;
@@ -9,7 +9,7 @@ describe("Privacy:readStoredConsentFactory", () => {
   beforeEach(() => {
     parseConsentCookie = jasmine.createSpy("parseConsentCookie");
     cookieJar = jasmine.createSpyObj("cookieJar", ["get"]);
-    readStoredConsent = readStoredConsentFactory({
+    readStoredConsent = injectReadStoredConsent({
       parseConsentCookie,
       orgId,
       cookieJar

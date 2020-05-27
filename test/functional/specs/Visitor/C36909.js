@@ -1,5 +1,5 @@
 import { ClientFunction, t } from "testcafe";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import { alloyWithVisitorTestPageUrl } from "../../helpers/constants/testServerUrl";
 import getVisitorEcid from "../../helpers/visitorService/getVisitorEcid";
 import createMockOptIn from "../../helpers/optIn/createMockOptIn";
@@ -13,7 +13,7 @@ import {
 } from "../../helpers/constants/configParts";
 import { CONSENT_IN } from "../../helpers/constants/consent";
 
-fixtureFactory({
+createFixture({
   title:
     "C36909 When ID migration is disabled and Visitor and Alloy are both awaiting consent, when Visitor is denied and Alloy is approved, Alloy goes ahead with getting an ECID.",
   url: alloyWithVisitorTestPageUrl

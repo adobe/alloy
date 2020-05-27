@@ -1,5 +1,5 @@
 import { RequestLogger, ClientFunction } from "testcafe";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 
 import {
   orgMainConfigMain,
@@ -23,7 +23,7 @@ const networkLogger2 = RequestLogger(
   networkLoggerConfig
 );
 
-fixtureFactory({
+createFixture({
   title:
     "C13818: Changing the options object after configure doesn't change the computed config",
   requestHooks: [networkLogger1, networkLogger2]

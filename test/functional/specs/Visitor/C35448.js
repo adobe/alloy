@@ -1,5 +1,5 @@
 import { ClientFunction, t } from "testcafe";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import { alloyWithVisitorTestPageUrl } from "../../helpers/constants/testServerUrl";
 import getVisitorEcid from "../../helpers/visitorService/getVisitorEcid";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
@@ -10,7 +10,7 @@ import {
   migrationEnabled
 } from "../../helpers/constants/configParts";
 
-fixtureFactory({
+createFixture({
   title:
     "C35448 - When ID migration is enabled and Visitor is on the page, Alloy waits for Visitor to get ECID and then uses this value.",
   url: alloyWithVisitorTestPageUrl
