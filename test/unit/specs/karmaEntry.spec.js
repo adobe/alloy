@@ -10,5 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+// Without this entry file, Karma + Rollup would create a separate build
+// for each spec file, resulting in slow tests runs, high memory usage,
+// and file system errors.
+
 // eslint-disable-next-line import/no-unresolved,import/extensions
 import "./**/*.spec.js";
