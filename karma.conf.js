@@ -36,7 +36,7 @@ module.exports = config => {
       "node_modules/promise-polyfill/dist/polyfill.js",
       "test/unit/helpers/mockServerClient.js",
       {
-        pattern: "test/unit/specs/**/*.spec.js",
+        pattern: "test/unit/specs/karmaEntry.spec.js",
         watched: false // The preprocessor will use its own watcher
       }
     ],
@@ -47,7 +47,7 @@ module.exports = config => {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "test/unit/specs/**/*.spec.js": ["rollup"]
+      "test/unit/specs/karmaEntry.spec.js": ["rollup"]
     },
 
     // test results reporter to use
