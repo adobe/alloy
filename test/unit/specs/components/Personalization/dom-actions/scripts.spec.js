@@ -17,7 +17,7 @@ import {
 } from "../../../../../../src/components/Personalization/dom-actions/scripts";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 import { createFragment } from "../../../../../../src/components/Personalization/dom-actions/dom";
-import { DIV } from "../../../../../../src/constants/tagNames";
+import { DIV } from "../../../../../../src/constants/tagName";
 import { createNode } from "../../../../../../src/utils/dom";
 
 describe("Personalization::helper::scripts", () => {

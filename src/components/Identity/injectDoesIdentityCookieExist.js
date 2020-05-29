@@ -11,13 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { cookieJar, getNamespacedCookieName } from "../../utils";
-import { IDENTITY_COOKIE_KEY } from "../../constants/cookieDetails";
+import { IDENTITY } from "../../constants/cookieNameKey";
 
 export default ({ orgId }) => {
-  const identityCookieName = getNamespacedCookieName(
-    orgId,
-    IDENTITY_COOKIE_KEY
-  );
+  const identityCookieName = getNamespacedCookieName(orgId, IDENTITY);
   /**
    * Returns whether the identity cookie exists.
    */

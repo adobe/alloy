@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { COOKIE_NAME_PREFIX } from "../constants/cookieDetails";
+import COOKIE_NAME_PREFIX from "../constants/cookieNamePrefix";
 import sanitizeOrgIdForCookieName from "./sanitizeOrgIdForCookieName";
 
 /**

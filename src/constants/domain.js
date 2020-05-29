@@ -10,8 +10,5 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// Remember to also incorporate the org ID wherever cookies are read or written.
-export const COOKIE_NAME_PREFIX = "kndctr";
-
-export const IDENTITY_COOKIE_KEY = "identity";
-export const CONSENT_COOKIE_KEY = "consent";
+export const EDGE = "edge.adobedc.net";
+export const ID_THIRD_PARTY = "adobedc.demdex.net";

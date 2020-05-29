@@ -11,9 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import { values } from "../../utils";
-import * as SCHEMAS from "../../constants/schemas";
+import * as SCHEMA from "./constants/schema";
 
-const ALL_SCHEMAS = values(SCHEMAS);
+const allSchemas = values(SCHEMA);
 
 export const mergeMeta = (event, meta) => {
   event.mergeMeta({ personalization: { ...meta } });
@@ -25,7 +25,7 @@ export const mergeQuery = (event, details) => {
 
 export const createQueryDetails = decisionScopes => {
   return {
-    schemas: ALL_SCHEMAS,
+    schemas: allSchemas,
     decisionScopes
   };
 };

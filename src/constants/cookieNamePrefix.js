@@ -10,5 +10,5 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export const EDGE_DOMAIN = "edge.adobedc.net";
-export const ID_THIRD_PARTY_DOMAIN = "adobedc.demdex.net";
+// Remember to also incorporate the org ID wherever cookies are read or written.
+export default "kndctr";

@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { getNamespacedCookieName } from "../../utils";
-import { CONSENT_COOKIE_KEY } from "../../constants/cookieDetails";
+import { CONSENT } from "../../constants/cookieNameKey";
 
 export default ({ parseConsentCookie, orgId, cookieJar }) => {
-  const consentCookieName = getNamespacedCookieName(orgId, CONSENT_COOKIE_KEY);
+  const consentCookieName = getNamespacedCookieName(orgId, CONSENT);
 
   return () => {
     const cookieValue = cookieJar.get(consentCookieName);
