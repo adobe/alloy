@@ -1,4 +1,4 @@
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createNetworkLogger from "../../helpers/networkLogger";
 
@@ -20,7 +20,7 @@ const config = compose(
 
 const networkLogger = createNetworkLogger();
 
-fixtureFactory({
+createFixture({
   title:
     "C14404: User cannot consent to all purposes after consenting to no purposes",
   requestHooks: [networkLogger.edgeEndpointLogs]

@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import awaitIdentityCookieFactory from "../../../../../src/components/Identity/awaitIdentityCookieFactory";
+import injectAwaitIdentityCookie from "../../../../../src/components/Identity/injectAwaitIdentityCookie";
 
-describe("Identity::awaitIdentityCookieFactory", () => {
+describe("Identity::injectAwaitIdentityCookie", () => {
   let identityCookieExists;
   let awaitIdentityCookie;
   let runOnResponseCallbacks;
@@ -27,7 +27,7 @@ describe("Identity::awaitIdentityCookieFactory", () => {
       });
     };
     onResponse = callback => onResponseCallbacks.push(callback);
-    awaitIdentityCookie = awaitIdentityCookieFactory({
+    awaitIdentityCookie = injectAwaitIdentityCookie({
       orgId: "org@adobe",
       doesIdentityCookieExist: () => identityCookieExists
     });

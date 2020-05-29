@@ -1,11 +1,11 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
 const networkLogger = createNetworkLogger();
-fixtureFactory({
+createFixture({
   title:
     "C12412 Response should return Cookie destinations if turned on in Blackbird",
   requestHooks: [networkLogger.edgeEndpointLogs]

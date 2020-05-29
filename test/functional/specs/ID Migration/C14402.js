@@ -2,7 +2,7 @@ import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import { responseStatus } from "../../helpers/assertions";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import createResponse from "../../../../src/core/createResponse";
 import generalConstants from "../../helpers/constants/general";
 
@@ -23,7 +23,7 @@ const config = compose(
 const networkLogger = createNetworkLogger();
 const { ecidRegex } = generalConstants;
 
-fixtureFactory({
+createFixture({
   title:
     "C14402: When ID migration is enabled and no legacy AMCV cookie is found, an AMCV cookie should be created",
   requestHooks: [networkLogger.edgeEndpointLogs]

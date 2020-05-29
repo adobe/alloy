@@ -1,8 +1,8 @@
 import { ClientFunction } from "testcafe";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
 
-fixtureFactory({
+createFixture({
   title: "C2588: Throws error when configure is executed multiple times."
 });
 

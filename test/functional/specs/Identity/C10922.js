@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
@@ -49,7 +49,7 @@ const assertRequestDidNotGoToDemdex = async () => {
   await t.expect(getHostForFirstRequest()).notMatch(demdexHostRegex);
 };
 
-fixtureFactory({
+createFixture({
   title: "C10922 - demdex usage",
   requestHooks: [networkLogger.edgeInteractEndpointLogs]
 });

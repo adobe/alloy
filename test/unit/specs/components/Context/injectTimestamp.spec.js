@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import placeContextFactory from "../../../../../src/components/Context/placeContextFactory";
+import injectTimestamp from "../../../../../src/components/Context/injectTimestamp";
 
-describe("Context::placeContextFactory", () => {
+describe("Context::injectTimestamp", () => {
   let dateProvider;
-  const date = new Date("March 25, 2019 21:56:18");
+  const date = new Date("November 25, 2019 10:09:42 UTC");
 
   beforeEach(() => {
     dateProvider = () => {
@@ -22,15 +22,11 @@ describe("Context::placeContextFactory", () => {
     };
   });
 
-  it("adds placeContext", () => {
-    spyOn(date, "getTimezoneOffset").and.returnValue(7 * 60);
+  it("adds timestamp", () => {
     const xdm = {};
-    placeContextFactory(dateProvider)(xdm);
+    injectTimestamp(dateProvider)(xdm);
     expect(xdm).toEqual({
-      placeContext: {
-        localTime: "2019-03-25T21:56:18.000-07:00",
-        localTimezoneOffset: 7 * 60
-      }
+      timestamp: "2019-11-25T10:09:42.000Z"
     });
   });
 });

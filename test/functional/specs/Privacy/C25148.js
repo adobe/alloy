@@ -1,6 +1,6 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createConsoleLogger from "../../helpers/consoleLogger";
 import {
@@ -13,7 +13,7 @@ const { CONSENT_OUT } = require("../../helpers/constants/consent");
 
 const networkLogger = createNetworkLogger();
 
-fixtureFactory({
+createFixture({
   title: "C25148 - When default consent is 'in', consent can be revoked.",
   requestHooks: [networkLogger.edgeEndpointLogs]
 });

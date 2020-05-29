@@ -10,38 +10,38 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import instanceFactory from "./instanceFactory";
-import { getApexDomain, storageFactory, cookieJar } from "../utils";
+import createInstance from "./createInstance";
+import { getApexDomain, injectStorage, cookieJar } from "../utils";
 import createLogController from "./createLogController";
 import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
-import sendNetworkRequestFactory from "./network/sendNetworkRequestFactory";
+import injectSendNetworkRequest from "./network/injectSendNetworkRequest";
 import createConsent from "./consent/createConsent";
 import createConsentStateMachine from "./consent/createConsentStateMachine";
 import createEvent from "./createEvent";
 import createResponse from "./createResponse";
-import executeCommandFactory from "./executeCommandFactory";
+import injectExecuteCommand from "./injectExecuteCommand";
 import validateCommandOptions from "./validateCommandOptions";
 import componentCreators from "./componentCreators";
 import buildAndValidateConfig from "./buildAndValidateConfig";
 import initializeComponents from "./initializeComponents";
 import createConfig from "./config/createConfig";
 import createCoreConfigs from "./config/createCoreConfigs";
-import handleErrorFactory from "./handleErrorFactory";
-import networkStrategyFactory from "./network/networkStrategyFactory";
+import injectHandleError from "./injectHandleError";
+import injectNetworkStrategy from "./network/injectNetworkStrategy";
 import createLogger from "./createLogger";
 import createEventManager from "./createEventManager";
 import createCookieTransfer from "./createCookieTransfer";
 import createDataCollectionRequestPayload from "./edgeNetwork/requestPayloads/createDataCollectionRequestPayload";
-import sendEdgeNetworkRequestFactory from "./edgeNetwork/sendEdgeNetworkRequestFactory";
-import processWarningsAndErrorsFactory from "./edgeNetwork/processWarningsAndErrorsFactory";
+import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkRequest";
+import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors";
 import validateNetworkResponseIsWellFormed from "./edgeNetwork/validateNetworkResponseIsWellFormed";
 import isRetryableHttpStatusCode from "./network/isRetryableHttpStatusCode";
 
 // eslint-disable-next-line no-underscore-dangle
 const instanceNamespaces = window.__alloyNS;
 
-const createNamespacedStorage = storageFactory(window);
+const createNamespacedStorage = injectStorage(window);
 
 const { console } = window;
 
@@ -60,7 +60,7 @@ if (instanceNamespaces) {
     const { setDebugEnabled, logger } = logController;
     const componentRegistry = createComponentRegistry();
     const lifecycle = createLifecycle(componentRegistry);
-    const networkStrategy = networkStrategyFactory(window, logger);
+    const networkStrategy = injectNetworkStrategy(window, logger);
 
     const setDebugCommand = options => {
       setDebugEnabled(options.enabled, { fromConfig: false });
@@ -80,15 +80,15 @@ if (instanceNamespaces) {
         orgId: config.orgId,
         apexDomain
       });
-      const sendNetworkRequest = sendNetworkRequestFactory({
+      const sendNetworkRequest = injectSendNetworkRequest({
         logger,
         networkStrategy,
         isRetryableHttpStatusCode
       });
-      const processWarningsAndErrors = processWarningsAndErrorsFactory({
+      const processWarningsAndErrors = injectProcessWarningsAndErrors({
         logger
       });
-      const sendEdgeNetworkRequest = sendEdgeNetworkRequestFactory({
+      const sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
         config,
         lifecycle,
         cookieTransfer,
@@ -129,12 +129,12 @@ if (instanceNamespaces) {
       });
     };
 
-    const handleError = handleErrorFactory({
+    const handleError = injectHandleError({
       instanceNamespace,
       logger
     });
 
-    const executeCommand = executeCommandFactory({
+    const executeCommand = injectExecuteCommand({
       logger,
       configureCommand,
       setDebugCommand,
@@ -142,7 +142,7 @@ if (instanceNamespaces) {
       validateCommandOptions
     });
 
-    const instance = instanceFactory(executeCommand);
+    const instance = createInstance(executeCommand);
 
     const queue = window[instanceNamespace].q;
     queue.push = instance;

@@ -1,6 +1,6 @@
-import environmentFactory from "../../../../../src/components/Context/environmentFactory";
+import injectEnvironment from "../../../../../src/components/Context/injectEnvironment";
 
-describe("Context::environmentFactory", () => {
+describe("Context::injectEnvironment", () => {
   const mywindow = {
     screen: { width: 1001, height: 1002 },
     innerWidth: 1003,
@@ -13,7 +13,7 @@ describe("Context::environmentFactory", () => {
       return date;
     };
     const xdm = {};
-    environmentFactory(mywindow, dateProvider)(xdm);
+    injectEnvironment(mywindow, dateProvider)(xdm);
     expect(xdm).toEqual({
       environment: {
         type: "browser",

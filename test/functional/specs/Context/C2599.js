@@ -1,13 +1,13 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import deviceContextConfig from "../../helpers/constants/deviceContextConfig";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
 const networkLogger = createNetworkLogger();
 
-fixtureFactory({
+createFixture({
   title:
     "C2599 - Adds only device context data when only device is specified in configuration.",
   requestHooks: [networkLogger.edgeEndpointLogs]

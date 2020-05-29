@@ -1,6 +1,6 @@
-import processIdSyncsFactory from "../../../../../src/components/Identity/processIdSyncsFactory";
+import injectProcessIdSyncs from "../../../../../src/components/Identity/injectProcessIdSyncs";
 
-describe("Identity::processIdSyncsFactory", () => {
+describe("Identity::injectProcessIdSyncs", () => {
   let fireReferrerHideableImage;
   let logger;
   let processIdSyncs;
@@ -10,7 +10,7 @@ describe("Identity::processIdSyncsFactory", () => {
       .createSpy()
       .and.returnValue(Promise.resolve());
     logger = jasmine.createSpyObj("logger", ["log", "error"]);
-    processIdSyncs = processIdSyncsFactory({
+    processIdSyncs = injectProcessIdSyncs({
       fireReferrerHideableImage,
       logger
     });

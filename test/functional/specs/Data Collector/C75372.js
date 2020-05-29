@@ -1,12 +1,12 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
 
 const networkLogger = createNetworkLogger();
 
-fixtureFactory({
+createFixture({
   title:
     "C75372 - XDM and data objects passed into event command should not be modified",
   requestHooks: [networkLogger.setConsentEndpointLogs]

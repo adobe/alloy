@@ -1,11 +1,11 @@
 import { ClientFunction } from "testcafe";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import testServerUrl from "../../helpers/constants/testServerUrl";
 
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
-fixtureFactory({
+createFixture({
   title: "C2586: Toggle logging through the querystring parameter.",
   url: `${testServerUrl}?alloy_debug=true`
 });

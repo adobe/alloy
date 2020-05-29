@@ -1,6 +1,6 @@
 import { RequestLogger, t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
@@ -16,7 +16,7 @@ const destinationLogger = RequestLogger(
   networkLoggerConfig
 );
 
-fixtureFactory({
+createFixture({
   title: "C31436 Qualify for URL destinations via XDM Data.",
   requestHooks: [networkLogger.edgeEndpointLogs, destinationLogger]
 });

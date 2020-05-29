@@ -1,6 +1,6 @@
 import { RequestLogger, t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
@@ -16,7 +16,7 @@ const destinationLogger = RequestLogger(
   networkLoggerConfig
 );
 
-fixtureFactory({
+createFixture({
   title:
     "C12411 Response should return URL destinations if turned on in Blackbird",
   requestHooks: [networkLogger.edgeEndpointLogs, destinationLogger]

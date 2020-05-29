@@ -10,23 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import timestampFactory from "../../../../../src/components/Context/timestampFactory";
+import injectImplementationDetails from "../../../../../src/components/Context/injectImplementationDetails";
 
-describe("Context::timestampFactory", () => {
-  let dateProvider;
-  const date = new Date("November 25, 2019 10:09:42 UTC");
+describe("Context::implementationDetails", () => {
+  const version = "1.2.3";
 
-  beforeEach(() => {
-    dateProvider = () => {
-      return date;
-    };
-  });
-
-  it("adds timestamp", () => {
+  it("works", () => {
     const xdm = {};
-    timestampFactory(dateProvider)(xdm);
+    injectImplementationDetails(version)(xdm);
     expect(xdm).toEqual({
-      timestamp: "2019-11-25T10:09:42.000Z"
+      implementationDetails: {
+        name: "https://ns.adobe.com/experience/alloy",
+        version: "1.2.3"
+      }
     });
   });
 });

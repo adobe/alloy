@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import executeCommandFactory from "../../../../src/core/executeCommandFactory";
+import injectExecuteCommand from "../../../../src/core/injectExecuteCommand";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
 
-describe("executeCommandFactory", () => {
+describe("injectExecuteCommand", () => {
   let logger;
   let handleError;
 
@@ -25,7 +25,7 @@ describe("executeCommandFactory", () => {
   });
 
   it("rejects promise if configure is not the first command executed", () => {
-    const executeCommand = executeCommandFactory({
+    const executeCommand = injectExecuteCommand({
       logger,
       handleError
     });
@@ -40,7 +40,7 @@ describe("executeCommandFactory", () => {
 
   it("rejects promise if configure command is executed twice", () => {
     const configureCommand = () => Promise.resolve();
-    const executeCommand = executeCommandFactory({
+    const executeCommand = injectExecuteCommand({
       logger,
       configureCommand,
       handleError
@@ -65,7 +65,7 @@ describe("executeCommandFactory", () => {
       }
     };
     const configureCommand = () => Promise.resolve(componentRegistry);
-    const executeCommand = executeCommandFactory({
+    const executeCommand = injectExecuteCommand({
       logger,
       configureCommand,
       handleError
@@ -83,7 +83,7 @@ describe("executeCommandFactory", () => {
 
   it("never resolves/rejects promise to any other command after configure fails", () => {
     const configureCommand = () => Promise.reject();
-    const executeCommand = executeCommandFactory({
+    const executeCommand = injectExecuteCommand({
       logger,
       configureCommand,
       handleError
@@ -118,7 +118,7 @@ describe("executeCommandFactory", () => {
       }
     };
     const configureCommand = () => Promise.resolve(componentRegistry);
-    const executeCommand = executeCommandFactory({
+    const executeCommand = injectExecuteCommand({
       logger,
       configureCommand,
       handleError,
@@ -161,7 +161,7 @@ describe("executeCommandFactory", () => {
       }
     };
     const configureCommand = () => Promise.resolve(componentRegistry);
-    const executeCommand = executeCommandFactory({
+    const executeCommand = injectExecuteCommand({
       logger,
       configureCommand,
       handleError,
@@ -202,7 +202,7 @@ describe("executeCommandFactory", () => {
       .createSpy()
       .and.returnValue(Promise.resolve("configureResult"));
     const setDebugCommand = jasmine.createSpy();
-    const executeCommand = executeCommandFactory({
+    const executeCommand = injectExecuteCommand({
       logger,
       configureCommand,
       setDebugCommand,

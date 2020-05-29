@@ -1,6 +1,6 @@
-import webFactory from "../../../../../src/components/Context/webFactory";
+import injectWeb from "../../../../../src/components/Context/injectWeb";
 
-describe("Context::webFactory", () => {
+describe("Context::injectWeb", () => {
   const window = {
     location: { href: "http://mylocation.com" },
     top: {
@@ -12,7 +12,7 @@ describe("Context::webFactory", () => {
 
   it("works", () => {
     const xdm = {};
-    webFactory(window)(xdm);
+    injectWeb(window)(xdm);
     expect(xdm).toEqual({
       web: {
         webPageDetails: {

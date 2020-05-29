@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import fetchFactory from "../../../../../src/core/network/fetchFactory";
+import injectFetch from "../../../../../src/core/network/injectFetch";
 
-describe("fetchFactory", () => {
+describe("injectFetch", () => {
   it("resolves returned promise upon network success", () => {
     const nativeFetch = jasmine.createSpy().and.returnValue(
       Promise.resolve({
@@ -22,7 +22,7 @@ describe("fetchFactory", () => {
         }
       })
     );
-    const fetch = fetchFactory(nativeFetch);
+    const fetch = injectFetch(nativeFetch);
     return fetch("http://example.com/endpoint", { a: "b" }).then(result => {
       expect(result).toEqual({
         status: 999,
@@ -35,7 +35,7 @@ describe("fetchFactory", () => {
     const nativeFetch = jasmine
       .createSpy()
       .and.returnValue(Promise.reject(new Error("No connection")));
-    const fetch = fetchFactory(nativeFetch);
+    const fetch = injectFetch(nativeFetch);
     return fetch("http://example.com/endpoint", { a: "b" })
       .then(fail)
       .catch(error => {

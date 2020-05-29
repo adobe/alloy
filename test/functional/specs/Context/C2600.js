@@ -1,13 +1,13 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import environmentContextConfig from "../../helpers/constants/environmentContextConfig";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
 const networkLogger = createNetworkLogger();
 
-fixtureFactory({
+createFixture({
   title:
     "C2600 - Adds only environment context data when only device is specified in configuration.",
   requestHooks: [networkLogger.edgeEndpointLogs]

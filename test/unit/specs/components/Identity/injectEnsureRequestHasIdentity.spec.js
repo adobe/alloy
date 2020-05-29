@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import ensureRequestHasIdentityFactory from "../../../../../src/components/Identity/ensureRequestHasIdentityFactory";
+import injectEnsureRequestHasIdentity from "../../../../../src/components/Identity/injectEnsureRequestHasIdentity";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 import { defer } from "../../../../../src/utils";
 
-describe("Identity::ensureRequestHasIdentityFactory", () => {
+describe("Identity::injectEnsureRequestHasIdentity", () => {
   let doesIdentityCookieExist;
   let setDomainForInitialIdentityPayload;
   let addLegacyEcidToPayloadPromise;
@@ -40,7 +40,7 @@ describe("Identity::ensureRequestHasIdentityFactory", () => {
       .createSpy("awaitIdentityCookie")
       .and.returnValue(awaitIdentityCookieDeferred.promise);
     logger = jasmine.createSpyObj("logger", ["log"]);
-    ensureRequestHasIdentity = ensureRequestHasIdentityFactory({
+    ensureRequestHasIdentity = injectEnsureRequestHasIdentity({
       doesIdentityCookieExist,
       setDomainForInitialIdentityPayload,
       addLegacyEcidToPayload,

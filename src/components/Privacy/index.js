@@ -13,20 +13,20 @@ governing permissions and limitations under the License.
 import { createTaskQueue, cookieJar } from "../../utils";
 import createComponent from "./createComponent";
 import createConsentRequestPayload from "./createConsentRequestPayload";
-import readStoredConsentFactory from "./readStoredConsentFactory";
-import sendSetConsentRequestFactory from "./sendSetConsentRequestFactory";
+import injectReadStoredConsent from "./injectReadStoredConsent";
+import injectSendSetConsentRequest from "./injectSendSetConsentRequest";
 import parseConsentCookie from "./parseConsentCookie";
 import validateSetConsentOptions from "./validateSetConsentOptions";
 
 const createPrivacy = ({ config, consent, sendEdgeNetworkRequest }) => {
   const { orgId, defaultConsent } = config;
-  const readStoredConsent = readStoredConsentFactory({
+  const readStoredConsent = injectReadStoredConsent({
     parseConsentCookie,
     orgId,
     cookieJar
   });
   const taskQueue = createTaskQueue();
-  const sendSetConsentRequest = sendSetConsentRequestFactory({
+  const sendSetConsentRequest = injectSendSetConsentRequest({
     createConsentRequestPayload,
     sendEdgeNetworkRequest
   });

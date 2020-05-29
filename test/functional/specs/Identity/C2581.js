@@ -1,5 +1,5 @@
 import { t, ClientFunction } from "testcafe";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import SequentialHook from "../../helpers/requestHooks/sequentialHook";
@@ -17,7 +17,7 @@ const debugEnabledConfig = compose(
 
 const interactHook = new SequentialHook(/v1\/interact\?/);
 
-fixtureFactory({
+createFixture({
   title: "C2581: Queue events when no ECID available on client",
   requestHooks: [interactHook]
 });

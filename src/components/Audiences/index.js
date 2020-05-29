@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { fireReferrerHideableImage } from "../../utils";
-import processDestinationsFactory from "./processDestinationsFactory";
+import injectProcessDestinations from "./injectProcessDestinations";
 
 const createAudiences = ({ logger }) => {
-  const processDestinations = processDestinationsFactory({
+  const processDestinations = injectProcessDestinations({
     fireReferrerHideableImage,
     logger
   });

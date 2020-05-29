@@ -1,11 +1,11 @@
 import { t, ClientFunction } from "testcafe";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import debugEnabledConfig from "../../helpers/constants/debugEnabledConfig";
 import createConsoleLogger from "../../helpers/consoleLogger";
 
 const fs = require("fs");
 
-fixtureFactory({
+createFixture({
   title: "C2580: Command queueing test",
   includeAlloyLibrary: false
 });

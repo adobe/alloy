@@ -1,6 +1,6 @@
-import deviceFactory from "../../../../../src/components/Context/deviceFactory";
+import injectDevice from "../../../../../src/components/Context/injectDevice";
 
-describe("Context::deviceFactory", () => {
+describe("Context::injectDevice", () => {
   let window;
 
   beforeEach(() => {
@@ -14,7 +14,7 @@ describe("Context::deviceFactory", () => {
 
   const run = () => {
     const xdm = {};
-    deviceFactory(window)(xdm);
+    injectDevice(window)(xdm);
     return xdm;
   };
 

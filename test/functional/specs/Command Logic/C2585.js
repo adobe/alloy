@@ -1,7 +1,7 @@
 import { ClientFunction } from "testcafe";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 
-fixtureFactory({
+createFixture({
   title: "C2585: Throws error when configure is not the first command executed."
 });
 

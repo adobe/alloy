@@ -1,7 +1,7 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
 import {
@@ -17,7 +17,7 @@ const debugEnabledConfig = compose(
 
 const networkLogger = createNetworkLogger();
 
-fixtureFactory({
+createFixture({
   title: "C2597 - Adds all context data to requests by default.",
   requestHooks: [networkLogger.edgeEndpointLogs]
 });

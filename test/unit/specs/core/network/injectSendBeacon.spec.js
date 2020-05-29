@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import sendBeaconFactory from "../../../../../src/core/network/sendBeaconFactory";
+import injectSendBeacon from "../../../../../src/core/network/injectSendBeacon";
 
 // When running these tests in IE 11, they fail because IE doesn't like the
 // way the blob is constructed (see
 // https://github.com/bpampuch/pdfmake/pull/297/files for a workaround).
-// Fortunately, if navigator.sendBeacon doesn't exist (IE 11), sendBeaconFactory
-// should never be used (see networkStrategyFactory.js), so we can skip
+// Fortunately, if navigator.sendBeacon doesn't exist (IE 11), injectSendBeacon
+// should never be used (see injectNetworkStrategy.js), so we can skip
 // these tests altogether.
 const guardForSendBeaconAvailability = spec => {
   return window.navigator.sendBeacon
@@ -24,7 +24,7 @@ const guardForSendBeaconAvailability = spec => {
     : () => pending("No sendBeacon API available.");
 };
 
-describe("sendBeaconFactory", () => {
+describe("injectSendBeacon", () => {
   it(
     "falls back to fetch if sendBeacon fails",
     guardForSendBeaconAvailability(() => {
@@ -36,7 +36,7 @@ describe("sendBeaconFactory", () => {
       const logger = {
         log: jasmine.createSpy()
       };
-      const sendBeacon = sendBeaconFactory(navigator, fetch, logger);
+      const sendBeacon = injectSendBeacon(navigator, fetch, logger);
       const body = { a: "b" };
       const result = sendBeacon("https://example.com/endpoint", body);
       expect(navigator.sendBeacon).toHaveBeenCalledWith(
@@ -59,7 +59,7 @@ describe("sendBeaconFactory", () => {
       };
       const body = { a: "b" };
       const fetch = jasmine.createSpy();
-      const sendBeacon = sendBeaconFactory(navigator, fetch);
+      const sendBeacon = injectSendBeacon(navigator, fetch);
       // eslint-disable-next-line consistent-return
       return sendBeacon("https://example.com/endpoint", body).then(() => {
         expect(fetch).not.toHaveBeenCalled();

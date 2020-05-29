@@ -1,4 +1,4 @@
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import SequentialHook from "../../helpers/requestHooks/sequentialHook";
 import {
@@ -19,7 +19,7 @@ const config = compose(
 
 const setConsentHook = new SequentialHook(/v1\/privacy\/set-consent\?/);
 
-fixtureFactory({
+createFixture({
   title: "C14414: Requests are queued while consent changes are pending",
   requestHooks: [setConsentHook]
 });

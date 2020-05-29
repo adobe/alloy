@@ -1,12 +1,12 @@
 import { t, Selector, ClientFunction } from "testcafe";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import baseConfig from "../../helpers/constants/baseConfig";
 import addAnchorToBody from "../../helpers/dom/addAnchorToBody";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createConsoleLogger from "../../helpers/consoleLogger";
 import { compose } from "../../helpers/constants/configParts";
 
-fixtureFactory({
+createFixture({
   title: "C8118: Send event with information about link clicks."
 });
 

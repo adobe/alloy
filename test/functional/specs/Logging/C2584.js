@@ -1,11 +1,11 @@
 import { ClientFunction } from "testcafe";
 import createConsoleLogger from "../../helpers/consoleLogger";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import testServerUrl from "../../helpers/constants/testServerUrl";
 import baseConfig from "../../helpers/constants/baseConfig";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
-fixtureFactory({
+createFixture({
   title: "C2584: Toggle logging through setDebug command"
 });
 

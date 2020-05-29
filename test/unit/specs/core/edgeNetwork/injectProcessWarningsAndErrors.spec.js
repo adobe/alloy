@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import processWarningsAndErrorsFactory from "../../../../../src/core/edgeNetwork/processWarningsAndErrorsFactory";
+import injectProcessWarningsAndErrors from "../../../../../src/core/edgeNetwork/injectProcessWarningsAndErrors";
 
 describe("processWarningsAndErrors", () => {
   let response;
@@ -27,7 +27,7 @@ describe("processWarningsAndErrors", () => {
       }
     };
     logger = jasmine.createSpyObj("logger", ["warn"]);
-    processWarningsAndErrors = processWarningsAndErrorsFactory({ logger });
+    processWarningsAndErrors = injectProcessWarningsAndErrors({ logger });
   });
 
   it("logs warnings", () => {

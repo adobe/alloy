@@ -1,5 +1,5 @@
 import { ClientFunction, t } from "testcafe";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import { alloyWithVisitorTestPageUrl } from "../../helpers/constants/testServerUrl";
 import createMockOptIn from "../../helpers/optIn/createMockOptIn";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
@@ -12,7 +12,7 @@ import {
 } from "../../helpers/constants/configParts";
 import { CONSENT_IN } from "../../helpers/constants/consent";
 
-fixtureFactory({
+createFixture({
   title:
     "C36908 When ID migration is enabled and Visitor and Alloy are both awaiting consent, when Visitor is denied and Alloy is approved, an error occurs.",
   url: alloyWithVisitorTestPageUrl

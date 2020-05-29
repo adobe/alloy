@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import sendEdgeNetworkRequestFactory from "../../../../../src/core/edgeNetwork/sendEdgeNetworkRequestFactory";
+import injectSendEdgeNetworkRequest from "../../../../../src/core/edgeNetwork/injectSendEdgeNetworkRequest";
 import createConfig from "../../../../../src/core/config/createConfig";
 import { defer } from "../../../../../src/utils";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 import assertFunctionCallOrder from "../../../helpers/assertFunctionCallOrder";
 
-describe("sendEdgeNetworkRequestFactory", () => {
+describe("injectSendEdgeNetworkRequest", () => {
   const config = createConfig({
     edgeDomain: "edge.example.com",
     edgeBasePath: "ee",
@@ -138,7 +138,7 @@ describe("sendEdgeNetworkRequestFactory", () => {
     validateNetworkResponseIsWellFormed = jasmine.createSpy(
       "validateNetworkResponseIsWellFormed"
     );
-    sendEdgeNetworkRequest = sendEdgeNetworkRequestFactory({
+    sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
       config,
       logger,
       lifecycle,

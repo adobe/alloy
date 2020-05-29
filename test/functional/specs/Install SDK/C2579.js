@@ -1,5 +1,5 @@
 import { RequestLogger, t, ClientFunction } from "testcafe";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 
 import {
   compose,
@@ -38,7 +38,7 @@ const networkLogger2 = RequestLogger(
   networkLoggerConfig
 );
 
-fixtureFactory({
+createFixture({
   title: "C2579: Isolates multiple SDK instances",
   requestHooks: [networkLogger1, networkLogger2]
 });

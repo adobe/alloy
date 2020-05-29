@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import storageFactory from "../../../../src/utils/storageFactory";
+import injectStorage from "../../../../src/utils/injectStorage";
 
-describe("storageFactory", () => {
+describe("injectStorage", () => {
   [
     {
       storageProperty: "session",
@@ -31,7 +31,7 @@ describe("storageFactory", () => {
               setItem: jasmine.createSpy().and.returnValue(true)
             }
           };
-          const storage = storageFactory(window)("example.");
+          const storage = injectStorage(window)("example.");
           const result = storage[storageProperty].setItem("foo", "bar");
           expect(window[windowProperty].setItem).toHaveBeenCalledWith(
             "com.adobe.alloy.example.foo",
@@ -46,7 +46,7 @@ describe("storageFactory", () => {
               setItem: jasmine.createSpy().and.throwError()
             }
           };
-          const storage = storageFactory(window)("example.");
+          const storage = injectStorage(window)("example.");
           const result = storage[storageProperty].setItem("foo", "bar");
           expect(result).toBeFalse();
         });
@@ -59,7 +59,7 @@ describe("storageFactory", () => {
               getItem: jasmine.createSpy().and.returnValue("abc")
             }
           };
-          const storage = storageFactory(window)("example.");
+          const storage = injectStorage(window)("example.");
           const result = storage[storageProperty].getItem("foo");
           expect(window[windowProperty].getItem).toHaveBeenCalledWith(
             "com.adobe.alloy.example.foo"
@@ -73,7 +73,7 @@ describe("storageFactory", () => {
               getItem: jasmine.createSpy().and.throwError()
             }
           };
-          const storage = storageFactory(window)("example.");
+          const storage = injectStorage(window)("example.");
           const result = storage[storageProperty].getItem("foo");
           expect(result).toBeNull();
         });

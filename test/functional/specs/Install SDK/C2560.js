@@ -1,9 +1,9 @@
 import { t, ClientFunction } from "testcafe";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 
 const getAlloyFunction = ClientFunction(() => !!window.alloy);
 
-fixtureFactory({
+createFixture({
   title: "C2560: Global function named alloy is accessible."
 });
 

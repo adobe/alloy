@@ -1,9 +1,9 @@
 import { ClientFunction } from "testcafe";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
-fixtureFactory({
+createFixture({
   title:
     'C14410: Setting consent for other purposes, or to other values than "in" or "out" should fail'
 });

@@ -15,22 +15,22 @@ import {
   areThirdPartyCookiesSupportedByDefault,
   convertStringToSha256Buffer
 } from "../../utils";
-import processIdSyncsFactory from "./processIdSyncsFactory";
+import injectProcessIdSyncs from "./injectProcessIdSyncs";
 import configValidators from "./configValidators";
 
 import createComponent from "./createComponent";
 import createLegacyIdentity from "./createLegacyIdentity";
 import awaitVisitorOptIn from "./visitorService/awaitVisitorOptIn";
-import getEcidFromVisitorFactory from "./visitorService/getEcidFromVisitorFactory";
-import handleResponseForIdSyncsFactory from "./handleResponseForIdSyncsFactory";
-import ensureRequestHasIdentityFactory from "./ensureRequestHasIdentityFactory";
+import injectGetEcidFromVisitor from "./visitorService/injectGetEcidFromVisitor";
+import injectHandleResponseForIdSyncs from "./injectHandleResponseForIdSyncs";
+import injectEnsureRequestHasIdentity from "./injectEnsureRequestHasIdentity";
 import createIdentityManager from "./identities/createIdentityManager";
 import addEcidQueryToEvent from "./addEcidQueryToEvent";
-import doesIdentityCookieExistFactory from "./doesIdentityCookieExistFactory";
-import setDomainForInitialIdentityPayloadFactory from "./setDomainForInitialIdentityPayloadFactory";
-import addLegacyEcidToPayloadFactory from "./addLegacyEcidToPayloadFactory";
+import injectDoesIdentityCookieExist from "./injectDoesIdentityCookieExist";
+import injectSetDomainForInitialIdentityPayload from "./injectSetDomainForInitialIdentityPayload";
+import injectAddLegacyEcidToPayload from "./injectAddLegacyEcidToPayload";
 import addEcidToPayload from "./addEcidToPayload";
-import awaitIdentityCookieFactory from "./awaitIdentityCookieFactory";
+import injectAwaitIdentityCookie from "./injectAwaitIdentityCookie";
 import getEcidFromResponse from "./getEcidFromResponse";
 import createGetIdentity from "./getIdentity/createGetIdentity";
 import validateSyncIdentityOptions from "./validateSyncIdentityOptions";
@@ -50,7 +50,7 @@ const createIdentity = ({
     logger,
     convertStringToSha256Buffer
   });
-  const getEcidFromVisitor = getEcidFromVisitorFactory({
+  const getEcidFromVisitor = injectGetEcidFromVisitor({
     logger,
     orgId,
     awaitVisitorOptIn
@@ -59,37 +59,37 @@ const createIdentity = ({
     config,
     getEcidFromVisitor
   });
-  const doesIdentityCookieExist = doesIdentityCookieExistFactory({ orgId });
+  const doesIdentityCookieExist = injectDoesIdentityCookieExist({ orgId });
   const getIdentity = createGetIdentity({
     sendEdgeNetworkRequest,
     createIdentityPayload
   });
-  const setDomainForInitialIdentityPayload = setDomainForInitialIdentityPayloadFactory(
+  const setDomainForInitialIdentityPayload = injectSetDomainForInitialIdentityPayload(
     {
       thirdPartyCookiesEnabled,
       areThirdPartyCookiesSupportedByDefault
     }
   );
-  const addLegacyEcidToPayload = addLegacyEcidToPayloadFactory({
+  const addLegacyEcidToPayload = injectAddLegacyEcidToPayload({
     getLegacyEcid: legacyIdentity.getEcid,
     addEcidToPayload
   });
-  const awaitIdentityCookie = awaitIdentityCookieFactory({
+  const awaitIdentityCookie = injectAwaitIdentityCookie({
     orgId,
     doesIdentityCookieExist
   });
-  const ensureRequestHasIdentity = ensureRequestHasIdentityFactory({
+  const ensureRequestHasIdentity = injectEnsureRequestHasIdentity({
     doesIdentityCookieExist,
     setDomainForInitialIdentityPayload,
     addLegacyEcidToPayload,
     awaitIdentityCookie,
     logger
   });
-  const processIdSyncs = processIdSyncsFactory({
+  const processIdSyncs = injectProcessIdSyncs({
     fireReferrerHideableImage,
     logger
   });
-  const handleResponseForIdSyncs = handleResponseForIdSyncsFactory({
+  const handleResponseForIdSyncs = injectHandleResponseForIdSyncs({
     processIdSyncs
   });
   return createComponent({
