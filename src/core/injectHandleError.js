@@ -13,18 +13,18 @@ governing permissions and limitations under the License.
 import { toError } from "../utils";
 import { DECLINED_CONSENT_ERROR_CODE } from "./consent/createConsentStateMachine";
 
-export default ({ instanceName, logger }) => (error, commandName) => {
+export default ({ errorPrefix, logger }) => (error, operation) => {
   // In the case of declined consent, we've opted to not reject the promise
   // returned to the customer, but instead resolve the promise with an
   // empty result object.
   if (error.code === DECLINED_CONSENT_ERROR_CODE) {
     logger.warn(
-      `The ${commandName} command could not fully complete because the user declined consent.`
+      `The ${operation} could not fully complete because the user declined consent.`
     );
     return {};
   }
 
   const err = toError(error);
-  err.message = `[${instanceName}] ${err.message}`;
+  err.message = `${errorPrefix} ${err.message}`;
   throw err;
 };

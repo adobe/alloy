@@ -10,37 +10,44 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { stackError, noop } from "../../utils";
+import { noop } from "../../utils";
 
-const createClickHandler = (eventManager, lifecycle) => {
+const createClickHandler = ({ eventManager, lifecycle, handleError }) => {
   return clickEvent => {
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
     const clickedElement = clickEvent.target;
     const event = eventManager.createEvent();
-    return lifecycle
-      .onClick({ event, clickedElement })
-      .then(() => {
-        if (event.isEmpty()) {
-          return Promise.resolve();
-        }
+    return (
+      lifecycle
+        .onClick({ event, clickedElement })
+        .then(() => {
+          if (event.isEmpty()) {
+            return Promise.resolve();
+          }
+          return eventManager.sendEvent(event);
+        })
         // eventManager.sendEvent() will return a promise resolved to an
         // object and we want to avoid returning any value to the customer
-        return eventManager.sendEvent(event).then(noop);
-      })
-      .catch(error => {
-        throw stackError("Failed to track click", error);
-      });
+        .then(noop)
+        .catch(error => {
+          handleError(error, "click collection");
+        })
+    );
   };
 };
 
-export default (config, eventManager, lifecycle) => {
+export default ({ config, eventManager, lifecycle, handleError }) => {
   const enabled = config.clickCollectionEnabled;
 
   if (!enabled) {
     return;
   }
 
-  const clickHandler = createClickHandler(eventManager, lifecycle);
+  const clickHandler = createClickHandler({
+    eventManager,
+    lifecycle,
+    handleError
+  });
 
   document.addEventListener("click", clickHandler, true);
 };

@@ -119,26 +119,32 @@ if (instanceNames) {
         createDataCollectionRequestPayload,
         sendEdgeNetworkRequest
       });
-
       return initializeComponents({
         componentCreators,
         lifecycle,
         componentRegistry,
         getImmediatelyAvailableTools(componentName) {
+          const componentLogger = logController.createComponentLogger(
+            componentName
+          );
           return {
             config,
             consent,
             eventManager,
-            logger: createComponentLogger(componentName),
+            logger: componentLogger,
             lifecycle,
-            sendEdgeNetworkRequest
+            sendEdgeNetworkRequest,
+            handleError: injectHandleError({
+              errorPrefix: `[${instanceName}] [${componentName}]`,
+              logger: componentLogger
+            })
           };
         }
       });
     };
 
     const handleError = injectHandleError({
-      instanceName,
+      errorPrefix: `[${instanceName}]`,
       logger
     });
 

@@ -100,7 +100,7 @@ export default ({
         return isObject(result) ? result : {};
       })
       .catch(error => {
-        return handleError(error, commandName);
+        return handleError(error, `${commandName} command`);
       });
   };
 };
