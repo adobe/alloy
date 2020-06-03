@@ -27,7 +27,9 @@ test.meta({
 });
 
 const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("sendEvent");
+  return window.alloy("sendEvent", {
+    datasetId: "5eb9aaa6a3b16e18a818e06f"
+  });
 });
 
 test("Test C2592: Event command sends a request.", async () => {
@@ -45,6 +47,9 @@ test("Test C2592: Event command sends a request.", async () => {
   await t
     .expect(request.events[0].xdm.implementationDetails.name)
     .eql("https://ns.adobe.com/experience/alloy");
+  await t
+    .expect(request.events[0].meta.collect.datasetId)
+    .eql("5eb9aaa6a3b16e18a818e06f");
   await t.expect(request.meta.state.cookiesEnabled).eql(true);
   await t.expect(request.meta.state.domain).ok();
 });

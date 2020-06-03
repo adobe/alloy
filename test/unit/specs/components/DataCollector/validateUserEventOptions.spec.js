@@ -18,7 +18,8 @@ describe("DataCollector::validateUserEventOptions", () => {
       { xdm: [] },
       { renderDecisions: "" },
       { data: [] },
-      { decisionScopes: {} }
+      { decisionScopes: {} },
+      { datasetId: 3634 }
     ].forEach(options => {
       expect(() => {
         validateUserEventOptions({ options });
@@ -43,7 +44,8 @@ describe("DataCollector::validateUserEventOptions", () => {
       { renderDecisions: true },
       { data: { test: "" } },
       { renderDecisions: true, data: { test: "" } },
-      { decisionScopes: ["test"] }
+      { decisionScopes: ["test"] },
+      { datasetId: "12432ewfr12" }
     ].forEach(options => {
       expect(() => {
         validateUserEventOptions({ options });
