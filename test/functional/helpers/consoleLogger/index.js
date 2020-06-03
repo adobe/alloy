@@ -100,7 +100,8 @@ const createConsoleLogger = async () => {
     memo[logLevel] = {
       expectMessageMatching: expectMessageMatching.bind(null, logLevel),
       expectNoMessageMatching: expectNoMessageMatching.bind(null, logLevel),
-      expectNoMessages: expectNoMessages.bind(null, logLevel)
+      expectNoMessages: expectNoMessages.bind(null, logLevel),
+      getMessagesSinceReset: getMessagesSinceReset.bind(null, logLevel)
     };
     return memo;
   }, {});

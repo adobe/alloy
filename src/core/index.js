@@ -124,9 +124,7 @@ if (instanceNames) {
         lifecycle,
         componentRegistry,
         getImmediatelyAvailableTools(componentName) {
-          const componentLogger = logController.createComponentLogger(
-            componentName
-          );
+          const componentLogger = createComponentLogger(componentName);
           return {
             config,
             consent,
