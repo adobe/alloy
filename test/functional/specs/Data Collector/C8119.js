@@ -1,10 +1,12 @@
 import { t, Selector, ClientFunction } from "testcafe";
 import createFixture from "../../helpers/createFixture";
-import baseConfig from "../../helpers/constants/baseConfig";
 import addAnchorToBody from "../../helpers/dom/addAnchorToBody";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createConsoleLogger from "../../helpers/consoleLogger";
-import { compose } from "../../helpers/constants/configParts";
+import {
+  compose,
+  orgMainConfigMain
+} from "../../helpers/constants/configParts";
 
 createFixture({
   title:
@@ -20,7 +22,7 @@ test.meta({
 test("Test C8119: Load page with link. Click link. Verify no event sent.", async () => {
   const getLocation = ClientFunction(() => document.location.href.toString());
   const testConfig = compose(
-    baseConfig,
+    orgMainConfigMain,
     {
       clickCollectionEnabled: false,
       onBeforeEventSend(options) {
