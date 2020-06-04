@@ -18,7 +18,13 @@ describe("injectExecuteCommand", () => {
   let handleError;
 
   beforeEach(() => {
-    logger = jasmine.createSpyObj("logger", ["log", "info", "warn", "error"]);
+    logger = jasmine.createSpyObj("logger", [
+      "log",
+      "info",
+      "warn",
+      "error",
+      "logOnBeforeCommand"
+    ]);
     handleError = jasmine.createSpy().and.callFake(error => {
       throw error;
     });
@@ -219,4 +225,6 @@ describe("injectExecuteCommand", () => {
       expect(setDebugResult).toEqual({});
     });
   });
+
+  it("logs onBeforeCommand", () => {});
 });

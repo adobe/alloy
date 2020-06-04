@@ -18,9 +18,9 @@ export default ({
   locationSearch,
   createLogger,
   instanceNamespace,
-  createNamespacedStorage
+  createNamespacedStorage,
+  getMonitors
 }) => {
-  const loggerPrefix = `[${instanceNamespace}]`;
   const parsedQueryString = queryString.parse(locationSearch);
   const storage = createNamespacedStorage(`instance.${instanceNamespace}.`);
 
@@ -49,13 +49,19 @@ export default ({
 
   return {
     setDebugEnabled,
-    logger: createLogger(console, getDebugEnabled, loggerPrefix),
+    logger: createLogger({
+      getDebugEnabled,
+      context: { instanceNamespace },
+      getMonitors,
+      console
+    }),
     createComponentLogger(componentNamespace) {
-      return createLogger(
-        console,
+      return createLogger({
         getDebugEnabled,
-        `${loggerPrefix} [${componentNamespace}]`
-      );
+        context: { instanceNamespace, componentNamespace },
+        getMonitors,
+        console
+      });
     }
   };
 };

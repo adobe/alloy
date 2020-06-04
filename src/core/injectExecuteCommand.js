@@ -92,7 +92,7 @@ export default ({
       // We have to wrap the getExecutor() call in the promise so the promise
       // will be rejected if getExecutor() throws errors.
       const executor = getExecutor(commandName, options);
-      logger.log(`Executing ${commandName} command.`, "Options:", options);
+      logger.logOnBeforeCommand({ commandName, options });
       resolve(executor());
     })
       .then(result => {

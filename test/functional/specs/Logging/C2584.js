@@ -29,7 +29,7 @@ test("Test C2584: setDebug command with enable: true. getLibraryInfo. refresh. t
 
   await debugCommand(true);
   await getLibraryInfoCommand();
-  await logger.log.expectMessageMatching(/Executing getLibraryInfo command/);
+  await logger.info.expectMessageMatching(/Executing getLibraryInfo command/);
 
   await t.navigateTo(testServerUrl);
   await configureAlloyInstance("alloy", baseConfig);
@@ -37,5 +37,5 @@ test("Test C2584: setDebug command with enable: true. getLibraryInfo. refresh. t
   await logger.reset();
   await getLibraryInfoCommand();
 
-  await logger.log.expectNoMessages();
+  await logger.info.expectNoMessages();
 });

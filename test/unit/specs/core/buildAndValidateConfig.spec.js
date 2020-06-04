@@ -34,7 +34,9 @@ describe("buildAndValidateConfig", () => {
     };
     logger = {
       enabled: false,
-      log: jasmine.createSpy()
+      log: jasmine.createSpy(),
+      logOnBeforeCommand: jasmine.createSpy(),
+      logOnInstanceConfigured: jasmine.createSpy()
     };
     setDebugEnabled = jasmine.createSpy();
   });
@@ -75,9 +77,11 @@ describe("buildAndValidateConfig", () => {
       logger,
       setDebugEnabled
     });
-    expect(logger.log).toHaveBeenCalledWith("Computed configuration:", {
-      debugEnabled: false,
-      idSyncEnabled: true
+    expect(logger.logOnInstanceConfigured).toHaveBeenCalledWith({
+      config: {
+        debugEnabled: false,
+        idSyncEnabled: true
+      }
     });
   });
 

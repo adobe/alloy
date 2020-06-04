@@ -31,10 +31,11 @@ export default ({ logger, networkStrategy, isRetryableHttpStatusCode }) => {
     // fully recursive raw data.
     // JSON.parse is expensive so we short circuit if logging is disabled.
     if (logger.enabled) {
-      logger.log(
-        `Request ${requestId}: Sending request.`,
-        JSON.parse(stringifiedPayload)
-      );
+      logger.logOnBeforeNetworkRequest({
+        url,
+        requestId,
+        payload: JSON.parse(stringifiedPayload)
+      });
     }
 
     const executeRequest = (retriesAttempted = 0) => {
@@ -54,13 +55,14 @@ export default ({ logger, networkStrategy, isRetryableHttpStatusCode }) => {
           // Non-JSON. Something went wrong.
         }
 
-        const messagesSuffix =
-          parsedBody || response.body ? `response body:` : `no response body.`;
-
-        logger.log(
-          `Request ${requestId}: Received response with status code ${response.status} and ${messagesSuffix}`,
-          parsedBody || response.body
-        );
+        logger.logOnNetworkResponse({
+          requestId,
+          url,
+          payload: JSON.parse(stringifiedPayload),
+          ...response,
+          parsedBody,
+          retriesAttempted
+        });
 
         return {
           statusCode: response.status,
@@ -71,6 +73,12 @@ export default ({ logger, networkStrategy, isRetryableHttpStatusCode }) => {
     };
 
     return executeRequest().catch(error => {
+      logger.logOnNetworkError({
+        requestId,
+        url,
+        payload: JSON.parse(stringifiedPayload),
+        error
+      });
       throw stackError("Network request failed.", error);
     });
   };

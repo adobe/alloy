@@ -22,15 +22,18 @@ describe("createLogController", () => {
   let getDebugEnabled;
   let sessionStorage;
   let createNamespacedStorage;
+  let getMonitors;
 
   beforeEach(() => {
     console = { log() {} };
     locationSearch = "";
     logger = { log() {} };
-    createLogger = jasmine.createSpy().and.callFake((_, _getDebugEnabled) => {
-      getDebugEnabled = _getDebugEnabled;
-      return logger;
-    });
+    createLogger = jasmine
+      .createSpy()
+      .and.callFake(({ getDebugEnabled: _getDebugEnabled }) => {
+        getDebugEnabled = _getDebugEnabled;
+        return logger;
+      });
     sessionStorage = {
       getItem: jasmine.createSpy().and.returnValue(null),
       setItem: jasmine.createSpy()
@@ -38,6 +41,7 @@ describe("createLogController", () => {
     createNamespacedStorage = jasmine.createSpy().and.returnValue({
       session: sessionStorage
     });
+    getMonitors = () => [];
   });
 
   it("creates a namespaced storage", () => {
@@ -46,7 +50,8 @@ describe("createLogController", () => {
       locationSearch,
       createLogger,
       instanceNamespace,
-      createNamespacedStorage
+      createNamespacedStorage,
+      getMonitors
     });
     expect(createNamespacedStorage).toHaveBeenCalledWith("instance.alloy123.");
   });
@@ -57,7 +62,8 @@ describe("createLogController", () => {
       locationSearch,
       createLogger,
       instanceNamespace,
-      createNamespacedStorage
+      createNamespacedStorage,
+      getMonitors
     });
     expect(getDebugEnabled()).toBe(false);
   });
@@ -69,7 +75,8 @@ describe("createLogController", () => {
       locationSearch,
       createLogger,
       instanceNamespace,
-      createNamespacedStorage
+      createNamespacedStorage,
+      getMonitors
     });
     expect(getDebugEnabled()).toBe(false);
   });
@@ -81,7 +88,8 @@ describe("createLogController", () => {
       locationSearch,
       createLogger,
       instanceNamespace,
-      createNamespacedStorage
+      createNamespacedStorage,
+      getMonitors
     });
     expect(getDebugEnabled()).toBe(true);
   });
@@ -92,7 +100,8 @@ describe("createLogController", () => {
       locationSearch,
       createLogger,
       instanceNamespace,
-      createNamespacedStorage
+      createNamespacedStorage,
+      getMonitors
     });
 
     logController.setDebugEnabled(true, { fromConfig: false });
@@ -106,7 +115,8 @@ describe("createLogController", () => {
       locationSearch,
       createLogger,
       instanceNamespace,
-      createNamespacedStorage
+      createNamespacedStorage,
+      getMonitors
     });
 
     logController.setDebugEnabled(true, { fromConfig: true });
@@ -120,7 +130,8 @@ describe("createLogController", () => {
       locationSearch,
       createLogger,
       instanceNamespace,
-      createNamespacedStorage
+      createNamespacedStorage,
+      getMonitors
     });
 
     logController.setDebugEnabled(true, { fromConfig: false });
@@ -137,7 +148,8 @@ describe("createLogController", () => {
       locationSearch,
       createLogger,
       instanceNamespace,
-      createNamespacedStorage
+      createNamespacedStorage,
+      getMonitors
     });
 
     logController.setDebugEnabled(false, { fromConfig: true });
@@ -152,7 +164,8 @@ describe("createLogController", () => {
       locationSearch,
       createLogger,
       instanceNamespace,
-      createNamespacedStorage
+      createNamespacedStorage,
+      getMonitors
     });
 
     // Make sure setting debugEnabled from config can't override it.
@@ -169,7 +182,8 @@ describe("createLogController", () => {
       locationSearch,
       createLogger,
       instanceNamespace,
-      createNamespacedStorage
+      createNamespacedStorage,
+      getMonitors
     });
 
     // Make sure setting debugEnabled from config can't override it.
@@ -185,14 +199,16 @@ describe("createLogController", () => {
       locationSearch,
       createLogger,
       instanceNamespace,
-      createNamespacedStorage
+      createNamespacedStorage,
+      getMonitors
     });
 
-    expect(createLogger).toHaveBeenCalledWith(
+    expect(createLogger).toHaveBeenCalledWith({
+      getDebugEnabled,
       console,
-      jasmine.any(Function),
-      "[alloy123]"
-    );
+      getMonitors,
+      context: { instanceNamespace: "alloy123" }
+    });
     expect(logController.logger).toBe(logger);
   });
 
@@ -202,17 +218,22 @@ describe("createLogController", () => {
       locationSearch,
       createLogger,
       instanceNamespace,
-      createNamespacedStorage
+      createNamespacedStorage,
+      getMonitors
     });
     const componentLogger = {};
     createLogger.and.returnValue(componentLogger);
     const result = logController.createComponentLogger("Personalization");
 
-    expect(createLogger).toHaveBeenCalledWith(
-      console,
+    expect(createLogger).toHaveBeenCalledWith({
       getDebugEnabled,
-      "[alloy123] [Personalization]"
-    );
+      console,
+      getMonitors,
+      context: {
+        instanceNamespace: "alloy123",
+        componentNamespace: "Personalization"
+      }
+    });
     expect(result).toBe(componentLogger);
   });
 });

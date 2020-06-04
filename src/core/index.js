@@ -45,19 +45,27 @@ const createNamespacedStorage = injectStorage(window);
 
 const { console } = window;
 
+// set this up as a function so that monitors can be added at anytime
+// eslint-disable-next-line no-underscore-dangle
+const getMonitors = () => window.__alloyMonitors || [];
+
 const coreConfigValidators = createCoreConfigs();
 const apexDomain = getApexDomain(window, cookieJar);
 
 if (instanceNamespaces) {
   instanceNamespaces.forEach(instanceNamespace => {
-    const logController = createLogController({
+    const {
+      setDebugEnabled,
+      logger,
+      createComponentLogger
+    } = createLogController({
       console,
       locationSearch: window.location.search,
       createLogger,
       instanceNamespace,
-      createNamespacedStorage
+      createNamespacedStorage,
+      getMonitors
     });
-    const { setDebugEnabled, logger } = logController;
     const componentRegistry = createComponentRegistry();
     const lifecycle = createLifecycle(componentRegistry);
     const networkStrategy = injectNetworkStrategy(window, logger);
@@ -121,7 +129,7 @@ if (instanceNamespaces) {
             config,
             consent,
             eventManager,
-            logger: logController.createComponentLogger(componentNamespace),
+            logger: createComponentLogger(componentNamespace),
             lifecycle,
             sendEdgeNetworkRequest
           };
@@ -146,6 +154,7 @@ if (instanceNamespaces) {
 
     const queue = window[instanceNamespace].q;
     queue.push = instance;
+    logger.logOnInstanceCreated({ instance });
     queue.forEach(instance);
   });
 }
