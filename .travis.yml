@@ -29,6 +29,8 @@ notifications:
       - mowla@adobe.com
       - khoury@adobe.com
       - aahardy@adobe.com
+      - alloy-engs@adobe.com
+      - ee-konductor-engineering@adobe.com
     on_failure: always
   
 before_install:
