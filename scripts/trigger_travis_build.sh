@@ -1,6 +1,9 @@
 body='{
 "request": {
-"branch":"sandbox-updates-iab"
+"branch":"organize-travis-jobs",
+"env": {
+   "global": ["EDGE_ENV=int", "ALLOY_ENV=prod"]
+}
 }}'
 
 curl -s -X POST \

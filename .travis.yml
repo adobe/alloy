@@ -27,7 +27,7 @@ jobs:
         - npm run test:saucelabs
       - stage: API/Konductor Build
         if: type == api
-        script: echo "KONDUCTOR BUILD"
+        script: npm run functional:api
 
 notifications:
   slack: adobedx:AlI4WB2ojGDcqsBEVZ1EGsCR
