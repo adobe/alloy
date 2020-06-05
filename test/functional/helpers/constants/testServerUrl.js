@@ -16,14 +16,14 @@ const alloyWithVisitorTestPageUrl = `https://alloyio.com/functional-test/${alloy
 export { alloyWithVisitorTestPageUrl };
 
 const getAlloyTestPageUrl = () => {
-  console.log(alloyEnv);
+  console.log("ALLOY ENV:", alloyEnv);
   let pageUrl;
   if (alloyEnv) {
     pageUrl = alloyPages[alloyEnv];
   } else {
     pageUrl = alloyPages[env];
   }
-  console.log(pageUrl);
+  console.log("ALLOY PAGE:", pageUrl);
   return pageUrl;
 };
 

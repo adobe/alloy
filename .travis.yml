@@ -29,6 +29,8 @@ jobs:
         - npm run test:saucelabs
       - stage: API/Konductor Build
         if: type == api
+        env:
+          - ALLOY_ENV="prod"
         script: 
         - npm ci
         - npm run functional:api
