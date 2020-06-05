@@ -42,15 +42,15 @@ describe("initializeComponents", () => {
     componentCreator2.namespace = "Comp2";
     componentCreators = [componentCreator1, componentCreator2];
 
-    getImmediatelyAvailableTools = componentNamespace => {
+    getImmediatelyAvailableTools = componentName => {
       return {
         tool1: {
           name: "tool1",
-          componentNamespace
+          componentName
         },
         tool2: {
           name: "tool2",
-          componentNamespace
+          componentName
         }
       };
     };
@@ -69,11 +69,11 @@ describe("initializeComponents", () => {
       expect(componentCreator).toHaveBeenCalledWith({
         tool1: {
           name: "tool1",
-          componentNamespace: componentCreator.namespace
+          componentName: componentCreator.namespace
         },
         tool2: {
           name: "tool2",
-          componentNamespace: componentCreator.namespace
+          componentName: componentCreator.namespace
         }
       });
       expect(componentRegistry.register).toHaveBeenCalledWith(

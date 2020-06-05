@@ -36,7 +36,7 @@ describe("createLogger", () => {
   beforeEach(() => {
     console = jasmine.createSpyObj("console", logMethods);
     getDebugEnabled = () => logEnabled;
-    context = { instanceNamespace: "myinstance" };
+    context = { instanceName: "myinstance" };
     getMonitors = () => [];
   });
 

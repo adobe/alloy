@@ -13,9 +13,9 @@ governing permissions and limitations under the License.
 import { assign } from "../utils";
 
 export default ({ getDebugEnabled, console, getMonitors, context }) => {
-  let prefix = `[${context.instanceNamespace}]`;
-  if (context.componentNamespace) {
-    prefix += ` [${context.componentNamespace}]`;
+  let prefix = `[${context.instanceName}]`;
+  if (context.componentName) {
+    prefix += ` [${context.componentName}]`;
   }
 
   const notifyMonitors = (method, data) => {

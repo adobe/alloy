@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import createLogController from "../../../../src/core/createLogController";
 
-const instanceNamespace = "alloy123";
+const instanceName = "alloy123";
 
 describe("createLogController", () => {
   let console;
@@ -49,7 +49,7 @@ describe("createLogController", () => {
       console,
       locationSearch,
       createLogger,
-      instanceNamespace,
+      instanceName,
       createNamespacedStorage,
       getMonitors
     });
@@ -61,7 +61,7 @@ describe("createLogController", () => {
       console,
       locationSearch,
       createLogger,
-      instanceNamespace,
+      instanceName,
       createNamespacedStorage,
       getMonitors
     });
@@ -74,7 +74,7 @@ describe("createLogController", () => {
       console,
       locationSearch,
       createLogger,
-      instanceNamespace,
+      instanceName,
       createNamespacedStorage,
       getMonitors
     });
@@ -87,7 +87,7 @@ describe("createLogController", () => {
       console,
       locationSearch,
       createLogger,
-      instanceNamespace,
+      instanceName,
       createNamespacedStorage,
       getMonitors
     });
@@ -99,7 +99,7 @@ describe("createLogController", () => {
       console,
       locationSearch,
       createLogger,
-      instanceNamespace,
+      instanceName,
       createNamespacedStorage,
       getMonitors
     });
@@ -114,7 +114,7 @@ describe("createLogController", () => {
       console,
       locationSearch,
       createLogger,
-      instanceNamespace,
+      instanceName,
       createNamespacedStorage,
       getMonitors
     });
@@ -129,7 +129,7 @@ describe("createLogController", () => {
       console,
       locationSearch,
       createLogger,
-      instanceNamespace,
+      instanceName,
       createNamespacedStorage,
       getMonitors
     });
@@ -147,7 +147,7 @@ describe("createLogController", () => {
       console,
       locationSearch,
       createLogger,
-      instanceNamespace,
+      instanceName,
       createNamespacedStorage,
       getMonitors
     });
@@ -163,7 +163,7 @@ describe("createLogController", () => {
       console,
       locationSearch,
       createLogger,
-      instanceNamespace,
+      instanceName,
       createNamespacedStorage,
       getMonitors
     });
@@ -181,7 +181,7 @@ describe("createLogController", () => {
       console,
       locationSearch,
       createLogger,
-      instanceNamespace,
+      instanceName,
       createNamespacedStorage,
       getMonitors
     });
@@ -198,7 +198,7 @@ describe("createLogController", () => {
       console,
       locationSearch,
       createLogger,
-      instanceNamespace,
+      instanceName,
       createNamespacedStorage,
       getMonitors
     });
@@ -207,7 +207,7 @@ describe("createLogController", () => {
       getDebugEnabled,
       console,
       getMonitors,
-      context: { instanceNamespace: "alloy123" }
+      context: { instanceName: "alloy123" }
     });
     expect(logController.logger).toBe(logger);
   });
@@ -217,7 +217,7 @@ describe("createLogController", () => {
       console,
       locationSearch,
       createLogger,
-      instanceNamespace,
+      instanceName,
       createNamespacedStorage,
       getMonitors
     });
@@ -230,8 +230,8 @@ describe("createLogController", () => {
       console,
       getMonitors,
       context: {
-        instanceNamespace: "alloy123",
-        componentNamespace: "Personalization"
+        instanceName: "alloy123",
+        componentName: "Personalization"
       }
     });
     expect(result).toBe(componentLogger);

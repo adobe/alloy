@@ -39,7 +39,7 @@ import validateNetworkResponseIsWellFormed from "./edgeNetwork/validateNetworkRe
 import isRetryableHttpStatusCode from "./network/isRetryableHttpStatusCode";
 
 // eslint-disable-next-line no-underscore-dangle
-const instanceNamespaces = window.__alloyNS;
+const instanceNames = window.__alloyNS;
 
 const createNamespacedStorage = injectStorage(window);
 
@@ -52,8 +52,8 @@ const getMonitors = () => window.__alloyMonitors || [];
 const coreConfigValidators = createCoreConfigs();
 const apexDomain = getApexDomain(window, cookieJar);
 
-if (instanceNamespaces) {
-  instanceNamespaces.forEach(instanceNamespace => {
+if (instanceNames) {
+  instanceNames.forEach(instanceName => {
     const {
       setDebugEnabled,
       logger,
@@ -62,7 +62,7 @@ if (instanceNamespaces) {
       console,
       locationSearch: window.location.search,
       createLogger,
-      instanceNamespace,
+      instanceName,
       createNamespacedStorage,
       getMonitors
     });
@@ -124,12 +124,12 @@ if (instanceNamespaces) {
         componentCreators,
         lifecycle,
         componentRegistry,
-        getImmediatelyAvailableTools(componentNamespace) {
+        getImmediatelyAvailableTools(componentName) {
           return {
             config,
             consent,
             eventManager,
-            logger: createComponentLogger(componentNamespace),
+            logger: createComponentLogger(componentName),
             lifecycle,
             sendEdgeNetworkRequest
           };
@@ -138,7 +138,7 @@ if (instanceNamespaces) {
     };
 
     const handleError = injectHandleError({
-      instanceNamespace,
+      instanceName,
       logger
     });
 
@@ -152,7 +152,7 @@ if (instanceNamespaces) {
 
     const instance = createInstance(executeCommand);
 
-    const queue = window[instanceNamespace].q;
+    const queue = window[instanceName].q;
     queue.push = instance;
     logger.logOnInstanceCreated({ instance });
     queue.forEach(instance);

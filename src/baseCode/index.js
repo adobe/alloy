@@ -34,16 +34,16 @@ governing permissions and limitations under the License.
  */
 
 (function(window, instanceNames) {
-  instanceNames.forEach(function(instanceNamespace) {
-    if (!window[instanceNamespace]) {
+  instanceNames.forEach(function(instanceName) {
+    if (!window[instanceName]) {
       // __alloyNS stores a name of each "instance", or in other words, each
       // global function created that the consumer will use. This array is
       // what the Alloy library will consult once it is loaded to determine
       // which global functions have been set up so that is can connect them to
       // the library's command processing pipeline.
       window.__alloyNS = window.__alloyNS || [];
-      window.__alloyNS.push(instanceNamespace);
-      window[instanceNamespace] = function() {
+      window.__alloyNS.push(instanceName);
+      window[instanceName] = function() {
         var userProvidedArgs = arguments;
         // Always return a promise, because the command may be executed
         // asynchronously, especially if the Alloy library has not yet loaded.
@@ -53,10 +53,10 @@ governing permissions and limitations under the License.
           // the promise we just returned to the consumer. If the Alloy
           // library has already loaded, then it will have already overridden
           // q.push and will therefore process the call immediately.
-          window[instanceNamespace].q.push([resolve, reject, userProvidedArgs]);
+          window[instanceName].q.push([resolve, reject, userProvidedArgs]);
         });
       };
-      window[instanceNamespace].q = [];
+      window[instanceName].q = [];
     }
   });
 })(window, ["alloy"]);

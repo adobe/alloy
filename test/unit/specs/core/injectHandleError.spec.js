@@ -12,12 +12,12 @@ governing permissions and limitations under the License.
 
 import injectHandleError from "../../../../src/core/injectHandleError";
 
-const expectedMessage = "[testinstanceNamespace] Bad thing happened.";
+const expectedMessage = "[testinstanceName] Bad thing happened.";
 
 describe("injectHandleError", () => {
   it("converts non-error to error and throws", () => {
     const handleError = injectHandleError({
-      instanceNamespace: "testinstanceNamespace"
+      instanceName: "testinstanceName"
     });
 
     expect(() => {
@@ -25,9 +25,9 @@ describe("injectHandleError", () => {
     }).toThrowError(expectedMessage);
   });
 
-  it("rethrows error with instanceNamespace prepended", () => {
+  it("rethrows error with instanceName prepended", () => {
     const handleError = injectHandleError({
-      instanceNamespace: "testinstanceNamespace"
+      instanceName: "testinstanceName"
     });
 
     expect(() => {
@@ -38,7 +38,7 @@ describe("injectHandleError", () => {
   it("logs an error and returns empty object if error is due to declined consent", () => {
     const logger = jasmine.createSpyObj("logger", ["warn"]);
     const handleError = injectHandleError({
-      instanceNamespace: "testinstanceNamespace",
+      instanceName: "testinstanceName",
       logger
     });
 

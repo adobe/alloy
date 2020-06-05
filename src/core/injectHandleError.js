@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { toError } from "../utils";
 import { DECLINED_CONSENT_ERROR_CODE } from "./consent/createConsentStateMachine";
 
-export default ({ instanceNamespace, logger }) => (error, commandName) => {
+export default ({ instanceName, logger }) => (error, commandName) => {
   // In the case of declined consent, we've opted to not reject the promise
   // returned to the customer, but instead resolve the promise with an
   // empty result object.
@@ -25,6 +25,6 @@ export default ({ instanceNamespace, logger }) => (error, commandName) => {
   }
 
   const err = toError(error);
-  err.message = `[${instanceNamespace}] ${err.message}`;
+  err.message = `[${instanceName}] ${err.message}`;
   throw err;
 };
