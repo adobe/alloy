@@ -14,13 +14,19 @@ services:
 
 jobs:
   include:
-      script:
-      - npm ci
-      - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then npm run functional:cron:prod; fi
-      - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run build:prod; fi
-      - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run functional:ci; fi
-      - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run functional:ci:bs; fi
-      - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run test:saucelabs; fi
+      script: npm ci
+      - stage: CRON build
+        script:
+        - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then npm run functional:cron:prod; fi
+      - stage: PR build
+        script:
+        - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run build:prod; fi
+        - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run functional:ci; fi
+        - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run functional:ci:bs; fi
+        - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run test:saucelabs; fi
+      - stage: API/Konductor Build
+        if: type = api
+        script: echo "KONDUCTOR BUILD"
 
 notifications:
   slack: adobedx:AlI4WB2ojGDcqsBEVZ1EGsCR
