@@ -1,7 +1,7 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
-import fixtureFactory from "../../helpers/fixtureFactory";
+import createFixture from "../../helpers/createFixture";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
@@ -19,7 +19,7 @@ const config = compose(
 const scope = "alloy-test-scope-1";
 const decisionContent = "<h3>welcome to TARGET AWESOME WORLD!!! </h3>";
 
-fixtureFactory({
+createFixture({
   title:
     "C28756: A form based offer should return if event command contains its scope",
   requestHooks: [networkLogger.edgeEndpointLogs]

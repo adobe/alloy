@@ -70,6 +70,49 @@ describeValidation(
     { value: { consent: undefined }, error: true },
     { value: "in", error: true },
     { value: undefined, error: true },
-    { value: null, error: true }
+    { value: null, error: true },
+    {
+      value: {
+        consent: [
+          {
+            standard: "IAB",
+            version: "2.0",
+            value: "1234abcd",
+            gdprApplies: true
+          }
+        ]
+      }
+    },
+    {
+      value: {
+        consent: [{ standard: "IAB", value: "1234abcd", gdprApplies: true }]
+      },
+      error: true
+    },
+    {
+      value: {
+        consent: [{ standard: "IAB", version: "2.0", gdprApplies: true }]
+      },
+      error: true
+    },
+    {
+      value: {
+        consent: [{ standard: "IAB", version: "2.0", value: "1234abcd" }]
+      },
+      error: true
+    },
+    {
+      value: {
+        consent: [
+          {
+            standard: "IAB",
+            version: "2.0",
+            value: "1234abcd",
+            gdprApplies: true
+          },
+          { standard: "Adobe", version: "1.0", value: { general: "in" } }
+        ]
+      }
+    }
   ]
 );
