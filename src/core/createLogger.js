@@ -21,10 +21,10 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
   const notifyMonitors = (method, data) => {
     const monitors = getMonitors();
     if (monitors.length > 0) {
-      const computedData = assign({}, context, data);
+      const dataWithContext = assign({}, context, data);
       monitors.forEach(monitor => {
         if (monitor[method]) {
-          monitor[method](computedData);
+          monitor[method](dataWithContext);
         }
       });
     }
