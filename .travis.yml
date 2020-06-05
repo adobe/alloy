@@ -16,7 +16,9 @@ jobs:
   include:
       - stage: CRON build
         if: type == cron
-        script: npm run functional:cron:prod
+        script: 
+        - npm ci
+        - npm run functional:cron:prod
       - stage: PR build
         if: type == pull_request OR type == push
         script:
@@ -27,7 +29,9 @@ jobs:
         - npm run test:saucelabs
       - stage: API/Konductor Build
         if: type == api
-        script: npm run functional:api
+        script: 
+        - npm ci
+        - npm run functional:api
 
 notifications:
   slack: adobedx:AlI4WB2ojGDcqsBEVZ1EGsCR
