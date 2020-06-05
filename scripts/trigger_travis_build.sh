@@ -1,6 +1,6 @@
 body='{
 "request": {
-"branch":"alloy-latest-release"
+"branch":"sandbox-updates-iab"
 }}'
 
 curl -s -X POST \
@@ -8,6 +8,6 @@ curl -s -X POST \
    -H "User-Agent: API Explorer" \
    -H "Accept: application/json" \
    -H "Travis-API-Version: 3" \
-   -H "Authorization: token HcO6OHnsqaoCn87gL5kDpQ" \
+   -H "Authorization: token j4RcsyanM-dKnjyo0YuUOA" \
    -d "$body" \
-   https://api.travis-ci.org/repo/adobe%2Falloy/requests
+   https://api.travis-ci.com/repo/adobe%2Falloy/requests
