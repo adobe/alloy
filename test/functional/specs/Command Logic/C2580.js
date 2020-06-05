@@ -7,7 +7,6 @@ import {
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
 const debugEnabledConfig = compose(
   orgMainConfigMain,
@@ -36,6 +35,10 @@ const getLibraryInfoCommand = ClientFunction(() => {
   window.alloy("getLibraryInfo");
 });
 
+const configureAlloy = ClientFunction(cfg => {
+  window.alloy("configure", cfg);
+});
+
 const getAlloyCommandQueueLength = ClientFunction(() => {
   return window.alloy.q.length;
 });
@@ -51,7 +54,7 @@ test("C2580: Command queueing test.", async () => {
   if (!environmentSupportsInjectingAlloy()) {
     return;
   }
-  await configureAlloyInstance(debugEnabledConfig);
+  await configureAlloy(debugEnabledConfig);
   await getLibraryInfoCommand();
   await t.expect(getAlloyCommandQueueLength()).eql(2);
   const alloyLibrary = fs.readFileSync("dist/standalone/alloy.js", "utf-8");
