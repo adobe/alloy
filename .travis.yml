@@ -15,15 +15,16 @@ services:
 jobs:
   include:
       - stage: CRON build
-        script:
-        - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then npm run functional:cron:prod; fi
+        if: type == cron
+        script: npm run functional:cron:prod
       - stage: PR build
+        if: type == pull_request OR type == push
         script:
         - npm ci
-        - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run build:prod; fi
-        - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run functional:ci; fi
-        - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run functional:ci:bs; fi
-        - if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then npm run test:saucelabs; fi
+        - npm run build:prod
+        - npm run functional:ci
+        - npm run functional:ci:bs
+        - npm run test:saucelabs
       - stage: API/Konductor Build
         if: type == api
         script: echo "KONDUCTOR BUILD"
