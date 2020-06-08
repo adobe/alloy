@@ -16,6 +16,7 @@ const alloyWithVisitorTestPageUrl = `https://alloyio.com/functional-test/${alloy
 export { alloyWithVisitorTestPageUrl };
 
 const getAlloyTestPageUrl = () => {
+  console.log("EDGE ENV:", env);
   console.log("ALLOY ENV:", alloyEnv);
   let pageUrl;
   if (alloyEnv) {
