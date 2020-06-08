@@ -31,6 +31,7 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
   };
 
   const log = (level, ...rest) => {
+    notifyMonitors("onBeforeLog", { level, arguments: rest });
     if (getDebugEnabled()) {
       console[level](prefix, ...rest);
     }
@@ -82,35 +83,23 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
      * Outputs a message to the web console.
      * @param {...*} arg Any argument to be logged.
      */
-    log(...args) {
-      notifyMonitors("onBeforeLog", { level: "log", arguments: args });
-      log("log", ...args);
-    },
+    log: log.bind(null, "log"),
     /**
      * Outputs informational message to the web console. In some
      * browsers a small "i" icon is displayed next to these items
      * in the web console's log.
      * @param {...*} arg Any argument to be logged.
      */
-    info(...args) {
-      notifyMonitors("onBeforeLog", { level: "info", arguments: args });
-      log("info", ...args);
-    },
+    info: log.bind(null, "info"),
     /**
      * Outputs a warning message to the web console.
      * @param {...*} arg Any argument to be logged.
      */
-    warn(...args) {
-      notifyMonitors("onBeforeLog", { level: "warn", arguments: args });
-      log("warn", ...args);
-    },
+    warn: log.bind(null, "warn"),
     /**
      * Outputs an error message to the web console.
      * @param {...*} arg Any argument to be logged.
      */
-    error(...args) {
-      notifyMonitors("onBeforeLog", { level: "error", arguments: args });
-      log("error", ...args);
-    }
+    error: log.bind(null, "error")
   };
 };

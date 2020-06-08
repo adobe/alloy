@@ -98,12 +98,16 @@ describe("createLogger", () => {
         .charAt(0)
         .toUpperCase()}${monitorMethod.slice(1)}`;
       context = { a: "1" };
-      const monitor1 = jasmine.createSpyObj("monitor1", [monitorMethod]);
+      const monitor1 = jasmine.createSpyObj("monitor1", [
+        monitorMethod,
+        "onBeforeLog"
+      ]);
       const monitor2 = jasmine.createSpyObj("monitor2", [monitorMethod]);
       getMonitors = () => [monitor1, monitor2];
       build();
       logger[loggerMethod]({ b: "2" });
       expect(monitor1[monitorMethod]).toHaveBeenCalledWith({ a: "1", b: "2" });
+      expect(monitor1.onBeforeLog).toHaveBeenCalled();
       expect(monitor2[monitorMethod]).toHaveBeenCalledWith({ a: "1", b: "2" });
     });
   });

@@ -226,5 +226,30 @@ describe("injectExecuteCommand", () => {
     });
   });
 
-  it("logs onBeforeCommand", () => {});
+  it("logs onBeforeCommand", () => {
+    const runCommand = () => {
+      expect(logger.logOnBeforeCommand).toHaveBeenCalledWith({
+        commandName: "test",
+        options: { my: "options" }
+      });
+    };
+    const testCommand = {
+      run: runCommand
+    };
+    const componentRegistry = {
+      getCommand: () => testCommand,
+      getCommandNames() {
+        return ["test"];
+      }
+    };
+    const configureCommand = () => Promise.resolve(componentRegistry);
+    const executeCommand = injectExecuteCommand({
+      logger,
+      configureCommand,
+      handleError,
+      validateCommandOptions: options => options
+    });
+    executeCommand("configure");
+    return executeCommand("test", { my: "options" });
+  });
 });
