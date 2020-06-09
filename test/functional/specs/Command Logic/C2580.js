@@ -26,10 +26,8 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const environmentSupportsInjectingAlloy = () => {
-  const env = process.env.EDGE_ENV || "int";
-  return env === "int";
-};
+const environmentSupportsInjectingAlloy = () =>
+  (process.env.ALLOY_ENV || "int") === "int";
 
 const getLibraryInfoCommand = ClientFunction(() => {
   window.alloy("getLibraryInfo");

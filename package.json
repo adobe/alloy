@@ -24,6 +24,7 @@
     "functional:local:headless": "EDGE_ENV=\"int\" testcafe chrome:headless",
     "functional:local:build": "EDGE_ENV=\"int\" npm run build:prod && testcafe chrome",
     "functional:local:watch": "EDGE_ENV=\"int\" testcafe chrome --live",
+    "functional:api": "testcafe chrome:headless",
     "prebuild": "npm run clean && npm run format && npm run lint",
     "build": "rollup -c",
     "prebuild:prod": "npm run prebuild",
