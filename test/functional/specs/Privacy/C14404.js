@@ -49,7 +49,9 @@ test("Test C14404: User cannot consent to all purposes after consenting to no pu
     .ok("Expected the setConsent command to be rejected");
   await t
     .expect(setConsentErrorMessage)
-    .contains("The user previously declined consent, which cannot be changed.");
+    .contains(
+      "User has already opted out of all advertising solutions, update operation not supported."
+    );
 
   // make sure the instance still has no consent
   const logger = await createConsoleLogger();
