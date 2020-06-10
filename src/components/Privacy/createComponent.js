@@ -49,19 +49,6 @@ export default ({
             .addTask(() => sendSetConsentRequest(value))
             .catch(error => {
               readCookieIfQueueEmpty();
-              // This check re-writes the error message from Konductor to be more clear.
-              // We could check for this before sending the request, but if we let the
-              // request go out and Konductor adds this feature, customers don't need to
-              // update Alloy to get the functionality.
-              if (
-                error &&
-                error.message &&
-                error.message.indexOf("User is opted out") > -1
-              ) {
-                throw new Error(
-                  "The user previously declined consent, which cannot be changed."
-                );
-              }
               throw error;
             })
             .then(readCookieIfQueueEmpty);
