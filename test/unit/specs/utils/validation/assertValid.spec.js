@@ -18,7 +18,7 @@ describe("validation::assertValid", () => {
       assertValid(false, "myValue", "myPath", "myMessage")
     ).toThrowMatching(e => {
       expect(e.message).toEqual(
-        "'myPath': Expected myMessage, but got 'myValue'."
+        `'myPath': Expected myMessage, but got "myValue".`
       );
       return true;
     });
