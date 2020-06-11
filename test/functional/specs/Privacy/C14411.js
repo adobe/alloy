@@ -41,5 +41,7 @@ test("Test C14411: User cannot consent to no purposes after consenting to no pur
     .ok("Expected the setConsent command to be rejected");
   await t
     .expect(setConsentErrorMessage)
-    .contains("The user previously declined consent, which cannot be changed.");
+    .contains(
+      "User has already opted out of all advertising solutions, update operation not supported."
+    );
 });
