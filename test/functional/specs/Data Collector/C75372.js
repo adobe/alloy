@@ -19,7 +19,7 @@ test.meta({
 });
 
 const sendEvent = ClientFunction(() => {
-  const xdmDataLayer = { foo: "bar" };
+  const xdmDataLayer = { device: { screenHeight: 1 } };
   const nonXdmDataLayer = { baz: "quux" };
   // Using a merge ID is a decent test because it's one thing we know
   // gets merged with the XDM object.
@@ -40,6 +40,6 @@ const sendEvent = ClientFunction(() => {
 test("C75372 - XDM and data objects passed into event command should not be modified", async () => {
   await configureAlloyInstance("alloy", orgMainConfigMain);
   const { xdmDataLayer, nonXdmDataLayer } = await sendEvent();
-  await t.expect(xdmDataLayer).eql({ foo: "bar" });
+  await t.expect(xdmDataLayer).eql({ device: { screenHeight: 1 } });
   await t.expect(nonXdmDataLayer).eql({ baz: "quux" });
 });
