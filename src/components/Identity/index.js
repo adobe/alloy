@@ -33,7 +33,6 @@ import addEcidToPayload from "./addEcidToPayload";
 import injectAwaitIdentityCookie from "./injectAwaitIdentityCookie";
 import getEcidFromResponse from "./getEcidFromResponse";
 import createGetIdentity from "./getIdentity/createGetIdentity";
-import validateSyncIdentityOptions from "./validateSyncIdentityOptions";
 import createIdentityPayload from "./getIdentity/createIdentityPayload";
 
 const createIdentity = ({
@@ -100,8 +99,7 @@ const createIdentity = ({
     handleResponseForIdSyncs,
     getEcidFromResponse,
     getIdentity,
-    consent,
-    validateSyncIdentityOptions
+    consent
   });
 };
 

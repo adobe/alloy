@@ -8,8 +8,7 @@ export default ({
   handleResponseForIdSyncs,
   getEcidFromResponse,
   getIdentity,
-  consent,
-  validateSyncIdentityOptions
+  consent
 }) => {
   let ecid;
   return {
@@ -39,12 +38,6 @@ export default ({
       }
     },
     commands: {
-      syncIdentity: {
-        optionsValidator: validateSyncIdentityOptions,
-        run: options => {
-          return identityManager.sync(options.identity);
-        }
-      },
       getIdentity: {
         optionsValidator: getIdentityOptionsValidator,
         run: options => {
