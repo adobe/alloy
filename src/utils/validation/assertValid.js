@@ -12,6 +12,8 @@ governing permissions and limitations under the License.
 
 export default (isValid, value, path, message) => {
   if (!isValid) {
-    throw new Error(`'${path}': Expected ${message}, but got '${value}'.`);
+    throw new Error(
+      `'${path}': Expected ${message}, but got ${JSON.stringify(value)}.`
+    );
   }
 };

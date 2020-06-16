@@ -16,12 +16,12 @@ describe("Identity::getIdentityOptionsValidator", () => {
     expect(() => {
       getIdentityOptionsValidator({ namespaces: [] });
     }).toThrow(
-      new Error("'namespaces': Expected a non-empty array, but got ''.")
+      new Error("'namespaces': Expected a non-empty array, but got [].")
     );
 
     expect(() => {
       getIdentityOptionsValidator({ namespaces: ["ACD"] });
-    }).toThrow(new Error("'namespaces[0]': Expected ECID, but got 'ACD'."));
+    }).toThrow(new Error(`'namespaces[0]': Expected ECID, but got "ACD".`));
   });
 
   it("should return valid options when no options are passed", () => {

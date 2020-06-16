@@ -36,7 +36,11 @@ test("Test C14410: Configuring default consent to 'out' fails", async t => {
     .expect(errorMessage)
     .ok("Expected the configure command to be rejected");
   await t.expect(errorMessage).contains("'defaultConsent':");
-  await t.expect(errorMessage).contains("'out'");
+  await t
+    .expect(errorMessage)
+    .contains(
+      `Expected one of these values: [["in","pending"]], but got "out"`
+    );
 });
 
 test("Test C14410: Setting consent for unknown purposes fails", async t => {
@@ -52,7 +56,7 @@ test("Test C14410: Setting consent for unknown purposes fails", async t => {
   await t
     .expect(errorMessage)
     .ok("Expected the setConsent command to be rejected");
-  await t.expect(errorMessage).contains("general' is a required option");
+  await t.expect(errorMessage).contains("Expected a valid consent object");
 });
 
 test("Test C14410: Setting consent to 'pending' fails", async t => {
@@ -68,5 +72,5 @@ test("Test C14410: Setting consent to 'pending' fails", async t => {
   await t
     .expect(errorMessage)
     .ok("Expected the setConsent command to be rejected");
-  await t.expect(errorMessage).contains("'pending'");
+  await t.expect(errorMessage).contains("Expected a valid consent object");
 });
