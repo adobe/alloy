@@ -28,7 +28,8 @@ const createDataCollector = ({ eventManager, logger }) => {
             type,
             mergeId,
             renderDecisions = false,
-            decisionScopes = []
+            decisionScopes = [],
+            datasetId
           } = options;
           const event = eventManager.createEvent();
 
@@ -48,6 +49,14 @@ const createDataCollector = ({ eventManager, logger }) => {
           if (mergeId) {
             event.mergeXdm({
               eventMergeId: mergeId
+            });
+          }
+
+          if (datasetId) {
+            event.mergeMeta({
+              collect: {
+                datasetId
+              }
             });
           }
 

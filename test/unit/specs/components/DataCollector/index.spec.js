@@ -22,7 +22,8 @@ describe("Event Command", () => {
       "documentMayUnload",
       "setUserData",
       "setUserXdm",
-      "mergeXdm"
+      "mergeXdm",
+      "mergeMeta"
     ]);
     logger = jasmine.createSpyObj("logger", {
       warn: undefined
@@ -120,6 +121,20 @@ describe("Event Command", () => {
       .then(() => {
         expect(event.mergeXdm).toHaveBeenCalledWith({
           eventMergeId: "mymergeid"
+        });
+      });
+  });
+
+  it("merges datasetId", () => {
+    return sendEventCommand
+      .run({
+        datasetId: "mydatasetId"
+      })
+      .then(() => {
+        expect(event.mergeMeta).toHaveBeenCalledWith({
+          collect: {
+            datasetId: "mydatasetId"
+          }
         });
       });
   });

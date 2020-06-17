@@ -71,6 +71,12 @@ function HomeWithHistory({ history }) {
       });
   };
 
+  const sendDataToSecondaryDataset = () => {
+    window.alloy("sendEvent", {
+      datasetId: "5eb9aaa6a3b16e18a818e06f"
+    });
+  };
+
   return (
     <div>
       <section>
@@ -109,6 +115,14 @@ function HomeWithHistory({ history }) {
         <h1>Sync Identity</h1>
         <div>
           <button onClick={syncIdentity}>Sync declared IDs to Identity</button>
+        </div>
+      </section>
+      <section>
+        <h1>Collect data by overriding the Dataset configured in Config UI</h1>
+        <div>
+          <button onClick={sendDataToSecondaryDataset}>
+            Send Event to Secondary Dataset
+          </button>
         </div>
       </section>
     </div>
