@@ -16,7 +16,6 @@ import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("Identity::createComponent", () => {
   let addEcidQueryToEvent;
-  let identityManager;
   let ensureRequestHasIdentity;
   let setLegacyEcid;
   let handleResponseForIdSyncs;
@@ -29,10 +28,6 @@ describe("Identity::createComponent", () => {
 
   beforeEach(() => {
     addEcidQueryToEvent = jasmine.createSpy("addEcidQueryToEvent");
-    identityManager = jasmine.createSpyObj("identityManager", {
-      addToPayload: undefined,
-      sync: Promise.resolve()
-    });
     ensureRequestHasIdentity = jasmine.createSpy("ensureRequestHasIdentity");
     setLegacyEcid = jasmine.createSpy("setLegacyEcid");
     handleResponseForIdSyncs = jasmine.createSpy("handleResponseForIdSyncs");
@@ -47,7 +42,6 @@ describe("Identity::createComponent", () => {
       .and.returnValue(getIdentityDeferred.promise);
     component = createComponent({
       addEcidQueryToEvent,
-      identityManager,
       ensureRequestHasIdentity,
       setLegacyEcid,
       handleResponseForIdSyncs,
@@ -61,13 +55,6 @@ describe("Identity::createComponent", () => {
     const event = { type: "event" };
     component.lifecycle.onBeforeEvent({ event });
     expect(addEcidQueryToEvent).toHaveBeenCalledWith(event);
-  });
-
-  it("adds identities to request payload", () => {
-    const payload = { type: "payload" };
-    const onResponse = jasmine.createSpy("onResponse");
-    component.lifecycle.onBeforeRequest({ payload, onResponse });
-    expect(identityManager.addToPayload).toHaveBeenCalledWith(payload);
   });
 
   it("ensures request has identity", () => {

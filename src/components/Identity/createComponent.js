@@ -2,7 +2,6 @@ import getIdentityOptionsValidator from "./getIdentity/getIdentityOptionsValidat
 
 export default ({
   addEcidQueryToEvent,
-  identityManager,
   ensureRequestHasIdentity,
   setLegacyEcid,
   handleResponseForIdSyncs,
@@ -20,7 +19,6 @@ export default ({
         addEcidQueryToEvent(event);
       },
       onBeforeRequest({ payload, onResponse }) {
-        identityManager.addToPayload(payload);
         return ensureRequestHasIdentity({ payload, onResponse });
       },
       onResponse({ response }) {
