@@ -39,25 +39,33 @@ import validateNetworkResponseIsWellFormed from "./edgeNetwork/validateNetworkRe
 import isRetryableHttpStatusCode from "./network/isRetryableHttpStatusCode";
 
 // eslint-disable-next-line no-underscore-dangle
-const instanceNamespaces = window.__alloyNS;
+const instanceNames = window.__alloyNS;
 
 const createNamespacedStorage = injectStorage(window);
 
 const { console } = window;
 
+// set this up as a function so that monitors can be added at anytime
+// eslint-disable-next-line no-underscore-dangle
+const getMonitors = () => window.__alloyMonitors || [];
+
 const coreConfigValidators = createCoreConfigs();
 const apexDomain = getApexDomain(window, cookieJar);
 
-if (instanceNamespaces) {
-  instanceNamespaces.forEach(instanceNamespace => {
-    const logController = createLogController({
+if (instanceNames) {
+  instanceNames.forEach(instanceName => {
+    const {
+      setDebugEnabled,
+      logger,
+      createComponentLogger
+    } = createLogController({
       console,
       locationSearch: window.location.search,
       createLogger,
-      instanceNamespace,
-      createNamespacedStorage
+      instanceName,
+      createNamespacedStorage,
+      getMonitors
     });
-    const { setDebugEnabled, logger } = logController;
     const componentRegistry = createComponentRegistry();
     const lifecycle = createLifecycle(componentRegistry);
     const networkStrategy = injectNetworkStrategy(window, logger);
@@ -116,12 +124,12 @@ if (instanceNamespaces) {
         componentCreators,
         lifecycle,
         componentRegistry,
-        getImmediatelyAvailableTools(componentNamespace) {
+        getImmediatelyAvailableTools(componentName) {
           return {
             config,
             consent,
             eventManager,
-            logger: logController.createComponentLogger(componentNamespace),
+            logger: createComponentLogger(componentName),
             lifecycle,
             sendEdgeNetworkRequest
           };
@@ -130,7 +138,7 @@ if (instanceNamespaces) {
     };
 
     const handleError = injectHandleError({
-      instanceNamespace,
+      instanceName,
       logger
     });
 
@@ -144,8 +152,9 @@ if (instanceNamespaces) {
 
     const instance = createInstance(executeCommand);
 
-    const queue = window[instanceNamespace].q;
+    const queue = window[instanceName].q;
     queue.push = instance;
+    logger.logOnInstanceCreated({ instance });
     queue.forEach(instance);
   });
 }

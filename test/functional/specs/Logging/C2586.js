@@ -26,6 +26,6 @@ test("Test C2586: Toggle logging through the querystring parameter.", async t =>
   await configureAlloyInstance("alloy", orgMainConfigMain);
   await getLibraryInfoCommand();
 
-  const { log } = await t.getBrowserConsoleMessages();
-  await t.expect(log).match(/Executing getLibraryInfo command/);
+  const { info } = await t.getBrowserConsoleMessages();
+  await t.expect(info).match(/Executing getLibraryInfo command/);
 });

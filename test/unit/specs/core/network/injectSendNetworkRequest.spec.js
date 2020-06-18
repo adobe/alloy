@@ -28,7 +28,11 @@ describe("injectSendNetworkRequest", () => {
   let isRetryableHttpStatusCode;
 
   beforeEach(() => {
-    logger = jasmine.createSpyObj("logger", ["log"]);
+    logger = jasmine.createSpyObj("logger", [
+      "logOnBeforeNetworkRequest",
+      "logOnNetworkResponse",
+      "logOnNetworkError"
+    ]);
     logger.enabled = true;
     networkStrategy = jasmine.createSpy().and.returnValue(
       Promise.resolve({
@@ -53,10 +57,11 @@ describe("injectSendNetworkRequest", () => {
       url,
       requestId
     }).then(() => {
-      expect(logger.log).toHaveBeenCalledWith(
-        jasmine.stringMatching(/^Request .+: Sending request.$/),
+      expect(logger.logOnBeforeNetworkRequest).toHaveBeenCalledWith({
+        requestId,
+        url,
         payload
-      );
+      });
       expect(networkStrategy).toHaveBeenCalledWith(url, payloadJson);
     });
   });
@@ -67,12 +72,15 @@ describe("injectSendNetworkRequest", () => {
       url,
       requestId
     }).then(response => {
-      expect(logger.log).toHaveBeenCalledWith(
-        jasmine.stringMatching(
-          /^Request .+: Received response with status code 200 and response body:$/
-        ),
-        responseBody
-      );
+      expect(logger.logOnNetworkResponse).toHaveBeenCalledWith({
+        requestId,
+        url,
+        payload,
+        status: 200,
+        body: responseBodyJson,
+        parsedBody: responseBody,
+        retriesAttempted: 0
+      });
       expect(response).toEqual({
         statusCode: 200,
         body: responseBodyJson,
@@ -93,12 +101,15 @@ describe("injectSendNetworkRequest", () => {
       url,
       requestId
     }).then(response => {
-      expect(logger.log).toHaveBeenCalledWith(
-        jasmine.stringMatching(
-          /^Request .+: Received response with status code 200 and response body:$/
-        ),
-        "non-JSON body"
-      );
+      expect(logger.logOnNetworkResponse).toHaveBeenCalledWith({
+        requestId,
+        url,
+        payload,
+        status: 200,
+        body: "non-JSON body",
+        parsedBody: undefined,
+        retriesAttempted: 0
+      });
       expect(response).toEqual({
         statusCode: 200,
         body: "non-JSON body",
@@ -119,12 +130,15 @@ describe("injectSendNetworkRequest", () => {
       url,
       requestId
     }).then(response => {
-      expect(logger.log).toHaveBeenCalledWith(
-        jasmine.stringMatching(
-          /^Request .+: Received response with status code 200 and no response body\.$/
-        ),
-        ""
-      );
+      expect(logger.logOnNetworkResponse).toHaveBeenCalledWith({
+        requestId,
+        url,
+        payload,
+        status: 200,
+        body: "",
+        parsedBody: undefined,
+        retriesAttempted: 0
+      });
       expect(response).toEqual({
         statusCode: 200,
         body: "",

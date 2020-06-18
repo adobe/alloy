@@ -10,8 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (console, getDebugEnabled, prefix) => {
-  const process = (level, ...rest) => {
+import { assign } from "../utils";
+
+export default ({ getDebugEnabled, console, getMonitors, context }) => {
+  let prefix = `[${context.instanceName}]`;
+  if (context.componentName) {
+    prefix += ` [${context.componentName}]`;
+  }
+
+  const notifyMonitors = (method, data) => {
+    const monitors = getMonitors();
+    if (monitors.length > 0) {
+      const dataWithContext = assign({}, context, data);
+      monitors.forEach(monitor => {
+        if (monitor[method]) {
+          monitor[method](dataWithContext);
+        }
+      });
+    }
+  };
+
+  const log = (level, ...rest) => {
+    notifyMonitors("onBeforeLog", { level, arguments: rest });
     if (getDebugEnabled()) {
       console[level](prefix, ...rest);
     }
@@ -19,29 +39,67 @@ export default (console, getDebugEnabled, prefix) => {
 
   return {
     get enabled() {
-      return getDebugEnabled();
+      return getMonitors().length > 0 || getDebugEnabled();
+    },
+    logOnInstanceCreated(data) {
+      notifyMonitors("onInstanceCreated", data);
+      log("info", "Instance initialized.");
+    },
+    logOnInstanceConfigured(data) {
+      notifyMonitors("onInstanceConfigured", data);
+      log("info", "Instance configured. Computed configuration:", data.config);
+    },
+    logOnBeforeCommand(data) {
+      notifyMonitors("onBeforeCommand", data);
+      log(
+        "info",
+        `Executing ${data.commandName} command. Options:`,
+        data.options
+      );
+    },
+    logOnBeforeNetworkRequest(data) {
+      notifyMonitors("onBeforeNetworkRequest", data);
+      log("info", `Request ${data.requestId}: Sending request.`, data.payload);
+    },
+    logOnNetworkResponse(data) {
+      notifyMonitors("onNetworkResponse", data);
+      const messagesSuffix =
+        data.parsedBody || data.body ? `response body:` : `no response body.`;
+      log(
+        "info",
+        `Request ${data.requestId}: Received response with status code ${data.status} and ${messagesSuffix}`,
+        data.parsedBody || data.body
+      );
+    },
+    logOnNetworkError(data) {
+      notifyMonitors("onNetworkError", data);
+      log(
+        "error",
+        `Request ${data.requestId}: Network request failed.`,
+        data.error
+      );
     },
     /**
      * Outputs a message to the web console.
      * @param {...*} arg Any argument to be logged.
      */
-    log: process.bind(null, "log"),
+    log: log.bind(null, "log"),
     /**
      * Outputs informational message to the web console. In some
      * browsers a small "i" icon is displayed next to these items
      * in the web console's log.
      * @param {...*} arg Any argument to be logged.
      */
-    info: process.bind(null, "info"),
+    info: log.bind(null, "info"),
     /**
      * Outputs a warning message to the web console.
      * @param {...*} arg Any argument to be logged.
      */
-    warn: process.bind(null, "warn"),
+    warn: log.bind(null, "warn"),
     /**
      * Outputs an error message to the web console.
      * @param {...*} arg Any argument to be logged.
      */
-    error: process.bind(null, "error")
+    error: log.bind(null, "error")
   };
 };
