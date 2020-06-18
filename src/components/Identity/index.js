@@ -12,8 +12,7 @@ governing permissions and limitations under the License.
 
 import {
   fireReferrerHideableImage,
-  areThirdPartyCookiesSupportedByDefault,
-  convertStringToSha256Buffer
+  areThirdPartyCookiesSupportedByDefault
 } from "../../utils";
 import injectProcessIdSyncs from "./injectProcessIdSyncs";
 import configValidators from "./configValidators";
@@ -24,7 +23,6 @@ import awaitVisitorOptIn from "./visitorService/awaitVisitorOptIn";
 import injectGetEcidFromVisitor from "./visitorService/injectGetEcidFromVisitor";
 import injectHandleResponseForIdSyncs from "./injectHandleResponseForIdSyncs";
 import injectEnsureRequestHasIdentity from "./injectEnsureRequestHasIdentity";
-import createIdentityManager from "./identities/createIdentityManager";
 import addEcidQueryToEvent from "./addEcidQueryToEvent";
 import injectDoesIdentityCookieExist from "./injectDoesIdentityCookieExist";
 import injectSetDomainForInitialIdentityPayload from "./injectSetDomainForInitialIdentityPayload";
@@ -33,23 +31,16 @@ import addEcidToPayload from "./addEcidToPayload";
 import injectAwaitIdentityCookie from "./injectAwaitIdentityCookie";
 import getEcidFromResponse from "./getEcidFromResponse";
 import createGetIdentity from "./getIdentity/createGetIdentity";
-import validateSyncIdentityOptions from "./validateSyncIdentityOptions";
 import createIdentityPayload from "./getIdentity/createIdentityPayload";
 
 const createIdentity = ({
   config,
   logger,
   consent,
-  eventManager,
   sendEdgeNetworkRequest
 }) => {
   const { orgId, thirdPartyCookiesEnabled } = config;
-  const identityManager = createIdentityManager({
-    eventManager,
-    consent,
-    logger,
-    convertStringToSha256Buffer
-  });
+
   const getEcidFromVisitor = injectGetEcidFromVisitor({
     logger,
     orgId,
@@ -94,14 +85,12 @@ const createIdentity = ({
   });
   return createComponent({
     addEcidQueryToEvent,
-    identityManager,
     ensureRequestHasIdentity,
     setLegacyEcid: legacyIdentity.setEcid,
     handleResponseForIdSyncs,
     getEcidFromResponse,
     getIdentity,
-    consent,
-    validateSyncIdentityOptions
+    consent
   });
 };
 

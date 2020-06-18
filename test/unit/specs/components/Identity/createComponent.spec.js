@@ -16,7 +16,6 @@ import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("Identity::createComponent", () => {
   let addEcidQueryToEvent;
-  let identityManager;
   let ensureRequestHasIdentity;
   let setLegacyEcid;
   let handleResponseForIdSyncs;
@@ -26,14 +25,9 @@ describe("Identity::createComponent", () => {
   let consentDeferred;
   let consent;
   let getIdentityDeferred;
-  let validateSyncIdentityOptions;
 
   beforeEach(() => {
     addEcidQueryToEvent = jasmine.createSpy("addEcidQueryToEvent");
-    identityManager = jasmine.createSpyObj("identityManager", {
-      addToPayload: undefined,
-      sync: Promise.resolve()
-    });
     ensureRequestHasIdentity = jasmine.createSpy("ensureRequestHasIdentity");
     setLegacyEcid = jasmine.createSpy("setLegacyEcid");
     handleResponseForIdSyncs = jasmine.createSpy("handleResponseForIdSyncs");
@@ -46,17 +40,14 @@ describe("Identity::createComponent", () => {
     getIdentity = jasmine
       .createSpy("getIdentity")
       .and.returnValue(getIdentityDeferred.promise);
-    validateSyncIdentityOptions = () => {};
     component = createComponent({
       addEcidQueryToEvent,
-      identityManager,
       ensureRequestHasIdentity,
       setLegacyEcid,
       handleResponseForIdSyncs,
       getEcidFromResponse,
       getIdentity,
-      consent,
-      validateSyncIdentityOptions
+      consent
     });
   });
 
@@ -64,13 +55,6 @@ describe("Identity::createComponent", () => {
     const event = { type: "event" };
     component.lifecycle.onBeforeEvent({ event });
     expect(addEcidQueryToEvent).toHaveBeenCalledWith(event);
-  });
-
-  it("adds identities to request payload", () => {
-    const payload = { type: "payload" };
-    const onResponse = jasmine.createSpy("onResponse");
-    component.lifecycle.onBeforeRequest({ payload, onResponse });
-    expect(identityManager.addToPayload).toHaveBeenCalledWith(payload);
   });
 
   it("ensures request has identity", () => {
@@ -116,20 +100,6 @@ describe("Identity::createComponent", () => {
     const result = component.lifecycle.onResponse({ response });
     expect(handleResponseForIdSyncs).toHaveBeenCalledWith(response);
     return expectAsync(result).toBeResolvedTo(undefined);
-  });
-
-  it("exposes options validator for syncIdentity command", () => {
-    expect(component.commands.syncIdentity.optionsValidator).toBe(
-      validateSyncIdentityOptions
-    );
-  });
-
-  it("syncIdentity syncs identities", () => {
-    const identity = { type: "identity" };
-    return component.commands.syncIdentity.run({ identity }).then(result => {
-      expect(identityManager.sync).toHaveBeenCalledWith(identity);
-      expect(result).toBeUndefined();
-    });
   });
 
   it("getIdentity command should make a request when ecid is not available", () => {

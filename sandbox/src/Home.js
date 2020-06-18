@@ -38,28 +38,6 @@ function HomeWithHistory({ history }) {
       });
   };
 
-  const syncIdentity = () => {
-    window
-      .alloy("syncIdentity", {
-        identity: {
-          // TODO: Uncomment once fix is done in AAM.
-          // Email_LC_SHA256: {
-          //   id: "me@gmail.com",
-          //   authenticatedState: "ambiguous",
-          //   hashEnabled: true, //TODO: document user ID hashing syntax
-          //   primary: true
-          // },
-          HYP: {
-            id: "1234",
-            authenticatedState: "ambiguous"
-          }
-        }
-      })
-      .then(function() {
-        console.log("Sandbox: Sync identity has completed.");
-      });
-  };
-
   const getIdentity = () => {
     window
       .alloy("getIdentity", { namespaces: ["ECID"] })
@@ -109,12 +87,6 @@ function HomeWithHistory({ history }) {
         <h1>Get Identity</h1>
         <div>
           <button onClick={getIdentity}>Get ECID</button>
-        </div>
-      </section>
-      <section>
-        <h1>Sync Identity</h1>
-        <div>
-          <button onClick={syncIdentity}>Sync declared IDs to Identity</button>
         </div>
       </section>
       <section>

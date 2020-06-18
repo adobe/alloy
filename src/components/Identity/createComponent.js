@@ -2,14 +2,12 @@ import getIdentityOptionsValidator from "./getIdentity/getIdentityOptionsValidat
 
 export default ({
   addEcidQueryToEvent,
-  identityManager,
   ensureRequestHasIdentity,
   setLegacyEcid,
   handleResponseForIdSyncs,
   getEcidFromResponse,
   getIdentity,
-  consent,
-  validateSyncIdentityOptions
+  consent
 }) => {
   let ecid;
   return {
@@ -21,7 +19,6 @@ export default ({
         addEcidQueryToEvent(event);
       },
       onBeforeRequest({ payload, onResponse }) {
-        identityManager.addToPayload(payload);
         return ensureRequestHasIdentity({ payload, onResponse });
       },
       onResponse({ response }) {
@@ -39,12 +36,6 @@ export default ({
       }
     },
     commands: {
-      syncIdentity: {
-        optionsValidator: validateSyncIdentityOptions,
-        run: options => {
-          return identityManager.sync(options.identity);
-        }
-      },
       getIdentity: {
         optionsValidator: getIdentityOptionsValidator,
         run: options => {
