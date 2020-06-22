@@ -1,8 +1,7 @@
 import testServerUrl from "../constants/testServerUrl";
 import createNetworkLogger from "../networkLogger";
 
-const edgeEnv = process.env.EDGE_ENV || "int";
-const alloyEnv = process.env.ALLOY_ENV;
+const alloyEnv = process.env.ALLOY_ENV || "int";
 
 const path = require("path");
 
@@ -26,7 +25,8 @@ export default ({
     .requestHooks(...requestHooks.concat(networkLogger.demdexProxy));
 
   const clientScripts = [];
-  if (edgeEnv === "int" && alloyEnv !== "prod") {
+  // We only inject scripts if we are not targeting Alloy PROD
+  if (alloyEnv !== "prod") {
     clientScripts.push({
       path: pageSnippetPath
     });
