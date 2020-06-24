@@ -31,6 +31,7 @@ jobs:
         if: type == api
         script: 
         - npm ci
+        - npm run build:prod
         - npm run functional:api
 
 notifications:
