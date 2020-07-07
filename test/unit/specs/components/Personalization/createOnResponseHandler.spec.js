@@ -18,15 +18,17 @@ import {
 import createOnResponseHandler from "../../../../../src/components/Personalization/createOnResponseHandler";
 
 describe("Personalization::onResponseHandler", () => {
-  const response = {};
   const renderableDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS;
   const decisions = PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS;
   const unprocessedDecisions = PAGE_WIDE_SCOPE_DECISIONS;
   let extractDecisions;
   let executeDecisions;
   let showContainers;
+  let response;
 
   beforeEach(() => {
+    response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
+
     extractDecisions = jasmine
       .createSpy("extractDecisions")
       .and.returnValue([renderableDecisions, decisions, unprocessedDecisions]);
@@ -38,6 +40,7 @@ describe("Personalization::onResponseHandler", () => {
     const expectedResult = {
       decisions
     };
+    response.getPayloadsByType.and.returnValue(PAGE_WIDE_SCOPE_DECISIONS);
     const renderDecisions = true;
     const onResponse = createOnResponseHandler({
       extractDecisions,
@@ -47,7 +50,7 @@ describe("Personalization::onResponseHandler", () => {
 
     const result = onResponse({ renderDecisions, response });
 
-    expect(extractDecisions).toHaveBeenCalledWith(response);
+    expect(extractDecisions).toHaveBeenCalledWith(PAGE_WIDE_SCOPE_DECISIONS);
     expect(showContainers).toHaveBeenCalled();
     expect(executeDecisions).toHaveBeenCalledWith(renderableDecisions);
     expect(result).toEqual(expectedResult);
@@ -57,6 +60,8 @@ describe("Personalization::onResponseHandler", () => {
     const expectedResult = {
       decisions: unprocessedDecisions
     };
+    response.getPayloadsByType.and.returnValue(PAGE_WIDE_SCOPE_DECISIONS);
+
     const renderDecisions = false;
     const onResponse = createOnResponseHandler({
       extractDecisions,
@@ -66,8 +71,28 @@ describe("Personalization::onResponseHandler", () => {
 
     const result = onResponse({ renderDecisions, response });
 
-    expect(extractDecisions).toHaveBeenCalledWith(response);
+    expect(extractDecisions).toHaveBeenCalledWith(PAGE_WIDE_SCOPE_DECISIONS);
     expect(showContainers).not.toHaveBeenCalled();
+    expect(executeDecisions).not.toHaveBeenCalled();
+    expect(result).toEqual(expectedResult);
+  });
+  it("should trigger showContainers if personalization payload is empty and return empty array", () => {
+    const expectedResult = {
+      decisions: []
+    };
+    response.getPayloadsByType.and.returnValue([]);
+
+    const renderDecisions = false;
+    const onResponse = createOnResponseHandler({
+      extractDecisions,
+      executeDecisions,
+      showContainers
+    });
+
+    const result = onResponse({ renderDecisions, response });
+
+    expect(showContainers).toHaveBeenCalled();
+    expect(extractDecisions).not.toHaveBeenCalled();
     expect(executeDecisions).not.toHaveBeenCalled();
     expect(result).toEqual(expectedResult);
   });

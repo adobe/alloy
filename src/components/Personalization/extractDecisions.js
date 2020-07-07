@@ -13,8 +13,6 @@ governing permissions and limitations under the License.
 import { isNonEmptyArray } from "../../utils";
 import * as SCHEMA from "./constants/schema";
 
-const DECISIONS_HANDLE = "personalization:decisions";
-
 const isDomActionItem = item => item.schema === SCHEMA.DOM_ACTION;
 
 const splitItems = (items, predicate) => {
@@ -56,8 +54,6 @@ const splitDecisions = (decisions, predicate) => {
   return [matchedDecisions, nonMatchedDecisions, decisions];
 };
 
-export default response => {
-  const decisions = response.getPayloadsByType(DECISIONS_HANDLE);
-
+export default decisions => {
   return splitDecisions(decisions, isDomActionItem);
 };

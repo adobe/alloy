@@ -19,17 +19,9 @@ import {
 import extractDecisions from "../../../../../src/components/Personalization/extractDecisions";
 
 describe("Personalization::extractDecisions", () => {
-  let response;
-
-  beforeEach(() => {
-    response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
-  });
+  const response = PAGE_WIDE_SCOPE_DECISIONS.concat(SCOPES_FOO1_FOO2_DECISIONS);
 
   it("extracts dom action decisions and rest of decisions", () => {
-    response.getPayloadsByType.and.returnValue(
-      PAGE_WIDE_SCOPE_DECISIONS.concat(SCOPES_FOO1_FOO2_DECISIONS)
-    );
-
     const [
       domActionDecisions,
       decisions,
