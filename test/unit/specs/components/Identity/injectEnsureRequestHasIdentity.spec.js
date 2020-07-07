@@ -11,35 +11,50 @@ governing permissions and limitations under the License.
 */
 
 import injectEnsureRequestHasIdentity from "../../../../../src/components/Identity/injectEnsureRequestHasIdentity";
+// By using the real injectAwaitIdentityCookie, this isn't a true unit test. The interactions between these
+// functions are so tightly coupled that it was much easier to understand the tests if I just included the
+// real one.
+import injectAwaitIdentityCookie from "../../../../../src/components/Identity/injectAwaitIdentityCookie";
+import { createCallbackAggregator } from "../../../../../src/utils";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
-import { defer } from "../../../../../src/utils";
 
 describe("Identity::injectEnsureRequestHasIdentity", () => {
   let doesIdentityCookieExist;
   let setDomainForInitialIdentityPayload;
-  let addLegacyEcidToPayloadPromise;
   let addLegacyEcidToPayload;
-  let awaitIdentityCookieDeferred;
   let awaitIdentityCookie;
   let logger;
   let ensureRequestHasIdentity;
 
+  let sentIndex;
+  let recievedIndex;
+  let payloads;
+  let requestsSentYet;
+  let onResponseCallbackAggregators;
+  let doesIdentityCookieExistBoolean;
+
   beforeEach(() => {
-    doesIdentityCookieExist = jasmine
-      .createSpy("doesIdentityCookieExist")
-      .and.returnValue(false);
-    setDomainForInitialIdentityPayload = jasmine.createSpy(
-      "setDomainForInitialIdentityPayload"
-    );
-    addLegacyEcidToPayloadPromise = Promise.resolve();
-    addLegacyEcidToPayload = jasmine
-      .createSpy("addLegacyEcidToPayload")
-      .and.returnValue(addLegacyEcidToPayloadPromise);
-    awaitIdentityCookieDeferred = defer();
-    awaitIdentityCookie = jasmine
-      .createSpy("awaitIdentityCookie")
-      .and.returnValue(awaitIdentityCookieDeferred.promise);
     logger = jasmine.createSpyObj("logger", ["log"]);
+
+    sentIndex = 0;
+    recievedIndex = 0;
+    payloads = [];
+    requestsSentYet = [];
+    onResponseCallbackAggregators = [];
+    doesIdentityCookieExistBoolean = false;
+
+    doesIdentityCookieExist = () => doesIdentityCookieExistBoolean;
+    setDomainForInitialIdentityPayload = payload => {
+      payload.domain = "initialIdentityDomain";
+    };
+    addLegacyEcidToPayload = payload => {
+      payload.legacyId = "legacyId";
+      return Promise.resolve();
+    };
+    awaitIdentityCookie = injectAwaitIdentityCookie({
+      orgId: "myorg",
+      doesIdentityCookieExist
+    });
     ensureRequestHasIdentity = injectEnsureRequestHasIdentity({
       doesIdentityCookieExist,
       setDomainForInitialIdentityPayload,
@@ -49,46 +64,132 @@ describe("Identity::injectEnsureRequestHasIdentity", () => {
     });
   });
 
-  it("returns resolved promise if identity cookie exists", () => {
-    doesIdentityCookieExist.and.returnValue(true);
-    return expectAsync(ensureRequestHasIdentity({})).toBeResolved();
-  });
+  const sendRequest = () => {
+    const payload = { id: sentIndex };
+    payloads.push(payload);
+    const onResponseCallbackAggregator = createCallbackAggregator();
+    onResponseCallbackAggregators.push(onResponseCallbackAggregator);
+
+    const i = sentIndex;
+    requestsSentYet.push(false);
+    ensureRequestHasIdentity({
+      payload,
+      onResponse: onResponseCallbackAggregator.add
+    }).then(() => {
+      requestsSentYet[i] = true;
+    });
+
+    sentIndex += 1;
+  };
+  const simulateResponseWithIdentity = () => {
+    doesIdentityCookieExistBoolean = true;
+    onResponseCallbackAggregators[recievedIndex].call();
+    recievedIndex += 1;
+  };
+  const simulateResponseWithoutIdentity = () => {
+    doesIdentityCookieExistBoolean = false;
+    try {
+      onResponseCallbackAggregators[recievedIndex].call();
+    } catch (e) {
+      // expected
+    }
+    recievedIndex += 1;
+  };
 
   it("allows first request to proceed and pauses subsequent requests until identity cookie exists", () => {
-    const payload1 = { type: "payload1" };
-    const onResponse1 = () => {};
-    const payload2 = { type: "payload2" };
-    const onResponse2 = () => {};
+    return Promise.resolve()
+      .then(() => {
+        sendRequest();
+        sendRequest();
+        sendRequest();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(requestsSentYet).toEqual([true, false, false]);
+        simulateResponseWithIdentity();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(requestsSentYet).toEqual([true, true, true]);
+        expect(payloads).toEqual([
+          { id: 0, domain: "initialIdentityDomain", legacyId: "legacyId" },
+          { id: 1 },
+          { id: 2 }
+        ]);
+        sendRequest();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(payloads[3]).toEqual({ id: 3 });
+        expect(requestsSentYet[3]).toEqual(true);
+      });
+  });
 
-    return ensureRequestHasIdentity({
-      payload: payload1,
-      onResponse: onResponse1
-    }).then(() => {
-      expect(logger.log).not.toHaveBeenCalled();
-      expect(awaitIdentityCookie).toHaveBeenCalledWith(onResponse1);
-      expect(setDomainForInitialIdentityPayload).toHaveBeenCalledWith(payload1);
-      expect(addLegacyEcidToPayload).toHaveBeenCalledWith(payload1);
+  it("allows the second request to be called if the first doesn't set the cookie, but still holds up the third", () => {
+    return Promise.resolve()
+      .then(() => {
+        sendRequest();
+        sendRequest();
+        sendRequest();
+        sendRequest();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(requestsSentYet).toEqual([true, false, false, false]);
+        simulateResponseWithoutIdentity();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(requestsSentYet).toEqual([true, true, false, false]);
+        simulateResponseWithIdentity();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(requestsSentYet).toEqual([true, true, true, true]);
+        expect(payloads).toEqual([
+          { id: 0, domain: "initialIdentityDomain", legacyId: "legacyId" },
+          { id: 1, domain: "initialIdentityDomain", legacyId: "legacyId" },
+          { id: 2 },
+          { id: 3 }
+        ]);
+      });
+  });
 
-      const completeHandler = jasmine.createSpy("completeHandler");
-      ensureRequestHasIdentity({
-        payload: payload2,
-        onResponse: onResponse2
-      }).then(completeHandler);
-      expect(logger.log).toHaveBeenCalledWith(
-        "Delaying request while retrieving ECID from server."
-      );
-      return flushPromiseChains()
-        .then(() => {
-          expect(completeHandler).not.toHaveBeenCalled();
-          awaitIdentityCookieDeferred.resolve();
-          return flushPromiseChains();
-        })
-        .then(() => {
-          expect(logger.log).toHaveBeenCalledWith(
-            "Resuming previously delayed request."
-          );
-          expect(completeHandler).toHaveBeenCalled();
-        });
-    });
+  it("logs messages", () => {
+    return Promise.resolve()
+      .then(() => {
+        sendRequest();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(logger.log).not.toHaveBeenCalled();
+        sendRequest();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(logger.log).toHaveBeenCalledWith(
+          "Delaying request while retrieving ECID from server."
+        );
+        simulateResponseWithIdentity();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(logger.log).toHaveBeenCalledWith(
+          "Resuming previously delayed request."
+        );
+      });
+  });
+
+  it("sends a message if we have an identity cookie", () => {
+    doesIdentityCookieExistBoolean = true;
+    return Promise.resolve()
+      .then(() => {
+        sendRequest();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(requestsSentYet).toEqual([true]);
+        expect(payloads).toEqual([{ id: 0 }]);
+      });
   });
 });
