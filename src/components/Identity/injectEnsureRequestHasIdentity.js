@@ -18,38 +18,72 @@ export default ({
   awaitIdentityCookie,
   logger
 }) => {
-  let identityCookiePromise;
+  let obtainedIdentityPromise;
+
+  const allowRequestToGoWithoutIdentity = payload => {
+    setDomainForInitialIdentityPayload(payload);
+    return addLegacyEcidToPayload(payload);
+  };
+
   /**
-   * Ensures that if no identity cookie exists, we only let one request be
-   * sent without an identity until its response returns. In the meantime,
+   * Ensures that if no identity cookie exists, we only let one request at a
+   * time without an identity until its response returns. In the meantime,
    * we queue all other requests, otherwise the requests could result in
-   * multiple ECIDs being minted for the user. Once the response to the first
-   * request returns, we can let the queued requests be sent, since they
-   * will have the newly minted ECID that was returned on the first response.
+   * multiple ECIDs being minted for the user. Once we get an identity
+   * cookie, we can let the queued requests be sent all at once, since they
+   * will have the newly minted ECID.
+   *
+   * Konductor should make every effort to return an identity, but in
+   * certain scenarios it may not. For example, in cases where the
+   * request does not match what Konductor is expecting (ie 400s).
+   * In cases where Konductor does not set an identity, there should be
+   * no events recorded so we don't need to worry about multiple ECIDs
+   * being minted for each user.
+   *
+   * If we only allowed one request through without an identity, a single
+   * malformed request causes all other requests to never send.
    */
   return ({ payload, onResponse }) => {
     if (doesIdentityCookieExist()) {
       return Promise.resolve();
     }
 
-    if (identityCookiePromise) {
-      // We don't have an identity cookie, but the first request has
-      // been sent to get it. We must wait for the response to the first
-      // request to come back and a cookie set before we can let this
-      // request go out.
+    if (obtainedIdentityPromise) {
+      // We don't have an identity cookie, but at least one request has
+      // been sent to get it. Konductor may set the identity cookie in the
+      // response. We will hold up this request until the last request
+      // requiring identity returns and awaitIdentityCookie confirms the
+      // identity was set.
       logger.log("Delaying request while retrieving ECID from server.");
-      return identityCookiePromise.then(() => {
-        logger.log("Resuming previously delayed request.");
+      const previousObtainedIdentityPromise = obtainedIdentityPromise;
+
+      // This promise resolves when we have an identity cookie. Additional
+      // requests are chained together so that only one is sent at a time
+      // until we have the identity cookie.
+      obtainedIdentityPromise = previousObtainedIdentityPromise.catch(() => {
+        return awaitIdentityCookie(onResponse);
       });
+
+      // When this returned promise resolves, the request will go out.
+      return (
+        previousObtainedIdentityPromise
+          .then(() => {
+            logger.log("Resuming previously delayed request.");
+          })
+          // If Konductor did not set the identity cookie on the previous
+          // request, then awaitIdentityCookie will reject its promise.
+          // Catch the rejection here and allow this request to go out.
+          .catch(() => {
+            return allowRequestToGoWithoutIdentity(payload);
+          })
+      );
     }
 
     // For Alloy+Konductor communication to be as robust as possible and
     // to ensure we don't mint new ECIDs for requests that would otherwise
     // be sent in parallel, we'll let this request go out to fetch the
-    // cookie, but we'll set up a promise so that future requests can
-    // know when the cookie has been set.
-    identityCookiePromise = awaitIdentityCookie(onResponse);
-    setDomainForInitialIdentityPayload(payload);
-    return addLegacyEcidToPayload(payload);
+    // cookie
+    obtainedIdentityPromise = awaitIdentityCookie(onResponse);
+    return allowRequestToGoWithoutIdentity(payload);
   };
 };
