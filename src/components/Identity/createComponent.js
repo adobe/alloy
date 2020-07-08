@@ -2,7 +2,7 @@ import getIdentityOptionsValidator from "./getIdentity/getIdentityOptionsValidat
 
 export default ({
   addEcidQueryToEvent,
-  ensureRequestHasIdentity,
+  ensureSingleIdentity,
   setLegacyEcid,
   handleResponseForIdSyncs,
   getEcidFromResponse,
@@ -19,7 +19,7 @@ export default ({
         addEcidQueryToEvent(event);
       },
       onBeforeRequest({ payload, onResponse }) {
-        return ensureRequestHasIdentity({ payload, onResponse });
+        return ensureSingleIdentity({ payload, onResponse });
       },
       onResponse({ response }) {
         if (!ecid) {

@@ -40,8 +40,9 @@ export default ({
    * no events recorded so we don't need to worry about multiple ECIDs
    * being minted for each user.
    *
-   * If we only allowed one request through without an identity, a single
-   * malformed request causes all other requests to never send.
+   * The reason we allow for multiple sequential requests to be sent without
+   * an identity is to prevent a single malformed request causing all other
+   * requests to never send.
    */
   return ({ payload, onResponse }) => {
     if (doesIdentityCookieExist()) {

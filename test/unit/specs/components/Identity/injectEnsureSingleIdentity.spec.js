@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectEnsureRequestHasIdentity from "../../../../../src/components/Identity/injectEnsureRequestHasIdentity";
+import injectEnsureSingleIdentity from "../../../../../src/components/Identity/injectEnsureSingleIdentity";
 // By using the real injectAwaitIdentityCookie, this isn't a true unit test. The interactions between these
 // functions are so tightly coupled that it was much easier to understand the tests if I just included the
 // real one.
@@ -18,13 +18,13 @@ import injectAwaitIdentityCookie from "../../../../../src/components/Identity/in
 import { createCallbackAggregator } from "../../../../../src/utils";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
-describe("Identity::injectEnsureRequestHasIdentity", () => {
+describe("Identity::injectEnsureSingleIdentity", () => {
   let doesIdentityCookieExist;
   let setDomainForInitialIdentityPayload;
   let addLegacyEcidToPayload;
   let awaitIdentityCookie;
   let logger;
-  let ensureRequestHasIdentity;
+  let ensureSingleIdentity;
 
   let sentIndex;
   let recievedIndex;
@@ -55,7 +55,7 @@ describe("Identity::injectEnsureRequestHasIdentity", () => {
       orgId: "myorg",
       doesIdentityCookieExist
     });
-    ensureRequestHasIdentity = injectEnsureRequestHasIdentity({
+    ensureSingleIdentity = injectEnsureSingleIdentity({
       doesIdentityCookieExist,
       setDomainForInitialIdentityPayload,
       addLegacyEcidToPayload,
@@ -72,7 +72,7 @@ describe("Identity::injectEnsureRequestHasIdentity", () => {
 
     const i = sentIndex;
     requestsSentYet.push(false);
-    ensureRequestHasIdentity({
+    ensureSingleIdentity({
       payload,
       onResponse: onResponseCallbackAggregator.add
     }).then(() => {

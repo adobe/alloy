@@ -22,7 +22,7 @@ import createLegacyIdentity from "./createLegacyIdentity";
 import awaitVisitorOptIn from "./visitorService/awaitVisitorOptIn";
 import injectGetEcidFromVisitor from "./visitorService/injectGetEcidFromVisitor";
 import injectHandleResponseForIdSyncs from "./injectHandleResponseForIdSyncs";
-import injectEnsureRequestHasIdentity from "./injectEnsureRequestHasIdentity";
+import injectEnsureSingleIdentity from "./injectEnsureSingleIdentity";
 import addEcidQueryToEvent from "./addEcidQueryToEvent";
 import injectDoesIdentityCookieExist from "./injectDoesIdentityCookieExist";
 import injectSetDomainForInitialIdentityPayload from "./injectSetDomainForInitialIdentityPayload";
@@ -69,7 +69,7 @@ const createIdentity = ({
     orgId,
     doesIdentityCookieExist
   });
-  const ensureRequestHasIdentity = injectEnsureRequestHasIdentity({
+  const ensureSingleIdentity = injectEnsureSingleIdentity({
     doesIdentityCookieExist,
     setDomainForInitialIdentityPayload,
     addLegacyEcidToPayload,
@@ -85,7 +85,7 @@ const createIdentity = ({
   });
   return createComponent({
     addEcidQueryToEvent,
-    ensureRequestHasIdentity,
+    ensureSingleIdentity,
     setLegacyEcid: legacyIdentity.setEcid,
     handleResponseForIdSyncs,
     getEcidFromResponse,
