@@ -51,7 +51,7 @@ const splitDecisions = (decisions, predicate) => {
     }
   });
 
-  return [matchedDecisions, nonMatchedDecisions, decisions];
+  return [matchedDecisions, nonMatchedDecisions];
 };
 
 export default decisions => {

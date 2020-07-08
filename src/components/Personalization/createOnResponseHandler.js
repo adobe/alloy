@@ -15,16 +15,14 @@ const DECISIONS_HANDLE = "personalization:decisions";
 
 export default ({ extractDecisions, executeDecisions, showContainers }) => {
   return ({ renderDecisions, response }) => {
-    const decisionsResponse = response.getPayloadsByType(DECISIONS_HANDLE);
-    if (!isNonEmptyArray(decisionsResponse)) {
+    const unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
+    if (!isNonEmptyArray(unprocessedDecisions)) {
       showContainers();
       return { decisions: [] };
     }
-    const [
-      renderableDecisions,
-      decisions,
+    const [renderableDecisions, decisions] = extractDecisions(
       unprocessedDecisions
-    ] = extractDecisions(decisionsResponse);
+    );
 
     if (renderDecisions) {
       executeDecisions(renderableDecisions);
