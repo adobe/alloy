@@ -19,6 +19,7 @@ import callbackValidator from "./callbackValidator";
 import createArrayOfValidator from "./createArrayOfValidator";
 import createDefaultValidator from "./createDefaultValidator";
 import createLiteralValidator from "./createLiteralValidator";
+import createMapOfValuesValidator from "./createMapOfValuesValidator";
 import createMinimumValidator from "./createMinimumValidator";
 import createNoUnknownFieldsValidator from "./createNoUnknownFieldsValidator";
 import createNonEmptyValidator from "./createNonEmptyValidator";
@@ -79,6 +80,9 @@ const anyOf = function anyOf(validators, message) {
   // one of the validators accept null or undefined.
   return chain(this, createAnyOfValidator(validators, message));
 };
+const anything = function anything() {
+  return nullSafeChain(this, base);
+};
 const arrayOf = function arrayOf(elementValidator) {
   return nullSafeChain(this, createArrayOfValidator(elementValidator), {
     nonEmpty: nonEmptyArray
@@ -100,6 +104,11 @@ const number = function number() {
     unique
   });
 };
+const mapOfValues = function mapOfValues(valuesValidator) {
+  return nullSafeChain(this, createMapOfValuesValidator(valuesValidator), {
+    nonEmpty: nonEmptyObject
+  });
+};
 const objectOf = function objectOf(schema) {
   const noUnknownFields = function noUnknownFields() {
     return nullSafeChain(this, createNoUnknownFieldsValidator(schema));
@@ -119,11 +128,13 @@ const string = function string() {
 };
 
 const boundAnyOf = anyOf.bind(base);
+const boundAnything = anything.bind(base);
 const boundArrayOf = arrayOf.bind(base);
 const boundBoolean = boolean.bind(base);
 const boundCallback = callback.bind(base);
 const boundLiteral = literal.bind(base);
 const boundNumber = number.bind(base);
+const boundMapOfValues = mapOfValues.bind(base);
 const boundObjectOf = objectOf.bind(base);
 const boundString = string.bind(base);
 
@@ -137,11 +148,13 @@ const boundEnumOf = function boundEnumOf(...values) {
 
 export {
   boundAnyOf as anyOf,
+  boundAnything as anything,
   boundArrayOf as arrayOf,
   boundBoolean as boolean,
   boundCallback as callback,
   boundLiteral as literal,
   boundNumber as number,
+  boundMapOfValues as mapOfValues,
   boundObjectOf as objectOf,
   boundString as string,
   boundEnumOf as enumOf
