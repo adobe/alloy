@@ -28,6 +28,7 @@ export default construct => {
   const basePayload = {
     mergeConfigOverrides: createMerger(content, "meta.configOverrides"),
     mergeState: createMerger(content, "meta.state"),
+    mergeQuery: createMerger(content, "query"),
     useIdThirdPartyDomain() {
       useIdThirdPartyDomain = true;
     },
