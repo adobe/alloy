@@ -16,7 +16,7 @@ import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("Identity::createComponent", () => {
   let addEcidQueryToEvent;
-  let ensureRequestHasIdentity;
+  let ensureSingleIdentity;
   let setLegacyEcid;
   let handleResponseForIdSyncs;
   let getEcidFromResponse;
@@ -28,7 +28,7 @@ describe("Identity::createComponent", () => {
 
   beforeEach(() => {
     addEcidQueryToEvent = jasmine.createSpy("addEcidQueryToEvent");
-    ensureRequestHasIdentity = jasmine.createSpy("ensureRequestHasIdentity");
+    ensureSingleIdentity = jasmine.createSpy("ensureSingleIdentity");
     setLegacyEcid = jasmine.createSpy("setLegacyEcid");
     handleResponseForIdSyncs = jasmine.createSpy("handleResponseForIdSyncs");
     getEcidFromResponse = jasmine.createSpy("getEcidFromResponse");
@@ -42,7 +42,7 @@ describe("Identity::createComponent", () => {
       .and.returnValue(getIdentityDeferred.promise);
     component = createComponent({
       addEcidQueryToEvent,
-      ensureRequestHasIdentity,
+      ensureSingleIdentity,
       setLegacyEcid,
       handleResponseForIdSyncs,
       getEcidFromResponse,
@@ -60,14 +60,14 @@ describe("Identity::createComponent", () => {
   it("ensures request has identity", () => {
     const payload = { type: "payload" };
     const onResponse = jasmine.createSpy("onResponse");
-    const ensureRequestHasIdentityPromise = Promise.resolve();
-    ensureRequestHasIdentity.and.returnValue(ensureRequestHasIdentityPromise);
+    const ensureSingleIdentityPromise = Promise.resolve();
+    ensureSingleIdentity.and.returnValue(ensureSingleIdentityPromise);
     const result = component.lifecycle.onBeforeRequest({ payload, onResponse });
-    expect(ensureRequestHasIdentity).toHaveBeenCalledWith({
+    expect(ensureSingleIdentity).toHaveBeenCalledWith({
       payload,
       onResponse
     });
-    expect(result).toBe(ensureRequestHasIdentityPromise);
+    expect(result).toBe(ensureSingleIdentityPromise);
   });
 
   it("does not create legacy identity cookie if response does not contain ECID", () => {
