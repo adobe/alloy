@@ -89,6 +89,22 @@
     </button>
     <button class="in-goog-vendor">Opt In to Google Vendor</button>
     <button class="no-goog-vendor">Opt Out of Google Vendor</button>
+    <button class="send-event-btn">Send an event with Consent</button>
+    <button class="get-ecid">Get the ECID value</button>
+
+    <div>
+      <h2>Available QueryString parameter:</h2>
+      <ul>
+        <li>ECID</li>
+        <li>orgId</li>
+        <li>configId</li>
+        <li>edgeDomain</li>
+        <li>gdprApplies</li>
+        <li>iabConsentString</li>
+        <li>eventConsentString</li>
+        <li>thirdPartyCookiesEnabled</li>
+      </ul>
+    </div>
 
     <script>
       var iabOptInBtn = document.querySelector(".iab-opt-in");
@@ -104,6 +120,8 @@
       );
       var noGoogVendorBtn = document.querySelector(".no-goog-vendor");
       var optInGoogVendorBtn = document.querySelector(".in-goog-vendor");
+      var sendEventWithConsentBtn = document.querySelector(".send-event-btn");
+      var getEcidButton = document.querySelector(".get-ecid");
 
       optInViaOneTrustApi.addEventListener("click", function() {
         OneTrust.AllowAll();
@@ -111,6 +129,46 @@
 
       optOutViaOneTrustApi.addEventListener("click", function() {
         OneTrust.RejectAll();
+      });
+
+      getEcidButton.addEventListener("click", function() {
+        alloy("getIdentity")
+          .then(function(result) {
+            window.ecid = result.identity.ECID;
+            console.log("ECID is: " + window.ecid);
+          })
+          .catch(function(error) {
+            console.log("Get identity error:", error);
+          });
+      });
+
+      sendEventWithConsentBtn.addEventListener("click", function() {
+        const type = "Alloy-E2E-sendEvent-consent";
+        const xdm = {
+          consentStrings: [
+            {
+              consentStandard: "IAB TCF",
+              consentStandardVersion: "2.0",
+              consentStringValue: getUrlParameter("eventConsentString"),
+              gdprApplies: getUrlParameter("gdprApplies") || true,
+              containsPersonalData: false
+            }
+          ]
+        };
+
+        if (getUrlParameter("ECID")) {
+          xdm.identityMap = {
+            ECID: [
+              {
+                id: getUrlParameter("ECID")
+              }
+            ]
+          };
+        }
+
+        alloy("sendEvent", { type, xdm }).then(() =>
+          console.log("Event has been sent!!")
+        );
       });
 
       optInGoogVendorBtn.addEventListener("click", function() {
