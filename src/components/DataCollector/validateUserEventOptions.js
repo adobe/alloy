@@ -37,14 +37,14 @@ export default ({ options, logger }) => {
       identityMap: mapOfValues(
         arrayOf(
           objectOf({
-            id: string().required(),
+            id: string(),
             primary: boolean().default(false),
             authenticatedState: enumOf(
               AMBIGUOUS,
               AUTHENTICATED,
               LOGGED_OUT
             ).default(AMBIGUOUS)
-          }).noUnknownFields()
+          })
         )
       )
     }),

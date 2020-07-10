@@ -32,14 +32,6 @@ describe("DataCollector::validateUserEventOptions", () => {
         xdm: {
           eventType: "test",
           identityMap: {
-            namespace1: [{ id: "123", primary: true, blah: "noSuchProperty" }]
-          }
-        }
-      },
-      {
-        xdm: {
-          eventType: "test",
-          identityMap: {
             namespace1: {}
           }
         }
@@ -53,31 +45,6 @@ describe("DataCollector::validateUserEventOptions", () => {
                 id: "123",
                 primary: true,
                 authenticatedState: "loggedIn"
-              }
-            ]
-          }
-        }
-      },
-      {
-        xdm: {
-          eventType: "test",
-          identityMap: {
-            namespace1: [
-              {
-                primary: true,
-                authenticatedState: "ambiguous"
-              },
-              {
-                id: "23",
-                primary: true,
-                authenticatedState: "ambiguous"
-              }
-            ],
-            namespace2: [
-              {
-                id: "23",
-                primary: true,
-                authenticatedState: "ambiguous"
               }
             ]
           }
