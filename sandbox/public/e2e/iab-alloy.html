@@ -12,6 +12,14 @@
             img-src * data:;
             connect-src 'self' *.alloyio.com *.demdex.net *.adobedc.net *.cookielaw.org *.onetrust.com"
     />
+    <style>
+      button {
+        display: block;
+        margin: 25px 0;
+        font-size: 110%;
+        cursor: pointer;
+      }
+    </style>
 
     <!-- OneTrust Cookies Consent Notice start -->
     <script
@@ -32,10 +40,7 @@
         function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
         (window,["alloy"]);
     </script>
-    <script
-      src="https://cdn1.adoberesources.net/alloy/latest/alloy.js"
-      async
-    ></script>
+    <script src="../alloy.js" async></script>
     <script>
       function getUrlParameter(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -46,26 +51,60 @@
           : decodeURIComponent(results[1].replace(/\+/g, " "));
       }
 
+      function resolveEdgeDomain() {
+        var defaultEdgeDomain =
+          location.host.indexOf("alloyio.com") !== -1
+            ? "firstparty.alloyio.com"
+            : undefined;
+
+        return getUrlParameter("edgeDomain") || defaultEdgeDomain;
+      }
+
       alloy("configure", {
-        edgeDomain: "firstparty.alloyio.com",
-        edgeConfigId: getUrlParameter("configId"),
-        orgId: getUrlParameter("orgId") || "555B08345D76A68D0A495E79@AdobeOrg"
+        edgeDomain: resolveEdgeDomain(),
+        edgeConfigId:
+          getUrlParameter("configId") || "60928f59-0406-4353-bfe3-22ed633c4f67",
+        orgId: getUrlParameter("orgId") || "334F60F35E1597910A495EC2@AdobeOrg",
+        thirdPartyCookiesEnabled: getUrlParameter("thirdPartyCookiesEnabled")
+          ? true
+          : false,
+        debugEnabled: true
       });
     </script>
   </head>
   <body>
-    <h1>End-to-end Test Page running the IAB testing suite.</h1>
-    <button class="iab-opt-in">Opt in to IAB consent</button>
-    <button class="iab-opt-out">Opt out to IAB consent</button>
-
+    <h1>End-to-end Test Page running the IAB testing suite using Alloy.</h1>
+    <button class="iab-opt-in">
+      Opt in to IAB consent using hardcoded string
+    </button>
+    <button class="iab-opt-out">
+      Opt out of IAB consent using hardcoded string
+    </button>
     <button class="iab-in-query-string">
       Consent via string passed in Query Param
     </button>
-
     <button class="iab-opt-in-onetrust-api">Opt In Via OneTrust JS API</button>
     <button class="iab-opt-out-onetrust-api">
       Opt Out Via OneTrust JS API
     </button>
+    <button class="in-goog-vendor">Opt In to Google Vendor</button>
+    <button class="no-goog-vendor">Opt Out of Google Vendor</button>
+    <button class="send-event-btn">Send an event with Consent</button>
+    <button class="get-ecid">Get the ECID value</button>
+
+    <div>
+      <h2>Available QueryString parameter:</h2>
+      <ul>
+        <li>ECID</li>
+        <li>orgId</li>
+        <li>configId</li>
+        <li>edgeDomain</li>
+        <li>gdprApplies</li>
+        <li>iabConsentString</li>
+        <li>eventConsentString</li>
+        <li>thirdPartyCookiesEnabled</li>
+      </ul>
+    </div>
 
     <script>
       var iabOptInBtn = document.querySelector(".iab-opt-in");
@@ -73,13 +112,16 @@
       var iabStringFromQueryStringBtn = document.querySelector(
         ".iab-in-query-string"
       );
-
       var optInViaOneTrustApi = document.querySelector(
         ".iab-opt-in-onetrust-api"
       );
       var optOutViaOneTrustApi = document.querySelector(
         ".iab-opt-out-onetrust-api"
       );
+      var noGoogVendorBtn = document.querySelector(".no-goog-vendor");
+      var optInGoogVendorBtn = document.querySelector(".in-goog-vendor");
+      var sendEventWithConsentBtn = document.querySelector(".send-event-btn");
+      var getEcidButton = document.querySelector(".get-ecid");
 
       optInViaOneTrustApi.addEventListener("click", function() {
         OneTrust.AllowAll();
@@ -89,6 +131,76 @@
         OneTrust.RejectAll();
       });
 
+      getEcidButton.addEventListener("click", function() {
+        alloy("getIdentity")
+          .then(function(result) {
+            window.ecid = result.identity.ECID;
+            console.log("ECID is: " + window.ecid);
+          })
+          .catch(function(error) {
+            console.log("Get identity error:", error);
+          });
+      });
+
+      sendEventWithConsentBtn.addEventListener("click", function() {
+        const type = "Alloy-E2E-sendEvent-consent";
+        const xdm = {
+          consentStrings: [
+            {
+              consentStandard: "IAB TCF",
+              consentStandardVersion: "2.0",
+              consentStringValue: getUrlParameter("eventConsentString"),
+              gdprApplies: getUrlParameter("gdprApplies") || true,
+              containsPersonalData: false
+            }
+          ]
+        };
+
+        if (getUrlParameter("ECID")) {
+          xdm.identityMap = {
+            ECID: [
+              {
+                id: getUrlParameter("ECID")
+              }
+            ]
+          };
+        }
+
+        alloy("sendEvent", { type, xdm }).then(() =>
+          console.log("Event has been sent!!")
+        );
+      });
+
+      optInGoogVendorBtn.addEventListener("click", function() {
+        var optInToGoogConsentString =
+          "CO2ISm8O2IbZcAVAMBFRACBsAIBAAAAgEIYgGPtjup3rYdY178JUkiCIFabBlBymqcio5Ao1cEACRNnQIUAIyhKBCQmaUqJBKhQRWBDAQtQwBCB06EBmgIQNUmkj1MQGQgCRKSF7BmQBEwQMCagoBDeRAAo-kIhkLCAAqO0E_AB4F5wAgEagLzAA";
+        alloy("setConsent", {
+          consent: [
+            {
+              standard: "IAB",
+              version: "2.0",
+              value: optInToGoogConsentString,
+              gdprApplies: getUrlParameter("gdprApplies") || true
+            }
+          ]
+        });
+      });
+
+      noGoogVendorBtn.addEventListener("click", function() {
+        var optOutOfGoogConsentString =
+          "CO2IS8PO2IbuvAVAMBFRACBsAIBAAAAgEIYgGQBiNh14tYnCZ-5fXnRqprc2dYaErJs0dFpVJBA0ALi95QggwAQXEIa4JmghQMIEJASUkIIMEjHIgsJSyMEIAMIgjpJqrggEIFVAIIgPDKAULEQQkBQcCCC2mhZURCaVE0AVLMF0CNYAICNQAA==";
+        alloy("setConsent", {
+          consent: [
+            {
+              standard: "IAB",
+              version: "2.0",
+              value: optOutOfGoogConsentString,
+              gdprApplies: getUrlParameter("gdprApplies") || true
+            }
+          ]
+        });
+      });
+
       iabStringFromQueryStringBtn.addEventListener("click", function() {
         alloy("setConsent", {
           consent: [
@@ -96,8 +208,6 @@
               standard: "IAB",
               version: "2.0",
               value: getUrlParameter("iabConsentString"),
-              // TODO: If this flag is set to false, it's business as usual.
-              // Make sure we have a test case for it.
               gdprApplies: getUrlParameter("gdprApplies") || true
             }
           ]
@@ -105,7 +215,6 @@
       });
 
       iabOptInBtn.addEventListener("click", function() {
-        // TODO: Use a real consent string once we figure out how to set the Adobe vendor ID in onetrust.
         var optedInConsentString =
           "CO1Z4yuO1Z4yuAcABBENArCsAP_AAH_AACiQGCNX_T5eb2vj-3Zdt_tkaYwf55y3o-wzhhaIse8NwIeH7BoGP2MwvBX4JiQCGBAkkiKBAQdtHGhcCQABgIhRiTKMYk2MjzNKJLJAilsbe0NYCD9mnsHT3ZCY70--u__7P3fAwQgkwVLwCRIWwgJJs0ohTABCOICpBwCUEIQEClhoACAnYFAR6gAAAIDAACAAAAEEEBAIABAAAkIgAAAEBAKACIBAACAEaAhAARIEAsAJEgCAAVA0JACKIIQBCDgwCjlACAoAAAAA.YAAAAAAAAAAA";
         alloy("setConsent", {
@@ -114,8 +223,6 @@
               standard: "IAB",
               version: "2.0",
               value: optedInConsentString,
-              // TODO: If this flag is set to false, it's business as usual.
-              // Make sure we have a test case for it.
               gdprApplies: getUrlParameter("gdprApplies") || true
             }
           ]
@@ -123,7 +230,6 @@
       });
 
       iabOptOutBtn.addEventListener("click", function() {
-        // TODO: Use a real consent string once we figure out how to set the Adobe vendor ID in onetrust.
         var optedOutConsentString =
           "CO1Z5evO1Z5evAcABBENArCgAAAAAH_AACiQGCNX_T5eb2vj-3Zdt_tkaYwf55y3o-wzhhaIse8NwIeH7BoGP2MwvBX4JiQCGBAkkiKBAQdtHGhcCQABgIhRiTKMYk2MjzNKBLJAilsbe0NYCD9mnsHT3ZCY70--u__7P3fAwQgkwVLwCRIWwgJJs0ohTABCOICpBwCUEIQEClhoACAnYFAR6gAAAIDAACAAAAEEEBAIABAAAkIgAAAEBAKACIBAACAEaAhAARIEAsAJEgCAAVA0JACKIIQBCDgwCjlACAoAAAAA.YAAAAAAAAAAA";
         alloy("setConsent", {
@@ -132,8 +238,6 @@
               standard: "IAB",
               version: "2.0",
               value: optedOutConsentString,
-              // TODO: If this flag is set to false, it's business as usual.
-              // Make sure we have a test case for it.
               gdprApplies: getUrlParameter("gdprApplies") || true
             }
           ]
