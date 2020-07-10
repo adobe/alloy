@@ -25,7 +25,6 @@ import createNoUnknownFieldsValidator from "./createNoUnknownFieldsValidator";
 import createNonEmptyValidator from "./createNonEmptyValidator";
 import createObjectOfValidator from "./createObjectOfValidator";
 import createAnyOfValidator from "./createAnyOfValidator";
-import createMapOfValidator from "./createMapOfValidator";
 import createUniqueValidator from "./createUniqueValidator";
 import domainValidator from "./domainValidator";
 import integerValidator from "./integerValidator";
@@ -127,9 +126,7 @@ const string = function string() {
     unique
   });
 };
-const mapOf = function mapOf(schema) {
-  return nullSafeChain(this, createMapOfValidator(schema));
-};
+
 const boundAnyOf = anyOf.bind(base);
 const boundAnything = anything.bind(base);
 const boundArrayOf = arrayOf.bind(base);
@@ -140,7 +137,6 @@ const boundNumber = number.bind(base);
 const boundMapOfValues = mapOfValues.bind(base);
 const boundObjectOf = objectOf.bind(base);
 const boundString = string.bind(base);
-const boundMap = mapOf.bind(base);
 
 // compound validators
 const boundEnumOf = function boundEnumOf(...values) {
@@ -161,6 +157,5 @@ export {
   boundMapOfValues as mapOfValues,
   boundObjectOf as objectOf,
   boundString as string,
-  boundEnumOf as enumOf,
-  boundMap as mapOf
+  boundEnumOf as enumOf
 };

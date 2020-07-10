@@ -16,7 +16,7 @@ import {
   boolean,
   arrayOf,
   enumOf,
-  mapOf
+  mapOfValues
 } from "../../utils/validation";
 import {
   AMBIGUOUS,
@@ -34,9 +34,8 @@ export default ({ options, logger }) => {
     type: string(),
     xdm: objectOf({
       eventType: string(),
-      identityMap: mapOf({
-        key: string(),
-        value: arrayOf(
+      identityMap: mapOfValues(
+        arrayOf(
           objectOf({
             id: string().required(),
             primary: boolean().default(false),
@@ -47,7 +46,7 @@ export default ({ options, logger }) => {
             ).default(AMBIGUOUS)
           }).noUnknownFields()
         )
-      })
+      )
     }),
     data: objectOf({}),
     renderDecisions: boolean(),
