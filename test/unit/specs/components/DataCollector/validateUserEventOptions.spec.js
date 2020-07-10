@@ -14,12 +14,75 @@ import validateUserEventOptions from "../../../../../src/components/DataCollecto
 describe("DataCollector::validateUserEventOptions", () => {
   it("throws error for invalid options", () => {
     [
-      undefined,
-      { xdm: [] },
-      { renderDecisions: "" },
-      { data: [] },
-      { decisionScopes: {} },
-      { datasetId: 3634 }
+      {
+        xdm: {
+          eventType: "test",
+          identityMap: "123"
+        }
+      },
+      {
+        xdm: {
+          eventType: "test",
+          identityMap: {
+            namespace1: { id: "123", primary: true }
+          }
+        }
+      },
+      {
+        xdm: {
+          eventType: "test",
+          identityMap: {
+            namespace1: [{ id: "123", primary: true, blah: "noSuchProperty" }]
+          }
+        }
+      },
+      {
+        xdm: {
+          eventType: "test",
+          identityMap: {
+            namespace1: {}
+          }
+        }
+      },
+      {
+        xdm: {
+          eventType: "test",
+          identityMap: {
+            namespace1: [
+              {
+                id: "123",
+                primary: true,
+                authenticatedState: "loggedIn"
+              }
+            ]
+          }
+        }
+      },
+      {
+        xdm: {
+          eventType: "test",
+          identityMap: {
+            namespace1: [
+              {
+                primary: true,
+                authenticatedState: "ambiguous"
+              },
+              {
+                id: "23",
+                primary: true,
+                authenticatedState: "ambiguous"
+              }
+            ],
+            namespace2: [
+              {
+                id: "23",
+                primary: true,
+                authenticatedState: "ambiguous"
+              }
+            ]
+          }
+        }
+      }
     ].forEach(options => {
       expect(() => {
         validateUserEventOptions({ options });
@@ -45,7 +108,19 @@ describe("DataCollector::validateUserEventOptions", () => {
       { data: { test: "" } },
       { renderDecisions: true, data: { test: "" } },
       { decisionScopes: ["test"] },
-      { datasetId: "12432ewfr12" }
+      { datasetId: "12432ewfr12" },
+      {
+        xdm: {
+          eventType: "test",
+          identityMap: {
+            namespace1: [
+              { id: "123", primary: true, authenticatedState: "authenticated" },
+              { id: "3" }
+            ],
+            namespace2: [{ id: "23", authenticatedState: "ambiguous" }]
+          }
+        }
+      }
     ].forEach(options => {
       expect(() => {
         validateUserEventOptions({ options });
