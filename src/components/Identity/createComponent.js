@@ -1,25 +1,22 @@
 import getIdentityOptionsValidator from "./getIdentity/getIdentityOptionsValidator";
 
 export default ({
-  addEcidQueryToEvent,
-  ensureSingleIdentity,
+  addEcidQueryToPayload,
+  ensureRequestHasIdentity,
   setLegacyEcid,
   handleResponseForIdSyncs,
   getEcidFromResponse,
   getIdentity,
   consent
 }) => {
-  let ecid;
+  let ecid; 
   return {
     lifecycle: {
-      // TODO: It would probably be best to query on the data collection payload level
-      // rather than the event. It seems like a payload-level thing and would save
-      // space whenever we start supporting multiple events per payload.
-      onBeforeEvent({ event }) {
-        addEcidQueryToEvent(event);
-      },
       onBeforeRequest({ payload, onResponse }) {
-        return ensureSingleIdentity({ payload, onResponse });
+        // Querying the ECID at the payload level so would return it on all requests,
+        // like `setConsent`.
+        addEcidQueryToPayload(payload);
+        return ensureRequestHasIdentity({ payload, onResponse });
       },
       onResponse({ response }) {
         if (!ecid) {

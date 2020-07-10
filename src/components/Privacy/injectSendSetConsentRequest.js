@@ -10,19 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import ecidNamespace from "../../constants/ecidNamespace";
-
 export default ({
   createConsentRequestPayload,
   sendEdgeNetworkRequest
 }) => consent => {
   const payload = createConsentRequestPayload();
   payload.setConsent(consent);
-  payload.mergeQuery({
-    identity: {
-      fetch: [ecidNamespace]
-    }
-  });
   return sendEdgeNetworkRequest({
     payload,
     action: "privacy/set-consent"

@@ -23,7 +23,7 @@ import awaitVisitorOptIn from "./visitorService/awaitVisitorOptIn";
 import injectGetEcidFromVisitor from "./visitorService/injectGetEcidFromVisitor";
 import injectHandleResponseForIdSyncs from "./injectHandleResponseForIdSyncs";
 import injectEnsureSingleIdentity from "./injectEnsureSingleIdentity";
-import addEcidQueryToEvent from "./addEcidQueryToEvent";
+import addEcidQueryToPayload from "./addEcidQueryToPayload";
 import injectDoesIdentityCookieExist from "./injectDoesIdentityCookieExist";
 import injectSetDomainForInitialIdentityPayload from "./injectSetDomainForInitialIdentityPayload";
 import injectAddLegacyEcidToPayload from "./injectAddLegacyEcidToPayload";
@@ -84,8 +84,8 @@ const createIdentity = ({
     processIdSyncs
   });
   return createComponent({
-    addEcidQueryToEvent,
     ensureSingleIdentity,
+    addEcidQueryToPayload,
     setLegacyEcid: legacyIdentity.setEcid,
     handleResponseForIdSyncs,
     getEcidFromResponse,
