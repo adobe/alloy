@@ -2,21 +2,21 @@ import getIdentityOptionsValidator from "./getIdentity/getIdentityOptionsValidat
 
 export default ({
   addEcidQueryToPayload,
-  ensureRequestHasIdentity,
+  ensureSingleIdentity,
   setLegacyEcid,
   handleResponseForIdSyncs,
   getEcidFromResponse,
   getIdentity,
   consent
 }) => {
-  let ecid; 
+  let ecid;
   return {
     lifecycle: {
       onBeforeRequest({ payload, onResponse }) {
-        // Querying the ECID at the payload level so would return it on all requests,
-        // like `setConsent`.
+        // Querying the ECID on every request to be able to set the legacy cookie, and make it
+        // available for the `getIdentity` command.
         addEcidQueryToPayload(payload);
-        return ensureRequestHasIdentity({ payload, onResponse });
+        return ensureSingleIdentity({ payload, onResponse });
       },
       onResponse({ response }) {
         if (!ecid) {

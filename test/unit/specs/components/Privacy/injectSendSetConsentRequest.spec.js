@@ -11,7 +11,7 @@ describe("Privacy:injectSendSetConsentRequest", () => {
       "createConsentRequestPayload"
     );
     sendEdgeNetworkRequest = jasmine.createSpy("sendEdgeNetworkRequest");
-    payload = jasmine.createSpyObj("payload", ["setConsent", "mergeQuery"]);
+    payload = jasmine.createSpyObj("payload", ["setConsent"]);
     createConsentRequestPayload.and.returnValue(payload);
     sendSetConsentRequest = injectSendSetConsentRequest({
       createConsentRequestPayload,
