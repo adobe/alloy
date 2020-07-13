@@ -11,11 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import injectEnsureSingleIdentity from "../../../../../src/components/Identity/injectEnsureSingleIdentity";
-// By using the real injectAwaitIdentityCookie, this isn't a true unit test. The interactions between these
-// functions are so tightly coupled that it was much easier to understand the tests if I just included the
-// real one.
-import injectAwaitIdentityCookie from "../../../../../src/components/Identity/injectAwaitIdentityCookie";
-import { createCallbackAggregator } from "../../../../../src/utils";
+import { defer } from "../../../../../src/utils";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("Identity::injectEnsureSingleIdentity", () => {
@@ -30,7 +26,9 @@ describe("Identity::injectEnsureSingleIdentity", () => {
   let recievedIndex;
   let payloads;
   let requestsSentYet;
-  let onResponseCallbackAggregators;
+  let awaitIdentityDeferreds;
+  let onResponse;
+  let onRequestFailure;
   let doesIdentityCookieExistBoolean;
 
   beforeEach(() => {
@@ -40,10 +38,9 @@ describe("Identity::injectEnsureSingleIdentity", () => {
     recievedIndex = 0;
     payloads = [];
     requestsSentYet = [];
-    onResponseCallbackAggregators = [];
+    awaitIdentityDeferreds = [];
     doesIdentityCookieExistBoolean = false;
 
-    doesIdentityCookieExist = () => doesIdentityCookieExistBoolean;
     setDomainForInitialIdentityPayload = payload => {
       payload.domain = "initialIdentityDomain";
     };
@@ -51,10 +48,15 @@ describe("Identity::injectEnsureSingleIdentity", () => {
       payload.legacyId = "legacyId";
       return Promise.resolve();
     };
-    awaitIdentityCookie = injectAwaitIdentityCookie({
-      orgId: "myorg",
-      doesIdentityCookieExist
-    });
+    awaitIdentityCookie = () => {
+      const deferred = defer();
+      awaitIdentityDeferreds.push(deferred);
+      return deferred.promise;
+    };
+    doesIdentityCookieExist = () => doesIdentityCookieExistBoolean;
+  });
+
+  const setup = () => {
     ensureSingleIdentity = injectEnsureSingleIdentity({
       doesIdentityCookieExist,
       setDomainForInitialIdentityPayload,
@@ -62,19 +64,19 @@ describe("Identity::injectEnsureSingleIdentity", () => {
       awaitIdentityCookie,
       logger
     });
-  });
+  };
 
   const sendRequest = () => {
     const payload = { id: sentIndex };
     payloads.push(payload);
-    const onResponseCallbackAggregator = createCallbackAggregator();
-    onResponseCallbackAggregators.push(onResponseCallbackAggregator);
-
+    onResponse = jasmine.createSpy("onResponse");
+    onRequestFailure = jasmine.createSpy("onRequestFailure");
     const i = sentIndex;
     requestsSentYet.push(false);
     ensureSingleIdentity({
       payload,
-      onResponse: onResponseCallbackAggregator.add
+      onResponse,
+      onRequestFailure
     }).then(() => {
       requestsSentYet[i] = true;
     });
@@ -82,21 +84,17 @@ describe("Identity::injectEnsureSingleIdentity", () => {
     sentIndex += 1;
   };
   const simulateResponseWithIdentity = () => {
-    doesIdentityCookieExistBoolean = true;
-    onResponseCallbackAggregators[recievedIndex].call();
+    doesIdentityCookieExist = true;
+    awaitIdentityDeferreds[recievedIndex].resolve();
     recievedIndex += 1;
   };
   const simulateResponseWithoutIdentity = () => {
-    doesIdentityCookieExistBoolean = false;
-    try {
-      onResponseCallbackAggregators[recievedIndex].call();
-    } catch (e) {
-      // expected
-    }
+    awaitIdentityDeferreds[recievedIndex].reject();
     recievedIndex += 1;
   };
 
   it("allows first request to proceed and pauses subsequent requests until identity cookie exists", () => {
+    setup();
     return Promise.resolve()
       .then(() => {
         sendRequest();
@@ -126,6 +124,7 @@ describe("Identity::injectEnsureSingleIdentity", () => {
   });
 
   it("allows the second request to be called if the first doesn't set the cookie, but still holds up the third", () => {
+    setup();
     return Promise.resolve()
       .then(() => {
         sendRequest();
@@ -156,6 +155,7 @@ describe("Identity::injectEnsureSingleIdentity", () => {
   });
 
   it("logs messages", () => {
+    setup();
     return Promise.resolve()
       .then(() => {
         sendRequest();
@@ -182,6 +182,7 @@ describe("Identity::injectEnsureSingleIdentity", () => {
 
   it("sends a message if we have an identity cookie", () => {
     doesIdentityCookieExistBoolean = true;
+    setup();
     return Promise.resolve()
       .then(() => {
         sendRequest();
@@ -191,5 +192,15 @@ describe("Identity::injectEnsureSingleIdentity", () => {
         expect(requestsSentYet).toEqual([true]);
         expect(payloads).toEqual([{ id: 0 }]);
       });
+  });
+
+  it("calls awaitIdentityCookie with the correct parameters", () => {
+    awaitIdentityCookie = jasmine.createSpy("awaitIdentityCookie");
+    setup();
+    sendRequest();
+    expect(awaitIdentityCookie).toHaveBeenCalledWith({
+      onResponse,
+      onRequestFailure
+    });
   });
 });

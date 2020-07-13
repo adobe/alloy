@@ -18,8 +18,8 @@ export default ({
       onBeforeEvent({ event }) {
         addEcidQueryToEvent(event);
       },
-      onBeforeRequest({ payload, onResponse }) {
-        return ensureSingleIdentity({ payload, onResponse });
+      onBeforeRequest({ payload, onResponse, onRequestFailure }) {
+        return ensureSingleIdentity({ payload, onResponse, onRequestFailure });
       },
       onResponse({ response }) {
         if (!ecid) {

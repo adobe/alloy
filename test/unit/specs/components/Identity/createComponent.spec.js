@@ -60,12 +60,18 @@ describe("Identity::createComponent", () => {
   it("ensures request has identity", () => {
     const payload = { type: "payload" };
     const onResponse = jasmine.createSpy("onResponse");
+    const onRequestFailure = jasmine.createSpy("onRequestFailure");
     const ensureSingleIdentityPromise = Promise.resolve();
     ensureSingleIdentity.and.returnValue(ensureSingleIdentityPromise);
-    const result = component.lifecycle.onBeforeRequest({ payload, onResponse });
+    const result = component.lifecycle.onBeforeRequest({
+      payload,
+      onResponse,
+      onRequestFailure
+    });
     expect(ensureSingleIdentity).toHaveBeenCalledWith({
       payload,
-      onResponse
+      onResponse,
+      onRequestFailure
     });
     expect(result).toBe(ensureSingleIdentityPromise);
   });

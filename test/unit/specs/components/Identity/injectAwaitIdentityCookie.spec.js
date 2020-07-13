@@ -16,7 +16,9 @@ describe("Identity::injectAwaitIdentityCookie", () => {
   let identityCookieExists;
   let awaitIdentityCookie;
   let runOnResponseCallbacks;
+  let runOnRequestFailureCallbacks;
   let onResponse;
+  let onRequestFailure;
 
   beforeEach(() => {
     identityCookieExists = true;
@@ -27,6 +29,13 @@ describe("Identity::injectAwaitIdentityCookie", () => {
       });
     };
     onResponse = callback => onResponseCallbacks.push(callback);
+    const onRequestFailureCallbacks = [];
+    runOnRequestFailureCallbacks = () => {
+      onRequestFailureCallbacks.forEach(callback => {
+        callback();
+      });
+    };
+    onRequestFailure = callback => onRequestFailureCallbacks.push(callback);
     awaitIdentityCookie = injectAwaitIdentityCookie({
       orgId: "org@adobe",
       doesIdentityCookieExist: () => identityCookieExists
@@ -34,18 +43,31 @@ describe("Identity::injectAwaitIdentityCookie", () => {
   });
 
   it("resolves promise if identity cookie exists after response", () => {
-    const promise = awaitIdentityCookie(onResponse);
+    const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
     runOnResponseCallbacks();
     return promise;
   });
 
   it("rejects promise if identity cookie does not exist after response", () => {
     identityCookieExists = false;
-    const promise = awaitIdentityCookie(onResponse);
+    const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
     const errorRegex = /verify that the org ID org@adobe configured/;
     expect(() => {
       runOnResponseCallbacks();
     }).toThrowError(errorRegex);
     return expectAsync(promise).toBeRejectedWithError(errorRegex);
+  });
+
+  it("resolves promise if identity cookie exists after request failure", () => {
+    const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
+    runOnRequestFailureCallbacks();
+    return promise;
+  });
+
+  it("rejects promise if identity cookie does not exist after request failure", () => {
+    identityCookieExists = false;
+    const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
+    runOnRequestFailureCallbacks();
+    return expectAsync(promise).toBeRejected();
   });
 });
