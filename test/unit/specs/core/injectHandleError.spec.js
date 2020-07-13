@@ -17,36 +17,36 @@ const expectedMessage = "[testinstanceName] Bad thing happened.";
 describe("injectHandleError", () => {
   it("converts non-error to error and throws", () => {
     const handleError = injectHandleError({
-      instanceName: "testinstanceName"
+      errorPrefix: "[testinstanceName]"
     });
 
     expect(() => {
-      handleError("Bad thing happened.");
+      handleError("Bad thing happened.", "myoperation");
     }).toThrowError(expectedMessage);
   });
 
   it("rethrows error with instanceName prepended", () => {
     const handleError = injectHandleError({
-      instanceName: "testinstanceName"
+      errorPrefix: "[testinstanceName]"
     });
 
     expect(() => {
-      handleError(new Error("Bad thing happened."));
+      handleError(new Error("Bad thing happened."), "myoperation");
     }).toThrowError(expectedMessage);
   });
 
   it("logs an error and returns empty object if error is due to declined consent", () => {
     const logger = jasmine.createSpyObj("logger", ["warn"]);
     const handleError = injectHandleError({
-      instanceName: "testinstanceName",
+      errorPrefix: "[testinstanceName]",
       logger
     });
 
     const error = new Error("User declined consent.");
     error.code = "declinedConsent";
-    expect(handleError(error, "test")).toEqual({});
+    expect(handleError(error, "myoperation")).toEqual({});
     expect(logger.warn).toHaveBeenCalledWith(
-      "The test command could not fully complete because the user declined consent."
+      "The myoperation could not fully complete because the user declined consent."
     );
   });
 });

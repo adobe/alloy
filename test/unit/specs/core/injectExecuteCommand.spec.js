@@ -40,7 +40,7 @@ describe("injectExecuteCommand", () => {
       .then(fail)
       .catch(error => {
         expect(error.message).toContain("The library must be configured first");
-        expect(handleError).toHaveBeenCalledWith(error, "event");
+        expect(handleError).toHaveBeenCalledWith(error, "event command");
       });
   });
 
@@ -59,7 +59,7 @@ describe("injectExecuteCommand", () => {
         expect(error.message).toContain(
           "The library has already been configured"
         );
-        expect(handleError).toHaveBeenCalledWith(error, "configure");
+        expect(handleError).toHaveBeenCalledWith(error, "configure command");
       });
   });
 
@@ -83,7 +83,7 @@ describe("injectExecuteCommand", () => {
         expect(error.message).toBe(
           "The bogus command does not exist. List of available commands: configure, setDebug, genuine."
         );
-        expect(handleError).toHaveBeenCalledWith(error, "bogus");
+        expect(handleError).toHaveBeenCalledWith(error, "bogus command");
       });
   });
 
@@ -134,7 +134,7 @@ describe("injectExecuteCommand", () => {
     return executeCommand("test", {}).catch(() => {
       expect(handleError).toHaveBeenCalledWith(
         new Error("Unexpected error"),
-        "test"
+        "test command"
       );
     });
   });

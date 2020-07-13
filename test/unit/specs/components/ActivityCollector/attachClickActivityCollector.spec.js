@@ -13,12 +13,13 @@ governing permissions and limitations under the License.
 import attachClickActivityCollector from "../../../../../src/components/ActivityCollector/attachClickActivityCollector";
 
 describe("ActivityCollector::attachClickActivityCollector", () => {
-  const cfg = {};
+  const config = {};
   let eventManager;
   let lifecycle;
   let clickHandler;
+  let handleError;
   beforeEach(() => {
-    cfg.clickCollectionEnabled = true;
+    config.clickCollectionEnabled = true;
     eventManager = {
       createEvent: () => {
         return {
@@ -36,33 +37,42 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
     spyOn(document, "addEventListener").and.callFake((name, handler, type) => {
       clickHandler = handler;
     });
+    handleError = jasmine.createSpy("handleError");
   });
 
+  const build = () => {
+    attachClickActivityCollector({
+      config,
+      eventManager,
+      lifecycle,
+      handleError
+    });
+  };
+
   it("Attaches click handler if clickCollectionEnabled is set to true", () => {
-    attachClickActivityCollector(cfg, eventManager, lifecycle);
+    build();
     expect(document.addEventListener).toHaveBeenCalled();
   });
 
   it("Does not attach click handler if clickCollectionEnabled is set to false", () => {
-    cfg.clickCollectionEnabled = false;
-    attachClickActivityCollector(cfg, eventManager, lifecycle);
+    config.clickCollectionEnabled = false;
+    build();
     expect(document.addEventListener).not.toHaveBeenCalled();
   });
 
   it("Publishes onClick lifecycle events at clicks when clickCollectionEnabled is set to true", () => {
-    attachClickActivityCollector(cfg, eventManager, lifecycle);
+    build();
     clickHandler({});
     expect(lifecycle.onClick).toHaveBeenCalled();
   });
 
-  it("Augments error that occurs inside onClick lifecycle", () => {
-    lifecycle.onClick.and.returnValue(
-      Promise.reject(new Error("Bad thing happened."))
-    );
-    attachClickActivityCollector(cfg, eventManager, lifecycle);
-    expectAsync(clickHandler({})).toBeRejectedWithError(
-      "Failed to track click\nCaused by: Bad thing happened."
-    );
+  it("Handles errors inside onClick lifecycle", () => {
+    const error = new Error("Bad thing happend.");
+    lifecycle.onClick.and.returnValue(Promise.reject(error));
+    build();
+    return clickHandler({}).then(() => {
+      expect(handleError).toHaveBeenCalledWith(error, "click collection");
+    });
   });
 
   it("Sends populated events", () => {
@@ -72,7 +82,7 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
       };
     };
     spyOn(eventManager, "sendEvent").and.callThrough();
-    attachClickActivityCollector(cfg, eventManager, lifecycle);
+    build();
     return clickHandler({}).then(() => {
       expect(eventManager.sendEvent).toHaveBeenCalled();
     });
@@ -80,7 +90,7 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
 
   it("Does not send empty events", () => {
     spyOn(eventManager, "sendEvent").and.callThrough();
-    attachClickActivityCollector(cfg, eventManager, lifecycle);
+    build();
     return clickHandler({}).then(() => {
       expect(eventManager.sendEvent).not.toHaveBeenCalled();
     });
@@ -92,9 +102,23 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
         isEmpty: () => false
       };
     };
-    attachClickActivityCollector(cfg, eventManager, lifecycle);
+    build();
     return clickHandler({}).then(result => {
       expect(result).toBe(undefined);
+    });
+  });
+
+  it("handles errors thrown in sendEvent", () => {
+    const error = new Error("Network Error");
+    eventManager.createEvent = () => {
+      return {
+        isEmpty: () => false
+      };
+    };
+    spyOn(eventManager, "sendEvent").and.returnValue(Promise.reject(error));
+    build();
+    return clickHandler({}).then(() => {
+      expect(handleError).toHaveBeenCalledWith(error, "click collection");
     });
   });
 });
