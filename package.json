@@ -19,7 +19,7 @@
     "functional:ci": "EDGE_ENV=\"int\" testcafe chrome",
     "functional:ci:bs": "EDGE_ENV=\"int\" testcafe 'browserstack:ie@11:Windows 10'",
     "functional:local": "EDGE_ENV=\"int\" testcafe chrome",
-    "functional:cron:prod": "EDGE_ENV=\"prod\" testcafe chrome",
+    "functional:cron:prod": "EDGE_ENV=\"prod\" ALLOY_ENV=\"prod\" testcafe chrome",
     "functional:local:allure": "EDGE_ENV=\"int\" testcafe chrome -r allure",
     "functional:local:headless": "EDGE_ENV=\"int\" testcafe chrome:headless",
     "functional:local:build": "EDGE_ENV=\"int\" npm run build:prod && testcafe chrome",
