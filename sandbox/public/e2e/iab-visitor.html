@@ -4,28 +4,113 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>IAB 2.0 Using Visitor.js</title>
+    <title>IAB testing page using Visitor</title>
 
-    <!-- OneTrust Cookies Consent Notice start -->
-    <script
-      src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"
-      type="text/javascript"
-      charset="UTF-8"
-      data-domain-script="679b1dc5-4386-4fa9-ba2b-8c8cee2d8d6f-test"
-    ></script>
-    <script type="text/javascript">
-      function OptanonWrapper() {}
-    </script>
-    <!-- OneTrust Cookies Consent Notice end -->
+    <script src="./js/__tcfapi.js"></script>
+    <script src="./js/visitor.5.js"></script>
 
-    <script src="./visitor.5.js"></script>
-  </head>
-  <body>
-    <h1>End-to-end Test Page running the IAB testing suite using Visitor.js</h1>
-    <button class="iab-opt-in-onetrust-api">Opt In Via OneTrust JS API</button>
-    <button class="iab-opt-out-onetrust-api">
-      Opt Out Via OneTrust JS API
-    </button>
+    <style>
+      div {
+        margin-bottom: 35px;
+      }
+
+      fieldset {
+        padding: 30px;
+      }
+      .global {
+        display: none;
+      }
+      .consent-ui {
+        height: 100%;
+      }
+      .purposes,
+      .vendor-consents {
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 20px;
+      }
+      code {
+        font-size: 120%;
+      }
+
+      .configs li {
+        margin-bottom: 20px;
+      }
+
+      body {
+        margin: 30px;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      button {
+        font-size: 15px;
+        cursor: pointer;
+        padding: 10px;
+        margin: 10px;
+      }
+
+      fieldset {
+        width: auto;
+        display: inline-block;
+        padding: 10px;
+        border-color: white;
+      }
+      legend {
+        font-weight: bold;
+      }
+      label {
+        display: block;
+      }
+      .wizard,
+      .multiple {
+        display: inline-block;
+        vertical-align: top;
+      }
+      .w {
+        display: none;
+      }
+
+      .screen1 {
+        display: block;
+      }
+      .loading {
+        visibility: hidden;
+      }
+      .choose-ui {
+        margin: 45px 0;
+      }
+      .choose-ui span {
+        cursor: pointer;
+        text-decoration: underline;
+      }
+      .choose-ui h4 {
+        display: inline;
+      }
+      .consent-ui {
+        height: 220px;
+        background: #f6f6f6;
+        padding-top: 30px;
+        margin-bottom: 45px;
+        padding-left: 30px;
+      }
+      .consent-ui > div {
+        display: none;
+      }
+      .target-ui h3 {
+        color: #c52e2e;
+      }
+      .target-ui h1 {
+        color: #4cc425;
+      }
+      .visitor-ui .btnGetMid {
+        margin-left: 0;
+      }
+      .msg {
+        font-style: italic;
+        font-size: 90%;
+        font-weight: bold;
+        color: #665353;
+      }
+    </style>
 
     <script>
       function getUrlParameter(name) {
@@ -37,33 +122,54 @@
           : decodeURIComponent(results[1].replace(/\+/g, " "));
       }
 
-      var optInViaOneTrustApi = document.querySelector(
-        ".iab-opt-in-onetrust-api"
-      );
-      var optOutViaOneTrustApi = document.querySelector(
-        ".iab-opt-out-onetrust-api"
-      );
+      const orgId =
+        getUrlParameter("orgId") || "A99B6A045DA8B6320A494233@AdobeOrg";
 
-      function instantiateVisitor() {
-        var orgId =
-          getUrlParameter("orgId") || "63F828255DBB44320A494027@AdobeOrg";
-        var visitor = Visitor.getInstance(orgId, {
-          doesOptInApply: true,
-          isIabContext: true,
-          isOptInStorageEnabled: false,
-          audienceManagerServer:
-            getUrlParameter("audienceManagerServer") || "dcs-qe1.demdex.net"
-        });
-      }
-
-      optInViaOneTrustApi.addEventListener("click", function() {
-        OneTrust.AllowAll();
-        instantiateVisitor();
+      __tcfapi.configure({
+        latency: 200,
+        gdprApplies: true,
+        purpose1: false,
+        purpose10: true,
+        vendorConsent: true,
+        shouldWaitForExplicitConsent: true,
+        tcString: getUrlParameter("consentString")
       });
 
-      optOutViaOneTrustApi.addEventListener("click", function() {
-        OneTrust.RejectAll();
-        instantiateVisitor();
+      var visitor = Visitor.getInstance(orgId, {
+        doesOptInApply: true,
+        isIabContext: true,
+        isOptInStorageEnabled: false,
+        audienceManagerServer:
+          getUrlParameter("aamServer") || "dcs-qe1.demdex.net"
+      });
+    </script>
+  </head>
+  <body>
+    <div class="submit-form">
+      <button class="submit">Submit your consent choices.</button>
+      <button class="getEcidBtn">Get ECID Value</button>
+    </div>
+
+    <script>
+      var submitBtn = document.querySelector(".submit");
+      var getEcidBtn = document.querySelector(".getEcidBtn");
+
+      submitBtn.addEventListener("click", function() {
+        var consent = {
+          shouldWaitForExplicitConsent: false,
+          purpose1: true,
+          purpose10: true,
+          vendorConsent: true
+        };
+
+        __tcfapi.configure(consent);
+      });
+
+      getEcidBtn.addEventListener("click", function() {
+        visitor.getMarketingCloudVisitorID(function(ecid) {
+          console.log("ECID", ecid);
+          window.ecid = ecid;
+        }, true);
       });
     </script>
   </body>
