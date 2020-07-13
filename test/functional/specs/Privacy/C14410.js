@@ -49,28 +49,19 @@ test("Test C14410: Setting consent for unknown purposes fails", async t => {
     ...orgMainConfigMain
   });
   const errorMessage = getErrorMessageFromSetConsent({
-    consent: [
-      { standard: "Adobe", version: "1.0", value: { analytics: "pending" } }
-    ]
+    consent: [{ standard: "Adobe", version: "1.0", value: { analytics: "in" } }]
   });
   await t
     .expect(errorMessage)
     .ok("Expected the setConsent command to be rejected");
-  await t.expect(errorMessage).contains("Expected a valid consent object");
-});
+  await t
+    .expect(errorMessage)
+    .contains("The server responded with the following errors");
 
-test("Test C14410: Setting consent to 'pending' fails", async t => {
-  await configureAlloyInstance("alloy", {
-    defaultConsent: "pending",
-    ...orgMainConfigMain
+  // make sure we can call it again with the correct values
+  await t.eval(() => {
+    window.alloy("setConsent", {
+      consent: [{ standard: "Adobe", version: "1.0", value: { general: "in" } }]
+    });
   });
-  const errorMessage = getErrorMessageFromSetConsent({
-    consent: [
-      { standard: "Adobe", version: "1.0", value: { general: "pending" } }
-    ]
-  });
-  await t
-    .expect(errorMessage)
-    .ok("Expected the setConsent command to be rejected");
-  await t.expect(errorMessage).contains("Expected a valid consent object");
 });
