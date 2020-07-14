@@ -18,7 +18,7 @@ const createAudiences = ({ logger }) => {
     fireReferrerHideableImage,
     logger
   });
-  const handleResponse = ({ response }) => {
+  const processDestinationsFromResponse = ({ response }) => {
     if (!response) {
       return undefined;
     }
@@ -27,8 +27,8 @@ const createAudiences = ({ logger }) => {
   };
   return {
     lifecycle: {
-      onResponse: handleResponse,
-      onRequestFailure: handleResponse
+      onResponse: processDestinationsFromResponse,
+      onRequestFailure: processDestinationsFromResponse
     },
     commands: {}
   };
