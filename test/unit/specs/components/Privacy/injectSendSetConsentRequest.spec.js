@@ -21,13 +21,15 @@ describe("Privacy:injectSendSetConsentRequest", () => {
 
   it("sets consent level and on payload and sends the request", () => {
     sendEdgeNetworkRequest.and.returnValue(Promise.resolve());
-    return sendSetConsentRequest("anything").then(resolvedValue => {
-      expect(payload.setConsent).toHaveBeenCalledWith("anything");
-      expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
-        payload,
-        action: "privacy/set-consent"
-      });
-      expect(resolvedValue).toBeUndefined();
-    });
+    return sendSetConsentRequest({ consentOptions: "anything" }).then(
+      resolvedValue => {
+        expect(payload.setConsent).toHaveBeenCalledWith("anything");
+        expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
+          payload,
+          action: "privacy/set-consent"
+        });
+        expect(resolvedValue).toBeUndefined();
+      }
+    );
   });
 });

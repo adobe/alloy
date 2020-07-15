@@ -1,6 +1,10 @@
 import validateSetConsentOptions from "../../../../../src/components/Privacy/validateSetConsentOptions";
 import describeValidation from "../../../helpers/describeValidation";
 
+const validGeneralConsent = [
+  { standard: "Adobe", version: "1.0", value: { general: "in" } }
+];
+
 describeValidation(
   "Privacy:validateSetConsentOptions",
   validateSetConsentOptions,
@@ -113,6 +117,64 @@ describeValidation(
           { standard: "Adobe", version: "1.0", value: { general: "in" } }
         ]
       }
+    },
+    {
+      value: {
+        consent: validGeneralConsent,
+        identityMap: {
+          HYP: [{}]
+        }
+      }
+    },
+    {
+      value: {
+        consent: validGeneralConsent,
+        identityMap: {
+          HYP: [
+            {
+              id: "1234",
+              authenticatedState: "ambiguous"
+            }
+          ]
+        }
+      }
+    },
+    {
+      value: {
+        consent: validGeneralConsent,
+        identityMap: {
+          HYP: [
+            {
+              blah: "1234"
+            }
+          ]
+        }
+      }
+    },
+    {
+      value: {
+        consent: validGeneralConsent,
+        identityMap: []
+      },
+      error: true
+    },
+    {
+      value: {
+        consent: validGeneralConsent,
+        identityMap: {
+          email: []
+        }
+      },
+      error: true
+    },
+    {
+      value: {
+        consent: validGeneralConsent,
+        identityMap: {
+          email: [[]]
+        }
+      },
+      error: true
     }
   ]
 );

@@ -1,6 +1,7 @@
 import {
   enumOf,
   objectOf,
+  mapOfValues,
   literal,
   arrayOf,
   anyOf,
@@ -38,7 +39,20 @@ export default objectOf({
     )
   )
     .nonEmpty()
-    .required()
+    .required(),
+  identityMap: mapOfValues(
+    arrayOf(
+      objectOf({
+        authenticatedState: string(),
+        id: string(),
+        namespace: objectOf({
+          code: string()
+        }).noUnknownFields(),
+        primary: boolean(),
+        xid: string()
+      })
+    ).nonEmpty()
+  )
 })
   .noUnknownFields()
   .required();
