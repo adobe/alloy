@@ -1,13 +1,13 @@
 import {
   enumOf,
   objectOf,
-  mapOfValues,
   literal,
   arrayOf,
   anyOf,
   string,
   boolean
 } from "../../utils/validation";
+import { validateIdentityMap } from "../../utils";
 import { IN, OUT } from "../../constants/consentStatus";
 import { GENERAL } from "../../constants/consentPurpose";
 
@@ -40,19 +40,7 @@ export default objectOf({
   )
     .nonEmpty()
     .required(),
-  identityMap: mapOfValues(
-    arrayOf(
-      objectOf({
-        authenticatedState: string(),
-        id: string(),
-        namespace: objectOf({
-          code: string()
-        }).noUnknownFields(),
-        primary: boolean(),
-        xid: string()
-      })
-    ).nonEmpty()
-  )
+  identityMap: validateIdentityMap
 })
   .noUnknownFields()
   .required();

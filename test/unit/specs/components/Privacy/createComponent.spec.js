@@ -78,12 +78,14 @@ describe("privacy:createComponent", () => {
     build();
     sendSetConsentRequest.and.returnValue(Promise.resolve());
     const onResolved = jasmine.createSpy("onResolved");
-    component.commands.setConsent.run(CONSENT_IN).then(onResolved);
+    component.commands.setConsent
+      .run({ identityMap: { my: "map" }, ...CONSENT_IN })
+      .then(onResolved);
     expect(consent.suspend).toHaveBeenCalled();
     return flushPromiseChains().then(() => {
       expect(sendSetConsentRequest).toHaveBeenCalledWith({
         consentOptions: CONSENT_IN.consent,
-        identityMap: undefined
+        identityMap: { my: "map" }
       });
       expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
       expect(onResolved).toHaveBeenCalledWith(undefined);
