@@ -16,7 +16,7 @@ export default ({ orgId, doesIdentityCookieExist }) => {
    * If an identity cookie doesn't already exist, it should always exist after
    * the first response.
    */
-  return onResponse => {
+  return ({ onResponse, onRequestFailure }) => {
     return new Promise((resolve, reject) => {
       onResponse(() => {
         if (doesIdentityCookieExist()) {
@@ -36,6 +36,15 @@ export default ({ orgId, doesIdentityCookieExist }) => {
           // Throwing an error will reject the event command that initiated
           // the request.
           throw noIdentityCookieError;
+        }
+      });
+      onRequestFailure(() => {
+        if (doesIdentityCookieExist()) {
+          resolve();
+        } else {
+          // The error from the request failure will be logged separately. Rejecting this here
+          // will tell ensureSingleIdentity to send the next request without identity
+          reject(new Error("No identity was set on response."));
         }
       });
     });

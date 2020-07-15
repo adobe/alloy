@@ -21,11 +21,15 @@ const hookNames = [
   "onBeforeDataCollectionRequest",
   // Called before each request is made to the edge.
   "onBeforeRequest",
-  // Called after each response is returned from the edge.
+  // Called after each response is returned from the edge with a successful
+  // status code
   "onResponse",
   // Called after a network request to the edge fails. Either the request
   // didn't make it to the edge, didn't make it to Konductor, or Konductor
-  // failed to return a regularly-structured response.
+  // failed to return a regularly-structured response. (In this case { error }
+  // is passed as the parameter)
+  // Also called when the respone returns a 400 or 500 error. (In this case
+  // { response } is passed as the parameter)
   "onRequestFailure",
   // A user clicked on an element.
   "onClick"
