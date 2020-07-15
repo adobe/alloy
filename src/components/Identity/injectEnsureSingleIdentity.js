@@ -44,7 +44,7 @@ export default ({
    * an identity is to prevent a single malformed request causing all other
    * requests to never send.
    */
-  return ({ payload, onResponse }) => {
+  return ({ payload, onResponse, onRequestFailure }) => {
     if (doesIdentityCookieExist()) {
       return Promise.resolve();
     }
@@ -62,7 +62,7 @@ export default ({
       // requests are chained together so that only one is sent at a time
       // until we have the identity cookie.
       obtainedIdentityPromise = previousObtainedIdentityPromise.catch(() => {
-        return awaitIdentityCookie(onResponse);
+        return awaitIdentityCookie({ onResponse, onRequestFailure });
       });
 
       // When this returned promise resolves, the request will go out.
@@ -84,7 +84,10 @@ export default ({
     // to ensure we don't mint new ECIDs for requests that would otherwise
     // be sent in parallel, we'll let this request go out to fetch the
     // cookie
-    obtainedIdentityPromise = awaitIdentityCookie(onResponse);
+    obtainedIdentityPromise = awaitIdentityCookie({
+      onResponse,
+      onRequestFailure
+    });
     return allowRequestToGoWithoutIdentity(payload);
   };
 };

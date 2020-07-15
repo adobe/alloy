@@ -18,12 +18,17 @@ const createAudiences = ({ logger }) => {
     fireReferrerHideableImage,
     logger
   });
+  const processDestinationsFromResponse = ({ response }) => {
+    if (!response) {
+      return undefined;
+    }
+    const destinations = response.getPayloadsByType("activation:push");
+    return processDestinations(destinations);
+  };
   return {
     lifecycle: {
-      onResponse({ response }) {
-        const destinations = response.getPayloadsByType("activation:push");
-        return processDestinations(destinations);
-      }
+      onResponse: processDestinationsFromResponse,
+      onRequestFailure: processDestinationsFromResponse
     },
     commands: {}
   };

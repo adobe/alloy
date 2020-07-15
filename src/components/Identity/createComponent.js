@@ -12,11 +12,11 @@ export default ({
   let ecid;
   return {
     lifecycle: {
-      onBeforeRequest({ payload, onResponse }) {
+      onBeforeRequest({ payload, onResponse, onRequestFailure }) {
         // Querying the ECID on every request to be able to set the legacy cookie, and make it
         // available for the `getIdentity` command.
         addEcidQueryToPayload(payload);
-        return ensureSingleIdentity({ payload, onResponse });
+        return ensureSingleIdentity({ payload, onResponse, onRequestFailure });
       },
       onResponse({ response }) {
         if (!ecid) {

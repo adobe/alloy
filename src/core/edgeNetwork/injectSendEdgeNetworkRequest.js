@@ -74,11 +74,18 @@ export default ({
           .call({ error })
           .then(throwError, throwError);
       })
-      .then(networkResponse => {
+      .then(({ parsedBody, statusCode }) => {
         // Note that networkResponse.parsedBody may be undefined if it was a
         // 204 No Content response. That's fine.
-        const response = createResponse(networkResponse.parsedBody);
+        const response = createResponse(parsedBody);
         cookieTransfer.responseToCookies(response);
+
+        if (statusCode >= 400) {
+          const throwError = () => processWarningsAndErrors(response);
+          return onRequestFailureCallbackAggregator
+            .call({ response })
+            .then(throwError, throwError);
+        }
         return onResponseCallbackAggregator
           .call({
             response
