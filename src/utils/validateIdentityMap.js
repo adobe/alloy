@@ -35,5 +35,7 @@ export default mapOfValues(
       primary: boolean(),
       xid: string()
     })
-  ).nonEmpty()
+  )
+    .nonEmpty()
+    .required()
 );

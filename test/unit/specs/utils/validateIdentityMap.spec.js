@@ -29,5 +29,8 @@ describeValidation("utils:validateIdentityMap", validateIdentityMap, [
   { value: undefined },
   { value: [], error: true },
   { value: { a: [] }, error: true },
+  { value: { a: null }, error: true },
+  { value: { a: undefined }, error: true },
+  { value: { a: "string" }, error: true },
   { value: {} }
 ]);

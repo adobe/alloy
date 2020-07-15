@@ -20,7 +20,9 @@ export default ({ createConsentRequestPayload, sendEdgeNetworkRequest }) => ({
   payload.setConsent(consentOptions);
   if (isObject(identityMap)) {
     Object.keys(identityMap).forEach(key => {
-      payload.addIdentity(key, identityMap[key]);
+      identityMap[key].forEach(identity => {
+        payload.addIdentity(key, identity);
+      });
     });
   }
   return sendEdgeNetworkRequest({
