@@ -21,7 +21,9 @@
       }
     </style>
 
-    <!-- OneTrust Cookies Consent Notice start -->
+    <!-- OneTrust Cookies Consent Notice start 
+    REMOVING FOR NOW BECAUSE THE POP UP IS BREAKING THE E2E TESTS.
+    TODO: FIND A WAY TO NOT OPEN IT.
     <script
       src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"
       type="text/javascript"
@@ -31,7 +33,7 @@
     <script type="text/javascript">
       function OptanonWrapper() {}
     </script>
-    <!-- OneTrust Cookies Consent Notice end -->
+     OneTrust Cookies Consent Notice end -->
 
     <!-- prettier-ignore -->
     <script>
@@ -42,6 +44,8 @@
     </script>
     <script src="../alloy.js" async></script>
     <script>
+      const orgId =
+        getUrlParameter("orgId") || "334F60F35E1597910A495EC2@AdobeOrg";
       function getUrlParameter(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
@@ -64,11 +68,16 @@
         edgeDomain: resolveEdgeDomain(),
         edgeConfigId:
           getUrlParameter("configId") || "60928f59-0406-4353-bfe3-22ed633c4f67",
-        orgId: getUrlParameter("orgId") || "334F60F35E1597910A495EC2@AdobeOrg",
+        orgId,
         thirdPartyCookiesEnabled: getUrlParameter("thirdPartyCookiesEnabled")
           ? true
           : false,
-        debugEnabled: true
+        debugEnabled: true,
+        // If `pending`, wait for the user's consent, but listening to the `setConsent` command.
+        defaultConsent: "in",
+        // Look for existing ECID Cookies set by the legacy Visitor.js library.
+        // That means we need a cookie names: `AMCV_334F60F35E1597910A495EC2%40AdobeOrg: MCMID|76365103486713493572334524`
+        idMigrationEnabled: true
       });
     </script>
   </head>
@@ -91,6 +100,7 @@
     <button class="no-goog-vendor">Opt Out of Google Vendor</button>
     <button class="send-event-btn">Send an event with Consent</button>
     <button class="get-ecid">Get the ECID value</button>
+    <button class="create-amcv-cookie">Create the Legacy AMCV cookie</button>
 
     <div>
       <h2>Available QueryString parameter:</h2>
@@ -122,6 +132,12 @@
       var optInGoogVendorBtn = document.querySelector(".in-goog-vendor");
       var sendEventWithConsentBtn = document.querySelector(".send-event-btn");
       var getEcidButton = document.querySelector(".get-ecid");
+      var createAmcvCookieBtn = document.querySelector(".create-amcv-cookie");
+
+      createAmcvCookieBtn.addEventListener("click", function() {
+        const ecid = getUrlParameter("ECID");
+        document.cookie = `AMCV_${encodeURIComponent(orgId)}=MCMID|${ecid}`;
+      });
 
       optInViaOneTrustApi.addEventListener("click", function() {
         OneTrust.AllowAll();
@@ -143,6 +159,13 @@
       });
 
       sendEventWithConsentBtn.addEventListener("click", function() {
+        if (!getUrlParameter("eventConsentString")) {
+          console.error(
+            "You need to pass an `eventConsentString` query param."
+          );
+          return;
+        }
+
         const type = "Alloy-E2E-sendEvent-consent";
         const xdm = {
           consentStrings: [
@@ -155,16 +178,6 @@
             }
           ]
         };
-
-        if (getUrlParameter("ECID")) {
-          xdm.identityMap = {
-            ECID: [
-              {
-                id: getUrlParameter("ECID")
-              }
-            ]
-          };
-        }
 
         alloy("sendEvent", { type, xdm }).then(() =>
           console.log("Event has been sent!!")

@@ -10,8 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, objectOf, boolean, arrayOf } from "../../utils/validation";
-
+import {
+  string,
+  objectOf,
+  boolean,
+  arrayOf,
+  enumOf,
+  mapOfValues
+} from "../../utils/validation";
+import {
+  AMBIGUOUS,
+  AUTHENTICATED,
+  LOGGED_OUT
+} from "../../constants/identityMapAuthenticatedState";
 /**
  * Verifies user provided event options.
  * @param {*} options The user event options to validate
@@ -22,7 +33,20 @@ export default ({ options, logger }) => {
   const eventOptionsValidator = objectOf({
     type: string(),
     xdm: objectOf({
-      eventType: string()
+      eventType: string(),
+      identityMap: mapOfValues(
+        arrayOf(
+          objectOf({
+            id: string(),
+            primary: boolean().default(false),
+            authenticatedState: enumOf(
+              AMBIGUOUS,
+              AUTHENTICATED,
+              LOGGED_OUT
+            ).default(AMBIGUOUS)
+          })
+        )
+      )
     }),
     data: objectOf({}),
     renderDecisions: boolean(),
