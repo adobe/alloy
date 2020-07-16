@@ -54,6 +54,17 @@ export const IAB_NO_PURPOSE_ONE = {
   ]
 };
 
+export const IAB_NO_PURPOSE_ONE_NO_GRPR = {
+  consent: [
+    {
+      standard: "IAB TCF",
+      version: "2.0",
+      value: "CO052oTO052oTDGAMBFRACBgAABAAAAAAIYgEawAQEagAAAA",
+      gdprApplies: false
+    }
+  ]
+};
+
 export const IAB_NO_PURPOSE_TEN = {
   consent: [
     {
