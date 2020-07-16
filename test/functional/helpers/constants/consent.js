@@ -21,7 +21,6 @@ export const CONSENT_OUT = {
   ]
 };
 
-// TODO: Add a test case with no `gdprApplies`
 export const IAB_CONSENT_IN = {
   consent: [
     {
@@ -29,6 +28,17 @@ export const IAB_CONSENT_IN = {
       version: "2.0",
       value: "CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA",
       gdprApplies: true
+    }
+  ]
+};
+
+export const IAB_CONSENT_IN_NO_GDPR = {
+  consent: [
+    {
+      standard: "IAB TCF",
+      version: "2.0",
+      value: "CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA",
+      gdprApplies: false
     }
   ]
 };
