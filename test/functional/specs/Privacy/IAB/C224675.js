@@ -83,6 +83,7 @@ test("Test C224675: Passing invalid consent options should throw a validation er
 
   // TODO: The error message below is not consistent with the way `standard` is being validated.
   // Discussed it with the Konductor team, they will re-work it.
+  // https://jira.corp.adobe.com/browse/EXEG-1961
   await t
     .expect(errorMessageForInvalidVersion)
     .contains(
