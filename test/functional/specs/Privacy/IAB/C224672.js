@@ -64,8 +64,8 @@ test("Test C224672: Passing the `gdprContainsPersonalData` flag should return in
   const consentCookieName = "kndctr_334F60F35E1597910A495EC2_AdobeOrg_consent";
   const consentCookieValue = await cookies.get(consentCookieName);
 
-  await t.expect(consentCookieValue).eql("general=in");
   await t.expect(consentCookieValue).ok("No consent cookie found.");
+  await t.expect(consentCookieValue).eql("general=in");
 
   // 2. The set-consent response payload contains the consent handle in XDM format
   const consentHandle = consentResponse.getPayloadsByType("privacy:consent");

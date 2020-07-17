@@ -66,8 +66,8 @@ test("Test C224676: Passing a positive Consent in the sendEvent command", async 
   const consentCookieName = "kndctr_334F60F35E1597910A495EC2_AdobeOrg_consent";
   const consentCookieValue = await cookies.get(consentCookieName);
 
-  await t.expect(consentCookieValue).eql("general=in");
   await t.expect(consentCookieValue).ok("No consent cookie found.");
+  await t.expect(consentCookieValue).eql("general=in");
 
   // 2. The ECID should exist in the response payload as well, if queried
   // TODO: We are seeing 2 `identity:result` handles. Bug logged on Konductor side:

@@ -65,8 +65,8 @@ const sendEvent = ClientFunction(() => window.alloy("sendEvent"));
       "kndctr_334F60F35E1597910A495EC2_AdobeOrg_consent";
     const consentCookieValue = await cookies.get(consentCookieName);
 
-    await t.expect(consentCookieValue).eql("general=out");
     await t.expect(consentCookieValue).ok("No consent cookie found.");
+    await t.expect(consentCookieValue).eql("general=out");
 
     // 2. The set-consent response payload contains the consent handle in XDM format
     const consentHandle = consentResponse.getPayloadsByType("privacy:consent");
