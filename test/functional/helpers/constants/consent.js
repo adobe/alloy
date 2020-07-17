@@ -32,6 +32,18 @@ export const IAB_CONSENT_IN = {
   ]
 };
 
+export const IAB_CONSENT_IN_PERSONAL_DATA = {
+  consent: [
+    {
+      standard: "IAB TCF",
+      version: "2.0",
+      value: "CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA",
+      gdprApplies: true,
+      gdprContainsPersonalData: true
+    }
+  ]
+};
+
 export const IAB_CONSENT_IN_NO_GDPR = {
   consent: [
     {
