@@ -43,10 +43,12 @@ export default ({
     commands: {
       setConsent: {
         optionsValidator: validateSetConsentOptions,
-        run: ({ consent: value }) => {
+        run: ({ consent: consentOptions, identityMap }) => {
           consent.suspend();
           return taskQueue
-            .addTask(() => sendSetConsentRequest(value))
+            .addTask(() =>
+              sendSetConsentRequest({ consentOptions, identityMap })
+            )
             .catch(error => {
               readCookieIfQueueEmpty();
               throw error;

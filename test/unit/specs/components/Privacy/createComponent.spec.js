@@ -78,10 +78,15 @@ describe("privacy:createComponent", () => {
     build();
     sendSetConsentRequest.and.returnValue(Promise.resolve());
     const onResolved = jasmine.createSpy("onResolved");
-    component.commands.setConsent.run(CONSENT_IN).then(onResolved);
+    component.commands.setConsent
+      .run({ identityMap: { my: "map" }, ...CONSENT_IN })
+      .then(onResolved);
     expect(consent.suspend).toHaveBeenCalled();
     return flushPromiseChains().then(() => {
-      expect(sendSetConsentRequest).toHaveBeenCalledWith(CONSENT_IN.consent);
+      expect(sendSetConsentRequest).toHaveBeenCalledWith({
+        consentOptions: CONSENT_IN.consent,
+        identityMap: { my: "map" }
+      });
       expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
       expect(onResolved).toHaveBeenCalledWith(undefined);
     });
@@ -107,7 +112,10 @@ describe("privacy:createComponent", () => {
     component.commands.setConsent.run(CONSENT_IN);
     return flushPromiseChains()
       .then(() => {
-        expect(sendSetConsentRequest).toHaveBeenCalledWith(CONSENT_IN.consent);
+        expect(sendSetConsentRequest).toHaveBeenCalledWith({
+          consentOptions: CONSENT_IN.consent,
+          identityMap: undefined
+        });
         expect(consent.setConsent).not.toHaveBeenCalledWith({ general: "in" });
         deferredConsentRequest.resolve();
         return flushPromiseChains();
@@ -130,13 +138,19 @@ describe("privacy:createComponent", () => {
     component.commands.setConsent.run(CONSENT_IN);
     return flushPromiseChains()
       .then(() => {
-        expect(sendSetConsentRequest).toHaveBeenCalledWith(CONSENT_IN.consent);
+        expect(sendSetConsentRequest).toHaveBeenCalledWith({
+          consentOptions: CONSENT_IN.consent,
+          identityMap: undefined
+        });
         component.commands.setConsent.run(CONSENT_OUT);
         deferredConsentRequest1.resolve();
         return flushPromiseChains();
       })
       .then(() => {
-        expect(sendSetConsentRequest).toHaveBeenCalledWith(CONSENT_OUT.consent);
+        expect(sendSetConsentRequest).toHaveBeenCalledWith({
+          consentOptions: CONSENT_OUT.consent,
+          identityMap: undefined
+        });
         deferredConsentRequest2.resolve();
         return flushPromiseChains();
       })

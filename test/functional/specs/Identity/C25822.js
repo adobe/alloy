@@ -26,7 +26,33 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const triggerAlloyEvent = ClientFunction(() => {
+const triggerBadAlloyEvent = ClientFunction(() => {
+  return window
+    .alloy("sendEvent", {
+      xdm: {
+        identityMap: {
+          HYP: [
+            {
+              id: 123
+            }
+          ]
+        }
+      }
+    })
+    .then(() => undefined, e => e.message);
+});
+
+test("C25822: Event command validates the identityMap", async () => {
+  await configureAlloyInstance("alloy", config);
+  const errorMessage = await triggerBadAlloyEvent();
+  await t
+    .expect(errorMessage)
+    .ok("Expected the sendEvent command to be rejected");
+
+  await t.expect(errorMessage).contains("xdm.identityMap.HYP[0].id");
+});
+
+const triggerGoodAlloyEvent = ClientFunction(() => {
   return window.alloy("sendEvent", {
     xdm: {
       identityMap: {
@@ -40,9 +66,9 @@ const triggerAlloyEvent = ClientFunction(() => {
   });
 });
 
-test("C25822: Event command sends a request with a validated identityMap", async () => {
+test("C25822: Event command sends the identityMap", async () => {
   await configureAlloyInstance("alloy", config);
-  await triggerAlloyEvent();
+  await triggerGoodAlloyEvent();
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
@@ -52,8 +78,11 @@ test("C25822: Event command sends a request with a validated identityMap", async
     networkLogger.edgeEndpointLogs.requests[0].request.body
   );
 
-  await t.expect(request.events[0].xdm.identityMap.HYP[0].primary).eql(false);
-  await t
-    .expect(request.events[0].xdm.identityMap.HYP[0].authenticatedState)
-    .eql("ambiguous");
+  await t.expect(request.events[0].xdm.identityMap).eql({
+    HYP: [
+      {
+        id: "id123"
+      }
+    ]
+  });
 });

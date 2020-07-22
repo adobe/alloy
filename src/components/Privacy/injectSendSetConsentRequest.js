@@ -10,12 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({
-  createConsentRequestPayload,
-  sendEdgeNetworkRequest
-}) => consent => {
+import { isObject } from "../../utils";
+
+export default ({ createConsentRequestPayload, sendEdgeNetworkRequest }) => ({
+  consentOptions,
+  identityMap
+}) => {
   const payload = createConsentRequestPayload();
-  payload.setConsent(consent);
+  payload.setConsent(consentOptions);
+  if (isObject(identityMap)) {
+    Object.keys(identityMap).forEach(key => {
+      identityMap[key].forEach(identity => {
+        payload.addIdentity(key, identity);
+      });
+    });
+  }
   return sendEdgeNetworkRequest({
     payload,
     action: "privacy/set-consent"
