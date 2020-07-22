@@ -64,6 +64,18 @@
         return getUrlParameter("edgeDomain") || defaultEdgeDomain;
       }
 
+      function stringToBoolean(str) {
+        if (str) {
+          return JSON.parse(str);
+        }
+      }
+
+      function resolveBooleanQueryParam(param, defaultValue) {
+        return getUrlParameter(param)
+          ? stringToBoolean(getUrlParameter(param))
+          : defaultValue;
+      }
+
       alloy("configure", {
         edgeDomain: resolveEdgeDomain(),
         edgeConfigId:
@@ -173,7 +185,7 @@
               consentStandard: "IAB TCF",
               consentStandardVersion: "2.0",
               consentStringValue: getUrlParameter("eventConsentString"),
-              gdprApplies: getUrlParameter("gdprApplies") || true,
+              gdprApplies: resolveBooleanQueryParam("gdprApplies", true),
               containsPersonalData: false
             }
           ]
@@ -193,7 +205,7 @@
               standard: "IAB",
               version: "2.0",
               value: optInToGoogConsentString,
-              gdprApplies: getUrlParameter("gdprApplies") || true
+              gdprApplies: resolveBooleanQueryParam("gdprApplies", true)
             }
           ]
         });
@@ -208,7 +220,7 @@
               standard: "IAB",
               version: "2.0",
               value: optOutOfGoogConsentString,
-              gdprApplies: getUrlParameter("gdprApplies") || true
+              gdprApplies: resolveBooleanQueryParam("gdprApplies", true)
             }
           ]
         });
@@ -221,7 +233,7 @@
               standard: "IAB",
               version: "2.0",
               value: getUrlParameter("iabConsentString"),
-              gdprApplies: getUrlParameter("gdprApplies") || true
+              gdprApplies: resolveBooleanQueryParam("gdprApplies", true)
             }
           ]
         });
@@ -236,7 +248,7 @@
               standard: "IAB",
               version: "2.0",
               value: optedInConsentString,
-              gdprApplies: getUrlParameter("gdprApplies") || true
+              gdprApplies: resolveBooleanQueryParam("gdprApplies", true)
             }
           ]
         });
@@ -251,7 +263,7 @@
               standard: "IAB",
               version: "2.0",
               value: optedOutConsentString,
-              gdprApplies: getUrlParameter("gdprApplies") || true
+              gdprApplies: resolveBooleanQueryParam("gdprApplies", true)
             }
           ]
         });

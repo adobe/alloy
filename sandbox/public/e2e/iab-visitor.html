@@ -148,12 +148,11 @@
     <div class="submit-form">
       <button class="submit">Submit your consent choices.</button>
       <button class="getEcidBtn">Get ECID Value</button>
+      <button class="create-amcv-cookie">Create the Legacy AMCV cookie</button>
     </div>
 
     <script>
       var submitBtn = document.querySelector(".submit");
-      var getEcidBtn = document.querySelector(".getEcidBtn");
-
       submitBtn.addEventListener("click", function() {
         var consent = {
           shouldWaitForExplicitConsent: false,
@@ -165,11 +164,18 @@
         __tcfapi.configure(consent);
       });
 
+      var getEcidBtn = document.querySelector(".getEcidBtn");
       getEcidBtn.addEventListener("click", function() {
         visitor.getMarketingCloudVisitorID(function(ecid) {
           console.log("ECID", ecid);
           window.ecid = ecid;
         }, true);
+      });
+
+      var createAmcvCookieBtn = document.querySelector(".create-amcv-cookie");
+      createAmcvCookieBtn.addEventListener("click", function() {
+        const ecid = getUrlParameter("ECID");
+        document.cookie = `AMCV_${encodeURIComponent(orgId)}=MCMID|${ecid}`;
       });
     </script>
   </body>
