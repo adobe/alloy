@@ -164,8 +164,7 @@ describeValidation(
         identityMap: {
           email: []
         }
-      },
-      error: true
+      }
     },
     {
       value: {
