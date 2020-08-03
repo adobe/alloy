@@ -4,9 +4,8 @@ const createResultLogMessage = (scriptUrl, success) => {
   return `Loading script ${success ? "succeeded" : "failed"}: ${scriptUrl}`;
 };
 
-// TODO - change this to cdn hosted target.js url after done testing
 const SOLUTION_SCRIPTS = {
-  mboxEdit: `http://localhost:4000/target.js/?${new Date().getTime()}`
+  mboxEdit: "http://cdn.tt.omtrdc.net/cdn/target.js"
 };
 
 const getExternalScripts = () => {
