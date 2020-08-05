@@ -86,9 +86,7 @@ test("Test C224675: Passing invalid consent options should throw a validation er
   // https://jira.corp.adobe.com/browse/EXEG-1961
   await t
     .expect(errorMessageForInvalidVersion)
-    .contains(
-      "Consent value does not match the specification for standard 'IAB TCF'"
-    );
+    .contains("Allowed IAB version is 2.0 for standard 'IAB TCF'");
 
   const errorMessageForInvalidValue = getErrorMessageFromSetConsent({
     consent: [
@@ -136,6 +134,6 @@ test("Test C224675: Passing invalid consent options should throw a validation er
   await t
     .expect(errorMessageForEmtpyValue)
     .contains(
-      "Consent value does not match the specification for standard 'IAB TCF'"
+      "IAB consent string value must not be empty for standard 'IAB TCF'"
     );
 });

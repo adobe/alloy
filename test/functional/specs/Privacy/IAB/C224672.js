@@ -81,7 +81,7 @@ test("Test C224672: Passing the `gdprContainsPersonalData` flag should return in
 
   // 3. The ECID should exist in the response payload as well, if queried
   const identityHandle = consentResponse.getPayloadsByType("identity:result");
-  await t.expect(identityHandle.length).eql(1);
+  await t.expect(identityHandle.length).eql(2);
 
   await sendEvent();
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
