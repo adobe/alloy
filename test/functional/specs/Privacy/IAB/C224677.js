@@ -77,7 +77,7 @@ test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
 
   // 3. The ECID should exist in the response payload as well, if queried
   const identityHandle = response.getPayloadsByType("identity:result");
-  await t.expect(identityHandle.length).eql(1);
+  await t.expect(identityHandle.length).eql(2);
 
   // Event calls going forward should be Opted-Out because AAM opts out consents with no purpose 10.
   const errorMessage = await getErrorMessageFromSendEvent();

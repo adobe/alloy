@@ -73,7 +73,7 @@ test("Test C224676: Passing a positive Consent in the sendEvent command", async 
   // TODO: We are seeing 2 `identity:result` handles. Bug logged on Konductor side:
   // https://jira.corp.adobe.com/browse/EXEG-1960
   const identityHandle = response.getPayloadsByType("identity:result");
-  await t.expect(identityHandle.length).eql(2); // TODO: CHANGE to 1.
+  await t.expect(identityHandle.length).eql(1);
 
   await sendEvent();
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
