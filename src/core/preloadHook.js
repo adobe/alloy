@@ -1,5 +1,7 @@
 const ALLOW_LIST = [
-  "http://localhost.corp.adobe.com:4502" // TODO - Target UI
+  "http://localhost.corp.adobe.com:4502",
+  "http://experience.adobe.com",
+  "https://atag.experiencecloud.adobe.com" // TODO - Target UI all envs incl. shell
 ];
 
 let preloadListener;
