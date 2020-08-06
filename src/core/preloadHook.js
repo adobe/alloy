@@ -1,7 +1,10 @@
+import loadScript from "@adobe/reactor-load-script";
+
+// TODO
 const ALLOW_LIST = [
   "http://localhost.corp.adobe.com:4502",
   "http://experience.adobe.com",
-  "https://atag.experiencecloud.adobe.com" // TODO - Target UI all envs incl. shell
+  "https://atag.experiencecloud.adobe.com"
 ];
 
 let preloadListener;
@@ -12,8 +15,8 @@ const createResultLogMessage = (origin, success) => {
   }`;
 };
 
-const preloadHookHandler = resolve => {
-  const preloadHook = event => {
+const getPreloadEventListener = resolve => {
+  const preloadEventListener = event => {
     if (
       event.data.type !== "preloadHook" ||
       !ALLOW_LIST.includes(event.origin)
@@ -21,16 +24,17 @@ const preloadHookHandler = resolve => {
       return;
     }
 
-    try {
-      // eslint-disable-next-line no-eval
-      window.eval(event.data.value);
-      console.log(createResultLogMessage(event.origin, true));
-    } catch (err) {
-      console.error(createResultLogMessage(event.origin, false));
-    }
-    resolve();
+    loadScript(event.data.url)
+      .then(() => {
+        console.log(createResultLogMessage(event.origin, true));
+        resolve();
+      })
+      .catch(() => {
+        console.error(createResultLogMessage(event.origin, false));
+        resolve();
+      });
   };
-  return preloadHook;
+  return preloadEventListener;
 };
 
 export const removeListener = () => {
@@ -38,8 +42,8 @@ export const removeListener = () => {
 };
 
 export default () => {
-  return new Promise((resolve, reject) => {
-    preloadListener = preloadHookHandler(resolve, reject);
+  return new Promise(resolve => {
+    preloadListener = getPreloadEventListener(resolve);
     window.addEventListener("message", preloadListener, false);
     window.parent.postMessage("preloadHookReady", "*");
   });
