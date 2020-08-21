@@ -16,6 +16,7 @@ export default ({
   config,
   logger,
   onResponseHandler,
+  onViewChangeHandler,
   onClickHandler,
   hideContainers,
   showContainers,
@@ -33,6 +34,7 @@ export default ({
         event,
         renderDecisions,
         decisionScopes = [],
+        viewName,
         onResponse = noop,
         onRequestFailure = noop
       }) {
@@ -41,6 +43,11 @@ export default ({
 
           // If we are in authoring mode we disable personalization
           mergeQuery(event, { enabled: false });
+          return;
+        }
+
+        if (renderDecisions && viewName) {
+          onViewChangeHandler({ viewName });
           return;
         }
 

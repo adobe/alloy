@@ -16,7 +16,7 @@ import {
   PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS,
   PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
 } from "./responsesMock/eventResponses";
-import extractDecisions from "../../../../../src/components/Personalization/extractDecisions";
+import extractDecisions from "../../../../../src/components/Personalization/extractRenderableDecisions";
 
 describe("Personalization::extractDecisions", () => {
   const response = PAGE_WIDE_SCOPE_DECISIONS.concat(SCOPES_FOO1_FOO2_DECISIONS);

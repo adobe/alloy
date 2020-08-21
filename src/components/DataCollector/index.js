@@ -31,6 +31,9 @@ const createDataCollector = ({ eventManager, logger }) => {
             decisionScopes = [],
             datasetId
           } = options;
+
+          const viewName =
+            xdm && xdm.application ? xdm.application.viewName : "";
           const event = eventManager.createEvent();
 
           if (documentUnloading) {
@@ -62,7 +65,8 @@ const createDataCollector = ({ eventManager, logger }) => {
 
           return eventManager.sendEvent(event, {
             renderDecisions,
-            decisionScopes
+            decisionScopes,
+            viewName
           });
         }
       }

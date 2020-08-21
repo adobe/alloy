@@ -14,7 +14,7 @@ import { string } from "../../utils/validation";
 import createComponent from "./createComponent";
 import { initDomActionsModules, executeActions } from "./dom-actions";
 import createCollect from "./createCollect";
-import extractDecisions from "./extractDecisions";
+import extractRenderableDecisions from "./extractRenderableDecisions";
 import createExecuteDecisions from "./createExecuteDecisions";
 import { hideContainers, showContainers } from "./flicker";
 import createOnResponseHandler from "./createOnResponseHandler";
@@ -22,11 +22,17 @@ import collectClicks from "./dom-actions/clicks/collectClicks";
 import { hasScopes, isAuthoringModeEnabled, getDecisionScopes } from "./utils";
 import { mergeMeta, mergeQuery, createQueryDetails } from "./event";
 import createOnClickHandler from "./createOnClickHandler";
+import extractPageWideScopeDecisions from "./extractPageWideScopeDecisions";
+import createViewChangeHandler from "./createViewChangeHandler";
+import createViewStorage from "./createViewStorage";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeMeta });
   const clickStorage = [];
+  const { push, get } = createViewStorage();
   const store = value => clickStorage.push(value);
+  const storeView = (viewName, decisions) => push(viewName, decisions);
+  const getView = viewName => get(viewName);
   const modules = initDomActionsModules(store);
   const executeDecisions = createExecuteDecisions({
     modules,
@@ -35,9 +41,15 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     collect
   });
   const onResponseHandler = createOnResponseHandler({
-    extractDecisions,
+    storeView,
+    extractRenderableDecisions,
+    extractPageWideScopeDecisions,
     executeDecisions,
     showContainers
+  });
+  const onViewChangeHandler = createViewChangeHandler({
+    getView,
+    executeDecisions
   });
   const onClickHandler = createOnClickHandler({
     mergeMeta,
@@ -49,6 +61,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     logger,
     eventManager,
     onResponseHandler,
+    onViewChangeHandler,
     onClickHandler,
     hideContainers,
     showContainers,

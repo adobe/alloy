@@ -9,27 +9,41 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import isNonEmptyArray from "../../utils/isNonEmptyArray";
 
 const DECISIONS_HANDLE = "personalization:decisions";
-export default ({ extractDecisions, executeDecisions, showContainers }) => {
+
+export default ({
+  storeView,
+  extractRenderableDecisions,
+  extractPageWideScopeDecisions,
+  executeDecisions,
+  showContainers
+}) => {
   return ({ renderDecisions, response }) => {
     const unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
-
-    if (!renderDecisions) {
-      return { decisions: unprocessedDecisions };
-    }
-
-    if (unprocessedDecisions.length === 0) {
+    if (!isNonEmptyArray(unprocessedDecisions)) {
       showContainers();
       return { decisions: [] };
     }
 
-    const [renderableDecisions, decisions] = extractDecisions(
-      unprocessedDecisions
-    );
+    if (renderDecisions) {
+      const [renderableDecisions, decisions] = extractRenderableDecisions(
+        unprocessedDecisions
+      );
 
-    executeDecisions(renderableDecisions);
-    showContainers();
-    return { decisions };
+      if (isNonEmptyArray(renderableDecisions)) {
+        const pageWideScopeDecisions = extractPageWideScopeDecisions(
+          renderableDecisions,
+          storeView
+        );
+
+        executeDecisions(pageWideScopeDecisions);
+      }
+      showContainers();
+      return { decisions };
+    }
+
+    return { decisions: unprocessedDecisions };
   };
 };
