@@ -14,7 +14,6 @@ import { string } from "../../utils/validation";
 import createComponent from "./createComponent";
 import { initDomActionsModules, executeActions } from "./dom-actions";
 import createCollect from "./createCollect";
-import createViewCollect from "./createViewCollect";
 import extractRenderableDecisions from "./extractRenderableDecisions";
 import createExecuteDecisions from "./createExecuteDecisions";
 import { hideContainers, showContainers } from "./flicker";
@@ -29,7 +28,6 @@ import createViewStorage from "./createViewStorage";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeMeta });
-  const viewCollect = createViewCollect({ eventManager, mergeMeta });
   const clickStorage = [];
   const { push, get } = createViewStorage();
   const store = value => clickStorage.push(value);
@@ -42,12 +40,6 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     executeActions,
     collect
   });
-  const executeViewDecisions = createExecuteDecisions({
-    modules,
-    logger,
-    executeActions,
-    collect: viewCollect
-  });
   const onResponseHandler = createOnResponseHandler({
     storeView,
     extractRenderableDecisions,
@@ -57,8 +49,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
   const onViewChangeHandler = createViewChangeHandler({
     getView,
-    executeViewDecisions,
-    collect: viewCollect
+    executeDecisions
   });
   const onClickHandler = createOnClickHandler({
     mergeMeta,

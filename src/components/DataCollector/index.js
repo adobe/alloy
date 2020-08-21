@@ -33,9 +33,7 @@ const createDataCollector = ({ eventManager, logger }) => {
           } = options;
 
           const viewName =
-            xdm && xdm.web && xdm.web.webPageDetails
-              ? xdm.web.webPageDetails.viewName
-              : "";
+            xdm && xdm.application ? xdm.application.viewName : "";
           const event = eventManager.createEvent();
 
           if (documentUnloading) {

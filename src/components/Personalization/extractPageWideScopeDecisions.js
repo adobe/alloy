@@ -1,4 +1,4 @@
-import PAGE_WIDE_SCOPE from "./constants/scope";
+import { PAGE_WIDE_SCOPE } from "./utils";
 
 const isPageWideScope = decision => decision.scope === PAGE_WIDE_SCOPE;
 
