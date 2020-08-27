@@ -11,7 +11,7 @@ const alloyWithVisitorPages = {
   prod: "alloyVisitorTestPageProd.html"
 };
 
-const alloyWithVisitorTestPageUrl = `https://alloyio.com/functional-test/${alloyWithVisitorPages[env]}`;
+const alloyWithVisitorTestPageUrl = `https://alloyio.com/functional-test/${alloyWithVisitorPages[alloyEnv]}`;
 
 export { alloyWithVisitorTestPageUrl };
 
