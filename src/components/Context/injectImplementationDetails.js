@@ -11,13 +11,8 @@ governing permissions and limitations under the License.
 */
 import { deepAssign } from "../../utils";
 
-export default version => {
+export default implementationDetails => {
   return xdm => {
-    const implementationDetails = {
-      name: "https://ns.adobe.com/experience/alloy",
-      version,
-      environment: "browser"
-    };
     deepAssign(xdm, { implementationDetails });
   };
 };

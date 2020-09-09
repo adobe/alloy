@@ -10,15 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// The __VERSION__ keyword will be replace at alloy build time with the package.json version.
-// The __EXTENSION_VERSION__ keyword will be replaced at extension build time with the
-// launch extension's package.json version.
-// see babel-plugin-version
-
 /* #if _REACTOR
-const alloyVersion = "__VERSION__";
-const extensionVersion = "__EXTENSION_VERSION__";
-export default `${alloyVersion}+${extensionVersion}`;
+export default "https://ns.adobe.com/experience/alloy+launch";
 //#else */
-export default "__VERSION__";
+export default "https://ns.adobe.com/experience/alloy";
 // #endif
