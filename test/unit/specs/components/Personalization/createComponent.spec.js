@@ -11,10 +11,19 @@ governing permissions and limitations under the License.
 */
 
 import createComponent from "../../../../../src/components/Personalization/createComponent";
-import * as SCHEMA from "../../../../../src/components/Personalization/constants/schema";
-import { values } from "../../../../../src/utils";
+import {
+  HTML_CONTENT_ITEM,
+  JSON_CONTENT_ITEM,
+  REDIRECT_ITEM,
+  DOM_ACTION
+} from "../../../../../src/components/Personalization/constants/personalizationConstants";
 
-const allSchemas = values(SCHEMA);
+const allSchemas = [
+  HTML_CONTENT_ITEM,
+  JSON_CONTENT_ITEM,
+  REDIRECT_ITEM,
+  DOM_ACTION
+];
 
 describe("Personalization", () => {
   let logger;

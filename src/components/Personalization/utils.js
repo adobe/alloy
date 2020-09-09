@@ -11,8 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { includes, isNonEmptyArray } from "../../utils";
-
-const PAGE_WIDE_SCOPE = "__view__";
+import { PAGE_WIDE_SCOPE } from "./constants/personalizationConstants";
 
 export const hasScopes = scopes => isNonEmptyArray(scopes);
 

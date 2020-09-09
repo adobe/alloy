@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray } from "../../utils";
-import * as SCHEMA from "./constants/schema";
+import * as SCHEMA from "./constants/personalizationConstants";
 
 const isDomActionItem = item => item.schema === SCHEMA.DOM_ACTION;
 
