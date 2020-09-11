@@ -16,7 +16,7 @@ import {
   JSON_CONTENT_ITEM,
   REDIRECT_ITEM,
   HTML_CONTENT_ITEM
-} from "../../../../../src/components/Personalization/constants/personalizationConstants";
+} from "../../../../../src/components/Personalization/constants/schema";
 
 describe("Personalization::event", () => {
   it("create query details for all schemas", () => {

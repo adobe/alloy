@@ -14,9 +14,9 @@ import {
   DOM_ACTION,
   JSON_CONTENT_ITEM,
   HTML_CONTENT_ITEM,
-  REDIRECT_ITEM,
-  PAGE_WIDE_SCOPE
-} from "./constants/personalizationConstants";
+  REDIRECT_ITEM
+} from "./constants/schema";
+import PAGE_WIDE_SCOPE from "./constants/scope";
 import { includes } from "../../utils";
 
 export const mergeMeta = (event, meta) => {

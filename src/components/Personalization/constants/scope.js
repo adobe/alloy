@@ -10,11 +10,4 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export const DOM_ACTION = "https://ns.adobe.com/personalization/dom-action";
-export const HTML_CONTENT_ITEM =
-  "https://ns.adobe.com/personalization/html-content-item";
-export const JSON_CONTENT_ITEM =
-  "https://ns.adobe.com/personalization/json-content-item";
-export const REDIRECT_ITEM =
-  "https://ns.adobe.com/personalization/redirect-item";
-export const PAGE_WIDE_SCOPE = "__view__";
+export default "__view__";
