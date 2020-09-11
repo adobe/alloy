@@ -11,16 +11,33 @@ governing permissions and limitations under the License.
 */
 
 import { createQueryDetails } from "../../../../../src/components/Personalization/event";
-import * as SCHEMA from "../../../../../src/components/Personalization/constants/schema";
-import { values } from "../../../../../src/utils";
-
-const schemas = values(SCHEMA);
+import {
+  DOM_ACTION,
+  JSON_CONTENT_ITEM,
+  REDIRECT_ITEM,
+  HTML_CONTENT_ITEM
+} from "../../../../../src/components/Personalization/constants/schema";
 
 describe("Personalization::event", () => {
-  it("create query details", () => {
+  it("create query details for all schemas", () => {
     const decisionScopes = ["__view__", "foo"];
     const result = createQueryDetails(decisionScopes);
-
-    expect(result).toEqual({ schemas, decisionScopes });
+    const expectedSchemas = [
+      HTML_CONTENT_ITEM,
+      JSON_CONTENT_ITEM,
+      REDIRECT_ITEM,
+      DOM_ACTION
+    ];
+    expect(result).toEqual({ schemas: expectedSchemas, decisionScopes });
+  });
+  it("create query details without dom action schema", () => {
+    const decisionScopes = ["foo"];
+    const result = createQueryDetails(decisionScopes);
+    const expectedSchemas = [
+      HTML_CONTENT_ITEM,
+      JSON_CONTENT_ITEM,
+      REDIRECT_ITEM
+    ];
+    expect(result).toEqual({ schemas: expectedSchemas, decisionScopes });
   });
 });
