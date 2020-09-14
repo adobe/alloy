@@ -10,19 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNonEmptyArray from "../../utils/isNonEmptyArray";
+import { isNonEmptyArray, assign } from "../../utils";
 
-export default ({ getView, executeViewDecisions, collect }) => {
-  return ({ viewName }) => {
-    const viewDecisions = getView(viewName);
+export default ({ eventManager, mergeMeta }) => {
+  return (meta, xdm = {}) => {
+    const { decisions = [] } = meta;
+    const data = { eventType: "display" };
+    const event = eventManager.createEvent();
 
-    if (isNonEmptyArray(viewDecisions)) {
-      executeViewDecisions(viewDecisions);
-      return;
+    if (isNonEmptyArray(decisions)) {
+      const viewName = decisions[0].scope;
+
+      data.web = {
+        webPageDetails: { viewName }
+      };
+
+      mergeMeta(event, meta);
     }
 
-    const xdm = { web: { webPageDetails: { viewName } } };
+    event.mergeXdm(assign(data, xdm));
 
-    collect({}, xdm);
+    return eventManager.sendEvent(event);
   };
 };
