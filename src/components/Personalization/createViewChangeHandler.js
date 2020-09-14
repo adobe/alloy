@@ -12,11 +12,17 @@ governing permissions and limitations under the License.
 
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
 
-export default ({ getView, executeDecisions }) => {
+export default ({ getView, executeViewDecisions, collect }) => {
   return ({ viewName }) => {
     const viewDecisions = getView(viewName);
+
     if (isNonEmptyArray(viewDecisions)) {
-      executeDecisions(viewDecisions);
+      executeViewDecisions(viewDecisions);
+      return;
     }
+
+    const xdm = { web: { webPageDetails: { viewName } } };
+
+    collect({}, xdm);
   };
 };
