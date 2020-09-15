@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 /* #if _REACTOR
-export default "https://ns.adobe.com/experience/alloy+launch";
+export default "https://ns.adobe.com/experience/alloy/reactor";
 //#else */
 export default "https://ns.adobe.com/experience/alloy";
 // #endif
