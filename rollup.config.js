@@ -17,7 +17,6 @@ import commonjs from "rollup-plugin-commonjs";
 import babel from "rollup-plugin-babel";
 import { terser } from "rollup-plugin-terser";
 import license from "rollup-plugin-license";
-import replaceVersion from "./rollupPluginReplaceVersion";
 
 const buildTargets = {
   PROD_STANDALONE: "prodStandalone",
@@ -51,8 +50,7 @@ const plugins = [
     mainFields: ["module", "main", "browser"]
   }),
   commonjs(),
-  babel(),
-  replaceVersion()
+  babel()
 ];
 
 if (minify) {

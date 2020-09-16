@@ -13,16 +13,20 @@ governing permissions and limitations under the License.
 import injectImplementationDetails from "../../../../../src/components/Context/injectImplementationDetails";
 
 describe("Context::implementationDetails", () => {
-  const version = "1.2.3";
+  const details = {
+    name: "myname",
+    version: "myversion",
+    environment: "myenvironment"
+  };
 
   it("works", () => {
     const xdm = {};
-    injectImplementationDetails(version)(xdm);
+    injectImplementationDetails(details)(xdm);
     expect(xdm).toEqual({
       implementationDetails: {
-        name: "https://ns.adobe.com/experience/alloy",
-        version: "1.2.3",
-        environment: "browser"
+        name: "myname",
+        version: "myversion",
+        environment: "myenvironment"
       }
     });
   });
