@@ -23,6 +23,6 @@ export default ({ getView, executeViewDecisions, collect }) => {
 
     const xdm = { web: { webPageDetails: { viewName } } };
 
-    collect({}, xdm);
+    collect({ meta: {}, xdm });
   };
 };

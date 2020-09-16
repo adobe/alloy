@@ -90,6 +90,7 @@ describe("createEventManager", () => {
             event,
             renderDecisions: true,
             decisionScopes: undefined,
+            viewName: undefined,
             payload: requestPayload,
             onResponse: jasmine.any(Function),
             onRequestFailure: jasmine.any(Function)

@@ -32,7 +32,7 @@ describe("Personalization::createCollect", () => {
 
   it("collects and sends event with metadata", () => {
     const collect = createCollect({ eventManager, mergeMeta });
-    collect(meta);
+    collect({ meta });
     expect(eventManager.createEvent).toHaveBeenCalled();
     expect(event.mergeXdm).toHaveBeenCalledWith({ eventType: "display" });
     expect(mergeMeta).toHaveBeenCalledWith(event, meta);

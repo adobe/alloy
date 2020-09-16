@@ -10,11 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
+import { isEmptyObject } from "../../utils";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 
 export default ({
-  storeView,
+  storeViews,
   extractRenderableDecisions,
   extractPageWideScopeDecisions,
   executeDecisions,
@@ -33,10 +34,14 @@ export default ({
       );
 
       if (isNonEmptyArray(renderableDecisions)) {
-        const pageWideScopeDecisions = extractPageWideScopeDecisions(
-          renderableDecisions,
-          storeView
-        );
+        const [
+          pageWideScopeDecisions,
+          viewDecisions
+        ] = extractPageWideScopeDecisions(renderableDecisions);
+
+        if (!isEmptyObject(viewDecisions)) {
+          storeViews(viewDecisions);
+        }
 
         executeDecisions(pageWideScopeDecisions);
       }

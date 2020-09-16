@@ -31,9 +31,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeMeta });
   const viewCollect = createViewCollect({ eventManager, mergeMeta });
   const clickStorage = [];
-  const { push, get } = createViewStorage();
+  const { storeViews, get } = createViewStorage();
   const store = value => clickStorage.push(value);
-  const storeView = (viewName, decisions) => push(viewName, decisions);
   const getView = viewName => get(viewName);
   const modules = initDomActionsModules(store);
   const executeDecisions = createExecuteDecisions({
@@ -49,7 +48,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     collect: viewCollect
   });
   const onResponseHandler = createOnResponseHandler({
-    storeView,
+    storeViews,
     extractRenderableDecisions,
     extractPageWideScopeDecisions,
     executeDecisions,

@@ -2,12 +2,7 @@ import PAGE_WIDE_SCOPE from "./constants/scope";
 
 const isPageWideScope = decision => decision.scope === PAGE_WIDE_SCOPE;
 
-const storeDecisions = (pushView, decisions) => {
-  Object.keys(decisions).forEach(scope => {
-    pushView(scope, decisions[scope]);
-  });
-};
-const extractDecisions = (decisions, pushView) => {
+const extractDecisions = decisions => {
   const pageWideDecisions = [];
   const viewDecisions = {};
 
@@ -21,11 +16,10 @@ const extractDecisions = (decisions, pushView) => {
       viewDecisions[decision.scope].push(decision);
     }
   });
-  storeDecisions(pushView, viewDecisions);
 
-  return pageWideDecisions;
+  return [pageWideDecisions, viewDecisions];
 };
 
-export default (decisions, pushView) => {
-  return extractDecisions(decisions, pushView);
+export default renderableDecisions => {
+  return extractDecisions(renderableDecisions);
 };

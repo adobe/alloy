@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { isNonEmptyArray, assign } from "../../utils";
 
 export default ({ eventManager, mergeMeta }) => {
-  return (meta, xdm = {}) => {
+  return ({ meta, xdm = {} }) => {
     const { decisions = [] } = meta;
     const data = { eventType: "display" };
     const event = eventManager.createEvent();
