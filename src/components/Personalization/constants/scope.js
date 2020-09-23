@@ -10,20 +10,4 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { includes, isNonEmptyArray } from "../../utils";
-import PAGE_WIDE_SCOPE from "./constants/scope";
-
-export const hasScopes = scopes => isNonEmptyArray(scopes);
-
-export const isAuthoringModeEnabled = (doc = document) =>
-  doc.location.href.indexOf("mboxEdit") !== -1;
-
-export const getDecisionScopes = (renderDecisions, decisionScopes) => {
-  const scopes = [...decisionScopes];
-
-  if (renderDecisions && !includes(scopes, PAGE_WIDE_SCOPE)) {
-    scopes.push(PAGE_WIDE_SCOPE);
-  }
-
-  return scopes;
-};
+export default "__view__";
