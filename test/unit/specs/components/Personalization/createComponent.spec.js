@@ -106,7 +106,6 @@ describe("Personalization", () => {
     expect(isAuthoringModeEnabled).toHaveBeenCalled();
     expect(getDecisionScopes).toHaveBeenCalled();
     expect(hasScopes).toHaveBeenCalled();
-    expect(showContainers).toHaveBeenCalled();
 
     expect(mergeQuery).not.toHaveBeenCalled();
     expect(onResponseHandler).not.toHaveBeenCalled();

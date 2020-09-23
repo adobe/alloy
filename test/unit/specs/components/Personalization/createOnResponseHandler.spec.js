@@ -82,7 +82,7 @@ describe("Personalization::onResponseHandler", () => {
     };
     response.getPayloadsByType.and.returnValue([]);
 
-    const renderDecisions = false;
+    const renderDecisions = true;
     const onResponse = createOnResponseHandler({
       extractDecisions,
       executeDecisions,
