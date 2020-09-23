@@ -16,7 +16,7 @@ const DECISIONS_HANDLE = "personalization:decisions";
 export default ({ extractDecisions, executeDecisions, showContainers }) => {
   return ({ renderDecisions, response }) => {
     const unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
-    if (!isNonEmptyArray(unprocessedDecisions)) {
+    if (renderDecisions && !isNonEmptyArray(unprocessedDecisions)) {
       showContainers();
       return { decisions: [] };
     }
