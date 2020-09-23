@@ -44,11 +44,8 @@ test("C36908 When ID migration is enabled and Visitor and Alloy are both awaitin
   await createMockOptIn(false);
 
   await configureAlloyInstance("alloy", config);
-  let errorMessage;
-  await setConsent(CONSENT_IN).catch(err => {
-    errorMessage = err.errMsg;
-  });
-  await t.expect(errorMessage).notOk("Expected no error message");
+
+  await setConsent(CONSENT_IN);
   const alloyIdentity = await getIdentity();
   await createMockOptIn(true);
   const visitorIdentity = await getVisitorEcid(orgMainConfigMain.orgId);
