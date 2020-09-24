@@ -61,17 +61,22 @@ test("Test C28760: A notification collect should be triggered if a VEC dom actio
 
   const sendEventRequest = networkLogger.edgeEndpointLogs.requests[0];
   const requestBody = JSON.parse(sendEventRequest.request.body);
+  const personalizationUrls =
+    requestBody.events[0].query.personalization.schemas;
+
   await t
     .expect(requestBody.events[0].query.personalization.decisionScopes)
     .eql([PAGE_WIDE_SCOPE]);
+
   await t
-    .expect(requestBody.events[0].query.personalization.schemas)
-    .eql([
-      "https://ns.adobe.com/personalization/dom-action",
-      "https://ns.adobe.com/personalization/html-content-item",
-      "https://ns.adobe.com/personalization/json-content-item",
-      "https://ns.adobe.com/personalization/redirect-item"
-    ]);
+    .expect(personalizationUrls)
+    .contains("https://ns.adobe.com/personalization/dom-action")
+    .expect(personalizationUrls)
+    .contains("https://ns.adobe.com/personalization/html-content-item")
+    .expect(personalizationUrls)
+    .contains("https://ns.adobe.com/personalization/json-content-item")
+    .expect(personalizationUrls)
+    .contains("https://ns.adobe.com/personalization/redirect-item");
 
   const response = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
