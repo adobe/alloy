@@ -9,27 +9,28 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import isNonEmptyArray from "../../utils/isNonEmptyArray";
+import isEmptyArray from "../../utils/isEmptyArray";
 
 const DECISIONS_HANDLE = "personalization:decisions";
-
 export default ({ extractDecisions, executeDecisions, showContainers }) => {
   return ({ renderDecisions, response }) => {
     const unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
-    if (renderDecisions && !isNonEmptyArray(unprocessedDecisions)) {
+
+    if (!renderDecisions) {
+      return { decisions: unprocessedDecisions };
+    }
+
+    if (isEmptyArray(unprocessedDecisions)) {
       showContainers();
       return { decisions: [] };
     }
+
     const [renderableDecisions, decisions] = extractDecisions(
       unprocessedDecisions
     );
 
-    if (renderDecisions) {
-      executeDecisions(renderableDecisions);
-      showContainers();
-      return { decisions };
-    }
-
-    return { decisions: unprocessedDecisions };
+    executeDecisions(renderableDecisions);
+    showContainers();
+    return { decisions };
   };
 };

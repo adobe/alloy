@@ -71,7 +71,7 @@ describe("Personalization::onResponseHandler", () => {
 
     const result = onResponse({ renderDecisions, response });
 
-    expect(extractDecisions).toHaveBeenCalledWith(PAGE_WIDE_SCOPE_DECISIONS);
+    expect(extractDecisions).not.toHaveBeenCalled();
     expect(showContainers).not.toHaveBeenCalled();
     expect(executeDecisions).not.toHaveBeenCalled();
     expect(result).toEqual(expectedResult);
