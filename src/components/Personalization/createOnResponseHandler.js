@@ -9,7 +9,6 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import isEmptyArray from "../../utils/isEmptyArray";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 export default ({ extractDecisions, executeDecisions, showContainers }) => {
@@ -20,7 +19,7 @@ export default ({ extractDecisions, executeDecisions, showContainers }) => {
       return { decisions: unprocessedDecisions };
     }
 
-    if (isEmptyArray(unprocessedDecisions)) {
+    if (unprocessedDecisions.length === 0) {
       showContainers();
       return { decisions: [] };
     }
