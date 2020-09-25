@@ -36,6 +36,9 @@ export default construct => {
       return useIdThirdPartyDomain;
     },
     addIdentity() {},
+    getDocumentMayUnload() {
+      return false;
+    },
     toJSON() {
       return content;
     }

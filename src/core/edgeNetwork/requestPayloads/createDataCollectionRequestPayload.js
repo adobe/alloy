@@ -19,7 +19,12 @@ export default () => {
       addIdentity: createAddIdentity(content),
       addEvent(event) {
         content.events = content.events || [];
-        content.events.push(event.toJSON());
+        content.events.push(event);
+      },
+      getDocumentMayUnload() {
+        return (content.events || []).some(event =>
+          event.getDocumentMayUnload()
+        );
       }
     };
   });

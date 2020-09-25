@@ -15,7 +15,7 @@ import injectFetch from "./injectFetch";
 import injectSendBeacon from "./injectSendBeacon";
 import isFunction from "../../utils/isFunction";
 
-export default (window, logger) => {
+export default ({ window, logger }) => {
   const fetch = isFunction(window.fetch)
     ? injectFetch(window.fetch)
     : injectSendXhrRequest(window.XMLHttpRequest);
@@ -24,7 +24,7 @@ export default (window, logger) => {
       ? injectSendBeacon(window.navigator, fetch, logger)
       : fetch;
 
-  return (url, body, documentMayUnload) => {
+  return ({ url, body, documentMayUnload }) => {
     const method = documentMayUnload ? sendBeacon : fetch;
     return method(url, body);
   };

@@ -39,13 +39,32 @@ describe("createDataCollectionRequestPayload", () => {
     expect(payload.getUseIdThirdPartyDomain()).toBeTrue();
   });
 
-  it("calls toJSON on the event when it is added to the payload", () => {
+  it("returns false from getDocumentMayUnload if no events say document may unload", () => {
     const payload = createDataCollectionRequestPayload();
     const event = {
-      toJSON: jasmine.createSpy()
+      getDocumentMayUnload() {
+        return false;
+      }
     };
     payload.addEvent(event);
-    expect(event.toJSON).toHaveBeenCalled();
+    expect(payload.getDocumentMayUnload()).toBeFalse();
+  });
+
+  it("returns true from getDocumentMayUnload if at least one event reports the document may unload", () => {
+    const payload = createDataCollectionRequestPayload();
+    const event1 = {
+      getDocumentMayUnload() {
+        return false;
+      }
+    };
+    const event2 = {
+      getDocumentMayUnload() {
+        return true;
+      }
+    };
+    payload.addEvent(event1);
+    payload.addEvent(event2);
+    expect(payload.getDocumentMayUnload()).toBeTrue();
   });
 
   it("serializes properly", () => {
@@ -62,7 +81,7 @@ describe("createDataCollectionRequestPayload", () => {
     });
     payload.addEvent(interactEvent);
     payload.addEvent(collectEvent);
-    expect(payload.toJSON()).toEqual({
+    expect(JSON.parse(JSON.stringify(payload))).toEqual({
       meta: {
         configOverrides: {
           testOverride: "testOverrideValue"

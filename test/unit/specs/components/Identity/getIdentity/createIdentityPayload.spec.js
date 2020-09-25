@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createIdentityPayload from "../../../../../../src/components/Identity/getIdentity/createIdentityPayload";
+import createDataCollectionRequestPayload from "../../../../../../src/core/edgeNetwork/requestPayloads/createDataCollectionRequestPayload";
 
 describe("createIdentityPayload", () => {
   it("should not use ID third-party domain when useIdThirdPartyDomain is not called", () => {
@@ -24,12 +25,17 @@ describe("createIdentityPayload", () => {
     expect(payload.getUseIdThirdPartyDomain()).toBeTrue();
   });
 
+  it("returns false from getDocumentMayUnload", () => {
+    const payload = createDataCollectionRequestPayload();
+    expect(payload.getDocumentMayUnload()).toBeFalse();
+  });
+
   it("serializes properly", () => {
     const payload = createIdentityPayload(["ECID"]);
     payload.addIdentity("IDNS", {
       id: "ABC123"
     });
-    expect(payload.toJSON()).toEqual({
+    expect(JSON.parse(JSON.stringify(payload))).toEqual({
       xdm: {
         identityMap: {
           IDNS: [

@@ -68,7 +68,7 @@ if (instanceNames) {
     });
     const componentRegistry = createComponentRegistry();
     const lifecycle = createLifecycle(componentRegistry);
-    const networkStrategy = injectNetworkStrategy(window, logger);
+    const networkStrategy = injectNetworkStrategy({ window, logger });
 
     const setDebugCommand = options => {
       setDebugEnabled(options.enabled, { fromConfig: false });
