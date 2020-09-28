@@ -62,18 +62,17 @@ test("Test C28757: A VEC offer should render if renderDecision=true", async () =
     .expect(requestBody.events[0].query.personalization.decisionScopes)
     .eql([PAGE_WIDE_SCOPE]);
 
-  const personalizationUrls =
+  const personalizationSchemas =
     requestBody.events[0].query.personalization.schemas;
 
-  await t
-    .expect(personalizationUrls)
-    .contains("https://ns.adobe.com/personalization/dom-action")
-    .expect(personalizationUrls)
-    .contains("https://ns.adobe.com/personalization/html-content-item")
-    .expect(personalizationUrls)
-    .contains("https://ns.adobe.com/personalization/json-content-item")
-    .expect(personalizationUrls)
-    .contains("https://ns.adobe.com/personalization/redirect-item");
+  const result = [
+    "https://ns.adobe.com/personalization/dom-action",
+    "https://ns.adobe.com/personalization/html-content-item",
+    "https://ns.adobe.com/personalization/json-content-item",
+    "https://ns.adobe.com/personalization/redirect-item"
+  ].every(schema => !!personalizationSchemas.find(s => s === schema));
+
+  await t.expect(result).eql(true);
 
   const response = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])

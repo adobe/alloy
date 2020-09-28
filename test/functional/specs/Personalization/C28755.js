@@ -57,22 +57,21 @@ test("Test C28755: A VEC offer for all visitors should return in every event if 
 
   const request = networkLogger.edgeEndpointLogs.requests[0];
   const requestBody = JSON.parse(request.request.body);
-  const personalizationUrls =
+  const personalizationSchemas =
     requestBody.events[0].query.personalization.schemas;
 
   await t
     .expect(requestBody.events[0].query.personalization.decisionScopes)
     .eql([PAGE_WIDE_SCOPE]);
 
-  await t
-    .expect(personalizationUrls)
-    .contains("https://ns.adobe.com/personalization/dom-action")
-    .expect(personalizationUrls)
-    .contains("https://ns.adobe.com/personalization/html-content-item")
-    .expect(personalizationUrls)
-    .contains("https://ns.adobe.com/personalization/json-content-item")
-    .expect(personalizationUrls)
-    .contains("https://ns.adobe.com/personalization/redirect-item");
+  const results = [
+    "https://ns.adobe.com/personalization/dom-action",
+    "https://ns.adobe.com/personalization/html-content-item",
+    "https://ns.adobe.com/personalization/json-content-item",
+    "https://ns.adobe.com/personalization/redirect-item"
+  ].every(schema => !!personalizationSchemas.find(s => s === schema));
+
+  await t.expect(results).eql(true);
 
   const response = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
