@@ -11,21 +11,15 @@ const alloyWithVisitorPages = {
   prod: "alloyVisitorTestPageProd.html"
 };
 
-const alloyWithVisitorTestPageUrl = `https://alloyio.com/functional-test/${alloyWithVisitorPages[env]}`;
+const envForPageUrl = alloyEnv || env;
 
+const alloyTestPageUrl = `https://alloyio.com/functional-test/${alloyPages[envForPageUrl]}`;
+export default alloyTestPageUrl;
+
+const alloyWithVisitorTestPageUrl = `https://alloyio.com/functional-test/${alloyWithVisitorPages[envForPageUrl]}`;
 export { alloyWithVisitorTestPageUrl };
 
-const getAlloyTestPageUrl = () => {
-  console.log("EDGE ENV:", env);
-  console.log("ALLOY ENV:", alloyEnv);
-  let pageUrl;
-  if (alloyEnv) {
-    pageUrl = alloyPages[alloyEnv];
-  } else {
-    pageUrl = alloyPages[env];
-  }
-  console.log("ALLOY PAGE:", pageUrl);
-  return pageUrl;
-};
-
-export default `https://alloyio.com/functional-test/${getAlloyTestPageUrl()}`;
+console.log("EDGE ENV:", env);
+console.log("ALLOY ENV:", alloyEnv);
+console.log("ALLOY PAGE:", alloyTestPageUrl);
+console.log("ALLOY VISITOR PAGE:", alloyWithVisitorTestPageUrl);

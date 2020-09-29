@@ -18,21 +18,36 @@ export default ({ logger, orgId, awaitVisitorOptIn }) => {
     if (Visitor) {
       // Need to explicitly wait for optIn because visitor will call callback
       // with invalid values prior to optIn being approved
-      return awaitVisitorOptIn({ logger }).then(() => {
-        logger.log(
-          "Delaying request while using Visitor to retrieve ECID from server."
-        );
+      return awaitVisitorOptIn({ logger })
+        .then(() => {
+          logger.log(
+            "Delaying request while using Visitor to retrieve ECID from server."
+          );
 
-        return new Promise(resolve => {
-          const visitor = Visitor.getInstance(orgId, {});
-          visitor.getMarketingCloudVisitorID(ecid => {
+          return new Promise(resolve => {
+            const visitor = Visitor.getInstance(orgId, {});
+            visitor.getMarketingCloudVisitorID(ecid => {
+              logger.log(
+                "Resuming previously delayed request that was waiting for ECID from Visitor."
+              );
+              resolve(ecid);
+            }, true);
+          });
+        })
+        .catch(error => {
+          // If consent was denied, get the ECID from experience edge. OptIn and AEP Web SDK
+          // consent should operate independently, but during id migration AEP Web SDK needs
+          // to wait for optIn object consent resolution so that only one ECID is generated.
+          if (error) {
             logger.log(
-              "Resuming previously delayed request that was waiting for ECID from Visitor."
+              `${error.message}, retrieving ECID from experience edge`
             );
-            resolve(ecid);
-          }, true);
+          } else {
+            logger.log(
+              "An error occurred while obtaining the ECID from Visitor."
+            );
+          }
         });
-      });
     }
     return Promise.resolve();
   };
