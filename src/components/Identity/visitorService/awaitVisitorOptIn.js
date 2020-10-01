@@ -25,8 +25,9 @@ export default ({ logger }) => {
             "Received legacy opt-in approval to let Visitor retrieve ECID from server."
           );
           resolve();
+        } else {
+          reject(new Error("Legacy opt-in was declined."));
         }
-        reject(new Error("Legacy opt-in was declined."));
       }, true);
     } else {
       resolve();

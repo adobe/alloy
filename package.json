@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Client-Side SDK for Unified Data Collection",
   "main": "src/core/index.js",
   "scripts": {
@@ -16,8 +16,8 @@
     "allure:generate": "allure generate allure/allure-results/ -o allure/allure-report/",
     "test:watch": "karma start",
     "test:watch:chrome": "karma start --browsers Chrome",
-    "functional:ci": "EDGE_ENV=\"prod\" EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"prod\" testcafe chrome",
-    "functional:ci:bs": "EDGE_ENV=\"prod\" EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"prod\" testcafe 'browserstack:ie@11:Windows 10'",
+    "functional:ci": "EDGE_ENV=\"prod\" EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome",
+    "functional:ci:bs": "EDGE_ENV=\"prod\" EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe 'browserstack:ie@11:Windows 10'",
     "functional:local": "EDGE_ENV=\"prod\" EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome",
     "functional:cron:prod": "EDGE_ENV=\"prod\" ALLOY_ENV=\"prod\" testcafe chrome",
     "functional:local:allure": "EDGE_ENV=\"prod\" testcafe chrome -r allure",

@@ -62,7 +62,7 @@ describe("getEcidFromVisitor", () => {
   });
 
   describe("Visitor exists; awaitVisitorOptIn rejects the promise", () => {
-    it("should return promise rejected with undefined", () => {
+    it("should return promise resolved with undefined", () => {
       window.Visitor = Visitor;
       const awaitVisitorOptIn = () => {
         return Promise.reject();
@@ -73,7 +73,7 @@ describe("getEcidFromVisitor", () => {
         orgId,
         awaitVisitorOptIn
       });
-      return expectAsync(getEcidFromVisitor()).toBeRejectedWith(undefined);
+      return expectAsync(getEcidFromVisitor()).toBeResolvedTo(undefined);
     });
   });
 });
