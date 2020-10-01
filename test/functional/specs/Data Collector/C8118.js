@@ -18,8 +18,9 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
+const getLocation = ClientFunction(() => document.location.href.toString());
+
 test("Test C8118: Load page with link. Click link. Verify event.", async () => {
-  const getLocation = ClientFunction(() => document.location.href.toString());
   await configureAlloyInstance("alloy", orgMainConfigMain);
   await addAnchorToBody({
     text: "Test Link",
@@ -30,8 +31,8 @@ test("Test C8118: Load page with link. Click link. Verify event.", async () => {
   });
   await t.click(Selector("#alloy-link-test"));
   await t.expect(getLocation()).contains("blank.html");
-  const request = networkLogger.edgeCollectEndpointLogs.requests[0].request;
-  const requestBody = JSON.parse(request.body);
+  const request = networkLogger.edgeCollectEndpointLogs.requests[0];
+  const requestBody = JSON.parse(request.request.body);
   const eventXdm = requestBody.events[0].xdm;
   await t.expect(eventXdm.eventType).eql("web.webinteraction.linkClicks");
   await t.expect(eventXdm.web.webInteraction).eql({
@@ -40,4 +41,5 @@ test("Test C8118: Load page with link. Click link. Verify event.", async () => {
     URL: "https://alloyio.com/functional-test/blank.html",
     linkClicks: { value: 1 }
   });
+  await t.expect(request.response).notOk("sendBeacon wasn't used");
 });
