@@ -1,6 +1,7 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
+import sendBeaconMock from "../../helpers/sendBeaconMock";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
 
@@ -40,10 +41,9 @@ const sendEvent = ClientFunction(() => {
 });
 
 test("Test 455258: sendEvent command sends a request to the collect endpoint using sendBeacon when documentUnloading is set to true.", async () => {
+  await sendBeaconMock.mock();
   await configureAlloyInstance("alloy", orgMainConfigMain);
   await sendEvent();
   await t.expect(networkLogger.edgeCollectEndpointLogs.requests.length).eql(1);
-  await t
-    .expect(networkLogger.edgeCollectEndpointLogs.requests[0].response)
-    .notOk("sendBeacon wasn't used");
+  await t.expect(sendBeaconMock.getCallCount()).eql(1);
 });

@@ -2,6 +2,7 @@ import { t, Selector, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
 import addAnchorToBody from "../../helpers/dom/addAnchorToBody";
+import sendBeaconMock from "../../helpers/sendBeaconMock";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
 
@@ -21,6 +22,7 @@ test.meta({
 const getLocation = ClientFunction(() => document.location.href.toString());
 
 test("Test C8118: Load page with link. Click link. Verify event.", async () => {
+  await sendBeaconMock.mock();
   await configureAlloyInstance("alloy", orgMainConfigMain);
   await addAnchorToBody({
     text: "Test Link",
@@ -41,5 +43,5 @@ test("Test C8118: Load page with link. Click link. Verify event.", async () => {
     URL: "https://alloyio.com/functional-test/blank.html",
     linkClicks: { value: 1 }
   });
-  await t.expect(request.response).notOk("sendBeacon wasn't used");
+  await t.expect(sendBeaconMock.getCallCount()).eql(1);
 });
