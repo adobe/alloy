@@ -27,43 +27,48 @@ const determineLinkType = (window, config, linkUrl, clickedObj) => {
   return linkType;
 };
 
+const findSupportedAnchorElement = targetElement => {
+  let element = targetElement;
+  while (element != null && element.nodeType === 1) {
+    if (isSupportedAnchorElement(element)) {
+      return element;
+    }
+    element = element.parentElement;
+  }
+  return null;
+};
+
 export default (window, config) => {
   return (event, targetElement) => {
-    let linkName;
-    let linkType;
-    let clickedElement = targetElement;
-    let linkUrl;
-    let isValidLink = false;
     // Search parent elements for an anchor element
     // TODO: Replace with generic DOM tool that can fetch configured properties
-    do {
-      linkUrl = getAbsoluteUrlFromAnchorElement(window, clickedElement);
-      if (!linkUrl) {
-        clickedElement = clickedElement.parentNode;
-      }
-    } while (!linkUrl && clickedElement);
-    if (linkUrl && isSupportedAnchorElement(clickedElement)) {
-      isValidLink = true;
-      linkType = determineLinkType(window, config, linkUrl, clickedElement);
-      // TODO: Update link name from the clicked element context
-      linkName = "Link Click";
+    const anchorElement = findSupportedAnchorElement(targetElement);
+    if (!anchorElement) {
+      return;
     }
 
-    if (isValidLink) {
-      event.documentMayUnload();
-      event.mergeXdm({
-        eventType: "web.webinteraction.linkClicks",
-        web: {
-          webInteraction: {
-            name: linkName,
-            type: linkType,
-            URL: linkUrl,
-            linkClicks: {
-              value: 1
-            }
+    const linkUrl = getAbsoluteUrlFromAnchorElement(window, anchorElement);
+    if (!linkUrl) {
+      return;
+    }
+
+    const linkType = determineLinkType(window, config, linkUrl, anchorElement);
+    // TODO: Update link name from the clicked element context
+    const linkName = "Link Click";
+
+    event.documentMayUnload();
+    event.mergeXdm({
+      eventType: "web.webinteraction.linkClicks",
+      web: {
+        webInteraction: {
+          name: linkName,
+          type: linkType,
+          URL: linkUrl,
+          linkClicks: {
+            value: 1
           }
         }
-      });
-    }
+      }
+    });
   };
 };

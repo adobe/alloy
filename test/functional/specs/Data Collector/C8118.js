@@ -34,11 +34,18 @@ test("Test C8118: Load page with link. Click link. Verify event.", async () => {
   );
   await configureAlloyInstance("alloy", testConfig);
   await addAnchorToBody({
-    text: "Test Link",
     attributes: {
-      href: "blank.html",
-      id: "alloy-link-test"
-    }
+      href: "blank.html"
+    },
+    children: [
+      {
+        element: "span",
+        attributes: {
+          id: "alloy-link-test"
+        },
+        text: "Test Link"
+      }
+    ]
   });
   const logger = await createConsoleLogger();
   await t.click(Selector("#alloy-link-test"));

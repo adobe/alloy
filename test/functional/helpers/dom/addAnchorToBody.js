@@ -1,14 +1,24 @@
 import { ClientFunction } from "testcafe";
 
 const addAnchorToBody = ClientFunction(cfg => {
-  const anchor = document.createElement("a");
-  const keys = Object.keys(cfg.attributes);
-  keys.forEach(key => {
-    anchor.setAttribute(key, cfg.attributes[key]);
-  });
-  const anchorText = document.createTextNode(cfg.text);
-  anchor.appendChild(anchorText);
-  document.body.appendChild(anchor);
+  const buildNode = ({ element = "a", attributes = {}, children, text }) => {
+    const node = document.createElement(element);
+    const keys = Object.keys(attributes);
+    keys.forEach(key => {
+      node.setAttribute(key, attributes[key]);
+    });
+    if (text) {
+      node.appendChild(document.createTextNode(cfg.text));
+    }
+    if (children) {
+      children.forEach(child => {
+        node.appendChild(buildNode(child));
+      });
+    }
+    return node;
+  };
+
+  document.body.appendChild(buildNode(cfg));
 });
 
 export default addAnchorToBody;
