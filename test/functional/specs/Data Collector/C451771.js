@@ -44,7 +44,7 @@ const consentIn = ClientFunction(
   { dependencies: { CONSENT_IN } }
 );
 
-test("Test C2593: Event command consents to all purposes", async () => {
+test("C451771: XDM and data objects should be cloned as soon as feasible.", async () => {
   await configureAlloyInstance(
     "alloy",
     compose(
