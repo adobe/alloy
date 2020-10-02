@@ -1,5 +1,4 @@
 import validateUserEventOptions from "./validateUserEventOptions";
-import clone from "../../utils/clone";
 
 /*
 Copyright 2019 Adobe. All rights reserved.
@@ -38,17 +37,8 @@ const createDataCollector = ({ eventManager, logger }) => {
             event.documentMayUnload();
           }
 
-          if (xdm) {
-            // Clone xdm in case the customer modifies the object
-            // between now and the time it gets sent to the server.
-            event.setUserXdm(clone(xdm));
-          }
-
-          if (data) {
-            // Clone data in case the customer modifies the object
-            // between now and the time it gets sent to the server.
-            event.setUserData(clone(data));
-          }
+          event.setUserXdm(xdm);
+          event.setUserData(data);
 
           if (type) {
             event.mergeXdm({

@@ -61,12 +61,8 @@ describe("Event Command", () => {
 
     return sendEventCommand.run(options).then(result => {
       expect(event.documentMayUnload).toHaveBeenCalled();
-      const xdmArg = event.setUserXdm.calls.argsFor(0)[0];
-      expect(xdmArg).not.toBe(xdm);
-      expect(xdmArg).toEqual(xdm);
-      const dataArg = event.setUserData.calls.argsFor(0)[0];
-      expect(dataArg).not.toBe(data);
-      expect(dataArg).toEqual(data);
+      expect(event.setUserXdm).toHaveBeenCalledWith(xdm);
+      expect(event.setUserData).toHaveBeenCalledWith(data);
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: true,
         decisionScopes: []
