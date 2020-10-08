@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import ContentSecurityPolicy from "./ContentSecurityPolicy";
 
 export default function EventMerge() {
   const eventMergeIdPromise = useRef(window.alloy("createEventMergeId"));
@@ -29,6 +30,7 @@ export default function EventMerge() {
 
   return (
     <div>
+      <ContentSecurityPolicy />
       <h2>Event Merge</h2>
       <p>This is the Event Merge view, part of the Single Page Application.</p>
       <p>

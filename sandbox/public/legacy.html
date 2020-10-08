@@ -3,71 +3,26 @@
   <head>
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="stylesheet" href="index.css" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta name="theme-color" content="#000000" />
-    <script src="https://github.com/Adobe-Marketing-Cloud/id-service/releases/download/4.5.1/visitorapi.min.js"></script>
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self' *.demdex.net;
-            script-src 'self' 'unsafe-inline' assets.adobedtm.com cdn.tt.omtrdc.net;
-            style-src 'self' 'unsafe-inline' cdn.tt.omtrdc.net;
+            script-src 'self' 'unsafe-inline' *.amazonaws.com github.com;
+            style-src 'self' 'unsafe-inline';
             img-src * data:;
-            connect-src 'self' unifiedjslab.tt.omtrdc.net demdex.net *.demdex.net http://localhost:8080 https://alpha.konductor.adobedc.net https://edgegateway.azurewebsites.net konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net"
+            connect-src 'self' *.adobedc.net *.demdex.net"
     />
-
+    <script src="https://github.com/Adobe-Marketing-Cloud/id-service/releases/download/4.5.1/visitorapi.min.js"></script>
     <title>Mock website hosting Alloy</title>
-
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-          "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-          "Helvetica Neue", sans-serif;
-        font-size: 1em;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        background-color: #333;
-        color: #eaeaea;
-      }
-
-      a {
-        color: #e7ca8d;
-      }
-
-      code {
-        font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-          monospace;
-        color: #acecfe;
-      }
-
-      section {
-        padding: 15px;
-      }
-
-      button {
-        display: block;
-        margin-bottom: 15px;
-      }
-
-      li,
-      button {
-        display: inline-block;
-        margin-right: 20px;
-        font-size: 120%;
-      }
-
-      #root {
-        padding: 10px;
-      }
-    </style>
+    <script>
+      Visitor.getInstance("334F60F35E1597910A495EC2@AdobeOrg", {});
+    </script>
   </head>
-  <script>
-    Visitor.getInstance("334F60F35E1597910A495EC2@AdobeOrg", {});
-  </script>
   <body>
     <div id="root">
       <div>
@@ -94,13 +49,14 @@
             <a href="/dualTag">DualTag</a>
           </li>
           <li>
-            <a href="/legacy.html">legacy</a>
+            <a href="/legacy.html">Legacy Visitor ID</a>
           </li>
         </ul>
         <hr />
       </div>
     </div>
-
-    <h2>VisitorAPI on this page</h2>
+    <div id="root">
+      <h2>Only the legacy VisitorAPI library is loaded on this page.</h2>
+    </div>
   </body>
 </html>
