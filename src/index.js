@@ -10,7 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// The __VERSION__ keyword will be replace at alloy build time with the package.json version.
-// see babel-plugin-version
+// This file is used to rollup the code into an ES module version to be used by other npm projects
+// like the launch extension.
 
-export default "__VERSION__";
+export { default as baseCode } from "./baseCode/index";
+
+export { default as core } from "./core";
+
+export {
+  default as createEventMergeId
+} from "./components/EventMerge/createEventMergeId";

@@ -17,14 +17,10 @@ const uuidv4Regex = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[
 
 describe("EventMerge", () => {
   let eventMerge;
-  let reactorRegisterCreateEventMergeId;
 
   beforeAll(() => {
-    reactorRegisterCreateEventMergeId = jasmine.createSpy();
     eventMerge = createEventMerge({
-      config: createConfig({
-        reactorRegisterCreateEventMergeId
-      })
+      config: createConfig()
     });
   });
 
@@ -37,14 +33,6 @@ describe("EventMerge", () => {
           )
         ).toBe(true);
       });
-    });
-  });
-
-  describe("reactor-specific functionality", () => {
-    it("registers a function for creating an event merge ID", () => {
-      const createEventMergeId = reactorRegisterCreateEventMergeId.calls.first()
-        .args[0];
-      expect(uuidv4Regex.test(createEventMergeId().eventMergeId)).toBe(true);
     });
   });
 });

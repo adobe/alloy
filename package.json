@@ -2,7 +2,7 @@
   "name": "@adobe/alloy",
   "version": "2.2.0",
   "description": "Client-Side SDK for Unified Data Collection",
-  "main": "src/core/index.js",
+  "module": "dist/index.js",
   "scripts": {
     "clean": "rimraf dist",
     "lint": "eslint --fix \"*.js\" \"src/**/*.js\" \"test/**/*.js\"",
@@ -28,10 +28,9 @@
     "prebuild": "npm run clean && npm run format && npm run lint",
     "build": "rollup -c",
     "prebuild:prod": "npm run prebuild",
-    "build:prod:standalone:unminified": "rollup -c --environment BUILD:prodStandalone",
-    "build:prod:standalone:minified": "rollup -c --environment MINIFY,BUILD:prodStandalone",
-    "build:prod:reactor:unminified": "rollup -c --environment BUILD:prodReactor",
-    "build:prod": "npm-run-all --parallel build:prod:standalone:unminified build:prod:standalone:minified build:prod:reactor:unminified",
+    "build:prod:unminified": "rollup -c --environment BUILD:prod",
+    "build:prod:minified": "rollup -c --environment MINIFY,BUILD:prod",
+    "build:prod": "npm-run-all --parallel build:prod:unminified build:prod:minified",
     "build:watch": "rollup -c -w",
     "build:basecode": "terser src/baseCode/index.js --mangle --compress unused=false",
     "sandbox": "cd sandbox && npm start",
@@ -77,14 +76,20 @@
     }
   ],
   "dependencies": {
+    "css.escape": "^1.5.1",
+    "uuid": "^3.3.2"
+  },
+  "peerDependencies": {
+    "@adobe/reactor-cookie": "^1.0.0",
+    "@adobe/reactor-load-script": "^1.1.1",
+    "@adobe/reactor-object-assign": "^1.0.0",
+    "@adobe/reactor-query-string": "^1.0.0"
+  },
+  "devDependencies": {
     "@adobe/reactor-cookie": "^1.0.0",
     "@adobe/reactor-load-script": "^1.1.1",
     "@adobe/reactor-object-assign": "^1.0.0",
     "@adobe/reactor-query-string": "^1.0.0",
-    "css.escape": "^1.5.1",
-    "uuid": "^3.3.2"
-  },
-  "devDependencies": {
     "@babel/core": "^7.2.2",
     "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
     "@babel/plugin-transform-template-literals": "^7.4.4",

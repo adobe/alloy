@@ -11,11 +11,7 @@ const promisePolyfillPath = path.join(
   "..",
   "promisePolyfill/promise-polyfill.min.js"
 );
-const alloyLibraryPath = path.join(
-  __dirname,
-  "../../../../",
-  "dist/standalone/alloy.js"
-);
+const alloyLibraryPath = path.join(__dirname, "../../../../", "dist/alloy.js");
 
 const networkLogger = createNetworkLogger();
 

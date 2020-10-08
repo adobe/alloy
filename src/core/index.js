@@ -38,127 +38,129 @@ import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsA
 import validateNetworkResponseIsWellFormed from "./edgeNetwork/validateNetworkResponseIsWellFormed";
 import isRetryableHttpStatusCode from "./network/isRetryableHttpStatusCode";
 
-// eslint-disable-next-line no-underscore-dangle
-const instanceNames = window.__alloyNS;
+export default () => {
+  // eslint-disable-next-line no-underscore-dangle
+  const instanceNames = window.__alloyNS;
 
-const createNamespacedStorage = injectStorage(window);
+  const createNamespacedStorage = injectStorage(window);
 
-const { console } = window;
+  const { console } = window;
 
-// set this up as a function so that monitors can be added at anytime
-// eslint-disable-next-line no-underscore-dangle
-const getMonitors = () => window.__alloyMonitors || [];
+  // set this up as a function so that monitors can be added at anytime
+  // eslint-disable-next-line no-underscore-dangle
+  const getMonitors = () => window.__alloyMonitors || [];
 
-const coreConfigValidators = createCoreConfigs();
-const apexDomain = getApexDomain(window, cookieJar);
+  const coreConfigValidators = createCoreConfigs();
+  const apexDomain = getApexDomain(window, cookieJar);
 
-if (instanceNames) {
-  instanceNames.forEach(instanceName => {
-    const {
-      setDebugEnabled,
-      logger,
-      createComponentLogger
-    } = createLogController({
-      console,
-      locationSearch: window.location.search,
-      createLogger,
-      instanceName,
-      createNamespacedStorage,
-      getMonitors
-    });
-    const componentRegistry = createComponentRegistry();
-    const lifecycle = createLifecycle(componentRegistry);
-    const networkStrategy = injectNetworkStrategy(window, logger);
-
-    const setDebugCommand = options => {
-      setDebugEnabled(options.enabled, { fromConfig: false });
-    };
-
-    const configureCommand = options => {
-      const config = buildAndValidateConfig({
-        options,
-        componentCreators,
-        coreConfigValidators,
-        createConfig,
+  if (instanceNames) {
+    instanceNames.forEach(instanceName => {
+      const {
+        setDebugEnabled,
         logger,
-        setDebugEnabled
+        createComponentLogger
+      } = createLogController({
+        console,
+        locationSearch: window.location.search,
+        createLogger,
+        instanceName,
+        createNamespacedStorage,
+        getMonitors
       });
-      const cookieTransfer = createCookieTransfer({
-        cookieJar,
-        orgId: config.orgId,
-        apexDomain
-      });
-      const sendNetworkRequest = injectSendNetworkRequest({
-        logger,
-        networkStrategy,
-        isRetryableHttpStatusCode
-      });
-      const processWarningsAndErrors = injectProcessWarningsAndErrors({
+      const componentRegistry = createComponentRegistry();
+      const lifecycle = createLifecycle(componentRegistry);
+      const networkStrategy = injectNetworkStrategy(window, logger);
+
+      const setDebugCommand = options => {
+        setDebugEnabled(options.enabled, { fromConfig: false });
+      };
+
+      const configureCommand = options => {
+        const config = buildAndValidateConfig({
+          options,
+          componentCreators,
+          coreConfigValidators,
+          createConfig,
+          logger,
+          setDebugEnabled
+        });
+        const cookieTransfer = createCookieTransfer({
+          cookieJar,
+          orgId: config.orgId,
+          apexDomain
+        });
+        const sendNetworkRequest = injectSendNetworkRequest({
+          logger,
+          networkStrategy,
+          isRetryableHttpStatusCode
+        });
+        const processWarningsAndErrors = injectProcessWarningsAndErrors({
+          logger
+        });
+        const sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
+          config,
+          lifecycle,
+          cookieTransfer,
+          sendNetworkRequest,
+          createResponse,
+          processWarningsAndErrors,
+          validateNetworkResponseIsWellFormed
+        });
+        const generalConsentState = createConsentStateMachine();
+        const consent = createConsent({
+          generalConsentState,
+          logger
+        });
+        const eventManager = createEventManager({
+          config,
+          logger,
+          lifecycle,
+          consent,
+          createEvent,
+          createDataCollectionRequestPayload,
+          sendEdgeNetworkRequest
+        });
+        return initializeComponents({
+          componentCreators,
+          lifecycle,
+          componentRegistry,
+          getImmediatelyAvailableTools(componentName) {
+            const componentLogger = createComponentLogger(componentName);
+            return {
+              config,
+              consent,
+              eventManager,
+              logger: componentLogger,
+              lifecycle,
+              sendEdgeNetworkRequest,
+              handleError: injectHandleError({
+                errorPrefix: `[${instanceName}] [${componentName}]`,
+                logger: componentLogger
+              })
+            };
+          }
+        });
+      };
+
+      const handleError = injectHandleError({
+        errorPrefix: `[${instanceName}]`,
         logger
       });
-      const sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
-        config,
-        lifecycle,
-        cookieTransfer,
-        sendNetworkRequest,
-        createResponse,
-        processWarningsAndErrors,
-        validateNetworkResponseIsWellFormed
-      });
-      const generalConsentState = createConsentStateMachine();
-      const consent = createConsent({
-        generalConsentState,
-        logger
-      });
-      const eventManager = createEventManager({
-        config,
+
+      const executeCommand = injectExecuteCommand({
         logger,
-        lifecycle,
-        consent,
-        createEvent,
-        createDataCollectionRequestPayload,
-        sendEdgeNetworkRequest
+        configureCommand,
+        setDebugCommand,
+        handleError,
+        validateCommandOptions
       });
-      return initializeComponents({
-        componentCreators,
-        lifecycle,
-        componentRegistry,
-        getImmediatelyAvailableTools(componentName) {
-          const componentLogger = createComponentLogger(componentName);
-          return {
-            config,
-            consent,
-            eventManager,
-            logger: componentLogger,
-            lifecycle,
-            sendEdgeNetworkRequest,
-            handleError: injectHandleError({
-              errorPrefix: `[${instanceName}] [${componentName}]`,
-              logger: componentLogger
-            })
-          };
-        }
-      });
-    };
 
-    const handleError = injectHandleError({
-      errorPrefix: `[${instanceName}]`,
-      logger
+      const instance = createInstance(executeCommand);
+
+      const queue = window[instanceName].q;
+      queue.push = instance;
+      logger.logOnInstanceCreated({ instance });
+      queue.forEach(instance);
     });
-
-    const executeCommand = injectExecuteCommand({
-      logger,
-      configureCommand,
-      setDebugCommand,
-      handleError,
-      validateCommandOptions
-    });
-
-    const instance = createInstance(executeCommand);
-
-    const queue = window[instanceName].q;
-    queue.push = instance;
-    logger.logOnInstanceCreated({ instance });
-    queue.forEach(instance);
-  });
-}
+  }
+};

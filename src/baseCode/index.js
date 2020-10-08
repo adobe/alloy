@@ -33,7 +33,7 @@ governing permissions and limitations under the License.
  * particularly sensitive to base code size.
  */
 
-(function(window, instanceNames) {
+export default instanceNames => {
   instanceNames.forEach(function(instanceName) {
     if (!window[instanceName]) {
       // __alloyNS stores a name of each "instance", or in other words, each
@@ -59,4 +59,4 @@ governing permissions and limitations under the License.
       window[instanceName].q = [];
     }
   });
-})(window, ["alloy"]);
+};
