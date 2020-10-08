@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import loadScript from "@adobe/reactor-load-script";
 import { selectNodes, createNode } from "../../../utils/dom";
 import { SRC, SCRIPT } from "../../../constants/tagName";
-import { getAttribute } from "./dom";
+import { getAttribute, getNonce } from "./dom";
 
 const is = (element, tagName) => element.tagName === tagName;
 const isInlineScript = element =>
@@ -40,7 +40,12 @@ export const getInlineScripts = fragment => {
       continue;
     }
 
-    result.push(createNode(SCRIPT, {}, { textContent }));
+    const nonce = getNonce();
+    const attributes = {
+      ...(nonce && { nonce })
+    };
+
+    result.push(createNode(SCRIPT, attributes, { textContent }));
   }
   /* eslint-enable no-continue */
 

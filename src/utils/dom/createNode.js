@@ -11,19 +11,27 @@ governing permissions and limitations under the License.
 */
 
 import appendNode from "./appendNode";
+import isObject from "../isObject";
+
+const populateElementAttributes = (element, attrs) => {
+  Object.keys(attrs).forEach(key => {
+    if (key === "style" && isObject(attrs[key])) {
+      const styleAttrs = attrs[key];
+      Object.keys(styleAttrs).forEach(styleKey => {
+        element.style[styleKey] = styleAttrs[styleKey];
+      });
+    } else {
+      element.setAttribute(key, attrs[key]);
+    }
+  });
+};
 
 export default (tag, attrs = {}, props = {}, children = [], doc = document) => {
   const result = doc.createElement(tag);
-
-  Object.keys(attrs).forEach(key => {
-    result.setAttribute(key, attrs[key]);
-  });
-
+  populateElementAttributes(result, attrs);
   Object.keys(props).forEach(key => {
     result[key] = props[key];
   });
-
   children.forEach(child => appendNode(result, child));
-
   return result;
 };

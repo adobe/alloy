@@ -18,7 +18,11 @@ const fireOnPage = fireImage;
 
 const IFRAME_ATTRS = {
   name: "Adobe Alloy",
-  style: "display: none; width: 0; height: 0;"
+  style: {
+    display: "none",
+    width: 0,
+    height: 0
+  }
 };
 
 export default request => {

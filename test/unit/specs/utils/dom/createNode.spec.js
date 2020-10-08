@@ -32,4 +32,16 @@ describe("DOM::createNode", () => {
     expect(element.tagName).toEqual("DIV");
     expect(element.firstElementChild.tagName).toEqual("P");
   });
+
+  it("supports style attribute objects", () => {
+    const element = createNode("DIV", { style: { color: "blue" } });
+    expect(element.tagName).toEqual("DIV");
+    expect(element.style.color).toEqual("blue");
+  });
+
+  it("supports style attribute strings", () => {
+    const element = createNode("DIV", { style: "color: blue;" });
+    expect(element.tagName).toEqual("DIV");
+    expect(element.style.color).toEqual("blue");
+  });
 });

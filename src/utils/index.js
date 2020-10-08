@@ -13,27 +13,21 @@ governing permissions and limitations under the License.
 /* eslint-disable import/prefer-default-export */
 
 // Please keep in alphabetical order.
-export {
-  default as areThirdPartyCookiesSupportedByDefault
-} from "./areThirdPartyCookiesSupportedByDefault";
+export { default as areThirdPartyCookiesSupportedByDefault } from "./areThirdPartyCookiesSupportedByDefault";
 export { default as assign } from "./assign";
 export { default as assignIf } from "./assignIf";
 export { default as clone } from "./clone";
 export { default as convertTimes } from "./convertTimes";
 export { default as cookieJar } from "./cookieJar";
 export { default as createMerger } from "./createMerger";
-export {
-  default as createCallbackAggregator
-} from "./createCallbackAggregator";
+export { default as createCallbackAggregator } from "./createCallbackAggregator";
 export { default as createTaskQueue } from "./createTaskQueue";
 export { default as defer } from "./defer";
 export { default as deepAssign } from "./deepAssign";
 export { default as endsWith } from "./endsWith";
 export { default as find } from "./find";
 export { default as fireImage } from "./fireImage";
-export {
-  default as fireReferrerHideableImage
-} from "./fireReferrerHideableImage";
+export { default as fireReferrerHideableImage } from "./fireReferrerHideableImage";
 export { default as flatMap } from "./flatMap";
 export { default as getApexDomain } from "./getApexDomain";
 export { default as getLastArrayItems } from "./getLastArrayItems";
@@ -56,9 +50,7 @@ export { default as memoize } from "./memoize";
 export { default as noop } from "./noop";
 export { default as padStart } from "./padStart";
 export { default as queryString } from "./querystring";
-export {
-  default as sanitizeOrgIdForCookieName
-} from "./sanitizeOrgIdForCookieName";
+export { default as sanitizeOrgIdForCookieName } from "./sanitizeOrgIdForCookieName";
 export { default as stackError } from "./stackError";
 export { default as injectStorage } from "./injectStorage";
 export { default as stringToBoolean } from "./stringToBoolean";
