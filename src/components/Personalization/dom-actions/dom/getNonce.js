@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { selectNodes } from "../../../../utils/dom";
+let nonce;
 
 /**
  * Returns the nonce if available.
@@ -18,6 +18,9 @@ import { selectNodes } from "../../../../utils/dom";
  * @returns {(String|undefined)} the nonce or undefined if not available
  */
 export default (context = document) => {
-  const n = selectNodes("[nonce]", context);
-  return n && n[0] && (n[0].nonce || n[0].getAttribute("nonce"));
+  if (!nonce) {
+    const n = context.querySelector("[nonce]");
+    nonce = n && n.nonce;
+  }
+  return nonce;
 };
