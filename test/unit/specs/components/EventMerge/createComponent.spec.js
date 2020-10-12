@@ -10,14 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createEventMergeId from "./createEventMergeId";
-import createComponent from "./createComponent";
+import createComponent from "../../../../../src/components/EventMerge/createComponent";
 
-const createEventMerge = () => {
-  return createComponent(createEventMergeId);
-};
-
-createEventMerge.namespace = "EventMerge";
-createEventMerge.configValidators = {};
-
-export default createEventMerge;
+describe("EventMerge:createComponent", () => {
+  it("creates a component", () => {
+    const createEventMergeId = () => undefined;
+    expect(createComponent({ createEventMergeId })).toEqual({
+      commands: {
+        createEventMergeId: {
+          run: createEventMergeId
+        }
+      }
+    });
+  });
+});

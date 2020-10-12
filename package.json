@@ -32,7 +32,6 @@
     "build:prod:minified": "rollup -c --environment MINIFY,BUILD:prod",
     "build:prod": "npm-run-all --parallel build:prod:unminified build:prod:minified",
     "build:watch": "rollup -c -w",
-    "build:basecode": "terser src/baseCode/index.js --mangle --compress unused=false",
     "sandbox": "cd sandbox && npm start",
     "sandbox:install": "cd sandbox && npm install",
     "sandbox:build": "cd sandbox && npm run build",

@@ -45,7 +45,14 @@ const plugins = [
 ];
 
 if (minify) {
-  plugins.push(terser());
+  plugins.push(
+    terser({
+      mangle: true,
+      compress: {
+        unused: false
+      }
+    })
+  );
 }
 
 if (buildTarget !== buildTargets.DEV) {
@@ -74,7 +81,7 @@ if (buildTarget === buildTargets.PROD) {
 }
 
 config.push({
-  input: "src/standalone.js",
+  input: "src/standAlone.js",
   output: [
     {
       file: `${destDirectory}alloy${minifiedExtension}.js`,
