@@ -28,12 +28,12 @@ const determineLinkType = (window, config, linkUrl, clickedObj) => {
 };
 
 const findSupportedAnchorElement = targetElement => {
-  let element = targetElement;
-  while (element != null && element.nodeType === 1) {
-    if (isSupportedAnchorElement(element)) {
-      return element;
+  let node = targetElement;
+  while (node) {
+    if (isSupportedAnchorElement(node)) {
+      return node;
     }
-    element = element.parentElement;
+    node = node.parentNode;
   }
   return null;
 };

@@ -1,6 +1,6 @@
 import { t, Selector, ClientFunction } from "testcafe";
 import createFixture from "../../helpers/createFixture";
-import addAnchorToBody from "../../helpers/dom/addAnchorToBody";
+import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createConsoleLogger from "../../helpers/consoleLogger";
 import {
@@ -33,20 +33,10 @@ test("Test C8118: Load page with link. Click link. Verify event.", async () => {
     }
   );
   await configureAlloyInstance("alloy", testConfig);
-  await addAnchorToBody({
-    attributes: {
-      href: "blank.html"
-    },
-    children: [
-      {
-        element: "span",
-        attributes: {
-          id: "alloy-link-test"
-        },
-        text: "Test Link"
-      }
-    ]
-  });
+  await addHtmlToBody(
+    `<a href="blank.html"><span id="alloy-link-test">Test Link</span></a>`
+  );
+
   const logger = await createConsoleLogger();
   await t.click(Selector("#alloy-link-test"));
   await t.expect(getLocation()).contains("blank.html");
