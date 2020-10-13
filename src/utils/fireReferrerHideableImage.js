@@ -17,7 +17,10 @@ import { BODY, IFRAME } from "../constants/tagName";
 const fireOnPage = fireImage;
 
 const IFRAME_ATTRS = {
-  name: "Adobe Alloy",
+  name: "Adobe Alloy"
+};
+
+const IFRAME_PROPS = {
   style: {
     display: "none",
     width: 0,
@@ -28,7 +31,7 @@ const IFRAME_ATTRS = {
 export default request => {
   const createIframe = () => {
     return awaitSelector(BODY).then(([body]) => {
-      const iframe = createNode(IFRAME, IFRAME_ATTRS);
+      const iframe = createNode(IFRAME, IFRAME_ATTRS, IFRAME_PROPS);
       return appendNode(body, iframe);
     });
   };

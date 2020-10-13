@@ -20,7 +20,9 @@ let nonce;
 export default (context = document) => {
   if (!nonce) {
     const n = context.querySelector("[nonce]");
-    nonce = n && n.nonce;
+    // NOTE: We're keeping n.getAttribute("nonce") until it is safe to remove:
+    //   ref: https://github.com/whatwg/html/issues/2369#issuecomment-280853946
+    nonce = n && (n.nonce || n.getAttribute("nonce"));
   }
   return nonce;
 };
