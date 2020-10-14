@@ -34,7 +34,7 @@ describe("DOM::createNode", () => {
   });
 
   it("supports style attribute objects", () => {
-    const element = createNode("DIV", { style: { color: "blue" } });
+    const element = createNode("DIV", {}, { style: { color: "blue" } });
     expect(element.tagName).toEqual("DIV");
     expect(element.style.color).toEqual("blue");
   });
