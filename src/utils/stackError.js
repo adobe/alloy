@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import toError from "./toError";
+import updateErrorMessage from "./updateErrorMessage";
 
 /**
  * Augments an error's message with additional context as it bubbles up the call stack.
@@ -19,8 +20,12 @@ import toError from "./toError";
  * this is used as the basis for the message of a newly created Error instance.
  * @returns {*}
  */
-export default (message, error) => {
-  const stackedError = toError(error);
-  stackedError.message = `${message}\nCaused by: ${stackedError.message}`;
-  return stackedError;
+export default ({ error, message }) => {
+  const errorToStack = toError(error);
+  const newMessage = `${message}\nCaused by: ${errorToStack.message}`;
+  updateErrorMessage({
+    error: errorToStack,
+    message: newMessage
+  });
+  return errorToStack;
 };

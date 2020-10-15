@@ -79,7 +79,7 @@ export default ({ logger, networkStrategy, isRetryableHttpStatusCode }) => {
         payload: JSON.parse(stringifiedPayload),
         error
       });
-      throw stackError("Network request failed.", error);
+      throw stackError({ error, message: "Network request failed." });
     });
   };
 };
