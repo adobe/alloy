@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { assign } from "../../utils";
 
 const createConfig = options => {
-  return assign(Object.create(null), options);
+  return assign({}, options);
 };
 
 export default createConfig;
