@@ -16,7 +16,7 @@ export default ({ eventManager, mergeMeta }) => {
   return ({ meta, xdm = {} }) => {
     const { decisions = [] } = meta;
     const data = { eventType: "display" };
-    const event = eventManager.createEvent({ notification: true });
+    const event = eventManager.createEvent();
 
     if (isNonEmptyArray(decisions)) {
       const viewName = decisions[0].scope;

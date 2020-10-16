@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 export default ({ eventManager, mergeMeta }) => {
   return ({ meta }) => {
-    const event = eventManager.createEvent({ notification: true });
+    const event = eventManager.createEvent();
     event.mergeXdm({ eventType: "display" });
     mergeMeta(event, meta);
 

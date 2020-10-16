@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop } from "../../utils";
+import { isNonEmptyArray, noop } from "../../utils";
 
 export default ({
   config,
@@ -28,6 +28,45 @@ export default ({
 }) => {
   const { prehidingStyle } = config;
 
+  const handleViewChange = (
+    renderDecisions,
+    viewName,
+    onResponse,
+    onRequestFailure
+  ) => {
+    if (renderDecisions) {
+      onViewChangeHandler({ viewName });
+      return;
+    }
+    onResponse(() => {
+      return { decisions: viewStore.getView(viewName) };
+    });
+    onRequestFailure(() => {
+      showContainers();
+    });
+  };
+  const handlePageLoad = (
+    renderDecisions,
+    decisionScopes,
+    viewName,
+    event,
+    onResponse,
+    onRequestFailure
+  ) => {
+    const scopes = getDecisionScopes(decisionScopes);
+
+    if (renderDecisions) {
+      hideContainers(prehidingStyle);
+    }
+    mergeQuery(event, createQueryDetails(scopes));
+
+    onResponse(({ response }) =>
+      onResponseHandler({ renderDecisions, response, viewName })
+    );
+    onRequestFailure(() => {
+      showContainers();
+    });
+  };
   return {
     lifecycle: {
       onBeforeEvent({
@@ -38,9 +77,6 @@ export default ({
         onResponse = noop,
         onRequestFailure = noop
       }) {
-        if (event.isNotification()) {
-          return;
-        }
         if (isAuthoringModeEnabled()) {
           logger.warn("Rendering is disabled, authoring mode.");
 
@@ -48,42 +84,29 @@ export default ({
           mergeQuery(event, { enabled: false });
           return;
         }
-
-        onRequestFailure(() => {
-          showContainers();
-        });
-
         if (
-          decisionScopes.length === 0 &&
-          viewStore.isStoreInitialized() &&
-          viewName
+          isNonEmptyArray(decisionScopes) ||
+          !viewStore.isStoreInitialized()
         ) {
-          if (renderDecisions) {
-            onViewChangeHandler({ viewName });
-            return;
-          }
-          onResponse(() => {
-            return { decisions: viewStore.getView(viewName) };
-          });
+          handlePageLoad(
+            renderDecisions,
+            decisionScopes,
+            viewName,
+            event,
+            onResponse,
+            onRequestFailure
+          );
           return;
         }
-
-        const scopes = getDecisionScopes(decisionScopes);
-
-        if (renderDecisions) {
-          hideContainers(prehidingStyle);
+        if (viewStore.isStoreInitialized() && viewName) {
+          handleViewChange(
+            renderDecisions,
+            viewName,
+            onResponse,
+            onRequestFailure
+          );
         }
-        /*  if (!renderDecisions) {
-          showContainers();
-        }
-*/
-        mergeQuery(event, createQueryDetails(scopes));
-
-        onResponse(({ response }) =>
-          onResponseHandler({ renderDecisions, response, viewName })
-        );
       },
-
       onClick({ event, clickedElement }) {
         onClickHandler({ event, clickedElement });
       }
