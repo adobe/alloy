@@ -19,12 +19,12 @@ const wrapForErrorHandling = (fn, stackMessage) => {
     try {
       result = fn(...args);
     } catch (error) {
-      throw stackError(stackMessage, error);
+      throw stackError({ error, message: stackMessage });
     }
 
     if (result instanceof Promise) {
       result = result.catch(error => {
-        throw stackError(stackMessage, error);
+        throw stackError({ error, message: stackMessage });
       });
     }
 

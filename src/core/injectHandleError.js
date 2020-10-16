@@ -10,21 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { toError } from "../utils";
+import { toError, updateErrorMessage } from "../utils";
 import { DECLINED_CONSENT_ERROR_CODE } from "./consent/createConsentStateMachine";
 
 export default ({ errorPrefix, logger }) => (error, operation) => {
+  const err = toError(error);
+
   // In the case of declined consent, we've opted to not reject the promise
   // returned to the customer, but instead resolve the promise with an
   // empty result object.
-  if (error.code === DECLINED_CONSENT_ERROR_CODE) {
+  if (err.code === DECLINED_CONSENT_ERROR_CODE) {
     logger.warn(
       `The ${operation} could not fully complete because the user declined consent.`
     );
     return {};
   }
 
-  const err = toError(error);
-  err.message = `${errorPrefix} ${err.message}`;
+  updateErrorMessage({
+    error: err,
+    message: `${errorPrefix} ${err.message}`
+  });
   throw err;
 };

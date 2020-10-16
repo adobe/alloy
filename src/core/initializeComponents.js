@@ -26,10 +26,10 @@ export default ({
     try {
       component = createComponent(tools);
     } catch (error) {
-      throw stackError(
-        `[${namespace}] An error occurred during component creation.`,
-        error
-      );
+      throw stackError({
+        error,
+        message: `[${namespace}] An error occurred during component creation.`
+      });
     }
     componentRegistry.register(namespace, component);
   });
