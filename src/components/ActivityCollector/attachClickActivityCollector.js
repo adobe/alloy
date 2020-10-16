@@ -16,7 +16,7 @@ const createClickHandler = ({ eventManager, lifecycle, handleError }) => {
   return clickEvent => {
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
     const clickedElement = clickEvent.target;
-    const event = eventManager.createEvent();
+    const event = eventManager.createEvent({ notification: true });
     return (
       lifecycle
         .onClick({ event, clickedElement })

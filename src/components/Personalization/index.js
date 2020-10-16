@@ -20,20 +20,19 @@ import createExecuteDecisions from "./createExecuteDecisions";
 import { hideContainers, showContainers } from "./flicker";
 import createOnResponseHandler from "./createOnResponseHandler";
 import collectClicks from "./dom-actions/clicks/collectClicks";
-import { hasScopes, isAuthoringModeEnabled, getDecisionScopes } from "./utils";
+import { isAuthoringModeEnabled, getDecisionScopes } from "./utils";
 import { mergeMeta, mergeQuery, createQueryDetails } from "./event";
 import createOnClickHandler from "./createOnClickHandler";
 import extractPageWideScopeDecisions from "./extractPageWideScopeDecisions";
 import createViewChangeHandler from "./createViewChangeHandler";
-import createViewStorage from "./createViewStorage";
+import createCacheManager from "./createCacheManager";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeMeta });
   const viewCollect = createViewCollect({ eventManager, mergeMeta });
   const clickStorage = [];
-  const { storeViews, get } = createViewStorage();
+  const viewStore = createCacheManager();
   const store = value => clickStorage.push(value);
-  const getView = viewName => get(viewName);
   const modules = initDomActionsModules(store);
   const executeDecisions = createExecuteDecisions({
     modules,
@@ -47,17 +46,18 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     executeActions,
     collect: viewCollect
   });
+  const onViewChangeHandler = createViewChangeHandler({
+    viewStore,
+    executeViewDecisions,
+    collect: viewCollect
+  });
   const onResponseHandler = createOnResponseHandler({
-    storeViews,
+    viewStore,
     extractRenderableDecisions,
     extractPageWideScopeDecisions,
     executeDecisions,
+    onViewChangeHandler,
     showContainers
-  });
-  const onViewChangeHandler = createViewChangeHandler({
-    getView,
-    executeViewDecisions,
-    collect: viewCollect
   });
   const onClickHandler = createOnClickHandler({
     mergeMeta,
@@ -73,12 +73,12 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     onClickHandler,
     hideContainers,
     showContainers,
-    hasScopes,
     isAuthoringModeEnabled,
     getDecisionScopes,
     mergeMeta,
     mergeQuery,
-    createQueryDetails
+    createQueryDetails,
+    viewStore
   });
 };
 

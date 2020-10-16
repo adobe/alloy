@@ -19,10 +19,10 @@ export const hasScopes = scopes => isNonEmptyArray(scopes);
 export const isAuthoringModeEnabled = (doc = document) =>
   doc.location.href.indexOf("mboxEdit") !== -1;
 
-export const getDecisionScopes = (renderDecisions, decisionScopes) => {
+export const getDecisionScopes = decisionScopes => {
   const scopes = [...decisionScopes];
 
-  if (renderDecisions && !includes(scopes, PAGE_WIDE_SCOPE)) {
+  if (!includes(scopes, PAGE_WIDE_SCOPE)) {
     scopes.push(PAGE_WIDE_SCOPE);
   }
 

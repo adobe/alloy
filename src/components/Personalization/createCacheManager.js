@@ -1,6 +1,9 @@
-const viewStorage = {};
+let viewStorage;
 
 const addView = (viewName, decisions) => {
+  if (viewStorage === undefined) {
+    viewStorage = {};
+  }
   viewStorage[viewName] = decisions;
 };
 
@@ -14,9 +17,14 @@ const getView = viewName => {
   return viewStorage[viewName];
 };
 
+const isStoreInitialized = () => {
+  return !(viewStorage === undefined);
+};
+
 export default () => {
   return {
     storeViews,
-    get: getView
+    getView,
+    isStoreInitialized
   };
 };

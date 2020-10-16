@@ -15,40 +15,47 @@ import { isEmptyObject } from "../../utils";
 const DECISIONS_HANDLE = "personalization:decisions";
 
 export default ({
-  storeViews,
+  viewStore,
   extractRenderableDecisions,
   extractPageWideScopeDecisions,
   executeDecisions,
+  onViewChangeHandler,
   showContainers
 }) => {
-  return ({ renderDecisions, response }) => {
+  return ({ renderDecisions, response, viewName }) => {
     const unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
     if (!isNonEmptyArray(unprocessedDecisions)) {
       showContainers();
       return { decisions: [] };
     }
 
+    const [renderableDecisions, decisions] = extractRenderableDecisions(
+      unprocessedDecisions
+    );
+    const [
+      pageWideScopeDecisions,
+      viewDecisions
+    ] = extractPageWideScopeDecisions(renderableDecisions);
+
+    if (!isEmptyObject(viewDecisions)) {
+      viewStore.storeViews(viewDecisions);
+    }
     if (renderDecisions) {
-      const [renderableDecisions, decisions] = extractRenderableDecisions(
-        unprocessedDecisions
-      );
-
-      if (isNonEmptyArray(renderableDecisions)) {
-        const [
-          pageWideScopeDecisions,
-          viewDecisions
-        ] = extractPageWideScopeDecisions(renderableDecisions);
-
-        if (!isEmptyObject(viewDecisions)) {
-          storeViews(viewDecisions);
-        }
-
-        executeDecisions(pageWideScopeDecisions);
+      executeDecisions(pageWideScopeDecisions);
+      if (viewName) {
+        onViewChangeHandler({ viewName });
       }
       showContainers();
       return { decisions };
     }
+    const decisionsToBeReturned = [...pageWideScopeDecisions, ...decisions];
 
-    return { decisions: unprocessedDecisions };
+    if (viewName && viewDecisions[viewName]) {
+      decisionsToBeReturned.push(...viewDecisions[viewName]);
+    }
+
+    return {
+      decisions: decisionsToBeReturned
+    };
   };
 };

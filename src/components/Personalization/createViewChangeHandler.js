@@ -12,9 +12,9 @@ governing permissions and limitations under the License.
 
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
 
-export default ({ getView, executeViewDecisions, collect }) => {
+export default ({ viewStore, executeViewDecisions, collect }) => {
   return ({ viewName }) => {
-    const viewDecisions = getView(viewName);
+    const viewDecisions = viewStore.getView(viewName);
 
     if (isNonEmptyArray(viewDecisions)) {
       executeViewDecisions(viewDecisions);

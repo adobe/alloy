@@ -20,11 +20,11 @@ export default ({
   onClickHandler,
   hideContainers,
   showContainers,
-  hasScopes,
   isAuthoringModeEnabled,
   getDecisionScopes,
   mergeQuery,
-  createQueryDetails
+  createQueryDetails,
+  viewStore
 }) => {
   const { prehidingStyle } = config;
 
@@ -38,6 +38,9 @@ export default ({
         onResponse = noop,
         onRequestFailure = noop
       }) {
+        if (event.isNotification()) {
+          return;
+        }
         if (isAuthoringModeEnabled()) {
           logger.warn("Rendering is disabled, authoring mode.");
 
@@ -46,31 +49,39 @@ export default ({
           return;
         }
 
-        if (renderDecisions && viewName) {
-          onViewChangeHandler({ viewName });
-          return;
-        }
-
-        const scopes = getDecisionScopes(renderDecisions, decisionScopes);
-
-        if (!hasScopes(scopes)) {
-          return;
-        }
-
-        // For renderDecisions we try to hide the personalization containers
-        if (renderDecisions) {
-          hideContainers(prehidingStyle);
-        }
-
-        mergeQuery(event, createQueryDetails(scopes));
-
-        onResponse(({ response }) =>
-          onResponseHandler({ renderDecisions, response })
-        );
-
         onRequestFailure(() => {
           showContainers();
         });
+
+        if (
+          decisionScopes.length === 0 &&
+          viewStore.isStoreInitialized() &&
+          viewName
+        ) {
+          if (renderDecisions) {
+            onViewChangeHandler({ viewName });
+            return;
+          }
+          onResponse(() => {
+            return { decisions: viewStore.getView(viewName) };
+          });
+          return;
+        }
+
+        const scopes = getDecisionScopes(decisionScopes);
+
+        if (renderDecisions) {
+          hideContainers(prehidingStyle);
+        }
+        /*  if (!renderDecisions) {
+          showContainers();
+        }
+*/
+        mergeQuery(event, createQueryDetails(scopes));
+
+        onResponse(({ response }) =>
+          onResponseHandler({ renderDecisions, response, viewName })
+        );
       },
 
       onClick({ event, clickedElement }) {

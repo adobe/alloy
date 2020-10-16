@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { clone, isEmptyObject, createMerger } from "../utils";
 
-export default () => {
+export default (options = { notification: false }) => {
   const content = {};
   let userXdm;
   let userData;
@@ -22,6 +22,9 @@ export default () => {
   const event = {
     setUserXdm(value) {
       userXdm = value;
+    },
+    isNotification() {
+      return options.notification;
     },
     setUserData(value) {
       userData = value;
