@@ -12,6 +12,12 @@ const debugEnabledConfig = compose(
   debugEnabled
 );
 
+/*
+ * Some pages will redefine the console logging methods with implementations
+ * that aren't as forgiving as the built in logger. We ran into this issue
+ * on a Shopify site with a redefined logger. This test runs through some basic
+ * scenarios and makes sure the logged objects can be stringified
+ */
 createFixture({
   title: "C532204: Logged objects can be stringified"
 });
