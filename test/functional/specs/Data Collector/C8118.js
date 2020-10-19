@@ -1,7 +1,7 @@
 import { t, Selector, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
-import addAnchorToBody from "../../helpers/dom/addAnchorToBody";
+import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
 import sendBeaconMock from "../../helpers/sendBeaconMock";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
@@ -24,13 +24,10 @@ const getLocation = ClientFunction(() => document.location.href.toString());
 test("Test C8118: Load page with link. Click link. Verify event.", async () => {
   await sendBeaconMock.mock();
   await configureAlloyInstance("alloy", orgMainConfigMain);
-  await addAnchorToBody({
-    text: "Test Link",
-    attributes: {
-      href: "blank.html",
-      id: "alloy-link-test"
-    }
-  });
+  await addHtmlToBody(
+    `<a href="blank.html"><span id="alloy-link-test">Test Link</span></a>`
+  );
+
   await t.click(Selector("#alloy-link-test"));
   await t.expect(getLocation()).contains("blank.html");
   const request = networkLogger.edgeCollectEndpointLogs.requests[0];

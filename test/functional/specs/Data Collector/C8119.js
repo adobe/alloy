@@ -1,7 +1,8 @@
 import { t, Selector, ClientFunction } from "testcafe";
 import createFixture from "../../helpers/createFixture";
+import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
 import createNetworkLogger from "../../helpers/networkLogger";
-import addAnchorToBody from "../../helpers/dom/addAnchorToBody";
+
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
@@ -32,13 +33,10 @@ test("Test C8119: Load page with link. Click link. Verify no event sent.", async
     }
   );
   await configureAlloyInstance("alloy", testConfig);
-  await addAnchorToBody({
-    text: "Test Link",
-    attributes: {
-      href: "blank.html",
-      id: "alloy-link-test"
-    }
-  });
+  await addHtmlToBody(
+    `<a id="alloy-link-test" href="blank.html">Test Link</a>`
+  );
+
   await t.click(Selector("#alloy-link-test"));
   await t.expect(getLocation()).contains("blank.html");
   await t.expect(networkLogger.edgeCollectEndpointLogs.requests.length).eql(0);
