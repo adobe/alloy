@@ -61,7 +61,9 @@ if (buildTarget !== buildTargets.DEV) {
   plugins.push(
     license({
       banner: {
-        file: path.join(__dirname, "LICENSE_BANNER")
+        content: {
+          file: path.join(__dirname, "LICENSE_BANNER")
+        }
       }
     })
   );

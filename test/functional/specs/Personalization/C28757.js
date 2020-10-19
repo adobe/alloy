@@ -10,7 +10,7 @@ import {
 } from "../../helpers/constants/configParts";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../../../src/core/createResponse";
-import testServerUrl from "../../helpers/constants/testServerUrl";
+import testPageUrl from "../../helpers/constants/testPageUrl";
 
 const networkLogger = createNetworkLogger();
 const config = compose(
@@ -20,7 +20,7 @@ const config = compose(
 const PAGE_WIDE_SCOPE = "__view__";
 createFixture({
   title: "C28757 A VEC offer should render if renderDecision=true",
-  url: `${testServerUrl}?test=C28755`,
+  url: `${testPageUrl}?test=C28755`,
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 

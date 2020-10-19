@@ -1,6 +1,5 @@
 import { ClientFunction, t } from "testcafe";
 import createFixture from "../../helpers/createFixture";
-import { alloyWithVisitorTestPageUrl } from "../../helpers/constants/testServerUrl";
 import createMockOptIn from "../../helpers/optIn/createMockOptIn";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
@@ -16,7 +15,7 @@ import getVisitorEcid from "../../helpers/visitorService/getVisitorEcid";
 createFixture({
   title:
     "C36908 When ID migration is enabled and Visitor and Alloy are both awaiting consent, when Visitor is denied and Alloy is approved, Alloy gets an ECID which is the same as Visitor's.",
-  url: alloyWithVisitorTestPageUrl
+  includeVisitorLibrary: true
 });
 
 test.meta({
