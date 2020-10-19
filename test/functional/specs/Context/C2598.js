@@ -4,13 +4,15 @@ import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
 import webContextConfig from "../../helpers/constants/webContextConfig";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
+import testServerUrl from "../../helpers/constants/testServerUrl";
 
 const networkLogger = createNetworkLogger();
 
 createFixture({
   title:
     "C2598 - Adds only web context data when only web is specified in configuration.",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
+  url: testServerUrl
 });
 
 test.meta({
@@ -21,17 +23,16 @@ test.meta({
 
 const triggerAlloyEvent = ClientFunction(() => {
   return window.alloy("sendEvent", {
-    xdm: {
-      web: {
-        webPageDetails: {
-          URL: "https://alloyio.com/functional-test/alloyTestPage.html"
-        }
-      }
-    }
+    xdm: {}
   });
 });
 
 test("Test C2598 - Adds only web context data when only web is specified in configuration.", async () => {
+  // navigate to set the document.referrer
+  await t.eval(() => {
+    window.document.location = `${window.document.location}`;
+  });
+
   await configureAlloyInstance("alloy", webContextConfig);
   await triggerAlloyEvent();
 
@@ -43,6 +44,13 @@ test("Test C2598 - Adds only web context data when only web is specified in conf
 
   await t.expect(stringifyRequest.events[0].xdm.web).ok();
   await t.expect(stringifyRequest.events[0].xdm.web.webPageDetails).ok();
+  await t
+    .expect(stringifyRequest.events[0].xdm.web.webPageDetails.URL)
+    .eql(testServerUrl);
+  await t.expect(stringifyRequest.events[0].xdm.web.webReferrer).ok();
+  await t
+    .expect(stringifyRequest.events[0].xdm.web.webReferrer.URL)
+    .eql(testServerUrl);
 
   await t.expect(stringifyRequest.events[0].xdm.device).notOk();
   await t.expect(stringifyRequest.events[0].xdm.placeContext).notOk();

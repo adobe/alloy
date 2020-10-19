@@ -19,7 +19,7 @@ export default window => {
         URL: window.location.href || window.location
       },
       webReferrer: {
-        URL: window.top.document.referrer
+        URL: window.document.referrer
       }
     };
     deepAssign(xdm, { web });

@@ -3,10 +3,8 @@ import injectWeb from "../../../../../src/components/Context/injectWeb";
 describe("Context::injectWeb", () => {
   const window = {
     location: { href: "http://mylocation.com" },
-    top: {
-      document: {
-        referrer: "http://myreferrer.com"
-      }
+    document: {
+      referrer: "http://myreferrer.com"
     }
   };
 
