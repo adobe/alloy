@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { clone, isEmptyObject, createMerger, noop } from "../utils";
+import { clone, isEmptyObject, createMerger } from "../utils";
 
 export default () => {
   const content = {};
   let userXdm;
   let userData;
   let documentMayUnload = false;
-  let lastChanceCallback = noop;
+  let lastChanceCallback;
 
   const event = {
     setUserXdm(value) {
@@ -52,24 +52,29 @@ export default () => {
       if (userData) {
         content.data = userData;
       }
-      const xdm = clone(Object(content.xdm));
-      const data = clone(Object(content.data));
-      try {
-        lastChanceCallback({ xdm, data });
-        // If onBeforeEventSend throws an exception,
-        // we don't want to apply the changes it made
-        // so setting content.xdm and content.data is inside this try
 
-        // We only set content.xdm if content.xdm was already set or
-        // if content.xdm was empty and the lastChanceCallback added items to it.
-        if (content.xdm || !isEmptyObject(xdm)) {
-          content.xdm = xdm;
+      if (lastChanceCallback) {
+        // We clone these because if lastChanceCallback throws an error, we don't
+        // want any modifications lastChanceCallback made to actually be applied.
+        const xdm = clone(content.xdm || {});
+        const data = clone(content.data || {});
+        try {
+          lastChanceCallback({ xdm, data });
+          // If onBeforeEventSend throws an exception,
+          // we don't want to apply the changes it made
+          // so setting content.xdm and content.data is inside this try
+
+          // We only set content.xdm if content.xdm was already set or
+          // if content.xdm was empty and the lastChanceCallback added items to it.
+          if (content.xdm || !isEmptyObject(xdm)) {
+            content.xdm = xdm;
+          }
+          if (content.data || !isEmptyObject(data)) {
+            content.data = data;
+          }
+        } catch (e) {
+          // the callback should have already logged the exception
         }
-        if (content.data || !isEmptyObject(data)) {
-          content.data = data;
-        }
-      } catch (e) {
-        // the callback should have already logged the exception
       }
 
       return content;

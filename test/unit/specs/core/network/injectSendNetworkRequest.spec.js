@@ -14,7 +14,12 @@ import injectSendNetworkRequest from "../../../../../src/core/network/injectSend
 
 describe("injectSendNetworkRequest", () => {
   const url = "https://example.com";
-  const payload = { a: "b" };
+  const payload = {
+    a: "b",
+    getDocumentMayUnload() {
+      return true;
+    }
+  };
   const payloadJson = JSON.stringify(payload);
   const requestId = "RID123";
 
@@ -60,9 +65,15 @@ describe("injectSendNetworkRequest", () => {
       expect(logger.logOnBeforeNetworkRequest).toHaveBeenCalledWith({
         requestId,
         url,
-        payload
+        payload: {
+          a: "b"
+        }
       });
-      expect(networkStrategy).toHaveBeenCalledWith(url, payloadJson);
+      expect(networkStrategy).toHaveBeenCalledWith({
+        url,
+        body: payloadJson,
+        documentMayUnload: true
+      });
     });
   });
 
@@ -75,7 +86,9 @@ describe("injectSendNetworkRequest", () => {
       expect(logger.logOnNetworkResponse).toHaveBeenCalledWith({
         requestId,
         url,
-        payload,
+        payload: {
+          a: "b"
+        },
         status: 200,
         body: responseBodyJson,
         parsedBody: responseBody,
@@ -104,7 +117,9 @@ describe("injectSendNetworkRequest", () => {
       expect(logger.logOnNetworkResponse).toHaveBeenCalledWith({
         requestId,
         url,
-        payload,
+        payload: {
+          a: "b"
+        },
         status: 200,
         body: "non-JSON body",
         parsedBody: undefined,
@@ -133,7 +148,9 @@ describe("injectSendNetworkRequest", () => {
       expect(logger.logOnNetworkResponse).toHaveBeenCalledWith({
         requestId,
         url,
-        payload,
+        payload: {
+          a: "b"
+        },
         status: 200,
         body: "",
         parsedBody: undefined,

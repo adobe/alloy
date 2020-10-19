@@ -1,16 +1,19 @@
 import { t, Selector, ClientFunction } from "testcafe";
 import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger";
 import addAnchorToBody from "../../helpers/dom/addAnchorToBody";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
-import createConsoleLogger from "../../helpers/consoleLogger";
 import {
   compose,
   orgMainConfigMain
 } from "../../helpers/constants/configParts";
 
+const networkLogger = createNetworkLogger();
+
 createFixture({
   title:
-    "C8119: Does not send event with information about link clicks if disabled."
+    "C8119: Does not send event with information about link clicks if disabled.",
+  requestHooks: [networkLogger.edgeCollectEndpointLogs]
 });
 
 test.meta({
@@ -19,19 +22,13 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
+const getLocation = ClientFunction(() => document.location.href.toString());
+
 test("Test C8119: Load page with link. Click link. Verify no event sent.", async () => {
-  const getLocation = ClientFunction(() => document.location.href.toString());
   const testConfig = compose(
     orgMainConfigMain,
     {
-      clickCollectionEnabled: false,
-      onBeforeEventSend(options) {
-        try {
-          // eslint-disable-next-line no-console
-          console.log(options.xdm.web.webInteraction.URL);
-          // eslint-disable-next-line no-empty
-        } catch (e) {}
-      }
+      clickCollectionEnabled: false
     }
   );
   await configureAlloyInstance("alloy", testConfig);
@@ -42,8 +39,7 @@ test("Test C8119: Load page with link. Click link. Verify no event sent.", async
       id: "alloy-link-test"
     }
   });
-  const logger = await createConsoleLogger();
   await t.click(Selector("#alloy-link-test"));
   await t.expect(getLocation()).contains("blank.html");
-  await logger.log.expectNoMessages();
+  await t.expect(networkLogger.edgeCollectEndpointLogs.requests.length).eql(0);
 });

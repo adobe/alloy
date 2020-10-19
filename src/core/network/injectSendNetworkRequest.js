@@ -39,7 +39,11 @@ export default ({ logger, networkStrategy, isRetryableHttpStatusCode }) => {
     }
 
     const executeRequest = (retriesAttempted = 0) => {
-      return networkStrategy(url, stringifiedPayload).then(response => {
+      return networkStrategy({
+        url,
+        body: stringifiedPayload,
+        documentMayUnload: payload.getDocumentMayUnload()
+      }).then(response => {
         if (
           isRetryableHttpStatusCode(response.status) &&
           retriesAttempted < 3
