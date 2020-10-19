@@ -103,10 +103,10 @@ test("Test C224678: Passing a negative Consent in the sendEvent command", async 
 
   await t.expect(handlesThatShouldBeMissing.length).eql(0);
 
-  // 5. The server should return an error.
+  // 5. The server doesn't throw error messages when there is no consent
   await t
     .expect(errorMessage)
-    .contains("User has opted out of all advertising solutions");
+    .notOk("Event returned an error when we expected it not to.");
 
   // 6. Events should be blocked going forward because we are opted out.
   await sendEvent();

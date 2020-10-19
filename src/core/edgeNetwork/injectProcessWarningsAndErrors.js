@@ -24,7 +24,10 @@ export default ({ logger }) => {
     // want to process.
 
     const warnings = response.getWarnings();
-    const errors = response.getErrors();
+    const errors = response.getErrors().filter(error => {
+      // Remove the opt-out error because we don't throw errors when the user is opted out.
+      return error.code !== "EXEG-0301-403";
+    });
 
     warnings.forEach(warning => {
       logger.warn(
