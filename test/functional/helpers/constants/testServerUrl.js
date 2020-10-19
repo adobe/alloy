@@ -19,7 +19,11 @@ export default alloyTestPageUrl;
 const alloyWithVisitorTestPageUrl = `https://alloyio.com/functional-test/${alloyWithVisitorPages[envForPageUrl]}`;
 export { alloyWithVisitorTestPageUrl };
 
+// eslint-disable-next-line no-console
 console.log("EDGE ENV:", env);
+// eslint-disable-next-line no-console
 console.log("ALLOY ENV:", alloyEnv);
+// eslint-disable-next-line no-console
 console.log("ALLOY PAGE:", alloyTestPageUrl);
+// eslint-disable-next-line no-console
 console.log("ALLOY VISITOR PAGE:", alloyWithVisitorTestPageUrl);

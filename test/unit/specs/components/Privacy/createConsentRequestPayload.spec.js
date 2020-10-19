@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createConsentRequestPayload from "../../../../../src/components/Privacy/createConsentRequestPayload";
+import createDataCollectionRequestPayload from "../../../../../src/core/edgeNetwork/requestPayloads/createDataCollectionRequestPayload";
 
 describe("createConsentRequestPayload", () => {
   it("should not use ID third-party domain when useIdThirdPartyDomain is not called", () => {
@@ -22,6 +23,11 @@ describe("createConsentRequestPayload", () => {
     const payload = createConsentRequestPayload();
     payload.useIdThirdPartyDomain();
     expect(payload.getUseIdThirdPartyDomain()).toBeTrue();
+  });
+
+  it("returns false from getDocumentMayUnload", () => {
+    const payload = createDataCollectionRequestPayload();
+    expect(payload.getDocumentMayUnload()).toBeFalse();
   });
 
   it("serializes properly", () => {
@@ -45,7 +51,7 @@ describe("createConsentRequestPayload", () => {
         }
       }
     ]);
-    expect(payload.toJSON()).toEqual({
+    expect(JSON.parse(JSON.stringify(payload))).toEqual({
       meta: {
         configOverrides: {
           testOverride: "testOverrideValue"
