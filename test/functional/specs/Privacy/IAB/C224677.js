@@ -82,8 +82,7 @@ test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
   // Event calls going forward should be Opted-Out because AAM opts out consents with no purpose 10.
   const errorMessage = await getErrorMessageFromSendEvent();
 
-  // Alloy doesn't throw error messages when the user is opted-out
-  await t.expect(errorMessage).notOk();
+  await t.expect(errorMessage).contains("EXEG-0301-403");
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 403);
