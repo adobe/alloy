@@ -22,52 +22,77 @@ console.log("EDGE ENV:", edgeEnv);
 // eslint-disable-next-line no-console
 console.log("ALLOY ENV:", alloyEnv);
 
+const localPromisePolyfillPath = path.join(
+  __dirname,
+  "../promisePolyfill/promise-polyfill.min.js"
+);
+const remotePromisePolyfillPath =
+  "https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js";
+const remoteVisitorLibraryUrl =
+  "https://github.com/Adobe-Marketing-Cloud/id-service/releases/latest/download/visitorapi.min.js";
+const alloyPageSnippetPath = path.join(
+  __dirname,
+  "../alloyPageSnippet/index.js"
+);
 const localAlloyLibraryPath = path.join(
   __dirname,
   "../../../../dist/standalone/alloy.js"
 );
+const remoteAlloyLibraryUrl =
+  "https://cdn1.adoberesources.net/alloy/latest/alloy.js";
 
 let localAlloyCode;
 
-/**
- * We're only testing against the alloy code found in /dist when alloyEnv
- * is "int". Otherwise, we're testing against the alloy that's on the CDN
- * and alloy code may not exist in /dist. This is why we don't always try to
- * load the file from the file system.
- */
+// We're only testing against the alloy code found in /dist when alloyEnv
+// is "int". Otherwise, we're testing against the prod alloy that's on the CDN
+// and in those cases alloy code may not event exist in /dist. This is why
+// we only try to load the file from the file system if alloyEnv is int.
 if (alloyEnv === "int") {
   localAlloyCode = fs.readFileSync(localAlloyLibraryPath, "utf8");
 }
 
-const remoteAlloyLibraryUrl =
-  "https://cdn1.adoberesources.net/alloy/latest/alloy.js";
-
-const addVisitorLibraryClientScript = clientScripts => {
+const addRemoteUrlClientScript = ({ clientScripts, url, async = false }) => {
+  // TestCafe client scripts don't "natively" support loading a script
+  // from a remote URL, so we have to make our local script add another script
+  // element that loads Visitor from the remote server.
   clientScripts.push({
-    content:
-      "document.write('<script src=\"https://github.com/Adobe-Marketing-Cloud/id-service/releases/latest/download/visitorapi.min.js\"></script>')"
+    content: `document.write('<script src="${url}"${
+      async ? " async" : ""
+    }></script>')`
   });
 };
 
+/**
+ * Produces an array of scripts that TestCafe should inject into the <head>
+ * when testing Alloy int.
+ */
 const getFixtureClientScriptsForInt = options => {
   const clientScripts = [];
-  const promisePolyfillPath = path.join(
-    __dirname,
-    "../promisePolyfill/promise-polyfill.min.js"
-  );
+
+  // We load a promise polyfill because promises aren't supported in IE
+  // and that's what customers supporting IE will need to do as part
+  // of installing Alloy.
+  // We could load the Promise polyfill from a CDN, but it would slow down
+  // our tests a bit since we would have to go over the wire to load it.
   clientScripts.push({
-    path: promisePolyfillPath
+    path: localPromisePolyfillPath
   });
 
+  // Useful for testing Alloy + Visitor interaction.
   if (options.includeVisitorLibrary) {
-    addVisitorLibraryClientScript(clientScripts);
+    addRemoteUrlClientScript({
+      clientScripts,
+      url: remoteVisitorLibraryUrl
+    });
   }
 
-  const pageSnippetPath = path.join(__dirname, "../alloyPageSnippet/index.js");
   clientScripts.push({
-    path: pageSnippetPath
+    path: alloyPageSnippetPath
   });
 
+  // Typically the Alloy library should be loaded in head. For some tests,
+  // like testing command queuing, we need greater control and will
+  // load the Alloy library later during the test using injectAlloyDuringTest.
   if (options.includeAlloyLibrary) {
     // When providing client scripts to TestCafe during the fixture
     // configuration process, TestCafe doesn't currently support loading scripts
@@ -83,28 +108,37 @@ const getFixtureClientScriptsForInt = options => {
   return clientScripts;
 };
 
+/**
+ * Produces an array of scripts that TestCafe should inject into the <head>
+ * when testing Alloy prod.
+ */
 const getFixtureClientScriptsForProd = options => {
   const clientScripts = [];
-  clientScripts.push({
-    content:
-      "document.write('<script src=\"https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js\"></script>')"
+  addRemoteUrlClientScript({
+    clientScripts,
+    url: remotePromisePolyfillPath
   });
 
+  // Useful for testing Alloy + Visitor interaction.
   if (options.includeVisitorLibrary) {
-    addVisitorLibraryClientScript(clientScripts);
+    addRemoteUrlClientScript({
+      clientScripts,
+      url: remoteVisitorLibraryUrl
+    });
   }
 
   clientScripts.push({
-    content:
-      "!function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||" +
-      "[]).push(o),n[o]=function(){var u=arguments;return new Promise(" +
-      "function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}" +
-      '(window,["alloy", "instance2"]);'
+    path: alloyPageSnippetPath
   });
 
+  // Typically the Alloy library should be loaded in head. For some tests,
+  // like testing command queuing, we need greater control and will
+  // load the Alloy library later during the test using injectAlloyDuringTest.
   if (options.includeAlloyLibrary) {
-    clientScripts.push({
-      content: `document.write('<script src="${remoteAlloyLibraryUrl}" async></script>')`
+    addRemoteUrlClientScript({
+      clientScripts,
+      url: remoteAlloyLibraryUrl,
+      async: true
     });
   }
 
@@ -116,6 +150,9 @@ const getFixtureClientScriptsByEnvironment = {
   prod: getFixtureClientScriptsForProd
 };
 
+/**
+ * Injects Alloy into the page while running a test against Alloy int.
+ */
 const injectAlloyDuringTestForInt = ClientFunction(
   () => {
     const scriptElement = document.createElement("script");
@@ -130,6 +167,9 @@ const injectAlloyDuringTestForInt = ClientFunction(
   }
 );
 
+/**
+ * Injects Alloy into the page while running a test against Alloy prod.
+ */
 const injectAlloyDuringTestForProd = ClientFunction(
   () => {
     const scriptElement = document.createElement("script");
