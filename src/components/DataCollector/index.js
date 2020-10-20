@@ -9,25 +9,6 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const getViewName = xdm => {
-  if (!xdm) {
-    return null;
-  }
-
-  const web = xdm.web;
-
-  if (!web) {
-    return null;
-  }
-
-  const webPageDetails = web.webPageDetails;
-
-  if (!webPageDetails) {
-    return null;
-  }
-
-  return webPageDetails.viewName;
-};
 
 import validateUserEventOptions from "./validateUserEventOptions";
 
@@ -50,18 +31,6 @@ const createDataCollector = ({ eventManager, logger }) => {
             decisionScopes = [],
             datasetId
           } = options;
-
-          const personalizationQueryDetails = {
-            renderDecisions,
-            decisionScopes
-          };
-
-          const viewName = getViewName(xdm);
-
-          if (viewName) {
-            personalizationQueryDetails.viewName = viewName;
-          }
-
           const event = eventManager.createEvent();
 
           if (documentUnloading) {
@@ -91,7 +60,10 @@ const createDataCollector = ({ eventManager, logger }) => {
             });
           }
 
-          return eventManager.sendEvent(event, personalizationQueryDetails);
+          return eventManager.sendEvent(event, {
+            renderDecisions,
+            decisionScopes
+          });
         }
       }
     }

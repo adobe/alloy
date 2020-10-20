@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray, noop } from "../../utils";
+import { noop } from "../../utils";
+import createPersonalizationDetails from "./createPersonalizationDetails";
 
 export default ({
   config,
@@ -21,47 +22,43 @@ export default ({
   hideContainers,
   showContainers,
   isAuthoringModeEnabled,
-  getDecisionScopes,
   mergeQuery,
-  createQueryDetails,
-  viewStore
+  viewCache
 }) => {
   const { prehidingStyle } = config;
 
-  const handleViewChange = (
-    renderDecisions,
-    viewName,
-    onResponse,
-    onRequestFailure
-  ) => {
-    if (renderDecisions) {
-      onViewChangeHandler({ viewName });
+  const handleViewChange = (personalization, onResponse, onRequestFailure) => {
+    if (personalization.isRenderDecisions()) {
+      onViewChangeHandler({
+        viewName: personalization.getViewName()
+      });
       return;
     }
     onResponse(() => {
-      return { decisions: viewStore.getView(viewName) };
+      return {
+        decisions: viewCache.getView(personalization.getViewName())
+      };
     });
     onRequestFailure(() => {
       showContainers();
     });
   };
   const handlePageLoad = (
-    renderDecisions,
-    decisionScopes,
-    viewName,
+    personalization,
     event,
     onResponse,
     onRequestFailure
   ) => {
-    const scopes = getDecisionScopes(decisionScopes);
-
-    if (renderDecisions) {
+    if (personalization.isRenderDecisions()) {
       hideContainers(prehidingStyle);
     }
-    mergeQuery(event, createQueryDetails(scopes));
+    mergeQuery(event, personalization.createQueryDetails());
 
     onResponse(({ response }) =>
-      onResponseHandler({ renderDecisions, response, viewName })
+      onResponseHandler({
+        personalization,
+        response
+      })
     );
     onRequestFailure(() => {
       showContainers();
@@ -73,7 +70,6 @@ export default ({
         event,
         renderDecisions,
         decisionScopes = [],
-        viewName,
         onResponse = noop,
         onRequestFailure = noop
       }) {
@@ -84,27 +80,18 @@ export default ({
           mergeQuery(event, { enabled: false });
           return;
         }
-        if (
-          isNonEmptyArray(decisionScopes) ||
-          !viewStore.isStoreInitialized()
-        ) {
-          handlePageLoad(
-            renderDecisions,
-            decisionScopes,
-            viewName,
-            event,
-            onResponse,
-            onRequestFailure
-          );
+        const personalization = createPersonalizationDetails({
+          renderDecisions,
+          decisionScopes,
+          event
+        });
+
+        if (personalization.hasScopes() || !viewCache.isInitialized()) {
+          handlePageLoad(personalization, event, onResponse, onRequestFailure);
           return;
         }
-        if (viewStore.isStoreInitialized() && viewName) {
-          handleViewChange(
-            renderDecisions,
-            viewName,
-            onResponse,
-            onRequestFailure
-          );
+        if (viewCache.isInitialized() && personalization.getViewName()) {
+          handleViewChange(personalization, onResponse, onRequestFailure);
         }
       },
       onClick({ event, clickedElement }) {

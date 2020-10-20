@@ -20,8 +20,8 @@ import createExecuteDecisions from "./createExecuteDecisions";
 import { hideContainers, showContainers } from "./flicker";
 import createOnResponseHandler from "./createOnResponseHandler";
 import collectClicks from "./dom-actions/clicks/collectClicks";
-import { isAuthoringModeEnabled, getDecisionScopes } from "./utils";
-import { mergeMeta, mergeQuery, createQueryDetails } from "./event";
+import { isAuthoringModeEnabled } from "./utils";
+import { mergeMeta, mergeQuery } from "./event";
 import createOnClickHandler from "./createOnClickHandler";
 import extractPageWideScopeDecisions from "./extractPageWideScopeDecisions";
 import createViewChangeHandler from "./createViewChangeHandler";
@@ -31,7 +31,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeMeta });
   const viewCollect = createViewCollect({ eventManager, mergeMeta });
   const clickStorage = [];
-  const viewStore = createCacheManager();
+  const viewCache = createCacheManager();
   const store = value => clickStorage.push(value);
   const modules = initDomActionsModules(store);
   const executeDecisions = createExecuteDecisions({
@@ -47,12 +47,12 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     collect: viewCollect
   });
   const onViewChangeHandler = createViewChangeHandler({
-    viewStore,
+    viewCache,
     executeViewDecisions,
     collect: viewCollect
   });
   const onResponseHandler = createOnResponseHandler({
-    viewStore,
+    viewCache,
     extractRenderableDecisions,
     extractPageWideScopeDecisions,
     executeDecisions,
@@ -74,11 +74,9 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     hideContainers,
     showContainers,
     isAuthoringModeEnabled,
-    getDecisionScopes,
     mergeMeta,
     mergeQuery,
-    createQueryDetails,
-    viewStore
+    viewCache
   });
 };
 

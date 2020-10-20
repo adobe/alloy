@@ -15,40 +15,41 @@ import { isEmptyObject } from "../../utils";
 const DECISIONS_HANDLE = "personalization:decisions";
 
 export default ({
-  viewStore,
+  viewCache,
   extractRenderableDecisions,
   extractPageWideScopeDecisions,
   executeDecisions,
   onViewChangeHandler,
   showContainers
 }) => {
-  return ({ renderDecisions, response, viewName }) => {
+  return ({ personalization, response }) => {
     const unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
+    const viewName = personalization.getViewName();
     if (!isNonEmptyArray(unprocessedDecisions)) {
       showContainers();
       return { decisions: [] };
     }
 
-    const [renderableDecisions, decisions] = extractRenderableDecisions(
-      unprocessedDecisions
+    const {
+      renderableDecisions,
+      formBasedDecisions
+    } = extractRenderableDecisions(unprocessedDecisions);
+    const { pageWideDecisions, viewDecisions } = extractPageWideScopeDecisions(
+      renderableDecisions
     );
-    const [
-      pageWideScopeDecisions,
-      viewDecisions
-    ] = extractPageWideScopeDecisions(renderableDecisions);
 
     if (!isEmptyObject(viewDecisions)) {
-      viewStore.storeViews(viewDecisions);
+      viewCache.storeViews(viewDecisions);
     }
-    if (renderDecisions) {
-      executeDecisions(pageWideScopeDecisions);
+    if (personalization.isRenderDecisions()) {
+      executeDecisions(pageWideDecisions);
       if (viewName) {
         onViewChangeHandler({ viewName });
       }
       showContainers();
-      return { decisions };
+      return { decisions: formBasedDecisions };
     }
-    const decisionsToBeReturned = [...pageWideScopeDecisions, ...decisions];
+    const decisionsToBeReturned = [...pageWideDecisions, ...formBasedDecisions];
 
     if (viewName && viewDecisions[viewName]) {
       decisionsToBeReturned.push(...viewDecisions[viewName]);

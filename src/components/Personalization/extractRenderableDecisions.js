@@ -35,23 +35,22 @@ const createDecision = (decision, items) => {
 };
 
 const splitDecisions = (decisions, predicate) => {
-  const matchedDecisions = [];
-  const nonMatchedDecisions = [];
+  const renderableDecisions = [];
+  const formBasedDecisions = [];
 
   decisions.forEach(decision => {
     const { items = [] } = decision;
     const [matchedItems, nonMatchedItems] = splitItems(items, predicate);
 
     if (isNonEmptyArray(matchedItems)) {
-      matchedDecisions.push(createDecision(decision, matchedItems));
+      renderableDecisions.push(createDecision(decision, matchedItems));
     }
 
     if (isNonEmptyArray(nonMatchedItems)) {
-      nonMatchedDecisions.push(createDecision(decision, nonMatchedItems));
+      formBasedDecisions.push(createDecision(decision, nonMatchedItems));
     }
   });
-
-  return [matchedDecisions, nonMatchedDecisions];
+  return { renderableDecisions, formBasedDecisions };
 };
 
 export default decisions => {

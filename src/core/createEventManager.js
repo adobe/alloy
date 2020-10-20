@@ -49,7 +49,7 @@ export default ({
      */
     sendEvent(event, options = {}) {
       event.setLastChanceCallback(onBeforeEventSendWithLoggedExceptions);
-      const { renderDecisions = false, decisionScopes, viewName } = options;
+      const { renderDecisions = false, decisionScopes } = options;
       const payload = createDataCollectionRequestPayload();
 
       const onResponseCallbackAggregator = createCallbackAggregator();
@@ -60,7 +60,6 @@ export default ({
           event,
           renderDecisions,
           decisionScopes,
-          viewName,
           payload,
           onResponse: onResponseCallbackAggregator.add,
           onRequestFailure: onRequestFailureCallbackAggregator.add

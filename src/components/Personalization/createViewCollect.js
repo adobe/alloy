@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray, assign } from "../../utils";
+import { isNonEmptyArray } from "../../utils";
 
 export default ({ eventManager, mergeMeta }) => {
   return ({ meta, xdm = {} }) => {
@@ -27,8 +27,8 @@ export default ({ eventManager, mergeMeta }) => {
 
       mergeMeta(event, meta);
     }
-
-    event.mergeXdm(assign(data, xdm));
+    event.mergeXdm(data);
+    event.mergeXdm(xdm);
 
     return eventManager.sendEvent(event);
   };

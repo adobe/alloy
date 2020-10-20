@@ -20,7 +20,7 @@ const extractDecisions = decisions => {
     });
   }
 
-  return [pageWideDecisions, viewDecisions];
+  return { pageWideDecisions, viewDecisions };
 };
 
 export default renderableDecisions => {
