@@ -19,7 +19,7 @@ import {
   edgeDomainFirstParty,
   orgMainConfigMain
 } from "../../helpers/constants/configParts";
-import { domain } from "../../helpers/edgeInfo";
+import { FIRST_PARTY_DOMAIN } from "../../helpers/constants/domain";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../../../src/core/createResponse";
 import areThirdPartyCookiesSupported from "../../helpers/areThirdPartyCookiesSupported";
@@ -79,15 +79,15 @@ test("C148846 - Setting edgeDomain to CNAME results in server calls to this CNAM
 
   if (areThirdPartyCookiesSupported()) {
     await t.expect(hostForFirstRequest).match(demdexHostRegex);
-    await t.expect(hostForSecondRequest).contains(domain.firstParty);
+    await t.expect(hostForSecondRequest).contains(FIRST_PARTY_DOMAIN);
 
     // Expects the demdex response to contain Konductor state.
     // Expects the demdex state to contain the identity cookie.
     await t.expect(demdexStateHandle.length).gte(0);
     await t.expect(demdexResponseContainsIdentityCookie).ok();
   } else {
-    await t.expect(hostForFirstRequest).contains(domain.firstParty);
-    await t.expect(hostForSecondRequest).contains(domain.firstParty);
+    await t.expect(hostForFirstRequest).contains(FIRST_PARTY_DOMAIN);
+    await t.expect(hostForSecondRequest).contains(FIRST_PARTY_DOMAIN);
   }
 
   // Expects the CNAME request header to contain the Konductor state cookies.

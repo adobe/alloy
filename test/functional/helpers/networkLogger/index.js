@@ -1,5 +1,4 @@
 import { RequestLogger } from "testcafe";
-import DemdexProxy from "./DemdexProxy";
 
 const networkLoggerOptions = {
   logRequestHeaders: true,
@@ -20,9 +19,6 @@ const createNetworkLogger = () => {
   const edgeInteractEndpoint = /v1\/interact\?configId=/;
   const setConsentEndpoint = /v1\/privacy\/set-consent\?configId=/;
 
-  const demdexProd = /adobedc\.demdex/;
-  const demdexProxy = new DemdexProxy(demdexProd, networkLoggerOptions);
-
   const edgeEndpointLogs = createRequestLogger(edgeEndpoint);
   const edgeCollectEndpointLogs = createRequestLogger(edgeCollectEndpoint);
   const edgeInteractEndpointLogs = createRequestLogger(edgeInteractEndpoint);
@@ -40,7 +36,6 @@ const createNetworkLogger = () => {
     edgeCollectEndpointLogs,
     edgeInteractEndpointLogs,
     setConsentEndpointLogs,
-    demdexProxy,
     clearLogs
   };
 };

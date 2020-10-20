@@ -1,8 +1,5 @@
 import testPageUrl from "../constants/testPageUrl";
-import createNetworkLogger from "../networkLogger";
 import { getFixtureClientScripts } from "./clientScripts";
-
-const networkLogger = createNetworkLogger();
 
 export default ({
   title = "",
@@ -17,6 +14,6 @@ export default ({
   });
   return fixture(title)
     .page(url)
-    .requestHooks(...requestHooks.concat(networkLogger.demdexProxy))
+    .requestHooks(...requestHooks)
     .clientScripts(clientScripts);
 };
