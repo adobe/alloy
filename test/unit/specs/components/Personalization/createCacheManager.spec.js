@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createViewStorage from "../../../../../src/components/Personalization/createCacheManager";
+import createViewCacheManager from "../../../../../src/components/Personalization/createViewCacheManager";
 
-describe("Personalization::createViewStorage", () => {
+describe("Personalization::createCacheManager", () => {
   const viewDecisions = {
     home: [
       {
@@ -36,10 +36,10 @@ describe("Personalization::createViewStorage", () => {
   };
 
   it("stores and gets the decisions based on a viewName", () => {
-    const viewStorage = createViewStorage();
-    viewStorage.storeViews(viewDecisions);
-    const cartDecisions = viewStorage.get("cart");
-    const homeDecisions = viewStorage.get("home");
+    const viewCacheManager = createViewCacheManager();
+    viewCacheManager.storeViews(viewDecisions);
+    const cartDecisions = viewCacheManager.getView("cart");
+    const homeDecisions = viewCacheManager.getView("home");
 
     expect(cartDecisions.length).toEqual(1);
     expect(homeDecisions.length).toEqual(2);

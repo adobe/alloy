@@ -11,15 +11,16 @@ governing permissions and limitations under the License.
 */
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
 import { isEmptyObject } from "../../utils";
+import { DOM_ACTION } from "./constants/schema";
+import PAGE_WIDE_SCOPE from "./constants/scope";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 
 export default ({
   viewCache,
-  extractRenderableDecisions,
-  extractPageWideScopeDecisions,
+  decisionsExtractor,
   executeDecisions,
-  onViewChangeHandler,
+  executeCachedViewDecisions,
   showContainers
 }) => {
   return ({ personalization, response }) => {
@@ -31,28 +32,37 @@ export default ({
     }
 
     const {
-      renderableDecisions,
-      formBasedDecisions
-    } = extractRenderableDecisions(unprocessedDecisions);
-    const { pageWideDecisions, viewDecisions } = extractPageWideScopeDecisions(
-      renderableDecisions
-    );
+      schemaDecisions,
+      otherDecisions
+    } = decisionsExtractor.groupDecisionsBySchema({
+      decisions: unprocessedDecisions,
+      schema: DOM_ACTION
+    });
+    const {
+      scopeDecisions,
+      otherScopeDecisions
+    } = decisionsExtractor.groupDecisionsByScope({
+      decisions: schemaDecisions,
+      scope: PAGE_WIDE_SCOPE
+    });
 
-    if (!isEmptyObject(viewDecisions)) {
-      viewCache.storeViews(viewDecisions);
+    if (!isEmptyObject(otherScopeDecisions)) {
+      viewCache.storeViews(otherScopeDecisions);
     }
+
     if (personalization.isRenderDecisions()) {
-      executeDecisions(pageWideDecisions);
+      executeDecisions(scopeDecisions);
       if (viewName) {
-        onViewChangeHandler({ viewName });
+        executeCachedViewDecisions({ viewName });
       }
       showContainers();
-      return { decisions: formBasedDecisions };
+      return { decisions: otherDecisions };
     }
-    const decisionsToBeReturned = [...pageWideDecisions, ...formBasedDecisions];
 
-    if (viewName && viewDecisions[viewName]) {
-      decisionsToBeReturned.push(...viewDecisions[viewName]);
+    const decisionsToBeReturned = [...scopeDecisions, ...otherDecisions];
+
+    if (viewName && otherScopeDecisions[viewName]) {
+      decisionsToBeReturned.push(...otherScopeDecisions[viewName]);
     }
 
     return {

@@ -14,56 +14,14 @@ import { noop } from "../../utils";
 import createPersonalizationDetails from "./createPersonalizationDetails";
 
 export default ({
-  config,
   logger,
-  onResponseHandler,
-  onViewChangeHandler,
+  pageLoadHandler,
+  viewChangeHandler,
   onClickHandler,
-  hideContainers,
-  showContainers,
   isAuthoringModeEnabled,
   mergeQuery,
   viewCache
 }) => {
-  const { prehidingStyle } = config;
-
-  const handleViewChange = (personalization, onResponse, onRequestFailure) => {
-    if (personalization.isRenderDecisions()) {
-      onViewChangeHandler({
-        viewName: personalization.getViewName()
-      });
-      return;
-    }
-    onResponse(() => {
-      return {
-        decisions: viewCache.getView(personalization.getViewName())
-      };
-    });
-    onRequestFailure(() => {
-      showContainers();
-    });
-  };
-  const handlePageLoad = (
-    personalization,
-    event,
-    onResponse,
-    onRequestFailure
-  ) => {
-    if (personalization.isRenderDecisions()) {
-      hideContainers(prehidingStyle);
-    }
-    mergeQuery(event, personalization.createQueryDetails());
-
-    onResponse(({ response }) =>
-      onResponseHandler({
-        personalization,
-        response
-      })
-    );
-    onRequestFailure(() => {
-      showContainers();
-    });
-  };
   return {
     lifecycle: {
       onBeforeEvent({
@@ -80,18 +38,26 @@ export default ({
           mergeQuery(event, { enabled: false });
           return;
         }
+
         const personalization = createPersonalizationDetails({
           renderDecisions,
           decisionScopes,
-          event
+          event,
+          viewCache
         });
 
-        if (personalization.hasScopes() || !viewCache.isInitialized()) {
-          handlePageLoad(personalization, event, onResponse, onRequestFailure);
+        if (personalization.shouldFetchData()) {
+          pageLoadHandler({
+            personalization,
+            event,
+            onResponse,
+            onRequestFailure
+          });
           return;
         }
-        if (viewCache.isInitialized() && personalization.getViewName()) {
-          handleViewChange(personalization, onResponse, onRequestFailure);
+
+        if (personalization.shouldUseCachedData()) {
+          viewChangeHandler({ personalization, onResponse, onRequestFailure });
         }
       },
       onClick({ event, clickedElement }) {

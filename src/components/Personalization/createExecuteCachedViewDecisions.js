@@ -10,24 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isAuthoringModeEnabled } from "../../../../../src/components/Personalization/utils";
+import isNonEmptyArray from "../../utils/isNonEmptyArray";
 
-describe("Personalization::utils", () => {
-  it("returns true if authoring mode is enabled", () => {
-    const doc = {
-      location: {
-        href: "http://foo.com?mboxEdit=1"
-      }
-    };
-    expect(isAuthoringModeEnabled(doc)).toEqual(true);
-  });
+export default ({ viewCache, executeViewDecisions, collect }) => {
+  return ({ viewName }) => {
+    const viewDecisions = viewCache.getView(viewName);
 
-  it("returns false if authoring mode is disabled", () => {
-    const doc = {
-      location: {
-        href: "http://foo.com"
-      }
-    };
-    expect(isAuthoringModeEnabled(doc)).toEqual(false);
-  });
-});
+    if (isNonEmptyArray(viewDecisions)) {
+      executeViewDecisions(viewDecisions);
+      return;
+    }
+
+    const xdm = { web: { webPageDetails: { viewName } } };
+
+    collect({ meta: {}, xdm });
+  };
+};

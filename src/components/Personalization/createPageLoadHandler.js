@@ -10,24 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isAuthoringModeEnabled } from "../../../../../src/components/Personalization/utils";
+export default ({
+  config,
+  responseHandler,
+  showContainers,
+  hideContainers,
+  mergeQuery
+}) => {
+  return ({ personalization, event, onResponse, onRequestFailure }) => {
+    const { prehidingStyle } = config;
 
-describe("Personalization::utils", () => {
-  it("returns true if authoring mode is enabled", () => {
-    const doc = {
-      location: {
-        href: "http://foo.com?mboxEdit=1"
-      }
-    };
-    expect(isAuthoringModeEnabled(doc)).toEqual(true);
-  });
+    if (personalization.isRenderDecisions()) {
+      hideContainers(prehidingStyle);
+    }
+    mergeQuery(event, personalization.createQueryDetails());
 
-  it("returns false if authoring mode is disabled", () => {
-    const doc = {
-      location: {
-        href: "http://foo.com"
-      }
-    };
-    expect(isAuthoringModeEnabled(doc)).toEqual(false);
-  });
-});
+    onResponse(({ response }) =>
+      responseHandler({ personalization, response })
+    );
+    onRequestFailure(() => {
+      showContainers();
+    });
+  };
+};

@@ -61,9 +61,8 @@ describe("Personalization::createViewCollect", () => {
         }
       }
     };
-    const expectedXdmObject = {
-      eventType: "display",
-      ...xdmObject
+    const data = {
+      eventType: "display"
     };
     const emptyMeta = { decisions: [] };
     const collect = createViewCollect({ eventManager, mergeMeta });
@@ -71,7 +70,8 @@ describe("Personalization::createViewCollect", () => {
     collect({ meta: emptyMeta, xdm: xdmObject });
 
     expect(eventManager.createEvent).toHaveBeenCalled();
-    expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdmObject);
+    expect(event.mergeXdm).toHaveBeenCalledWith(data);
+    expect(event.mergeXdm).toHaveBeenCalledWith(xdmObject);
     expect(mergeMeta).not.toHaveBeenCalled();
     expect(eventManager.sendEvent).toHaveBeenCalled();
   });

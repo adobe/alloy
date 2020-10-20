@@ -10,19 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNonEmptyArray from "../../utils/isNonEmptyArray";
-
-export default ({ viewCache, executeViewDecisions, collect }) => {
-  return ({ viewName }) => {
-    const viewDecisions = viewCache.getView(viewName);
-
-    if (isNonEmptyArray(viewDecisions)) {
-      executeViewDecisions(viewDecisions);
+export default ({ executeCachedViewDecisions, viewCache, showContainers }) => {
+  return ({ personalization, onResponse, onRequestFailure }) => {
+    if (personalization.isRenderDecisions()) {
+      executeCachedViewDecisions({
+        viewName: personalization.getViewName()
+      });
       return;
     }
 
-    const xdm = { web: { webPageDetails: { viewName } } };
+    onResponse(() => {
+      return {
+        decisions: viewCache.getView(personalization.getViewName())
+      };
+    });
 
-    collect({ meta: {}, xdm });
+    onRequestFailure(() => {
+      showContainers();
+    });
   };
 };

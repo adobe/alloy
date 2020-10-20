@@ -10,21 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { includes, isNonEmptyArray } from "../../utils";
-
-export const PAGE_WIDE_SCOPE = "__view__";
-
-export const hasScopes = scopes => isNonEmptyArray(scopes);
-
-export const isAuthoringModeEnabled = (doc = document) =>
-  doc.location.href.indexOf("mboxEdit") !== -1;
-
-export const getDecisionScopes = decisionScopes => {
-  const scopes = [...decisionScopes];
-
-  if (!includes(scopes, PAGE_WIDE_SCOPE)) {
-    scopes.push(PAGE_WIDE_SCOPE);
-  }
-
-  return scopes;
+// eslint-disable-next-line import/prefer-default-export
+export const isAuthoringModeEnabled = (doc = document) => {
+  return doc.location.href.indexOf("mboxEdit") !== -1;
 };

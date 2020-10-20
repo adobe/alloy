@@ -9,11 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createViewChangeHandler from "../../../../../src/components/Personalization/createViewChangeHandler";
+import createExecuteCachedViewDecisions from "../../../../../src/components/Personalization/createExecuteCachedViewDecisions";
 import { CART_VIEW_DECISIONS } from "./responsesMock/eventResponses";
 
-describe("Personalization::createViewChangeHandler", () => {
-  let getView;
+describe("Personalization::createExecuteCachedViewDecisions", () => {
+  const viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
   let executeViewDecisions;
   let collect;
 
@@ -23,31 +23,31 @@ describe("Personalization::createViewChangeHandler", () => {
   });
 
   it("executes view decisions", () => {
-    getView = jasmine.createSpy().and.returnValue(CART_VIEW_DECISIONS);
-    const handleViewChange = createViewChangeHandler({
-      getView,
+    viewCache.getView.and.returnValue(CART_VIEW_DECISIONS);
+    const executeCachedViewDecisions = createExecuteCachedViewDecisions({
+      viewCache,
       executeViewDecisions,
       collect
     });
     const viewName = "cart";
-    handleViewChange({ viewName });
+    executeCachedViewDecisions({ viewName });
 
-    expect(getView).toHaveBeenCalledWith(viewName);
+    expect(viewCache.getView).toHaveBeenCalledWith(viewName);
     expect(executeViewDecisions).toHaveBeenCalledWith(CART_VIEW_DECISIONS);
   });
 
   it("sends a collect call when no decisions in cache for a specific view", () => {
-    getView = jasmine.createSpy().and.returnValue([]);
-    const handleViewChange = createViewChangeHandler({
-      getView,
+    viewCache.getView.and.returnValue([]);
+    const executeCachedViewDecisions = createExecuteCachedViewDecisions({
+      viewCache,
       executeViewDecisions,
       collect
     });
     const viewName = "products";
     const xdm = { web: { webPageDetails: { viewName } } };
-    handleViewChange({ viewName });
+    executeCachedViewDecisions({ viewName });
 
-    expect(getView).toHaveBeenCalledWith(viewName);
+    expect(viewCache.getView).toHaveBeenCalledWith(viewName);
     expect(executeViewDecisions).not.toHaveBeenCalled();
     expect(collect).toHaveBeenCalledWith({ meta: {}, xdm });
   });

@@ -1,3 +1,15 @@
+/*
+Copyright 2020 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
 import { includes } from "../../utils";
 import PAGE_WIDE_SCOPE from "./constants/scope";
 import {
@@ -16,9 +28,29 @@ const getScopes = decisionScopes => {
 
   return scopes;
 };
+const getViewName = xdm => {
+  if (!xdm) {
+    return undefined;
+  }
 
-export default ({ renderDecisions, decisionScopes, event }) => {
+  const web = xdm.web;
+
+  if (!web) {
+    return undefined;
+  }
+
+  const webPageDetails = web.webPageDetails;
+
+  if (!webPageDetails) {
+    return undefined;
+  }
+
+  return webPageDetails.viewName;
+};
+
+export default ({ renderDecisions, decisionScopes, event, viewCache }) => {
   const xdm = event.toJSON().xdm;
+  const viewName = getViewName(xdm);
   return {
     isRenderDecisions() {
       return renderDecisions;
@@ -27,26 +59,13 @@ export default ({ renderDecisions, decisionScopes, event }) => {
       return getScopes(decisionScopes);
     },
     getViewName() {
-      if (!xdm) {
-        return undefined;
-      }
-
-      const web = xdm.web;
-
-      if (!web) {
-        return undefined;
-      }
-
-      const webPageDetails = web.webPageDetails;
-
-      if (!webPageDetails) {
-        return undefined;
-      }
-
-      return webPageDetails.viewName;
+      return viewName;
     },
     hasScopes() {
       return decisionScopes.length > 0;
+    },
+    hasViewName() {
+      return viewName !== undefined;
     },
     createQueryDetails() {
       const schemas = [
@@ -60,6 +79,16 @@ export default ({ renderDecisions, decisionScopes, event }) => {
         schemas,
         decisionScopes: getScopes(decisionScopes)
       };
+    },
+    shouldFetchData() {
+      return (
+        decisionScopes.length > 0 ||
+        !viewCache.isInitialized() ||
+        (viewName === undefined && renderDecisions)
+      );
+    },
+    shouldUseCachedData() {
+      return viewName !== undefined && viewCache.isInitialized();
     }
   };
 };
