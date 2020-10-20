@@ -36,7 +36,7 @@ const getAlloyCommandQueueLength = ClientFunction(() => {
   return window.alloy.q.length;
 });
 
-test.only("C2580: Command queueing test.", async () => {
+test("C2580: Command queueing test.", async () => {
   await configureAlloy(debugEnabledConfig);
   await getLibraryInfoCommand();
   await t.expect(getAlloyCommandQueueLength()).eql(2);
