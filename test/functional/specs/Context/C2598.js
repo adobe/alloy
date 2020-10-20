@@ -4,7 +4,7 @@ import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
 import webContextConfig from "../../helpers/constants/webContextConfig";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
-import testServerUrl from "../../helpers/constants/testServerUrl";
+import testPageUrl from "../../helpers/constants/testPageUrl";
 
 const networkLogger = createNetworkLogger();
 
@@ -12,7 +12,7 @@ createFixture({
   title:
     "C2598 - Adds only web context data when only web is specified in configuration.",
   requestHooks: [networkLogger.edgeEndpointLogs],
-  url: testServerUrl
+  url: testPageUrl
 });
 
 test.meta({
@@ -46,11 +46,11 @@ test("Test C2598 - Adds only web context data when only web is specified in conf
   await t.expect(stringifyRequest.events[0].xdm.web.webPageDetails).ok();
   await t
     .expect(stringifyRequest.events[0].xdm.web.webPageDetails.URL)
-    .eql(testServerUrl);
+    .eql(testPageUrl);
   await t.expect(stringifyRequest.events[0].xdm.web.webReferrer).ok();
   await t
     .expect(stringifyRequest.events[0].xdm.web.webReferrer.URL)
-    .eql(testServerUrl);
+    .eql(testPageUrl);
 
   await t.expect(stringifyRequest.events[0].xdm.device).notOk();
   await t.expect(stringifyRequest.events[0].xdm.placeContext).notOk();
