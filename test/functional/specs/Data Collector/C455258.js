@@ -4,12 +4,13 @@ import createFixture from "../../helpers/createFixture";
 import sendBeaconMock from "../../helpers/sendBeaconMock";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
+import isSendBeaconSupported from "../../helpers/isSendBeaconSupported";
 
 const networkLogger = createNetworkLogger();
 
 createFixture({
   title:
-    "455258: sendEvent command sends a request to the collect endpoint using sendBeacon when documentUnloading is set to true.",
+    "C455258: sendEvent command sends a request to the collect endpoint using sendBeacon when documentUnloading is set to true.",
   requestHooks: [networkLogger.edgeCollectEndpointLogs]
 });
 
@@ -40,10 +41,14 @@ const sendEvent = ClientFunction(() => {
     });
 });
 
-test("Test 455258: sendEvent command sends a request to the collect endpoint using sendBeacon when documentUnloading is set to true.", async () => {
-  await sendBeaconMock.mock();
+test("Test C455258: sendEvent command sends a request to the collect endpoint using sendBeacon when documentUnloading is set to true.", async () => {
+  if (isSendBeaconSupported()) {
+    await sendBeaconMock.mock();
+  }
   await configureAlloyInstance("alloy", orgMainConfigMain);
   await sendEvent();
   await t.expect(networkLogger.edgeCollectEndpointLogs.requests.length).eql(1);
-  await t.expect(sendBeaconMock.getCallCount()).eql(1);
+  if (isSendBeaconSupported()) {
+    await t.expect(sendBeaconMock.getCallCount()).eql(1);
+  }
 });

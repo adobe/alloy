@@ -1,14 +1,19 @@
 import { t } from "testcafe";
+import {
+  CHROME,
+  CHROMIUM,
+  EDGE,
+  INTERNET_EXPLORER
+} from "./constants/browsers";
 
-// The names here match those listed in
-// https://github.com/lancedikson/bowser/blob/9ecf3e94c3269ef8bb4c8274dab6a31eea665aea/src/constants.js
-// which is the library that provides the value for t.browser.name.
 const browsersSupportingThirdPartyCookiesByDefault = [
-  "Chrome",
-  "Chromium",
-  "Microsoft Edge",
-  "Internet Explorer"
+  CHROME,
+  CHROMIUM,
+  EDGE,
+  INTERNET_EXPLORER
 ];
 
+// This must be a function called during the test, otherwise TestCafe will throw
+// an error about how it can't resolve the right context for "t".
 export default () =>
   browsersSupportingThirdPartyCookiesByDefault.indexOf(t.browser.name) !== -1;
