@@ -64,19 +64,7 @@ test("Test C224670: Opt in to IAB", async () => {
   await t.expect(consentCookieValue).ok("No consent cookie found.");
   await t.expect(consentCookieValue).eql("general=in");
 
-  // 2. The set-consent response payload contains the consent handle in XDM format
-  const consentHandle = consentResponse.getPayloadsByType("privacy:consent");
-
-  await t.expect(consentHandle.length).gte(0);
-  await t.expect(consentHandle[0]).eql({
-    consentStandard: "IAB TCF",
-    consentStandardVersion: "2.0",
-    consentStringValue: "CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA",
-    containsPersonalData: false,
-    gdprApplies: true
-  });
-
-  // 3. The ECID should exist in the response payload as well, if queried
+  // 2. The ECID should exist in the response payload as well, if queried
   const identityHandle = consentResponse.getPayloadsByType("identity:result");
   await t.expect(identityHandle.length).eql(2);
 

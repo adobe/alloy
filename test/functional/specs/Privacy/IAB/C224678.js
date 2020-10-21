@@ -72,23 +72,11 @@ test("Test C224678: Passing a negative Consent in the sendEvent command", async 
   await t.expect(consentCookieValue).ok("No consent cookie found.");
   await t.expect(consentCookieValue).eql("general=out");
 
-  // 2. The set-consent response payload contains the consent handle in XDM format
-  const consentHandle = response.getPayloadsByType("privacy:consent");
-
-  await t.expect(consentHandle.length).eql(1);
-  await t.expect(consentHandle[0]).eql({
-    consentStandard: "IAB TCF",
-    consentStandardVersion: "2.0",
-    consentStringValue: "CO052oTO052oTDGAMBFRACBgAABAAAAAAIYgEawAQEagAAAA",
-    containsPersonalData: false,
-    gdprApplies: true
-  });
-
-  // 3. The ECID not should exist in the response payload as well, even if queried
+  // 2. The ECID should not exist in the response payload as well, even if queried
   const identityHandle = response.getPayloadsByType("identity:result");
   await t.expect(identityHandle.length).eql(0);
 
-  // 4. Should not have any activation, ID Syncs or decisions in the response.
+  // 3. Should not have any activation, ID Syncs or decisions in the response.
   const handlesThatShouldBeMissing = [
     "activation:push",
     "identity:exchange",
@@ -103,12 +91,12 @@ test("Test C224678: Passing a negative Consent in the sendEvent command", async 
 
   await t.expect(handlesThatShouldBeMissing.length).eql(0);
 
-  // 5. The server doesn't throw error messages when there is no consent
+  // 4. The server doesn't throw error messages when there is no consent
   await t
     .expect(errorMessage)
     .notOk("Event returned an error when we expected it not to.");
 
-  // 6. Events should be blocked going forward because we are opted out.
+  // 5. Events should be blocked going forward because we are opted out.
   await sendEvent();
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 });
