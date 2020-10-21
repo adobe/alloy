@@ -10,7 +10,7 @@ import {
 } from "../../helpers/constants/configParts";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../../../src/core/createResponse";
-import testServerUrl from "../../helpers/constants/testServerUrl";
+import testPageUrl from "../../helpers/constants/testPageUrl";
 
 const networkLogger = createNetworkLogger();
 const config = compose(
@@ -25,7 +25,7 @@ createFixture({
   title:
     "C28755: A VEC offer for all visitors should return in every event if __view__ scope exist",
   requestHooks: [networkLogger.edgeEndpointLogs],
-  url: `${testServerUrl}?test=C28755`
+  url: `${testPageUrl}?test=C28755`
 });
 
 test.meta({
