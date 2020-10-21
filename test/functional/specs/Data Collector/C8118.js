@@ -5,6 +5,7 @@ import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
 import sendBeaconMock from "../../helpers/sendBeaconMock";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
+import isSendBeaconSupported from "../../helpers/isSendBeaconSupported";
 
 const networkLogger = createNetworkLogger();
 
@@ -22,7 +23,9 @@ test.meta({
 const getLocation = ClientFunction(() => document.location.href.toString());
 
 test("Test C8118: Load page with link. Click link. Verify event.", async () => {
-  await sendBeaconMock.mock();
+  if (isSendBeaconSupported()) {
+    await sendBeaconMock.mock();
+  }
   await configureAlloyInstance("alloy", orgMainConfigMain);
   await addHtmlToBody(
     `<a href="blank.html"><span id="alloy-link-test">Test Link</span></a>`
@@ -40,5 +43,7 @@ test("Test C8118: Load page with link. Click link. Verify event.", async () => {
     URL: "https://alloyio.com/functional-test/blank.html",
     linkClicks: { value: 1 }
   });
-  await t.expect(sendBeaconMock.getCallCount()).eql(1);
+  if (isSendBeaconSupported()) {
+    await t.expect(sendBeaconMock.getCallCount()).eql(1);
+  }
 });
