@@ -13,23 +13,18 @@ governing permissions and limitations under the License.
 import createViewChangeHandler from "../../../../../src/components/Personalization/createViewChangeHandler";
 
 describe("Personalization::createViewChangeHandler", () => {
-  let executeCachedViewDecisions;
-  let showContainers;
   let personalization;
-
+  let viewCache;
   let onResponse = jasmine.createSpy();
   const onRequestFailure = jasmine.createSpy();
-  let viewCache;
+  const executeCachedViewDecisions = jasmine.createSpy();
+  const showContainers = jasmine.createSpy("showContainers");
 
   beforeEach(() => {
-    executeCachedViewDecisions = jasmine.createSpy(
-      "executeCachedViewDecisions"
-    );
     personalization = jasmine.createSpyObj("personalization", [
       "isRenderDecisions",
       "getViewName"
     ]);
-    showContainers = jasmine.createSpy("showContainers");
     viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
   });
 
@@ -50,8 +45,6 @@ describe("Personalization::createViewChangeHandler", () => {
     expect(executeCachedViewDecisions).toHaveBeenCalledWith({
       viewName: "cart"
     });
-    expect(onResponse).not.toHaveBeenCalled();
-    expect(onRequestFailure).not.toHaveBeenCalled();
   });
 
   it("should return cached views if renderDecisions is false", () => {
