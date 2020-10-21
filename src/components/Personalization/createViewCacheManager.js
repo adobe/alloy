@@ -10,19 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { assign } from "../../utils";
+
 export default () => {
   let viewStorage;
-  const addView = (viewName, decisions) => {
+
+  const storeViews = decisions => {
     if (viewStorage === undefined) {
       viewStorage = {};
     }
-    viewStorage[viewName] = decisions;
-  };
-
-  const storeViews = decisions => {
-    Object.keys(decisions).forEach(scope => {
-      addView(scope, decisions[scope]);
-    });
+    assign(viewStorage, decisions);
   };
 
   const getView = viewName => {

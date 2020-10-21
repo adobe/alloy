@@ -9,7 +9,6 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import isNonEmptyArray from "../../utils/isNonEmptyArray";
 import { isEmptyObject } from "../../utils";
 import { DOM_ACTION } from "./constants/schema";
 import PAGE_WIDE_SCOPE from "./constants/scope";
@@ -26,7 +25,7 @@ export default ({
   return ({ personalization, response }) => {
     const unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
     const viewName = personalization.getViewName();
-    if (!isNonEmptyArray(unprocessedDecisions)) {
+    if (unprocessedDecisions.length === 0) {
       showContainers();
       return { decisions: [] };
     }
