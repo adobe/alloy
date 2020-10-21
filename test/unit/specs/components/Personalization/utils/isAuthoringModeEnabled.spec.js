@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isAuthoringModeEnabled } from "../../../../../src/components/Personalization/utils";
+import isAuthoringModeEnabled from "../../../../../../src/components/Personalization/utils/isAuthoringModeEnabled";
 
-describe("Personalization::utils", () => {
+describe("Personalization::isAuthoringModeEnabled", () => {
   it("returns true if authoring mode is enabled", () => {
     const doc = {
       location: {

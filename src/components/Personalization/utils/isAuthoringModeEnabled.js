@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line import/prefer-default-export
-export const isAuthoringModeEnabled = (doc = document) => {
+export default (doc = document) => {
   return doc.location.href.indexOf("mboxEdit") !== -1;
 };

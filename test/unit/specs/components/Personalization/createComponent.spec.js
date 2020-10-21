@@ -130,26 +130,6 @@ describe("Personalization", () => {
     expect(mergeQuery).not.toHaveBeenCalled();
     expect(onClickHandler).not.toHaveBeenCalled();
   });
-  /*
-  it("should trigger pageLoadHandler if cache is initialized, viewName is not provided, decisionScopes is empty(not spa impl)", () => {
-    build();
-    const renderDecisions = true;
-    const decisionScopes = [];
-    viewCache.isInitialized.and.returnValue(true);
-    event.toJSON.and.returnValue({});
-
-    personalizationComponent.lifecycle.onBeforeEvent({
-      event,
-      renderDecisions,
-      decisionScopes
-    });
-
-    expect(isAuthoringModeEnabled).toHaveBeenCalled();
-    expect(pageLoadHandler).toHaveBeenCalled();
-    expect(viewChangeHandler).not.toHaveBeenCalled();
-    expect(mergeQuery).not.toHaveBeenCalled();
-    expect(onClickHandler).not.toHaveBeenCalled();
-  }); */
   it("should trigger onClickHandler at onClick", () => {
     build();
     personalizationComponent.lifecycle.onClick({ event });

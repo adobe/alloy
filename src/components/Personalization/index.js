@@ -19,7 +19,7 @@ import createExecuteDecisions from "./createExecuteDecisions";
 import { hideContainers, showContainers } from "./flicker";
 import createPageLoadHandler from "./createPageLoadHandler";
 import collectClicks from "./dom-actions/clicks/collectClicks";
-import { isAuthoringModeEnabled } from "./utils";
+import isAuthoringModeEnabled from "./utils/isAuthoringModeEnabled";
 import { mergeMeta, mergeQuery } from "./event";
 import createOnClickHandler from "./createOnClickHandler";
 import createExecuteCachedViewDecisions from "./createExecuteCachedViewDecisions";
