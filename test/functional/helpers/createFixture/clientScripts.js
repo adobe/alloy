@@ -45,7 +45,7 @@ let localAlloyCode;
 
 // We're only testing against the alloy code found in /dist when alloyEnv
 // is "int". Otherwise, we're testing against the prod alloy that's on the CDN
-// and in those cases alloy code may not event exist in /dist. This is why
+// and in those cases alloy code may not even exist in /dist. This is why
 // we only try to load the file from the file system if alloyEnv is int.
 if (alloyEnv === "int") {
   localAlloyCode = fs.readFileSync(localAlloyLibraryPath, "utf8");
