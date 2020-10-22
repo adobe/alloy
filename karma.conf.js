@@ -34,7 +34,6 @@ module.exports = config => {
     // list of files / patterns to load in the browser
     files: [
       "node_modules/promise-polyfill/dist/polyfill.js",
-      "test/unit/helpers/mockServerClient.js",
       {
         pattern: "test/unit/specs/karmaEntry.spec.js",
         watched: false // The preprocessor will use its own watcher

@@ -10,43 +10,39 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { createServer, Response } from "miragejs";
 import injectNetworkStrategy from "../../../../../src/core/network/injectNetworkStrategy";
 
-const mockServerClient = window.mockServerClient || (() => {});
-
-// the mockserver client library just returns objects with a "then" method.  In order to do
-// promise chaining, we need to wrap these "fake" promises in real ones.
-const wrapInRealPromises = client => {
-  return Object.keys(client).reduce((memo, functionName) => {
-    memo[functionName] = (...args) => {
-      return new Promise((resolve, reject) => {
-        client[functionName](...args).then(resolve, reject);
+const createMockServer = ({ responseCode, responseBody } = {}) => {
+  return createServer({
+    // Sets timing to 0 and hides Mirage logging.
+    environment: "test",
+    routes() {
+      this.urlPrefix = "http://localhost:1080";
+      this.post("/myapi", () => {
+        return new Response(responseCode, {}, responseBody);
       });
-    };
-    return memo;
-  }, {});
+    }
+  });
 };
 
-const eventually = (
-  testFunction,
-  checks = 5,
-  millisecondsBetweenChecks = 100
-) => {
-  return new Promise((resolve, reject) => {
-    const check = remainingChecks => {
-      setTimeout(() => {
-        testFunction()
-          .then(resolve)
-          .catch(error => {
-            if (remainingChecks <= 0) {
-              reject(error);
-            } else {
-              check(remainingChecks - 1);
-            }
-          });
-      }, millisecondsBetweenChecks);
+// This function MUST be run AFTER createMockServer() is called,
+// because Mirage replaces window.fetch and window.XMLHttpRequest with mocked
+// versions. If we ran the below code first, the native methods would be used
+// instead of the mocks because of how we pull the fetch and XMLHttpRequest
+// methods off window both in the code below and inside injectNetworkStrategy.
+const createNetworkStrategy = ({ simulateWindowWithoutFetch }) => {
+  let testingWindow = window;
+
+  if (simulateWindowWithoutFetch) {
+    testingWindow = {
+      XMLHttpRequest: window.XMLHttpRequest
     };
-    check(checks);
+  }
+
+  return injectNetworkStrategy({
+    window: testingWindow,
+    logger: console
   });
 };
 
@@ -57,221 +53,112 @@ const eventually = (
  */
 describe("injectNetworkStrategy", () => {
   const requestBody = JSON.stringify({ id: "myrequest" });
-  const largeRequestBody = JSON.stringify({
-    id: "mylargerequest",
-    data: new Uint8Array(10 * 1024)
-  });
 
-  let client;
-  let networkStrategy;
-  let mockServerRunning = false;
+  const scenarios = [
+    {
+      description: "window with fetch support",
+      simulateWindowWithoutFetch: true
+    },
+    {
+      description: "window without fetch support",
+      simulateWindowWithoutFetch: false
+    }
+  ];
 
-  // Check to see if the mock server is running:
-  beforeAll(() => {
-    return new Promise((resolve, reject) => {
-      const timeout = setTimeout(reject, 500);
-      fetch("http://localhost:1080/status", { method: "PUT" })
-        .then(resolve)
-        .catch(reject)
-        .finally(() => clearTimeout(timeout));
-    })
-      .then(() => {
-        mockServerRunning = true;
-      })
-      .catch(() => {
-        mockServerRunning = false;
-      });
-  });
+  scenarios.forEach(({ description, simulateWindowWithoutFetch }) => {
+    describe(description, () => {
+      [200].forEach(responseCode => {
+        it(`handles successful response code ${responseCode}`, () => {
+          const server = createMockServer({
+            responseCode: 200,
+            responseBody: "mybod"
+          });
+          const networkStrategy = createNetworkStrategy({
+            simulateWindowWithoutFetch
+          });
 
-  const whenMockServerIsRunningIt = (name, testFunc) => {
-    it(name, () => {
-      if (mockServerRunning) {
-        return testFunc();
-      }
-      pending("Mock server is not running");
-      return Promise.resolve();
-    });
-  };
-
-  [
-    ["window", window],
-    ["XMLHttpRequest", { XMLHttpRequest: window.XMLHttpRequest }]
-  ].forEach(([name, testingWindow]) => {
-    describe(name, () => {
-      beforeEach(() => {
-        if (mockServerRunning) {
-          networkStrategy = injectNetworkStrategy(testingWindow, console);
-          client = wrapInRealPromises(mockServerClient("localhost", 1080));
-          return client.reset();
-        }
-        return Promise.resolve();
-      });
-
-      const mockResponse = (code, body) => {
-        const promise = client.mockAnyResponse({
-          httpRequest: {
-            method: "POST",
-            path: "/myapi",
-            body: {
-              type: "JSON",
-              json: requestBody,
-              matchType: "STRICT"
-            }
-          },
-          httpResponse: {
-            statusCode: code,
-            body
-          }
-        });
-        return promise;
-      };
-
-      [200].forEach(code => {
-        whenMockServerIsRunningIt(
-          `handles successful response code ${code}`,
-          () => {
-            return mockResponse(code, "mybody")
-              .then(() =>
-                networkStrategy("http://localhost:1080/myapi", requestBody)
-              )
-              .then(result => {
-                expect(result).toEqual({
-                  status: 200,
-                  body: "mybody"
-                });
-              });
-          }
-        );
-      });
-
-      whenMockServerIsRunningIt(
-        "handles successful response code 204 (no content)",
-        () => {
-          return mockResponse(204, "mybody")
-            .then(() =>
-              networkStrategy("http://localhost:1080/myapi", requestBody)
-            )
-            .then(result => {
-              expect(result).toEqual({
-                status: 204,
-                body: ""
-              });
+          return networkStrategy({
+            url: "http://localhost:1080/myapi",
+            body: requestBody
+          }).then(result => {
+            server.shutdown();
+            expect(result).toEqual({
+              status: 200,
+              body: "mybod"
             });
-        }
-      );
-
-      [301, 400, 403, 500].forEach(code => {
-        whenMockServerIsRunningIt(`handles error response code ${code}`, () => {
-          return mockResponse(code, "mybody")
-            .then(() =>
-              networkStrategy("http://localhost:1080/myapi", requestBody)
-            )
-            .then(result => {
-              expect(result).toEqual({
-                status: code,
-                body: "mybody"
-              });
-            });
+          });
         });
       });
 
-      whenMockServerIsRunningIt("handles a dropped connection", () => {
-        return client
-          .mockAnyResponse({
-            httpRequest: {
-              method: "POST",
-              path: "/myapi"
-            },
-            httpError: {
-              dropConnection: true
-            }
-          })
-          .then(() =>
-            networkStrategy("http://localhost:1080/myapi", requestBody)
-          )
+      it("handles successful response code 204 (no content)", () => {
+        const server = createMockServer({
+          responseCode: 204
+        });
+        const networkStrategy = createNetworkStrategy({
+          simulateWindowWithoutFetch
+        });
+
+        return networkStrategy({
+          url: "http://localhost:1080/myapi",
+          body: requestBody
+        }).then(result => {
+          server.shutdown();
+          expect(result).toEqual({
+            status: 204,
+            body: ""
+          });
+        });
+      });
+
+      [301, 400, 403, 500].forEach(responseCode => {
+        it(`handles error response code ${responseCode}`, () => {
+          const server = createMockServer({
+            responseCode,
+            responseBody: "mybod"
+          });
+          const networkStrategy = createNetworkStrategy({
+            simulateWindowWithoutFetch
+          });
+
+          return networkStrategy({
+            url: "http://localhost:1080/myapi",
+            body: requestBody
+          }).then(result => {
+            server.shutdown();
+            expect(result).toEqual({
+              status: responseCode,
+              body: "mybod"
+            });
+          });
+        });
+      });
+
+      it("handles a dropped connection", () => {
+        const server = createMockServer();
+        const networkStrategy = createNetworkStrategy({
+          simulateWindowWithoutFetch
+        });
+
+        // When a network connection is dropped, an error is thrown by the
+        // browser, which then bubbles up through our networkStrategy module.
+        // While we can't technically simulate a dropped connection
+        // using Mirage, we can try to hit an endpoint that hasn't been
+        // configured on our Mirage server, which similarly results in an
+        // error being thrown.
+        return networkStrategy({
+          url: "http://localhost:1080/unconfuredendpoint",
+          body: requestBody
+        })
           .then(fail)
           .catch(error => {
+            server.shutdown();
             expect(error).toBeDefined();
           });
       });
-
-      whenMockServerIsRunningIt("sends a beacon", () => {
-        // use a different endpoint here, because when the test fails, the beacon could still go
-        // out and cause other tests to fail.
-        return client
-          .mockAnyResponse({
-            httpRequest: {
-              method: "POST",
-              path: "/smallbeacon"
-            },
-            httpResponse: {
-              statusCode: 204
-            }
-          })
-          .then(() =>
-            networkStrategy(
-              "http://localhost:1080/smallbeacon",
-              requestBody,
-              true
-            )
-          )
-          .then(result => {
-            expect(result).toEqual({
-              status: 204,
-              body: ""
-            });
-          })
-          .then(() => {
-            return eventually(() => {
-              return client.verify(
-                {
-                  method: "POST",
-                  path: "/smallbeacon",
-                  body: requestBody
-                },
-                1,
-                1
-              ); // verify atLeast 1, atMost 1 times called
-            });
-          });
-      });
-
-      whenMockServerIsRunningIt("sends a large beacon", () => {
-        return client
-          .mockAnyResponse({
-            httpRequest: {
-              method: "POST",
-              path: "/largebeacon"
-            },
-            httpResponse: {
-              statusCode: 204
-            }
-          })
-          .then(() =>
-            networkStrategy(
-              "http://localhost:1080/largebeacon",
-              largeRequestBody,
-              true
-            )
-          )
-          .then(result =>
-            expect(result).toEqual({
-              status: 204,
-              body: ""
-            })
-          )
-          .then(() =>
-            client.verify(
-              {
-                method: "POST",
-                path: "/largebeacon",
-                body: largeRequestBody
-              },
-              1,
-              1
-            )
-          ); // verify atLeast 1, atMost 1 times called
-      });
     });
   });
+
+  // We don't have tests for sendBeacon because Mirage (actually, the Pretender
+  // library that Mirage uses) doesn't support it yet.
+  // https://github.com/pretenderjs/pretender/issues/249
 });
