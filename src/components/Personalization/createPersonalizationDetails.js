@@ -80,15 +80,18 @@ export default ({ renderDecisions, decisionScopes, event, viewCache }) => {
         decisionScopes: getScopes(decisionScopes)
       };
     },
+    isCacheInitialized() {
+      return viewCache.isInitialized();
+    },
     shouldFetchData() {
       return (
-        decisionScopes.length > 0 ||
-        !viewCache.isInitialized() ||
-        (viewName === undefined && renderDecisions)
+        this.hasScopes() ||
+        !this.isCacheInitialized() ||
+        (!this.hasViewName() && this.isRenderDecisions())
       );
     },
     shouldUseCachedData() {
-      return viewName !== undefined && viewCache.isInitialized();
+      return this.hasViewName() && this.isCacheInitialized();
     }
   };
 };

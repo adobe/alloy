@@ -22,13 +22,13 @@ import { DOM_ACTION } from "../../../../../src/components/Personalization/consta
 import PAGE_WIDE_SCOPE from "../../../../../src/components/Personalization/constants/scope";
 
 describe("Personalization::onResponseHandler", () => {
-  const renderableDecisions = [
+  const domActionDecisions = [
     ...PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
     ...CART_VIEW_DECISIONS,
     ...PRODUCTS_VIEW_DECISIONS
   ];
   // const viewDecisions = CART_VIEW_DECISIONS.concat(PRODUCTS_VIEW_DECISIONS);
-  const nonRenderableDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS;
+  const nonDomActionDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS;
   const unprocessedDecisions = [
     ...PAGE_WIDE_SCOPE_DECISIONS,
     ...CART_VIEW_DECISIONS,
@@ -42,11 +42,11 @@ describe("Personalization::onResponseHandler", () => {
   let executeCachedViewDecisions;
   let showContainers;
   let response;
-  let personalization;
+  let personalizationDetails;
 
   beforeEach(() => {
     response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
-    personalization = jasmine.createSpyObj("personalization", [
+    personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
       "isRenderDecisions",
       "getViewName"
     ]);
@@ -63,25 +63,25 @@ describe("Personalization::onResponseHandler", () => {
   });
 
   it("should execute DOM ACTION decisions and return rest of decisions when renderDecisions is true", () => {
-    const views = {
+    const nonPageWideScopeDecisions = {
       cart: CART_VIEW_DECISIONS,
       products: PRODUCTS_VIEW_DECISIONS
     };
     decisionsExtractor.groupDecisionsBySchema.and.returnValue({
-      schemaDecisions: renderableDecisions,
-      otherDecisions: nonRenderableDecisions
+      domActionDecisions,
+      nonDomActionDecisions
     });
     decisionsExtractor.groupDecisionsByScope.and.returnValue({
-      scopeDecisions: pageWideScopeDecisions,
-      otherScopeDecisions: views
+      pageWideScopeDecisions,
+      nonPageWideScopeDecisions
     });
 
     const expectedResult = {
-      decisions: nonRenderableDecisions
+      decisions: nonDomActionDecisions
     };
     response.getPayloadsByType.and.returnValue(unprocessedDecisions);
-    personalization.isRenderDecisions.and.returnValue(true);
-    personalization.getViewName.and.returnValue(undefined);
+    personalizationDetails.isRenderDecisions.and.returnValue(true);
+    personalizationDetails.getViewName.and.returnValue(undefined);
     const onResponse = createOnResponseHandler({
       viewCache,
       decisionsExtractor,
@@ -90,17 +90,19 @@ describe("Personalization::onResponseHandler", () => {
       showContainers
     });
 
-    const result = onResponse({ personalization, response });
+    const result = onResponse({ personalizationDetails, response });
 
     expect(decisionsExtractor.groupDecisionsBySchema).toHaveBeenCalledWith({
       decisions: unprocessedDecisions,
       schema: DOM_ACTION
     });
     expect(decisionsExtractor.groupDecisionsByScope).toHaveBeenCalledWith({
-      decisions: renderableDecisions,
+      decisions: domActionDecisions,
       scope: PAGE_WIDE_SCOPE
     });
-    expect(viewCache.storeViews).toHaveBeenCalledWith(views);
+    expect(viewCache.storeViews).toHaveBeenCalledWith(
+      nonPageWideScopeDecisions
+    );
     expect(showContainers).toHaveBeenCalled();
     expect(executeDecisions).toHaveBeenCalledWith(pageWideScopeDecisions);
     expect(executeCachedViewDecisions).not.toHaveBeenCalled();
@@ -108,25 +110,25 @@ describe("Personalization::onResponseHandler", () => {
   });
 
   it("should execute DOM ACTION decisions for page wide and for view and return rest of decisions when renderDecisions is true and a viewName is provided", () => {
-    const views = {
+    const nonPageWideScopeDecisions = {
       cart: CART_VIEW_DECISIONS,
       products: PRODUCTS_VIEW_DECISIONS
     };
     decisionsExtractor.groupDecisionsBySchema.and.returnValue({
-      schemaDecisions: renderableDecisions,
-      otherDecisions: nonRenderableDecisions
+      domActionDecisions,
+      nonDomActionDecisions
     });
     decisionsExtractor.groupDecisionsByScope.and.returnValue({
-      scopeDecisions: pageWideScopeDecisions,
-      otherScopeDecisions: views
+      pageWideScopeDecisions,
+      nonPageWideScopeDecisions
     });
 
     const expectedResult = {
-      decisions: nonRenderableDecisions
+      decisions: nonDomActionDecisions
     };
     response.getPayloadsByType.and.returnValue(unprocessedDecisions);
-    personalization.isRenderDecisions.and.returnValue(true);
-    personalization.getViewName.and.returnValue("cart");
+    personalizationDetails.isRenderDecisions.and.returnValue(true);
+    personalizationDetails.getViewName.and.returnValue("cart");
     const onResponse = createOnResponseHandler({
       viewCache,
       decisionsExtractor,
@@ -135,17 +137,19 @@ describe("Personalization::onResponseHandler", () => {
       showContainers
     });
 
-    const result = onResponse({ personalization, response });
+    const result = onResponse({ personalizationDetails, response });
 
     expect(decisionsExtractor.groupDecisionsBySchema).toHaveBeenCalledWith({
       decisions: unprocessedDecisions,
       schema: DOM_ACTION
     });
     expect(decisionsExtractor.groupDecisionsByScope).toHaveBeenCalledWith({
-      decisions: renderableDecisions,
+      decisions: domActionDecisions,
       scope: PAGE_WIDE_SCOPE
     });
-    expect(viewCache.storeViews).toHaveBeenCalledWith(views);
+    expect(viewCache.storeViews).toHaveBeenCalledWith(
+      nonPageWideScopeDecisions
+    );
     expect(showContainers).toHaveBeenCalled();
     expect(executeDecisions).toHaveBeenCalledWith(pageWideScopeDecisions);
     expect(executeCachedViewDecisions).toHaveBeenCalledWith({
@@ -155,30 +159,30 @@ describe("Personalization::onResponseHandler", () => {
   });
 
   it("should return pageWide decisions, form based and the view decisions when renderDecisions is false and a viewName is provided", () => {
-    const views = {
+    const nonPageWideScopeDecisions = {
       cart: CART_VIEW_DECISIONS,
       products: PRODUCTS_VIEW_DECISIONS
     };
 
     decisionsExtractor.groupDecisionsBySchema.and.returnValue({
-      schemaDecisions: renderableDecisions,
-      otherDecisions: nonRenderableDecisions
+      domActionDecisions,
+      nonDomActionDecisions
     });
     decisionsExtractor.groupDecisionsByScope.and.returnValue({
-      scopeDecisions: pageWideScopeDecisions,
-      otherScopeDecisions: views
+      pageWideScopeDecisions,
+      nonPageWideScopeDecisions
     });
     const expectedResult = {
       decisions: [
         ...pageWideScopeDecisions,
-        ...nonRenderableDecisions,
-        ...views.cart
+        ...nonDomActionDecisions,
+        ...nonPageWideScopeDecisions.cart
       ]
     };
     response.getPayloadsByType.and.returnValue(unprocessedDecisions);
 
-    personalization.isRenderDecisions.and.returnValue(false);
-    personalization.getViewName.and.returnValue("cart");
+    personalizationDetails.isRenderDecisions.and.returnValue(false);
+    personalizationDetails.getViewName.and.returnValue("cart");
 
     const onResponse = createOnResponseHandler({
       viewCache,
@@ -188,9 +192,11 @@ describe("Personalization::onResponseHandler", () => {
       showContainers
     });
 
-    const result = onResponse({ personalization, response });
+    const result = onResponse({ personalizationDetails, response });
 
-    expect(viewCache.storeViews).toHaveBeenCalledWith(views);
+    expect(viewCache.storeViews).toHaveBeenCalledWith(
+      nonPageWideScopeDecisions
+    );
     expect(showContainers).not.toHaveBeenCalled();
     expect(executeDecisions).not.toHaveBeenCalled();
     expect(executeCachedViewDecisions).not.toHaveBeenCalled();
@@ -198,13 +204,13 @@ describe("Personalization::onResponseHandler", () => {
     expect(result).toEqual(expectedResult);
   });
 
-  it("should trigger showContainers if personalization payload is empty and return empty array", () => {
+  it("should trigger showContainers if personalizationDetails payload is empty and return empty array", () => {
     const expectedResult = {
       decisions: []
     };
     response.getPayloadsByType.and.returnValue([]);
-    personalization.isRenderDecisions.and.returnValue(false);
-    personalization.getViewName.and.returnValue("cart");
+    personalizationDetails.isRenderDecisions.and.returnValue(false);
+    personalizationDetails.getViewName.and.returnValue("cart");
 
     const onResponse = createOnResponseHandler({
       viewCache,
@@ -213,7 +219,7 @@ describe("Personalization::onResponseHandler", () => {
       executeCachedViewDecisions,
       showContainers
     });
-    const result = onResponse({ personalization, response });
+    const result = onResponse({ personalizationDetails, response });
 
     expect(showContainers).toHaveBeenCalled();
     expect(decisionsExtractor.groupDecisionsBySchema).not.toHaveBeenCalled();
@@ -225,19 +231,19 @@ describe("Personalization::onResponseHandler", () => {
 
   it("shouldn't store any viewDecision", () => {
     decisionsExtractor.groupDecisionsBySchema.and.returnValue({
-      schemaDecisions: PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
-      otherDecisions: nonRenderableDecisions
+      domActionDecisions: PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
+      nonDomActionDecisions
     });
     decisionsExtractor.groupDecisionsByScope.and.returnValue({
-      scopeDecisions: pageWideScopeDecisions,
-      otherScopeDecisions: {}
+      pageWideScopeDecisions,
+      nonPageWideScopeDecisions: {}
     });
     const expectedResult = {
-      decisions: nonRenderableDecisions
+      decisions: nonDomActionDecisions
     };
     response.getPayloadsByType.and.returnValue(PAGE_WIDE_SCOPE_DECISIONS);
-    personalization.isRenderDecisions.and.returnValue(true);
-    personalization.getViewName.and.returnValue(undefined);
+    personalizationDetails.isRenderDecisions.and.returnValue(true);
+    personalizationDetails.getViewName.and.returnValue(undefined);
 
     const onResponse = createOnResponseHandler({
       viewCache,
@@ -247,7 +253,7 @@ describe("Personalization::onResponseHandler", () => {
       showContainers
     });
 
-    const result = onResponse({ personalization, response });
+    const result = onResponse({ personalizationDetails, response });
 
     expect(viewCache.storeViews).not.toHaveBeenCalled();
     expect(showContainers).toHaveBeenCalled();

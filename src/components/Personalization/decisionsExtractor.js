@@ -32,42 +32,42 @@ const createDecision = (decision, items) => {
 };
 
 const splitDecisions = (decisions, schema) => {
-  const schemaDecisions = [];
-  const otherDecisions = [];
+  const domActionDecisions = [];
+  const nonDomActionDecisions = [];
 
   decisions.forEach(decision => {
     const { items = [] } = decision;
     const [matchedItems, nonMatchedItems] = splitItems(items, schema);
 
     if (isNonEmptyArray(matchedItems)) {
-      schemaDecisions.push(createDecision(decision, matchedItems));
+      domActionDecisions.push(createDecision(decision, matchedItems));
     }
 
     if (isNonEmptyArray(nonMatchedItems)) {
-      otherDecisions.push(createDecision(decision, nonMatchedItems));
+      nonDomActionDecisions.push(createDecision(decision, nonMatchedItems));
     }
   });
-  return { schemaDecisions, otherDecisions };
+  return { domActionDecisions, nonDomActionDecisions };
 };
 
 const extractDecisionsByScope = (decisions, scope) => {
-  const scopeDecisions = [];
-  const otherScopeDecisions = {};
+  const pageWideScopeDecisions = [];
+  const nonPageWideScopeDecisions = {};
 
   if (isNonEmptyArray(decisions)) {
     decisions.forEach(decision => {
       if (decision.scope === scope) {
-        scopeDecisions.push(decision);
+        pageWideScopeDecisions.push(decision);
       } else {
-        if (!otherScopeDecisions[decision.scope]) {
-          otherScopeDecisions[decision.scope] = [];
+        if (!nonPageWideScopeDecisions[decision.scope]) {
+          nonPageWideScopeDecisions[decision.scope] = [];
         }
-        otherScopeDecisions[decision.scope].push(decision);
+        nonPageWideScopeDecisions[decision.scope].push(decision);
       }
     });
   }
 
-  return { scopeDecisions, otherScopeDecisions };
+  return { pageWideScopeDecisions, nonPageWideScopeDecisions };
 };
 
 export default {

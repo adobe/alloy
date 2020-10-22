@@ -26,32 +26,32 @@ describe("Personalization::decisionsExtractor", () => {
     );
 
     const {
-      scopeDecisions,
-      otherScopeDecisions
+      pageWideScopeDecisions,
+      nonPageWideScopeDecisions
     } = decisionsExtractor.groupDecisionsByScope({
       decisions,
       scope: "__view__"
     });
-    expect(scopeDecisions).toEqual(
+    expect(pageWideScopeDecisions).toEqual(
       PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
     );
-    expect(otherScopeDecisions).toEqual({ cart: CART_VIEW_DECISIONS });
+    expect(nonPageWideScopeDecisions).toEqual({ cart: CART_VIEW_DECISIONS });
   });
 
   it("extracts decisions by schema", () => {
     const decisions = PAGE_WIDE_SCOPE_DECISIONS;
 
     const {
-      schemaDecisions,
-      otherDecisions
+      domActionDecisions,
+      nonDomActionDecisions
     } = decisionsExtractor.groupDecisionsBySchema({
       decisions,
       schema: DOM_ACTION
     });
-    expect(otherDecisions).toEqual(
+    expect(nonDomActionDecisions).toEqual(
       PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS
     );
-    expect(schemaDecisions).toEqual(
+    expect(domActionDecisions).toEqual(
       PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
     );
   });

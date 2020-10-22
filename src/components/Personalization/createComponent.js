@@ -39,16 +39,16 @@ export default ({
           return;
         }
 
-        const personalization = createPersonalizationDetails({
+        const personalizationDetails = createPersonalizationDetails({
           renderDecisions,
           decisionScopes,
           event,
           viewCache
         });
 
-        if (personalization.shouldFetchData()) {
+        if (personalizationDetails.shouldFetchData()) {
           pageLoadHandler({
-            personalization,
+            personalizationDetails,
             event,
             onResponse,
             onRequestFailure
@@ -56,8 +56,12 @@ export default ({
           return;
         }
 
-        if (personalization.shouldUseCachedData()) {
-          viewChangeHandler({ personalization, onResponse, onRequestFailure });
+        if (personalizationDetails.shouldUseCachedData()) {
+          viewChangeHandler({
+            personalizationDetails,
+            onResponse,
+            onRequestFailure
+          });
         }
       },
       onClick({ event, clickedElement }) {

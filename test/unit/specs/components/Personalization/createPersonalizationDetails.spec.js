@@ -33,7 +33,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     });
     const decisionScopes = ["test1", "test2"];
     const renderDecisions = true;
-    const personalization = createPersonalizationDetails({
+    const personalizationDetails = createPersonalizationDetails({
       renderDecisions,
       decisionScopes,
       event,
@@ -51,22 +51,24 @@ describe("Personalization::createPersonalizationDetails", () => {
       ],
       decisionScopes: expectedDecisionScopes
     };
-    const queryDetails = personalization.createQueryDetails();
+    const queryDetails = personalizationDetails.createQueryDetails();
 
-    expect(personalization.isRenderDecisions()).toEqual(true);
-    expect(personalization.hasScopes()).toEqual(true);
-    expect(personalization.getDecisionScopes()).toEqual(expectedDecisionScopes);
+    expect(personalizationDetails.isRenderDecisions()).toEqual(true);
+    expect(personalizationDetails.hasScopes()).toEqual(true);
+    expect(personalizationDetails.getDecisionScopes()).toEqual(
+      expectedDecisionScopes
+    );
     expect(queryDetails).toEqual(expectedQueryDetails);
-    expect(personalization.getViewName()).toEqual("cart");
-    expect(personalization.shouldFetchData()).toEqual(true);
-    expect(personalization.hasViewName()).toEqual(true);
-    expect(personalization.shouldUseCachedData()).toEqual(true);
+    expect(personalizationDetails.getViewName()).toEqual("cart");
+    expect(personalizationDetails.shouldFetchData()).toEqual(true);
+    expect(personalizationDetails.hasViewName()).toEqual(true);
+    expect(personalizationDetails.shouldUseCachedData()).toEqual(true);
   });
   it("should return false if renderDecisions is false", () => {
     const decisionScopes = [];
     const renderDecisions = false;
     event.toJSON.and.returnValue({ xdm: {} });
-    const personalization = createPersonalizationDetails({
+    const personalizationDetails = createPersonalizationDetails({
       renderDecisions,
       decisionScopes,
       event,
@@ -83,22 +85,24 @@ describe("Personalization::createPersonalizationDetails", () => {
       ],
       decisionScopes: expectedDecisionScopes
     };
-    const queryDetails = personalization.createQueryDetails();
+    const queryDetails = personalizationDetails.createQueryDetails();
 
-    expect(personalization.isRenderDecisions()).toEqual(false);
-    expect(personalization.hasScopes()).toEqual(false);
-    expect(personalization.getDecisionScopes()).toEqual(expectedDecisionScopes);
+    expect(personalizationDetails.isRenderDecisions()).toEqual(false);
+    expect(personalizationDetails.hasScopes()).toEqual(false);
+    expect(personalizationDetails.getDecisionScopes()).toEqual(
+      expectedDecisionScopes
+    );
     expect(queryDetails).toEqual(expectedQueryDetails);
-    expect(personalization.getViewName()).toEqual(undefined);
-    expect(personalization.shouldFetchData()).toEqual(true);
-    expect(personalization.hasViewName()).toEqual(false);
-    expect(personalization.shouldUseCachedData()).toEqual(false);
+    expect(personalizationDetails.getViewName()).toEqual(undefined);
+    expect(personalizationDetails.shouldFetchData()).toEqual(true);
+    expect(personalizationDetails.hasViewName()).toEqual(false);
+    expect(personalizationDetails.shouldUseCachedData()).toEqual(false);
   });
   it("should return true at shouldFetchData", () => {
     event.toJSON.and.returnValue({ xdm: {} });
     const decisionScopes = [];
     const renderDecisions = false;
-    const personalization = createPersonalizationDetails({
+    const personalizationDetails = createPersonalizationDetails({
       renderDecisions,
       decisionScopes,
       event,
@@ -116,15 +120,17 @@ describe("Personalization::createPersonalizationDetails", () => {
       ],
       decisionScopes: expectedDecisionScopes
     };
-    const queryDetails = personalization.createQueryDetails();
+    const queryDetails = personalizationDetails.createQueryDetails();
 
-    expect(personalization.isRenderDecisions()).toEqual(false);
-    expect(personalization.hasScopes()).toEqual(false);
-    expect(personalization.getDecisionScopes()).toEqual(expectedDecisionScopes);
+    expect(personalizationDetails.isRenderDecisions()).toEqual(false);
+    expect(personalizationDetails.hasScopes()).toEqual(false);
+    expect(personalizationDetails.getDecisionScopes()).toEqual(
+      expectedDecisionScopes
+    );
     expect(queryDetails).toEqual(expectedQueryDetails);
-    expect(personalization.getViewName()).toEqual(undefined);
-    expect(personalization.shouldFetchData()).toEqual(true);
-    expect(personalization.hasViewName()).toEqual(false);
-    expect(personalization.shouldUseCachedData()).toEqual(false);
+    expect(personalizationDetails.getViewName()).toEqual(undefined);
+    expect(personalizationDetails.shouldFetchData()).toEqual(true);
+    expect(personalizationDetails.hasViewName()).toEqual(false);
+    expect(personalizationDetails.shouldUseCachedData()).toEqual(false);
   });
 });

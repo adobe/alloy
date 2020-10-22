@@ -17,7 +17,7 @@ describe("Personalization::createPageLoadHandler", () => {
   let showContainers;
   let hideContainers;
   let mergeQuery;
-  let personalization;
+  let personalizationDetails;
   const config = {
     prehidingStyle: "body {opacity:0;}"
   };
@@ -28,7 +28,7 @@ describe("Personalization::createPageLoadHandler", () => {
   beforeEach(() => {
     responseHandler = jasmine.createSpy();
     mergeQuery = jasmine.createSpy();
-    personalization = jasmine.createSpyObj("personalization", [
+    personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
       "isRenderDecisions",
       "createQueryDetails"
     ]);
@@ -44,10 +44,10 @@ describe("Personalization::createPageLoadHandler", () => {
       hideContainers,
       mergeQuery
     });
-    personalization.isRenderDecisions.and.returnValue(true);
+    personalizationDetails.isRenderDecisions.and.returnValue(true);
 
     onPageLoad({
-      personalization,
+      personalizationDetails,
       event,
       onResponse,
       onRequestFailure
@@ -62,9 +62,9 @@ describe("Personalization::createPageLoadHandler", () => {
       hideContainers,
       mergeQuery
     });
-    personalization.isRenderDecisions.and.returnValue(false);
+    personalizationDetails.isRenderDecisions.and.returnValue(false);
     onPageLoad({
-      personalization,
+      personalizationDetails,
       event,
       onResponse,
       onRequestFailure
@@ -81,12 +81,12 @@ describe("Personalization::createPageLoadHandler", () => {
       hideContainers,
       mergeQuery
     });
-    personalization.isRenderDecisions.and.returnValue(false);
+    personalizationDetails.isRenderDecisions.and.returnValue(false);
     onResponse = callback => {
       callback(responseHandler);
     };
     onPageLoad({
-      personalization,
+      personalizationDetails,
       event,
       onResponse,
       onRequestFailure
@@ -103,12 +103,12 @@ describe("Personalization::createPageLoadHandler", () => {
       hideContainers,
       mergeQuery
     });
-    personalization.isRenderDecisions.and.returnValue(false);
+    personalizationDetails.isRenderDecisions.and.returnValue(false);
     onRequestFailure = callback => {
       callback(showContainers);
     };
     onPageLoad({
-      personalization,
+      personalizationDetails,
       event,
       onResponse,
       onRequestFailure

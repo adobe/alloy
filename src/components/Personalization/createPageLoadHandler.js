@@ -17,16 +17,16 @@ export default ({
   hideContainers,
   mergeQuery
 }) => {
-  return ({ personalization, event, onResponse, onRequestFailure }) => {
+  return ({ personalizationDetails, event, onResponse, onRequestFailure }) => {
     const { prehidingStyle } = config;
 
-    if (personalization.isRenderDecisions()) {
+    if (personalizationDetails.isRenderDecisions()) {
       hideContainers(prehidingStyle);
     }
-    mergeQuery(event, personalization.createQueryDetails());
+    mergeQuery(event, personalizationDetails.createQueryDetails());
 
     onResponse(({ response }) =>
-      responseHandler({ personalization, response })
+      responseHandler({ personalizationDetails, response })
     );
     onRequestFailure(() => {
       showContainers();

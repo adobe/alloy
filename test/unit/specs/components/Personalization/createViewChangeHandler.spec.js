@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import createViewChangeHandler from "../../../../../src/components/Personalization/createViewChangeHandler";
 
 describe("Personalization::createViewChangeHandler", () => {
-  let personalization;
+  let personalizationDetails;
   let viewCache;
   let onResponse = jasmine.createSpy();
   const onRequestFailure = jasmine.createSpy();
@@ -21,7 +21,7 @@ describe("Personalization::createViewChangeHandler", () => {
   const showContainers = jasmine.createSpy("showContainers");
 
   beforeEach(() => {
-    personalization = jasmine.createSpyObj("personalization", [
+    personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
       "isRenderDecisions",
       "getViewName"
     ]);
@@ -34,11 +34,11 @@ describe("Personalization::createViewChangeHandler", () => {
       viewCache,
       showContainers
     });
-    personalization.isRenderDecisions.and.returnValue(true);
-    personalization.getViewName.and.returnValue("cart");
+    personalizationDetails.isRenderDecisions.and.returnValue(true);
+    personalizationDetails.getViewName.and.returnValue("cart");
 
     viewChangeHandler({
-      personalization,
+      personalizationDetails,
       onResponse,
       onRequestFailure
     });
@@ -53,15 +53,15 @@ describe("Personalization::createViewChangeHandler", () => {
       viewCache,
       showContainers
     });
-    personalization.isRenderDecisions.and.returnValue(false);
-    personalization.getViewName.and.returnValue("cart");
+    personalizationDetails.isRenderDecisions.and.returnValue(false);
+    personalizationDetails.getViewName.and.returnValue("cart");
 
     onResponse = callback => {
       callback();
     };
 
     viewChangeHandler({
-      personalization,
+      personalizationDetails,
       onResponse,
       onRequestFailure
     });

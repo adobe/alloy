@@ -22,46 +22,49 @@ export default ({
   executeCachedViewDecisions,
   showContainers
 }) => {
-  return ({ personalization, response }) => {
+  return ({ personalizationDetails, response }) => {
     const unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
-    const viewName = personalization.getViewName();
+    const viewName = personalizationDetails.getViewName();
     if (unprocessedDecisions.length === 0) {
       showContainers();
       return { decisions: [] };
     }
 
     const {
-      schemaDecisions,
-      otherDecisions
+      domActionDecisions,
+      nonDomActionDecisions
     } = decisionsExtractor.groupDecisionsBySchema({
       decisions: unprocessedDecisions,
       schema: DOM_ACTION
     });
     const {
-      scopeDecisions,
-      otherScopeDecisions
+      pageWideScopeDecisions,
+      nonPageWideScopeDecisions
     } = decisionsExtractor.groupDecisionsByScope({
-      decisions: schemaDecisions,
+      decisions: domActionDecisions,
       scope: PAGE_WIDE_SCOPE
     });
 
-    if (!isEmptyObject(otherScopeDecisions)) {
-      viewCache.storeViews(otherScopeDecisions);
+    if (!isEmptyObject(nonPageWideScopeDecisions)) {
+      viewCache.storeViews(nonPageWideScopeDecisions);
     }
 
-    if (personalization.isRenderDecisions()) {
-      executeDecisions(scopeDecisions);
+    if (personalizationDetails.isRenderDecisions()) {
+      executeDecisions(pageWideScopeDecisions);
       if (viewName) {
         executeCachedViewDecisions({ viewName });
       }
       showContainers();
-      return { decisions: otherDecisions };
+      return { decisions: nonDomActionDecisions };
     }
 
-    const decisionsToBeReturned = [...scopeDecisions, ...otherDecisions];
+    const decisionsToBeReturned = [
+      ...pageWideScopeDecisions,
+      ...nonDomActionDecisions
+    ];
 
-    if (viewName && otherScopeDecisions[viewName]) {
-      decisionsToBeReturned.push(...otherScopeDecisions[viewName]);
+    if (viewName && nonPageWideScopeDecisions[viewName]) {
+      decisionsToBeReturned.push(...nonPageWideScopeDecisions[viewName]);
     }
 
     return {
