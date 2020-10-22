@@ -15,7 +15,7 @@ import createPersonalizationDetails from "./createPersonalizationDetails";
 
 export default ({
   logger,
-  pageLoadHandler,
+  fetchDataHandler,
   viewChangeHandler,
   onClickHandler,
   isAuthoringModeEnabled,
@@ -47,7 +47,7 @@ export default ({
         });
 
         if (personalizationDetails.shouldFetchData()) {
-          pageLoadHandler({
+          fetchDataHandler({
             personalizationDetails,
             event,
             onResponse,

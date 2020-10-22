@@ -17,7 +17,7 @@ import createCollect from "./createCollect";
 import createViewCollect from "./createViewCollect";
 import createExecuteDecisions from "./createExecuteDecisions";
 import { hideContainers, showContainers } from "./flicker";
-import createPageLoadHandler from "./createPageLoadHandler";
+import createFetchDataHandler from "./createFetchDataHandler";
 import collectClicks from "./dom-actions/clicks/collectClicks";
 import isAuthoringModeEnabled from "./utils/isAuthoringModeEnabled";
 import { mergeMeta, mergeQuery } from "./event";
@@ -59,7 +59,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     executeCachedViewDecisions,
     showContainers
   });
-  const pageLoadHandler = createPageLoadHandler({
+  const fetchDataHandler = createFetchDataHandler({
     config,
     responseHandler,
     hideContainers,
@@ -77,7 +77,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
   return createComponent({
     logger,
-    pageLoadHandler,
+    fetchDataHandler,
     viewChangeHandler,
     onClickHandler,
     isAuthoringModeEnabled,

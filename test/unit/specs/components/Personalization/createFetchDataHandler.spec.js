@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createPageLoadHandler from "../../../../../src/components/Personalization/createPageLoadHandler";
+import createFetchDataHandler from "../../../../../src/components/Personalization/createFetchDataHandler";
 
-describe("Personalization::createPageLoadHandler", () => {
+describe("Personalization::createFetchDataHandler", () => {
   let responseHandler;
   let showContainers;
   let hideContainers;
@@ -37,7 +37,7 @@ describe("Personalization::createPageLoadHandler", () => {
   });
 
   it("should hide containers if renderDecisions is true", () => {
-    const onPageLoad = createPageLoadHandler({
+    const fetchDataHandler = createFetchDataHandler({
       config,
       responseHandler,
       showContainers,
@@ -46,7 +46,7 @@ describe("Personalization::createPageLoadHandler", () => {
     });
     personalizationDetails.isRenderDecisions.and.returnValue(true);
 
-    onPageLoad({
+    fetchDataHandler({
       personalizationDetails,
       event,
       onResponse,
@@ -55,7 +55,7 @@ describe("Personalization::createPageLoadHandler", () => {
     expect(hideContainers).toHaveBeenCalled();
   });
   it("shouldn't hide containers if renderDecisions is false", () => {
-    const onPageLoad = createPageLoadHandler({
+    const fetchDataHandler = createFetchDataHandler({
       config,
       responseHandler,
       showContainers,
@@ -63,7 +63,7 @@ describe("Personalization::createPageLoadHandler", () => {
       mergeQuery
     });
     personalizationDetails.isRenderDecisions.and.returnValue(false);
-    onPageLoad({
+    fetchDataHandler({
       personalizationDetails,
       event,
       onResponse,
@@ -74,7 +74,7 @@ describe("Personalization::createPageLoadHandler", () => {
   });
 
   it("should trigger responseHandler at onResponse", () => {
-    const onPageLoad = createPageLoadHandler({
+    const fetchDataHandler = createFetchDataHandler({
       config,
       responseHandler,
       showContainers,
@@ -85,7 +85,7 @@ describe("Personalization::createPageLoadHandler", () => {
     onResponse = callback => {
       callback(responseHandler);
     };
-    onPageLoad({
+    fetchDataHandler({
       personalizationDetails,
       event,
       onResponse,
@@ -96,7 +96,7 @@ describe("Personalization::createPageLoadHandler", () => {
     expect(responseHandler).toHaveBeenCalled();
   });
   it("should trigger showContainers at onRequestFailure", () => {
-    const onPageLoad = createPageLoadHandler({
+    const fetchDataHandler = createFetchDataHandler({
       config,
       responseHandler,
       showContainers,
@@ -107,7 +107,7 @@ describe("Personalization::createPageLoadHandler", () => {
     onRequestFailure = callback => {
       callback(showContainers);
     };
-    onPageLoad({
+    fetchDataHandler({
       personalizationDetails,
       event,
       onResponse,

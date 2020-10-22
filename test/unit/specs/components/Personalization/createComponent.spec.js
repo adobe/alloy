@@ -14,7 +14,7 @@ import createComponent from "../../../../../src/components/Personalization/creat
 
 describe("Personalization", () => {
   let logger;
-  let pageLoadHandler;
+  let fetchDataHandler;
   let onClickHandler;
   let viewChangeHandler;
   let showContainers;
@@ -27,7 +27,7 @@ describe("Personalization", () => {
   const build = () => {
     personalizationComponent = createComponent({
       logger,
-      pageLoadHandler,
+      fetchDataHandler,
       viewChangeHandler,
       onClickHandler,
       isAuthoringModeEnabled,
@@ -45,7 +45,7 @@ describe("Personalization", () => {
       warn: jasmine.createSpy()
     };
     isAuthoringModeEnabled = jasmine.createSpy().and.returnValue(false);
-    pageLoadHandler = jasmine.createSpy();
+    fetchDataHandler = jasmine.createSpy();
     viewChangeHandler = jasmine.createSpy();
     onClickHandler = jasmine.createSpy();
     showContainers = jasmine.createSpy();
@@ -69,7 +69,7 @@ describe("Personalization", () => {
     );
     expect(isAuthoringModeEnabled).toHaveBeenCalled();
     expect(mergeQuery).toHaveBeenCalledWith(event, { enabled: false });
-    expect(pageLoadHandler).not.toHaveBeenCalled();
+    expect(fetchDataHandler).not.toHaveBeenCalled();
     expect(viewChangeHandler).not.toHaveBeenCalled();
     expect(onClickHandler).not.toHaveBeenCalled();
     expect(showContainers).not.toHaveBeenCalled();
@@ -86,7 +86,7 @@ describe("Personalization", () => {
     });
 
     expect(isAuthoringModeEnabled).toHaveBeenCalled();
-    expect(pageLoadHandler).toHaveBeenCalled();
+    expect(fetchDataHandler).toHaveBeenCalled();
     expect(viewChangeHandler).not.toHaveBeenCalled();
     expect(mergeQuery).not.toHaveBeenCalled();
     expect(onClickHandler).not.toHaveBeenCalled();
@@ -104,7 +104,7 @@ describe("Personalization", () => {
     });
 
     expect(isAuthoringModeEnabled).toHaveBeenCalled();
-    expect(pageLoadHandler).toHaveBeenCalled();
+    expect(fetchDataHandler).toHaveBeenCalled();
     expect(viewChangeHandler).not.toHaveBeenCalled();
     expect(mergeQuery).not.toHaveBeenCalled();
     expect(onClickHandler).not.toHaveBeenCalled();
@@ -125,7 +125,7 @@ describe("Personalization", () => {
     });
 
     expect(isAuthoringModeEnabled).toHaveBeenCalled();
-    expect(pageLoadHandler).not.toHaveBeenCalled();
+    expect(fetchDataHandler).not.toHaveBeenCalled();
     expect(viewChangeHandler).toHaveBeenCalled();
     expect(mergeQuery).not.toHaveBeenCalled();
     expect(onClickHandler).not.toHaveBeenCalled();
