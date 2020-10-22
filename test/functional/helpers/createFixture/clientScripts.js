@@ -14,11 +14,8 @@ import path from "path";
 import fs from "fs";
 import { ClientFunction } from "testcafe";
 
-const edgeEnv = process.env.EDGE_ENV || "int";
 const alloyEnv = process.env.ALLOY_ENV || "int";
 
-// eslint-disable-next-line no-console
-console.log("EDGE ENV:", edgeEnv);
 // eslint-disable-next-line no-console
 console.log("ALLOY ENV:", alloyEnv);
 
