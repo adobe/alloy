@@ -17,7 +17,13 @@ export default ({
   hideContainers,
   mergeQuery
 }) => {
-  return ({ personalizationDetails, event, onResponse, onRequestFailure }) => {
+  return ({
+    decisionsDeferred,
+    personalizationDetails,
+    event,
+    onResponse,
+    onRequestFailure
+  }) => {
     const { prehidingStyle } = config;
 
     if (personalizationDetails.isRenderDecisions()) {
@@ -26,9 +32,10 @@ export default ({
     mergeQuery(event, personalizationDetails.createQueryDetails());
 
     onResponse(({ response }) =>
-      responseHandler({ personalizationDetails, response })
+      responseHandler({ decisionsDeferred, personalizationDetails, response })
     );
     onRequestFailure(() => {
+      decisionsDeferred.reject();
       showContainers();
     });
   };

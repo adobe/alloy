@@ -14,15 +14,14 @@ import isNonEmptyArray from "../../utils/isNonEmptyArray";
 
 export default ({ viewCache, executeViewDecisions, collect }) => {
   return ({ viewName }) => {
-    const viewDecisions = viewCache.getView(viewName);
+    viewCache.getView(viewName).then(viewDecisions => {
+      if (isNonEmptyArray(viewDecisions)) {
+        executeViewDecisions(viewDecisions);
+        return;
+      }
+      const xdm = { web: { webPageDetails: { viewName } } };
 
-    if (isNonEmptyArray(viewDecisions)) {
-      executeViewDecisions(viewDecisions);
-      return;
-    }
-
-    const xdm = { web: { webPageDetails: { viewName } } };
-
-    collect({ meta: {}, xdm });
+      collect({ meta: {}, xdm });
+    });
   };
 };

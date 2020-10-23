@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createViewChangeHandler from "../../../../../src/components/Personalization/createViewChangeHandler";
+import { CART_VIEW_DECISIONS } from "./responsesMock/eventResponses";
 
 describe("Personalization::createViewChangeHandler", () => {
   let personalizationDetails;
@@ -48,6 +49,11 @@ describe("Personalization::createViewChangeHandler", () => {
   });
 
   it("should return cached views if renderDecisions is false", () => {
+    const promise = {
+      then: callback => callback(CART_VIEW_DECISIONS)
+    };
+    viewCache.getView.and.returnValue(promise);
+
     const viewChangeHandler = createViewChangeHandler({
       executeCachedViewDecisions,
       viewCache,

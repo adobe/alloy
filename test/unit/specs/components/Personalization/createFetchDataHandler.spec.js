@@ -18,14 +18,17 @@ describe("Personalization::createFetchDataHandler", () => {
   let hideContainers;
   let mergeQuery;
   let personalizationDetails;
+  let decisionsDeferred;
   const config = {
     prehidingStyle: "body {opacity:0;}"
   };
   let onResponse = jasmine.createSpy();
   let onRequestFailure = jasmine.createSpy();
   const event = {};
+  let response;
 
   beforeEach(() => {
+    response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
     responseHandler = jasmine.createSpy();
     mergeQuery = jasmine.createSpy();
     personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
@@ -34,6 +37,7 @@ describe("Personalization::createFetchDataHandler", () => {
     ]);
     hideContainers = jasmine.createSpy("hideContainers");
     showContainers = jasmine.createSpy("showContainers");
+    decisionsDeferred = jasmine.createSpyObj("decisionsDeferred", ["reject"]);
   });
 
   it("should hide containers if renderDecisions is true", () => {
@@ -47,6 +51,7 @@ describe("Personalization::createFetchDataHandler", () => {
     personalizationDetails.isRenderDecisions.and.returnValue(true);
 
     fetchDataHandler({
+      decisionsDeferred,
       personalizationDetails,
       event,
       onResponse,
@@ -64,6 +69,7 @@ describe("Personalization::createFetchDataHandler", () => {
     });
     personalizationDetails.isRenderDecisions.and.returnValue(false);
     fetchDataHandler({
+      decisionsDeferred,
       personalizationDetails,
       event,
       onResponse,
@@ -83,9 +89,10 @@ describe("Personalization::createFetchDataHandler", () => {
     });
     personalizationDetails.isRenderDecisions.and.returnValue(false);
     onResponse = callback => {
-      callback(responseHandler);
+      callback(response);
     };
     fetchDataHandler({
+      decisionsDeferred,
       personalizationDetails,
       event,
       onResponse,
@@ -105,9 +112,10 @@ describe("Personalization::createFetchDataHandler", () => {
     });
     personalizationDetails.isRenderDecisions.and.returnValue(false);
     onRequestFailure = callback => {
-      callback(showContainers);
+      callback();
     };
     fetchDataHandler({
+      decisionsDeferred,
       personalizationDetails,
       event,
       onResponse,
@@ -116,5 +124,6 @@ describe("Personalization::createFetchDataHandler", () => {
 
     expect(hideContainers).not.toHaveBeenCalled();
     expect(showContainers).toHaveBeenCalled();
+    expect(decisionsDeferred.reject).toHaveBeenCalled();
   });
 });

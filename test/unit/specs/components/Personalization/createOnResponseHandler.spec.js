@@ -36,13 +36,13 @@ describe("Personalization::onResponseHandler", () => {
   ];
   const pageWideScopeDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS;
 
-  let viewCache;
   let decisionsExtractor;
   let executeDecisions;
   let executeCachedViewDecisions;
   let showContainers;
   let response;
   let personalizationDetails;
+  let decisionsDeferred;
 
   beforeEach(() => {
     response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
@@ -54,12 +54,16 @@ describe("Personalization::onResponseHandler", () => {
       "groupDecisionsBySchema",
       "groupDecisionsByScope"
     ]);
-    viewCache = jasmine.createSpyObj("viewCache", ["storeViews"]);
+    decisionsDeferred = jasmine.createSpyObj("decisionsDeferred", [
+      "defer",
+      "reject",
+      "resolve"
+    ]);
+    executeDecisions = jasmine.createSpy("executeDecisions");
+    showContainers = jasmine.createSpy("showContainers");
     executeCachedViewDecisions = jasmine.createSpy(
       "executeCachedViewDecisions"
     );
-    executeDecisions = jasmine.createSpy("executeDecisions");
-    showContainers = jasmine.createSpy("showContainers");
   });
 
   it("should execute DOM ACTION decisions and return rest of decisions when renderDecisions is true", () => {
@@ -83,14 +87,17 @@ describe("Personalization::onResponseHandler", () => {
     personalizationDetails.isRenderDecisions.and.returnValue(true);
     personalizationDetails.getViewName.and.returnValue(undefined);
     const onResponse = createOnResponseHandler({
-      viewCache,
       decisionsExtractor,
       executeDecisions,
       executeCachedViewDecisions,
       showContainers
     });
 
-    const result = onResponse({ personalizationDetails, response });
+    const result = onResponse({
+      decisionsDeferred,
+      personalizationDetails,
+      response
+    });
 
     expect(decisionsExtractor.groupDecisionsBySchema).toHaveBeenCalledWith({
       decisions: unprocessedDecisions,
@@ -100,7 +107,7 @@ describe("Personalization::onResponseHandler", () => {
       decisions: domActionDecisions,
       scope: PAGE_WIDE_SCOPE
     });
-    expect(viewCache.storeViews).toHaveBeenCalledWith(
+    expect(decisionsDeferred.resolve).toHaveBeenCalledWith(
       nonPageWideScopeDecisions
     );
     expect(showContainers).toHaveBeenCalled();
@@ -130,15 +137,20 @@ describe("Personalization::onResponseHandler", () => {
     personalizationDetails.isRenderDecisions.and.returnValue(true);
     personalizationDetails.getViewName.and.returnValue("cart");
     const onResponse = createOnResponseHandler({
-      viewCache,
       decisionsExtractor,
       executeDecisions,
       executeCachedViewDecisions,
       showContainers
     });
 
-    const result = onResponse({ personalizationDetails, response });
-
+    const result = onResponse({
+      decisionsDeferred,
+      personalizationDetails,
+      response
+    });
+    expect(decisionsDeferred.resolve).toHaveBeenCalledWith(
+      nonPageWideScopeDecisions
+    );
     expect(decisionsExtractor.groupDecisionsBySchema).toHaveBeenCalledWith({
       decisions: unprocessedDecisions,
       schema: DOM_ACTION
@@ -147,9 +159,7 @@ describe("Personalization::onResponseHandler", () => {
       decisions: domActionDecisions,
       scope: PAGE_WIDE_SCOPE
     });
-    expect(viewCache.storeViews).toHaveBeenCalledWith(
-      nonPageWideScopeDecisions
-    );
+
     expect(showContainers).toHaveBeenCalled();
     expect(executeDecisions).toHaveBeenCalledWith(pageWideScopeDecisions);
     expect(executeCachedViewDecisions).toHaveBeenCalledWith({
@@ -185,22 +195,24 @@ describe("Personalization::onResponseHandler", () => {
     personalizationDetails.getViewName.and.returnValue("cart");
 
     const onResponse = createOnResponseHandler({
-      viewCache,
       decisionsExtractor,
       executeDecisions,
       executeCachedViewDecisions,
       showContainers
     });
 
-    const result = onResponse({ personalizationDetails, response });
+    const result = onResponse({
+      decisionsDeferred,
+      personalizationDetails,
+      response
+    });
 
-    expect(viewCache.storeViews).toHaveBeenCalledWith(
-      nonPageWideScopeDecisions
-    );
     expect(showContainers).not.toHaveBeenCalled();
     expect(executeDecisions).not.toHaveBeenCalled();
     expect(executeCachedViewDecisions).not.toHaveBeenCalled();
-
+    expect(decisionsDeferred.resolve).toHaveBeenCalledWith(
+      nonPageWideScopeDecisions
+    );
     expect(result).toEqual(expectedResult);
   });
 
@@ -213,14 +225,17 @@ describe("Personalization::onResponseHandler", () => {
     personalizationDetails.getViewName.and.returnValue("cart");
 
     const onResponse = createOnResponseHandler({
-      viewCache,
       decisionsExtractor,
       executeDecisions,
       executeCachedViewDecisions,
       showContainers
     });
-    const result = onResponse({ personalizationDetails, response });
-
+    const result = onResponse({
+      decisionsDeferred,
+      personalizationDetails,
+      response
+    });
+    expect(decisionsDeferred.resolve).toHaveBeenCalledWith({});
     expect(showContainers).toHaveBeenCalled();
     expect(decisionsExtractor.groupDecisionsBySchema).not.toHaveBeenCalled();
     expect(decisionsExtractor.groupDecisionsByScope).not.toHaveBeenCalled();
@@ -246,19 +261,22 @@ describe("Personalization::onResponseHandler", () => {
     personalizationDetails.getViewName.and.returnValue(undefined);
 
     const onResponse = createOnResponseHandler({
-      viewCache,
       decisionsExtractor,
       executeDecisions,
       executeCachedViewDecisions,
       showContainers
     });
 
-    const result = onResponse({ personalizationDetails, response });
+    const result = onResponse({
+      decisionsDeferred,
+      personalizationDetails,
+      response
+    });
 
-    expect(viewCache.storeViews).not.toHaveBeenCalled();
     expect(showContainers).toHaveBeenCalled();
     expect(executeDecisions).toHaveBeenCalledWith(pageWideScopeDecisions);
     expect(executeCachedViewDecisions).not.toHaveBeenCalled();
+    expect(decisionsDeferred.resolve).toHaveBeenCalledWith({});
     expect(result).toEqual(expectedResult);
   });
 });

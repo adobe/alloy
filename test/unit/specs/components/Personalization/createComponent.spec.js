@@ -50,7 +50,10 @@ describe("Personalization", () => {
     onClickHandler = jasmine.createSpy();
     showContainers = jasmine.createSpy();
     mergeQuery = jasmine.createSpy();
-    viewCache = jasmine.createSpyObj("viewCache", ["isInitialized"]);
+    viewCache = jasmine.createSpyObj("viewCache", [
+      "isInitialized",
+      "storeViews"
+    ]);
   });
 
   it("shouldn't do anything since authoringMode is enabled", () => {
@@ -73,6 +76,7 @@ describe("Personalization", () => {
     expect(viewChangeHandler).not.toHaveBeenCalled();
     expect(onClickHandler).not.toHaveBeenCalled();
     expect(showContainers).not.toHaveBeenCalled();
+    expect(viewCache.storeViews).not.toHaveBeenCalled();
   });
 
   it("should trigger pageLoad if there are decisionScopes", () => {
@@ -90,6 +94,7 @@ describe("Personalization", () => {
     expect(viewChangeHandler).not.toHaveBeenCalled();
     expect(mergeQuery).not.toHaveBeenCalled();
     expect(onClickHandler).not.toHaveBeenCalled();
+    expect(viewCache.storeViews).toHaveBeenCalled();
   });
   it("should trigger pageLoad if cache is not initialized", () => {
     build();
@@ -108,6 +113,7 @@ describe("Personalization", () => {
     expect(viewChangeHandler).not.toHaveBeenCalled();
     expect(mergeQuery).not.toHaveBeenCalled();
     expect(onClickHandler).not.toHaveBeenCalled();
+    expect(viewCache.storeViews).toHaveBeenCalled();
   });
   it("should trigger viewHandler if cache is initialized and viewName is provided", () => {
     build();
@@ -129,6 +135,7 @@ describe("Personalization", () => {
     expect(viewChangeHandler).toHaveBeenCalled();
     expect(mergeQuery).not.toHaveBeenCalled();
     expect(onClickHandler).not.toHaveBeenCalled();
+    expect(viewCache.storeViews).not.toHaveBeenCalled();
   });
   it("should trigger onClickHandler at onClick", () => {
     build();

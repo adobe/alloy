@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createViewCacheManager from "../../../../../src/components/Personalization/createViewCacheManager";
+import { defer } from "../../../../../src/utils";
 
 describe("Personalization::createCacheManager", () => {
   const viewDecisions = {
@@ -37,11 +38,16 @@ describe("Personalization::createCacheManager", () => {
 
   it("stores and gets the decisions based on a viewName", () => {
     const viewCacheManager = createViewCacheManager();
-    viewCacheManager.storeViews(viewDecisions);
-    const cartDecisions = viewCacheManager.getView("cart");
-    const homeDecisions = viewCacheManager.getView("home");
 
-    expect(cartDecisions.length).toEqual(1);
-    expect(homeDecisions.length).toEqual(2);
+    const decisionsDeferred = defer();
+    viewCacheManager.storeViews(decisionsDeferred.promise);
+    decisionsDeferred.resolve(viewDecisions);
+
+    viewCacheManager.getView("cart").then(decisions => {
+      expect(decisions.length).toEqual(1);
+    });
+    viewCacheManager.getView("home").then(decisions => {
+      expect(decisions.length).toEqual(2);
+    });
   });
 });

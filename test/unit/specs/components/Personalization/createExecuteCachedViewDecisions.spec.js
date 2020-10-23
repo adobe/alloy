@@ -13,17 +13,22 @@ import createExecuteCachedViewDecisions from "../../../../../src/components/Pers
 import { CART_VIEW_DECISIONS } from "./responsesMock/eventResponses";
 
 describe("Personalization::createExecuteCachedViewDecisions", () => {
-  const viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
+  let viewCache;
   let executeViewDecisions;
   let collect;
 
   beforeEach(() => {
-    executeViewDecisions = jasmine.createSpy();
+    viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
+    executeViewDecisions = jasmine.createSpy("executeViewDecisions");
     collect = jasmine.createSpy();
   });
 
   it("executes view decisions", () => {
-    viewCache.getView.and.returnValue(CART_VIEW_DECISIONS);
+    const promise = {
+      then: callback => callback(CART_VIEW_DECISIONS)
+    };
+    viewCache.getView.and.returnValue(promise);
+
     const executeCachedViewDecisions = createExecuteCachedViewDecisions({
       viewCache,
       executeViewDecisions,
@@ -31,13 +36,16 @@ describe("Personalization::createExecuteCachedViewDecisions", () => {
     });
     const viewName = "cart";
     executeCachedViewDecisions({ viewName });
-
     expect(viewCache.getView).toHaveBeenCalledWith(viewName);
     expect(executeViewDecisions).toHaveBeenCalledWith(CART_VIEW_DECISIONS);
   });
 
   it("sends a collect call when no decisions in cache for a specific view", () => {
-    viewCache.getView.and.returnValue([]);
+    const promise = {
+      then: callback => callback([])
+    };
+    viewCache.getView.and.returnValue(promise);
+
     const executeCachedViewDecisions = createExecuteCachedViewDecisions({
       viewCache,
       executeViewDecisions,

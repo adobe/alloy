@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop } from "../../utils";
+import { noop, defer } from "../../utils";
 import createPersonalizationDetails from "./createPersonalizationDetails";
 
 export default ({
@@ -47,7 +47,12 @@ export default ({
         });
 
         if (personalizationDetails.shouldFetchData()) {
+          const decisionsDeferred = defer();
+
+          viewCache.storeViews(decisionsDeferred.promise);
+
           fetchDataHandler({
+            decisionsDeferred,
             personalizationDetails,
             event,
             onResponse,

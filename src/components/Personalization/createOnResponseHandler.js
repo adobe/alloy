@@ -16,17 +16,17 @@ import PAGE_WIDE_SCOPE from "./constants/scope";
 const DECISIONS_HANDLE = "personalization:decisions";
 
 export default ({
-  viewCache,
   decisionsExtractor,
   executeDecisions,
   executeCachedViewDecisions,
   showContainers
 }) => {
-  return ({ personalizationDetails, response }) => {
+  return ({ decisionsDeferred, personalizationDetails, response }) => {
     const unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
     const viewName = personalizationDetails.getViewName();
     if (unprocessedDecisions.length === 0) {
       showContainers();
+      decisionsDeferred.resolve({});
       return { decisions: [] };
     }
 
@@ -45,8 +45,10 @@ export default ({
       scope: PAGE_WIDE_SCOPE
     });
 
-    if (!isEmptyObject(nonPageWideScopeDecisions)) {
-      viewCache.storeViews(nonPageWideScopeDecisions);
+    if (isEmptyObject(nonPageWideScopeDecisions)) {
+      decisionsDeferred.resolve({});
+    } else {
+      decisionsDeferred.resolve(nonPageWideScopeDecisions);
     }
 
     if (personalizationDetails.isRenderDecisions()) {
@@ -67,8 +69,6 @@ export default ({
       decisionsToBeReturned.push(...nonPageWideScopeDecisions[viewName]);
     }
 
-    return {
-      decisions: decisionsToBeReturned
-    };
+    return { decisions: decisionsToBeReturned };
   };
 };

@@ -53,7 +53,6 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     collect: viewCollect
   });
   const responseHandler = createOnResponseHandler({
-    viewCache,
     decisionsExtractor,
     executeDecisions,
     executeCachedViewDecisions,

@@ -12,17 +12,15 @@ governing permissions and limitations under the License.
 
 export default ({ executeCachedViewDecisions, viewCache, showContainers }) => {
   return ({ personalizationDetails, onResponse, onRequestFailure }) => {
+    const viewName = personalizationDetails.getViewName();
+
     if (personalizationDetails.isRenderDecisions()) {
-      executeCachedViewDecisions({
-        viewName: personalizationDetails.getViewName()
-      });
+      executeCachedViewDecisions({ viewName });
       return;
     }
 
     onResponse(() => {
-      return {
-        decisions: viewCache.getView(personalizationDetails.getViewName())
-      };
+      return viewCache.getView(viewName).then(decisions => ({ decisions }));
     });
 
     onRequestFailure(() => {
