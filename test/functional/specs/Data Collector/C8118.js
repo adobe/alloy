@@ -33,6 +33,7 @@ test("Test C8118: Load page with link. Click link. Verify event.", async () => {
 
   await t.click(Selector("#alloy-link-test"));
   await t.expect(getLocation()).contains("blank.html");
+  await t.expect(networkLogger.edgeCollectEndpointLogs.requests.length).eql(1);
   const request = networkLogger.edgeCollectEndpointLogs.requests[0];
   const requestBody = JSON.parse(request.request.body);
   const eventXdm = requestBody.events[0].xdm;
