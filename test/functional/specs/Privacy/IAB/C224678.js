@@ -52,7 +52,8 @@ const sendEventWithConsentError = ClientFunction(() =>
 
 const sendEvent = ClientFunction(() => window.alloy("sendEvent"));
 
-test("Test C224678: Passing a negative Consent in the sendEvent command", async () => {
+// TODO: re-enable this test when Konductor fixes the issue. Konductor is returning more payloads than expected.
+test.skip("Test C224678: Passing a negative Consent in the sendEvent command", async () => {
   await configureAlloyInstance("alloy", config);
   const errorMessage = await sendEventWithConsentError();
 
