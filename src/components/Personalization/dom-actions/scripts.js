@@ -25,6 +25,10 @@ export const getInlineScripts = fragment => {
   const scripts = selectNodes(SCRIPT, fragment);
   const result = [];
   const { length } = scripts;
+  const nonce = getNonce();
+  const attributes = {
+    ...(nonce && { nonce })
+  };
 
   /* eslint-disable no-continue */
   for (let i = 0; i < length; i += 1) {
@@ -39,11 +43,6 @@ export const getInlineScripts = fragment => {
     if (!textContent) {
       continue;
     }
-
-    const nonce = getNonce();
-    const attributes = {
-      ...(nonce && { nonce })
-    };
 
     result.push(createNode(SCRIPT, attributes, { textContent }));
   }
