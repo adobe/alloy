@@ -169,9 +169,14 @@ const injectAlloyDuringTestForInt = ClientFunction(
  */
 const injectAlloyDuringTestForProd = ClientFunction(
   () => {
-    const scriptElement = document.createElement("script");
-    scriptElement.src = remoteAlloyLibraryUrl;
-    document.getElementsByTagName("head")[0].appendChild(scriptElement);
+    return new Promise(resolve => {
+      const scriptElement = document.createElement("script");
+      scriptElement.src = remoteAlloyLibraryUrl;
+      scriptElement.addEventListener("load", () => {
+        resolve();
+      });
+      document.getElementsByTagName("head")[0].appendChild(scriptElement);
+    });
   },
   {
     dependencies: {

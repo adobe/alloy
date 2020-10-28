@@ -63,28 +63,14 @@ test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
   await t.expect(consentCookieValue).ok("No consent cookie found.");
   await t.expect(consentCookieValue).eql("general=in");
 
-  // 2. The set-consent response payload contains the consent handle in XDM format
-  const consentHandle = response.getPayloadsByType("privacy:consent");
-
-  await t.expect(consentHandle.length).gte(0);
-  await t.expect(consentHandle[0]).eql({
-    consentStandard: "IAB TCF",
-    consentStandardVersion: "2.0",
-    consentStringValue: "CO052kIO052kIDGAMBFRACBgAIAAAAAAAIYgEawAQEagAAAA",
-    containsPersonalData: false,
-    gdprApplies: true
-  });
-
-  // 3. The ECID should exist in the response payload as well, if queried
+  // 2. The ECID should exist in the response payload as well, if queried
   const identityHandle = response.getPayloadsByType("identity:result");
   await t.expect(identityHandle.length).eql(2);
 
   // Event calls going forward should be Opted-Out because AAM opts out consents with no purpose 10.
   const errorMessage = await getErrorMessageFromSendEvent();
 
-  await t
-    .expect(errorMessage)
-    .contains("[Code EXEG:0] User has opted out of all advertising solutions");
+  await t.expect(errorMessage).contains("EXEG-0301-403");
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 403);
