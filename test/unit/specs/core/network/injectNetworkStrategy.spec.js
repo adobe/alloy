@@ -31,17 +31,9 @@ const createMockServer = ({ responseCode, responseBody } = {}) => {
 // versions. If we ran the below code first, the native methods would be used
 // instead of the mocks because of how we pull the fetch and XMLHttpRequest
 // methods off window both in the code below and inside injectNetworkStrategy.
-const createNetworkStrategy = ({ simulateWindowWithoutFetch }) => {
-  let testingWindow = window;
-
-  if (simulateWindowWithoutFetch) {
-    testingWindow = {
-      XMLHttpRequest: window.XMLHttpRequest
-    };
-  }
-
+const createNetworkStrategy = () => {
   return injectNetworkStrategy({
-    window: testingWindow,
+    window,
     logger: console
   });
 };
@@ -54,108 +46,85 @@ const createNetworkStrategy = ({ simulateWindowWithoutFetch }) => {
 describe("injectNetworkStrategy", () => {
   const requestBody = JSON.stringify({ id: "myrequest" });
 
-  const scenarios = [
-    {
-      description: "window with fetch support",
-      simulateWindowWithoutFetch: true
-    },
-    {
-      description: "window without fetch support",
-      simulateWindowWithoutFetch: false
-    }
-  ];
-
-  scenarios.forEach(({ description, simulateWindowWithoutFetch }) => {
-    describe(description, () => {
-      [200].forEach(responseCode => {
-        it(`handles successful response code ${responseCode}`, () => {
-          const server = createMockServer({
-            responseCode: 200,
-            responseBody: "mybod"
-          });
-          const networkStrategy = createNetworkStrategy({
-            simulateWindowWithoutFetch
-          });
-
-          return networkStrategy({
-            url: "http://localhost:1080/myapi",
-            body: requestBody
-          }).then(result => {
-            server.shutdown();
-            expect(result).toEqual({
-              status: 200,
-              body: "mybod"
-            });
-          });
-        });
+  [200].forEach(responseCode => {
+    it(`handles successful response code ${responseCode}`, () => {
+      const server = createMockServer({
+        responseCode: 200,
+        responseBody: "mybod"
       });
+      const networkStrategy = createNetworkStrategy();
 
-      it("handles successful response code 204 (no content)", () => {
-        const server = createMockServer({
-          responseCode: 204
+      return networkStrategy({
+        url: "http://localhost:1080/myapi",
+        body: requestBody
+      }).then(result => {
+        server.shutdown();
+        expect(result).toEqual({
+          status: 200,
+          body: "mybod"
         });
-        const networkStrategy = createNetworkStrategy({
-          simulateWindowWithoutFetch
-        });
-
-        return networkStrategy({
-          url: "http://localhost:1080/myapi",
-          body: requestBody
-        }).then(result => {
-          server.shutdown();
-          expect(result).toEqual({
-            status: 204,
-            body: ""
-          });
-        });
-      });
-
-      [301, 400, 403, 500].forEach(responseCode => {
-        it(`handles error response code ${responseCode}`, () => {
-          const server = createMockServer({
-            responseCode,
-            responseBody: "mybod"
-          });
-          const networkStrategy = createNetworkStrategy({
-            simulateWindowWithoutFetch
-          });
-
-          return networkStrategy({
-            url: "http://localhost:1080/myapi",
-            body: requestBody
-          }).then(result => {
-            server.shutdown();
-            expect(result).toEqual({
-              status: responseCode,
-              body: "mybod"
-            });
-          });
-        });
-      });
-
-      it("handles a dropped connection", () => {
-        const server = createMockServer();
-        const networkStrategy = createNetworkStrategy({
-          simulateWindowWithoutFetch
-        });
-
-        // When a network connection is dropped, an error is thrown by the
-        // browser, which then bubbles up through our networkStrategy module.
-        // While we can't technically simulate a dropped connection
-        // using Mirage, we can try to hit an endpoint that hasn't been
-        // configured on our Mirage server, which similarly results in an
-        // error being thrown.
-        return networkStrategy({
-          url: "http://localhost:1080/unconfuredendpoint",
-          body: requestBody
-        })
-          .then(fail)
-          .catch(error => {
-            server.shutdown();
-            expect(error).toBeDefined();
-          });
       });
     });
+  });
+
+  it("handles successful response code 204 (no content)", () => {
+    const server = createMockServer({
+      responseCode: 204
+    });
+    const networkStrategy = createNetworkStrategy();
+
+    return networkStrategy({
+      url: "http://localhost:1080/myapi",
+      body: requestBody
+    }).then(result => {
+      server.shutdown();
+      expect(result).toEqual({
+        status: 204,
+        body: ""
+      });
+    });
+  });
+
+  [301, 400, 403, 500].forEach(responseCode => {
+    it(`handles error response code ${responseCode}`, () => {
+      const server = createMockServer({
+        responseCode,
+        responseBody: "mybod"
+      });
+      const networkStrategy = createNetworkStrategy();
+
+      return networkStrategy({
+        url: "http://localhost:1080/myapi",
+        body: requestBody
+      }).then(result => {
+        server.shutdown();
+        expect(result).toEqual({
+          status: responseCode,
+          body: "mybod"
+        });
+      });
+    });
+  });
+
+  it("handles a dropped connection", () => {
+    const server = createMockServer();
+    const networkStrategy = createNetworkStrategy();
+
+    // When a network connection is dropped, an error is thrown by the
+    // browser, which then bubbles up through our networkStrategy module.
+    // While we can't technically simulate a dropped connection
+    // using Mirage, we can try to hit an endpoint that hasn't been
+    // configured on our Mirage server, which similarly results in an
+    // error being thrown.
+    return networkStrategy({
+      url: "http://localhost:1080/unconfuredendpoint",
+      body: requestBody
+    })
+      .then(fail)
+      .catch(error => {
+        server.shutdown();
+        expect(error).toBeDefined();
+      });
   });
 
   // We don't have tests for sendBeacon because Mirage (actually, the Pretender
