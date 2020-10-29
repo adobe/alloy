@@ -60,9 +60,11 @@ test(`Test ${TEST_ID}: A nonce attribute should be added to injected script tags
   // This event should result in Personalization component injecting a script tag
   await triggerAlloyEvent();
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  // Verify that the returned script tag has been injected by Personalization
   await t
     .expect(elementWithIdExist(TEST_ID))
     .ok(`Could not find element with id ${TEST_ID}`);
+  // Verify that the script tag with nonce attr was allowed to execute by the CSP
   await consoleLogger.log.expectMessageMatching(
     new RegExp(`${TEST_ID} SCRIPT INJECTION CSP NONCE TEST`)
   );

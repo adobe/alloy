@@ -61,6 +61,7 @@ test(`Test ${TEST_ID}: A nonce attribute should be added to injected style tags 
   // This event should result in Personalization component injecting a style tag
   await triggerAlloyEvent();
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  // Verify that the returned style tag with nonce attr was injected by Personalization
   await t
     .expect(testStyleApplied())
     .ok(`Header style (opacity=0.5) was not applied`);
