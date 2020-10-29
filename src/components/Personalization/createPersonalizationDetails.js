@@ -19,15 +19,6 @@ import {
   REDIRECT_ITEM
 } from "./constants/schema";
 
-const getScopes = decisionScopes => {
-  const scopes = [...decisionScopes];
-
-  if (!includes(scopes, PAGE_WIDE_SCOPE)) {
-    scopes.push(PAGE_WIDE_SCOPE);
-  }
-
-  return scopes;
-};
 const getViewName = xdm => {
   if (!xdm) {
     return undefined;
@@ -55,9 +46,6 @@ export default ({ renderDecisions, decisionScopes, event, viewCache }) => {
     isRenderDecisions() {
       return renderDecisions;
     },
-    getDecisionScopes() {
-      return getScopes(decisionScopes);
-    },
     getViewName() {
       return viewName;
     },
@@ -68,27 +56,29 @@ export default ({ renderDecisions, decisionScopes, event, viewCache }) => {
       return viewName !== undefined;
     },
     createQueryDetails() {
-      const schemas = [
-        HTML_CONTENT_ITEM,
-        JSON_CONTENT_ITEM,
-        REDIRECT_ITEM,
-        DOM_ACTION
-      ];
+      const scopes = [...decisionScopes];
+      if (!this.isCacheInitialized()) {
+        if (!includes(scopes, PAGE_WIDE_SCOPE)) {
+          scopes.push(PAGE_WIDE_SCOPE);
+        }
+      }
+
+      const schemas = [HTML_CONTENT_ITEM, JSON_CONTENT_ITEM, REDIRECT_ITEM];
+
+      if (includes(scopes, PAGE_WIDE_SCOPE)) {
+        schemas.push(DOM_ACTION);
+      }
 
       return {
         schemas,
-        decisionScopes: getScopes(decisionScopes)
+        decisionScopes: scopes
       };
     },
     isCacheInitialized() {
       return viewCache.isInitialized();
     },
     shouldFetchData() {
-      return (
-        this.hasScopes() ||
-        !this.isCacheInitialized() ||
-        (!this.hasViewName() && this.isRenderDecisions())
-      );
+      return this.hasScopes() || !this.isCacheInitialized();
     },
     shouldUseCachedData() {
       return this.hasViewName() && this.isCacheInitialized();

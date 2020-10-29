@@ -27,7 +27,126 @@ describe("Personalization::createPersonalizationDetails", () => {
     viewCache = jasmine.createSpyObj("viewCache", ["getView", "isInitialized"]);
   });
 
-  it("should return true if renderDecisions is true", () => {
+  it("should fetch data when no cache, renderDecisions is true, no viewName and decisionScopes (in non SPA world)", () => {
+    const decisionScopes = [];
+    const renderDecisions = true;
+    event.toJSON.and.returnValue({ xdm: {} });
+    const personalizationDetails = createPersonalizationDetails({
+      renderDecisions,
+      decisionScopes,
+      event,
+      viewCache
+    });
+    viewCache.isInitialized.and.returnValue(false);
+    const expectedDecisionScopes = [PAGE_WIDE_SCOPE];
+    const expectedQueryDetails = {
+      schemas: [
+        HTML_CONTENT_ITEM,
+        JSON_CONTENT_ITEM,
+        REDIRECT_ITEM,
+        DOM_ACTION
+      ],
+      decisionScopes: expectedDecisionScopes
+    };
+    const queryDetails = personalizationDetails.createQueryDetails();
+
+    expect(personalizationDetails.isRenderDecisions()).toEqual(true);
+    expect(personalizationDetails.hasScopes()).toEqual(false);
+    expect(queryDetails).toEqual(expectedQueryDetails);
+    expect(personalizationDetails.getViewName()).toEqual(undefined);
+    expect(personalizationDetails.shouldFetchData()).toEqual(true);
+    expect(personalizationDetails.hasViewName()).toEqual(false);
+    expect(personalizationDetails.shouldUseCachedData()).toEqual(false);
+  });
+  it("should fetch data when no cache, renderDecisions is false, no viewName and decisionScopes is empty", () => {
+    const decisionScopes = [];
+    const renderDecisions = false;
+    event.toJSON.and.returnValue({ xdm: {} });
+    const personalizationDetails = createPersonalizationDetails({
+      renderDecisions,
+      decisionScopes,
+      event,
+      viewCache
+    });
+    viewCache.isInitialized.and.returnValue(false);
+    const expectedDecisionScopes = [PAGE_WIDE_SCOPE];
+    const expectedQueryDetails = {
+      schemas: [
+        HTML_CONTENT_ITEM,
+        JSON_CONTENT_ITEM,
+        REDIRECT_ITEM,
+        DOM_ACTION
+      ],
+      decisionScopes: expectedDecisionScopes
+    };
+    const queryDetails = personalizationDetails.createQueryDetails();
+
+    expect(personalizationDetails.isRenderDecisions()).toEqual(false);
+    expect(personalizationDetails.hasScopes()).toEqual(false);
+    expect(queryDetails).toEqual(expectedQueryDetails);
+    expect(personalizationDetails.getViewName()).toEqual(undefined);
+    expect(personalizationDetails.shouldFetchData()).toEqual(true);
+    expect(personalizationDetails.hasViewName()).toEqual(false);
+    expect(personalizationDetails.shouldUseCachedData()).toEqual(false);
+  });
+  it("should fetch data when no cache, renderDecisions is false, no viewName and decisionScopes is not empty", () => {
+    const decisionScopes = ["test1"];
+    const renderDecisions = false;
+    event.toJSON.and.returnValue({ xdm: {} });
+    const personalizationDetails = createPersonalizationDetails({
+      renderDecisions,
+      decisionScopes,
+      event,
+      viewCache
+    });
+    viewCache.isInitialized.and.returnValue(false);
+    const expectedDecisionScopes = ["test1", "__view__"];
+    const expectedQueryDetails = {
+      schemas: [
+        HTML_CONTENT_ITEM,
+        JSON_CONTENT_ITEM,
+        REDIRECT_ITEM,
+        DOM_ACTION
+      ],
+      decisionScopes: expectedDecisionScopes
+    };
+    const queryDetails = personalizationDetails.createQueryDetails();
+
+    expect(personalizationDetails.isRenderDecisions()).toEqual(false);
+    expect(personalizationDetails.hasScopes()).toEqual(true);
+    expect(queryDetails).toEqual(expectedQueryDetails);
+    expect(personalizationDetails.getViewName()).toEqual(undefined);
+    expect(personalizationDetails.shouldFetchData()).toEqual(true);
+    expect(personalizationDetails.hasViewName()).toEqual(false);
+    expect(personalizationDetails.shouldUseCachedData()).toEqual(false);
+  });
+  it("should fetch data when cache initialized, renderDecisions is false, no viewName, and decisionScopes is not empty", () => {
+    const decisionScopes = ["test1"];
+    const renderDecisions = false;
+    event.toJSON.and.returnValue({ xdm: {} });
+    const personalizationDetails = createPersonalizationDetails({
+      renderDecisions,
+      decisionScopes,
+      event,
+      viewCache
+    });
+    viewCache.isInitialized.and.returnValue(true);
+    const expectedDecisionScopes = ["test1"];
+    const expectedQueryDetails = {
+      schemas: [HTML_CONTENT_ITEM, JSON_CONTENT_ITEM, REDIRECT_ITEM],
+      decisionScopes: expectedDecisionScopes
+    };
+    const queryDetails = personalizationDetails.createQueryDetails();
+
+    expect(personalizationDetails.isRenderDecisions()).toEqual(false);
+    expect(personalizationDetails.hasScopes()).toEqual(true);
+    expect(queryDetails).toEqual(expectedQueryDetails);
+    expect(personalizationDetails.getViewName()).toEqual(undefined);
+    expect(personalizationDetails.shouldFetchData()).toEqual(true);
+    expect(personalizationDetails.hasViewName()).toEqual(false);
+    expect(personalizationDetails.shouldUseCachedData()).toEqual(false);
+  });
+  it("should fetch data when cache initialized, renderDecisions is true and decisionScopes is not empty and viewName exist", () => {
     event.toJSON.and.returnValue({
       xdm: { web: { webPageDetails: { viewName: "cart" } } }
     });
@@ -41,7 +160,115 @@ describe("Personalization::createPersonalizationDetails", () => {
     });
     viewCache.isInitialized.and.returnValue(true);
 
-    const expectedDecisionScopes = ["test1", "test2", PAGE_WIDE_SCOPE];
+    const expectedDecisionScopes = ["test1", "test2"];
+    const expectedQueryDetails = {
+      schemas: [HTML_CONTENT_ITEM, JSON_CONTENT_ITEM, REDIRECT_ITEM],
+      decisionScopes: expectedDecisionScopes
+    };
+    const queryDetails = personalizationDetails.createQueryDetails();
+
+    expect(personalizationDetails.isRenderDecisions()).toEqual(true);
+    expect(personalizationDetails.hasScopes()).toEqual(true);
+    expect(queryDetails).toEqual(expectedQueryDetails);
+    expect(personalizationDetails.getViewName()).toEqual("cart");
+    expect(personalizationDetails.shouldFetchData()).toEqual(true);
+    expect(personalizationDetails.hasViewName()).toEqual(true);
+  });
+  it("should do nothing when cache is initialized, renderDecisions true, no viewName and decisionScopes is empty", () => {
+    event.toJSON.and.returnValue({ xdm: {} });
+    const decisionScopes = [];
+    const renderDecisions = true;
+    const personalizationDetails = createPersonalizationDetails({
+      renderDecisions,
+      decisionScopes,
+      event,
+      viewCache
+    });
+    viewCache.isInitialized.and.returnValue(true);
+
+    expect(personalizationDetails.isRenderDecisions()).toEqual(true);
+    expect(personalizationDetails.hasScopes()).toEqual(false);
+    expect(personalizationDetails.getViewName()).toEqual(undefined);
+    expect(personalizationDetails.shouldFetchData()).toEqual(false);
+    expect(personalizationDetails.hasViewName()).toEqual(false);
+    expect(personalizationDetails.shouldUseCachedData()).toEqual(false);
+  });
+  it("should do nothing when cache is initialized, renderDecisions false, no viewName and decisionScopes is empty", () => {
+    event.toJSON.and.returnValue({ xdm: {} });
+    const decisionScopes = [];
+    const renderDecisions = false;
+    const personalizationDetails = createPersonalizationDetails({
+      renderDecisions,
+      decisionScopes,
+      event,
+      viewCache
+    });
+    viewCache.isInitialized.and.returnValue(true);
+
+    expect(personalizationDetails.isRenderDecisions()).toEqual(false);
+    expect(personalizationDetails.hasScopes()).toEqual(false);
+    expect(personalizationDetails.getViewName()).toEqual(undefined);
+    expect(personalizationDetails.shouldFetchData()).toEqual(false);
+    expect(personalizationDetails.hasViewName()).toEqual(false);
+    expect(personalizationDetails.shouldUseCachedData()).toEqual(false);
+  });
+  it("should use cache when cache initialized, renderDecisions is true and decisionScopes is empty and viewName exist", () => {
+    event.toJSON.and.returnValue({
+      xdm: { web: { webPageDetails: { viewName: "cart" } } }
+    });
+    const decisionScopes = [];
+    const renderDecisions = true;
+    const personalizationDetails = createPersonalizationDetails({
+      renderDecisions,
+      decisionScopes,
+      event,
+      viewCache
+    });
+    viewCache.isInitialized.and.returnValue(true);
+
+    expect(personalizationDetails.isRenderDecisions()).toEqual(true);
+    expect(personalizationDetails.hasScopes()).toEqual(false);
+    expect(personalizationDetails.getViewName()).toEqual("cart");
+    expect(personalizationDetails.hasViewName()).toEqual(true);
+    expect(personalizationDetails.shouldFetchData()).toEqual(false);
+    expect(personalizationDetails.shouldUseCachedData()).toEqual(true);
+  });
+  it("should use cache when cache initialized, renderDecisions is false and decisionScopes is empty and viewName exist", () => {
+    event.toJSON.and.returnValue({
+      xdm: { web: { webPageDetails: { viewName: "cart" } } }
+    });
+    const decisionScopes = [];
+    const renderDecisions = false;
+    const personalizationDetails = createPersonalizationDetails({
+      renderDecisions,
+      decisionScopes,
+      event,
+      viewCache
+    });
+    viewCache.isInitialized.and.returnValue(true);
+
+    expect(personalizationDetails.isRenderDecisions()).toEqual(false);
+    expect(personalizationDetails.hasScopes()).toEqual(false);
+    expect(personalizationDetails.getViewName()).toEqual("cart");
+    expect(personalizationDetails.hasViewName()).toEqual(true);
+    expect(personalizationDetails.shouldFetchData()).toEqual(false);
+    expect(personalizationDetails.shouldUseCachedData()).toEqual(true);
+  });
+  it("should fetch data when cache initialized, renderDecisions is true and decisionScopes has __view__ and viewName exist", () => {
+    event.toJSON.and.returnValue({
+      xdm: { web: { webPageDetails: { viewName: "cart" } } }
+    });
+    const decisionScopes = ["__view__"];
+    const renderDecisions = true;
+    const personalizationDetails = createPersonalizationDetails({
+      renderDecisions,
+      decisionScopes,
+      event,
+      viewCache
+    });
+    viewCache.isInitialized.and.returnValue(true);
+
+    const expectedDecisionScopes = ["__view__"];
     const expectedQueryDetails = {
       schemas: [
         HTML_CONTENT_ITEM,
@@ -55,82 +282,9 @@ describe("Personalization::createPersonalizationDetails", () => {
 
     expect(personalizationDetails.isRenderDecisions()).toEqual(true);
     expect(personalizationDetails.hasScopes()).toEqual(true);
-    expect(personalizationDetails.getDecisionScopes()).toEqual(
-      expectedDecisionScopes
-    );
     expect(queryDetails).toEqual(expectedQueryDetails);
     expect(personalizationDetails.getViewName()).toEqual("cart");
     expect(personalizationDetails.shouldFetchData()).toEqual(true);
     expect(personalizationDetails.hasViewName()).toEqual(true);
-    expect(personalizationDetails.shouldUseCachedData()).toEqual(true);
-  });
-  it("should return false if renderDecisions is false", () => {
-    const decisionScopes = [];
-    const renderDecisions = false;
-    event.toJSON.and.returnValue({ xdm: {} });
-    const personalizationDetails = createPersonalizationDetails({
-      renderDecisions,
-      decisionScopes,
-      event,
-      viewCache
-    });
-    viewCache.isInitialized.and.returnValue(false);
-    const expectedDecisionScopes = [PAGE_WIDE_SCOPE];
-    const expectedQueryDetails = {
-      schemas: [
-        HTML_CONTENT_ITEM,
-        JSON_CONTENT_ITEM,
-        REDIRECT_ITEM,
-        DOM_ACTION
-      ],
-      decisionScopes: expectedDecisionScopes
-    };
-    const queryDetails = personalizationDetails.createQueryDetails();
-
-    expect(personalizationDetails.isRenderDecisions()).toEqual(false);
-    expect(personalizationDetails.hasScopes()).toEqual(false);
-    expect(personalizationDetails.getDecisionScopes()).toEqual(
-      expectedDecisionScopes
-    );
-    expect(queryDetails).toEqual(expectedQueryDetails);
-    expect(personalizationDetails.getViewName()).toEqual(undefined);
-    expect(personalizationDetails.shouldFetchData()).toEqual(true);
-    expect(personalizationDetails.hasViewName()).toEqual(false);
-    expect(personalizationDetails.shouldUseCachedData()).toEqual(false);
-  });
-  it("should return true at shouldFetchData", () => {
-    event.toJSON.and.returnValue({ xdm: {} });
-    const decisionScopes = [];
-    const renderDecisions = false;
-    const personalizationDetails = createPersonalizationDetails({
-      renderDecisions,
-      decisionScopes,
-      event,
-      viewCache
-    });
-    viewCache.isInitialized.and.returnValue(false);
-
-    const expectedDecisionScopes = [PAGE_WIDE_SCOPE];
-    const expectedQueryDetails = {
-      schemas: [
-        HTML_CONTENT_ITEM,
-        JSON_CONTENT_ITEM,
-        REDIRECT_ITEM,
-        DOM_ACTION
-      ],
-      decisionScopes: expectedDecisionScopes
-    };
-    const queryDetails = personalizationDetails.createQueryDetails();
-
-    expect(personalizationDetails.isRenderDecisions()).toEqual(false);
-    expect(personalizationDetails.hasScopes()).toEqual(false);
-    expect(personalizationDetails.getDecisionScopes()).toEqual(
-      expectedDecisionScopes
-    );
-    expect(queryDetails).toEqual(expectedQueryDetails);
-    expect(personalizationDetails.getViewName()).toEqual(undefined);
-    expect(personalizationDetails.shouldFetchData()).toEqual(true);
-    expect(personalizationDetails.hasViewName()).toEqual(false);
-    expect(personalizationDetails.shouldUseCachedData()).toEqual(false);
   });
 });
