@@ -15,6 +15,6 @@ export default ClientFunction(html => {
   const head = document.createElement("head");
   head.innerHTML = html;
   while (head.firstChild) {
-    document.head.prepend(head.firstChild);
+    document.head.appendChild(head.firstChild);
   }
 });
