@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import addNonceToInlineStyleElements from "../../../../../../src/components/Personalization/dom-actions/addNonceToInlineStyleElements";
+import { testResetCachedNonce } from "../../../../../../src/components/Personalization/dom-actions/dom/getNonce";
 import { createFragment } from "../../../../../../src/components/Personalization/dom-actions/dom";
 import { STYLE } from "../../../../../../src/constants/tagName";
 import {
@@ -26,6 +27,7 @@ describe("Personalization::dom-actions::addNonceToInlineStyleElements", () => {
   });
 
   it("should add nonce to inline style elements if available", () => {
+    testResetCachedNonce();
     // Make sure a nonce is available to alloy
     appendNode(
       document.head,
