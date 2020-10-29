@@ -57,10 +57,8 @@ export default ({ renderDecisions, decisionScopes, event, viewCache }) => {
     },
     createQueryDetails() {
       const scopes = [...decisionScopes];
-      if (!this.isCacheInitialized()) {
-        if (!includes(scopes, PAGE_WIDE_SCOPE)) {
-          scopes.push(PAGE_WIDE_SCOPE);
-        }
+      if (!this.isCacheInitialized() && !includes(scopes, PAGE_WIDE_SCOPE)) {
+        scopes.push(PAGE_WIDE_SCOPE);
       }
 
       const schemas = [HTML_CONTENT_ITEM, JSON_CONTENT_ITEM, REDIRECT_ITEM];
