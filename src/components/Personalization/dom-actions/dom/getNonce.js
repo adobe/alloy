@@ -27,6 +27,7 @@ export default (context = document) => {
   return nonce;
 };
 
+// This function is only used for testing and removed when library is built (tree-shaking)
 export const testResetCachedNonce = () => {
   nonce = undefined;
 };
