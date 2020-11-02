@@ -17,8 +17,9 @@ const config = compose(
   debugEnabled
 );
 const PAGE_WIDE_SCOPE = "__view__";
+// spaImplementationTest=true is a query string param used for this specific target activity
 createFixture({
-  title: "C782719 SPA support functional test with auto-rendering disabled",
+  title: "C782719 SPA support with auto-rendering disabled",
   url: `${testPageUrl}?spaImplementationTest=true`,
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
@@ -55,7 +56,7 @@ const getDecisionScopes = ({ decisions }) => {
   });
 };
 
-test("Test C782719: SPA support functional test with auto-rendering disabled", async () => {
+test("Test C782719: SPA support with auto-rendering disabled", async () => {
   await configureAlloyInstance("alloy", config);
 
   const pageWideAndProductsViewDecisions = await triggerAlloyEvent(
@@ -83,7 +84,7 @@ test("Test C782719: SPA support functional test with auto-rendering disabled", a
     "https://ns.adobe.com/personalization/html-content-item",
     "https://ns.adobe.com/personalization/json-content-item",
     "https://ns.adobe.com/personalization/redirect-item"
-  ].every(schema => !!personalizationSchemas.find(s => s === schema));
+  ].every(schema => personalizationSchemas.includes(schema));
 
   await t.expect(result).eql(true);
 
