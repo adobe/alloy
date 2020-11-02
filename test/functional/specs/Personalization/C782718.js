@@ -179,6 +179,7 @@ test("Test C782718: SPA support with auto-rendering and view notifications", asy
   // assert that a notification call with xdm.web.webPageDetails.viewName and no personalization meta is sent
   const cartViewNotificationRequest =
     networkLogger.edgeEndpointLogs.requests[6];
+  console.log("cartViewNotificationRequest", cartViewNotificationRequest);
   const cartViewNotificationRequestBody = JSON.parse(
     cartViewNotificationRequest.request.body
   );
