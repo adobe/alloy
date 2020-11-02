@@ -3,35 +3,29 @@
   <head>
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="stylesheet" href="index.css" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta name="theme-color" content="#000000" />
     <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self' *.demdex.net;
-            script-src 'self' 'unsafe-inline' assets.adobedtm.com cdn.tt.omtrdc.net;
-            style-src 'self' 'unsafe-inline' cdn.tt.omtrdc.net;
-            img-src * data:;
-            connect-src 'self' *.localalloy.com *.alloyio.com ws://localhost:3000 http://localhost:8080 unifiedjslab.tt.omtrdc.net *.demdex.net *.adobedc.net https://edgegateway.azurewebsites.net konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net"
-    />
 
     <title>Mock website hosting Alloy</title>
 
     <!-- prettier-ignore -->
-    <script>
+    <script nonce="%REACT_APP_NONCE%">
       !function(e,a,n,t){var i=e.head;if(i){
       if (a) return;
       var o=e.createElement("style");
+      o.setAttribute("nonce", "%REACT_APP_NONCE%");
       o.id="alloy-prehiding",o.innerText=n,i.appendChild(o),
       setTimeout(function(){o.parentNode&&o.parentNode.removeChild(o)},t)}}
       (document, document.location.href.indexOf("mboxEdit") !== -1, ".personalization-container { opacity: 0 !important }", 3000);
     </script>
 
     <!-- prettier-ignore -->
-    <script>
+    <script nonce="%REACT_APP_NONCE%">
       !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
       []).push(o),n[o]=function(){var u=arguments;return new Promise(
       function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
@@ -39,7 +33,7 @@
     </script>
     <script src="alloy.js" async></script>
 
-    <script>
+    <script nonce="%REACT_APP_NONCE%">
       function getUrlParameter(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");

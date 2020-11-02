@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { createNode, appendNode, removeNode } from "../../../utils/dom";
 import { STYLE } from "../../../constants/tagName";
-import { getElementById } from "../dom-actions/dom";
+import { getElementById, getNonce } from "../dom-actions/dom";
 
 const PREHIDING_ID = "alloy-prehiding";
 const HIDING_STYLE_DEFINITION = "{ visibility: hidden }";
@@ -29,7 +29,10 @@ export const hideElements = prehidingSelector => {
     return;
   }
 
-  const attrs = {};
+  const nonce = getNonce();
+  const attrs = {
+    ...(nonce && { nonce })
+  };
   const props = {
     textContent: `${prehidingSelector} ${HIDING_STYLE_DEFINITION}`
   };
@@ -63,7 +66,8 @@ export const hideContainers = prehidingStyle => {
     return;
   }
 
-  const attrs = { id: PREHIDING_ID };
+  const nonce = getNonce();
+  const attrs = { id: PREHIDING_ID, ...(nonce && { nonce }) };
   const props = { textContent: prehidingStyle };
   const styleNode = createNode(STYLE, attrs, props);
 

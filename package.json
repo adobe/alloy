@@ -34,7 +34,7 @@
     "build:prod": "npm-run-all --parallel build:prod:standalone:unminified build:prod:standalone:minified build:prod:reactor:unminified",
     "build:watch": "rollup -c -w",
     "build:basecode": "terser src/baseCode/index.js --mangle --compress unused=false",
-    "sandbox": "cd sandbox && npm start",
+    "sandbox": "cd sandbox && export REACT_APP_NONCE=321 && npm start",
     "sandbox:install": "cd sandbox && npm install",
     "sandbox:build": "cd sandbox && npm run build",
     "dev": "npm-run-all --parallel build:watch sandbox",

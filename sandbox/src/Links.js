@@ -1,4 +1,5 @@
 import React from "react";
+import ContentSecurityPolicy from "./ContentSecurityPolicy";
 
 export default function Links() {
   const adobeLink = () => {
@@ -12,6 +13,7 @@ export default function Links() {
 
   return (
     <div>
+      <ContentSecurityPolicy />
       <h2>Links</h2>
       <p>
         This page shows a few different ways link clicks can be handled in
