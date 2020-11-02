@@ -138,7 +138,8 @@ test("Test C782718: SPA support with auto-rendering and view notifications", asy
 
   // sendEvent at a view change, this shouldn't request any target data, it should use the existing cache
 
-  await triggerAlloyEvent("/transformers", []);
+  const transformersView = await triggerAlloyEvent("/transformers", []);
+  console.log("transformersView", transformersView);
   const viewChangeRequest = networkLogger.edgeEndpointLogs.requests[3];
   const viewChangeRequestBody = JSON.parse(viewChangeRequest.request.body);
   // assert that no personalization query was attached to the request
@@ -149,6 +150,10 @@ test("Test C782718: SPA support with auto-rendering and view notifications", asy
   // check that a render view decision notification was sent
   const transformersViewNotificationRequest =
     networkLogger.edgeEndpointLogs.requests[4];
+  console.log(
+    "transformersViewNotificationRequest",
+    transformersViewNotificationRequest
+  );
   const transformersViewNotificationRequestBody = JSON.parse(
     transformersViewNotificationRequest.request.body
   );
