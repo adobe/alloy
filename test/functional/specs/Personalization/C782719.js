@@ -9,7 +9,7 @@ import {
 } from "../../helpers/constants/configParts";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../../../src/core/createResponse";
-import testServerUrl from "../../helpers/constants/testServerUrl";
+import testPageUrl from "../../helpers/constants/testPageUrl";
 
 const networkLogger = createNetworkLogger();
 const config = compose(
@@ -19,7 +19,7 @@ const config = compose(
 const PAGE_WIDE_SCOPE = "__view__";
 createFixture({
   title: "C782719 SPA support functional test with auto-rendering disabled",
-  url: `${testServerUrl}?spaImplementationTest=true`,
+  url: `${testPageUrl}?spaImplementationTest=true`,
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
