@@ -1,6 +1,6 @@
 import { t, Selector, ClientFunction } from "testcafe";
 import createFixture from "../../helpers/createFixture";
-import addAnchorToBody from "../../helpers/dom/addAnchorToBody";
+import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createConsoleLogger from "../../helpers/consoleLogger";
 import createUnhandledRejectionLogger from "../../helpers/createUnhandledRejectionLogger";
@@ -37,13 +37,8 @@ test("Test C225010: Click collection handles errors when user declines consent",
     },
     { dependencies: { CONSENT_OUT } }
   );
-  await addAnchorToBody({
-    text: "Test Link",
-    attributes: {
-      href: "#foo",
-      id: "alloy-link-test"
-    }
-  });
+  await addHtmlToBody(`<a id="alloy-link-test" href="#foo">Test Link</a>`);
+
   const consoleLogger = await createConsoleLogger();
   const unhandledRejectionLogger = await createUnhandledRejectionLogger();
   await t.click(Selector("#alloy-link-test"));

@@ -28,11 +28,13 @@ describe("ActivityCollector::createLinkClick", () => {
   };
   const supportedLinkElement = {
     tagName: "A",
-    href: "index.html"
+    href: "index.html",
+    nodeType: 1
   };
   const unsupportedLinkElement = {
     tagName: "LINK",
-    href: "index.html"
+    href: "index.html",
+    nodeType: 1
   };
   const linkClick = createLinkClick(mockWindow, config);
   it("Extends event XDM data with link information for supported anchor elements", () => {

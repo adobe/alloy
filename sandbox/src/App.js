@@ -45,10 +45,11 @@ function BasicExample() {
             <Link to="/orgTwo">Multiple Orgs</Link>
           </li>
           <li>
-            <Link to="/dualTag">Dual Tag</Link>
+            {/* Anchor tag to ensure app is reloaded with unsafe CSP */}
+            <a href="/dualTag">Dual Tag</a>
           </li>
           <li>
-            <a href="/legacy.html">legacy</a>
+            <a href="/legacy.html">Legacy Visitor ID</a>
           </li>
         </ul>
 

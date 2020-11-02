@@ -1,9 +1,9 @@
-import { edgeConfigId } from "./edgeInfo";
+import EDGE_CONFIG_ID from "./constants/edgeConfigId";
 import edgeDomainThirdParty from "./constants/configParts/edgeDomainThirdParty";
 
 const edgeBasePath = process.env.EDGE_BASE_PATH;
 
-export default (orgId, configId = edgeConfigId) => {
+export default (orgId, configId = EDGE_CONFIG_ID) => {
   const config = {
     edgeConfigId: configId,
     orgId: orgId || "334F60F35E1597910A495EC2@AdobeOrg",

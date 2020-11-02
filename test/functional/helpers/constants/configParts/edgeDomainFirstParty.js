@@ -1,5 +1,5 @@
-import { domain } from "../../edgeInfo";
+import { FIRST_PARTY_DOMAIN } from "../domain";
 
 export default {
-  edgeDomain: domain.firstParty
+  edgeDomain: FIRST_PARTY_DOMAIN
 };

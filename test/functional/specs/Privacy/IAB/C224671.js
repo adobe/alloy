@@ -68,19 +68,7 @@ const sendEvent = ClientFunction(() => window.alloy("sendEvent"));
     await t.expect(consentCookieValue).ok("No consent cookie found.");
     await t.expect(consentCookieValue).eql("general=out");
 
-    // 2. The set-consent response payload contains the consent handle in XDM format
-    const consentHandle = consentResponse.getPayloadsByType("privacy:consent");
-
-    await t.expect(consentHandle.length).gte(0);
-    await t.expect(consentHandle[0]).eql({
-      consentStandard: "IAB TCF",
-      consentStandardVersion: "2.0",
-      consentStringValue: consent.consent[0].value,
-      containsPersonalData: false,
-      gdprApplies: true
-    });
-
-    // 3. The ECID should exist in the response payload as well, if queried
+    // 2. The ECID should exist in the response payload as well, if queried
     const identityHandle = consentResponse.getPayloadsByType("identity:result");
     await t.expect(identityHandle.length).eql(1);
 

@@ -47,11 +47,7 @@ test("Test C14404: User cannot consent to all purposes after consenting to no pu
   await t
     .expect(setConsentErrorMessage)
     .ok("Expected the setConsent command to be rejected");
-  await t
-    .expect(setConsentErrorMessage)
-    .contains(
-      "User has already opted out of all advertising solutions, update operation not supported."
-    );
+  await t.expect(setConsentErrorMessage).contains("EXEG-0302-409");
 
   // make sure the instance still has no consent
   const logger = await createConsoleLogger();

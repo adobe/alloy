@@ -57,11 +57,7 @@ test("Test C224675: Passing invalid consent options should throw a validation er
     .expect(errorMessageForInvalidStandard)
     .contains("The server responded with the following errors");
 
-  await t
-    .expect(errorMessageForInvalidStandard)
-    .contains(
-      "The value supplied for field 'standard' does not match your input schema"
-    );
+  await t.expect(errorMessageForInvalidStandard).contains("EXEG-0102-400");
 
   const errorMessageForInvalidVersion = await getErrorMessageFromSetConsent({
     consent: [
@@ -86,7 +82,8 @@ test("Test C224675: Passing invalid consent options should throw a validation er
   // https://jira.corp.adobe.com/browse/EXEG-1961
   await t
     .expect(errorMessageForInvalidVersion)
-    .contains("Allowed IAB version is 2.0 for standard 'IAB TCF'");
+    // TODO: log ticket - Konductor error just says "Invalid request"
+    .contains("EXEG-0104-422");
 
   const errorMessageForInvalidValue = await getErrorMessageFromSetConsent({
     consent: [
@@ -107,11 +104,9 @@ test("Test C224675: Passing invalid consent options should throw a validation er
 
   // TODO: The error message below is not consistent with the way `standard` is being validated.
   // Discussed it with the Konductor team, they will re-work it.
-  await t
-    .expect(errorMessageForInvalidValue)
-    .contains("[Code EXEG:400] Invalid request.");
+  await t.expect(errorMessageForInvalidValue).contains("EXEG-0103-400");
 
-  const errorMessageForEmtpyValue = await getErrorMessageFromSetConsent({
+  const errorMessageForEmptyValue = await getErrorMessageFromSetConsent({
     consent: [
       {
         standard: "IAB TCF",
@@ -122,18 +117,14 @@ test("Test C224675: Passing invalid consent options should throw a validation er
   });
 
   await t
-    .expect(errorMessageForEmtpyValue)
+    .expect(errorMessageForEmptyValue)
     .ok("Expected the setConsent command to be rejected");
 
   await t
-    .expect(errorMessageForEmtpyValue)
+    .expect(errorMessageForEmptyValue)
     .contains("The server responded with the following errors");
 
   // TODO: The error message below is not consistent with the way `standard` is being validated.
   // Discussed it with the Konductor team, they will re-work it.
-  await t
-    .expect(errorMessageForEmtpyValue)
-    .contains(
-      "IAB consent string value must not be empty for standard 'IAB TCF'"
-    );
+  await t.expect(errorMessageForEmptyValue).contains("EXEG-0104-422");
 });

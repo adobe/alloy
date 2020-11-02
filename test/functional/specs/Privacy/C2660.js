@@ -5,7 +5,7 @@ import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
 import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain";
 import { compose, consentPending } from "../../helpers/constants/configParts";
-import testServerUrl from "../../helpers/constants/testServerUrl";
+import testPageUrl from "../../helpers/constants/testPageUrl";
 
 const { CONSENT_IN } = require("../../helpers/constants/consent");
 
@@ -57,8 +57,8 @@ test("C2660 - Context data is captured before user consents.", async () => {
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
 
   const requests = networkLogger.edgeEndpointLogs.requests;
-  await t.expect(getContextUrlFromRequest(requests[0])).eql(testServerUrl);
+  await t.expect(getContextUrlFromRequest(requests[0])).eql(testPageUrl);
   await t
     .expect(getContextUrlFromRequest(requests[1]))
-    .eql(`${testServerUrl}#foo`);
+    .eql(`${testPageUrl}#foo`);
 });

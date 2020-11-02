@@ -1,9 +1,9 @@
 import { ClientFunction } from "testcafe";
 import createConsoleLogger from "../../helpers/consoleLogger";
 import createFixture from "../../helpers/createFixture";
-import testServerUrl from "../../helpers/constants/testServerUrl";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
+import reloadPage from "../../helpers/reloadPage";
 
 createFixture({
   title: "C2584: Toggle logging through setDebug command"
@@ -23,7 +23,7 @@ const getLibraryInfoCommand = ClientFunction(() => {
   return window.alloy("getLibraryInfo");
 });
 
-test("Test C2584: setDebug command with enable: true. getLibraryInfo. refresh. toggle and repeat.", async t => {
+test("Test C2584: setDebug command with enable: true. getLibraryInfo. refresh. toggle and repeat.", async () => {
   const logger = await createConsoleLogger();
   await configureAlloyInstance("alloy", orgMainConfigMain);
 
@@ -31,7 +31,7 @@ test("Test C2584: setDebug command with enable: true. getLibraryInfo. refresh. t
   await getLibraryInfoCommand();
   await logger.info.expectMessageMatching(/Executing getLibraryInfo command/);
 
-  await t.navigateTo(testServerUrl);
+  await reloadPage();
   await configureAlloyInstance("alloy", orgMainConfigMain);
   await debugCommand(false);
   await logger.reset();

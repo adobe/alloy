@@ -1,15 +1,16 @@
 import React, { useRef, useEffect } from "react";
+import ContentSecurityPolicy from "./ContentSecurityPolicy";
 
 export default function EventMerge() {
   const eventMergeIdPromise = useRef(window.alloy("createEventMergeId"));
 
   useEffect(() => {
-    eventMergeIdPromise.current.then(eventMergeId => {
+    eventMergeIdPromise.current.then(result => {
       window
         .alloy("sendEvent", {
           xdm: {
             key1: "value1",
-            eventMergeId
+            eventMergeId: result.eventMergeId
           }
         })
         .catch(console.error);
@@ -19,7 +20,7 @@ export default function EventMerge() {
           .alloy("sendEvent", {
             xdm: {
               key2: "value2",
-              eventMergeId
+              eventMergeId: result.eventMergeId
             }
           })
           .catch(console.error);
@@ -29,6 +30,7 @@ export default function EventMerge() {
 
   return (
     <div>
+      <ContentSecurityPolicy />
       <h2>Event Merge</h2>
       <p>This is the Event Merge view, part of the Single Page Application.</p>
       <p>

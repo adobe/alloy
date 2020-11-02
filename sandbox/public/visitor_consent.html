@@ -4,16 +4,8 @@
     <meta charset="UTF-8" />
     <title>Visitor Consent</title>
     <script src="https://github.com/Adobe-Marketing-Cloud/id-service/releases/download/4.5.1/visitorapi.min.js"></script>
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self' *.demdex.net;
-            script-src 'self' 'unsafe-inline' assets.adobedtm.com cdn.tt.omtrdc.net;
-            style-src 'self' 'unsafe-inline' cdn.tt.omtrdc.net;
-            img-src * data:;
-            connect-src 'self' *.localalloy.com *.alloyio.com ws://localhost:3000 http://localhost:8080 unifiedjslab.tt.omtrdc.net *.demdex.net *.adobedc.net https://edgegateway.azurewebsites.net konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net"
-    />
     <!-- prettier-ignore -->
-    <script>
+    <script nonce="%REACT_APP_NONCE%">
       Visitor.getInstance("53A16ACB5CC1D3760A495C99@AdobeOrg", {
         doesOptInApply: true
       });
@@ -25,7 +17,7 @@
     </script>
     <script src="alloy.js" async></script>
 
-    <script>
+    <script nonce="%REACT_APP_NONCE%">
       function getUrlParameter(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
