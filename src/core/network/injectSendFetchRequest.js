@@ -10,20 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default (navigator, fetch, logger) => {
+export default ({ fetch }) => {
   return (url, body) => {
-    const blob = new Blob([body], { type: "text/plain; charset=UTF-8" });
-    if (!navigator.sendBeacon(url, blob)) {
-      logger.log("The `beacon` call has failed; falling back to `fetch`");
-      return fetch(url, body);
-    }
-
-    // Using sendBeacon, we technically don't get a response back from
-    // the server, but we'll resolve the promise with an object to maintain
-    // consistency with other network strategies.
-    return Promise.resolve({
-      status: 204,
-      body: ""
+    return fetch(url, {
+      method: "POST",
+      cache: "no-cache",
+      credentials: "include", // To set the cookie header in the request.
+      headers: {
+        "Content-Type": "text/plain; charset=UTF-8"
+      },
+      referrer: "client",
+      body
+    }).then(response => {
+      return response.text().then(responseBody => ({
+        status: response.status,
+        body: responseBody
+      }));
     });
   };
 };

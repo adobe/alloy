@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default XMLHttpRequest => {
+export default ({ XMLHttpRequest }) => {
   return (url, body) => {
     return new Promise((resolve, reject) => {
       const request = new XMLHttpRequest();

@@ -10,22 +10,29 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectSendXhrRequest from "./injectSendXhrRequest";
-import injectFetch from "./injectFetch";
-import injectSendBeacon from "./injectSendBeacon";
 import isFunction from "../../utils/isFunction";
 
-export default ({ window, logger }) => {
-  const fetch = isFunction(window.fetch)
-    ? injectFetch(window.fetch)
-    : injectSendXhrRequest(window.XMLHttpRequest);
-  const sendBeacon =
-    window.navigator && isFunction(window.navigator.sendBeacon)
-      ? injectSendBeacon(window.navigator, fetch, logger)
-      : fetch;
+export default ({
+  window,
+  logger,
+  injectSendFetchRequest,
+  injectSendXhrRequest,
+  injectSendBeaconRequest
+}) => {
+  const { fetch, navigator, XMLHttpRequest } = window;
+  const sendFetchRequest = isFunction(fetch)
+    ? injectSendFetchRequest({ fetch })
+    : injectSendXhrRequest({ XMLHttpRequest });
+  const sendBeaconRequest = isFunction(navigator.sendBeacon)
+    ? injectSendBeaconRequest({
+        navigator,
+        sendFetchRequest,
+        logger
+      })
+    : sendFetchRequest;
 
   return ({ url, body, documentMayUnload }) => {
-    const method = documentMayUnload ? sendBeacon : fetch;
+    const method = documentMayUnload ? sendBeaconRequest : sendFetchRequest;
     return method(url, body);
   };
 };

@@ -28,6 +28,9 @@ import initializeComponents from "./initializeComponents";
 import createConfig from "./config/createConfig";
 import createCoreConfigs from "./config/createCoreConfigs";
 import injectHandleError from "./injectHandleError";
+import injectSendFetchRequest from "./network/injectSendFetchRequest";
+import injectSendXhrRequest from "./network/injectSendXhrRequest";
+import injectSendBeaconRequest from "./network/injectSendBeaconRequest";
 import injectNetworkStrategy from "./network/injectNetworkStrategy";
 import createLogger from "./createLogger";
 import createEventManager from "./createEventManager";
@@ -68,7 +71,13 @@ if (instanceNames) {
     });
     const componentRegistry = createComponentRegistry();
     const lifecycle = createLifecycle(componentRegistry);
-    const networkStrategy = injectNetworkStrategy({ window, logger });
+    const networkStrategy = injectNetworkStrategy({
+      window,
+      logger,
+      injectSendFetchRequest,
+      injectSendXhrRequest,
+      injectSendBeaconRequest
+    });
 
     const setDebugCommand = options => {
       setDebugEnabled(options.enabled, { fromConfig: false });

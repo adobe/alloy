@@ -10,124 +10,164 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createServer, Response } from "miragejs";
 import injectNetworkStrategy from "../../../../../src/core/network/injectNetworkStrategy";
 
-const createMockServer = ({ responseCode, responseBody } = {}) => {
-  return createServer({
-    // Sets timing to 0 and hides Mirage logging.
-    environment: "test",
-    routes() {
-      this.urlPrefix = "http://localhost:1080";
-      this.post("/myapi", () => {
-        return new Response(responseCode, {}, responseBody);
-      });
-    }
-  });
-};
-
-// This function MUST be run AFTER createMockServer() is called,
-// because Mirage replaces window.fetch and window.XMLHttpRequest with mocked
-// versions. If we ran the below code first, the native methods would be used
-// instead of the mocks because of how we pull the fetch and XMLHttpRequest
-// methods off window both in the code below and inside injectNetworkStrategy.
-const createNetworkStrategy = () => {
-  return injectNetworkStrategy({
-    window,
-    logger: console
-  });
-};
-
-/**
- * These tests require a mock server to be running to do the verification
- * Run the mock server with `npm run mockserver`.  If this test sees there
- * is no mock server running, it will mark the tests as pending.
- */
 describe("injectNetworkStrategy", () => {
-  const requestBody = JSON.stringify({ id: "myrequest" });
+  const logger = { log() {} };
+  const url = "http://example.com";
+  const body = "testbody";
 
-  [200].forEach(responseCode => {
-    it(`handles successful response code ${responseCode}`, () => {
-      const server = createMockServer({
-        responseCode: 200,
-        responseBody: "mybod"
-      });
-      const networkStrategy = createNetworkStrategy();
+  let sendFetchRequestPromise;
+  let sendFetchRequest;
+  let injectSendFetchRequest;
+  let sendXhrRequestPromise;
+  let sendXhrRequest;
+  let injectSendXhrRequest;
+  let sendBeaconRequestPromise;
+  let sendBeaconRequest;
+  let injectSendBeaconRequest;
 
-      return networkStrategy({
-        url: "http://localhost:1080/myapi",
-        body: requestBody
-      }).then(result => {
-        server.shutdown();
-        expect(result).toEqual({
-          status: 200,
-          body: "mybod"
-        });
-      });
-    });
+  beforeEach(() => {
+    sendFetchRequestPromise = Promise.resolve();
+    sendFetchRequest = jasmine
+      .createSpy()
+      .and.returnValue(sendFetchRequestPromise);
+    injectSendFetchRequest = jasmine
+      .createSpy()
+      .and.returnValue(sendFetchRequest);
+    sendXhrRequestPromise = Promise.resolve();
+    sendXhrRequest = jasmine.createSpy().and.returnValue(sendXhrRequestPromise);
+    injectSendXhrRequest = jasmine.createSpy().and.returnValue(sendXhrRequest);
+    sendBeaconRequestPromise = Promise.resolve();
+    sendBeaconRequest = jasmine
+      .createSpy()
+      .and.returnValue(sendBeaconRequestPromise);
+    injectSendBeaconRequest = jasmine
+      .createSpy()
+      .and.returnValue(sendBeaconRequest);
   });
 
-  it("handles successful response code 204 (no content)", () => {
-    const server = createMockServer({
-      responseCode: 204
+  it("uses fetch if available and document won't unload", () => {
+    const window = {
+      fetch() {},
+      navigator: {}
+    };
+    const networkStrategy = injectNetworkStrategy({
+      window,
+      logger,
+      injectSendFetchRequest,
+      injectSendXhrRequest,
+      injectSendBeaconRequest
     });
-    const networkStrategy = createNetworkStrategy();
-
-    return networkStrategy({
-      url: "http://localhost:1080/myapi",
-      body: requestBody
-    }).then(result => {
-      server.shutdown();
-      expect(result).toEqual({
-        status: 204,
-        body: ""
-      });
+    const result = networkStrategy({
+      url,
+      body,
+      documentMayUnload: false
     });
+    expect(injectSendFetchRequest).toHaveBeenCalledWith({
+      fetch: window.fetch
+    });
+    expect(sendFetchRequest).toHaveBeenCalledWith(url, body);
+    expect(result).toBe(sendFetchRequestPromise);
   });
 
-  [301, 400, 403, 500].forEach(responseCode => {
-    it(`handles error response code ${responseCode}`, () => {
-      const server = createMockServer({
-        responseCode,
-        responseBody: "mybod"
-      });
-      const networkStrategy = createNetworkStrategy();
-
-      return networkStrategy({
-        url: "http://localhost:1080/myapi",
-        body: requestBody
-      }).then(result => {
-        server.shutdown();
-        expect(result).toEqual({
-          status: responseCode,
-          body: "mybod"
-        });
-      });
+  it("uses XHR if fetch is unavailable and document won't unload", () => {
+    const window = {
+      XMLHttpRequest() {},
+      navigator: {}
+    };
+    const networkStrategy = injectNetworkStrategy({
+      window,
+      logger,
+      injectSendFetchRequest,
+      injectSendXhrRequest,
+      injectSendBeaconRequest
     });
+    const result = networkStrategy({
+      url,
+      body,
+      documentMayUnload: false
+    });
+    expect(injectSendXhrRequest).toHaveBeenCalledWith({
+      XMLHttpRequest: window.XMLHttpRequest
+    });
+    expect(sendXhrRequest).toHaveBeenCalledWith(url, body);
+    expect(result).toBe(sendXhrRequestPromise);
   });
 
-  it("handles a dropped connection", () => {
-    const server = createMockServer();
-    const networkStrategy = createNetworkStrategy();
-
-    // When a network connection is dropped, an error is thrown by the
-    // browser, which then bubbles up through our networkStrategy module.
-    // While we can't technically simulate a dropped connection
-    // using Mirage, we can try to hit an endpoint that hasn't been
-    // configured on our Mirage server, which similarly results in an
-    // error being thrown.
-    return networkStrategy({
-      url: "http://localhost:1080/unconfuredendpoint",
-      body: requestBody
-    })
-      .then(fail)
-      .catch(error => {
-        server.shutdown();
-        expect(error).toBeDefined();
-      });
+  it("uses sendBeacon if available and document may unload", () => {
+    const window = {
+      fetch() {},
+      navigator: {
+        sendBeacon() {}
+      }
+    };
+    const networkStrategy = injectNetworkStrategy({
+      window,
+      logger,
+      injectSendFetchRequest,
+      injectSendXhrRequest,
+      injectSendBeaconRequest
+    });
+    const result = networkStrategy({
+      url,
+      body,
+      documentMayUnload: true
+    });
+    expect(injectSendBeaconRequest).toHaveBeenCalledWith({
+      navigator: window.navigator,
+      sendFetchRequest,
+      logger
+    });
+    expect(sendBeaconRequest).toHaveBeenCalledWith(url, body);
+    expect(result).toBe(sendBeaconRequestPromise);
   });
 
-  // We don't have tests for sendBeacon because Mirage (actually, the Pretender
-  // library that Mirage uses) doesn't support it yet.
-  // https://github.com/pretenderjs/pretender/issues/249
+  it("uses fetch if sendBeacon is unavailable, fetch is available, and document may unload", () => {
+    const window = {
+      fetch() {},
+      navigator: {}
+    };
+    const networkStrategy = injectNetworkStrategy({
+      window,
+      logger,
+      injectSendFetchRequest,
+      injectSendXhrRequest,
+      injectSendBeaconRequest
+    });
+    const result = networkStrategy({
+      url,
+      body,
+      documentMayUnload: true
+    });
+    expect(injectSendFetchRequest).toHaveBeenCalledWith({
+      fetch: window.fetch
+    });
+    expect(sendFetchRequest).toHaveBeenCalledWith(url, body);
+    expect(result).toBe(sendFetchRequestPromise);
+  });
+
+  it("uses XHR if sendBeacon is unavailable, fetch is unavailable, and document may unload", () => {
+    const window = {
+      XMLHttpRequest() {},
+      navigator: {}
+    };
+    const networkStrategy = injectNetworkStrategy({
+      window,
+      logger,
+      injectSendFetchRequest,
+      injectSendXhrRequest,
+      injectSendBeaconRequest
+    });
+    const result = networkStrategy({
+      url,
+      body,
+      documentMayUnload: true
+    });
+    expect(injectSendXhrRequest).toHaveBeenCalledWith({
+      XMLHttpRequest: window.XMLHttpRequest
+    });
+    expect(sendXhrRequest).toHaveBeenCalledWith(url, body);
+    expect(result).toBe(sendXhrRequestPromise);
+  });
 });
