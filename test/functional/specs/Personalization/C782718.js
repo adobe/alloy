@@ -72,8 +72,8 @@ const getNotificationPayload = (decisions, scope) => {
 test("Test C782718: SPA support with auto-rendering and view notifications", async () => {
   await configureAlloyInstance("alloy", config);
 
-  await triggerAlloyEvent("/products", []);
-
+  const decisionsPayload = await triggerAlloyEvent("/products", []);
+  console.log("decisions Payload", decisionsPayload);
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(3);
@@ -141,7 +141,8 @@ test("Test C782718: SPA support with auto-rendering and view notifications", asy
 
   // sendEvent at a view change, this shouldn't request any target data, it should use the existing cache
 
-  await triggerAlloyEvent("/transformers", []);
+  const transformersDecisions = await triggerAlloyEvent("/transformers", []);
+  console.log("transformersDecisions Payload", transformersDecisions);
 
   const viewChangeRequest = networkLogger.edgeEndpointLogs.requests[3];
   const viewChangeRequestBody = JSON.parse(viewChangeRequest.request.body);
