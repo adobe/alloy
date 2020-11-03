@@ -19,29 +19,8 @@ import {
   REDIRECT_ITEM
 } from "./constants/schema";
 
-const getViewName = xdm => {
-  if (!xdm) {
-    return undefined;
-  }
-
-  const web = xdm.web;
-
-  if (!web) {
-    return undefined;
-  }
-
-  const webPageDetails = web.webPageDetails;
-
-  if (!webPageDetails) {
-    return undefined;
-  }
-
-  return webPageDetails.viewName;
-};
-
 export default ({ renderDecisions, decisionScopes, event, viewCache }) => {
-  const xdm = event.toJSON().xdm;
-  const viewName = getViewName(xdm);
+  const viewName = event.getViewName();
   return {
     isRenderDecisions() {
       return renderDecisions;

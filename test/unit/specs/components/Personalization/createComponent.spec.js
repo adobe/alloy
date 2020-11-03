@@ -37,8 +37,8 @@ describe("Personalization", () => {
   };
 
   beforeEach(() => {
-    event = jasmine.createSpyObj("event", ["mergeQuery", "toJSON"]);
-    event.toJSON.and.returnValue({});
+    event = jasmine.createSpyObj("event", ["mergeQuery", "getViewName"]);
+    event.getViewName.and.returnValue({});
 
     logger = {
       info: jasmine.createSpy(),
@@ -120,9 +120,7 @@ describe("Personalization", () => {
     const renderDecisions = false;
     const decisionScopes = [];
     viewCache.isInitialized.and.returnValue(true);
-    event.toJSON.and.returnValue({
-      xdm: { web: { webPageDetails: { viewName: "cart" } } }
-    });
+    event.getViewName.and.returnValue("cart");
 
     personalizationComponent.lifecycle.onBeforeEvent({
       event,

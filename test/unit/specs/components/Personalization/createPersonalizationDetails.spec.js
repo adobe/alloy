@@ -23,14 +23,14 @@ describe("Personalization::createPersonalizationDetails", () => {
   let viewCache;
 
   beforeEach(() => {
-    event = jasmine.createSpyObj("event", ["toJSON"]);
+    event = jasmine.createSpyObj("event", ["getViewName"]);
     viewCache = jasmine.createSpyObj("viewCache", ["getView", "isInitialized"]);
   });
 
   it("should fetch data when no cache, renderDecisions is true, no viewName and decisionScopes (in non SPA world)", () => {
     const decisionScopes = [];
     const renderDecisions = true;
-    event.toJSON.and.returnValue({ xdm: {} });
+    event.getViewName.and.returnValue(undefined);
     const personalizationDetails = createPersonalizationDetails({
       renderDecisions,
       decisionScopes,
@@ -61,7 +61,7 @@ describe("Personalization::createPersonalizationDetails", () => {
   it("should fetch data when no cache, renderDecisions is false, no viewName and decisionScopes is empty", () => {
     const decisionScopes = [];
     const renderDecisions = false;
-    event.toJSON.and.returnValue({ xdm: {} });
+    event.getViewName.and.returnValue(undefined);
     const personalizationDetails = createPersonalizationDetails({
       renderDecisions,
       decisionScopes,
@@ -92,7 +92,7 @@ describe("Personalization::createPersonalizationDetails", () => {
   it("should fetch data when no cache, renderDecisions is false, no viewName and decisionScopes is not empty", () => {
     const decisionScopes = ["test1"];
     const renderDecisions = false;
-    event.toJSON.and.returnValue({ xdm: {} });
+    event.getViewName.and.returnValue(undefined);
     const personalizationDetails = createPersonalizationDetails({
       renderDecisions,
       decisionScopes,
@@ -123,7 +123,7 @@ describe("Personalization::createPersonalizationDetails", () => {
   it("should fetch data when cache initialized, renderDecisions is false, no viewName, and decisionScopes is not empty", () => {
     const decisionScopes = ["test1"];
     const renderDecisions = false;
-    event.toJSON.and.returnValue({ xdm: {} });
+    event.getViewName.and.returnValue(undefined);
     const personalizationDetails = createPersonalizationDetails({
       renderDecisions,
       decisionScopes,
@@ -147,9 +147,8 @@ describe("Personalization::createPersonalizationDetails", () => {
     expect(personalizationDetails.shouldUseCachedData()).toEqual(false);
   });
   it("should fetch data when cache initialized, renderDecisions is true and decisionScopes is not empty and viewName exist", () => {
-    event.toJSON.and.returnValue({
-      xdm: { web: { webPageDetails: { viewName: "cart" } } }
-    });
+    event.getViewName.and.returnValue("cart");
+
     const decisionScopes = ["test1", "test2"];
     const renderDecisions = true;
     const personalizationDetails = createPersonalizationDetails({
@@ -175,7 +174,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     expect(personalizationDetails.hasViewName()).toEqual(true);
   });
   it("should do nothing when cache is initialized, renderDecisions true, no viewName and decisionScopes is empty", () => {
-    event.toJSON.and.returnValue({ xdm: {} });
+    event.getViewName.and.returnValue(undefined);
     const decisionScopes = [];
     const renderDecisions = true;
     const personalizationDetails = createPersonalizationDetails({
@@ -194,7 +193,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     expect(personalizationDetails.shouldUseCachedData()).toEqual(false);
   });
   it("should do nothing when cache is initialized, renderDecisions false, no viewName and decisionScopes is empty", () => {
-    event.toJSON.and.returnValue({ xdm: {} });
+    event.getViewName.and.returnValue(undefined);
     const decisionScopes = [];
     const renderDecisions = false;
     const personalizationDetails = createPersonalizationDetails({
@@ -213,9 +212,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     expect(personalizationDetails.shouldUseCachedData()).toEqual(false);
   });
   it("should use cache when cache initialized, renderDecisions is true and decisionScopes is empty and viewName exist", () => {
-    event.toJSON.and.returnValue({
-      xdm: { web: { webPageDetails: { viewName: "cart" } } }
-    });
+    event.getViewName.and.returnValue("cart");
     const decisionScopes = [];
     const renderDecisions = true;
     const personalizationDetails = createPersonalizationDetails({
@@ -234,9 +231,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     expect(personalizationDetails.shouldUseCachedData()).toEqual(true);
   });
   it("should use cache when cache initialized, renderDecisions is false and decisionScopes is empty and viewName exist", () => {
-    event.toJSON.and.returnValue({
-      xdm: { web: { webPageDetails: { viewName: "cart" } } }
-    });
+    event.getViewName.and.returnValue("cart");
     const decisionScopes = [];
     const renderDecisions = false;
     const personalizationDetails = createPersonalizationDetails({
@@ -255,9 +250,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     expect(personalizationDetails.shouldUseCachedData()).toEqual(true);
   });
   it("should fetch data when cache initialized, renderDecisions is true and decisionScopes has __view__ and viewName exist", () => {
-    event.toJSON.and.returnValue({
-      xdm: { web: { webPageDetails: { viewName: "cart" } } }
-    });
+    event.getViewName.and.returnValue("cart");
     const decisionScopes = ["__view__"];
     const renderDecisions = true;
     const personalizationDetails = createPersonalizationDetails({
