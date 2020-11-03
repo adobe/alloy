@@ -99,7 +99,7 @@ describe("Personalization::createExecuteDecisions", () => {
         meta: metas[1],
         error: "could not render this item"
       });
-      expect(collect).toHaveBeenCalledWith({ decisions: [metas[0]] });
+      expect(collect).toHaveBeenCalledWith({ meta: { decisions: [metas[0]] } });
     });
   });
 
@@ -134,7 +134,6 @@ describe("Personalization::createExecuteDecisions", () => {
       expect(logger.error).toHaveBeenCalledWith(error);
     });
   });
-
   it("should not trigger collect when dom-action click", () => {
     executeActions = jasmine
       .createSpy()

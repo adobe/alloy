@@ -46,7 +46,7 @@ const processMetas = (collect, logger, actionResults) => {
   });
 
   if (isNonEmptyArray(finalMetas)) {
-    collect({ decisions: finalMetas });
+    collect({ meta: { decisions: finalMetas } });
   }
 };
 

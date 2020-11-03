@@ -10,10 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export const mergeMeta = (event, meta) => {
-  event.mergeMeta({ personalization: { ...meta } });
-};
-
-export const mergeQuery = (event, details) => {
-  event.mergeQuery({ personalization: { ...details } });
+export default (doc = document) => {
+  return doc.location.href.indexOf("mboxEdit") !== -1;
 };

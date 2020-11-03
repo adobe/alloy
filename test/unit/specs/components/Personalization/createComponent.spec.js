@@ -11,59 +11,49 @@ governing permissions and limitations under the License.
 */
 
 import createComponent from "../../../../../src/components/Personalization/createComponent";
-import * as SCHEMA from "../../../../../src/components/Personalization/constants/schema";
-import { values } from "../../../../../src/utils";
-
-const allSchemas = values(SCHEMA);
 
 describe("Personalization", () => {
   let logger;
-  let config;
-  let onResponseHandler;
+  let fetchDataHandler;
   let onClickHandler;
-  let hideContainers;
+  let viewChangeHandler;
   let showContainers;
-  let hasScopes;
   let isAuthoringModeEnabled;
-  let getDecisionScopes;
+  let viewCache;
   let mergeQuery;
-  let createQueryDetails;
   let event;
   let personalizationComponent;
 
   const build = () => {
     personalizationComponent = createComponent({
-      config,
       logger,
-      onResponseHandler,
+      fetchDataHandler,
+      viewChangeHandler,
       onClickHandler,
-      hideContainers,
-      showContainers,
-      hasScopes,
       isAuthoringModeEnabled,
-      getDecisionScopes,
       mergeQuery,
-      createQueryDetails
+      viewCache
     });
   };
 
   beforeEach(() => {
-    event = jasmine.createSpyObj("event", ["mergeQuery"]);
+    event = jasmine.createSpyObj("event", ["mergeQuery", "getViewName"]);
+    event.getViewName.and.returnValue({});
 
     logger = {
       info: jasmine.createSpy(),
       warn: jasmine.createSpy()
     };
     isAuthoringModeEnabled = jasmine.createSpy().and.returnValue(false);
-    config = jasmine.createSpy();
-    onResponseHandler = jasmine.createSpy();
+    fetchDataHandler = jasmine.createSpy();
+    viewChangeHandler = jasmine.createSpy();
     onClickHandler = jasmine.createSpy();
-    hideContainers = jasmine.createSpy();
     showContainers = jasmine.createSpy();
-    hasScopes = jasmine.createSpy();
-    getDecisionScopes = jasmine.createSpy();
     mergeQuery = jasmine.createSpy();
-    createQueryDetails = jasmine.createSpy();
+    viewCache = jasmine.createSpyObj("viewCache", [
+      "isInitialized",
+      "storeViews"
+    ]);
   });
 
   it("shouldn't do anything since authoringMode is enabled", () => {
@@ -82,21 +72,36 @@ describe("Personalization", () => {
     );
     expect(isAuthoringModeEnabled).toHaveBeenCalled();
     expect(mergeQuery).toHaveBeenCalledWith(event, { enabled: false });
-
-    expect(onResponseHandler).not.toHaveBeenCalled();
+    expect(fetchDataHandler).not.toHaveBeenCalled();
+    expect(viewChangeHandler).not.toHaveBeenCalled();
     expect(onClickHandler).not.toHaveBeenCalled();
-    expect(hideContainers).not.toHaveBeenCalled();
     expect(showContainers).not.toHaveBeenCalled();
-    expect(hasScopes).not.toHaveBeenCalled();
-    expect(getDecisionScopes).not.toHaveBeenCalled();
-    expect(createQueryDetails).not.toHaveBeenCalled();
+    expect(viewCache.storeViews).not.toHaveBeenCalled();
   });
 
-  it("shouldn't do anything since personalization is disabled", () => {
+  it("should trigger pageLoad if there are decisionScopes", () => {
     build();
-    hasScopes.and.returnValue(false);
+    const renderDecisions = false;
+    const decisionScopes = ["alloy1"];
+    personalizationComponent.lifecycle.onBeforeEvent({
+      event,
+      renderDecisions,
+      decisionScopes
+    });
+
+    expect(isAuthoringModeEnabled).toHaveBeenCalled();
+    expect(fetchDataHandler).toHaveBeenCalled();
+    expect(viewChangeHandler).not.toHaveBeenCalled();
+    expect(mergeQuery).not.toHaveBeenCalled();
+    expect(onClickHandler).not.toHaveBeenCalled();
+    expect(viewCache.storeViews).toHaveBeenCalled();
+  });
+  it("should trigger pageLoad if cache is not initialized", () => {
+    build();
     const renderDecisions = false;
     const decisionScopes = [];
+    viewCache.isInitialized.and.returnValue(false);
+
     personalizationComponent.lifecycle.onBeforeEvent({
       event,
       renderDecisions,
@@ -104,27 +109,18 @@ describe("Personalization", () => {
     });
 
     expect(isAuthoringModeEnabled).toHaveBeenCalled();
-    expect(getDecisionScopes).toHaveBeenCalled();
-    expect(hasScopes).toHaveBeenCalled();
-    expect(showContainers).not.toHaveBeenCalled();
+    expect(fetchDataHandler).toHaveBeenCalled();
+    expect(viewChangeHandler).not.toHaveBeenCalled();
     expect(mergeQuery).not.toHaveBeenCalled();
-    expect(onResponseHandler).not.toHaveBeenCalled();
     expect(onClickHandler).not.toHaveBeenCalled();
-    expect(hideContainers).not.toHaveBeenCalled();
-    expect(createQueryDetails).not.toHaveBeenCalled();
+    expect(viewCache.storeViews).toHaveBeenCalled();
   });
-
-  it("should only merge the query data", () => {
+  it("should trigger viewHandler if cache is initialized and viewName is provided", () => {
+    build();
     const renderDecisions = false;
-    const decisionScopes = ["foo"];
-    const eventQueryDetails = {
-      accepts: allSchemas,
-      decisionScopes
-    };
-    build();
-    hasScopes.and.returnValue(true);
-    getDecisionScopes.and.returnValue("foo");
-    createQueryDetails.and.returnValue(eventQueryDetails);
+    const decisionScopes = [];
+    viewCache.isInitialized.and.returnValue(true);
+    event.getViewName.and.returnValue("cart");
 
     personalizationComponent.lifecycle.onBeforeEvent({
       event,
@@ -133,79 +129,16 @@ describe("Personalization", () => {
     });
 
     expect(isAuthoringModeEnabled).toHaveBeenCalled();
-    expect(getDecisionScopes).toHaveBeenCalled();
-    expect(hasScopes).toHaveBeenCalled();
-    expect(createQueryDetails).toHaveBeenCalled();
-    expect(mergeQuery).toHaveBeenCalledWith(event, eventQueryDetails);
-
-    expect(hideContainers).not.toHaveBeenCalled();
-    expect(onResponseHandler).not.toHaveBeenCalled();
+    expect(fetchDataHandler).not.toHaveBeenCalled();
+    expect(viewChangeHandler).toHaveBeenCalled();
+    expect(mergeQuery).not.toHaveBeenCalled();
     expect(onClickHandler).not.toHaveBeenCalled();
-    expect(showContainers).not.toHaveBeenCalled();
+    expect(viewCache.storeViews).not.toHaveBeenCalled();
   });
-
-  it("should merge the query data and hide containers", () => {
-    const renderDecisions = true;
-    const decisionScopes = ["foo"];
-    const eventQueryDetails = {
-      accepts: allSchemas,
-      decisionScopes
-    };
+  it("should trigger onClickHandler at onClick", () => {
     build();
-    hasScopes.and.returnValue(true);
-    getDecisionScopes.and.returnValue("foo");
-    createQueryDetails.and.returnValue(eventQueryDetails);
+    personalizationComponent.lifecycle.onClick({ event });
 
-    personalizationComponent.lifecycle.onBeforeEvent({
-      event,
-      renderDecisions,
-      decisionScopes
-    });
-
-    expect(isAuthoringModeEnabled).toHaveBeenCalled();
-    expect(getDecisionScopes).toHaveBeenCalled();
-    expect(hasScopes).toHaveBeenCalled();
-    expect(createQueryDetails).toHaveBeenCalled();
-    expect(mergeQuery).toHaveBeenCalledWith(event, eventQueryDetails);
-    expect(hideContainers).toHaveBeenCalled();
-
-    expect(onResponseHandler).not.toHaveBeenCalled();
-    expect(onClickHandler).not.toHaveBeenCalled();
-    expect(showContainers).not.toHaveBeenCalled();
-  });
-
-  it("should merge the query data, hide containers and trigger onResponseHandler", () => {
-    const renderDecisions = true;
-    const decisionScopes = ["foo"];
-    const eventQueryDetails = {
-      accepts: allSchemas,
-      decisionScopes
-    };
-    build();
-    hasScopes.and.returnValue(true);
-    getDecisionScopes.and.returnValue("foo");
-    createQueryDetails.and.returnValue(eventQueryDetails);
-
-    const onResponse = func => {
-      func({});
-    };
-
-    personalizationComponent.lifecycle.onBeforeEvent({
-      event,
-      renderDecisions,
-      decisionScopes,
-      onResponse
-    });
-
-    expect(isAuthoringModeEnabled).toHaveBeenCalled();
-    expect(getDecisionScopes).toHaveBeenCalled();
-    expect(hasScopes).toHaveBeenCalled();
-    expect(createQueryDetails).toHaveBeenCalled();
-    expect(mergeQuery).toHaveBeenCalledWith(event, eventQueryDetails);
-    expect(hideContainers).toHaveBeenCalled();
-    expect(onResponseHandler).toHaveBeenCalled();
-
-    expect(onClickHandler).not.toHaveBeenCalled();
-    expect(showContainers).not.toHaveBeenCalled();
+    expect(onClickHandler).toHaveBeenCalled();
   });
 });
