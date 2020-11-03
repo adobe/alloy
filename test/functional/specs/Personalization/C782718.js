@@ -31,24 +31,6 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const pageWideScopeNotificationPayload = [
-  {
-    id: "AT:eyJhY3Rpdml0eUlkIjoiMTIyNzA1IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
-    scope: "__view__"
-  }
-];
-const productsViewNotificationPayload = [
-  {
-    id: "AT:eyJhY3Rpdml0eUlkIjoiMTIyNzA1IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
-    scope: "/products"
-  }
-];
-const transformersViewNotificationPayload = [
-  {
-    id: "AT:eyJhY3Rpdml0eUlkIjoiMTIyNzA1IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
-    scope: "/transformers"
-  }
-];
 const triggerAlloyEvent = ClientFunction((viewName, scopes) => {
   return new Promise(resolve => {
     window
@@ -73,6 +55,19 @@ const getDecisionContent = ClientFunction(elementId => {
 
   return container.innerText;
 });
+
+const getNotificationPayload = (decisions, scope) => {
+  const metas = [];
+  decisions.forEach(decision => {
+    if (decision.scope === scope) {
+      metas.push({
+        id: decision.id,
+        scope: decision.scope
+      });
+    }
+  });
+  return metas;
+};
 
 test("Test C782718: SPA support with auto-rendering and view notifications", async () => {
   await configureAlloyInstance("alloy", config);
@@ -122,6 +117,10 @@ test("Test C782718: SPA support with auto-rendering and view notifications", asy
   await t
     .expect(notificationRequestBody.events[0].xdm.eventType)
     .eql("display");
+  const pageWideScopeNotificationPayload = getNotificationPayload(
+    personalizationPayload,
+    PAGE_WIDE_SCOPE
+  );
   await t
     .expect(notificationRequestBody.events[0].meta.personalization.decisions)
     .eql(pageWideScopeNotificationPayload);
@@ -129,6 +128,10 @@ test("Test C782718: SPA support with auto-rendering and view notifications", asy
   const viewNotificationRequest = networkLogger.edgeEndpointLogs.requests[2];
   const viewNotificationRequestBody = JSON.parse(
     viewNotificationRequest.request.body
+  );
+  const productsViewNotificationPayload = getNotificationPayload(
+    personalizationPayload,
+    "/products"
   );
   await t
     .expect(
@@ -138,8 +141,8 @@ test("Test C782718: SPA support with auto-rendering and view notifications", asy
 
   // sendEvent at a view change, this shouldn't request any target data, it should use the existing cache
 
-  const transformersView = await triggerAlloyEvent("/transformers", []);
-  console.log("transformersView", transformersView);
+  await triggerAlloyEvent("/transformers", []);
+
   const viewChangeRequest = networkLogger.edgeEndpointLogs.requests[3];
   const viewChangeRequestBody = JSON.parse(viewChangeRequest.request.body);
   // assert that no personalization query was attached to the request
@@ -150,16 +153,18 @@ test("Test C782718: SPA support with auto-rendering and view notifications", asy
   // check that a render view decision notification was sent
   const transformersViewNotificationRequest =
     networkLogger.edgeEndpointLogs.requests[4];
-  console.log(
-    "transformersViewNotificationRequest",
-    transformersViewNotificationRequest
-  );
+
   const transformersViewNotificationRequestBody = JSON.parse(
     transformersViewNotificationRequest.request.body
   );
   await t
     .expect(transformersViewNotificationRequestBody.events[0].xdm.eventType)
     .eql("display");
+  const transformersViewNotificationPayload = getNotificationPayload(
+    personalizationPayload,
+    "/transformers"
+  );
+
   await t
     .expect(
       transformersViewNotificationRequestBody.events[0].meta.personalization
@@ -179,7 +184,6 @@ test("Test C782718: SPA support with auto-rendering and view notifications", asy
   // assert that a notification call with xdm.web.webPageDetails.viewName and no personalization meta is sent
   const cartViewNotificationRequest =
     networkLogger.edgeEndpointLogs.requests[6];
-  console.log("cartViewNotificationRequest", cartViewNotificationRequest);
   const cartViewNotificationRequestBody = JSON.parse(
     cartViewNotificationRequest.request.body
   );
