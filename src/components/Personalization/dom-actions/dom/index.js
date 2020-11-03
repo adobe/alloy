@@ -23,3 +23,4 @@ export { default as getNextSibling } from "./getNextSibling";
 export { default as getChildren } from "./getChildren";
 export { default as getChildNodes } from "./getChildNodes";
 export { default as getFirstChild } from "./getFirstChild";
+export { default as getNonce } from "./getNonce";

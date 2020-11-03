@@ -1,4 +1,5 @@
 import React from "react";
+import ContentSecurityPolicy from "./ContentSecurityPolicy";
 
 const executeSetConsentCommand = generalPurpose => () => {
   window
@@ -19,6 +20,7 @@ const executeSetConsentCommand = generalPurpose => () => {
 export default function Consent() {
   return (
     <div>
+      <ContentSecurityPolicy />
       <h2>Opt-In</h2>
       <p>This page tests user consent:</p>
       <div>

@@ -11,19 +11,30 @@ governing permissions and limitations under the License.
 */
 
 import appendNode from "./appendNode";
+import isObject from "../isObject";
+
+const populateElementProperties = (element, props) => {
+  Object.keys(props).forEach(key => {
+    // The following is to support setting style properties to avoid CSP errors.
+    if (key === "style" && isObject(props[key])) {
+      const styleProps = props[key];
+      Object.keys(styleProps).forEach(styleKey => {
+        element.style[styleKey] = styleProps[styleKey];
+      });
+    } else {
+      element[key] = props[key];
+    }
+  });
+};
 
 export default (tag, attrs = {}, props = {}, children = [], doc = document) => {
   const result = doc.createElement(tag);
-
   Object.keys(attrs).forEach(key => {
+    // TODO: To highlight CSP problems consider throwing a descriptive error
+    //       if nonce is available and key is style.
     result.setAttribute(key, attrs[key]);
   });
-
-  Object.keys(props).forEach(key => {
-    result[key] = props[key];
-  });
-
+  populateElementProperties(result, props);
   children.forEach(child => appendNode(result, child));
-
   return result;
 };

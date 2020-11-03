@@ -1,5 +1,6 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
+import ContentSecurityPolicy from "./ContentSecurityPolicy";
 
 let previousPath;
 function HomeWithHistory({ history }) {
@@ -57,6 +58,7 @@ function HomeWithHistory({ history }) {
 
   return (
     <div>
+      <ContentSecurityPolicy />
       <section>
         <div className="personalization-container">
           <h2>Some awesome default content.</h2>

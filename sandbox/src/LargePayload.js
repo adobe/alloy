@@ -1,4 +1,5 @@
 import React from "react";
+import ContentSecurityPolicy from "./ContentSecurityPolicy";
 
 export default function LargePayload() {
   const makePayload = (size, times = 1) => () => {
@@ -16,6 +17,7 @@ export default function LargePayload() {
 
   return (
     <div>
+      <ContentSecurityPolicy />
       <h2>Large Payloads</h2>
       <p>This page tests send really large payloads to the edge.</p>
       <p>

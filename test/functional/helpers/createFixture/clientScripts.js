@@ -98,7 +98,7 @@ const getFixtureClientScriptsForInt = options => {
     // like to simulate that. To do so, we'll wrap our Alloy code in a
     // setTimeout with a small arbitrary delay.
     clientScripts.push({
-      content: `setTimeout(() => {\n${localAlloyCode}\n}, 10);`
+      content: `setTimeout(function() {\n${localAlloyCode}\n}, 10);`
     });
   }
 
