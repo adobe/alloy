@@ -3,6 +3,9 @@
   "version": "2.2.0",
   "description": "Adobe Experience Platform Web SDK",
   "module": "dist/index.js",
+  "files": [
+    "dist/index.js"
+  ],
   "scripts": {
     "clean": "rimraf dist",
     "lint": "eslint --fix \"*.js\" \"src/**/*.js\" \"test/**/*.js\"",

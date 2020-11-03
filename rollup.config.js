@@ -32,6 +32,12 @@ const minify = process.env.MINIFY;
 const destDirectory = destDirectoryByBuildTarget[buildTarget];
 
 const minifiedExtension = minify ? ".min" : "";
+const baseCodeTerser = terser({
+  mangle: true,
+  compress: {
+    unused: false
+  }
+});
 
 const plugins = [
   resolve({
@@ -43,17 +49,6 @@ const plugins = [
   commonjs(),
   babel()
 ];
-
-if (minify) {
-  plugins.push(
-    terser({
-      mangle: true,
-      compress: {
-        unused: false
-      }
-    })
-  );
-}
 
 if (buildTarget !== buildTargets.DEV) {
   plugins.push(
@@ -78,7 +73,7 @@ if (buildTarget === buildTargets.PROD) {
         format: "iife"
       }
     ],
-    plugins
+    plugins: minify ? [...plugins, baseCodeTerser] : plugins
   });
 }
 
@@ -95,7 +90,7 @@ config.push({
         "}\n"
     }
   ],
-  plugins
+  plugins: minify ? [...plugins, terser()] : plugins
 });
 
 if (buildTarget === buildTargets.PROD && !minify) {
@@ -108,7 +103,7 @@ if (buildTarget === buildTargets.PROD && !minify) {
       }
     ],
     // The @adobe/reactor-* dependencies are specified as peerDependencies so no need to include them in the
-    // module build
+    // module build. The Launch extension does not need them included.
     external(name) {
       return /^@adobe\/reactor-/.test(name);
     },

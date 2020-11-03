@@ -11,12 +11,14 @@ governing permissions and limitations under the License.
 */
 
 // This file is used to rollup the code into an ES module version to be used by other npm projects
-// like the launch extension.
+// like the launch extension. Everything that is exported here can be used independently by other
+// npm projects.
 
 export { default as baseCode } from "./baseCode/index";
 
 export { default as core } from "./core";
 
+// createEventMergeId is used by the Launch extension to provide a synchronous way to create an id
 export {
   default as createEventMergeId
 } from "./components/EventMerge/createEventMergeId";
