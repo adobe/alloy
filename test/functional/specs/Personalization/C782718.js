@@ -11,6 +11,7 @@ import {
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../../../src/core/createResponse";
 import testPageUrl from "../../helpers/constants/testPageUrl";
+import flushPromiseChains from "../../helpers/flushPromiseChains";
 
 const networkLogger = createNetworkLogger();
 const config = compose(
@@ -72,8 +73,7 @@ const getNotificationPayload = (decisions, scope) => {
 test("Test C782718: SPA support with auto-rendering and view notifications", async () => {
   await configureAlloyInstance("alloy", config);
 
-  const decisionsPayload = await triggerAlloyEvent("/products", []);
-  console.log("decisions Payload", decisionsPayload);
+  await triggerAlloyEvent("/products", []);
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(3);
@@ -112,6 +112,9 @@ test("Test C782718: SPA support with auto-rendering and view notifications", asy
     .expect(getDecisionContent("products-view-spa-functional-test"))
     .eql("products decision for spa functional test");
 
+  // Let promises resolve so that the notification is sent.
+  await flushPromiseChains();
+
   const notificationRequest = networkLogger.edgeEndpointLogs.requests[1];
   const notificationRequestBody = JSON.parse(notificationRequest.request.body);
   await t
@@ -141,9 +144,7 @@ test("Test C782718: SPA support with auto-rendering and view notifications", asy
 
   // sendEvent at a view change, this shouldn't request any target data, it should use the existing cache
 
-  const transformersDecisions = await triggerAlloyEvent("/transformers", []);
-  console.log("transformersDecisions Payload", transformersDecisions);
-
+  await triggerAlloyEvent("/transformers", []);
   const viewChangeRequest = networkLogger.edgeEndpointLogs.requests[3];
   const viewChangeRequestBody = JSON.parse(viewChangeRequest.request.body);
   // assert that no personalization query was attached to the request
@@ -151,10 +152,11 @@ test("Test C782718: SPA support with auto-rendering and view notifications", asy
   await t
     .expect(getDecisionContent("transformers-view-spa-functional-test"))
     .eql("transformers decision for spa functional test");
+  // Let promises resolve so that the notification is sent.
+  await flushPromiseChains();
   // check that a render view decision notification was sent
   const transformersViewNotificationRequest =
     networkLogger.edgeEndpointLogs.requests[4];
-
   const transformersViewNotificationRequestBody = JSON.parse(
     transformersViewNotificationRequest.request.body
   );
