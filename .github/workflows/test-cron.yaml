@@ -1,0 +1,31 @@
+name: Alloy-Test-Cron
+
+on:
+  schedule:
+   - cron: '0 3 * * *'
+
+jobs:
+  build-test:
+    name: "Build"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: "master"
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - uses: actions/cache@v2
+        id: node-cache
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.lock') }}
+      - name: Install dependencies
+        if: steps.node-cache.outputs.cache-hit != 'true'
+        run: npm install
+      - name: Build
+        run: npm run build:prod
+      - name: test
+        run: npm run functional:cron:prod
+  
