@@ -2,7 +2,7 @@
   window._satellite = window._satellite || {};
   window._satellite.container = {
   "buildInfo": {
-    "buildDate": "2020-10-29T14:59:11Z",
+    "buildDate": "2020-11-05T04:05:50Z",
     "environment": "development",
     "turbineBuildDate": "2020-08-10T20:14:17Z",
     "turbineVersion": "27.0.0"
@@ -91,6 +91,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+var clone = require("../../utils/clone");
+
 module.exports = function (_ref) {
   var instanceManager = _ref.instanceManager,
       decisionsCallbackStorage = _ref.decisionsCallbackStorage;
@@ -102,6 +104,14 @@ module.exports = function (_ref) {
 
     if (!instance) {
       throw new Error("Failed to send event for instance \"".concat(instanceName, "\". No matching instance was configured with this name."));
+    } // If the customer modifies the xdm object (or anything nested in the object) after this action runs, we want to
+    // make sure those modifications are not reflected in the data sent to the server. By cloning the object here,
+    // we ensure we use a snapshot that will remain unchanged during the time period between when sendEvent
+    // is called and the network request is made.
+
+
+    if (otherSettings.xdm) {
+      otherSettings.xdm = clone(otherSettings.xdm);
     }
 
     return instance("sendEvent", otherSettings).then(function (result) {
@@ -141,6 +151,33 @@ module.exports = {
       trigger(decisions);
     });
   }
+};
+          }
+
+        },
+        "adobe-alloy/dist/lib/utils/clone.js": {
+          "script": function(module, exports, require, turbine) {
+"use strict";
+
+/*
+Copyright 2020 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+/**
+ * Clones a value by serializing then deserializing the value.
+ * @param {*} value
+ * @returns {any}
+ */
+module.exports = function (value) {
+  return JSON.parse(JSON.stringify(value));
 };
           }
 
@@ -197,23 +234,32 @@ module.exports = function (instanceNames) {
     console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.');
   } else {
     (function () {
-      function _interopDefault(ex) {
-        return ex && _typeof2(ex) === 'object' && 'default' in ex ? ex['default'] : ex;
+      var assign = require('@adobe/reactor-object-assign');
+
+      var cookie = require('@adobe/reactor-cookie');
+
+      var queryString = require('@adobe/reactor-query-string');
+
+      var loadScript = require('@adobe/reactor-load-script');
+
+      function _interopDefaultLegacy(e) {
+        return e && _typeof2(e) === 'object' && 'default' in e ? e : {
+          'default': e
+        };
       }
 
-      var assign = _interopDefault(require('@adobe/reactor-object-assign'));
+      var assign__default = /*#__PURE__*/_interopDefaultLegacy(assign);
 
-      var cookie = _interopDefault(require('@adobe/reactor-cookie'));
+      var cookie__default = /*#__PURE__*/_interopDefaultLegacy(cookie);
 
-      var queryString = _interopDefault(require('@adobe/reactor-query-string'));
+      var queryString__default = /*#__PURE__*/_interopDefaultLegacy(queryString);
 
-      var loadScript = _interopDefault(require('@adobe/reactor-load-script'));
+      var loadScript__default = /*#__PURE__*/_interopDefaultLegacy(loadScript);
       /*
       Copyright 2019 Adobe. All rights reserved.
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -239,7 +285,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -259,7 +304,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -281,7 +325,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -301,19 +344,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
-      Unless required by applicable law or agreed to in writing, software distributed under
-      the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-      OF ANY KIND, either express or implied. See the License for the specific language
-      governing permissions and limitations under the License.
-      */
-
-      /*
-      Copyright 2019 Adobe. All rights reserved.
-      This file is licensed to you under the Apache License, Version 2.0 (the "License");
-      you may not use this file except in compliance with the License. You may obtain a copy
-      of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -335,7 +365,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -357,19 +386,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
-      Unless required by applicable law or agreed to in writing, software distributed under
-      the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-      OF ANY KIND, either express or implied. See the License for the specific language
-      governing permissions and limitations under the License.
-      */
-
-      /*
-      Copyright 2019 Adobe. All rights reserved.
-      This file is licensed to you under the Apache License, Version 2.0 (the "License");
-      you may not use this file except in compliance with the License. You may obtain a copy
-      of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -564,7 +580,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -613,7 +628,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -645,7 +659,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -684,7 +697,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -738,7 +750,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -764,7 +775,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -787,7 +797,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -819,7 +828,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -835,13 +843,26 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
       governing permissions and limitations under the License.
       */
 
+
+      var populateElementProperties = function populateElementProperties(element, props) {
+        Object.keys(props).forEach(function (key) {
+          // The following is to support setting style properties to avoid CSP errors.
+          if (key === "style" && isObject(props[key])) {
+            var styleProps = props[key];
+            Object.keys(styleProps).forEach(function (styleKey) {
+              element.style[styleKey] = styleProps[styleKey];
+            });
+          } else {
+            element[key] = props[key];
+          }
+        });
+      };
 
       var createNode = function createNode(tag) {
         var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -850,11 +871,11 @@ module.exports = function (instanceNames) {
         var doc = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : document;
         var result = doc.createElement(tag);
         Object.keys(attrs).forEach(function (key) {
+          // TODO: To highlight CSP problems consider throwing a descriptive error
+          //       if nonce is available and key is style.
           result.setAttribute(key, attrs[key]);
         });
-        Object.keys(props).forEach(function (key) {
-          result[key] = props[key];
-        });
+        populateElementProperties(result, props);
         children.forEach(function (child) {
           return appendNode(result, child);
         });
@@ -865,7 +886,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -885,7 +905,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -920,7 +939,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -942,7 +960,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -964,7 +981,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -988,7 +1004,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1012,7 +1027,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1131,7 +1145,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1159,7 +1172,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1179,8 +1191,14 @@ module.exports = function (instanceNames) {
 
       var fireOnPage = fireImage;
       var IFRAME_ATTRS = {
-        name: "Adobe Alloy",
-        style: "display: none; width: 0; height: 0;"
+        name: "Adobe Alloy"
+      };
+      var IFRAME_PROPS = {
+        style: {
+          display: "none",
+          width: 0,
+          height: 0
+        }
       };
 
       var fireReferrerHideableImage = function fireReferrerHideableImage(request) {
@@ -1189,7 +1207,7 @@ module.exports = function (instanceNames) {
             var _ref2 = _slicedToArray(_ref, 1),
                 body = _ref2[0];
 
-            var iframe = createNode(IFRAME, IFRAME_ATTRS);
+            var iframe = createNode(IFRAME, IFRAME_ATTRS, IFRAME_PROPS);
             return appendNode(body, iframe);
           });
         };
@@ -1220,7 +1238,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1236,7 +1253,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1250,7 +1266,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1272,7 +1287,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1314,7 +1328,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1329,7 +1342,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1344,7 +1356,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1360,7 +1371,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1385,7 +1395,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1407,7 +1416,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1429,7 +1437,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1452,7 +1459,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1475,7 +1481,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1499,7 +1504,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1521,7 +1525,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1543,7 +1546,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1581,7 +1583,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1599,7 +1600,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1629,19 +1629,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
-      Unless required by applicable law or agreed to in writing, software distributed under
-      the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-      OF ANY KIND, either express or implied. See the License for the specific language
-      governing permissions and limitations under the License.
-      */
-
-      /*
-      Copyright 2019 Adobe. All rights reserved.
-      This file is licensed to you under the Apache License, Version 2.0 (the "License");
-      you may not use this file except in compliance with the License. You may obtain a copy
-      of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1660,11 +1647,32 @@ module.exports = function (instanceNames) {
         return value instanceof Error ? value : new Error(value);
       };
       /*
+      Copyright 2020 Adobe. All rights reserved.
+      This file is licensed to you under the Apache License, Version 2.0 (the "License");
+      you may not use this file except in compliance with the License. You may obtain a copy
+      of the License at http://www.apache.org/licenses/LICENSE-2.0
+      Unless required by applicable law or agreed to in writing, software distributed under
+      the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+      OF ANY KIND, either express or implied. See the License for the specific language
+      governing permissions and limitations under the License.
+      */
+
+
+      var updateErrorMessage = function updateErrorMessage(_ref) {
+        var error = _ref.error,
+            message = _ref.message;
+
+        try {
+          error.message = message;
+        } catch (e) {// We'll set a new message when we can, but some errors, like DOMException,
+          // have a read-only message property, which limits our options.
+        }
+      };
+      /*
       Copyright 2019 Adobe. All rights reserved.
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1680,17 +1688,22 @@ module.exports = function (instanceNames) {
        */
 
 
-      var stackError = function stackError(message, error) {
-        var stackedError = toError(error);
-        stackedError.message = message + "\nCaused by: " + stackedError.message;
-        return stackedError;
+      var stackError = function stackError(_ref) {
+        var error = _ref.error,
+            message = _ref.message;
+        var errorToStack = toError(error);
+        var newMessage = message + "\nCaused by: " + errorToStack.message;
+        updateErrorMessage({
+          error: errorToStack,
+          message: newMessage
+        });
+        return errorToStack;
       };
       /*
       Copyright 2019 Adobe. All rights reserved.
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1751,7 +1764,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1870,23 +1882,10 @@ module.exports = function (instanceNames) {
 
       var v4_1 = v4;
       /*
-      Copyright 2019 Adobe. All rights reserved.
-      This file is licensed to you under the Apache License, Version 2.0 (the "License");
-      you may not use this file except in compliance with the License. You may obtain a copy
-      of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
-      Unless required by applicable law or agreed to in writing, software distributed under
-      the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-      OF ANY KIND, either express or implied. See the License for the specific language
-      governing permissions and limitations under the License.
-      */
-
-      /*
       Copyright 2020 Adobe. All rights reserved.
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1946,7 +1945,7 @@ module.exports = function (instanceNames) {
         // to the new combined validator function.
 
 
-        assign(combinedValidator, leftValidator, additionalMethods);
+        assign__default['default'](combinedValidator, leftValidator, additionalMethods);
         return combinedValidator;
       };
       /*
@@ -1954,7 +1953,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -1989,7 +1987,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2007,7 +2004,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2024,7 +2020,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2041,7 +2036,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2074,7 +2068,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2096,7 +2089,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2115,7 +2107,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2155,7 +2146,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2174,7 +2164,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2204,7 +2193,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2228,7 +2216,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2275,7 +2262,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2302,7 +2288,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2323,7 +2308,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2342,7 +2326,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2359,7 +2342,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2376,7 +2358,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2402,7 +2383,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2419,7 +2399,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2439,7 +2418,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2456,7 +2434,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2609,7 +2586,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2630,7 +2606,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2654,7 +2629,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2668,7 +2642,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2682,7 +2655,7 @@ module.exports = function (instanceNames) {
             instanceName = _ref.instanceName,
             createNamespacedStorage = _ref.createNamespacedStorage,
             getMonitors = _ref.getMonitors;
-        var parsedQueryString = queryString.parse(locationSearch);
+        var parsedQueryString = queryString__default['default'].parse(locationSearch);
         var storage = createNamespacedStorage("instance." + instanceName + ".");
         var debugSessionValue = storage.session.getItem("debug");
         var debugEnabled = debugSessionValue === "true";
@@ -2740,7 +2713,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2810,7 +2782,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -2825,12 +2796,18 @@ module.exports = function (instanceNames) {
           try {
             result = fn.apply(void 0, arguments);
           } catch (error) {
-            throw stackError(stackMessage, error);
+            throw stackError({
+              error: error,
+              message: stackMessage
+            });
           }
 
           if (result instanceof Promise) {
             result = result["catch"](function (error) {
-              throw stackError(stackMessage, error);
+              throw stackError({
+                error: error,
+                message: stackMessage
+              });
             });
           }
 
@@ -2920,7 +2897,11 @@ module.exports = function (instanceNames) {
 
           var executeRequest = function executeRequest() {
             var retriesAttempted = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-            return networkStrategy(url, stringifiedPayload).then(function (response) {
+            return networkStrategy({
+              url: url,
+              body: stringifiedPayload,
+              documentMayUnload: payload.getDocumentMayUnload()
+            }).then(function (response) {
               if (isRetryableHttpStatusCode(response.status) && retriesAttempted < 3) {
                 return executeRequest(retriesAttempted + 1);
               }
@@ -2955,7 +2936,10 @@ module.exports = function (instanceNames) {
               payload: JSON.parse(stringifiedPayload),
               error: error
             });
-            throw stackError("Network request failed.", error);
+            throw stackError({
+              error: error,
+              message: "Network request failed."
+            });
           });
         };
       };
@@ -2964,7 +2948,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3030,7 +3013,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3046,7 +3028,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3060,7 +3041,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3105,7 +3085,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3118,7 +3097,7 @@ module.exports = function (instanceNames) {
         var userXdm;
         var userData;
         var _documentMayUnload = false;
-        var lastChanceCallback = noop;
+        var lastChanceCallback;
         var event = {
           setUserXdm: function setUserXdm(value) {
             userXdm = value;
@@ -3141,6 +3120,13 @@ module.exports = function (instanceNames) {
           setLastChanceCallback: function setLastChanceCallback(value) {
             lastChanceCallback = value;
           },
+          getViewName: function getViewName() {
+            if (!userXdm || !userXdm.web || !userXdm.web.webPageDetails) {
+              return undefined;
+            }
+
+            return userXdm.web.webPageDetails.viewName;
+          },
           toJSON: function toJSON() {
             if (userXdm) {
               event.mergeXdm(userXdm);
@@ -3150,27 +3136,31 @@ module.exports = function (instanceNames) {
               content.data = userData;
             }
 
-            var xdm = clone(Object(content.xdm));
-            var data = clone(Object(content.data));
+            if (lastChanceCallback) {
+              // We clone these because if lastChanceCallback throws an error, we don't
+              // want any modifications lastChanceCallback made to actually be applied.
+              var xdm = clone(content.xdm || {});
+              var data = clone(content.data || {});
 
-            try {
-              lastChanceCallback({
-                xdm: xdm,
-                data: data
-              }); // If onBeforeEventSend throws an exception,
-              // we don't want to apply the changes it made
-              // so setting content.xdm and content.data is inside this try
-              // We only set content.xdm if content.xdm was already set or
-              // if content.xdm was empty and the lastChanceCallback added items to it.
+              try {
+                lastChanceCallback({
+                  xdm: xdm,
+                  data: data
+                }); // If onBeforeEventSend throws an exception,
+                // we don't want to apply the changes it made
+                // so setting content.xdm and content.data is inside this try
+                // We only set content.xdm if content.xdm was already set or
+                // if content.xdm was empty and the lastChanceCallback added items to it.
 
-              if (content.xdm || !isEmptyObject(xdm)) {
-                content.xdm = xdm;
+                if (content.xdm || !isEmptyObject(xdm)) {
+                  content.xdm = xdm;
+                }
+
+                if (content.data || !isEmptyObject(data)) {
+                  content.data = data;
+                }
+              } catch (e) {// the callback should have already logged the exception
               }
-
-              if (content.data || !isEmptyObject(data)) {
-                content.data = data;
-              }
-            } catch (e) {// the callback should have already logged the exception
             }
 
             return content;
@@ -3183,7 +3173,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3249,7 +3238,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3348,7 +3336,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3383,7 +3370,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3427,7 +3413,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3506,7 +3491,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3561,7 +3545,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3578,7 +3561,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3647,7 +3629,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3667,46 +3648,53 @@ module.exports = function (instanceNames) {
         return linkType;
       };
 
+      var findSupportedAnchorElement = function findSupportedAnchorElement(targetElement) {
+        var node = targetElement;
+
+        while (node) {
+          if (isSupportedAnchorElement(node)) {
+            return node;
+          }
+
+          node = node.parentNode;
+        }
+
+        return null;
+      };
+
       var createLinkClick = function createLinkClick(window, config) {
         return function (event, targetElement) {
-          var linkName;
-          var linkType;
-          var clickedElement = targetElement;
-          var linkUrl;
-          var isValidLink = false; // Search parent elements for an anchor element
+          // Search parent elements for an anchor element
           // TODO: Replace with generic DOM tool that can fetch configured properties
+          var anchorElement = findSupportedAnchorElement(targetElement);
 
-          do {
-            linkUrl = getAbsoluteUrlFromAnchorElement(window, clickedElement);
-
-            if (!linkUrl) {
-              clickedElement = clickedElement.parentNode;
-            }
-          } while (!linkUrl && clickedElement);
-
-          if (linkUrl && isSupportedAnchorElement(clickedElement)) {
-            isValidLink = true;
-            linkType = determineLinkType(window, config, linkUrl, clickedElement); // TODO: Update link name from the clicked element context
-
-            linkName = "Link Click";
+          if (!anchorElement) {
+            return;
           }
 
-          if (isValidLink) {
-            event.documentMayUnload();
-            event.mergeXdm({
-              eventType: "web.webinteraction.linkClicks",
-              web: {
-                webInteraction: {
-                  name: linkName,
-                  type: linkType,
-                  URL: linkUrl,
-                  linkClicks: {
-                    value: 1
-                  }
+          var linkUrl = getAbsoluteUrlFromAnchorElement(window, anchorElement);
+
+          if (!linkUrl) {
+            return;
+          }
+
+          var linkType = determineLinkType(window, config, linkUrl, anchorElement); // TODO: Update link name from the clicked element context
+
+          var linkName = "Link Click";
+          event.documentMayUnload();
+          event.mergeXdm({
+            eventType: "web.webinteraction.linkClicks",
+            web: {
+              webInteraction: {
+                name: linkName,
+                type: linkType,
+                URL: linkUrl,
+                linkClicks: {
+                  value: 1
                 }
               }
-            });
-          }
+            }
+          });
         };
       };
       /*
@@ -3714,7 +3702,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3754,7 +3741,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3794,7 +3780,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3813,7 +3798,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3900,7 +3884,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -3909,7 +3892,7 @@ module.exports = function (instanceNames) {
       // Maybe default the domain in the cookieJar to apex while allowing overrides.
 
 
-      var apexDomain = getApexDomain(window, cookie);
+      var apexDomain = getApexDomain(window, cookie__default['default']);
       /**
        * Handles migration of ECID to and from Visitor.js.
        */
@@ -3924,7 +3907,7 @@ module.exports = function (instanceNames) {
         var getEcidFromLegacyCookies = function getEcidFromLegacyCookies() {
           var ecid = null;
           var secidCookieName = "s_ecid";
-          var legacyEcidCookieValue = cookie.get(secidCookieName) || cookie.get(amcvCookieName);
+          var legacyEcidCookieValue = cookie__default['default'].get(secidCookieName) || cookie__default['default'].get(amcvCookieName);
 
           if (legacyEcidCookieValue) {
             var reg = /(^|\|)MCMID\|(\d+)($|\|)/;
@@ -3954,8 +3937,8 @@ module.exports = function (instanceNames) {
             return Promise.resolve();
           },
           setEcid: function setEcid(ecid) {
-            if (idMigrationEnabled && !cookie.get(amcvCookieName)) {
-              cookie.set(amcvCookieName, "MCMID|" + ecid, {
+            if (idMigrationEnabled && !cookie__default['default'].get(amcvCookieName)) {
+              cookie__default['default'].set(amcvCookieName, "MCMID|" + ecid, {
                 domain: apexDomain,
                 // Without `expires` this will be a session cookie.
                 expires: 390 // days, or 13 months.
@@ -3970,7 +3953,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4002,7 +3984,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4019,7 +4000,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4067,7 +4047,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4086,7 +4065,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4181,7 +4159,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4195,7 +4172,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4214,7 +4190,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4229,7 +4204,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4244,7 +4218,7 @@ module.exports = function (instanceNames) {
          */
 
         return function () {
-          return Boolean(cookie.get(identityCookieName));
+          return Boolean(cookie__default['default'].get(identityCookieName));
         };
       };
 
@@ -4275,7 +4249,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4305,7 +4278,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4329,7 +4301,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4347,7 +4318,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4401,7 +4371,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4421,7 +4390,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4444,7 +4412,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4476,19 +4443,21 @@ module.exports = function (instanceNames) {
             return _useIdThirdPartyDomain;
           },
           addIdentity: function addIdentity() {},
+          getDocumentMayUnload: function getDocumentMayUnload() {
+            return false;
+          },
           toJSON: function toJSON() {
             return content;
           }
         };
         var extendedPayload = construct(content);
-        return assign({}, basePayload, extendedPayload);
+        return assign__default['default']({}, basePayload, extendedPayload);
       };
       /*
       Copyright 2019 Adobe. All rights reserved.
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4509,7 +4478,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4533,7 +4501,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4608,7 +4575,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4645,7 +4611,7 @@ module.exports = function (instanceNames) {
               value = _dest$spec.value,
               domain = _dest$spec.domain,
               ttlDays = _dest$spec.ttlDays;
-          cookie.set(name, value || "", {
+          cookie__default['default'].set(name, value || "", {
             domain: domain || "",
             expires: ttlDays || 10 // days
 
@@ -4666,7 +4632,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4704,30 +4669,101 @@ module.exports = function (instanceNames) {
       createAudiences.namespace = "Audiences";
       createAudiences.configValidators = {};
       /*
-      Copyright 2020 Adobe. All rights reserved.
+      Copyright 2019 Adobe. All rights reserved.
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
       governing permissions and limitations under the License.
       */
 
+      var PAGE_WIDE_SCOPE = "__view__";
+      /*
+      Copyright 2019 Adobe. All rights reserved.
+      This file is licensed to you under the Apache License, Version 2.0 (the "License");
+      you may not use this file except in compliance with the License. You may obtain a copy
+      of the License at http://www.apache.org/licenses/LICENSE-2.0
+      Unless required by applicable law or agreed to in writing, software distributed under
+      the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+      OF ANY KIND, either express or implied. See the License for the specific language
+      governing permissions and limitations under the License.
+      */
+
+      var DOM_ACTION = "https://ns.adobe.com/personalization/dom-action";
+      var HTML_CONTENT_ITEM = "https://ns.adobe.com/personalization/html-content-item";
+      var JSON_CONTENT_ITEM = "https://ns.adobe.com/personalization/json-content-item";
+      var REDIRECT_ITEM = "https://ns.adobe.com/personalization/redirect-item";
+
+      var createPersonalizationDetails = function createPersonalizationDetails(_ref) {
+        var renderDecisions = _ref.renderDecisions,
+            decisionScopes = _ref.decisionScopes,
+            event = _ref.event,
+            viewCache = _ref.viewCache;
+        var viewName = event.getViewName();
+        return {
+          isRenderDecisions: function isRenderDecisions() {
+            return renderDecisions;
+          },
+          getViewName: function getViewName() {
+            return viewName;
+          },
+          hasScopes: function hasScopes() {
+            return decisionScopes.length > 0;
+          },
+          hasViewName: function hasViewName() {
+            return viewName !== undefined;
+          },
+          createQueryDetails: function createQueryDetails() {
+            var scopes = _toConsumableArray(decisionScopes);
+
+            if (!this.isCacheInitialized() && !includes(scopes, PAGE_WIDE_SCOPE)) {
+              scopes.push(PAGE_WIDE_SCOPE);
+            }
+
+            var schemas = [HTML_CONTENT_ITEM, JSON_CONTENT_ITEM, REDIRECT_ITEM];
+
+            if (includes(scopes, PAGE_WIDE_SCOPE)) {
+              schemas.push(DOM_ACTION);
+            }
+
+            return {
+              schemas: schemas,
+              decisionScopes: scopes
+            };
+          },
+          isCacheInitialized: function isCacheInitialized() {
+            return viewCache.isInitialized();
+          },
+          shouldFetchData: function shouldFetchData() {
+            return this.hasScopes() || !this.isCacheInitialized();
+          },
+          shouldUseCachedData: function shouldUseCachedData() {
+            return this.hasViewName() && this.isCacheInitialized();
+          }
+        };
+      };
+      /*
+      Copyright 2020 Adobe. All rights reserved.
+      This file is licensed to you under the Apache License, Version 2.0 (the "License");
+      you may not use this file except in compliance with the License. You may obtain a copy
+      of the License at http://www.apache.org/licenses/LICENSE-2.0
+      Unless required by applicable law or agreed to in writing, software distributed under
+      the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+      OF ANY KIND, either express or implied. See the License for the specific language
+      governing permissions and limitations under the License.
+      */
+
+
       var createComponent$1 = function createComponent$1(_ref) {
-        var config = _ref.config,
-            logger = _ref.logger,
-            onResponseHandler = _ref.onResponseHandler,
+        var logger = _ref.logger,
+            fetchDataHandler = _ref.fetchDataHandler,
+            viewChangeHandler = _ref.viewChangeHandler,
             onClickHandler = _ref.onClickHandler,
-            hideContainers = _ref.hideContainers,
-            showContainers = _ref.showContainers,
-            hasScopes = _ref.hasScopes,
             isAuthoringModeEnabled = _ref.isAuthoringModeEnabled,
-            getDecisionScopes = _ref.getDecisionScopes,
             mergeQuery = _ref.mergeQuery,
-            createQueryDetails = _ref.createQueryDetails;
-        var prehidingStyle = config.prehidingStyle;
+            viewCache = _ref.viewCache;
         return {
           lifecycle: {
             onBeforeEvent: function onBeforeEvent(_ref2) {
@@ -4749,32 +4785,37 @@ module.exports = function (instanceNames) {
                 return;
               }
 
-              var scopes = getDecisionScopes(renderDecisions, decisionScopes);
+              var personalizationDetails = createPersonalizationDetails({
+                renderDecisions: renderDecisions,
+                decisionScopes: decisionScopes,
+                event: event,
+                viewCache: viewCache
+              });
 
-              if (!hasScopes(scopes)) {
+              if (personalizationDetails.shouldFetchData()) {
+                var decisionsDeferred = defer();
+                viewCache.storeViews(decisionsDeferred.promise);
+                fetchDataHandler({
+                  decisionsDeferred: decisionsDeferred,
+                  personalizationDetails: personalizationDetails,
+                  event: event,
+                  onResponse: onResponse,
+                  onRequestFailure: onRequestFailure
+                });
                 return;
-              } // For renderDecisions we try to hide the personalization containers
-
-
-              if (renderDecisions) {
-                hideContainers(prehidingStyle);
               }
 
-              mergeQuery(event, createQueryDetails(scopes));
-              onResponse(function (_ref3) {
-                var response = _ref3.response;
-                return onResponseHandler({
-                  renderDecisions: renderDecisions,
-                  response: response
+              if (personalizationDetails.shouldUseCachedData()) {
+                viewChangeHandler({
+                  personalizationDetails: personalizationDetails,
+                  onResponse: onResponse,
+                  onRequestFailure: onRequestFailure
                 });
-              });
-              onRequestFailure(function () {
-                showContainers();
-              });
+              }
             },
-            onClick: function onClick(_ref4) {
-              var event = _ref4.event,
-                  clickedElement = _ref4.clickedElement;
+            onClick: function onClick(_ref3) {
+              var event = _ref3.event,
+                  clickedElement = _ref3.clickedElement;
               onClickHandler({
                 event: event,
                 clickedElement: clickedElement
@@ -4788,7 +4829,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -4888,7 +4928,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5016,7 +5055,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5040,7 +5078,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5056,7 +5093,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5072,7 +5108,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5088,7 +5123,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5112,7 +5146,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5128,7 +5161,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5144,7 +5176,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5168,7 +5199,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5192,7 +5222,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5214,7 +5243,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5236,7 +5264,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5252,12 +5279,32 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
       governing permissions and limitations under the License.
       */
+
+
+      var nonce;
+      /**
+       * Returns the nonce if available.
+       * @param {Node} [context=document] defaults to document
+       * @returns {(String|undefined)} the nonce or undefined if not available
+       */
+
+      var getNonce = function getNonce() {
+        var context = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document;
+
+        if (nonce === undefined) {
+          var n = context.querySelector("[nonce]"); // NOTE: We're keeping n.getAttribute("nonce") until it is safe to remove:
+          //   ref: https://github.com/whatwg/html/issues/2369#issuecomment-280853946
+
+          nonce = n && (n.nonce || n.getAttribute("nonce"));
+        }
+
+        return nonce;
+      }; // This function is only used for testing and removed when library is built (tree-shaking)
 
 
       var PREHIDING_ID = "alloy-prehiding";
@@ -5274,7 +5321,12 @@ module.exports = function (instanceNames) {
           return;
         }
 
-        var attrs = {};
+        var nonce = getNonce();
+
+        var attrs = _objectSpread2({}, nonce && {
+          nonce: nonce
+        });
+
         var props = {
           textContent: prehidingSelector + " " + HIDING_STYLE_DEFINITION
         };
@@ -5306,9 +5358,14 @@ module.exports = function (instanceNames) {
           return;
         }
 
-        var attrs = {
+        var nonce = getNonce();
+
+        var attrs = _objectSpread2({
           id: PREHIDING_ID
-        };
+        }, nonce && {
+          nonce: nonce
+        });
+
         var props = {
           textContent: prehidingStyle
         };
@@ -5332,7 +5389,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5348,7 +5404,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5381,7 +5436,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5393,19 +5447,55 @@ module.exports = function (instanceNames) {
         return element.tagName === tagName;
       };
 
+      var isInlineStyleElement = function isInlineStyleElement(element) {
+        return is(element, STYLE) && !getAttribute(element, SRC);
+      };
+
+      var addNonceToInlineStyleElements = function addNonceToInlineStyleElements(fragment) {
+        var styleNodes = selectNodes(STYLE, fragment);
+        var length = styleNodes.length;
+        var nonce = getNonce();
+
+        if (!nonce) {
+          return;
+        }
+        /* eslint-disable no-continue */
+
+
+        for (var i = 0; i < length; i += 1) {
+          var element = styleNodes[i];
+
+          if (!isInlineStyleElement(element)) {
+            continue;
+          }
+
+          element.nonce = nonce;
+        }
+      };
+
+      var is$1 = function is(element, tagName) {
+        return element.tagName === tagName;
+      };
+
       var isInlineScript = function isInlineScript(element) {
-        return is(element, SCRIPT) && !getAttribute(element, SRC);
+        return is$1(element, SCRIPT) && !getAttribute(element, SRC);
       };
 
       var isRemoteScript = function isRemoteScript(element) {
-        return is(element, SCRIPT) && getAttribute(element, SRC);
+        return is$1(element, SCRIPT) && getAttribute(element, SRC);
       };
 
       var getInlineScripts = function getInlineScripts(fragment) {
         var scripts = selectNodes(SCRIPT, fragment);
         var result = [];
         var length = scripts.length;
+        var nonce = getNonce();
+
+        var attributes = _objectSpread2({}, nonce && {
+          nonce: nonce
+        });
         /* eslint-disable no-continue */
+
 
         for (var i = 0; i < length; i += 1) {
           var element = scripts[i];
@@ -5420,7 +5510,7 @@ module.exports = function (instanceNames) {
             continue;
           }
 
-          result.push(createNode(SCRIPT, {}, {
+          result.push(createNode(SCRIPT, attributes, {
             textContent: textContent
           }));
         }
@@ -5464,14 +5554,13 @@ module.exports = function (instanceNames) {
       };
 
       var executeRemoteScripts = function executeRemoteScripts(urls) {
-        return Promise.all(urls.map(loadScript));
+        return Promise.all(urls.map(loadScript__default['default']));
       };
       /*
       Copyright 2019 Adobe. All rights reserved.
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5481,6 +5570,7 @@ module.exports = function (instanceNames) {
 
       var appendHtml = function appendHtml(container, html) {
         var fragment = createFragment(html);
+        addNonceToInlineStyleElements(fragment);
         var elements = getChildNodes(fragment);
         var scripts = getInlineScripts(fragment);
         var scriptsUrls = getRemoteScriptsUrls(fragment);
@@ -5496,7 +5586,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5519,7 +5608,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5529,6 +5617,7 @@ module.exports = function (instanceNames) {
 
       var prependHtml = function prependHtml(container, html) {
         var fragment = createFragment(html);
+        addNonceToInlineStyleElements(fragment);
         var elements = getChildNodes(fragment);
         var scripts = getInlineScripts(fragment);
         var scriptsUrls = getRemoteScriptsUrls(fragment);
@@ -5558,7 +5647,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5568,6 +5656,7 @@ module.exports = function (instanceNames) {
 
       var insertHtmlBefore = function insertHtmlBefore(container, html) {
         var fragment = createFragment(html);
+        addNonceToInlineStyleElements(fragment);
         var elements = getChildNodes(fragment);
         var scripts = getInlineScripts(fragment);
         var scriptsUrls = getRemoteScriptsUrls(fragment);
@@ -5583,7 +5672,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5600,7 +5688,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5610,6 +5697,7 @@ module.exports = function (instanceNames) {
 
       var insertHtmlAfter = function insertHtmlAfter(container, html) {
         var fragment = createFragment(html);
+        addNonceToInlineStyleElements(fragment);
         var elements = getChildNodes(fragment);
         var scripts = getInlineScripts(fragment);
         var scriptsUrls = getRemoteScriptsUrls(fragment);
@@ -5634,7 +5722,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5652,7 +5739,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5677,7 +5763,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5709,7 +5794,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5731,7 +5815,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5777,7 +5860,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5812,7 +5894,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5867,7 +5948,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5878,7 +5958,8 @@ module.exports = function (instanceNames) {
       var createCollect = function createCollect(_ref) {
         var eventManager = _ref.eventManager,
             mergeMeta = _ref.mergeMeta;
-        return function (meta) {
+        return function (_ref2) {
+          var meta = _ref2.meta;
           var event = eventManager.createEvent();
           event.mergeXdm({
             eventType: "display"
@@ -5888,11 +5969,10 @@ module.exports = function (instanceNames) {
         };
       };
       /*
-      Copyright 2019 Adobe. All rights reserved.
+      Copyright 2020 Adobe. All rights reserved.
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5900,68 +5980,40 @@ module.exports = function (instanceNames) {
       */
 
 
-      var DOM_ACTION = "https://ns.adobe.com/personalization/dom-action";
-      var HTML_CONTENT_ITEM = "https://ns.adobe.com/personalization/html-content-item";
-      var JSON_CONTENT_ITEM = "https://ns.adobe.com/personalization/json-content-item";
-      var REDIRECT_ITEM = "https://ns.adobe.com/personalization/redirect-item";
+      var createViewCollect = function createViewCollect(_ref) {
+        var eventManager = _ref.eventManager,
+            mergeMeta = _ref.mergeMeta;
+        return function (_ref2) {
+          var meta = _ref2.meta,
+              _ref2$xdm = _ref2.xdm,
+              xdm = _ref2$xdm === void 0 ? {} : _ref2$xdm;
+          var _meta$decisions = meta.decisions,
+              decisions = _meta$decisions === void 0 ? [] : _meta$decisions;
+          var data = {
+            eventType: "display"
+          };
+          var event = eventManager.createEvent();
 
-      var isDomActionItem = function isDomActionItem(item) {
-        return item.schema === DOM_ACTION;
-      };
-
-      var splitItems = function splitItems(items, predicate) {
-        var matched = [];
-        var nonMatched = [];
-        items.forEach(function (item) {
-          if (predicate(item)) {
-            matched.push(item);
-          } else {
-            nonMatched.push(item);
+          if (isNonEmptyArray(decisions)) {
+            var viewName = decisions[0].scope;
+            data.web = {
+              webPageDetails: {
+                viewName: viewName
+              }
+            };
+            mergeMeta(event, meta);
           }
-        });
-        return [matched, nonMatched];
-      };
 
-      var createDecision = function createDecision(decision, items) {
-        return {
-          id: decision.id,
-          scope: decision.scope,
-          items: items
+          event.mergeXdm(data);
+          event.mergeXdm(xdm);
+          return eventManager.sendEvent(event);
         };
-      };
-
-      var splitDecisions = function splitDecisions(decisions, predicate) {
-        var matchedDecisions = [];
-        var nonMatchedDecisions = [];
-        decisions.forEach(function (decision) {
-          var _decision$items = decision.items,
-              items = _decision$items === void 0 ? [] : _decision$items;
-
-          var _splitItems = splitItems(items, predicate),
-              _splitItems2 = _slicedToArray(_splitItems, 2),
-              matchedItems = _splitItems2[0],
-              nonMatchedItems = _splitItems2[1];
-
-          if (isNonEmptyArray(matchedItems)) {
-            matchedDecisions.push(createDecision(decision, matchedItems));
-          }
-
-          if (isNonEmptyArray(nonMatchedItems)) {
-            nonMatchedDecisions.push(createDecision(decision, nonMatchedItems));
-          }
-        });
-        return [matchedDecisions, nonMatchedDecisions];
-      };
-
-      var extractDecisions = function extractDecisions(decisions) {
-        return splitDecisions(decisions, isDomActionItem);
       };
       /*
       Copyright 2020 Adobe. All rights reserved.
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -5979,7 +6031,7 @@ module.exports = function (instanceNames) {
           scope: decision.scope
         };
         return decision.items.map(function (item) {
-          return assign({}, item.data, {
+          return assign__default['default']({}, item.data, {
             meta: meta
           });
         });
@@ -6012,7 +6064,9 @@ module.exports = function (instanceNames) {
 
         if (isNonEmptyArray(finalMetas)) {
           collect({
-            decisions: finalMetas
+            meta: {
+              decisions: finalMetas
+            }
           });
         }
       };
@@ -6039,7 +6093,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6047,40 +6100,37 @@ module.exports = function (instanceNames) {
       */
 
 
-      var DECISIONS_HANDLE = "personalization:decisions";
-
-      var createOnResponseHandler = function createOnResponseHandler(_ref) {
-        var extractDecisions = _ref.extractDecisions,
-            executeDecisions = _ref.executeDecisions,
-            showContainers = _ref.showContainers;
+      var createFetchDataHandler = function createFetchDataHandler(_ref) {
+        var config = _ref.config,
+            responseHandler = _ref.responseHandler,
+            showContainers = _ref.showContainers,
+            hideContainers = _ref.hideContainers,
+            mergeQuery = _ref.mergeQuery;
         return function (_ref2) {
-          var renderDecisions = _ref2.renderDecisions,
-              response = _ref2.response;
-          var unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
+          var decisionsDeferred = _ref2.decisionsDeferred,
+              personalizationDetails = _ref2.personalizationDetails,
+              event = _ref2.event,
+              onResponse = _ref2.onResponse,
+              onRequestFailure = _ref2.onRequestFailure;
+          var prehidingStyle = config.prehidingStyle;
 
-          if (!renderDecisions) {
-            return {
-              decisions: unprocessedDecisions
-            };
+          if (personalizationDetails.isRenderDecisions()) {
+            hideContainers(prehidingStyle);
           }
 
-          if (unprocessedDecisions.length === 0) {
+          mergeQuery(event, personalizationDetails.createQueryDetails());
+          onResponse(function (_ref3) {
+            var response = _ref3.response;
+            return responseHandler({
+              decisionsDeferred: decisionsDeferred,
+              personalizationDetails: personalizationDetails,
+              response: response
+            });
+          });
+          onRequestFailure(function () {
+            decisionsDeferred.reject();
             showContainers();
-            return {
-              decisions: []
-            };
-          }
-
-          var _extractDecisions = extractDecisions(unprocessedDecisions),
-              _extractDecisions2 = _slicedToArray(_extractDecisions, 2),
-              renderableDecisions = _extractDecisions2[0],
-              decisions = _extractDecisions2[1];
-
-          executeDecisions(renderableDecisions);
-          showContainers();
-          return {
-            decisions: decisions
-          };
+          });
         };
       };
       /*
@@ -6088,7 +6138,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6121,7 +6170,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6169,7 +6217,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6177,26 +6224,21 @@ module.exports = function (instanceNames) {
       */
 
 
-      var PAGE_WIDE_SCOPE = "__view__";
-
-      var hasScopes = function hasScopes(scopes) {
-        return isNonEmptyArray(scopes);
-      };
-
       var isAuthoringModeEnabled = function isAuthoringModeEnabled() {
         var doc = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document;
         return doc.location.href.indexOf("mboxEdit") !== -1;
       };
+      /*
+      Copyright 2019 Adobe. All rights reserved.
+      This file is licensed to you under the Apache License, Version 2.0 (the "License");
+      you may not use this file except in compliance with the License. You may obtain a copy
+      of the License at http://www.apache.org/licenses/LICENSE-2.0
+      Unless required by applicable law or agreed to in writing, software distributed under
+      the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+      OF ANY KIND, either express or implied. See the License for the specific language
+      governing permissions and limitations under the License.
+      */
 
-      var getDecisionScopes = function getDecisionScopes(renderDecisions, decisionScopes) {
-        var scopes = _toConsumableArray(decisionScopes);
-
-        if (renderDecisions && !includes(scopes, PAGE_WIDE_SCOPE)) {
-          scopes.push(PAGE_WIDE_SCOPE);
-        }
-
-        return scopes;
-      };
 
       var mergeMeta = function mergeMeta(event, meta) {
         event.mergeMeta({
@@ -6209,25 +6251,11 @@ module.exports = function (instanceNames) {
           personalization: _objectSpread2({}, details)
         });
       };
-
-      var createQueryDetails = function createQueryDetails(decisionScopes) {
-        var schemas = [HTML_CONTENT_ITEM, JSON_CONTENT_ITEM, REDIRECT_ITEM];
-
-        if (includes(decisionScopes, PAGE_WIDE_SCOPE)) {
-          schemas.push(DOM_ACTION);
-        }
-
-        return {
-          schemas: schemas,
-          decisionScopes: decisionScopes
-        };
-      };
       /*
       Copyright 2020 Adobe. All rights reserved.
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6255,11 +6283,284 @@ module.exports = function (instanceNames) {
         };
       };
       /*
+      Copyright 2020 Adobe. All rights reserved.
+      This file is licensed to you under the Apache License, Version 2.0 (the "License");
+      you may not use this file except in compliance with the License. You may obtain a copy
+      of the License at http://www.apache.org/licenses/LICENSE-2.0
+      Unless required by applicable law or agreed to in writing, software distributed under
+      the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+      OF ANY KIND, either express or implied. See the License for the specific language
+      governing permissions and limitations under the License.
+      */
+
+
+      var createExecuteCachedViewDecisions = function createExecuteCachedViewDecisions(_ref) {
+        var viewCache = _ref.viewCache,
+            executeViewDecisions = _ref.executeViewDecisions,
+            collect = _ref.collect;
+        return function (_ref2) {
+          var viewName = _ref2.viewName;
+          viewCache.getView(viewName).then(function (viewDecisions) {
+            if (isNonEmptyArray(viewDecisions)) {
+              executeViewDecisions(viewDecisions);
+              return;
+            }
+
+            var xdm = {
+              web: {
+                webPageDetails: {
+                  viewName: viewName
+                }
+              }
+            };
+            collect({
+              meta: {},
+              xdm: xdm
+            });
+          });
+        };
+      };
+      /*
+      Copyright 2020 Adobe. All rights reserved.
+      This file is licensed to you under the Apache License, Version 2.0 (the "License");
+      you may not use this file except in compliance with the License. You may obtain a copy
+      of the License at http://www.apache.org/licenses/LICENSE-2.0
+      Unless required by applicable law or agreed to in writing, software distributed under
+      the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+      OF ANY KIND, either express or implied. See the License for the specific language
+      governing permissions and limitations under the License.
+      */
+
+
+      var createViewCacheManager = function createViewCacheManager() {
+        var viewStorage;
+        var viewStorageDeferred = defer();
+
+        var storeViews = function storeViews(decisionsPromise) {
+          decisionsPromise.then(function (decisions) {
+            if (viewStorage === undefined) {
+              viewStorage = {};
+            }
+
+            assign__default['default'](viewStorage, decisions);
+            viewStorageDeferred.resolve();
+          });
+        };
+
+        var getView = function getView(viewName) {
+          return viewStorageDeferred.promise.then(function () {
+            return viewStorage[viewName];
+          });
+        };
+
+        var isInitialized = function isInitialized() {
+          return !(viewStorage === undefined);
+        };
+
+        return {
+          storeViews: storeViews,
+          getView: getView,
+          isInitialized: isInitialized
+        };
+      };
+      /*
+      Copyright 2020 Adobe. All rights reserved.
+      This file is licensed to you under the Apache License, Version 2.0 (the "License");
+      you may not use this file except in compliance with the License. You may obtain a copy
+      of the License at http://www.apache.org/licenses/LICENSE-2.0
+      Unless required by applicable law or agreed to in writing, software distributed under
+      the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+      OF ANY KIND, either express or implied. See the License for the specific language
+      governing permissions and limitations under the License.
+      */
+
+
+      var createViewChangeHandler = function createViewChangeHandler(_ref) {
+        var executeCachedViewDecisions = _ref.executeCachedViewDecisions,
+            viewCache = _ref.viewCache,
+            showContainers = _ref.showContainers;
+        return function (_ref2) {
+          var personalizationDetails = _ref2.personalizationDetails,
+              onResponse = _ref2.onResponse,
+              onRequestFailure = _ref2.onRequestFailure;
+          var viewName = personalizationDetails.getViewName();
+
+          if (personalizationDetails.isRenderDecisions()) {
+            executeCachedViewDecisions({
+              viewName: viewName
+            });
+            return;
+          }
+
+          onResponse(function () {
+            return viewCache.getView(viewName).then(function (decisions) {
+              return {
+                decisions: decisions
+              };
+            });
+          });
+          onRequestFailure(function () {
+            showContainers();
+          });
+        };
+      };
+
+      var splitItems = function splitItems(items, schema) {
+        var matched = [];
+        var nonMatched = [];
+        items.forEach(function (item) {
+          if (item.schema === schema) {
+            matched.push(item);
+          } else {
+            nonMatched.push(item);
+          }
+        });
+        return [matched, nonMatched];
+      };
+
+      var createDecision = function createDecision(decision, items) {
+        return {
+          id: decision.id,
+          scope: decision.scope,
+          items: items
+        };
+      };
+
+      var splitDecisions = function splitDecisions(decisions, schema) {
+        var domActionDecisions = [];
+        var nonDomActionDecisions = [];
+        decisions.forEach(function (decision) {
+          var _decision$items = decision.items,
+              items = _decision$items === void 0 ? [] : _decision$items;
+
+          var _splitItems = splitItems(items, schema),
+              _splitItems2 = _slicedToArray(_splitItems, 2),
+              matchedItems = _splitItems2[0],
+              nonMatchedItems = _splitItems2[1];
+
+          if (isNonEmptyArray(matchedItems)) {
+            domActionDecisions.push(createDecision(decision, matchedItems));
+          }
+
+          if (isNonEmptyArray(nonMatchedItems)) {
+            nonDomActionDecisions.push(createDecision(decision, nonMatchedItems));
+          }
+        });
+        return {
+          domActionDecisions: domActionDecisions,
+          nonDomActionDecisions: nonDomActionDecisions
+        };
+      };
+
+      var extractDecisionsByScope = function extractDecisionsByScope(decisions, scope) {
+        var pageWideScopeDecisions = [];
+        var nonPageWideScopeDecisions = {};
+
+        if (isNonEmptyArray(decisions)) {
+          decisions.forEach(function (decision) {
+            if (decision.scope === scope) {
+              pageWideScopeDecisions.push(decision);
+            } else {
+              if (!nonPageWideScopeDecisions[decision.scope]) {
+                nonPageWideScopeDecisions[decision.scope] = [];
+              }
+
+              nonPageWideScopeDecisions[decision.scope].push(decision);
+            }
+          });
+        }
+
+        return {
+          pageWideScopeDecisions: pageWideScopeDecisions,
+          nonPageWideScopeDecisions: nonPageWideScopeDecisions
+        };
+      };
+
+      var decisionsExtractor = {
+        groupDecisionsBySchema: function groupDecisionsBySchema(_ref) {
+          var decisions = _ref.decisions,
+              schema = _ref.schema;
+          return splitDecisions(decisions, schema);
+        },
+        groupDecisionsByScope: function groupDecisionsByScope(_ref2) {
+          var decisions = _ref2.decisions,
+              scope = _ref2.scope;
+          return extractDecisionsByScope(decisions, scope);
+        }
+      };
+      var DECISIONS_HANDLE = "personalization:decisions";
+
+      var createOnResponseHandler = function createOnResponseHandler(_ref) {
+        var decisionsExtractor = _ref.decisionsExtractor,
+            executeDecisions = _ref.executeDecisions,
+            executeCachedViewDecisions = _ref.executeCachedViewDecisions,
+            showContainers = _ref.showContainers;
+        return function (_ref2) {
+          var decisionsDeferred = _ref2.decisionsDeferred,
+              personalizationDetails = _ref2.personalizationDetails,
+              response = _ref2.response;
+          var unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
+          var viewName = personalizationDetails.getViewName();
+
+          if (unprocessedDecisions.length === 0) {
+            showContainers();
+            decisionsDeferred.resolve({});
+            return {
+              decisions: []
+            };
+          }
+
+          var _decisionsExtractor$g = decisionsExtractor.groupDecisionsBySchema({
+            decisions: unprocessedDecisions,
+            schema: DOM_ACTION
+          }),
+              domActionDecisions = _decisionsExtractor$g.domActionDecisions,
+              nonDomActionDecisions = _decisionsExtractor$g.nonDomActionDecisions;
+
+          var _decisionsExtractor$g2 = decisionsExtractor.groupDecisionsByScope({
+            decisions: domActionDecisions,
+            scope: PAGE_WIDE_SCOPE
+          }),
+              pageWideScopeDecisions = _decisionsExtractor$g2.pageWideScopeDecisions,
+              nonPageWideScopeDecisions = _decisionsExtractor$g2.nonPageWideScopeDecisions;
+
+          if (isEmptyObject(nonPageWideScopeDecisions)) {
+            decisionsDeferred.resolve({});
+          } else {
+            decisionsDeferred.resolve(nonPageWideScopeDecisions);
+          }
+
+          if (personalizationDetails.isRenderDecisions()) {
+            executeDecisions(pageWideScopeDecisions);
+
+            if (viewName) {
+              executeCachedViewDecisions({
+                viewName: viewName
+              });
+            }
+
+            showContainers();
+            return {
+              decisions: nonDomActionDecisions
+            };
+          }
+
+          var decisionsToBeReturned = [].concat(_toConsumableArray(pageWideScopeDecisions), _toConsumableArray(nonDomActionDecisions));
+
+          if (viewName && nonPageWideScopeDecisions[viewName]) {
+            decisionsToBeReturned.push.apply(decisionsToBeReturned, _toConsumableArray(nonPageWideScopeDecisions[viewName]));
+          }
+
+          return {
+            decisions: decisionsToBeReturned
+          };
+        };
+      };
+      /*
       Copyright 2019 Adobe. All rights reserved.
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6275,7 +6576,12 @@ module.exports = function (instanceNames) {
           eventManager: eventManager,
           mergeMeta: mergeMeta
         });
+        var viewCollect = createViewCollect({
+          eventManager: eventManager,
+          mergeMeta: mergeMeta
+        });
         var clickStorage = [];
+        var viewCache = createViewCacheManager();
 
         var store = function store(value) {
           return clickStorage.push(value);
@@ -6288,30 +6594,48 @@ module.exports = function (instanceNames) {
           executeActions: executeActions,
           collect: collect
         });
-        var onResponseHandler = createOnResponseHandler({
-          extractDecisions: extractDecisions,
+        var executeViewDecisions = createExecuteDecisions({
+          modules: modules,
+          logger: logger,
+          executeActions: executeActions,
+          collect: viewCollect
+        });
+        var executeCachedViewDecisions = createExecuteCachedViewDecisions({
+          viewCache: viewCache,
+          executeViewDecisions: executeViewDecisions,
+          collect: viewCollect
+        });
+        var responseHandler = createOnResponseHandler({
+          decisionsExtractor: decisionsExtractor,
           executeDecisions: executeDecisions,
+          executeCachedViewDecisions: executeCachedViewDecisions,
           showContainers: showContainers
+        });
+        var fetchDataHandler = createFetchDataHandler({
+          config: config,
+          responseHandler: responseHandler,
+          showContainers: showContainers,
+          hideContainers: hideContainers,
+          mergeQuery: mergeQuery
         });
         var onClickHandler = createOnClickHandler({
           mergeMeta: mergeMeta,
           collectClicks: collectClicks,
           clickStorage: clickStorage
         });
+        var viewChangeHandler = createViewChangeHandler({
+          executeCachedViewDecisions: executeCachedViewDecisions,
+          viewCache: viewCache,
+          showContainers: showContainers
+        });
         return createComponent$1({
-          config: config,
           logger: logger,
-          eventManager: eventManager,
-          onResponseHandler: onResponseHandler,
+          fetchDataHandler: fetchDataHandler,
+          viewChangeHandler: viewChangeHandler,
           onClickHandler: onClickHandler,
-          hideContainers: hideContainers,
-          showContainers: showContainers,
-          hasScopes: hasScopes,
           isAuthoringModeEnabled: isAuthoringModeEnabled,
-          getDecisionScopes: getDecisionScopes,
-          mergeMeta: mergeMeta,
           mergeQuery: mergeQuery,
-          createQueryDetails: createQueryDetails
+          viewCache: viewCache
         });
       };
 
@@ -6324,7 +6648,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6338,7 +6661,7 @@ module.exports = function (instanceNames) {
               URL: window.location.href || window.location
             },
             webReferrer: {
-              URL: window.top.document.referrer
+              URL: window.document.referrer
             }
           };
           deepAssign(xdm, {
@@ -6351,7 +6674,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6416,7 +6738,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6445,7 +6766,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6470,7 +6790,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6491,7 +6810,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6511,7 +6829,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6523,15 +6840,14 @@ module.exports = function (instanceNames) {
       // see babel-plugin-version
 
 
-      var alloyVersion = "2.2.0";
-      var extensionVersion = "2.1.1";
+      var alloyVersion = "2.3.0";
+      var extensionVersion = "2.2.0";
       var libraryVersion = alloyVersion + "+" + extensionVersion;
       /*
       Copyright 2020 Adobe. All rights reserved.
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6544,7 +6860,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6580,7 +6895,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6628,7 +6942,7 @@ module.exports = function (instanceNames) {
             consent = _ref.consent,
             sendSetConsentRequest = _ref.sendSetConsentRequest,
             validateSetConsentOptions = _ref.validateSetConsentOptions;
-        var consentByPurpose = assign(_defineProperty({}, GENERAL, defaultConsent), readStoredConsent());
+        var consentByPurpose = assign__default['default'](_defineProperty({}, GENERAL, defaultConsent), readStoredConsent());
         consent.setConsent(consentByPurpose);
 
         var readCookieIfQueueEmpty = function readCookieIfQueueEmpty() {
@@ -6679,7 +6993,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6706,7 +7019,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6729,7 +7041,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6767,7 +7078,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6804,7 +7114,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6820,7 +7129,7 @@ module.exports = function (instanceNames) {
         var readStoredConsent = injectReadStoredConsent({
           parseConsentCookie: parseConsentCookie,
           orgId: orgId,
-          cookieJar: cookie
+          cookieJar: cookie__default['default']
         });
         var taskQueue = createTaskQueue();
         var sendSetConsentRequest = injectSendSetConsentRequest({
@@ -6843,7 +7152,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6880,7 +7188,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6909,7 +7216,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6923,7 +7229,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6934,10 +7239,10 @@ module.exports = function (instanceNames) {
 
       var buildSchema = function buildSchema(coreConfigValidators, componentCreators) {
         var schema = {};
-        assign(schema, coreConfigValidators);
+        assign__default['default'](schema, coreConfigValidators);
         componentCreators.forEach(function (createComponent) {
           var configValidators = createComponent.configValidators;
-          assign(schema, configValidators);
+          assign__default['default'](schema, configValidators);
         });
         return schema;
       };
@@ -6973,7 +7278,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -6995,7 +7299,10 @@ module.exports = function (instanceNames) {
           try {
             component = createComponent(tools);
           } catch (error) {
-            throw stackError("[" + namespace + "] An error occurred during component creation.", error);
+            throw stackError({
+              error: error,
+              message: "[" + namespace + "] An error occurred during component creation."
+            });
           }
 
           componentRegistry.register(namespace, component);
@@ -7011,7 +7318,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -7020,14 +7326,13 @@ module.exports = function (instanceNames) {
 
 
       var createConfig = function createConfig(options) {
-        return assign(Object.create(null), options);
+        return assign__default['default']({}, options);
       };
       /*
       Copyright 2019 Adobe. All rights reserved.
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -7043,7 +7348,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -7066,7 +7370,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -7078,16 +7381,19 @@ module.exports = function (instanceNames) {
         var errorPrefix = _ref.errorPrefix,
             logger = _ref.logger;
         return function (error, operation) {
-          // In the case of declined consent, we've opted to not reject the promise
+          var err = toError(error); // In the case of declined consent, we've opted to not reject the promise
           // returned to the customer, but instead resolve the promise with an
           // empty result object.
-          if (error.code === DECLINED_CONSENT_ERROR_CODE) {
+
+          if (err.code === DECLINED_CONSENT_ERROR_CODE) {
             logger.warn("The " + operation + " could not fully complete because the user declined consent.");
             return {};
           }
 
-          var err = toError(error);
-          err.message = errorPrefix + " " + err.message;
+          updateErrorMessage({
+            error: err,
+            message: errorPrefix + " " + err.message
+          });
           throw err;
         };
       };
@@ -7096,7 +7402,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -7140,7 +7445,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -7175,7 +7479,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -7208,7 +7511,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -7216,10 +7518,15 @@ module.exports = function (instanceNames) {
       */
 
 
-      var injectNetworkStrategy = function injectNetworkStrategy(window, logger) {
+      var injectNetworkStrategy = function injectNetworkStrategy(_ref) {
+        var window = _ref.window,
+            logger = _ref.logger;
         var fetch = isFunction(window.fetch) ? injectFetch(window.fetch) : injectSendXhrRequest(window.XMLHttpRequest);
         var sendBeacon = window.navigator && isFunction(window.navigator.sendBeacon) ? injectSendBeacon(window.navigator, fetch, logger) : fetch;
-        return function (url, body, documentMayUnload) {
+        return function (_ref2) {
+          var url = _ref2.url,
+              body = _ref2.body,
+              documentMayUnload = _ref2.documentMayUnload;
           var method = documentMayUnload ? sendBeacon : fetch;
           return method(url, body);
         };
@@ -7229,7 +7536,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -7252,7 +7558,7 @@ module.exports = function (instanceNames) {
           var monitors = getMonitors();
 
           if (monitors.length > 0) {
-            var dataWithContext = assign({}, context, data);
+            var dataWithContext = assign__default['default']({}, context, data);
             monitors.forEach(function (monitor) {
               if (monitor[method]) {
                 monitor[method](dataWithContext);
@@ -7339,7 +7645,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -7427,7 +7732,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -7506,7 +7810,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -7520,7 +7823,12 @@ module.exports = function (instanceNames) {
             addIdentity: createAddIdentity(content),
             addEvent: function addEvent(event) {
               content.events = content.events || [];
-              content.events.push(event.toJSON());
+              content.events.push(event);
+            },
+            getDocumentMayUnload: function getDocumentMayUnload() {
+              return (content.events || []).some(function (event) {
+                return event.getDocumentMayUnload();
+              });
             }
           };
         });
@@ -7623,7 +7931,7 @@ module.exports = function (instanceNames) {
               var lifecycleOnResponseReturnValues = returnValues.shift() || [];
               var consumerOnResponseReturnValues = returnValues.shift() || [];
               var lifecycleOnBeforeRequestReturnValues = returnValues;
-              return assign.apply(void 0, [{}].concat(_toConsumableArray(lifecycleOnResponseReturnValues), _toConsumableArray(consumerOnResponseReturnValues), _toConsumableArray(lifecycleOnBeforeRequestReturnValues)));
+              return assign__default['default'].apply(void 0, [{}].concat(_toConsumableArray(lifecycleOnResponseReturnValues), _toConsumableArray(consumerOnResponseReturnValues), _toConsumableArray(lifecycleOnBeforeRequestReturnValues)));
             });
           });
         };
@@ -7633,7 +7941,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -7674,7 +7981,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -7689,7 +7995,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -7716,7 +8021,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -7732,7 +8036,6 @@ module.exports = function (instanceNames) {
       This file is licensed to you under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License. You may obtain a copy
       of the License at http://www.apache.org/licenses/LICENSE-2.0
-      
       Unless required by applicable law or agreed to in writing, software distributed under
       the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
       OF ANY KIND, either express or implied. See the License for the specific language
@@ -7751,7 +8054,7 @@ module.exports = function (instanceNames) {
       };
 
       var coreConfigValidators = createCoreConfigs();
-      var apexDomain$1 = getApexDomain(window, cookie);
+      var apexDomain$1 = getApexDomain(window, cookie__default['default']);
 
       if (instanceNames) {
         instanceNames.forEach(function (instanceName) {
@@ -7769,7 +8072,10 @@ module.exports = function (instanceNames) {
 
           var componentRegistry = createComponentRegistry();
           var lifecycle = createLifecycle(componentRegistry);
-          var networkStrategy = injectNetworkStrategy(window, logger);
+          var networkStrategy = injectNetworkStrategy({
+            window: window,
+            logger: logger
+          });
 
           var setDebugCommand = function setDebugCommand(options) {
             setDebugEnabled(options.enabled, {
@@ -7787,7 +8093,7 @@ module.exports = function (instanceNames) {
               setDebugEnabled: setDebugEnabled
             });
             var cookieTransfer = createCookieTransfer({
-              cookieJar: cookie,
+              cookieJar: cookie__default['default'],
               orgId: config.orgId,
               apexDomain: apexDomain$1
             });
@@ -7984,7 +8290,7 @@ module.exports = function (_ref) {
           }
         ]
       },
-      "hostedLibFilesBaseUrl": "/perf/js/1281f6ff0c59/52f9f604c48e/e42d3cbf1e5e/hostedLibFiles/EPa63f62806cac47af95e68a7252c5257b/"
+      "hostedLibFilesBaseUrl": "/perf/js/1281f6ff0c59/52f9f604c48e/b62bae94dde2/hostedLibFiles/EP4426249d34fd41a594efc0decc99e6cb/"
     },
     "core": {
       "displayName": "Core",
@@ -8154,7 +8460,7 @@ module.exports = {
 
         }
       },
-      "hostedLibFilesBaseUrl": "/perf/js/1281f6ff0c59/52f9f604c48e/e42d3cbf1e5e/hostedLibFiles/EP2e2f86ba46954a2b8a2b3bb72276b9f8/"
+      "hostedLibFilesBaseUrl": "/perf/js/1281f6ff0c59/52f9f604c48e/b62bae94dde2/hostedLibFiles/EP2e2f86ba46954a2b8a2b3bb72276b9f8/"
     }
   },
   "company": {
