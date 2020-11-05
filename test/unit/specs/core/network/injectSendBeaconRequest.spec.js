@@ -28,9 +28,7 @@ describe("injectSendBeaconRequest", () => {
   it(
     "falls back to sendFetchRequest if sendBeacon fails",
     guardForSendBeaconAvailability(() => {
-      const navigator = {
-        sendBeacon: jasmine.createSpy().and.returnValue(false)
-      };
+      const sendBeacon = jasmine.createSpy().and.returnValue(false);
       const sendFetchRequestPromise = Promise.resolve();
       const sendFetchRequest = jasmine
         .createSpy()
@@ -39,13 +37,13 @@ describe("injectSendBeaconRequest", () => {
         log: jasmine.createSpy()
       };
       const sendBeaconRequest = injectSendBeaconRequest({
-        navigator,
+        sendBeacon,
         sendFetchRequest,
         logger
       });
       const body = { a: "b" };
       const result = sendBeaconRequest("https://example.com/endpoint", body);
-      expect(navigator.sendBeacon).toHaveBeenCalledWith(
+      expect(sendBeacon).toHaveBeenCalledWith(
         "https://example.com/endpoint",
         jasmine.any(Object)
       );
@@ -54,7 +52,7 @@ describe("injectSendBeaconRequest", () => {
         body
       );
       expect(logger.log).toHaveBeenCalledWith(
-        jasmine.stringMatching("call has failed")
+        jasmine.stringMatching("falling back to")
       );
       expect(result).toBe(sendFetchRequestPromise);
     })
@@ -63,13 +61,11 @@ describe("injectSendBeaconRequest", () => {
   it(
     "does not fall back to sendFetchRequest if sendBeacon succeeds",
     guardForSendBeaconAvailability(() => {
-      const navigator = {
-        sendBeacon: jasmine.createSpy().and.returnValue(true)
-      };
+      const sendBeacon = jasmine.createSpy().and.returnValue(true);
       const body = { a: "b" };
       const sendFetchRequest = jasmine.createSpy();
       const sendBeaconRequest = injectSendBeaconRequest({
-        navigator,
+        sendBeacon,
         sendFetchRequest
       });
       // eslint-disable-next-line consistent-return
