@@ -10,13 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  getDecisionScopes,
-  hasScopes,
-  isAuthoringModeEnabled
-} from "../../../../../src/components/Personalization/utils";
+import isAuthoringModeEnabled from "../../../../../../src/components/Personalization/utils/isAuthoringModeEnabled";
 
-describe("Personalization::utils", () => {
+describe("Personalization::isAuthoringModeEnabled", () => {
   it("returns true if authoring mode is enabled", () => {
     const doc = {
       location: {
@@ -33,23 +29,5 @@ describe("Personalization::utils", () => {
       }
     };
     expect(isAuthoringModeEnabled(doc)).toEqual(false);
-  });
-
-  it("returns true if it has scopes", () => {
-    expect(hasScopes(["foo"])).toEqual(true);
-    expect(hasScopes([])).toEqual(false);
-    expect(hasScopes(null)).toEqual(false);
-    expect(hasScopes({})).toEqual(false);
-    expect(hasScopes("foo")).toEqual(false);
-  });
-
-  it("returns decisions scopes", () => {
-    expect(getDecisionScopes(true, [])).toEqual(["__view__"]);
-    expect(getDecisionScopes(false, [])).toEqual([]);
-    expect(getDecisionScopes(false, ["foo"])).toEqual(["foo"]);
-    expect(getDecisionScopes(true, ["foo", "__view__"])).toEqual([
-      "foo",
-      "__view__"
-    ]);
   });
 });

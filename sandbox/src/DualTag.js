@@ -1,18 +1,19 @@
 import React from "react";
+import UnsafeContentSecurityPolicy from "./UnsafeContentSecurityPolicy";
 
 function loadLaunch() {
   const script = document.createElement("script");
-
   script.src =
     "http://assets.adobedtm.com/launch-ENaa9d45a2136f487791ebc8420ec24dbe.min.js";
   script.async = true;
-
   document.body.appendChild(script);
 }
 
 export default function DualTag() {
   return (
     <div>
+      {/* Need less restrictive CSP for old libraries */}
+      <UnsafeContentSecurityPolicy />
       {loadLaunch()}
       <h2>Dual Tagging</h2>
       <p>

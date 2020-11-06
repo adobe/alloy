@@ -99,7 +99,7 @@ const getFixtureClientScriptsForInt = options => {
     // like to simulate that. To do so, we'll wrap our Alloy code in a
     // setTimeout with a small arbitrary delay.
     clientScripts.push({
-      content: `setTimeout(() => {\n${localAlloyCode}\n}, 10);`
+      content: `setTimeout(function() {\n${localAlloyCode}\n}, 10);`
     });
   }
 
@@ -170,9 +170,14 @@ const injectAlloyDuringTestForInt = ClientFunction(
  */
 const injectAlloyDuringTestForProd = ClientFunction(
   () => {
-    const scriptElement = document.createElement("script");
-    scriptElement.src = remoteAlloyLibraryUrl;
-    document.getElementsByTagName("head")[0].appendChild(scriptElement);
+    return new Promise(resolve => {
+      const scriptElement = document.createElement("script");
+      scriptElement.src = remoteAlloyLibraryUrl;
+      scriptElement.addEventListener("load", () => {
+        resolve();
+      });
+      document.getElementsByTagName("head")[0].appendChild(scriptElement);
+    });
   },
   {
     dependencies: {

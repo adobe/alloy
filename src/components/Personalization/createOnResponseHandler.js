@@ -9,27 +9,66 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { isEmptyObject } from "../../utils";
+import { DOM_ACTION } from "./constants/schema";
+import PAGE_WIDE_SCOPE from "./constants/scope";
 
 const DECISIONS_HANDLE = "personalization:decisions";
-export default ({ extractDecisions, executeDecisions, showContainers }) => {
-  return ({ renderDecisions, response }) => {
+
+export default ({
+  decisionsExtractor,
+  executeDecisions,
+  executeCachedViewDecisions,
+  showContainers
+}) => {
+  return ({ decisionsDeferred, personalizationDetails, response }) => {
     const unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
-
-    if (!renderDecisions) {
-      return { decisions: unprocessedDecisions };
-    }
-
+    const viewName = personalizationDetails.getViewName();
     if (unprocessedDecisions.length === 0) {
       showContainers();
+      decisionsDeferred.resolve({});
       return { decisions: [] };
     }
 
-    const [renderableDecisions, decisions] = extractDecisions(
-      unprocessedDecisions
-    );
+    const {
+      domActionDecisions,
+      nonDomActionDecisions
+    } = decisionsExtractor.groupDecisionsBySchema({
+      decisions: unprocessedDecisions,
+      schema: DOM_ACTION
+    });
+    const {
+      pageWideScopeDecisions,
+      nonPageWideScopeDecisions
+    } = decisionsExtractor.groupDecisionsByScope({
+      decisions: domActionDecisions,
+      scope: PAGE_WIDE_SCOPE
+    });
 
-    executeDecisions(renderableDecisions);
-    showContainers();
-    return { decisions };
+    if (isEmptyObject(nonPageWideScopeDecisions)) {
+      decisionsDeferred.resolve({});
+    } else {
+      decisionsDeferred.resolve(nonPageWideScopeDecisions);
+    }
+
+    if (personalizationDetails.isRenderDecisions()) {
+      executeDecisions(pageWideScopeDecisions);
+      if (viewName) {
+        executeCachedViewDecisions({ viewName });
+      }
+      showContainers();
+      return { decisions: nonDomActionDecisions };
+    }
+
+    const decisionsToBeReturned = [
+      ...pageWideScopeDecisions,
+      ...nonDomActionDecisions
+    ];
+
+    if (viewName && nonPageWideScopeDecisions[viewName]) {
+      decisionsToBeReturned.push(...nonPageWideScopeDecisions[viewName]);
+    }
+
+    return { decisions: decisionsToBeReturned };
   };
 };

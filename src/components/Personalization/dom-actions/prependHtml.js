@@ -18,6 +18,7 @@ import {
   insertBefore
 } from "./dom";
 import { loadImages } from "./images";
+import addNonceToInlineStyleElements from "./addNonceToInlineStyleElements";
 import {
   getInlineScripts,
   getRemoteScriptsUrls,
@@ -27,6 +28,7 @@ import {
 
 export default (container, html) => {
   const fragment = createFragment(html);
+  addNonceToInlineStyleElements(fragment);
   const elements = getChildNodes(fragment);
   const scripts = getInlineScripts(fragment);
   const scriptsUrls = getRemoteScriptsUrls(fragment);

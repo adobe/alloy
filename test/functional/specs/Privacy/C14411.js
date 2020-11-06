@@ -39,9 +39,5 @@ test("Test C14411: User cannot consent to no purposes after consenting to no pur
   await t
     .expect(setConsentErrorMessage)
     .ok("Expected the setConsent command to be rejected");
-  await t
-    .expect(setConsentErrorMessage)
-    .contains(
-      "User has already opted out of all advertising solutions, update operation not supported."
-    );
+  await t.expect(setConsentErrorMessage).contains("EXEG-0302-409");
 });

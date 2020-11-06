@@ -10,31 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  DOM_ACTION,
-  JSON_CONTENT_ITEM,
-  HTML_CONTENT_ITEM,
-  REDIRECT_ITEM
-} from "./constants/schema";
-import PAGE_WIDE_SCOPE from "./constants/scope";
-import { includes } from "../../utils";
-
 export const mergeMeta = (event, meta) => {
   event.mergeMeta({ personalization: { ...meta } });
 };
 
 export const mergeQuery = (event, details) => {
   event.mergeQuery({ personalization: { ...details } });
-};
-
-export const createQueryDetails = decisionScopes => {
-  const schemas = [HTML_CONTENT_ITEM, JSON_CONTENT_ITEM, REDIRECT_ITEM];
-
-  if (includes(decisionScopes, PAGE_WIDE_SCOPE)) {
-    schemas.push(DOM_ACTION);
-  }
-  return {
-    schemas,
-    decisionScopes
-  };
 };
