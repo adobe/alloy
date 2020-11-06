@@ -29,7 +29,7 @@ describe("sendXhrRequest", () => {
     XMLHttpRequest = () => {
       return request;
     };
-    sendXhrRequest = injectSendXhrRequest(XMLHttpRequest);
+    sendXhrRequest = injectSendXhrRequest({ XMLHttpRequest });
     body = { a: "b" };
   });
 

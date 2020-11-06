@@ -15,4 +15,4 @@ governing permissions and limitations under the License.
 // and file system errors.
 
 // eslint-disable-next-line import/no-unresolved,import/extensions
-import "./**/*.spec.js";
+import "./*/**/*.spec.js";

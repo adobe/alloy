@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createInstance from "./createInstance";
-import { getApexDomain, injectStorage, cookieJar } from "../utils";
+import { getApexDomain, injectStorage, cookieJar, isFunction } from "../utils";
 import createLogController from "./createLogController";
 import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
@@ -28,6 +28,9 @@ import initializeComponents from "./initializeComponents";
 import createConfig from "./config/createConfig";
 import createCoreConfigs from "./config/createCoreConfigs";
 import injectHandleError from "./injectHandleError";
+import injectSendFetchRequest from "./network/injectSendFetchRequest";
+import injectSendXhrRequest from "./network/injectSendXhrRequest";
+import injectSendBeaconRequest from "./network/injectSendBeaconRequest";
 import injectNetworkStrategy from "./network/injectNetworkStrategy";
 import createLogger from "./createLogger";
 import createEventManager from "./createEventManager";
@@ -43,7 +46,7 @@ const instanceNames = window.__alloyNS;
 
 const createNamespacedStorage = injectStorage(window);
 
-const { console } = window;
+const { console, fetch, navigator, XMLHttpRequest } = window;
 
 // set this up as a function so that monitors can be added at anytime
 // eslint-disable-next-line no-underscore-dangle
@@ -51,6 +54,9 @@ const getMonitors = () => window.__alloyMonitors || [];
 
 const coreConfigValidators = createCoreConfigs();
 const apexDomain = getApexDomain(window, cookieJar);
+const sendFetchRequest = isFunction(fetch)
+  ? injectSendFetchRequest({ fetch })
+  : injectSendXhrRequest({ XMLHttpRequest });
 
 if (instanceNames) {
   instanceNames.forEach(instanceName => {
@@ -68,7 +74,6 @@ if (instanceNames) {
     });
     const componentRegistry = createComponentRegistry();
     const lifecycle = createLifecycle(componentRegistry);
-    const networkStrategy = injectNetworkStrategy({ window, logger });
 
     const setDebugCommand = options => {
       setDebugEnabled(options.enabled, { fromConfig: false });
@@ -87,6 +92,19 @@ if (instanceNames) {
         cookieJar,
         orgId: config.orgId,
         apexDomain
+      });
+      const sendBeaconRequest = isFunction(navigator.sendBeacon)
+        ? injectSendBeaconRequest({
+            // Without the bind(), the browser will complain about an
+            // illegal invocation.
+            sendBeacon: navigator.sendBeacon.bind(navigator),
+            sendFetchRequest,
+            logger
+          })
+        : sendFetchRequest;
+      const networkStrategy = injectNetworkStrategy({
+        sendFetchRequest,
+        sendBeaconRequest
       });
       const sendNetworkRequest = injectSendNetworkRequest({
         logger,
