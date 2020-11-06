@@ -20,12 +20,7 @@ jobs:
         id: node-cache
         with:
           path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.lock') }}
-      - name: Install dependencies
-        if: steps.node-cache.outputs.cache-hit != 'true'
-        run: npm install
-      - name: Build
-        run: npm run build:prod
-      - name: test
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Test
         run: npm run functional:cron:prod
   
