@@ -1,7 +1,10 @@
 name: PR-Tests
-on:
-  pull_request_target:
-    branches: [master]
+on: pull_request
+env:
+  SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+  SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+  BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+  BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
 
 jobs:
   unit-test-saucelabs:
@@ -12,11 +15,6 @@ jobs:
       with:
         ref: "${{github.event.pull_request.head.ref}}"
         repository: "${{github.event.pull_request.head.repo.full_name}}"
-    - uses: saucelabs/sauce-connect-action@master
-      with:
-        username: ${{ secrets.SAUCE_USERNAME }}
-        accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-        tunnelIdentifier: github-action-tunnel
     - uses: actions/cache@v2
       id: node-cache
       with:
@@ -36,16 +34,16 @@ jobs:
         with:
           ref: "${{github.event.pull_request.head.ref}}"
           repository: "${{github.event.pull_request.head.repo.full_name}}"
-      - uses: saucelabs/sauce-connect-action@master
-        with:
-          username: ${{ secrets.SAUCE_USERNAME }}
-          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-          tunnelIdentifier: github-action-tunnel
       - uses: actions/cache@v2
         id: node-cache
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+      - uses: saucelabs/sauce-connect-action@master
+        with:
+          username: ${{ secrets.SAUCE_USERNAME }}
+          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+          tunnelIdentifier: github-action-tunnel
       - name: Install dependencies
         if: steps.node-cache.outputs.cache-hit != 'true'
         run: npm ci
@@ -54,7 +52,7 @@ jobs:
       - name: Test
         run: npm run test:functional
   
-  #Using Browserstack to run functional tests on IE 11 since SauceLabs times out on most IE tests. 
+  #Using Browserstack to run functional tests on IE 11. SauceLabs times out on IE tests.
   e2e-test-browserstack:
     name: "E2E Tests using BrowserStack"
     runs-on: ubuntu-latest
@@ -73,13 +71,6 @@ jobs:
       run: npm ci
     - name: Build
       run: npm run build
-    - name: 'BrowserStack Env Setup'
-      uses: 'browserstack/github-actions/setup-env@master'
-      with:
-        username:  ${{ secrets.BROWSERSTACK_USERNAME }}
-        access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-        build-name: 'alloypr${{ github.event.pull_request.number }}'
-        project-name: 'Alloy'
     - name: 'BrowserStackLocal Setup'
       uses: 'browserstack/github-actions/setup-local@master'
       with:
@@ -118,7 +109,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: head-stats
-          path: ./bundle-stats.json
+          path: bundle-stats.json
 
   build-base:
     name: "Build base"
@@ -146,7 +137,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: base-stats
-        path: ./bundle-stats.json
+        path: bundle-stats.json
 
   compare:
     name: "Compare base & head bundle sizes"
@@ -166,5 +157,5 @@ jobs:
       uses: weltenwort/webpack-stats-diff-action@v1.2.0
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        base_stats_path: ./base-stats/bundle-stats.json
-        head_stats_path: ./head-stats/bundle-stats.json
+        base_stats_path: base-stats/bundle-stats.json
+        head_stats_path: head-stats/bundle-stats.json
