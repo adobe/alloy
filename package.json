@@ -18,6 +18,7 @@
     "test:functional:ci": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe 'browserstack:ie@11:Windows 10'",
     "test:functional:cron:prod": "ALLOY_ENV=\"prod\" testcafe 'browserstack:chrome:Windows 10'",
     "test:functional:api": "testcafe chrome:headless",
+    "sandbox:build": "cd sandbox && npm run build",
     "dev": "concurrently --names build,sandbox \"rollup -c -w\" \"cd sandbox && export REACT_APP_NONCE=321 && npm start\"",
     "build": "npm run format && npm run lint && npm run clean && concurrently \"rollup -c --environment BUILD:prodStandalone\" \"rollup -c --environment MINIFY,BUILD:prodStandalone\" \"rollup -c --environment BUILD:prodReactor\" && echo \"Base Code:\" && terser src/baseCode/index.js --mangle --compress unused=false",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js"
