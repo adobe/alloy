@@ -29,6 +29,8 @@ export default () => {
 
   const processQueuedAwaits = () => {
     if (queue) {
+      // hold a copy of the queue because handling the old awaitConsent calls could
+      // put the machine back into the suspended state.
       const oldQueue = queue;
       queue = undefined;
       oldQueue.forEach(({ deferred, event }) => {
@@ -37,6 +39,7 @@ export default () => {
     }
   };
 
+  // In the suspended state, just queue the events until the outstanding request has returned.
   const awaitSuspended = ({ deferred, event }) => {
     queue.push({ deferred, event });
   };
@@ -47,12 +50,14 @@ export default () => {
       const newHash = hash(consentXdm);
       if (lastConsentHash !== newHash) {
         event.mergeMeta({ consentHash: newHash });
+        // Move to the suspended state until the request returns and the cookie is re-read.
         handleAwaitConsent = awaitSuspended;
         queue = [];
         deferred.resolve();
         return;
       }
     }
+    // if the consent is undefined or hasn't changed, do the default action for this state.
     fn({ deferred, event });
   };
 
@@ -64,6 +69,9 @@ export default () => {
     deferred.reject(createDeclinedConsentError());
   });
 
+  // Every time a request is returned, alloy re-reads the consent cookie, and
+  // calls in or out with the current consent hash. This will get the state
+  // machine out of the suspended state.
   return {
     in(consentHash) {
       lastConsentHash = consentHash;
