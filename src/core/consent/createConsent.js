@@ -12,33 +12,30 @@ governing permissions and limitations under the License.
 
 import { DECLINED_CONSENT } from "./createConsentStateMachine";
 import { IN, OUT, PENDING } from "../../constants/consentStatus";
-import { GENERAL } from "../../constants/consentPurpose";
+import { GENERAL, CONSENT_HASH } from "../../constants/consentPurpose";
 
 export default ({ generalConsentState, logger }) => {
   return {
-    setConsent(consentByPurpose) {
-      switch (consentByPurpose[GENERAL]) {
+    setConsent({ [GENERAL]: generalConsent, [CONSENT_HASH]: consentHash }) {
+      switch (generalConsent) {
         case IN:
-          generalConsentState.in();
+          generalConsentState.in(consentHash);
           break;
         case OUT:
-          logger.warn(`Some commands may fail. ${DECLINED_CONSENT}`);
-          generalConsentState.out();
-          break;
         case PENDING:
-          logger.warn("Some commands may be delayed until the user consents.");
-          generalConsentState.pending();
+          logger.warn(`Some commands may fail. ${DECLINED_CONSENT}`);
+          generalConsentState.out(consentHash);
           break;
         default:
-          logger.warn(`Unknown consent value: ${consentByPurpose[GENERAL]}`);
+          logger.warn(`Unknown consent value: ${generalConsent}`);
           break;
       }
     },
     suspend() {
-      generalConsentState.pending();
+      generalConsentState.suspend();
     },
-    awaitConsent() {
-      return generalConsentState.awaitConsent();
+    awaitConsent(event) {
+      return generalConsentState.awaitConsent(event);
     }
   };
 };

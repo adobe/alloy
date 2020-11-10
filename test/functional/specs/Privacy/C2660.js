@@ -39,7 +39,8 @@ const getContextUrlFromRequest = request => {
   return parsedBody.events[0].xdm.web.webPageDetails.URL;
 };
 
-test("C2660 - Context data is captured before user consents.", async () => {
+// We need to find a different way to test this if "pending" consent is no longer supported.
+test.skip("C2660 - Context data is captured before user consents.", async () => {
   await configureAlloyInstance(
     compose(
       orgMainConfigMain,

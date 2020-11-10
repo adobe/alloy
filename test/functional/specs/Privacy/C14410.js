@@ -27,9 +27,9 @@ const getErrorMessageFromSetConsent = ClientFunction(consent =>
 // state isn't reset, so when I had this all in one test, the third part here was failing because
 // an instance was already configured with that orgId.
 
-test("Test C14410: Configuring default consent to 'out' fails", async t => {
+test("Test C14410: Configuring default consent to 'other' fails", async t => {
   const errorMessage = getErrorMessageFromConfigure({
-    defaultConsent: "out",
+    defaultConsent: "other",
     ...orgMainConfigMain
   });
   await t
@@ -39,7 +39,7 @@ test("Test C14410: Configuring default consent to 'out' fails", async t => {
   await t
     .expect(errorMessage)
     .contains(
-      `Expected one of these values: [["in","pending"]], but got "out"`
+      `Expected one of these values: [["in","pending","out"]], but got "other"`
     );
 });
 

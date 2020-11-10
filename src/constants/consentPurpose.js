@@ -12,3 +12,4 @@ governing permissions and limitations under the License.
 
 // eslint-disable-next-line import/prefer-default-export
 export const GENERAL = "general";
+export const CONSENT_HASH = "consentHash";

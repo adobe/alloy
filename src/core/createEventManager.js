@@ -68,7 +68,7 @@ export default ({
           // it's important to add the event here because the payload object will call toJSON
           // which applies the userData, userXdm, and lastChanceCallback
           payload.addEvent(event);
-          return consent.awaitConsent();
+          return consent.awaitConsent(event);
         })
         .then(() => {
           return lifecycle.onBeforeDataCollectionRequest({

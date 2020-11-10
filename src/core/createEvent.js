@@ -52,6 +52,13 @@ export default () => {
 
       return userXdm.web.webPageDetails.viewName;
     },
+    getConsent() {
+      if (!userXdm || !userXdm.consentStrings) {
+        return undefined;
+      }
+
+      return userXdm.consentStrings;
+    },
     toJSON() {
       if (userXdm) {
         event.mergeXdm(userXdm);

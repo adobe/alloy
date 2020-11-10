@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import hash from "./hash";
 import { defer } from "../../utils";
 
 export const DECLINED_CONSENT = "The user declined consent.";
@@ -22,39 +23,66 @@ const createDeclinedConsentError = () => {
 };
 
 export default () => {
-  const deferreds = [];
+  let queue;
+  let lastConsentHash;
+  let handleAwaitConsent;
 
-  const runAll = () => {
-    while (deferreds.length) {
-      deferreds.shift().resolve();
+  const processQueuedAwaits = () => {
+    if (queue) {
+      const oldQueue = queue;
+      queue = undefined;
+      oldQueue.forEach(({ deferred, event }) => {
+        handleAwaitConsent({ deferred, event });
+      });
     }
   };
-  const discardAll = () => {
-    while (deferreds.length) {
-      deferreds.shift().reject(createDeclinedConsentError());
-    }
+
+  const awaitSuspended = ({ deferred, event }) => {
+    queue.push({ deferred, event });
   };
 
-  const awaitIn = () => Promise.resolve();
-  const awaitOut = () => Promise.reject(createDeclinedConsentError());
-  const awaitPending = () => {
-    const deferred = defer();
-    deferreds.push(deferred);
-    return deferred.promise;
+  const createAwaitWithCheck = fn => ({ deferred, event }) => {
+    const consentXdm = event && event.getConsent();
+    if (consentXdm) {
+      const newHash = hash(consentXdm);
+      if (lastConsentHash !== newHash) {
+        event.mergeMeta({ consentHash: newHash });
+        handleAwaitConsent = awaitSuspended;
+        queue = [];
+        deferred.resolve();
+        return;
+      }
+    }
+    fn({ deferred, event });
   };
+
+  const awaitIn = createAwaitWithCheck(({ deferred }) => {
+    deferred.resolve();
+  });
+
+  const awaitOut = createAwaitWithCheck(({ deferred }) => {
+    deferred.reject(createDeclinedConsentError());
+  });
 
   return {
-    in() {
-      runAll();
-      this.awaitConsent = awaitIn;
+    in(consentHash) {
+      lastConsentHash = consentHash;
+      handleAwaitConsent = awaitIn;
+      processQueuedAwaits();
     },
-    out() {
-      discardAll();
-      this.awaitConsent = awaitOut;
+    out(consentHash) {
+      lastConsentHash = consentHash;
+      handleAwaitConsent = awaitOut;
+      processQueuedAwaits();
     },
-    pending() {
-      this.awaitConsent = awaitPending;
+    suspend() {
+      handleAwaitConsent = awaitSuspended;
+      queue = [];
     },
-    awaitConsent: awaitPending
+    awaitConsent(event) {
+      const deferred = defer();
+      handleAwaitConsent({ deferred, event });
+      return deferred.promise;
+    }
   };
 };

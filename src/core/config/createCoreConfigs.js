@@ -14,11 +14,11 @@ import { boolean, string, callback, enumOf } from "../../utils/validation";
 import { noop } from "../../utils";
 import { EDGE as EDGE_DOMAIN } from "../../constants/domain";
 import EDGE_BASE_PATH from "../../constants/edgeBasePath";
-import { IN, PENDING } from "../../constants/consentStatus";
+import { IN, OUT, PENDING } from "../../constants/consentStatus";
 
 export default () => ({
   debugEnabled: boolean().default(false),
-  defaultConsent: enumOf(IN, PENDING).default(IN),
+  defaultConsent: enumOf(IN, PENDING, OUT).default(IN),
   edgeConfigId: string()
     .unique()
     .required(),
