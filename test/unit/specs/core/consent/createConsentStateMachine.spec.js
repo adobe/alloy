@@ -155,10 +155,4 @@ describe("createConsentStateMachine", () => {
     setOut(events[0].getHash());
     return promisesAre([RESOLVED, RESOLVED, PENDING]);
   });
-
-  it("does not resolve promise if consent is pending", () => {
-    subject.pending();
-    eventWithConsent();
-    return promisesAre([PENDING]);
-  });
 });

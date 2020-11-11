@@ -21,7 +21,7 @@ describe("createConsent", () => {
     state = jasmine.createSpyObj("state", [
       "in",
       "out",
-      "pending",
+      "suspend",
       "awaitConsent"
     ]);
     logger = jasmine.createSpyObj("logger", ["warn"]);
@@ -32,14 +32,14 @@ describe("createConsent", () => {
     subject.setConsent({ general: "in" });
     expect(state.in).toHaveBeenCalled();
     expect(state.out).not.toHaveBeenCalled();
-    expect(state.pending).not.toHaveBeenCalled();
+    expect(state.suspend).not.toHaveBeenCalled();
     expect(logger.warn).not.toHaveBeenCalled();
   });
   it("sets consent to out", () => {
     subject.setConsent({ general: "out" });
     expect(state.in).not.toHaveBeenCalled();
     expect(state.out).toHaveBeenCalled();
-    expect(state.pending).not.toHaveBeenCalled();
+    expect(state.suspend).not.toHaveBeenCalled();
     expect(logger.warn).toHaveBeenCalledWith(
       "Some commands may fail. The user declined consent."
     );
@@ -48,7 +48,7 @@ describe("createConsent", () => {
     subject.setConsent({ general: "pending" });
     expect(state.in).not.toHaveBeenCalled();
     expect(state.out).toHaveBeenCalled();
-    expect(state.pending).not.toHaveBeenCalled();
+    expect(state.suspend).not.toHaveBeenCalled();
     expect(logger.warn).toHaveBeenCalledWith(
       "Some commands may fail. The user declined consent."
     );
@@ -57,14 +57,14 @@ describe("createConsent", () => {
     subject.setConsent({ general: "foo" });
     expect(state.in).not.toHaveBeenCalled();
     expect(state.out).not.toHaveBeenCalled();
-    expect(state.pending).not.toHaveBeenCalled();
+    expect(state.suspend).not.toHaveBeenCalled();
     expect(logger.warn).toHaveBeenCalledWith("Unknown consent value: foo");
   });
   it("suspends", () => {
     subject.suspend();
     expect(state.in).not.toHaveBeenCalled();
     expect(state.out).not.toHaveBeenCalled();
-    expect(state.pending).toHaveBeenCalled();
+    expect(state.suspend).toHaveBeenCalled();
     expect(logger.warn).not.toHaveBeenCalled();
   });
   it("calls await consent", () => {
