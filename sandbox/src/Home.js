@@ -9,6 +9,7 @@ function HomeWithHistory({ history }) {
       const instanceName = loc.pathname.includes("orgTwo")
         ? "organizationTwo"
         : "alloy";
+
       window[instanceName]("sendEvent", {
         renderDecisions: true,
         xdm: {
@@ -23,7 +24,6 @@ function HomeWithHistory({ history }) {
     window
       .alloy("sendEvent", {
         renderDecisions: true,
-        decisionScopes: ["alloy-location-1", "alloy-location-2"],
         xdm: {
           // Demonstrates overriding automatically collected data
           device: {
@@ -34,7 +34,9 @@ function HomeWithHistory({ history }) {
       .then(({ decisions = [] }) => {
         decisions.forEach(decision => {
           const domLocation = document.querySelector(`.${decision.scope}`);
-          domLocation.innerHTML = decision.items[0].data.content;
+          if (domLocation) {
+            domLocation.innerHTML = decision.items[0].data.content;
+          }
         });
       });
   };

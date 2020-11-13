@@ -10,9 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// Without this entry file, Karma + Rollup would create a separate build
-// for each spec file, resulting in slow tests runs, high memory usage,
-// and file system errors.
+import { isNonEmptyArray } from "../../utils";
 
-// eslint-disable-next-line import/no-unresolved,import/extensions
-import "./*/**/*.spec.js";
+export default ({ eventManager, mergeMeta }) => {
+  return ({ meta, xdm = {} }) => {
+    const { decisions = [] } = meta;
+    const data = { eventType: "display" };
+    const event = eventManager.createEvent();
+
+    if (isNonEmptyArray(decisions)) {
+      const viewName = decisions[0].scope;
+
+      data.web = {
+        webPageDetails: { viewName }
+      };
+
+      mergeMeta(event, meta);
+    }
+    event.mergeXdm(data);
+    event.mergeXdm(xdm);
+
+    return eventManager.sendEvent(event);
+  };
+};

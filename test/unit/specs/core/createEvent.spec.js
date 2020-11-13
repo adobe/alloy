@@ -192,7 +192,17 @@ describe("createEvent", () => {
     event.setUserData({ foo: "bar" });
     expect(event.isEmpty()).toBeFalse();
   });
-
+  it("returns undefined when no viewName exists", () => {
+    expect(event.getViewName()).toBe(undefined);
+    event.setUserXdm({ web: {} });
+    expect(event.getViewName()).toBe(undefined);
+    event.setUserXdm({ web: { webPageDetails: {} } });
+    expect(event.getViewName()).toBe(undefined);
+  });
+  it("returns viewName when viewName exists", () => {
+    event.setUserXdm({ web: { webPageDetails: { viewName: "cart" } } });
+    expect(event.getViewName()).toBe("cart");
+  });
   describe("applyCallback", () => {
     it("can add fields to empty xdm", () => {
       const callback = ({ xdm, data }) => {

@@ -10,23 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop } from "../../utils";
+import { noop, defer } from "../../utils";
+import createPersonalizationDetails from "./createPersonalizationDetails";
 
 export default ({
-  config,
   logger,
-  onResponseHandler,
+  fetchDataHandler,
+  viewChangeHandler,
   onClickHandler,
-  hideContainers,
-  showContainers,
-  hasScopes,
   isAuthoringModeEnabled,
-  getDecisionScopes,
   mergeQuery,
-  createQueryDetails
+  viewCache
 }) => {
-  const { prehidingStyle } = config;
-
   return {
     lifecycle: {
       onBeforeEvent({
@@ -44,28 +39,36 @@ export default ({
           return;
         }
 
-        const scopes = getDecisionScopes(renderDecisions, decisionScopes);
+        const personalizationDetails = createPersonalizationDetails({
+          renderDecisions,
+          decisionScopes,
+          event,
+          viewCache
+        });
 
-        if (!hasScopes(scopes)) {
+        if (personalizationDetails.shouldFetchData()) {
+          const decisionsDeferred = defer();
+
+          viewCache.storeViews(decisionsDeferred.promise);
+
+          fetchDataHandler({
+            decisionsDeferred,
+            personalizationDetails,
+            event,
+            onResponse,
+            onRequestFailure
+          });
           return;
         }
 
-        // For renderDecisions we try to hide the personalization containers
-        if (renderDecisions) {
-          hideContainers(prehidingStyle);
+        if (personalizationDetails.shouldUseCachedData()) {
+          viewChangeHandler({
+            personalizationDetails,
+            onResponse,
+            onRequestFailure
+          });
         }
-
-        mergeQuery(event, createQueryDetails(scopes));
-
-        onResponse(({ response }) =>
-          onResponseHandler({ renderDecisions, response })
-        );
-
-        onRequestFailure(() => {
-          showContainers();
-        });
       },
-
       onClick({ event, clickedElement }) {
         onClickHandler({ event, clickedElement });
       }

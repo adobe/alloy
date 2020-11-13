@@ -45,6 +45,7 @@ const triggerAlloyEvent = ClientFunction(decisionScope => {
 
 test("Test C28756: A form based offer should return if event command contains its scope.", async () => {
   await configureAlloyInstance("alloy", config);
+  const expectedScopes = ["alloy-test-scope-1", "__view__"];
 
   const result = await triggerAlloyEvent(scope);
 
@@ -59,13 +60,13 @@ test("Test C28756: A form based offer should return if event command contains it
 
   await t
     .expect(requestBody.events[0].query.personalization.decisionScopes)
-    .eql([scope]);
+    .eql(expectedScopes);
 
   const results = [
     "https://ns.adobe.com/personalization/html-content-item",
     "https://ns.adobe.com/personalization/json-content-item",
     "https://ns.adobe.com/personalization/redirect-item"
-  ].every(schema => !!personalizationSchemas.find(s => s === schema));
+  ].every(schema => personalizationSchemas.includes(schema));
 
   await t.expect(results).eql(true);
 

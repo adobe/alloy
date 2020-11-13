@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /*
 Copyright 2019 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -12,9 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const mockserver = require("mockserver-node");
-
-mockserver.start_mockserver({
-  serverPort: 1080,
-  jvmOptions: "-Dmockserver.enableCORSForAllResponses=true"
-});
+export default (doc = document) => {
+  return doc.location.href.indexOf("mboxEdit") !== -1;
+};

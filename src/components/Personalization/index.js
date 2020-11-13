@@ -14,18 +14,25 @@ import { string } from "../../utils/validation";
 import createComponent from "./createComponent";
 import { initDomActionsModules, executeActions } from "./dom-actions";
 import createCollect from "./createCollect";
-import extractDecisions from "./extractDecisions";
+import createViewCollect from "./createViewCollect";
 import createExecuteDecisions from "./createExecuteDecisions";
 import { hideContainers, showContainers } from "./flicker";
-import createOnResponseHandler from "./createOnResponseHandler";
+import createFetchDataHandler from "./createFetchDataHandler";
 import collectClicks from "./dom-actions/clicks/collectClicks";
-import { hasScopes, isAuthoringModeEnabled, getDecisionScopes } from "./utils";
-import { mergeMeta, mergeQuery, createQueryDetails } from "./event";
+import isAuthoringModeEnabled from "./utils/isAuthoringModeEnabled";
+import { mergeMeta, mergeQuery } from "./event";
 import createOnClickHandler from "./createOnClickHandler";
+import createExecuteCachedViewDecisions from "./createExecuteCachedViewDecisions";
+import createViewCacheManager from "./createViewCacheManager";
+import createViewChangeHandler from "./createViewChangeHandler";
+import decisionsExtractor from "./decisionsExtractor";
+import createOnResponseHandler from "./createOnResponseHandler";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeMeta });
+  const viewCollect = createViewCollect({ eventManager, mergeMeta });
   const clickStorage = [];
+  const viewCache = createViewCacheManager();
   const store = value => clickStorage.push(value);
   const modules = initDomActionsModules(store);
   const executeDecisions = createExecuteDecisions({
@@ -34,30 +41,48 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     executeActions,
     collect
   });
-  const onResponseHandler = createOnResponseHandler({
-    extractDecisions,
+  const executeViewDecisions = createExecuteDecisions({
+    modules,
+    logger,
+    executeActions,
+    collect: viewCollect
+  });
+  const executeCachedViewDecisions = createExecuteCachedViewDecisions({
+    viewCache,
+    executeViewDecisions,
+    collect: viewCollect
+  });
+  const responseHandler = createOnResponseHandler({
+    decisionsExtractor,
     executeDecisions,
+    executeCachedViewDecisions,
     showContainers
+  });
+  const fetchDataHandler = createFetchDataHandler({
+    config,
+    responseHandler,
+    showContainers,
+    hideContainers,
+    mergeQuery
   });
   const onClickHandler = createOnClickHandler({
     mergeMeta,
     collectClicks,
     clickStorage
   });
+  const viewChangeHandler = createViewChangeHandler({
+    executeCachedViewDecisions,
+    viewCache,
+    showContainers
+  });
   return createComponent({
-    config,
     logger,
-    eventManager,
-    onResponseHandler,
+    fetchDataHandler,
+    viewChangeHandler,
     onClickHandler,
-    hideContainers,
-    showContainers,
-    hasScopes,
     isAuthoringModeEnabled,
-    getDecisionScopes,
-    mergeMeta,
     mergeQuery,
-    createQueryDetails
+    viewCache
   });
 };
 

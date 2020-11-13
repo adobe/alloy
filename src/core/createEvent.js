@@ -45,6 +45,13 @@ export default () => {
     setLastChanceCallback(value) {
       lastChanceCallback = value;
     },
+    getViewName() {
+      if (!userXdm || !userXdm.web || !userXdm.web.webPageDetails) {
+        return undefined;
+      }
+
+      return userXdm.web.webPageDetails.viewName;
+    },
     toJSON() {
       if (userXdm) {
         event.mergeXdm(userXdm);

@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectFetch from "../../../../../src/core/network/injectFetch";
+import injectSendFetchRequest from "../../../../../src/core/network/injectSendFetchRequest";
 
-describe("injectFetch", () => {
+describe("injectSendFetchRequest", () => {
   it("resolves returned promise upon network success", () => {
-    const nativeFetch = jasmine.createSpy().and.returnValue(
+    const fetch = jasmine.createSpy().and.returnValue(
       Promise.resolve({
         status: 999,
         text() {
@@ -22,21 +22,23 @@ describe("injectFetch", () => {
         }
       })
     );
-    const fetch = injectFetch(nativeFetch);
-    return fetch("http://example.com/endpoint", { a: "b" }).then(result => {
-      expect(result).toEqual({
-        status: 999,
-        body: "content"
-      });
-    });
+    const sendFetchRequest = injectSendFetchRequest({ fetch });
+    return sendFetchRequest("http://example.com/endpoint", { a: "b" }).then(
+      result => {
+        expect(result).toEqual({
+          status: 999,
+          body: "content"
+        });
+      }
+    );
   });
 
   it("rejects returned promise upon network failure", () => {
-    const nativeFetch = jasmine
+    const fetch = jasmine
       .createSpy()
       .and.returnValue(Promise.reject(new Error("No connection")));
-    const fetch = injectFetch(nativeFetch);
-    return fetch("http://example.com/endpoint", { a: "b" })
+    const sendFetchRequest = injectSendFetchRequest({ fetch });
+    return sendFetchRequest("http://example.com/endpoint", { a: "b" })
       .then(fail)
       .catch(error => {
         expect(error.message).toBe("No connection");

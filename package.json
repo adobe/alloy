@@ -1,51 +1,33 @@
 {
   "name": "@adobe/alloy",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Adobe Experience Platform Web SDK",
   "module": "dist/index.js",
   "files": [
     "dist/index.js"
   ],
   "scripts": {
+    "install": "cd sandbox && npm install",
     "clean": "rimraf dist",
     "lint": "eslint --fix \"*.js\" \"src/**/*.js\" \"test/**/*.js\"",
     "format": "prettier --write \"*.{html,js}\" \"{sandbox,src,test}/**/*.{html,js}\"",
-    "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
-    "test": "karma start --single-run",
-    "test:report": "karma start --single-run --reporters allure",
-    "test:slreport": "karma start karma-saucelabs.conf.js --reporters allure",
-    "test:coverage": "karma start --single-run --reporters spec,coverage",
-    "test:saucelabs": "karma start karma-saucelabs.conf.js",
-    "allure:generate": "allure generate allure/allure-results/ -o allure/allure-report/",
-    "test:watch": "karma start",
-    "test:watch:chrome": "karma start --browsers Chrome",
-    "functional:ci": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome",
-    "functional:ci:bs": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe 'browserstack:ie@11:Windows 10'",
-    "functional:local": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome",
-    "functional:cron:prod": "ALLOY_ENV=\"prod\" testcafe chrome",
-    "functional:local:allure": "testcafe chrome -r allure",
-    "functional:local:headless": "testcafe chrome:headless",
-    "functional:local:build": "npm run build:prod && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome",
-    "functional:local:watch": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" BUILD=\"prodStandalone\" ./scripts/watchFunctionalTests.js",
-    "functional:api": "testcafe chrome:headless",
-    "prebuild": "npm run clean && npm run format && npm run lint",
-    "build": "rollup -c",
-    "prebuild:prod": "npm run prebuild",
-    "build:prod:unminified": "rollup -c --environment BUILD:prod",
-    "build:prod:minified": "rollup -c --environment MINIFY,BUILD:prod",
-    "build:prod": "npm-run-all --parallel build:prod:unminified build:prod:minified",
-    "build:watch": "rollup -c -w",
-    "sandbox": "cd sandbox && export REACT_APP_NONCE=321 && npm start",
-    "sandbox:install": "cd sandbox && npm install",
-    "sandbox:build": "cd sandbox && npm run build",
-    "dev": "npm-run-all --parallel build:watch sandbox",
-    "checkbundlesize": "bundlesize",
-    "mockserver": "./scripts/mockServer.js"
+    "test": "npm run test:unit && npm run test:functional",
+    "test:unit": "karma start --single-run",
+    "test:unit:watch": "karma start",
+    "test:unit:saucelabs": "karma start karma-saucelabs.conf.js",
+    "test:unit:coverage": "karma start --single-run --reporters spec,coverage",
+    "test:functional": "rollup -c --environment BUILD:prod && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome",
+    "test:functional:watch": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" BUILD=\"prod\" ./scripts/watchFunctionalTests.js",
+    "test:functional:ci": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe 'browserstack:ie@11:Windows 10'",
+    "test:functional:cron:prod": "ALLOY_ENV=\"prod\" testcafe chrome",
+    "test:functional:api": "testcafe chrome:headless",
+    "dev": "concurrently --names build,sandbox \"rollup -c -w\" \"cd sandbox && export REACT_APP_NONCE=321 && npm start\"",
+    "build": "npm run format && npm run lint && npm run clean && concurrently \"rollup -c --environment BUILD:prod\" \"rollup -c --environment MINIFY,BUILD:prod\" && echo \"Base Code:\" && cat dist/baseCode.min.js",
+    "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "echo 'Running pre-commit scripts...' && lint-staged",
-      "pre-push": "echo 'Running pre-push scripts...' && npm run checkthattestfilesexist && npm run test"
+      "pre-commit": "echo 'Running pre-commit scripts...' && npm run checkthattestfilesexist && lint-staged && npm run test:unit"
     }
   },
   "lint-staged": {
@@ -74,11 +56,12 @@
   "license": "Apache-2.0",
   "bundlesize": [
     {
-      "path": "./dist/standalone/alloy.min.js"
+      "path": "./dist/alloy.min.js"
     }
   ],
   "dependencies": {
     "css.escape": "^1.5.1",
+    "typescript": "^4.0.5",
     "uuid": "^3.3.2"
   },
   "peerDependencies": {
@@ -98,6 +81,7 @@
     "@babel/preset-env": "^7.4.5",
     "babel-plugin-version": "^0.2.3",
     "bundlesize": "^0.18.0",
+    "concurrently": "^5.3.0",
     "dotenv": "^8.1.0",
     "eslint": "^6.5.1",
     "eslint-config-airbnb-base": "^14.0.0",
@@ -119,8 +103,6 @@
     "karma-sauce-launcher": "^2.0.2",
     "karma-spec-reporter": "0.0.32",
     "lint-staged": "^9.4.2",
-    "mockserver-node": "^5.6.1",
-    "npm-run-all": "^4.1.5",
     "prettier": "^1.16.4",
     "promise-polyfill": "^8.1.0",
     "puppeteer": "^1.16.0",

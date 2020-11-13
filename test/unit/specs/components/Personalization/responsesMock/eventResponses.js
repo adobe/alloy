@@ -128,3 +128,52 @@ export const PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS = [
     ]
   }
 ];
+
+export const CART_VIEW_DECISIONS = [
+  {
+    id: "TNT:activity4:experience9",
+    scope: "cart",
+    items: [
+      {
+        schema: "https://ns.adobe.com/personalization/dom-action",
+        data: {
+          type: "setHtml",
+          selector: "#foo",
+          content: "<div>welcome to cart view</div>"
+        }
+      },
+      {
+        schema: "https://ns.adobe.com/personalization/dom-action",
+        data: {
+          type: "setHtml",
+          selector: "#foo2",
+          content: "<div>here is a target activity for cart view</div>"
+        }
+      }
+    ]
+  }
+];
+export const PRODUCTS_VIEW_DECISIONS = [
+  {
+    id: "TNT:activity3:experience4",
+    scope: "products",
+    items: [
+      {
+        schema: "https://ns.adobe.com/personalization/dom-action",
+        data: {
+          type: "setHtml",
+          selector: "#foo3",
+          content: "<div>welcome to products view</div>"
+        }
+      },
+      {
+        schema: "https://ns.adobe.com/personalization/dom-action",
+        data: {
+          type: "setHtml",
+          selector: "#foo4",
+          content: "<div>here is a target activity for products view</div>"
+        }
+      }
+    ]
+  }
+];

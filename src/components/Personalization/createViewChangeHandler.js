@@ -10,9 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// Without this entry file, Karma + Rollup would create a separate build
-// for each spec file, resulting in slow tests runs, high memory usage,
-// and file system errors.
+export default ({ executeCachedViewDecisions, viewCache, showContainers }) => {
+  return ({ personalizationDetails, onResponse, onRequestFailure }) => {
+    const viewName = personalizationDetails.getViewName();
 
-// eslint-disable-next-line import/no-unresolved,import/extensions
-import "./*/**/*.spec.js";
+    if (personalizationDetails.isRenderDecisions()) {
+      executeCachedViewDecisions({ viewName });
+      return;
+    }
+
+    onResponse(() => {
+      return viewCache.getView(viewName).then(decisions => ({ decisions }));
+    });
+
+    onRequestFailure(() => {
+      showContainers();
+    });
+  };
+};

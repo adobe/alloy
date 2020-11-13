@@ -16,23 +16,22 @@ jobs:
   include:
       - stage: CRON build
         if: type == cron
-        script: 
+        script:
         - npm ci
-        - npm run functional:cron:prod
+        - npm run test:functional:cron:prod
       - stage: PR build
         if: type == pull_request OR type == push
         script:
         - npm ci
-        - npm run build:prod
-        - npm run functional:ci
-        - npm run functional:ci:bs
-        - npm run test:saucelabs
+        - npm run build
+        - npm run test:functional:ci
+        - npm run test:unit:saucelabs
       - stage: API/Konductor Build
         if: type == api
-        script: 
+        script:
         - npm ci
-        - npm run build:prod
-        - npm run functional:api
+        - npm run build
+        - npm run test:functional:api
 
 notifications:
   slack: adobedx:AlI4WB2ojGDcqsBEVZ1EGsCR
@@ -44,6 +43,6 @@ notifications:
       - alloy-engs@adobe.com
       - ee-konductor-engineering@adobe.com
     on_failure: always
-  
+
 before_install:
 - stty cols 80

@@ -27,10 +27,7 @@ const remotePromisePolyfillPath =
   "https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js";
 const remoteVisitorLibraryUrl =
   "https://github.com/Adobe-Marketing-Cloud/id-service/releases/latest/download/visitorapi.min.js";
-const alloyPageSnippetPath = path.join(
-  __dirname,
-  "../alloyPageSnippet/index.js"
-);
+const baseCodePath = path.join(__dirname, "../../../../dist/baseCode.min.js");
 const localAlloyLibraryPath = path.join(__dirname, "../../../../dist/alloy.js");
 const remoteAlloyLibraryUrl =
   "https://cdn1.adoberesources.net/alloy/latest/alloy.js";
@@ -44,6 +41,10 @@ let localAlloyCode;
 if (alloyEnv === "int") {
   localAlloyCode = fs.readFileSync(localAlloyLibraryPath, "utf8");
 }
+
+const baseCodeWithCustomInstances = fs
+  .readFileSync(baseCodePath, "utf8")
+  .replace('["alloy"]', '["alloy","instance2"]');
 
 const addRemoteUrlClientScript = ({ clientScripts, url, async = false }) => {
   // TestCafe client scripts don't "natively" support loading a script
@@ -81,7 +82,7 @@ const getFixtureClientScriptsForInt = options => {
   }
 
   clientScripts.push({
-    path: alloyPageSnippetPath
+    content: baseCodeWithCustomInstances
   });
 
   // Typically the Alloy library should be loaded in head. For some tests,
@@ -122,7 +123,7 @@ const getFixtureClientScriptsForProd = options => {
   }
 
   clientScripts.push({
-    path: alloyPageSnippetPath
+    content: baseCodeWithCustomInstances
   });
 
   // Typically the Alloy library should be loaded in head. For some tests,

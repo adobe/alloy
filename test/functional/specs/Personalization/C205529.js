@@ -70,7 +70,7 @@ test("Test C205529: Receive offer based on device", async () => {
     "https://ns.adobe.com/personalization/html-content-item",
     "https://ns.adobe.com/personalization/json-content-item",
     "https://ns.adobe.com/personalization/redirect-item"
-  ].every(schema => !!personalizationSchemas.find(s => s === schema));
+  ].every(schema => personalizationSchemas.includes(schema));
 
   await t.expect(results).eql(true);
 
