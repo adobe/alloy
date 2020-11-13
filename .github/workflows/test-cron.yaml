@@ -1,12 +1,11 @@
 name: Alloy-Test-Cron
-
 on:
   push:
     branches:
-      - github-actions
+      - main
   schedule:
     - cron: |
-        0/2 * * * *
+        0 0 * * *
 
 jobs:
   alloy-prod-e2e:

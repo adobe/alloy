@@ -1,7 +1,6 @@
 name: PR-Tests
-#Targeting this branch temporarily 
 on:
-  push:
+  pull_request:
     branches:
       - main
 env:
