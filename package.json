@@ -2,9 +2,11 @@
   "name": "@adobe/alloy",
   "version": "2.3.0",
   "description": "Adobe Experience Platform Web SDK",
-  "module": "dist/index.js",
+  "main": "dist/main.js",
+  "module": "dist/module.js",
   "files": [
-    "dist/index.js"
+    "dist/main.js",
+    "dist/module.js"
   ],
   "scripts": {
     "install": "cd sandbox && npm install",

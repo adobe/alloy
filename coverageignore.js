@@ -18,6 +18,6 @@ module.exports = [
   "**/.*",
   "**/constants/**",
   "**/index.js",
-  "src/baseCode.js",
-  "src/standAlone.js"
+  "baseCode.js",
+  "standalone.js"
 ];

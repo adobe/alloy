@@ -32,35 +32,53 @@ const minify = process.env.MINIFY;
 const destDirectory = destDirectoryByBuildTarget[buildTarget];
 
 const minifiedExtension = minify ? ".min" : "";
-const baseCodeTerser = terser({
-  mangle: true,
-  compress: {
-    unused: false
+
+const BASE_CODE = "baseCode";
+const STANDALONE = "standalone";
+const MODULE = "module";
+const MAIN = "main";
+const buildPlugins = version => {
+  const plugins = [
+    resolve({
+      preferBuiltins: false,
+      // Support the browser field in dependencies' package.json.
+      // Useful for the uuid package.
+      mainFields: ["module", "main", "browser"]
+    }),
+    commonjs()
+  ];
+  if (version !== MODULE) {
+    plugins.push(babel());
   }
-});
 
-const plugins = [
-  resolve({
-    preferBuiltins: false,
-    // Support the browser field in dependencies' package.json.
-    // Useful for the uuid package.
-    mainFields: ["module", "main", "browser"]
-  }),
-  commonjs(),
-  babel()
-];
-
-if (buildTarget !== buildTargets.DEV) {
-  plugins.push(
-    license({
-      banner: {
-        content: {
-          file: path.join(__dirname, "LICENSE_BANNER")
+  if (minify && version === BASE_CODE) {
+    plugins.push(
+      terser({
+        mangle: true,
+        compress: {
+          unused: false
         }
-      }
-    })
-  );
-}
+      })
+    );
+  }
+  if (minify && version === STANDALONE) {
+    plugins.push(terser());
+  }
+
+  if (buildTarget !== buildTargets.DEV && version !== BASE_CODE) {
+    plugins.push(
+      license({
+        banner: {
+          content: {
+            file: path.join(__dirname, "LICENSE_BANNER")
+          }
+        }
+      })
+    );
+  }
+
+  return plugins;
+};
 
 const config = [];
 
@@ -73,12 +91,12 @@ if (buildTarget === buildTargets.PROD) {
         format: "iife"
       }
     ],
-    plugins: minify ? [...plugins, baseCodeTerser] : plugins
+    plugins: buildPlugins(BASE_CODE)
   });
 }
 
 config.push({
-  input: "src/standAlone.js",
+  input: "src/standalone.js",
   output: [
     {
       file: `${destDirectory}alloy${minifiedExtension}.js`,
@@ -90,7 +108,7 @@ config.push({
         "}\n"
     }
   ],
-  plugins: minify ? [...plugins, terser()] : plugins
+  plugins: buildPlugins(STANDALONE)
 });
 
 if (buildTarget === buildTargets.PROD && !minify) {
@@ -98,7 +116,25 @@ if (buildTarget === buildTargets.PROD && !minify) {
     input: "src/index.js",
     output: [
       {
-        file: `${destDirectory}index.js`,
+        file: `${destDirectory}main.js`,
+        format: "cjs"
+      }
+    ],
+    // The @adobe/reactor-* dependencies are specified as peerDependencies so no need to include them in the
+    // module build. The Launch extension does not need them included.
+    external(name) {
+      return /^@adobe\/reactor-/.test(name);
+    },
+    plugins: buildPlugins(MAIN)
+  });
+}
+
+if (buildTarget === buildTargets.PROD && !minify) {
+  config.push({
+    input: "src/index.js",
+    output: [
+      {
+        file: `${destDirectory}module.js`,
         format: "es"
       }
     ],
@@ -107,7 +143,7 @@ if (buildTarget === buildTargets.PROD && !minify) {
     external(name) {
       return /^@adobe\/reactor-/.test(name);
     },
-    plugins
+    plugins: buildPlugins(MODULE)
   });
 }
 
