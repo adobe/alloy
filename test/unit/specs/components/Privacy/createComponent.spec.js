@@ -26,7 +26,9 @@ const createConsent = generalConsent => ({
   ]
 });
 const CONSENT_IN = createConsent("in");
+const CONSENT_IN_HASH = 53977425;
 const CONSENT_OUT = createConsent("out");
+const CONSENT_OUT_HASH = 3121632797;
 
 describe("privacy:createComponent", () => {
   let readStoredConsent;
@@ -85,7 +87,8 @@ describe("privacy:createComponent", () => {
     return flushPromiseChains().then(() => {
       expect(sendSetConsentRequest).toHaveBeenCalledWith({
         consentOptions: CONSENT_IN.consent,
-        identityMap: { my: "map" }
+        identityMap: { my: "map" },
+        newConsentHash: CONSENT_IN_HASH
       });
       expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
       expect(onResolved).toHaveBeenCalledWith(undefined);
@@ -114,7 +117,8 @@ describe("privacy:createComponent", () => {
       .then(() => {
         expect(sendSetConsentRequest).toHaveBeenCalledWith({
           consentOptions: CONSENT_IN.consent,
-          identityMap: undefined
+          identityMap: undefined,
+          newConsentHash: CONSENT_IN_HASH
         });
         expect(consent.setConsent).not.toHaveBeenCalledWith({ general: "in" });
         deferredConsentRequest.resolve();
@@ -127,7 +131,11 @@ describe("privacy:createComponent", () => {
 
   it("only calls setConsent once with multiple consent requests", () => {
     defaultConsent = "pending";
-    readStoredConsent.and.returnValues({}, { general: "out" });
+    readStoredConsent.and.returnValues(
+      {},
+      { general: "in", consentHash: CONSENT_IN_HASH },
+      { general: "out", consentHash: CONSENT_OUT_HASH }
+    );
     build();
     const deferredConsentRequest1 = defer();
     const deferredConsentRequest2 = defer();
@@ -140,7 +148,8 @@ describe("privacy:createComponent", () => {
       .then(() => {
         expect(sendSetConsentRequest).toHaveBeenCalledWith({
           consentOptions: CONSENT_IN.consent,
-          identityMap: undefined
+          identityMap: undefined,
+          newConsentHash: CONSENT_IN_HASH
         });
         component.commands.setConsent.run(CONSENT_OUT);
         deferredConsentRequest1.resolve();
@@ -149,7 +158,8 @@ describe("privacy:createComponent", () => {
       .then(() => {
         expect(sendSetConsentRequest).toHaveBeenCalledWith({
           consentOptions: CONSENT_OUT.consent,
-          identityMap: undefined
+          identityMap: undefined,
+          newConsentHash: CONSENT_OUT_HASH
         });
         deferredConsentRequest2.resolve();
         return flushPromiseChains();
@@ -163,14 +173,20 @@ describe("privacy:createComponent", () => {
   });
 
   it("checks the cookie after an event", () => {
-    readStoredConsent.and.returnValues({}, { general: "out" });
+    readStoredConsent.and.returnValues(
+      {},
+      { general: "out", consentHash: CONSENT_OUT_HASH }
+    );
     build();
     component.lifecycle.onResponse();
     expect(consent.setConsent).toHaveBeenCalledWith({ general: "out" });
   });
 
   it("checks the cookie after an error response", () => {
-    readStoredConsent.and.returnValues({}, { general: "out" });
+    readStoredConsent.and.returnValues(
+      {},
+      { general: "out", consentHash: CONSENT_OUT_HASH }
+    );
     build();
     component.lifecycle.onRequestFailure();
     expect(consent.setConsent).toHaveBeenCalledWith({ general: "out" });

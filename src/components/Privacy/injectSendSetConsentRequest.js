@@ -14,7 +14,8 @@ import { isObject } from "../../utils";
 
 export default ({ createConsentRequestPayload, sendEdgeNetworkRequest }) => ({
   consentOptions,
-  identityMap
+  identityMap,
+  newConsentHash
 }) => {
   const payload = createConsentRequestPayload();
   payload.setConsent(consentOptions);
@@ -24,6 +25,9 @@ export default ({ createConsentRequestPayload, sendEdgeNetworkRequest }) => ({
         payload.addIdentity(key, identity);
       });
     });
+  }
+  if (newConsentHash !== undefined) {
+    payload.setConsentHash(newConsentHash);
   }
   return sendEdgeNetworkRequest({
     payload,

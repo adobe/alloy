@@ -23,9 +23,9 @@ describe("Privacy:injectReadStoredConsent", () => {
     expect(parseConsentCookie).toHaveBeenCalledWith("cookieValue");
   });
 
-  it("returns undefined if the cookie is not there", () => {
+  it("returns empty object if the cookie is not there", () => {
     cookieJar.get.and.returnValue(undefined);
-    expect(readStoredConsent()).toEqual(undefined);
+    expect(readStoredConsent()).toEqual({});
     expect(parseConsentCookie).not.toHaveBeenCalled();
   });
 

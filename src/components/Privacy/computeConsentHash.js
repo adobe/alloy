@@ -10,6 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line import/prefer-default-export
-export const GENERAL = "general";
-export const CONSENT_HASH = "consentHash";
+import { crc32 } from "../../utils";
+
+// serialize an object with a consistent ordering
+const serialize = obj => {
+  if (Array.isArray(obj)) {
+    return JSON.stringify(obj.map(i => serialize(i)));
+  }
+  if (typeof obj === "object" && obj !== null) {
+    return Object.keys(obj)
+      .sort()
+      .map(k => `${k}:${serialize(obj[k])}`)
+      .join("|");
+  }
+  return obj;
+};
+
+export default obj => {
+  return crc32(serialize(obj));
+};

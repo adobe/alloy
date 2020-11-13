@@ -10,6 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line import/prefer-default-export
-export const GENERAL = "general";
-export const CONSENT_HASH = "consentHash";
+import computeConsentHash from "../../../../../src/components/Privacy/computeConsentHash";
+
+describe("computeConsentHash", () => {
+  it("works", () => {
+    expect(
+      computeConsentHash([
+        {
+          standard: "Adobe",
+          version: "1.0",
+          value: {
+            general: "in"
+          }
+        }
+      ])
+    ).toBe(53977425);
+  });
+});

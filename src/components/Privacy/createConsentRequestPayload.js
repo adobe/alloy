@@ -15,7 +15,7 @@ import createRequestPayload from "../../core/edgeNetwork/requestPayloads/createR
 export default () => {
   return createRequestPayload(content => {
     return {
-      addIdentity: (namespaceCode, identity) => {
+      addIdentity(namespaceCode, identity) {
         content.identityMap = content.identityMap || {};
         content.identityMap[namespaceCode] =
           content.identityMap[namespaceCode] || [];
@@ -23,6 +23,10 @@ export default () => {
       },
       setConsent(consent) {
         content.consent = consent;
+      },
+      setConsentHash(consentHash) {
+        content.meta = content.meta || {};
+        content.meta.consentHash = consentHash;
       }
     };
   });

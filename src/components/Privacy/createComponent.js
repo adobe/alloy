@@ -11,7 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { assign } from "../../utils";
-import { GENERAL } from "../../constants/consentPurpose";
+import { GENERAL, CONSENT_HASH } from "../../constants/consentPurpose";
+import computeConsentHash from "./computeConsentHash";
 
 export default ({
   readStoredConsent,
@@ -21,23 +22,36 @@ export default ({
   sendSetConsentRequest,
   validateSetConsentOptions
 }) => {
-  const consentByPurpose = assign(
-    { [GENERAL]: defaultConsent },
-    readStoredConsent()
-  );
-  consent.setConsent(consentByPurpose);
+  let consentHash;
+
+  const initializeConsent = () => {
+    const {
+      [CONSENT_HASH]: storedConsentHash,
+      ...storedConsentByPurpose
+    } = readStoredConsent();
+    const consentByPurpose = assign(
+      { [GENERAL]: defaultConsent },
+      storedConsentByPurpose
+    );
+    consentHash = storedConsentHash;
+    consent.setConsent(consentByPurpose);
+  };
 
   const readCookieIfQueueEmpty = () => {
-    if (taskQueue.length === 0) {
-      const storedConsent = readStoredConsent();
+    const {
+      [CONSENT_HASH]: storedConsentHash,
+      ...storedConsentByPurpose
+    } = readStoredConsent();
 
-      // Only read cookies when there are no outstanding setConsent
-      // requests. This helps with race conditions.
-      if (storedConsent) {
-        consent.setConsent(storedConsent);
-      }
+    consentHash = storedConsentHash;
+    // setting the consent will flush the pending queue of events.
+    // we only want to do that if there aren't any pending setConsent calls
+    if (taskQueue.length === 0) {
+      consent.setConsent(storedConsentByPurpose);
     }
   };
+
+  initializeConsent();
 
   return {
     commands: {
@@ -46,9 +60,17 @@ export default ({
         run: ({ consent: consentOptions, identityMap }) => {
           consent.suspend();
           return taskQueue
-            .addTask(() =>
-              sendSetConsentRequest({ consentOptions, identityMap })
-            )
+            .addTask(() => {
+              const newConsentHash = computeConsentHash(consentOptions);
+              if (consentHash === undefined || consentHash !== newConsentHash) {
+                return sendSetConsentRequest({
+                  consentOptions,
+                  identityMap,
+                  newConsentHash
+                });
+              }
+              return Promise.resolve();
+            })
             .catch(error => {
               readCookieIfQueueEmpty();
               throw error;
