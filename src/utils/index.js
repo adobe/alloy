@@ -26,6 +26,7 @@ export {
   default as createCallbackAggregator
 } from "./createCallbackAggregator";
 export { default as createTaskQueue } from "./createTaskQueue";
+export { default as crc32 } from "./crc32";
 export { default as defer } from "./defer";
 export { default as deepAssign } from "./deepAssign";
 export { default as endsWith } from "./endsWith";
