@@ -63,7 +63,6 @@
   ],
   "dependencies": {
     "css.escape": "^1.5.1",
-    "typescript": "^4.0.5",
     "uuid": "^3.3.2"
   },
   "peerDependencies": {

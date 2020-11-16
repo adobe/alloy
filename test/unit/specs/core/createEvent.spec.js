@@ -258,5 +258,21 @@ describe("createEvent", () => {
         data: { a: "1", b: "2" }
       });
     });
+
+    it("can replace xdm or data", () => {
+      const callback = content => {
+        content.xdm = { a: "1" };
+        content.data = { b: "2" };
+      };
+
+      const subject = createEvent();
+      subject.setUserXdm({ c: "3" });
+      subject.setUserData({ d: "4" });
+      subject.setLastChanceCallback(callback);
+      expect(subject.toJSON()).toEqual({
+        xdm: { a: "1" },
+        data: { b: "2" }
+      });
+    });
   });
 });
