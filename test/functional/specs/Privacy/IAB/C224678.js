@@ -52,13 +52,12 @@ const sendEventWithConsentError = ClientFunction(() =>
 
 const sendEvent = ClientFunction(() => window.alloy("sendEvent"));
 
-// TODO: re-enable this test when Konductor fixes the issue. Konductor is returning more payloads than expected.
-test.skip("Test C224678: Passing a negative Consent in the sendEvent command", async () => {
+test("Test C224678: Passing a negative Consent in the sendEvent command", async () => {
   await configureAlloyInstance("alloy", config);
   const errorMessage = await sendEventWithConsentError();
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 403);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
   const rawResponse = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
@@ -97,7 +96,11 @@ test.skip("Test C224678: Passing a negative Consent in the sendEvent command", a
     .expect(errorMessage)
     .notOk("Event returned an error when we expected it not to.");
 
-  // 5. Events should be blocked going forward because we are opted out.
+  // 5. But returns a warning message confirming the opt-out
+  const warnings = response.getWarnings().map(w => w.code);
+  await t.expect(warnings).contains("EXEG-0301-200");
+
+  // 6. Events should be blocked going forward because we are opted out.
   await sendEvent();
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 });
