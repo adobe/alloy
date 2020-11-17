@@ -1,8 +1,7 @@
 name: Alloy-Test-Cron
 on:
   schedule:
-    - cron: |
-        0 0 * * *
+    - cron: "0 */24 * * *"
 
 jobs:
   alloy-prod-e2e:
