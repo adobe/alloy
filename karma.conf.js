@@ -27,7 +27,6 @@ module.exports = config => {
       "karma-coverage",
       "karma-chrome-launcher",
       "karma-jasmine-matchers",
-      "karma-browserstack-launcher",
       "karma-spec-reporter",
       "karma-rollup-preprocessor",
       "karma-allure-reporter"
@@ -53,7 +52,7 @@ module.exports = config => {
     // test results reporter to use
     // possible values: "dots", "progress"
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ["dots", "BrowserStack"],
+    reporters: ["dots"],
 
     allureReport: {
       reportDir: "allure/allure-results/", // By default files will be save in the base dir
@@ -73,21 +72,13 @@ module.exports = config => {
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: true,
 
-    browserStack: {
-      username: process.env.BROWSERSTACK_USERNAME,
-      accessKey: process.env.BROWSERSTACK_ACCESS_KEY
-    },
-
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ["bs_chrome_windows"],
+    browsers: ["ChromeHeadlessNoSandbox"],
     customLaunchers: {
-      bs_chrome_windows: {
-        base: "BrowserStack",
-        browser: "chrome",
-        browser_version: "72.0",
-        os: "Windows",
-        os_version: "10"
+      ChromeHeadlessNoSandbox: {
+        base: "ChromeHeadless",
+        flags: ["--no-sandbox"]
       }
     },
     // Continuous Integration mode

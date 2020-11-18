@@ -33,7 +33,7 @@ jobs:
         local-identifier: random
     - name: Run Unit Test on BS
       run: |
-        npm run test:unit
+        npm run test:unit:browserstack
     - name: 'BrowserStackLocal Stop'
       uses: 'browserstack/github-actions/setup-local@master'
       with:

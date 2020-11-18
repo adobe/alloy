@@ -11,6 +11,7 @@
     "test": "npm run test:unit && npm run test:functional",
     "test:unit": "karma start --single-run",
     "test:unit:watch": "karma start",
+    "test:unit:browserstack": "karma start karma-browserstack.conf.js",
     "test:unit:coverage": "karma start --single-run --reporters spec,coverage",
     "test:functional": "rollup -c --environment BUILD:prodStandalone && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome",
     "test:functional:watch": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" BUILD=\"prodStandalone\" ./scripts/watchFunctionalTests.js",
