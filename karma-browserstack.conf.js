@@ -1,4 +1,4 @@
-const karmaBroserstackLauncher = require("karma-browserstack-launcher");
+const karmaBrowserStackLauncher = require("karma-browserstack-launcher");
 
 const karmaConfig = require("./karma.conf.js");
 
@@ -50,7 +50,7 @@ module.exports = config => {
       "karma-spec-reporter",
       "karma-rollup-preprocessor",
       "karma-allure-reporter",
-      karmaBroserstackLauncher
+      karmaBrowserStackLauncher
     ],
 
     reporters: ["spec", "BrowserStack"],
