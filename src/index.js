@@ -14,7 +14,11 @@ governing permissions and limitations under the License.
 // like the launch extension. Everything that is exported here can be used independently by other
 // npm projects.
 
-export { default as baseCode } from "./baseCode/index";
+import baseCodeWithWindow from "./baseCode/index";
+
+export const baseCode = instanceNames => {
+  baseCodeWithWindow(window, instanceNames);
+};
 
 export { default as core } from "./core";
 

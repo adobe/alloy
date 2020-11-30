@@ -14,4 +14,4 @@ governing permissions and limitations under the License.
 
 import baseCode from "./baseCode/index";
 
-baseCode(["alloy"]);
+baseCode(window, ["alloy"]);

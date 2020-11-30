@@ -56,8 +56,12 @@ const buildPlugins = version => {
       terser({
         mangle: true,
         compress: {
-          unused: false
-        }
+          unused: true
+        },
+        output: {
+          wrap_func_args: false
+        },
+        toplevel: true
       })
     );
   }
@@ -88,7 +92,8 @@ if (buildTarget === buildTargets.PROD) {
     output: [
       {
         file: `${destDirectory}baseCode${minifiedExtension}.js`,
-        format: "iife"
+        format: "cjs",
+        strict: false
       }
     ],
     plugins: buildPlugins(BASE_CODE)
