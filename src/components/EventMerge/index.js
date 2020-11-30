@@ -14,7 +14,7 @@ import createEventMergeId from "./createEventMergeId";
 import createComponent from "./createComponent";
 
 const createEventMerge = () => {
-  return createComponent(createEventMergeId);
+  return createComponent({ createEventMergeId });
 };
 
 createEventMerge.namespace = "EventMerge";
