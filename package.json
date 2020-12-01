@@ -2,11 +2,11 @@
   "name": "@adobe/alloy",
   "version": "2.3.0",
   "description": "Adobe Experience Platform Web SDK",
-  "main": "dist/main.js",
-  "module": "dist/module.js",
+  "main": "dist/es5/index.js",
+  "module": "dist/es6/index.js",
   "files": [
-    "dist/main.js",
-    "dist/module.js"
+    "dist/es5",
+    "dist/es6"
   ],
   "scripts": {
     "install": "cd sandbox && npm install",
@@ -25,6 +25,7 @@
     "test:functional:api": "testcafe chrome:headless",
     "dev": "concurrently --names build,sandbox \"rollup -c -w\" \"cd sandbox && export REACT_APP_NONCE=321 && npm start\"",
     "build": "npm run format && npm run lint && npm run clean && concurrently \"rollup -c --environment BUILD:prod\" \"rollup -c --environment MINIFY,BUILD:prod\" && echo \"Base Code:\" && cat dist/baseCode.min.js",
+    "prepublish": "npm run clean && npx babel src --out-dir dist/es5 --env-name npm && babel src --out-dir dist/es6 --ignore src/baseCode.js,src/standalone.js --no-babelrc --plugins version",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js"
   },
   "husky": {
@@ -62,24 +63,20 @@
     }
   ],
   "dependencies": {
+    "@babel/cli": "^7.12.8",
     "css.escape": "^1.5.1",
-    "uuid": "^3.3.2"
-  },
-  "peerDependencies": {
+    "uuid": "^3.3.2",
     "@adobe/reactor-cookie": "^1.0.0",
     "@adobe/reactor-load-script": "^1.1.1",
     "@adobe/reactor-object-assign": "^1.0.0",
     "@adobe/reactor-query-string": "^1.0.0"
   },
   "devDependencies": {
-    "@adobe/reactor-cookie": "^1.0.0",
-    "@adobe/reactor-load-script": "^1.1.1",
-    "@adobe/reactor-object-assign": "^1.0.0",
-    "@adobe/reactor-query-string": "^1.0.0",
     "@babel/core": "^7.2.2",
     "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
     "@babel/plugin-transform-template-literals": "^7.4.4",
     "@babel/preset-env": "^7.4.5",
+    "babel-cli": "^6.26.0",
     "babel-plugin-version": "^0.2.3",
     "bundlesize": "^0.18.0",
     "concurrently": "^5.3.0",

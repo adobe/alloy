@@ -35,8 +35,7 @@ const minifiedExtension = minify ? ".min" : "";
 
 const BASE_CODE = "baseCode";
 const STANDALONE = "standalone";
-const MODULE = "module";
-const MAIN = "main";
+
 const buildPlugins = version => {
   const plugins = [
     resolve({
@@ -45,11 +44,9 @@ const buildPlugins = version => {
       // Useful for the uuid package.
       mainFields: ["module", "main", "browser"]
     }),
-    commonjs()
+    commonjs(),
+    babel({ envName: "rollup" })
   ];
-  if (version !== MODULE) {
-    plugins.push(babel());
-  }
 
   if (minify && version === BASE_CODE) {
     plugins.push(
@@ -115,41 +112,5 @@ config.push({
   ],
   plugins: buildPlugins(STANDALONE)
 });
-
-if (buildTarget === buildTargets.PROD && !minify) {
-  config.push({
-    input: "src/index.js",
-    output: [
-      {
-        file: `${destDirectory}main.js`,
-        format: "cjs"
-      }
-    ],
-    // The @adobe/reactor-* dependencies are specified as peerDependencies so no need to include them in the
-    // module build. The Launch extension does not need them included.
-    external(name) {
-      return /^@adobe\/reactor-/.test(name);
-    },
-    plugins: buildPlugins(MAIN)
-  });
-}
-
-if (buildTarget === buildTargets.PROD && !minify) {
-  config.push({
-    input: "src/index.js",
-    output: [
-      {
-        file: `${destDirectory}module.js`,
-        format: "es"
-      }
-    ],
-    // The @adobe/reactor-* dependencies are specified as peerDependencies so no need to include them in the
-    // module build. The Launch extension does not need them included.
-    external(name) {
-      return /^@adobe\/reactor-/.test(name);
-    },
-    plugins: buildPlugins(MODULE)
-  });
-}
 
 export default config;

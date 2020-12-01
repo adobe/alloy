@@ -35,7 +35,7 @@ const plugins = [
     mainFields: ["module", "main", "browser"]
   }),
   commonjs(),
-  babel()
+  babel({ envName: "rollup" })
 ];
 
 if (argv.reporters && argv.reporters.split(",").includes("coverage")) {
