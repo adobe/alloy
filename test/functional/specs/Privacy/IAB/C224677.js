@@ -40,9 +40,7 @@ const triggerSetConsent = ClientFunction(
   { dependencies: { IAB_NO_PURPOSE_TEN } }
 );
 
-const getErrorMessageFromSendEvent = ClientFunction(() =>
-  window.alloy("sendEvent").then(() => undefined, e => e.message)
-);
+const triggerEvent = ClientFunction(() => window.alloy("sendEvent"));
 
 test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
   await configureAlloyInstance("alloy", config);
@@ -67,11 +65,17 @@ test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
   const identityHandle = response.getPayloadsByType("identity:result");
   await t.expect(identityHandle.length).eql(2);
 
-  // Event calls going forward should be Opted-Out because AAM opts out consents with no purpose 10.
-  const errorMessage = await getErrorMessageFromSendEvent();
+  // 3. Event calls going forward should be opted out because AAM opts out consents with no purpose 10.
+  await triggerEvent();
+  const rawEventResponse = JSON.parse(
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+  );
+  const eventResponse = createResponse(rawEventResponse);
 
-  await t.expect(errorMessage).contains("EXEG-0301-403");
+  // 4. And a warning message should be returned, confirming the opt-out
+  const warnings = eventResponse.getWarnings().map(w => w.code);
+  await t.expect(warnings).contains("EXEG-0301-200");
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 403);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 });
