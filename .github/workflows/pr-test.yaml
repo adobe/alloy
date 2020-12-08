@@ -5,8 +5,8 @@ on:
       - main
 
 jobs:
-  unit-test-browserstack:
-    name: "Unit Test"
+  unit-test:
+    name: "Unit Tests"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -33,14 +33,14 @@ jobs:
         local-identifier: random
     - name: Run Unit Test on BS
       run: |
-        npm run test:unit:browserstack
+        npm run test:unit:browserstack:ci
     - name: 'BrowserStackLocal Stop'
       uses: 'browserstack/github-actions/setup-local@master'
       with:
         local-testing: stop
 
-  e2e-test-browserstack:
-    name: "E2E Tests BrowserStack"
+  e2e-test:
+    name: "E2E Tests"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
