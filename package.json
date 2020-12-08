@@ -105,6 +105,7 @@
     "puppeteer": "^1.16.0",
     "recursive-readdir": "^2.2.2",
     "request": "^2.88.0",
+    "rimraf": "^3.0.2",
     "rollup": "^2.29.0",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-commonjs": "^10.1.0",
