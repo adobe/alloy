@@ -25,7 +25,7 @@
     "test:functional:api": "testcafe chrome:headless",
     "dev": "concurrently --names build,sandbox \"rollup -c -w\" \"cd sandbox && export REACT_APP_NONCE=321 && npm start\"",
     "build": "npm run format && npm run lint && npm run clean && concurrently \"rollup -c --environment BUILD:prod\" \"rollup -c --environment MINIFY,BUILD:prod\" && echo \"Base Code:\" && cat dist/baseCode.min.js",
-    "prepublish": "npm run clean && npx babel src --out-dir dist/es5 --env-name npm && babel src --out-dir dist/es6 --ignore src/baseCode.js,src/standalone.js --no-babelrc --plugins version",
+    "prepublish": "npx rimraf dist && npx babel src --out-dir dist/es5 --env-name npm && babel src --out-dir dist/es6 --ignore src/baseCode.js,src/standalone.js --no-babelrc --plugins version",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js"
   },
   "husky": {
@@ -63,12 +63,12 @@
     }
   ],
   "dependencies": {
-    "css.escape": "^1.5.1",
-    "uuid": "^3.3.2",
     "@adobe/reactor-cookie": "^1.0.0",
     "@adobe/reactor-load-script": "^1.1.1",
     "@adobe/reactor-object-assign": "^1.0.0",
-    "@adobe/reactor-query-string": "^1.0.0"
+    "@adobe/reactor-query-string": "^1.0.0",
+    "css.escape": "^1.5.1",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",
