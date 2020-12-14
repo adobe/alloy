@@ -31,5 +31,6 @@ export default () => ({
   orgId: string()
     .unique()
     .required(),
+  onBeforeLinkCollect: callback().default(noop),
   onBeforeEventSend: callback().default(noop)
 });

@@ -20,6 +20,7 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
   let handleError;
   beforeEach(() => {
     config.clickCollectionEnabled = true;
+    config.onBeforeLinkCollect = undefined;
     eventManager = {
       createEvent: () => {
         return {
@@ -85,6 +86,51 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
     build();
     return clickHandler({}).then(() => {
       expect(eventManager.sendEvent).toHaveBeenCalled();
+    });
+  });
+
+  it("Sends an event if onBeforeLinkCollect does not return false", () => {
+    eventManager.createEvent = () => {
+      return {
+        isEmpty: () => false
+      };
+    };
+    spyOn(eventManager, "sendEvent").and.callThrough();
+    config.onBeforeLinkCollect = function() {};
+    spyOn(config, "onBeforeLinkCollect").and.callThrough();
+    build();
+    return clickHandler({}).then(() => {
+      expect(config.onBeforeLinkCollect).toHaveBeenCalled();
+      expect(eventManager.sendEvent).toHaveBeenCalled();
+    });
+  });
+
+  it("Does not send an event if event is empty but onBeforeLinkCollect doesn't return false", () => {
+    spyOn(eventManager, "sendEvent").and.callThrough();
+    config.onBeforeLinkCollect = function() {};
+    spyOn(config, "onBeforeLinkCollect").and.callThrough();
+    build();
+    return clickHandler({}).then(() => {
+      expect(config.onBeforeLinkCollect).toHaveBeenCalled();
+      expect(eventManager.sendEvent).not.toHaveBeenCalled();
+    });
+  });
+
+  it("Does not send event if onBeforeLinkCollect returns false", () => {
+    eventManager.createEvent = () => {
+      return {
+        isEmpty: () => false
+      };
+    };
+    spyOn(eventManager, "sendEvent").and.callThrough();
+    config.onBeforeLinkCollect = function() {
+      return false;
+    };
+    spyOn(config, "onBeforeLinkCollect").and.callThrough();
+    build();
+    return clickHandler({}).then(() => {
+      expect(config.onBeforeLinkCollect).toHaveBeenCalled();
+      expect(eventManager.sendEvent).not.toHaveBeenCalled();
     });
   });
 
