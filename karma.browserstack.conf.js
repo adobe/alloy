@@ -36,8 +36,6 @@ module.exports = config => {
     }
   };
 
-  const browserStackAccessKey = process.env.BROWSERSTACK_ACCESS_KEY;
-
   config.set({
     browsers: Object.keys(customLaunchers),
     customLaunchers,
@@ -53,10 +51,6 @@ module.exports = config => {
       karmaBrowserStackLauncher
     ],
 
-    reporters: ["spec", "BrowserStack"],
-    browserStack: {
-      accessKey: browserStackAccessKey,
-      username: process.env.BROWSERSTACK_USERNAME
-    }
+    reporters: ["spec", "BrowserStack"]
   });
 };
