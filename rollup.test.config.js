@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 const path = require("path");
-const jscc = require("rollup-plugin-jscc");
 const resolve = require("rollup-plugin-node-resolve");
 const globImport = require("rollup-plugin-glob-import");
 const commonjs = require("rollup-plugin-commonjs");
@@ -23,11 +22,6 @@ const ignorePatterns = require("./coverageignore");
 const argv = minimist(process.argv.slice(2));
 const plugins = [
   globImport(),
-  jscc({
-    values: {
-      _REACTOR: true
-    }
-  }),
   resolve({
     preferBuiltins: false,
     // Support the browser field in dependencies' package.json.
