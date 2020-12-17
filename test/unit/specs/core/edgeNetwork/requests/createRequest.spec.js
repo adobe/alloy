@@ -10,15 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createRequestPayload from "../../../core/edgeNetwork/requestPayloads/createRequestPayload";
-import createAddIdentity from "../../../core/edgeNetwork/requestPayloads/contentModifiers/createAddIdentity";
+// eslint-disable-next-line no-unused-vars
+import createRequestPayload from "../../../../../../src/core/edgeNetwork/requests/createRequest";
 
-export default namespaces => {
-  return createRequestPayload(content => {
-    content.query = content.query || {};
-    content.query.identity = { fetch: namespaces };
-    return {
-      addIdentity: createAddIdentity(content)
-    };
-  });
-};
+// This module is tested thoroughly through the different types of requests
+// that leverage this module.

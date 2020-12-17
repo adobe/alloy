@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, createMerger } from "../../../utils";
+import { createMerger } from "../../../utils";
 
 /**
  * Creates a payload object that extends a base payload object. This is not
@@ -21,29 +21,14 @@ import { assign, createMerger } from "../../../utils";
  * on top of the methods of the base payload object.
  * @returns {Object} The extended payload object.
  */
-export default construct => {
-  const content = {};
-  let useIdThirdPartyDomain = false;
-
-  const basePayload = {
-    mergeConfigOverrides: createMerger(content, "meta.configOverrides"),
+export default options => {
+  const { content, addIdentity } = options;
+  return {
     mergeState: createMerger(content, "meta.state"),
     mergeQuery: createMerger(content, "query"),
-    useIdThirdPartyDomain() {
-      useIdThirdPartyDomain = true;
-    },
-    getUseIdThirdPartyDomain() {
-      return useIdThirdPartyDomain;
-    },
-    addIdentity() {},
-    getDocumentMayUnload() {
-      return false;
-    },
+    addIdentity,
     toJSON() {
       return content;
     }
   };
-
-  const extendedPayload = construct(content);
-  return assign({}, basePayload, extendedPayload);
 };

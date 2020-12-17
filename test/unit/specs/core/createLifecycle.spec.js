@@ -23,7 +23,6 @@ describe("createLifecycle", () => {
     [
       "onComponentsRegistered",
       "onBeforeEvent",
-      "onBeforeDataCollectionRequest",
       "onBeforeRequest",
       "onResponse",
       "onRequestFailure",

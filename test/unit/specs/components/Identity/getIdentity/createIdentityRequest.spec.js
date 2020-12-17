@@ -10,16 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({
-  sendEdgeNetworkRequest,
-  createIdentityRequestPayload,
-  createIdentityRequest
-}) => {
-  return namespaces => {
-    const payload = createIdentityRequestPayload(namespaces);
+import describeRequest from "../../../../helpers/describeRequest";
+import createIdentityRequest from "../../../../../../src/components/Identity/getIdentity/createIdentityRequest";
+
+describe("createIdentityRequest", () => {
+  describeRequest(createIdentityRequest);
+
+  it("provides the appropriate action", () => {
+    const payload = {};
     const request = createIdentityRequest(payload);
-    return sendEdgeNetworkRequest({
-      request
-    });
-  };
-};
+    expect(request.getAction()).toBe("identity/acquire");
+  });
+
+  it("never uses sendBeacon", () => {
+    const payload = {};
+    const request = createIdentityRequest(payload);
+    expect(request.getUseSendBeacon()).toBeFalse();
+  });
+});

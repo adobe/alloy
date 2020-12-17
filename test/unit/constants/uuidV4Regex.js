@@ -10,16 +10,4 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({
-  sendEdgeNetworkRequest,
-  createIdentityRequestPayload,
-  createIdentityRequest
-}) => {
-  return namespaces => {
-    const payload = createIdentityRequestPayload(namespaces);
-    const request = createIdentityRequest(payload);
-    return sendEdgeNetworkRequest({
-      request
-    });
-  };
-};
+export default /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;

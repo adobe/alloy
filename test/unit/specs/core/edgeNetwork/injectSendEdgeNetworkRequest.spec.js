@@ -32,13 +32,7 @@ describe("injectSendEdgeNetworkRequest", () => {
   let processWarningsAndErrors;
   let validateNetworkResponseIsWellFormed;
   let sendEdgeNetworkRequest;
-  const payload = {
-    getUseIdThirdPartyDomain() {
-      return false;
-    }
-  };
-  const action = "test-action";
-
+  let request;
   /**
    * Helper for testing handling of network request failures, particularly
    * their interplay with lifecycle hooks.
@@ -50,7 +44,7 @@ describe("injectSendEdgeNetworkRequest", () => {
     const error = new Error("no connection");
     sendNetworkRequest.and.returnValue(Promise.reject(error));
     const errorHandler = jasmine.createSpy("errorHandler");
-    sendEdgeNetworkRequest({ payload, action, runOnRequestFailureCallbacks })
+    sendEdgeNetworkRequest({ request, runOnRequestFailureCallbacks })
       .then(fail)
       .catch(errorHandler);
     return flushPromiseChains()
@@ -75,7 +69,7 @@ describe("injectSendEdgeNetworkRequest", () => {
     const error = new Error("Unexpected response.");
     validateNetworkResponseIsWellFormed.and.throwError(error);
     const errorHandler = jasmine.createSpy("errorHandler");
-    sendEdgeNetworkRequest({ payload, action, runOnRequestFailureCallbacks })
+    sendEdgeNetworkRequest({ request, runOnRequestFailureCallbacks })
       .then(fail)
       .catch(errorHandler);
     return flushPromiseChains()
@@ -98,7 +92,7 @@ describe("injectSendEdgeNetworkRequest", () => {
     assertLifecycleCall
   }) => {
     const successHandler = jasmine.createSpy("successHandler");
-    sendEdgeNetworkRequest({ payload, action, runOnResponseCallbacks }).then(
+    sendEdgeNetworkRequest({ request, runOnResponseCallbacks }).then(
       successHandler
     );
     return flushPromiseChains()
@@ -114,6 +108,15 @@ describe("injectSendEdgeNetworkRequest", () => {
   };
 
   beforeEach(() => {
+    request = jasmine.createSpyObj("request", {
+      getId: "RID123",
+      getAction: "test-action",
+      getPayload: {
+        type: "payload"
+      },
+      getUseIdThirdPartyDomain: false,
+      getUseSendBeacon: false
+    });
     logger = jasmine.createSpyObj("logger", ["log"]);
     lifecycle = jasmine.createSpyObj("lifecycle", {
       onBeforeRequest: Promise.resolve(),
@@ -151,59 +154,79 @@ describe("injectSendEdgeNetworkRequest", () => {
   });
 
   it("transfers cookies to payload when sending to first-party domain", () => {
-    payload.getUseIdThirdPartyDomain = () => false;
-    return sendEdgeNetworkRequest({ payload, action }).then(() => {
+    return sendEdgeNetworkRequest({ request }).then(() => {
       expect(cookieTransfer.cookiesToPayload).toHaveBeenCalledWith(
-        payload,
+        request.getPayload(),
         "edge.example.com"
       );
     });
   });
 
   it("transfers cookies to payload when sending to third-party domain", () => {
-    payload.getUseIdThirdPartyDomain = () => false;
     // Ensure that sendEdgeNetworkRequest waits until after
     // lifecycle.onBeforeRequest to determine the endpoint domain.
     lifecycle.onBeforeRequest.and.callFake(() => {
-      payload.getUseIdThirdPartyDomain = () => true;
+      request.getUseIdThirdPartyDomain.and.returnValue(true);
       return Promise.resolve();
     });
-    return sendEdgeNetworkRequest({ payload, action }).then(() => {
+    return sendEdgeNetworkRequest({ request }).then(() => {
       expect(cookieTransfer.cookiesToPayload).toHaveBeenCalledWith(
-        payload,
+        request.getPayload(),
         "adobedc.demdex.net"
       );
     });
   });
 
   it("sends request to first-party domain", () => {
-    payload.getUseIdThirdPartyDomain = () => false;
-    return sendEdgeNetworkRequest({ payload, action }).then(() => {
+    return sendEdgeNetworkRequest({ request }).then(() => {
       expect(sendNetworkRequest).toHaveBeenCalledWith({
-        payload,
-        url: jasmine.stringMatching(
-          /https:\/\/edge\.example\.com\/ee\/v1\/test-action\?configId=myconfigId&requestId=[0-9a-f-]+/
-        ),
-        requestId: jasmine.stringMatching(/^[0-9a-f-]+$/)
+        requestId: "RID123",
+        url:
+          "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123",
+        payload: {
+          type: "payload"
+        },
+        useSendBeacon: false
       });
     });
   });
 
   it("sends request to third-party domain", () => {
-    payload.getUseIdThirdPartyDomain = () => false;
     // Ensure that sendEdgeNetworkRequest waits until after
     // lifecycle.onBeforeRequest to determine the endpoint domain.
     lifecycle.onBeforeRequest.and.callFake(() => {
-      payload.getUseIdThirdPartyDomain = () => true;
+      request.getUseIdThirdPartyDomain.and.returnValue(true);
       return Promise.resolve();
     });
-    return sendEdgeNetworkRequest({ payload, action }).then(() => {
+    return sendEdgeNetworkRequest({ request }).then(() => {
       expect(sendNetworkRequest).toHaveBeenCalledWith({
-        payload,
-        url: jasmine.stringMatching(
-          /https:\/\/adobedc\.demdex\.net\/ee\/v1\/test-action\?configId=myconfigId&requestId=[0-9a-f-]+/
-        ),
-        requestId: jasmine.stringMatching(/^[0-9a-f-]+$/)
+        requestId: "RID123",
+        url:
+          "https://adobedc.demdex.net/ee/v1/test-action?configId=myconfigId&requestId=RID123",
+        payload: {
+          type: "payload"
+        },
+        useSendBeacon: false
+      });
+    });
+  });
+
+  it("sends request using sendBeacon", () => {
+    // Ensure that sendEdgeNetworkRequest waits until after
+    // lifecycle.onBeforeRequest to determine whether to use sendBeacon.
+    lifecycle.onBeforeRequest.and.callFake(() => {
+      request.getUseSendBeacon.and.returnValue(true);
+      return Promise.resolve();
+    });
+    return sendEdgeNetworkRequest({ request }).then(() => {
+      expect(sendNetworkRequest).toHaveBeenCalledWith({
+        requestId: "RID123",
+        url:
+          "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123",
+        payload: {
+          type: "payload"
+        },
+        useSendBeacon: true
       });
     });
   });
@@ -212,11 +235,11 @@ describe("injectSendEdgeNetworkRequest", () => {
     const deferred = defer();
     lifecycle.onBeforeRequest.and.returnValue(deferred.promise);
     const successHandler = jasmine.createSpy("successHandler");
-    sendEdgeNetworkRequest({ payload, action }).then(successHandler);
+    sendEdgeNetworkRequest({ request }).then(successHandler);
     return flushPromiseChains()
       .then(() => {
         expect(lifecycle.onBeforeRequest).toHaveBeenCalledWith({
-          payload,
+          request,
           onResponse: jasmine.any(Function),
           onRequestFailure: jasmine.any(Function)
         });
@@ -383,7 +406,7 @@ describe("injectSendEdgeNetworkRequest", () => {
   });
 
   it("transfers cookies from response before lifecycle.onResponse", () => {
-    return sendEdgeNetworkRequest({ payload, action }).then(() => {
+    return sendEdgeNetworkRequest({ request }).then(() => {
       expect(cookieTransfer.responseToCookies).toHaveBeenCalledWith(response);
       assertFunctionCallOrder([
         cookieTransfer.responseToCookies,
@@ -393,7 +416,7 @@ describe("injectSendEdgeNetworkRequest", () => {
   });
 
   it("processes warnings and errors", () => {
-    return sendEdgeNetworkRequest({ payload, action }).then(() => {
+    return sendEdgeNetworkRequest({ request }).then(() => {
       expect(processWarningsAndErrors).toHaveBeenCalled();
     });
   });
@@ -401,7 +424,7 @@ describe("injectSendEdgeNetworkRequest", () => {
   it("rejects the promise if error is thrown while processing warnings and errors", () => {
     processWarningsAndErrors.and.throwError(new Error("Invalid XDM"));
     return expectAsync(
-      sendEdgeNetworkRequest({ payload, action })
+      sendEdgeNetworkRequest({ request })
     ).toBeRejectedWithError("Invalid XDM");
   });
 
@@ -415,7 +438,7 @@ describe("injectSendEdgeNetworkRequest", () => {
     );
 
     return expectAsync(
-      sendEdgeNetworkRequest({ payload, action, runOnResponseCallbacks })
+      sendEdgeNetworkRequest({ request, runOnResponseCallbacks })
     ).toBeResolvedTo({ c: 2, h: 9, a: 2, b: 8 });
   });
 
@@ -427,8 +450,10 @@ describe("injectSendEdgeNetworkRequest", () => {
       return Promise.resolve();
     });
     lifecycle.onResponse.and.returnValue(Promise.resolve([{ c: 2 }]));
-    return expectAsync(
-      sendEdgeNetworkRequest({ payload, action })
-    ).toBeResolvedTo({ a: 1, b: 1, c: 2 });
+    return expectAsync(sendEdgeNetworkRequest({ request })).toBeResolvedTo({
+      a: 1,
+      b: 1,
+      c: 2
+    });
   });
 });

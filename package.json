@@ -99,6 +99,7 @@
     "prettier": "^1.16.4",
     "promise-polyfill": "^8.1.0",
     "puppeteer": "^1.16.0",
+    "read-cache": "^1.0.0",
     "recursive-readdir": "^2.2.2",
     "request": "^2.88.0",
     "rollup": "^2.29.0",

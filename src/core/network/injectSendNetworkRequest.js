@@ -12,38 +12,37 @@ governing permissions and limitations under the License.
 
 import { stackError } from "../../utils";
 
-export default ({ logger, networkStrategy, isRetryableHttpStatusCode }) => {
+export default ({
+  logger,
+  sendFetchRequest,
+  sendBeaconRequest,
+  isRetryableHttpStatusCode
+}) => {
   /**
    * Send a network request and returns details about the response.
-   *
-   * @param {Object} payload This will be JSON stringified and sent as the post body.
-   * @param {String} url The URL to which the request should be sent.
-   * @param {String} requestID A unique ID for the request.
    */
-  return ({ payload, url, requestId }) => {
-    const stringifiedPayload = JSON.stringify(payload);
-
+  return ({ requestId, url, payload, useSendBeacon }) => {
     // We want to log raw payload and event data rather than
     // our fancy wrapper objects. Calling payload.toJSON() is
     // insufficient to get all the nested raw data, because it's
     // not recursive (it doesn't call toJSON() on the event objects).
     // Parsing the result of JSON.stringify(), however, gives the
     // fully recursive raw data.
-    // JSON.parse is expensive so we short circuit if logging is disabled.
-    if (logger.enabled) {
-      logger.logOnBeforeNetworkRequest({
-        url,
-        requestId,
-        payload: JSON.parse(stringifiedPayload)
-      });
-    }
+    const stringifiedPayload = JSON.stringify(payload);
+    const parsedPayload = JSON.parse(stringifiedPayload);
+
+    logger.logOnBeforeNetworkRequest({
+      url,
+      requestId,
+      payload: parsedPayload
+    });
 
     const executeRequest = (retriesAttempted = 0) => {
-      return networkStrategy({
-        url,
-        body: stringifiedPayload,
-        documentMayUnload: payload.getDocumentMayUnload()
-      }).then(response => {
+      const requestMethod = useSendBeacon
+        ? sendBeaconRequest
+        : sendFetchRequest;
+
+      return requestMethod(url, stringifiedPayload).then(response => {
         if (
           isRetryableHttpStatusCode(response.status) &&
           retriesAttempted < 3
@@ -62,7 +61,7 @@ export default ({ logger, networkStrategy, isRetryableHttpStatusCode }) => {
         logger.logOnNetworkResponse({
           requestId,
           url,
-          payload: JSON.parse(stringifiedPayload),
+          payload: parsedPayload,
           ...response,
           parsedBody,
           retriesAttempted
@@ -80,7 +79,7 @@ export default ({ logger, networkStrategy, isRetryableHttpStatusCode }) => {
       logger.logOnNetworkError({
         requestId,
         url,
-        payload: JSON.parse(stringifiedPayload),
+        payload: parsedPayload,
         error
       });
       throw stackError({ error, message: "Network request failed." });

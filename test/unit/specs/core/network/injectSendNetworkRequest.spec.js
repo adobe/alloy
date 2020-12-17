@@ -15,10 +15,7 @@ import injectSendNetworkRequest from "../../../../../src/core/network/injectSend
 describe("injectSendNetworkRequest", () => {
   const url = "https://example.com";
   const payload = {
-    a: "b",
-    getDocumentMayUnload() {
-      return true;
-    }
+    a: "b"
   };
   const payloadJson = JSON.stringify(payload);
   const requestId = "RID123";
@@ -29,7 +26,8 @@ describe("injectSendNetworkRequest", () => {
   const responseBodyJson = JSON.stringify(responseBody);
 
   let sendNetworkRequest;
-  let networkStrategy;
+  let sendFetchRequest;
+  let sendBeaconRequest;
   let isRetryableHttpStatusCode;
 
   beforeEach(() => {
@@ -39,10 +37,16 @@ describe("injectSendNetworkRequest", () => {
       "logOnNetworkError"
     ]);
     logger.enabled = true;
-    networkStrategy = jasmine.createSpy().and.returnValue(
+    sendFetchRequest = jasmine.createSpy().and.returnValue(
       Promise.resolve({
         status: 200,
         body: responseBodyJson
+      })
+    );
+    sendBeaconRequest = jasmine.createSpy().and.returnValue(
+      Promise.resolve({
+        status: 204,
+        body: ""
       })
     );
     isRetryableHttpStatusCode = jasmine
@@ -51,29 +55,25 @@ describe("injectSendNetworkRequest", () => {
 
     sendNetworkRequest = injectSendNetworkRequest({
       logger,
-      networkStrategy,
+      sendFetchRequest,
+      sendBeaconRequest,
       isRetryableHttpStatusCode
     });
   });
 
   it("sends the request", () => {
     return sendNetworkRequest({
+      requestId,
       payload,
       url,
-      requestId
+      useSendBeacon: false
     }).then(() => {
       expect(logger.logOnBeforeNetworkRequest).toHaveBeenCalledWith({
         requestId,
         url,
-        payload: {
-          a: "b"
-        }
+        payload
       });
-      expect(networkStrategy).toHaveBeenCalledWith({
-        url,
-        body: payloadJson,
-        documentMayUnload: true
-      });
+      expect(sendFetchRequest).toHaveBeenCalledWith(url, payloadJson);
     });
   });
 
@@ -86,9 +86,7 @@ describe("injectSendNetworkRequest", () => {
       expect(logger.logOnNetworkResponse).toHaveBeenCalledWith({
         requestId,
         url,
-        payload: {
-          a: "b"
-        },
+        payload,
         status: 200,
         body: responseBodyJson,
         parsedBody: responseBody,
@@ -103,7 +101,7 @@ describe("injectSendNetworkRequest", () => {
   });
 
   it("handles a response with a non-JSON body", () => {
-    networkStrategy.and.returnValue(
+    sendFetchRequest.and.returnValue(
       Promise.resolve({
         status: 200,
         body: "non-JSON body"
@@ -134,7 +132,7 @@ describe("injectSendNetworkRequest", () => {
   });
 
   it("handles a response with an empty body", () => {
-    networkStrategy.and.returnValue(
+    sendFetchRequest.and.returnValue(
       Promise.resolve({
         status: 200,
         body: ""
@@ -165,7 +163,7 @@ describe("injectSendNetworkRequest", () => {
   });
 
   it("rejects the promise when a network error occurs", () => {
-    networkStrategy.and.returnValue(Promise.reject(new Error("networkerror")));
+    sendFetchRequest.and.returnValue(Promise.reject(new Error("networkerror")));
     return sendNetworkRequest({
       payload,
       url,
@@ -205,7 +203,7 @@ describe("injectSendNetworkRequest", () => {
         body: responseBodyJson,
         parsedBody: responseBody
       });
-      expect(networkStrategy).toHaveBeenCalledTimes(3);
+      expect(sendFetchRequest).toHaveBeenCalledTimes(3);
     });
   });
 
@@ -221,7 +219,7 @@ describe("injectSendNetworkRequest", () => {
         body: responseBodyJson,
         parsedBody: responseBody
       });
-      expect(networkStrategy).toHaveBeenCalledTimes(4);
+      expect(sendFetchRequest).toHaveBeenCalledTimes(4);
     });
   });
 });
