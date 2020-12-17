@@ -7,7 +7,7 @@ on:
 jobs:
   unit-test:
     name: "Unit Tests"
-    runs-on: macos-latest
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
       with:
@@ -41,7 +41,7 @@ jobs:
 
   e2e-test:
     name: "E2E Tests"
-    runs-on: macos-latest
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
       with:
