@@ -12,15 +12,8 @@ governing permissions and limitations under the License.
 
 import { createMerger } from "../../../utils";
 
-/**
- * Creates a payload object that extends a base payload object. This is not
- * intended to be used from any modules other than "extending" payload modules.
- * @param {Function} construct A function that which will receive the content object
- * that the "subclass" can modify. The content object will be serialized when toJSON()
- * is called. The construct method should return an object whose methods will be merged on
- * on top of the methods of the base payload object.
- * @returns {Object} The extended payload object.
- */
+// This provides the base functionality that all types of
+// request payloads share.
 export default options => {
   const { content, addIdentity } = options;
   return {

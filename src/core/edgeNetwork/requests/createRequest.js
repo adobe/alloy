@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import { uuid } from "../../../utils";
 
+// This provides the base functionality that all types of requests share.
 export default options => {
   const { payload, getAction, getUseSendBeacon } = options;
   const id = uuid();
