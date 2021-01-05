@@ -17,19 +17,9 @@ describe("createDataCollectionRequest", () => {
   describeRequest(createDataCollectionRequest);
 
   it("uses collect with sendBeacon if document may unload and identity is established", () => {
-    const event1 = {
-      getDocumentMayUnload() {
-        return false;
-      }
-    };
-    const event2 = {
+    const payload = {
       getDocumentMayUnload() {
         return true;
-      }
-    };
-    const payload = {
-      getEvents() {
-        return [event1, event2];
       }
     };
     const request = createDataCollectionRequest(payload);
@@ -39,19 +29,9 @@ describe("createDataCollectionRequest", () => {
   });
 
   it("uses interact without sendBeacon if document may unload but identity has not been established", () => {
-    const event1 = {
-      getDocumentMayUnload() {
-        return false;
-      }
-    };
-    const event2 = {
+    const payload = {
       getDocumentMayUnload() {
         return true;
-      }
-    };
-    const payload = {
-      getEvents() {
-        return [event1, event2];
       }
     };
     const request = createDataCollectionRequest(payload);
@@ -60,14 +40,9 @@ describe("createDataCollectionRequest", () => {
   });
 
   it("uses interact without sendBeacon if identity has been established but document will not unload", () => {
-    const event = {
+    const payload = {
       getDocumentMayUnload() {
         return false;
-      }
-    };
-    const payload = {
-      getEvents() {
-        return [event];
       }
     };
     const request = createDataCollectionRequest(payload);
@@ -78,7 +53,9 @@ describe("createDataCollectionRequest", () => {
 
   it("uses interact without sendBeacon if document will not unload and identity has not been established", () => {
     const payload = {
-      getEvents() {}
+      getDocumentMayUnload() {
+        return false;
+      }
     };
     const request = createDataCollectionRequest(payload);
     expect(request.getAction()).toBe("interact");

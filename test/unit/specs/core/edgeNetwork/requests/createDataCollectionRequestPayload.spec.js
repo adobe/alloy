@@ -41,7 +41,7 @@ describe("createDataCollectionRequestPayload", () => {
     });
   });
 
-  it("adds and retrieves events", () => {
+  it("adds events and serializes them properly", () => {
     const payload = createDataCollectionRequestPayload();
     const event1 = createEvent();
     event1.setUserXdm({
@@ -53,9 +53,32 @@ describe("createDataCollectionRequestPayload", () => {
       c: "d"
     });
     payload.addEvent(event2);
-    expect(payload.getEvents()).toEqual([event1, event2]);
     expect(JSON.parse(JSON.stringify(payload))).toEqual({
       events: [{ xdm: { a: "b" } }, { xdm: { c: "d" } }]
     });
+  });
+
+  it("returns that document may unload if any event reports that it may unload", () => {
+    const payload = createDataCollectionRequestPayload();
+    const event1 = createEvent();
+    payload.addEvent(event1);
+    const event2 = createEvent();
+    event2.documentMayUnload();
+    payload.addEvent(event2);
+    expect(payload.getDocumentMayUnload()).toBeTrue();
+  });
+
+  it("returns that document will not unload if no event reports that it may unload", () => {
+    const payload = createDataCollectionRequestPayload();
+    const event1 = createEvent();
+    payload.addEvent(event1);
+    const event2 = createEvent();
+    payload.addEvent(event2);
+    expect(payload.getDocumentMayUnload()).toBeFalse();
+  });
+
+  it("returns that document will not unload if the payload contains no events", () => {
+    const payload = createDataCollectionRequestPayload();
+    expect(payload.getDocumentMayUnload()).toBeFalse();
   });
 });

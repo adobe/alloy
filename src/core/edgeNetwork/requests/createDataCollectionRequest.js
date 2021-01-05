@@ -48,11 +48,10 @@ export default dataCollectionRequestPayload => {
     // using fetch instead of sendBeacon.
     //
     // The second approach seemed preferable.
-    const events = dataCollectionRequestPayload.getEvents();
-    const documentMayUnload = (events || []).some(event =>
-      event.getDocumentMayUnload()
+    return (
+      dataCollectionRequestPayload.getDocumentMayUnload() &&
+      isIdentityEstablished
     );
-    return documentMayUnload && isIdentityEstablished;
   };
 
   return createRequest({

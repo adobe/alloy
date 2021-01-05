@@ -25,8 +25,8 @@ export default () => {
     content.events.push(event);
   };
 
-  payload.getEvents = () => {
-    return content.events;
+  payload.getDocumentMayUnload = () => {
+    return (content.events || []).some(event => event.getDocumentMayUnload());
   };
 
   return payload;
