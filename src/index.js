@@ -14,15 +14,12 @@ governing permissions and limitations under the License.
 // like the launch extension. Everything that is exported here can be used independently by other
 // npm projects.
 
-import baseCodeWithWindow from "./baseCode/index";
+import { createExecuteCommand } from "./core";
 
-export const baseCode = instanceNames => {
-  baseCodeWithWindow(window, instanceNames);
+export default instanceName => {
+  const { executeCommand: instance, logger } = createExecuteCommand(
+    instanceName
+  );
+  logger.logOnInstanceCreated({ instance });
+  return instance;
 };
-
-export { default as core } from "./core";
-
-// createEventMergeId is used by the Launch extension to provide a synchronous way to create an id
-export {
-  default as createEventMergeId
-} from "./components/EventMerge/createEventMergeId";

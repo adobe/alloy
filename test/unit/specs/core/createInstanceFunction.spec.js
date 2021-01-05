@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createInstance from "../../../../src/core/createInstance";
+import createInstance from "../../../../src/core/createInstanceFunction";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
 
 describe("createInstance", () => {
