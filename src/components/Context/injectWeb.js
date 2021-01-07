@@ -12,14 +12,20 @@ governing permissions and limitations under the License.
 
 import { deepAssign } from "../../utils";
 
+// URLs reported by browser APIs may not be URI-compliant because browsers are more lenient
+// than the URI RFC (https://tools.ietf.org/html/rfc3986). The XDM fields we're populating,
+// however, should conform to the URI spec. For this reason, we need to encode the URL.
+// We decode the URL first so it doesn't end up double encoded if it was previously encoded.
+const encode = url => encodeURI(decodeURI(url));
+
 export default window => {
   return xdm => {
     const web = {
       webPageDetails: {
-        URL: window.location.href || window.location
+        URL: encode(window.location.href || window.location)
       },
       webReferrer: {
-        URL: window.document.referrer
+        URL: encode(window.document.referrer)
       }
     };
     deepAssign(xdm, { web });
