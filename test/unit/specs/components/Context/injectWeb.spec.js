@@ -1,6 +1,6 @@
 import injectWeb from "../../../../../src/components/Context/injectWeb";
 
-fdescribe("Context::injectWeb", () => {
+describe("Context::injectWeb", () => {
   it("works", () => {
     const window = {
       location: { href: "http://mylocation.com?campaign=123|456" },
