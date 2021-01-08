@@ -23,7 +23,7 @@ module.exports = config => {
     bs_firefox_windows: {
       base: "BrowserStack",
       browser: "Firefox",
-      browser_version: "latest-beta",
+      browser_version: "84",
       os: "Windows",
       os_version: "10"
     },

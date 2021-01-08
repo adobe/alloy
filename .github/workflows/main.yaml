@@ -1,18 +1,18 @@
-name: Alloy-Test-Cron
+name: Main
 on:
-  repository_dispatch:
-    types: run-e2e
-  schedule:
-    - cron: "0 */24 * * *"
-
+  push:
+    branches:
+      - main
+      
 jobs:
-  alloy-prod-e2e:
-    name: "Prod E2E Tests"
+  e2e-test:
+    name: "E2E Alloy Int - Edge Prod"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
       with:
-        ref: "alloy-latest-release"
+        ref: "${{github.event.pull_request.head.ref}}"
+        repository: "${{github.event.pull_request.head.repo.full_name}}"
     - uses: actions/cache@v2
       id: npm-cache
       with:
@@ -21,6 +21,8 @@ jobs:
     - name: Install dependencies
       if: steps.npm-cache.outputs.cache-hit != 'true'
       run: npm ci
+    - name: Build
+      run: npm run build
     - name: 'BrowserStack Env Setup'
       uses: 'browserstack/github-actions/setup-env@master'
       with:
@@ -33,13 +35,8 @@ jobs:
         local-identifier: random
     - name: Run TestCafe Tests
       run: |
-        npm run test:functional:ci:pp
+        npm run test:functional:ci:ip
     - name: 'BrowserStackLocal Stop'
       uses: 'browserstack/github-actions/setup-local@master'
       with:
         local-testing: stop
-    - uses: craftech-io/slack-action@v1
-      with:
-        slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-        status: failure
-      if: failure()

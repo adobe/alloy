@@ -7,7 +7,7 @@ on:
 jobs:
   unit-test:
     name: "Unit Tests"
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
       with:
@@ -56,7 +56,7 @@ jobs:
       if: steps.npm-cache.outputs.cache-hit != 'true'
       run: npm ci
     - name: Build
-      run: npm run build
+      run: npm run test:functional:build
     - name: 'BrowserStack Env Setup'
       uses: 'browserstack/github-actions/setup-env@master'
       with:
@@ -69,8 +69,7 @@ jobs:
         local-identifier: random
     - name: Run TestCafe Tests
       run: |
-        npm run test:functional:ci:chrome
-        npm run test:functional:ci:ie
+        npm run test:functional:ci:ipp
     - name: 'BrowserStackLocal Stop'
       uses: 'browserstack/github-actions/setup-local@master'
       with:
