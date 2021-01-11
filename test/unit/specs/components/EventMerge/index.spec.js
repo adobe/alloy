@@ -12,8 +12,7 @@ governing permissions and limitations under the License.
 
 import createEventMerge from "../../../../../src/components/EventMerge";
 import createConfig from "../../../../../src/core/config/createConfig";
-
-const uuidv4Regex = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
+import uuidV4Regex from "../../../constants/uuidV4Regex";
 
 describe("EventMerge", () => {
   let eventMerge;
@@ -32,7 +31,7 @@ describe("EventMerge", () => {
     describe("createEventMergeId", () => {
       it("returns a UUID v4-compliant Id", () => {
         expect(
-          uuidv4Regex.test(
+          uuidV4Regex.test(
             eventMerge.commands.createEventMergeId.run().eventMergeId
           )
         ).toBe(true);
@@ -44,7 +43,7 @@ describe("EventMerge", () => {
     it("registers a function for creating an event merge ID", () => {
       const createEventMergeId = reactorRegisterCreateEventMergeId.calls.first()
         .args[0];
-      expect(uuidv4Regex.test(createEventMergeId().eventMergeId)).toBe(true);
+      expect(uuidV4Regex.test(createEventMergeId().eventMergeId)).toBe(true);
     });
   });
 });

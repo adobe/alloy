@@ -10,22 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createRequestPayload from "./createRequestPayload";
-import createAddIdentity from "./contentModifiers/createAddIdentity";
+// eslint-disable-next-line no-unused-vars
+import createPayload from "../../../../../../src/core/edgeNetwork/requests/createRequestPayload";
 
-export default () => {
-  return createRequestPayload(content => {
-    return {
-      addIdentity: createAddIdentity(content),
-      addEvent(event) {
-        content.events = content.events || [];
-        content.events.push(event);
-      },
-      getDocumentMayUnload() {
-        return (content.events || []).some(event =>
-          event.getDocumentMayUnload()
-        );
-      }
-    };
-  });
-};
+// This module is tested thoroughly through the different types of request
+// payloads that leverage this module.

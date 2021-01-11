@@ -11,8 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import createEventManager from "../../../../src/core/createEventManager";
-import realCreateDataCollectionRequestPayload from "../../../../src/core/edgeNetwork/requestPayloads/createDataCollectionRequestPayload";
-import realCreateEvent from "../../../../src/core/createEvent";
 import createConfig from "../../../../src/core/config/createConfig";
 import { defer } from "../../../../src/utils";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
@@ -24,6 +22,7 @@ describe("createEventManager", () => {
   let consent;
   let event;
   let requestPayload;
+  let request;
   let sendEdgeNetworkRequest;
   let eventManager;
   beforeEach(() => {
@@ -40,15 +39,21 @@ describe("createEventManager", () => {
     consent = jasmine.createSpyObj("consent", {
       awaitConsent: Promise.resolve()
     });
-    event = realCreateEvent();
-    spyOnAllFunctions(event);
+    event = jasmine.createSpyObj("event", ["setLastChanceCallback"]);
     const createEvent = () => {
       return event;
     };
-    requestPayload = realCreateDataCollectionRequestPayload();
-    spyOnAllFunctions(requestPayload);
+    requestPayload = jasmine.createSpyObj("requestPayload", ["addEvent"]);
     const createDataCollectionRequestPayload = () => {
       return requestPayload;
+    };
+    request = {
+      getPayload() {
+        return requestPayload;
+      }
+    };
+    const createDataCollectionRequest = () => {
+      return request;
     };
     sendEdgeNetworkRequest = jasmine
       .createSpy("sendEdgeNetworkRequest")
@@ -60,6 +65,7 @@ describe("createEventManager", () => {
       consent,
       createEvent,
       createDataCollectionRequestPayload,
+      createDataCollectionRequest,
       sendEdgeNetworkRequest
     });
   });
@@ -90,7 +96,6 @@ describe("createEventManager", () => {
             event,
             renderDecisions: true,
             decisionScopes: undefined,
-            payload: requestPayload,
             onResponse: jasmine.any(Function),
             onRequestFailure: jasmine.any(Function)
           });
@@ -131,33 +136,24 @@ describe("createEventManager", () => {
       });
     });
 
-    it("calls onBeforeEvent before consent and onBeforeDataCollectionRequest after", () => {
-      const deferred = defer();
-      consent.awaitConsent = () => deferred.promise;
+    it("allows components and consent to pause the lifecycle", () => {
+      const onBeforeEventDeferred = defer();
+      const consentDeferred = defer();
+      lifecycle.onBeforeEvent.and.returnValue(onBeforeEventDeferred.promise);
+      consent.awaitConsent.and.returnValue(consentDeferred.promise);
       eventManager.sendEvent(event);
+      expect(lifecycle.onBeforeEvent).toHaveBeenCalled();
       return flushPromiseChains()
         .then(() => {
-          expect(lifecycle.onBeforeEvent).toHaveBeenCalled();
-          expect(
-            lifecycle.onBeforeDataCollectionRequest
-          ).not.toHaveBeenCalled();
-          deferred.resolve();
+          expect(consent.awaitConsent).not.toHaveBeenCalled();
+          expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
+          onBeforeEventDeferred.resolve();
           return flushPromiseChains();
         })
         .then(() => {
-          expect(lifecycle.onBeforeDataCollectionRequest).toHaveBeenCalled();
-        });
-    });
-
-    it("allows other components to access payload and pause the lifecycle", () => {
-      const deferred = defer();
-      lifecycle.onBeforeDataCollectionRequest.and.returnValue(deferred.promise);
-      eventManager.sendEvent(event);
-      return flushPromiseChains()
-        .then(() => {
-          expect(lifecycle.onBeforeDataCollectionRequest).toHaveBeenCalled();
+          expect(consent.awaitConsent).toHaveBeenCalled();
           expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
-          deferred.resolve();
+          consentDeferred.resolve();
           return flushPromiseChains();
         })
         .then(() => {
@@ -169,15 +165,8 @@ describe("createEventManager", () => {
       const onResponseForOnBeforeEvent = jasmine.createSpy(
         "onResponseForOnBeforeEvent"
       );
-      const onResponseForOnBeforeDataCollection = jasmine.createSpy(
-        "onResponseForOnBeforeDataCollection"
-      );
       lifecycle.onBeforeEvent.and.callFake(({ onResponse }) => {
         onResponse(onResponseForOnBeforeEvent);
-        return Promise.resolve();
-      });
-      lifecycle.onBeforeDataCollectionRequest.and.callFake(({ onResponse }) => {
-        onResponse(onResponseForOnBeforeDataCollection);
         return Promise.resolve();
       });
       const response = { type: "response" };
@@ -187,9 +176,6 @@ describe("createEventManager", () => {
       });
       return eventManager.sendEvent(event).then(() => {
         expect(onResponseForOnBeforeEvent).toHaveBeenCalledWith({ response });
-        expect(onResponseForOnBeforeDataCollection).toHaveBeenCalledWith({
-          response
-        });
       });
     });
 
@@ -197,19 +183,10 @@ describe("createEventManager", () => {
       const onRequestFailureForOnBeforeEvent = jasmine.createSpy(
         "onRequestFailureForOnBeforeEvent"
       );
-      const onRequestFailureForOnBeforeDataCollection = jasmine.createSpy(
-        "onRequestFailureForOnBeforeDataCollection"
-      );
       lifecycle.onBeforeEvent.and.callFake(({ onRequestFailure }) => {
         onRequestFailure(onRequestFailureForOnBeforeEvent);
         return Promise.resolve();
       });
-      lifecycle.onBeforeDataCollectionRequest.and.callFake(
-        ({ onRequestFailure }) => {
-          onRequestFailure(onRequestFailureForOnBeforeDataCollection);
-          return Promise.resolve();
-        }
-      );
       sendEdgeNetworkRequest.and.callFake(
         ({ runOnRequestFailureCallbacks }) => {
           const error = new Error();
@@ -224,32 +201,13 @@ describe("createEventManager", () => {
           expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalledWith({
             error: e
           });
-          expect(
-            onRequestFailureForOnBeforeDataCollection
-          ).toHaveBeenCalledWith({
-            error: e
-          });
         });
     });
 
-    it("sends request using interact endpoint if the document will not unload", () => {
-      event.getDocumentMayUnload.and.returnValue(false);
+    it("sends network request", () => {
       return eventManager.sendEvent(event).then(() => {
         expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
-          payload: requestPayload,
-          action: "interact",
-          runOnResponseCallbacks: jasmine.any(Function),
-          runOnRequestFailureCallbacks: jasmine.any(Function)
-        });
-      });
-    });
-
-    it("sends request using collect endpoint if the document may unload", () => {
-      event.getDocumentMayUnload.and.returnValue(true);
-      return eventManager.sendEvent(event).then(() => {
-        expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
-          payload: requestPayload,
-          action: "collect",
+          request,
           runOnResponseCallbacks: jasmine.any(Function),
           runOnRequestFailureCallbacks: jasmine.any(Function)
         });

@@ -10,16 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({
-  sendEdgeNetworkRequest,
-  createIdentityRequestPayload,
-  createIdentityRequest
-}) => {
-  return namespaces => {
-    const payload = createIdentityRequestPayload(namespaces);
-    const request = createIdentityRequest(payload);
-    return sendEdgeNetworkRequest({
-      request
-    });
-  };
+import createRequest from "../../core/edgeNetwork/requests/createRequest";
+
+export default consentRequestPayload => {
+  return createRequest({
+    payload: consentRequestPayload,
+    getAction() {
+      return "privacy/set-consent";
+    },
+    getUseSendBeacon() {
+      return false;
+    }
+  });
 };

@@ -1,25 +1,38 @@
 import injectSendSetConsentRequest from "../../../../../src/components/Privacy/injectSendSetConsentRequest";
 
 describe("Privacy:injectSendSetConsentRequest", () => {
-  let createConsentRequestPayload;
   let sendEdgeNetworkRequest;
-  let payload;
+  let requestPayload;
+  let request;
+  let createConsentRequestPayload;
+  let createConsentRequest;
   let sendSetConsentRequest;
 
   beforeEach(() => {
-    createConsentRequestPayload = jasmine.createSpy(
-      "createConsentRequestPayload"
-    );
     sendEdgeNetworkRequest = jasmine.createSpy("sendEdgeNetworkRequest");
-    payload = jasmine.createSpyObj("payload", ["setConsent", "addIdentity"]);
-    createConsentRequestPayload.and.returnValue(payload);
+    requestPayload = jasmine.createSpyObj("requestPayload", [
+      "setConsent",
+      "addIdentity"
+    ]);
+    createConsentRequestPayload = jasmine
+      .createSpy("createConsentRequestPayload")
+      .and.returnValue(requestPayload);
+    request = {
+      getPayload() {
+        return requestPayload;
+      }
+    };
+    createConsentRequest = jasmine
+      .createSpy("createConsentRequest")
+      .and.returnValue(request);
     sendSetConsentRequest = injectSendSetConsentRequest({
       createConsentRequestPayload,
+      createConsentRequest,
       sendEdgeNetworkRequest
     });
   });
 
-  it("sets consent level and on payload and sends the request", () => {
+  it("sets consent level and on requestPayload and sends the request", () => {
     sendEdgeNetworkRequest.and.returnValue(Promise.resolve());
     return sendSetConsentRequest({
       consentOptions: "anything",
@@ -28,15 +41,14 @@ describe("Privacy:injectSendSetConsentRequest", () => {
         b: [{ id: "3" }]
       }
     }).then(resolvedValue => {
-      expect(payload.setConsent).toHaveBeenCalledWith("anything");
+      expect(requestPayload.setConsent).toHaveBeenCalledWith("anything");
       expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
-        payload,
-        action: "privacy/set-consent"
+        request
       });
       expect(resolvedValue).toBeUndefined();
-      expect(payload.addIdentity).toHaveBeenCalledWith("a", { id: "1" });
-      expect(payload.addIdentity).toHaveBeenCalledWith("a", { id: "2" });
-      expect(payload.addIdentity).toHaveBeenCalledWith("b", { id: "3" });
+      expect(requestPayload.addIdentity).toHaveBeenCalledWith("a", { id: "1" });
+      expect(requestPayload.addIdentity).toHaveBeenCalledWith("a", { id: "2" });
+      expect(requestPayload.addIdentity).toHaveBeenCalledWith("b", { id: "3" });
     });
   });
 });

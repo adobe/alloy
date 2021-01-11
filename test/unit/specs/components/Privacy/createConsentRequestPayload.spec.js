@@ -11,68 +11,51 @@ governing permissions and limitations under the License.
 */
 
 import createConsentRequestPayload from "../../../../../src/components/Privacy/createConsentRequestPayload";
-import createDataCollectionRequestPayload from "../../../../../src/core/edgeNetwork/requestPayloads/createDataCollectionRequestPayload";
+import describeRequestPayload from "../../../helpers/describeRequestPayload";
 
 describe("createConsentRequestPayload", () => {
-  it("should not use ID third-party domain when useIdThirdPartyDomain is not called", () => {
-    const payload = createConsentRequestPayload();
-    expect(payload.getUseIdThirdPartyDomain()).toBeFalse();
-  });
+  describeRequestPayload(createConsentRequestPayload);
 
-  it("should use ID third-party domain when useIdThirdPartyDomain is called", () => {
+  it("adds an identity", () => {
     const payload = createConsentRequestPayload();
-    payload.useIdThirdPartyDomain();
-    expect(payload.getUseIdThirdPartyDomain()).toBeTrue();
-  });
-
-  it("returns false from getDocumentMayUnload", () => {
-    const payload = createDataCollectionRequestPayload();
-    expect(payload.getDocumentMayUnload()).toBeFalse();
-  });
-
-  it("serializes properly", () => {
-    const payload = createConsentRequestPayload();
-    payload.mergeConfigOverrides({
-      testOverride: "testOverrideValue"
-    });
-    payload.mergeState({
-      testState: "testStateValue"
-    });
-    payload.useIdThirdPartyDomain();
     payload.addIdentity("IDNS", {
       id: "ABC123"
     });
+    payload.addIdentity("IDNS", {
+      id: "DEF456"
+    });
+    expect(JSON.parse(JSON.stringify(payload))).toEqual({
+      identityMap: {
+        IDNS: [
+          {
+            id: "ABC123"
+          },
+          {
+            id: "DEF456"
+          }
+        ]
+      }
+    });
+  });
+
+  it("sets consent", () => {
+    const payload = createConsentRequestPayload();
     payload.setConsent([
       {
         standard: "Adobe",
         version: "1.0",
         value: {
-          general: "out"
+          general: "in"
         }
       }
     ]);
     expect(JSON.parse(JSON.stringify(payload))).toEqual({
-      meta: {
-        configOverrides: {
-          testOverride: "testOverrideValue"
-        },
-        state: {
-          testState: "testStateValue"
-        }
-      },
-      identityMap: {
-        IDNS: [
-          {
-            id: "ABC123"
-          }
-        ]
-      },
       consent: [
         {
           standard: "Adobe",
           version: "1.0",
           value: {
-            general: "out"
+            general: "in"
           }
         }
       ]
