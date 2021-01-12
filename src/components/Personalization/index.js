@@ -20,7 +20,7 @@ import { hideContainers, showContainers } from "./flicker";
 import createFetchDataHandler from "./createFetchDataHandler";
 import collectClicks from "./dom-actions/clicks/collectClicks";
 import isAuthoringModeEnabled from "./utils/isAuthoringModeEnabled";
-import { mergeMeta, mergeQuery } from "./event";
+import { mergeDecisionsMeta, mergeQuery } from "./event";
 import createOnClickHandler from "./createOnClickHandler";
 import createExecuteCachedViewDecisions from "./createExecuteCachedViewDecisions";
 import createViewCacheManager from "./createViewCacheManager";
@@ -29,8 +29,8 @@ import decisionsExtractor from "./decisionsExtractor";
 import createOnResponseHandler from "./createOnResponseHandler";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
-  const collect = createCollect({ eventManager, mergeMeta });
-  const viewCollect = createViewCollect({ eventManager, mergeMeta });
+  const collect = createCollect({ eventManager, mergeDecisionsMeta });
+  const viewCollect = createViewCollect({ eventManager, mergeDecisionsMeta });
   const clickStorage = [];
   const viewCache = createViewCacheManager();
   const store = value => clickStorage.push(value);
@@ -66,7 +66,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     mergeQuery
   });
   const onClickHandler = createOnClickHandler({
-    mergeMeta,
+    mergeDecisionsMeta,
     collectClicks,
     clickStorage
   });

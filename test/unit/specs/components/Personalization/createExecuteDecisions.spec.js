@@ -99,7 +99,7 @@ describe("Personalization::createExecuteDecisions", () => {
         meta: metas[1],
         error: "could not render this item"
       });
-      expect(collect).toHaveBeenCalledWith({ meta: { decisions: [metas[0]] } });
+      expect(collect).toHaveBeenCalledWith({ decisionsMeta: [metas[0]] });
     });
   });
 

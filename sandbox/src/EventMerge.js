@@ -1,7 +1,9 @@
 import React, { useRef, useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
+import useSendPageViewEvent from "./useSendPageViewEvent";
 
 export default function EventMerge() {
+  useSendPageViewEvent();
   const eventMergeIdPromise = useRef(window.alloy("createEventMergeId"));
 
   useEffect(() => {
@@ -31,7 +33,7 @@ export default function EventMerge() {
   return (
     <div>
       <ContentSecurityPolicy />
-      <h2>Event Merge</h2>
+      <h1>Event Merge</h1>
       <p>This is the Event Merge view, part of the Single Page Application.</p>
       <p>
         On this view, we are sending two events at different times, merged

@@ -57,6 +57,6 @@ describe("Personalization::createExecuteCachedViewDecisions", () => {
 
     expect(viewCache.getView).toHaveBeenCalledWith(viewName);
     expect(executeViewDecisions).not.toHaveBeenCalled();
-    expect(collect).toHaveBeenCalledWith({ meta: {}, xdm });
+    expect(collect).toHaveBeenCalledWith({ decisionsMeta: [], xdm });
   });
 });

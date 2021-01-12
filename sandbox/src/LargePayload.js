@@ -1,24 +1,26 @@
 import React from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
+import useSendPageViewEvent from "./useSendPageViewEvent";
+
+const makePayload = (size, times = 1) => () => {
+  var i;
+  for (i = 0; i < times; i++) {
+    const payload = new Uint8Array(size * 1024);
+    window.alloy("sendEvent", {
+      documentUnloading: true,
+      data: {
+        payload
+      }
+    });
+  }
+};
 
 export default function LargePayload() {
-  const makePayload = (size, times = 1) => () => {
-    var i;
-    for (i = 0; i < times; i++) {
-      const payload = new Uint8Array(size * 1024);
-      window.alloy("sendEvent", {
-        documentUnloading: true,
-        data: {
-          payload
-        }
-      });
-    }
-  };
-
+  useSendPageViewEvent();
   return (
     <div>
       <ContentSecurityPolicy />
-      <h2>Large Payloads</h2>
+      <h1>Large Payload</h1>
       <p>This page tests send really large payloads to the edge.</p>
       <p>
         All those requests should attempt to use <code>sendBeacon</code> and

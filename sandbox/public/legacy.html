@@ -12,7 +12,7 @@
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self' *.demdex.net;
-            script-src 'self' 'unsafe-inline' *.amazonaws.com github.com;
+            script-src 'self' 'unsafe-inline' *.amazonaws.com github.com *.githubusercontent.com;
             style-src 'self' 'unsafe-inline';
             img-src * data:;
             connect-src 'self' *.adobedc.net *.demdex.net"
@@ -24,38 +24,42 @@
     </script>
   </head>
   <body>
-    <div id="root">
-      <div>
-        <ul>
-          <li>
-            <a href="/">Home</a>
-          </li>
-          <li>
-            <a href="/consent">Consent</a>
-          </li>
-          <li>
-            <a href="/links">Links</a>
-          </li>
-          <li>
-            <a href="/eventMerge">Event-Merge</a>
-          </li>
-          <li>
-            <a href="/largePayload">Large Payload</a>
-          </li>
-          <li>
-            <a href="/orgTwo">Multiple Orgs</a>
-          </li>
-          <li>
-            <a href="/dualTag">DualTag</a>
-          </li>
-          <li>
-            <a href="/legacy.html">Legacy Visitor ID</a>
-          </li>
-        </ul>
-        <hr />
-      </div>
+    <div>
+      <ul>
+        <li>
+          <a href="/">Home</a>
+        </li>
+        <li>
+          <a href="/consent">Consent</a>
+        </li>
+        <li>
+          <a href="/personalization">Personalization</a>
+        </li>
+        <li>
+          <a href="/personalizationSpa">Personalization - SPA</a>
+        </li>
+        <li>
+          <a href="/links">Links</a>
+        </li>
+        <li>
+          <a href="/eventMerge">Event-Merge</a>
+        </li>
+        <li>
+          <a href="/largePayload">Large Payload</a>
+        </li>
+        <li>
+          <a href="/orgTwo">Multiple Orgs</a>
+        </li>
+        <li>
+          <a href="/dualTag">DualTag</a>
+        </li>
+        <li>
+          <a href="/legacy.html">Legacy Visitor ID</a>
+        </li>
+      </ul>
     </div>
-    <div id="root">
+    <hr />
+    <div>
       <h2>Only the legacy VisitorAPI library is loaded on this page.</h2>
     </div>
   </body>
