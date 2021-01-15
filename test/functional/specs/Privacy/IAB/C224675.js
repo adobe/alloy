@@ -58,7 +58,7 @@ test("Test C224675: Passing invalid consent options should throw a validation er
     .contains("Unexpected server response with status code 400")
     .expect(errorMessageForInvalidStandard)
     .contains(
-      "The value supplied for field 'consent.[0]' does not match your input schema"
+      "The value supplied for field 'consent[0]' does not match your input schema"
     );
 
   await t.expect(errorMessageForInvalidStandard).contains("EXEG-0102-400");
@@ -79,11 +79,13 @@ test("Test C224675: Passing invalid consent options should throw a validation er
 
   await t
     .expect(errorMessageForInvalidVersion)
-    .contains("Unexpected server response with status code 422")
+    .contains("Unexpected server response with status code 400")
     .expect(errorMessageForInvalidVersion)
-    .contains("Allowed IAB version is 2.0 for standard 'IAB TCF' at index 0");
+    .contains(
+      "The value supplied for field 'consent[0]' does not match your input schema"
+    );
 
-  await t.expect(errorMessageForInvalidVersion).contains("EXEG-0104-422");
+  await t.expect(errorMessageForInvalidVersion).contains("EXEG-0102-400");
 
   const errorMessageForInvalidValue = await getErrorMessageFromSetConsent({
     consent: [
