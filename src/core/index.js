@@ -31,11 +31,11 @@ import injectHandleError from "./injectHandleError";
 import injectSendFetchRequest from "./network/injectSendFetchRequest";
 import injectSendXhrRequest from "./network/injectSendXhrRequest";
 import injectSendBeaconRequest from "./network/injectSendBeaconRequest";
-import injectNetworkStrategy from "./network/injectNetworkStrategy";
 import createLogger from "./createLogger";
 import createEventManager from "./createEventManager";
 import createCookieTransfer from "./createCookieTransfer";
-import createDataCollectionRequestPayload from "./edgeNetwork/requestPayloads/createDataCollectionRequestPayload";
+import createDataCollectionRequestPayload from "./edgeNetwork/requests/createDataCollectionRequestPayload";
+import createDataCollectionRequest from "./edgeNetwork/requests/createDataCollectionRequest";
 import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkRequest";
 import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors";
 import validateNetworkResponseIsWellFormed from "./edgeNetwork/validateNetworkResponseIsWellFormed";
@@ -89,13 +89,10 @@ export const createExecuteCommand = ({
           logger
         })
       : sendFetchRequest;
-    const networkStrategy = injectNetworkStrategy({
-      sendFetchRequest,
-      sendBeaconRequest
-    });
     const sendNetworkRequest = injectSendNetworkRequest({
       logger,
-      networkStrategy,
+      sendFetchRequest,
+      sendBeaconRequest,
       isRetryableHttpStatusCode
     });
     const processWarningsAndErrors = injectProcessWarningsAndErrors({
@@ -123,6 +120,7 @@ export const createExecuteCommand = ({
       consent,
       createEvent,
       createDataCollectionRequestPayload,
+      createDataCollectionRequest,
       sendEdgeNetworkRequest
     });
     return initializeComponents({

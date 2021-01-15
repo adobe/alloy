@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import injectSetDomainForInitialIdentityPayload from "../../../../../src/components/Identity/injectSetDomainForInitialIdentityPayload";
 
 describe("Identity::injectSetDomainForInitialIdentityPayload", () => {
-  let payload;
+  let request;
   let thirdPartyCookiesEnabled;
   let areThirdPartyCookiesSupportedByDefault;
   let setDomainForInitialIdentityPayload;
@@ -28,7 +28,7 @@ describe("Identity::injectSetDomainForInitialIdentityPayload", () => {
   };
 
   beforeEach(() => {
-    payload = jasmine.createSpyObj("payload", ["useIdThirdPartyDomain"]);
+    request = jasmine.createSpyObj("request", ["setUseIdThirdPartyDomain"]);
     areThirdPartyCookiesSupportedByDefault = jasmine.createSpy(
       "areThirdPartyCookiesSupportedByDefault"
     );
@@ -38,29 +38,29 @@ describe("Identity::injectSetDomainForInitialIdentityPayload", () => {
     thirdPartyCookiesEnabled = false;
     areThirdPartyCookiesSupportedByDefault.and.returnValue(true);
     build();
-    setDomainForInitialIdentityPayload(payload);
-    expect(payload.useIdThirdPartyDomain).not.toHaveBeenCalled();
+    setDomainForInitialIdentityPayload(request);
+    expect(request.setUseIdThirdPartyDomain).not.toHaveBeenCalled();
   });
 
   it("does not use third-party domain if third-party cookies are not supported by the browser by default", () => {
     thirdPartyCookiesEnabled = true;
     areThirdPartyCookiesSupportedByDefault.and.returnValue(false);
     build();
-    setDomainForInitialIdentityPayload(payload);
+    setDomainForInitialIdentityPayload(request);
     expect(areThirdPartyCookiesSupportedByDefault).toHaveBeenCalledWith(
       jasmine.any(String)
     );
-    expect(payload.useIdThirdPartyDomain).not.toHaveBeenCalled();
+    expect(request.setUseIdThirdPartyDomain).not.toHaveBeenCalled();
   });
 
   it("uses third-party domain if third-party cookies are enabled and supported by the browser by default", () => {
     thirdPartyCookiesEnabled = true;
     areThirdPartyCookiesSupportedByDefault.and.returnValue(true);
     build();
-    setDomainForInitialIdentityPayload(payload);
+    setDomainForInitialIdentityPayload(request);
     expect(areThirdPartyCookiesSupportedByDefault).toHaveBeenCalledWith(
       jasmine.any(String)
     );
-    expect(payload.useIdThirdPartyDomain).toHaveBeenCalled();
+    expect(request.setUseIdThirdPartyDomain).toHaveBeenCalled();
   });
 });

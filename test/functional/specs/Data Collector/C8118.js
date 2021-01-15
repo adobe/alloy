@@ -6,12 +6,16 @@ import sendBeaconMock from "../../helpers/sendBeaconMock";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
 import isSendBeaconSupported from "../../helpers/isSendBeaconSupported";
+import testPageUrl from "../../helpers/constants/testPageUrl";
 
 const networkLogger = createNetworkLogger();
 
 createFixture({
   title: "C8118: Send event with information about link clicks.",
-  requestHooks: [networkLogger.edgeCollectEndpointLogs]
+  requestHooks: [
+    networkLogger.edgeInteractEndpointLogs,
+    networkLogger.edgeCollectEndpointLogs
+  ]
 });
 
 test.meta({
@@ -22,19 +26,18 @@ test.meta({
 
 const getLocation = ClientFunction(() => document.location.href.toString());
 
-test("Test C8118: Load page with link. Click link. Verify event.", async () => {
-  if (isSendBeaconSupported()) {
-    await sendBeaconMock.mock();
-  }
-  await configureAlloyInstance("alloy", orgMainConfigMain);
-  await addHtmlToBody(
+const addLinkToBody = () => {
+  return addHtmlToBody(
     `<a href="blank.html"><span id="alloy-link-test">Test Link</span></a>`
   );
+};
 
+const clickLink = async () => {
   await t.click(Selector("#alloy-link-test"));
   await t.expect(getLocation()).contains("blank.html");
-  await t.expect(networkLogger.edgeCollectEndpointLogs.requests.length).eql(1);
-  const request = networkLogger.edgeCollectEndpointLogs.requests[0];
+};
+
+const assertRequest = async request => {
   const requestBody = JSON.parse(request.request.body);
   const eventXdm = requestBody.events[0].xdm;
   await t.expect(eventXdm.eventType).eql("web.webinteraction.linkClicks");
@@ -44,6 +47,57 @@ test("Test C8118: Load page with link. Click link. Verify event.", async () => {
     URL: "https://alloyio.com/functional-test/blank.html",
     linkClicks: { value: 1 }
   });
+};
+
+const sendEvent = ClientFunction(() => {
+  return window.alloy("sendEvent");
+});
+
+test("Test C8118: Verify link a click sends a request to the collect endpoint when identity has been established, interact endpoint otherwise", async () => {
+  if (isSendBeaconSupported()) {
+    await sendBeaconMock.mock();
+  }
+  await configureAlloyInstance("alloy", orgMainConfigMain);
+  await addLinkToBody();
+
+  // If an identity has not been established, we hit the interact endpoint using
+  // fetch even though the user may be navigating away from the page. We may
+  // or may not get a response back before navigation completes. If we don't,
+  // an identity will not have been established, unfortunately.
+  await clickLink();
+  await t.expect(networkLogger.edgeInteractEndpointLogs.requests.length).eql(1);
+  await t.expect(networkLogger.edgeCollectEndpointLogs.requests.length).eql(0);
+  await assertRequest(networkLogger.edgeInteractEndpointLogs.requests[0]);
+  if (isSendBeaconSupported()) {
+    await t.expect(sendBeaconMock.getCallCount()).eql(0);
+  }
+
+  // The link click took us to a new page. Let's go back to our test page.
+  await t.navigateTo(testPageUrl);
+  await networkLogger.clearLogs();
+
+  if (isSendBeaconSupported()) {
+    await sendBeaconMock.mock();
+  }
+
+  await configureAlloyInstance("alloy", orgMainConfigMain);
+  // Ensure an identity is established by sending an event in the regular manner.
+  await sendEvent();
+  await t.expect(networkLogger.edgeInteractEndpointLogs.requests.length).eql(1);
+  await t.expect(networkLogger.edgeCollectEndpointLogs.requests.length).eql(0);
+  if (isSendBeaconSupported()) {
+    await t.expect(sendBeaconMock.getCallCount()).eql(0);
+  }
+
+  await networkLogger.clearLogs();
+
+  // Because an identity has been established, we can safely hit the collect
+  // endpoint using sendBeacon.
+  await addLinkToBody();
+  await clickLink();
+  await t.expect(networkLogger.edgeInteractEndpointLogs.requests.length).eql(0);
+  await t.expect(networkLogger.edgeCollectEndpointLogs.requests.length).eql(1);
+  await assertRequest(networkLogger.edgeCollectEndpointLogs.requests[0]);
   if (isSendBeaconSupported()) {
     await t.expect(sendBeaconMock.getCallCount()).eql(1);
   }

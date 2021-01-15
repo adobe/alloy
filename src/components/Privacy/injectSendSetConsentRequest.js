@@ -12,10 +12,11 @@ governing permissions and limitations under the License.
 
 import { isObject } from "../../utils";
 
-export default ({ createConsentRequestPayload, sendEdgeNetworkRequest }) => ({
-  consentOptions,
-  identityMap
-}) => {
+export default ({
+  createConsentRequestPayload,
+  createConsentRequest,
+  sendEdgeNetworkRequest
+}) => ({ consentOptions, identityMap }) => {
   const payload = createConsentRequestPayload();
   payload.setConsent(consentOptions);
   if (isObject(identityMap)) {
@@ -25,9 +26,9 @@ export default ({ createConsentRequestPayload, sendEdgeNetworkRequest }) => ({
       });
     });
   }
+  const request = createConsentRequest(payload);
   return sendEdgeNetworkRequest({
-    payload,
-    action: "privacy/set-consent"
+    request
   }).then(() => {
     // Don't let response data disseminate beyond this
     // point unless necessary.

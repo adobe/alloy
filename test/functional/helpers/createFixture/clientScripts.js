@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import path from "path";
 import fs from "fs";
+import readCache from "read-cache";
 import { ClientFunction } from "testcafe";
 
 const alloyEnv = process.env.ALLOY_ENV || "int";
@@ -33,17 +34,27 @@ const localNpmLibraryPath = path.join(__dirname, "../../../../dist/es6.js");
 const remoteAlloyLibraryUrl =
   "https://cdn1.adoberesources.net/alloy/latest/alloy.js";
 
-let localAlloyCode;
-let localNpmLibraryCode;
+// We use this getter for retrieving the library code instead of just loading
+// the library code a single time up-front, because we want every run to be
+// using the latest library code. This is important when developing in watch
+// mode and making changes to source files.
+const getLocalAlloyCode = () => {
+  // readCache caches file content until the file is modified, at which
+  // point it will retrieve fresh file content, cache it, and return it.
+  return readCache.sync(localAlloyLibraryPath, "utf8");
+};
+// This is the javascript built from src/index.js which does not include the
+// baseCode, but exposes a createInstance function.
+const getLocalNpmLibraryCode = () => {
+  return readCache.sync(localNpmLibraryPath, "utf8");
+};
 
-// We're only testing against the alloy code found in /dist when alloyEnv
-// is "int". Otherwise, we're testing against the prod alloy that's on the CDN
-// and in those cases alloy code may not even exist in /dist. This is why
-// we only try to load the file from the file system if alloyEnv is int.
-if (alloyEnv === "int") {
-  localAlloyCode = fs.readFileSync(localAlloyLibraryPath, "utf8");
-  localNpmLibraryCode = fs.readFileSync(localNpmLibraryPath, "utf8");
-}
+const injectInlineScript = ClientFunction(code => {
+  const scriptElement = document.createElement("script");
+  // eslint-disable-next-line no-undef
+  scriptElement.innerHTML = code;
+  document.getElementsByTagName("head")[0].appendChild(scriptElement);
+});
 
 const baseCodeWithCustomInstances = fs
   .readFileSync(baseCodePath, "utf8")
@@ -99,13 +110,13 @@ const getFixtureClientScriptsForInt = options => {
     // like to simulate that. To do so, we'll wrap our Alloy code in a
     // setTimeout with a small arbitrary delay.
     clientScripts.push({
-      content: `setTimeout(function() {\n${localAlloyCode}\n}, 10);`
+      content: `setTimeout(function() {\n${getLocalAlloyCode()}\n}, 10);`
     });
   }
 
   if (options.includeNpmLibrary) {
     clientScripts.push({
-      content: localNpmLibraryCode
+      content: getLocalNpmLibraryCode()
     });
   }
 
@@ -157,19 +168,9 @@ const getFixtureClientScriptsByEnvironment = {
 /**
  * Injects Alloy into the page while running a test against Alloy int.
  */
-const injectAlloyDuringTestForInt = ClientFunction(
-  () => {
-    const scriptElement = document.createElement("script");
-    // eslint-disable-next-line no-undef
-    scriptElement.innerHTML = localAlloyCode;
-    document.getElementsByTagName("head")[0].appendChild(scriptElement);
-  },
-  {
-    dependencies: {
-      localAlloyCode
-    }
-  }
-);
+const injectAlloyDuringTestForInt = () => {
+  return injectInlineScript(getLocalAlloyCode());
+};
 
 /**
  * Injects Alloy into the page while running a test against Alloy prod.

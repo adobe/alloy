@@ -10,9 +10,24 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ sendFetchRequest, sendBeaconRequest }) => {
-  return ({ url, body, documentMayUnload }) => {
-    const method = documentMayUnload ? sendBeaconRequest : sendFetchRequest;
-    return method(url, body);
+import createRequestPayload from "./createRequestPayload";
+import createAddIdentity from "./contentModifiers/createAddIdentity";
+
+export default () => {
+  const content = {};
+  const payload = createRequestPayload({
+    content,
+    addIdentity: createAddIdentity(content)
+  });
+
+  payload.addEvent = event => {
+    content.events = content.events || [];
+    content.events.push(event);
   };
+
+  payload.getDocumentMayUnload = () => {
+    return (content.events || []).some(event => event.getDocumentMayUnload());
+  };
+
+  return payload;
 };

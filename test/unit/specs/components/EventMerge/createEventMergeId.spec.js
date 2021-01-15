@@ -11,12 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import createEventMergeId from "../../../../../src/components/EventMerge/createEventMergeId";
-
-const uuidv4Regex = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
+import uuidV4Regex from "../../../constants/uuidV4Regex";
 
 describe("EventMerge:createEventMergeId", () => {
   it("returns a UUID v4-compliant Id", () => {
-    expect(uuidv4Regex.test(createEventMergeId().eventMergeId)).toBe(true);
+    expect(uuidV4Regex.test(createEventMergeId().eventMergeId)).toBe(true);
   });
 
   it("doesn't return any other fields in the response", () => {
