@@ -26,7 +26,6 @@ createFixture({
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
-const getAlloyFunction = ClientFunction(() => window.alloyCreateInstance);
 const createAlloyInstance = ClientFunction(() => {
   window.npmLibraryAlloy = window.alloyCreateInstance({
     instanceName: "npmLibraryAlloy"
@@ -44,7 +43,6 @@ const alloyEnv = process.env.ALLOY_ENV || "int";
 
 if (alloyEnv === "int") {
   test("C1338399: Use SDK from NPM entry point", async () => {
-    await t.expect(getAlloyFunction).ok(); // wait for the globalFunction to be available
     await createAlloyInstance();
     await configureAlloyInstance("npmLibraryAlloy", mainConfig);
     await sendEvent();
