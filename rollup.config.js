@@ -17,24 +17,23 @@ import babel from "rollup-plugin-babel";
 import { terser } from "rollup-plugin-terser";
 import license from "rollup-plugin-license";
 
-const buildTargets = {
-  PROD: "prod",
-  DEV: "dev"
-};
-
-const destDirectoryByBuildTarget = {
-  [buildTargets.PROD]: "dist/",
-  [buildTargets.DEV]: "sandbox/public/"
-};
-
-const buildTarget = process.env.BUILD || buildTargets.DEV;
+// Boolean Environment Options:
+// Should the output files be minified?
 const minify = process.env.MINIFY;
-const destDirectory = destDirectoryByBuildTarget[buildTarget];
+// If true, output files to sandbox, if false output files to dist/
+const sandbox = process.env.SANDBOX;
+// Build the base code file?
+const baseCode = process.env.BASE_CODE;
+// Build the es6 rollup file? (This is used to test the npm version in functional tests)
+const es6 = process.env.ES6;
+
+const destDirectory = sandbox ? "sandbox/public" : "dist/";
 
 const minifiedExtension = minify ? ".min" : "";
 
 const BASE_CODE = "baseCode";
 const STANDALONE = "standalone";
+const ES6 = "es6";
 
 const buildPlugins = version => {
   const plugins = [
@@ -62,11 +61,11 @@ const buildPlugins = version => {
       })
     );
   }
-  if (minify && version === STANDALONE) {
+  if (minify && version !== BASE_CODE) {
     plugins.push(terser());
   }
 
-  if (buildTarget !== buildTargets.DEV && version !== BASE_CODE) {
+  if (!sandbox && version === STANDALONE) {
     plugins.push(
       license({
         banner: {
@@ -83,7 +82,7 @@ const buildPlugins = version => {
 
 const config = [];
 
-if (buildTarget === buildTargets.PROD) {
+if (baseCode) {
   config.push({
     input: "src/baseCode.js",
     output: [
@@ -112,5 +111,18 @@ config.push({
   ],
   plugins: buildPlugins(STANDALONE)
 });
+
+if (es6) {
+  config.push({
+    input: "test/functional/helpers/es6index.js",
+    output: [
+      {
+        file: `${destDirectory}es6${minifiedExtension}.js`,
+        format: "iife"
+      }
+    ],
+    plugins: buildPlugins(ES6)
+  });
+}
 
 export default config;

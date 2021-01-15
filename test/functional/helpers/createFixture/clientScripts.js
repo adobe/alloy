@@ -29,10 +29,12 @@ const remoteVisitorLibraryUrl =
   "https://github.com/Adobe-Marketing-Cloud/id-service/releases/latest/download/visitorapi.min.js";
 const baseCodePath = path.join(__dirname, "../../../../dist/baseCode.js");
 const localAlloyLibraryPath = path.join(__dirname, "../../../../dist/alloy.js");
+const localNpmLibraryPath = path.join(__dirname, "../../../../dist/es6.js");
 const remoteAlloyLibraryUrl =
   "https://cdn1.adoberesources.net/alloy/latest/alloy.js";
 
 let localAlloyCode;
+let localNpmLibraryCode;
 
 // We're only testing against the alloy code found in /dist when alloyEnv
 // is "int". Otherwise, we're testing against the prod alloy that's on the CDN
@@ -40,6 +42,7 @@ let localAlloyCode;
 // we only try to load the file from the file system if alloyEnv is int.
 if (alloyEnv === "int") {
   localAlloyCode = fs.readFileSync(localAlloyLibraryPath, "utf8");
+  localNpmLibraryCode = fs.readFileSync(localNpmLibraryPath, "utf8");
 }
 
 const baseCodeWithCustomInstances = fs
@@ -97,6 +100,12 @@ const getFixtureClientScriptsForInt = options => {
     // setTimeout with a small arbitrary delay.
     clientScripts.push({
       content: `setTimeout(function() {\n${localAlloyCode}\n}, 10);`
+    });
+  }
+
+  if (options.includeNpmLibrary) {
+    clientScripts.push({
+      content: localNpmLibraryCode
     });
   }
 

@@ -15,11 +15,30 @@ governing permissions and limitations under the License.
 // npm projects.
 
 import { createExecuteCommand } from "./core";
+import createLogger from "./core/createLogger";
+import createLogController from "./core/createLogController";
+import { injectStorage } from "./utils";
 
-export default instanceName => {
-  const { executeCommand: instance, logger } = createExecuteCommand(
-    instanceName
-  );
-  logger.logOnInstanceCreated({ instance });
+const { console } = window;
+const createNamespacedStorage = injectStorage(window);
+// set this up as a function so that monitors can be added at anytime
+// eslint-disable-next-line no-underscore-dangle
+const defaultGetMonitors = () => window.__alloyMonitors || [];
+
+// eslint-disable-next-line import/prefer-default-export
+export const createInstance = ({
+  instanceName,
+  getMonitors = defaultGetMonitors
+}) => {
+  const logController = createLogController({
+    console,
+    locationSearch: window.location.search,
+    createLogger,
+    instanceName,
+    createNamespacedStorage,
+    getMonitors
+  });
+  const instance = createExecuteCommand({ instanceName, logController });
+  logController.logger.logOnInstanceCreated({ instance });
   return instance;
 };

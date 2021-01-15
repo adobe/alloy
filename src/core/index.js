@@ -55,19 +55,10 @@ const sendFetchRequest = isFunction(fetch)
   ? injectSendFetchRequest({ fetch })
   : injectSendXhrRequest({ XMLHttpRequest });
 
-export const createExecuteCommand = instanceName => {
-  const {
-    setDebugEnabled,
-    logger,
-    createComponentLogger
-  } = createLogController({
-    console,
-    locationSearch: window.location.search,
-    createLogger,
-    instanceName,
-    createNamespacedStorage,
-    getMonitors
-  });
+export const createExecuteCommand = ({
+  instanceName,
+  logController: { setDebugEnabled, logger, createComponentLogger }
+}) => {
   const componentRegistry = createComponentRegistry();
   const lifecycle = createLifecycle(componentRegistry);
 
@@ -168,7 +159,7 @@ export const createExecuteCommand = instanceName => {
     handleError,
     validateCommandOptions
   });
-  return { executeCommand, logger };
+  return executeCommand;
 };
 
 export default () => {
@@ -177,12 +168,24 @@ export default () => {
 
   if (instanceNames) {
     instanceNames.forEach(instanceName => {
-      const { executeCommand, logger } = createExecuteCommand(instanceName);
+      const logController = createLogController({
+        console,
+        locationSearch: window.location.search,
+        createLogger,
+        instanceName,
+        createNamespacedStorage,
+        getMonitors
+      });
+
+      const executeCommand = createExecuteCommand({
+        instanceName,
+        logController
+      });
       const instance = createInstanceFunction(executeCommand);
 
       const queue = window[instanceName].q;
       queue.push = instance;
-      logger.logOnInstanceCreated({ instance });
+      logController.logger.logOnInstanceCreated({ instance });
       queue.forEach(instance);
     });
   }

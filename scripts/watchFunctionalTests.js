@@ -55,7 +55,8 @@ const effectByEventCode = {
 
 (async () => {
   const { options, warnings } = await loadConfigFile(
-    path.join(__dirname, "../rollup.config.js")
+    path.join(__dirname, "../rollup.config.js"),
+    { environment: "BASE_CODE,ES6" }
   );
 
   warnings.flush();
