@@ -16,7 +16,7 @@ export default ({
   thirdPartyCookiesEnabled,
   areThirdPartyCookiesSupportedByDefault
 }) => {
-  return payload => {
+  return request => {
     if (
       thirdPartyCookiesEnabled &&
       areThirdPartyCookiesSupportedByDefault(getBrowser(window))
@@ -30,7 +30,7 @@ export default ({
       // domain will use our ECID to set the third-party cookie if the third-party
       // cookie isn't already set, which provides for better cross-domain
       // identification for future requests.
-      payload.useIdThirdPartyDomain();
+      request.setUseIdThirdPartyDomain();
     }
   };
 };

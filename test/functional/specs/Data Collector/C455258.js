@@ -10,8 +10,11 @@ const networkLogger = createNetworkLogger();
 
 createFixture({
   title:
-    "C455258: sendEvent command sends a request to the collect endpoint using sendBeacon when documentUnloading is set to true.",
-  requestHooks: [networkLogger.edgeCollectEndpointLogs]
+    "C455258: sendEvent command sends a request to the collect endpoint using sendBeacon when documentUnloading is set to true but only when identity has established.",
+  requestHooks: [
+    networkLogger.edgeInteractEndpointLogs,
+    networkLogger.edgeCollectEndpointLogs
+  ]
 });
 
 test.meta({
@@ -20,33 +23,49 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const sendEvent = ClientFunction(() => {
-  return window
-    .alloy("sendEvent", {
-      documentUnloading: true
-    })
-    .catch(() => {
-      // Because documentUnloading is set to true, Alloy uses sendBeacon and
-      // since sendBeacon ignores any response from the server, no identity
-      // cookie gets established for the user, resulting in the error:
-      //
-      // "An identity was not set properly. Please verify that the org ID
-      // 334F60F35E1597910A495EC2@AdobeOrg configured in Alloy matches the
-      // org ID specified in the edge configuration."
-      //
-      // This is probably something we want to address and is logged here:
-      // https://jira.corp.adobe.com/browse/CORE-52954
-      //
-      // Until then, we'll ignore the error.
-    });
+const sendEvent = ClientFunction(({ documentUnloading }) => {
+  return window.alloy("sendEvent", {
+    documentUnloading
+  });
 });
 
-test("Test C455258: sendEvent command sends a request to the collect endpoint using sendBeacon when documentUnloading is set to true.", async () => {
+test("Test C455258: sendEvent command sends a request to the collect endpoint when identity has been established and documentUnloading is set to true, interact otherwise.", async () => {
   if (isSendBeaconSupported()) {
     await sendBeaconMock.mock();
   }
   await configureAlloyInstance("alloy", orgMainConfigMain);
-  await sendEvent();
+
+  // An identity has not yet been established. This request should go to the
+  // interact endpoint.
+  await sendEvent({
+    documentUnloading: true
+  });
+
+  await t.expect(networkLogger.edgeInteractEndpointLogs.requests.length).eql(1);
+  await t.expect(networkLogger.edgeCollectEndpointLogs.requests.length).eql(0);
+
+  if (isSendBeaconSupported()) {
+    await t.expect(sendBeaconMock.getCallCount()).eql(0);
+  }
+
+  // An identity has been established. This request should go to the
+  // collect endpoint.
+  await sendEvent({
+    documentUnloading: true
+  });
+
+  await t.expect(networkLogger.edgeInteractEndpointLogs.requests.length).eql(1);
+  await t.expect(networkLogger.edgeCollectEndpointLogs.requests.length).eql(1);
+
+  if (isSendBeaconSupported()) {
+    await t.expect(sendBeaconMock.getCallCount()).eql(1);
+  }
+
+  // documentUnloading is not set to true. The request should go to the
+  // interact endpoint.
+  await sendEvent({});
+
+  await t.expect(networkLogger.edgeInteractEndpointLogs.requests.length).eql(2);
   await t.expect(networkLogger.edgeCollectEndpointLogs.requests.length).eql(1);
   if (isSendBeaconSupported()) {
     await t.expect(sendBeaconMock.getCallCount()).eql(1);

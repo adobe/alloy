@@ -53,24 +53,34 @@ describe("Identity::createComponent", () => {
 
   it("adds ECID query to event", () => {
     const payload = { type: "payload" };
+    const request = {
+      getPayload() {
+        return payload;
+      }
+    };
     const onResponse = jasmine.createSpy("onResponse");
-    component.lifecycle.onBeforeRequest({ payload, onResponse });
+    component.lifecycle.onBeforeRequest({ request, onResponse });
     expect(addEcidQueryToPayload).toHaveBeenCalledWith(payload);
   });
 
   it("ensures request has identity", () => {
     const payload = { type: "payload" };
+    const request = {
+      getPayload() {
+        return payload;
+      }
+    };
     const onResponse = jasmine.createSpy("onResponse");
     const onRequestFailure = jasmine.createSpy("onRequestFailure");
     const ensureSingleIdentityPromise = Promise.resolve();
     ensureSingleIdentity.and.returnValue(ensureSingleIdentityPromise);
     const result = component.lifecycle.onBeforeRequest({
-      payload,
+      request,
       onResponse,
       onRequestFailure
     });
     expect(ensureSingleIdentity).toHaveBeenCalledWith({
-      payload,
+      request,
       onResponse,
       onRequestFailure
     });

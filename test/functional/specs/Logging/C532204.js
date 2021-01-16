@@ -30,7 +30,9 @@ test.meta({
 
 const setupLogger = ClientFunction(() => {
   ["log", "info", "warn", "error"].forEach(methodName => {
+    // eslint-disable-next-line no-console
     const origConsoleMethod = console[methodName];
+    // eslint-disable-next-line no-console
     console[methodName] = (...args) => {
       args.forEach(arg => {
         String(arg);
