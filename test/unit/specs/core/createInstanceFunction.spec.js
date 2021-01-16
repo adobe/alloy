@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createInstance from "../../../../src/core/createInstanceFunction";
+import createInstanceFunction from "../../../../src/core/createInstanceFunction";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
 
 describe("createInstance", () => {
@@ -20,7 +20,7 @@ describe("createInstance", () => {
       .and.returnValue(Promise.resolve("commandresult"));
     const resolve = jasmine.createSpy();
     const reject = jasmine.createSpy();
-    const instance = createInstance(executeCommand);
+    const instance = createInstanceFunction(executeCommand);
 
     instance([resolve, reject, ["event", { foo: "bar" }]]);
 
@@ -38,7 +38,7 @@ describe("createInstance", () => {
       .and.returnValue(Promise.reject(new Error("error occurred")));
     const resolve = jasmine.createSpy();
     const reject = jasmine.createSpy();
-    const instance = createInstance(executeCommand);
+    const instance = createInstanceFunction(executeCommand);
 
     instance([resolve, reject, ["event", { foo: "bar" }]]);
 
