@@ -30,7 +30,14 @@ const remoteVisitorLibraryUrl =
   "https://github.com/Adobe-Marketing-Cloud/id-service/releases/latest/download/visitorapi.min.js";
 const baseCodePath = path.join(__dirname, "../../../../dist/baseCode.js");
 const localAlloyLibraryPath = path.join(__dirname, "../../../../dist/alloy.js");
-const localNpmLibraryPath = path.join(__dirname, "../../../../dist/es6.js");
+const localNpmLibraryPath = path.join(
+  __dirname,
+  "../../../../dist/npmLibraryLocal.js"
+);
+const prodNpmLibraryPath = path.join(
+  __dirname,
+  "../../../../dist/npmLibraryProd.js"
+);
 const remoteAlloyLibraryUrl =
   "https://cdn1.adoberesources.net/alloy/latest/alloy.js";
 
@@ -47,6 +54,10 @@ const getLocalAlloyCode = () => {
 // baseCode, but exposes a createInstance function.
 const getLocalNpmLibraryCode = () => {
   return readCache.sync(localNpmLibraryPath, "utf8");
+};
+// This is the javascript built from the production @adobe/alloy npm Library
+const getProdNpmLibraryCode = () => {
+  return readCache.sync(prodNpmLibraryPath, "utf8");
 };
 
 const injectInlineScript = ClientFunction(code => {
@@ -157,6 +168,11 @@ const getFixtureClientScriptsForProd = options => {
     });
   }
 
+  if (options.includeNpmLibrary) {
+    clientScripts.push({
+      content: getProdNpmLibraryCode()
+    });
+  }
   return clientScripts;
 };
 

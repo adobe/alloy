@@ -24,8 +24,10 @@ const minify = process.env.MINIFY;
 const sandbox = process.env.SANDBOX;
 // Build the base code file?
 const baseCode = process.env.BASE_CODE;
-// Build the es6 rollup file? (This is used to test the npm version in functional tests)
-const es6 = process.env.ES6;
+// Build the npm library local rollup file? (This is used to test the npm version in functional tests)
+const npmLibraryLocal = process.env.NPM_LIBRARY_LOCAL;
+// Build the npm library rollup based on the production npm library?
+const npmLibraryProd = process.env.NPM_LIBRARY_PROD;
 
 const destDirectory = sandbox ? "sandbox/public" : "dist/";
 
@@ -33,7 +35,8 @@ const minifiedExtension = minify ? ".min" : "";
 
 const BASE_CODE = "baseCode";
 const STANDALONE = "standalone";
-const ES6 = "es6";
+const NPM_LIBRARY_LOCAL = "npmLibraryLocal";
+const NPM_LIBRARY_PROD = "npmLibraryProd";
 
 const buildPlugins = version => {
   const plugins = [
@@ -112,16 +115,29 @@ config.push({
   plugins: buildPlugins(STANDALONE)
 });
 
-if (es6) {
+if (npmLibraryLocal) {
   config.push({
-    input: "test/functional/helpers/es6index.js",
+    input: "test/functional/helpers/npmLibraryLocal.js",
     output: [
       {
-        file: `${destDirectory}es6${minifiedExtension}.js`,
+        file: `${destDirectory}npmLibraryLocal${minifiedExtension}.js`,
         format: "iife"
       }
     ],
-    plugins: buildPlugins(ES6)
+    plugins: buildPlugins(NPM_LIBRARY_LOCAL)
+  });
+}
+
+if (npmLibraryProd) {
+  config.push({
+    input: "test/functional/helpers/npmLibraryProd.js",
+    output: [
+      {
+        file: `${destDirectory}npmLibraryProd${minifiedExtension}.js`,
+        format: "iife"
+      }
+    ],
+    plugins: buildPlugins(NPM_LIBRARY_PROD)
   });
 }
 
