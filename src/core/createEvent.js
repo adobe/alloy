@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { clone, isEmptyObject, createMerger } from "../utils";
+import { clone, isEmptyObject, createMerger } from "../utils/index";
 
 export default () => {
   const content = {};

@@ -10,8 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, objectOf, boolean, arrayOf } from "../../utils/validation";
-import { validateIdentityMap } from "../../utils";
+import {
+  string,
+  objectOf,
+  boolean,
+  arrayOf
+} from "../../utils/validation/index";
+import { validateIdentityMap } from "../../utils/index";
 /**
  * Verifies user provided event options.
  * @param {*} options The user event options to validate

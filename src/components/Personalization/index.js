@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "../../utils/validation";
+import { string } from "../../utils/validation/index";
 import createComponent from "./createComponent";
-import { initDomActionsModules, executeActions } from "./dom-actions";
+import { initDomActionsModules, executeActions } from "./dom-actions/index";
 import createCollect from "./createCollect";
 import createViewCollect from "./createViewCollect";
 import createExecuteDecisions from "./createExecuteDecisions";
-import { hideContainers, showContainers } from "./flicker";
+import { hideContainers, showContainers } from "./flicker/index";
 import createFetchDataHandler from "./createFetchDataHandler";
 import collectClicks from "./dom-actions/clicks/collectClicks";
 import isAuthoringModeEnabled from "./utils/isAuthoringModeEnabled";

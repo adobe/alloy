@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import escape from "css.escape";
-import { selectNodes } from "../../../../utils/dom";
+import { selectNodes } from "../../../../utils/dom/index";
 import { isNotEqSelector, splitWithEq } from "./helperForEq";
 
 // Trying to match ID or CSS class

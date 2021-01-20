@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { includes } from "../../utils";
+import { includes } from "../../utils/index";
 import PAGE_WIDE_SCOPE from "./constants/scope";
 import {
   DOM_ACTION,

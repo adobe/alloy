@@ -19,7 +19,7 @@ import injectImplementationDetails from "./injectImplementationDetails";
 import libraryVersion from "../../constants/libraryVersion";
 import libraryName from "../../constants/libraryName";
 import createComponent from "./createComponent";
-import { arrayOf, string } from "../../utils/validation";
+import { arrayOf, string } from "../../utils/validation/index";
 
 const web = injectWeb(window);
 const device = injectDevice(window);

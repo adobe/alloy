@@ -14,10 +14,10 @@ governing permissions and limitations under the License.
 // like the launch extension. Everything that is exported here can be used independently by other
 // npm projects.
 
-import { createExecuteCommand } from "./core";
+import { createExecuteCommand } from "./core/index";
 import createLogger from "./core/createLogger";
 import createLogController from "./core/createLogController";
-import { injectStorage } from "./utils";
+import { injectStorage } from "./utils/index";
 
 const { console } = window;
 const createNamespacedStorage = injectStorage(window);

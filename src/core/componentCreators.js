@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createDataCollector from "../components/DataCollector";
-import createActivityCollector from "../components/ActivityCollector";
-import createIdentity from "../components/Identity";
-import createAudiences from "../components/Audiences";
-import createPersonalization from "../components/Personalization";
-import createContext from "../components/Context";
-import createPrivacy from "../components/Privacy";
-import createEventMerge from "../components/EventMerge";
-import createLibraryInfo from "../components/LibraryInfo";
+import createDataCollector from "../components/DataCollector/index";
+import createActivityCollector from "../components/ActivityCollector/index";
+import createIdentity from "../components/Identity/index";
+import createAudiences from "../components/Audiences/index";
+import createPersonalization from "../components/Personalization/index";
+import createContext from "../components/Context/index";
+import createPrivacy from "../components/Privacy/index";
+import createEventMerge from "../components/EventMerge/index";
+import createLibraryInfo from "../components/LibraryInfo/index";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
 // TODO: Figure out how sub-components will be made available/registered

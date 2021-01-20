@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createTaskQueue, cookieJar } from "../../utils";
+import { createTaskQueue, cookieJar } from "../../utils/index";
 import createComponent from "./createComponent";
 import createConsentRequestPayload from "./createConsentRequestPayload";
 import createConsentRequest from "./createConsentRequest";

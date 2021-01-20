@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isFunction, isObject, values } from "../utils";
+import { isFunction, isObject, values } from "../utils/index";
 
 const coreCommands = {
   CONFIGURE: "configure",

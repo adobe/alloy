@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { noop } from "../../utils";
+import { noop } from "../../utils/index";
 
 const createResultLogMessage = (idSync, success) => {
   return `ID sync ${success ? "succeeded" : "failed"}: ${idSync.spec.url}`;

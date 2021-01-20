@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { queryString, stringToBoolean } from "../utils";
+import { queryString, stringToBoolean } from "../utils/index";
 import debugQueryParam from "../constants/debugQueryParam";
 
 export default ({

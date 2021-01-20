@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { selectNodes } from "../../../utils/dom";
+import { selectNodes } from "../../../utils/dom/index";
 import { SRC, STYLE } from "../../../constants/tagName";
-import { getAttribute, getNonce } from "./dom";
+import { getAttribute, getNonce } from "./dom/index";
 
 const is = (element, tagName) => element.tagName === tagName;
 const isInlineStyleElement = element =>

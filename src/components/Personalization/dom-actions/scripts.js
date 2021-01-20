@@ -11,9 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import loadScript from "@adobe/reactor-load-script";
-import { selectNodes, createNode } from "../../../utils/dom";
+import { selectNodes, createNode } from "../../../utils/dom/index";
 import { SRC, SCRIPT } from "../../../constants/tagName";
-import { getAttribute, getNonce } from "./dom";
+import { getAttribute, getNonce } from "./dom/index";
 
 const is = (element, tagName) => element.tagName === tagName;
 const isInlineScript = element =>

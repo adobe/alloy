@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, flatMap, isNonEmptyArray } from "../../utils";
+import { assign, flatMap, isNonEmptyArray } from "../../utils/index";
 
 const identity = item => item;
 

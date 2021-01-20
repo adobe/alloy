@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createCallbackAggregator } from "../utils";
+import { createCallbackAggregator } from "../utils/index";
 
 export default ({
   config,

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { intersection, stackError } from "../utils";
+import { intersection, stackError } from "../utils/index";
 
 const wrapForErrorHandling = (fn, stackMessage) => {
   return (...args) => {

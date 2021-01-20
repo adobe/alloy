@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyString } from "../../../../utils";
+import { isNonEmptyString } from "../../../../utils/index";
 
 const EQ_START = ":eq(";
 const EQ_PATTERN = /:eq\((\d+)\)/g;

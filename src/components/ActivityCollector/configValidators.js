@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, boolean } from "../../utils/validation";
+import { string, boolean } from "../../utils/validation/index";
 
 export default {
   clickCollectionEnabled: boolean().default(true),
