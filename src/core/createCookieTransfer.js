@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { endsWith, isNamespacedCookieName } from "../utils/index";
+import { endsWith, isNamespacedCookieName } from "../utils";
 import convertTimes, { DAY, SECOND } from "../utils/convertTimes";
 
 const STATE_STORE_HANDLE_TYPE = "state:store";

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { setStyle } from "./dom/index";
+import { setStyle } from "./dom";
 
 export default (container, styles) => {
   const { priority, ...style } = styles;

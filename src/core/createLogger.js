@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign } from "../utils/index";
+import { assign } from "../utils";
 
 export default ({ getDebugEnabled, console, getMonitors, context }) => {
   let prefix = `[${context.instanceName}]`;

@@ -10,13 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  boolean,
-  string,
-  callback,
-  enumOf
-} from "../../utils/validation/index";
-import { noop } from "../../utils/index";
+import { boolean, string, callback, enumOf } from "../../utils/validation";
+import { noop } from "../../utils";
 import { EDGE as EDGE_DOMAIN } from "../../constants/domain";
 import EDGE_BASE_PATH from "../../constants/edgeBasePath";
 import { IN, PENDING } from "../../constants/consentStatus";

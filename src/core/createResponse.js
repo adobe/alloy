@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { flatMap } from "../utils/index";
+import { flatMap } from "../utils";
 
 /**
  * Creates a representation of a gateway response with the addition of

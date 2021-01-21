@@ -1,5 +1,5 @@
-import { objectOf, anything, arrayOf } from "../../utils/validation/index";
-import { validateIdentityMap } from "../../utils/index";
+import { objectOf, anything, arrayOf } from "../../utils/validation";
+import { validateIdentityMap } from "../../utils";
 
 export default objectOf({
   consent: arrayOf(anything())

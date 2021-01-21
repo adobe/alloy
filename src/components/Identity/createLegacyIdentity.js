@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { getApexDomain, cookieJar } from "../../utils/index";
+import { getApexDomain, cookieJar } from "../../utils";
 
 // TODO: We are already retrieving the apex in core; find a way to reuse it.
 // Maybe default the domain in the cookieJar to apex while allowing overrides.

@@ -11,12 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createInstanceFunction from "./createInstanceFunction";
-import {
-  getApexDomain,
-  injectStorage,
-  cookieJar,
-  isFunction
-} from "../utils/index";
+import { getApexDomain, injectStorage, cookieJar, isFunction } from "../utils";
 import createLogController from "./createLogController";
 import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";

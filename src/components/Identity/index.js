@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import {
   fireReferrerHideableImage,
   areThirdPartyCookiesSupportedByDefault
-} from "../../utils/index";
+} from "../../utils";
 import injectProcessIdSyncs from "./injectProcessIdSyncs";
 import configValidators from "./configValidators";
 

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { defer } from "../../utils/index";
+import { defer } from "../../utils";
 
 export const DECLINED_CONSENT = "The user declined consent.";
 export const DECLINED_CONSENT_ERROR_CODE = "declinedConsent";

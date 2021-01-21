@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { SRC } from "../../../constants/tagName";
-import { setAttribute, removeAttribute } from "./dom/index";
+import { setAttribute, removeAttribute } from "./dom";
 import { isImage, loadImage } from "./images";
 
 export default (container, url) => {

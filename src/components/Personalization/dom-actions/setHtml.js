@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { removeNode } from "../../../utils/dom/index";
-import { getChildNodes } from "./dom/index";
+import { removeNode } from "../../../utils/dom";
+import { getChildNodes } from "./dom";
 import appendHtml from "./appendHtml";
 
 const clear = container => {

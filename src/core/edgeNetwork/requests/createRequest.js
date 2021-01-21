@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { uuid } from "../../../utils/index";
+import { uuid } from "../../../utils";
 
 // This provides the base functionality that all types of requests share.
 export default options => {

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop, defer } from "../../utils/index";
+import { noop, defer } from "../../utils";
 import createPersonalizationDetails from "./createPersonalizationDetails";
 
 export default ({

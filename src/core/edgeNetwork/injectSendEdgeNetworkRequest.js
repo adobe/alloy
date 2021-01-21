@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain";
 import apiVersion from "../../constants/apiVersion";
-import { createCallbackAggregator, noop, assign } from "../../utils/index";
+import { createCallbackAggregator, noop, assign } from "../../utils";
 
 export default ({
   config,
