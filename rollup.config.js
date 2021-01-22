@@ -26,8 +26,6 @@ const sandbox = process.env.SANDBOX;
 const baseCode = process.env.BASE_CODE;
 // Build the npm package local rollup file? (This is used to test the npm package in functional tests)
 const npmPackageLocal = process.env.NPM_PACKAGE_LOCAL;
-// Build the npm package rollup based on the production npm package?
-const npmPackageProd = process.env.NPM_PACKAGE_PROD;
 
 const destDirectory = sandbox ? "sandbox/public" : "dist/";
 
@@ -36,7 +34,6 @@ const minifiedExtension = minify ? ".min" : "";
 const BASE_CODE = "baseCode";
 const STANDALONE = "standalone";
 const NPM_PACKAGE_LOCAL = "npmPackageLocal";
-const NPM_PACKAGE_PROD = "npmPackageProd";
 
 const buildPlugins = version => {
   const plugins = [
@@ -125,19 +122,6 @@ if (npmPackageLocal) {
       }
     ],
     plugins: buildPlugins(NPM_PACKAGE_LOCAL)
-  });
-}
-
-if (npmPackageProd) {
-  config.push({
-    input: "test/functional/helpers/npmPackageProd.js",
-    output: [
-      {
-        file: `distTest/npmPackageProd${minifiedExtension}.js`,
-        format: "iife"
-      }
-    ],
-    plugins: buildPlugins(NPM_PACKAGE_PROD)
   });
 }
 
