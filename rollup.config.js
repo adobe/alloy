@@ -24,10 +24,10 @@ const minify = process.env.MINIFY;
 const sandbox = process.env.SANDBOX;
 // Build the base code file?
 const baseCode = process.env.BASE_CODE;
-// Build the npm library local rollup file? (This is used to test the npm version in functional tests)
-const npmLibraryLocal = process.env.NPM_LIBRARY_LOCAL;
-// Build the npm library rollup based on the production npm library?
-const npmLibraryProd = process.env.NPM_LIBRARY_PROD;
+// Build the npm package local rollup file? (This is used to test the npm package in functional tests)
+const npmPackageLocal = process.env.NPM_PACKAGE_LOCAL;
+// Build the npm package rollup based on the production npm package?
+const npmPackageProd = process.env.NPM_PACKAGE_PROD;
 
 const destDirectory = sandbox ? "sandbox/public" : "dist/";
 
@@ -35,8 +35,8 @@ const minifiedExtension = minify ? ".min" : "";
 
 const BASE_CODE = "baseCode";
 const STANDALONE = "standalone";
-const NPM_LIBRARY_LOCAL = "npmLibraryLocal";
-const NPM_LIBRARY_PROD = "npmLibraryProd";
+const NPM_PACKAGE_LOCAL = "npmPackageLocal";
+const NPM_PACKAGE_PROD = "npmPackageProd";
 
 const buildPlugins = version => {
   const plugins = [
@@ -90,7 +90,7 @@ if (baseCode) {
     input: "src/baseCode.js",
     output: [
       {
-        file: `${destDirectory}baseCode${minifiedExtension}.js`,
+        file: `distTest/baseCode${minifiedExtension}.js`,
         format: "cjs",
         strict: false
       }
@@ -115,29 +115,29 @@ config.push({
   plugins: buildPlugins(STANDALONE)
 });
 
-if (npmLibraryLocal) {
+if (npmPackageLocal) {
   config.push({
-    input: "test/functional/helpers/npmLibraryLocal.js",
+    input: "test/functional/helpers/npmPackageLocal.js",
     output: [
       {
-        file: `${destDirectory}npmLibraryLocal${minifiedExtension}.js`,
+        file: `distTest/npmPackageLocal${minifiedExtension}.js`,
         format: "iife"
       }
     ],
-    plugins: buildPlugins(NPM_LIBRARY_LOCAL)
+    plugins: buildPlugins(NPM_PACKAGE_LOCAL)
   });
 }
 
-if (npmLibraryProd) {
+if (npmPackageProd) {
   config.push({
-    input: "test/functional/helpers/npmLibraryProd.js",
+    input: "test/functional/helpers/npmPackageProd.js",
     output: [
       {
-        file: `${destDirectory}npmLibraryProd${minifiedExtension}.js`,
+        file: `distTest/npmPackageProd${minifiedExtension}.js`,
         format: "iife"
       }
     ],
-    plugins: buildPlugins(NPM_LIBRARY_PROD)
+    plugins: buildPlugins(NPM_PACKAGE_PROD)
   });
 }
 

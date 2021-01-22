@@ -56,7 +56,7 @@ const effectByEventCode = {
 (async () => {
   const { options, warnings } = await loadConfigFile(
     path.join(__dirname, "../rollup.config.js"),
-    { environment: "BASE_CODE,NPM_LIBRARY_LOCAL" }
+    { environment: "BASE_CODE,NPM_PACKAGE_LOCAL" }
   );
 
   warnings.flush();
