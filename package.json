@@ -27,7 +27,7 @@
     "test:functional:api": "testcafe chrome:headless",
     "sandbox:build": "cd sandbox && npm run build",
     "dev": "concurrently --names build,sandbox \"rollup -c -w --environment SANDBOX\" \"cd sandbox && export REACT_APP_NONCE=321 && npm start\"",
-    "build": "npm run format && npm run lint && npm run clean && concurrently \"rollup -c --environment BASE_CODE,NPM_PACKAGE_LOCAL\" \"rollup -c --environment MINIFY,BASE_CODE\" && echo \"Base Code:\" && cat dist/baseCode.min.js",
+    "build": "npm run format && npm run lint && npm run clean && concurrently \"rollup -c --environment BASE_CODE,NPM_PACKAGE_LOCAL\" \"rollup -c --environment MINIFY,BASE_CODE\" && echo \"Base Code:\" && cat distTest/baseCode.min.js",
     "prepublishOnly": "rimraf libEs5 libEs6 && babel src --out-dir libEs5 --env-name npm && babel src --out-dir libEs6 --ignore src/baseCode.js,src/standalone.js --no-babelrc --plugins version",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js"
   },
