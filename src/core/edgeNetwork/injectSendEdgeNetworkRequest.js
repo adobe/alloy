@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain";
 import apiVersion from "../../constants/apiVersion";
-import { createCallbackAggregator, noop, uuid, assign } from "../../utils";
+import { createCallbackAggregator, noop, assign } from "../../utils";
 
 export default ({
   config,
@@ -30,8 +30,7 @@ export default ({
    * lifecycle methods, configured edge domains, response structures, etc.
    */
   return ({
-    payload,
-    action,
+    request,
     runOnResponseCallbacks = noop,
     runOnRequestFailureCallbacks = noop
   }) => {
@@ -45,18 +44,22 @@ export default ({
 
     return lifecycle
       .onBeforeRequest({
-        payload,
+        request,
         onResponse: onResponseCallbackAggregator.add,
         onRequestFailure: onRequestFailureCallbackAggregator.add
       })
       .then(() => {
-        const endpointDomain = payload.getUseIdThirdPartyDomain()
+        const endpointDomain = request.getUseIdThirdPartyDomain()
           ? ID_THIRD_PARTY_DOMAIN
           : edgeDomain;
-        const requestId = uuid();
-        const url = `https://${endpointDomain}/${edgeBasePath}/${apiVersion}/${action}?configId=${edgeConfigId}&requestId=${requestId}`;
-        cookieTransfer.cookiesToPayload(payload, endpointDomain);
-        return sendNetworkRequest({ payload, url, requestId });
+        const url = `https://${endpointDomain}/${edgeBasePath}/${apiVersion}/${request.getAction()}?configId=${edgeConfigId}&requestId=${request.getId()}`;
+        cookieTransfer.cookiesToPayload(request.getPayload(), endpointDomain);
+        return sendNetworkRequest({
+          requestId: request.getId(),
+          url,
+          payload: request.getPayload(),
+          useSendBeacon: request.getUseSendBeacon()
+        });
       })
       .then(networkResponse => {
         // Will throw an error if malformed.

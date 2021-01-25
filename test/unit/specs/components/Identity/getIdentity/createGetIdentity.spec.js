@@ -2,51 +2,65 @@ import createGetIdentity from "../../../../../../src/components/Identity/getIden
 
 describe("Identity::createGetIdentity", () => {
   let sendEdgeNetworkRequest;
-  let createIdentityPayload;
-  const samplePayload = {
-    myPayload: { methodOne: () => {}, methodTwo: () => {} }
-  };
+  let createIdentityRequestPayload;
+  let createIdentityRequest;
+  let request;
 
   beforeEach(() => {
     sendEdgeNetworkRequest = jasmine.createSpy("sendEdgeNetworkRequest");
-    createIdentityPayload = jasmine
-      .createSpy("createIdentityPayload")
-      .and.returnValue(samplePayload);
+    const requestPayload = {
+      type: "payload"
+    };
+    createIdentityRequestPayload = jasmine
+      .createSpy("createIdentityRequestPayload")
+      .and.returnValue(requestPayload);
+    request = {
+      getPayload() {
+        return requestPayload;
+      }
+    };
+    createIdentityRequest = jasmine
+      .createSpy("createIdentityRequest")
+      .and.returnValue(request);
   });
 
   it("should return a function which calls sendEdgeNetworkRequest", () => {
     const getIdentity = createGetIdentity({
       sendEdgeNetworkRequest,
-      createIdentityPayload
+      createIdentityRequestPayload,
+      createIdentityRequest
     });
     getIdentity();
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
-      payload: samplePayload,
-      action: "identity/acquire"
+      request
     });
   });
 
-  it("each getIdentity call should create a new payload object", () => {
+  it("each getIdentity call should create new payloads and requests", () => {
     const payload1 = { type: "payload1" };
     const payload2 = { type: "payload2" };
-    createIdentityPayload.and.returnValues(payload1, payload2);
+    const request1 = { type: "request1" };
+    const request2 = { type: "request2" };
+    createIdentityRequestPayload.and.returnValues(payload1, payload2);
+    createIdentityRequest.and.returnValues(request1, request2);
     const getIdentity = createGetIdentity({
       sendEdgeNetworkRequest,
-      createIdentityPayload
+      createIdentityRequestPayload,
+      createIdentityRequest
     });
-    getIdentity(["optionOne", "optionTwo"]);
-    expect(createIdentityPayload).toHaveBeenCalledWith([
-      "optionOne",
-      "optionTwo"
+    getIdentity(["namespace1", "namespace2"]);
+    expect(createIdentityRequestPayload).toHaveBeenCalledWith([
+      "namespace1",
+      "namespace2"
     ]);
+    expect(createIdentityRequest).toHaveBeenCalledWith(payload1);
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
-      payload: payload1,
-      action: "identity/acquire"
+      request: request1
     });
     getIdentity();
+    expect(createIdentityRequest).toHaveBeenCalledWith(payload2);
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
-      payload: payload2,
-      action: "identity/acquire"
+      request: request2
     });
   });
 });

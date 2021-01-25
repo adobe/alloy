@@ -56,7 +56,11 @@ test("Test C14410: Setting consent for unknown purposes fails", async t => {
     .ok("Expected the setConsent command to be rejected");
   await t
     .expect(errorMessage)
-    .contains("The server responded with the following errors");
+    .contains("Unexpected server response with status code 400")
+    .expect(errorMessage)
+    .contains(
+      "Invalid request. The value supplied for field 'consent.[0].value' does not match your input schema"
+    );
 
   // make sure we can call it again with the correct values
   await t.eval(() => {

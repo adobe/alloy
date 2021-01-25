@@ -19,6 +19,7 @@ export default ({
   consent,
   createEvent,
   createDataCollectionRequestPayload,
+  createDataCollectionRequest,
   sendEdgeNetworkRequest
 }) => {
   const { onBeforeEventSend } = config;
@@ -51,7 +52,7 @@ export default ({
       event.setLastChanceCallback(onBeforeEventSendWithLoggedExceptions);
       const { renderDecisions = false, decisionScopes } = options;
       const payload = createDataCollectionRequestPayload();
-
+      const request = createDataCollectionRequest(payload);
       const onResponseCallbackAggregator = createCallbackAggregator();
       const onRequestFailureCallbackAggregator = createCallbackAggregator();
 
@@ -60,29 +61,16 @@ export default ({
           event,
           renderDecisions,
           decisionScopes,
-          payload,
           onResponse: onResponseCallbackAggregator.add,
           onRequestFailure: onRequestFailureCallbackAggregator.add
         })
         .then(() => {
-          // it's important to add the event here because the payload object will call toJSON
-          // which applies the userData, userXdm, and lastChanceCallback
           payload.addEvent(event);
           return consent.awaitConsent();
         })
         .then(() => {
-          return lifecycle.onBeforeDataCollectionRequest({
-            payload,
-            onResponse: onResponseCallbackAggregator.add,
-            onRequestFailure: onRequestFailureCallbackAggregator.add
-          });
-        })
-        .then(() => {
-          const documentMayUnload = event.getDocumentMayUnload();
-          const action = documentMayUnload ? "collect" : "interact";
           return sendEdgeNetworkRequest({
-            payload,
-            action,
+            request,
             runOnResponseCallbacks: onResponseCallbackAggregator.call,
             runOnRequestFailureCallbacks:
               onRequestFailureCallbackAggregator.call

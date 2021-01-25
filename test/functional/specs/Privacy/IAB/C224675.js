@@ -55,7 +55,11 @@ test("Test C224675: Passing invalid consent options should throw a validation er
 
   await t
     .expect(errorMessageForInvalidStandard)
-    .contains("The server responded with the following errors");
+    .contains("Unexpected server response with status code 400")
+    .expect(errorMessageForInvalidStandard)
+    .contains(
+      "The value supplied for field 'consent[0]' does not match your input schema"
+    );
 
   await t.expect(errorMessageForInvalidStandard).contains("EXEG-0102-400");
 
@@ -75,15 +79,13 @@ test("Test C224675: Passing invalid consent options should throw a validation er
 
   await t
     .expect(errorMessageForInvalidVersion)
-    .contains("The server responded with the following errors");
-
-  // TODO: The error message below is not consistent with the way `standard` is being validated.
-  // Discussed it with the Konductor team, they will re-work it.
-  // https://jira.corp.adobe.com/browse/EXEG-1961
-  await t
+    .contains("Unexpected server response with status code 400")
     .expect(errorMessageForInvalidVersion)
-    // TODO: log ticket - Konductor error just says "Invalid request"
-    .contains("EXEG-0104-422");
+    .contains(
+      "The value supplied for field 'consent[0]' does not match your input schema"
+    );
+
+  await t.expect(errorMessageForInvalidVersion).contains("EXEG-0102-400");
 
   const errorMessageForInvalidValue = await getErrorMessageFromSetConsent({
     consent: [
@@ -100,10 +102,12 @@ test("Test C224675: Passing invalid consent options should throw a validation er
 
   await t
     .expect(errorMessageForInvalidValue)
-    .contains("The server responded with the following errors");
+    .contains("Unexpected server response with status code 400")
+    .expect(errorMessageForInvalidValue)
+    .contains(
+      "Invalid request. No value supplied for field 'consent.[0].value'"
+    );
 
-  // TODO: The error message below is not consistent with the way `standard` is being validated.
-  // Discussed it with the Konductor team, they will re-work it.
   await t.expect(errorMessageForInvalidValue).contains("EXEG-0103-400");
 
   const errorMessageForEmptyValue = await getErrorMessageFromSetConsent({
@@ -122,9 +126,11 @@ test("Test C224675: Passing invalid consent options should throw a validation er
 
   await t
     .expect(errorMessageForEmptyValue)
-    .contains("The server responded with the following errors");
+    .contains("Unexpected server response with status code 422")
+    .expect(errorMessageForEmptyValue)
+    .contains(
+      "IAB consent string value must not be empty for standard 'IAB TCF' at index 0"
+    );
 
-  // TODO: The error message below is not consistent with the way `standard` is being validated.
-  // Discussed it with the Konductor team, they will re-work it.
   await t.expect(errorMessageForEmptyValue).contains("EXEG-0104-422");
 });

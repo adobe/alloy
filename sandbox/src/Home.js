@@ -45,10 +45,16 @@ function HomeWithHistory({ history }) {
     window
       .alloy("getIdentity", { namespaces: ["ECID"] })
       .then(function(result) {
-        console.log(
-          "Sandbox: Get Identity command has completed.",
-          result.identity.ECID
-        );
+        if (result.identity) {
+          console.log(
+            "Sandbox: Get Identity command has completed.",
+            result.identity.ECID
+          );
+        } else {
+          console.log(
+            "Sandbox: Get Identity command has completed but no identity was provided in the result (possibly due to lack of consent)."
+          );
+        }
       });
   };
 

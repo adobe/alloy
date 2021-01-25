@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import { createTaskQueue, cookieJar } from "../../utils";
 import createComponent from "./createComponent";
 import createConsentRequestPayload from "./createConsentRequestPayload";
+import createConsentRequest from "./createConsentRequest";
 import injectReadStoredConsent from "./injectReadStoredConsent";
 import injectSendSetConsentRequest from "./injectSendSetConsentRequest";
 import parseConsentCookie from "./parseConsentCookie";
@@ -28,6 +29,7 @@ const createPrivacy = ({ config, consent, sendEdgeNetworkRequest }) => {
   const taskQueue = createTaskQueue();
   const sendSetConsentRequest = injectSendSetConsentRequest({
     createConsentRequestPayload,
+    createConsentRequest,
     sendEdgeNetworkRequest
   });
 

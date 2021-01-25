@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/adobe/alloy.svg?branch=master)](https://travis-ci.org/adobe/alloy)
+[[![Alloy Production](https://github.com/adobe/alloy/workflows/Alloy-Test-Cron/badge.svg)](https://github.com/adobe/alloy/actions)]
 
 # Alloy
 

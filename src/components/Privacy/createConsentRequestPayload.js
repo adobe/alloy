@@ -10,24 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createRequestPayload from "../../core/edgeNetwork/requestPayloads/createRequestPayload";
+import createRequestPayload from "../../core/edgeNetwork/requests/createRequestPayload";
 
 export default () => {
-  return createRequestPayload(content => {
-    return {
-      addIdentity(namespaceCode, identity) {
-        content.identityMap = content.identityMap || {};
-        content.identityMap[namespaceCode] =
-          content.identityMap[namespaceCode] || [];
-        content.identityMap[namespaceCode].push(identity);
-      },
-      setConsent(consent) {
-        content.consent = consent;
-      },
-      setConsentHash(consentHash) {
-        content.meta = content.meta || {};
-        content.meta.consentHash = consentHash;
-      }
-    };
+  const content = {};
+  const payload = createRequestPayload({
+    content,
+    addIdentity: (namespaceCode, identity) => {
+      content.identityMap = content.identityMap || {};
+      content.identityMap[namespaceCode] =
+        content.identityMap[namespaceCode] || [];
+      content.identityMap[namespaceCode].push(identity);
+    }
   });
+
+  payload.setConsent = consent => {
+    content.consent = consent;
+  };
+  payload.setConsentHash = consentHash => {
+    content.consentHash = consentHash;
+  };
+
+  return payload;
 };

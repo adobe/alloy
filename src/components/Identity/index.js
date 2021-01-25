@@ -31,7 +31,8 @@ import addEcidToPayload from "./addEcidToPayload";
 import injectAwaitIdentityCookie from "./injectAwaitIdentityCookie";
 import getEcidFromResponse from "./getEcidFromResponse";
 import createGetIdentity from "./getIdentity/createGetIdentity";
-import createIdentityPayload from "./getIdentity/createIdentityPayload";
+import createIdentityRequest from "./getIdentity/createIdentityRequest";
+import createIdentityRequestPayload from "./getIdentity/createIdentityRequestPayload";
 
 const createIdentity = ({
   config,
@@ -53,7 +54,8 @@ const createIdentity = ({
   const doesIdentityCookieExist = injectDoesIdentityCookieExist({ orgId });
   const getIdentity = createGetIdentity({
     sendEdgeNetworkRequest,
-    createIdentityPayload
+    createIdentityRequestPayload,
+    createIdentityRequest
   });
   const setDomainForInitialIdentityPayload = injectSetDomainForInitialIdentityPayload(
     {

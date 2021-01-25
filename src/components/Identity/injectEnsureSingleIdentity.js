@@ -20,9 +20,9 @@ export default ({
 }) => {
   let obtainedIdentityPromise;
 
-  const allowRequestToGoWithoutIdentity = payload => {
-    setDomainForInitialIdentityPayload(payload);
-    return addLegacyEcidToPayload(payload);
+  const allowRequestToGoWithoutIdentity = request => {
+    setDomainForInitialIdentityPayload(request);
+    return addLegacyEcidToPayload(request.getPayload());
   };
 
   /**
@@ -44,8 +44,9 @@ export default ({
    * an identity is to prevent a single malformed request causing all other
    * requests to never send.
    */
-  return ({ payload, onResponse, onRequestFailure }) => {
+  return ({ request, onResponse, onRequestFailure }) => {
     if (doesIdentityCookieExist()) {
+      request.setIsIdentityEstablished();
       return Promise.resolve();
     }
 
@@ -70,12 +71,13 @@ export default ({
         previousObtainedIdentityPromise
           .then(() => {
             logger.log("Resuming previously delayed request.");
+            request.setIsIdentityEstablished();
           })
           // If Konductor did not set the identity cookie on the previous
           // request, then awaitIdentityCookie will reject its promise.
           // Catch the rejection here and allow this request to go out.
           .catch(() => {
-            return allowRequestToGoWithoutIdentity(payload);
+            return allowRequestToGoWithoutIdentity(request);
           })
       );
     }
@@ -88,6 +90,6 @@ export default ({
       onResponse,
       onRequestFailure
     });
-    return allowRequestToGoWithoutIdentity(payload);
+    return allowRequestToGoWithoutIdentity(request);
   };
 };

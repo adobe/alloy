@@ -23,9 +23,9 @@ describe("Identity::injectEnsureSingleIdentity", () => {
   let ensureSingleIdentity;
 
   let sentIndex;
-  let recievedIndex;
-  let payloads;
-  let requestsSentYet;
+  let receivedIndex;
+  let requests;
+  let requestSentStatusByIndex;
   let awaitIdentityDeferreds;
   let onResponse;
   let onRequestFailure;
@@ -35,17 +35,17 @@ describe("Identity::injectEnsureSingleIdentity", () => {
     logger = jasmine.createSpyObj("logger", ["log"]);
 
     sentIndex = 0;
-    recievedIndex = 0;
-    payloads = [];
-    requestsSentYet = [];
+    receivedIndex = 0;
+    requests = [];
+    requestSentStatusByIndex = [];
     awaitIdentityDeferreds = [];
     doesIdentityCookieExistBoolean = false;
 
-    setDomainForInitialIdentityPayload = payload => {
-      payload.domain = "initialIdentityDomain";
+    setDomainForInitialIdentityPayload = request => {
+      request.setUseIdThirdPartyDomain();
     };
     addLegacyEcidToPayload = payload => {
-      payload.legacyId = "legacyId";
+      payload.addIdentity("ECID", { id: "ABC123" });
       return Promise.resolve();
     };
     awaitIdentityCookie = () => {
@@ -67,30 +67,37 @@ describe("Identity::injectEnsureSingleIdentity", () => {
   };
 
   const sendRequest = () => {
-    const payload = { id: sentIndex };
-    payloads.push(payload);
+    const requestPayload = jasmine.createSpyObj("requestPayload", [
+      "addIdentity"
+    ]);
+    const request = jasmine.createSpyObj("request", {
+      getPayload: requestPayload,
+      setIsIdentityEstablished: undefined,
+      setUseIdThirdPartyDomain: undefined
+    });
+    requests.push(request);
     onResponse = jasmine.createSpy("onResponse");
     onRequestFailure = jasmine.createSpy("onRequestFailure");
     const i = sentIndex;
-    requestsSentYet.push(false);
+    requestSentStatusByIndex.push(false);
     ensureSingleIdentity({
-      payload,
+      request,
       onResponse,
       onRequestFailure
     }).then(() => {
-      requestsSentYet[i] = true;
+      requestSentStatusByIndex[i] = true;
     });
 
     sentIndex += 1;
   };
   const simulateResponseWithIdentity = () => {
     doesIdentityCookieExist = true;
-    awaitIdentityDeferreds[recievedIndex].resolve();
-    recievedIndex += 1;
+    awaitIdentityDeferreds[receivedIndex].resolve();
+    receivedIndex += 1;
   };
   const simulateResponseWithoutIdentity = () => {
-    awaitIdentityDeferreds[recievedIndex].reject();
-    recievedIndex += 1;
+    awaitIdentityDeferreds[receivedIndex].reject();
+    receivedIndex += 1;
   };
 
   it("allows first request to proceed and pauses subsequent requests until identity cookie exists", () => {
@@ -103,23 +110,25 @@ describe("Identity::injectEnsureSingleIdentity", () => {
         return flushPromiseChains();
       })
       .then(() => {
-        expect(requestsSentYet).toEqual([true, false, false]);
+        expect(requestSentStatusByIndex).toEqual([true, false, false]);
         simulateResponseWithIdentity();
         return flushPromiseChains();
       })
       .then(() => {
-        expect(requestsSentYet).toEqual([true, true, true]);
-        expect(payloads).toEqual([
-          { id: 0, domain: "initialIdentityDomain", legacyId: "legacyId" },
-          { id: 1 },
-          { id: 2 }
-        ]);
+        expect(requestSentStatusByIndex).toEqual([true, true, true]);
+        expect(requests[0].setUseIdThirdPartyDomain).toHaveBeenCalled();
+        expect(requests[1].setUseIdThirdPartyDomain).not.toHaveBeenCalled();
+        expect(requests[2].setUseIdThirdPartyDomain).not.toHaveBeenCalled();
+        expect(requests[0].getPayload().addIdentity).toHaveBeenCalled();
+        expect(requests[1].getPayload().addIdentity).not.toHaveBeenCalled();
+        expect(requests[2].getPayload().addIdentity).not.toHaveBeenCalled();
         sendRequest();
         return flushPromiseChains();
       })
       .then(() => {
-        expect(payloads[3]).toEqual({ id: 3 });
-        expect(requestsSentYet[3]).toEqual(true);
+        expect(requests[3].setUseIdThirdPartyDomain).not.toHaveBeenCalled();
+        expect(requests[3].getPayload().addIdentity).not.toHaveBeenCalled();
+        expect(requestSentStatusByIndex[3]).toEqual(true);
       });
   });
 
@@ -134,23 +143,25 @@ describe("Identity::injectEnsureSingleIdentity", () => {
         return flushPromiseChains();
       })
       .then(() => {
-        expect(requestsSentYet).toEqual([true, false, false, false]);
+        expect(requestSentStatusByIndex).toEqual([true, false, false, false]);
         simulateResponseWithoutIdentity();
         return flushPromiseChains();
       })
       .then(() => {
-        expect(requestsSentYet).toEqual([true, true, false, false]);
+        expect(requestSentStatusByIndex).toEqual([true, true, false, false]);
         simulateResponseWithIdentity();
         return flushPromiseChains();
       })
       .then(() => {
-        expect(requestsSentYet).toEqual([true, true, true, true]);
-        expect(payloads).toEqual([
-          { id: 0, domain: "initialIdentityDomain", legacyId: "legacyId" },
-          { id: 1, domain: "initialIdentityDomain", legacyId: "legacyId" },
-          { id: 2 },
-          { id: 3 }
-        ]);
+        expect(requestSentStatusByIndex).toEqual([true, true, true, true]);
+        expect(requests[0].setUseIdThirdPartyDomain).toHaveBeenCalled();
+        expect(requests[1].setUseIdThirdPartyDomain).toHaveBeenCalled();
+        expect(requests[2].setUseIdThirdPartyDomain).not.toHaveBeenCalled();
+        expect(requests[3].setUseIdThirdPartyDomain).not.toHaveBeenCalled();
+        expect(requests[0].getPayload().addIdentity).toHaveBeenCalled();
+        expect(requests[1].getPayload().addIdentity).toHaveBeenCalled();
+        expect(requests[2].getPayload().addIdentity).not.toHaveBeenCalled();
+        expect(requests[3].getPayload().addIdentity).not.toHaveBeenCalled();
       });
   });
 
@@ -180,7 +191,7 @@ describe("Identity::injectEnsureSingleIdentity", () => {
       });
   });
 
-  it("sends a message if we have an identity cookie", () => {
+  it("sends a request without third-party domain or legacy ECID if we have an identity cookie", () => {
     doesIdentityCookieExistBoolean = true;
     setup();
     return Promise.resolve()
@@ -189,8 +200,9 @@ describe("Identity::injectEnsureSingleIdentity", () => {
         return flushPromiseChains();
       })
       .then(() => {
-        expect(requestsSentYet).toEqual([true]);
-        expect(payloads).toEqual([{ id: 0 }]);
+        expect(requestSentStatusByIndex).toEqual([true]);
+        expect(requests[0].setUseIdThirdPartyDomain).not.toHaveBeenCalled();
+        expect(requests[0].getPayload().addIdentity).not.toHaveBeenCalled();
       });
   });
 
