@@ -151,7 +151,8 @@ if (instanceNames) {
             handleError: injectHandleError({
               errorPrefix: `[${instanceName}] [${componentName}]`,
               logger: componentLogger
-            })
+            }),
+            createNamespacedStorage
           };
         }
       });

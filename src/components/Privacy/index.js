@@ -12,14 +12,16 @@ governing permissions and limitations under the License.
 
 import { createTaskQueue, cookieJar } from "../../utils";
 import createComponent from "./createComponent";
+import createConsentHashStore from "./createConsentHashStore";
 import createConsentRequestPayload from "./createConsentRequestPayload";
 import createConsentRequest from "./createConsentRequest";
 import injectReadStoredConsent from "./injectReadStoredConsent";
 import injectSendSetConsentRequest from "./injectSendSetConsentRequest";
 import parseConsentCookie from "./parseConsentCookie";
 import validateSetConsentOptions from "./validateSetConsentOptions";
+import injectDoesIdentityCookieExist from "../Identity/injectDoesIdentityCookieExist";
 
-const createPrivacy = ({ config, consent, sendEdgeNetworkRequest }) => {
+const createPrivacy = ({ config, consent, sendEdgeNetworkRequest, createNamespacedStorage }) => {
   const { orgId, defaultConsent } = config;
   const readStoredConsent = injectReadStoredConsent({
     parseConsentCookie,
@@ -32,6 +34,10 @@ const createPrivacy = ({ config, consent, sendEdgeNetworkRequest }) => {
     createConsentRequest,
     sendEdgeNetworkRequest
   });
+  const storage = createNamespacedStorage(`consentHashes.${orgId}.`);
+  const consentHashStore = createConsentHashStore({ storage: storage.persistent });
+
+  const doesIdentityCookieExist = injectDoesIdentityCookieExist({ orgId });
 
   return createComponent({
     readStoredConsent,
@@ -39,7 +45,9 @@ const createPrivacy = ({ config, consent, sendEdgeNetworkRequest }) => {
     defaultConsent,
     consent,
     sendSetConsentRequest,
-    validateSetConsentOptions
+    validateSetConsentOptions,
+    consentHashStore,
+    doesIdentityCookieExist
   });
 };
 

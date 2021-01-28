@@ -42,6 +42,19 @@ const getStorageByType = (context, storageType, namespace) => {
       } catch (e) {
         return false;
       }
+    },
+    /**
+     * Clear all values in storage that match the namespace.
+     */
+    clear() {
+      try {
+        Object.keys(context[storageType]).forEach(key => {
+          if (key.startsWith(namespace)) {
+            context[storageType].removeItem(key);
+          }
+        });
+      } catch (e) {
+      }
     }
   };
 };

@@ -27,9 +27,6 @@ export default () => {
   payload.setConsent = consent => {
     content.consent = consent;
   };
-  payload.setConsentHash = consentHash => {
-    content.consentHash = consentHash;
-  };
 
   return payload;
 };

@@ -11,8 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { assign } from "../../utils";
-import { GENERAL, CONSENT_HASH } from "../../constants/consentPurpose";
-import computeConsentHash from "./computeConsentHash";
+import { GENERAL } from "../../constants/consentPurpose";
 
 export default ({
   readStoredConsent,
@@ -20,38 +19,32 @@ export default ({
   defaultConsent,
   consent,
   sendSetConsentRequest,
-  validateSetConsentOptions
+  validateSetConsentOptions,
+  consentHashStore,
+  doesIdentityCookieExist
 }) => {
-  let consentHash;
+  const identityCookieExists = doesIdentityCookieExist();
+  const consentCookieExists = readStoredConsent()[GENERAL] !== undefined;
+  if (!identityCookieExists || !consentCookieExists) {
+    consentHashStore.clear();
+  }
 
-  const initializeConsent = () => {
-    const {
-      [CONSENT_HASH]: storedConsentHash,
-      ...storedConsentByPurpose
-    } = readStoredConsent();
-    const consentByPurpose = assign(
-      { [GENERAL]: defaultConsent },
-      storedConsentByPurpose
-    );
-    consentHash = storedConsentHash;
-    consent.setConsent(consentByPurpose);
-  };
+  const consentByPurpose = assign(
+    { [GENERAL]: defaultConsent },
+    readStoredConsent()
+  );
+  consent.setConsent(consentByPurpose);
 
   const readCookieIfQueueEmpty = () => {
-    const {
-      [CONSENT_HASH]: storedConsentHash,
-      ...storedConsentByPurpose
-    } = readStoredConsent();
-
-    consentHash = storedConsentHash;
-    // setting the consent will flush the pending queue of events.
-    // we only want to do that if there aren't any pending setConsent calls
     if (taskQueue.length === 0) {
-      consent.setConsent(storedConsentByPurpose);
+      const storedConsent = readStoredConsent();
+      // Only read cookies when there are no outstanding setConsent
+      // requests. This helps with race conditions.
+      if (storedConsent) {
+        consent.setConsent(storedConsent);
+      }
     }
   };
-
-  initializeConsent();
 
   return {
     commands: {
@@ -59,23 +52,19 @@ export default ({
         optionsValidator: validateSetConsentOptions,
         run: ({ consent: consentOptions, identityMap }) => {
           consent.suspend();
+          const consentHashes = consentHashStore.lookup(consentOptions);
           return taskQueue
             .addTask(() => {
-              const newConsentHash = computeConsentHash(consentOptions);
-              if (consentHash === undefined || consentHash !== newConsentHash) {
+              if (consentHashes.isNew()) {
                 return sendSetConsentRequest({
                   consentOptions,
-                  identityMap,
-                  newConsentHash
+                  identityMap
                 });
               }
               return Promise.resolve();
             })
-            .catch(error => {
-              readCookieIfQueueEmpty();
-              throw error;
-            })
-            .then(readCookieIfQueueEmpty);
+            .then(() => consentHashes.save())
+            .finally(readCookieIfQueueEmpty)
         }
       }
     },

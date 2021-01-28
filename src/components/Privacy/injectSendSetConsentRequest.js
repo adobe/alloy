@@ -16,7 +16,7 @@ export default ({
   createConsentRequestPayload,
   createConsentRequest,
   sendEdgeNetworkRequest
-}) => ({ consentOptions, identityMap, newConsentHash }) => {
+}) => ({ consentOptions, identityMap }) => {
   const payload = createConsentRequestPayload();
   payload.setConsent(consentOptions);
   if (isObject(identityMap)) {
@@ -25,9 +25,6 @@ export default ({
         payload.addIdentity(key, identity);
       });
     });
-  }
-  if (newConsentHash !== undefined) {
-    payload.setConsentHash(newConsentHash);
   }
   const request = createConsentRequest(payload);
   return sendEdgeNetworkRequest({
