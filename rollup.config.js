@@ -27,7 +27,7 @@ const baseCode = process.env.BASE_CODE;
 // Build the npm package local rollup file? (This is used to test the npm package in functional tests)
 const npmPackageLocal = process.env.NPM_PACKAGE_LOCAL;
 
-const destDirectory = sandbox ? "sandbox/public" : "dist/";
+const destDirectory = sandbox ? "sandbox/public/" : "dist/";
 
 const minifiedExtension = minify ? ".min" : "";
 
