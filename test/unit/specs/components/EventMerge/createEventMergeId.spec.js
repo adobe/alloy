@@ -10,7 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// The __VERSION__ keyword will be replace at alloy build time with the package.json version.
-// see babel-plugin-version
+import createEventMergeId from "../../../../../src/components/EventMerge/createEventMergeId";
+import uuidV4Regex from "../../../constants/uuidV4Regex";
 
-export default "__VERSION__";
+describe("EventMerge:createEventMergeId", () => {
+  it("returns a UUID v4-compliant Id", () => {
+    expect(uuidV4Regex.test(createEventMergeId().eventMergeId)).toBe(true);
+  });
+
+  it("doesn't return any other fields in the response", () => {
+    expect(Object.keys(createEventMergeId())).toEqual(["eventMergeId"]);
+  });
+});

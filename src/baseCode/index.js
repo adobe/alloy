@@ -33,7 +33,7 @@ governing permissions and limitations under the License.
  * particularly sensitive to base code size.
  */
 
-(function(window, instanceNames) {
+export default (window, instanceNames) => {
   instanceNames.forEach(function(instanceName) {
     if (!window[instanceName]) {
       // __alloyNS stores a name of each "instance", or in other words, each
@@ -41,8 +41,7 @@ governing permissions and limitations under the License.
       // what the Alloy library will consult once it is loaded to determine
       // which global functions have been set up so that is can connect them to
       // the library's command processing pipeline.
-      window.__alloyNS = window.__alloyNS || [];
-      window.__alloyNS.push(instanceName);
+      (window.__alloyNS = window.__alloyNS || []).push(instanceName);
       window[instanceName] = function() {
         var userProvidedArgs = arguments;
         // Always return a promise, because the command may be executed
@@ -59,4 +58,4 @@ governing permissions and limitations under the License.
       window[instanceName].q = [];
     }
   });
-})(window, ["alloy"]);
+};

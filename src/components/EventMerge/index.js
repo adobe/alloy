@@ -10,40 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { uuid } from "../../utils";
-import { callback } from "../../utils/validation";
+import createEventMergeId from "./createEventMergeId";
+import createComponent from "./createComponent";
 
-const generateEventMergeIdResult = () => {
-  return {
-    eventMergeId: uuid()
-  };
-};
-
-const createEventMerge = ({ config }) => {
-  // #if _REACTOR
-  // This is a way for the Event Merge ID data element in the Reactor extension
-  // to get an event merge ID synchronously since data elements are required
-  // to be synchronous.
-  config.reactorRegisterCreateEventMergeId(generateEventMergeIdResult);
-  // #endif
-
-  return {
-    commands: {
-      createEventMergeId: {
-        run: generateEventMergeIdResult
-      }
-    }
-  };
+const createEventMerge = () => {
+  return createComponent({ createEventMergeId });
 };
 
 createEventMerge.namespace = "EventMerge";
 createEventMerge.configValidators = {};
-
-// #if _REACTOR
-// Not much need to validate since we are our own consumer.
-createEventMerge.configValidators.reactorRegisterCreateEventMergeId = callback().default(
-  () => {}
-);
-// #endif
 
 export default createEventMerge;

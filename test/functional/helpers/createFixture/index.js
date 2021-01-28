@@ -6,11 +6,13 @@ export default ({
   url = testPageUrl,
   requestHooks = [],
   includeAlloyLibrary = true,
-  includeVisitorLibrary = false
+  includeVisitorLibrary = false,
+  includeNpmLibrary = false
 }) => {
   const clientScripts = getFixtureClientScripts({
     includeAlloyLibrary,
-    includeVisitorLibrary
+    includeVisitorLibrary,
+    includeNpmLibrary
   });
   return fixture(title)
     .page(url)

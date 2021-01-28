@@ -14,4 +14,10 @@ governing permissions and limitations under the License.
  * Patterns of source files (files within the src directory) that should be
  * ignored for test coverage checks and reporting.
  */
-module.exports = ["**/.*", "**/constants/**", "**/index.js"];
+module.exports = [
+  "**/.*",
+  "**/constants/**",
+  "**/index.js",
+  "baseCode.js",
+  "standalone.js"
+];

@@ -28,10 +28,11 @@ const remotePromisePolyfillPath =
   "https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js";
 const remoteVisitorLibraryUrl =
   "https://github.com/Adobe-Marketing-Cloud/id-service/releases/latest/download/visitorapi.min.js";
-const baseCodePath = path.join(__dirname, "../../../../src/baseCode/index.js");
-const localAlloyLibraryPath = path.join(
+const baseCodePath = path.join(__dirname, "../../../../distTest/baseCode.js");
+const localAlloyLibraryPath = path.join(__dirname, "../../../../dist/alloy.js");
+const localNpmLibraryPath = path.join(
   __dirname,
-  "../../../../dist/standalone/alloy.js"
+  "../../../../distTest/npmPackageLocal.js"
 );
 const remoteAlloyLibraryUrl =
   "https://cdn1.adoberesources.net/alloy/latest/alloy.js";
@@ -44,6 +45,16 @@ const getLocalAlloyCode = () => {
   // readCache caches file content until the file is modified, at which
   // point it will retrieve fresh file content, cache it, and return it.
   return readCache.sync(localAlloyLibraryPath, "utf8");
+};
+// This is the javascript built from src/index.js which does not include the
+// baseCode, but exposes a createInstance function.
+const getLocalNpmLibraryCode = () => {
+  return readCache.sync(localNpmLibraryPath, "utf8");
+};
+// This is the javascript built from the production @adobe/alloy npm Library
+const getProdNpmLibraryCode = () => {
+  // TODO: use the production NPM package once it is published
+  return readCache.sync(localNpmLibraryPath, "utf8");
 };
 
 const injectInlineScript = ClientFunction(code => {
@@ -111,6 +122,12 @@ const getFixtureClientScriptsForInt = options => {
     });
   }
 
+  if (options.includeNpmLibrary) {
+    clientScripts.push({
+      content: getLocalNpmLibraryCode()
+    });
+  }
+
   return clientScripts;
 };
 
@@ -148,6 +165,11 @@ const getFixtureClientScriptsForProd = options => {
     });
   }
 
+  if (options.includeNpmLibrary) {
+    clientScripts.push({
+      content: getProdNpmLibraryCode()
+    });
+  }
   return clientScripts;
 };
 

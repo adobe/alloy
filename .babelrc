@@ -3,7 +3,6 @@
     [
       "@babel/preset-env",
       {
-        "modules": false,
         "targets": {
           "browsers": [
             "last 2 Chrome versions",
@@ -20,5 +19,29 @@
       "loose": true
     }],
     "version"
-  ]
+  ],
+  "env": {
+    "rollup": {
+      "presets": [
+        [
+          "@babel/preset-env",
+          {
+            "modules": false
+          }
+        ]
+      ]
+    },
+    "npm": {
+      "ignore": [
+        "src/baseCode.js",
+        "src/standalone.js"
+      ],
+      "plugins": [
+        ["@babel/plugin-transform-modules-commonjs", {
+          "strict": true,
+          "noInterop": true
+        }]
+      ]
+    }
+  }
 }
