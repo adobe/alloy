@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { cookieJar, getNamespacedCookieName } from "../../utils";
-import { IDENTITY } from "../../constants/cookieNameKey";
+import { cookieJar, getNamespacedCookieName } from ".";
+import { IDENTITY } from "../constants/cookieNameKey";
 
 export default ({ orgId }) => {
   const identityCookieName = getNamespacedCookieName(orgId, IDENTITY);

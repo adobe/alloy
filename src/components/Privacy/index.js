@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createTaskQueue, cookieJar } from "../../utils";
+import { createTaskQueue, cookieJar, injectDoesIdentityCookieExist } from "../../utils";
 import createComponent from "./createComponent";
 import createConsentHashStore from "./createConsentHashStore";
 import createConsentRequestPayload from "./createConsentRequestPayload";
@@ -19,7 +19,6 @@ import injectReadStoredConsent from "./injectReadStoredConsent";
 import injectSendSetConsentRequest from "./injectSendSetConsentRequest";
 import parseConsentCookie from "./parseConsentCookie";
 import validateSetConsentOptions from "./validateSetConsentOptions";
-import injectDoesIdentityCookieExist from "../Identity/injectDoesIdentityCookieExist";
 
 const createPrivacy = ({ config, consent, sendEdgeNetworkRequest, createNamespacedStorage }) => {
   const { orgId, defaultConsent } = config;

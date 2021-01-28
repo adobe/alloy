@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 
 import {
   fireReferrerHideableImage,
-  areThirdPartyCookiesSupportedByDefault
+  areThirdPartyCookiesSupportedByDefault,
+  injectDoesIdentityCookieExist
 } from "../../utils";
 import injectProcessIdSyncs from "./injectProcessIdSyncs";
 import configValidators from "./configValidators";
@@ -24,7 +25,6 @@ import injectGetEcidFromVisitor from "./visitorService/injectGetEcidFromVisitor"
 import injectHandleResponseForIdSyncs from "./injectHandleResponseForIdSyncs";
 import injectEnsureSingleIdentity from "./injectEnsureSingleIdentity";
 import addEcidQueryToPayload from "./addEcidQueryToPayload";
-import injectDoesIdentityCookieExist from "./injectDoesIdentityCookieExist";
 import injectSetDomainForInitialIdentityPayload from "./injectSetDomainForInitialIdentityPayload";
 import injectAddLegacyEcidToPayload from "./injectAddLegacyEcidToPayload";
 import addEcidToPayload from "./addEcidToPayload";

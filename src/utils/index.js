@@ -41,6 +41,7 @@ export { default as getLastArrayItems } from "./getLastArrayItems";
 export { default as getNamespacedCookieName } from "./getNamespacedCookieName";
 export { default as groupBy } from "./groupBy";
 export { default as includes } from "./includes";
+export { default as injectDoesIdentityCookieExist } from "./injectDoesIdentityCookieExist";
 export { default as intersection } from "./intersection";
 export { default as isBoolean } from "./isBoolean";
 export { default as isEmptyObject } from "./isEmptyObject";
