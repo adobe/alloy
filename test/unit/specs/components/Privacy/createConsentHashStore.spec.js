@@ -24,7 +24,7 @@ const CONSENT_OUT = {
   value: { general: "out" }
 };
 
-fdescribe("createConsentHashStore", () => {
+describe("createConsentHashStore", () => {
   let storage;
   let subject;
   beforeEach(() => {
