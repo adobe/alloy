@@ -23,16 +23,16 @@ export default ({
   consentHashStore,
   doesIdentityCookieExist
 }) => {
+  let consentByPurpose = { [GENERAL]: defaultConsent };
+
   const identityCookieExists = doesIdentityCookieExist();
   const consentCookieExists = readStoredConsent()[GENERAL] !== undefined;
   if (!identityCookieExists || !consentCookieExists) {
     consentHashStore.clear();
+  } else {
+    consentByPurpose = assign(consentByPurpose, readStoredConsent());
   }
 
-  const consentByPurpose = assign(
-    { [GENERAL]: defaultConsent },
-    readStoredConsent()
-  );
   consent.setConsent(consentByPurpose);
 
   const readCookieIfQueueEmpty = () => {
@@ -64,7 +64,7 @@ export default ({
               return Promise.resolve();
             })
             .then(() => consentHashes.save())
-            .finally(readCookieIfQueueEmpty)
+            .finally(readCookieIfQueueEmpty);
         }
       }
     },

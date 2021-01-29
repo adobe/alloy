@@ -98,3 +98,31 @@ export const IAB_NO_ADOBE_VENDOR = {
     }
   ]
 };
+
+export const ADOBE2_IN = {
+  consent: [
+    {
+      standard: "Adobe",
+      version: "2.0",
+      value: {
+        collect: {
+          val: "y"
+        }
+      }
+    }
+  ]
+};
+
+export const ADOBE2_OUT = {
+  consent: [
+    {
+      standard: "Adobe",
+      version: "2.0",
+      value: {
+        collect: {
+          val: "n"
+        }
+      }
+    }
+  ]
+};
