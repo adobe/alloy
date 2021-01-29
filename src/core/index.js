@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createInstance from "./createInstance";
+import createInstanceFunction from "./createInstanceFunction";
 import { getApexDomain, injectStorage, cookieJar, isFunction } from "../utils";
 import createLogController from "./createLogController";
 import createLifecycle from "./createLifecycle";
@@ -41,9 +41,6 @@ import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsA
 import validateNetworkResponseIsWellFormed from "./edgeNetwork/validateNetworkResponseIsWellFormed";
 import isRetryableHttpStatusCode from "./network/isRetryableHttpStatusCode";
 
-// eslint-disable-next-line no-underscore-dangle
-const instanceNames = window.__alloyNS;
-
 const createNamespacedStorage = injectStorage(window);
 
 const { console, fetch, navigator, XMLHttpRequest } = window;
@@ -58,124 +55,137 @@ const sendFetchRequest = isFunction(fetch)
   ? injectSendFetchRequest({ fetch })
   : injectSendXhrRequest({ XMLHttpRequest });
 
-if (instanceNames) {
-  instanceNames.forEach(instanceName => {
-    const {
-      setDebugEnabled,
+export const createExecuteCommand = ({
+  instanceName,
+  logController: { setDebugEnabled, logger, createComponentLogger }
+}) => {
+  const componentRegistry = createComponentRegistry();
+  const lifecycle = createLifecycle(componentRegistry);
+
+  const setDebugCommand = options => {
+    setDebugEnabled(options.enabled, { fromConfig: false });
+  };
+
+  const configureCommand = options => {
+    const config = buildAndValidateConfig({
+      options,
+      componentCreators,
+      coreConfigValidators,
+      createConfig,
       logger,
-      createComponentLogger
-    } = createLogController({
-      console,
-      locationSearch: window.location.search,
-      createLogger,
-      instanceName,
-      createNamespacedStorage,
-      getMonitors
+      setDebugEnabled
     });
-    const componentRegistry = createComponentRegistry();
-    const lifecycle = createLifecycle(componentRegistry);
-
-    const setDebugCommand = options => {
-      setDebugEnabled(options.enabled, { fromConfig: false });
-    };
-
-    const configureCommand = options => {
-      const config = buildAndValidateConfig({
-        options,
-        componentCreators,
-        coreConfigValidators,
-        createConfig,
-        logger,
-        setDebugEnabled
-      });
-      const cookieTransfer = createCookieTransfer({
-        cookieJar,
-        orgId: config.orgId,
-        apexDomain
-      });
-      const sendBeaconRequest = isFunction(navigator.sendBeacon)
-        ? injectSendBeaconRequest({
-            // Without the bind(), the browser will complain about an
-            // illegal invocation.
-            sendBeacon: navigator.sendBeacon.bind(navigator),
-            sendFetchRequest,
-            logger
-          })
-        : sendFetchRequest;
-      const sendNetworkRequest = injectSendNetworkRequest({
-        logger,
-        sendFetchRequest,
-        sendBeaconRequest,
-        isRetryableHttpStatusCode
-      });
-      const processWarningsAndErrors = injectProcessWarningsAndErrors({
-        logger
-      });
-      const sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
-        config,
-        lifecycle,
-        cookieTransfer,
-        sendNetworkRequest,
-        createResponse,
-        processWarningsAndErrors,
-        validateNetworkResponseIsWellFormed
-      });
-      const generalConsentState = createConsentStateMachine();
-      const consent = createConsent({
-        generalConsentState,
-        logger
-      });
-      const eventManager = createEventManager({
-        config,
-        logger,
-        lifecycle,
-        consent,
-        createEvent,
-        createDataCollectionRequestPayload,
-        createDataCollectionRequest,
-        sendEdgeNetworkRequest
-      });
-      return initializeComponents({
-        componentCreators,
-        lifecycle,
-        componentRegistry,
-        getImmediatelyAvailableTools(componentName) {
-          const componentLogger = createComponentLogger(componentName);
-          return {
-            config,
-            consent,
-            eventManager,
-            logger: componentLogger,
-            lifecycle,
-            sendEdgeNetworkRequest,
-            handleError: injectHandleError({
-              errorPrefix: `[${instanceName}] [${componentName}]`,
-              logger: componentLogger
-            }),
-            createNamespacedStorage
-          };
-        }
-      });
-    };
-
-    const handleError = injectHandleError({
-      errorPrefix: `[${instanceName}]`,
+    const cookieTransfer = createCookieTransfer({
+      cookieJar,
+      orgId: config.orgId,
+      apexDomain
+    });
+    const sendBeaconRequest = isFunction(navigator.sendBeacon)
+      ? injectSendBeaconRequest({
+          // Without the bind(), the browser will complain about an
+          // illegal invocation.
+          sendBeacon: navigator.sendBeacon.bind(navigator),
+          sendFetchRequest,
+          logger
+        })
+      : sendFetchRequest;
+    const sendNetworkRequest = injectSendNetworkRequest({
+      logger,
+      sendFetchRequest,
+      sendBeaconRequest,
+      isRetryableHttpStatusCode
+    });
+    const processWarningsAndErrors = injectProcessWarningsAndErrors({
       logger
     });
-
-    const executeCommand = injectExecuteCommand({
-      logger,
-      configureCommand,
-      setDebugCommand,
-      handleError,
-      validateCommandOptions
+    const sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
+      config,
+      lifecycle,
+      cookieTransfer,
+      sendNetworkRequest,
+      createResponse,
+      processWarningsAndErrors,
+      validateNetworkResponseIsWellFormed
     });
 
-    const instance = createInstance(executeCommand);
+    const generalConsentState = createConsentStateMachine();
+    const consent = createConsent({
+      generalConsentState,
+      logger
+    });
+    const eventManager = createEventManager({
+      config,
+      logger,
+      lifecycle,
+      consent,
+      createEvent,
+      createDataCollectionRequestPayload,
+      createDataCollectionRequest,
+      sendEdgeNetworkRequest
+    });
+    return initializeComponents({
+      componentCreators,
+      lifecycle,
+      componentRegistry,
+      getImmediatelyAvailableTools(componentName) {
+        const componentLogger = createComponentLogger(componentName);
+        return {
+          config,
+          consent,
+          eventManager,
+          logger: componentLogger,
+          lifecycle,
+          sendEdgeNetworkRequest,
+          handleError: injectHandleError({
+            errorPrefix: `[${instanceName}] [${componentName}]`,
+            logger: componentLogger
+          }),
+          createNamespacedStorage
+        };
+      }
+    });
+  };
 
-    const queue = window[instanceName].q;
-    queue.push = instance;
-    logger.logOnInstanceCreated({ instance });
-    queue.forEach(instance);
+  const handleError = injectHandleError({
+    errorPrefix: `[${instanceName}]`,
+    logger
   });
-}
+
+  const executeCommand = injectExecuteCommand({
+    logger,
+    configureCommand,
+    setDebugCommand,
+    handleError,
+    validateCommandOptions
+  });
+  return executeCommand;
+};
+
+export default () => {
+  // eslint-disable-next-line no-underscore-dangle
+  const instanceNames = window.__alloyNS;
+
+  if (instanceNames) {
+    instanceNames.forEach(instanceName => {
+      const logController = createLogController({
+        console,
+        locationSearch: window.location.search,
+        createLogger,
+        instanceName,
+        createNamespacedStorage,
+        getMonitors
+      });
+
+      const executeCommand = createExecuteCommand({
+        instanceName,
+        logController
+      });
+      const instance = createInstanceFunction(executeCommand);
+
+      const queue = window[instanceName].q;
+      queue.push = instance;
+      logController.logger.logOnInstanceCreated({ instance });
+      queue.forEach(instance);
+    });
+  }
+};

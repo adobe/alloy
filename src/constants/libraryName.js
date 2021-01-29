@@ -10,8 +10,4 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/* #if _REACTOR
-export default "https://ns.adobe.com/experience/alloy/reactor";
-//#else */
 export default "https://ns.adobe.com/experience/alloy";
-// #endif

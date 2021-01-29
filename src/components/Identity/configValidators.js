@@ -10,16 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, callback } from "../../utils/validation";
+import { boolean } from "../../utils/validation";
 
 const configValidators = {
   thirdPartyCookiesEnabled: boolean().default(true),
   idMigrationEnabled: boolean().default(true)
 };
-
-// #if _REACTOR
-// Not much need to validate since we are our own consumer.
-configValidators.reactorRegisterGetEcid = callback().default(() => {});
-// #endif
 
 export default configValidators;

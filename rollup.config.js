@@ -11,110 +11,118 @@ governing permissions and limitations under the License.
 */
 
 import path from "path";
-import jscc from "rollup-plugin-jscc";
 import resolve from "rollup-plugin-node-resolve";
 import commonjs from "rollup-plugin-commonjs";
 import babel from "rollup-plugin-babel";
 import { terser } from "rollup-plugin-terser";
 import license from "rollup-plugin-license";
 
-const buildTargets = {
-  PROD_STANDALONE: "prodStandalone",
-  PROD_REACTOR: "prodReactor",
-  DEV: "dev"
-};
-
-const destDirectoryByBuildTarget = {
-  [buildTargets.PROD_STANDALONE]: "dist/standalone/",
-  [buildTargets.PROD_REACTOR]: "dist/reactor/",
-  [buildTargets.DEV]: "sandbox/public/"
-};
-
-const buildTarget = process.env.BUILD || buildTargets.DEV;
+// Boolean Environment Options:
+// Should the output files be minified?
 const minify = process.env.MINIFY;
-const destDirectory = destDirectoryByBuildTarget[buildTarget];
+// If true, output files to sandbox, if false output files to dist/
+const sandbox = process.env.SANDBOX;
+// Build the base code file?
+const baseCode = process.env.BASE_CODE;
+// Build the npm package local rollup file? (This is used to test the npm package in functional tests)
+const npmPackageLocal = process.env.NPM_PACKAGE_LOCAL;
+
+const destDirectory = sandbox ? "sandbox/public/" : "dist/";
 
 const minifiedExtension = minify ? ".min" : "";
 
-const plugins = [
-  jscc({
-    values: {
-      _DEV: buildTarget === buildTargets.DEV,
-      _REACTOR: buildTarget === buildTargets.PROD_REACTOR
-    }
-  }),
-  resolve({
-    preferBuiltins: false,
-    // Support the browser field in dependencies' package.json.
-    // Useful for the uuid package.
-    mainFields: ["module", "main", "browser"]
-  }),
-  commonjs(),
-  babel()
-];
+const BASE_CODE = "baseCode";
+const STANDALONE = "standalone";
+const NPM_PACKAGE_LOCAL = "npmPackageLocal";
 
-if (minify) {
-  plugins.push(terser());
-}
+const buildPlugins = version => {
+  const plugins = [
+    resolve({
+      preferBuiltins: false,
+      // Support the browser field in dependencies' package.json.
+      // Useful for the uuid package.
+      mainFields: ["module", "main", "browser"]
+    }),
+    commonjs(),
+    babel({ envName: "rollup" })
+  ];
 
-if (buildTarget !== buildTargets.DEV) {
-  plugins.push(
-    license({
-      banner: {
-        content: {
-          file: path.join(__dirname, "LICENSE_BANNER")
+  if (minify && version === BASE_CODE) {
+    plugins.push(
+      terser({
+        mangle: true,
+        compress: {
+          unused: true
+        },
+        output: {
+          wrap_func_args: false
+        },
+        toplevel: true
+      })
+    );
+  }
+  if (minify && version !== BASE_CODE) {
+    plugins.push(terser());
+  }
+
+  if (!sandbox && version === STANDALONE) {
+    plugins.push(
+      license({
+        banner: {
+          content: {
+            file: path.join(__dirname, "LICENSE_BANNER")
+          }
         }
+      })
+    );
+  }
+
+  return plugins;
+};
+
+const config = [];
+
+if (baseCode) {
+  config.push({
+    input: "src/baseCode.js",
+    output: [
+      {
+        file: `distTest/baseCode${minifiedExtension}.js`,
+        format: "cjs",
+        strict: false
       }
-    })
-  );
+    ],
+    plugins: buildPlugins(BASE_CODE)
+  });
 }
 
-const config = {
-  input: "src/core/index.js",
+config.push({
+  input: "src/standalone.js",
   output: [
     {
       file: `${destDirectory}alloy${minifiedExtension}.js`,
-      // For the Reactor-specific build, we need to use the CommonJS format
-      // for output instead of IIFE, otherwise Rollup doesn't know whether the
-      // "external" modules (as defined elsewhere in this configuration) are
-      // coming from global variables or from another CommonJS bundler, so
-      // it adds a bunch of cruft to accommodate and logs build warnings.
-      // Because we have to use the CommonJS format for the Reactor-specific
-      // build, we can't just use an "intro" that looks like:
-      // if (IE less than version 11) {
-      //   console.warn("unsupported browser");
-      //   return;
-      // }
-      // because you can't "return" from a CommonJS module. Therefore, we have
-      // to do an if-else for an "intro" and "outro".
-      // If we do an if-else, we're not compliant with strict mode, because
-      // babel inserts its function declarations directly inside our if-else.
-      // Because function declarations are not allowed directly within an
-      // if-else in strict mode, we need to wrap babel's
-      // function declarations (and our own code) inside an IIFE.
-      // So, what we end up with is output using "format: cjs" but with an
-      // appropriate intro and outro that provides browser checking and an
-      // IIFE. This works for both Reactor-specific and standalone use cases.
-      format: "cjs",
-      // Allow non-IE browsers and IE11
-      // document.documentMode was added in IE8, and is specific to IE.
-      // IE7 and lower are not ES5 compatible so will get a parse error loading
-      // the library.
+      format: "iife",
       intro:
         "if (document.documentMode && document.documentMode < 11) {\n" +
         "  console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.');\n" +
-        "} else {\n" +
-        "  (function() {",
-      outro: "  })();\n}"
+        "  return;\n" +
+        "}\n"
     }
   ],
-  plugins
-};
+  plugins: buildPlugins(STANDALONE)
+});
 
-// If we're building for Reactor, we'll use Reactor's core modules
-// (named @adobe/reactor-*) instead of including the packages directly.
-if (buildTarget === buildTargets.PROD_REACTOR) {
-  config.external = name => /^@adobe\/reactor-/.test(name);
+if (npmPackageLocal) {
+  config.push({
+    input: "test/functional/helpers/npmPackageLocal.js",
+    output: [
+      {
+        file: `distTest/npmPackageLocal${minifiedExtension}.js`,
+        format: "iife"
+      }
+    ],
+    plugins: buildPlugins(NPM_PACKAGE_LOCAL)
+  });
 }
 
 export default config;

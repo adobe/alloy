@@ -8,3 +8,6 @@ sandbox/build
 allure
 logs
 *.log*
+distTest
+libEs5
+libEs6
