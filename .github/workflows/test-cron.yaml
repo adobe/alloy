@@ -7,39 +7,44 @@ on:
 
 jobs:
   alloy-prod-e2e:
-    name: "Prod E2E Tests"
+    name: "Cron: Prod E2E Tests"
     runs-on: ubuntu-latest
+    outputs:
+      previous-tag: ${{ steps.previoustag.outputs.tag }}
     steps:
-    - uses: actions/checkout@v2
-      with:
-        ref: "alloy-latest-release"
-    - uses: actions/cache@v2
-      id: npm-cache
-      with:
-        path: '**/node_modules'
-        key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
-    - name: Install dependencies
-      if: steps.npm-cache.outputs.cache-hit != 'true'
-      run: npm ci
-    - name: 'BrowserStack Env Setup'
-      uses: 'browserstack/github-actions/setup-env@master'
-      with:
-        username:  ${{ secrets.BROWSERSTACK_USERNAME }}
-        access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    - name: 'BrowserStackLocal Setup'
-      uses: 'browserstack/github-actions/setup-local@master'
-      with:
-        local-testing: start
-        local-identifier: random
-    - name: Run TestCafe Tests
-      run: |
-        npm run test:functional:ci:pp
-    - name: 'BrowserStackLocal Stop'
-      uses: 'browserstack/github-actions/setup-local@master'
-      with:
-        local-testing: stop
-    - uses: craftech-io/slack-action@v1
-      with:
-        slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-        status: failure
-      if: failure()
+      - uses: actions/checkout@v2.3.3
+        with:
+          fetch-depth: 0
+      - name: Get previous tag
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+      - uses: actions/cache@v2
+        id: npm-cache
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: 'BrowserStack Env Setup'
+        uses: 'browserstack/github-actions/setup-env@master'
+        with:
+          username:  ${{ secrets.BROWSERSTACK_USERNAME }}
+          access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      - name: 'BrowserStackLocal Setup'
+        uses: 'browserstack/github-actions/setup-local@master'
+        with:
+          local-testing: start
+          local-identifier: random
+      - name: Run TestCafe Tests
+        run: |
+          npm run test:functional:ci:pp
+      - name: 'BrowserStackLocal Stop'
+        uses: 'browserstack/github-actions/setup-local@master'
+        with:
+          local-testing: stop
+      - uses: craftech-io/slack-action@v1
+        with:
+          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          status: failure
+        if: failure()
