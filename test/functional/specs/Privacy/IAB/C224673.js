@@ -12,6 +12,7 @@ import {
   consentPending,
   debugEnabled
 } from "../../../helpers/constants/configParts";
+import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies";
 
 const config = compose(
   orgMainConfigMain,
@@ -60,8 +61,7 @@ test("Test C224673: Opt in to IAB while gdprApplies is FALSE", async () => {
   const consentResponse = createResponse(consentRawResponse);
 
   // 1. The set-consent response should contain the Consent cookie: { general: in }
-  const consentCookieName = "kndctr_334F60F35E1597910A495EC2_AdobeOrg_consent";
-  const consentCookieValue = await cookies.get(consentCookieName);
+  const consentCookieValue = await cookies.get(MAIN_CONSENT_COOKIE_NAME);
 
   await t.expect(consentCookieValue).ok("No consent cookie found.");
   await t.expect(consentCookieValue).eql("general=in");

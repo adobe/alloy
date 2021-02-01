@@ -9,6 +9,7 @@ import {
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
+import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
 
 const debugEnabledConfig = compose(
   orgMainConfigMain,
@@ -37,8 +38,6 @@ const triggerAlloyEvents = ClientFunction(() => {
   ]);
 });
 
-const identityCookieName = "kndctr_334F60F35E1597910A495EC2_AdobeOrg_identity";
-
 test("Test C2581: Queue requests until we receive an ECID.", async () => {
   await configureAlloyInstance("alloy", debugEnabledConfig);
   await triggerAlloyEvents();
@@ -46,6 +45,6 @@ test("Test C2581: Queue requests until we receive an ECID.", async () => {
   await t
     .expect(interactHook.haveRequestsBeenSequential())
     .ok("Interact requests were not sequential");
-  const identityCookieValue = await cookies.get(identityCookieName);
+  const identityCookieValue = await cookies.get(MAIN_IDENTITY_COOKIE_NAME);
   await t.expect(identityCookieValue).ok("No identity cookie found.");
 });

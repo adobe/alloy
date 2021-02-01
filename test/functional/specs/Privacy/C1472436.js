@@ -8,6 +8,7 @@ import cookies from "../../helpers/cookies";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const { ADOBE2_IN } = require("../../helpers/constants/consent");
+const { MAIN_CONSENT_COOKIE_NAME } = require("../../helpers/constants/cookies");
 
 const networkLogger = createNetworkLogger();
 
@@ -41,7 +42,7 @@ test("C1472436: Set-consent is called when consent cookie is missing even though
 
   // delete consent cookie, and reload
   await reloadPage();
-  await cookies.drop("kndctr_334F60F35E1597910A495EC2_AdobeOrg_consent");
+  await cookies.drop(MAIN_CONSENT_COOKIE_NAME);
   await alloy.configure(configuration);
 
   // try to send an event, but it should be queued

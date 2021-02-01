@@ -23,6 +23,7 @@ import { FIRST_PARTY_DOMAIN } from "../../helpers/constants/domain";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../../../src/core/createResponse";
 import areThirdPartyCookiesSupported from "../../helpers/areThirdPartyCookiesSupported";
+import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
 
 const executeEventCommand = ClientFunction(() => {
   return window.alloy("sendEvent");
@@ -31,8 +32,6 @@ const executeEventCommand = ClientFunction(() => {
 const demdexHostRegex = /\.demdex\.net/;
 
 const getHostFor = requestLogger => requestLogger.request.headers.host;
-
-const identityCookieName = "kndctr_334F60F35E1597910A495EC2_AdobeOrg_identity";
 
 const config = compose(
   orgMainConfigMain,
@@ -71,7 +70,7 @@ test("C148846 - Setting edgeDomain to CNAME results in server calls to this CNAM
   const cnameStateHandle = alloyCnameResponse.getPayloadsByType("state:store");
 
   const demdexResponseContainsIdentityCookie = demdexStateHandle.find(h => {
-    return h.key.includes(identityCookieName);
+    return h.key.includes(MAIN_IDENTITY_COOKIE_NAME);
   });
 
   const hostForFirstRequest = getHostFor(firstRequest);
@@ -95,10 +94,10 @@ test("C148846 - Setting edgeDomain to CNAME results in server calls to this CNAM
   // Expects the CNAME response header to contain the Konductor state.
   await t
     .expect(secondRequest.request.headers.cookie)
-    .contains(identityCookieName);
+    .contains(MAIN_IDENTITY_COOKIE_NAME);
   await t.expect(cnameStateHandle.length).eql(0);
   await t.expect(secondRequest.response.headers["set-cookie"]).ok();
   await t
     .expect(secondRequest.response.headers["set-cookie"][0])
-    .contains(identityCookieName);
+    .contains(MAIN_IDENTITY_COOKIE_NAME);
 });
