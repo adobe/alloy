@@ -1,8 +1,7 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions";
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createResponse from "../../../../src/core/createResponse";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import {
@@ -10,8 +9,9 @@ import {
   orgMainConfigMain,
   consentPending
 } from "../../helpers/constants/configParts";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
-const { CONSENT_OUT } = require("../../helpers/constants/consent");
+import { CONSENT_OUT } from "../../helpers/constants/consent";
 
 const config = compose(
   orgMainConfigMain,
@@ -32,19 +32,11 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const setConsentOut = ClientFunction(
-  () => {
-    return window.alloy("setConsent", CONSENT_OUT);
-  },
-  { dependencies: { CONSENT_OUT } }
-);
-
 test("C28754 - Consenting to no purposes should result in no data handles in the response.", async () => {
-  await configureAlloyInstance("alloy", config);
+  const alloy = createAlloyProxy("alloy");
+  await alloy.configure(config);
 
-  // Revoke consent.
-  await setConsentOut();
-
+  await alloy.setConsent(CONSENT_OUT);
   await responseStatus(networkLogger.setConsentEndpointLogs.requests, 200);
 
   const response = JSON.parse(

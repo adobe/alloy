@@ -1,13 +1,12 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
 import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain";
 import { compose, consentPending } from "../../helpers/constants/configParts";
 import testPageUrl from "../../helpers/constants/testPageUrl";
-
-const { CONSENT_IN } = require("../../helpers/constants/consent");
+import createAlloyProxy from "../../helpers/createAlloyProxy";
+import { CONSENT_IN } from "../../helpers/constants/consent";
 
 const networkLogger = createNetworkLogger();
 
@@ -22,40 +21,38 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const sendEvent = ClientFunction(() => {
-  window.alloy("sendEvent");
-});
-
-const changeHashAndConsent = ClientFunction(
-  () => {
-    window.location.hash = "foo";
-    return window.alloy("setConsent", CONSENT_IN);
-  },
-  { dependencies: { CONSENT_IN } }
-);
-
 const getContextUrlFromRequest = request => {
   const parsedBody = JSON.parse(request.request.body);
   return parsedBody.events[0].xdm.web.webPageDetails.URL;
 };
 
 test("C2660 - Context data is captured before user consents.", async () => {
-  await configureAlloyInstance(
+  const alloy = createAlloyProxy("alloy");
+  await alloy.configure(
     compose(
       orgMainConfigMain,
       consentPending
     )
   );
 
-  await sendEvent();
-  await flushPromiseChains();
-  await changeHashAndConsent();
-  await sendEvent();
+  // send an event that will be queued
+  const sendEventResponse = await alloy.sendEventAsync();
   await flushPromiseChains();
 
-  // expect that we made two requests
+  // change something that will be collected by Context Component
+  await t.eval(() => {
+    window.location.hash = "foo";
+  });
+
+  // set consent to flush the events queue
+  await alloy.setConsent(CONSENT_IN);
+  await sendEventResponse.promise;
+
+  // send another event to make sure the foo hash is collected normally
+  await alloy.sendEvent();
+
+  // expect that context was captured at the right time
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
-
   const requests = networkLogger.edgeEndpointLogs.requests;
   await t.expect(getContextUrlFromRequest(requests[0])).eql(testPageUrl);
   await t

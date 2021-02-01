@@ -1,8 +1,7 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../../helpers/networkLogger";
 import { responseStatus } from "../../../helpers/assertions/index";
 import createFixture from "../../../helpers/createFixture";
-import configureAlloyInstance from "../../../helpers/configureAlloyInstance";
 import createResponse from "../../../../../src/core/createResponse";
 import getResponseBody from "../../../helpers/networkLogger/getResponseBody";
 import cookies from "../../../helpers/cookies";
@@ -12,6 +11,7 @@ import {
   debugEnabled
 } from "../../../helpers/constants/configParts";
 import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies";
+import createAlloyProxy from "../../../helpers/createAlloyProxy";
 
 const config = compose(
   orgMainConfigMain,
@@ -31,28 +31,24 @@ test.meta({
   TEST_RUN: "REGRESSION"
 });
 
-const sendEventWithConsent = ClientFunction(() =>
-  window.alloy("sendEvent", {
-    xdm: {
-      consentStrings: [
-        {
-          consentStandard: "IAB TCF",
-          consentStandardVersion: "2.0",
-          consentStringValue:
-            "CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA",
-          gdprApplies: true,
-          containsPersonalData: false
-        }
-      ]
-    }
-  })
-);
-
-const sendEvent = ClientFunction(() => window.alloy("sendEvent"));
+const eventOptionsWithConsent = {
+  xdm: {
+    consentStrings: [
+      {
+        consentStandard: "IAB TCF",
+        consentStandardVersion: "2.0",
+        consentStringValue: "CO052l-O052l-DGAMBFRACBgAIBAAAAAAIYgEawAQEagAAAA",
+        gdprApplies: true,
+        containsPersonalData: false
+      }
+    ]
+  }
+};
 
 test("Test C224676: Passing a positive Consent in the sendEvent command", async () => {
-  await configureAlloyInstance("alloy", config);
-  await sendEventWithConsent();
+  const alloy = createAlloyProxy("alloy");
+  await alloy.configure(config);
+  await alloy.sendEvent(eventOptionsWithConsent);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
@@ -75,6 +71,6 @@ test("Test C224676: Passing a positive Consent in the sendEvent command", async 
   const identityHandle = response.getPayloadsByType("identity:result");
   await t.expect(identityHandle.length).eql(1);
 
-  await sendEvent();
+  await alloy.sendEvent();
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
 });

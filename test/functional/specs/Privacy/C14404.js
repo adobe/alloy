@@ -1,5 +1,4 @@
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createNetworkLogger from "../../helpers/networkLogger";
 
 import {
@@ -9,8 +8,8 @@ import {
   debugEnabled
 } from "../../helpers/constants/configParts";
 import createConsoleLogger from "../../helpers/consoleLogger";
-
-const { CONSENT_OUT, CONSENT_IN } = require("../../helpers/constants/consent");
+import createAlloyProxy from "../../helpers/createAlloyProxy";
+import { CONSENT_OUT, CONSENT_IN } from "../../helpers/constants/consent";
 
 const config = compose(
   orgMainConfigMain,
@@ -33,17 +32,11 @@ test.meta({
 });
 
 test("Test C14404: User cannot consent to all purposes after consenting to no purposes", async t => {
-  await configureAlloyInstance("alloy", config);
-  await t.eval(() => window.alloy("setConsent", CONSENT_OUT), {
-    dependencies: { CONSENT_OUT }
-  });
-  const setConsentErrorMessage = await t.eval(
-    () =>
-      window
-        .alloy("setConsent", CONSENT_IN)
-        .then(() => undefined, e => e.message),
-    { dependencies: { CONSENT_IN } }
-  );
+  const alloy = createAlloyProxy("alloy");
+  await alloy.configure(config);
+  await alloy.setConsent(CONSENT_OUT);
+  const setConsentErrorMessage = await alloy.setConsentErrorMessage(CONSENT_IN);
+
   await t
     .expect(setConsentErrorMessage)
     .ok("Expected the setConsent command to be rejected");
@@ -51,7 +44,7 @@ test("Test C14404: User cannot consent to all purposes after consenting to no pu
 
   // make sure the instance still has no consent
   const logger = await createConsoleLogger();
-  await t.eval(() => window.alloy("sendEvent"));
+  await alloy.sendEvent();
   await logger.warn.expectMessageMatching(/user declined consent/);
   // make sure no event requests went out
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);

@@ -1,8 +1,7 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../../helpers/networkLogger";
 import { responseStatus } from "../../../helpers/assertions/index";
 import createFixture from "../../../helpers/createFixture";
-import configureAlloyInstance from "../../../helpers/configureAlloyInstance";
 import createResponse from "../../../../../src/core/createResponse";
 import getResponseBody from "../../../helpers/networkLogger/getResponseBody";
 import cookies from "../../../helpers/cookies";
@@ -12,6 +11,7 @@ import {
   debugEnabled
 } from "../../../helpers/constants/configParts";
 import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies";
+import createAlloyProxy from "../../../helpers/createAlloyProxy";
 
 const config = compose(
   orgMainConfigMain,
@@ -32,30 +32,24 @@ test.meta({
 });
 
 // Consent with no Purpose 1, should result in Opt-Out.
-const sendEventWithConsentError = ClientFunction(() =>
-  window
-    .alloy("sendEvent", {
-      xdm: {
-        consentStrings: [
-          {
-            consentStandard: "IAB TCF",
-            consentStandardVersion: "2.0",
-            consentStringValue:
-              "CO052oTO052oTDGAMBFRACBgAABAAAAAAIYgEawAQEagAAAA",
-            gdprApplies: true,
-            containsPersonalData: false
-          }
-        ]
+const sendEventOptions = {
+  xdm: {
+    consentStrings: [
+      {
+        consentStandard: "IAB TCF",
+        consentStandardVersion: "2.0",
+        consentStringValue: "CO052oTO052oTDGAMBFRACBgAABAAAAAAIYgEawAQEagAAAA",
+        gdprApplies: true,
+        containsPersonalData: false
       }
-    })
-    .then(() => undefined, e => e.message)
-);
-
-const sendEvent = ClientFunction(() => window.alloy("sendEvent"));
+    ]
+  }
+};
 
 test("Test C224678: Passing a negative Consent in the sendEvent command", async () => {
-  await configureAlloyInstance("alloy", config);
-  const errorMessage = await sendEventWithConsentError();
+  const alloy = createAlloyProxy("alloy");
+  await alloy.configure(config);
+  const errorMessage = await alloy.sendEventErrorMessage(sendEventOptions);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
@@ -101,6 +95,6 @@ test("Test C224678: Passing a negative Consent in the sendEvent command", async 
   await t.expect(warnings).contains("EXEG-0301-200");
 
   // 6. Events should be blocked going forward because we are opted out.
-  await sendEvent();
+  await alloy.sendEvent();
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 });

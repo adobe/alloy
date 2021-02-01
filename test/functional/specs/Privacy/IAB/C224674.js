@@ -1,8 +1,7 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../../helpers/networkLogger";
 import { responseStatus } from "../../../helpers/assertions/index";
 import createFixture from "../../../helpers/createFixture";
-import configureAlloyInstance from "../../../helpers/configureAlloyInstance";
 import createResponse from "../../../../../src/core/createResponse";
 import getResponseBody from "../../../helpers/networkLogger/getResponseBody";
 import cookies from "../../../helpers/cookies";
@@ -13,16 +12,14 @@ import {
   debugEnabled
 } from "../../../helpers/constants/configParts";
 import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies";
+import createAlloyProxy from "../../../helpers/createAlloyProxy";
+import { IAB_NO_PURPOSE_ONE_NO_GRPR } from "../../../helpers/constants/consent";
 
 const config = compose(
   orgMainConfigMain,
   consentPending,
   debugEnabled
 );
-
-const {
-  IAB_NO_PURPOSE_ONE_NO_GRPR
-} = require("../../../helpers/constants/consent");
 
 const networkLogger = createNetworkLogger();
 
@@ -40,16 +37,10 @@ test.meta({
   TEST_RUN: "REGRESSION"
 });
 
-const triggerSetConsent = ClientFunction(
-  () => window.alloy("setConsent", IAB_NO_PURPOSE_ONE_NO_GRPR),
-  { dependencies: { IAB_NO_PURPOSE_ONE_NO_GRPR } }
-);
-
-const sendEvent = ClientFunction(() => window.alloy("sendEvent"));
-
 test("Test C224674: Opt out to IAB while gdprApplies is FALSE", async () => {
-  await configureAlloyInstance("alloy", config);
-  await triggerSetConsent();
+  const alloy = createAlloyProxy("alloy");
+  await alloy.configure(config);
+  await alloy.setConsent(IAB_NO_PURPOSE_ONE_NO_GRPR);
 
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
@@ -70,6 +61,6 @@ test("Test C224674: Opt out to IAB while gdprApplies is FALSE", async () => {
   const identityHandle = consentResponse.getPayloadsByType("identity:result");
   await t.expect(identityHandle.length).eql(2);
 
-  await sendEvent();
+  await alloy.sendEvent();
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 });

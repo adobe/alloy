@@ -1,8 +1,7 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../../helpers/networkLogger";
 import { responseStatus } from "../../../helpers/assertions/index";
 import createFixture from "../../../helpers/createFixture";
-import configureAlloyInstance from "../../../helpers/configureAlloyInstance";
 import createResponse from "../../../../../src/core/createResponse";
 import getResponseBody from "../../../helpers/networkLogger/getResponseBody";
 import cookies from "../../../helpers/cookies";
@@ -12,8 +11,8 @@ import {
   debugEnabled
 } from "../../../helpers/constants/configParts";
 import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies";
-
-const { IAB_NO_PURPOSE_TEN } = require("../../../helpers/constants/consent");
+import createAlloyProxy from "../../../helpers/createAlloyProxy";
+import { IAB_NO_PURPOSE_TEN } from "../../../helpers/constants/consent";
 
 const config = compose(
   orgMainConfigMain,
@@ -36,16 +35,10 @@ test.meta({
   TEST_RUN: "REGRESSION"
 });
 
-const triggerSetConsent = ClientFunction(
-  () => window.alloy("setConsent", IAB_NO_PURPOSE_TEN),
-  { dependencies: { IAB_NO_PURPOSE_TEN } }
-);
-
-const triggerEvent = ClientFunction(() => window.alloy("sendEvent"));
-
 test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
-  await configureAlloyInstance("alloy", config);
-  await triggerSetConsent();
+  const alloy = createAlloyProxy("alloy");
+  await alloy.configure(config);
+  await alloy.setConsent(IAB_NO_PURPOSE_TEN);
 
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
 
@@ -66,7 +59,7 @@ test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
   await t.expect(identityHandle.length).eql(2);
 
   // 3. Event calls going forward should be opted out because AAM opts out consents with no purpose 10.
-  await triggerEvent();
+  await alloy.sendEvent();
   const rawEventResponse = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );

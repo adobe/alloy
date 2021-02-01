@@ -1,12 +1,11 @@
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
   orgMainConfigMain,
   consentPending
 } from "../../helpers/constants/configParts";
-
-const { CONSENT_OUT } = require("../../helpers/constants/consent");
+import createAlloyProxy from "../../helpers/createAlloyProxy";
+import { CONSENT_OUT } from "../../helpers/constants/consent";
 
 const config = compose(
   orgMainConfigMain,
@@ -23,18 +22,10 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C14411: User consents to no purposes after consenting to no purposes", async t => {
-  await configureAlloyInstance("alloy", config);
-  await t.eval(() => window.alloy("setConsent", CONSENT_OUT), {
-    dependencies: { CONSENT_OUT }
-  });
-
-  const setConsentErrorMessage = await t.eval(
-    () =>
-      window
-        .alloy("setConsent", CONSENT_OUT)
-        .then(() => undefined, e => e.message),
-    { dependencies: { CONSENT_OUT } }
-  );
-  await t.expect(setConsentErrorMessage).notOk();
+test("Test C14411: User consents to no purposes after consenting to no purposes", async () => {
+  const alloy = createAlloyProxy("alloy");
+  await alloy.configure(config);
+  await alloy.setConsent(CONSENT_OUT);
+  // make sure this doesn't throw an error
+  await alloy.setConsent(CONSENT_OUT);
 });
