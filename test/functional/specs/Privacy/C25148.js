@@ -29,7 +29,7 @@ const config = compose(
 );
 
 test("C25148 - When default consent is 'in', consent can be revoked", async () => {
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure(config);
 
   // trigger an event

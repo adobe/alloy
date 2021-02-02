@@ -27,7 +27,7 @@ const getContextUrlFromRequest = request => {
 };
 
 test("C2660 - Context data is captured before user consents.", async () => {
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure(
     compose(
       orgMainConfigMain,

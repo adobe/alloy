@@ -10,10 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
   edgeDomainFirstParty,
@@ -24,10 +23,7 @@ import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../../../src/core/createResponse";
 import areThirdPartyCookiesSupported from "../../helpers/areThirdPartyCookiesSupported";
 import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
-
-const executeEventCommand = ClientFunction(() => {
-  return window.alloy("sendEvent");
-});
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const demdexHostRegex = /\.demdex\.net/;
 
@@ -51,9 +47,10 @@ createFixture({
 });
 
 test("C148846 - Setting edgeDomain to CNAME results in server calls to this CNAME", async () => {
-  await configureAlloyInstance("alloy", config);
-  await executeEventCommand();
-  await executeEventCommand();
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  await alloy.sendEvent();
+  await alloy.sendEvent();
 
   const firstRequest = networkLogger.edgeInteractEndpointLogs.requests[0];
   const secondRequest = networkLogger.edgeInteractEndpointLogs.requests[1];

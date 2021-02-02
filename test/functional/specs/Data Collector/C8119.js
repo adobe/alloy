@@ -3,11 +3,11 @@ import createFixture from "../../helpers/createFixture";
 import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
 import createNetworkLogger from "../../helpers/networkLogger";
 
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
   orgMainConfigMain
 } from "../../helpers/constants/configParts";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
 
@@ -26,13 +26,14 @@ test.meta({
 const getLocation = ClientFunction(() => document.location.href.toString());
 
 test("Test C8119: Load page with link. Click link. Verify no event sent.", async () => {
+  const alloy = createAlloyProxy();
   const testConfig = compose(
     orgMainConfigMain,
     {
       clickCollectionEnabled: false
     }
   );
-  await configureAlloyInstance("alloy", testConfig);
+  await alloy.configure(testConfig);
   await addHtmlToBody(
     `<a id="alloy-link-test" href="blank.html">Test Link</a>`
   );

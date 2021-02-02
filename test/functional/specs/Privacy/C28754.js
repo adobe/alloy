@@ -33,7 +33,7 @@ test.meta({
 });
 
 test("C28754 - Consenting to no purposes should result in no data handles in the response.", async () => {
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure(config);
 
   await alloy.setConsent(CONSENT_OUT);

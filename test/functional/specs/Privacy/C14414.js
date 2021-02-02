@@ -30,7 +30,7 @@ test.meta({
 });
 
 test("Test C14414: Requests are queued while consent changes are pending", async t => {
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure(config);
   const setConsentResponse1 = await alloy.setConsentAsync(CONSENT_IN);
   const setConsentResponse2 = await alloy.setConsentAsync(CONSENT_OUT);

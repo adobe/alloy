@@ -10,7 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createTaskQueue, cookieJar, injectDoesIdentityCookieExist } from "../../utils";
+import {
+  createTaskQueue,
+  cookieJar,
+  injectDoesIdentityCookieExist
+} from "../../utils";
 import createComponent from "./createComponent";
 import createConsentHashStore from "./createConsentHashStore";
 import createConsentRequestPayload from "./createConsentRequestPayload";
@@ -20,7 +24,12 @@ import injectSendSetConsentRequest from "./injectSendSetConsentRequest";
 import parseConsentCookie from "./parseConsentCookie";
 import validateSetConsentOptions from "./validateSetConsentOptions";
 
-const createPrivacy = ({ config, consent, sendEdgeNetworkRequest, createNamespacedStorage }) => {
+const createPrivacy = ({
+  config,
+  consent,
+  sendEdgeNetworkRequest,
+  createNamespacedStorage
+}) => {
   const { orgId, defaultConsent } = config;
   const readStoredConsent = injectReadStoredConsent({
     parseConsentCookie,
@@ -34,7 +43,9 @@ const createPrivacy = ({ config, consent, sendEdgeNetworkRequest, createNamespac
     sendEdgeNetworkRequest
   });
   const storage = createNamespacedStorage(`consentHashes.${orgId}.`);
-  const consentHashStore = createConsentHashStore({ storage: storage.persistent });
+  const consentHashStore = createConsentHashStore({
+    storage: storage.persistent
+  });
 
   const doesIdentityCookieExist = injectDoesIdentityCookieExist({ orgId });
 

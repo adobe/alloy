@@ -34,7 +34,7 @@ const commands = [
   "getLibraryInfo"
 ];
 
-export default instanceName => {
+export default (instanceName = "alloy") => {
   const proxy = {};
   commands.forEach(command => {
     proxy[command] = options => proxyFunction(instanceName, command, options);

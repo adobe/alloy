@@ -46,7 +46,7 @@ const eventOptionsWithConsent = {
 };
 
 test("Test C224676: Passing a positive Consent in the sendEvent command", async () => {
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent(eventOptionsWithConsent);
 

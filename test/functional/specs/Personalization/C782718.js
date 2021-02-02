@@ -2,7 +2,6 @@ import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions";
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
   orgMainConfigMain,
@@ -12,6 +11,7 @@ import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../../../src/core/createResponse";
 import testPageUrl from "../../helpers/constants/testPageUrl";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
 const config = compose(
@@ -32,25 +32,6 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const triggerAlloyEvent = ClientFunction((viewName, scopes) => {
-  return new Promise(resolve => {
-    window
-      .alloy("sendEvent", {
-        renderDecisions: true,
-        decisionScopes: scopes,
-        xdm: {
-          web: {
-            webPageDetails: {
-              viewName
-            }
-          }
-        }
-      })
-      .then(result => {
-        resolve(result);
-      });
-  });
-});
 const getDecisionContent = ClientFunction(elementId => {
   const container = document.getElementById(elementId);
 
@@ -71,9 +52,20 @@ const getNotificationPayload = (decisions, scope) => {
 };
 
 test("Test C782718: SPA support with auto-rendering and view notifications", async () => {
-  await configureAlloyInstance("alloy", config);
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
 
-  await triggerAlloyEvent("/products", []);
+  await alloy.sendEvent({
+    renderDecisions: true,
+    decisionScopes: [],
+    xdm: {
+      web: {
+        webPageDetails: {
+          viewName: "/products"
+        }
+      }
+    }
+  });
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(3);
@@ -143,8 +135,17 @@ test("Test C782718: SPA support with auto-rendering and view notifications", asy
     .eql(productsViewNotificationPayload);
 
   // sendEvent at a view change, this shouldn't request any target data, it should use the existing cache
-
-  await triggerAlloyEvent("/transformers", []);
+  await alloy.sendEvent({
+    renderDecisions: true,
+    decisionScopes: [],
+    xdm: {
+      web: {
+        webPageDetails: {
+          viewName: "/transformers"
+        }
+      }
+    }
+  });
   const viewChangeRequest = networkLogger.edgeEndpointLogs.requests[3];
   const viewChangeRequestBody = JSON.parse(viewChangeRequest.request.body);
   // assert that no personalization query was attached to the request
@@ -176,7 +177,17 @@ test("Test C782718: SPA support with auto-rendering and view notifications", asy
     .eql(transformersViewNotificationPayload);
 
   // no decisions in cache for this specific view, should only send a notification
-  await triggerAlloyEvent("/cart", []);
+  await alloy.sendEvent({
+    renderDecisions: true,
+    decisionScopes: [],
+    xdm: {
+      web: {
+        webPageDetails: {
+          viewName: "/cart"
+        }
+      }
+    }
+  });
 
   const cartViewChangeRequest = networkLogger.edgeEndpointLogs.requests[5];
   const cartViewChangeRequestBody = JSON.parse(

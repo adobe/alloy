@@ -36,7 +36,7 @@ test.meta({
 });
 
 test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.setConsent(IAB_NO_PURPOSE_TEN);
 

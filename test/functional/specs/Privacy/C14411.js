@@ -23,7 +23,7 @@ test.meta({
 });
 
 test("Test C14411: User consents to no purposes after consenting to no purposes", async () => {
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.setConsent(CONSENT_OUT);
   // make sure this doesn't throw an error

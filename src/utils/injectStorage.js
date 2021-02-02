@@ -53,7 +53,9 @@ const getStorageByType = (context, storageType, namespace) => {
             context[storageType].removeItem(key);
           }
         });
+        return true;
       } catch (e) {
+        return false;
       }
     }
   };

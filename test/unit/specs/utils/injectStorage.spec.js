@@ -86,16 +86,24 @@ describe("injectStorage", () => {
               removeItem: jasmine.createSpy(),
               "com.adobe.alloy.example.a": "1",
               "com.adobe.alloy.example.b": "2",
-              "c": "3",
+              c: "3",
               "com.adobe.alloy.d": "4"
             }
           };
           const storage = injectStorage(window)("example.");
           storage[storageProperty].clear();
-          expect(window[windowProperty].removeItem).toHaveBeenCalledWith("com.adobe.alloy.example.a");
-          expect(window[windowProperty].removeItem).toHaveBeenCalledWith("com.adobe.alloy.example.b");
-          expect(window[windowProperty].removeItem).not.toHaveBeenCalledWith("c");
-          expect(window[windowProperty].removeItem).not.toHaveBeenCalledWith("com.adobe.alloy.d");
+          expect(window[windowProperty].removeItem).toHaveBeenCalledWith(
+            "com.adobe.alloy.example.a"
+          );
+          expect(window[windowProperty].removeItem).toHaveBeenCalledWith(
+            "com.adobe.alloy.example.b"
+          );
+          expect(window[windowProperty].removeItem).not.toHaveBeenCalledWith(
+            "c"
+          );
+          expect(window[windowProperty].removeItem).not.toHaveBeenCalledWith(
+            "com.adobe.alloy.d"
+          );
         });
       });
     });

@@ -21,7 +21,7 @@ test.meta({
 });
 
 test("Test C2593: Event command consents to all purposes", async () => {
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure({
     defaultConsent: "pending",
     ...environmentContextConfig

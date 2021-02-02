@@ -31,7 +31,7 @@ test.meta({
 });
 
 test("Test C14405: Unidentified user can consent to all purposes", async t => {
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.setConsent(CONSENT_IN);
   await alloy.sendEvent();

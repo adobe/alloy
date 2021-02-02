@@ -32,7 +32,7 @@ test.meta({
 });
 
 test("Test C14404: User cannot consent to all purposes after consenting to no purposes", async t => {
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.setConsent(CONSENT_OUT);
   const setConsentErrorMessage = await alloy.setConsentErrorMessage(CONSENT_IN);

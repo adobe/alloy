@@ -30,7 +30,7 @@ const configuration = {
 
 test("C1472434: Set-consent is called when consent is different", async () => {
   // set consent to in
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure(configuration);
   await alloy.setConsent(ADOBE2_IN);
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);

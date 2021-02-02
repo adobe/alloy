@@ -1,14 +1,14 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
 import {
   compose,
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const debugEnabledConfig = compose(
   orgMainConfigMain,
@@ -28,13 +28,10 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("sendEvent");
-});
-
 test("Test C2597 - Adds all context data to requests by default.", async () => {
-  await configureAlloyInstance("alloy", debugEnabledConfig);
-  await triggerAlloyEvent();
+  const alloy = createAlloyProxy();
+  await alloy.configure(debugEnabledConfig);
+  await alloy.sendEvent();
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);

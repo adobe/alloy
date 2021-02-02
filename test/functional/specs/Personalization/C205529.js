@@ -1,8 +1,7 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
   orgMainConfigMain,
@@ -10,6 +9,7 @@ import {
 } from "../../helpers/constants/configParts";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../../../src/core/createResponse";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
 const config = compose(
@@ -30,27 +30,17 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const triggerAlloyEvent = ClientFunction(decisionScope => {
-  return new Promise(resolve => {
-    window
-      .alloy("sendEvent", {
-        decisionScopes: [decisionScope],
-        xdm: {
-          device: {
-            screenWidth: 9999
-          }
-        }
-      })
-      .then(result => {
-        resolve(result);
-      });
-  });
-});
-
 test("Test C205529: Receive offer based on device", async () => {
-  await configureAlloyInstance("alloy", config);
-
-  const result = await triggerAlloyEvent(PAGE_WIDE_SCOPE);
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  const result = await alloy.sendEvent({
+    decisionScopes: [PAGE_WIDE_SCOPE],
+    xdm: {
+      device: {
+        screenWidth: 9999
+      }
+    }
+  });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 

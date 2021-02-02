@@ -30,7 +30,7 @@ const configuration = {
 
 test("C1472438: Adobe consent version 2.0 is translated to general=out", async () => {
   // setup alloy
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure(configuration);
 
   // try to send an event, but it should be queued

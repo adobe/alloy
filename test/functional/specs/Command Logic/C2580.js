@@ -7,6 +7,7 @@ import {
   debugEnabled
 } from "../../helpers/constants/configParts";
 import { injectAlloyDuringTest } from "../../helpers/createFixture/clientScripts";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const debugEnabledConfig = compose(
   orgMainConfigMain,
@@ -24,21 +25,14 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const getLibraryInfoCommand = ClientFunction(() => {
-  window.alloy("getLibraryInfo");
-});
-
-const configureAlloy = ClientFunction(cfg => {
-  window.alloy("configure", cfg);
-});
-
 const getAlloyCommandQueueLength = ClientFunction(() => {
   return window.alloy.q.length;
 });
 
 test("C2580: Command queueing test.", async () => {
-  await configureAlloy(debugEnabledConfig);
-  await getLibraryInfoCommand();
+  const alloy = createAlloyProxy();
+  await alloy.configureAsync(debugEnabledConfig);
+  await alloy.getLibraryInfoAsync();
   await t.expect(getAlloyCommandQueueLength()).eql(2);
   const logger = await createConsoleLogger();
   await injectAlloyDuringTest();

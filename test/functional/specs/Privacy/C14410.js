@@ -20,7 +20,7 @@ test.meta({
 // an instance was already configured with that orgId.
 
 test("Test C14410: Configuring default consent to 'out' fails", async t => {
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   const errorMessage = await alloy.configureErrorMessage({
     defaultConsent: "out",
     ...orgMainConfigMain
@@ -37,7 +37,7 @@ test("Test C14410: Configuring default consent to 'out' fails", async t => {
 });
 
 test("Test C14410: Setting consent for unknown purposes fails", async t => {
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure({
     defaultConsent: "pending",
     ...orgMainConfigMain

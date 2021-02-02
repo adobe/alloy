@@ -27,7 +27,7 @@ const config = {
 };
 
 test("C14407 - Consenting to all purposes should be persisted.", async () => {
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.setConsent(CONSENT_IN);
   await reloadPage();

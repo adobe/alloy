@@ -33,7 +33,7 @@ test.meta({
 });
 
 test("Test C224675: Passing invalid consent options should throw a validation error", async () => {
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure(config);
 
   const errorMessageForInvalidStandard = await alloy.setConsentErrorMessage({

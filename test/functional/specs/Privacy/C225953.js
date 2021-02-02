@@ -32,7 +32,7 @@ test.meta({
 });
 
 test("Test C225953: Identity map can be sent on a setConsent command", async () => {
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.setConsent({
     identityMap: {

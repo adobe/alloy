@@ -31,7 +31,7 @@ test.meta({
 });
 
 test("Test C2594: event command resolves promise with empty object if user consents to no purposes", async t => {
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure(config);
   const logger = await createConsoleLogger();
 

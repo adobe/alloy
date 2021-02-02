@@ -40,6 +40,9 @@ describe("privacy:createComponent", () => {
   let doesIdentityCookieExist;
   let component;
 
+  const setIdentityCookie = () => {
+    doesIdentityCookieExist.and.returnValue(true);
+  };
 
   beforeEach(() => {
     readStoredConsent = jasmine.createSpy("readStoredConsent");
@@ -50,7 +53,10 @@ describe("privacy:createComponent", () => {
     validateSetConsentOptions = jasmine
       .createSpy("validateSetConsentOptions")
       .and.callFake(options => options);
-    consentHashStore = jasmine.createSpyObj("consentHashStore", ["clear", "lookup"]);
+    consentHashStore = jasmine.createSpyObj("consentHashStore", [
+      "clear",
+      "lookup"
+    ]);
     consentHashes = jasmine.createSpyObj("consentHashes", ["isNew", "save"]);
     doesIdentityCookieExist = jasmine.createSpy("doesIdentityCookieExist");
     consentHashStore.lookup.and.returnValue(consentHashes);
@@ -83,14 +89,6 @@ describe("privacy:createComponent", () => {
     readStoredConsent.and.returnValue({ general: "out" });
   };
 
-  const setIdentityCookie = () => {
-    doesIdentityCookieExist.and.returnValue(true);
-  }
-
-  const clearIdenityCookie = () => {
-    doesIdentityCookieExist.and.returnValue(false);
-  }
-
   const mockSetConsent = () => {
     const deferred = defer();
     sendSetConsentRequest.and.returnValue(deferred.promise);
@@ -110,12 +108,24 @@ describe("privacy:createComponent", () => {
         deferred.reject();
       }
     };
-  }
+  };
 
   [
-    { defaultConsent: "pending", setCookie: clearConsentCookie, expected: "pending" },
-    { defaultConsent: "pending", setCookie: setConsentCookieIn, expected: "in" },
-    { defaultConsent: "pending", setCookie: setConsentCookieOut, expected: "out" },
+    {
+      defaultConsent: "pending",
+      setCookie: clearConsentCookie,
+      expected: "pending"
+    },
+    {
+      defaultConsent: "pending",
+      setCookie: setConsentCookieIn,
+      expected: "in"
+    },
+    {
+      defaultConsent: "pending",
+      setCookie: setConsentCookieOut,
+      expected: "out"
+    },
     { defaultConsent: "in", setCookie: clearConsentCookie, expected: "in" },
     { defaultConsent: "in", setCookie: setConsentCookieIn, expected: "in" },
     { defaultConsent: "in", setCookie: setConsentCookieOut, expected: "out" }

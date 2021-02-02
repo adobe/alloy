@@ -32,7 +32,7 @@ test.meta({
 
 test("Test C14406: Unidentified user can consent to no purposes", async t => {
   const logger = await createConsoleLogger();
-  const alloy = createAlloyProxy("alloy");
+  const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.setConsent(CONSENT_OUT);
   await alloy.sendEvent();
