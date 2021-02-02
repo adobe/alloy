@@ -44,6 +44,7 @@ export { default as includes } from "./includes";
 export {
   default as injectDoesIdentityCookieExist
 } from "./injectDoesIdentityCookieExist";
+export { default as injectStorage } from "./injectStorage";
 export { default as intersection } from "./intersection";
 export { default as isBoolean } from "./isBoolean";
 export { default as isEmptyObject } from "./isEmptyObject";
@@ -64,7 +65,7 @@ export {
   default as sanitizeOrgIdForCookieName
 } from "./sanitizeOrgIdForCookieName";
 export { default as stackError } from "./stackError";
-export { default as injectStorage } from "./injectStorage";
+export { default as startsWith } from "./startsWith";
 export { default as stringToBoolean } from "./stringToBoolean";
 export { default as toArray } from "./toArray";
 export { default as toError } from "./toError";

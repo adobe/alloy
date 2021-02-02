@@ -196,6 +196,7 @@ test("Test C782718: SPA support with auto-rendering and view notifications", asy
   // assert that no personalization query was attached to the request
   await t.expect(cartViewChangeRequestBody.events[0].query).eql(undefined);
   // assert that a notification call with xdm.web.webPageDetails.viewName and no personalization meta is sent
+  await flushPromiseChains();
   const cartViewNotificationRequest =
     networkLogger.edgeEndpointLogs.requests[6];
   const cartViewNotificationRequestBody = JSON.parse(
