@@ -1,7 +1,5 @@
-name: Alloy-Test-Cron
+name: Prod-Test
 on:
-  repository_dispatch:
-    types: run-e2e
   schedule:
     - cron: "0 */24 * * *"
 
@@ -9,8 +7,6 @@ jobs:
   alloy-prod-e2e:
     name: "Cron: Prod E2E Tests"
     runs-on: ubuntu-latest
-    outputs:
-      previous-tag: ${{ steps.previoustag.outputs.tag }}
     steps:
       - uses: actions/checkout@v2.3.3
         with:
