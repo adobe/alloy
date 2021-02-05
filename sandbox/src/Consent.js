@@ -71,8 +71,8 @@ const adobe1Consent = generalPurpose => {
   };
 };
 
-const adobe2Consent = ({ collect }) => {
-  return {
+const adobe2Consent = ({ collect, personalize }) => {
+  const consent = {
     consent: [
       {
         standard: "Adobe",
@@ -85,6 +85,14 @@ const adobe2Consent = ({ collect }) => {
       }
     ]
   };
+  if (personalize) {
+    consent.consent[0].value.personalize = {
+      content: {
+        val: personalize
+      }
+    };
+  }
+  return consent;
 };
 
 const iabConsent = consentString => {
@@ -97,6 +105,16 @@ const iabConsent = consentString => {
       }
     ]
   };
+};
+
+const mergeConsent = (...consents) => {
+  return consents.reduce(
+    (memo, { consent }) => {
+      memo.consent = memo.consent.concat(consent);
+      return memo;
+    },
+    { consent: [] }
+  );
 };
 
 const defaultConsent = getQueryStringParameter("defaultConsent") || "in";
@@ -326,6 +344,22 @@ export default function Consent() {
           >
             Collect="n"
           </button>
+          <button
+            onClick={executeCommand(
+              "setConsent",
+              adobe2Consent({ collect: "y", personalize: "y" })
+            )}
+          >
+            Collect="y" Personalize="y"
+          </button>
+          <button
+            onClick={executeCommand(
+              "setConsent",
+              adobe2Consent({ collect: "y", personalize: "n" })
+            )}
+          >
+            Collect="y" Personalize="n"
+          </button>
         </dd>
         <dt>IAB TCF 2.0</dt>
         <dd>
@@ -354,6 +388,31 @@ export default function Consent() {
             )}
           >
             Google Vendor Out
+          </button>
+        </dd>
+        <dt>Adobe 2.0 and IAB TCF 2.0</dt>
+        <dd>
+          <button
+            onClick={executeCommand(
+              "setConsent",
+              mergeConsent(
+                adobe2Consent({ collect: "y" }),
+                iabConsent(IAB_OPT_IN)
+              )
+            )}
+          >
+            In
+          </button>
+          <button
+            onClick={executeCommand(
+              "setConsent",
+              mergeConsent(
+                adobe2Consent({ collect: "n" }),
+                iabConsent(IAB_OPT_OUT)
+              )
+            )}
+          >
+            Out
           </button>
         </dd>
         <dt>Legacy Opt-in Object</dt>
