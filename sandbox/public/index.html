@@ -31,7 +31,6 @@
       function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
       (window,["alloy", "organizationTwo"]);
     </script>
-    <script src="alloy.js" async></script>
 
     <script nonce="%REACT_APP_NONCE%">
       function getUrlParameter(name) {
@@ -43,8 +42,38 @@
           : decodeURIComponent(results[1].replace(/\+/g, " "));
       }
 
+      function includeScript(src) {
+        return new Promise(function(resolve, reject) {
+          var tag = document.createElement("script");
+          tag.type = "text/javascript";
+          tag.async = true;
+          tag.addEventListener("load", function() {
+            resolve();
+          });
+          tag.nonce = "%REACT_APP_NONCE%";
+          tag.src = src;
+          document.head.append(tag);
+        });
+      }
+
+      if (getUrlParameter("includeVisitor") === "true") {
+        includeScript(
+          "https://github.com/Adobe-Marketing-Cloud/id-service/releases/download/4.5.1/visitorapi.min.js"
+        ).then(function() {
+          Visitor.getInstance("53A16ACB5CC1D3760A495C99@AdobeOrg", {
+            doesOptInApply: getUrlParameter("legacyOptIn") === "true"
+          });
+          // Alloy only looks for window.Visitor when it initially loads, so only load Alloy after Visitor loaded.
+          includeScript("alloy.js");
+        });
+      } else {
+        includeScript("alloy.js");
+      }
+    </script>
+
+    <script nonce="%REACT_APP_NONCE%">
       alloy("configure", {
-        // defaultConsent: { general: "pending" },
+        defaultConsent: getUrlParameter("defaultConsent") || "in",
         edgeDomain:
           location.host.indexOf("alloyio.com") !== -1
             ? "firstparty.alloyio.com"
