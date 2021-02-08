@@ -15,10 +15,14 @@ import {
   PAGE_WIDE_SCOPE_DECISIONS,
   PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
   PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS,
-  PRODUCTS_VIEW_DECISIONS
+  PRODUCTS_VIEW_DECISIONS,
+  REDIRECT_PAGE_WIDE_SCOPE_DECISION
 } from "./responsesMock/eventResponses";
 import createOnResponseHandler from "../../../../../src/components/Personalization/createOnResponseHandler";
-import { DOM_ACTION } from "../../../../../src/components/Personalization/constants/schema";
+import {
+  DOM_ACTION,
+  REDIRECT_ITEM
+} from "../../../../../src/components/Personalization/constants/schema";
 import PAGE_WIDE_SCOPE from "../../../../../src/components/Personalization/constants/scope";
 
 describe("Personalization::onResponseHandler", () => {
@@ -43,6 +47,7 @@ describe("Personalization::onResponseHandler", () => {
   let response;
   let personalizationDetails;
   let decisionsDeferred;
+  let handleRedirectDecisions;
 
   beforeEach(() => {
     response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
@@ -64,6 +69,7 @@ describe("Personalization::onResponseHandler", () => {
     executeCachedViewDecisions = jasmine.createSpy(
       "executeCachedViewDecisions"
     );
+    handleRedirectDecisions = jasmine.createSpy("handleRedirectDecisions");
   });
 
   it("should execute DOM ACTION decisions and return rest of decisions when renderDecisions is true", () => {
@@ -71,10 +77,16 @@ describe("Personalization::onResponseHandler", () => {
       cart: CART_VIEW_DECISIONS,
       products: PRODUCTS_VIEW_DECISIONS
     };
-    decisionsExtractor.groupDecisionsBySchema.and.returnValue({
-      domActionDecisions,
-      nonDomActionDecisions
-    });
+    decisionsExtractor.groupDecisionsBySchema.and.returnValues(
+      {
+        matchedDecisions: [],
+        notMatchedDecisions: unprocessedDecisions
+      },
+      {
+        matchedDecisions: domActionDecisions,
+        notMatchedDecisions: nonDomActionDecisions
+      }
+    );
     decisionsExtractor.groupDecisionsByScope.and.returnValue({
       pageWideScopeDecisions,
       nonPageWideScopeDecisions
@@ -90,6 +102,7 @@ describe("Personalization::onResponseHandler", () => {
       decisionsExtractor,
       executeDecisions,
       executeCachedViewDecisions,
+      handleRedirectDecisions,
       showContainers
     });
 
@@ -102,6 +115,10 @@ describe("Personalization::onResponseHandler", () => {
     expect(decisionsExtractor.groupDecisionsBySchema).toHaveBeenCalledWith({
       decisions: unprocessedDecisions,
       schema: DOM_ACTION
+    });
+    expect(decisionsExtractor.groupDecisionsBySchema).toHaveBeenCalledWith({
+      decisions: unprocessedDecisions,
+      schema: REDIRECT_ITEM
     });
     expect(decisionsExtractor.groupDecisionsByScope).toHaveBeenCalledWith({
       decisions: domActionDecisions,
@@ -121,10 +138,16 @@ describe("Personalization::onResponseHandler", () => {
       cart: CART_VIEW_DECISIONS,
       products: PRODUCTS_VIEW_DECISIONS
     };
-    decisionsExtractor.groupDecisionsBySchema.and.returnValue({
-      domActionDecisions,
-      nonDomActionDecisions
-    });
+    decisionsExtractor.groupDecisionsBySchema.and.returnValues(
+      {
+        matchedDecisions: [],
+        notMatchedDecisions: unprocessedDecisions
+      },
+      {
+        matchedDecisions: domActionDecisions,
+        notMatchedDecisions: nonDomActionDecisions
+      }
+    );
     decisionsExtractor.groupDecisionsByScope.and.returnValue({
       pageWideScopeDecisions,
       nonPageWideScopeDecisions
@@ -140,6 +163,7 @@ describe("Personalization::onResponseHandler", () => {
       decisionsExtractor,
       executeDecisions,
       executeCachedViewDecisions,
+      handleRedirectDecisions,
       showContainers
     });
 
@@ -151,6 +175,10 @@ describe("Personalization::onResponseHandler", () => {
     expect(decisionsDeferred.resolve).toHaveBeenCalledWith(
       nonPageWideScopeDecisions
     );
+    expect(decisionsExtractor.groupDecisionsBySchema).toHaveBeenCalledWith({
+      decisions: unprocessedDecisions,
+      schema: REDIRECT_ITEM
+    });
     expect(decisionsExtractor.groupDecisionsBySchema).toHaveBeenCalledWith({
       decisions: unprocessedDecisions,
       schema: DOM_ACTION
@@ -168,16 +196,28 @@ describe("Personalization::onResponseHandler", () => {
     expect(result).toEqual(expectedResult);
   });
 
-  it("should return pageWide decisions, form based and the view decisions when renderDecisions is false and a viewName is provided", () => {
+  it("should return pageWide decisions, form based, redirect and the view decisions when renderDecisions is false and a viewName is provided", () => {
+    const payload = [
+      ...PAGE_WIDE_SCOPE_DECISIONS,
+      ...CART_VIEW_DECISIONS,
+      ...PRODUCTS_VIEW_DECISIONS,
+      ...REDIRECT_PAGE_WIDE_SCOPE_DECISION
+    ];
     const nonPageWideScopeDecisions = {
       cart: CART_VIEW_DECISIONS,
       products: PRODUCTS_VIEW_DECISIONS
     };
 
-    decisionsExtractor.groupDecisionsBySchema.and.returnValue({
-      domActionDecisions,
-      nonDomActionDecisions
-    });
+    decisionsExtractor.groupDecisionsBySchema.and.returnValues(
+      {
+        matchedDecisions: REDIRECT_PAGE_WIDE_SCOPE_DECISION,
+        notMatchedDecisions: unprocessedDecisions
+      },
+      {
+        matchedDecisions: domActionDecisions,
+        notMatchedDecisions: nonDomActionDecisions
+      }
+    );
     decisionsExtractor.groupDecisionsByScope.and.returnValue({
       pageWideScopeDecisions,
       nonPageWideScopeDecisions
@@ -186,10 +226,11 @@ describe("Personalization::onResponseHandler", () => {
       decisions: [
         ...pageWideScopeDecisions,
         ...nonDomActionDecisions,
+        ...REDIRECT_PAGE_WIDE_SCOPE_DECISION,
         ...nonPageWideScopeDecisions.cart
       ]
     };
-    response.getPayloadsByType.and.returnValue(unprocessedDecisions);
+    response.getPayloadsByType.and.returnValue(payload);
 
     personalizationDetails.isRenderDecisions.and.returnValue(false);
     personalizationDetails.getViewName.and.returnValue("cart");
@@ -198,6 +239,7 @@ describe("Personalization::onResponseHandler", () => {
       decisionsExtractor,
       executeDecisions,
       executeCachedViewDecisions,
+      handleRedirectDecisions,
       showContainers
     });
 
@@ -208,6 +250,7 @@ describe("Personalization::onResponseHandler", () => {
     });
 
     expect(showContainers).not.toHaveBeenCalled();
+    expect(handleRedirectDecisions).not.toHaveBeenCalled();
     expect(executeDecisions).not.toHaveBeenCalled();
     expect(executeCachedViewDecisions).not.toHaveBeenCalled();
     expect(decisionsDeferred.resolve).toHaveBeenCalledWith(
@@ -245,10 +288,16 @@ describe("Personalization::onResponseHandler", () => {
   });
 
   it("shouldn't store any viewDecision", () => {
-    decisionsExtractor.groupDecisionsBySchema.and.returnValue({
-      domActionDecisions: PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
-      nonDomActionDecisions
-    });
+    decisionsExtractor.groupDecisionsBySchema.and.returnValues(
+      {
+        matchedDecisions: [],
+        notMatchedDecisions: []
+      },
+      {
+        matchedDecisions: PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
+        notMatchedDecisions: nonDomActionDecisions
+      }
+    );
     decisionsExtractor.groupDecisionsByScope.and.returnValue({
       pageWideScopeDecisions,
       nonPageWideScopeDecisions: {}
@@ -264,6 +313,7 @@ describe("Personalization::onResponseHandler", () => {
       decisionsExtractor,
       executeDecisions,
       executeCachedViewDecisions,
+      handleRedirectDecisions,
       showContainers
     });
 
@@ -285,10 +335,16 @@ describe("Personalization::onResponseHandler", () => {
       cart: CART_VIEW_DECISIONS,
       products: PRODUCTS_VIEW_DECISIONS
     };
-    decisionsExtractor.groupDecisionsBySchema.and.returnValue({
-      domActionDecisions,
-      nonDomActionDecisions
-    });
+    decisionsExtractor.groupDecisionsBySchema.and.returnValues(
+      {
+        matchedDecisions: [],
+        notMatchedDecisions: unprocessedDecisions
+      },
+      {
+        matchedDecisions: domActionDecisions,
+        notMatchedDecisions: nonDomActionDecisions
+      }
+    );
     decisionsExtractor.groupDecisionsByScope.and.returnValue({
       pageWideScopeDecisions,
       nonPageWideScopeDecisions
@@ -317,6 +373,10 @@ describe("Personalization::onResponseHandler", () => {
     );
     expect(decisionsExtractor.groupDecisionsBySchema).toHaveBeenCalledWith({
       decisions: unprocessedDecisions,
+      schema: REDIRECT_ITEM
+    });
+    expect(decisionsExtractor.groupDecisionsBySchema).toHaveBeenCalledWith({
+      decisions: unprocessedDecisions,
       schema: DOM_ACTION
     });
     expect(decisionsExtractor.groupDecisionsByScope).toHaveBeenCalledWith({
@@ -328,5 +388,59 @@ describe("Personalization::onResponseHandler", () => {
     expect(executeDecisions).toHaveBeenCalledWith(pageWideScopeDecisions);
     expect(executeCachedViewDecisions).not.toHaveBeenCalled();
     expect(result).toEqual(expectedResult);
+  });
+
+  it("should trigger redirect handler when renderDecisions is true", () => {
+    const payload = [
+      ...PAGE_WIDE_SCOPE_DECISIONS,
+      ...CART_VIEW_DECISIONS,
+      ...PRODUCTS_VIEW_DECISIONS,
+      ...REDIRECT_PAGE_WIDE_SCOPE_DECISION
+    ];
+    const nonPageWideScopeDecisions = {
+      cart: CART_VIEW_DECISIONS,
+      products: PRODUCTS_VIEW_DECISIONS
+    };
+    decisionsExtractor.groupDecisionsBySchema.and.returnValues(
+      {
+        matchedDecisions: REDIRECT_PAGE_WIDE_SCOPE_DECISION,
+        notMatchedDecisions: unprocessedDecisions
+      },
+      {
+        matchedDecisions: domActionDecisions,
+        notMatchedDecisions: nonDomActionDecisions
+      }
+    );
+    decisionsExtractor.groupDecisionsByScope.and.returnValue({
+      pageWideScopeDecisions,
+      nonPageWideScopeDecisions
+    });
+
+    response.getPayloadsByType.and.returnValue(payload);
+    personalizationDetails.isRenderDecisions.and.returnValue(true);
+    personalizationDetails.getViewName.and.returnValue("cart");
+    const onResponse = createOnResponseHandler({
+      decisionsExtractor,
+      executeDecisions,
+      executeCachedViewDecisions,
+      handleRedirectDecisions,
+      showContainers
+    });
+
+    const result = onResponse({
+      decisionsDeferred,
+      personalizationDetails,
+      response
+    });
+    expect(decisionsDeferred.resolve).toHaveBeenCalledWith({});
+    expect(decisionsExtractor.groupDecisionsBySchema).toHaveBeenCalledWith({
+      decisions: payload,
+      schema: REDIRECT_ITEM
+    });
+
+    expect(showContainers).not.toHaveBeenCalled();
+    expect(executeDecisions).not.toHaveBeenCalled();
+    expect(executeCachedViewDecisions).not.toHaveBeenCalled();
+    expect(result).toEqual(undefined);
   });
 });

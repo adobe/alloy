@@ -42,16 +42,16 @@ describe("Personalization::decisionsExtractor", () => {
     const decisions = PAGE_WIDE_SCOPE_DECISIONS;
 
     const {
-      domActionDecisions,
-      nonDomActionDecisions
+      matchedDecisions,
+      notMatchedDecisions
     } = decisionsExtractor.groupDecisionsBySchema({
       decisions,
       schema: DOM_ACTION
     });
-    expect(nonDomActionDecisions).toEqual(
+    expect(notMatchedDecisions).toEqual(
       PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS
     );
-    expect(domActionDecisions).toEqual(
+    expect(matchedDecisions).toEqual(
       PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
     );
   });

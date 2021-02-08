@@ -10,8 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { isEmptyObject } from "../../utils";
-import { DOM_ACTION } from "./constants/schema";
+import { DOM_ACTION, REDIRECT_ITEM } from "./constants/schema";
 import PAGE_WIDE_SCOPE from "./constants/scope";
+import isNonEmptyArray from "../../utils/isNonEmptyArray";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 
@@ -19,6 +20,7 @@ export default ({
   decisionsExtractor,
   executeDecisions,
   executeCachedViewDecisions,
+  handleRedirectDecisions,
   showContainers
 }) => {
   return ({ decisionsDeferred, personalizationDetails, response }) => {
@@ -30,18 +32,34 @@ export default ({
       return { decisions: [] };
     }
 
-    const {
-      domActionDecisions,
-      nonDomActionDecisions
-    } = decisionsExtractor.groupDecisionsBySchema({
-      decisions: unprocessedDecisions,
-      schema: DOM_ACTION
-    });
+    const decisionsGroupedByRedirectItemSchema = decisionsExtractor.groupDecisionsBySchema(
+      {
+        decisions: unprocessedDecisions,
+        schema: REDIRECT_ITEM
+      }
+    );
+
+    if (
+      isNonEmptyArray(decisionsGroupedByRedirectItemSchema.matchedDecisions) &&
+      personalizationDetails.isRenderDecisions()
+    ) {
+      decisionsDeferred.resolve({});
+      return handleRedirectDecisions(
+        decisionsGroupedByRedirectItemSchema.matchedDecisions
+      );
+    }
+
+    const decisionsGroupedByDomActionSchema = decisionsExtractor.groupDecisionsBySchema(
+      {
+        decisions: decisionsGroupedByRedirectItemSchema.notMatchedDecisions,
+        schema: DOM_ACTION
+      }
+    );
     const {
       pageWideScopeDecisions,
       nonPageWideScopeDecisions
     } = decisionsExtractor.groupDecisionsByScope({
-      decisions: domActionDecisions,
+      decisions: decisionsGroupedByDomActionSchema.matchedDecisions,
       scope: PAGE_WIDE_SCOPE
     });
 
@@ -57,12 +75,15 @@ export default ({
         executeCachedViewDecisions({ viewName });
       }
       showContainers();
-      return { decisions: nonDomActionDecisions };
+      return {
+        decisions: decisionsGroupedByDomActionSchema.notMatchedDecisions
+      };
     }
 
     const decisionsToBeReturned = [
       ...pageWideScopeDecisions,
-      ...nonDomActionDecisions
+      ...decisionsGroupedByDomActionSchema.notMatchedDecisions,
+      ...decisionsGroupedByRedirectItemSchema.matchedDecisions
     ];
 
     if (viewName && nonPageWideScopeDecisions[viewName]) {
