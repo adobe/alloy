@@ -1,4 +1,4 @@
-name: Dev-Test
+name: Dev
 on: push
 
 jobs:
@@ -60,7 +60,7 @@ jobs:
         local-identifier: random
     - name: Run TestCafe Tests
       run: |
-        npm run test:functional:ci:ipp
+        npm run test:functional:ci:dev
     - name: 'BrowserStackLocal Stop'
       uses: 'browserstack/github-actions/setup-local@master'
       with:

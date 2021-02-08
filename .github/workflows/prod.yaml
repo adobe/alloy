@@ -1,4 +1,4 @@
-name: Prod-Test
+name: Prod
 on:
   schedule:
     - cron: "0 */24 * * *"
@@ -34,7 +34,7 @@ jobs:
           local-identifier: random
       - name: Run TestCafe Tests
         run: |
-          npm run test:functional:ci:pp
+          npm run test:functional:ci:prod
       - name: 'BrowserStackLocal Stop'
         uses: 'browserstack/github-actions/setup-local@master'
         with:

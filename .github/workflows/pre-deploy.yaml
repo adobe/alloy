@@ -31,7 +31,7 @@ jobs:
         local-identifier: random
     - name: Run TestCafe Tests
       run: |
-        npm run test:functional:ci:ip
+        npm run test:functional:ci:predeploy
     - name: 'BrowserStackLocal Stop'
       uses: 'browserstack/github-actions/setup-local@master'
       with:
