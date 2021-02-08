@@ -32,22 +32,22 @@ const createDecision = (decision, items) => {
 };
 
 const splitDecisions = (decisions, schema) => {
-  const domActionDecisions = [];
-  const nonDomActionDecisions = [];
+  const matchedDecisions = [];
+  const notMatchedDecisions = [];
 
   decisions.forEach(decision => {
     const { items = [] } = decision;
     const [matchedItems, nonMatchedItems] = splitItems(items, schema);
 
     if (isNonEmptyArray(matchedItems)) {
-      domActionDecisions.push(createDecision(decision, matchedItems));
+      matchedDecisions.push(createDecision(decision, matchedItems));
     }
 
     if (isNonEmptyArray(nonMatchedItems)) {
-      nonDomActionDecisions.push(createDecision(decision, nonMatchedItems));
+      notMatchedDecisions.push(createDecision(decision, nonMatchedItems));
     }
   });
-  return { domActionDecisions, nonDomActionDecisions };
+  return { matchedDecisions, notMatchedDecisions };
 };
 
 const extractDecisionsByScope = (decisions, scope) => {
