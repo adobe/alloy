@@ -19,7 +19,7 @@ import createComponent from "./createComponent";
 import createConsentHashStore from "./createConsentHashStore";
 import createConsentRequestPayload from "./createConsentRequestPayload";
 import createConsentRequest from "./createConsentRequest";
-import injectReadStoredConsent from "./injectReadStoredConsent";
+import createStoredConsent from "./createStoredConsent";
 import injectSendSetConsentRequest from "./injectSendSetConsentRequest";
 import parseConsentCookie from "./parseConsentCookie";
 import validateSetConsentOptions from "./validateSetConsentOptions";
@@ -31,7 +31,7 @@ const createPrivacy = ({
   createNamespacedStorage
 }) => {
   const { orgId, defaultConsent } = config;
-  const readStoredConsent = injectReadStoredConsent({
+  const storedConsent = createStoredConsent({
     parseConsentCookie,
     orgId,
     cookieJar
@@ -50,7 +50,7 @@ const createPrivacy = ({
   const doesIdentityCookieExist = injectDoesIdentityCookieExist({ orgId });
 
   return createComponent({
-    readStoredConsent,
+    storedConsent,
     taskQueue,
     defaultConsent,
     consent,

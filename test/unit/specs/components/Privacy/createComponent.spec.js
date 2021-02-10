@@ -29,7 +29,7 @@ const CONSENT_IN = createConsent("in");
 const CONSENT_OUT = createConsent("out");
 
 describe("privacy:createComponent", () => {
-  let readStoredConsent;
+  let storedConsent;
   let taskQueue;
   let defaultConsent;
   let consent;
@@ -44,8 +44,12 @@ describe("privacy:createComponent", () => {
     doesIdentityCookieExist.and.returnValue(true);
   };
 
+  const clearIdentityCookie = () => {
+    doesIdentityCookieExist.and.returnValue(false);
+  };
+
   beforeEach(() => {
-    readStoredConsent = jasmine.createSpy("readStoredConsent");
+    storedConsent = jasmine.createSpyObj("storedConsent", ["read", "clear"]);
     taskQueue = createTaskQueue();
     defaultConsent = "in";
     consent = jasmine.createSpyObj("consent", ["setConsent", "suspend"]);
@@ -66,7 +70,7 @@ describe("privacy:createComponent", () => {
 
   const build = () => {
     component = createComponent({
-      readStoredConsent,
+      storedConsent,
       taskQueue,
       defaultConsent,
       consent,
@@ -78,15 +82,15 @@ describe("privacy:createComponent", () => {
   };
 
   const clearConsentCookie = function clearConsentCookie() {
-    readStoredConsent.and.returnValue({});
+    storedConsent.read.and.returnValue({});
   };
 
   const setConsentCookieIn = function setConsentCookieIn() {
-    readStoredConsent.and.returnValue({ general: "in" });
+    storedConsent.read.and.returnValue({ general: "in" });
   };
 
   const setConsentCookieOut = function setConsentCookieOut() {
-    readStoredConsent.and.returnValue({ general: "out" });
+    storedConsent.read.and.returnValue({ general: "out" });
   };
 
   const mockSetConsent = () => {
@@ -242,5 +246,21 @@ describe("privacy:createComponent", () => {
     setConsentCookieOut();
     component.lifecycle.onRequestFailure();
     expect(consent.setConsent).toHaveBeenCalledWith({ general: "out" });
+  });
+
+  it("clears storage when the identity cookie is missing", () => {
+    setConsentCookieIn();
+    clearIdentityCookie();
+    build();
+    expect(consentHashStore.clear).toHaveBeenCalled();
+    expect(storedConsent.clear).toHaveBeenCalled();
+  });
+
+  it("clears storage when the consent cookie is missing", () => {
+    clearConsentCookie();
+    setIdentityCookie();
+    build();
+    expect(consentHashStore.clear).toHaveBeenCalled();
+    expect(storedConsent.clear).not.toHaveBeenCalled();
   });
 });

@@ -16,8 +16,13 @@ import { CONSENT } from "../../constants/cookieNameKey";
 export default ({ parseConsentCookie, orgId, cookieJar }) => {
   const consentCookieName = getNamespacedCookieName(orgId, CONSENT);
 
-  return () => {
-    const cookieValue = cookieJar.get(consentCookieName);
-    return cookieValue ? parseConsentCookie(cookieValue) : {};
+  return {
+    read() {
+      const cookieValue = cookieJar.get(consentCookieName);
+      return cookieValue ? parseConsentCookie(cookieValue) : {};
+    },
+    clear() {
+      cookieJar.remove(consentCookieName);
+    }
   };
 };

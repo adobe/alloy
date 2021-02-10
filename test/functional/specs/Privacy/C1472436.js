@@ -42,7 +42,7 @@ test("C1472436: Set-consent is called when consent cookie is missing even though
 
   // delete consent cookie, and reload
   await reloadPage();
-  await cookies.drop(MAIN_CONSENT_COOKIE_NAME);
+  await cookies.remove(MAIN_CONSENT_COOKIE_NAME);
   await alloy.configure(configuration);
 
   // try to send an event, but it should be queued

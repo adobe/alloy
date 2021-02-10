@@ -14,7 +14,7 @@ import { assign } from "../../utils";
 import { GENERAL } from "../../constants/consentPurpose";
 
 export default ({
-  readStoredConsent,
+  storedConsent,
   taskQueue,
   defaultConsent,
   consent,
@@ -26,22 +26,27 @@ export default ({
   let consentByPurpose = { [GENERAL]: defaultConsent };
 
   const identityCookieExists = doesIdentityCookieExist();
-  const consentCookieExists = readStoredConsent()[GENERAL] !== undefined;
+  const consentCookieExists = storedConsent.read()[GENERAL] !== undefined;
   if (!identityCookieExists || !consentCookieExists) {
     consentHashStore.clear();
   } else {
-    consentByPurpose = assign(consentByPurpose, readStoredConsent());
+    consentByPurpose = assign(consentByPurpose, storedConsent.read());
+  }
+  // If the identity cookie is gone, remove the consent cookie because the
+  // consent info is tied to the identity.
+  if (!identityCookieExists) {
+    storedConsent.clear();
   }
 
   consent.setConsent(consentByPurpose);
 
   const readCookieIfQueueEmpty = () => {
     if (taskQueue.length === 0) {
-      const storedConsent = readStoredConsent();
+      const storedConsentObject = storedConsent.read();
       // Only read cookies when there are no outstanding setConsent
       // requests. This helps with race conditions.
-      if (storedConsent) {
-        consent.setConsent(storedConsent);
+      if (storedConsentObject) {
+        consent.setConsent(storedConsentObject);
       }
     }
   };
