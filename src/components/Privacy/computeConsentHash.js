@@ -15,17 +15,19 @@ import { crc32 } from "../../utils";
 // serialize an object with a consistent ordering
 const serialize = obj => {
   if (Array.isArray(obj)) {
-    return JSON.stringify(obj.map(i => serialize(i)));
+    return obj.map(i => serialize(i));
   }
   if (typeof obj === "object" && obj !== null) {
     return Object.keys(obj)
       .sort()
-      .map(k => `${k}:${serialize(obj[k])}`)
-      .join("|");
+      .reduce((memo, key) => {
+        memo[key] = serialize(obj[key]);
+        return memo;
+      }, {});
   }
   return obj;
 };
 
 export default obj => {
-  return crc32(serialize(obj));
+  return crc32(JSON.stringify(serialize(obj)));
 };

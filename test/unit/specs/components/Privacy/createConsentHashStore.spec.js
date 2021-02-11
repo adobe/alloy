@@ -46,18 +46,18 @@ describe("createConsentHashStore", () => {
   it("saves the hash", () => {
     const consentHashes = subject.lookup([CONSENT_IN]);
     consentHashes.save();
-    expect(storage.setItem).toHaveBeenCalledWith("Adobe.1.0", "2112854754");
+    expect(storage.setItem).toHaveBeenCalledWith("Adobe.1.0", "3165644325");
   });
 
   it("is not new when lookup is the same", () => {
-    storage.getItem.and.returnValue("2112854754");
+    storage.getItem.and.returnValue("3165644325");
     const consentHashes = subject.lookup([CONSENT_IN]);
     expect(consentHashes.isNew()).toBe(false);
     expect(storage.getItem).toHaveBeenCalledWith("Adobe.1.0");
   });
 
   it("is new when lookup is different", () => {
-    storage.getItem.and.returnValue("2112854754");
+    storage.getItem.and.returnValue("3165644325");
     const consentHashes = subject.lookup([CONSENT_OUT]);
     expect(consentHashes.isNew()).toBe(true);
     expect(storage.getItem).toHaveBeenCalledWith("Adobe.1.0");

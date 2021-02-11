@@ -63,8 +63,8 @@ const iabConsent = consentString => {
   };
 };
 
-const mergeConsent = (...consentObjects) => {
-  return consentObjects.reduce(
+const mergeConsent = (...setConsentOptions) => {
+  return setConsentOptions.reduce(
     (memo, { consent }) => {
       memo.consent = memo.consent.concat(consent);
       return memo;

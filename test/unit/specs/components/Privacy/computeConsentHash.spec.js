@@ -24,6 +24,30 @@ describe("computeConsentHash", () => {
           }
         }
       ])
-    ).toBe(53977425);
+    ).toBe(2905535662);
+  });
+
+  [
+    [{ a: 1, b: 2 }, { b: 2, a: 1 }],
+    [[{ a: 1, b: 2 }], [{ b: 2, a: 1 }]],
+    [{ a: { b: 2, c: 3 } }, { a: { c: 3, b: 2 } }],
+    [{ a: [1], b: [2] }, { b: [2], a: [1] }],
+    [{ a: undefined }, {}]
+  ].forEach(([a, b], index) => {
+    it(`computes the same hash ${index}`, () => {
+      expect(computeConsentHash(a)).toBe(computeConsentHash(b));
+    });
+  });
+
+  [
+    [[1, 2], [2, 1]],
+    ["1", 1],
+    [{ a: null }, { a: undefined }],
+    [{ "xdm:key": "value" }, { xdm: "key:value" }],
+    [null, {}]
+  ].forEach(([a, b], index) => {
+    it(`computes a different hash ${index}`, () => {
+      expect(computeConsentHash(a)).not.toBe(computeConsentHash(b));
+    });
   });
 });
