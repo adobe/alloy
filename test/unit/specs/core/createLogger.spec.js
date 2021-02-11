@@ -17,6 +17,8 @@ const monitorMethods = [
   "onInstanceCreated",
   "onInstanceConfigured",
   "onBeforeCommand",
+  "onCommandResolved",
+  "onCommandRejected",
   "onBeforeNetworkRequest",
   "onNetworkResponse",
   "onNetworkError"
@@ -144,6 +146,37 @@ describe("createLogger", () => {
       "[myinstance]",
       "Executing mycommand command. Options:",
       { a: "1" }
+    );
+  });
+
+  it("logs onCommandResolved", () => {
+    logEnabled = true;
+    build();
+    logger.logOnCommandResolved({
+      commandName: "mycommand",
+      options: { a: "1" },
+      result: { b: "2" }
+    });
+    expect(console.info).toHaveBeenCalledWith(
+      "[myinstance]",
+      "mycommand command resolved. Result:",
+      { b: "2" }
+    );
+  });
+
+  it("logs onCommandRejected", () => {
+    logEnabled = true;
+    build();
+    const error = Error("myerror");
+    logger.logOnCommandRejected({
+      commandName: "mycommand",
+      options: { a: "1" },
+      error
+    });
+    expect(console.error).toHaveBeenCalledWith(
+      "[myinstance]",
+      "mycommand command was rejected. Error:",
+      error
     );
   });
 

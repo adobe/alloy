@@ -19,3 +19,12 @@ dd {
   margin-bottom: 15px;
   margin-left: 0px;
 }
+
+table.configuration span.disabled {
+  opacity: 0.5;
+  margin-right: 10px;
+}
+
+table.configuration a {
+  margin-right: 10px;
+}
