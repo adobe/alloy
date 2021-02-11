@@ -10,10 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { TOO_MANY_REQUESTS } from "../../constants/httpStatusCode";
+import {
+  TOO_MANY_REQUESTS,
+  SERVICE_UNAVAILABLE,
+  BAD_GATEWAY,
+  GATEWAY_TIMEOUT
+} from "../../constants/httpStatusCode";
+import { includes } from "../../utils";
 
-export default statusCode => {
+const MAX_RETRIES = 3;
+
+const RETRYABLE_STATUS_CODES = [
+  TOO_MANY_REQUESTS,
+  SERVICE_UNAVAILABLE,
+  BAD_GATEWAY,
+  GATEWAY_TIMEOUT
+];
+
+// These rules are in accordance with
+// https://git.corp.adobe.com/pages/experience-edge/konductor/#/apis/errors?id=handling-4xx-and-5xx-responses
+export default ({ response, retriesAttempted }) => {
   return (
-    statusCode === TOO_MANY_REQUESTS || (statusCode >= 500 && statusCode < 600)
+    retriesAttempted < MAX_RETRIES &&
+    includes(RETRYABLE_STATUS_CODES, response.statusCode)
   );
 };

@@ -19,6 +19,8 @@ import { NO_CONTENT } from "../../constants/httpStatusCode";
 export default networkResponse => {
   const { statusCode, body, parsedBody } = networkResponse;
   if (
+    statusCode < 200 ||
+    statusCode >= 300 ||
     (!parsedBody && statusCode !== NO_CONTENT) ||
     (parsedBody && !Array.isArray(parsedBody.handle))
   ) {

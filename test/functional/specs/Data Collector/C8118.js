@@ -53,7 +53,7 @@ const sendEvent = ClientFunction(() => {
   return window.alloy("sendEvent");
 });
 
-test("Test C8118: Verify link a click sends a request to the collect endpoint when identity has been established, interact endpoint otherwise", async () => {
+test("Test C8118: Verify link click sends a request to the collect endpoint when identity has been established, interact endpoint otherwise", async () => {
   if (isSendBeaconSupported()) {
     await sendBeaconMock.mock();
   }

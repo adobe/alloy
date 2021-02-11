@@ -67,7 +67,7 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
         data.parsedBody || data.body ? `response body:` : `no response body.`;
       log(
         "info",
-        `Request ${data.requestId}: Received response with status code ${data.status} and ${messagesSuffix}`,
+        `Request ${data.requestId}: Received response with status code ${data.statusCode} and ${messagesSuffix}`,
         data.parsedBody || data.body
       );
     },

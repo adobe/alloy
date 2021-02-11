@@ -168,7 +168,7 @@ describe("createLogger", () => {
       parsedBody: { a: "1" },
       body: "thebody",
       requestId: "abc123",
-      status: 200
+      statusCode: 200
     });
     expect(console.info).toHaveBeenCalledWith(
       "[myinstance]",
@@ -183,7 +183,7 @@ describe("createLogger", () => {
     logger.logOnNetworkResponse({
       body: "thebody",
       requestId: "abc123",
-      status: 200
+      statusCode: 200
     });
     expect(console.info).toHaveBeenCalledWith(
       "[myinstance]",
@@ -195,7 +195,11 @@ describe("createLogger", () => {
   it("logs onNetworkResponse with no response body", () => {
     logEnabled = true;
     build();
-    logger.logOnNetworkResponse({ body: "", requestId: "abc123", status: 200 });
+    logger.logOnNetworkResponse({
+      body: "",
+      requestId: "abc123",
+      statusCode: 200
+    });
     expect(console.info).toHaveBeenCalledWith(
       "[myinstance]",
       "Request abc123: Received response with status code 200 and no response body.",

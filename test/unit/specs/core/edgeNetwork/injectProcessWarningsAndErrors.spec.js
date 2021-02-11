@@ -26,50 +26,57 @@ describe("processWarningsAndErrors", () => {
         return [];
       }
     };
-    logger = jasmine.createSpyObj("logger", ["warn"]);
+    logger = jasmine.createSpyObj("logger", ["warn", "error"]);
     processWarningsAndErrors = injectProcessWarningsAndErrors({ logger });
   });
 
   it("logs warnings", () => {
-    response.getWarnings = () => [
+    const warnings = [
       {
-        code: "general:100",
-        message: "General warning."
+        title: "General warning",
+        detail: "General warning detail"
       },
       {
-        code: "personalization:204",
-        message: "Personalization warning."
+        title: "Personalization warning",
+        message: "Personalization warning detail"
       }
     ];
+    response.getWarnings = () => warnings;
 
     processWarningsAndErrors(response);
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "Warning received from server: [Code general:100] General warning."
+      "The server responded with the following warning:",
+      warnings[0]
     );
     expect(logger.warn).toHaveBeenCalledWith(
-      "Warning received from server: [Code personalization:204] Personalization warning."
+      "The server responded with the following warning:",
+      warnings[1]
     );
   });
 
-  it("throws errors", () => {
-    response.getErrors = () => [
+  it("logs errors", () => {
+    const errors = [
       {
-        code: "general:100",
-        message: "General error occurred."
+        title: "General warning",
+        detail: "General warning detail"
       },
       {
-        code: "personalization:204",
-        message: "Personalization error occurred."
+        title: "Personalization warning",
+        message: "Personalization warning detail"
       }
     ];
+    response.getErrors = () => errors;
 
-    expect(() => {
-      processWarningsAndErrors(response);
-    }).toThrowError(
-      "The server responded with the following errors:\n" +
-        "• [Code general:100] General error occurred.\n" +
-        "• [Code personalization:204] Personalization error occurred."
+    processWarningsAndErrors(response);
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "The server responded with the following non-fatal error:",
+      errors[0]
+    );
+    expect(logger.error).toHaveBeenCalledWith(
+      "The server responded with the following non-fatal error:",
+      errors[1]
     );
   });
 });

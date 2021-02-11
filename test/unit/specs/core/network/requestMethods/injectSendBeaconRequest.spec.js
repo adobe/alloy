@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectSendBeaconRequest from "../../../../../src/core/network/injectSendBeaconRequest";
+import injectSendBeaconRequest from "../../../../../../src/core/network/requestMethods/injectSendBeaconRequest";
 
 // When running these tests in IE 11, they fail because IE doesn't like the
 // way the blob is constructed (see
@@ -70,8 +70,11 @@ describe("injectSendBeaconRequest", () => {
       });
       // eslint-disable-next-line consistent-return
       return sendBeaconRequest("https://example.com/endpoint", body).then(
-        () => {
+        result => {
           expect(sendFetchRequest).not.toHaveBeenCalled();
+          expect(result.statusCode).toBe(204);
+          expect(result.getHeader("Content-Type")).toBeNull();
+          expect(result.body).toBe("");
         }
       );
     })

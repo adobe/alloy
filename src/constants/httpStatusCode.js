@@ -12,3 +12,6 @@ governing permissions and limitations under the License.
 
 export const NO_CONTENT = 204;
 export const TOO_MANY_REQUESTS = 429;
+export const BAD_GATEWAY = 502;
+export const SERVICE_UNAVAILABLE = 503;
+export const GATEWAY_TIMEOUT = 504;

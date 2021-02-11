@@ -417,15 +417,8 @@ describe("injectSendEdgeNetworkRequest", () => {
 
   it("processes warnings and errors", () => {
     return sendEdgeNetworkRequest({ request }).then(() => {
-      expect(processWarningsAndErrors).toHaveBeenCalled();
+      expect(processWarningsAndErrors).toHaveBeenCalledWith(response);
     });
-  });
-
-  it("rejects the promise if error is thrown while processing warnings and errors", () => {
-    processWarningsAndErrors.and.throwError(new Error("Invalid XDM"));
-    return expectAsync(
-      sendEdgeNetworkRequest({ request })
-    ).toBeRejectedWithError("Invalid XDM");
   });
 
   it("returns the merged object from lifecycle::onResponse and runOnResponseCallbacks", () => {

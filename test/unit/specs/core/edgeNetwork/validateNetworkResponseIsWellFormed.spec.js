@@ -13,6 +13,26 @@ governing permissions and limitations under the License.
 import validateNetworkResponseIsWellFormed from "../../../../../src/core/edgeNetwork/validateNetworkResponseIsWellFormed";
 
 describe("validateNetworkResponseIsWellFormed", () => {
+  it("throws error if status code is below 2xx", () => {
+    expect(() => {
+      validateNetworkResponseIsWellFormed({
+        statusCode: 199
+      });
+    }).toThrowError(
+      "Unexpected server response with status code 199 and no response body."
+    );
+  });
+
+  it("throws error if status code is above 2xx", () => {
+    expect(() => {
+      validateNetworkResponseIsWellFormed({
+        statusCode: 300
+      });
+    }).toThrowError(
+      "Unexpected server response with status code 300 and no response body."
+    );
+  });
+
   it("throws error if no parsed body and HTTP status code is not 204", () => {
     expect(() => {
       validateNetworkResponseIsWellFormed({
