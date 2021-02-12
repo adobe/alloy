@@ -10,21 +10,37 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const MESSAGE_PREFIX = "The server responded with the following";
+import { NO_CONTENT } from "../../constants/httpStatusCode";
+
+const MESSAGE_PREFIX = "The server responded with a";
 
 export default ({ logger }) => {
-  /**
-   * Processes warnings and errors from a response object by logging them to the
-   * console.
-   * @param {Object} response
-   */
-  return response => {
-    response.getWarnings().forEach(warning => {
-      logger.warn(`${MESSAGE_PREFIX} warning:`, warning);
-    });
+  return networkResponse => {
+    const { statusCode, body, parsedBody } = networkResponse;
 
-    response.getErrors().forEach(error => {
-      logger.error(`${MESSAGE_PREFIX} non-fatal error:`, error);
-    });
+    if (
+      statusCode < 200 ||
+      statusCode >= 300 ||
+      (!parsedBody && statusCode !== NO_CONTENT) ||
+      (parsedBody && !Array.isArray(parsedBody.handle))
+    ) {
+      const bodyToLog = parsedBody ? JSON.stringify(parsedBody, null, 2) : body;
+      const messageSuffix = bodyToLog
+        ? `response body:\n${bodyToLog}`
+        : `no response body.`;
+      throw new Error(
+        `${MESSAGE_PREFIX} status code ${statusCode} and ${messageSuffix}`
+      );
+    }
+
+    if (parsedBody) {
+      const { warnings = [], errors = [] } = parsedBody;
+      warnings.forEach(warning => {
+        logger.warn(`${MESSAGE_PREFIX} warning:`, warning);
+      });
+      errors.forEach(error => {
+        logger.error(`${MESSAGE_PREFIX} non-fatal error:`, error);
+      });
+    }
   };
 };

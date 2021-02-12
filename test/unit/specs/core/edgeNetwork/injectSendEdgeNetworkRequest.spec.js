@@ -30,7 +30,6 @@ describe("injectSendEdgeNetworkRequest", () => {
   let response;
   let createResponse;
   let processWarningsAndErrors;
-  let validateNetworkResponseIsWellFormed;
   let sendEdgeNetworkRequest;
   let request;
   /**
@@ -59,15 +58,15 @@ describe("injectSendEdgeNetworkRequest", () => {
   };
 
   /**
-   * Helper for testing handling of malformed network responses, particularly
+   * Helper for testing handling of fatal error responses from the server, particularly
    * their interplay with lifecycle hooks.
    */
-  const testMalformedResponseHandling = ({
+  const testResponseFailureHandling = ({
     runOnRequestFailureCallbacks,
     assertLifecycleCall
   }) => {
     const error = new Error("Unexpected response.");
-    validateNetworkResponseIsWellFormed.and.throwError(error);
+    processWarningsAndErrors.and.throwError(error);
     const errorHandler = jasmine.createSpy("errorHandler");
     sendEdgeNetworkRequest({ request, runOnRequestFailureCallbacks })
       .then(fail)
@@ -84,10 +83,10 @@ describe("injectSendEdgeNetworkRequest", () => {
   };
 
   /**
-   * Helper for testing handling of well-formed network responses, particularly
+   * Helper for testing handling of successful network responses, particularly
    * their interplay with lifecycle hooks.
    */
-  const testWellFormedResponseHandling = ({
+  const testResponseSuccessHandling = ({
     runOnResponseCallbacks,
     assertLifecycleCall
   }) => {
@@ -138,9 +137,6 @@ describe("injectSendEdgeNetworkRequest", () => {
       .createSpy("createResponse")
       .and.returnValue(response);
     processWarningsAndErrors = jasmine.createSpy("processWarningsAndErrors");
-    validateNetworkResponseIsWellFormed = jasmine.createSpy(
-      "validateNetworkResponseIsWellFormed"
-    );
     sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
       config,
       logger,
@@ -148,8 +144,7 @@ describe("injectSendEdgeNetworkRequest", () => {
       cookieTransfer,
       sendNetworkRequest,
       createResponse,
-      processWarningsAndErrors,
-      validateNetworkResponseIsWellFormed
+      processWarningsAndErrors
     });
   });
 
@@ -307,11 +302,11 @@ describe("injectSendEdgeNetworkRequest", () => {
     });
   });
 
-  it("when network response is malformed, calls lifecycle.onRequestFailure, waits for it to complete, then rejects promise", () => {
+  it("when network response is a failure, calls lifecycle.onRequestFailure, waits for it to complete, then rejects promise", () => {
     const deferred = defer();
     lifecycle.onRequestFailure.and.returnValue(deferred.promise);
 
-    return testMalformedResponseHandling({
+    return testResponseFailureHandling({
       assertLifecycleCall(error) {
         expect(lifecycle.onRequestFailure).toHaveBeenCalledWith({ error });
         // We reject this deferred to simulate a component throwing an error
@@ -323,7 +318,7 @@ describe("injectSendEdgeNetworkRequest", () => {
     });
   });
 
-  it("when network response is malformed, calls lifecycle.onBeforeRequest's onRequestFailure callback, waits for it to complete, then rejects promise", () => {
+  it("when network response is a failure, calls lifecycle.onBeforeRequest's onRequestFailure callback, waits for it to complete, then rejects promise", () => {
     const deferred = defer();
     const requestFailureCallback = jasmine
       .createSpy("requestFailureCallback")
@@ -332,7 +327,7 @@ describe("injectSendEdgeNetworkRequest", () => {
       onRequestFailure(requestFailureCallback);
       return Promise.resolve();
     });
-    return testMalformedResponseHandling({
+    return testResponseFailureHandling({
       assertLifecycleCall(error) {
         expect(requestFailureCallback).toHaveBeenCalledWith({ error });
         // We reject this deferred to simulate a component throwing an error
@@ -345,12 +340,12 @@ describe("injectSendEdgeNetworkRequest", () => {
     });
   });
 
-  it("when network response is malformed, calls runOnRequestFailureCallbacks, waits for it to complete, then rejects promise", () => {
+  it("when network response is a failure, calls runOnRequestFailureCallbacks, waits for it to complete, then rejects promise", () => {
     const deferred = defer();
     const runOnRequestFailureCallbacks = jasmine
       .createSpy("runOnRequestFailureCallbacks")
       .and.returnValue(deferred.promise);
-    return testMalformedResponseHandling({
+    return testResponseFailureHandling({
       runOnRequestFailureCallbacks,
       assertLifecycleCall(error) {
         expect(runOnRequestFailureCallbacks).toHaveBeenCalledWith({ error });
@@ -363,10 +358,10 @@ describe("injectSendEdgeNetworkRequest", () => {
     });
   });
 
-  it("when network response is well-formed, calls lifecycle.onResponse, waits for it to complete, then resolves promise", () => {
+  it("when network response is a success, calls lifecycle.onResponse, waits for it to complete, then resolves promise", () => {
     const deferred = defer();
     lifecycle.onResponse.and.returnValue(deferred.promise);
-    return testWellFormedResponseHandling({
+    return testResponseSuccessHandling({
       assertLifecycleCall() {
         expect(lifecycle.onResponse).toHaveBeenCalledWith({ response });
         deferred.resolve();
@@ -374,7 +369,7 @@ describe("injectSendEdgeNetworkRequest", () => {
     });
   });
 
-  it("when network response is well-formed, calls lifecycle.onBeforeRequest's responseCallback callback, waits for it to complete, then resolves promise", () => {
+  it("when network response is a success, calls lifecycle.onBeforeRequest's responseCallback callback, waits for it to complete, then resolves promise", () => {
     const deferred = defer();
     const responseCallback = jasmine
       .createSpy("responseCallback")
@@ -383,7 +378,7 @@ describe("injectSendEdgeNetworkRequest", () => {
       onResponse(responseCallback);
       return Promise.resolve();
     });
-    return testWellFormedResponseHandling({
+    return testResponseSuccessHandling({
       assertLifecycleCall() {
         expect(responseCallback).toHaveBeenCalledWith({ response });
         deferred.resolve();
@@ -391,12 +386,12 @@ describe("injectSendEdgeNetworkRequest", () => {
     });
   });
 
-  it("when network response is well-formed, calls runOnResponseCallbacks, waits for it to complete, then resolves promise", () => {
+  it("when network response is a success, calls runOnResponseCallbacks, waits for it to complete, then resolves promise", () => {
     const deferred = defer();
     const runOnResponseCallbacks = jasmine
       .createSpy("runOnResponseCallbacks")
       .and.returnValue(deferred.promise);
-    return testWellFormedResponseHandling({
+    return testResponseSuccessHandling({
       runOnResponseCallbacks,
       assertLifecycleCall() {
         expect(runOnResponseCallbacks).toHaveBeenCalledWith({ response });
@@ -412,12 +407,6 @@ describe("injectSendEdgeNetworkRequest", () => {
         cookieTransfer.responseToCookies,
         lifecycle.onResponse
       ]);
-    });
-  });
-
-  it("processes warnings and errors", () => {
-    return sendEdgeNetworkRequest({ request }).then(() => {
-      expect(processWarningsAndErrors).toHaveBeenCalledWith(response);
     });
   });
 

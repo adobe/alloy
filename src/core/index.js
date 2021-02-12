@@ -38,7 +38,6 @@ import createDataCollectionRequestPayload from "./edgeNetwork/requests/createDat
 import createDataCollectionRequest from "./edgeNetwork/requests/createDataCollectionRequest";
 import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkRequest";
 import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors";
-import validateNetworkResponseIsWellFormed from "./edgeNetwork/validateNetworkResponseIsWellFormed";
 import isRequestRetryable from "./network/isRequestRetryable";
 import getRequestRetryDelay from "./network/getRequestRetryDelay";
 
@@ -106,8 +105,7 @@ export const createExecuteCommand = ({
       cookieTransfer,
       sendNetworkRequest,
       createResponse,
-      processWarningsAndErrors,
-      validateNetworkResponseIsWellFormed
+      processWarningsAndErrors
     });
 
     const generalConsentState = createConsentStateMachine();

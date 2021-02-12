@@ -45,8 +45,6 @@ test("Test C13819: Sending invalid config ID rejects command promise with useful
   const errorMessage = await sendEvent();
   await t
     .expect(errorMessage)
-    .contains(
-      "Unexpected server response with status code 400 and response body"
-    );
+    .contains("The server responded with a status code 400 and response body");
   await t.expect(errorMessage).contains("EXEG-0003-400");
 });
