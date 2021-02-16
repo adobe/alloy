@@ -71,7 +71,7 @@ describe("processWarningsAndErrors", () => {
       },
       {
         title: "Personalization warning",
-        message: "Personalization warning detail"
+        detail: "Personalization warning detail"
       }
     ];
 
@@ -101,7 +101,7 @@ describe("processWarningsAndErrors", () => {
       },
       {
         title: "Personalization warning",
-        message: "Personalization warning detail"
+        detail: "Personalization warning detail"
       }
     ];
 
