@@ -22,7 +22,10 @@ export default ({ sendBeacon, sendFetchRequest, logger }) => {
     // the server, but we'll resolve the promise with an object to maintain
     // consistency with other network strategies.
     return Promise.resolve({
-      status: 204,
+      statusCode: 204,
+      getHeader() {
+        return null;
+      },
       body: ""
     });
   };

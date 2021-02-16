@@ -20,7 +20,14 @@ export default ({ XMLHttpRequest }) => {
             reject(new Error("Request aborted."));
           } else {
             resolve({
-              status: request.status,
+              statusCode: request.status,
+              // We expose headers through a function instead of creating an object
+              // with all the headers up front because:
+              // 1. It avoids having to add header parsing code to get all headers.
+              // 2. The native request.getResponseHeader method is case-insensitive.
+              getHeader(name) {
+                return request.getResponseHeader(name);
+              },
               body: request.responseText
             });
           }

@@ -25,7 +25,6 @@ const createNamespacedStorage = injectStorage(window);
 // eslint-disable-next-line no-underscore-dangle
 const defaultGetMonitors = () => window.__alloyMonitors || [];
 
-// eslint-disable-next-line import/prefer-default-export
 export const createInstance = ({
   instanceName,
   getMonitors = defaultGetMonitors

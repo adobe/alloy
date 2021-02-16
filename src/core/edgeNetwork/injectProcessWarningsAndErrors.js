@@ -10,33 +10,37 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { NO_CONTENT } from "../../constants/httpStatusCode";
+
+const MESSAGE_PREFIX = "The server responded with a";
+
 export default ({ logger }) => {
-  /**
-   * Processes warnings and errors from a response object. If warnings are found,
-   * they will be logged. If errors are found, an error will be thrown with information
-   * about the errors received from the server.
-   * @param {Object} response
-   * @param {Object} logger
-   */
-  return response => {
-    // Regardless of whether the response had a successful status code,
-    // the response payload may have warnings and errors we still
-    // want to process.
+  return networkResponse => {
+    const { statusCode, body, parsedBody } = networkResponse;
 
-    const warnings = response.getWarnings();
-    const errors = response.getErrors();
-
-    warnings.forEach(warning => {
-      logger.warn(
-        `Warning received from server: [Code ${warning.code}] ${warning.message}`
+    if (
+      statusCode < 200 ||
+      statusCode >= 300 ||
+      (!parsedBody && statusCode !== NO_CONTENT) ||
+      (parsedBody && !Array.isArray(parsedBody.handle))
+    ) {
+      const bodyToLog = parsedBody ? JSON.stringify(parsedBody, null, 2) : body;
+      const messageSuffix = bodyToLog
+        ? `response body:\n${bodyToLog}`
+        : `no response body.`;
+      throw new Error(
+        `${MESSAGE_PREFIX} status code ${statusCode} and ${messageSuffix}`
       );
-    });
+    }
 
-    if (errors.length) {
-      const errorMessage = errors.reduce((memo, error) => {
-        return `${memo}\n• [Code ${error.code}] ${error.message}`;
-      }, "The server responded with the following errors:");
-      throw new Error(errorMessage);
+    if (parsedBody) {
+      const { warnings = [], errors = [] } = parsedBody;
+      warnings.forEach(warning => {
+        logger.warn(`${MESSAGE_PREFIX} warning:`, warning);
+      });
+      errors.forEach(error => {
+        logger.error(`${MESSAGE_PREFIX} non-fatal error:`, error);
+      });
     }
   };
 };
