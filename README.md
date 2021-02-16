@@ -1,4 +1,4 @@
-[[![Alloy Production](https://github.com/adobe/alloy/workflows/Alloy-Test-Cron/badge.svg)](https://github.com/adobe/alloy/actions)]
+[[![Alloy Main Branch | Konductor Prod](https://github.com/adobe/alloy/workflows/Pre-Deploy/badge.svg)](https://github.com/adobe/alloy/actions)]
 
 # Alloy
 
