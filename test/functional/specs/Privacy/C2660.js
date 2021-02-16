@@ -46,7 +46,7 @@ test("C2660 - Context data is captured before user consents.", async () => {
 
   // set consent to flush the events queue
   await alloy.setConsent(CONSENT_IN);
-  await sendEventResponse.promise;
+  await sendEventResponse.result;
 
   // send another event to make sure the foo hash is collected normally
   await alloy.sendEvent();

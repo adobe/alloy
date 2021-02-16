@@ -38,7 +38,7 @@ test("Test C2594: event command resolves promise with empty object if user conse
   const sendEventResponse = await alloy.sendEventAsync();
   await alloy.setConsent(CONSENT_OUT);
 
-  const result = await sendEventResponse.promise;
+  const result = await sendEventResponse.result;
   await t.expect(result).eql({});
   await logger.warn.expectMessageMatching(/user declined consent/);
   // make sure no event requests were sent out

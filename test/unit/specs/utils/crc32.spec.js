@@ -643,7 +643,7 @@ describe("crc32", () => {
     expect(result).toBe(864118309);
   });
 
-  it("should create different hash for identical strings", () => {
+  it("should create different hashes for different strings", () => {
     const stringOneToHash = "hello@#&^hq10";
     const stringTwoToHash = "hello@#&h^q10";
     const resultOne = crc32(stringOneToHash);

@@ -35,7 +35,7 @@ test("Test C2593: Event command consents to all purposes", async () => {
   await alloy.setConsent(CONSENT_IN);
 
   // ensure the event goes out
-  await sendEventResponse.promise;
+  await sendEventResponse.result;
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 });

@@ -13,7 +13,8 @@ governing permissions and limitations under the License.
 import {
   createTaskQueue,
   cookieJar,
-  injectDoesIdentityCookieExist
+  injectDoesIdentityCookieExist,
+  sanitizeOrgIdForCookieName
 } from "../../utils";
 import createComponent from "./createComponent";
 import createConsentHashStore from "./createConsentHashStore";
@@ -42,7 +43,9 @@ const createPrivacy = ({
     createConsentRequest,
     sendEdgeNetworkRequest
   });
-  const storage = createNamespacedStorage(`consentHashes.${orgId}.`);
+  const storage = createNamespacedStorage(
+    `${sanitizeOrgIdForCookieName(orgId)}.consentHashes.`
+  );
   const consentHashStore = createConsentHashStore({
     storage: storage.persistent
   });

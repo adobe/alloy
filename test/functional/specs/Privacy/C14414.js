@@ -42,6 +42,6 @@ test("Test C14414: Requests are queued while consent changes are pending", async
     .ok("Set-consent requests were not sequential");
 
   // make sure there are no errors returned from the setConsent requests
-  await setConsentResponse1.promise;
-  await setConsentResponse2.promise;
+  await setConsentResponse1.result;
+  await setConsentResponse2.result;
 });

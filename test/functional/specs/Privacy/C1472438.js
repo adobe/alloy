@@ -43,6 +43,6 @@ test("C1472438: Adobe consent version 2.0 is translated to general=out", async (
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
 
   // make sure the event does not go out
-  await sendEventResponse.promise;
+  await sendEventResponse.result;
   await t.expect(networkLogger.edgeInteractEndpointLogs.requests.length).eql(0);
 });

@@ -15,7 +15,7 @@ export default ({ storage }) => {
         const key = getKey(consentObject);
         const { standard, version, ...rest } = consentObject;
         if (!currentHashes[key]) {
-          currentHashes[key] = `${computeConsentHash(rest)}`;
+          currentHashes[key] = computeConsentHash(rest).toString();
         }
         return currentHashes[key];
       };

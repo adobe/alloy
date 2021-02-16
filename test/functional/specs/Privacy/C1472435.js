@@ -54,6 +54,6 @@ test("C1472435: Set-consent is called when identity cookie is missing even thoug
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(2);
 
   // make sure the event goes out
-  await sendEventResponse.promise;
+  await sendEventResponse.result;
   await t.expect(networkLogger.edgeInteractEndpointLogs.requests.length).eql(1);
 });
