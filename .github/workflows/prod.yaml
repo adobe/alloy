@@ -9,11 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.3
+      - name: "Get latest Alloy Release"
+        id: last_release
+        uses: InsonusK/get-latest-release@v1.0.1
         with:
-          fetch-depth: 0
-      - name: Get previous tag
-        id: previoustag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+          myToken: ${{ github.token }}
+          exclude_types: "draft|prerelease"
+          view_top: 1
       - uses: actions/cache@v2
         id: npm-cache
         with:
