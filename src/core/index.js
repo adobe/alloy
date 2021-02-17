@@ -28,9 +28,9 @@ import initializeComponents from "./initializeComponents";
 import createConfig from "./config/createConfig";
 import createCoreConfigs from "./config/createCoreConfigs";
 import injectHandleError from "./injectHandleError";
-import injectSendFetchRequest from "./network/injectSendFetchRequest";
-import injectSendXhrRequest from "./network/injectSendXhrRequest";
-import injectSendBeaconRequest from "./network/injectSendBeaconRequest";
+import injectSendFetchRequest from "./network/requestMethods/injectSendFetchRequest";
+import injectSendXhrRequest from "./network/requestMethods/injectSendXhrRequest";
+import injectSendBeaconRequest from "./network/requestMethods/injectSendBeaconRequest";
 import createLogger from "./createLogger";
 import createEventManager from "./createEventManager";
 import createCookieTransfer from "./createCookieTransfer";
@@ -38,8 +38,8 @@ import createDataCollectionRequestPayload from "./edgeNetwork/requests/createDat
 import createDataCollectionRequest from "./edgeNetwork/requests/createDataCollectionRequest";
 import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkRequest";
 import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors";
-import validateNetworkResponseIsWellFormed from "./edgeNetwork/validateNetworkResponseIsWellFormed";
-import isRetryableHttpStatusCode from "./network/isRetryableHttpStatusCode";
+import isRequestRetryable from "./network/isRequestRetryable";
+import getRequestRetryDelay from "./network/getRequestRetryDelay";
 
 const createNamespacedStorage = injectStorage(window);
 
@@ -93,7 +93,8 @@ export const createExecuteCommand = ({
       logger,
       sendFetchRequest,
       sendBeaconRequest,
-      isRetryableHttpStatusCode
+      isRequestRetryable,
+      getRequestRetryDelay
     });
     const processWarningsAndErrors = injectProcessWarningsAndErrors({
       logger
@@ -104,8 +105,7 @@ export const createExecuteCommand = ({
       cookieTransfer,
       sendNetworkRequest,
       createResponse,
-      processWarningsAndErrors,
-      validateNetworkResponseIsWellFormed
+      processWarningsAndErrors
     });
 
     const generalConsentState = createConsentStateMachine({ logger });

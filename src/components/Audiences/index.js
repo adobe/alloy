@@ -19,16 +19,12 @@ const createAudiences = ({ logger }) => {
     logger
   });
   const processDestinationsFromResponse = ({ response }) => {
-    if (!response) {
-      return undefined;
-    }
     const destinations = response.getPayloadsByType("activation:push");
     return processDestinations(destinations);
   };
   return {
     lifecycle: {
-      onResponse: processDestinationsFromResponse,
-      onRequestFailure: processDestinationsFromResponse
+      onResponse: processDestinationsFromResponse
     },
     commands: {}
   };

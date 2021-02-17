@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectSendXhrRequest from "../../../../../src/core/network/injectSendXhrRequest";
+import injectSendXhrRequest from "../../../../../../src/core/network/requestMethods/injectSendXhrRequest";
 
 describe("sendXhrRequest", () => {
   const url = "https://example.com/endpoint";
@@ -24,7 +24,8 @@ describe("sendXhrRequest", () => {
       "open",
       "setRequestHeader",
       "send",
-      "onloadstart"
+      "onloadstart",
+      "getResponseHeader"
     ]);
     XMLHttpRequest = () => {
       return request;
@@ -82,14 +83,15 @@ describe("sendXhrRequest", () => {
   it("resolves returned promise upon network success", () => {
     const xhrPromise = sendXhrRequest("https://example.com/endpoint", body);
     request.readyState = 4;
+    request.getResponseHeader.and.returnValue("headervalue");
     request.responseText = "response text";
     request.status = 999;
     request.onreadystatechange();
     return xhrPromise.then(result => {
-      expect(result).toEqual({
-        status: 999,
-        body: "response text"
-      });
+      expect(result.statusCode).toBe(999);
+      expect(result.getHeader("Content-Type")).toBe("headervalue");
+      expect(result.body).toBe("response text");
+      expect(request.getResponseHeader).toHaveBeenCalledWith("Content-Type");
     });
   });
 });

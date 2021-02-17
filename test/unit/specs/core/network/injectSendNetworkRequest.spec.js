@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import injectSendNetworkRequest from "../../../../../src/core/network/injectSendNetworkRequest";
+import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("injectSendNetworkRequest", () => {
   const url = "https://example.com";
@@ -28,9 +29,11 @@ describe("injectSendNetworkRequest", () => {
   let sendNetworkRequest;
   let sendFetchRequest;
   let sendBeaconRequest;
-  let isRetryableHttpStatusCode;
+  let isRequestRetryable;
+  let getRequestRetryDelay;
 
   beforeEach(() => {
+    jasmine.clock().install();
     logger = jasmine.createSpyObj("logger", [
       "logOnBeforeNetworkRequest",
       "logOnNetworkResponse",
@@ -39,26 +42,34 @@ describe("injectSendNetworkRequest", () => {
     logger.enabled = true;
     sendFetchRequest = jasmine.createSpy().and.returnValue(
       Promise.resolve({
-        status: 200,
+        statusCode: 200,
         body: responseBodyJson
       })
     );
     sendBeaconRequest = jasmine.createSpy().and.returnValue(
       Promise.resolve({
-        status: 204,
+        statusCode: 204,
         body: ""
       })
     );
-    isRetryableHttpStatusCode = jasmine
-      .createSpy("isRetryableHttpStatusCode")
+    isRequestRetryable = jasmine
+      .createSpy("isRequestRetryable")
       .and.returnValue(false);
+    getRequestRetryDelay = jasmine
+      .createSpy("getRequestRetryDelay")
+      .and.returnValue(1000);
 
     sendNetworkRequest = injectSendNetworkRequest({
       logger,
       sendFetchRequest,
       sendBeaconRequest,
-      isRetryableHttpStatusCode
+      isRequestRetryable,
+      getRequestRetryDelay
     });
+  });
+
+  afterEach(() => {
+    jasmine.clock().uninstall();
   });
 
   it("sends the request", () => {
@@ -87,7 +98,7 @@ describe("injectSendNetworkRequest", () => {
         requestId,
         url,
         payload,
-        status: 200,
+        statusCode: 200,
         body: responseBodyJson,
         parsedBody: responseBody,
         retriesAttempted: 0
@@ -103,7 +114,7 @@ describe("injectSendNetworkRequest", () => {
   it("handles a response with a non-JSON body", () => {
     sendFetchRequest.and.returnValue(
       Promise.resolve({
-        status: 200,
+        statusCode: 200,
         body: "non-JSON body"
       })
     );
@@ -118,7 +129,7 @@ describe("injectSendNetworkRequest", () => {
         payload: {
           a: "b"
         },
-        status: 200,
+        statusCode: 200,
         body: "non-JSON body",
         parsedBody: undefined,
         retriesAttempted: 0
@@ -134,7 +145,7 @@ describe("injectSendNetworkRequest", () => {
   it("handles a response with an empty body", () => {
     sendFetchRequest.and.returnValue(
       Promise.resolve({
-        status: 200,
+        statusCode: 200,
         body: ""
       })
     );
@@ -149,7 +160,7 @@ describe("injectSendNetworkRequest", () => {
         payload: {
           a: "b"
         },
-        status: 200,
+        statusCode: 200,
         body: "",
         parsedBody: undefined,
         retriesAttempted: 0
@@ -191,35 +202,32 @@ describe("injectSendNetworkRequest", () => {
     });
   });
 
-  it(`retries certain status codes until success`, () => {
-    isRetryableHttpStatusCode.and.returnValues(true, true, false);
-    return sendNetworkRequest({
+  it(`retries requests until request is no longer retryable`, () => {
+    isRequestRetryable.and.returnValues(true, true, false);
+    sendNetworkRequest({
       payload,
       url,
       requestId
-    }).then(response => {
-      expect(response).toEqual({
-        statusCode: 200,
-        body: responseBodyJson,
-        parsedBody: responseBody
-      });
-      expect(sendFetchRequest).toHaveBeenCalledTimes(3);
     });
-  });
 
-  it(`retries certain status codes until max retries met`, () => {
-    isRetryableHttpStatusCode.and.returnValues(true, true, true);
-    return sendNetworkRequest({
-      payload,
-      url,
-      requestId
-    }).then(response => {
-      expect(response).toEqual({
-        statusCode: 200,
-        body: responseBodyJson,
-        parsedBody: responseBody
+    expect(sendFetchRequest).toHaveBeenCalledTimes(1);
+    return flushPromiseChains()
+      .then(() => {
+        expect(sendFetchRequest).toHaveBeenCalledTimes(1);
+        jasmine.clock().tick(1000);
+        expect(sendFetchRequest).toHaveBeenCalledTimes(2);
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(sendFetchRequest).toHaveBeenCalledTimes(2);
+        jasmine.clock().tick(1000);
+        expect(sendFetchRequest).toHaveBeenCalledTimes(3);
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(sendFetchRequest).toHaveBeenCalledTimes(3);
+        jasmine.clock().tick(1000);
+        expect(sendFetchRequest).toHaveBeenCalledTimes(3);
       });
-      expect(sendFetchRequest).toHaveBeenCalledTimes(4);
-    });
   });
 });

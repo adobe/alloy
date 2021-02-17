@@ -52,7 +52,7 @@ test("Test C224675: Passing invalid consent options should throw a validation er
 
   await t
     .expect(errorMessageForInvalidStandard)
-    .contains("Unexpected server response with status code 400")
+    .contains("The server responded with a status code 400")
     .expect(errorMessageForInvalidStandard)
     .contains(
       "The value supplied for field 'consent[0]' does not match your input schema"
@@ -76,7 +76,7 @@ test("Test C224675: Passing invalid consent options should throw a validation er
 
   await t
     .expect(errorMessageForInvalidVersion)
-    .contains("Unexpected server response with status code 400")
+    .contains("The server responded with a status code 400")
     .expect(errorMessageForInvalidVersion)
     .contains(
       "The value supplied for field 'consent[0]' does not match your input schema"
@@ -99,7 +99,7 @@ test("Test C224675: Passing invalid consent options should throw a validation er
 
   await t
     .expect(errorMessageForInvalidValue)
-    .contains("Unexpected server response with status code 400")
+    .contains("The server responded with a status code 400")
     .expect(errorMessageForInvalidValue)
     .contains(
       "Invalid request. No value supplied for field 'consent.[0].value'"
@@ -123,7 +123,7 @@ test("Test C224675: Passing invalid consent options should throw a validation er
 
   await t
     .expect(errorMessageForEmptyValue)
-    .contains("Unexpected server response with status code 422")
+    .contains("The server responded with a status code 422")
     .expect(errorMessageForEmptyValue)
     .contains(
       "IAB consent string value must not be empty for standard 'IAB TCF' at index 0"

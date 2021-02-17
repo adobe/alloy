@@ -20,8 +20,7 @@ export default ({
   cookieTransfer,
   sendNetworkRequest,
   createResponse,
-  processWarningsAndErrors,
-  validateNetworkResponseIsWellFormed
+  processWarningsAndErrors
 }) => {
   const { edgeDomain, edgeBasePath, edgeConfigId } = config;
 
@@ -62,14 +61,13 @@ export default ({
         });
       })
       .then(networkResponse => {
-        // Will throw an error if malformed.
-        validateNetworkResponseIsWellFormed(networkResponse);
+        processWarningsAndErrors(networkResponse);
         return networkResponse;
       })
       .catch(error => {
-        // Catch errors that came from sendNetworkRequest (like if there's
-        // no internet connection) or the error we throw above due to no
-        // parsed body, because we handle them the same way.
+        // Regardless of whether the network call failed, an unexpected status
+        // code was returned, or the response body was malformed, we want to call
+        // the onRequestFailure callbacks, but still throw the exception.
         const throwError = () => {
           throw error;
         };
@@ -77,34 +75,21 @@ export default ({
           .call({ error })
           .then(throwError, throwError);
       })
-      .then(({ parsedBody, statusCode }) => {
+      .then(({ parsedBody }) => {
         // Note that networkResponse.parsedBody may be undefined if it was a
         // 204 No Content response. That's fine.
         const response = createResponse(parsedBody);
         cookieTransfer.responseToCookies(response);
 
-        if (statusCode >= 400) {
-          const throwError = () => processWarningsAndErrors(response);
-          return onRequestFailureCallbackAggregator
-            .call({ response })
-            .then(throwError, throwError);
-        }
+        // Notice we're calling the onResponse lifecycle method even if there are errors
+        // inside the response body. This is because the full request didn't actually fail--
+        // only portions of it that are considered non-fatal (a specific, non-critical
+        // Konductor plugin, for example).
         return onResponseCallbackAggregator
           .call({
             response
           })
           .then(returnValues => {
-            // This line's location is very important.
-            // As long as we received a properly structured response,
-            // we consider the response sucessful enough to call lifecycle
-            // onResponse methods. However, a structured response from the
-            // server may ALSO containing errors. Because of this, we make
-            // sure we call lifecycle onResponse methods, then later
-            // process the warnings and errors.
-            // If there are errors in the response body, an error will
-            // be thrown here which should ultimately reject the promise that
-            // was returned to the customer for the command they executed.
-            processWarningsAndErrors(response);
             // Merges all returned objects from all `onResponse` callbacks into
             // a single object that can later be returned to the customer.
             const lifecycleOnResponseReturnValues = returnValues.shift() || [];

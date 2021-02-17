@@ -16,7 +16,8 @@ export default ({
   logger,
   sendFetchRequest,
   sendBeaconRequest,
-  isRetryableHttpStatusCode
+  isRequestRetryable,
+  getRequestRetryDelay
 }) => {
   /**
    * Send a network request and returns details about the response.
@@ -43,11 +44,21 @@ export default ({
         : sendFetchRequest;
 
       return requestMethod(url, stringifiedPayload).then(response => {
-        if (
-          isRetryableHttpStatusCode(response.status) &&
-          retriesAttempted < 3
-        ) {
-          return executeRequest(retriesAttempted + 1);
+        const requestIsRetryable = isRequestRetryable({
+          response,
+          retriesAttempted
+        });
+
+        if (requestIsRetryable) {
+          const requestRetryDelay = getRequestRetryDelay({
+            response,
+            retriesAttempted
+          });
+          return new Promise(resolve => {
+            setTimeout(() => {
+              resolve(executeRequest(retriesAttempted + 1));
+            }, requestRetryDelay);
+          });
         }
 
         let parsedBody;
@@ -68,7 +79,7 @@ export default ({
         });
 
         return {
-          statusCode: response.status,
+          statusCode: response.statusCode,
           body: response.body,
           parsedBody
         };
