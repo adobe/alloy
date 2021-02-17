@@ -13,63 +13,113 @@ governing permissions and limitations under the License.
 import injectProcessWarningsAndErrors from "../../../../../src/core/edgeNetwork/injectProcessWarningsAndErrors";
 
 describe("processWarningsAndErrors", () => {
-  let response;
   let logger;
   let processWarningsAndErrors;
 
   beforeEach(() => {
-    response = {
-      getWarnings() {
-        return [];
-      },
-      getErrors() {
-        return [];
-      }
-    };
-    logger = jasmine.createSpyObj("logger", ["warn"]);
+    logger = jasmine.createSpyObj("logger", ["warn", "error"]);
     processWarningsAndErrors = injectProcessWarningsAndErrors({ logger });
   });
 
-  it("logs warnings", () => {
-    response.getWarnings = () => [
-      {
-        code: "general:100",
-        message: "General warning."
-      },
-      {
-        code: "personalization:204",
-        message: "Personalization warning."
-      }
-    ];
-
-    processWarningsAndErrors(response);
-
-    expect(logger.warn).toHaveBeenCalledWith(
-      "Warning received from server: [Code general:100] General warning."
-    );
-    expect(logger.warn).toHaveBeenCalledWith(
-      "Warning received from server: [Code personalization:204] Personalization warning."
+  it("throws error if status code is below 2xx", () => {
+    expect(() => {
+      processWarningsAndErrors({
+        statusCode: 199
+      });
+    }).toThrowError(
+      "The server responded with a status code 199 and no response body."
     );
   });
 
-  it("throws errors", () => {
-    response.getErrors = () => [
+  it("throws error if status code is above 2xx", () => {
+    expect(() => {
+      processWarningsAndErrors({
+        statusCode: 300
+      });
+    }).toThrowError(
+      "The server responded with a status code 300 and no response body."
+    );
+  });
+
+  it("throws error if no parsed body and HTTP status code is not 204", () => {
+    expect(() => {
+      processWarningsAndErrors({
+        statusCode: 200
+      });
+    }).toThrowError(
+      "The server responded with a status code 200 and no response body."
+    );
+  });
+
+  it("throws an error if parsed body does not have handle array", () => {
+    expect(() => {
+      processWarningsAndErrors({
+        statusCode: 200,
+        body: '{"foo":"bar"}',
+        parsedBody: { foo: "bar" }
+      });
+    }).toThrowError(
+      'The server responded with a status code 200 and response body:\n{\n  "foo": "bar"\n}'
+    );
+  });
+
+  it("logs warnings", () => {
+    const warnings = [
       {
-        code: "general:100",
-        message: "General error occurred."
+        title: "General warning",
+        detail: "General warning detail"
       },
       {
-        code: "personalization:204",
-        message: "Personalization error occurred."
+        title: "Personalization warning",
+        detail: "Personalization warning detail"
       }
     ];
 
-    expect(() => {
-      processWarningsAndErrors(response);
-    }).toThrowError(
-      "The server responded with the following errors:\n" +
-        "• [Code general:100] General error occurred.\n" +
-        "• [Code personalization:204] Personalization error occurred."
+    processWarningsAndErrors({
+      statusCode: 200,
+      parsedBody: {
+        handle: [],
+        warnings
+      }
+    });
+
+    expect(logger.warn).toHaveBeenCalledWith(
+      "The server responded with a warning:",
+      warnings[0]
+    );
+    expect(logger.warn).toHaveBeenCalledWith(
+      "The server responded with a warning:",
+      warnings[1]
+    );
+  });
+
+  it("logs non-fatal errors", () => {
+    const errors = [
+      {
+        title: "General warning",
+        detail: "General warning detail"
+      },
+      {
+        title: "Personalization warning",
+        detail: "Personalization warning detail"
+      }
+    ];
+
+    processWarningsAndErrors({
+      statusCode: 207,
+      parsedBody: {
+        handle: [],
+        errors
+      }
+    });
+
+    expect(logger.error).toHaveBeenCalledWith(
+      "The server responded with a non-fatal error:",
+      errors[0]
+    );
+    expect(logger.error).toHaveBeenCalledWith(
+      "The server responded with a non-fatal error:",
+      errors[1]
     );
   });
 });
