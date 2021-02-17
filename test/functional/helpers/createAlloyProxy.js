@@ -28,7 +28,7 @@
  * await alloy.sendEvent({ renderDecisions: true });
  *
  * Additionally each command has a xxxErrorMessage variant that returns a promise that will resolve
- * with undefined if there was no error, and the error mesessage if there was an error.
+ * with undefined if there was no error, and the error message if there was an error.
  *
  * const errorMessage = await alloy.sendEventErrorMessage();
  * await t.expect(errorMessage).ok("Expected an error, but didn't get one");
