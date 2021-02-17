@@ -108,7 +108,7 @@ export const createExecuteCommand = ({
       validateNetworkResponseIsWellFormed
     });
 
-    const generalConsentState = createConsentStateMachine();
+    const generalConsentState = createConsentStateMachine({ logger });
     const consent = createConsent({
       generalConsentState,
       logger

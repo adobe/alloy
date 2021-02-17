@@ -21,7 +21,7 @@ const createDeclinedConsentError = () => {
   return error;
 };
 
-export default () => {
+export default ({ logger }) => {
   const deferreds = [];
 
   const runAll = () => {
@@ -45,16 +45,27 @@ export default () => {
 
   return {
     in() {
+      if (this.awaitConsent && this.awaitConsent !== awaitIn) {
+        logger.info("User consented.");
+      }
       runAll();
       this.awaitConsent = awaitIn;
     },
     out() {
+      if (this.awaitConsent === undefined) {
+        logger.warn("No user consent. Some commands may fail.");
+      } else if (this.awaitConsent !== awaitOut) {
+        logger.warn("User declined consent. Some commands may fail.");
+      }
       discardAll();
       this.awaitConsent = awaitOut;
     },
     pending() {
+      if (!this.awaitConsent) {
+        logger.warn("No user consent. Some commands may be delayed.");
+      }
       this.awaitConsent = awaitPending;
     },
-    awaitConsent: awaitPending
+    awaitConsent: undefined
   };
 };

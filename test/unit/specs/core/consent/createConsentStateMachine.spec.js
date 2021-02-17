@@ -16,10 +16,12 @@ import flushPromiseChains from "../../../helpers/flushPromiseChains";
 const DECLINED_CONSENT_ERROR_CODE = "declinedConsent";
 
 describe("createConsentStateMachine", () => {
+  let logger;
   let subject;
 
   beforeEach(() => {
-    subject = createConsentStateMachine();
+    logger = jasmine.createSpyObj("logger", ["info", "warn"]);
+    subject = createConsentStateMachine({ logger });
   });
 
   it("does not resolve promise if consent is pending", () => {
@@ -85,4 +87,40 @@ describe("createConsentStateMachine", () => {
         expect(error.code).toBe(DECLINED_CONSENT_ERROR_CODE);
       });
   });
+
+  [
+    ["in", "in"],
+    ["in", "out", "User declined consent. Some commands may fail."],
+    ["in", "pending"],
+    ["out", "in", "User consented.", "info"],
+    ["out", "out"],
+    ["out", "pending"],
+    ["pending", "in", "User consented.", "info"],
+    ["pending", "out", "User declined consent. Some commands may fail."],
+    ["pending", "pending"],
+    [undefined, "in"],
+    [undefined, "out", "No user consent. Some commands may fail."],
+    [undefined, "pending", "No user consent. Some commands may be delayed."]
+  ].forEach(
+    ([initialState, finalState, expectedMessage, logLevel = "warn"]) => {
+      it(`logs the correct messages from ${initialState} to ${finalState}`, () => {
+        if (initialState) {
+          subject[initialState]();
+          logger.info.calls.reset();
+          logger.warn.calls.reset();
+        }
+        subject[finalState]();
+        if (expectedMessage) {
+          expect(logger[logLevel]).toHaveBeenCalledWith(expectedMessage);
+        } else {
+          expect(logger.warn).not.toHaveBeenCalled();
+        }
+        if (logLevel === "warn") {
+          expect(logger.info).not.toHaveBeenCalled();
+        } else {
+          expect(logger.warn).not.toHaveBeenCalled();
+        }
+      });
+    }
+  );
 });

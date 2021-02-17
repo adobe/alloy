@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { DECLINED_CONSENT } from "./createConsentStateMachine";
 import { IN, OUT, PENDING } from "../../constants/consentStatus";
 import { GENERAL } from "../../constants/consentPurpose";
 
@@ -22,11 +21,9 @@ export default ({ generalConsentState, logger }) => {
           generalConsentState.in();
           break;
         case OUT:
-          logger.warn(`Some commands may fail. ${DECLINED_CONSENT}`);
           generalConsentState.out();
           break;
         case PENDING:
-          logger.warn("Some commands may be delayed until the user consents.");
           generalConsentState.pending();
           break;
         default:
