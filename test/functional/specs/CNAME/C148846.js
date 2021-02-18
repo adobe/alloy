@@ -32,7 +32,7 @@ const demdexHostRegex = /\.demdex\.net/;
 
 const getHostFor = requestLogger => requestLogger.request.headers.host;
 
-const identityCookieName = "kndctr_334F60F35E1597910A495EC2_AdobeOrg_identity";
+const identityCookieName = "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_identity";
 
 const config = compose(
   orgMainConfigMain,

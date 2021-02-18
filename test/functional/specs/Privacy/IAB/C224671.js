@@ -62,7 +62,7 @@ const sendEvent = ClientFunction(() => window.alloy("sendEvent"));
 
     // 1. The set-consent response should contain the Consent cookie: { general: out }
     const consentCookieName =
-      "kndctr_334F60F35E1597910A495EC2_AdobeOrg_consent";
+      "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_consent";
     const consentCookieValue = await cookies.get(consentCookieName);
 
     await t.expect(consentCookieValue).ok("No consent cookie found.");

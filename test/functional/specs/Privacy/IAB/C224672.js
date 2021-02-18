@@ -61,7 +61,7 @@ test("Test C224672: Passing the `gdprContainsPersonalData` flag should return in
   const consentResponse = createResponse(consentRawResponse);
 
   // 1. The set-consent response should contain the Consent cookie: { general: in }
-  const consentCookieName = "kndctr_334F60F35E1597910A495EC2_AdobeOrg_consent";
+  const consentCookieName = "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_consent";
   const consentCookieValue = await cookies.get(consentCookieName);
 
   await t.expect(consentCookieValue).ok("No consent cookie found.");

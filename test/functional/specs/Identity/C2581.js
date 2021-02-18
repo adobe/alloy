@@ -37,7 +37,7 @@ const triggerAlloyEvents = ClientFunction(() => {
   ]);
 });
 
-const identityCookieName = "kndctr_334F60F35E1597910A495EC2_AdobeOrg_identity";
+const identityCookieName = "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_identity";
 
 test("Test C2581: Queue requests until we receive an ECID.", async () => {
   await configureAlloyInstance("alloy", debugEnabledConfig);
