@@ -51,7 +51,7 @@ export default ({
 
     const decisionsGroupedByDomActionSchema = decisionsExtractor.groupDecisionsBySchema(
       {
-        decisions: decisionsGroupedByRedirectItemSchema.notMatchedDecisions,
+        decisions: decisionsGroupedByRedirectItemSchema.unmatchedDecisions,
         schema: DOM_ACTION
       }
     );
@@ -76,13 +76,13 @@ export default ({
       }
       showContainers();
       return {
-        decisions: decisionsGroupedByDomActionSchema.notMatchedDecisions
+        decisions: decisionsGroupedByDomActionSchema.unmatchedDecisions
       };
     }
 
     const decisionsToBeReturned = [
       ...pageWideScopeDecisions,
-      ...decisionsGroupedByDomActionSchema.notMatchedDecisions,
+      ...decisionsGroupedByDomActionSchema.unmatchedDecisions,
       ...decisionsGroupedByRedirectItemSchema.matchedDecisions
     ];
 

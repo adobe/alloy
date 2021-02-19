@@ -80,11 +80,11 @@ describe("Personalization::onResponseHandler", () => {
     decisionsExtractor.groupDecisionsBySchema.and.returnValues(
       {
         matchedDecisions: [],
-        notMatchedDecisions: unprocessedDecisions
+        unmatchedDecisions: unprocessedDecisions
       },
       {
         matchedDecisions: domActionDecisions,
-        notMatchedDecisions: nonDomActionDecisions
+        unmatchedDecisions: nonDomActionDecisions
       }
     );
     decisionsExtractor.groupDecisionsByScope.and.returnValue({
@@ -141,11 +141,11 @@ describe("Personalization::onResponseHandler", () => {
     decisionsExtractor.groupDecisionsBySchema.and.returnValues(
       {
         matchedDecisions: [],
-        notMatchedDecisions: unprocessedDecisions
+        unmatchedDecisions: unprocessedDecisions
       },
       {
         matchedDecisions: domActionDecisions,
-        notMatchedDecisions: nonDomActionDecisions
+        unmatchedDecisions: nonDomActionDecisions
       }
     );
     decisionsExtractor.groupDecisionsByScope.and.returnValue({
@@ -211,11 +211,11 @@ describe("Personalization::onResponseHandler", () => {
     decisionsExtractor.groupDecisionsBySchema.and.returnValues(
       {
         matchedDecisions: REDIRECT_PAGE_WIDE_SCOPE_DECISION,
-        notMatchedDecisions: unprocessedDecisions
+        unmatchedDecisions: unprocessedDecisions
       },
       {
         matchedDecisions: domActionDecisions,
-        notMatchedDecisions: nonDomActionDecisions
+        unmatchedDecisions: nonDomActionDecisions
       }
     );
     decisionsExtractor.groupDecisionsByScope.and.returnValue({
@@ -291,11 +291,11 @@ describe("Personalization::onResponseHandler", () => {
     decisionsExtractor.groupDecisionsBySchema.and.returnValues(
       {
         matchedDecisions: [],
-        notMatchedDecisions: []
+        unmatchedDecisions: []
       },
       {
         matchedDecisions: PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
-        notMatchedDecisions: nonDomActionDecisions
+        unmatchedDecisions: nonDomActionDecisions
       }
     );
     decisionsExtractor.groupDecisionsByScope.and.returnValue({
@@ -404,11 +404,11 @@ describe("Personalization::onResponseHandler", () => {
     decisionsExtractor.groupDecisionsBySchema.and.returnValues(
       {
         matchedDecisions: REDIRECT_PAGE_WIDE_SCOPE_DECISION,
-        notMatchedDecisions: unprocessedDecisions
+        unmatchedDecisions: unprocessedDecisions
       },
       {
         matchedDecisions: domActionDecisions,
-        notMatchedDecisions: nonDomActionDecisions
+        unmatchedDecisions: nonDomActionDecisions
       }
     );
     decisionsExtractor.groupDecisionsByScope.and.returnValue({

@@ -13,11 +13,12 @@ governing permissions and limitations under the License.
 import { REDIRECT_PAGE_WIDE_SCOPE_DECISION } from "./responsesMock/eventResponses";
 import createRedirectHandler from "../../../../../src/components/Personalization/createRedirectHandler";
 
-const documentMayUnload = true;
-
 describe("Personalization::createRedirectDecisionHandler", () => {
   let collect;
+  let showContainers;
+  let logger;
 
+  const documentMayUnload = true;
   const decisions = REDIRECT_PAGE_WIDE_SCOPE_DECISION;
   const meta = {
     decisions: [
@@ -29,21 +30,41 @@ describe("Personalization::createRedirectDecisionHandler", () => {
   };
   const replace = jasmine.createSpy();
 
+  const window = {
+    location: { replace }
+  };
+
   beforeEach(() => {
     collect = jasmine.createSpy().and.returnValue(Promise.resolve());
+    logger = jasmine.createSpyObj("logger", ["warn"]);
+    showContainers = jasmine.createSpy("showContainers");
   });
 
   it("should trigger collect before redirect", () => {
-    const win = {
-      location: { replace }
-    };
     const handleRedirectDecisions = createRedirectHandler({
       collect,
-      win
+      window,
+      logger,
+      showContainers
     });
     return handleRedirectDecisions(decisions).then(() => {
-      expect(collect).toHaveBeenCalledWith({ meta }, documentMayUnload);
+      expect(collect).toHaveBeenCalledWith({ meta, documentMayUnload });
       expect(replace).toHaveBeenCalledWith(decisions[0].items[0].data.content);
+    });
+  });
+  it("should trigger showContainers and logger at redirect", () => {
+    replace.and.throwError("Malformed url");
+
+    const handleRedirectDecisions = createRedirectHandler({
+      collect,
+      window,
+      logger,
+      showContainers
+    });
+    return handleRedirectDecisions(decisions).then(() => {
+      expect(collect).toHaveBeenCalled();
+      expect(showContainers).toHaveBeenCalled();
+      expect(logger.warn).toHaveBeenCalled();
     });
   });
 });
