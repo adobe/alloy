@@ -33,14 +33,8 @@ test.meta({
 });
 
 const triggerAlloyEvent = ClientFunction(() => {
-  return new Promise(resolve => {
-    window
-      .alloy("sendEvent", {
-        renderDecisions: true
-      })
-      .then(result => {
-        resolve(result);
-      });
+  return window.alloy("sendEvent", {
+    renderDecisions: true
   });
 });
 
@@ -49,6 +43,8 @@ test("Test C205528: A redirect offer should redirect the page to the URL in the 
   try {
     await triggerAlloyEvent();
   } catch (e) {
+    // we'll get the ClientFunction exception here because within it we will do a redirect.
+  } finally {
     await t.expect(redirectLogger.requests.length).eql(1);
   }
 });

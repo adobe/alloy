@@ -52,7 +52,12 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     executeActions,
     collect: viewCollect
   });
-  const handleRedirectDecisions = createRedirectHandler({ collect });
+  const handleRedirectDecisions = createRedirectHandler({
+    collect,
+    window,
+    logger,
+    showContainers
+  });
   const executeCachedViewDecisions = createExecuteCachedViewDecisions({
     viewCache,
     executeViewDecisions,

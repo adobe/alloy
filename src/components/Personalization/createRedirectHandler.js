@@ -18,13 +18,18 @@ const getRedirectDetails = redirectDecisions => {
   return { content, decisions: [{ id, scope }] };
 };
 
-export default ({ collect, win = window }) => {
+export default ({ collect, window, logger, showContainers }) => {
   return redirectDecisions => {
     const { content, decisions } = getRedirectDetails(redirectDecisions);
     const documentMayUnload = true;
 
-    return collect({ meta: { decisions } }, documentMayUnload).then(() => {
-      win.location.replace(content);
-    });
+    return collect({ meta: { decisions }, documentMayUnload })
+      .then(() => {
+        window.location.replace(content);
+      })
+      .catch(() => {
+        showContainers();
+        logger.warn("An error occurred while executing the redirect offer.");
+      });
   };
 };

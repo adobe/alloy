@@ -33,7 +33,7 @@ const createDecision = (decision, items) => {
 
 const splitDecisions = (decisions, schema) => {
   const matchedDecisions = [];
-  const notMatchedDecisions = [];
+  const unmatchedDecisions = [];
 
   decisions.forEach(decision => {
     const { items = [] } = decision;
@@ -44,10 +44,10 @@ const splitDecisions = (decisions, schema) => {
     }
 
     if (isNonEmptyArray(nonMatchedItems)) {
-      notMatchedDecisions.push(createDecision(decision, nonMatchedItems));
+      unmatchedDecisions.push(createDecision(decision, nonMatchedItems));
     }
   });
-  return { matchedDecisions, notMatchedDecisions };
+  return { matchedDecisions, unmatchedDecisions };
 };
 
 const extractDecisionsByScope = (decisions, scope) => {

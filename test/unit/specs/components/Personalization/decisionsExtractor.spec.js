@@ -43,12 +43,12 @@ describe("Personalization::decisionsExtractor", () => {
 
     const {
       matchedDecisions,
-      notMatchedDecisions
+      unmatchedDecisions
     } = decisionsExtractor.groupDecisionsBySchema({
       decisions,
       schema: DOM_ACTION
     });
-    expect(notMatchedDecisions).toEqual(
+    expect(unmatchedDecisions).toEqual(
       PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS
     );
     expect(matchedDecisions).toEqual(

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 export default ({ eventManager, mergeDecisionsMeta }) => {
   // Called when a decision is auto-rendered for the __view__ scope (non-SPA view).
-  return ({ decisionsMeta }, documentMayUnload = false) => {
+  return ({ decisionsMeta, documentMayUnload = false }) => {
     const event = eventManager.createEvent();
     event.mergeXdm({ eventType: "display" });
     mergeDecisionsMeta(event, decisionsMeta);
