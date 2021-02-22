@@ -40,7 +40,7 @@ test("Test C225010: Click collection handles errors when user declines consent",
   await t.click(Selector("#alloy-link-test"));
   await t.expect(getLocation()).contains("#foo");
   await consoleLogger.warn.expectMessageMatching(
-    /The click collection could not fully complete because the user declined consent/
+    /The click collection could not fully complete. The user declined consent./
   );
   await unhandledRejectionLogger.expectNoMessageMatching(/.*/);
 });

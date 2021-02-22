@@ -14,10 +14,14 @@ import { defer } from "../../utils";
 
 export const DECLINED_CONSENT = "The user declined consent.";
 export const DECLINED_CONSENT_ERROR_CODE = "declinedConsent";
+export const CONSENT_SOURCE_DEFAULT = "default";
+export const CONSENT_SOURCE_INITIAL = "initial";
+export const CONSENT_SOURCE_NEW = "new";
 
-const createDeclinedConsentError = () => {
-  const error = new Error(DECLINED_CONSENT);
+const createDeclinedConsentError = errorMessage => {
+  const error = Error(errorMessage);
   error.code = DECLINED_CONSENT_ERROR_CODE;
+  error.message = errorMessage;
   return error;
 };
 
@@ -31,12 +35,22 @@ export default ({ logger }) => {
   };
   const discardAll = () => {
     while (deferreds.length) {
-      deferreds.shift().reject(createDeclinedConsentError());
+      deferreds
+        .shift()
+        .reject(createDeclinedConsentError("The user declined consent."));
     }
   };
 
+  const awaitInitial = () =>
+    Promise.reject(new Error("Consent has not been initialized."));
+  const awaitInDefault = () => Promise.resolve();
   const awaitIn = () => Promise.resolve();
-  const awaitOut = () => Promise.reject(createDeclinedConsentError());
+  const awaitOutDefault = () =>
+    Promise.reject(
+      createDeclinedConsentError("No consent preferences have been set.")
+    );
+  const awaitOut = () =>
+    Promise.reject(createDeclinedConsentError("The user declined consent."));
   const awaitPending = () => {
     const deferred = defer();
     deferreds.push(deferred);
@@ -44,28 +58,51 @@ export default ({ logger }) => {
   };
 
   return {
-    in() {
-      if (this.awaitConsent && this.awaitConsent !== awaitIn) {
-        logger.info("User consented.");
+    in(source) {
+      if (source === CONSENT_SOURCE_DEFAULT) {
+        this.awaitConsent = awaitInDefault;
+      } else {
+        if (source === CONSENT_SOURCE_INITIAL) {
+          logger.info("Loaded user consent preferences.");
+        } else if (
+          source === CONSENT_SOURCE_NEW &&
+          this.awaitConsent !== awaitIn
+        ) {
+          logger.info("User consented.");
+        }
+        runAll();
+        this.awaitConsent = awaitIn;
       }
-      runAll();
-      this.awaitConsent = awaitIn;
     },
-    out() {
-      if (this.awaitConsent === undefined) {
-        logger.warn("No user consent. Some commands may fail.");
-      } else if (this.awaitConsent !== awaitOut) {
-        logger.warn("User declined consent. Some commands may fail.");
+    out(source) {
+      if (source === CONSENT_SOURCE_DEFAULT) {
+        logger.warn(
+          "No saved user consent preferences. Some commands may fail."
+        );
+        this.awaitConsent = awaitOutDefault;
+      } else {
+        if (source === CONSENT_SOURCE_INITIAL) {
+          logger.warn(
+            "Loaded user consent preferences. Some commands may fail."
+          );
+        } else if (
+          source === CONSENT_SOURCE_NEW &&
+          this.awaitConsent !== awaitOut
+        ) {
+          logger.warn("User declined consent. Some commands may fail.");
+        }
+        discardAll();
+        this.awaitConsent = awaitOut;
       }
-      discardAll();
-      this.awaitConsent = awaitOut;
     },
-    pending() {
-      if (!this.awaitConsent) {
-        logger.warn("No user consent. Some commands may be delayed.");
+    pending(source) {
+      if (source === CONSENT_SOURCE_DEFAULT) {
+        logger.info(
+          "No saved user consent preferences. Some commands may be delayed."
+        );
       }
       this.awaitConsent = awaitPending;
     },
-    awaitConsent: undefined
+    awaitConsent: awaitInitial
   };
 };

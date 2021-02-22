@@ -36,7 +36,9 @@ test("Test C14414: Requests are queued while consent changes are pending", async
   const setConsentResponse2 = await alloy.setConsentAsync(CONSENT_OUT);
   const logger = await createConsoleLogger();
   await alloy.sendEvent();
-  await logger.warn.expectMessageMatching(/user declined consent/);
+  await logger.warn.expectMessageMatching(
+    /The sendEvent command could not fully complete. The user declined consent./
+  );
   await t
     .expect(setConsentHook.haveRequestsBeenSequential())
     .ok("Set-consent requests were not sequential");

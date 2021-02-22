@@ -34,5 +34,5 @@ test("Test C1631712: Requests are dropped when default consent is out", async t 
   await alloy.sendEvent();
   await alloy.setConsent(CONSENT_IN);
   await flushPromiseChains();
-  await t.expect(networkLogger.edgeEndpointLogs.count).eql(0);
+  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
 });

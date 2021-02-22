@@ -44,14 +44,21 @@ describe("createConsentStateMachine", () => {
     });
   });
 
-  it("rejects promise if user consented to no purposes", () => {
-    subject.out();
-    const onRejected = jasmine.createSpy("onRejected");
-    subject.awaitConsent().catch(onRejected);
+  [
+    ["default", "No consent preferences have been set."],
+    ["initial", "The user declined consent."],
+    ["new", "The user declined consent."]
+  ].forEach(([source, expectedMessage]) => {
+    it("rejects promise if user consented to no purposes", () => {
+      subject.out(source);
+      const onRejected = jasmine.createSpy("onRejected");
+      subject.awaitConsent().catch(onRejected);
 
-    return flushPromiseChains().then(() => {
-      const error = onRejected.calls.argsFor(0)[0];
-      expect(error.code).toBe(DECLINED_CONSENT_ERROR_CODE);
+      return flushPromiseChains().then(() => {
+        const error = onRejected.calls.argsFor(0)[0];
+        expect(error.code).toBe(DECLINED_CONSENT_ERROR_CODE);
+        expect(error.message).toBe(expectedMessage);
+      });
     });
   });
 
@@ -85,42 +92,79 @@ describe("createConsentStateMachine", () => {
       .then(() => {
         const error = onRejected.calls.argsFor(0)[0];
         expect(error.code).toBe(DECLINED_CONSENT_ERROR_CODE);
+        expect(error.message).toBe("The user declined consent.");
+      });
+  });
+
+  it("rejects promises when it is not initialized", () => {
+    const onRejected = jasmine.createSpy("onRejected");
+    return subject
+      .awaitConsent()
+      .catch(onRejected)
+      .then(() => {
+        expect(onRejected).toHaveBeenCalled();
       });
   });
 
   [
-    ["in", "in"],
-    ["in", "out", "User declined consent. Some commands may fail."],
-    ["in", "pending"],
-    ["out", "in", "User consented.", "info"],
-    ["out", "out"],
-    ["out", "pending"],
-    ["pending", "in", "User consented.", "info"],
-    ["pending", "out", "User declined consent. Some commands may fail."],
-    ["pending", "pending"],
-    [undefined, "in"],
-    [undefined, "out", "No user consent. Some commands may fail."],
-    [undefined, "pending", "No user consent. Some commands may be delayed."]
-  ].forEach(
-    ([initialState, finalState, expectedMessage, logLevel = "warn"]) => {
-      it(`logs the correct messages from ${initialState} to ${finalState}`, () => {
-        if (initialState) {
-          subject[initialState]();
-          logger.info.calls.reset();
-          logger.warn.calls.reset();
-        }
-        subject[finalState]();
-        if (expectedMessage) {
-          expect(logger[logLevel]).toHaveBeenCalledWith(expectedMessage);
-        } else {
-          expect(logger.warn).not.toHaveBeenCalled();
-        }
-        if (logLevel === "warn") {
-          expect(logger.info).not.toHaveBeenCalled();
-        } else {
-          expect(logger.warn).not.toHaveBeenCalled();
-        }
+    ["in", "default"],
+    ["in", "initial", "Loaded user consent preferences.", "info"],
+    ["in", "new", "User consented.", "info"],
+    [
+      "out",
+      "default",
+      "No saved user consent preferences. Some commands may fail."
+    ],
+    [
+      "out",
+      "initial",
+      "Loaded user consent preferences. Some commands may fail."
+    ],
+    ["out", "new", "User declined consent. Some commands may fail."],
+    [
+      "pending",
+      "default",
+      "No saved user consent preferences. Some commands may be delayed.",
+      "info"
+    ],
+    ["pending", "initial"],
+    ["pending", "new"]
+  ].forEach(([action, source, expectedMessage, logLevel = "warn"]) => {
+    it(`logs the correct messages when ${action} is called with source ${source}`, () => {
+      subject[action](source);
+      if (expectedMessage) {
+        expect(logger[logLevel]).toHaveBeenCalledWith(expectedMessage);
+      } else {
+        expect(logger.warn).not.toHaveBeenCalled();
+      }
+    });
+  });
+
+  [
+    ["in", "User consented.", "info"],
+    ["out", "User declined consent. Some commands may fail.", "warn"]
+  ].forEach(([action, expectedMessage, logLevel]) => {
+    ["in", "out", "pending"].forEach(defaultConsent => {
+      it(`logs a message when first setting consent (${defaultConsent} => ${action}) using setConsent`, () => {
+        subject[defaultConsent]("default");
+        subject.pending();
+        subject[action]("new");
+        expect(logger[logLevel]).toHaveBeenCalledWith(expectedMessage);
       });
-    }
-  );
+      it(`logs a message when first setting consent (${defaultConsent} => ${action}) using sendEvent`, () => {
+        subject[defaultConsent]("default");
+        subject[action]("new");
+        expect(logger[logLevel]).toHaveBeenCalledWith(expectedMessage);
+      });
+    });
+    it(`doesn't log a message when a request returns or fails. (${action})`, () => {
+      subject[action]("initial");
+      logger.info.calls.reset();
+      logger.warn.calls.reset();
+      subject[action]("new");
+      subject[action]("new");
+      expect(logger.info).not.toHaveBeenCalled();
+      expect(logger.warn).not.toHaveBeenCalled();
+    });
+  });
 });

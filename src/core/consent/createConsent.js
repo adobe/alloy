@@ -12,24 +12,39 @@ governing permissions and limitations under the License.
 
 import { IN, OUT, PENDING } from "../../constants/consentStatus";
 import { GENERAL } from "../../constants/consentPurpose";
+import {
+  CONSENT_SOURCE_DEFAULT,
+  CONSENT_SOURCE_INITIAL,
+  CONSENT_SOURCE_NEW
+} from "./createConsentStateMachine";
 
 export default ({ generalConsentState, logger }) => {
+  const setConsent = (consentByPurpose, source) => {
+    switch (consentByPurpose[GENERAL]) {
+      case IN:
+        generalConsentState.in(source);
+        break;
+      case OUT:
+        generalConsentState.out(source);
+        break;
+      case PENDING:
+        generalConsentState.pending(source);
+        break;
+      default:
+        logger.warn(`Unknown consent value: ${consentByPurpose[GENERAL]}`);
+        break;
+    }
+  };
   return {
-    setConsent(consentByPurpose) {
-      switch (consentByPurpose[GENERAL]) {
-        case IN:
-          generalConsentState.in();
-          break;
-        case OUT:
-          generalConsentState.out();
-          break;
-        case PENDING:
-          generalConsentState.pending();
-          break;
-        default:
-          logger.warn(`Unknown consent value: ${consentByPurpose[GENERAL]}`);
-          break;
+    initializeConsent(defaultConsentByPurpose, storedConsentByPurpose) {
+      if (storedConsentByPurpose[GENERAL]) {
+        setConsent(storedConsentByPurpose, CONSENT_SOURCE_INITIAL);
+      } else {
+        setConsent(defaultConsentByPurpose, CONSENT_SOURCE_DEFAULT);
       }
+    },
+    setConsent(consentByPurpose) {
+      setConsent(consentByPurpose, CONSENT_SOURCE_NEW);
     },
     suspend() {
       generalConsentState.pending();
