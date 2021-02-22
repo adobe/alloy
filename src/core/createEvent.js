@@ -74,17 +74,17 @@ export default () => {
       if (onBeforeEventSend) {
         const xdm = content.xdm || {};
         const data = content.data || {};
-        onBeforeEventSend({
-          xdm,
-          data
-        });
 
-        if (Object.keys(xdm).length) {
-          content.xdm = xdm;
+        // this allows the user to replace the object passed into the callback
+        const tempContent = { xdm, data };
+        onBeforeEventSend(tempContent);
+
+        if (Object.keys(tempContent).length) {
+          content.xdm = tempContent.xdm;
         }
 
-        if (Object.keys(data).length) {
-          content.data = data;
+        if (Object.keys(tempContent.data).length) {
+          content.data = tempContent.data;
         }
       }
 
@@ -108,6 +108,7 @@ export default () => {
       return userXdm.web.webPageDetails.viewName;
     },
     toJSON() {
+      if (!isFinalized) this.finalize();
       return content;
     }
   };

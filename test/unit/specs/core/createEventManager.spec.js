@@ -39,7 +39,7 @@ describe("createEventManager", () => {
     consent = jasmine.createSpyObj("consent", {
       awaitConsent: Promise.resolve()
     });
-    event = jasmine.createSpyObj("event", ["setLastChanceCallback"]);
+    event = jasmine.createSpyObj("event", ["finalize"]);
     const createEvent = () => {
       return event;
     };
