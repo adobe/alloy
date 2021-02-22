@@ -52,7 +52,7 @@ describe("Personalization::createRedirectDecisionHandler", () => {
       expect(replace).toHaveBeenCalledWith(decisions[0].items[0].data.content);
     });
   });
-  it("should trigger showContainers and logger at redirect", () => {
+  it("should trigger showContainers and logger when redirect fails", () => {
     replace.and.throwError("Malformed url");
 
     const handleRedirectDecisions = createRedirectHandler({
