@@ -108,7 +108,7 @@ export const createExecuteCommand = ({
       processWarningsAndErrors
     });
 
-    const generalConsentState = createConsentStateMachine();
+    const generalConsentState = createConsentStateMachine({ logger });
     const consent = createConsent({
       generalConsentState,
       logger

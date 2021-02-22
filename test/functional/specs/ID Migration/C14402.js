@@ -12,6 +12,7 @@ import {
   migrationEnabled
 } from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
+import { LEGACY_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
 
 const config = compose(
   orgMainConfigMain,
@@ -62,7 +63,5 @@ test("Test C14402: When ID migration is enabled and no legacy AMCV cookie is fou
 
   await t
     .expect(documentCookie)
-    .contains(
-      `AMCV_334F60F35E1597910A495EC2%40AdobeOrg=MCMID|${ecidPayload.id}`
-    );
+    .contains(`${LEGACY_IDENTITY_COOKIE_NAME}=MCMID|${ecidPayload.id}`);
 });

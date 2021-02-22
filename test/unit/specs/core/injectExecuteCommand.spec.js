@@ -290,4 +290,22 @@ describe("injectExecuteCommand", () => {
       });
     });
   });
+
+  it("logs onCommandResolved when handleError swallows the error", () => {
+    const myerror = Error("bananas");
+    handleError.and.returnValue({});
+    const executeCommand = buildWithTestCommand(() => {
+      throw myerror;
+    });
+    executeCommand("configure");
+    return executeCommand("test", { my: "options" }).then(result => {
+      expect(result).toEqual({});
+      expect(logger.logOnCommandResolved).toHaveBeenCalledWith({
+        commandName: "test",
+        options: { my: "options" },
+        result: {}
+      });
+      expect(logger.logOnCommandRejected).not.toHaveBeenCalled();
+    });
+  });
 });
