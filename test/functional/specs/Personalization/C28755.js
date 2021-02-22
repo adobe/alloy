@@ -46,7 +46,7 @@ const triggerAlloyEvent = ClientFunction(decisionScope => {
   });
 });
 
-test("Test C28755: A VEC offer for all visitors should return in every event if __view__ scope exist", async () => {
+test.skip("Test C28755: A VEC offer for all visitors should return in every event if __view__ scope exist", async () => {
   await configureAlloyInstance("alloy", config);
 
   const result = await triggerAlloyEvent(PAGE_WIDE_SCOPE);

@@ -33,7 +33,7 @@ const triggerAlloyEvent = ClientFunction(() => {
   });
 });
 
-test("C31436 Qualify for URL destinations via XDM Data.", async () => {
+test.skip("C31436 Qualify for URL destinations via XDM Data.", async () => {
   await configureAlloyInstance("alloy", orgMainConfigMain);
   await triggerAlloyEvent();
 

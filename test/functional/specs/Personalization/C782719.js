@@ -56,7 +56,7 @@ const getDecisionScopes = ({ decisions }) => {
   });
 };
 
-test("Test C782719: SPA support with auto-rendering disabled", async () => {
+test.skip("Test C782719: SPA support with auto-rendering disabled", async () => {
   await configureAlloyInstance("alloy", config);
 
   const pageWideAndProductsViewDecisions = await triggerAlloyEvent(

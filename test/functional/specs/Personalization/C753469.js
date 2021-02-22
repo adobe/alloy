@@ -50,7 +50,7 @@ const elementWithIdExist = ClientFunction(id => {
   return !!document.getElementById(id);
 });
 
-test(`Test ${TEST_ID}: A nonce attribute should be added to injected script tags when CSP nonce is available`, async () => {
+test.skip(`Test ${TEST_ID}: A nonce attribute should be added to injected script tags when CSP nonce is available`, async () => {
   const { nonce } = generalConstants;
   // Inject script tag with a nonce attribute so that alloy can use it.
   await addHtmlToHeader(`<script nonce="${nonce}"/>`);
