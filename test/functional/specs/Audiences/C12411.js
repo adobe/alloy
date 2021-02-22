@@ -1,8 +1,8 @@
-import { RequestLogger, t, ClientFunction } from "testcafe";
+import { RequestLogger, t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
 
@@ -28,13 +28,10 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("sendEvent");
-});
-
 test("C12411 Response should return URL destinations if turned on in Blackbird", async () => {
-  await configureAlloyInstance("alloy", orgMainConfigMain);
-  await triggerAlloyEvent();
+  const alloy = createAlloyProxy();
+  await alloy.configure(orgMainConfigMain);
+  await alloy.sendEvent();
 
   await t.expect(destinationLogger.requests.length > 0).eql(true);
 });

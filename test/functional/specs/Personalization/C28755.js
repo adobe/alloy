@@ -1,8 +1,7 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
   orgMainConfigMain,
@@ -11,6 +10,7 @@ import {
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../../../src/core/createResponse";
 import testPageUrl from "../../helpers/constants/testPageUrl";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
 const config = compose(
@@ -34,22 +34,10 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const triggerAlloyEvent = ClientFunction(decisionScope => {
-  return new Promise(resolve => {
-    window
-      .alloy("sendEvent", {
-        decisionScopes: [decisionScope]
-      })
-      .then(result => {
-        resolve(result);
-      });
-  });
-});
-
 test.skip("Test C28755: A VEC offer for all visitors should return in every event if __view__ scope exist", async () => {
-  await configureAlloyInstance("alloy", config);
-
-  const result = await triggerAlloyEvent(PAGE_WIDE_SCOPE);
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  const result = await alloy.sendEvent({ decisionScopes: [PAGE_WIDE_SCOPE] });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 

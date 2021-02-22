@@ -1,8 +1,8 @@
-import { RequestLogger, t, ClientFunction } from "testcafe";
+import { RequestLogger, t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
 
@@ -27,15 +27,12 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("sendEvent", {
+test("C31436 Qualify for URL destinations via XDM Data.", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(orgMainConfigMain);
+  await alloy.sendEvent({
     xdm: { web: { webPageDetails: { name: "C31436" } } }
   });
-});
-
-test.skip("C31436 Qualify for URL destinations via XDM Data.", async () => {
-  await configureAlloyInstance("alloy", orgMainConfigMain);
-  await triggerAlloyEvent();
 
   await t.expect(destinationLogger.requests.length).eql(1);
 });

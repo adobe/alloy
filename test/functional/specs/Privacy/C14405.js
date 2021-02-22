@@ -1,5 +1,4 @@
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createNetworkLogger from "../../helpers/networkLogger";
 
 import {
@@ -8,8 +7,9 @@ import {
   consentPending,
   debugEnabled
 } from "../../helpers/constants/configParts";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
-const { CONSENT_IN } = require("../../helpers/constants/consent");
+import { CONSENT_IN } from "../../helpers/constants/consent";
 
 const config = compose(
   orgMainConfigMain,
@@ -31,12 +31,10 @@ test.meta({
 });
 
 test("Test C14405: Unidentified user can consent to all purposes", async t => {
-  await configureAlloyInstance("alloy", config);
-  await t.eval(() => window.alloy("setConsent", CONSENT_IN), {
-    dependencies: { CONSENT_IN }
-  });
-  await t.eval(() => window.alloy("sendEvent"));
-
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  await alloy.setConsent(CONSENT_IN);
+  await alloy.sendEvent();
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
   const request = networkLogger.edgeEndpointLogs.requests[0].request.body;
   await t

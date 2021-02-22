@@ -23,7 +23,9 @@ describe("injectExecuteCommand", () => {
       "info",
       "warn",
       "error",
-      "logOnBeforeCommand"
+      "logOnBeforeCommand",
+      "logOnCommandResolved",
+      "logOnCommandRejected"
     ]);
     handleError = jasmine.createSpy().and.callFake(error => {
       throw error;
@@ -36,11 +38,11 @@ describe("injectExecuteCommand", () => {
       handleError
     });
 
-    return executeCommand("event")
+    return executeCommand("sendEvent")
       .then(fail)
       .catch(error => {
         expect(error.message).toContain("The library must be configured first");
-        expect(handleError).toHaveBeenCalledWith(error, "event command");
+        expect(handleError).toHaveBeenCalledWith(error, "sendEvent command");
       });
   });
 
@@ -226,13 +228,7 @@ describe("injectExecuteCommand", () => {
     });
   });
 
-  it("logs onBeforeCommand", () => {
-    const runCommand = () => {
-      expect(logger.logOnBeforeCommand).toHaveBeenCalledWith({
-        commandName: "test",
-        options: { my: "options" }
-      });
-    };
+  const buildWithTestCommand = runCommand => {
     const testCommand = {
       run: runCommand
     };
@@ -243,13 +239,73 @@ describe("injectExecuteCommand", () => {
       }
     };
     const configureCommand = () => Promise.resolve(componentRegistry);
-    const executeCommand = injectExecuteCommand({
+    return injectExecuteCommand({
       logger,
       configureCommand,
       handleError,
       validateCommandOptions: options => options
     });
+  };
+
+  it("logs onBeforeCommand", () => {
+    const executeCommand = buildWithTestCommand(() => {
+      expect(logger.logOnBeforeCommand).toHaveBeenCalledWith({
+        commandName: "test",
+        options: { my: "options" }
+      });
+    });
     executeCommand("configure");
     return executeCommand("test", { my: "options" });
+  });
+
+  it("logs onCommandResolved", () => {
+    const executeCommand = buildWithTestCommand(() => {
+      expect(logger.logOnCommandResolved).not.toHaveBeenCalled();
+      return { go: "bananas" };
+    });
+    executeCommand("configure");
+    return executeCommand("test", { my: "options" }).then(result => {
+      expect(result).toEqual({ go: "bananas" });
+      expect(logger.logOnCommandResolved).toHaveBeenCalledWith({
+        commandName: "test",
+        options: { my: "options" },
+        result: { go: "bananas" }
+      });
+    });
+  });
+
+  it("logs onCommandRejected", () => {
+    const myerror = Error("bananas");
+    const executeCommand = buildWithTestCommand(() => {
+      expect(logger.logOnCommandRejected).not.toHaveBeenCalled();
+      throw myerror;
+    });
+    executeCommand("configure");
+    return executeCommand("test", { my: "options" }).catch(error => {
+      expect(error).toEqual(myerror);
+      expect(logger.logOnCommandRejected).toHaveBeenCalledWith({
+        commandName: "test",
+        options: { my: "options" },
+        error: myerror
+      });
+    });
+  });
+
+  it("logs onCommandResolved when handleError swallows the error", () => {
+    const myerror = Error("bananas");
+    handleError.and.returnValue({});
+    const executeCommand = buildWithTestCommand(() => {
+      throw myerror;
+    });
+    executeCommand("configure");
+    return executeCommand("test", { my: "options" }).then(result => {
+      expect(result).toEqual({});
+      expect(logger.logOnCommandResolved).toHaveBeenCalledWith({
+        commandName: "test",
+        options: { my: "options" },
+        result: {}
+      });
+      expect(logger.logOnCommandRejected).not.toHaveBeenCalled();
+    });
   });
 });

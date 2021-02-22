@@ -10,10 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
   edgeDomainThirdParty,
@@ -27,12 +26,9 @@ import {
 import reloadPage from "../../helpers/reloadPage";
 import setLegacyIdentityCookie from "../../helpers/setLegacyIdentityCookie";
 import areThirdPartyCookiesSupported from "../../helpers/areThirdPartyCookiesSupported";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
-
-const executeEventCommand = ClientFunction(() => {
-  return window.alloy("sendEvent");
-});
 
 const demdexHostRegex = /\.demdex\.net/;
 
@@ -101,8 +97,10 @@ const permutationsUsingDemdex = [
 
 permutationsUsingDemdex.forEach(permutation => {
   test(`C10922 - demdex is used for first request when configured with ${permutation.description} and browser supports third-party cookies by default`, async () => {
-    await configureAlloyInstance("alloy", permutation.config);
-    await executeEventCommand();
+    const alloy = createAlloyProxy();
+    await alloy.configure(permutation.config);
+    await alloy.sendEvent();
+
     if (areThirdPartyCookiesSupported()) {
       await assertRequestWentToDemdex();
     } else {
@@ -110,8 +108,8 @@ permutationsUsingDemdex.forEach(permutation => {
     }
     await networkLogger.clearLogs();
     await reloadPage();
-    await configureAlloyInstance("alloy", permutation.config);
-    await executeEventCommand();
+    await alloy.configure(permutation.config);
+    await alloy.sendEvent();
     // The request should not have gone to the third-party domain
     // because we already have an identity cookie.
     await assertRequestDidNotGoToDemdex();
@@ -151,8 +149,9 @@ const permutationsNotUsingDemdex = [
 
 permutationsNotUsingDemdex.forEach(permutation => {
   test(`C10922 - demdex is not used when configured with ${permutation.description}`, async () => {
-    await configureAlloyInstance("alloy", permutation.config);
-    await executeEventCommand();
+    const alloy = createAlloyProxy();
+    await alloy.configure(permutation.config);
+    await alloy.sendEvent();
     await assertRequestDidNotGoToDemdex();
   });
 });

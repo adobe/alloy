@@ -1,7 +1,6 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
   orgMainConfigMain,
@@ -10,6 +9,7 @@ import {
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../../../src/core/createResponse";
 import testPageUrl from "../../helpers/constants/testPageUrl";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
 const config = compose(
@@ -30,26 +30,6 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const triggerAlloyEvent = ClientFunction((viewName, scopes) => {
-  return new Promise(resolve => {
-    window
-      .alloy("sendEvent", {
-        renderDecisions: false,
-        decisionScopes: scopes,
-        xdm: {
-          web: {
-            webPageDetails: {
-              viewName
-            }
-          }
-        }
-      })
-      .then(result => {
-        resolve(result);
-      });
-  });
-});
-
 const getDecisionScopes = ({ decisions }) => {
   return decisions.map(decision => {
     return decision.scope;
@@ -57,12 +37,20 @@ const getDecisionScopes = ({ decisions }) => {
 };
 
 test.skip("Test C782719: SPA support with auto-rendering disabled", async () => {
-  await configureAlloyInstance("alloy", config);
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  const pageWideAndProductsViewDecisions = await alloy.sendEvent({
+    renderDecisions: false,
+    decisionScopes: [],
+    xdm: {
+      web: {
+        webPageDetails: {
+          viewName: "/products"
+        }
+      }
+    }
+  });
 
-  const pageWideAndProductsViewDecisions = await triggerAlloyEvent(
-    "/products",
-    []
-  );
   // assert we get in sendEvent promise decisions for "__view__" and "/products"
   await t
     .expect(getDecisionScopes(pageWideAndProductsViewDecisions))
@@ -97,7 +85,18 @@ test.skip("Test C782719: SPA support with auto-rendering disabled", async () => 
 
   await t.expect(personalizationPayload.length).eql(3);
   // sendEvent at a view change, this shouldn't request any target data, it should use the existing cache
-  const transformersDecisions = await triggerAlloyEvent("/transformers", []);
+  const transformersDecisions = await alloy.sendEvent({
+    renderDecisions: false,
+    decisionScopes: [],
+    xdm: {
+      web: {
+        webPageDetails: {
+          viewName: "/transformers"
+        }
+      }
+    }
+  });
+
   const viewChangeRequest = networkLogger.edgeEndpointLogs.requests[1];
   const viewChangeRequestBody = JSON.parse(viewChangeRequest.request.body);
   // assert that no personalization query was attached to the request
@@ -108,7 +107,17 @@ test.skip("Test C782719: SPA support with auto-rendering disabled", async () => 
     .eql(["/transformers"]);
 
   // no decisions in cache for this specific view
-  const cartDecisions = await triggerAlloyEvent("/cart", []);
+  const cartDecisions = await alloy.sendEvent({
+    renderDecisions: false,
+    decisionScopes: [],
+    xdm: {
+      web: {
+        webPageDetails: {
+          viewName: "/cart"
+        }
+      }
+    }
+  });
 
   const cartViewChangeRequest = networkLogger.edgeEndpointLogs.requests[2];
   const cartViewChangeRequestBody = JSON.parse(

@@ -1,4 +1,4 @@
-import { ClientFunction } from "testcafe";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 import createFixture from "../../helpers/createFixture";
 
 createFixture({
@@ -11,25 +11,12 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const triggerAlloyEvent = ClientFunction(() => {
-  return new Promise(resolve => {
-    window
-      .alloy("configure", {
-        debugEnabled: true
-      })
-      .catch(() => {
-        window.alloy("sendEvent").catch(resolve);
-      });
-  });
-});
-
 test("Test C2585: Throw error when configure is not the first command executed.", async t => {
   // Note: unable to enable logging with url parameter or enabler logger config.
-
-  const errorMessage = await triggerAlloyEvent();
-
+  const alloy = createAlloyProxy();
+  const sendEventErrorMessage = await alloy.sendEventErrorMessage();
   await t
-    .expect(errorMessage)
+    .expect(sendEventErrorMessage)
     .match(
       /The library must be configured first. Please do so by executing the configure command./
     );

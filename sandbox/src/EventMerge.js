@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import ContentSecurityPolicy from "./ContentSecurityPolicy";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 
 export default function EventMerge() {
   const eventMergeIdPromise = useRef(window.alloy("createEventMergeId"));

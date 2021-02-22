@@ -19,7 +19,7 @@
     "test:unit:browserstack:local": "karma start karma.browserstack.conf.js",
     "test:unit:browserstack:ci": "karma start karma.browserstack.conf.js --browsers bs_chrome_windows,bs_safari_macos,bs_firefox_windows,bs_ie_windows --single-run --reporters spec,BrowserStack",
     "test:unit:coverage": "karma start --single-run --reporters spec,coverage",
-    "test:functional": "rollup -c --environment BASE_CODE,NPM_PACKAGE_LOCAL && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome",
+    "test:functional": "rollup -c --environment BASE_CODE,NPM_PACKAGE_LOCAL && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome,safari,firefox",
     "test:functional:watch": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ./scripts/watchFunctionalTests.js",
     "test:functional:ci:build": "rollup -c --environment BASE_CODE,NPM_PACKAGE_LOCAL",
     "test:functional:ci:predeploy": "ALLOY_ENV=\"int\" testcafe 'browserstack:chrome@87:OS X Big Sur','browserstack:ie@11:Windows 10','browserstack:firefox@84:OS X Big Sur','browserstack:safari@14.0:OS X Big Sur'",
