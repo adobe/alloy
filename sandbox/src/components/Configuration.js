@@ -2,7 +2,6 @@ import React from "react";
 
 const getQueryStringParameter = key => {
   var searchParams = new URLSearchParams(window.location.search);
-  console.log(key, searchParams.get(key));
   return searchParams.get(key);
 };
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-const KONDUCTOR_COOKIE_PREFIX = "kndctr_334F60F35E1597910A495EC2_AdobeOrg_";
-const LEGACY_IDENTITY_COOKIE = "AMCV_334F60F35E1597910A495EC2%40AdobeOrg";
+const KONDUCTOR_COOKIE_PREFIX = "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_";
+const LEGACY_IDENTITY_COOKIE = "AMCV_5BFE274A5F6980A50A495C08%40AdobeOrg";
 
 let cookies;
 const refreshCookies = () => {

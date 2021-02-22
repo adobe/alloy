@@ -9,7 +9,6 @@ import { CONSENT_OUT } from "../../helpers/constants/consent";
 import { MAIN_CONSENT_COOKIE_NAME } from "../../helpers/constants/cookies";
 import cookies from "../../helpers/cookies";
 import reloadPage from "../../helpers/reloadPage";
-import createConsoleLogger from "../../helpers/consoleLogger";
 
 const config = compose(
   orgMainConfigMain,
@@ -51,9 +50,4 @@ test("Test C14411: User consents to no purposes after consenting to no purposes 
     .expect(setConsentErrorMessage)
     .ok("Expected the setConsent command to be rejected");
   await t.expect(setConsentErrorMessage).contains("EXEG-0302-409");
-
-  // make sure the instance still has no consent
-  const logger = await createConsoleLogger();
-  await alloy.sendEvent();
-  await logger.warn.expectMessageMatching(/user declined consent/);
 });
