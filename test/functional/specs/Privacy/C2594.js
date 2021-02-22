@@ -40,9 +40,7 @@ test("Test C2594: event command resolves promise with empty object if user conse
 
   const result = await sendEventResponse.result;
   await t.expect(result).eql({});
-  await logger.warn.expectMessageMatching(
-    /The sendEvent command could not fully complete. The user declined consent./
-  );
+  await logger.warn.expectMessageMatching(/The user declined consent./);
   // make sure no event requests were sent out
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
 });
