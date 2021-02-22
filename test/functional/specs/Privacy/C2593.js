@@ -1,11 +1,11 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
 import environmentContextConfig from "../../helpers/constants/environmentContextConfig";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
-
-const { CONSENT_IN } = require("../../helpers/constants/consent");
+import createAlloyProxy from "../../helpers/createAlloyProxy";
+import flushPromiseChains from "../../helpers/flushPromiseChains";
+import { CONSENT_IN } from "../../helpers/constants/consent";
 
 const networkLogger = createNetworkLogger();
 
@@ -20,25 +20,22 @@ test.meta({
   TEST_RUN: "REGRESSION"
 });
 
-const triggerEventThenConsent = ClientFunction(
-  () => {
-    return new Promise(resolve => {
-      const eventPromise = window.alloy("sendEvent");
-      window.alloy("setConsent", CONSENT_IN).then(() => {
-        eventPromise.then(resolve);
-      });
-    });
-  },
-  { dependencies: { CONSENT_IN } }
-);
-
 test("Test C2593: Event command consents to all purposes", async () => {
-  await configureAlloyInstance("alloy", {
+  const alloy = createAlloyProxy();
+  await alloy.configure({
     defaultConsent: "pending",
     ...environmentContextConfig
   });
-  await triggerEventThenConsent();
+  // try to send an event and verify that it is queued
+  const sendEventResponse = await alloy.sendEventAsync();
+  await flushPromiseChains();
+  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
 
+  // set the consent to in
+  await alloy.setConsent(CONSENT_IN);
+
+  // ensure the event goes out
+  await sendEventResponse.result;
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 });

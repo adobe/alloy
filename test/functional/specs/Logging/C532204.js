@@ -1,11 +1,11 @@
 import { ClientFunction } from "testcafe";
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const debugEnabledConfig = compose(
   orgMainConfigMain,
@@ -42,12 +42,9 @@ const setupLogger = ClientFunction(() => {
   });
 });
 
-const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("sendEvent");
-});
-
 test("Test C532204: Logged objects can be stringified", async () => {
   await setupLogger();
-  await configureAlloyInstance("alloy", debugEnabledConfig);
-  await triggerAlloyEvent();
+  const alloy = createAlloyProxy();
+  await alloy.configure(debugEnabledConfig);
+  await alloy.sendEvent();
 });

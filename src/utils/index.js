@@ -24,6 +24,7 @@ export {
   default as createCallbackAggregator
 } from "./createCallbackAggregator";
 export { default as createTaskQueue } from "./createTaskQueue";
+export { default as crc32 } from "./crc32";
 export { default as defer } from "./defer";
 export { default as deepAssign } from "./deepAssign";
 export { default as endsWith } from "./endsWith";
@@ -38,6 +39,10 @@ export { default as getLastArrayItems } from "./getLastArrayItems";
 export { default as getNamespacedCookieName } from "./getNamespacedCookieName";
 export { default as groupBy } from "./groupBy";
 export { default as includes } from "./includes";
+export {
+  default as injectDoesIdentityCookieExist
+} from "./injectDoesIdentityCookieExist";
+export { default as injectStorage } from "./injectStorage";
 export { default as intersection } from "./intersection";
 export { default as isBoolean } from "./isBoolean";
 export { default as isEmptyObject } from "./isEmptyObject";
@@ -58,7 +63,7 @@ export {
   default as sanitizeOrgIdForCookieName
 } from "./sanitizeOrgIdForCookieName";
 export { default as stackError } from "./stackError";
-export { default as injectStorage } from "./injectStorage";
+export { default as startsWith } from "./startsWith";
 export { default as stringToBoolean } from "./stringToBoolean";
 export { default as toArray } from "./toArray";
 export { default as toError } from "./toError";

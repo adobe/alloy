@@ -10,18 +10,29 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createTaskQueue, cookieJar } from "../../utils";
+import {
+  createTaskQueue,
+  cookieJar,
+  injectDoesIdentityCookieExist,
+  sanitizeOrgIdForCookieName
+} from "../../utils";
 import createComponent from "./createComponent";
+import createConsentHashStore from "./createConsentHashStore";
 import createConsentRequestPayload from "./createConsentRequestPayload";
 import createConsentRequest from "./createConsentRequest";
-import injectReadStoredConsent from "./injectReadStoredConsent";
+import createStoredConsent from "./createStoredConsent";
 import injectSendSetConsentRequest from "./injectSendSetConsentRequest";
 import parseConsentCookie from "./parseConsentCookie";
 import validateSetConsentOptions from "./validateSetConsentOptions";
 
-const createPrivacy = ({ config, consent, sendEdgeNetworkRequest }) => {
+const createPrivacy = ({
+  config,
+  consent,
+  sendEdgeNetworkRequest,
+  createNamespacedStorage
+}) => {
   const { orgId, defaultConsent } = config;
-  const readStoredConsent = injectReadStoredConsent({
+  const storedConsent = createStoredConsent({
     parseConsentCookie,
     orgId,
     cookieJar
@@ -32,14 +43,24 @@ const createPrivacy = ({ config, consent, sendEdgeNetworkRequest }) => {
     createConsentRequest,
     sendEdgeNetworkRequest
   });
+  const storage = createNamespacedStorage(
+    `${sanitizeOrgIdForCookieName(orgId)}.consentHashes.`
+  );
+  const consentHashStore = createConsentHashStore({
+    storage: storage.persistent
+  });
+
+  const doesIdentityCookieExist = injectDoesIdentityCookieExist({ orgId });
 
   return createComponent({
-    readStoredConsent,
+    storedConsent,
     taskQueue,
     defaultConsent,
     consent,
     sendSetConsentRequest,
-    validateSetConsentOptions
+    validateSetConsentOptions,
+    consentHashStore,
+    doesIdentityCookieExist
   });
 };
 

@@ -1,8 +1,7 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../../helpers/networkLogger";
 import { responseStatus } from "../../../helpers/assertions/index";
 import createFixture from "../../../helpers/createFixture";
-import configureAlloyInstance from "../../../helpers/configureAlloyInstance";
 import createResponse from "../../../../../src/core/createResponse";
 import getResponseBody from "../../../helpers/networkLogger/getResponseBody";
 import cookies from "../../../helpers/cookies";
@@ -11,8 +10,9 @@ import {
   orgMainConfigMain,
   debugEnabled
 } from "../../../helpers/constants/configParts";
-
-const { IAB_NO_PURPOSE_TEN } = require("../../../helpers/constants/consent");
+import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies";
+import createAlloyProxy from "../../../helpers/createAlloyProxy";
+import { IAB_NO_PURPOSE_TEN } from "../../../helpers/constants/consent";
 
 const config = compose(
   orgMainConfigMain,
@@ -35,16 +35,10 @@ test.meta({
   TEST_RUN: "REGRESSION"
 });
 
-const triggerSetConsent = ClientFunction(
-  () => window.alloy("setConsent", IAB_NO_PURPOSE_TEN),
-  { dependencies: { IAB_NO_PURPOSE_TEN } }
-);
-
-const triggerEvent = ClientFunction(() => window.alloy("sendEvent"));
-
 test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
-  await configureAlloyInstance("alloy", config);
-  await triggerSetConsent();
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  await alloy.setConsent(IAB_NO_PURPOSE_TEN);
 
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
 
@@ -55,8 +49,7 @@ test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
   const response = createResponse(rawResponse);
 
   // 1. The set-consent response should contain the Consent cookie: { general: in }
-  const consentCookieName = "kndctr_334F60F35E1597910A495EC2_AdobeOrg_consent";
-  const consentCookieValue = await cookies.get(consentCookieName);
+  const consentCookieValue = await cookies.get(MAIN_CONSENT_COOKIE_NAME);
 
   await t.expect(consentCookieValue).ok("No consent cookie found.");
   await t.expect(consentCookieValue).eql("general=in");
@@ -66,7 +59,7 @@ test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
   await t.expect(identityHandle.length).eql(2);
 
   // 3. Event calls going forward should be opted out because AAM opts out consents with no purpose 10.
-  await triggerEvent();
+  await alloy.sendEvent();
   const rawEventResponse = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );

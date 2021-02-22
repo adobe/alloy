@@ -1,9 +1,7 @@
-import { ClientFunction } from "testcafe";
 import createFixture from "../../helpers/createFixture";
 import testPageUrl from "../../helpers/constants/testPageUrl";
-
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 createFixture({
   title: "C2586: Toggle logging through the querystring parameter.",
@@ -16,15 +14,10 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const getLibraryInfoCommand = ClientFunction(() => {
-  return new Promise(resolve => {
-    window.alloy("getLibraryInfo").then(() => resolve());
-  });
-});
-
 test("Test C2586: Toggle logging through the querystring parameter.", async t => {
-  await configureAlloyInstance("alloy", orgMainConfigMain);
-  await getLibraryInfoCommand();
+  const alloy = createAlloyProxy();
+  await alloy.configure(orgMainConfigMain);
+  await alloy.getLibraryInfo();
 
   const { info } = await t.getBrowserConsoleMessages();
   await t.expect(info).match(/Executing getLibraryInfo command/);

@@ -108,7 +108,7 @@ export const createExecuteCommand = ({
       processWarningsAndErrors
     });
 
-    const generalConsentState = createConsentStateMachine();
+    const generalConsentState = createConsentStateMachine({ logger });
     const consent = createConsent({
       generalConsentState,
       logger
@@ -139,7 +139,8 @@ export const createExecuteCommand = ({
           handleError: injectHandleError({
             errorPrefix: `[${instanceName}] [${componentName}]`,
             logger: componentLogger
-          })
+          }),
+          createNamespacedStorage
         };
       }
     });

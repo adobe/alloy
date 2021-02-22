@@ -1,5 +1,5 @@
 import React from "react";
-import ContentSecurityPolicy from "./ContentSecurityPolicy";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 
 export default function Links() {
   const adobeLink = () => {

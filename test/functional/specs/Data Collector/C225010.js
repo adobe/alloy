@@ -1,7 +1,6 @@
 import { t, Selector, ClientFunction } from "testcafe";
 import createFixture from "../../helpers/createFixture";
 import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createConsoleLogger from "../../helpers/consoleLogger";
 import createUnhandledRejectionLogger from "../../helpers/createUnhandledRejectionLogger";
 import {
@@ -10,8 +9,8 @@ import {
   consentPending,
   debugEnabled
 } from "../../helpers/constants/configParts";
-
-const { CONSENT_OUT } = require("../../helpers/constants/consent");
+import createAlloyProxy from "../../helpers/createAlloyProxy";
+import { CONSENT_OUT } from "../../helpers/constants/consent";
 
 createFixture({
   title: "C225010: Click collection handles errors when user declines consent"
@@ -24,19 +23,16 @@ test.meta({
 });
 
 test("Test C225010: Click collection handles errors when user declines consent", async () => {
+  const alloy = createAlloyProxy();
   const getLocation = ClientFunction(() => document.location.href.toString());
   const testConfig = compose(
     orgMainConfigMain,
     consentPending,
     debugEnabled
   );
-  await configureAlloyInstance("alloy", testConfig);
-  await t.eval(
-    () => {
-      return window.alloy("setConsent", CONSENT_OUT);
-    },
-    { dependencies: { CONSENT_OUT } }
-  );
+  await alloy.configure(testConfig);
+  await alloy.setConsent(CONSENT_OUT);
+
   await addHtmlToBody(`<a id="alloy-link-test" href="#foo">Test Link</a>`);
 
   const consoleLogger = await createConsoleLogger();

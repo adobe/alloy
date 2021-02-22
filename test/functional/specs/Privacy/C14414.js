@@ -1,5 +1,4 @@
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import SequentialHook from "../../helpers/requestHooks/sequentialHook";
 import {
   compose,
@@ -8,8 +7,8 @@ import {
   debugEnabled
 } from "../../helpers/constants/configParts";
 import createConsoleLogger from "../../helpers/consoleLogger";
-
-const { CONSENT_IN, CONSENT_OUT } = require("../../helpers/constants/consent");
+import { CONSENT_IN, CONSENT_OUT } from "../../helpers/constants/consent";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const config = compose(
   orgMainConfigMain,
@@ -31,25 +30,18 @@ test.meta({
 });
 
 test("Test C14414: Requests are queued while consent changes are pending", async t => {
-  await configureAlloyInstance("alloy", config);
-  await t.eval(
-    () => {
-      // Don't wait for setConsent to complete.
-      window.alloy("setConsent", CONSENT_IN);
-    },
-    { dependencies: { CONSENT_IN } }
-  );
-  await t.eval(
-    () => {
-      // Don't wait for setConsent to complete.
-      window.alloy("setConsent", CONSENT_OUT);
-    },
-    { dependencies: { CONSENT_OUT } }
-  );
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  const setConsentResponse1 = await alloy.setConsentAsync(CONSENT_IN);
+  const setConsentResponse2 = await alloy.setConsentAsync(CONSENT_OUT);
   const logger = await createConsoleLogger();
-  await t.eval(() => window.alloy("sendEvent"));
+  await alloy.sendEvent();
   await logger.warn.expectMessageMatching(/user declined consent/);
   await t
     .expect(setConsentHook.haveRequestsBeenSequential())
     .ok("Set-consent requests were not sequential");
+
+  // make sure there are no errors returned from the setConsent requests
+  await setConsentResponse1.result;
+  await setConsentResponse2.result;
 });

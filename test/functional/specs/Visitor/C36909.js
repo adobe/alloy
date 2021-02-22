@@ -1,8 +1,7 @@
-import { ClientFunction, t } from "testcafe";
+import { t } from "testcafe";
 import createFixture from "../../helpers/createFixture";
 import getVisitorEcid from "../../helpers/visitorService/getVisitorEcid";
 import createMockOptIn from "../../helpers/optIn/createMockOptIn";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
   orgMainConfigMain,
@@ -11,6 +10,7 @@ import {
   consentPending
 } from "../../helpers/constants/configParts";
 import { CONSENT_IN } from "../../helpers/constants/consent";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 createFixture({
   title:
@@ -31,20 +31,12 @@ const config = compose(
   consentPending
 );
 
-const setConsent = ClientFunction(consent => {
-  return window.alloy("setConsent", consent);
-});
-
-const getAlloyEcid = ClientFunction(() => {
-  return window.alloy("getIdentity", {}).then(result => {
-    return result.ECID;
-  });
-});
-
 test("C36909 When ID migration is disabled and Visitor and Alloy are both awaiting consent, when Visitor is denied and Alloy is approved, Alloy goes ahead with getting an ECID", async () => {
   await createMockOptIn(false);
-  await configureAlloyInstance("alloy", config);
-  await setConsent(CONSENT_IN);
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  await alloy.setConsent(CONSENT_IN);
   const visitorEcid = await getVisitorEcid(orgMainConfigMain.orgId);
-  await t.expect(getAlloyEcid()).notEql(visitorEcid);
+  const alloyEcid = await alloy.getIdentity({});
+  await t.expect(alloyEcid.identity.ECID).notEql(visitorEcid);
 });
