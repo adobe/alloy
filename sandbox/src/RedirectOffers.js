@@ -1,14 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ContentSecurityPolicy from "./ContentSecurityPolicy";
 
 export default function RedirectOffers() {
-  window
-    .alloy("sendEvent", {
-      renderDecisions: true
-    })
-    .then(({ decisions = [] }) => {
-      console.log("personalized decisions", decisions);
-    });
+  useEffect(() => {
+    window
+      .alloy("sendEvent", {
+        renderDecisions: true
+      })
+      .then(({ decisions = [] }) => {
+        console.log("personalized decisions", decisions);
+      });
+  }, []);
+
   return (
     <div className="personalization-container">
       <ContentSecurityPolicy />
