@@ -18,6 +18,7 @@ export default () => {
   let userData;
   let documentMayUnload = false;
   let isFinalized = false;
+  let shouldSendEvent = true;
 
   const event = {
     getUserXdm() {
@@ -77,7 +78,8 @@ export default () => {
 
         // this allows the user to replace the object passed into the callback
         const tempContent = { xdm, data };
-        onBeforeEventSend(tempContent);
+        const result = onBeforeEventSend(tempContent);
+        if (result === false) shouldSendEvent = false;
 
         if (Object.keys(tempContent).length) {
           content.xdm = tempContent.xdm;
@@ -99,6 +101,9 @@ export default () => {
         (!userXdm || isEmptyObject(userXdm)) &&
         (!userData || isEmptyObject(userData))
       );
+    },
+    shouldSend() {
+      return shouldSendEvent;
     },
     getViewName() {
       if (!userXdm || !userXdm.web || !userXdm.web.webPageDetails) {

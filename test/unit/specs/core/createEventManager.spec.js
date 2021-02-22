@@ -39,7 +39,7 @@ describe("createEventManager", () => {
     consent = jasmine.createSpyObj("consent", {
       awaitConsent: Promise.resolve()
     });
-    event = jasmine.createSpyObj("event", ["finalize"]);
+    event = jasmine.createSpyObj("event", ["finalize", "shouldSend"]);
     const createEvent = () => {
       return event;
     };
@@ -114,6 +114,36 @@ describe("createEventManager", () => {
       });
       return eventManager.sendEvent(event).then(() => {
         expect(config.onBeforeEventSend).toHaveBeenCalled();
+      });
+    });
+
+    it("returns false onBeforeEventSend and event should not be sent", () => {
+      const eventToIgnore = jasmine.createSpyObj("event", {
+        finalize: () => {},
+        shouldSend: false
+      });
+      return eventManager.sendEvent(eventToIgnore).then(() => {
+        expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
+      });
+    });
+
+    it("returns null onBeforeEventSend and event should be sent", () => {
+      const eventToIgnore = jasmine.createSpyObj("event", {
+        finalize: () => {},
+        shouldSend: null
+      });
+      return eventManager.sendEvent(eventToIgnore).then(() => {
+        expect(sendEdgeNetworkRequest).toHaveBeenCalled();
+      });
+    });
+
+    it("returns true onBeforeEventSend and event should be sent", () => {
+      const eventToIgnore = jasmine.createSpyObj("event", {
+        finalize: () => {},
+        shouldSend: true
+      });
+      return eventManager.sendEvent(eventToIgnore).then(() => {
+        expect(sendEdgeNetworkRequest).toHaveBeenCalled();
       });
     });
 

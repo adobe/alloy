@@ -61,6 +61,14 @@ export default ({
           // NOTE: this calls onBeforeEventSend callback (if configured)
           event.finalize(onBeforeEventSend);
 
+          // if the callback returns false, the event should not be sent
+          return event.shouldSend();
+        })
+        .then(shouldSendEvent => {
+          if (shouldSendEvent === false) {
+            return Promise.resolve();
+          }
+
           return sendEdgeNetworkRequest({
             request,
             runOnResponseCallbacks: onResponseCallbackAggregator.call,
