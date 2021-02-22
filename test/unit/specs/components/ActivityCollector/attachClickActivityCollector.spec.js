@@ -81,7 +81,7 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
         isEmpty: () => false
       };
     };
-    spyOn(eventManager, "sendEvent").and.callThrough();
+    eventManager.sendEvent = jasmine.createSpy();
     build();
     return clickHandler({}).then(() => {
       expect(eventManager.sendEvent).toHaveBeenCalled();
@@ -89,7 +89,7 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
   });
 
   it("Does not send empty events", () => {
-    spyOn(eventManager, "sendEvent").and.callThrough();
+    eventManager.sendEvent = jasmine.createSpy();
     build();
     return clickHandler({}).then(() => {
       expect(eventManager.sendEvent).not.toHaveBeenCalled();

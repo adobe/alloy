@@ -14,7 +14,6 @@ import { createCallbackAggregator } from "../utils";
 
 export default ({
   config,
-  logger,
   lifecycle,
   consent,
   createEvent,
@@ -23,15 +22,6 @@ export default ({
   sendEdgeNetworkRequest
 }) => {
   const { onBeforeEventSend } = config;
-
-  const onBeforeEventSendWithLoggedExceptions = (...args) => {
-    try {
-      onBeforeEventSend(...args);
-    } catch (e) {
-      logger.error(e);
-      throw e;
-    }
-  };
 
   return {
     createEvent,
@@ -49,7 +39,6 @@ export default ({
      * @returns {*}
      */
     sendEvent(event, options = {}) {
-      event.setLastChanceCallback(onBeforeEventSendWithLoggedExceptions);
       const { renderDecisions = false, decisionScopes } = options;
       const payload = createDataCollectionRequestPayload();
       const request = createDataCollectionRequest(payload);
@@ -69,6 +58,9 @@ export default ({
           return consent.awaitConsent();
         })
         .then(() => {
+          // NOTE: this calls onBeforeEventSend callback (if configured)
+          event.finalize(onBeforeEventSend);
+
           return sendEdgeNetworkRequest({
             request,
             runOnResponseCallbacks: onResponseCallbackAggregator.call,

@@ -10,27 +10,85 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { clone, isEmptyObject, createMerger } from "../utils";
+import { isEmptyObject, deepAssign } from "../utils";
 
 export default () => {
   const content = {};
   let userXdm;
   let userData;
   let documentMayUnload = false;
-  let lastChanceCallback;
+  let isFinalized = false;
 
   const event = {
+    getUserXdm() {
+      return userXdm;
+    },
     setUserXdm(value) {
+      if (isFinalized) {
+        throw new Error("userXdm cannot be set after event is finalized");
+      }
       userXdm = value;
     },
     setUserData(value) {
+      if (isFinalized) {
+        throw new Error("userData cannot be set after event is finalized");
+      }
+
       userData = value;
     },
-    mergeXdm: createMerger(content, "xdm"),
-    mergeMeta: createMerger(content, "meta"),
-    mergeQuery: createMerger(content, "query"),
+    mergeXdm(xdm) {
+      if (isFinalized) {
+        throw new Error("mergeXdm cannot be called after event is finalized");
+      }
+
+      deepAssign(content, { xdm });
+    },
+    mergeMeta(meta) {
+      if (isFinalized) {
+        throw new Error("mergeMeta cannot be called after event is finalized");
+      }
+
+      deepAssign(content, { meta });
+    },
+    mergeQuery(query) {
+      if (isFinalized) {
+        throw new Error("mergeQuery cannot be called after event is finalized");
+      }
+
+      deepAssign(content, { query });
+    },
     documentMayUnload() {
       documentMayUnload = true;
+    },
+    finalize(onBeforeEventSend) {
+      if (isFinalized) return;
+
+      if (userXdm) {
+        event.mergeXdm(userXdm);
+      }
+
+      if (userData) {
+        content.data = userData;
+      }
+
+      if (onBeforeEventSend) {
+        const xdm = content.xdm || {};
+        const data = content.data || {};
+        onBeforeEventSend({
+          xdm,
+          data
+        });
+
+        if (Object.keys(xdm).length) {
+          content.xdm = xdm;
+        }
+
+        if (Object.keys(data).length) {
+          content.data = data;
+        }
+      }
+
+      isFinalized = true;
     },
     getDocumentMayUnload() {
       return documentMayUnload;
@@ -42,9 +100,6 @@ export default () => {
         (!userData || isEmptyObject(userData))
       );
     },
-    setLastChanceCallback(value) {
-      lastChanceCallback = value;
-    },
     getViewName() {
       if (!userXdm || !userXdm.web || !userXdm.web.webPageDetails) {
         return undefined;
@@ -53,39 +108,6 @@ export default () => {
       return userXdm.web.webPageDetails.viewName;
     },
     toJSON() {
-      if (userXdm) {
-        event.mergeXdm(userXdm);
-      }
-      if (userData) {
-        content.data = userData;
-      }
-
-      if (lastChanceCallback) {
-        // We clone these because if lastChanceCallback throws an error, we don't
-        // want any modifications lastChanceCallback made to actually be applied.
-        const args = {
-          xdm: clone(content.xdm || {}),
-          data: clone(content.data || {})
-        };
-        try {
-          lastChanceCallback(args);
-          // If onBeforeEventSend throws an exception,
-          // we don't want to apply the changes it made
-          // so setting content.xdm and content.data is inside this try
-
-          // We only set content.xdm if content.xdm was already set or
-          // if content.xdm was empty and the lastChanceCallback added items to it.
-          if (content.xdm || !isEmptyObject(args.xdm)) {
-            content.xdm = args.xdm;
-          }
-          if (content.data || !isEmptyObject(args.data)) {
-            content.data = args.data;
-          }
-        } catch (e) {
-          // the callback should have already logged the exception
-        }
-      }
-
       return content;
     }
   };

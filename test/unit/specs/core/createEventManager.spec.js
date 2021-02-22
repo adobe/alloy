@@ -108,31 +108,21 @@ describe("createEventManager", () => {
         });
     });
 
-    it("sets the lastChanceCallback, which wraps config.onBeforeEventSend, on the event", () => {
-      let wrappedLastChanceCallback;
-      event.setLastChanceCallback.and.callFake(callback => {
-        wrappedLastChanceCallback = callback;
+    it("events call onBeforeEventSend callback", () => {
+      event.finalize.and.callFake(onBeforeEventSend => {
+        onBeforeEventSend();
       });
-      return eventManager.sendEvent(event, {}).then(() => {
-        wrappedLastChanceCallback();
+      return eventManager.sendEvent(event).then(() => {
         expect(config.onBeforeEventSend).toHaveBeenCalled();
       });
     });
 
-    it("logs errors in the config.onBeforeEventSend callback", () => {
-      const error = new Error("onBeforeEventSend error");
-      config.onBeforeEventSend.and.throwError(error);
+    it("throws an error on event finalize and event should not be sent", () => {
+      const errorMsg = "Expected Error";
+      event.finalize.and.throwError(errorMsg);
 
-      let wrappedLastChanceCallback;
-      event.setLastChanceCallback.and.callFake(callback => {
-        wrappedLastChanceCallback = callback;
-      });
-
-      return eventManager.sendEvent(event, {}).then(() => {
-        expect(() => {
-          wrappedLastChanceCallback();
-        }).toThrowError("onBeforeEventSend error");
-        expect(logger.error).toHaveBeenCalledWith(error);
+      return eventManager.sendEvent(event).catch(() => {
+        expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
       });
     });
 
