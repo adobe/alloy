@@ -23,7 +23,7 @@
     "test:functional:watch": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ./scripts/watchFunctionalTests.js",
     "test:functional:ci:build": "rollup -c --environment BASE_CODE,NPM_PACKAGE_LOCAL",
     "test:functional:ci:predeploy": "ALLOY_ENV=\"int\" testcafe 'browserstack:chrome@88.0:OS X Big Sur','browserstack:ie@11:Windows 10','browserstack:firefox@85.0:OS X Big Sur','browserstack:safari@14.0:OS X Big Sur'",
-    "test:functional:ci:edgepredeploy": "ALLOY_ENV=\"prod\" EDGE_BASE_PATH=\"ee-pre-prd\" testcafe chrome",
+    "test:functional:ci:edgepredeploy": "ALLOY_ENV=\"prod\" EDGE_BASE_PATH=\"ee-pre-prd\" testcafe 'browserstack:chrome@88.0:OS X Big Sur'",
     "test:functional:ci:dev": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe 'browserstack:chrome@88:Windows 10','browserstack:ie@11:Windows 10','browserstack:firefox@85:Windows 10','browserstack:safari@14.0:OS X Big Sur'",
     "test:functional:ci:prod": "ALLOY_ENV=\"prod\" testcafe 'browserstack:chrome@88.0:OS X Big Sur','browserstack:ie@11:Windows 10','browserstack:firefox@85.0:OS X Catalina','browserstack:safari@14.0:OS X Big Sur'",
     "test:functional:api": "testcafe chrome:headless",
