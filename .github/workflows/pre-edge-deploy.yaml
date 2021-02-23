@@ -1,9 +1,13 @@
 #This configuration will be used by the Edge team to test against prod.
 
 name: Pre-Edge-Deploy
-on:
-  repository_dispatch:
-    types: pre-edge-deploy
+on: 
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
 
 jobs:
   alloy-prod-e2e:
