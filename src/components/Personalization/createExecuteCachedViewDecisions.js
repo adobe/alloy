@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNonEmptyArray from "../../utils/isNonEmptyArray";
+import { isNonEmptyArray, isNonEmptyString } from "../../utils";
 
 export default ({ viewCache, executeViewDecisions, collect }) => {
   return ({ viewName }) => {
@@ -19,9 +19,12 @@ export default ({ viewCache, executeViewDecisions, collect }) => {
         executeViewDecisions(viewDecisions);
         return;
       }
-      const xdm = { web: { webPageDetails: { viewName } } };
 
-      collect({ meta: {}, xdm });
+      if (isNonEmptyString(viewName)) {
+        const xdm = { web: { webPageDetails: { viewName } } };
+
+        collect({ meta: {}, xdm });
+      }
     });
   };
 };
