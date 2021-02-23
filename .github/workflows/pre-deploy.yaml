@@ -4,7 +4,7 @@ on: workflow_dispatch
 jobs:
   e2e-test:
     name: "E2E Alloy Int - Edge Prod"
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
       with:

@@ -1,12 +1,14 @@
-name: Prod
+#This configuration will be used by the Edge team to test against prod.
+
+name: Pre-Edge-Deploy
 on:
-  schedule:
-    - cron: "0 */24 * * *"
+  repository_dispatch:
+    types: pre-edge-deploy
 
 jobs:
   alloy-prod-e2e:
-    name: "Cron: Prod E2E Tests"
-    runs-on: ubuntu-latest
+    name: "Pre Edge: Prod E2E Tests"
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2.3.3
       - name: "Get latest Alloy Release"
@@ -36,13 +38,8 @@ jobs:
           local-identifier: random
       - name: Run TestCafe Tests
         run: |
-          npm run test:functional:ci:prod
+          npm run test:functional:ci:edgepredeploy
       - name: 'BrowserStackLocal Stop'
         uses: 'browserstack/github-actions/setup-local@master'
         with:
           local-testing: stop
-      - uses: craftech-io/slack-action@v1
-        with:
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          status: failure
-        if: failure()

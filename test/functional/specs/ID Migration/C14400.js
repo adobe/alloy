@@ -74,6 +74,6 @@ test("Test C14400: When ID migration is disabled and no identity cookie is found
   await t
     .expect(documentCookie)
     .notContains(
-      `AMCV_334F60F35E1597910A495EC2%40AdobeOrg=MCMID|${ecidPayload.id}`
+      `AMCV_5BFE274A5F6980A50A495C08%40AdobeOrg=MCMID|${ecidPayload.id}`
     );
 });
