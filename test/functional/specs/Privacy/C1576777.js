@@ -52,5 +52,5 @@ test("C1576777: When identity cookie is missing, stored consent is cleared", asy
   await alloy.configure(configuration);
   await alloy.sendEvent();
 
-  await t.expect(networkLogger.edgeInteractEndpointLogs.requests.length).eql(2);
+  await t.expect(networkLogger.edgeInteractEndpointLogs.requests.length).eql(1);
 });
