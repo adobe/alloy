@@ -1,7 +1,5 @@
 name: Prod
 on:
-  repository_dispatch:
-    types: konductor
   schedule:
     - cron: "0 */24 * * *"
 

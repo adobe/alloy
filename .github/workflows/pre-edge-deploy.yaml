@@ -8,7 +8,7 @@ on:
 jobs:
   alloy-prod-e2e:
     name: "Pre Edge: Prod E2E Tests"
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2.3.3
       - name: "Get latest Alloy Release"
