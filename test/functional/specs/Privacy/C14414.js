@@ -31,6 +31,7 @@ test.meta({
 
 test
   .before(async t => {
+    // Create the hook here so that it is only used for one test run.
     t.ctx.setConsentHook = new SequentialHook(/v1\/privacy\/set-consent\?/);
     await t.addRequestHooks(t.ctx.setConsentHook);
   })
