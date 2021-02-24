@@ -57,7 +57,7 @@ test("Test C224676: Passing a positive Consent in the sendEvent command", async 
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
 
-  const response = createResponse(rawResponse);
+  const response = createResponse({ content: rawResponse });
 
   // 1. The set-consent response should contain the Consent cookie: { general: in }
   const consentCookieValue = await cookies.get(MAIN_CONSENT_COOKIE_NAME);

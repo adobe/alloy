@@ -59,7 +59,7 @@ test("Test C14400: When ID migration is disabled and no identity cookie is found
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
 
-  const payloads = createResponse(response).getPayloadsByType(
+  const payloads = createResponse({ content: response }).getPayloadsByType(
     "identity:result"
   );
 

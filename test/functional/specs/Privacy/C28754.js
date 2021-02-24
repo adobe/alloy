@@ -43,7 +43,7 @@ test("C28754 - Consenting to no purposes should result in no data handles in the
     getResponseBody(networkLogger.setConsentEndpointLogs.requests[0])
   );
 
-  const alloyResponse = createResponse(response);
+  const alloyResponse = createResponse({ content: response });
 
   const idSyncsPayload = alloyResponse.getPayloadsByType("identity:exchange");
   const personalizationPayload = alloyResponse.getPayloadsByType(

@@ -91,9 +91,9 @@ test.skip("Test C782718: SPA support with auto-rendering and view notifications"
   const response = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
-  const personalizationPayload = createResponse(response).getPayloadsByType(
-    "personalization:decisions"
-  );
+  const personalizationPayload = createResponse({
+    content: response
+  }).getPayloadsByType("personalization:decisions");
 
   await t.expect(personalizationPayload.length).eql(3);
   // here we should verify that we have rendered decisions for page-wide scope and for /products view

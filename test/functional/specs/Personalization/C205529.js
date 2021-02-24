@@ -67,9 +67,9 @@ test("Test C205529: Receive offer based on device", async () => {
   const response = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
-  const personalizationPayload = createResponse(response).getPayloadsByType(
-    "personalization:decisions"
-  );
+  const personalizationPayload = createResponse({
+    content: response
+  }).getPayloadsByType("personalization:decisions");
 
   await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
   await t

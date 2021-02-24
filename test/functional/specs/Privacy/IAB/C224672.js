@@ -50,7 +50,7 @@ test("Test C224672: Passing the `gdprContainsPersonalData` flag should return in
     getResponseBody(networkLogger.setConsentEndpointLogs.requests[0])
   );
 
-  const consentResponse = createResponse(consentRawResponse);
+  const consentResponse = createResponse({ content: consentRawResponse });
 
   // 1. The set-consent response should contain the Consent cookie: { general: in }
   const consentCookieValue = await cookies.get(MAIN_CONSENT_COOKIE_NAME);

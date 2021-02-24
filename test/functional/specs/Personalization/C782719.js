@@ -79,9 +79,9 @@ test.skip("Test C782719: SPA support with auto-rendering disabled", async () => 
   const response = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
-  const personalizationPayload = createResponse(response).getPayloadsByType(
-    "personalization:decisions"
-  );
+  const personalizationPayload = createResponse({
+    content: response
+  }).getPayloadsByType("personalization:decisions");
 
   await t.expect(personalizationPayload.length).eql(3);
   // sendEvent at a view change, this shouldn't request any target data, it should use the existing cache

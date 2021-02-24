@@ -58,12 +58,14 @@ test("C148846 - Setting edgeDomain to CNAME results in server calls to this CNAM
   const responseForDemdexRequest = JSON.parse(getResponseBody(firstRequest));
   // const responseForCnameRequest = JSON.parse(getResponseBody(secondRequest));
 
-  const alloyDemdexResponse = createResponse(responseForDemdexRequest);
+  const alloyDemdexResponse = createResponse({
+    content: responseForDemdexRequest
+  });
   const demdexStateHandle = alloyDemdexResponse.getPayloadsByType(
     "state:store"
   );
 
-  // const alloyCnameResponse = createResponse(responseForCnameRequest);
+  // const alloyCnameResponse = createResponse({ content: responseForCnameRequest });
   // const cnameStateHandle = alloyCnameResponse.getPayloadsByType("state:store");
 
   const demdexResponseContainsIdentityCookie = demdexStateHandle.find(h => {

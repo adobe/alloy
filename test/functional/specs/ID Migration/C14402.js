@@ -49,7 +49,7 @@ test("Test C14402: When ID migration is enabled and no legacy AMCV cookie is fou
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
 
-  const payloads = createResponse(response).getPayloadsByType(
+  const payloads = createResponse({ content: response }).getPayloadsByType(
     "identity:result"
   );
 
