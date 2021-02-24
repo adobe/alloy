@@ -64,7 +64,7 @@ test("Test C8118: Verify link click sends a request to the collect endpoint when
   await clickLink();
 
   // We cannot assert the interact endpoint has been called because Alloy uses
-  // the fetch API in this case and there is no gurantee that the browser will
+  // the fetch API in this case and there is no guarantee that the browser will
   // finish sending the request before navigating the user.
 
   // await t.expect(networkLogger.edgeCollectEndpointLogs.requests.length).eql(0);
@@ -99,4 +99,7 @@ test("Test C8118: Verify link click sends a request to the collect endpoint when
   await t.expect(networkLogger.edgeInteractEndpointLogs.requests.length).eql(0);
   await t.expect(networkLogger.edgeCollectEndpointLogs.requests.length).eql(1);
   await assertRequest(networkLogger.edgeCollectEndpointLogs.requests[0]);
+  if (isSendBeaconSupported()) {
+    await t.expect(sendBeaconMock.getCallCount()).eql(1);
+  }
 });

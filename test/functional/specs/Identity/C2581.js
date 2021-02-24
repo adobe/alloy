@@ -31,7 +31,7 @@ test.meta({
 test("Test C2581: Queue requests until we receive an ECID.", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(debugEnabledConfig);
-  await alloy.sendEventAsync({ renderDecisions: true });
+  await alloy.sendEventAsync();
   await alloy.sendEvent();
   await t.expect(interactHook.numRequests).eql(2);
   await t
