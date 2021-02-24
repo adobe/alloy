@@ -32,7 +32,7 @@ test("Test C2581: Queue requests until we receive an ECID.", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(debugEnabledConfig);
   // this should get an ECID
-  await alloy.sendEventAsync({ renderDecisions: true });
+  await alloy.sendEventAsync();
   // this should wait until the first event returns
   // so it can send the ECID in the request
   await alloy.sendEvent();
