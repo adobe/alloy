@@ -249,6 +249,36 @@ describe("createEvent", () => {
       expect(subject.toJSON()).toEqual({ xdm: { b: "2" }, data: { b: "2" } });
     });
 
+    it("cannot set xdm or data to empty objects", () => {
+      const callback = content => {
+        content.xdm = {};
+        content.data = {};
+      };
+      const subject = createEvent();
+      subject.setUserXdm({ a: "1", b: "2" });
+      subject.setUserData({ a: "1", b: "2" });
+      subject.finalize(callback);
+      expect(subject.toJSON()).toEqual({
+        xdm: { a: "1", b: "2" },
+        data: { a: "1", b: "2" }
+      });
+    });
+
+    it("cannot delete xdm or data objects", () => {
+      const callback = content => {
+        delete content.xdm;
+        delete content.data;
+      };
+      const subject = createEvent();
+      subject.setUserXdm({ a: "1", b: "2" });
+      subject.setUserData({ a: "1", b: "2" });
+      subject.finalize(callback);
+      expect(subject.toJSON()).toEqual({
+        xdm: { a: "1", b: "2" },
+        data: { a: "1", b: "2" }
+      });
+    });
+
     it("event merges when there is an error", () => {
       const callback = ({ xdm, data }) => {
         delete xdm.a;

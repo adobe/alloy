@@ -81,11 +81,11 @@ export default () => {
 
         shouldSendEvent = result !== false;
 
-        if (Object.keys(tempContent.xdm).length) {
+        if (tempContent.xdm && Object.keys(tempContent.xdm).length) {
           content.xdm = tempContent.xdm;
         }
 
-        if (Object.keys(tempContent.data).length) {
+        if (tempContent.data && Object.keys(tempContent.data).length) {
           content.data = tempContent.data;
         }
       }

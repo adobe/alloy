@@ -20,16 +20,12 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
   let handleError;
   beforeEach(() => {
     config.clickCollectionEnabled = true;
-    eventManager = {
-      createEvent: () => {
-        return {
-          isEmpty: () => true
-        };
+    eventManager = jasmine.createSpyObj("eventManager", {
+      createEvent: {
+        isEmpty: () => true
       },
-      sendEvent: () => {
-        return Promise.resolve();
-      }
-    };
+      sendEvent: Promise.resolve()
+    });
     lifecycle = jasmine.createSpyObj("lifecycle", {
       onClick: Promise.resolve()
     });
@@ -81,7 +77,6 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
         isEmpty: () => false
       };
     };
-    eventManager.sendEvent = jasmine.createSpy();
     build();
     return clickHandler({}).then(() => {
       expect(eventManager.sendEvent).toHaveBeenCalled();
@@ -89,7 +84,6 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
   });
 
   it("Does not send empty events", () => {
-    eventManager.sendEvent = jasmine.createSpy();
     build();
     return clickHandler({}).then(() => {
       expect(eventManager.sendEvent).not.toHaveBeenCalled();
@@ -97,11 +91,12 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
   });
 
   it("returns undefined", () => {
-    eventManager.createEvent = () => {
-      return {
+    eventManager = jasmine.createSpyObj("eventManager", {
+      createEvent: {
         isEmpty: () => false
-      };
-    };
+      },
+      sendEvent: Promise.resolve()
+    });
     build();
     return clickHandler({}).then(result => {
       expect(result).toBe(undefined);
@@ -110,12 +105,12 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
 
   it("handles errors thrown in sendEvent", () => {
     const error = new Error("Network Error");
-    eventManager.createEvent = () => {
-      return {
+    eventManager = jasmine.createSpyObj("eventManager", {
+      createEvent: {
         isEmpty: () => false
-      };
-    };
-    spyOn(eventManager, "sendEvent").and.returnValue(Promise.reject(error));
+      },
+      sendEvent: Promise.reject(error)
+    });
     build();
     return clickHandler({}).then(() => {
       expect(handleError).toHaveBeenCalledWith(error, "click collection");
