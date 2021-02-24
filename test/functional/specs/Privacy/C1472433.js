@@ -3,7 +3,6 @@ import createFixture from "../../helpers/createFixture";
 import createNetworkLogger from "../../helpers/networkLogger";
 import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
-import reloadPage from "../../helpers/reloadPage";
 
 const { ADOBE2_IN } = require("../../helpers/constants/consent");
 
@@ -36,7 +35,8 @@ test("C1472433 - Set-consent is not called when consent is the same", async () =
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
 
   // reload the page to make sure the hashes are stored
-  await reloadPage();
+  await t.eval(() => document.location.reload());
+  await t.wait(1000);
   await alloy.configure(configuration);
 
   // send an event which should go out immediately
@@ -45,5 +45,6 @@ test("C1472433 - Set-consent is not called when consent is the same", async () =
 
   // set the consent to in again, and make sure an edge request isn't generated.
   await alloy.setConsent(ADOBE2_IN);
+  await t.wait(1000);
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
 });
