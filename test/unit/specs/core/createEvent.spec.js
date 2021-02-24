@@ -249,7 +249,7 @@ describe("createEvent", () => {
       expect(subject.toJSON()).toEqual({ xdm: { b: "2" }, data: { b: "2" } });
     });
 
-    it("cannot set xdm or data to empty objects", () => {
+    it("can set xdm or data to empty objects", () => {
       const callback = content => {
         content.xdm = {};
         content.data = {};
@@ -258,13 +258,10 @@ describe("createEvent", () => {
       subject.setUserXdm({ a: "1", b: "2" });
       subject.setUserData({ a: "1", b: "2" });
       subject.finalize(callback);
-      expect(subject.toJSON()).toEqual({
-        xdm: { a: "1", b: "2" },
-        data: { a: "1", b: "2" }
-      });
+      expect(subject.toJSON()).toEqual({});
     });
 
-    it("cannot delete xdm or data objects", () => {
+    it("can delete xdm or data objects", () => {
       const callback = content => {
         delete content.xdm;
         delete content.data;
@@ -273,10 +270,7 @@ describe("createEvent", () => {
       subject.setUserXdm({ a: "1", b: "2" });
       subject.setUserData({ a: "1", b: "2" });
       subject.finalize(callback);
-      expect(subject.toJSON()).toEqual({
-        xdm: { a: "1", b: "2" },
-        data: { a: "1", b: "2" }
-      });
+      expect(subject.toJSON()).toEqual({});
     });
 
     it("event merges when there is an error", () => {

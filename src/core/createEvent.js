@@ -72,21 +72,25 @@ export default () => {
         // assume that the onBeforeEventSend callback will fail (in-case of an error)
         shouldSendEvent = false;
 
-        const xdm = content.xdm || {};
-        const data = content.data || {};
-
         // this allows the user to replace the object passed into the callback
-        const tempContent = { xdm, data };
+        const tempContent = {
+          xdm: content.xdm || {},
+          data: content.data || {}
+        };
+
         const result = onBeforeEventSend(tempContent);
 
         shouldSendEvent = result !== false;
 
-        if (tempContent.xdm && Object.keys(tempContent.xdm).length) {
-          content.xdm = tempContent.xdm;
+        content.xdm = tempContent.xdm || {};
+        content.data = tempContent.data || {};
+
+        if (isEmptyObject(content.xdm)) {
+          delete content.xdm;
         }
 
-        if (tempContent.data && Object.keys(tempContent.data).length) {
-          content.data = tempContent.data;
+        if (isEmptyObject(content.data)) {
+          delete content.data;
         }
       }
 
