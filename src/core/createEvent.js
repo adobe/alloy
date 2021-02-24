@@ -54,7 +54,9 @@ export default () => {
       documentMayUnload = true;
     },
     finalize(onBeforeEventSend) {
-      if (isFinalized) return;
+      if (isFinalized) {
+        return;
+      }
 
       if (userXdm) {
         event.mergeXdm(userXdm);
