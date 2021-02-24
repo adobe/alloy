@@ -38,6 +38,9 @@ test("C35448 - When ID migration is enabled and Visitor is on the page, Alloy wa
   await t.expect(identityResult).eql({
     identity: {
       ECID: visitorEcid
+    },
+    edge: {
+      regionId: 9
     }
   });
 });

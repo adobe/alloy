@@ -16,6 +16,7 @@ import createLogController from "./createLogController";
 import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
 import injectSendNetworkRequest from "./network/injectSendNetworkRequest";
+import injectExtractEdgeInfo from "./network/injectExtractEdgeInfo";
 import createConsent from "./consent/createConsent";
 import createConsentStateMachine from "./consent/createConsentStateMachine";
 import createEvent from "./createEvent";
@@ -89,12 +90,14 @@ export const createExecuteCommand = ({
           logger
         })
       : sendFetchRequest;
+    const extractEdgeInfo = injectExtractEdgeInfo({ logger });
     const sendNetworkRequest = injectSendNetworkRequest({
       logger,
       sendFetchRequest,
       sendBeaconRequest,
       isRequestRetryable,
-      getRequestRetryDelay
+      getRequestRetryDelay,
+      extractEdgeInfo
     });
     const processWarningsAndErrors = injectProcessWarningsAndErrors({
       logger

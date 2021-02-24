@@ -11,3 +11,4 @@ governing permissions and limitations under the License.
 */
 
 export const RETRY_AFTER = "Retry-After";
+export const ADOBE_EDGE = "x-adobe-edge";

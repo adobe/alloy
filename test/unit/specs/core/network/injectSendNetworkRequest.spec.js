@@ -31,6 +31,7 @@ describe("injectSendNetworkRequest", () => {
   let sendBeaconRequest;
   let isRequestRetryable;
   let getRequestRetryDelay;
+  let extractEdgeInfo;
 
   beforeEach(() => {
     jasmine.clock().install();
@@ -58,13 +59,17 @@ describe("injectSendNetworkRequest", () => {
     getRequestRetryDelay = jasmine
       .createSpy("getRequestRetryDelay")
       .and.returnValue(1000);
+    extractEdgeInfo = jasmine
+      .createSpy("extractEdgeInfo")
+      .and.returnValue({ regionId: 6 });
 
     sendNetworkRequest = injectSendNetworkRequest({
       logger,
       sendFetchRequest,
       sendBeaconRequest,
       isRequestRetryable,
-      getRequestRetryDelay
+      getRequestRetryDelay,
+      extractEdgeInfo
     });
   });
 
@@ -106,7 +111,8 @@ describe("injectSendNetworkRequest", () => {
       expect(response).toEqual({
         statusCode: 200,
         body: responseBodyJson,
-        parsedBody: responseBody
+        parsedBody: responseBody,
+        edge: { regionId: 6 }
       });
     });
   });
@@ -137,7 +143,8 @@ describe("injectSendNetworkRequest", () => {
       expect(response).toEqual({
         statusCode: 200,
         body: "non-JSON body",
-        parsedBody: undefined
+        parsedBody: undefined,
+        edge: { regionId: 6 }
       });
     });
   });
@@ -149,6 +156,7 @@ describe("injectSendNetworkRequest", () => {
         body: ""
       })
     );
+    extractEdgeInfo.and.returnValue({});
     return sendNetworkRequest({
       payload,
       url,
@@ -168,7 +176,8 @@ describe("injectSendNetworkRequest", () => {
       expect(response).toEqual({
         statusCode: 200,
         body: "",
-        parsedBody: undefined
+        parsedBody: undefined,
+        edge: {}
       });
     });
   });
@@ -197,7 +206,8 @@ describe("injectSendNetworkRequest", () => {
       expect(response).toEqual({
         statusCode: 200,
         body: responseBodyJson,
-        parsedBody: responseBody
+        parsedBody: responseBody,
+        edge: { regionId: 6 }
       });
     });
   });

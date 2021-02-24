@@ -1,3 +1,4 @@
+import { assign } from "../../utils";
 import getIdentityOptionsValidator from "./getIdentity/getIdentityOptionsValidator";
 
 export default ({
@@ -10,6 +11,7 @@ export default ({
   consent
 }) => {
   let ecid;
+  let edge = {};
   return {
     lifecycle: {
       onBeforeRequest({ request, onResponse, onRequestFailure }) {
@@ -28,6 +30,7 @@ export default ({
             setLegacyEcid(ecid);
           }
         }
+        edge = assign(edge, response.getEdge());
 
         return handleResponseForIdSyncs(response);
       }
@@ -45,7 +48,8 @@ export default ({
               return {
                 identity: {
                   ECID: ecid
-                }
+                },
+                edge
               };
             });
         }

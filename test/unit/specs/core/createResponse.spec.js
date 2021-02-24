@@ -55,16 +55,19 @@ const responseContent = {
 };
 
 describe("createResponse", () => {
-  const response = createResponse(responseContent);
+  const response = createResponse({
+    content: responseContent,
+    edge: { regionId: 7 }
+  });
 
   describe("getPayloadsByType", () => {
     it("handles undefined content", () => {
-      const emptyResponse = createResponse();
+      const emptyResponse = createResponse({ content: undefined });
       expect(emptyResponse.getPayloadsByType("type1")).toEqual([]);
     });
 
     it("handles content without handle key", () => {
-      const emptyResponse = createResponse({});
+      const emptyResponse = createResponse({ content: {} });
       expect(emptyResponse.getPayloadsByType("type1")).toEqual([]);
     });
 
@@ -87,12 +90,12 @@ describe("createResponse", () => {
 
   describe("getErrors", () => {
     it("handles undefined content", () => {
-      const emptyResponse = createResponse();
+      const emptyResponse = createResponse({ content: undefined });
       expect(emptyResponse.getErrors()).toEqual([]);
     });
 
     it("handles content without errors key", () => {
-      const emptyResponse = createResponse({});
+      const emptyResponse = createResponse({ content: {} });
       expect(emptyResponse.getErrors()).toEqual([]);
     });
 
@@ -103,17 +106,33 @@ describe("createResponse", () => {
 
   describe("getWarnings", () => {
     it("handles undefined content", () => {
-      const emptyResponse = createResponse();
+      const emptyResponse = createResponse({ content: undefined });
       expect(emptyResponse.getWarnings()).toEqual([]);
     });
 
     it("handles content without warnings key", () => {
-      const emptyResponse = createResponse({});
+      const emptyResponse = createResponse({ content: {} });
       expect(emptyResponse.getWarnings()).toEqual([]);
     });
 
     it("returns warnings", () => {
       expect(response.getWarnings()).toBe(responseContent.warnings);
+    });
+  });
+
+  describe("getEdge", () => {
+    it("handles undefined content", () => {
+      const emptyResponse = createResponse({ edge: undefined });
+      expect(emptyResponse.getEdge()).toEqual({});
+    });
+
+    it("handles content without warnings key", () => {
+      const emptyResponse = createResponse({ edge: {} });
+      expect(emptyResponse.getEdge()).toEqual({});
+    });
+
+    it("returns the edge info", () => {
+      expect(response.getEdge()).toEqual({ regionId: 7 });
     });
   });
 
@@ -123,3 +142,4 @@ describe("createResponse", () => {
     });
   });
 });
+

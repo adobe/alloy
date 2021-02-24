@@ -45,6 +45,9 @@ test("C36908 When ID migration is enabled and Visitor and Alloy are both awaitin
   await t.expect(alloyIdentity).eql({
     identity: {
       ECID: visitorIdentity
+    },
+    edge: {
+      regionId: 9
     }
   });
 });

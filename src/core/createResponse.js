@@ -17,7 +17,7 @@ import { flatMap } from "../utils";
  * helper methods.
  * @returns Response
  */
-export default (content = {}) => {
+export default ({ content = {}, edge = {} }) => {
   const { handle = [], errors = [], warnings = [] } = content;
 
   /**
@@ -49,6 +49,12 @@ export default (content = {}) => {
      */
     getWarnings() {
       return warnings;
+    },
+    /**
+     * Returns an object containing the regionId from the x-adobe-edge header
+     */
+    getEdge() {
+      return edge;
     },
     toJSON() {
       return content;
