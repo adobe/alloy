@@ -187,6 +187,14 @@ describe("createEvent", () => {
     expect(event.getDocumentMayUnload()).toBeTrue();
   });
 
+  it("throws error when mergeXdm called after finalize", () => {
+    event.setUserXdm({ web: {} });
+    event.finalize();
+    expect(() => event.mergeXdm({ a: "b" })).toThrowError(
+      "mergeXdm cannot be called after event is finalized"
+    );
+  });
+
   it("reports whether the event is empty", () => {
     expect(event.isEmpty()).toBeTrue();
     event.setUserData({ foo: "bar" });

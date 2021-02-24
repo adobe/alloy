@@ -20,42 +20,34 @@ export default () => {
   let isFinalized = false;
   let shouldSendEvent = true;
 
+  const throwIfEventFinalized = methodName => {
+    if (isFinalized) {
+      throw new Error(`${methodName} cannot be called after event is finalized`);
+    }
+  };
+
   const event = {
     getUserXdm() {
       return userXdm;
     },
     setUserXdm(value) {
-      if (isFinalized) {
-        throw new Error("userXdm cannot be set after event is finalized");
-      }
+      throwIfEventFinalized("setUserXdm");
       userXdm = value;
     },
     setUserData(value) {
-      if (isFinalized) {
-        throw new Error("userData cannot be set after event is finalized");
-      }
-
+      throwIfEventFinalized("setUserData");
       userData = value;
     },
     mergeXdm(xdm) {
-      if (isFinalized) {
-        throw new Error("mergeXdm cannot be called after event is finalized");
-      }
-
+      throwIfEventFinalized("mergeXdm");
       deepAssign(content, { xdm });
     },
     mergeMeta(meta) {
-      if (isFinalized) {
-        throw new Error("mergeMeta cannot be called after event is finalized");
-      }
-
+      throwIfEventFinalized("mergeMeta");
       deepAssign(content, { meta });
     },
     mergeQuery(query) {
-      if (isFinalized) {
-        throw new Error("mergeQuery cannot be called after event is finalized");
-      }
-
+      throwIfEventFinalized("mergeQuery");
       deepAssign(content, { query });
     },
     documentMayUnload() {
@@ -81,7 +73,7 @@ export default () => {
         const result = onBeforeEventSend(tempContent);
         if (result === false) shouldSendEvent = false;
 
-        if (Object.keys(tempContent).length) {
+        if (Object.keys(tempContent.xdm).length) {
           content.xdm = tempContent.xdm;
         }
 
