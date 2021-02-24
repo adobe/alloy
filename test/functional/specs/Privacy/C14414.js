@@ -28,7 +28,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test.only("Test C14414: Requests are queued while consent changes are pending", async t => {
+test("Test C14414: Requests are queued while consent changes are pending", async t => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const setConsentResponse1 = await alloy.setConsentAsync(CONSENT_IN);
