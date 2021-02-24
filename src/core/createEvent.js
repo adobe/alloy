@@ -22,7 +22,9 @@ export default () => {
 
   const throwIfEventFinalized = methodName => {
     if (isFinalized) {
-      throw new Error(`${methodName} cannot be called after event is finalized`);
+      throw new Error(
+        `${methodName} cannot be called after event is finalized`
+      );
     }
   };
 
@@ -67,13 +69,17 @@ export default () => {
       }
 
       if (onBeforeEventSend) {
+        // assume that the onBeforeEventSend callback will fail (in-case of an error)
+        shouldSendEvent = false;
+
         const xdm = content.xdm || {};
         const data = content.data || {};
 
         // this allows the user to replace the object passed into the callback
         const tempContent = { xdm, data };
         const result = onBeforeEventSend(tempContent);
-        if (result === false) shouldSendEvent = false;
+
+        shouldSendEvent = result !== false;
 
         if (Object.keys(tempContent.xdm).length) {
           content.xdm = tempContent.xdm;

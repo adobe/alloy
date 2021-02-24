@@ -267,6 +267,42 @@ describe("createEvent", () => {
       });
     });
 
+    it("event shouldSend should be true when callback returns undefined", () => {
+      const callback = () => {
+        return undefined;
+      };
+      const subject = createEvent();
+      subject.finalize(callback);
+      expect(subject.shouldSend()).toBeTrue();
+    });
+
+    it("event shouldSend should be true when callback returns true", () => {
+      const callback = () => {
+        return true;
+      };
+      const subject = createEvent();
+      subject.finalize(callback);
+      expect(subject.shouldSend()).toBeTrue();
+    });
+
+    it("event shouldSend should be false when callback throws error", () => {
+      const callback = () => {
+        throw new Error("Expected Error");
+      };
+      const subject = createEvent();
+      expect(() => subject.finalize(callback)).toThrowError("Expected Error");
+      expect(subject.shouldSend()).toBeFalse();
+    });
+
+    it("event shouldSend should be false when callback returns false", () => {
+      const callback = () => {
+        return false;
+      };
+      const subject = createEvent();
+      subject.finalize(callback);
+      expect(subject.shouldSend()).toBeFalse();
+    });
+
     it("can replace xdm or data", () => {
       const callback = content => {
         content.xdm = { a: "1" };

@@ -39,7 +39,10 @@ describe("createEventManager", () => {
     consent = jasmine.createSpyObj("consent", {
       awaitConsent: Promise.resolve()
     });
-    event = jasmine.createSpyObj("event", ["finalize", "shouldSend"]);
+    event = jasmine.createSpyObj("event", {
+      finalize: undefined,
+      shouldSend: true
+    });
     const createEvent = () => {
       return event;
     };
@@ -108,16 +111,13 @@ describe("createEventManager", () => {
         });
     });
 
-    it("events call onBeforeEventSend callback", () => {
-      event.finalize.and.callFake(onBeforeEventSend => {
-        onBeforeEventSend();
-      });
+    it("events call finalize with onBeforeEventSend callback", () => {
       return eventManager.sendEvent(event).then(() => {
-        expect(config.onBeforeEventSend).toHaveBeenCalled();
+        expect(event.finalize).toHaveBeenCalledWith(config.onBeforeEventSend);
       });
     });
 
-    it("returns false onBeforeEventSend and event should not be sent", () => {
+    it("does not send event when event.shouldSend returns false", () => {
       const eventToIgnore = jasmine.createSpyObj("event", {
         finalize: () => {},
         shouldSend: false
@@ -127,17 +127,7 @@ describe("createEventManager", () => {
       });
     });
 
-    it("returns null onBeforeEventSend and event should be sent", () => {
-      const eventToIgnore = jasmine.createSpyObj("event", {
-        finalize: () => {},
-        shouldSend: null
-      });
-      return eventManager.sendEvent(eventToIgnore).then(() => {
-        expect(sendEdgeNetworkRequest).toHaveBeenCalled();
-      });
-    });
-
-    it("returns true onBeforeEventSend and event should be sent", () => {
+    it("does send event when event.shouldSend returns true", () => {
       const eventToIgnore = jasmine.createSpyObj("event", {
         finalize: () => {},
         shouldSend: true
@@ -150,10 +140,14 @@ describe("createEventManager", () => {
     it("throws an error on event finalize and event should not be sent", () => {
       const errorMsg = "Expected Error";
       event.finalize.and.throwError(errorMsg);
-
-      return eventManager.sendEvent(event).catch(() => {
-        expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
-      });
+      return eventManager.sendEvent(event).then(
+        () => {
+          throw new Error("Should not have resolved.");
+        },
+        () => {
+          expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
+        }
+      );
     });
 
     it("allows components and consent to pause the lifecycle", () => {
