@@ -45,6 +45,5 @@ test("C1472433 - Set-consent is not called when consent is the same", async () =
 
   // set the consent to in again, and make sure an edge request isn't generated.
   await alloy.setConsent(ADOBE2_IN);
-  await t.wait(1000);
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
 });
