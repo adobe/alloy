@@ -12,6 +12,26 @@ governing permissions and limitations under the License.
 
 import { t, ClientFunction } from "testcafe";
 
+const getLocalStorageEntries = ClientFunction(() => {
+  const entries = Object.keys(window.localStorage)
+    // It seems that TestCafe modifies localStorage in such a way that
+    // Object.keys() returns not just the entry names, but also some methods,
+    // so we have to filter down to only those keys that are actual
+    // storage entries.
+    .filter(key => localStorage.getItem(key) !== null)
+    .reduce((memo, entryName) => {
+      memo[entryName] = localStorage[entryName];
+      return memo;
+    }, {});
+  return entries;
+});
+
+const setLocalStorageEntries = ClientFunction(entries => {
+  Object.keys(entries).forEach(entryName => {
+    localStorage.setItem(entryName, entries[entryName]);
+  });
+});
+
 const getCurrentUrl = ClientFunction(() => {
   return document.location.href;
 });
@@ -21,9 +41,15 @@ export default async () => {
   // navigateTo waits for the server to respond after a redirect occurs,
   // which is why we use it instead of just calling document.location.reload()
   // in our client function.
-  // We have to navigate to a different page and then back to the current page,
+  // TestCafe + Safari have an issue where local storage is cleared when using
+  // t.navigateTo(), which is why we have to retrieve local storage entries
+  // and then restore them after navigation.
+  // https://github.com/DevExpress/testcafe/issues/5992
+  // Also, we have to navigate to a different page and then back to the current page,
   // because if we just tried to navigate to the same page we're on, TestCafe
-  // would hang.
+  // would hang in Safari (at least).
+  const localStorageEntries = await getLocalStorageEntries();
   await t.navigateTo("blank.html");
   await t.navigateTo(currentUrl);
+  await setLocalStorageEntries(localStorageEntries);
 };
