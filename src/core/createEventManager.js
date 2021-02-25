@@ -58,12 +58,28 @@ export default ({
           return consent.awaitConsent();
         })
         .then(() => {
-          // NOTE: this calls onBeforeEventSend callback (if configured)
-          event.finalize(onBeforeEventSend);
+          let shouldSend;
+          try {
+            // NOTE: this calls onBeforeEventSend callback (if configured)
+            event.finalize(onBeforeEventSend);
+            shouldSend = event.shouldSend();
+          } catch (error) {
+            const throwError = () => {
+              throw error;
+            };
+            onRequestFailureCallbackAggregator.add(lifecycle.onRequestFailure);
+            return onRequestFailureCallbackAggregator
+              .call()
+              .then(throwError, throwError);
+          }
 
           // if the callback returns false, the event should not be sent
-          if (!event.shouldSend()) {
-            return undefined;
+          if (!shouldSend) {
+            onRequestFailureCallbackAggregator.add(lifecycle.onRequestFailure);
+            return onRequestFailureCallbackAggregator.call().then(() => {
+              // Ensure the promise gets resolved with undefined instead
+              // of an array of return values from the callbacks.
+            });
           }
 
           return sendEdgeNetworkRequest({
