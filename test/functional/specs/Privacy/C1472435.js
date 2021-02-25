@@ -6,7 +6,10 @@ import reloadPage from "../../helpers/reloadPage";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
 import cookies from "../../helpers/cookies";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
-import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
+import {
+  LEGACY_IDENTITY_COOKIE_NAME,
+  MAIN_IDENTITY_COOKIE_NAME
+} from "../../helpers/constants/cookies";
 
 const { ADOBE2_IN } = require("../../helpers/constants/consent");
 
@@ -42,6 +45,7 @@ test("C1472435: Set-consent is called when identity cookie is missing even thoug
   // delete identity cookie, and reload
   await reloadPage();
   await cookies.remove(MAIN_IDENTITY_COOKIE_NAME);
+  await cookies.remove(LEGACY_IDENTITY_COOKIE_NAME);
   await alloy.configure(configuration);
 
   // try to send an event, but it should be queued

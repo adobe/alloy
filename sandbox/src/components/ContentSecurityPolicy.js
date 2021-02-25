@@ -22,7 +22,7 @@ export default function ContentSecurityPolicy() {
               script-src 'self' 'nonce-${process.env.REACT_APP_NONCE}' cdn.jsdelivr.net assets.adobedtm.com;
               style-src 'self' 'unsafe-inline';
               img-src * data:;
-              connect-src 'self' *.adobedc.net *.demdex.net`}
+              connect-src 'self' *.alloyio.com *.adobedc.net *.demdex.net`}
       />
     </Helmet>
   );

@@ -5,7 +5,10 @@ import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfig
 import reloadPage from "../../helpers/reloadPage";
 import cookies from "../../helpers/cookies";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
-import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
+import {
+  LEGACY_IDENTITY_COOKIE_NAME,
+  MAIN_IDENTITY_COOKIE_NAME
+} from "../../helpers/constants/cookies";
 
 const { ADOBE2_OUT } = require("../../helpers/constants/consent");
 
@@ -28,13 +31,13 @@ test.meta({
 const configuration = {
   defaultConsent: "in",
   debugEnabled: true,
-  idMigrationEnabled: false,
+  idMigrationEnabled: true,
   thirdPartyCookiesEnabled: false,
   ...orgMainConfigMain
 };
 
 test("C1576777: When identity cookie is missing, stored consent is cleared", async () => {
-  // set consent to in
+  // set consent to out
   const alloy = createAlloyProxy();
   await alloy.configure(configuration);
   await alloy.setConsent(ADOBE2_OUT);
@@ -42,6 +45,7 @@ test("C1576777: When identity cookie is missing, stored consent is cleared", asy
   // delete identity cookie, and reload
   await reloadPage();
   await cookies.remove(MAIN_IDENTITY_COOKIE_NAME);
+  await cookies.remove(LEGACY_IDENTITY_COOKIE_NAME);
   await alloy.configure(configuration);
 
   // try to send an event it should go out since the stored consent should be cleared

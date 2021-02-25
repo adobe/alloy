@@ -10,15 +10,15 @@ module.exports = config => {
       base: "BrowserStack",
       browser: "chrome",
       browser_version: "latest",
-      os: "Windows",
-      os_version: "10"
+      os: "OS X",
+      os_version: "Catalina"
     },
     bs_safari_macos: {
       base: "BrowserStack",
       browser: "Safari",
       browser_version: "latest",
       os: "OS X",
-      os_version: "Catalina"
+      os_version: "Big Sur"
     },
     bs_firefox_windows: {
       base: "BrowserStack",

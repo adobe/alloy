@@ -51,7 +51,7 @@ const getNotificationPayload = (decisions, scope) => {
   return metas;
 };
 
-test("Test C782718: SPA support with auto-rendering and view notifications", async () => {
+test.skip("Test C782718: SPA support with auto-rendering and view notifications", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
 

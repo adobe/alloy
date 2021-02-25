@@ -34,7 +34,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C28755: A VEC offer for all visitors should return in every event if __view__ scope exist", async () => {
+test.skip("Test C28755: A VEC offer for all visitors should return in every event if __view__ scope exist", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const result = await alloy.sendEvent({ decisionScopes: [PAGE_WIDE_SCOPE] });
