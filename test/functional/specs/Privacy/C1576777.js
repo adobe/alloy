@@ -31,6 +31,8 @@ test.meta({
 const configuration = {
   defaultConsent: "in",
   debugEnabled: true,
+  idMigrationEnabled: true,
+  thirdPartyCookiesEnabled: false,
   ...orgMainConfigMain
 };
 

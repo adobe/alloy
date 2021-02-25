@@ -35,12 +35,5 @@ test("C35448 - When ID migration is enabled and Visitor is on the page, Alloy wa
   const visitorEcidPromise = getVisitorEcid(orgMainConfigMain.orgId);
   const identityResult = await alloy.getIdentity();
   const visitorEcid = await visitorEcidPromise;
-  await t.expect(identityResult).eql({
-    identity: {
-      ECID: visitorEcid
-    },
-    edge: {
-      regionId: 9
-    }
-  });
+  await t.expect(identityResult.identity).eql({ ECID: visitorEcid });
 });
