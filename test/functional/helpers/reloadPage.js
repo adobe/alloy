@@ -10,8 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { ClientFunction } from "testcafe";
+import { t, ClientFunction } from "testcafe";
 
-export default ClientFunction(() => {
-  document.location.reload();
+const getCurrentUrl = ClientFunction(() => {
+  return document.location.href;
 });
+
+export default async () => {
+  const currentUrl = await getCurrentUrl();
+  // navigateTo waits for the server to respond after a redirect occurs,
+  // which is why we use it instead of just calling document.location.reload()
+  // in our client function.
+  // We have to navigate to a different page and then back to the current page,
+  // because if we just tried to navigate to the same page we're on, TestCafe
+  // would hang.
+  await t.navigateTo("blank.html");
+  await t.navigateTo(currentUrl);
+};

@@ -35,7 +35,7 @@ const configuration = {
 };
 
 test("C1576777: When identity cookie is missing, stored consent is cleared", async () => {
-  // set consent to in
+  // set consent to out
   const alloy = createAlloyProxy();
   await alloy.configure(configuration);
   await alloy.setConsent(ADOBE2_OUT);
