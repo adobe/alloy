@@ -23,15 +23,12 @@ export default () => {
   const throwIfEventFinalized = methodName => {
     if (isFinalized) {
       throw new Error(
-        `${methodName} cannot be called after event is finalized`
+        `${methodName} cannot be called after event is finalized.`
       );
     }
   };
 
   const event = {
-    getUserXdm() {
-      return userXdm;
-    },
     setUserXdm(value) {
       throwIfEventFinalized("setUserXdm");
       userXdm = value;
@@ -68,6 +65,9 @@ export default () => {
         content.data = userData;
       }
 
+      // the event should already be considered finalized in case onBeforeEventSend throws an error
+      isFinalized = true;
+
       if (onBeforeEventSend) {
         // assume that the onBeforeEventSend callback will fail (in-case of an error)
         shouldSendEvent = false;
@@ -93,8 +93,6 @@ export default () => {
           delete content.data;
         }
       }
-
-      isFinalized = true;
     },
     getDocumentMayUnload() {
       return documentMayUnload;
@@ -117,7 +115,10 @@ export default () => {
       return userXdm.web.webPageDetails.viewName;
     },
     toJSON() {
-      if (!isFinalized) this.finalize();
+      if (!isFinalized) {
+        throw new Error("toJSON called before finalize");
+      }
+
       return content;
     }
   };

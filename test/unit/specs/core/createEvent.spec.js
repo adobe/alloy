@@ -44,6 +44,7 @@ describe("createEvent", () => {
         type: "clue"
       }
     });
+    event.finalize();
     expect(event.toJSON()).toEqual({
       xdm: {
         fruit: {
@@ -95,6 +96,7 @@ describe("createEvent", () => {
     event.mergeXdm({
       fruit: "apple"
     });
+    event.finalize();
     expect(event.toJSON()).toEqual({
       xdm: {
         fruit: "apple"
@@ -105,6 +107,7 @@ describe("createEvent", () => {
   it("sets user data", () => {
     event.setUserData({ fruit: "apple" });
     event.setUserData({ veggie: "carrot" });
+    event.finalize();
     expect(event.toJSON()).toEqual({
       data: {
         veggie: "carrot"
@@ -114,6 +117,7 @@ describe("createEvent", () => {
 
   it("handles undefined user data", () => {
     event.setUserData(undefined);
+    event.finalize();
     expect(event.toJSON()).toEqual({});
   });
 
@@ -134,6 +138,7 @@ describe("createEvent", () => {
         type: "clue"
       }
     });
+    event.finalize();
     expect(event.toJSON()).toEqual({
       meta: {
         fruit: {
@@ -166,6 +171,7 @@ describe("createEvent", () => {
         type: "clue"
       }
     });
+    event.finalize();
     expect(event.toJSON()).toEqual({
       query: {
         fruit: {
@@ -191,8 +197,13 @@ describe("createEvent", () => {
     event.setUserXdm({ web: {} });
     event.finalize();
     expect(() => event.mergeXdm({ a: "b" })).toThrowError(
-      "mergeXdm cannot be called after event is finalized"
+      "mergeXdm cannot be called after event is finalized."
     );
+  });
+
+  it("throws error when toJSON called before finalize", () => {
+    event.setUserXdm({ web: {} });
+    expect(() => event.toJSON()).toThrowError("toJSON called before finalize");
   });
 
   it("reports whether the event is empty", () => {
