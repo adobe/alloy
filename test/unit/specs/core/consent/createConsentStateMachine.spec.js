@@ -108,23 +108,28 @@ describe("createConsentStateMachine", () => {
 
   [
     ["in", "default"],
-    ["in", "initial", "Loaded user consent preferences.", "info"],
+    [
+      "in",
+      "initial",
+      "Loaded user consent preferences. The user previously consented.",
+      "info"
+    ],
     ["in", "new", "User consented.", "info"],
     [
       "out",
       "default",
-      "No saved user consent preferences. Some commands may fail."
+      "User consent preferences not found. Default consent of out will be used."
     ],
     [
       "out",
       "initial",
-      "Loaded user consent preferences. Some commands may fail."
+      "Loaded user consent preferences. The user previously declined consent."
     ],
-    ["out", "new", "User declined consent. Some commands may fail."],
+    ["out", "new", "User declined consent."],
     [
       "pending",
       "default",
-      "No saved user consent preferences. Some commands may be delayed.",
+      "User consent preferences not found. Default consent of pending will be used. Some commands may be delayed.",
       "info"
     ],
     ["pending", "initial"],
@@ -142,7 +147,7 @@ describe("createConsentStateMachine", () => {
 
   [
     ["in", "User consented.", "info"],
-    ["out", "User declined consent. Some commands may fail.", "warn"]
+    ["out", "User declined consent.", "warn"]
   ].forEach(([action, expectedMessage, logLevel]) => {
     ["in", "out", "pending"].forEach(defaultConsent => {
       it(`logs a message when first setting consent (${defaultConsent} => ${action}) using setConsent`, () => {

@@ -19,7 +19,7 @@ export const CONSENT_SOURCE_INITIAL = "initial";
 export const CONSENT_SOURCE_NEW = "new";
 
 const createDeclinedConsentError = errorMessage => {
-  const error = Error(errorMessage);
+  const error = new Error(errorMessage);
   error.code = DECLINED_CONSENT_ERROR_CODE;
   error.message = errorMessage;
   return error;
@@ -63,7 +63,9 @@ export default ({ logger }) => {
         this.awaitConsent = awaitInDefault;
       } else {
         if (source === CONSENT_SOURCE_INITIAL) {
-          logger.info("Loaded user consent preferences.");
+          logger.info(
+            "Loaded user consent preferences. The user previously consented."
+          );
         } else if (
           source === CONSENT_SOURCE_NEW &&
           this.awaitConsent !== awaitIn
@@ -77,19 +79,19 @@ export default ({ logger }) => {
     out(source) {
       if (source === CONSENT_SOURCE_DEFAULT) {
         logger.warn(
-          "No saved user consent preferences. Some commands may fail."
+          "User consent preferences not found. Default consent of out will be used."
         );
         this.awaitConsent = awaitOutDefault;
       } else {
         if (source === CONSENT_SOURCE_INITIAL) {
           logger.warn(
-            "Loaded user consent preferences. Some commands may fail."
+            "Loaded user consent preferences. The user previously declined consent."
           );
         } else if (
           source === CONSENT_SOURCE_NEW &&
           this.awaitConsent !== awaitOut
         ) {
-          logger.warn("User declined consent. Some commands may fail.");
+          logger.warn("User declined consent.");
         }
         discardAll();
         this.awaitConsent = awaitOut;
@@ -98,7 +100,7 @@ export default ({ logger }) => {
     pending(source) {
       if (source === CONSENT_SOURCE_DEFAULT) {
         logger.info(
-          "No saved user consent preferences. Some commands may be delayed."
+          "User consent preferences not found. Default consent of pending will be used. Some commands may be delayed."
         );
       }
       this.awaitConsent = awaitPending;
