@@ -25,6 +25,8 @@ describe("createEventManager", () => {
   let requestPayload;
   let request;
   let sendEdgeNetworkRequest;
+  let onRequestFailureForOnBeforeEvent;
+  let fakeOnRequestFailure;
   let eventManager;
   beforeEach(() => {
     config = createConfig({
@@ -49,6 +51,13 @@ describe("createEventManager", () => {
       finalize: () => {},
       shouldSend: false
     });
+    onRequestFailureForOnBeforeEvent = jasmine.createSpy(
+      "onRequestFailureForOnBeforeEvent"
+    );
+    fakeOnRequestFailure = ({ onRequestFailure }) => {
+      onRequestFailure(onRequestFailureForOnBeforeEvent);
+      return Promise.resolve();
+    };
     const createEvent = () => {
       return event;
     };
@@ -124,28 +133,37 @@ describe("createEventManager", () => {
     });
 
     it("does not send event when event.shouldSend returns false", () => {
-      return eventManager.sendEvent(eventToIgnore).then(() => {
+      lifecycle.onBeforeEvent.and.callFake(fakeOnRequestFailure);
+      return eventManager.sendEvent(eventToIgnore).then(result => {
+        expect(result).toBeUndefined();
+        expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalled();
         expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
       });
     });
 
-    it("does send event when event.shouldSend returns true", () => {
-      return eventManager.sendEvent(event).then(() => {
+    it("sends event when event.shouldSend returns true", () => {
+      lifecycle.onBeforeEvent.and.callFake(fakeOnRequestFailure);
+      return eventManager.sendEvent(event).then(result => {
+        expect(result).toBeUndefined();
+        expect(onRequestFailureForOnBeforeEvent).not.toHaveBeenCalled();
         expect(sendEdgeNetworkRequest).toHaveBeenCalled();
       });
     });
 
     it("throws an error on event finalize and event should not be sent", () => {
+      lifecycle.onBeforeEvent.and.callFake(fakeOnRequestFailure);
       const errorMsg = "Expected Error";
       event.finalize.and.throwError(errorMsg);
-      return eventManager.sendEvent(event).then(
-        () => {
+      return eventManager
+        .sendEvent(event)
+        .then(() => {
           throw new Error("Should not have resolved.");
-        },
-        () => {
+        })
+        .catch(err => {
+          expect(err.message).toEqual(errorMsg);
+          expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalled();
           expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
-        }
-      );
+        });
     });
 
     it("allows components and consent to pause the lifecycle", () => {
@@ -192,13 +210,7 @@ describe("createEventManager", () => {
     });
 
     it("calls onRequestFailure callbacks on request failure", () => {
-      const onRequestFailureForOnBeforeEvent = jasmine.createSpy(
-        "onRequestFailureForOnBeforeEvent"
-      );
-      lifecycle.onBeforeEvent.and.callFake(({ onRequestFailure }) => {
-        onRequestFailure(onRequestFailureForOnBeforeEvent);
-        return Promise.resolve();
-      });
+      lifecycle.onBeforeEvent.and.callFake(fakeOnRequestFailure);
       sendEdgeNetworkRequest.and.callFake(
         ({ runOnRequestFailureCallbacks }) => {
           const error = new Error();
