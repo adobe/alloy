@@ -76,7 +76,7 @@ describe("createResponse", () => {
       expect(emptyResponse.getPayloadsByType("type1")).toEqual([]);
     });
 
-    it("handles content without handle key", () => {
+    it("handles content without handle property", () => {
       const emptyResponse = createResponse({ content: {} });
       expect(emptyResponse.getPayloadsByType("type1")).toEqual([]);
     });
@@ -104,7 +104,7 @@ describe("createResponse", () => {
       expect(emptyResponse.getErrors()).toEqual([]);
     });
 
-    it("handles content without errors key", () => {
+    it("handles content without errors property", () => {
       const emptyResponse = createResponse({ content: {} });
       expect(emptyResponse.getErrors()).toEqual([]);
     });
@@ -120,7 +120,7 @@ describe("createResponse", () => {
       expect(emptyResponse.getWarnings()).toEqual([]);
     });
 
-    it("handles content without warnings key", () => {
+    it("handles content without warnings property", () => {
       const emptyResponse = createResponse({ content: {} });
       expect(emptyResponse.getWarnings()).toEqual([]);
     });
