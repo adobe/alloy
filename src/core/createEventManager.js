@@ -58,11 +58,9 @@ export default ({
           return consent.awaitConsent();
         })
         .then(() => {
-          let shouldSend;
           try {
             // NOTE: this calls onBeforeEventSend callback (if configured)
             event.finalize(onBeforeEventSend);
-            shouldSend = event.shouldSend();
           } catch (error) {
             const throwError = () => {
               throw error;
@@ -74,7 +72,7 @@ export default ({
           }
 
           // if the callback returns false, the event should not be sent
-          if (!shouldSend) {
+          if (!event.shouldSend()) {
             onRequestFailureCallbackAggregator.add(lifecycle.onRequestFailure);
             return onRequestFailureCallbackAggregator.call().then(() => {
               // Ensure the promise gets resolved with undefined instead
