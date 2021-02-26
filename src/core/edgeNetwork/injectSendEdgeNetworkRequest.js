@@ -75,10 +75,10 @@ export default ({
           .call({ error })
           .then(throwError, throwError);
       })
-      .then(({ parsedBody, edge }) => {
+      .then(({ parsedBody, getHeader }) => {
         // Note that networkResponse.parsedBody may be undefined if it was a
         // 204 No Content response. That's fine.
-        const response = createResponse({ content: parsedBody, edge });
+        const response = createResponse({ content: parsedBody, getHeader });
         cookieTransfer.responseToCookies(response);
 
         // Notice we're calling the onResponse lifecycle method even if there are errors

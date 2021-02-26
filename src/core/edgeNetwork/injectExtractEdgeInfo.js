@@ -10,10 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { ADOBE_EDGE } from "../../constants/httpHeaderNames";
-
-export default ({ logger }) => response => {
-  const adobeEdgeHeader = response.getHeader(ADOBE_EDGE);
+export default ({ logger }) => adobeEdgeHeader => {
   if (adobeEdgeHeader) {
     const headerParts = adobeEdgeHeader.split(";");
     if (headerParts.length >= 2 && headerParts[1].length > 0) {
@@ -26,7 +23,7 @@ export default ({ logger }) => response => {
         // No need to do anything. The log statement below will log an error
       }
     }
-    logger.warn(`Invalid x-adobe-edge header: "${adobeEdgeHeader}"`);
+    logger.warn(`Invalid adobe edge: "${adobeEdgeHeader}"`);
   }
   return {};
 };

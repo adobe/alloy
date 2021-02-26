@@ -3,7 +3,7 @@ import createNetworkLogger from "../../helpers/networkLogger";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import { responseStatus } from "../../helpers/assertions";
 import createFixture from "../../helpers/createFixture";
-import createResponse from "../../../../src/core/createResponse";
+import createResponse from "../../helpers/createResponse";
 import generalConstants from "../../helpers/constants/general";
 import {
   compose,

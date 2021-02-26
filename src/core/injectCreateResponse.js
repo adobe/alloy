@@ -11,13 +11,14 @@ governing permissions and limitations under the License.
 */
 
 import { flatMap } from "../utils";
+import { ADOBE_EDGE } from "../constants/httpHeaderNames";
 
 /**
  * Creates a representation of a gateway response with the addition of
  * helper methods.
  * @returns Response
  */
-export default ({ content = {}, edge = {} }) => {
+export default ({ extractEdgeInfo }) => ({ content = {}, getHeader }) => {
   const { handle = [], errors = [], warnings = [] } = content;
 
   /**
@@ -54,7 +55,7 @@ export default ({ content = {}, edge = {} }) => {
      * Returns an object containing the regionId from the x-adobe-edge header
      */
     getEdge() {
-      return edge;
+      return extractEdgeInfo(getHeader(ADOBE_EDGE));
     },
     toJSON() {
       return content;

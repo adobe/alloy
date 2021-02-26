@@ -20,7 +20,7 @@ import {
 } from "../../helpers/constants/configParts";
 import { FIRST_PARTY_DOMAIN } from "../../helpers/constants/domain";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../../../src/core/createResponse";
+import createResponse from "../../helpers/createResponse";
 import areThirdPartyCookiesSupported from "../../helpers/areThirdPartyCookiesSupported";
 import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
 import createAlloyProxy from "../../helpers/createAlloyProxy";

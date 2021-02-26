@@ -10,35 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectExtractEdgeInfo from "../../../../../src/core/network/injectExtractEdgeInfo";
+import injectExtractEdgeInfo from "../../../../../src/core/edgeNetwork/injectExtractEdgeInfo";
 
 describe("extractEdgeInfo", () => {
-  let response;
   let logger;
   let extractEdgeInfo;
   beforeEach(() => {
-    response = jasmine.createSpyObj("response", ["getHeader"]);
     logger = jasmine.createSpyObj("logger", ["warn"]);
     extractEdgeInfo = injectExtractEdgeInfo({ logger });
   });
 
-  it("gets the correct header", () => {
-    extractEdgeInfo(response);
-    expect(response.getHeader).toHaveBeenCalledWith("x-adobe-edge");
-  });
-
   [undefined, ""].forEach(input => {
     it(`doesn't log for missing header "${input}"`, () => {
-      response.getHeader.and.returnValue(input);
-      expect(extractEdgeInfo(response)).toEqual({});
+      expect(extractEdgeInfo(input)).toEqual({});
       expect(logger.warn).not.toHaveBeenCalled();
     });
   });
 
   ["OR2", "VA6;", "VA6;bad"].forEach(input => {
     it(`handles invalid header "${input}"`, () => {
-      response.getHeader.and.returnValue(input);
-      expect(extractEdgeInfo(response)).toEqual({});
+      expect(extractEdgeInfo(input)).toEqual({});
       expect(logger.warn).toHaveBeenCalled();
     });
   });
@@ -50,8 +41,7 @@ describe("extractEdgeInfo", () => {
     ["VA7;-1", { regionId: -1 }]
   ].forEach(([input, expectedOutput]) => {
     it(`parses "${input}" correctly`, () => {
-      response.getHeader.and.returnValue(input);
-      expect(extractEdgeInfo(response)).toEqual(expectedOutput);
+      expect(extractEdgeInfo(input)).toEqual(expectedOutput);
     });
   });
 });

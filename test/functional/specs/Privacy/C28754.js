@@ -2,7 +2,7 @@ import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions";
 import createFixture from "../../helpers/createFixture";
-import createResponse from "../../../../src/core/createResponse";
+import createResponse from "../../helpers/createResponse";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import {
   compose,

@@ -124,7 +124,7 @@ describe("injectSendEdgeNetworkRequest", () => {
     ]);
     networkResult = {
       parsedBody: { my: "parsedBody" },
-      edge: { regionId: 42 }
+      getHeader: () => "myheader"
     };
     sendNetworkRequest = jasmine
       .createSpy("sendNetworkRequest")
@@ -436,15 +436,12 @@ describe("injectSendEdgeNetworkRequest", () => {
     });
   });
 
-
   it("creates the response with the correct parameters", () => {
     return sendEdgeNetworkRequest({ request }).then(() => {
       expect(createResponse).toHaveBeenCalledWith({
         content: { my: "parsedBody" },
-        edge: { regionId: 42 }
+        getHeader: networkResult.getHeader
       });
     });
   });
-
 });
-

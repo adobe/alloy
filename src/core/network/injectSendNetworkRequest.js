@@ -17,8 +17,7 @@ export default ({
   sendFetchRequest,
   sendBeaconRequest,
   isRequestRetryable,
-  getRequestRetryDelay,
-  extractEdgeInfo
+  getRequestRetryDelay
 }) => {
   /**
    * Send a network request and returns details about the response.
@@ -83,7 +82,7 @@ export default ({
           statusCode: response.statusCode,
           body: response.body,
           parsedBody,
-          edge: extractEdgeInfo(response)
+          getHeader: response.getHeader
         };
       });
     };

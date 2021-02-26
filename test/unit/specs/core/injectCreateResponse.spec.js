@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createResponse from "../../../../src/core/createResponse";
+import injectCreateResponse from "../../../../src/core/injectCreateResponse";
 
 const responseContent = {
   requestId: 123,
@@ -55,9 +55,19 @@ const responseContent = {
 };
 
 describe("createResponse", () => {
-  const response = createResponse({
-    content: responseContent,
-    edge: { regionId: 7 }
+  let extractEdgeInfo;
+  let getHeader;
+  let createResponse;
+  let response;
+
+  beforeEach(() => {
+    extractEdgeInfo = jasmine.createSpy("extractEdgeInfo");
+    getHeader = jasmine.createSpy("getHeader");
+    createResponse = injectCreateResponse({ extractEdgeInfo });
+    response = createResponse({
+      content: responseContent,
+      getHeader
+    });
   });
 
   describe("getPayloadsByType", () => {
@@ -121,18 +131,12 @@ describe("createResponse", () => {
   });
 
   describe("getEdge", () => {
-    it("handles undefined content", () => {
-      const emptyResponse = createResponse({ edge: undefined });
-      expect(emptyResponse.getEdge()).toEqual({});
-    });
-
-    it("handles content without warnings key", () => {
-      const emptyResponse = createResponse({ edge: {} });
-      expect(emptyResponse.getEdge()).toEqual({});
-    });
-
-    it("returns the edge info", () => {
-      expect(response.getEdge()).toEqual({ regionId: 7 });
+    it("calls extractEdgeInfo with x-adobe-edge header and returns the result", () => {
+      extractEdgeInfo.and.returnValue({ regionId: 42 });
+      getHeader.and.returnValue("VA6;42");
+      expect(response.getEdge()).toEqual({ regionId: 42 });
+      expect(extractEdgeInfo).toHaveBeenCalledWith("VA6;42");
+      expect(getHeader).toHaveBeenCalledWith("x-adobe-edge");
     });
   });
 
@@ -142,4 +146,3 @@ describe("createResponse", () => {
     });
   });
 });
-

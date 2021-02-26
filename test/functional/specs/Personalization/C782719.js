@@ -7,7 +7,7 @@ import {
   debugEnabled
 } from "../../helpers/constants/configParts";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../../../src/core/createResponse";
+import createResponse from "../../helpers/createResponse";
 import testPageUrl from "../../helpers/constants/testPageUrl";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
