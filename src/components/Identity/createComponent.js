@@ -30,6 +30,8 @@ export default ({
             setLegacyEcid(ecid);
           }
         }
+        // For sendBeacon requests, getEdge() will return {}, so we are using assign here
+        // so that sendBeacon requests don't override the edge info from before.
         edge = assign(edge, response.getEdge());
 
         return handleResponseForIdSyncs(response);
