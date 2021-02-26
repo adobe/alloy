@@ -1,5 +1,4 @@
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createNetworkLogger from "../../helpers/networkLogger";
 import {
   compose,
@@ -9,7 +8,8 @@ import {
 } from "../../helpers/constants/configParts";
 import createConsoleLogger from "../../helpers/consoleLogger";
 
-const { CONSENT_OUT } = require("../../helpers/constants/consent");
+import { CONSENT_OUT } from "../../helpers/constants/consent";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const config = compose(
   orgMainConfigMain,
@@ -32,11 +32,10 @@ test.meta({
 
 test("Test C14406: Unidentified user can consent to no purposes", async t => {
   const logger = await createConsoleLogger();
-  await configureAlloyInstance("alloy", config);
-  await t.eval(() => window.alloy("setConsent", CONSENT_OUT), {
-    dependencies: { CONSENT_OUT }
-  });
-  await t.eval(() => window.alloy("sendEvent"));
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  await alloy.setConsent(CONSENT_OUT);
+  await alloy.sendEvent();
   await logger.warn.expectMessageMatching(/user declined consent/);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
 });

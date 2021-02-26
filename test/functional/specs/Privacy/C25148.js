@@ -1,15 +1,14 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createConsoleLogger from "../../helpers/consoleLogger";
 import {
   compose,
   debugEnabled,
   orgMainConfigMain
 } from "../../helpers/constants/configParts";
-
-const { CONSENT_OUT } = require("../../helpers/constants/consent");
+import createAlloyProxy from "../../helpers/createAlloyProxy";
+import { CONSENT_OUT } from "../../helpers/constants/consent";
 
 const networkLogger = createNetworkLogger();
 
@@ -24,35 +23,24 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("sendEvent", {});
-});
-
-const setConsentOut = ClientFunction(
-  () => {
-    return window.alloy("setConsent", CONSENT_OUT);
-  },
-  { dependencies: { CONSENT_OUT } }
+const config = compose(
+  orgMainConfigMain,
+  debugEnabled
 );
 
 test("C25148 - When default consent is 'in', consent can be revoked", async () => {
-  await configureAlloyInstance(
-    "alloy",
-    compose(
-      orgMainConfigMain,
-      debugEnabled
-    )
-  );
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
 
   // trigger an event
-  await triggerAlloyEvent();
+  await alloy.sendEvent();
 
   // revoke user consent
-  await setConsentOut();
+  await alloy.setConsent(CONSENT_OUT);
 
   // trigger a second event
   const logger = await createConsoleLogger();
-  await triggerAlloyEvent();
+  await alloy.sendEvent();
   await logger.warn.expectMessageMatching(/user declined consent/);
 
   // ensure only one event was sent

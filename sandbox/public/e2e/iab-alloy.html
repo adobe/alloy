@@ -45,7 +45,7 @@
     <script src="../alloy.js" async></script>
     <script>
       const orgId =
-        getUrlParameter("orgId") || "334F60F35E1597910A495EC2@AdobeOrg";
+        getUrlParameter("orgId") || "5BFE274A5F6980A50A495C08@AdobeOrg";
       function getUrlParameter(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
@@ -79,7 +79,7 @@
       alloy("configure", {
         edgeDomain: resolveEdgeDomain(),
         edgeConfigId:
-          getUrlParameter("configId") || "60928f59-0406-4353-bfe3-22ed633c4f67",
+          getUrlParameter("configId") || "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
         orgId,
         thirdPartyCookiesEnabled: getUrlParameter("thirdPartyCookiesEnabled")
           ? true
@@ -88,7 +88,7 @@
         // If `pending`, wait for the user's consent, but listening to the `setConsent` command.
         defaultConsent: "in",
         // Look for existing ECID Cookies set by the legacy Visitor.js library.
-        // That means we need a cookie names: `AMCV_334F60F35E1597910A495EC2%40AdobeOrg: MCMID|76365103486713493572334524`
+        // That means we need a cookie names: `AMCV_5BFE274A5F6980A50A495C08%40AdobeOrg: MCMID|76365103486713493572334524`
         idMigrationEnabled: true
       });
     </script>

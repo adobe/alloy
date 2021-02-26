@@ -1,6 +1,6 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
-import ContentSecurityPolicy from "./ContentSecurityPolicy";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 
 let previousPath;
 function HomeWithHistory({ history }) {

@@ -1,5 +1,5 @@
 import React from "react";
-import UnsafeContentSecurityPolicy from "./UnsafeContentSecurityPolicy";
+import UnsafeContentSecurityPolicy from "./components/UnsafeContentSecurityPolicy";
 
 function loadLaunch() {
   const script = document.createElement("script");

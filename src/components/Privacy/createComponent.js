@@ -10,31 +10,42 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign } from "../../utils";
 import { GENERAL } from "../../constants/consentPurpose";
 
 export default ({
-  readStoredConsent,
+  storedConsent,
   taskQueue,
   defaultConsent,
   consent,
   sendSetConsentRequest,
-  validateSetConsentOptions
+  validateSetConsentOptions,
+  consentHashStore,
+  doesIdentityCookieExist
 }) => {
-  const consentByPurpose = assign(
-    { [GENERAL]: defaultConsent },
-    readStoredConsent()
-  );
-  consent.setConsent(consentByPurpose);
+  const defaultConsentByPurpose = { [GENERAL]: defaultConsent };
+  let storedConsentByPurpose = storedConsent.read();
+
+  const identityCookieExists = doesIdentityCookieExist();
+  const consentCookieExists = storedConsentByPurpose[GENERAL] !== undefined;
+  if (!identityCookieExists || !consentCookieExists) {
+    consentHashStore.clear();
+  }
+  // If the identity cookie is gone, remove the consent cookie because the
+  // consent info is tied to the identity.
+  if (!identityCookieExists) {
+    storedConsent.clear();
+    storedConsentByPurpose = {};
+  }
+
+  consent.initializeConsent(defaultConsentByPurpose, storedConsentByPurpose);
 
   const readCookieIfQueueEmpty = () => {
     if (taskQueue.length === 0) {
-      const storedConsent = readStoredConsent();
-
+      const storedConsentObject = storedConsent.read();
       // Only read cookies when there are no outstanding setConsent
       // requests. This helps with race conditions.
-      if (storedConsent) {
-        consent.setConsent(storedConsent);
+      if (storedConsentObject) {
+        consent.setConsent(storedConsentObject);
       }
     }
   };
@@ -45,15 +56,19 @@ export default ({
         optionsValidator: validateSetConsentOptions,
         run: ({ consent: consentOptions, identityMap }) => {
           consent.suspend();
+          const consentHashes = consentHashStore.lookup(consentOptions);
           return taskQueue
-            .addTask(() =>
-              sendSetConsentRequest({ consentOptions, identityMap })
-            )
-            .catch(error => {
-              readCookieIfQueueEmpty();
-              throw error;
+            .addTask(() => {
+              if (consentHashes.isNew()) {
+                return sendSetConsentRequest({
+                  consentOptions,
+                  identityMap
+                });
+              }
+              return Promise.resolve();
             })
-            .then(readCookieIfQueueEmpty);
+            .then(() => consentHashes.save())
+            .finally(readCookieIfQueueEmpty);
         }
       }
     },

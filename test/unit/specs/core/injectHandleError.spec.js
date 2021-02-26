@@ -46,7 +46,7 @@ describe("injectHandleError", () => {
     error.code = "declinedConsent";
     expect(handleError(error, "myoperation")).toEqual({});
     expect(logger.warn).toHaveBeenCalledWith(
-      "The myoperation could not fully complete because the user declined consent."
+      "The myoperation could not fully complete. User declined consent."
     );
   });
 });

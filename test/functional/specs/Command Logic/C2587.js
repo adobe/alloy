@@ -1,12 +1,11 @@
 import { ClientFunction } from "testcafe";
 import createFixture from "../../helpers/createFixture";
-
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const config = compose(
   orgMainConfigMain,
@@ -28,7 +27,9 @@ const bogusCommand = ClientFunction(() => {
 });
 
 test("Test C2587: Throw error when executing command that doesn't exist", async t => {
-  await configureAlloyInstance("alloy", config);
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+
   const errorMessage = await bogusCommand();
   await t
     .expect(errorMessage)

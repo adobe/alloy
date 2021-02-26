@@ -2,7 +2,6 @@ import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
   orgMainConfigMain,
@@ -11,6 +10,7 @@ import {
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../../../src/core/createResponse";
 import testPageUrl from "../../helpers/constants/testPageUrl";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
 const config = compose(
@@ -30,17 +30,6 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const triggerAlloyEvent = ClientFunction(() => {
-  return new Promise(resolve => {
-    window
-      .alloy("sendEvent", {
-        renderDecisions: true
-      })
-      .then(result => {
-        resolve(result);
-      });
-  });
-});
 const getDecisionContent = ClientFunction(() => {
   const container = document.getElementById("C28755");
 
@@ -48,9 +37,9 @@ const getDecisionContent = ClientFunction(() => {
 });
 
 test("Test C28757: A VEC offer should render if renderDecision=true", async () => {
-  await configureAlloyInstance("alloy", config);
-
-  await triggerAlloyEvent();
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  await alloy.sendEvent({ renderDecisions: true });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 

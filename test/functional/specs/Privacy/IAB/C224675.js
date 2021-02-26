@@ -1,13 +1,13 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../../helpers/networkLogger";
 import createFixture from "../../../helpers/createFixture";
-import configureAlloyInstance from "../../../helpers/configureAlloyInstance";
 import {
   compose,
   orgMainConfigMain,
   consentPending,
   debugEnabled
 } from "../../../helpers/constants/configParts";
+import createAlloyProxy from "../../../helpers/createAlloyProxy";
 
 const config = compose(
   orgMainConfigMain,
@@ -32,14 +32,11 @@ test.meta({
   TEST_RUN: "REGRESSION"
 });
 
-const getErrorMessageFromSetConsent = ClientFunction(consent =>
-  window.alloy("setConsent", consent).then(() => undefined, e => e.message)
-);
-
 test("Test C224675: Passing invalid consent options should throw a validation error", async () => {
-  await configureAlloyInstance("alloy", config);
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
 
-  const errorMessageForInvalidStandard = await getErrorMessageFromSetConsent({
+  const errorMessageForInvalidStandard = await alloy.setConsentErrorMessage({
     consent: [
       {
         standard: "IAB",
@@ -63,7 +60,7 @@ test("Test C224675: Passing invalid consent options should throw a validation er
 
   await t.expect(errorMessageForInvalidStandard).contains("EXEG-0102-400");
 
-  const errorMessageForInvalidVersion = await getErrorMessageFromSetConsent({
+  const errorMessageForInvalidVersion = await alloy.setConsentErrorMessage({
     consent: [
       {
         standard: "IAB TCF",
@@ -87,7 +84,7 @@ test("Test C224675: Passing invalid consent options should throw a validation er
 
   await t.expect(errorMessageForInvalidVersion).contains("EXEG-0102-400");
 
-  const errorMessageForInvalidValue = await getErrorMessageFromSetConsent({
+  const errorMessageForInvalidValue = await alloy.setConsentErrorMessage({
     consent: [
       {
         standard: "IAB TCF",
@@ -110,7 +107,7 @@ test("Test C224675: Passing invalid consent options should throw a validation er
 
   await t.expect(errorMessageForInvalidValue).contains("EXEG-0103-400");
 
-  const errorMessageForEmptyValue = await getErrorMessageFromSetConsent({
+  const errorMessageForEmptyValue = await alloy.setConsentErrorMessage({
     consent: [
       {
         standard: "IAB TCF",

@@ -78,12 +78,11 @@ describe("createCoreConfigs", () => {
       }).toThrowError();
     });
     it("validates defaultConsent='out'", () => {
-      expect(() => {
-        objectOf(createCoreConfigs())({
-          defaultConsent: OUT,
-          ...baseConfig
-        });
-      }).toThrowError();
+      const config = objectOf(createCoreConfigs())({
+        defaultConsent: OUT,
+        ...baseConfig
+      });
+      expect(config.defaultConsent).toEqual(OUT);
     });
   });
 

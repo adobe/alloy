@@ -1,6 +1,5 @@
-import { RequestLogger, t, ClientFunction } from "testcafe";
+import { RequestLogger, t } from "testcafe";
 import createFixture from "../../helpers/createFixture";
-
 import {
   compose,
   orgMainConfigMain,
@@ -8,10 +7,8 @@ import {
   debugEnabled,
   migrationDisabled
 } from "../../helpers/constants/configParts";
-
 import EDGE_CONFIG_ID from "../../helpers/constants/edgeConfigId";
-
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const mainConfig = compose(
   orgMainConfigMain,
@@ -60,21 +57,15 @@ const getIdentityCookieValue = request => {
   return identityEntry.value;
 };
 
-const instance1Config = () => configureAlloyInstance(altConfig);
-
-const instance1Event = ClientFunction(() => window.alloy("sendEvent"));
-
-const instance2Config = () => configureAlloyInstance("instance2", mainConfig);
-
-const instance2Event = ClientFunction(() => window.instance2("sendEvent"));
-
 test("Test C2579: Separate ECIDs are used for multiple SDK instances.", async () => {
-  await instance1Config();
-  await instance2Config();
-  await instance1Event();
-  await instance2Event();
-  await instance1Event();
-  await instance2Event();
+  const instance1 = createAlloyProxy();
+  const instance2 = createAlloyProxy("instance2");
+  await instance1.configure(altConfig);
+  await instance2.configure(mainConfig);
+  await instance1.sendEvent();
+  await instance2.sendEvent();
+  await instance1.sendEvent();
+  await instance2.sendEvent();
 
   await t.expect(networkLogger1.requests.length).eql(2);
   await t.expect(networkLogger2.requests.length).eql(2);

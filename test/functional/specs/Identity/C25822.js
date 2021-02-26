@@ -1,13 +1,13 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
 const config = compose(
@@ -26,25 +26,22 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const triggerBadAlloyEvent = ClientFunction(() => {
-  return window
-    .alloy("sendEvent", {
-      xdm: {
-        identityMap: {
-          HYP: [
-            {
-              id: 123
-            }
-          ]
+const badAlloyEventOptions = {
+  xdm: {
+    identityMap: {
+      HYP: [
+        {
+          id: 123
         }
-      }
-    })
-    .then(() => undefined, e => e.message);
-});
+      ]
+    }
+  }
+};
 
 test("C25822: Event command validates the identityMap", async () => {
-  await configureAlloyInstance("alloy", config);
-  const errorMessage = await triggerBadAlloyEvent();
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  const errorMessage = await alloy.sendEventErrorMessage(badAlloyEventOptions);
   await t
     .expect(errorMessage)
     .ok("Expected the sendEvent command to be rejected");
@@ -52,23 +49,22 @@ test("C25822: Event command validates the identityMap", async () => {
   await t.expect(errorMessage).contains("xdm.identityMap.HYP[0].id");
 });
 
-const triggerGoodAlloyEvent = ClientFunction(() => {
-  return window.alloy("sendEvent", {
-    xdm: {
-      identityMap: {
-        HYP: [
-          {
-            id: "id123"
-          }
-        ]
-      }
+const goodAlloyEventOptions = {
+  xdm: {
+    identityMap: {
+      HYP: [
+        {
+          id: "id123"
+        }
+      ]
     }
-  });
-});
+  }
+};
 
 test("C25822: Event command sends the identityMap", async () => {
-  await configureAlloyInstance("alloy", config);
-  await triggerGoodAlloyEvent();
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  await alloy.sendEvent(goodAlloyEventOptions);
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 

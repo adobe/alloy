@@ -1,5 +1,4 @@
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createNetworkLogger from "../../helpers/networkLogger";
 import {
   compose,
@@ -8,8 +7,8 @@ import {
   debugEnabled
 } from "../../helpers/constants/configParts";
 import createConsoleLogger from "../../helpers/consoleLogger";
-
-const { CONSENT_OUT } = require("../../helpers/constants/consent");
+import createAlloyProxy from "../../helpers/createAlloyProxy";
+import { CONSENT_OUT } from "../../helpers/constants/consent";
 
 const config = compose(
   orgMainConfigMain,
@@ -32,15 +31,16 @@ test.meta({
 });
 
 test("Test C2594: event command resolves promise with empty object if user consents to no purposes", async t => {
-  await configureAlloyInstance("alloy", config);
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
   const logger = await createConsoleLogger();
-  const sendEventPromise = t.eval(() => window.alloy("sendEvent"));
-  await t.eval(() => window.alloy("setConsent", CONSENT_OUT), {
-    dependencies: { CONSENT_OUT }
-  });
-  const result = await sendEventPromise;
+
+  const sendEventResponse = await alloy.sendEventAsync();
+  await alloy.setConsent(CONSENT_OUT);
+
+  const result = await sendEventResponse.result;
   await t.expect(result).eql({});
-  await logger.warn.expectMessageMatching(/user declined consent/);
+  await logger.warn.expectMessageMatching(/The user declined consent./);
   // make sure no event requests were sent out
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
 });

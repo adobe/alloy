@@ -95,12 +95,18 @@ export default ({
       logger.logOnBeforeCommand({ commandName, options });
       resolve(executor());
     })
-      .then(result => {
-        // We should always be returning an object from every command.
-        return isObject(result) ? result : {};
-      })
       .catch(error => {
         return handleError(error, `${commandName} command`);
+      })
+      .catch(error => {
+        logger.logOnCommandRejected({ commandName, options, error });
+        throw error;
+      })
+      .then(rawResult => {
+        // We should always be returning an object from every command.
+        const result = isObject(rawResult) ? rawResult : {};
+        logger.logOnCommandResolved({ commandName, options, result });
+        return result;
       });
   };
 };

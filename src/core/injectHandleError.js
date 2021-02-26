@@ -20,9 +20,7 @@ export default ({ errorPrefix, logger }) => (error, operation) => {
   // returned to the customer, but instead resolve the promise with an
   // empty result object.
   if (err.code === DECLINED_CONSENT_ERROR_CODE) {
-    logger.warn(
-      `The ${operation} could not fully complete because the user declined consent.`
-    );
+    logger.warn(`The ${operation} could not fully complete. ${err.message}`);
     return {};
   }
 

@@ -1,6 +1,6 @@
-import { ClientFunction } from "testcafe";
 import createFixture from "../../helpers/createFixture";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 createFixture({
   title: "C2588: Throws error when configure is executed multiple times."
@@ -12,15 +12,10 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const configureAlloyInstance = ClientFunction(config => {
-  return window
-    .alloy("configure", config)
-    .then(() => {}, error => error.message);
-});
-
 test("Test C2588: Throw error when configure is executed multiple times.", async t => {
-  await configureAlloyInstance(orgMainConfigMain);
-  const errorMessage = await configureAlloyInstance(orgMainConfigMain);
+  const alloy = createAlloyProxy();
+  await alloy.configure(orgMainConfigMain);
+  const errorMessage = await alloy.configureErrorMessage(orgMainConfigMain);
 
   await t
     .expect(errorMessage)

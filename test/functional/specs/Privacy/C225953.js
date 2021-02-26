@@ -1,5 +1,4 @@
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
 
@@ -9,6 +8,7 @@ import {
   consentPending,
   debugEnabled
 } from "../../helpers/constants/configParts";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const { CONSENT_IN } = require("../../helpers/constants/consent");
 
@@ -31,25 +31,18 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C225953: Identity map can be sent on a setConsent command", async t => {
-  await configureAlloyInstance("alloy", config);
-  await t.eval(
-    () =>
-      window.alloy("setConsent", {
-        identityMap: {
-          HYP: [
-            {
-              id: "id123"
-            }
-          ]
-        },
-        consent: CONSENT_IN.consent
-      }),
-    {
-      dependencies: { CONSENT_IN }
-    }
-  );
-  await t.eval(() => window.alloy("sendEvent"));
-
+test("Test C225953: Identity map can be sent on a setConsent command", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  await alloy.setConsent({
+    identityMap: {
+      HYP: [
+        {
+          id: "id123"
+        }
+      ]
+    },
+    consent: CONSENT_IN.consent
+  });
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 });

@@ -1,8 +1,8 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
 
@@ -38,7 +38,8 @@ const sendEvent = ClientFunction(() => {
 });
 
 test("C75372 - XDM and data objects passed into event command should not be modified", async () => {
-  await configureAlloyInstance("alloy", orgMainConfigMain);
+  const alloy = createAlloyProxy();
+  await alloy.configure(orgMainConfigMain);
   const { xdmDataLayer, nonXdmDataLayer } = await sendEvent();
   await t.expect(xdmDataLayer).eql({ device: { screenHeight: 1 } });
   await t.expect(nonXdmDataLayer).eql({ baz: "quux" });

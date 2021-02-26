@@ -57,6 +57,18 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
         data.options
       );
     },
+    logOnCommandResolved(data) {
+      notifyMonitors("onCommandResolved", data);
+      log("info", `${data.commandName} command resolved. Result:`, data.result);
+    },
+    logOnCommandRejected(data) {
+      notifyMonitors("onCommandRejected", data);
+      log(
+        "error",
+        `${data.commandName} command was rejected. Error:`,
+        data.error
+      );
+    },
     logOnBeforeNetworkRequest(data) {
       notifyMonitors("onBeforeNetworkRequest", data);
       log("info", `Request ${data.requestId}: Sending request.`, data.payload);

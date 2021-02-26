@@ -1,8 +1,7 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../../helpers/networkLogger";
 import { responseStatus } from "../../../helpers/assertions/index";
 import createFixture from "../../../helpers/createFixture";
-import configureAlloyInstance from "../../../helpers/configureAlloyInstance";
 import createResponse from "../../../../../src/core/createResponse";
 import getResponseBody from "../../../helpers/networkLogger/getResponseBody";
 import cookies from "../../../helpers/cookies";
@@ -12,17 +11,18 @@ import {
   consentPending,
   debugEnabled
 } from "../../../helpers/constants/configParts";
+import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies";
+import createAlloyProxy from "../../../helpers/createAlloyProxy";
+import {
+  IAB_NO_PURPOSE_ONE,
+  IAB_NO_ADOBE_VENDOR
+} from "../../../helpers/constants/consent";
 
 const config = compose(
   orgMainConfigMain,
   consentPending,
   debugEnabled
 );
-
-const {
-  IAB_NO_PURPOSE_ONE,
-  IAB_NO_ADOBE_VENDOR
-} = require("../../../helpers/constants/consent");
 
 const networkLogger = createNetworkLogger();
 
@@ -40,16 +40,11 @@ test.meta({
   TEST_RUN: "REGRESSION"
 });
 
-const triggerSetConsent = ClientFunction(consent =>
-  window.alloy("setConsent", consent)
-);
-
-const sendEvent = ClientFunction(() => window.alloy("sendEvent"));
-
 [IAB_NO_PURPOSE_ONE, IAB_NO_ADOBE_VENDOR].forEach(consent => {
   test("Test C224671: Opt out of IAB - No Purpose 1 & No Vendor", async () => {
-    await configureAlloyInstance("alloy", config);
-    await triggerSetConsent(consent);
+    const alloy = createAlloyProxy();
+    await alloy.configure(config);
+    await alloy.setConsent(consent);
 
     await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
     await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
@@ -61,9 +56,7 @@ const sendEvent = ClientFunction(() => window.alloy("sendEvent"));
     const consentResponse = createResponse(consentRawResponse);
 
     // 1. The set-consent response should contain the Consent cookie: { general: out }
-    const consentCookieName =
-      "kndctr_334F60F35E1597910A495EC2_AdobeOrg_consent";
-    const consentCookieValue = await cookies.get(consentCookieName);
+    const consentCookieValue = await cookies.get(MAIN_CONSENT_COOKIE_NAME);
 
     await t.expect(consentCookieValue).ok("No consent cookie found.");
     await t.expect(consentCookieValue).eql("general=out");
@@ -72,7 +65,7 @@ const sendEvent = ClientFunction(() => window.alloy("sendEvent"));
     const identityHandle = consentResponse.getPayloadsByType("identity:result");
     await t.expect(identityHandle.length).eql(1);
 
-    await sendEvent();
+    await alloy.sendEvent();
     await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(0);
   });
 });

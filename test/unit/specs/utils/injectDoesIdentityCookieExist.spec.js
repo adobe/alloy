@@ -10,9 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectDoesIdentityCookieExist from "../../../../../src/components/Identity/injectDoesIdentityCookieExist";
-import removeAllCookies from "../../../helpers/removeAllCookies";
-import { cookieJar } from "../../../../../src/utils";
+import {
+  injectDoesIdentityCookieExist,
+  cookieJar
+} from "../../../../src/utils";
+import removeAllCookies from "../../helpers/removeAllCookies";
 
 describe("Identity::injectDoesIdentityCookieExist", () => {
   afterEach(removeAllCookies);

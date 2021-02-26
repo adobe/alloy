@@ -1,13 +1,13 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
 const config = compose(
@@ -26,15 +26,12 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("sendEvent", {
+test("Test C2592: Event command sends a request.", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  await alloy.sendEvent({
     datasetId: "5eb9aaa6a3b16e18a818e06f"
   });
-});
-
-test("Test C2592: Event command sends a request.", async () => {
-  await configureAlloyInstance("alloy", config);
-  await triggerAlloyEvent();
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 

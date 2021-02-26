@@ -1,3 +1,4 @@
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 import createFixture from "../../helpers/createFixture";
 
 createFixture({
@@ -11,10 +12,8 @@ test.meta({
 });
 
 test("Test C13817: Throws error when running command after bad configure", async t => {
-  const eventErrorMessage = await t.eval(() => {
-    window.alloy("configure");
-    return window.alloy("sendEvent").then(() => undefined, e => e.message);
-  });
-
+  const alloy = createAlloyProxy();
+  await alloy.configureErrorMessage();
+  const eventErrorMessage = await alloy.sendEventErrorMessage();
   await t.expect(eventErrorMessage).contains("configured");
 });

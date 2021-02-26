@@ -29,59 +29,116 @@ const CONSENT_IN = createConsent("in");
 const CONSENT_OUT = createConsent("out");
 
 describe("privacy:createComponent", () => {
-  let readStoredConsent;
+  let storedConsent;
   let taskQueue;
   let defaultConsent;
   let consent;
   let sendSetConsentRequest;
   let validateSetConsentOptions;
+  let consentHashStore;
+  let consentHashes;
+  let doesIdentityCookieExist;
   let component;
 
+  const setIdentityCookie = () => {
+    doesIdentityCookieExist.and.returnValue(true);
+  };
+
+  const clearIdentityCookie = () => {
+    doesIdentityCookieExist.and.returnValue(false);
+  };
+
   beforeEach(() => {
-    readStoredConsent = jasmine.createSpy("readStoredConsent");
+    storedConsent = jasmine.createSpyObj("storedConsent", ["read", "clear"]);
     taskQueue = createTaskQueue();
     defaultConsent = "in";
-    consent = jasmine.createSpyObj("consent", ["setConsent", "suspend"]);
+    consent = jasmine.createSpyObj("consent", [
+      "initializeConsent",
+      "setConsent",
+      "suspend"
+    ]);
     sendSetConsentRequest = jasmine.createSpy("sendSetConsentRequest");
     validateSetConsentOptions = jasmine
       .createSpy("validateSetConsentOptions")
       .and.callFake(options => options);
+    consentHashStore = jasmine.createSpyObj("consentHashStore", [
+      "clear",
+      "lookup"
+    ]);
+    consentHashes = jasmine.createSpyObj("consentHashes", ["isNew", "save"]);
+    doesIdentityCookieExist = jasmine.createSpy("doesIdentityCookieExist");
+    consentHashStore.lookup.and.returnValue(consentHashes);
+    setIdentityCookie();
+    consentHashes.isNew.and.returnValue(true);
   });
 
   const build = () => {
     component = createComponent({
-      readStoredConsent,
+      storedConsent,
       taskQueue,
       defaultConsent,
       consent,
       sendSetConsentRequest,
-      validateSetConsentOptions
+      validateSetConsentOptions,
+      consentHashStore,
+      doesIdentityCookieExist
     });
   };
 
-  it("uses the default consent", () => {
-    defaultConsent = "pending";
-    readStoredConsent.and.returnValue({});
-    build();
-    expect(consent.setConsent).toHaveBeenCalledWith({ general: "pending" });
-  });
+  const clearConsentCookie = function clearConsentCookie() {
+    storedConsent.read.and.returnValue({});
+  };
 
-  it("uses the stored consent", () => {
-    readStoredConsent.and.returnValue({ general: "out" });
+  const setConsentCookieIn = function setConsentCookieIn() {
+    storedConsent.read.and.returnValue({ general: "in" });
+  };
+
+  const setConsentCookieOut = function setConsentCookieOut() {
+    storedConsent.read.and.returnValue({ general: "out" });
+  };
+
+  const mockSetConsent = () => {
+    const deferred = defer();
+    sendSetConsentRequest.and.returnValue(deferred.promise);
+    return {
+      respondWithIn() {
+        setConsentCookieIn();
+        deferred.resolve();
+      },
+      respondWithOut() {
+        setConsentCookieOut();
+        deferred.resolve();
+      },
+      respondWithNoCookie() {
+        deferred.resolve();
+      },
+      respondWithError() {
+        deferred.reject();
+      }
+    };
+  };
+
+  it("initializes consent", () => {
+    defaultConsent = "mydefaultconsent";
+    storedConsent.read.and.returnValue({ general: "myinitialconsent" });
     build();
-    expect(consent.setConsent).toHaveBeenCalledWith({ general: "out" });
+    expect(consent.initializeConsent).toHaveBeenCalledWith(
+      { general: "mydefaultconsent" },
+      { general: "myinitialconsent" }
+    );
   });
 
   it("handles the setConsent command", () => {
     defaultConsent = "pending";
-    readStoredConsent.and.returnValues({}, { general: "in" });
+    clearConsentCookie();
     build();
-    sendSetConsentRequest.and.returnValue(Promise.resolve());
+    const setConsentMock = mockSetConsent();
     const onResolved = jasmine.createSpy("onResolved");
     component.commands.setConsent
       .run({ identityMap: { my: "map" }, ...CONSENT_IN })
       .then(onResolved);
     expect(consent.suspend).toHaveBeenCalled();
+    setConsentMock.respondWithIn();
     return flushPromiseChains().then(() => {
       expect(sendSetConsentRequest).toHaveBeenCalledWith({
         consentOptions: CONSENT_IN.consent,
@@ -94,10 +151,12 @@ describe("privacy:createComponent", () => {
 
   it("updates the consent object even after a request failure", () => {
     defaultConsent = "pending";
-    readStoredConsent.and.returnValues({}, { general: "in" });
+    clearConsentCookie();
     build();
-    sendSetConsentRequest.and.returnValue(Promise.reject());
+    const setConsentMock = mockSetConsent();
     component.commands.setConsent.run(CONSENT_IN);
+    setConsentCookieIn();
+    setConsentMock.respondWithError();
     return flushPromiseChains().then(() => {
       expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
     });
@@ -105,10 +164,9 @@ describe("privacy:createComponent", () => {
 
   it("only updates the consent object after the response returns", () => {
     defaultConsent = "pending";
-    readStoredConsent.and.returnValues({}, { general: "in" });
+    clearConsentCookie();
     build();
-    const deferredConsentRequest = defer();
-    sendSetConsentRequest.and.returnValue(deferredConsentRequest.promise);
+    const setConsentMock = mockSetConsent();
     component.commands.setConsent.run(CONSENT_IN);
     return flushPromiseChains()
       .then(() => {
@@ -117,7 +175,7 @@ describe("privacy:createComponent", () => {
           identityMap: undefined
         });
         expect(consent.setConsent).not.toHaveBeenCalledWith({ general: "in" });
-        deferredConsentRequest.resolve();
+        setConsentMock.respondWithIn();
         return flushPromiseChains();
       })
       .then(() => {
@@ -127,14 +185,11 @@ describe("privacy:createComponent", () => {
 
   it("only calls setConsent once with multiple consent requests", () => {
     defaultConsent = "pending";
-    readStoredConsent.and.returnValues({}, { general: "out" });
+    clearConsentCookie();
+    consentHashes.isNew.and.returnValue(true);
     build();
-    const deferredConsentRequest1 = defer();
-    const deferredConsentRequest2 = defer();
-    sendSetConsentRequest.and.returnValues(
-      deferredConsentRequest1.promise,
-      deferredConsentRequest2.promise
-    );
+    const setConsentMock1 = mockSetConsent();
+    let setConsentMock2;
     component.commands.setConsent.run(CONSENT_IN);
     return flushPromiseChains()
       .then(() => {
@@ -142,8 +197,9 @@ describe("privacy:createComponent", () => {
           consentOptions: CONSENT_IN.consent,
           identityMap: undefined
         });
+        setConsentMock2 = mockSetConsent();
         component.commands.setConsent.run(CONSENT_OUT);
-        deferredConsentRequest1.resolve();
+        setConsentMock1.respondWithIn();
         return flushPromiseChains();
       })
       .then(() => {
@@ -151,28 +207,49 @@ describe("privacy:createComponent", () => {
           consentOptions: CONSENT_OUT.consent,
           identityMap: undefined
         });
-        deferredConsentRequest2.resolve();
+        setConsentMock2.respondWithOut();
         return flushPromiseChains();
       })
       .then(() => {
         expect(consent.setConsent).not.toHaveBeenCalledWith({ general: "in" });
-        // one time to "pending", one time to "out"
-        expect(consent.setConsent).toHaveBeenCalledTimes(2);
+        expect(consent.setConsent).toHaveBeenCalledTimes(1);
         expect(consent.setConsent).toHaveBeenCalledWith({ general: "out" });
       });
   });
 
   it("checks the cookie after an event", () => {
-    readStoredConsent.and.returnValues({}, { general: "out" });
+    clearConsentCookie();
     build();
+    setConsentCookieOut();
     component.lifecycle.onResponse();
     expect(consent.setConsent).toHaveBeenCalledWith({ general: "out" });
   });
 
   it("checks the cookie after an error response", () => {
-    readStoredConsent.and.returnValues({}, { general: "out" });
+    clearConsentCookie();
     build();
+    setConsentCookieOut();
     component.lifecycle.onRequestFailure();
     expect(consent.setConsent).toHaveBeenCalledWith({ general: "out" });
+  });
+
+  it("clears storage when the identity cookie is missing", () => {
+    setConsentCookieIn();
+    clearIdentityCookie();
+    build();
+    expect(consentHashStore.clear).toHaveBeenCalled();
+    expect(storedConsent.clear).toHaveBeenCalled();
+    expect(consent.initializeConsent).toHaveBeenCalledWith(
+      { general: "in" },
+      {}
+    );
+  });
+
+  it("clears storage when the consent cookie is missing", () => {
+    clearConsentCookie();
+    setIdentityCookie();
+    build();
+    expect(consentHashStore.clear).toHaveBeenCalled();
+    expect(storedConsent.clear).not.toHaveBeenCalled();
   });
 });

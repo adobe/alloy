@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import baseNamespace from "../constants/namespace";
+import startsWith from "./startsWith";
 
 const getStorageByType = (context, storageType, namespace) => {
   // When storage is disabled on Safari, the mere act of referencing
@@ -38,6 +39,21 @@ const getStorageByType = (context, storageType, namespace) => {
     setItem(name, value) {
       try {
         context[storageType].setItem(namespace + name, value);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    },
+    /**
+     * Clear all values in storage that match the namespace.
+     */
+    clear() {
+      try {
+        Object.keys(context[storageType]).forEach(key => {
+          if (startsWith(key, namespace)) {
+            context[storageType].removeItem(key);
+          }
+        });
         return true;
       } catch (e) {
         return false;
