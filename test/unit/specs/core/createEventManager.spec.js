@@ -21,6 +21,7 @@ describe("createEventManager", () => {
   let lifecycle;
   let consent;
   let event;
+  let eventToIgnore;
   let requestPayload;
   let request;
   let sendEdgeNetworkRequest;
@@ -41,8 +42,12 @@ describe("createEventManager", () => {
       awaitConsent: Promise.resolve()
     });
     event = jasmine.createSpyObj("event", {
-      finalize: undefined,
+      finalize: () => {},
       shouldSend: true
+    });
+    eventToIgnore = jasmine.createSpyObj("event", {
+      finalize: () => {},
+      shouldSend: false
     });
     const createEvent = () => {
       return event;
@@ -119,20 +124,12 @@ describe("createEventManager", () => {
     });
 
     it("does not send event when event.shouldSend returns false", () => {
-      event = jasmine.createSpyObj("event", {
-        finalize: () => {},
-        shouldSend: false
-      });
-      return eventManager.sendEvent(event).then(() => {
+      return eventManager.sendEvent(eventToIgnore).then(() => {
         expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
       });
     });
 
     it("does send event when event.shouldSend returns true", () => {
-      event = jasmine.createSpyObj("event", {
-        finalize: () => {},
-        shouldSend: true
-      });
       return eventManager.sendEvent(event).then(() => {
         expect(sendEdgeNetworkRequest).toHaveBeenCalled();
       });
