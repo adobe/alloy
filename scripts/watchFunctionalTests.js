@@ -44,7 +44,7 @@ const effectByEventCode = {
       firstBuildComplete = true;
       const testcafe = await createTestCafe();
       const liveRunner = testcafe.createLiveModeRunner();
-      await liveRunner.browsers(["safari"]).run();
+      await liveRunner.browsers(["chrome"]).run();
       await testcafe.close();
     }
   },

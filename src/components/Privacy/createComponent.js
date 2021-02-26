@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign } from "../../utils";
 import { GENERAL } from "../../constants/consentPurpose";
 
 export default ({
@@ -23,22 +22,22 @@ export default ({
   consentHashStore,
   doesIdentityCookieExist
 }) => {
-  let consentByPurpose = { [GENERAL]: defaultConsent };
+  const defaultConsentByPurpose = { [GENERAL]: defaultConsent };
+  let storedConsentByPurpose = storedConsent.read();
 
   const identityCookieExists = doesIdentityCookieExist();
-  const consentCookieExists = storedConsent.read()[GENERAL] !== undefined;
+  const consentCookieExists = storedConsentByPurpose[GENERAL] !== undefined;
   if (!identityCookieExists || !consentCookieExists) {
     consentHashStore.clear();
-  } else {
-    consentByPurpose = assign(consentByPurpose, storedConsent.read());
   }
   // If the identity cookie is gone, remove the consent cookie because the
   // consent info is tied to the identity.
   if (!identityCookieExists) {
     storedConsent.clear();
+    storedConsentByPurpose = {};
   }
 
-  consent.setConsent(consentByPurpose);
+  consent.initializeConsent(defaultConsentByPurpose, storedConsentByPurpose);
 
   const readCookieIfQueueEmpty = () => {
     if (taskQueue.length === 0) {

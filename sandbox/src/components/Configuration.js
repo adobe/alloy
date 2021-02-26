@@ -56,7 +56,8 @@ export default () => {
               defaultValue="in"
               options={[
                 { value: "pending", label: "Set to pending" },
-                { value: "in", label: "Set to in" }
+                { value: "in", label: "Set to in" },
+                { value: "out", label: "Set to out" }
               ]}
             />
           </td>
