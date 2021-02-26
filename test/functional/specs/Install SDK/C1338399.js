@@ -26,7 +26,7 @@ createFixture({
 
 const createAlloyInstance = ClientFunction(() => {
   window.npmLibraryAlloy = window.alloyCreateInstance({
-    instanceName: "npmLibraryAlloy"
+    name: "npmLibraryAlloy"
   });
 });
 

@@ -25,19 +25,16 @@ const createNamespacedStorage = injectStorage(window);
 // eslint-disable-next-line no-underscore-dangle
 const defaultGetMonitors = () => window.__alloyMonitors || [];
 
-export const createInstance = ({
-  instanceName,
-  getMonitors = defaultGetMonitors
-}) => {
+export const createInstance = ({ name, getMonitors = defaultGetMonitors }) => {
   const logController = createLogController({
     console,
     locationSearch: window.location.search,
     createLogger,
-    instanceName,
+    instanceName: name,
     createNamespacedStorage,
     getMonitors
   });
-  const instance = createExecuteCommand({ instanceName, logController });
+  const instance = createExecuteCommand({ instanceName: name, logController });
   logController.logger.logOnInstanceCreated({ instance });
   return instance;
 };
