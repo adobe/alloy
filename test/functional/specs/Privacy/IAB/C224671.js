@@ -2,7 +2,7 @@ import { t } from "testcafe";
 import createNetworkLogger from "../../../helpers/networkLogger";
 import { responseStatus } from "../../../helpers/assertions/index";
 import createFixture from "../../../helpers/createFixture";
-import createResponse from "../../../../../src/core/createResponse";
+import createResponse from "../../../helpers/createResponse";
 import getResponseBody from "../../../helpers/networkLogger/getResponseBody";
 import cookies from "../../../helpers/cookies";
 import {
@@ -53,7 +53,7 @@ test.meta({
       getResponseBody(networkLogger.setConsentEndpointLogs.requests[0])
     );
 
-    const consentResponse = createResponse(consentRawResponse);
+    const consentResponse = createResponse({ content: consentRawResponse });
 
     // 1. The set-consent response should contain the Consent cookie: { general: out }
     const consentCookieValue = await cookies.get(MAIN_CONSENT_COOKIE_NAME);

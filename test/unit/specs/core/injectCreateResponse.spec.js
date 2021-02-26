@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createResponse from "../../../../src/core/createResponse";
+import injectCreateResponse from "../../../../src/core/injectCreateResponse";
 
 const responseContent = {
   requestId: 123,
@@ -55,16 +55,29 @@ const responseContent = {
 };
 
 describe("createResponse", () => {
-  const response = createResponse(responseContent);
+  let extractEdgeInfo;
+  let getHeader;
+  let createResponse;
+  let response;
+
+  beforeEach(() => {
+    extractEdgeInfo = jasmine.createSpy("extractEdgeInfo");
+    getHeader = jasmine.createSpy("getHeader");
+    createResponse = injectCreateResponse({ extractEdgeInfo });
+    response = createResponse({
+      content: responseContent,
+      getHeader
+    });
+  });
 
   describe("getPayloadsByType", () => {
     it("handles undefined content", () => {
-      const emptyResponse = createResponse();
+      const emptyResponse = createResponse({ content: undefined });
       expect(emptyResponse.getPayloadsByType("type1")).toEqual([]);
     });
 
-    it("handles content without handle key", () => {
-      const emptyResponse = createResponse({});
+    it("handles content without handle property", () => {
+      const emptyResponse = createResponse({ content: {} });
       expect(emptyResponse.getPayloadsByType("type1")).toEqual([]);
     });
 
@@ -87,12 +100,12 @@ describe("createResponse", () => {
 
   describe("getErrors", () => {
     it("handles undefined content", () => {
-      const emptyResponse = createResponse();
+      const emptyResponse = createResponse({ content: undefined });
       expect(emptyResponse.getErrors()).toEqual([]);
     });
 
-    it("handles content without errors key", () => {
-      const emptyResponse = createResponse({});
+    it("handles content without errors property", () => {
+      const emptyResponse = createResponse({ content: {} });
       expect(emptyResponse.getErrors()).toEqual([]);
     });
 
@@ -103,17 +116,27 @@ describe("createResponse", () => {
 
   describe("getWarnings", () => {
     it("handles undefined content", () => {
-      const emptyResponse = createResponse();
+      const emptyResponse = createResponse({ content: undefined });
       expect(emptyResponse.getWarnings()).toEqual([]);
     });
 
-    it("handles content without warnings key", () => {
-      const emptyResponse = createResponse({});
+    it("handles content without warnings property", () => {
+      const emptyResponse = createResponse({ content: {} });
       expect(emptyResponse.getWarnings()).toEqual([]);
     });
 
     it("returns warnings", () => {
       expect(response.getWarnings()).toBe(responseContent.warnings);
+    });
+  });
+
+  describe("getEdge", () => {
+    it("calls extractEdgeInfo with x-adobe-edge header and returns the result", () => {
+      extractEdgeInfo.and.returnValue({ regionId: 42 });
+      getHeader.and.returnValue("VA6;42");
+      expect(response.getEdge()).toEqual({ regionId: 42 });
+      expect(extractEdgeInfo).toHaveBeenCalledWith("VA6;42");
+      expect(getHeader).toHaveBeenCalledWith("x-adobe-edge");
     });
   });
 

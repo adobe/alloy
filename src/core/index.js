@@ -16,10 +16,11 @@ import createLogController from "./createLogController";
 import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
 import injectSendNetworkRequest from "./network/injectSendNetworkRequest";
+import injectExtractEdgeInfo from "./edgeNetwork/injectExtractEdgeInfo";
 import createConsent from "./consent/createConsent";
 import createConsentStateMachine from "./consent/createConsentStateMachine";
 import createEvent from "./createEvent";
-import createResponse from "./createResponse";
+import injectCreateResponse from "./injectCreateResponse";
 import injectExecuteCommand from "./injectExecuteCommand";
 import validateCommandOptions from "./validateCommandOptions";
 import componentCreators from "./componentCreators";
@@ -99,6 +100,8 @@ export const createExecuteCommand = ({
     const processWarningsAndErrors = injectProcessWarningsAndErrors({
       logger
     });
+    const extractEdgeInfo = injectExtractEdgeInfo({ logger });
+    const createResponse = injectCreateResponse({ extractEdgeInfo });
     const sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
       config,
       lifecycle,

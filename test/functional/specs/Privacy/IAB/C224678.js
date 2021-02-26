@@ -2,7 +2,7 @@ import { t } from "testcafe";
 import createNetworkLogger from "../../../helpers/networkLogger";
 import { responseStatus } from "../../../helpers/assertions/index";
 import createFixture from "../../../helpers/createFixture";
-import createResponse from "../../../../../src/core/createResponse";
+import createResponse from "../../../helpers/createResponse";
 import getResponseBody from "../../../helpers/networkLogger/getResponseBody";
 import cookies from "../../../helpers/cookies";
 import {
@@ -58,7 +58,7 @@ test("Test C224678: Passing a negative Consent in the sendEvent command", async 
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
 
-  const response = createResponse(rawResponse);
+  const response = createResponse({ content: rawResponse });
 
   // 1. The set-consent response should contain the Consent cookie: { general: out }
   const consentCookieValue = await cookies.get(MAIN_CONSENT_COOKIE_NAME);

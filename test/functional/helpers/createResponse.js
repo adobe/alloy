@@ -10,5 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export const RETRY_AFTER = "Retry-After";
-export const ADOBE_EDGE = "x-adobe-edge";
+import injectCreateResponse from "../../../src/core/injectCreateResponse";
+
+export default injectCreateResponse({ logger: console });

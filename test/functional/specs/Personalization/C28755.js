@@ -8,7 +8,7 @@ import {
   debugEnabled
 } from "../../helpers/constants/configParts";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../../../src/core/createResponse";
+import createResponse from "../../helpers/createResponse";
 import testPageUrl from "../../helpers/constants/testPageUrl";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
@@ -64,9 +64,9 @@ test.skip("Test C28755: A VEC offer for all visitors should return in every even
   const response = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
-  const personalizationPayload = createResponse(response).getPayloadsByType(
-    "personalization:decisions"
-  );
+  const personalizationPayload = createResponse({
+    content: response
+  }).getPayloadsByType("personalization:decisions");
 
   await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
   await t

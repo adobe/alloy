@@ -8,7 +8,7 @@ import {
   debugEnabled
 } from "../../helpers/constants/configParts";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../../../src/core/createResponse";
+import createResponse from "../../helpers/createResponse";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
@@ -61,9 +61,9 @@ test("Test C28756: A form based offer should return if event command contains it
   const response = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
-  const personalizationPayload = createResponse(response).getPayloadsByType(
-    "personalization:decisions"
-  );
+  const personalizationPayload = createResponse({
+    content: response
+  }).getPayloadsByType("personalization:decisions");
 
   await t.expect(personalizationPayload[0].scope).eql(scope);
   await t
