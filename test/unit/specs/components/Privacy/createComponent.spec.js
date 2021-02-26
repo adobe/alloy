@@ -52,7 +52,11 @@ describe("privacy:createComponent", () => {
     storedConsent = jasmine.createSpyObj("storedConsent", ["read", "clear"]);
     taskQueue = createTaskQueue();
     defaultConsent = "in";
-    consent = jasmine.createSpyObj("consent", ["setConsent", "suspend"]);
+    consent = jasmine.createSpyObj("consent", [
+      "initializeConsent",
+      "setConsent",
+      "suspend"
+    ]);
     sendSetConsentRequest = jasmine.createSpy("sendSetConsentRequest");
     validateSetConsentOptions = jasmine
       .createSpy("validateSetConsentOptions")
@@ -114,32 +118,14 @@ describe("privacy:createComponent", () => {
     };
   };
 
-  [
-    {
-      defaultConsent: "pending",
-      setCookie: clearConsentCookie,
-      expected: "pending"
-    },
-    {
-      defaultConsent: "pending",
-      setCookie: setConsentCookieIn,
-      expected: "in"
-    },
-    {
-      defaultConsent: "pending",
-      setCookie: setConsentCookieOut,
-      expected: "out"
-    },
-    { defaultConsent: "in", setCookie: clearConsentCookie, expected: "in" },
-    { defaultConsent: "in", setCookie: setConsentCookieIn, expected: "in" },
-    { defaultConsent: "in", setCookie: setConsentCookieOut, expected: "out" }
-  ].forEach(({ defaultConsent: defaultConsentArg, setCookie, expected }) => {
-    it(`sets consent to ${expected} when defaultConsent is ${defaultConsentArg} and we ${setCookie.name}`, () => {
-      defaultConsent = defaultConsentArg;
-      setCookie();
-      build();
-      expect(consent.setConsent).toHaveBeenCalledWith({ general: expected });
-    });
+  it("initializes consent", () => {
+    defaultConsent = "mydefaultconsent";
+    storedConsent.read.and.returnValue({ general: "myinitialconsent" });
+    build();
+    expect(consent.initializeConsent).toHaveBeenCalledWith(
+      { general: "mydefaultconsent" },
+      { general: "myinitialconsent" }
+    );
   });
 
   it("handles the setConsent command", () => {
@@ -226,8 +212,7 @@ describe("privacy:createComponent", () => {
       })
       .then(() => {
         expect(consent.setConsent).not.toHaveBeenCalledWith({ general: "in" });
-        // one time to "pending", one time to "out"
-        expect(consent.setConsent).toHaveBeenCalledTimes(2);
+        expect(consent.setConsent).toHaveBeenCalledTimes(1);
         expect(consent.setConsent).toHaveBeenCalledWith({ general: "out" });
       });
   });
@@ -254,6 +239,10 @@ describe("privacy:createComponent", () => {
     build();
     expect(consentHashStore.clear).toHaveBeenCalled();
     expect(storedConsent.clear).toHaveBeenCalled();
+    expect(consent.initializeConsent).toHaveBeenCalledWith(
+      { general: "in" },
+      {}
+    );
   });
 
   it("clears storage when the consent cookie is missing", () => {

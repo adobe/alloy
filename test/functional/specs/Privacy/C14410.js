@@ -19,10 +19,10 @@ test.meta({
 // state isn't reset, so when I had this all in one test, the third part here was failing because
 // an instance was already configured with that orgId.
 
-test("Test C14410: Configuring default consent to 'out' fails", async t => {
+test("Test C14410: Configuring default consent to 'unknown' fails", async t => {
   const alloy = createAlloyProxy();
   const errorMessage = await alloy.configureErrorMessage({
-    defaultConsent: "out",
+    defaultConsent: "unknown",
     ...orgMainConfigMain
   });
   await t
@@ -32,7 +32,7 @@ test("Test C14410: Configuring default consent to 'out' fails", async t => {
   await t
     .expect(errorMessage)
     .contains(
-      `Expected one of these values: [["in","pending"]], but got "out"`
+      `Expected one of these values: [["in","out","pending"]], but got "unknown"`
     );
 });
 

@@ -40,18 +40,14 @@ describe("createConsent", () => {
     expect(state.in).not.toHaveBeenCalled();
     expect(state.out).toHaveBeenCalled();
     expect(state.pending).not.toHaveBeenCalled();
-    expect(logger.warn).toHaveBeenCalledWith(
-      "Some commands may fail. The user declined consent."
-    );
+    expect(logger.warn).not.toHaveBeenCalled();
   });
   it("sets consent to pending", () => {
     subject.setConsent({ general: "pending" });
     expect(state.in).not.toHaveBeenCalled();
     expect(state.out).not.toHaveBeenCalled();
     expect(state.pending).toHaveBeenCalled();
-    expect(logger.warn).toHaveBeenCalledWith(
-      "Some commands may be delayed until the user consents."
-    );
+    expect(logger.warn).not.toHaveBeenCalled();
   });
   it("logs unknown consent values", () => {
     subject.setConsent({ general: "foo" });

@@ -16,10 +16,12 @@ import flushPromiseChains from "../../../helpers/flushPromiseChains";
 const DECLINED_CONSENT_ERROR_CODE = "declinedConsent";
 
 describe("createConsentStateMachine", () => {
+  let logger;
   let subject;
 
   beforeEach(() => {
-    subject = createConsentStateMachine();
+    logger = jasmine.createSpyObj("logger", ["info", "warn"]);
+    subject = createConsentStateMachine({ logger });
   });
 
   it("does not resolve promise if consent is pending", () => {
@@ -42,14 +44,21 @@ describe("createConsentStateMachine", () => {
     });
   });
 
-  it("rejects promise if user consented to no purposes", () => {
-    subject.out();
-    const onRejected = jasmine.createSpy("onRejected");
-    subject.awaitConsent().catch(onRejected);
+  [
+    ["default", "No consent preferences have been set."],
+    ["initial", "The user declined consent."],
+    ["new", "The user declined consent."]
+  ].forEach(([source, expectedMessage]) => {
+    it("rejects promise if user consented to no purposes", () => {
+      subject.out(source);
+      const onRejected = jasmine.createSpy("onRejected");
+      subject.awaitConsent().catch(onRejected);
 
-    return flushPromiseChains().then(() => {
-      const error = onRejected.calls.argsFor(0)[0];
-      expect(error.code).toBe(DECLINED_CONSENT_ERROR_CODE);
+      return flushPromiseChains().then(() => {
+        const error = onRejected.calls.argsFor(0)[0];
+        expect(error.code).toBe(DECLINED_CONSENT_ERROR_CODE);
+        expect(error.message).toBe(expectedMessage);
+      });
     });
   });
 
@@ -83,6 +92,84 @@ describe("createConsentStateMachine", () => {
       .then(() => {
         const error = onRejected.calls.argsFor(0)[0];
         expect(error.code).toBe(DECLINED_CONSENT_ERROR_CODE);
+        expect(error.message).toBe("The user declined consent.");
       });
+  });
+
+  it("rejects promises when it is not initialized", () => {
+    const onRejected = jasmine.createSpy("onRejected");
+    return subject
+      .awaitConsent()
+      .catch(onRejected)
+      .then(() => {
+        expect(onRejected).toHaveBeenCalled();
+      });
+  });
+
+  [
+    ["in", "default"],
+    [
+      "in",
+      "initial",
+      "Loaded user consent preferences. The user previously consented.",
+      "info"
+    ],
+    ["in", "new", "User consented.", "info"],
+    [
+      "out",
+      "default",
+      "User consent preferences not found. Default consent of out will be used."
+    ],
+    [
+      "out",
+      "initial",
+      "Loaded user consent preferences. The user previously declined consent."
+    ],
+    ["out", "new", "User declined consent."],
+    [
+      "pending",
+      "default",
+      "User consent preferences not found. Default consent of pending will be used. Some commands may be delayed.",
+      "info"
+    ],
+    ["pending", "initial"],
+    ["pending", "new"]
+  ].forEach(([action, source, expectedMessage, logLevel = "warn"]) => {
+    it(`logs the correct messages when ${action} is called with source ${source}`, () => {
+      subject[action](source);
+      if (expectedMessage) {
+        expect(logger[logLevel]).toHaveBeenCalledWith(expectedMessage);
+      } else {
+        expect(logger.warn).not.toHaveBeenCalled();
+      }
+    });
+  });
+
+  [
+    ["in", "User consented.", "info"],
+    ["out", "User declined consent.", "warn"]
+  ].forEach(([action, expectedMessage, logLevel]) => {
+    ["in", "out", "pending"].forEach(defaultConsent => {
+      it(`logs a message when first setting consent (${defaultConsent} => ${action}) using setConsent`, () => {
+        subject[defaultConsent]("default");
+        subject.pending();
+        subject[action]("new");
+        expect(logger[logLevel]).toHaveBeenCalledWith(expectedMessage);
+      });
+      it(`logs a message when first setting consent (${defaultConsent} => ${action}) using sendEvent`, () => {
+        subject[defaultConsent]("default");
+        subject[action]("new");
+        expect(logger[logLevel]).toHaveBeenCalledWith(expectedMessage);
+      });
+    });
+    it(`doesn't log a message when a request returns or fails. (${action})`, () => {
+      subject[action]("initial");
+      logger.info.calls.reset();
+      logger.warn.calls.reset();
+      subject[action]("new");
+      subject[action]("new");
+      expect(logger.info).not.toHaveBeenCalled();
+      expect(logger.warn).not.toHaveBeenCalled();
+    });
   });
 });

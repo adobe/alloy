@@ -6,9 +6,9 @@ import {
 } from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import { CONSENT_OUT } from "../../helpers/constants/consent";
-import reloadPage from "../../helpers/reloadPage";
-import cookies from "../../helpers/cookies";
 import { MAIN_CONSENT_COOKIE_NAME } from "../../helpers/constants/cookies";
+import cookies from "../../helpers/cookies";
+import reloadPage from "../../helpers/reloadPage";
 
 const config = compose(
   orgMainConfigMain,
@@ -25,7 +25,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C14411: User consents to no purposes after consenting to no purposes", async () => {
+test("Test C14411: User consents to no purposes after consenting to no purposes with cache", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.setConsent(CONSENT_OUT);
