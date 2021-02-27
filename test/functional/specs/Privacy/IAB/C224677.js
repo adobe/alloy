@@ -14,10 +14,7 @@ import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies";
 import createAlloyProxy from "../../../helpers/createAlloyProxy";
 import { IAB_NO_PURPOSE_TEN } from "../../../helpers/constants/consent";
 
-const config = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, debugEnabled);
 
 const networkLogger = createNetworkLogger();
 
@@ -66,8 +63,10 @@ test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
   const eventResponse = createResponse(rawEventResponse);
 
   // 4. And a warning message should be returned, confirming the opt-out
-  const warnings = eventResponse.getWarnings().map(w => w.code);
-  await t.expect(warnings).contains("EXEG-0301-200");
+  const warningTypes = eventResponse.getWarnings().map(w => w.type);
+  await t
+    .expect(warningTypes)
+    .contains("https://ns.adobe.com/aep/errors/EXEG-0301-200");
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);

@@ -21,7 +21,6 @@ describe("createEventManager", () => {
   let lifecycle;
   let consent;
   let event;
-  let eventToIgnore;
   let requestPayload;
   let request;
   let sendEdgeNetworkRequest;
@@ -44,12 +43,8 @@ describe("createEventManager", () => {
       awaitConsent: Promise.resolve()
     });
     event = jasmine.createSpyObj("event", {
-      finalize: () => {},
+      finalize: undefined,
       shouldSend: true
-    });
-    eventToIgnore = jasmine.createSpyObj("event", {
-      finalize: () => {},
-      shouldSend: false
     });
     onRequestFailureForOnBeforeEvent = jasmine.createSpy(
       "onRequestFailureForOnBeforeEvent"
@@ -134,9 +129,14 @@ describe("createEventManager", () => {
 
     it("does not send event when event.shouldSend returns false", () => {
       lifecycle.onBeforeEvent.and.callFake(fakeOnRequestFailure);
-      return eventManager.sendEvent(eventToIgnore).then(result => {
+      event.shouldSend.and.returnValue(false);
+      return eventManager.sendEvent(event).then(result => {
         expect(result).toBeUndefined();
         expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalled();
+        expect(
+          onRequestFailureForOnBeforeEvent.calls.mostRecent().args[0].error
+            .message
+        ).toBe("Event was cancelled.");
         expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
       });
     });
@@ -159,9 +159,11 @@ describe("createEventManager", () => {
         .then(() => {
           throw new Error("Should not have resolved.");
         })
-        .catch(err => {
-          expect(err.message).toEqual(errorMsg);
-          expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalled();
+        .catch(error => {
+          expect(error.message).toEqual(errorMsg);
+          expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalledWith({
+            error
+          });
           expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
         });
     });
@@ -221,9 +223,9 @@ describe("createEventManager", () => {
       return eventManager
         .sendEvent(event)
         .then(fail)
-        .catch(e => {
+        .catch(error => {
           expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalledWith({
-            error: e
+            error
           });
         });
     });

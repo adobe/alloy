@@ -67,17 +67,20 @@ export default ({
             };
             onRequestFailureCallbackAggregator.add(lifecycle.onRequestFailure);
             return onRequestFailureCallbackAggregator
-              .call()
+              .call({ error })
               .then(throwError, throwError);
           }
 
           // if the callback returns false, the event should not be sent
           if (!event.shouldSend()) {
             onRequestFailureCallbackAggregator.add(lifecycle.onRequestFailure);
-            return onRequestFailureCallbackAggregator.call().then(() => {
-              // Ensure the promise gets resolved with undefined instead
-              // of an array of return values from the callbacks.
-            });
+            const error = new Error("Event was cancelled.");
+            return onRequestFailureCallbackAggregator
+              .call({ error })
+              .then(() => {
+                // Ensure the promise gets resolved with undefined instead
+                // of an array of return values from the callbacks.
+              });
           }
 
           return sendEdgeNetworkRequest({
