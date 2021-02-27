@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import attachClickActivityCollector from "../../../../../src/components/ActivityCollector/attachClickActivityCollector";
+import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("ActivityCollector::attachClickActivityCollector", () => {
   const config = {};
@@ -20,16 +21,12 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
   let handleError;
   beforeEach(() => {
     config.clickCollectionEnabled = true;
-    eventManager = {
-      createEvent: () => {
-        return {
-          isEmpty: () => true
-        };
+    eventManager = jasmine.createSpyObj("eventManager", {
+      createEvent: {
+        isEmpty: () => false
       },
-      sendEvent: () => {
-        return Promise.resolve();
-      }
-    };
+      sendEvent: Promise.resolve()
+    });
     lifecycle = jasmine.createSpyObj("lifecycle", {
       onClick: Promise.resolve()
     });
@@ -67,58 +64,53 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
   });
 
   it("Handles errors inside onClick lifecycle", () => {
-    const error = new Error("Bad thing happend.");
+    const error = new Error("Bad thing happened.");
     lifecycle.onClick.and.returnValue(Promise.reject(error));
     build();
-    return clickHandler({}).then(() => {
-      expect(handleError).toHaveBeenCalledWith(error, "click collection");
-    });
+    return clickHandler({})
+      .then(() => {
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(handleError).toHaveBeenCalledWith(error, "click collection");
+      });
   });
 
   it("Sends populated events", () => {
-    eventManager.createEvent = () => {
-      return {
-        isEmpty: () => false
-      };
-    };
-    spyOn(eventManager, "sendEvent").and.callThrough();
     build();
-    return clickHandler({}).then(() => {
-      expect(eventManager.sendEvent).toHaveBeenCalled();
-    });
+    return clickHandler({})
+      .then(() => {
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(eventManager.sendEvent).toHaveBeenCalled();
+      });
   });
 
   it("Does not send empty events", () => {
-    spyOn(eventManager, "sendEvent").and.callThrough();
-    build();
-    return clickHandler({}).then(() => {
-      expect(eventManager.sendEvent).not.toHaveBeenCalled();
+    eventManager.createEvent.and.returnValue({
+      isEmpty: () => true
     });
-  });
-
-  it("returns undefined", () => {
-    eventManager.createEvent = () => {
-      return {
-        isEmpty: () => false
-      };
-    };
     build();
-    return clickHandler({}).then(result => {
-      expect(result).toBe(undefined);
-    });
+    return clickHandler({})
+      .then(() => {
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(eventManager.sendEvent).not.toHaveBeenCalled();
+      });
   });
 
   it("handles errors thrown in sendEvent", () => {
     const error = new Error("Network Error");
-    eventManager.createEvent = () => {
-      return {
-        isEmpty: () => false
-      };
-    };
-    spyOn(eventManager, "sendEvent").and.returnValue(Promise.reject(error));
+    eventManager.sendEvent.and.returnValue(Promise.reject(error));
     build();
-    return clickHandler({}).then(() => {
-      expect(handleError).toHaveBeenCalledWith(error, "click collection");
-    });
+    return clickHandler({})
+      .then(() => {
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(handleError).toHaveBeenCalledWith(error, "click collection");
+      });
   });
 });

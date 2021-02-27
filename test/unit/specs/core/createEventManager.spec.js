@@ -24,6 +24,8 @@ describe("createEventManager", () => {
   let requestPayload;
   let request;
   let sendEdgeNetworkRequest;
+  let onRequestFailureForOnBeforeEvent;
+  let fakeOnRequestFailure;
   let eventManager;
   beforeEach(() => {
     config = createConfig({
@@ -34,12 +36,23 @@ describe("createEventManager", () => {
     logger = jasmine.createSpyObj("logger", ["error", "warn"]);
     lifecycle = jasmine.createSpyObj("lifecycle", {
       onBeforeEvent: Promise.resolve(),
-      onBeforeDataCollectionRequest: Promise.resolve()
+      onBeforeDataCollectionRequest: Promise.resolve(),
+      onRequestFailure: Promise.resolve()
     });
     consent = jasmine.createSpyObj("consent", {
       awaitConsent: Promise.resolve()
     });
-    event = jasmine.createSpyObj("event", ["setLastChanceCallback"]);
+    event = jasmine.createSpyObj("event", {
+      finalize: undefined,
+      shouldSend: true
+    });
+    onRequestFailureForOnBeforeEvent = jasmine.createSpy(
+      "onRequestFailureForOnBeforeEvent"
+    );
+    fakeOnRequestFailure = ({ onRequestFailure }) => {
+      onRequestFailure(onRequestFailureForOnBeforeEvent);
+      return Promise.resolve();
+    };
     const createEvent = () => {
       return event;
     };
@@ -108,32 +121,51 @@ describe("createEventManager", () => {
         });
     });
 
-    it("sets the lastChanceCallback, which wraps config.onBeforeEventSend, on the event", () => {
-      let wrappedLastChanceCallback;
-      event.setLastChanceCallback.and.callFake(callback => {
-        wrappedLastChanceCallback = callback;
-      });
-      return eventManager.sendEvent(event, {}).then(() => {
-        wrappedLastChanceCallback();
-        expect(config.onBeforeEventSend).toHaveBeenCalled();
+    it("events call finalize with onBeforeEventSend callback", () => {
+      return eventManager.sendEvent(event).then(() => {
+        expect(event.finalize).toHaveBeenCalledWith(config.onBeforeEventSend);
       });
     });
 
-    it("logs errors in the config.onBeforeEventSend callback", () => {
-      const error = new Error("onBeforeEventSend error");
-      config.onBeforeEventSend.and.throwError(error);
-
-      let wrappedLastChanceCallback;
-      event.setLastChanceCallback.and.callFake(callback => {
-        wrappedLastChanceCallback = callback;
+    it("does not send event when event.shouldSend returns false", () => {
+      lifecycle.onBeforeEvent.and.callFake(fakeOnRequestFailure);
+      event.shouldSend.and.returnValue(false);
+      return eventManager.sendEvent(event).then(result => {
+        expect(result).toBeUndefined();
+        expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalled();
+        expect(
+          onRequestFailureForOnBeforeEvent.calls.mostRecent().args[0].error
+            .message
+        ).toBe("Event was cancelled.");
+        expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
       });
+    });
 
-      return eventManager.sendEvent(event, {}).then(() => {
-        expect(() => {
-          wrappedLastChanceCallback();
-        }).toThrowError("onBeforeEventSend error");
-        expect(logger.error).toHaveBeenCalledWith(error);
+    it("sends event when event.shouldSend returns true", () => {
+      lifecycle.onBeforeEvent.and.callFake(fakeOnRequestFailure);
+      return eventManager.sendEvent(event).then(result => {
+        expect(result).toBeUndefined();
+        expect(onRequestFailureForOnBeforeEvent).not.toHaveBeenCalled();
+        expect(sendEdgeNetworkRequest).toHaveBeenCalled();
       });
+    });
+
+    it("throws an error on event finalize and event should not be sent", () => {
+      lifecycle.onBeforeEvent.and.callFake(fakeOnRequestFailure);
+      const errorMsg = "Expected Error";
+      event.finalize.and.throwError(errorMsg);
+      return eventManager
+        .sendEvent(event)
+        .then(() => {
+          throw new Error("Should not have resolved.");
+        })
+        .catch(error => {
+          expect(error.message).toEqual(errorMsg);
+          expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalledWith({
+            error
+          });
+          expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
+        });
     });
 
     it("allows components and consent to pause the lifecycle", () => {
@@ -180,13 +212,7 @@ describe("createEventManager", () => {
     });
 
     it("calls onRequestFailure callbacks on request failure", () => {
-      const onRequestFailureForOnBeforeEvent = jasmine.createSpy(
-        "onRequestFailureForOnBeforeEvent"
-      );
-      lifecycle.onBeforeEvent.and.callFake(({ onRequestFailure }) => {
-        onRequestFailure(onRequestFailureForOnBeforeEvent);
-        return Promise.resolve();
-      });
+      lifecycle.onBeforeEvent.and.callFake(fakeOnRequestFailure);
       sendEdgeNetworkRequest.and.callFake(
         ({ runOnRequestFailureCallbacks }) => {
           const error = new Error();
@@ -197,9 +223,9 @@ describe("createEventManager", () => {
       return eventManager
         .sendEvent(event)
         .then(fail)
-        .catch(e => {
+        .catch(error => {
           expect(onRequestFailureForOnBeforeEvent).toHaveBeenCalledWith({
-            error: e
+            error
           });
         });
     });

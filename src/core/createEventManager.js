@@ -14,7 +14,6 @@ import { createCallbackAggregator } from "../utils";
 
 export default ({
   config,
-  logger,
   lifecycle,
   consent,
   createEvent,
@@ -23,15 +22,6 @@ export default ({
   sendEdgeNetworkRequest
 }) => {
   const { onBeforeEventSend } = config;
-
-  const onBeforeEventSendWithLoggedExceptions = (...args) => {
-    try {
-      onBeforeEventSend(...args);
-    } catch (e) {
-      logger.error(e);
-      throw e;
-    }
-  };
 
   return {
     createEvent,
@@ -49,7 +39,6 @@ export default ({
      * @returns {*}
      */
     sendEvent(event, options = {}) {
-      event.setLastChanceCallback(onBeforeEventSendWithLoggedExceptions);
       const { renderDecisions = false, decisionScopes } = options;
       const payload = createDataCollectionRequestPayload();
       const request = createDataCollectionRequest(payload);
@@ -69,6 +58,31 @@ export default ({
           return consent.awaitConsent();
         })
         .then(() => {
+          try {
+            // NOTE: this calls onBeforeEventSend callback (if configured)
+            event.finalize(onBeforeEventSend);
+          } catch (error) {
+            const throwError = () => {
+              throw error;
+            };
+            onRequestFailureCallbackAggregator.add(lifecycle.onRequestFailure);
+            return onRequestFailureCallbackAggregator
+              .call({ error })
+              .then(throwError, throwError);
+          }
+
+          // if the callback returns false, the event should not be sent
+          if (!event.shouldSend()) {
+            onRequestFailureCallbackAggregator.add(lifecycle.onRequestFailure);
+            const error = new Error("Event was cancelled.");
+            return onRequestFailureCallbackAggregator
+              .call({ error })
+              .then(() => {
+                // Ensure the promise gets resolved with undefined instead
+                // of an array of return values from the callbacks.
+              });
+          }
+
           return sendEdgeNetworkRequest({
             request,
             runOnResponseCallbacks: onResponseCallbackAggregator.call,

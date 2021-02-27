@@ -44,6 +44,7 @@ describe("createEvent", () => {
         type: "clue"
       }
     });
+    event.finalize();
     expect(event.toJSON()).toEqual({
       xdm: {
         fruit: {
@@ -95,6 +96,7 @@ describe("createEvent", () => {
     event.mergeXdm({
       fruit: "apple"
     });
+    event.finalize();
     expect(event.toJSON()).toEqual({
       xdm: {
         fruit: "apple"
@@ -105,6 +107,7 @@ describe("createEvent", () => {
   it("sets user data", () => {
     event.setUserData({ fruit: "apple" });
     event.setUserData({ veggie: "carrot" });
+    event.finalize();
     expect(event.toJSON()).toEqual({
       data: {
         veggie: "carrot"
@@ -114,6 +117,7 @@ describe("createEvent", () => {
 
   it("handles undefined user data", () => {
     event.setUserData(undefined);
+    event.finalize();
     expect(event.toJSON()).toEqual({});
   });
 
@@ -134,6 +138,7 @@ describe("createEvent", () => {
         type: "clue"
       }
     });
+    event.finalize();
     expect(event.toJSON()).toEqual({
       meta: {
         fruit: {
@@ -166,6 +171,7 @@ describe("createEvent", () => {
         type: "clue"
       }
     });
+    event.finalize();
     expect(event.toJSON()).toEqual({
       query: {
         fruit: {
@@ -185,6 +191,19 @@ describe("createEvent", () => {
     expect(event.getDocumentMayUnload()).toBeFalse();
     event.documentMayUnload();
     expect(event.getDocumentMayUnload()).toBeTrue();
+  });
+
+  it("throws error when mergeXdm called after finalize", () => {
+    event.setUserXdm({ web: {} });
+    event.finalize();
+    expect(() => event.mergeXdm({ a: "b" })).toThrowError(
+      "mergeXdm cannot be called after event is finalized."
+    );
+  });
+
+  it("throws error when toJSON called before finalize", () => {
+    event.setUserXdm({ web: {} });
+    expect(() => event.toJSON()).toThrowError("toJSON called before finalize");
   });
 
   it("reports whether the event is empty", () => {
@@ -210,7 +229,7 @@ describe("createEvent", () => {
         data.b = "2";
       };
       const subject = createEvent();
-      subject.setLastChanceCallback(callback);
+      subject.finalize(callback);
       expect(subject.toJSON()).toEqual({ xdm: { a: "1" }, data: { b: "2" } });
     });
 
@@ -222,7 +241,7 @@ describe("createEvent", () => {
       const subject = createEvent();
       subject.setUserData({ a: "1" });
       subject.setUserXdm({ a: "1" });
-      subject.setLastChanceCallback(callback);
+      subject.finalize(callback);
       expect(subject.toJSON()).toEqual({
         xdm: { a: "1", b: "2" },
         data: { a: "1", b: "2" }
@@ -237,26 +256,86 @@ describe("createEvent", () => {
       const subject = createEvent();
       subject.setUserXdm({ a: "1", b: "2" });
       subject.setUserData({ a: "1", b: "2" });
-      subject.setLastChanceCallback(callback);
+      subject.finalize(callback);
       expect(subject.toJSON()).toEqual({ xdm: { b: "2" }, data: { b: "2" } });
     });
 
-    it("doesn't merge when there is an exception", () => {
+    it("can set xdm or data to empty objects", () => {
+      const callback = content => {
+        content.xdm = {};
+        content.data = {};
+      };
+      const subject = createEvent();
+      subject.setUserXdm({ a: "1", b: "2" });
+      subject.setUserData({ a: "1", b: "2" });
+      subject.finalize(callback);
+      expect(subject.toJSON()).toEqual({});
+    });
+
+    it("can delete xdm or data objects", () => {
+      const callback = content => {
+        delete content.xdm;
+        delete content.data;
+      };
+      const subject = createEvent();
+      subject.setUserXdm({ a: "1", b: "2" });
+      subject.setUserData({ a: "1", b: "2" });
+      subject.finalize(callback);
+      expect(subject.toJSON()).toEqual({});
+    });
+
+    it("event merges when there is an error", () => {
       const callback = ({ xdm, data }) => {
         delete xdm.a;
         xdm.c = "3";
         delete data.a;
         data.c = "3";
-        throw Error("Expected Error");
+        throw new Error("Expected Error");
       };
       const subject = createEvent();
       subject.setUserXdm({ a: "1", b: "2" });
       subject.setUserData({ a: "1", b: "2" });
-      subject.setLastChanceCallback(callback);
+      expect(() => subject.finalize(callback)).toThrowError("Expected Error");
       expect(subject.toJSON()).toEqual({
-        xdm: { a: "1", b: "2" },
-        data: { a: "1", b: "2" }
+        xdm: { b: "2", c: "3" },
+        data: { b: "2", c: "3" }
       });
+    });
+
+    it("event shouldSend should be true when callback returns undefined", () => {
+      const callback = () => {
+        return undefined;
+      };
+      const subject = createEvent();
+      subject.finalize(callback);
+      expect(subject.shouldSend()).toBeTrue();
+    });
+
+    it("event shouldSend should be true when callback returns true", () => {
+      const callback = () => {
+        return true;
+      };
+      const subject = createEvent();
+      subject.finalize(callback);
+      expect(subject.shouldSend()).toBeTrue();
+    });
+
+    it("event shouldSend should be false when callback throws error", () => {
+      const callback = () => {
+        throw new Error("Expected Error");
+      };
+      const subject = createEvent();
+      expect(() => subject.finalize(callback)).toThrowError("Expected Error");
+      expect(subject.shouldSend()).toBeFalse();
+    });
+
+    it("event shouldSend should be false when callback returns false", () => {
+      const callback = () => {
+        return false;
+      };
+      const subject = createEvent();
+      subject.finalize(callback);
+      expect(subject.shouldSend()).toBeFalse();
     });
 
     it("can replace xdm or data", () => {
@@ -268,7 +347,7 @@ describe("createEvent", () => {
       const subject = createEvent();
       subject.setUserXdm({ c: "3" });
       subject.setUserData({ d: "4" });
-      subject.setLastChanceCallback(callback);
+      subject.finalize(callback);
       expect(subject.toJSON()).toEqual({
         xdm: { a: "1" },
         data: { b: "2" }
