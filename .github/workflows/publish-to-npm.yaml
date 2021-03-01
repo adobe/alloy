@@ -7,10 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: "Setup Authentication For Publishing"
-        uses: actions/setup-node@v1
-        with:
-          node-version: 10
       - uses: actions/cache@v2
         id: npm-cache
         with:
