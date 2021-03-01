@@ -10,7 +10,7 @@ jobs:
       - name: "Setup Authentication For Publishing"
         uses: actions/setup-node@v2
         with:
-          node-version: "14"
+          noded-version: 10
       - uses: actions/cache@v2
         id: npm-cache
         with:
@@ -20,6 +20,7 @@ jobs:
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
       - name: "Publish to NPM"
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+          access: 'public'
