@@ -20,4 +20,8 @@ describe("isNonEmptyString", () => {
   it("returns false when empty string", () => {
     expect(isNonEmptyString("")).toBe(false);
   });
+
+  it("returns false when undefined string", () => {
+    expect(isNonEmptyString(undefined)).toBe(false);
+  });
 });

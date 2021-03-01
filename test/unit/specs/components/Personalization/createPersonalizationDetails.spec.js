@@ -280,4 +280,17 @@ describe("Personalization::createPersonalizationDetails", () => {
     expect(personalizationDetails.shouldFetchData()).toEqual(true);
     expect(personalizationDetails.hasViewName()).toEqual(true);
   });
+  it("hasViewName should return false when viewName is empty", () => {
+    const decisionScopes = [];
+    const renderDecisions = true;
+    event.getViewName.and.returnValue("");
+    const personalizationDetails = createPersonalizationDetails({
+      renderDecisions,
+      decisionScopes,
+      event,
+      viewCache
+    });
+    expect(personalizationDetails.isRenderDecisions()).toEqual(true);
+    expect(personalizationDetails.hasViewName()).toEqual(false);
+  });
 });

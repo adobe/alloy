@@ -14,6 +14,8 @@ import createViewCacheManager from "../../../../../src/components/Personalizatio
 import { defer } from "../../../../../src/utils";
 
 describe("Personalization::createCacheManager", () => {
+  const cartView = "cart";
+  const homeView = "home";
   const viewDecisions = {
     home: [
       {
@@ -38,16 +40,27 @@ describe("Personalization::createCacheManager", () => {
 
   it("stores and gets the decisions based on a viewName", () => {
     const viewCacheManager = createViewCacheManager();
-
     const decisionsDeferred = defer();
+
     viewCacheManager.storeViews(decisionsDeferred.promise);
     decisionsDeferred.resolve(viewDecisions);
 
-    viewCacheManager.getView("cart").then(decisions => {
-      expect(decisions.length).toEqual(1);
-    });
-    viewCacheManager.getView("home").then(decisions => {
-      expect(decisions.length).toEqual(2);
-    });
+    expectAsync(viewCacheManager.getView(cartView)).toBeResolvedTo(
+      viewDecisions[cartView]
+    );
+
+    expectAsync(viewCacheManager.getView(homeView)).toBeResolvedTo(
+      viewDecisions[homeView]
+    );
+  });
+
+  it("should be no views when decisions deferred is rejected", () => {
+    const viewCacheManager = createViewCacheManager();
+    const decisionsDeferred = defer();
+
+    viewCacheManager.storeViews(decisionsDeferred.promise);
+    decisionsDeferred.reject();
+
+    expectAsync(viewCacheManager.getView("cart")).toBeResolvedTo(undefined);
   });
 });

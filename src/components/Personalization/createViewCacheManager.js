@@ -18,13 +18,17 @@ export default () => {
   const viewStorageDeferred = defer();
 
   const storeViews = decisionsPromise => {
-    decisionsPromise.then(decisions => {
-      if (viewStorage === undefined) {
-        viewStorage = {};
-      }
-      assign(viewStorage, decisions);
-      viewStorageDeferred.resolve();
-    });
+    decisionsPromise
+      .then(decisions => {
+        if (viewStorage === undefined) {
+          viewStorage = {};
+        }
+        assign(viewStorage, decisions);
+        viewStorageDeferred.resolve();
+      })
+      .catch(() => {
+        viewStorageDeferred.resolve();
+      });
   };
 
   const getView = viewName => {
