@@ -90,25 +90,30 @@ describe("injectExecuteCommand", () => {
   });
 
   it("never resolves/rejects promise to any other command after configure fails", () => {
-    const configureCommand = () => Promise.reject();
+    const configureError = new Error("Test configure command failed");
+    const configureCommand = () => Promise.reject(configureError);
     const executeCommand = injectExecuteCommand({
       logger,
       configureCommand,
       handleError
     });
 
-    executeCommand("configure");
-    const thenSpy = jasmine.createSpy();
-    const catchSpy = jasmine.createSpy();
-    executeCommand("event")
-      .then(thenSpy)
-      .catch(catchSpy);
+    const configureRejectedSpy = jasmine.createSpy("configureRejectedSpy");
+    executeCommand("configure")
+      .then(fail)
+      .catch(configureRejectedSpy);
+    const sendEventResolvedSpy = jasmine.createSpy("sendEventResolvedSpy");
+    const sendEventRejectedSpy = jasmine.createSpy("sendEventRejectedSpy");
+    executeCommand("sendEvent")
+      .then(sendEventResolvedSpy)
+      .catch(sendEventRejectedSpy);
     return flushPromiseChains().then(() => {
+      expect(configureRejectedSpy).toHaveBeenCalledWith(configureError);
       expect(logger.warn).toHaveBeenCalledWith(
-        "An error during configuration is preventing the event command from executing."
+        "An error during configuration is preventing the sendEvent command from executing."
       );
-      expect(thenSpy).not.toHaveBeenCalled();
-      expect(catchSpy).not.toHaveBeenCalled();
+      expect(sendEventResolvedSpy).not.toHaveBeenCalled();
+      expect(sendEventRejectedSpy).not.toHaveBeenCalled();
     });
   });
 
