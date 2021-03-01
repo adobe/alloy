@@ -81,7 +81,8 @@ export default ({
         return {
           statusCode: response.statusCode,
           body: response.body,
-          parsedBody
+          parsedBody,
+          getHeader: response.getHeader
         };
       });
     };

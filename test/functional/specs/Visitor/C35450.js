@@ -41,9 +41,5 @@ test("C35450 - When ID migration is enabled and Visitor and Alloy are both await
   const visitorEcidPromise = getVisitorEcid(orgMainConfigMain.orgId);
   const identityResult = await alloy.getIdentity();
   const visitorEcid = await visitorEcidPromise;
-  await t.expect(identityResult).eql({
-    identity: {
-      ECID: visitorEcid
-    }
-  });
+  await t.expect(identityResult.identity).eql({ ECID: visitorEcid });
 });

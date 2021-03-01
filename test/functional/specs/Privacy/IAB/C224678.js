@@ -2,7 +2,7 @@ import { t } from "testcafe";
 import createNetworkLogger from "../../../helpers/networkLogger";
 import { responseStatus } from "../../../helpers/assertions/index";
 import createFixture from "../../../helpers/createFixture";
-import createResponse from "../../../../../src/core/createResponse";
+import createResponse from "../../../helpers/createResponse";
 import getResponseBody from "../../../helpers/networkLogger/getResponseBody";
 import cookies from "../../../helpers/cookies";
 import {
@@ -13,10 +13,7 @@ import {
 import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies";
 import createAlloyProxy from "../../../helpers/createAlloyProxy";
 
-const config = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, debugEnabled);
 
 const networkLogger = createNetworkLogger();
 
@@ -58,7 +55,7 @@ test("Test C224678: Passing a negative Consent in the sendEvent command", async 
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
 
-  const response = createResponse(rawResponse);
+  const response = createResponse({ content: rawResponse });
 
   // 1. The set-consent response should contain the Consent cookie: { general: out }
   const consentCookieValue = await cookies.get(MAIN_CONSENT_COOKIE_NAME);
@@ -91,8 +88,10 @@ test("Test C224678: Passing a negative Consent in the sendEvent command", async 
     .notOk("Event returned an error when we expected it not to.");
 
   // 5. But returns a warning message confirming the opt-out
-  const warnings = response.getWarnings().map(w => w.code);
-  await t.expect(warnings).contains("EXEG-0301-200");
+  const warningTypes = response.getWarnings().map(w => w.type);
+  await t
+    .expect(warningTypes)
+    .contains("https://ns.adobe.com/aep/errors/EXEG-0301-200");
 
   // 6. Events should be blocked going forward because we are opted out.
   await alloy.sendEvent();

@@ -10,27 +10,89 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { clone, isEmptyObject, createMerger } from "../utils";
+import { isEmptyObject, deepAssign } from "../utils";
 
 export default () => {
   const content = {};
   let userXdm;
   let userData;
   let documentMayUnload = false;
-  let lastChanceCallback;
+  let isFinalized = false;
+  let shouldSendEvent = true;
+
+  const throwIfEventFinalized = methodName => {
+    if (isFinalized) {
+      throw new Error(
+        `${methodName} cannot be called after event is finalized.`
+      );
+    }
+  };
 
   const event = {
     setUserXdm(value) {
+      throwIfEventFinalized("setUserXdm");
       userXdm = value;
     },
     setUserData(value) {
+      throwIfEventFinalized("setUserData");
       userData = value;
     },
-    mergeXdm: createMerger(content, "xdm"),
-    mergeMeta: createMerger(content, "meta"),
-    mergeQuery: createMerger(content, "query"),
+    mergeXdm(xdm) {
+      throwIfEventFinalized("mergeXdm");
+      deepAssign(content, { xdm });
+    },
+    mergeMeta(meta) {
+      throwIfEventFinalized("mergeMeta");
+      deepAssign(content, { meta });
+    },
+    mergeQuery(query) {
+      throwIfEventFinalized("mergeQuery");
+      deepAssign(content, { query });
+    },
     documentMayUnload() {
       documentMayUnload = true;
+    },
+    finalize(onBeforeEventSend) {
+      if (isFinalized) {
+        return;
+      }
+
+      if (userXdm) {
+        event.mergeXdm(userXdm);
+      }
+
+      if (userData) {
+        content.data = userData;
+      }
+
+      // the event should already be considered finalized in case onBeforeEventSend throws an error
+      isFinalized = true;
+
+      if (onBeforeEventSend) {
+        // assume that the onBeforeEventSend callback will fail (in-case of an error)
+        shouldSendEvent = false;
+
+        // this allows the user to replace the object passed into the callback
+        const tempContent = {
+          xdm: content.xdm || {},
+          data: content.data || {}
+        };
+
+        const result = onBeforeEventSend(tempContent);
+
+        shouldSendEvent = result !== false;
+
+        content.xdm = tempContent.xdm || {};
+        content.data = tempContent.data || {};
+
+        if (isEmptyObject(content.xdm)) {
+          delete content.xdm;
+        }
+
+        if (isEmptyObject(content.data)) {
+          delete content.data;
+        }
+      }
     },
     getDocumentMayUnload() {
       return documentMayUnload;
@@ -42,8 +104,8 @@ export default () => {
         (!userData || isEmptyObject(userData))
       );
     },
-    setLastChanceCallback(value) {
-      lastChanceCallback = value;
+    shouldSend() {
+      return shouldSendEvent;
     },
     getViewName() {
       if (!userXdm || !userXdm.web || !userXdm.web.webPageDetails) {
@@ -53,37 +115,8 @@ export default () => {
       return userXdm.web.webPageDetails.viewName;
     },
     toJSON() {
-      if (userXdm) {
-        event.mergeXdm(userXdm);
-      }
-      if (userData) {
-        content.data = userData;
-      }
-
-      if (lastChanceCallback) {
-        // We clone these because if lastChanceCallback throws an error, we don't
-        // want any modifications lastChanceCallback made to actually be applied.
-        const args = {
-          xdm: clone(content.xdm || {}),
-          data: clone(content.data || {})
-        };
-        try {
-          lastChanceCallback(args);
-          // If onBeforeEventSend throws an exception,
-          // we don't want to apply the changes it made
-          // so setting content.xdm and content.data is inside this try
-
-          // We only set content.xdm if content.xdm was already set or
-          // if content.xdm was empty and the lastChanceCallback added items to it.
-          if (content.xdm || !isEmptyObject(args.xdm)) {
-            content.xdm = args.xdm;
-          }
-          if (content.data || !isEmptyObject(args.data)) {
-            content.data = args.data;
-          }
-        } catch (e) {
-          // the callback should have already logged the exception
-        }
+      if (!isFinalized) {
+        throw new Error("toJSON called before finalize");
       }
 
       return content;

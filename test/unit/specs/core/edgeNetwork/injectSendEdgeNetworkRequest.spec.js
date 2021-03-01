@@ -32,10 +32,9 @@ describe("injectSendEdgeNetworkRequest", () => {
   let processWarningsAndErrors;
   let sendEdgeNetworkRequest;
   let request;
-  /**
-   * Helper for testing handling of network request failures, particularly
-   * their interplay with lifecycle hooks.
-   */
+
+  // Helper for testing handling of network request failures, particularly
+  // their interplay with lifecycle hooks.
   const testRequestFailureHandling = ({
     runOnRequestFailureCallbacks,
     assertLifecycleCall
@@ -57,10 +56,9 @@ describe("injectSendEdgeNetworkRequest", () => {
       });
   };
 
-  /**
-   * Helper for testing handling of fatal error responses from the server, particularly
-   * their interplay with lifecycle hooks.
-   */
+  // Helper for testing handling of fatal error responses from the server, particularly
+  // their interplay with lifecycle hooks.
+
   const testResponseFailureHandling = ({
     runOnRequestFailureCallbacks,
     assertLifecycleCall
@@ -82,10 +80,8 @@ describe("injectSendEdgeNetworkRequest", () => {
       });
   };
 
-  /**
-   * Helper for testing handling of successful network responses, particularly
-   * their interplay with lifecycle hooks.
-   */
+  // Helper for testing handling of successful network responses, particularly
+  // their interplay with lifecycle hooks.
   const testResponseSuccessHandling = ({
     runOnResponseCallbacks,
     assertLifecycleCall
@@ -127,7 +123,8 @@ describe("injectSendEdgeNetworkRequest", () => {
       "responseToCookies"
     ]);
     networkResult = {
-      parsedBody: {}
+      parsedBody: { my: "parsedBody" },
+      getHeader: () => "myheader"
     };
     sendNetworkRequest = jasmine
       .createSpy("sendNetworkRequest")
@@ -436,6 +433,15 @@ describe("injectSendEdgeNetworkRequest", () => {
       a: 1,
       b: 1,
       c: 2
+    });
+  });
+
+  it("creates the response with the correct parameters", () => {
+    return sendEdgeNetworkRequest({ request }).then(() => {
+      expect(createResponse).toHaveBeenCalledWith({
+        content: { my: "parsedBody" },
+        getHeader: networkResult.getHeader
+      });
     });
   });
 });
