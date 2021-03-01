@@ -38,6 +38,7 @@ describe("privacy:createComponent", () => {
   let consentHashStore;
   let consentHashes;
   let doesIdentityCookieExist;
+  let requestFailureError;
   let component;
 
   const setIdentityCookie = () => {
@@ -70,6 +71,7 @@ describe("privacy:createComponent", () => {
     consentHashStore.lookup.and.returnValue(consentHashes);
     setIdentityCookie();
     consentHashes.isNew.and.returnValue(true);
+    requestFailureError = new Error("Request for setting test consent failed.");
   });
 
   const build = () => {
@@ -113,7 +115,7 @@ describe("privacy:createComponent", () => {
         deferred.resolve();
       },
       respondWithError() {
-        deferred.reject();
+        deferred.reject(requestFailureError);
       }
     };
   };
@@ -154,11 +156,13 @@ describe("privacy:createComponent", () => {
     clearConsentCookie();
     build();
     const setConsentMock = mockSetConsent();
-    component.commands.setConsent.run(CONSENT_IN);
+    const onRejected = jasmine.createSpy("onRejected");
+    component.commands.setConsent.run(CONSENT_IN).catch(onRejected);
     setConsentCookieIn();
     setConsentMock.respondWithError();
     return flushPromiseChains().then(() => {
       expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
+      expect(onRejected).toHaveBeenCalledWith(requestFailureError);
     });
   });
 
