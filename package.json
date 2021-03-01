@@ -9,7 +9,6 @@
     "libEs6"
   ],
   "scripts": {
-    "install": "cd sandbox && npm install",
     "clean": "rimraf dist distTest libEs5 libEs6",
     "lint": "eslint --fix \"*.js\" \"src/**/*.js\" \"test/**/*.js\"",
     "format": "prettier --write \"*.{html,js}\" \"{sandbox,src,test}/**/*.{html,js}\"",
