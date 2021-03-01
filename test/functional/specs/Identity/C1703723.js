@@ -10,10 +10,7 @@ import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import createNetworkLogger from "../../helpers/networkLogger";
 
-const debugEnabledConfig = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled);
 
 const networkLogger = createNetworkLogger();
 
@@ -24,12 +21,12 @@ createFixture({
 });
 
 test.meta({
-  ID: "C1703772",
+  ID: "C1703773",
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
 
-test("C1703722: getIdentity uses cached values when interact already called", async () => {
+test("C1703723: getIdentity uses cached values when interact already called", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(debugEnabledConfig);
   // this should get an ECID
