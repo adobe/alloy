@@ -31,39 +31,40 @@ describe("DOM::awaitSelector", () => {
     removeNode(nodes[0]);
   };
 
-  const awaitSelectorAndAssert = (id, win, doc, done) => {
+  const awaitSelectorAndAssert = (id, win, doc) => {
     const result = awaitSelector(`#${id}`, selectNodes, 1000, win, doc);
 
     createAndAppendNodeDelayed(id);
 
-    result
+    return result
       .then(nodes => {
-        done();
-        cleanUp(id);
         expect(nodes[0].tagName).toEqual("DIV");
       })
-      .catch(() => {
-        done();
+      .finally(() => {
         cleanUp(id);
-        fail(`${id} should be found`);
+      })
+      .catch(() => {
+        throw new Error(`${id} should be found`);
       });
   };
 
-  it("await via MutationObserver", done => {
-    awaitSelectorAndAssert("abc", window, document, done);
+  it("await via MutationObserver", () => {
+    return awaitSelectorAndAssert("abc", window, document);
   });
 
-  it("await via requestAnimationFrame", done => {
-    const win = { requestAnimationFrame: window.requestAnimationFrame };
+  it("await via requestAnimationFrame", () => {
+    const win = {
+      requestAnimationFrame: window.requestAnimationFrame.bind(window)
+    };
     const doc = { visibilityState: "visible" };
 
-    awaitSelectorAndAssert("def", win, doc, done);
+    return awaitSelectorAndAssert("def", win, doc);
   });
 
-  it("await via timer", done => {
+  it("await via timer", () => {
     const win = {};
     const doc = {};
 
-    awaitSelectorAndAssert("ghi", win, doc, done);
+    return awaitSelectorAndAssert("ghi", win, doc);
   });
 });
