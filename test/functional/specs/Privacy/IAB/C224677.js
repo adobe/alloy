@@ -2,7 +2,7 @@ import { t } from "testcafe";
 import createNetworkLogger from "../../../helpers/networkLogger";
 import { responseStatus } from "../../../helpers/assertions/index";
 import createFixture from "../../../helpers/createFixture";
-import createResponse from "../../../../../src/core/createResponse";
+import createResponse from "../../../helpers/createResponse";
 import getResponseBody from "../../../helpers/networkLogger/getResponseBody";
 import cookies from "../../../helpers/cookies";
 import {
@@ -14,10 +14,7 @@ import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies";
 import createAlloyProxy from "../../../helpers/createAlloyProxy";
 import { IAB_NO_PURPOSE_TEN } from "../../../helpers/constants/consent";
 
-const config = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, debugEnabled);
 
 const networkLogger = createNetworkLogger();
 
@@ -46,7 +43,7 @@ test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
     getResponseBody(networkLogger.setConsentEndpointLogs.requests[0])
   );
 
-  const response = createResponse(rawResponse);
+  const response = createResponse({ content: rawResponse });
 
   // 1. The set-consent response should contain the Consent cookie: { general: in }
   const consentCookieValue = await cookies.get(MAIN_CONSENT_COOKIE_NAME);
@@ -63,11 +60,13 @@ test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
   const rawEventResponse = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
-  const eventResponse = createResponse(rawEventResponse);
+  const eventResponse = createResponse({ content: rawEventResponse });
 
   // 4. And a warning message should be returned, confirming the opt-out
-  const warnings = eventResponse.getWarnings().map(w => w.code);
-  await t.expect(warnings).contains("EXEG-0301-200");
+  const warningTypes = eventResponse.getWarnings().map(w => w.type);
+  await t
+    .expect(warningTypes)
+    .contains("https://ns.adobe.com/aep/errors/EXEG-0301-200");
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);

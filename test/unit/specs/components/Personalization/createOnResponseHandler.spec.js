@@ -279,4 +279,54 @@ describe("Personalization::onResponseHandler", () => {
     expect(decisionsDeferred.resolve).toHaveBeenCalledWith({});
     expect(result).toEqual(expectedResult);
   });
+
+  it("shouldn't trigger executeCachedViewDecisions when viewName is empty", () => {
+    const nonPageWideScopeDecisions = {
+      cart: CART_VIEW_DECISIONS,
+      products: PRODUCTS_VIEW_DECISIONS
+    };
+    decisionsExtractor.groupDecisionsBySchema.and.returnValue({
+      domActionDecisions,
+      nonDomActionDecisions
+    });
+    decisionsExtractor.groupDecisionsByScope.and.returnValue({
+      pageWideScopeDecisions,
+      nonPageWideScopeDecisions
+    });
+
+    const expectedResult = {
+      decisions: nonDomActionDecisions
+    };
+    response.getPayloadsByType.and.returnValue(unprocessedDecisions);
+    personalizationDetails.isRenderDecisions.and.returnValue(true);
+    personalizationDetails.getViewName.and.returnValue("");
+    const onResponse = createOnResponseHandler({
+      decisionsExtractor,
+      executeDecisions,
+      executeCachedViewDecisions,
+      showContainers
+    });
+
+    const result = onResponse({
+      decisionsDeferred,
+      personalizationDetails,
+      response
+    });
+    expect(decisionsDeferred.resolve).toHaveBeenCalledWith(
+      nonPageWideScopeDecisions
+    );
+    expect(decisionsExtractor.groupDecisionsBySchema).toHaveBeenCalledWith({
+      decisions: unprocessedDecisions,
+      schema: DOM_ACTION
+    });
+    expect(decisionsExtractor.groupDecisionsByScope).toHaveBeenCalledWith({
+      decisions: domActionDecisions,
+      scope: PAGE_WIDE_SCOPE
+    });
+
+    expect(showContainers).toHaveBeenCalled();
+    expect(executeDecisions).toHaveBeenCalledWith(pageWideScopeDecisions);
+    expect(executeCachedViewDecisions).not.toHaveBeenCalled();
+    expect(result).toEqual(expectedResult);
+  });
 });

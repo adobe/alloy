@@ -10,5 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export const RETRY_AFTER = "Retry-After";
-export const ADOBE_EDGE = "x-adobe-edge";
+export default ({ logger }) => adobeEdgeHeader => {
+  if (adobeEdgeHeader) {
+    const headerParts = adobeEdgeHeader.split(";");
+    if (headerParts.length >= 2 && headerParts[1].length > 0) {
+      try {
+        const regionId = parseInt(headerParts[1], 10);
+        if (!Number.isNaN(regionId)) {
+          return { regionId };
+        }
+      } catch (e) {
+        // No need to do anything. The log statement below will log an error
+      }
+    }
+    logger.warn(`Invalid adobe edge: "${adobeEdgeHeader}"`);
+  }
+  return {};
+};

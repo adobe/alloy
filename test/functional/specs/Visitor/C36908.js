@@ -42,9 +42,5 @@ test("C36908 When ID migration is enabled and Visitor and Alloy are both awaitin
   await createMockOptIn(true);
   const visitorIdentity = await getVisitorEcid(orgMainConfigMain.orgId);
 
-  await t.expect(alloyIdentity).eql({
-    identity: {
-      ECID: visitorIdentity
-    }
-  });
+  await t.expect(alloyIdentity.identity).eql({ ECID: visitorIdentity });
 });

@@ -43,16 +43,8 @@ describe("createDataCollectionRequestPayload", () => {
 
   it("adds events and serializes them properly", () => {
     const payload = createDataCollectionRequestPayload();
-    const event1 = createEvent();
-    event1.setUserXdm({
-      a: "b"
-    });
-    payload.addEvent(event1);
-    const event2 = createEvent();
-    event2.setUserXdm({
-      c: "d"
-    });
-    payload.addEvent(event2);
+    payload.addEvent({ xdm: { a: "b" } });
+    payload.addEvent({ xdm: { c: "d" } });
     expect(JSON.parse(JSON.stringify(payload))).toEqual({
       events: [{ xdm: { a: "b" } }, { xdm: { c: "d" } }]
     });

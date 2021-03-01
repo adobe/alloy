@@ -18,6 +18,7 @@ import {
   JSON_CONTENT_ITEM,
   REDIRECT_ITEM
 } from "./constants/schema";
+import isNonEmptyString from "../../utils/isNonEmptyString";
 
 export default ({ renderDecisions, decisionScopes, event, viewCache }) => {
   const viewName = event.getViewName();
@@ -32,7 +33,7 @@ export default ({ renderDecisions, decisionScopes, event, viewCache }) => {
       return decisionScopes.length > 0;
     },
     hasViewName() {
-      return viewName !== undefined;
+      return isNonEmptyString(viewName);
     },
     createQueryDetails() {
       const scopes = [...decisionScopes];

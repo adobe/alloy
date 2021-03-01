@@ -29,7 +29,8 @@ const injectContentSecurityPolicy = ClientFunction(nonce => {
   meta.httpEquiv = "Content-Security-Policy";
   meta.content = `default-src 'self';
                   script-src 'self' 'unsafe-eval' 'nonce-${nonce}';
-                  style-src 'self' 'nonce-${nonce}'`;
+                  style-src 'self' 'nonce-${nonce}';
+                  connect-src 'self' *.alloyio.com *.demdex.net *.adobedc.net;`;
   document.head.appendChild(meta);
 });
 

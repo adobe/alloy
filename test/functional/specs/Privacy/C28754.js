@@ -2,7 +2,7 @@ import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions";
 import createFixture from "../../helpers/createFixture";
-import createResponse from "../../../../src/core/createResponse";
+import createResponse from "../../helpers/createResponse";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import {
   compose,
@@ -43,7 +43,7 @@ test("C28754 - Consenting to no purposes should result in no data handles in the
     getResponseBody(networkLogger.setConsentEndpointLogs.requests[0])
   );
 
-  const alloyResponse = createResponse(response);
+  const alloyResponse = createResponse({ content: response });
 
   const idSyncsPayload = alloyResponse.getPayloadsByType("identity:exchange");
   const personalizationPayload = alloyResponse.getPayloadsByType(

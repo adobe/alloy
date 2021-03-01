@@ -8,7 +8,7 @@ import {
   debugEnabled
 } from "../../helpers/constants/configParts";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../../../src/core/createResponse";
+import createResponse from "../../helpers/createResponse";
 import testPageUrl from "../../helpers/constants/testPageUrl";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
@@ -66,9 +66,9 @@ test("Test C28757: A VEC offer should render if renderDecision=true", async () =
   const response = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
-  const personalizationPayload = createResponse(response).getPayloadsByType(
-    "personalization:decisions"
-  );
+  const personalizationPayload = createResponse({
+    content: response
+  }).getPayloadsByType("personalization:decisions");
 
   await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
   await t.expect(getDecisionContent()).eql("Here is an awesome target offer!");

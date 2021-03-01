@@ -31,6 +31,7 @@ describe("injectSendNetworkRequest", () => {
   let sendBeaconRequest;
   let isRequestRetryable;
   let getRequestRetryDelay;
+  let getHeader;
 
   beforeEach(() => {
     jasmine.clock().install();
@@ -40,16 +41,19 @@ describe("injectSendNetworkRequest", () => {
       "logOnNetworkError"
     ]);
     logger.enabled = true;
+    getHeader = jasmine.createSpy("getHeader");
     sendFetchRequest = jasmine.createSpy().and.returnValue(
       Promise.resolve({
         statusCode: 200,
-        body: responseBodyJson
+        body: responseBodyJson,
+        getHeader
       })
     );
     sendBeaconRequest = jasmine.createSpy().and.returnValue(
       Promise.resolve({
         statusCode: 204,
-        body: ""
+        body: "",
+        getHeader: () => undefined
       })
     );
     isRequestRetryable = jasmine
@@ -101,12 +105,14 @@ describe("injectSendNetworkRequest", () => {
         statusCode: 200,
         body: responseBodyJson,
         parsedBody: responseBody,
-        retriesAttempted: 0
+        retriesAttempted: 0,
+        getHeader
       });
       expect(response).toEqual({
         statusCode: 200,
         body: responseBodyJson,
-        parsedBody: responseBody
+        parsedBody: responseBody,
+        getHeader
       });
     });
   });
@@ -115,7 +121,8 @@ describe("injectSendNetworkRequest", () => {
     sendFetchRequest.and.returnValue(
       Promise.resolve({
         statusCode: 200,
-        body: "non-JSON body"
+        body: "non-JSON body",
+        getHeader
       })
     );
     return sendNetworkRequest({
@@ -132,12 +139,14 @@ describe("injectSendNetworkRequest", () => {
         statusCode: 200,
         body: "non-JSON body",
         parsedBody: undefined,
-        retriesAttempted: 0
+        retriesAttempted: 0,
+        getHeader
       });
       expect(response).toEqual({
         statusCode: 200,
         body: "non-JSON body",
-        parsedBody: undefined
+        parsedBody: undefined,
+        getHeader
       });
     });
   });
@@ -146,7 +155,8 @@ describe("injectSendNetworkRequest", () => {
     sendFetchRequest.and.returnValue(
       Promise.resolve({
         statusCode: 200,
-        body: ""
+        body: "",
+        getHeader
       })
     );
     return sendNetworkRequest({
@@ -163,12 +173,14 @@ describe("injectSendNetworkRequest", () => {
         statusCode: 200,
         body: "",
         parsedBody: undefined,
-        retriesAttempted: 0
+        retriesAttempted: 0,
+        getHeader
       });
       expect(response).toEqual({
         statusCode: 200,
         body: "",
-        parsedBody: undefined
+        parsedBody: undefined,
+        getHeader
       });
     });
   });
@@ -197,7 +209,8 @@ describe("injectSendNetworkRequest", () => {
       expect(response).toEqual({
         statusCode: 200,
         body: responseBodyJson,
-        parsedBody: responseBody
+        parsedBody: responseBody,
+        getHeader
       });
     });
   });

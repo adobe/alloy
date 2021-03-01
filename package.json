@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy",
-  "version": "2.3.0",
+  "version": "2.4.0-alpha.1",
   "description": "Adobe Experience Platform Web SDK",
   "main": "libEs5/index.js",
   "module": "libEs6/index.js",
@@ -9,7 +9,6 @@
     "libEs6"
   ],
   "scripts": {
-    "install": "cd sandbox && npm install",
     "clean": "rimraf dist distTest libEs5 libEs6",
     "lint": "eslint --fix \"*.js\" \"src/**/*.js\" \"test/**/*.js\"",
     "format": "prettier --write \"*.{html,js}\" \"{sandbox,src,test}/**/*.{html,js}\"",
@@ -121,7 +120,7 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-terser": "^7.0.2",
     "start-server-and-test": "^1.10.6",
-    "testcafe": "^1.11.0",
+    "testcafe": "^1.10.0",
     "testcafe-browser-provider-browserstack": "^1.13.0-alpha.1",
     "ua-parser": "^0.3.5",
     "url-parse": "^1.4.7"
