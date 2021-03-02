@@ -25,14 +25,12 @@ const createNamespacedStorage = injectStorage(window);
 
 export const createInstance = options => {
   const eventOptionsValidator = objectOf({
-    name: string().required(),
-    monitors: arrayOf(objectOf({}))
-  })
-    .noUnknownFields()
-    .required();
-  const { name, monitors = [] } = eventOptionsValidator(options);
+    name: string().default("alloy"),
+    monitors: arrayOf(objectOf({})).default([])
+  }).noUnknownFields();
+  const { name, monitors } = eventOptionsValidator(options);
 
-  // this is a function so that window.__alloyMonitors can be set or added to at any any time
+  // this is a function so that window.__alloyMonitors can be set or added to at any time
   // eslint-disable-next-line no-underscore-dangle
   const getMonitors = () => (window.__alloyMonitors || []).concat(monitors);
   const logController = createLogController({
