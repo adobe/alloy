@@ -14,10 +14,7 @@ import flushPromiseChains from "../../helpers/flushPromiseChains";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
-const config = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
 // spaImplementationTest=true is a query string param used for this specific target activity
 createFixture({
@@ -117,8 +114,10 @@ test.skip("Test C782718: SPA support with auto-rendering and view notifications"
     PAGE_WIDE_SCOPE
   );
   await t
-    // eslint-disable-next-line no-underscore-dangle
-    .expect(notificationRequestBody.events[0].xdm._experience.propositions)
+    .expect(
+      // eslint-disable-next-line no-underscore-dangle
+      notificationRequestBody.events[0].xdm._experience.decisioning.propositions
+    )
     .eql(pageWideScopeDecisionsMeta);
   // notification for view rendered decisions
   const viewNotificationRequest = networkLogger.edgeEndpointLogs.requests[2];
@@ -130,8 +129,11 @@ test.skip("Test C782718: SPA support with auto-rendering and view notifications"
     "/products"
   );
   await t
-    // eslint-disable-next-line no-underscore-dangle
-    .expect(viewNotificationRequestBody.events[0].xdm._experience.propositions)
+    .expect(
+      // eslint-disable-next-line no-underscore-dangle
+      viewNotificationRequestBody.events[0].xdm._experience.decisioning
+        .propositions
+    )
     .eql(productsViewDecisionsMeta);
 
   // sendEvent at a view change, this shouldn't request any target data, it should use the existing cache
@@ -173,7 +175,7 @@ test.skip("Test C782718: SPA support with auto-rendering and view notifications"
     .expect(
       // eslint-disable-next-line no-underscore-dangle
       transformersViewNotificationRequestBody.events[0].xdm._experience
-        .propositions
+        .decisioning.propositions
     )
     .eql(transformersViewDecisionsMeta);
 

@@ -13,7 +13,9 @@ governing permissions and limitations under the License.
 export const mergeDecisionsMeta = (event, decisionsMeta) => {
   event.mergeXdm({
     _experience: {
-      propositions: decisionsMeta
+      decisioning: {
+        propositions: decisionsMeta
+      }
     }
   });
 };

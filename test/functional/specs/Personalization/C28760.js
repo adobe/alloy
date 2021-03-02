@@ -13,10 +13,7 @@ import testPageUrl from "../../helpers/constants/testPageUrl";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
-const config = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
 createFixture({
   title:
@@ -86,7 +83,9 @@ test("Test C28760: A notification collect should be triggered if a VEC dom actio
     .expect(notificationRequestBody.events[0].xdm.eventType)
     .eql("display");
   await t
-    // eslint-disable-next-line no-underscore-dangle
-    .expect(notificationRequestBody.events[0].xdm._experience.propositions)
+    .expect(
+      // eslint-disable-next-line no-underscore-dangle
+      notificationRequestBody.events[0].xdm._experience.decisioning.propositions
+    )
     .eql(notificationPayload);
 });

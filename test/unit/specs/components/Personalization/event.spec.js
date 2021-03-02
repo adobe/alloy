@@ -37,16 +37,18 @@ describe("Personalization::event", () => {
       mergeDecisionsMeta(event, decisionsMeta);
       expect(event.mergeXdm).toHaveBeenCalledWith({
         _experience: {
-          propositions: [
-            {
-              id: "abc",
-              scope: "home"
-            },
-            {
-              id: "def",
-              scope: "cart"
-            }
-          ]
+          decisioning: {
+            propositions: [
+              {
+                id: "abc",
+                scope: "home"
+              },
+              {
+                id: "def",
+                scope: "cart"
+              }
+            ]
+          }
         }
       });
     });
