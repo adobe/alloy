@@ -46,7 +46,14 @@ test("Test C455258: sendEvent command sends a request to the collect endpoint wh
   await alloy.sendEvent({ documentUnloading: true });
 
   await t.expect(networkLogger.edgeInteractEndpointLogs.requests.length).eql(1);
-  await t.expect(networkLogger.edgeCollectEndpointLogs.requests.length).eql(1);
+  // The browser's sendBeacon api returns before the actual request is made. Therefore
+  // the sendEvent promise resolves right away so the /collect call may not have gone
+  // out yet. By calling the RequestLogger's count method, TestCafe will retry this
+  // assertion until it succeeds or until the timeout is reached. The parameter to count
+  // is a filter function. In this case we want to count all the requests.
+  await t
+    .expect(networkLogger.edgeCollectEndpointLogs.count(() => true))
+    .eql(1);
 
   if (isSendBeaconSupported()) {
     await t.expect(sendBeaconMock.getCallCount()).eql(1);
