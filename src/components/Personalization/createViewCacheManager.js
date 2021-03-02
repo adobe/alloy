@@ -27,6 +27,9 @@ export default () => {
         viewStorageDeferred.resolve();
       })
       .catch(() => {
+        if (viewStorage === undefined) {
+          viewStorage = {};
+        }
         viewStorageDeferred.resolve();
       });
   };

@@ -28,7 +28,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("C12411 Response should return URL destinations if turned on in Blackbird", async () => {
+test.skip("C12411 Response should return URL destinations if turned on in Blackbird", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(orgMainConfigMain);
   await alloy.sendEvent();
