@@ -18,14 +18,23 @@ import { createExecuteCommand } from "./core";
 import createLogger from "./core/createLogger";
 import createLogController from "./core/createLogController";
 import { injectStorage } from "./utils";
+import { arrayOf, objectOf, string } from "./utils/validation";
 
 const { console } = window;
 const createNamespacedStorage = injectStorage(window);
-// set this up as a function so that monitors can be added at anytime
-// eslint-disable-next-line no-underscore-dangle
-const defaultGetMonitors = () => window.__alloyMonitors || [];
 
-export const createInstance = ({ name, getMonitors = defaultGetMonitors }) => {
+export const createInstance = options => {
+  const eventOptionsValidator = objectOf({
+    name: string().required(),
+    monitors: arrayOf(objectOf({}))
+  })
+    .noUnknownFields()
+    .required();
+  const { name, monitors = [] } = eventOptionsValidator(options);
+
+  // this is a function so that window.__alloyMonitors can be set or added to at any any time
+  // eslint-disable-next-line no-underscore-dangle
+  const getMonitors = () => (window.__alloyMonitors || []).concat(monitors);
   const logController = createLogController({
     console,
     locationSearch: window.location.search,
