@@ -17,6 +17,7 @@ import {
 import removeAllCookies from "../../helpers/removeAllCookies";
 
 describe("Identity::injectDoesIdentityCookieExist", () => {
+  beforeEach(removeAllCookies);
   afterEach(removeAllCookies);
 
   it("returns false if cookie does not exist", () => {
