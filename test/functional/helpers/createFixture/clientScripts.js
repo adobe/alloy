@@ -34,6 +34,10 @@ const localNpmLibraryPath = path.join(
   __dirname,
   "../../../../distTest/npmPackageLocal.js"
 );
+const prodNpmLibraryPath = path.join(
+  __dirname,
+  "../../../../distTest/npmPackageProd.js"
+);
 const remoteAlloyLibraryUrl =
   "https://cdn1.adoberesources.net/alloy/latest/alloy.js";
 
@@ -53,8 +57,7 @@ const getLocalNpmLibraryCode = () => {
 };
 // This is the javascript built from the production @adobe/alloy npm Library
 const getProdNpmLibraryCode = () => {
-  // TODO: use the production NPM package once it is published
-  return readCache.sync(localNpmLibraryPath, "utf8");
+  return readCache.sync(prodNpmLibraryPath, "utf8");
 };
 
 const injectInlineScript = ClientFunction(code => {
