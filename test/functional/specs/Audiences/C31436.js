@@ -27,7 +27,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("C31436 Qualify for URL destinations via XDM Data.", async () => {
+test.skip("C31436 Qualify for URL destinations via XDM Data.", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(orgMainConfigMain);
   await alloy.sendEvent({
