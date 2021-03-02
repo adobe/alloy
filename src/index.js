@@ -23,7 +23,7 @@ import { arrayOf, objectOf, string } from "./utils/validation";
 const { console } = window;
 const createNamespacedStorage = injectStorage(window);
 
-export const createInstance = options => {
+export const createInstance = (options = {}) => {
   const eventOptionsValidator = objectOf({
     name: string().default("alloy"),
     monitors: arrayOf(objectOf({})).default([])
