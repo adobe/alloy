@@ -28,7 +28,10 @@ const remotePromisePolyfillPath =
   "https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js";
 const remoteVisitorLibraryUrl =
   "https://github.com/Adobe-Marketing-Cloud/id-service/releases/latest/download/visitorapi.min.js";
-const baseCodePath = path.join(__dirname, "../../../../distTest/baseCode.js");
+const baseCodePath = path.join(
+  __dirname,
+  "../../../../distTest/baseCode.min.js"
+);
 const localAlloyLibraryPath = path.join(__dirname, "../../../../dist/alloy.js");
 const localNpmLibraryPath = path.join(
   __dirname,

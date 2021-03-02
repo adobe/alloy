@@ -1,11 +1,11 @@
 #This configuration will be used by the Edge team to test against prod.
 
 name: Pre-Edge-Deploy
-on: 
+on:
   workflow_dispatch:
     inputs:
       logLevel:
-        description: 'Log level'     
+        description: 'Log level'
         required: true
         default: 'warning'
 
@@ -31,7 +31,7 @@ jobs:
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
       - name: Build
-        run: npm run test:functional:ci:build
+        run: npm run test:functional:build:prod
       - name: 'BrowserStack Env Setup'
         uses: 'browserstack/github-actions/setup-env@master'
         with:

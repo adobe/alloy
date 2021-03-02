@@ -18,9 +18,10 @@
     "test:unit:browserstack:local": "karma start karma.browserstack.conf.js",
     "test:unit:browserstack:ci": "karma start karma.browserstack.conf.js --browsers bs_chrome_windows,bs_safari_macos,bs_firefox_windows,bs_ie_windows --single-run --reporters spec,BrowserStack",
     "test:unit:coverage": "karma start --single-run --reporters spec,coverage",
-    "test:functional": "rollup -c --environment BASE_CODE,NPM_PACKAGE_LOCAL && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome",
+    "test:functional": "npm run test:functional:build:int && EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome",
     "test:functional:watch": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ./scripts/watchFunctionalTests.js",
-    "test:functional:ci:build": "rollup -c --environment BASE_CODE,NPM_PACKAGE_LOCAL",
+    "test:functional:build:int": "rollup -c --environment BASE_CODE_MIN,STANDALONE,NPM_PACKAGE_LOCAL",
+    "test:functional:build:prod": "rollup -c --environment BASE_CODE_MIN,NPM_PACKAGE_PROD",
     "test:functional:ci:predeploy": "ALLOY_ENV=\"int\" testcafe 'browserstack:chrome@87:Windows 10','browserstack:ie@11:Windows 10','browserstack:firefox@85:Windows 10','browserstack:safari@14.0:OS X Big Sur'",
     "test:functional:ci:dev": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe 'browserstack:chrome@87:Windows 10','browserstack:ie@11:Windows 10','browserstack:firefox@85:Windows 10','browserstack:safari@14.0:OS X Big Sur'",
     "test:functional:ci:prod": "ALLOY_ENV=\"prod\" testcafe 'browserstack:chrome@87:Windows 10','browserstack:ie@11:Windows 10','browserstack:firefox@85:Windows 10','browserstack:safari@14.0:OS X Big Sur'",
@@ -28,7 +29,8 @@
     "test:functional:api": "testcafe chrome:headless",
     "sandbox:build": "cd sandbox && npm run build",
     "dev": "concurrently --names build,sandbox \"rollup -c -w --environment SANDBOX\" \"cd sandbox && export REACT_APP_NONCE=321 && npm start\"",
-    "build": "npm run format && npm run lint && npm run clean && concurrently \"rollup -c --environment BASE_CODE,NPM_PACKAGE_LOCAL\" \"rollup -c --environment MINIFY,BASE_CODE\" && echo \"Base Code:\" && cat distTest/baseCode.min.js",
+    "build": "npm run format && npm run lint && npm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN && echo \"Base Code:\" && cat distTest/baseCode.min.js",
+    "prepare": "cd sandbox && npm install",
     "prepublishOnly": "rimraf libEs5 libEs6 && babel src --out-dir libEs5 --env-name npm && babel src --out-dir libEs6 --ignore src/baseCode.js,src/standalone.js --no-babelrc --plugins version",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js"
   },
@@ -75,6 +77,7 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "@adobe/alloy": "^2.4.0-alpha.1",
     "@babel/cli": "^7.12.8",
     "@babel/core": "^7.2.2",
     "@babel/plugin-proposal-object-rest-spread": "^7.3.2",

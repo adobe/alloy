@@ -1,6 +1,6 @@
 name: Pre-Deploy
 on: workflow_dispatch
-      
+
 jobs:
   e2e-test:
     name: "E2E Alloy Int - Edge Prod"
@@ -18,7 +18,7 @@ jobs:
       if: steps.npm-cache.outputs.cache-hit != 'true'
       run: npm ci
     - name: Build
-      run: npm run test:functional:ci:build
+      run: npm run test:functional:build:int
     - name: 'BrowserStack Env Setup'
       uses: 'browserstack/github-actions/setup-env@master'
       with:
