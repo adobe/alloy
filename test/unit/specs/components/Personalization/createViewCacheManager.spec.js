@@ -45,13 +45,14 @@ describe("Personalization::createCacheManager", () => {
     viewCacheManager.storeViews(decisionsDeferred.promise);
     decisionsDeferred.resolve(viewDecisions);
 
-    expectAsync(viewCacheManager.getView(cartView)).toBeResolvedTo(
-      viewDecisions[cartView]
-    );
-
-    expectAsync(viewCacheManager.getView(homeView)).toBeResolvedTo(
-      viewDecisions[homeView]
-    );
+    return Promise.all([
+      expectAsync(viewCacheManager.getView(cartView)).toBeResolvedTo(
+        viewDecisions[cartView]
+      ),
+      expectAsync(viewCacheManager.getView(homeView)).toBeResolvedTo(
+        viewDecisions[homeView]
+      )
+    ]);
   });
 
   it("should be no views when decisions deferred is rejected", () => {
@@ -61,6 +62,10 @@ describe("Personalization::createCacheManager", () => {
     viewCacheManager.storeViews(decisionsDeferred.promise);
     decisionsDeferred.reject();
 
-    expectAsync(viewCacheManager.getView("cart")).toBeResolvedTo(undefined);
+    return expectAsync(viewCacheManager.getView("cart"))
+      .toBeResolvedTo(undefined)
+      .then(() => {
+        expect(viewCacheManager.isInitialized()).toBeTrue();
+      });
   });
 });
