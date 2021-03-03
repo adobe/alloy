@@ -44,8 +44,8 @@ export default function Personalization() {
       <h1>Personalization - SPA</h1>
       <p>
         Below are links to two different single-page app views. Each view
-        contains personalized content set up in Target using a view scope
-        of <i>product</i> and <i>cart</i>, respectively. Each view's personalized
+        contains personalized content set up in Target using a view scope of{" "}
+        <i>product</i> and <i>cart</i>, respectively. Each view's personalized
         content contains a button whose clicks are tracked as conversions.
       </p>
       <ul>

@@ -19,7 +19,7 @@ const config = compose(
 );
 const PAGE_WIDE_SCOPE = "__view__";
 const decisionContent =
-  '<div id="C28755"> Here is an awesome target offer!</div>';
+  '<div id="C28755">Here is an awesome target offer!</div>';
 
 createFixture({
   title:
@@ -34,10 +34,10 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test.skip("Test C28755: A VEC offer for all visitors should return in every event if __view__ scope exist", async () => {
+test("Test C28755: A VEC offer for all visitors should return in every event if __view__ scope exist", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  const result = await alloy.sendEvent({ decisionScopes: [PAGE_WIDE_SCOPE] });
+  const result = await alloy.sendEvent();
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
