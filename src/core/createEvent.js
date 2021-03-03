@@ -39,15 +39,21 @@ export default () => {
     },
     mergeXdm(xdm) {
       throwIfEventFinalized("mergeXdm");
-      deepAssign(content, { xdm });
+      if (xdm) {
+        deepAssign(content, { xdm });
+      }
     },
     mergeMeta(meta) {
       throwIfEventFinalized("mergeMeta");
-      deepAssign(content, { meta });
+      if (meta) {
+        deepAssign(content, { meta });
+      }
     },
     mergeQuery(query) {
       throwIfEventFinalized("mergeQuery");
-      deepAssign(content, { query });
+      if (query) {
+        deepAssign(content, { query });
+      }
     },
     documentMayUnload() {
       documentMayUnload = true;
