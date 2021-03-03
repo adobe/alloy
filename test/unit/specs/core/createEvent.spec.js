@@ -36,6 +36,8 @@ describe("createEvent", () => {
         type: "basketball"
       }
     });
+    event.mergeXdm();
+    event.mergeXdm(null);
     event.mergeXdm({
       sport: {
         type: "football"
@@ -138,6 +140,8 @@ describe("createEvent", () => {
         type: "clue"
       }
     });
+    event.mergeMeta();
+    event.mergeMeta(null);
     event.finalize();
     expect(event.toJSON()).toEqual({
       meta: {
@@ -171,6 +175,8 @@ describe("createEvent", () => {
         type: "clue"
       }
     });
+    event.mergeQuery();
+    event.mergeQuery(null);
     event.finalize();
     expect(event.toJSON()).toEqual({
       query: {
