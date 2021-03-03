@@ -4,14 +4,9 @@ on: push
 jobs:
   unit-test:
     name: "Unit Tests"
-    timeout-minutes: 5
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Turnstyle
-      uses: softprops/turnstyle@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: actions/cache@v2
       id: npm-cache
       with:
