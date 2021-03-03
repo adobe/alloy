@@ -44,7 +44,7 @@ export default ({
       const storedConsentObject = storedConsent.read();
       // Only read cookies when there are no outstanding setConsent
       // requests. This helps with race conditions.
-      if (storedConsentObject) {
+      if (storedConsentObject[GENERAL] !== undefined) {
         consent.setConsent(storedConsentObject);
       }
     }
