@@ -35,10 +35,10 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const {
     getClickMetasBySelector,
     getClickSelectors,
-    store
+    storeClickMetrics
   } = createClickStorage();
   const viewCache = createViewCacheManager();
-  const modules = initDomActionsModules(store);
+  const modules = initDomActionsModules(storeClickMetrics);
   const executeDecisions = createExecuteDecisions({
     modules,
     logger,

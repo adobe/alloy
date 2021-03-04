@@ -1,7 +1,7 @@
 import createClickStorage from "../../../../../src/components/Personalization/createClickStorage";
 
 describe("Personalization::createClickStorage", () => {
-  let clickStorageManager;
+  let clickStorage;
 
   const FIRST_CLICK = {
     selector: "div:123:h2",
@@ -43,26 +43,26 @@ describe("Personalization::createClickStorage", () => {
     }
   }; */
   beforeEach(() => {
-    clickStorageManager = createClickStorage();
+    clickStorage = createClickStorage();
   });
 
   it("returns empty array if empty storage", () => {
-    expect(clickStorageManager.getClickSelectors()).toEqual([]);
+    expect(clickStorage.getClickSelectors()).toEqual([]);
   });
 
   it("returns empty object when no metadata for this selector", () => {
-    expect(clickStorageManager.getClickMetasBySelector("123")).toEqual({});
+    expect(clickStorage.getClickMetasBySelector("123")).toEqual({});
   });
 
   it("stores clicks as a map in the click storage and returns the selectors and metadata", () => {
-    clickStorageManager.store(FIRST_CLICK);
-    clickStorageManager.store(SECOND_CLICK);
-    clickStorageManager.store(THIRD_CLICK);
-    clickStorageManager.store(FORTH_CLICK);
+    clickStorage.storeClickMetrics(FIRST_CLICK);
+    clickStorage.storeClickMetrics(SECOND_CLICK);
+    clickStorage.storeClickMetrics(THIRD_CLICK);
+    clickStorage.storeClickMetrics(FORTH_CLICK);
 
-    expect(clickStorageManager.getClickSelectors().length).toEqual(2);
-    expect(
-      clickStorageManager.getClickMetasBySelector("div:123:h2").length
-    ).toEqual(2);
+    expect(clickStorage.getClickSelectors().length).toEqual(2);
+    expect(clickStorage.getClickMetasBySelector("div:123:h2").length).toEqual(
+      2
+    );
   });
 });

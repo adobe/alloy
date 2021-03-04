@@ -22,7 +22,7 @@ const metasToArray = metas => {
 export default () => {
   const clickStorage = {};
 
-  const store = value => {
+  const storeClickMetrics = value => {
     if (!clickStorage[value.selector]) {
       clickStorage[value.selector] = {};
     }
@@ -41,7 +41,7 @@ export default () => {
     return metasToArray(clickStorage[selector]);
   };
   return {
-    store,
+    storeClickMetrics,
     getClickSelectors,
     getClickMetasBySelector
   };
