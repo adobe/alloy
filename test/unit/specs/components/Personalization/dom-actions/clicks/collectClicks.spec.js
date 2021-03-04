@@ -42,8 +42,15 @@ describe("Personalization::tracking::clicks", () => {
     appendNode(document.body, node);
 
     const selector = "#abc:eq(0) > div.b:eq(0) > div.c";
-    const meta = { a: 1 };
-    const values = [{ selector, meta }];
+    const meta = {
+      id: "AT:1234",
+      scope: "example_scope"
+    };
+
+    const values = {};
+    values[selector] = {};
+    values[selector][meta.id] = meta.scope;
+
     const element = document.getElementById("one");
     const result = collectClicks(element, values);
 

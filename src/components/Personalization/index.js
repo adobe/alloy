@@ -27,13 +27,13 @@ import createViewCacheManager from "./createViewCacheManager";
 import createViewChangeHandler from "./createViewChangeHandler";
 import decisionsExtractor from "./decisionsExtractor";
 import createOnResponseHandler from "./createOnResponseHandler";
+import createClickStorage from "./createClickStorage";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
   const viewCollect = createViewCollect({ eventManager, mergeDecisionsMeta });
   const clickStorage = [];
   const viewCache = createViewCacheManager();
-  const store = value => clickStorage.push(value);
   const modules = initDomActionsModules(store);
   const executeDecisions = createExecuteDecisions({
     modules,
