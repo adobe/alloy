@@ -31,7 +31,7 @@ jobs:
       run: |
         npm run test:unit:browserstack:ci
         chmod +x "${GITHUB_WORKSPACE}/scripts/clearBs.sh"
-        "${GITHUB_WORKSPACE}/script.sh"
+        "${GITHUB_WORKSPACE}/scripts/clearBs.sh"
         npm run test:functional:ci:dev
     - name: 'BrowserStackLocal Stop'
       uses: 'browserstack/github-actions/setup-local@master'
