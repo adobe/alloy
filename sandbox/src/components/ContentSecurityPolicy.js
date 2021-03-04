@@ -18,8 +18,9 @@ export default function ContentSecurityPolicy() {
     <Helmet>
       <meta
         http-equiv="Content-Security-Policy"
+        // cdn.tt.omtrdc.net is necessary for Target VEC to function properly.
         content={`default-src 'self';
-              script-src 'self' 'nonce-${process.env.REACT_APP_NONCE}' cdn.jsdelivr.net assets.adobedtm.com;
+              script-src 'self' 'nonce-${process.env.REACT_APP_NONCE}' cdn.jsdelivr.net assets.adobedtm.com cdn.tt.omtrdc.net;
               style-src 'self' 'unsafe-inline';
               img-src * data:;
               connect-src 'self' *.alloyio.com *.adobedc.net *.demdex.net`}

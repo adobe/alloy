@@ -7,8 +7,6 @@ import {
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../helpers/createResponse";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
@@ -17,6 +15,8 @@ const config = compose(
   debugEnabled
 );
 const scope = "alloy-test-scope-1";
+const decisionId =
+  "AT:eyJhY3Rpdml0eUlkIjoiMTI2NDg2IiwiZXhwZXJpZW5jZUlkIjoiMCJ9";
 const decisionContent = "<h3>welcome to TARGET AWESOME WORLD!!! </h3>";
 
 createFixture({
@@ -34,8 +34,9 @@ test.meta({
 test("Test C28756: A form based offer should return if event command contains its scope.", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  const expectedScopes = ["alloy-test-scope-1", "__view__"];
-  const result = await alloy.sendEvent({ decisionScopes: [scope] });
+  const result = await alloy.sendEvent({
+    decisionScopes: [scope]
+  });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
@@ -48,7 +49,7 @@ test("Test C28756: A form based offer should return if event command contains it
 
   await t
     .expect(requestBody.events[0].query.personalization.decisionScopes)
-    .eql(expectedScopes);
+    .eql([scope, "__view__"]);
 
   const results = [
     "https://ns.adobe.com/personalization/html-content-item",
@@ -58,21 +59,10 @@ test("Test C28756: A form based offer should return if event command contains it
 
   await t.expect(results).eql(true);
 
-  const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
-  );
-  const personalizationPayload = createResponse({
-    content: response
-  }).getPayloadsByType("personalization:decisions");
-
-  await t.expect(personalizationPayload[0].scope).eql(scope);
-  await t
-    .expect(personalizationPayload[0].items[0].data.content)
-    .eql(decisionContent);
-
-  await t.expect(result.decisions.length).eql(1);
-  await t.expect(result.decisions[0].scope).eql(scope);
-  await t
-    .expect(result.decisions[0].items[0].data.content)
-    .eql(decisionContent);
+  const matchingDecision = result.decisions.find(decision => {
+    return decision.id === decisionId;
+  });
+  await t.expect(matchingDecision).ok("Decision not found.");
+  await t.expect(matchingDecision.scope).eql(scope);
+  await t.expect(matchingDecision.items[0].data.content).eql(decisionContent);
 });

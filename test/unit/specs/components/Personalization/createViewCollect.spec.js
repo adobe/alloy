@@ -13,15 +13,13 @@ import createViewCollect from "../../../../../src/components/Personalization/cre
 
 describe("Personalization::createViewCollect", () => {
   let eventManager;
-  let mergeMeta;
-  const meta = {
-    decisions: [
-      {
-        id: "foo1",
-        scope: "cart"
-      }
-    ]
-  };
+  let mergeDecisionsMeta;
+  const decisionsMeta = [
+    {
+      id: "foo1",
+      scope: "cart"
+    }
+  ];
   const event = {
     mergeXdm: jasmine.createSpy()
   };
@@ -31,7 +29,7 @@ describe("Personalization::createViewCollect", () => {
       sendEvent: undefined,
       createEvent: event
     });
-    mergeMeta = jasmine.createSpy("mergeMeta").and.returnValue({ meta });
+    mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
   });
 
   it("sends event with metadata when decisions is not empty", () => {
@@ -43,13 +41,13 @@ describe("Personalization::createViewCollect", () => {
         }
       }
     };
-    const collect = createViewCollect({ eventManager, mergeMeta });
+    const collect = createViewCollect({ eventManager, mergeDecisionsMeta });
 
-    collect({ meta });
+    collect({ decisionsMeta });
 
     expect(eventManager.createEvent).toHaveBeenCalled();
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdmObject);
-    expect(mergeMeta).toHaveBeenCalledWith(event, meta);
+    expect(mergeDecisionsMeta).toHaveBeenCalledWith(event, decisionsMeta);
     expect(eventManager.sendEvent).toHaveBeenCalled();
   });
 
@@ -64,15 +62,14 @@ describe("Personalization::createViewCollect", () => {
     const data = {
       eventType: "display"
     };
-    const emptyMeta = { decisions: [] };
-    const collect = createViewCollect({ eventManager, mergeMeta });
+    const collect = createViewCollect({ eventManager, mergeDecisionsMeta });
 
-    collect({ meta: emptyMeta, xdm: xdmObject });
+    collect({ decisionsMeta: [], xdm: xdmObject });
 
     expect(eventManager.createEvent).toHaveBeenCalled();
     expect(event.mergeXdm).toHaveBeenCalledWith(data);
     expect(event.mergeXdm).toHaveBeenCalledWith(xdmObject);
-    expect(mergeMeta).not.toHaveBeenCalled();
+    expect(mergeDecisionsMeta).not.toHaveBeenCalled();
     expect(eventManager.sendEvent).toHaveBeenCalled();
   });
 });

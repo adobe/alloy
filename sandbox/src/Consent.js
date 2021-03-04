@@ -1,5 +1,6 @@
 import React from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
+import useSendPageViewEvent from "./useSendPageViewEvent";
 import "./Consent.css";
 import Configuration from "./components/Configuration";
 import Cookies from "./components/Cookies";
@@ -78,9 +79,12 @@ const executeCommand = (command, options = {}) => () => {
 };
 
 export default function Consent() {
+  useSendPageViewEvent();
+
   return (
     <div>
       <ContentSecurityPolicy />
+      <h1>Consent</h1>
       <h2>Opt-In</h2>
       <p>This page tests user consent:</p>
 

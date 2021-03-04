@@ -12,27 +12,29 @@ governing permissions and limitations under the License.
 import createOnClickHandler from "../../../../../src/components/Personalization/createOnClickHandler";
 
 describe("Personalization::createOnClickHandler", () => {
-  let mergeMeta;
+  let mergeDecisionsMeta;
   let collectClicks;
   const event = {
     mergeXdm: jasmine.createSpy("mergeXdm"),
     mergeMeta: jasmine.createSpy("mergeMeta")
   };
   const clickStorage = [];
-  const metas = [
+  const decisionsMeta = [
     {
       id: 1,
       scope: "foo"
     }
   ];
   beforeEach(() => {
-    mergeMeta = jasmine.createSpy("mergeMeta");
-    collectClicks = jasmine.createSpy("collectClicks").and.returnValue(metas);
+    mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
+    collectClicks = jasmine
+      .createSpy("collectClicks")
+      .and.returnValue(decisionsMeta);
   });
 
   it("collects clicks", () => {
     const handleOnClick = createOnClickHandler({
-      mergeMeta,
+      mergeDecisionsMeta,
       collectClicks,
       clickStorage
     });
@@ -41,7 +43,7 @@ describe("Personalization::createOnClickHandler", () => {
     handleOnClick({ event, clickedElement });
 
     expect(event.mergeXdm).toHaveBeenCalledWith({ eventType: "click" });
-    expect(mergeMeta).toHaveBeenCalledWith(event, { decisions: metas });
+    expect(mergeDecisionsMeta).toHaveBeenCalledWith(event, decisionsMeta);
     expect(collectClicks).toHaveBeenCalledWith(clickedElement, clickStorage);
   });
 });

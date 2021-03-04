@@ -38,7 +38,7 @@ const getDecisionContent = ClientFunction(elementId => {
   return container.innerText;
 });
 
-const getNotificationPayload = (decisions, scope) => {
+const getDecisionsMetaByScope = (decisions, scope) => {
   const metas = [];
   decisions.forEach(decision => {
     if (decision.scope === scope) {
@@ -112,27 +112,32 @@ test.skip("Test C782718: SPA support with auto-rendering and view notifications"
   await t
     .expect(notificationRequestBody.events[0].xdm.eventType)
     .eql("display");
-  const pageWideScopeNotificationPayload = getNotificationPayload(
+  const pageWideScopeDecisionsMeta = getDecisionsMetaByScope(
     personalizationPayload,
     PAGE_WIDE_SCOPE
   );
   await t
-    .expect(notificationRequestBody.events[0].meta.personalization.decisions)
-    .eql(pageWideScopeNotificationPayload);
+    .expect(
+      // eslint-disable-next-line no-underscore-dangle
+      notificationRequestBody.events[0].xdm._experience.decisioning.propositions
+    )
+    .eql(pageWideScopeDecisionsMeta);
   // notification for view rendered decisions
   const viewNotificationRequest = networkLogger.edgeEndpointLogs.requests[2];
   const viewNotificationRequestBody = JSON.parse(
     viewNotificationRequest.request.body
   );
-  const productsViewNotificationPayload = getNotificationPayload(
+  const productsViewDecisionsMeta = getDecisionsMetaByScope(
     personalizationPayload,
     "/products"
   );
   await t
     .expect(
-      viewNotificationRequestBody.events[0].meta.personalization.decisions
+      // eslint-disable-next-line no-underscore-dangle
+      viewNotificationRequestBody.events[0].xdm._experience.decisioning
+        .propositions
     )
-    .eql(productsViewNotificationPayload);
+    .eql(productsViewDecisionsMeta);
 
   // sendEvent at a view change, this shouldn't request any target data, it should use the existing cache
   await alloy.sendEvent({
@@ -164,17 +169,18 @@ test.skip("Test C782718: SPA support with auto-rendering and view notifications"
   await t
     .expect(transformersViewNotificationRequestBody.events[0].xdm.eventType)
     .eql("display");
-  const transformersViewNotificationPayload = getNotificationPayload(
+  const transformersViewDecisionsMeta = getDecisionsMetaByScope(
     personalizationPayload,
     "/transformers"
   );
 
   await t
     .expect(
-      transformersViewNotificationRequestBody.events[0].meta.personalization
-        .decisions
+      // eslint-disable-next-line no-underscore-dangle
+      transformersViewNotificationRequestBody.events[0].xdm._experience
+        .decisioning.propositions
     )
-    .eql(transformersViewNotificationPayload);
+    .eql(transformersViewDecisionsMeta);
 
   // no decisions in cache for this specific view, should only send a notification
   await alloy.sendEvent({
@@ -210,5 +216,8 @@ test.skip("Test C782718: SPA support with auto-rendering and view notifications"
       cartViewNotificationRequestBody.events[0].xdm.web.webPageDetails.viewName
     )
     .eql("/cart");
-  await t.expect(cartViewNotificationRequestBody.events[0].meta).eql(undefined);
+  await t
+    // eslint-disable-next-line no-underscore-dangle
+    .expect(cartViewNotificationRequestBody.events[0].xdm._experience)
+    .eql(undefined);
 });

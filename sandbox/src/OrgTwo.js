@@ -1,9 +1,11 @@
 import React from "react";
+import useSendPageViewEvent from "./useSendPageViewEvent";
 
 export default function OrgTwo() {
+  useSendPageViewEvent({ instanceName: "organizationTwo" });
   return (
     <div>
-      <h2>Multiple Organizations</h2>
+      <h1>Multiple Organizations</h1>
       <p>
         This view is managed by a partnering company that owns a different Org
         ID.
