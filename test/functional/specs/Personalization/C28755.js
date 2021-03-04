@@ -23,7 +23,7 @@ const decisionContent =
 
 createFixture({
   title:
-    "C28755: A VEC offer for all visitors should return in every event if __view__ scope exist",
+    "C28755: The first sendEvent on the page should fetch Personalization VEC offers",
   requestHooks: [networkLogger.edgeEndpointLogs],
   url: `${testPageUrl}?test=C28755`
 });
@@ -34,7 +34,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C28755: A VEC offer for all visitors should return in every event if __view__ scope exist", async () => {
+test("Test C28755: The first sendEvent on the page should fetch Personalization VEC offers", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const result = await alloy.sendEvent();
