@@ -32,6 +32,7 @@ describe("Personalization::createClickStorage", () => {
     }
   };
 
+  /*  this is how the clickStorage map should look like
   const expectedClicksInStorage = {
     "div:123:h1": {
       "AT:123": "consent"
@@ -40,21 +41,28 @@ describe("Personalization::createClickStorage", () => {
       "AT:123": "consent",
       "AT:234": "consent"
     }
-  };
+  }; */
   beforeEach(() => {
     clickStorageManager = createClickStorage();
   });
 
-  it("initializes the clickStorage with an empty object", () => {
-    expect(clickStorageManager.clickStorage).toEqual({});
+  it("returns empty array if empty storage", () => {
+    expect(clickStorageManager.getClickSelectors()).toEqual([]);
   });
 
-  it("stores clicks as a map in the click storage", () => {
+  it("returns empty object when no metadata for this selector", () => {
+    expect(clickStorageManager.getClickMetasBySelector("123")).toEqual({});
+  });
+
+  it("stores clicks as a map in the click storage and returns the selectors and metadata", () => {
     clickStorageManager.store(FIRST_CLICK);
     clickStorageManager.store(SECOND_CLICK);
     clickStorageManager.store(THIRD_CLICK);
     clickStorageManager.store(FORTH_CLICK);
 
-    expect(clickStorageManager.clickStorage).toEqual(expectedClicksInStorage);
+    expect(clickStorageManager.getClickSelectors().length).toEqual(2);
+    expect(
+      clickStorageManager.getClickMetasBySelector("div:123:h2").length
+    ).toEqual(2);
   });
 });

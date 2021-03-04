@@ -32,7 +32,11 @@ import createClickStorage from "./createClickStorage";
 const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
   const viewCollect = createViewCollect({ eventManager, mergeDecisionsMeta });
-  const clickStorage = [];
+  const {
+    getClickMetasBySelector,
+    getClickSelectors,
+    store
+  } = createClickStorage();
   const viewCache = createViewCacheManager();
   const modules = initDomActionsModules(store);
   const executeDecisions = createExecuteDecisions({
@@ -68,7 +72,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
     collectClicks,
-    clickStorage
+    getClickSelectors,
+    getClickMetasBySelector
   });
   const viewChangeHandler = createViewChangeHandler({
     executeCachedViewDecisions,

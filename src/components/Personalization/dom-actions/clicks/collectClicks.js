@@ -12,21 +12,17 @@ governing permissions and limitations under the License.
 
 import matchesSelectorWithEq from "../dom/matchesSelectorWithEq";
 
-const metasToArray = metas => {
-  return Object.keys(metas).map(key => {
-    return {
-      id: key,
-      scope: metas[key]
-    };
-  });
-};
-const getMetasIfMatches = (clickedElement, selector, metas) => {
+const getMetasIfMatches = (
+  clickedElement,
+  selector,
+  getClickMetasBySelector
+) => {
   const { documentElement } = document;
   let element = clickedElement;
 
   while (element && element !== documentElement) {
     if (matchesSelectorWithEq(selector, element)) {
-      return metasToArray(metas);
+      return getClickMetasBySelector(selector);
     }
 
     element = element.parentNode;
@@ -35,18 +31,13 @@ const getMetasIfMatches = (clickedElement, selector, metas) => {
   return null;
 };
 
-export default (clickedElement, values) => {
-  if (values.length === 0) {
-    return [];
-  }
-
+export default (clickedElement, selectors, getClickMetasBySelector) => {
   const result = [];
-  const selectors = Object.keys(values);
   for (let i = 0; i < selectors.length; i += 1) {
     const metas = getMetasIfMatches(
       clickedElement,
       selectors[i],
-      values[selectors[i]]
+      getClickMetasBySelector
     );
 
     if (metas) {
