@@ -30,6 +30,10 @@ button {
   margin-bottom: 15px;
 }
 
+ul {
+  padding: 0;
+}
+
 li, button {
   display: inline-block;
   margin-right: 20px;

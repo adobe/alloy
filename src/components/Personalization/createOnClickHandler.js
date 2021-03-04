@@ -12,13 +12,14 @@ governing permissions and limitations under the License.
 
 import { isNonEmptyArray } from "../../utils";
 
-export default ({ mergeMeta, collectClicks, clickStorage }) => {
+export default ({ mergeDecisionsMeta, collectClicks, clickStorage }) => {
+  // Called when an element qualifying for conversion within an offer is clicked.
   return ({ event, clickedElement }) => {
-    const clickMetas = collectClicks(clickedElement, clickStorage);
+    const decisionsMeta = collectClicks(clickedElement, clickStorage);
 
-    if (isNonEmptyArray(clickMetas)) {
+    if (isNonEmptyArray(decisionsMeta)) {
       event.mergeXdm({ eventType: "click" });
-      mergeMeta(event, { decisions: clickMetas });
+      mergeDecisionsMeta(event, decisionsMeta);
     }
   };
 };

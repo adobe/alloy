@@ -46,7 +46,8 @@ const processMetas = (collect, logger, actionResults) => {
   });
 
   if (isNonEmptyArray(finalMetas)) {
-    collect({ meta: { decisions: finalMetas } });
+    // collect here can either be the function from createCollect or createViewCollect.
+    collect({ decisionsMeta: finalMetas });
   }
 };
 

@@ -86,6 +86,9 @@ test("Test C28760: A notification collect should be triggered if a VEC dom actio
     .expect(notificationRequestBody.events[0].xdm.eventType)
     .eql("display");
   await t
-    .expect(notificationRequestBody.events[0].meta.personalization.decisions)
+    .expect(
+      // eslint-disable-next-line no-underscore-dangle
+      notificationRequestBody.events[0].xdm._experience.decisioning.propositions
+    )
     .eql(notificationPayload);
 });

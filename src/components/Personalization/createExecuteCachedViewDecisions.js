@@ -21,7 +21,8 @@ export default ({ viewCache, executeViewDecisions, collect }) => {
       }
       const xdm = { web: { webPageDetails: { viewName } } };
 
-      collect({ meta: {}, xdm });
+      // This collect function is not from createCollect. It's the function from createViewCollect.
+      collect({ decisionsMeta: [], xdm });
     });
   };
 };

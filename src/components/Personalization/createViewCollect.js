@@ -12,20 +12,20 @@ governing permissions and limitations under the License.
 
 import { isNonEmptyArray } from "../../utils";
 
-export default ({ eventManager, mergeMeta }) => {
-  return ({ meta, xdm = {} }) => {
-    const { decisions = [] } = meta;
+export default ({ eventManager, mergeDecisionsMeta }) => {
+  // Called when an offer for a specific SPA view is auto-rendered.
+  return ({ decisionsMeta, xdm }) => {
     const data = { eventType: "display" };
     const event = eventManager.createEvent();
 
-    if (isNonEmptyArray(decisions)) {
-      const viewName = decisions[0].scope;
+    if (isNonEmptyArray(decisionsMeta)) {
+      const viewName = decisionsMeta[0].scope;
 
       data.web = {
         webPageDetails: { viewName }
       };
 
-      mergeMeta(event, meta);
+      mergeDecisionsMeta(event, decisionsMeta);
     }
     event.mergeXdm(data);
     event.mergeXdm(xdm);
