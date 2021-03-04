@@ -27,11 +27,9 @@ jobs:
       with:
         local-testing: start
         local-identifier: random
-    - name: Run Unit Test on BS
+    - name: Run Unit & Functional tests on BS
       run: |
         npm run test:unit:browserstack:ci
-    - name: Run TestCafe Tests
-      run: |
         npm run test:functional:ci:dev
     - name: 'BrowserStackLocal Stop'
       uses: 'browserstack/github-actions/setup-local@master'
