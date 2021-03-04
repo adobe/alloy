@@ -33,8 +33,9 @@ jobs:
         local-identifier: random
     - name: Run Unit & Functional tests on BS
       run: |
-        npm run test:unit:browserstack:ci
         chmod +x "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
+        "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
+        npm run test:unit:browserstack:ci
         "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
         npm run test:functional:ci:dev
     - name: 'BrowserStackLocal Stop'
