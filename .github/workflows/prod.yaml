@@ -38,6 +38,8 @@ jobs:
           local-identifier: random
       - name: Run TestCafe Tests
         run: |
+          npm run test:unit:browserstack:ci
+          chmod +x "${GITHUB_WORKSPACE}/scripts/clearBs.sh"
           npm run test:functional:ci:prod
       - name: 'BrowserStackLocal Stop'
         uses: 'browserstack/github-actions/setup-local@master'
