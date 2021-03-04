@@ -3,7 +3,7 @@ on: push
 
 jobs:
   unit-test:
-    name: "Unit Tests"
+    name: "Unit & Functional"
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
