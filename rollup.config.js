@@ -30,7 +30,7 @@ const NPM_PACKAGE_LOCAL = "NPM_PACKAGE_LOCAL";
 const NPM_PACKAGE_PROD = "NPM_PACKAGE_PROD";
 // Add "_MIN" to the end of the option name to build the minified version
 
-const buildPlugins = (version, minify) => {
+const buildPlugins = (variant, minify) => {
   const plugins = [
     resolve({
       preferBuiltins: false,
@@ -42,7 +42,7 @@ const buildPlugins = (version, minify) => {
     babel({ envName: "rollup" })
   ];
 
-  if (minify && version === BASE_CODE) {
+  if (minify && variant === BASE_CODE) {
     plugins.push(
       terser({
         mangle: true,
@@ -56,11 +56,11 @@ const buildPlugins = (version, minify) => {
       })
     );
   }
-  if (minify && version !== BASE_CODE) {
+  if (minify && variant !== BASE_CODE) {
     plugins.push(terser());
   }
 
-  if (version === STANDALONE) {
+  if (variant === STANDALONE) {
     plugins.push(
       license({
         banner: {
@@ -75,11 +75,11 @@ const buildPlugins = (version, minify) => {
   return plugins;
 };
 
-const buildConfig = (version, minify) => {
-  const plugins = buildPlugins(version, minify);
+const buildConfig = (variant, minify) => {
+  const plugins = buildPlugins(variant, minify);
   const minifiedExtension = minify ? ".min" : "";
 
-  if (version === BASE_CODE) {
+  if (variant === BASE_CODE) {
     return {
       input: "src/baseCode.js",
       output: [
@@ -92,8 +92,8 @@ const buildConfig = (version, minify) => {
       plugins
     };
   }
-  if (version === STANDALONE || version === SANDBOX) {
-    const destDirectory = version === SANDBOX ? "sandbox/public/" : "dist/";
+  if (variant === STANDALONE || variant === SANDBOX) {
+    const destDirectory = variant === SANDBOX ? "sandbox/public/" : "dist/";
 
     return {
       input: "src/standalone.js",
@@ -114,7 +114,7 @@ const buildConfig = (version, minify) => {
 
   // NPM_PACKAGE_LOCAL or NPM_PACKAGE_PROD
   const filename =
-    version === NPM_PACKAGE_LOCAL ? "npmPackageLocal" : "npmPackageProd";
+    variant === NPM_PACKAGE_LOCAL ? "npmPackageLocal" : "npmPackageProd";
 
   return {
     input: `test/functional/helpers/${filename}.js`,

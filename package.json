@@ -27,7 +27,7 @@
     "test:functional:ci:prod": "ALLOY_ENV=\"prod\" testcafe 'browserstack:chrome@87:Windows 10','browserstack:ie@11:Windows 10','browserstack:firefox@85:Windows 10','browserstack:safari@14.0:OS X Big Sur'",
     "test:functional:ci:edgepredeploy": "ALLOY_ENV=\"prod\" EDGE_BASE_PATH=\"ee-pre-prd\" testcafe 'browserstack:chrome@87:Windows 10','browserstack:ie@11:Windows 10','browserstack:firefox@84:Windows 10','browserstack:safari@14.0:OS X Big Sur'",
     "test:functional:api": "testcafe chrome:headless",
-    "sandbox:build": "cd sandbox && npm run build",
+    "sandbox:build": "rollup -c --environment SANDBOX && cd sandbox && npm run build",
     "dev": "concurrently --names build,sandbox \"rollup -c -w --environment SANDBOX\" \"cd sandbox && export REACT_APP_NONCE=321 && npm start\"",
     "build": "npm run format && npm run lint && npm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN && echo \"Base Code:\" && cat distTest/baseCode.min.js",
     "prepare": "cd sandbox && npm install",
