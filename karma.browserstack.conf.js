@@ -50,6 +50,6 @@ module.exports = config => {
       karmaBrowserStackLauncher
     ],
 
-    reporters: ["spec", "BrowserStack"]
+    reporters: ["dots", "BrowserStack"]
   });
 };
