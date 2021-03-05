@@ -1,5 +1,6 @@
 import React from "react";
 import UnsafeContentSecurityPolicy from "./components/UnsafeContentSecurityPolicy";
+import useSendPageViewEvent from "./useSendPageViewEvent";
 
 function loadLaunch() {
   const script = document.createElement("script");
@@ -10,12 +11,13 @@ function loadLaunch() {
 }
 
 export default function DualTag() {
+  useSendPageViewEvent();
   return (
     <div>
       {/* Need less restrictive CSP for old libraries */}
       <UnsafeContentSecurityPolicy />
       {loadLaunch()}
-      <h2>Dual Tagging</h2>
+      <h1>Dual Tagging</h1>
       <p>
         This page loads a launch library containing Analytics, ECID, DIL, and
         Target.

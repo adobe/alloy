@@ -7,16 +7,13 @@ import {
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../helpers/createResponse";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
-const config = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
+const decisionId =
+  "AT:eyJhY3Rpdml0eUlkIjoiMTI2NTYxIiwiZXhwZXJpZW5jZUlkIjoiMCJ9";
 const decisionContent = '<div id="C205529">Device based offer!</div>';
 
 createFixture({
@@ -34,7 +31,6 @@ test("Test C205529: Receive offer based on device", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const result = await alloy.sendEvent({
-    decisionScopes: [PAGE_WIDE_SCOPE],
     xdm: {
       device: {
         screenWidth: 9999
@@ -55,30 +51,20 @@ test("Test C205529: Receive offer based on device", async () => {
     .expect(requestBody.events[0].query.personalization.decisionScopes)
     .eql([PAGE_WIDE_SCOPE]);
 
-  const results = [
+  const requestSchemas = [
     "https://ns.adobe.com/personalization/dom-action",
     "https://ns.adobe.com/personalization/html-content-item",
     "https://ns.adobe.com/personalization/json-content-item",
     "https://ns.adobe.com/personalization/redirect-item"
   ].every(schema => personalizationSchemas.includes(schema));
 
-  await t.expect(results).eql(true);
+  await t.expect(requestSchemas).eql(true);
 
-  const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
-  );
-  const personalizationPayload = createResponse({
-    content: response
-  }).getPayloadsByType("personalization:decisions");
+  const matchingDecision = result.decisions.find(decision => {
+    return decision.id === decisionId;
+  });
 
-  await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
-  await t
-    .expect(personalizationPayload[0].items[0].data.content)
-    .eql(decisionContent);
-
-  await t.expect(result.decisions.length).eql(1);
-  await t.expect(result.decisions[0].scope).eql(PAGE_WIDE_SCOPE);
-  await t
-    .expect(result.decisions[0].items[0].data.content)
-    .eql(decisionContent);
+  await t.expect(matchingDecision).ok("Decision not found.");
+  await t.expect(matchingDecision.scope).eql(PAGE_WIDE_SCOPE);
+  await t.expect(matchingDecision.items[0].data.content).eql(decisionContent);
 });

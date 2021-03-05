@@ -20,21 +20,25 @@ import { hideContainers, showContainers } from "./flicker";
 import createFetchDataHandler from "./createFetchDataHandler";
 import collectClicks from "./dom-actions/clicks/collectClicks";
 import isAuthoringModeEnabled from "./utils/isAuthoringModeEnabled";
-import { mergeMeta, mergeQuery } from "./event";
+import { mergeDecisionsMeta, mergeQuery } from "./event";
 import createOnClickHandler from "./createOnClickHandler";
 import createExecuteCachedViewDecisions from "./createExecuteCachedViewDecisions";
 import createViewCacheManager from "./createViewCacheManager";
 import createViewChangeHandler from "./createViewChangeHandler";
 import decisionsExtractor from "./decisionsExtractor";
 import createOnResponseHandler from "./createOnResponseHandler";
+import createClickStorage from "./createClickStorage";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
-  const collect = createCollect({ eventManager, mergeMeta });
-  const viewCollect = createViewCollect({ eventManager, mergeMeta });
-  const clickStorage = [];
+  const collect = createCollect({ eventManager, mergeDecisionsMeta });
+  const viewCollect = createViewCollect({ eventManager, mergeDecisionsMeta });
+  const {
+    getClickMetasBySelector,
+    getClickSelectors,
+    storeClickMetrics
+  } = createClickStorage();
   const viewCache = createViewCacheManager();
-  const store = value => clickStorage.push(value);
-  const modules = initDomActionsModules(store);
+  const modules = initDomActionsModules(storeClickMetrics);
   const executeDecisions = createExecuteDecisions({
     modules,
     logger,
@@ -66,9 +70,10 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     mergeQuery
   });
   const onClickHandler = createOnClickHandler({
-    mergeMeta,
+    mergeDecisionsMeta,
     collectClicks,
-    clickStorage
+    getClickSelectors,
+    getClickMetasBySelector
   });
   const viewChangeHandler = createViewChangeHandler({
     executeCachedViewDecisions,

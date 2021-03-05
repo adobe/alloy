@@ -1,20 +1,22 @@
 import React from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
+import useSendPageViewEvent from "./useSendPageViewEvent";
+
+const adobeLink = () => {
+  window.alloy("sendEvent", {
+    documentUnloading: true,
+    xdm: {
+      "activitystreams:href": "http://www.adobe.com"
+    }
+  });
+};
 
 export default function Links() {
-  const adobeLink = () => {
-    window.alloy("sendEvent", {
-      documentUnloading: true,
-      xdm: {
-        "activitystreams:href": "http://www.adobe.com"
-      }
-    });
-  };
-
+  useSendPageViewEvent();
   return (
     <div>
       <ContentSecurityPolicy />
-      <h2>Links</h2>
+      <h1>Links</h1>
       <p>
         This page shows a few different ways link clicks can be handled in
         Alloy.

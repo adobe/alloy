@@ -13,17 +13,14 @@ import testPageUrl from "../../helpers/constants/testPageUrl";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
-const config = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
 const decisionContent =
-  '<div id="C28755"> Here is an awesome target offer!</div>';
+  '<div id="C28755">Here is an awesome target offer!</div>';
 
 createFixture({
   title:
-    "C28755: A VEC offer for all visitors should return in every event if __view__ scope exist",
+    "C28755: The first sendEvent on the page should fetch Personalization VEC offers",
   requestHooks: [networkLogger.edgeEndpointLogs],
   url: `${testPageUrl}?test=C28755`
 });
@@ -34,10 +31,10 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test.skip("Test C28755: A VEC offer for all visitors should return in every event if __view__ scope exist", async () => {
+test("Test C28755: The first sendEvent on the page should fetch Personalization VEC offers", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  const result = await alloy.sendEvent({ decisionScopes: [PAGE_WIDE_SCOPE] });
+  const result = await alloy.sendEvent();
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 

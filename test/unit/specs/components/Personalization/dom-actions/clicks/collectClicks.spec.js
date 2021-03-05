@@ -24,6 +24,15 @@ describe("Personalization::tracking::clicks", () => {
   });
 
   it("should collect clicks", () => {
+    const meta = [
+      {
+        id: "AT:1234",
+        scope: "example_scope"
+      }
+    ];
+    const getClickMetasBySelector = jasmine
+      .createSpy("getClickMetasBySelector")
+      .and.returnValue(meta);
     const content = `
       <div class="b">
         <div id="one" class="c">first</div>
@@ -41,12 +50,11 @@ describe("Personalization::tracking::clicks", () => {
 
     appendNode(document.body, node);
 
-    const selector = "#abc:eq(0) > div.b:eq(0) > div.c";
-    const meta = { a: 1 };
-    const values = [{ selector, meta }];
-    const element = document.getElementById("one");
-    const result = collectClicks(element, values);
+    const selectors = ["#abc:eq(0) > div.b:eq(0) > div.c"];
 
-    expect(result).toEqual([meta]);
+    const element = document.getElementById("one");
+    const result = collectClicks(element, selectors, getClickMetasBySelector);
+
+    expect(result).toEqual(meta);
   });
 });

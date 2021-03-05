@@ -256,4 +256,18 @@ describe("privacy:createComponent", () => {
     expect(consentHashStore.clear).toHaveBeenCalled();
     expect(storedConsent.clear).not.toHaveBeenCalled();
   });
+
+  it("doesn't call setConsent when there is no cookie after onResponse", () => {
+    clearConsentCookie();
+    build();
+    component.lifecycle.onResponse();
+    expect(consent.setConsent).not.toHaveBeenCalled();
+  });
+
+  it("doesn't call setConsent when there is no cookie after onRequestFailure", () => {
+    clearConsentCookie();
+    build();
+    component.lifecycle.onRequestFailure();
+    expect(consent.setConsent).not.toHaveBeenCalled();
+  });
 });
