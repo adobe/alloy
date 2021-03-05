@@ -27,14 +27,18 @@ import createViewCacheManager from "./createViewCacheManager";
 import createViewChangeHandler from "./createViewChangeHandler";
 import decisionsExtractor from "./decisionsExtractor";
 import createOnResponseHandler from "./createOnResponseHandler";
+import createClickStorage from "./createClickStorage";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
   const viewCollect = createViewCollect({ eventManager, mergeDecisionsMeta });
-  const clickStorage = [];
+  const {
+    getClickMetasBySelector,
+    getClickSelectors,
+    storeClickMetrics
+  } = createClickStorage();
   const viewCache = createViewCacheManager();
-  const store = value => clickStorage.push(value);
-  const modules = initDomActionsModules(store);
+  const modules = initDomActionsModules(storeClickMetrics);
   const executeDecisions = createExecuteDecisions({
     modules,
     logger,
@@ -68,7 +72,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
     collectClicks,
-    clickStorage
+    getClickSelectors,
+    getClickMetasBySelector
   });
   const viewChangeHandler = createViewChangeHandler({
     executeCachedViewDecisions,

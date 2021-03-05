@@ -14,11 +14,9 @@ import createOnClickHandler from "../../../../../src/components/Personalization/
 describe("Personalization::createOnClickHandler", () => {
   let mergeDecisionsMeta;
   let collectClicks;
-  const event = {
-    mergeXdm: jasmine.createSpy("mergeXdm"),
-    mergeMeta: jasmine.createSpy("mergeMeta")
-  };
-  const clickStorage = [];
+  let getClickSelectors;
+  let getClickMetasBySelector;
+  const event = {};
   const decisionsMeta = [
     {
       id: 1,
@@ -30,13 +28,25 @@ describe("Personalization::createOnClickHandler", () => {
     collectClicks = jasmine
       .createSpy("collectClicks")
       .and.returnValue(decisionsMeta);
+    event.mergeXdm = jasmine.createSpy("mergeXdm");
+    event.mergeMeta = jasmine.createSpy("mergeMeta");
+    mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
+    collectClicks = jasmine
+      .createSpy("collectClicks")
+      .and.returnValue(decisionsMeta);
+    getClickSelectors = jasmine.createSpy("getClickSelectors");
+    getClickMetasBySelector = jasmine.createSpy("getClickMetasBySelector");
   });
 
   it("collects clicks", () => {
+    const selectors = ["foo", "foo2"];
+    collectClicks.and.returnValue(decisionsMeta);
+    getClickSelectors.and.returnValue(selectors);
     const handleOnClick = createOnClickHandler({
       mergeDecisionsMeta,
       collectClicks,
-      clickStorage
+      getClickSelectors,
+      getClickMetasBySelector
     });
     const clickedElement = "foo";
 
@@ -44,6 +54,27 @@ describe("Personalization::createOnClickHandler", () => {
 
     expect(event.mergeXdm).toHaveBeenCalledWith({ eventType: "click" });
     expect(mergeDecisionsMeta).toHaveBeenCalledWith(event, decisionsMeta);
-    expect(collectClicks).toHaveBeenCalledWith(clickedElement, clickStorage);
+    expect(collectClicks).toHaveBeenCalledWith(
+      clickedElement,
+      selectors,
+      getClickMetasBySelector
+    );
+  });
+
+  it("collects clicks shouldn't be called when clickStorage is empty", () => {
+    getClickSelectors.and.returnValue([]);
+    const handleOnClick = createOnClickHandler({
+      mergeDecisionsMeta,
+      collectClicks,
+      getClickSelectors,
+      getClickMetasBySelector
+    });
+    const clickedElement = "foo";
+
+    handleOnClick({ event, clickedElement });
+
+    expect(event.mergeXdm).not.toHaveBeenCalled();
+    expect(mergeDecisionsMeta).not.toHaveBeenCalled();
+    expect(collectClicks).not.toHaveBeenCalled();
   });
 });
