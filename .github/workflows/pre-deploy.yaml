@@ -3,12 +3,16 @@ on: workflow_dispatch
       
 jobs:
   e2e-test:
-    name: "E2E Alloy Int - Edge Prod"
+    name: "Alloy Int Edge Prod E2E Test"
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
       with:
         ref: "main"
+    - name: Serialize workflow runs
+      uses: softprops/turnstyle@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: actions/cache@v2
       id: npm-cache
       with:
@@ -31,6 +35,8 @@ jobs:
         local-identifier: random
     - name: Run TestCafe Tests
       run: |
+        chmod +x "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
+        "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
         npm run test:functional:ci:predeploy
     - name: 'BrowserStackLocal Stop'
       uses: 'browserstack/github-actions/setup-local@master'
