@@ -43,7 +43,6 @@ module.exports = config => {
     plugins: [
       "karma-jasmine",
       "karma-coverage",
-      "karma-chrome-launcher",
       "karma-jasmine-matchers",
       "karma-spec-reporter",
       "karma-rollup-preprocessor",

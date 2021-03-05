@@ -85,8 +85,8 @@ describe("Identity::createLegacyIdentity", () => {
 
     it("should request ECID from visitor ID Service if legacy ECID cookies are missing", () => {
       build();
-      legacyIdentity.getEcid().then(() => {
-        return expect(getEcidFromVisitor).toHaveBeenCalled();
+      return legacyIdentity.getEcid().then(() => {
+        expect(getEcidFromVisitor).toHaveBeenCalled();
       });
     });
   });

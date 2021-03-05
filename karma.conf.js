@@ -22,15 +22,7 @@ module.exports = config => {
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ["jasmine"],
-    plugins: [
-      "karma-jasmine",
-      "karma-coverage",
-      "karma-chrome-launcher",
-      "karma-jasmine-matchers",
-      "karma-spec-reporter",
-      "karma-rollup-preprocessor",
-      "karma-allure-reporter"
-    ],
+
     // list of files / patterns to load in the browser
     files: [
       "node_modules/promise-polyfill/dist/polyfill.js",
