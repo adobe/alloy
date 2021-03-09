@@ -13,6 +13,10 @@ jobs:
   alloy-dev-test:
     name: "Run Unit & E2E Test"
     runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        specs: [test/functional/specs/Audiences/*.js, test/functional/specs/CNAME/*.js, test/functional/specs/Command\ Logic/*.js, test/functional/specs/Context/*.js]
     steps:
     - uses: actions/checkout@v2
     - name: Serialize workflow runs
@@ -33,4 +37,13 @@ jobs:
       run: |
         chmod +x "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
         "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
-        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Audiences/*.js,test/functional/specs/CNAME/*.js,test/functional/specs/Command\ Logic/*.js,test/functional/specs/Context/*.js
+        npm run test:unit:browserstack:ci
+        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" ${{ matrix.specs }}
+# npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Data\ Collector/*.js
+# npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Identity/*.js
+# npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/ID\ Migration/*.js
+# npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Install\ SDK/*.js
+# npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Logging/*.js
+# npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Personalization/*.js
+# npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Privacy/*.js
+# npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Visitor/*.js
