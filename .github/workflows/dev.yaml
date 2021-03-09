@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        specs: [test/functional/specs/Audiences/*.js, test/functional/specs/CNAME/*.js, test/functional/specs/Command\ Logic/*.js, test/functional/specs/Context/*.js]
+        browser: ["browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0"]
     steps:
     - uses: actions/checkout@v2
     - name: Serialize workflow runs
@@ -33,17 +33,20 @@ jobs:
       run: npm ci
     - name: Build
       run: npm run test:functional:ci:build
-    - name: Run Unit & Functional tests on BS
+    - name: Unit Test
+      run: npm run test:unit:browserstack:ci
+    - name: Functional e2e Tests
       run: |
-        chmod +x "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
-        "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
-        npm run test:unit:browserstack:ci
-        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" ${{ matrix.specs }}
-# npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Data\ Collector/*.js
-# npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Identity/*.js
-# npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/ID\ Migration/*.js
-# npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Install\ SDK/*.js
-# npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Logging/*.js
-# npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Personalization/*.js
-# npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Privacy/*.js
-# npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Visitor/*.js
+        npx testcafe ${{ matrix.browser }} test/functional/specs/Audiences/*.js,
+        npx testcafe ${{ matrix.browser }} test/functional/specs/CNAME/*.js
+        npx testcafe ${{ matrix.browser }} test/functional/specs/Command\ Logic/*.js
+        npx testcafe ${{ matrix.browser }} test/functional/specs/Context/*.js
+        npx testcafe ${{ matrix.browser }} test/functional/specs/Data\ Collector/*.js
+        npx testcafe ${{ matrix.browser }} test/functional/specs/Identity/*.js
+        npx testcafe ${{ matrix.browser }} test/functional/specs/ID\ Migration/*.js
+        npx testcafe ${{ matrix.browser }} test/functional/specs/Install\ SDK/*.js
+        npx testcafe ${{ matrix.browser }} test/functional/specs/Logging/*.js
+        npx testcafe ${{ matrix.browser }} test/functional/specs/Personalization/*.js
+        npx testcafe ${{ matrix.browser }} test/functional/specs/Privacy/*.js
+        npx testcafe ${{ matrix.browser }} test/functional/specs/Visitor/*.js
+
