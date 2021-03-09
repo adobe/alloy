@@ -33,16 +33,4 @@ jobs:
       run: |
         chmod +x "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
         "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
-        npm run test:unit:browserstack:ci
-        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Audiences/*.js
-        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/CNAME/*.js
-        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Command\ Logic/*.js
-        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Context/*.js
-        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Data\ Collector/*.js
-        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Identity/*.js
-        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/ID\ Migration/*.js
-        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Install\ SDK/*.js
-        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Logging/*.js
-        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Personalization/*.js
-        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Privacy/*.js
-        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Visitor/*.js
+        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Audiences/*.js,test/functional/specs/CNAME/*.js,test/functional/specs/Command\ Logic/*.js,test/functional/specs/Context/*.js
