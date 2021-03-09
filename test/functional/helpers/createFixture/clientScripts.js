@@ -16,9 +16,14 @@ import readCache from "read-cache";
 import { ClientFunction } from "testcafe";
 
 const alloyEnv = process.env.ALLOY_ENV || "int";
-
+const alloyProdVersion = process.env.ALLOY_PROD_VERSION;
 // eslint-disable-next-line no-console
-console.log("ALLOY ENV:", alloyEnv);
+console.log(`ALLOY ENV: ${alloyEnv}`);
+
+if (alloyProdVersion) {
+  // eslint-disable-next-line no-console
+  console.log(`ALLOY PROD VERSION: ${alloyProdVersion}`);
+}
 
 const localPromisePolyfillPath = path.join(
   __dirname,
@@ -34,8 +39,7 @@ const localNpmLibraryPath = path.join(
   __dirname,
   "../../../../distTest/npmPackageLocal.js"
 );
-const remoteAlloyLibraryUrl =
-  "https://cdn1.adoberesources.net/alloy/latest/alloy.js";
+const remoteAlloyLibraryUrl = `https://cdn1.adoberesources.net/alloy/${alloyProdVersion}/alloy.js`;
 
 // We use this getter for retrieving the library code instead of just loading
 // the library code a single time up-front, because we want every run to be
