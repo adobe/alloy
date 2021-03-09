@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: ["browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0"]
+        browser: ["'browserstack:chrome@87'","'browserstack:firefox@85'","'browserstack:ie@11'","'browserstack:safari@14.0'"]
     steps:
     - uses: actions/checkout@v2
     - name: Serialize workflow runs
@@ -49,7 +49,7 @@ jobs:
         npx testcafe ${{ matrix.browser }} test/functional/specs/Personalization/*.js
         npx testcafe ${{ matrix.browser }} test/functional/specs/Privacy/*.js
         npx testcafe ${{ matrix.browser }} test/functional/specs/Visitor/*.js
-    - name: Clear Browserstack Tunnels
-      run: |
-        chmod +x "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
-        "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
+    # - name: Clear Browserstack Tunnels
+    #   run: |
+    #     chmod +x "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
+    #     "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
