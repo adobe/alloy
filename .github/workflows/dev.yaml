@@ -10,8 +10,8 @@ env:
   ALLOY_ENV: "int"
 
 jobs:
-  chrome-e2e:
-    name: "Chrome E2E Test"
+  alloy-dev-test:
+    name: "Run Unit & E2E Test"
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
@@ -29,108 +29,20 @@ jobs:
       run: npm ci
     - name: Build
       run: npm run test:functional:ci:build
-    - name: Run E2E Test
+    - name: Run Unit & Functional tests on BS
       run: |
-        npx testcafe "browserstack:chrome@87" test/functional/specs/Audiences/*.js
-        npx testcafe "browserstack:chrome@87" test/functional/specs/CNAME/*.js
-        npx testcafe "browserstack:chrome@87" test/functional/specs/Command\ Logic/*.js
-        npx testcafe "browserstack:chrome@87" test/functional/specs/Context/*.js
-        npx testcafe "browserstack:chrome@87" test/functional/specs/Data\ Collector/*.js
-        npx testcafe "browserstack:chrome@87" test/functional/specs/Identity/*.js
-        npx testcafe "browserstack:chrome@87" test/functional/specs/ID\ Migration/*.js
-        npx testcafe "browserstack:chrome@87" test/functional/specs/Install\ SDK/*.js
-        npx testcafe "browserstack:chrome@87" test/functional/specs/Logging/*.js
-        npx testcafe "browserstack:chrome@87" test/functional/specs/Personalization/*.js
-        npx testcafe "browserstack:chrome@87" test/functional/specs/Privacy/*.js
-        npx testcafe "browserstack:chrome@87" test/functional/specs/Visitor/*.js
-
-  firefox-e2e:
-    name: "Firefox E2E Test"
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/cache@v2
-      id: npm-cache
-      with:
-        path: '**/node_modules'
-        key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
-    - name: Install dependencies
-      if: steps.npm-cache.outputs.cache-hit != 'true'
-      run: npm ci
-    - name: Build
-      run: npm run test:functional:ci:build
-    - name: Run E2E Test
-      run: |
-        npx testcafe "browserstack:firefox@85" test/functional/specs/Audiences/*.js
-        npx testcafe "browserstack:firefox@85" test/functional/specs/CNAME/*.js
-        npx testcafe "browserstack:firefox@85" test/functional/specs/Command\ Logic/*.js
-        npx testcafe "browserstack:firefox@85" test/functional/specs/Context/*.js
-        npx testcafe "browserstack:firefox@85" test/functional/specs/Data\ Collector/*.js
-        npx testcafe "browserstack:firefox@85" test/functional/specs/Identity/*.js
-        npx testcafe "browserstack:firefox@85" test/functional/specs/ID\ Migration/*.js
-        npx testcafe "browserstack:firefox@85" test/functional/specs/Install\ SDK/*.js
-        npx testcafe "browserstack:firefox@85" test/functional/specs/Logging/*.js
-        npx testcafe "browserstack:firefox@85" test/functional/specs/Personalization/*.js
-        npx testcafe "browserstack:firefox@85" test/functional/specs/Privacy/*.js
-        npx testcafe "browserstack:firefox@85" test/functional/specs/Visitor/*.js
-
-  ie-e2e:
-    name: "IE E2E Test"
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/cache@v2
-      id: npm-cache
-      with:
-        path: '**/node_modules'
-        key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
-    - name: Install dependencies
-      if: steps.npm-cache.outputs.cache-hit != 'true'
-      run: npm ci
-    - name: Build
-      run: npm run test:functional:ci:build
-    - name: Run E2E Test
-      run: |
-        npx testcafe "browserstack:ie@11" test/functional/specs/Audiences/*.js
-        npx testcafe "browserstack:ie@11" test/functional/specs/CNAME/*.js
-        npx testcafe "browserstack:ie@11" test/functional/specs/Context/*.js
-        npx testcafe "browserstack:ie@11" test/functional/specs/Command\ Logic/*.js
-        npx testcafe "browserstack:ie@11" test/functional/specs/Data\ Collector/*.js
-        npx testcafe "browserstack:ie@11" test/functional/specs/Identity/*.js
-        npx testcafe "browserstack:ie@11" test/functional/specs/ID\ Migration/*.js
-        npx testcafe "browserstack:ie@11" test/functional/specs/Install\ SDK/*.js
-        npx testcafe "browserstack:ie@11" test/functional/specs/Logging/*.js
-        npx testcafe "browserstack:ie@11" test/functional/specs/Personalization/*.js
-        npx testcafe "browserstack:ie@11" test/functional/specs/Privacy/*.js
-        npx testcafe "browserstack:ie@11" test/functional/specs/Visitor/*.js
-
-  safari-e2e:
-    name: "Safari E2E Test"
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/cache@v2
-      id: npm-cache
-      with:
-        path: '**/node_modules'
-        key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
-    - name: Install dependencies
-      if: steps.npm-cache.outputs.cache-hit != 'true'
-      run: npm ci
-    - name: Build
-      run: npm run test:functional:ci:build
-    - name: Run E2E Test
-      run: |
-        npx testcafe "browserstack:safari@14.0" test/functional/specs/Audiences/*.js
-        npx testcafe "browserstack:safari@14.0" test/functional/specs/CNAME/*.js
-        npx testcafe "browserstack:safari@14.0" test/functional/specs/Command\ Logic/*.js
-        npx testcafe "browserstack:safari@14.0" test/functional/specs/Context/*.js
-        npx testcafe "browserstack:safari@14.0" test/functional/specs/Data\ Collector/*.js
-        npx testcafe "browserstack:safari@14.0" test/functional/specs/Identity/*.js
-        npx testcafe "browserstack:safari@14.0" test/functional/specs/ID\ Migration/*.js
-        npx testcafe "browserstack:safari@14.0" test/functional/specs/Install\ SDK/*.js
-        npx testcafe "browserstack:safari@14.0" test/functional/specs/Logging/*.js
-        npx testcafe "browserstack:safari@14.0" test/functional/specs/Personalization/*.js
-        npx testcafe "browserstack:safari@14.0" test/functional/specs/Privacy/*.js
-        npx testcafe "browserstack:safari@14.0" test/functional/specs/Visitor/*.js
-
+        chmod +x "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
+        "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
+        npm run test:unit:browserstack:ci
+        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Audiences/*.js
+        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/CNAME/*.js
+        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Command\ Logic/*.js
+        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Context/*.js
+        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Data\ Collector/*.js
+        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Identity/*.js
+        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/ID\ Migration/*.js
+        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Install\ SDK/*.js
+        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Logging/*.js
+        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Personalization/*.js
+        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Privacy/*.js
+        npx testcafe "browserstack:chrome@87","browserstack:firefox@85","browserstack:ie@11","browserstack:safari@14.0" test/functional/specs/Visitor/*.js
