@@ -49,8 +49,8 @@ jobs:
       - name: Run TestCafe Tests
         run: |
           chmod +x "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
-          "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
           npm run test:functional:ci:edgepredeploy
+          "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
       - name: 'BrowserStackLocal Stop'
         uses: 'browserstack/github-actions/setup-local@master'
         with:

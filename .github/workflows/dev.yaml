@@ -49,4 +49,7 @@ jobs:
         npx testcafe ${{ matrix.browser }} test/functional/specs/Personalization/*.js
         npx testcafe ${{ matrix.browser }} test/functional/specs/Privacy/*.js
         npx testcafe ${{ matrix.browser }} test/functional/specs/Visitor/*.js
-
+    - name: Clear Browserstack Tunnels
+      run: |
+        chmod +x "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
+        "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
