@@ -14,15 +14,22 @@ import path from "path";
 import fs from "fs";
 import readCache from "read-cache";
 import { ClientFunction } from "testcafe";
+import { INTEGRATION, PRODUCTION } from "../constants/alloyEnvironment";
 
-const alloyEnv = process.env.ALLOY_ENV || "int";
+const alloyEnv = process.env.ALLOY_ENV || INTEGRATION;
 const alloyProdVersion = process.env.ALLOY_PROD_VERSION;
 // eslint-disable-next-line no-console
 console.log(`ALLOY ENV: ${alloyEnv}`);
 
-if (alloyProdVersion) {
-  // eslint-disable-next-line no-console
-  console.log(`ALLOY PROD VERSION: ${alloyProdVersion}`);
+if (alloyEnv === PRODUCTION) {
+  if (alloyProdVersion) {
+    // eslint-disable-next-line no-console
+    console.log(`ALLOY PROD VERSION: ${alloyProdVersion}`);
+  } else {
+    throw new Error(
+      "The ALLOY_PROD_VERSION environment variable must be provided when running against the production environment."
+    );
+  }
 }
 
 const localPromisePolyfillPath = path.join(
@@ -211,8 +218,8 @@ const injectAlloyDuringTestForProd = ClientFunction(
 );
 
 const injectAlloyDuringTestByEnvironment = {
-  int: injectAlloyDuringTestForInt,
-  prod: injectAlloyDuringTestForProd
+  [INTEGRATION]: injectAlloyDuringTestForInt,
+  [PRODUCTION]: injectAlloyDuringTestForProd
 };
 
 /**
