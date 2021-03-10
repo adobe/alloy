@@ -14,11 +14,23 @@ import path from "path";
 import fs from "fs";
 import readCache from "read-cache";
 import { ClientFunction } from "testcafe";
+import { INTEGRATION, PRODUCTION } from "../constants/alloyEnvironment";
 
-const alloyEnv = process.env.ALLOY_ENV || "int";
-
+const alloyEnv = process.env.ALLOY_ENV || INTEGRATION;
+const alloyProdVersion = process.env.ALLOY_PROD_VERSION;
 // eslint-disable-next-line no-console
-console.log("ALLOY ENV:", alloyEnv);
+console.log(`ALLOY ENV: ${alloyEnv}`);
+
+if (alloyEnv === PRODUCTION) {
+  if (alloyProdVersion) {
+    // eslint-disable-next-line no-console
+    console.log(`ALLOY PROD VERSION: ${alloyProdVersion}`);
+  } else {
+    throw new Error(
+      "The ALLOY_PROD_VERSION environment variable must be provided when running against the production environment."
+    );
+  }
+}
 
 const localPromisePolyfillPath = path.join(
   __dirname,
@@ -34,8 +46,7 @@ const localNpmLibraryPath = path.join(
   __dirname,
   "../../../../distTest/npmPackageLocal.js"
 );
-const remoteAlloyLibraryUrl =
-  "https://cdn1.adoberesources.net/alloy/latest/alloy.js";
+const remoteAlloyLibraryUrl = `https://cdn1.adoberesources.net/alloy/${alloyProdVersion}/alloy.js`;
 
 // We use this getter for retrieving the library code instead of just loading
 // the library code a single time up-front, because we want every run to be
@@ -207,8 +218,8 @@ const injectAlloyDuringTestForProd = ClientFunction(
 );
 
 const injectAlloyDuringTestByEnvironment = {
-  int: injectAlloyDuringTestForInt,
-  prod: injectAlloyDuringTestForProd
+  [INTEGRATION]: injectAlloyDuringTestForInt,
+  [PRODUCTION]: injectAlloyDuringTestForProd
 };
 
 /**
