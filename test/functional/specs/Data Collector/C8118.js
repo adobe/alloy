@@ -49,7 +49,7 @@ const assertRequest = async request => {
   });
 };
 
-test("Test C8118: Verify link click sends a request to the collect endpoint when identity has been established, interact endpoint otherwise", async () => {
+test.skip("Test C8118: Verify link click sends a request to the collect endpoint when identity has been established, interact endpoint otherwise", async () => {
   if (isSendBeaconSupported()) {
     await sendBeaconMock.mock();
   }

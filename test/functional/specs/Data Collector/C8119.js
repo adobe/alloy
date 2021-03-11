@@ -25,7 +25,7 @@ test.meta({
 
 const getLocation = ClientFunction(() => document.location.href.toString());
 
-test("Test C8119: Load page with link. Click link. Verify no event sent.", async () => {
+test.skip("Test C8119: Load page with link. Click link. Verify no event sent.", async () => {
   const alloy = createAlloyProxy();
   const testConfig = compose(
     orgMainConfigMain,
