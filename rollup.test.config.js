@@ -29,7 +29,10 @@ const plugins = [
     mainFields: ["module", "main", "browser"]
   }),
   commonjs(),
-  babel({ envName: "rollup" })
+  babel({
+    envName: "rollup",
+    configFile: path.resolve(__dirname, "babel.config.js")
+  })
 ];
 
 if (argv.reporters && argv.reporters.split(",").includes("coverage")) {

@@ -55,12 +55,10 @@ const effectByEventCode = {
 
 (async () => {
   const { options, warnings } = await loadConfigFile(
-    path.join(__dirname, "../rollup.config.js"),
-    { environment: "BASE_CODE_MIN,STANDALONE,NPM_PACKAGE_LOCAL" }
+    path.join(__dirname, "../rollup.config.js")
   );
 
   warnings.flush();
-
   const watcher = rollup.watch(options);
   watcher.on("event", event => {
     const effect = effectByEventCode[event.code];

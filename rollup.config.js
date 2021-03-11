@@ -39,25 +39,29 @@ const buildPlugins = (variant, minify) => {
       mainFields: ["module", "main", "browser"]
     }),
     commonjs(),
-    babel({ envName: "rollup" })
+    babel({
+      envName: "rollup",
+      configFile: path.resolve(__dirname, "babel.config.js")
+    })
   ];
 
-  if (minify && variant === BASE_CODE) {
-    plugins.push(
-      terser({
-        mangle: true,
-        compress: {
-          unused: true
-        },
-        output: {
-          wrap_func_args: false
-        },
-        toplevel: true
-      })
-    );
-  }
-  if (minify && variant !== BASE_CODE) {
-    plugins.push(terser());
+  if (minify) {
+    if (variant === BASE_CODE) {
+      plugins.push(
+        terser({
+          mangle: true,
+          compress: {
+            unused: true
+          },
+          output: {
+            wrap_func_args: false
+          },
+          toplevel: true
+        })
+      );
+    } else {
+      plugins.push(terser());
+    }
   }
 
   if (variant === STANDALONE) {
