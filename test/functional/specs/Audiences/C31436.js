@@ -1,4 +1,4 @@
-import { RequestLogger, t } from "testcafe";
+import { RequestLogger, RequestMock, t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
@@ -16,9 +16,17 @@ const destinationLogger = RequestLogger(
   networkLoggerConfig
 );
 
+const destinationRequestMock = RequestMock()
+  .onRequestTo("https://cataas.com/cat/cute")
+  .respond(null, 200);
+
 createFixture({
   title: "C31436 Qualify for URL destinations via XDM Data.",
-  requestHooks: [networkLogger.edgeEndpointLogs, destinationLogger]
+  requestHooks: [
+    networkLogger.edgeEndpointLogs,
+    destinationLogger,
+    destinationRequestMock
+  ]
 });
 
 test.meta({

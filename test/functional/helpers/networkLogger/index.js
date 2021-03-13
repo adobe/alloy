@@ -36,6 +36,8 @@ const createNetworkLogger = () => {
 
   return {
     edgeEndpointLogs,
+    // Before using edgeCollectEndpointLogs in a test, check to see if you
+    // should be using the createCollectEndpointAssertion.js module instead.
     edgeCollectEndpointLogs,
     edgeInteractEndpointLogs,
     setConsentEndpointLogs,
