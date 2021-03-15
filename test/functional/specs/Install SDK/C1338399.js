@@ -36,16 +36,10 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const alloyEnv = process.env.ALLOY_ENV || "int";
-
-if (alloyEnv === "int") {
-  test("C1338399: Use SDK from NPM entry point", async () => {
-    await createAlloyInstance();
-    const alloy = createAlloyProxy("npmLibraryAlloy");
-    await alloy.configure(mainConfig);
-    await alloy.sendEvent();
-    await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
-  });
-} else {
-  test.skip("C1338399: Use SDK from NPM entry point", () => {});
-}
+test("C1338399: Use SDK from NPM entry point", async () => {
+  await createAlloyInstance();
+  const alloy = createAlloyProxy("npmLibraryAlloy");
+  await alloy.configure(mainConfig);
+  await alloy.sendEvent();
+  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
+});
