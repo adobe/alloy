@@ -107,6 +107,9 @@ export const ADOBE2_IN = {
       value: {
         collect: {
           val: "y"
+        },
+        metadata: {
+          time: "2019-01-01T15:52:25+00:00"
         }
       }
     }
@@ -121,6 +124,9 @@ export const ADOBE2_OUT = {
       value: {
         collect: {
           val: "n"
+        },
+        metadata: {
+          time: "2019-01-01T15:52:25+00:00"
         }
       }
     }
