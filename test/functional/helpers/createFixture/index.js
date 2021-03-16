@@ -1,5 +1,6 @@
 import testPageUrl from "../constants/testPageUrl";
 import { getFixtureClientScripts } from "./clientScripts";
+import destinationRequestMock from "./destinationRequestMock";
 
 export default ({
   title = "",
@@ -16,6 +17,6 @@ export default ({
   });
   return fixture(title)
     .page(url)
-    .requestHooks(...requestHooks)
+    .requestHooks(...requestHooks, destinationRequestMock)
     .clientScripts(clientScripts);
 };

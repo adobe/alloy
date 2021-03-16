@@ -1,20 +1,17 @@
-import { t, Selector, ClientFunction } from "testcafe";
+import { t, Selector } from "testcafe";
 import createFixture from "../../helpers/createFixture";
 import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
-import createNetworkLogger from "../../helpers/networkLogger";
-
 import {
   compose,
   orgMainConfigMain
 } from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
-
-const networkLogger = createNetworkLogger();
+import preventLinkNavigation from "../../helpers/preventLinkNavigation";
+import createCollectEndpointAsserter from "../../helpers/createCollectEndpointAsserter";
 
 createFixture({
   title:
-    "C8119: Does not send event with information about link clicks if disabled.",
-  requestHooks: [networkLogger.edgeCollectEndpointLogs]
+    "C8119: Does not send event with information about link clicks if disabled."
 });
 
 test.meta({
@@ -23,9 +20,19 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const getLocation = ClientFunction(() => document.location.href.toString());
+const addLinkToBody = () => {
+  return addHtmlToBody(
+    `<a id="alloy-link-test" href="blank.html">Test Link</a>`
+  );
+};
 
-test.skip("Test C8119: Load page with link. Click link. Verify no event sent.", async () => {
+const clickLink = async () => {
+  await t.click(Selector("#alloy-link-test"));
+};
+
+test("Test C8119: Load page with link. Click link. Verify no event sent.", async () => {
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  await preventLinkNavigation();
   const alloy = createAlloyProxy();
   const testConfig = compose(
     orgMainConfigMain,
@@ -34,11 +41,7 @@ test.skip("Test C8119: Load page with link. Click link. Verify no event sent.", 
     }
   );
   await alloy.configure(testConfig);
-  await addHtmlToBody(
-    `<a id="alloy-link-test" href="blank.html">Test Link</a>`
-  );
-
-  await t.click(Selector("#alloy-link-test"));
-  await t.expect(getLocation()).contains("blank.html");
-  await t.expect(networkLogger.edgeCollectEndpointLogs.requests.length).eql(0);
+  await addLinkToBody();
+  await clickLink();
+  await collectEndpointAsserter.assertNeitherCollectNorInteractCalled();
 });
