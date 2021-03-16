@@ -36,13 +36,12 @@ export default async () => {
 
   const assertCollectCalled = async () => {
     if (isSendBeaconSupported()) {
-      // When sendBeacon is called, the browser doesn't send
-      // the request right away, but instead queues the request to be sent sometime
-      // later. Therefore, the sendEvent promise resolves before any network
-      // request may have actually been made. By calling the RequestLogger's count
-      // method, TestCafe will retry this assertion until it succeeds or until the
-      // timeout is reached. The parameter to count is a filter function. In this
-      // case we want to count all the requests.
+      // When sendBeacon is called, the browser doesn't send the request right away,
+      // but instead queues the request to be sent sometime later. Therefore, the
+      // sendEvent promise resolves before any network request may have actually been made.
+      // By calling the RequestLogger's count method, TestCafe will retry this
+      // assertion until it succeeds or until the timeout is reached. The parameter
+      // to count is a filter function. In this case, we want to count all the requests.
       await t
         .expect(networkLogger.edgeCollectEndpointLogs.count(() => true))
         .eql(1, "No network request to the collect endpoint was detected.");
@@ -63,8 +62,9 @@ export default async () => {
 
   const assertCollectNotCalled = async () => {
     if (isSendBeaconSupported()) {
-      // The browser's sendBeacon api returns before the actual request is made. Therefore,
-      // the sendEvent promise resolves before any network request may have actually been made.
+      // When sendBeacon is called, the browser doesn't send the request right away,
+      // but instead queues the request to be sent sometime later. Therefore, the
+      // sendEvent promise resolves before any network request may have actually been made.
       // In order to check that a request to the collect endpoint is never made, we would
       // have to wait for an arbitrary period of time before checking that the number of
       // network requests to the collect endpoint is 0. Instead of waiting for an arbitrary
@@ -96,27 +96,47 @@ export default async () => {
       .eql(0, "A network request to the interact endpoint was detected.");
   };
 
+  let collectRequestAsserted = false;
+  let interactRequestAsserted = false;
   return {
     async assertCollectCalledAndNotInteract() {
+      collectRequestAsserted = true;
       // The order of these matter because we need to make sure sendBeacon
       // requests have actually been sent by the browser before checking
       // that they weren't interact calls.
       await assertCollectCalled();
       await assertInteractNotCalled();
-      return networkLogger.edgeCollectEndpointLogs.requests[0];
     },
     async assertInteractCalledAndNotCollect() {
+      interactRequestAsserted = true;
       await assertCollectNotCalled();
       await assertInteractCalled();
-      return networkLogger.edgeInteractEndpointLogs.requests[0];
     },
     async assertNeitherCollectNorInteractCalled() {
       await assertCollectNotCalled();
       await assertInteractNotCalled();
     },
     async reset() {
+      interactRequestAsserted = false;
+      collectRequestAsserted = false;
       await networkLogger.clearLogs();
       await sendBeaconMock.reset();
+    },
+    getInteractRequest() {
+      if (!interactRequestAsserted) {
+        throw new Error(
+          "You must call assertInteractCalledAndNotCollect before getting the interact request"
+        );
+      }
+      return networkLogger.edgeInteractEndpointLogs.requests[0];
+    },
+    getCollectRequest() {
+      if (!collectRequestAsserted) {
+        throw new Error(
+          "You must call assertCollectCalledAndNotInteract before getting the collect request"
+        );
+      }
+      return networkLogger.edgeCollectEndpointLogs.requests[0];
     }
   };
 };

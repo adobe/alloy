@@ -45,7 +45,8 @@ test("Test C8118: Verify link click sends a request to the collect endpoint when
   await alloy.configure(orgMainConfigMain);
   await addLinkToBody();
   await clickLink();
-  const interactRequest = await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  const interactRequest = await collectEndpointAsserter.getInteractRequest();
   await collectEndpointAsserter.reset();
   // If an identity has not been established, we hit the interact endpoint using
   // fetch even though the user may be navigating away from the page. In the
@@ -59,6 +60,7 @@ test("Test C8118: Verify link click sends a request to the collect endpoint when
   // Because an identity has been established, we can safely hit the collect
   // endpoint using sendBeacon.
   await clickLink();
-  const collectRequest = await collectEndpointAsserter.assertCollectCalledAndNotInteract();
+  await collectEndpointAsserter.assertCollectCalledAndNotInteract();
+  const collectRequest = collectEndpointAsserter.getCollectRequest();
   await assertRequestXdm(collectRequest);
 });

@@ -19,5 +19,5 @@ import { RequestMock } from "testcafe";
 // destination to successfully execute, we'll mock the third-party
 // URL destination endpoint.
 export default RequestMock()
-  .onRequestTo("https://cataas.com/cat")
+  .onRequestTo(/^https:\/\/cataas.com\//)
   .respond(null, 200);
