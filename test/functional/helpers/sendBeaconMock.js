@@ -13,11 +13,10 @@ governing permissions and limitations under the License.
 import { ClientFunction } from "testcafe";
 
 const mock = ClientFunction(() => {
-  sessionStorage.setItem("sendBeaconCallCount", 0);
   const nativeSendBeacon = window.navigator.sendBeacon.bind(window.navigator);
   window.navigator.sendBeacon = (...args) => {
     const sendBeaconCallCount = Number(
-      sessionStorage.getItem("sendBeaconCallCount")
+      sessionStorage.getItem("sendBeaconCallCount") || 0
     );
     sessionStorage.setItem("sendBeaconCallCount", sendBeaconCallCount + 1);
     return nativeSendBeacon(...args);
@@ -25,14 +24,25 @@ const mock = ClientFunction(() => {
 });
 
 const getCallCount = ClientFunction(() => {
-  return Number(sessionStorage.getItem("sendBeaconCallCount"));
+  return Number(sessionStorage.getItem("sendBeaconCallCount") || 0);
+});
+
+const reset = ClientFunction(() => {
+  sessionStorage.removeItem("sendBeaconCallCount");
 });
 
 /**
  * Mocks and calls through to the native sendBeacon API. Useful for
  * determining whether sendBeacon was used to make a network request.
+ * This is typically better than using a network logger because sendBeacon,
+ * at least in some browsers, asynchronously sends the request some time
+ * after sendBeacon is called. This would make it tricky to assert, for example,
+ * that a network request *wasn't* sent using sendBeacon because we would
+ * have to wait an arbitrary time period before checking the network logger
+ * to see that no requests were made to the collect endpoint.
  */
 export default {
   mock,
-  getCallCount
+  getCallCount,
+  reset
 };

@@ -19,7 +19,15 @@ const { Octokit } = require("@octokit/rest");
 // a draft nor pre-release, then retrieving the package.json
 // from the release's associated tag, then logging the value
 // of the version field found in package.json.
-const octokit = new Octokit();
+const octokit = new Octokit({
+  // These APIs have a rate limit of 60/hour total (across all
+  // APIs, per IP address) when unauthenticated, but a rate limit
+  // of 1000/hr when using the Github token for authentication
+  // (15000/hr if we upgrade to a GitHub Enterprise Cloud account).
+  // We'll use the Github token when it's available (when this script
+  // is running as part of a Github workflow).
+  auth: process.env.GITHUB_TOKEN
+});
 
 octokit.repos
   .listReleases({

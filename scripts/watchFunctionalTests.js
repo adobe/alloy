@@ -16,6 +16,13 @@ const path = require("path");
 const rollup = require("rollup");
 const loadConfigFile = require("rollup/dist/loadConfigFile");
 const createTestCafe = require("testcafe");
+const yargs = require("yargs/yargs");
+const { hideBin } = require("yargs/helpers");
+
+const argv = yargs(hideBin(process.argv)).option("browsers", {
+  type: "array",
+  default: ["chrome"]
+}).argv;
 
 /**
  * This script produces a build of Alloy from the source, then starts functional
@@ -44,7 +51,7 @@ const effectByEventCode = {
       firstBuildComplete = true;
       const testcafe = await createTestCafe();
       const liveRunner = testcafe.createLiveModeRunner();
-      await liveRunner.browsers(["chrome"]).run();
+      await liveRunner.browsers(argv.browsers).run();
       await testcafe.close();
     }
   },
