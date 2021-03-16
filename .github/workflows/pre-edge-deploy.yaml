@@ -14,11 +14,11 @@ jobs:
     name: "Pre Edge: Prod E2E Tests"
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2.3.3
       - name: Serialize workflow runs
         uses: softprops/turnstyle@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v2.3.3
       - name: "Get latest Alloy Release"
         id: last_release
         uses: InsonusK/get-latest-release@v1.0.1
