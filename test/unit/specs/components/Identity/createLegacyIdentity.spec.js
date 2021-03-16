@@ -34,6 +34,7 @@ describe("Identity::createLegacyIdentity", () => {
 
   beforeEach(() => {
     idMigrationEnabled = true;
+    removeAllCookies();
   });
 
   afterEach(removeAllCookies);
