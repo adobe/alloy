@@ -47,6 +47,8 @@ jobs:
           chmod +x "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
           "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
           npm run test:functional:ci:prod
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'BrowserStackLocal Stop'
         uses: 'browserstack/github-actions/setup-local@master'
         with:
