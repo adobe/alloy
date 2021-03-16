@@ -18,14 +18,15 @@ jobs:
         uses: softprops/turnstyle@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/checkout@v2.3.3
       - name: "Get latest Alloy Release"
         id: last_release
         uses: InsonusK/get-latest-release@v1.0.1
         with:
           myToken: ${{ github.token }}
           exclude_types: "draft|prerelease"
-          view_top: 1
+      - uses: actions/checkout@v2.3.3
+        with:
+          ref: ${{ steps.last_release.outputs.tag_name }}
       - uses: actions/cache@v2
         id: npm-cache
         with:
