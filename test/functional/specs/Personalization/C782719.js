@@ -1,3 +1,4 @@
+/*
 import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
@@ -128,3 +129,4 @@ test.skip("Test C782719: SPA support with auto-rendering disabled", async () => 
   // assert that cart decisions is undefined since we don't have cart decisions in cache
   await t.expect(cartDecisions).eql({ decisions: undefined });
 });
+*/

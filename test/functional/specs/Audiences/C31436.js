@@ -1,3 +1,4 @@
+/*
 import { RequestLogger, t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
@@ -36,3 +37,4 @@ test.skip("C31436 Qualify for URL destinations via XDM Data.", async () => {
 
   await t.expect(destinationLogger.requests.length).eql(1);
 });
+*/

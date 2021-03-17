@@ -40,11 +40,18 @@ const remotePromisePolyfillPath =
   "https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js";
 const remoteVisitorLibraryUrl =
   "https://github.com/Adobe-Marketing-Cloud/id-service/releases/latest/download/visitorapi.min.js";
-const baseCodePath = path.join(__dirname, "../../../../distTest/baseCode.js");
+const baseCodePath = path.join(
+  __dirname,
+  "../../../../distTest/baseCode.min.js"
+);
 const localAlloyLibraryPath = path.join(__dirname, "../../../../dist/alloy.js");
 const localNpmLibraryPath = path.join(
   __dirname,
   "../../../../distTest/npmPackageLocal.js"
+);
+const prodNpmLibraryPath = path.join(
+  __dirname,
+  "../../../../distTest/npmPackageProd.js"
 );
 const remoteAlloyLibraryUrl = `https://cdn1.adoberesources.net/alloy/${alloyProdVersion}/alloy.js`;
 
@@ -64,8 +71,7 @@ const getLocalNpmLibraryCode = () => {
 };
 // This is the javascript built from the production @adobe/alloy npm Library
 const getProdNpmLibraryCode = () => {
-  // TODO: use the production NPM package once it is published
-  return readCache.sync(localNpmLibraryPath, "utf8");
+  return readCache.sync(prodNpmLibraryPath, "utf8");
 };
 
 const injectInlineScript = ClientFunction(code => {

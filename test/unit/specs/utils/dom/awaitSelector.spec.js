@@ -43,8 +43,8 @@ describe("DOM::awaitSelector", () => {
       .finally(() => {
         cleanUp(id);
       })
-      .catch(() => {
-        throw new Error(`${id} should be found`);
+      .catch(e => {
+        throw new Error(`${id} should be found. Error was ${e}`);
       });
   };
 

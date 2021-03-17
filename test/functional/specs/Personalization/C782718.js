@@ -1,3 +1,4 @@
+/*
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions";
@@ -14,10 +15,7 @@ import flushPromiseChains from "../../helpers/flushPromiseChains";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
-const config = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
 // spaImplementationTest=true is a query string param used for this specific target activity
 createFixture({
@@ -221,3 +219,4 @@ test.skip("Test C782718: SPA support with auto-rendering and view notifications"
     .expect(cartViewNotificationRequestBody.events[0].xdm._experience)
     .eql(undefined);
 });
+*/
