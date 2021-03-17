@@ -14,11 +14,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: "Get latest Alloy Release"
-          id: last_release
-          uses: InsonusK/get-latest-release@v1.0.1
-          with:
-            myToken: ${{ github.token }}
-            exclude_types: "draft|prerelease"
+        id: last_release
+        uses: InsonusK/get-latest-release@v1.0.1
+        with:
+          myToken: ${{ github.token }}
+          exclude_types: "draft|prerelease"
       - uses: actions/checkout@v2.3.3
         with:
           ref: ${{ steps.last_release.outputs.tag_name }}
