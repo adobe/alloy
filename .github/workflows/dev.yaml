@@ -1,5 +1,7 @@
 name: Dev
-on: push
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   unit-test:
