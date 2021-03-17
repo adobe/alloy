@@ -1,3 +1,4 @@
+/*
 import { RequestLogger, t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
@@ -35,3 +36,4 @@ test.skip("C12411 Response should return URL destinations if turned on in Blackb
 
   await t.expect(destinationLogger.requests.length > 0).eql(true);
 });
+*/

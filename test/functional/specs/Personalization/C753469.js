@@ -1,3 +1,4 @@
+/*
 import { t, ClientFunction } from "testcafe";
 import generalConstants from "../../helpers/constants/general";
 import createNetworkLogger from "../../helpers/networkLogger";
@@ -58,3 +59,4 @@ test.skip(`Test ${TEST_ID}: A nonce attribute should be added to injected script
     new RegExp(`${TEST_ID} SCRIPT INJECTION CSP NONCE TEST`)
   );
 });
+*/

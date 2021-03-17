@@ -1,3 +1,4 @@
+/*
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions";
@@ -218,3 +219,4 @@ test.skip("Test C782718: SPA support with auto-rendering and view notifications"
     .expect(cartViewNotificationRequestBody.events[0].xdm._experience)
     .eql(undefined);
 });
+*/
