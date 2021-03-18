@@ -30,7 +30,5 @@ jobs:
       run: |
         chmod +x "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
         "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
-        npm run test:unit:browserstack:ci
-        "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
         npm run test:functional:ci:dev
 
