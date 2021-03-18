@@ -1,13 +1,10 @@
-/*
 import { t, ClientFunction } from "testcafe";
-import generalConstants from "../../helpers/constants/general";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
 import createConsoleLogger from "../../helpers/consoleLogger";
-import addHtmlToHeader from "../../helpers/dom/addHtmlToHeader";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
-import testPageUrl from "../../helpers/constants/testPageUrl";
+import { TEST_PAGE_WITH_CSP as TEST_PAGE_WITH_CSP_URL } from "../../helpers/constants/url";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
@@ -16,7 +13,7 @@ const TEST_ID = "C753469";
 
 createFixture({
   title: `${TEST_ID}: A nonce attribute should be added to injected script tags when CSP nonce is available`,
-  url: `${testPageUrl}?test=${TEST_ID}`,
+  url: `${TEST_PAGE_WITH_CSP_URL}?test=${TEST_ID}`,
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
@@ -26,24 +23,11 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const injectContentSecurityPolicy = ClientFunction(nonce => {
-  const meta = document.createElement("meta");
-  meta.httpEquiv = "Content-Security-Policy";
-  meta.content = `default-src 'self';
-                  script-src 'self' 'unsafe-eval' 'nonce-${nonce}';
-                  style-src 'self' 'nonce-${nonce}'`;
-  document.head.appendChild(meta);
-});
-
 const elementWithIdExist = ClientFunction(id => {
   return !!document.getElementById(id);
 });
 
-test.skip(`Test ${TEST_ID}: A nonce attribute should be added to injected script tags when CSP nonce is available`, async () => {
-  const { nonce } = generalConstants;
-  // Inject script tag with a nonce attribute so that alloy can use it.
-  await addHtmlToHeader(`<script nonce="${nonce}"/>`);
-  await injectContentSecurityPolicy(nonce);
+test(`Test ${TEST_ID}: A nonce attribute should be added to injected script tags when CSP nonce is available`, async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(orgMainConfigMain);
   const consoleLogger = await createConsoleLogger();
@@ -59,4 +43,3 @@ test.skip(`Test ${TEST_ID}: A nonce attribute should be added to injected script
     new RegExp(`${TEST_ID} SCRIPT INJECTION CSP NONCE TEST`)
   );
 });
-*/

@@ -3,7 +3,7 @@ import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
 import webContextConfig from "../../helpers/constants/webContextConfig";
-import testPageUrl from "../../helpers/constants/testPageUrl";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
@@ -12,7 +12,7 @@ createFixture({
   title:
     "C2598 - Adds only web context data when only web is specified in configuration.",
   requestHooks: [networkLogger.edgeEndpointLogs],
-  url: testPageUrl
+  url: TEST_PAGE_URL
 });
 
 test.meta({
@@ -41,11 +41,11 @@ test("Test C2598 - Adds only web context data when only web is specified in conf
   await t.expect(stringifyRequest.events[0].xdm.web.webPageDetails).ok();
   await t
     .expect(stringifyRequest.events[0].xdm.web.webPageDetails.URL)
-    .eql(testPageUrl);
+    .eql(TEST_PAGE_URL);
   await t.expect(stringifyRequest.events[0].xdm.web.webReferrer).ok();
   await t
     .expect(stringifyRequest.events[0].xdm.web.webReferrer.URL)
-    .eql(testPageUrl);
+    .eql(TEST_PAGE_URL);
 
   await t.expect(stringifyRequest.events[0].xdm.device).notOk();
   await t.expect(stringifyRequest.events[0].xdm.placeContext).notOk();

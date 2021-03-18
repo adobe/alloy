@@ -4,6 +4,7 @@ import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
 import environmentContextConfig from "../../helpers/constants/environmentContextConfig";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
 
 const networkLogger = createNetworkLogger();
 
@@ -23,7 +24,7 @@ const sendEventOptions = {
   xdm: {
     web: {
       webPageDetails: {
-        URL: "https://alloyio.com/functional-test/alloyTestPage.html"
+        URL: TEST_PAGE_URL
       }
     }
   }

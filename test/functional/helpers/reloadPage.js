@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { t, ClientFunction } from "testcafe";
+import { RELOAD_PAGE as RELOAD_PAGE_URL } from "./constants/url";
 
 const getLocalStorageEntries = ClientFunction(() => {
   const entries = Object.keys(window.localStorage)
@@ -49,7 +50,8 @@ export default async () => {
   // because if we just tried to navigate to the same page we're on, TestCafe
   // would hang in Safari (at least).
   const localStorageEntries = await getLocalStorageEntries();
-  await t.navigateTo("blank.html");
+  // We could navigate to any other page and then back again.
+  await t.navigateTo(RELOAD_PAGE_URL);
   await t.navigateTo(currentUrl);
   await setLocalStorageEntries(localStorageEntries);
 };

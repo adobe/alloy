@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <!--
+      While it seems reasonable to use re-use our default test page
+      and just add the meta CSP element dynamically during our test,
+      TestCafe has a bug that prevents that approach from working properly.
+      https://github.com/DevExpress/testcafe/issues/6057
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self';
+    script-src 'self' 'unsafe-eval' 'nonce-aZ96GeVfD9D';
+    style-src 'self' 'nonce-aZ96GeVfD9D';
+    connect-src 'self' *.alloyio.com *.demdex.net *.adobedc.net;"
+    />
+    <title>Alloy Test Page</title>
+    <!--
+      A customer using a CSP would typically add a nonce attribute to
+      the base code script we provide in Alloy's installation instructions.
+      Then, Alloy would find the nonce on that script tag and use the
+      nonce value when adding script or style elements (typically when
+      rendering personalized content). Because TestCafe limits how the
+      base code's script tag is constructed
+      (https://github.com/DevExpress/testcafe/issues/5612), we can't add
+      a nonce attribute to the script tag that TestCafe adds to the page.
+      So, as a workaround, we've provided this script tag with a nonce, so that
+      Alloy can properly access and use its nonce value.
+    -->
+    <script nonce="aZ96GeVfD9D"></script>
+  </head>
+  <body>
+    <h1>
+      Testcafe injects Alloy and configurations during runtime. This is a
+      standalone test page that is hosted on alloyio.com/functional-test/
+    </h1>
+  </body>
+</html>
