@@ -2,9 +2,12 @@ name: Dev
 on:
   push:
   workflow_dispatch:
+env:
+        BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+        BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
 
 jobs:
-  unit-test:
+  dev-test:
     name: "Run Unit & E2E Test"
     runs-on: macos-latest
     steps:
@@ -23,16 +26,6 @@ jobs:
       run: npm ci
     - name: Build
       run: npm run test:functional:build:int
-    - name: 'BrowserStack Env Setup'
-      uses: 'browserstack/github-actions/setup-env@master'
-      with:
-        username:  ${{ secrets.BROWSERSTACK_USERNAME }}
-        access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    - name: 'BrowserStackLocal Setup'
-      uses: 'browserstack/github-actions/setup-local@master'
-      with:
-        local-testing: start
-        local-identifier: random
     - name: Run Unit & Functional tests on BS
       run: |
         chmod +x "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
@@ -40,7 +33,4 @@ jobs:
         npm run test:unit:browserstack:ci
         "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
         npm run test:functional:ci:dev
-    - name: 'BrowserStackLocal Stop'
-      uses: 'browserstack/github-actions/setup-local@master'
-      with:
-        local-testing: stop
+
