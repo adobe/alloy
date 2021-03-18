@@ -10,7 +10,10 @@ import {
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
-const config = compose(orgMainConfigMain, debugEnabled);
+const config = compose(
+  orgMainConfigMain,
+  debugEnabled
+);
 const PAGE_WIDE_SCOPE = "__view__";
 const decisionId =
   "AT:eyJhY3Rpdml0eUlkIjoiMTI2NTYxIiwiZXhwZXJpZW5jZUlkIjoiMCJ9";

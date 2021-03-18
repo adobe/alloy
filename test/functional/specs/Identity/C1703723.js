@@ -10,7 +10,10 @@ import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import createNetworkLogger from "../../helpers/networkLogger";
 
-const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled);
+const debugEnabledConfig = compose(
+  orgMainConfigMain,
+  debugEnabled
+);
 
 const networkLogger = createNetworkLogger();
 
