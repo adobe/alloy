@@ -1,10 +1,10 @@
-import testPageUrl from "../constants/testPageUrl";
+import { TEST_PAGE as TEST_PAGE_URL } from "../constants/url";
 import { getFixtureClientScripts } from "./clientScripts";
 import destinationRequestMock from "./destinationRequestMock";
 
 export default ({
   title = "",
-  url = testPageUrl,
+  url = TEST_PAGE_URL,
   requestHooks = [],
   includeAlloyLibrary = true,
   includeVisitorLibrary = false,

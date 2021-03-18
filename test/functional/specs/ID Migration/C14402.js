@@ -4,7 +4,7 @@ import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import { responseStatus } from "../../helpers/assertions";
 import createFixture from "../../helpers/createFixture";
 import createResponse from "../../helpers/createResponse";
-import generalConstants from "../../helpers/constants/general";
+import { ECID as ECID_REGEX } from "../../helpers/constants/regex";
 import {
   compose,
   orgMainConfigMain,
@@ -21,7 +21,6 @@ const config = compose(
 );
 
 const networkLogger = createNetworkLogger();
-const { ecidRegex } = generalConstants;
 
 createFixture({
   title:
@@ -57,7 +56,7 @@ test("Test C14402: When ID migration is enabled and no legacy AMCV cookie is fou
     payload => payload.namespace.code === "ECID"
   )[0];
 
-  await t.expect(ecidPayload.id).match(ecidRegex);
+  await t.expect(ecidPayload.id).match(ECID_REGEX);
 
   const documentCookie = await getDocumentCookie();
 

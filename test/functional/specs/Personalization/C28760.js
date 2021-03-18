@@ -9,16 +9,19 @@ import {
 } from "../../helpers/constants/configParts";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../helpers/createResponse";
-import testPageUrl from "../../helpers/constants/testPageUrl";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
-const config = compose(orgMainConfigMain, debugEnabled);
+const config = compose(
+  orgMainConfigMain,
+  debugEnabled
+);
 const PAGE_WIDE_SCOPE = "__view__";
 createFixture({
   title:
     "C28760: A notification collect should be triggered if a VEC dom actions offer has been rendered",
-  url: `${testPageUrl}?test=C28760`,
+  url: `${TEST_PAGE_URL}?test=C28760`,
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
@@ -35,7 +38,7 @@ const extractDecisionsMeta = payload => {
   });
 };
 
-test("Test C28760: A notification collect should be triggered if a VEC dom actions offer has been rendered", async () => {
+test.skip("Test C28760: A notification collect should be triggered if a VEC dom actions offer has been rendered", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({ renderDecisions: true });

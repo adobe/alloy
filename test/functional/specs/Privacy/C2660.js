@@ -4,7 +4,7 @@ import createFixture from "../../helpers/createFixture";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
 import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain";
 import { compose, consentPending } from "../../helpers/constants/configParts";
-import testPageUrl from "../../helpers/constants/testPageUrl";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import { CONSENT_IN } from "../../helpers/constants/consent";
 
@@ -54,8 +54,8 @@ test("C2660 - Context data is captured before user consents.", async () => {
   // expect that context was captured at the right time
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
   const requests = networkLogger.edgeEndpointLogs.requests;
-  await t.expect(getContextUrlFromRequest(requests[0])).eql(testPageUrl);
+  await t.expect(getContextUrlFromRequest(requests[0])).eql(TEST_PAGE_URL);
   await t
     .expect(getContextUrlFromRequest(requests[1]))
-    .eql(`${testPageUrl}#foo`);
+    .eql(`${TEST_PAGE_URL}#foo`);
 });

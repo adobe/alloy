@@ -10,7 +10,7 @@ import {
 } from "../../helpers/constants/configParts";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../helpers/createResponse";
-import testPageUrl from "../../helpers/constants/testPageUrl";
+import { TEST_PAGE_WITH_CSP as TEST_PAGE_WITH_CSP_URL } from "../../helpers/constants/url";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
@@ -20,7 +20,7 @@ const PAGE_WIDE_SCOPE = "__view__";
 // spaImplementationTest=true is a query string param used for this specific target activity
 createFixture({
   title: "C782718 SPA support with auto-rendering and view notifications",
-  url: `${testPageUrl}?spaImplementationTest=true`,
+  url: `${TEST_PAGE_WITH_CSP_URL}?spaImplementationTest=true`,
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 

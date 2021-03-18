@@ -9,11 +9,14 @@ import {
 } from "../../helpers/constants/configParts";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../helpers/createResponse";
-import testPageUrl from "../../helpers/constants/testPageUrl";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
-const config = compose(orgMainConfigMain, debugEnabled);
+const config = compose(
+  orgMainConfigMain,
+  debugEnabled
+);
 const PAGE_WIDE_SCOPE = "__view__";
 const decisionContent =
   '<div id="C28755">Here is an awesome target offer!</div>';
@@ -22,7 +25,7 @@ createFixture({
   title:
     "C28755: The first sendEvent on the page should fetch Personalization VEC offers",
   requestHooks: [networkLogger.edgeEndpointLogs],
-  url: `${testPageUrl}?test=C28755`
+  url: `${TEST_PAGE_URL}?test=C28755`
 });
 
 test.meta({

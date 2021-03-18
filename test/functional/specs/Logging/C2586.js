@@ -1,11 +1,11 @@
 import createFixture from "../../helpers/createFixture";
-import testPageUrl from "../../helpers/constants/testPageUrl";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 createFixture({
   title: "C2586: Toggle logging through the querystring parameter.",
-  url: `${testPageUrl}?alloy_debug=true`
+  url: `${TEST_PAGE_URL}?alloy_debug=true`
 });
 
 test.meta({
