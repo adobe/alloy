@@ -1,4 +1,3 @@
-/*
 import { RequestLogger, t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
@@ -28,6 +27,14 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
+// This test is skipped because there's a bug in TestCafe where the request logger doesn't
+// log the request of the URL destination image if the image is loaded inside an iframe.
+// The image is loaded inside an iframe because hideReferrer is set to true for the
+// URL destination. We could fix this test by setting hideReferrer to false so that
+// the image is loaded outside an iframe, but there seems to be another bug at or
+// behind Konductor preventing us from doing so.
+// https://github.com/DevExpress/testcafe/issues/6060
+// https://jira.corp.adobe.com/browse/PDCL-4709
 test.skip("C31436 Qualify for URL destinations via XDM Data.", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(orgMainConfigMain);
@@ -37,4 +44,3 @@ test.skip("C31436 Qualify for URL destinations via XDM Data.", async () => {
 
   await t.expect(destinationLogger.requests.length).eql(1);
 });
-*/
