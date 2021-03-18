@@ -12,7 +12,7 @@ on:
 jobs:
   alloy-prod-e2e:
     name: "Pre Edge: Prod E2E Tests"
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Serialize workflow runs
         uses: softprops/turnstyle@v1

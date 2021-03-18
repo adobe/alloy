@@ -4,7 +4,7 @@ on: workflow_dispatch
 jobs:
   e2e-test:
     name: "Alloy Int Edge Prod E2E Test"
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
     - name: Serialize workflow runs
       uses: softprops/turnstyle@v1
