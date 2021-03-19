@@ -32,7 +32,6 @@ module.exports = config => {
       browserName: 'internet explorer',
       browserVersion: 'latest',
       platform: 'Windows 10',
-      }
     },
   };
 
