@@ -51,7 +51,16 @@ module.exports = function (config) {
     preprocessors: {
       "test/unit/specs/karmaEntry.spec.js": ["rollup"]
     },
-    reporters: ['progress', 'saucelabs'],
+    plugins: [      
+      "karma-jasmine",
+      "karma-coverage",
+      "karma-jasmine-matchers",
+      "karma-spec-reporter",
+      "karma-rollup-preprocessor",
+      "karma-allure-reporter", 
+      'karma-sauce-launcher'
+    ],
+    reporters: ['dots', 'saucelabs'],
     port: 9876,
     colors: true,
     sauceLabs: {
