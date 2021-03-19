@@ -8,26 +8,26 @@ module.exports = config => {
   const customLaunchers = {
     sl_chrome: {
       base: 'SauceLabs',
-      browserName: 'chrome',
+      browserName: 'Chrome',
       version: 'latest'
     },
     sl_safari: {
       base: 'SauceLabs',
-      browserName: 'safari',
+      browserName: 'Safari',
       browserVersion: 'latest'
     },
     sl_firefox: {
       base: 'SauceLabs',
-      browserName: 'firefox',
+      browserName: 'Firefox',
       version: 'latest'
     },
     sl_ie_11: {
       base: 'SauceLabs',
-      browserName: 'internet explorer',
+      browserName: 'IE',
       version: 'latest'
     }
   };
-  
+
   config.set({
     browsers: Object.keys(customLaunchers),
     customLaunchers,
