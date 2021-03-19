@@ -33,10 +33,10 @@ module.exports = config => {
   };
 
   config.set({
-    basePath: '',
-    reporters: ['progress', 'saucelabs'],
+    browsers: Object.keys(customLaunchers),
+    customLaunchers,
+    reporters: ['dots', 'saucelabs'],
     colors: true,
-    concurrency: 5,
     sauceLabs: {
       testName: 'Alloy Unit Test',
       build: process.env.GITHUB_RUN_ID,
