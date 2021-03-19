@@ -8,23 +8,35 @@ module.exports = config => {
   const customLaunchers = {
     sl_chrome: {
       base: 'SauceLabs',
-      browserName: 'Chrome',
-      version: 'latest'
+      browserName: 'chrome',
+      version: 'latest',
+      'sauce:options':{
+        tags: ['w3c-chrome']
+      }
     },
     sl_safari: {
       base: 'SauceLabs',
       browserName: 'Safari',
-      browserVersion: 'latest'
+      browserVersion: 'latest',
+      'sauce:options':{
+        tags: ['w3c-safari']
+      }
     },
     sl_firefox: {
       base: 'SauceLabs',
-      browserName: 'Firefox',
-      version: 'latest'
+      browserName: 'firefox',
+      version: 'latest',
+      'sauce:options':{
+        tags: ['w3c-firefox']
+      }
     },
     sl_ie_11: {
       base: 'SauceLabs',
       browserName: 'IE',
-      version: 'latest'
+      version: 'latest',
+      'sauce:options':{
+        tags: ['w3c-ie']
+      }
     }
   };
 
