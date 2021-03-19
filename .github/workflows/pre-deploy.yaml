@@ -1,15 +1,14 @@
 name: Pre-Deploy
 on: workflow_dispatch
+env:
+        SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+        SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
 
 jobs:
   e2e-test:
     name: "Alloy Int Edge Prod E2E Test"
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
-    - name: Serialize workflow runs
-      uses: softprops/turnstyle@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: actions/checkout@v2
       with:
         ref: "main"
@@ -23,22 +22,5 @@ jobs:
       run: npm ci
     - name: Build
       run: npm run test:functional:build:int
-    - name: 'BrowserStack Env Setup'
-      uses: 'browserstack/github-actions/setup-env@master'
-      with:
-        username:  ${{ secrets.BROWSERSTACK_USERNAME }}
-        access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    - name: 'BrowserStackLocal Setup'
-      uses: 'browserstack/github-actions/setup-local@master'
-      with:
-        local-testing: start
-        local-identifier: random
     - name: Run TestCafe Tests
-      run: |
-        chmod +x "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
-        "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
-        npm run test:functional:ci:predeploy
-    - name: 'BrowserStackLocal Stop'
-      uses: 'browserstack/github-actions/setup-local@master'
-      with:
-        local-testing: stop
+      run: npm run test:functional:ci:predeploy

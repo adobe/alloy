@@ -9,17 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const puppeteer = require("puppeteer");
 const rollupConfig = require("./rollup.test.config");
-
-process.env.CHROME_BIN = puppeteer.executablePath();
 
 module.exports = config => {
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: "",
-
-    // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ["jasmine"],
 
@@ -45,11 +40,6 @@ module.exports = config => {
     // possible values: "dots", "progress"
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ["dots"],
-
-    allureReport: {
-      reportDir: "allure/allure-results/", // By default files will be save in the base dir
-      useBrowserName: true // add browser name to report and classes names
-    },
 
     // web server port
     port: 9876,
