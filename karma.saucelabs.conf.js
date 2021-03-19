@@ -1,80 +1,67 @@
-const puppeteer = require("puppeteer");
-const rollupConfig = require("./rollup.test.config");
+const karmaSauceLauncher = require("karma-sauce-launcher");
 
-process.env.CHROME_BIN = puppeteer.executablePath();
+const karmaConfig = require("./karma.conf.js");
 
-module.exports = function (config) {
-  if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY) {
-    console.log('Make sure the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables are set.')
-    process.exit(1)
-  }
+module.exports = config => {
+  karmaConfig(config);
 
   const customLaunchers = {
+    sl_safari: {
+      base: 'SauceLabs',
+      browserName: 'safari',
+      version: '12',
+    },
+    sl_edge: {
+      base: 'SauceLabs',
+      browserName: 'MicrosoftEdge',
+    },
     sl_chrome: {
       base: 'SauceLabs',
       browserName: 'chrome',
-      version: 'latest',
-      tags: ['jsonwp-chrome']
-    },
-    sl_chromeW3C: {
-      base: 'SauceLabs',
-      browserName: 'chrome',
-      browserVersion: 'latest',
-      'sauce:options':{
-        tags: ['w3c-chrome']
-      }
+      version: '38',
     },
     sl_firefox: {
       base: 'SauceLabs',
       browserName: 'firefox',
-      version: 'latest',
-      tags: ['jsonwp-firefox']
+      version: '40',
     },
     sl_ie_11: {
       base: 'SauceLabs',
       browserName: 'internet explorer',
-      version: 'latest',
-      tags: ['jsonwp-ie11']
-    }
+      version: '11',
+    },
   };
 
   config.set({
     basePath: '',
-    frameworks: ['jasmine'],
-    files: [
-      "node_modules/promise-polyfill/dist/polyfill.js",
-      {
-        pattern: "test/unit/specs/karmaEntry.spec.js",
-        watched: false // The preprocessor will use its own watcher
-      }
-    ],
-    preprocessors: {
-      "test/unit/specs/karmaEntry.spec.js": ["rollup"]
+    reporters: ['progress', 'saucelabs'],
+    colors: true,
+    concurrency: 5,
+    sauceLabs: {
+      testName: 'Alloy Unit Test',
+      build: process.env.GITHUB_RUN_ID,
+      recordScreenshots: false,
+      username: process.env.SAUCE_USERNAME,
+      accessKey: process.env.SAUCE_ACCESS_KEY,
+      // Must match with `.github/workflows/saucelabs.yml`
+      connectOptions: {
+        scproxyPort: 5757,
+        logfile: 'sauce_connect.log',
+      },
+      public: 'public',
     },
-    plugins: [      
+    plugins: [
       "karma-jasmine",
       "karma-coverage",
       "karma-jasmine-matchers",
       "karma-spec-reporter",
       "karma-rollup-preprocessor",
-      "karma-allure-reporter", 
-      'karma-sauce-launcher'
+      "karma-allure-reporter",
+      karmaSauceLauncher
     ],
-    reporters: ['dots', 'saucelabs'],
-    port: 9876,
-    colors: true,
-    sauceLabs: {
-      testName: 'Alloy Unit Test',
-      recordScreenshots: false,
-      connectOptions: {
-        logfile: 'sauce_connect.log'
-      },
-      public: 'public'
-    },
     // Increase timeout in case connection in CI is slow
     captureTimeout: 120000,
-    customLaunchers: customLaunchers,
-    browsers: Object.keys(customLaunchers),
-    singleRun: true
-  })
+    customLaunchers,
+    singleRun: true,
+  });
 };
