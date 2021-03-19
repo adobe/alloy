@@ -1,3 +1,8 @@
+const puppeteer = require("puppeteer");
+const rollupConfig = require("./rollup.test.config");
+
+process.env.CHROME_BIN = puppeteer.executablePath();
+
 module.exports = function (config) {
   if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY) {
     console.log('Make sure the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables are set.')
@@ -43,11 +48,14 @@ module.exports = function (config) {
         watched: false // The preprocessor will use its own watcher
       }
     ],
+    preprocessors: {
+      "test/unit/specs/karmaEntry.spec.js": ["rollup"]
+    },
     reporters: ['progress', 'saucelabs'],
     port: 9876,
     colors: true,
     sauceLabs: {
-      testName: 'Karma and Sauce Labs demo',
+      testName: 'Alloy Unit Test',
       recordScreenshots: false,
       connectOptions: {
         logfile: 'sauce_connect.log'
