@@ -1,4 +1,4 @@
-const karmaSauceLabsLauncher = require("karma-saucelabs-launcher");
+const karmaSauceLabsLauncher = require("karma-sauce-launcher");
 
 const karmaConfig = require("./karma.conf.js");
 
