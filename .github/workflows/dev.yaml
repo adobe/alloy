@@ -28,8 +28,6 @@ jobs:
       run: npm run test:functional:build:int
     - name: Run Unit & Functional tests on BS
       run: |
-        chmod +x "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
-        "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
+        npm run test:unit:saucelabs:ci
         npm run test:functional:ci:dev
-        npm run test:unit:browserstack:ci
 
