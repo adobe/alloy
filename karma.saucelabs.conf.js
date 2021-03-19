@@ -29,9 +29,6 @@ module.exports = config => {
   };
 
   config.set({
-    browsers: Object.keys(customLaunchers),
-    customLaunchers,
-
     plugins: [
       "karma-jasmine",
       "karma-coverage",
@@ -40,16 +37,21 @@ module.exports = config => {
       "karma-rollup-preprocessor",
       karmaSauceLabsLauncher
     ],
+    reporters: ["dots", "saucelabs"],
+    port: 9876,
+    colors: true,
     sauceLabs: {
-			testName: 'Alloy Unit Test',
-			username: process.env.SAUCE_USERNAME,
-			accessKey: process.env.SAUCE_ACCESS_KEY,
-			connectOptions: {
-				port: 5757,
-				logfile: 'sauce_connect.log'
-			}
-		},
-
-    reporters: ["dots", "saucelabs"]
+      testName: 'Alloy Unit Test',
+      recordScreenshots: false,
+      connectOptions: {
+        logfile: 'sauce_connect.log'
+      },
+      public: 'public'
+    },
+    // Increase timeout in case connection in CI is slow
+    captureTimeout: 120000,
+    browsers: Object.keys(customLaunchers),
+    customLaunchers,
+    singleRun: true
   });
 };
