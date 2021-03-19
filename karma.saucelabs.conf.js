@@ -1,4 +1,5 @@
 const karmaSauceLauncher = require("karma-sauce-launcher");
+process.env.CHROME_BIN = require('puppeteer').executablePath()
 
 const karmaConfig = require("./karma.conf.js");
 
@@ -43,7 +44,6 @@ module.exports = config => {
       recordScreenshots: false,
       username: process.env.SAUCE_USERNAME,
       accessKey: process.env.SAUCE_ACCESS_KEY,
-      // Must match with `.github/workflows/saucelabs.yml`
       connectOptions: {
         scproxyPort: 5757,
         logfile: 'sauce_connect.log',
