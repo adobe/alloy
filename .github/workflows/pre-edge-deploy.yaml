@@ -8,16 +8,15 @@ on:
         description: 'Log level'
         required: true
         default: 'warning'
+env:
+        SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+        SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
 
 jobs:
   alloy-prod-e2e:
     name: "Pre Edge: Prod E2E Tests"
     runs-on: ubuntu-latest
     steps:
-      - name: Serialize workflow runs
-        uses: softprops/turnstyle@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: "Get latest Alloy Release"
         id: last_release
         uses: InsonusK/get-latest-release@v1.0.1
@@ -37,24 +36,7 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run test:functional:build:prod
-      - name: 'BrowserStack Env Setup'
-        uses: 'browserstack/github-actions/setup-env@master'
-        with:
-          username:  ${{ secrets.BROWSERSTACK_USERNAME }}
-          access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-      - name: 'BrowserStackLocal Setup'
-        uses: 'browserstack/github-actions/setup-local@master'
-        with:
-          local-testing: start
-          local-identifier: random
       - name: Run TestCafe Tests
-        run: |
-          chmod +x "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
-          "${GITHUB_WORKSPACE}/scripts/clearBrowserStackJobs.sh"
-          npm run test:functional:ci:edgepredeploy
+        run: npm run test:functional:ci:edgepredeploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: 'BrowserStackLocal Stop'
-        uses: 'browserstack/github-actions/setup-local@master'
-        with:
-          local-testing: stop
