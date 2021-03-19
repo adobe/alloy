@@ -26,7 +26,7 @@ jobs:
       run: npm ci
     - name: Build
       run: npm run test:functional:build:int
-    - name: Run Unit & Functional tests on BS
+    - name: Run Unit & Functional Test
       run: |
        npm run test:unit:saucelabs:ci
        npm run test:functional:ci:dev
