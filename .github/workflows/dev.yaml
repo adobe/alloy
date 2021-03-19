@@ -26,12 +26,6 @@ jobs:
       run: npm ci
     - name: Build
       run: npm run test:functional:build:int
-    - uses: saucelabs/sauce-connect-action@v1
-      with:
-          username: ${{ secrets.SAUCE_USERNAME }}
-          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-          tunnelIdentifier: github-action-tunnel
-          scVersion: 4.6.4
     - name: Run Unit & Functional tests on BS
       run: |
        npm run test:unit:saucelabs:ci
