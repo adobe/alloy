@@ -14,6 +14,30 @@ module.exports = config => {
         tags: ['w3c-chrome']
       }
     },
+    sl_firefoxW3C: {
+      base: 'SauceLabs',
+      browserName: 'firefox',
+      browserVersion: 'latest',
+      'sauce:options':{
+        tags: ['w3c-firefox']
+      }
+    },
+    sl_safariW3C: {
+      base: 'SauceLabs',
+      browserName: 'safari',
+      browserVersion: 'latest',
+      'sauce:options':{
+        tags: ['w3c-safari']
+      }
+    },
+    sl_ieW3C: {
+      base: 'SauceLabs',
+      browserName: 'ie',
+      browserVersion: 'latest',
+      'sauce:options':{
+        tags: ['w3c-ie']
+      }
+    },
   };
 
   config.set({
