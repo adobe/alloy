@@ -7,14 +7,10 @@ env:
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
 
 jobs:
-  dev-test:
-    name: "Run Unit & E2E Test"
+  unit-test:
+    name: "Unit Test"
     runs-on: ubuntu-latest
     steps:
-    - name: Serialize workflow runs
-      uses: softprops/turnstyle@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
       id: npm-cache
@@ -27,7 +23,23 @@ jobs:
     - name: Build
       run: npm run test:functional:build:int
     - name: Run Unit & Functional Test
-      run: |
-       npm run test:unit:saucelabs:ci
-       npm run test:functional:ci:dev
+      run: npm run test:unit:saucelabs:ci
+       
+  functional-test:
+    name: "Functional Test"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v2
+      id: npm-cache
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+    - name: Install dependencies
+      if: steps.npm-cache.outputs.cache-hit != 'true'
+      run: npm ci
+    - name: Build
+      run: npm run test:functional:build:int
+    - name: Run Unit & Functional Test
+      run: npm run test:functional:ci:dev
        
