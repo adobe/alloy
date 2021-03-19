@@ -6,33 +6,33 @@ module.exports = config => {
   karmaConfig(config);
   const customLaunchers = {
     sl_chromeW3C: {
-      base: 'SauceLabs',
-      browserName: 'chrome',
-      browserVersion: 'latest',
-      'sauce:options':{
-        tags: ['w3c-chrome']
+      base: "SauceLabs",
+      browserName: "chrome",
+      browserVersion: "latest",
+      "sauce:options": {
+        tags: ["w3c-chrome"]
       }
     },
     sl_firefoxW3C: {
-      base: 'SauceLabs',
-      browserName: 'firefox',
-      browserVersion: 'latest',
-      'sauce:options':{
-        tags: ['w3c-firefox']
+      base: "SauceLabs",
+      browserName: "firefox",
+      browserVersion: "latest",
+      "sauce:options": {
+        tags: ["w3c-firefox"]
       }
     },
     sl_safariW3C: {
-      base: 'SauceLabs',
-      browserName: 'safari',
-      browserVersion: 'latest',
-      platform: 'macOS 11.00',
+      base: "SauceLabs",
+      browserName: "safari",
+      browserVersion: "latest",
+      platform: "macOS 11.00"
     },
     sl_ieW3C: {
-      base: 'SauceLabs',
-      browserName: 'internet explorer',
-      browserVersion: 'latest',
-      platform: 'Windows 10',
-    },
+      base: "SauceLabs",
+      browserName: "internet explorer",
+      browserVersion: "latest",
+      platform: "Windows 10"
+    }
   };
 
   config.set({
