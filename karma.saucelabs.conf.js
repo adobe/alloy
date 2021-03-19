@@ -1,59 +1,53 @@
-const karmaSauceLabsLauncher = require("karma-sauce-launcher");
-
-const karmaConfig = require("./karma.conf.js");
-
-module.exports = config => {
-  karmaConfig(config);
+module.exports = function (config) {
+  if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY) {
+    console.log('Make sure the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables are set.')
+    process.exit(1)
+  }
 
   const customLaunchers = {
     sl_chrome: {
       base: 'SauceLabs',
       browserName: 'chrome',
       version: 'latest',
-      'sauce:options':{
-        tags: ['w3c-chrome']
-      }
+      tags: ['jsonwp-chrome']
     },
-    sl_safari: {
+    sl_chromeW3C: {
       base: 'SauceLabs',
-      browserName: 'Safari',
+      browserName: 'chrome',
       browserVersion: 'latest',
       'sauce:options':{
-        tags: ['w3c-safari']
+        tags: ['w3c-chrome']
       }
     },
     sl_firefox: {
       base: 'SauceLabs',
       browserName: 'firefox',
       version: 'latest',
-      'sauce:options':{
-        tags: ['w3c-firefox']
-      }
+      tags: ['jsonwp-firefox']
     },
     sl_ie_11: {
       base: 'SauceLabs',
-      browserName: 'IE',
+      browserName: 'internet explorer',
       version: 'latest',
-      'sauce:options':{
-        tags: ['w3c-ie']
-      }
+      tags: ['jsonwp-ie11']
     }
   };
 
   config.set({
-    plugins: [
-      "karma-jasmine",
-      "karma-coverage",
-      "karma-jasmine-matchers",
-      "karma-spec-reporter",
-      "karma-rollup-preprocessor",
-      karmaSauceLabsLauncher
+    basePath: '',
+    frameworks: ['jasmine'],
+    files: [
+      "node_modules/promise-polyfill/dist/polyfill.js",
+      {
+        pattern: "test/unit/specs/karmaEntry.spec.js",
+        watched: false // The preprocessor will use its own watcher
+      }
     ],
-    reporters: ["dots", "saucelabs"],
+    reporters: ['progress', 'saucelabs'],
     port: 9876,
     colors: true,
     sauceLabs: {
-      testName: 'Alloy Unit Test',
+      testName: 'Karma and Sauce Labs demo',
       recordScreenshots: false,
       connectOptions: {
         logfile: 'sauce_connect.log'
@@ -62,8 +56,8 @@ module.exports = config => {
     },
     // Increase timeout in case connection in CI is slow
     captureTimeout: 120000,
+    customLaunchers: customLaunchers,
     browsers: Object.keys(customLaunchers),
-    customLaunchers,
     singleRun: true
-  });
+  })
 };
