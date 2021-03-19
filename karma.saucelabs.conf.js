@@ -45,7 +45,6 @@ module.exports = config => {
       "karma-jasmine-matchers",
       "karma-spec-reporter",
       "karma-rollup-preprocessor",
-      "karma-allure-reporter",
       karmaSauceLauncher
     ],
 
