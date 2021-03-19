@@ -40,6 +40,15 @@ module.exports = config => {
       "karma-rollup-preprocessor",
       karmaSauceLabsLauncher
     ],
+    sauceLabs: {
+			testName: 'Alloy Unit Test',
+			username: process.env.SAUCE_USERNAME,
+			accessKey: process.env.SAUCE_ACCESS_KEY,
+			connectOptions: {
+				port: 5757,
+				logfile: 'sauce_connect.log'
+			}
+		},
 
     reporters: ["dots", "saucelabs"]
   });
