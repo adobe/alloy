@@ -22,7 +22,7 @@ jobs:
       run: npm ci
     - name: Build
       run: npm run test:functional:build:int
-    - name: Run Unit & Functional Test
+    - name: Run Unit Test
       run: npm run test:unit:saucelabs:ci
        
   functional-test:
@@ -40,6 +40,6 @@ jobs:
       run: npm ci
     - name: Build
       run: npm run test:functional:build:int
-    - name: Run Unit & Functional Test
+    - name: Run Functional Test
       run: npm run test:functional:ci:dev
        
