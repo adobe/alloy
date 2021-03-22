@@ -21,6 +21,10 @@ describe("Personalization::createExecuteDecisions", () => {
     {
       id: 1,
       scope: "foo",
+      scopeDetails: {
+        experienceId: 123,
+        branchId: 234
+      },
       items: [
         {
           schema: "https://ns.adobe.com/personalization/dom-action",
@@ -35,6 +39,10 @@ describe("Personalization::createExecuteDecisions", () => {
     {
       id: 5,
       scope: "__view__",
+      scopeDetails: {
+        experienceId: 456,
+        branchId: 654
+      },
       items: [
         {
           schema: "https://ns.adobe.com/personalization/dom-action",
@@ -54,18 +62,21 @@ describe("Personalization::createExecuteDecisions", () => {
       content: "<div>Hola Mundo</div>",
       meta: {
         id: decisions[0].id,
-        scope: "foo"
+        scope: "foo",
+        scopeDetails: decisions[0].scopeDetails
       }
     }
   ];
   const metas = [
     {
       id: decisions[0].id,
-      scope: decisions[0].scope
+      scope: decisions[0].scope,
+      scopeDetails: decisions[0].scopeDetails
     },
     {
       id: decisions[1].id,
-      scope: decisions[1].scope
+      scope: decisions[1].scope,
+      scopeDetails: decisions[1].scopeDetails
     }
   ];
   const modules = {

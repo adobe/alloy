@@ -15,7 +15,11 @@ import { assign, flatMap, isNonEmptyArray } from "../../utils";
 const identity = item => item;
 
 const buildActions = decision => {
-  const meta = { id: decision.id, scope: decision.scope };
+  const meta = {
+    id: decision.id,
+    scope: decision.scope,
+    scopeDetails: decision.scopeDetails
+  };
 
   return decision.items.map(item => assign({}, item.data, { meta }));
 };
