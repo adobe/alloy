@@ -7,7 +7,7 @@ import {
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
-import testPageUrl from "../../helpers/constants/testPageUrl";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
 
 const networkLogger = createNetworkLogger();
 
@@ -22,7 +22,7 @@ const config = compose(
 createFixture({
   title:
     "C205528 A redirect offer should redirect the page to the URL in the redirect decision",
-  url: `${testPageUrl}?test=C205528`,
+  url: `${TEST_PAGE_URL}?test=C205528`,
   requestHooks: [networkLogger.edgeEndpointLogs, redirectLogger]
 });
 

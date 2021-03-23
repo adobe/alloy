@@ -31,7 +31,6 @@ describe("Personalization::onResponseHandler", () => {
     ...CART_VIEW_DECISIONS,
     ...PRODUCTS_VIEW_DECISIONS
   ];
-  // const viewDecisions = CART_VIEW_DECISIONS.concat(PRODUCTS_VIEW_DECISIONS);
   const nonDomActionDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS;
   const unprocessedDecisions = [
     ...PAGE_WIDE_SCOPE_DECISIONS,
@@ -338,11 +337,11 @@ describe("Personalization::onResponseHandler", () => {
     decisionsExtractor.groupDecisionsBySchema.and.returnValues(
       {
         matchedDecisions: [],
-        notMatchedDecisions: unprocessedDecisions
+        unmatchedDecisions: unprocessedDecisions
       },
       {
         matchedDecisions: domActionDecisions,
-        notMatchedDecisions: nonDomActionDecisions
+        unmatchedDecisions: nonDomActionDecisions
       }
     );
     decisionsExtractor.groupDecisionsByScope.and.returnValue({
@@ -360,6 +359,7 @@ describe("Personalization::onResponseHandler", () => {
       decisionsExtractor,
       executeDecisions,
       executeCachedViewDecisions,
+      handleRedirectDecisions,
       showContainers
     });
 
