@@ -22,6 +22,8 @@ import EventMerge from "./EventMerge";
 import LargePayload from "./LargePayload";
 import OrgTwo from "./OrgTwo";
 import DualTag from "./DualTag";
+import RedirectOffers from "./RedirectOffers";
+import RedirectedNewPage from "./RedirectedNewPage";
 
 function BasicExample() {
   return (
@@ -59,6 +61,9 @@ function BasicExample() {
           <li>
             <a href="/legacy.html">Legacy Visitor ID</a>
           </li>
+          <li>
+            <a href="/redirectOffers">Redirect Offers</a>
+          </li>
         </ul>
 
         <hr />
@@ -72,6 +77,8 @@ function BasicExample() {
         <Route path="/largePayload" component={LargePayload} />
         <Route path="/orgTwo" component={OrgTwo} />
         <Route path="/dualTag" component={DualTag} />
+        <Route path="/redirectOffers" component={RedirectOffers} />
+        <Route path="/redirectedNewPage" component={RedirectedNewPage} />
       </div>
     </Router>
   );
