@@ -5,6 +5,9 @@ on:
 env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+        SAUCE_CAPABILITIES_OVERRIDES_PATH: sauceLabsCapabilities.json
+        EDGE_BASE_PATH: ee-pre-prd
+        ALLOY_ENV: int
 
 jobs:
   unit-test:
