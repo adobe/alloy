@@ -38,7 +38,7 @@ const extractDecisionsMeta = payload => {
   });
 };
 
-test.skip("Test C28760: A notification collect should be triggered if a VEC dom actions offer has been rendered", async () => {
+test("Test C28760: A notification collect should be triggered if a VEC dom actions offer has been rendered", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({ renderDecisions: true });
