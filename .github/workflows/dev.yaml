@@ -41,4 +41,4 @@ jobs:
     - name: Build
       run: npm run test:functional:build:int
     - name: Run Functional Test
-      run: npm run test:functional:ci:dev
+      run: npm run test:functional:ci:dev -- 'saucelabs:Chrome@latest-1:macOS 11.00','saucelabs:IE@11.285:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
