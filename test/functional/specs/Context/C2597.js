@@ -3,17 +3,8 @@ import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
 
-import {
-  compose,
-  orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
+import { orgMainConfigMain } from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
-
-const debugEnabledConfig = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
 
 const networkLogger = createNetworkLogger();
 
@@ -30,17 +21,18 @@ test.meta({
 
 test("Test C2597 - Adds all context data to requests by default.", async () => {
   const alloy = createAlloyProxy();
-  await alloy.configure(debugEnabledConfig);
+  await alloy.configure(orgMainConfigMain);
   await alloy.sendEvent();
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
-  const request = networkLogger.edgeEndpointLogs.requests[0].request.body;
-  const stringifyRequest = JSON.parse(request);
+  const parsedBody = JSON.parse(
+    networkLogger.edgeEndpointLogs.requests[0].request.body
+  );
 
-  await t.expect(stringifyRequest.events[0].xdm.device).ok();
-  await t.expect(stringifyRequest.events[0].xdm.placeContext).ok();
-  await t.expect(stringifyRequest.events[0].xdm.environment.type).ok();
-  await t.expect(stringifyRequest.events[0].xdm.web.webPageDetails).ok();
+  await t.expect(parsedBody.events[0].xdm.device).ok();
+  await t.expect(parsedBody.events[0].xdm.placeContext).ok();
+  await t.expect(parsedBody.events[0].xdm.environment.type).ok();
+  await t.expect(parsedBody.events[0].xdm.web.webPageDetails).ok();
 });

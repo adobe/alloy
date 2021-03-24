@@ -34,20 +34,21 @@ test("Test C2598 - Adds only web context data when only web is specified in conf
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
-  const request = networkLogger.edgeEndpointLogs.requests[0].request.body;
-  const stringifyRequest = JSON.parse(request);
+  const parsedBody = JSON.parse(
+    networkLogger.edgeEndpointLogs.requests[0].request.body
+  );
 
-  await t.expect(stringifyRequest.events[0].xdm.web).ok();
-  await t.expect(stringifyRequest.events[0].xdm.web.webPageDetails).ok();
+  await t.expect(parsedBody.events[0].xdm.web).ok();
+  await t.expect(parsedBody.events[0].xdm.web.webPageDetails).ok();
   await t
-    .expect(stringifyRequest.events[0].xdm.web.webPageDetails.URL)
+    .expect(parsedBody.events[0].xdm.web.webPageDetails.URL)
     .eql(TEST_PAGE_URL);
-  await t.expect(stringifyRequest.events[0].xdm.web.webReferrer).ok();
+  await t.expect(parsedBody.events[0].xdm.web.webReferrer).ok();
   await t
-    .expect(stringifyRequest.events[0].xdm.web.webReferrer.URL)
+    .expect(parsedBody.events[0].xdm.web.webReferrer.URL)
     .eql(TEST_PAGE_URL);
 
-  await t.expect(stringifyRequest.events[0].xdm.device).notOk();
-  await t.expect(stringifyRequest.events[0].xdm.placeContext).notOk();
-  await t.expect(stringifyRequest.events[0].xdm.environment).notOk();
+  await t.expect(parsedBody.events[0].xdm.device).notOk();
+  await t.expect(parsedBody.events[0].xdm.placeContext).notOk();
+  await t.expect(parsedBody.events[0].xdm.environment).notOk();
 });
