@@ -47,5 +47,4 @@ jobs:
       uses: DevExpress/testcafe-action@latest
       with:
         args: "-q -c 5 'saucelabs:Chrome@latest-1:macOS 11.00','saucelabs:IE@11.285:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'"
-    # - name: Run Functional Test
-    #   run: testcafe -q -c 5 'saucelabs:Chrome@latest-1:macOS 11.00','saucelabs:IE@11.285:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
+  
