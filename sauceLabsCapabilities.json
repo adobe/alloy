@@ -1,7 +1,7 @@
 {
     "sauce:options": {
-      "extendedDebugging": true,
-      "recordScreenshots": false,
-      "recordVideo": false
+      "extendedDebugging": false,
+      "recordScreenshots": true,
+      "recordVideo": true
     }
   }
