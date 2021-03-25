@@ -4,7 +4,7 @@ env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
         SAUCE_JOB: "Alloy Pre-Deploy Workflow"
-        SAUCE_CAPABILITIES_OVERRIDES_PATH: 'overrides.json'
+        SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
         ALLOY_ENV: int 
 
 jobs:
