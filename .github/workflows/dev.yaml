@@ -26,7 +26,7 @@ jobs:
     - name: Build
       run: npm run test:functional:build:int
     - name: Run Unit Test
-      run: npm test:unit:watch -- karma.saucelabs.conf.js --single-run
+      run: npm run test:unit:saucelabs:ci
        
   functional-test:
     name: "Functional Test"
