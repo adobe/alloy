@@ -28,7 +28,12 @@ const splitItems = (items, schema) => {
 };
 
 const createDecision = (decision, items) => {
-  return { id: decision.id, scope: decision.scope, items };
+  return {
+    id: decision.id,
+    scope: decision.scope,
+    scopeDetails: decision.scopeDetails,
+    items
+  };
 };
 
 const splitDecisions = (decisions, schema) => {

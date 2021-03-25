@@ -18,16 +18,15 @@ describe("Personalization::createRedirectDecisionHandler", () => {
   let showContainers;
   let logger;
 
-  const documentMayUnload = true;
+  const isRedirectNotification = true;
   const decisions = REDIRECT_PAGE_WIDE_SCOPE_DECISION;
-  const meta = {
-    decisions: [
-      {
-        id: decisions[0].id,
-        scope: decisions[0].scope
-      }
-    ]
-  };
+  const decisionsMeta = [
+    {
+      id: decisions[0].id,
+      scope: decisions[0].scope,
+      scopeDetails: decisions[0].scopeDetails
+    }
+  ];
   const replace = jasmine.createSpy();
 
   const window = {
@@ -48,7 +47,10 @@ describe("Personalization::createRedirectDecisionHandler", () => {
       showContainers
     });
     return handleRedirectDecisions(decisions).then(() => {
-      expect(collect).toHaveBeenCalledWith({ meta, documentMayUnload });
+      expect(collect).toHaveBeenCalledWith({
+        decisionsMeta,
+        isRedirectNotification
+      });
       expect(replace).toHaveBeenCalledWith(decisions[0].items[0].data.content);
     });
   });

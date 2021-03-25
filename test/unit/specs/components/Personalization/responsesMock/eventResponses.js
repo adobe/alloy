@@ -48,6 +48,8 @@ export const PAGE_WIDE_SCOPE_DECISIONS = [
   {
     id: "TNT:activity1:experience1",
     scope: "__view__",
+    scopeDetails:
+      "this is a field that we don't process so will be using just a string",
     items: [
       {
         schema: "https://ns.adobe.com/personalization/dom-action",
@@ -86,6 +88,8 @@ export const PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS = [
   {
     id: "TNT:activity1:experience1",
     scope: "__view__",
+    scopeDetails:
+      "this is a field that we don't process so will be using just a string",
     items: [
       {
         schema: "https://ns.adove.com/experience/item",
@@ -108,6 +112,8 @@ export const PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS = [
   {
     id: "TNT:activity1:experience1",
     scope: "__view__",
+    scopeDetails:
+      "this is a field that we don't process so will be using just a string",
     items: [
       {
         schema: "https://ns.adobe.com/personalization/dom-action",
@@ -181,6 +187,8 @@ export const REDIRECT_PAGE_WIDE_SCOPE_DECISION = [
   {
     id: "TNT:activity15:experience1",
     scope: "__view__",
+    scopeDetails:
+      "here should be an object but we don't process it so will be using a string",
     items: [
       {
         schema: "https://ns.adobe.com/personalization/redirect-item",

@@ -12,18 +12,18 @@ governing permissions and limitations under the License.
 
 const getRedirectDetails = redirectDecisions => {
   const decision = redirectDecisions[0];
-  const { items, id, scope } = decision;
+  const { items, id, scope, scopeDetails } = decision;
   const { content } = items[0].data;
 
-  return { content, decisions: [{ id, scope }] };
+  return { content, decisionsMeta: [{ id, scope, scopeDetails }] };
 };
 
 export default ({ collect, window, logger, showContainers }) => {
   return redirectDecisions => {
-    const { content, decisions } = getRedirectDetails(redirectDecisions);
-    const documentMayUnload = true;
+    const { content, decisionsMeta } = getRedirectDetails(redirectDecisions);
+    const isRedirectNotification = true;
 
-    return collect({ meta: { decisions }, documentMayUnload })
+    return collect({ decisionsMeta, isRedirectNotification })
       .then(() => {
         window.location.replace(content);
       })

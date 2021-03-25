@@ -26,7 +26,7 @@ const buildActions = decision => {
 
 const processMetas = (collect, logger, actionResults) => {
   const results = flatMap(actionResults, identity);
-  const finalMetas = [];
+  const decisionsMeta = [];
   const set = new Set();
 
   results.forEach(item => {
@@ -46,12 +46,12 @@ const processMetas = (collect, logger, actionResults) => {
     }
 
     set.add(meta.id);
-    finalMetas.push(meta);
+    decisionsMeta.push(meta);
   });
 
-  if (isNonEmptyArray(finalMetas)) {
+  if (isNonEmptyArray(decisionsMeta)) {
     // collect here can either be the function from createCollect or createViewCollect.
-    collect({ decisionsMeta: finalMetas });
+    collect({ decisionsMeta });
   }
 };
 
