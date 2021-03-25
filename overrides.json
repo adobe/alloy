@@ -1,1 +1,6 @@
-{ "extendedDebugging": true }
+{
+    "extendedDebugging": true,
+    "capturePerformance": true,
+    "recordScreenshots": false,
+    "recordVideo": false
+}
