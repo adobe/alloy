@@ -45,8 +45,8 @@ jobs:
     - name: Build
       run: npm run test:functional:build:int
     - name: Run Functional Test
-      run: npx testcafe -q -c 5 'saucelabs:Chrome@latest-1:macOS 11.00'
-    - run: npx testcafe -q -c 5 'saucelabs:IE@11.285:Windows 10'
-    - run: npx testcafe -q -c 5 'saucelabs:Firefox@latest:Windows 10'
-    - run: npx testcafe -q -c 5 'saucelabs:Safari@latest:macOS 11.00'
+      run: npx SAUCE_CAPABILITIES_OVERRIDES_PATH=\"overrides.json\" testcafe -q -c 5 'saucelabs:Chrome@latest-1:macOS 11.00'
+    - run: npx SAUCE_CAPABILITIES_OVERRIDES_PATH=\"overrides.json\" testcafe -q -c 5 'saucelabs:IE@11.285:Windows 10'
+    - run: npx SAUCE_CAPABILITIES_OVERRIDES_PATH=\"overrides.json\" testcafe -q -c 5 'saucelabs:Firefox@latest:Windows 10'
+    - run: npx SAUCE_CAPABILITIES_OVERRIDES_PATH=\"overrides.json\" testcafe -q -c 5 'saucelabs:Safari@latest:macOS 11.00'
     
