@@ -33,9 +33,7 @@ describe("injectSendBeaconRequest", () => {
       const sendFetchRequest = jasmine
         .createSpy()
         .and.returnValue(sendFetchRequestPromise);
-      const logger = {
-        log: jasmine.createSpy()
-      };
+      const logger = jasmine.createSpyObj(["info"]);
       const sendBeaconRequest = injectSendBeaconRequest({
         sendBeacon,
         sendFetchRequest,
@@ -51,7 +49,7 @@ describe("injectSendBeaconRequest", () => {
         "https://example.com/endpoint",
         body
       );
-      expect(logger.log).toHaveBeenCalledWith(
+      expect(logger.info).toHaveBeenCalledWith(
         jasmine.stringMatching("falling back to")
       );
       expect(result).toBe(sendFetchRequestPromise);

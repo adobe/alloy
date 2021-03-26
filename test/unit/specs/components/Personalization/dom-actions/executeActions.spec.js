@@ -15,7 +15,7 @@ import executeActions from "../../../../../../src/components/Personalization/dom
 describe("Personalization::executeActions", () => {
   it("should execute actions", () => {
     const actionSpy = jasmine.createSpy().and.returnValue(Promise.resolve(1));
-    const logger = jasmine.createSpyObj("logger", ["error", "log"]);
+    const logger = jasmine.createSpyObj("logger", ["error", "info"]);
     logger.enabled = true;
     const actions = [{ type: "foo" }];
     const modules = {
@@ -25,14 +25,14 @@ describe("Personalization::executeActions", () => {
     return executeActions(actions, modules, logger).then(result => {
       expect(result).toEqual([1]);
       expect(actionSpy).toHaveBeenCalled();
-      expect(logger.log.calls.count()).toEqual(1);
+      expect(logger.info.calls.count()).toEqual(1);
       expect(logger.error).not.toHaveBeenCalled();
     });
   });
 
-  it("should not invoke logger.log when logger is not enabled", () => {
+  it("should not invoke logger.info when logger is not enabled", () => {
     const actionSpy = jasmine.createSpy().and.returnValue(Promise.resolve(1));
-    const logger = jasmine.createSpyObj("logger", ["error", "log"]);
+    const logger = jasmine.createSpyObj("logger", ["error", "info"]);
     logger.enabled = false;
     const actions = [{ type: "foo" }];
     const modules = {
@@ -41,13 +41,13 @@ describe("Personalization::executeActions", () => {
     return executeActions(actions, modules, logger).then(result => {
       expect(result).toEqual([1]);
       expect(actionSpy).toHaveBeenCalled();
-      expect(logger.log.calls.count()).toEqual(0);
+      expect(logger.info.calls.count()).toEqual(0);
       expect(logger.error).not.toHaveBeenCalled();
     });
   });
 
   it("should throw error when execute actions fails", () => {
-    const logger = jasmine.createSpyObj("logger", ["error", "log"]);
+    const logger = jasmine.createSpyObj("logger", ["error", "info"]);
     logger.enabled = true;
     const actions = [{ type: "foo" }];
     const modules = {
@@ -58,19 +58,19 @@ describe("Personalization::executeActions", () => {
   });
 
   it("should log nothing when there are no actions", () => {
-    const logger = jasmine.createSpyObj("logger", ["error", "log"]);
+    const logger = jasmine.createSpyObj("logger", ["error", "info"]);
     const actions = [];
     const modules = {};
 
     return executeActions(actions, modules, logger).then(result => {
       expect(result).toEqual([]);
-      expect(logger.log).not.toHaveBeenCalled();
+      expect(logger.info).not.toHaveBeenCalled();
       expect(logger.error).not.toHaveBeenCalled();
     });
   });
 
   it("should throw error when there are no actions types", () => {
-    const logger = jasmine.createSpyObj("logger", ["error", "log"]);
+    const logger = jasmine.createSpyObj("logger", ["error", "info"]);
     logger.enabled = true;
     const actions = [{ type: "foo1" }];
     const modules = {

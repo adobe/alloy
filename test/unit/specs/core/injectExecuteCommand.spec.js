@@ -19,7 +19,6 @@ describe("injectExecuteCommand", () => {
 
   beforeEach(() => {
     logger = jasmine.createSpyObj("logger", [
-      "log",
       "info",
       "warn",
       "error",

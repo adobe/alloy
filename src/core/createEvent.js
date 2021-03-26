@@ -78,7 +78,8 @@ export default () => {
         // assume that the onBeforeEventSend callback will fail (in-case of an error)
         shouldSendEvent = false;
 
-        // this allows the user to replace the object passed into the callback
+        // this allows the user to replace the xdm and data properties
+        // on the object passed to the callback
         const tempContent = {
           xdm: content.xdm || {},
           data: content.data || {}

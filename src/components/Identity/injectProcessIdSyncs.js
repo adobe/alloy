@@ -25,7 +25,7 @@ export default ({ fireReferrerHideableImage, logger }) => idSyncs => {
     urlIdSyncs.map(idSync => {
       return fireReferrerHideableImage(idSync.spec)
         .then(() => {
-          logger.log(createResultLogMessage(idSync, true));
+          logger.info(createResultLogMessage(idSync, true));
         })
         .catch(() => {
           // We intentionally do not throw an error if id syncs fail. We

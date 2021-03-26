@@ -25,9 +25,7 @@ describe("Event Command", () => {
       "mergeXdm",
       "mergeMeta"
     ]);
-    logger = jasmine.createSpyObj("logger", {
-      warn: undefined
-    });
+    logger = jasmine.createSpyObj("logger", ["warn"]);
 
     eventManager = {
       createEvent() {

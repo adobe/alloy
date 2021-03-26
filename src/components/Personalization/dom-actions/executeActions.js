@@ -26,7 +26,7 @@ const logActionCompleted = (logger, action) => {
   if (logger.enabled) {
     const details = JSON.stringify(action);
 
-    logger.log(`Action ${details} executed.`);
+    logger.info(`Action ${details} executed.`);
   }
 };
 

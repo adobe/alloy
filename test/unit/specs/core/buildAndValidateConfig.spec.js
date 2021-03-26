@@ -34,7 +34,7 @@ describe("buildAndValidateConfig", () => {
     };
     logger = {
       enabled: false,
-      log: jasmine.createSpy(),
+      info: jasmine.createSpy(),
       logOnBeforeCommand: jasmine.createSpy(),
       logOnInstanceConfigured: jasmine.createSpy()
     };

@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import createExecuteDecisions from "../../../../../src/components/Personalization/createExecuteDecisions";
 
 describe("Personalization::createExecuteDecisions", () => {
-  const logger = jasmine.createSpyObj("logger", ["log", "warn", "error"]);
+  const logger = jasmine.createSpyObj("logger", ["info", "warn", "error"]);
   let executeActions;
   let collect;
 
