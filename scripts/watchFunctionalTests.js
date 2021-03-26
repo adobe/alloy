@@ -39,10 +39,12 @@ let firstBuildComplete = false;
 
 const effectByEventCode = {
   BUNDLE_START(event) {
-    console.log(`Bundling ${event.input} to ${event.output}`);
+    console.log(`Started bundling ${event.input} to ${event.output}`);
   },
   async BUNDLE_END(event) {
-    console.log(`Bundled ${event.input} to ${event.output}`);
+    console.log(`Finished bundling ${event.input} to ${event.output}`);
+  },
+  async END() {
     if (firstBuildComplete) {
       console.log(
         `Press Ctrl+R to restart the test run against the new build.`
@@ -64,7 +66,7 @@ const effectByEventCode = {
   // Ideally we would pass these environment variables as part
   // of the loadConfigFile function, but that doesn't work.
   // See https://github.com/rollup/rollup/issues/4003
-  process.env.SANDBOX = "true";
+  process.env.STANDALONE = "true";
   process.env.NPM_PACKAGE_LOCAL = "true";
   process.env.BASE_CODE_MIN = "true";
   const { options, warnings } = await loadConfigFile(
