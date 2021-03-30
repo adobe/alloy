@@ -13,6 +13,7 @@ module.exports = {
       { name: "fdescribe", message: "don't focus tests" },
       { name: ["it", "only"], message: "don't focus tests" },
       { name: "fit", message: "don't focus tests" },
+      { name: ["fixture", "only"], message: "don't focus tests" },
       { name: ["test", "only"], message: "don't focus tests" },
       { name: "ftest", message: "don't focus tests" }
     ],
