@@ -9,6 +9,7 @@ env:
         SAUCE_JOB: "Alloy Prod Workflow"
         SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
         ALLOY_ENV: prod
+        ALLOY_PROD_VERSION: './scripts/getProdVersion.js'
 
 jobs:
   alloy-prod-e2e:
@@ -34,13 +35,6 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run test:functional:build:prod
-      - name: Retrieve alloy prod version
-        run: npx ./scripts/getProdVersion.js
-        id: prodversion
-      - name: Print prod version with an environment variable
-        run: echo $ALLOY_PROD_VERSION
-        env:
-          ALLOY_PROD_VERSION: ${{ steps.prodversion.outputs.prodversion }}
       - name: Run TestCafe Tests
         run: npx testcafe -q -c 5 'saucelabs:Chrome@latest-1:macOS 11.00','saucelabs:IE@11.285:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
         env:
