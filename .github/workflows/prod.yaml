@@ -35,7 +35,7 @@ jobs:
       - name: Build
         run: npm run test:functional:build:prod
       - name: Retrieve alloy prod version
-        run: npx ALLOY_PROD_VERSION=`scripts/getProdVersion.js`
+        run: npx ./scripts/getProdVersion.js $ALLOY_PROD_VERSION
       - name: Run TestCafe Tests
         run: npx testcafe -q -c 5 'saucelabs:Chrome@latest-1:macOS 11.00','saucelabs:IE@11.285:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
         env:
