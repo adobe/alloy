@@ -24,9 +24,6 @@ jobs:
       - uses: actions/checkout@v2.3.3
         with:
           ref: ${{ steps.last_release.outputs.tag_name }}
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14'
       - uses: actions/cache@v2
         id: npm-cache
         with:
@@ -38,11 +35,12 @@ jobs:
       - name: Build
         run: npm run test:functional:build:prod
       - name: Run TestCafe Tests
-        run: npx ALLOY_PROD_VERSION=`scripts/getProdVersion.js` testcafe -q -c 5 'saucelabs:Chrome@latest-1:macOS 11.00','saucelabs:IE@11.285:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
+        run: npx ALLOY_PROD_VERSION=`scripts/getProdVersion.js`
+        run: npx testcafe -q -c 5 'saucelabs:Chrome@latest-1:macOS 11.00','saucelabs:IE@11.285:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: craftech-io/slack-action@v1
-        with:
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          status: failure
-        if: failure()
+      # - uses: craftech-io/slack-action@v1
+      #   with:
+      #     slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #     status: failure
+      #   if: failure()
