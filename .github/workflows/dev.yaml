@@ -1,6 +1,6 @@
 name: Dev
 on:
-  push:
+  # push:
   workflow_dispatch:
 env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
