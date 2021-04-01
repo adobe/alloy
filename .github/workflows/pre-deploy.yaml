@@ -3,6 +3,9 @@ on: workflow_dispatch
 env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+        SAUCE_JOB: "Alloy Pre-Deploy Workflow"
+        SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
+        ALLOY_ENV: int 
 
 jobs:
   e2e-test:
@@ -23,4 +26,4 @@ jobs:
     - name: Build
       run: npm run test:functional:build:int
     - name: Run TestCafe Tests
-      run: npm run test:functional:ci:predeploy
+      run: npx testcafe -q -c 5 'saucelabs:Chrome@latest-1:macOS 11.00','saucelabs:IE@11.285:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'

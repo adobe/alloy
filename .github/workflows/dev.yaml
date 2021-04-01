@@ -5,6 +5,10 @@ on:
 env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+        SAUCE_JOB: "Alloy Dev Workflow"
+        SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
+        EDGE_BASE_PATH: ee-pre-prd
+        ALLOY_ENV: int
 
 jobs:
   unit-test:
@@ -23,7 +27,7 @@ jobs:
     - name: Build
       run: npm run test:functional:build:int
     - name: Run Unit Test
-      run: npm run test:unit:saucelabs:ci
+      run: npx karma start karma.saucelabs.conf.js --single-run
        
   functional-test:
     name: "Functional Test"
@@ -41,4 +45,5 @@ jobs:
     - name: Build
       run: npm run test:functional:build:int
     - name: Run Functional Test
-      run: npm run test:functional:ci:dev
+      run: npx testcafe -q -c 5 'saucelabs:Chrome@latest-1:macOS 11.00','saucelabs:IE@11.285:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
+    
