@@ -9,7 +9,6 @@ env:
         SAUCE_JOB: "Alloy Prod Workflow"
         SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
         ALLOY_ENV: prod
-        ALLOY_PROD_VERSION: 2.4.0 
 
 jobs:
   alloy-prod-e2e:
@@ -36,36 +35,7 @@ jobs:
       - name: Build
         run: npm run test:functional:build:prod
       - name: Run TestCafe Tests
-        run: npx testcafe -q -c 5 'saucelabs:Chrome@latest-1:macOS 11.00','saucelabs:IE@11.285:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # - uses: craftech-io/slack-action@v1
-      #   with:
-      #     slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #     status: failure
-      #   if: failure()
-  alloy-prod-230:
-    name: "Cron: Prod E2E Tests"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get tag name
-        id: get_tag_name
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
-      - uses: actions/checkout@v1
-        with:
-          ref: ${{ steps.get_tag_name.outputs.VERSION }}
-      - uses: actions/cache@v2
-        id: npm-cache
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
-      - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
-      - name: Build
-        run: npm run test:functional:build:prod
-      - name: Run TestCafe Tests
-        run: npx testcafe -q -c 5 'saucelabs:Chrome@latest-1:macOS 11.00','saucelabs:IE@11.285:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
+        run: npm run test:functional:ci:prod -- testcafe -q -c 5 'saucelabs:Chrome@latest-1:macOS 11.00','saucelabs:IE@11.285:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # - uses: craftech-io/slack-action@v1
