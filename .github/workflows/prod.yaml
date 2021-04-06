@@ -8,6 +8,7 @@ env:
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
         SAUCE_JOB: "Alloy Prod Workflow"
         SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
+        ALLOY_ENV: prod
 
 jobs:
   alloy-prod-e2e:
