@@ -18,7 +18,7 @@
     "test:unit:saucelabs:local": "karma start karma.saucelabs.conf.js --single-run",
     "test:unit:coverage": "karma start --single-run --reporters spec,coverage",
     "test:functional": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome",
-    "test:functional:ci:prod": "SAUCE_CAPABILITIES_OVERRIDES_PATH=\"sauceLabsCapabilities.json\" ALLOY_PROD_VERSION=`scripts/getProdVersion.js` testcafe -q -c 5 'saucelabs:Chrome@latest-1:macOS 11.00','saucelabs:IE@latest:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'",
+    "test:functional:ci:prod": "SAUCE_CAPABILITIES_OVERRIDES_PATH=\"sauceLabsCapabilities.json\" ALLOY_PROD_VERSION=`scripts/getProdVersion.js` testcafe -q -c 5",
     "test:functional:watch": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ./scripts/watchFunctionalTests.js --browsers chrome",
     "test:functional:build:int": "rollup -c --environment BASE_CODE_MIN,STANDALONE,NPM_PACKAGE_LOCAL",
     "test:functional:build:prod": "rollup -c --environment BASE_CODE_MIN,NPM_PACKAGE_PROD",
