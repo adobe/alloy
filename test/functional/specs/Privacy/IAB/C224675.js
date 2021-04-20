@@ -101,9 +101,7 @@ test("Test C224675: Passing invalid consent options should throw a validation er
     .expect(errorMessageForInvalidValue)
     .contains("The server responded with a status code 400")
     .expect(errorMessageForInvalidValue)
-    .contains(
-      "Invalid request. No value supplied for field 'consent.[0].value'"
-    );
+    .contains("No value supplied for field 'consent.[0].value'");
 
   await t.expect(errorMessageForInvalidValue).contains("EXEG-0103-400");
 
