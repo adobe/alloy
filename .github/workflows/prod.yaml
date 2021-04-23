@@ -15,15 +15,16 @@ jobs:
     name: "Cron: Prod E2E Tests"
     runs-on: ubuntu-latest
     steps:
-      - name: "Get latest Alloy Release"
-        id: last_release
-        uses: InsonusK/get-latest-release@v1.0.1
-        with:
-          myToken: ${{ github.token }}
-          exclude_types: "draft|prerelease"
+      # - name: "Get latest Alloy Release"
+      #   id: last_release
+      #   uses: InsonusK/get-latest-release@v1.0.1
+      #   with:
+      #     myToken: ${{ github.token }}
+      #     exclude_types: "draft|prerelease"
       - uses: actions/checkout@v2.3.3
-        with:
-          ref: ${{ steps.last_release.outputs.tag_name }}
+      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+        # with:
+        #   ref: ${{ steps.last_release.outputs.tag_name }}
       - uses: actions/cache@v2
         id: npm-cache
         with:
