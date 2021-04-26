@@ -10,9 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { deepAssign } from "../../utils";
+import libraryName from "../../constants/libraryName";
+import libraryVersion from "../../constants/libraryVersion";
 
-export default implementationDetails => {
-  return xdm => {
-    deepAssign(xdm, { implementationDetails });
+export default xdm => {
+  const implementationDetails = {
+    name: libraryName,
+    version: libraryVersion,
+    environment: "browser"
   };
+  deepAssign(xdm, { implementationDetails });
 };

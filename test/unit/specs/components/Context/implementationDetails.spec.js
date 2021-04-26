@@ -10,23 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectImplementationDetails from "../../../../../src/components/Context/injectImplementationDetails";
+import implementationDetails from "../../../../../src/components/Context/implementationDetails";
 
 describe("Context::implementationDetails", () => {
-  const details = {
-    name: "myname",
-    version: "myversion",
-    environment: "myenvironment"
-  };
-
   it("works", () => {
     const xdm = {};
-    injectImplementationDetails(details)(xdm);
+    implementationDetails(xdm);
     expect(xdm).toEqual({
       implementationDetails: {
-        name: "myname",
-        version: "myversion",
-        environment: "myenvironment"
+        name: "https://ns.adobe.com/experience/alloy",
+        version: "__VERSION__",
+        environment: "browser"
       }
     });
   });
