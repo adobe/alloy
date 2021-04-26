@@ -14,14 +14,24 @@ import { deepAssign } from "../../utils";
 
 export default window => {
   return xdm => {
-    const { innerWidth, innerHeight } = window;
+    const {
+      document: { documentElement: { clientWidth, clientHeight } = {} }
+    } = window;
+
     const environment = {
-      type: "browser",
-      browserDetails: {
-        viewportWidth: innerWidth,
-        viewportHeight: innerHeight
-      }
+      type: "browser"
     };
+    const hasWidth = clientWidth && clientWidth >= 0;
+    const hasHeight = clientHeight && clientHeight >= 0;
+    if (hasWidth || hasHeight) {
+      environment.browserDetails = {};
+      if (hasWidth) {
+        environment.browserDetails.viewportWidth = clientWidth;
+      }
+      if (hasHeight) {
+        environment.browserDetails.viewportHeight = clientHeight;
+      }
+    }
 
     deepAssign(xdm, { environment });
   };
