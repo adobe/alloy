@@ -1,8 +1,12 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
-import { orgMainConfigMain } from "../../helpers/constants/configParts";
+import {
+  debugEnabled,
+  orgMainConfigMain
+} from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
+import createConsoleLogger from "../../helpers/consoleLogger";
 
 const networkLogger = createNetworkLogger();
 
@@ -66,9 +70,11 @@ test("C1715149 Events should call onBeforeEventSend callback, fail, and not send
 });
 
 test("C1715149 Events should call onBeforeEventSend callback, return false, and not send event", async () => {
+  const logger = await createConsoleLogger();
   const alloy = createAlloyProxy();
   await alloy.configure({
     ...orgMainConfigMain,
+    ...debugEnabled,
     onBeforeEventSend: onBeforeEventSendFalse
   });
 
@@ -79,4 +85,5 @@ test("C1715149 Events should call onBeforeEventSend callback, return false, and 
   // if event is cancelled, the promise should resolve with an empty object
   await t.expect(result).eql({});
   await t.expect(networkLogger.edgeInteractEndpointLogs.requests.length).eql(0);
+  await logger.info.expectMessageMatching(/Event was canceled/);
 });

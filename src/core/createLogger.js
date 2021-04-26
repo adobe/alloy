@@ -92,11 +92,6 @@ export default ({ getDebugEnabled, console, getMonitors, context }) => {
       );
     },
     /**
-     * Outputs a message to the web console.
-     * @param {...*} arg Any argument to be logged.
-     */
-    log: log.bind(null, "log"),
-    /**
      * Outputs informational message to the web console. In some
      * browsers a small "i" icon is displayed next to these items
      * in the web console's log.

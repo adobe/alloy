@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import createLogger from "../../../../src/core/createLogger";
 
-const logMethods = ["log", "info", "warn", "error"];
+const logMethods = ["info", "warn", "error"];
 const monitorMethods = [
   "onInstanceCreated",
   "onInstanceConfigured",

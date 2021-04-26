@@ -12,8 +12,12 @@ governing permissions and limitations under the License.
 
 import { createCallbackAggregator } from "../utils";
 
+const EVENT_CANCELLATION_MESSAGE =
+  "Event was canceled because the onBeforeEventSend callback returned false.";
+
 export default ({
   config,
+  logger,
   lifecycle,
   consent,
   createEvent,
@@ -74,7 +78,8 @@ export default ({
           // if the callback returns false, the event should not be sent
           if (!event.shouldSend()) {
             onRequestFailureCallbackAggregator.add(lifecycle.onRequestFailure);
-            const error = new Error("Event was cancelled.");
+            logger.info(EVENT_CANCELLATION_MESSAGE);
+            const error = new Error(EVENT_CANCELLATION_MESSAGE);
             return onRequestFailureCallbackAggregator
               .call({ error })
               .then(() => {

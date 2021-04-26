@@ -14,7 +14,7 @@ export default ({ sendBeacon, sendFetchRequest, logger }) => {
   return (url, body) => {
     const blob = new Blob([body], { type: "text/plain; charset=UTF-8" });
     if (!sendBeacon(url, blob)) {
-      logger.log("Unable to use `sendBeacon`; falling back to `fetch`.");
+      logger.info("Unable to use `sendBeacon`; falling back to `fetch`.");
       return sendFetchRequest(url, body);
     }
 

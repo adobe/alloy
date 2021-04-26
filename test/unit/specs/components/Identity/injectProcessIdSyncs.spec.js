@@ -9,7 +9,7 @@ describe("Identity::injectProcessIdSyncs", () => {
     fireReferrerHideableImage = jasmine
       .createSpy()
       .and.returnValue(Promise.resolve());
-    logger = jasmine.createSpyObj("logger", ["log", "error"]);
+    logger = jasmine.createSpyObj("logger", ["info", "error"]);
     processIdSyncs = injectProcessIdSyncs({
       fireReferrerHideableImage,
       logger
@@ -64,7 +64,7 @@ describe("Identity::injectProcessIdSyncs", () => {
         url: "http://test.zyx",
         hideReferrer: false
       });
-      expect(logger.log).toHaveBeenCalledWith(
+      expect(logger.info).toHaveBeenCalledWith(
         "ID sync succeeded: http://test.zyx"
       );
       expect(logger.error).toHaveBeenCalledWith(
