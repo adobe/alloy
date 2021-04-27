@@ -33,5 +33,10 @@ git commit -m "update self devDependency to ${VERSION}"
 git tag -a "v${VERSION}" -m "${VERSION}"
 git push gh-origin HEAD:${GITHUB_REF} --follow-tags
 
-# build alloy.js and alloy.min.js to upload as release assets
+# build alloy.js and alloy.min.js
 npm run build
+
+# upload alloy.js and alloy.min.js to CDN
+echo "$CDN_PRIVATE_KEY" > id_rsa
+./scripts/sftpCommands.sh ${VERSION} | \
+  sftp -i ./id_rsa -oHostKeyAlgorithms=+ssh-dss -b - sshacs@dxresources.ssh.upload.akamai.com:/prod/alloy
