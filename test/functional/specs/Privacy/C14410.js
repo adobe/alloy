@@ -52,9 +52,7 @@ test("Test C14410: Setting consent for unknown purposes fails", async t => {
     .expect(errorMessage)
     .contains("The server responded with a status code 400")
     .expect(errorMessage)
-    .contains(
-      "The value supplied for field 'consent.[0].value' does not match your input schema"
-    );
+    .contains("EXEG-0102-400");
 
   // make sure we can call it again with the correct values
   await alloy.setConsent(CONSENT_IN);
