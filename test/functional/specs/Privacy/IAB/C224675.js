@@ -9,11 +9,7 @@ import {
 } from "../../../helpers/constants/configParts";
 import createAlloyProxy from "../../../helpers/createAlloyProxy";
 
-const config = compose(
-  orgMainConfigMain,
-  consentPending,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, consentPending, debugEnabled);
 
 const networkLogger = createNetworkLogger();
 
@@ -54,11 +50,7 @@ test("Test C224675: Passing invalid consent options should throw a validation er
     .expect(errorMessageForInvalidStandard)
     .contains("The server responded with a status code 400")
     .expect(errorMessageForInvalidStandard)
-    .contains(
-      "The value supplied for field 'consent[0]' does not match your input schema"
-    );
-
-  await t.expect(errorMessageForInvalidStandard).contains("EXEG-0102-400");
+    .contains("EXEG-0102-400");
 
   const errorMessageForInvalidVersion = await alloy.setConsentErrorMessage({
     consent: [
@@ -78,11 +70,7 @@ test("Test C224675: Passing invalid consent options should throw a validation er
     .expect(errorMessageForInvalidVersion)
     .contains("The server responded with a status code 400")
     .expect(errorMessageForInvalidVersion)
-    .contains(
-      "The value supplied for field 'consent[0]' does not match your input schema"
-    );
-
-  await t.expect(errorMessageForInvalidVersion).contains("EXEG-0102-400");
+    .contains("EXEG-0102-400");
 
   const errorMessageForInvalidValue = await alloy.setConsentErrorMessage({
     consent: [
@@ -101,9 +89,7 @@ test("Test C224675: Passing invalid consent options should throw a validation er
     .expect(errorMessageForInvalidValue)
     .contains("The server responded with a status code 400")
     .expect(errorMessageForInvalidValue)
-    .contains("No value supplied for field 'consent.[0].value'");
-
-  await t.expect(errorMessageForInvalidValue).contains("EXEG-0103-400");
+    .contains("EXEG-0103-400");
 
   const errorMessageForEmptyValue = await alloy.setConsentErrorMessage({
     consent: [
@@ -123,9 +109,5 @@ test("Test C224675: Passing invalid consent options should throw a validation er
     .expect(errorMessageForEmptyValue)
     .contains("The server responded with a status code 422")
     .expect(errorMessageForEmptyValue)
-    .contains(
-      "IAB consent string value must not be empty for standard 'IAB TCF' at index 0"
-    );
-
-  await t.expect(errorMessageForEmptyValue).contains("EXEG-0104-422");
+    .contains("EXEG-0104-422");
 });
