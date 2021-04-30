@@ -10,10 +10,7 @@ import {
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
-const config = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, debugEnabled);
 
 createFixture({
   title: "C25822: Event command sends a request with a validated identityMap",

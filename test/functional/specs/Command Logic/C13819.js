@@ -18,12 +18,9 @@ import {
 import createFixture from "../../helpers/createFixture";
 import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 
-const config = compose(
-  orgMainConfigMain,
-  {
-    edgeConfigId: "BOGUS"
-  }
-);
+const config = compose(orgMainConfigMain, {
+  edgeConfigId: "BOGUS"
+});
 
 createFixture({
   title:

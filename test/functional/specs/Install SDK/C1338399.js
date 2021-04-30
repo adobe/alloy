@@ -9,11 +9,7 @@ import {
 } from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
-const mainConfig = compose(
-  orgMainConfigMain,
-  debugEnabled,
-  migrationDisabled
-);
+const mainConfig = compose(orgMainConfigMain, debugEnabled, migrationDisabled);
 
 const networkLogger = createNetworkLogger();
 

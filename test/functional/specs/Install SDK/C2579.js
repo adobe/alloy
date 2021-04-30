@@ -10,16 +10,8 @@ import {
 import EDGE_CONFIG_ID from "../../helpers/constants/edgeConfigId";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
-const mainConfig = compose(
-  orgMainConfigMain,
-  debugEnabled,
-  migrationDisabled
-);
-const altConfig = compose(
-  orgAltConfigAlt,
-  debugEnabled,
-  migrationDisabled
-);
+const mainConfig = compose(orgMainConfigMain, debugEnabled, migrationDisabled);
+const altConfig = compose(orgAltConfigAlt, debugEnabled, migrationDisabled);
 
 const networkLoggerConfig = {
   logRequestBody: true,
