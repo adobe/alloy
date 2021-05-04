@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import ContentSecurityPolicy from "./ContentSecurityPolicy";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 
 export default function RedirectOffers() {
   useEffect(() => {

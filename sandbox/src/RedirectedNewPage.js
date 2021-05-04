@@ -1,7 +1,16 @@
-import React from "react";
-import ContentSecurityPolicy from "./ContentSecurityPolicy";
+import React, { useEffect } from "react";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 
 export default function RedirectedNewPage() {
+  useEffect(() => {
+    window
+      .alloy("sendEvent", {
+        renderDecisions: true
+      })
+      .then(({ decisions = [] }) => {
+        console.log("personalized decisions on the redirected view", decisions);
+      });
+  }, []);
   return (
     <div className="personalization-container">
       <ContentSecurityPolicy />
