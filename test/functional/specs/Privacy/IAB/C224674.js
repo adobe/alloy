@@ -15,11 +15,7 @@ import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies";
 import createAlloyProxy from "../../../helpers/createAlloyProxy";
 import { IAB_NO_PURPOSE_ONE_NO_GRPR } from "../../../helpers/constants/consent";
 
-const config = compose(
-  orgMainConfigMain,
-  consentPending,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, consentPending, debugEnabled);
 
 const networkLogger = createNetworkLogger();
 

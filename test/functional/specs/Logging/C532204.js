@@ -7,10 +7,7 @@ import {
 } from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
-const debugEnabledConfig = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled);
 
 /*
  * Some pages will redefine the console logging methods with implementations

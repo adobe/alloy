@@ -18,11 +18,7 @@ import {
   IAB_NO_ADOBE_VENDOR
 } from "../../../helpers/constants/consent";
 
-const config = compose(
-  orgMainConfigMain,
-  consentPending,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, consentPending, debugEnabled);
 
 const networkLogger = createNetworkLogger();
 

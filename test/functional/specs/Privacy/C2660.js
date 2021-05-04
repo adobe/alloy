@@ -28,12 +28,7 @@ const getContextUrlFromRequest = request => {
 
 test("C2660 - Context data is captured before user consents.", async () => {
   const alloy = createAlloyProxy();
-  await alloy.configure(
-    compose(
-      orgMainConfigMain,
-      consentPending
-    )
-  );
+  await alloy.configure(compose(orgMainConfigMain, consentPending));
 
   // send an event that will be queued
   const sendEventResponse = await alloy.sendEventAsync();
