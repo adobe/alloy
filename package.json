@@ -31,7 +31,7 @@
   },
   "lint-staged": {
     "./*.js": [
-      "eslint --fix"
+      "eslint --cache --fix"
     ],
     "./{src,test}/**/*.js": [
       "eslint --cache --fix"
