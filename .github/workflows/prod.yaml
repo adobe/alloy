@@ -16,9 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          # Fetch all the branches and tags in the repo
+          fetch-depth: 0
+      # install these dependencies so getTestingTags will work
       - run: npm install -g @octokit/rest semver
       - run: |
-          for TAG in $(./scripts/getTestingVersions.js)
+          for TAG in $(./scripts/getTestingTags.js)
           do
             git checkout tags/$TAG
             npm ci
@@ -27,6 +31,7 @@ jobs:
             npx testcafe -q -c 5 'saucelabs:Chrome@latest:macOS 11.00','saucelabs:IE@11.285:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
           done
         env:
+          # getTestingTags calls the Github API so we need to use the token
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: craftech-io/slack-action@v1
         with:
