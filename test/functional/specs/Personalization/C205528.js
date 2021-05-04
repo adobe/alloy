@@ -1,19 +1,18 @@
-import { t, ClientFunction, RequestLogger } from "testcafe";
+import { t, RequestLogger } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
-import configureAlloyInstance from "../../helpers/configureAlloyInstance";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
+const redirectEndpoint = /functional-test\/alloyTestPage.html\?redirectedTest=true/;
 
-const redirectLogger = RequestLogger(
-  "https://alloyio.com/functional-test/alloyTestPage.html?redirectedTest=true"
-);
+const redirectLogger = RequestLogger(redirectEndpoint);
 
 const config = compose(
   orgMainConfigMain,
@@ -32,18 +31,15 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const triggerAlloyEvent = ClientFunction(() => {
-  return window.alloy("sendEvent", {
-    renderDecisions: true
-  });
-});
-
 test("Test C205528: A redirect offer should redirect the page to the URL in the redirect decision", async () => {
-  await configureAlloyInstance("alloy", config);
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
   try {
-    await triggerAlloyEvent();
+    await alloy.sendEvent({
+      renderDecisions: true
+    });
   } catch (e) {
-    // we'll get the ClientFunction exception here because within it we will do a redirect.
+    // an exception will be thrown because a redirect will be executed within the Alloy Client Function
   } finally {
     await t.expect(redirectLogger.requests.length).eql(1);
   }
