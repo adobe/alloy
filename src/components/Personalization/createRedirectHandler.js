@@ -23,7 +23,7 @@ export default ({ collect, window, logger, showContainers }) => {
     const { content, decisions } = getRedirectDetails(redirectDecisions);
     const documentMayUnload = true;
 
-    return collect({ meta: { decisions }, documentMayUnload })
+    return collect({ decisionsMeta: decisions, documentMayUnload })
       .then(() => {
         window.location.replace(content);
       })
