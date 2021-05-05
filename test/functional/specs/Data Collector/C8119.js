@@ -34,12 +34,9 @@ test("Test C8119: Load page with link. Click link. Verify no event sent.", async
   const collectEndpointAsserter = await createCollectEndpointAsserter();
   await preventLinkNavigation();
   const alloy = createAlloyProxy();
-  const testConfig = compose(
-    orgMainConfigMain,
-    {
-      clickCollectionEnabled: false
-    }
-  );
+  const testConfig = compose(orgMainConfigMain, {
+    clickCollectionEnabled: false
+  });
   await alloy.configure(testConfig);
   await addLinkToBody();
   await clickLink();

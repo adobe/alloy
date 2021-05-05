@@ -7,10 +7,7 @@ import {
 } from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
-const config = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, debugEnabled);
 
 createFixture({
   title: "C2587: Throw error when executing command that doesn't exist."
@@ -23,7 +20,10 @@ test.meta({
 });
 
 const bogusCommand = ClientFunction(() => {
-  return window.alloy("bogusCommand").then(() => {}, error => error.message);
+  return window.alloy("bogusCommand").then(
+    () => {},
+    error => error.message
+  );
 });
 
 test("Test C2587: Throw error when executing command that doesn't exist", async t => {

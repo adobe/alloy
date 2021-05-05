@@ -23,10 +23,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const config = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, debugEnabled);
 
 test("C25148 - When default consent is 'in', consent can be revoked", async () => {
   const alloy = createAlloyProxy();

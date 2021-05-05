@@ -7,15 +7,9 @@ import {
 } from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
-const debugEnabledConfig = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled);
 
-const debugDisabledConfig = compose(
-  orgMainConfigMain,
-  debugDisabled
-);
+const debugDisabledConfig = compose(orgMainConfigMain, debugDisabled);
 
 createFixture({
   title: "C2583: Toggle logging through configuration"

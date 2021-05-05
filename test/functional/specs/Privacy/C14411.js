@@ -10,10 +10,7 @@ import { MAIN_CONSENT_COOKIE_NAME } from "../../helpers/constants/cookies";
 import cookies from "../../helpers/cookies";
 import reloadPage from "../../helpers/reloadPage";
 
-const config = compose(
-  orgMainConfigMain,
-  consentPending
-);
+const config = compose(orgMainConfigMain, consentPending);
 
 createFixture({
   title: "C14411: User consents to no purposes after consenting to no purposes"
