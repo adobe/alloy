@@ -95,4 +95,44 @@ describe("Context::injectEnvironment", () => {
       }
     }
   );
+
+  run(
+    "handles 0 height and width",
+    {
+      document: {
+        documentElement: {
+          clientWidth: 0,
+          clientHeight: 0
+        }
+      }
+    },
+    {
+      environment: {
+        type: "browser",
+        browserDetails: {
+          viewportWidth: 0,
+          viewportHeight: 0
+        }
+      }
+    }
+  );
+  run(
+    "handles null and floating point height and width",
+    {
+      document: {
+        documentElement: {
+          clientWidth: null,
+          clientHeight: 4.2
+        }
+      }
+    },
+    {
+      environment: {
+        type: "browser",
+        browserDetails: {
+          viewportHeight: 4
+        }
+      }
+    }
+  );
 });
