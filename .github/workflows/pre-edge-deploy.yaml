@@ -1,12 +1,11 @@
 name: Pre-Edge-Deploy
 on:
-  push:
-    workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
+  workflow_dispatch:
+  inputs:
+    logLevel:
+      description: 'Log level'
+      required: true
+      default: 'warning'
 env:
   SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
   SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
