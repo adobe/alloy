@@ -1,45 +1,36 @@
-#This configuration will be used by the Edge team to test against prod.
-
 name: Pre-Edge-Deploy
 on:
-  workflow_dispatch:
+  push:
+    workflow_dispatch:
     inputs:
       logLevel:
         description: 'Log level'
         required: true
         default: 'warning'
 env:
-        SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-        SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
-        ALLOY_ENV: prod
-        EDGE_BASE_PATH: ee-pre-prd
+  SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+  SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+  SAUCE_JOB: "Alloy Pre-Edge Workflow"
+  SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
+  ALLOY_ENV: int
+  EDGE_BASE_PATH: ee-pre-prd
 
 jobs:
-  alloy-prod-e2e:
-    name: "Pre Edge: Prod E2E Tests"
+  functional-test:
+    name: "Functional Test"
     runs-on: ubuntu-latest
     steps:
-      - name: "Get latest Alloy Release"
-        id: last_release
-        uses: InsonusK/get-latest-release@v1.0.1
-        with:
-          myToken: ${{ github.token }}
-          exclude_types: "draft|prerelease"
-      - uses: actions/checkout@v2.3.3
-        with:
-          ref: ${{ steps.last_release.outputs.tag_name }}
-      - uses: actions/cache@v2
-        id: npm-cache
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
-      - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
-      - name: Build
-        run: npm run test:functional:build:prod
-      - name: Run TestCafe Tests
-        run: npm run test:functional:ci:prod
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v2
+      id: npm-cache
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+    - name: Install dependencies
+      if: steps.npm-cache.outputs.cache-hit != 'true'
+      run: npm ci
+    - name: Build
+      run: npm run test:functional:build:int
+    - name: Run Functional Test
+      run: npx testcafe -q -c 5 'saucelabs:Chrome@latest-1:macOS 11.00','saucelabs:IE@latest:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
+    

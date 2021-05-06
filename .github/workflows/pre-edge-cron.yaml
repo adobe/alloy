@@ -1,18 +1,26 @@
-name: Prod
+#This configuration will be used by the Edge team to test against prod.
+
+name: Pre-Edge-Cron
 on:
   schedule:
     - cron: "0 */24 * * *"
   workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
 env:
   SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
   SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-  SAUCE_JOB: "Alloy Prod Workflow"
+  SAUCE_JOB: "Alloy Pre-Edge Cron Workflow"
   SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
   ALLOY_ENV: prod
+  EDGE_BASE_PATH: ee-pre-prd
 
 jobs:
-  alloy-prod-e2e:
-    name: "Cron: Prod E2E Tests"
+  alloy-preedge-e2e:
+    name: "Pre Edge: Prod E2E Tests"
     runs-on: ubuntu-latest
     steps:
       - name: "Get latest Alloy Release"
@@ -38,8 +46,3 @@ jobs:
         run: npm run test:functional:ci:prod
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: craftech-io/slack-action@v1
-        with:
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          status: failure
-        if: failure()
