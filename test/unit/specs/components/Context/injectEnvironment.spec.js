@@ -17,8 +17,8 @@ describe("Context::injectEnvironment", () => {
       innerHeight: 1004,
       document: {
         documentElement: {
-          clientWidth: 1005,
-          clientHeight: 1006
+          offsetWidth: 1005,
+          offsetHeight: 1006
         }
       }
     },
@@ -38,8 +38,8 @@ describe("Context::injectEnvironment", () => {
     {
       document: {
         documentElement: {
-          clientWidth: -10,
-          clientHeight: -20
+          offsetWidth: -10,
+          offsetHeight: -20
         }
       }
     },
@@ -55,17 +55,14 @@ describe("Context::injectEnvironment", () => {
     {
       document: {
         documentElement: {
-          clientWidth: -10,
-          clientHeight: 42
+          offsetWidth: -10,
+          offsetHeight: -42
         }
       }
     },
     {
       environment: {
         type: "browser",
-        browserDetails: {
-          viewportHeight: 42
-        }
       }
     }
   );
@@ -101,8 +98,8 @@ describe("Context::injectEnvironment", () => {
     {
       document: {
         documentElement: {
-          clientWidth: 0,
-          clientHeight: 0
+          offsetWidth: 0,
+          offsetHeight: 0
         }
       }
     },
@@ -117,12 +114,12 @@ describe("Context::injectEnvironment", () => {
     }
   );
   run(
-    "handles null and floating point height and width",
+    "handles floating point height and width",
     {
       document: {
         documentElement: {
-          clientWidth: null,
-          clientHeight: 4.2
+          offsetWidth: 10,
+          offsetHeight: 4.2
         }
       }
     },
@@ -130,6 +127,7 @@ describe("Context::injectEnvironment", () => {
       environment: {
         type: "browser",
         browserDetails: {
+          viewportWidth: 10,
           viewportHeight: 4
         }
       }
