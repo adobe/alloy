@@ -75,7 +75,10 @@ const getLastPromise = ClientFunction(() => {
 const getLastErrorMessage = ClientFunction(() => {
   // return a promise that resolves to the error message or undefined
   // using the last promise set by asyncProxyFunction
-  return window.lastAlloyProxyPromise.then(() => undefined, e => e.message);
+  return window.lastAlloyProxyPromise.then(
+    () => undefined,
+    e => e.message
+  );
 });
 
 const commands = [

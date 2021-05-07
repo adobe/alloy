@@ -29,10 +29,7 @@ const demdexHostRegex = /\.demdex\.net/;
 
 const getHostFor = requestLogger => requestLogger.request.headers.host;
 
-const config = compose(
-  orgMainConfigMain,
-  edgeDomainFirstParty
-);
+const config = compose(orgMainConfigMain, edgeDomainFirstParty);
 
 test.meta({
   ID: "C148846",

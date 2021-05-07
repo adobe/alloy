@@ -21,7 +21,11 @@ describe("validation::createUnique", () => {
     });
   });
 
-  [["a", "a"], ["a", "b", "a"], ["a", "b", "b"]].forEach(values => {
+  [
+    ["a", "a"],
+    ["a", "b", "a"],
+    ["a", "b", "b"]
+  ].forEach(values => {
     it(`should reject ${JSON.stringify(values)}`, () => {
       const validator = string().unique();
       values.forEach((value, i) => {

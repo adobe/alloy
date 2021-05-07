@@ -27,7 +27,10 @@ describe("groupBy", () => {
 
     const map = {
       1: [{ id: 1, name: "Foo" }],
-      2: [{ id: 2, name: "Foo2" }, { id: 2, name: "Foo3" }]
+      2: [
+        { id: 2, name: "Foo2" },
+        { id: 2, name: "Foo3" }
+      ]
     };
 
     expect(groupBy(array, item => item.id || "default")).toEqual(map);
@@ -43,7 +46,10 @@ describe("groupBy", () => {
 
     const map = {
       1: [{ id: 1, name: "Foo" }],
-      2: [{ id: 2, name: "Foo2" }, { id: 2, name: "Foo3" }],
+      2: [
+        { id: 2, name: "Foo2" },
+        { id: 2, name: "Foo3" }
+      ],
       default: [{ noId: 2, name: "Foo3" }]
     };
 

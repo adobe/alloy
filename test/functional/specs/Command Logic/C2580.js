@@ -9,10 +9,7 @@ import {
 import { injectAlloyDuringTest } from "../../helpers/createFixture/clientScripts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
-const debugEnabledConfig = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled);
 
 createFixture({
   title: "C2580: Command queueing test",

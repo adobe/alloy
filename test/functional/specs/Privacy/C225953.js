@@ -12,11 +12,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const { CONSENT_IN } = require("../../helpers/constants/consent");
 
-const config = compose(
-  orgMainConfigMain,
-  consentPending,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, consentPending, debugEnabled);
 
 const networkLogger = createNetworkLogger();
 

@@ -10,11 +10,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy";
 import createNetworkLogger from "../../helpers/networkLogger";
 import SequentialHook from "../../helpers/requestHooks/sequentialHook";
 
-const config = compose(
-  orgMainConfigMain,
-  consentPending,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, consentPending, debugEnabled);
 
 const networkLogger = createNetworkLogger();
 

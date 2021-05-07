@@ -11,11 +11,7 @@ import createConsoleLogger from "../../helpers/consoleLogger";
 import { CONSENT_OUT } from "../../helpers/constants/consent";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
-const config = compose(
-  orgMainConfigMain,
-  consentPending,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, consentPending, debugEnabled);
 
 const networkLogger = createNetworkLogger();
 
