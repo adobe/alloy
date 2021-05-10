@@ -15,17 +15,21 @@ import { deepAssign, isNumber } from "../../utils";
 export default window => {
   return xdm => {
     const {
-      document: { documentElement: { offsetWidth, offsetHeight } = {} }
+      document: { documentElement: { clientWidth, clientHeight } = {} }
     } = window;
 
     const environment = {
       type: "browser"
     };
-    if (isNumber(offsetWidth) && offsetWidth >= 0 &&
-      isNumber(offsetHeight) && offsetHeight >= 0) {
+    if (
+      isNumber(clientWidth) &&
+      clientWidth >= 0 &&
+      isNumber(clientHeight) &&
+      clientHeight >= 0
+    ) {
       environment.browserDetails = {
-        viewportWidth: Math.round(offsetWidth),
-        viewportHeight: Math.round(offsetHeight)
+        viewportWidth: Math.round(clientWidth),
+        viewportHeight: Math.round(clientHeight)
       };
     }
 

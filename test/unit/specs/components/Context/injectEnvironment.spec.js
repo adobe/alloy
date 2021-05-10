@@ -17,8 +17,8 @@ describe("Context::injectEnvironment", () => {
       innerHeight: 1004,
       document: {
         documentElement: {
-          offsetWidth: 1005,
-          offsetHeight: 1006
+          clientWidth: 1005,
+          clientHeight: 1006
         }
       }
     },
@@ -38,8 +38,8 @@ describe("Context::injectEnvironment", () => {
     {
       document: {
         documentElement: {
-          offsetWidth: -10,
-          offsetHeight: -20
+          clientWidth: -10,
+          clientHeight: -20
         }
       }
     },
@@ -55,14 +55,14 @@ describe("Context::injectEnvironment", () => {
     {
       document: {
         documentElement: {
-          offsetWidth: -10,
-          offsetHeight: -42
+          clientWidth: -10,
+          clientHeight: -42
         }
       }
     },
     {
       environment: {
-        type: "browser",
+        type: "browser"
       }
     }
   );
@@ -98,8 +98,8 @@ describe("Context::injectEnvironment", () => {
     {
       document: {
         documentElement: {
-          offsetWidth: 0,
-          offsetHeight: 0
+          clientWidth: 0,
+          clientHeight: 0
         }
       }
     },
@@ -118,8 +118,8 @@ describe("Context::injectEnvironment", () => {
     {
       document: {
         documentElement: {
-          offsetWidth: 10,
-          offsetHeight: 4.2
+          clientWidth: 10,
+          clientHeight: 4.2
         }
       }
     },
