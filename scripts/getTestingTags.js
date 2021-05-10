@@ -42,13 +42,12 @@ octokit.paginate(
       .filter(release => !release.draft && !release.prerelease)
       .map(release => release.tag_name);
     const prodReleasesToTest = prodReleases
-      .filter(tag => semver.lte("2.2.0", semver.clean(tag)));
+      .filter(tag => semver.lte("2.4.0", semver.clean(tag)));
     if (prodReleasesToTest.length < prodReleases.length) {
       done();
     }
     return prodReleasesToTest;
   }
 ).then(prodReleasesToTest => {
-  console.log(prodReleasesToTest.join(" "));
+  console.log(JSON.stringify(prodReleasesToTest));
 });
-

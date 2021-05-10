@@ -20,7 +20,7 @@ jobs:
           # Fetch all the branches and tags in the repo
           fetch-depth: 0
       # install these dependencies so getTestingTags will work
-      - run: npm install -g @octokit/rest semver
+      - run: npm install @octokit/rest semver
       - run: |
           for TAG in $(./scripts/getTestingTags.js)
           do
@@ -33,8 +33,8 @@ jobs:
         env:
           # getTestingTags calls the Github API so we need to use the token
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: craftech-io/slack-action@v1
-        with:
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          status: failure
-        if: failure()
+      # - uses: craftech-io/slack-action@v1
+      #   with:
+      #     slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #     status: failure
+      #   if: failure()
