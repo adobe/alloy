@@ -24,9 +24,9 @@ jobs:
         # id: list_tags_working
         uses: actions/github-script@v3
         with:
-        script: |
-          const tags_to_test = fromJson($(./scripts/getTestingTags.js));
-          core.setOutput("tags_to_test", tags_to_test);
+          script: |
+            const tags_to_test = fromJson($(./scripts/getTestingTags.js));
+            core.setOutput("tags_to_test", tags_to_test);
         env:
           # getTestingTags calls the Github API so we need to use the token
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
