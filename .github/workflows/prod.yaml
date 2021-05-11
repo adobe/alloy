@@ -19,20 +19,45 @@ jobs:
         with:
           # Fetch all the branches and tags in the repo
           fetch-depth: 0
-      # install these dependencies so getTestingTags will work
       - run: npm install @octokit/rest semver
-      - run: |
-          for TAG in $(./scripts/getTestingTags.js)
-          do
-            git checkout tags/$TAG
-            npm ci
-            npm run test:functional:build:prod
-            export ALLOY_PROD_VERSION=`node -e 'console.log(require("./package.json").version)'`
-            npx testcafe -q -c 5 'saucelabs:Chrome@latest:macOS 11.00','saucelabs:IE@11.285:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
-          done
+      - name: List tags on ${{ github.repository }}
+        # id: list_tags_working
+        uses: actions/github-script@v3
+        with:
+        script: |
+          const tags_to_test = fromJson($(./scripts/getTestingTags.js));
+          core.setOutput("tags_to_test", tags_to_test);
         env:
           # getTestingTags calls the Github API so we need to use the token
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # trigger_workflow:
+  #   name: Trigger ${{ matrix.workflow.id }}
+  #   strategy:
+  #     max-parallel: 1
+  #     matrix:
+  #       workflow:
+  #           tags: ${{ needs.fetch_releases.outputs.tags_to_test }}
+  #   needs: fetch_releases
+  #   if: ${{ matrix.workflow.tags != '[]' }}
+  #   runs-on: macos-latest
+  #   steps:
+  #     - name: Create a workflow dispatch event with ${{ matrix.workflow.tags }}
+  #       if: ${{ matrix.workflow.tags != '[]' }}
+  #       uses: actions/github-script@v3
+  #       with:
+  #         github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+  #         script: |
+  #           const response = await github.request("POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches", {
+  #             owner: REPO_OWNER,
+  #             repo: REPO_NAME,
+  #             ref: context.ref,
+  #             workflow_id: '${{ matrix.workflow.id }}',
+  #             inputs: {
+  #               tags: '${{ matrix.workflow.tags }}'
+  #             }
+  #           });
+  #           const result = { status: response.status, url: response.url };
+  #           console.log(result);
       # - uses: craftech-io/slack-action@v1
       #   with:
       #     slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
