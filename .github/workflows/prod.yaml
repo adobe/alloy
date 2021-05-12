@@ -13,14 +13,19 @@ env:
 jobs:
   get_testing_tags:
     name: Fetch releases
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     outputs:
       tagsToTest: ${{ steps.list_tags_working.outputs.tagsToTest }}
     steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - run: npm install @octokit/rest semver
       - name: Retrieve tags
         id: list_tags_working
         uses: actions/github-script@v3
         with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const tagsToTest = fromJson($(./scripts/getTestingTags.js));
             core.setOutput("tagsToTest", tagsToTest);
