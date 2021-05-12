@@ -27,6 +27,6 @@ jobs:
         with:
           github-token: ${{ github.token }}
           script: |
-            const tagsToTest = fromJson($(./scripts/getTestingTags.js));
+            const tagsToTest = $(./scripts/getTestingTags.js);
             core.setOutput("tagsToTest", tagsToTest);
             console.log("tagsToTest: ", tagsToTest);
