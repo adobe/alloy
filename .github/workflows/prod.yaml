@@ -21,7 +21,6 @@ jobs:
         id: list_tags_working
         uses: actions/github-script@v3
         with:
-          github-token: ${{ github.token }}
           script: |
             const tagsToTest = fromJson($(./scripts/getTestingTags.js));
             core.setOutput("tagsToTest", tagsToTest);
