@@ -13,7 +13,7 @@ env:
 jobs:
   get_testing_tags:
     name: Fetch releases
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     outputs:
       tagsToTest: ${{ steps.list_tags_working.outputs.tagsToTest }}
     steps:
@@ -23,10 +23,11 @@ jobs:
       - run: npm install @octokit/rest semver
       - name: Retrieve tags
         id: list_tags_working
-        uses: actions/github-script@v3
+        uses: actions/github-script@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          github-token: ${{ github.token }}
           script: |
-            const tagsToTest = $(./scripts/getTestingTags.js);
+            const tagsToTest = require('./scripts/getTestingTags.js');
             core.setOutput("tagsToTest", tagsToTest);
             console.log("tagsToTest: ", tagsToTest);
