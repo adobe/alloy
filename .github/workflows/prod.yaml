@@ -11,55 +11,18 @@ env:
   ALLOY_ENV: prod
 
 jobs:
-  alloy-prod-e2e:
-    name: "Cron: Prod E2E Tests"
+  get_testing_tags:
+    name: Fetch releases
     runs-on: ubuntu-latest
+    outputs:
+      tagsToTest: ${{ steps.list_tags_working.outputs.tagsToTest }}
     steps:
-      - uses: actions/checkout@v2
-        with:
-          # Fetch all the branches and tags in the repo
-          fetch-depth: 0
-      - run: npm install @octokit/rest semver
-      - name: List tags on ${{ github.repository }}
-        # id: list_tags_working
+      - name: Retrieve tags
+        id: list_tags_working
         uses: actions/github-script@v3
         with:
+          github-token: ${{ github.token }}
           script: |
-            const tags_to_test = fromJson($(./scripts/getTestingTags.js));
-            core.setOutput("tags_to_test", tags_to_test);
-        env:
-          # getTestingTags calls the Github API so we need to use the token
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  # trigger_workflow:
-  #   name: Trigger ${{ matrix.workflow.id }}
-  #   strategy:
-  #     max-parallel: 1
-  #     matrix:
-  #       workflow:
-  #           tags: ${{ needs.fetch_releases.outputs.tags_to_test }}
-  #   needs: fetch_releases
-  #   if: ${{ matrix.workflow.tags != '[]' }}
-  #   runs-on: macos-latest
-  #   steps:
-  #     - name: Create a workflow dispatch event with ${{ matrix.workflow.tags }}
-  #       if: ${{ matrix.workflow.tags != '[]' }}
-  #       uses: actions/github-script@v3
-  #       with:
-  #         github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-  #         script: |
-  #           const response = await github.request("POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches", {
-  #             owner: REPO_OWNER,
-  #             repo: REPO_NAME,
-  #             ref: context.ref,
-  #             workflow_id: '${{ matrix.workflow.id }}',
-  #             inputs: {
-  #               tags: '${{ matrix.workflow.tags }}'
-  #             }
-  #           });
-  #           const result = { status: response.status, url: response.url };
-  #           console.log(result);
-      # - uses: craftech-io/slack-action@v1
-      #   with:
-      #     slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #     status: failure
-      #   if: failure()
+            const tagsToTest = fromJson($(./scripts/getTestingTags.js));
+            core.setOutput("tagsToTest", tagsToTest);
+            console.log("tagsToTest: ", tagsToTest);
