@@ -28,7 +28,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
-            const tagsToTest = require('./scripts/getTestingTags.js');
+            const tagsToTest = $('./scripts/getTestingTags.js');
             core.setOutput("tagsToTest", tagsToTest);
             console.log("tagsToTest: ", tagsToTest);
 
