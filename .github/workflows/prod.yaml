@@ -4,26 +4,47 @@ on:
     - cron: "0 */24 * * *"
   workflow_dispatch:
 env:
-        SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-        SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        SAUCE_JOB: "Alloy Prod Workflow"
-        SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
-        ALLOY_ENV: prod
+  SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+  SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+  SAUCE_JOB: "Alloy Prod Workflow"
+  SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
+  ALLOY_ENV: prod
 
 jobs:
-  alloy-prod-e2e:
-    name: "Cron: Prod E2E Tests"
+  get_testing_tags:
+    name: Fetch releases
+    runs-on: ubuntu-latest
+    outputs:
+      matrixInput: ${{ steps.list_tags_working.outputs.matrixInput }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - run: npm install @octokit/rest semver
+      - name: Retrieve tags
+        id: list_tags_working
+        uses: actions/github-script@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            const getTestingTags = require('./scripts/getTestingTags.js');
+            const tagsToTest = await getTestingTags();
+            const matrixInput = { include: tagsToTest.map(tag => ({tag})) }
+            core.setOutput("matrixInput", JSON.stringify(matrixInput));
+            console.log("matrixInput: ", matrixInput);
+
+  start_workflow:
+    name: Trigger Test Matrix
+    strategy:
+      matrix: ${{ fromJSON(needs.get_testing_tags.outputs.matrixInput) }}
+    needs: get_testing_tags
     runs-on: ubuntu-latest
     steps:
-      - name: "Get latest Alloy Release"
-        id: last_release
-        uses: InsonusK/get-latest-release@v1.0.1
+      - name: Create a workflow dispatch event with ${{ matrix.tag }}
+        uses: actions/checkout@v2.3.3
         with:
-          myToken: ${{ github.token }}
-          exclude_types: "draft|prerelease"
-      - uses: actions/checkout@v2.3.3
-        with:
-          ref: ${{ steps.last_release.outputs.tag_name }}
+          ref: ${{ matrix.tag }}
       - uses: actions/cache@v2
         id: npm-cache
         with:
