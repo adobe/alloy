@@ -30,24 +30,23 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN
 });
 
-
-octokit.paginate(
-  octokit.repos.listReleases,
-  {
-    owner: "adobe",
-    repo: "alloy",
-  },
-  ({ data: releases }, done) => {
-    const prodReleases = releases
-      .filter(release => !release.draft && !release.prerelease)
-      .map(release => release.tag_name);
-    const prodReleasesToTest = prodReleases
-      .filter(tag => semver.lte("2.4.0", semver.clean(tag)));
-    if (prodReleasesToTest.length < prodReleases.length) {
-      done();
+module.exports = () => {
+  return octokit.paginate(
+    octokit.repos.listReleases,
+    {
+      owner: "adobe",
+      repo: "alloy",
+    },
+    ({ data: releases }, done) => {
+      const prodReleases = releases
+        .filter(release => !release.draft && !release.prerelease)
+        .map(release => release.tag_name);
+      const prodReleasesToTest = prodReleases
+        .filter(tag => semver.lte("2.4.0", semver.clean(tag)));
+      if (prodReleasesToTest.length < prodReleases.length) {
+        done();
+      }
+      return prodReleasesToTest;
     }
-    return prodReleasesToTest;
-  }
-).then(prodReleasesToTest => {
-  console.log(JSON.stringify(prodReleasesToTest));
-});
+  )
+}
