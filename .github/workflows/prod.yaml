@@ -15,7 +15,7 @@ jobs:
     name: Fetch releases
     runs-on: ubuntu-latest
     outputs:
-      tagsToTest: ${{ steps.list_tags_working.outputs.tagsToTest }}
+      matrixInput: ${{ steps.list_tags_working.outputs.matrixInput }}
     steps:
       - uses: actions/checkout@v2
         with:
