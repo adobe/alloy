@@ -31,7 +31,7 @@ jobs:
             const getTestingTags = require('./scripts/getTestingTags.js');
             const tagsToTest = await getTestingTags();
             const matrixInput = { include: tagsToTest.map(tag => ({tag})) }
-            core.setOutput("matrixInput", matrixInput);
+            core.setOutput("matrixInput", JSON.stringify(matrixInput));
             console.log("matrixInput: ", matrixInput);
 
   start_workflow:
