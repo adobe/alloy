@@ -30,20 +30,21 @@ jobs:
           script: |
             const getTestingTags = require('./scripts/getTestingTags.js');
             const tagsToTest = await getTestingTags();
-            core.setOutput("tagsToTest", tagsToTest);
-            console.log("tagsToTest: ", tagsToTest);
+            const matrixInput = { include: tagsToTest.map(tag => ({tag})) }
+            core.setOutput("matrixInput", matrixInput);
+            console.log("matrixInput: ", matrixInput);
 
   start_workflow:
     name: Trigger Test Matrix
     strategy:
-      matrix: ${{ fromJSON(needs.get_testing_tags.outputs.tagsToTest) }}
+      matrix: ${{ fromJSON(needs.get_testing_tags.outputs.matrixInput) }}
     needs: get_testing_tags
     runs-on: ubuntu-latest
     steps:
-      - name: Create a workflow dispatch event with ${{ matrix }}
+      - name: Create a workflow dispatch event with ${{ matrix.tag }}
         uses: actions/checkout@v2.3.3
         with:
-          ref: ${{ matrix }}
+          ref: ${{ matrix.tag }}
       - uses: actions/cache@v2
         id: npm-cache
         with:
