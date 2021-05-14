@@ -36,7 +36,7 @@ jobs:
   start_workflow:
     name: Trigger Test Matrix
     strategy:
-      matrix: ${{ needs.get_testing_tags.outputs.tagsToTest }}
+      matrix: ${{ fromJSON(needs.get_testing_tags.outputs.tagsToTest) }}
     needs: get_testing_tags
     runs-on: ubuntu-latest
     steps:
