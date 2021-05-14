@@ -34,22 +34,16 @@ jobs:
             console.log("tagsToTest: ", tagsToTest);
 
   start_workflow:
-    name: Trigger ${{ matrix.workflow.id }}
+    name: Trigger Test Matrix
     strategy:
-      max-parallel: 1
-      matrix:
-        workflow:
-          - id: 'tags-to-test.yml'
-            tags: ${{ needs.get_testing_tags.outputs.tagsToTest }}
+      matrix: ${{ needs.get_testing_tags.outputs.tagsToTest }}
     needs: get_testing_tags
-    # if: ${{ matrix.workflow.tags != '[]' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Create a workflow dispatch event with ${{ matrix.workflow.tags }}
-        if: ${{ matrix.workflow.tags != '[]' }}
+      - name: Create a workflow dispatch event with ${{ matrix }}
         uses: actions/checkout@v2.3.3
         with:
-          ref: ${{ matrix.workflow.tags }}
+          ref: ${{ matrix }}
       - uses: actions/cache@v2
         id: npm-cache
         with:
