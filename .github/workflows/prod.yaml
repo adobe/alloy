@@ -15,7 +15,7 @@ jobs:
     name: Fetch releases
     runs-on: ubuntu-latest
     outputs:
-      matrix-input: ${{ steps.list-tags.outputs.matrix-input }}
+      matrixInput: ${{ steps.list-tags.outputs.matrixInput }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -30,14 +30,14 @@ jobs:
           script: |
             const getTestingTags = require('./scripts/getTestingTags.js');
             const tagsToTest = await getTestingTags();
-            const matrix-input = { include: tagsToTest.map(tag => ({tag})) }
-            core.setOutput("matrix-input", JSON.stringify(matrix-input));
-            console.log("matrix-input: ", matrix-input);
+            const matrixInput = { include: tagsToTest.map(tag => ({tag})) }
+            core.setOutput("matrixInput", JSON.stringify(matrixInput));
+            console.log("matrixInput: ", matrixInput);
 
   start_workflow:
     name: Trigger Test Matrix
     strategy:
-      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrix-input) }}
+      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
     needs: get-testing-tags
     runs-on: ubuntu-latest
     steps:
