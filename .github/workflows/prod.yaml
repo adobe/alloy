@@ -11,18 +11,18 @@ env:
   ALLOY_ENV: prod
 
 jobs:
-  get_testing_tags:
+  get-testing-tags:
     name: Fetch releases
     runs-on: ubuntu-latest
     outputs:
-      matrixInput: ${{ steps.list_tags_working.outputs.matrixInput }}
+      matrix-input: ${{ steps.list-tags.outputs.matrix-input }}
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - run: npm install @octokit/rest semver
       - name: Retrieve tags
-        id: list_tags_working
+        id: list-tags
         uses: actions/github-script@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -30,15 +30,15 @@ jobs:
           script: |
             const getTestingTags = require('./scripts/getTestingTags.js');
             const tagsToTest = await getTestingTags();
-            const matrixInput = { include: tagsToTest.map(tag => ({tag})) }
-            core.setOutput("matrixInput", JSON.stringify(matrixInput));
-            console.log("matrixInput: ", matrixInput);
+            const matrix-input = { include: tagsToTest.map(tag => ({tag})) }
+            core.setOutput("matrix-input", JSON.stringify(matrix-input));
+            console.log("matrix-input: ", matrix-input);
 
   start_workflow:
     name: Trigger Test Matrix
     strategy:
-      matrix: ${{ fromJSON(needs.get_testing_tags.outputs.matrixInput) }}
-    needs: get_testing_tags
+      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrix-input) }}
+    needs: get-testing-tags
     runs-on: ubuntu-latest
     steps:
       - name: Create a workflow dispatch event with ${{ matrix.tag }}

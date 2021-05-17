@@ -38,6 +38,6 @@ jobs:
       - name: Build
         run: npm run test:functional:build:prod
       - name: Run TestCafe Tests
-        run: npm run test:functional:ci:prod -- 'saucelabs:Chrome@latest:macOS 11.00','saucelabs:IE@latest:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
+        run: npm run test:functional:ci:prod
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
