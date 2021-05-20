@@ -11,5 +11,5 @@ governing permissions and limitations under the License.
 */
 
 export default (doc = document) => {
-  return doc.location.href.indexOf("authoringEnabled") !== -1;
+  return doc.location.href.indexOf("adobe_authoring_enabled") !== -1;
 };
