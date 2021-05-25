@@ -16,7 +16,7 @@ describe("Personalization::isAuthoringModeEnabled", () => {
   it("returns true if authoring mode is enabled", () => {
     const doc = {
       location: {
-        href: "http://foo.com?mboxEdit=1"
+        href: "http://foo.com?adobe_authoring_enabled=1"
       }
     };
     expect(isAuthoringModeEnabled(doc)).toEqual(true);
