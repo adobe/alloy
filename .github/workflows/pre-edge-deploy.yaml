@@ -1,5 +1,3 @@
-#This configuration will be used by the Edge team to test against prod.
-
 name: Pre-Edge-Deploy
 on:
   workflow_dispatch:

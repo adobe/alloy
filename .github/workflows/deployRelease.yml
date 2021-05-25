@@ -1,0 +1,72 @@
+name: Deploy Release
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version"
+        required: true
+
+# This workflow is split into release and prerelease jobs so that the
+# release job can require a manual approval. Otherwise, the release and
+# prerelease jobs should be identical.
+jobs:
+  validate:
+    name: "Validate"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: adobe/project-card-release-automation/validate-version@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ github.event.inputs.version }}
+  release:
+    name: "Release"
+    runs-on: ubuntu-latest
+    needs: validate
+    # this environment requires manual approval
+    environment: Production
+    # final release versions do not contain '-'
+    if: ${{ contains(github.event.inputs.version, '-') == false }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 15.x
+      - run: ./scripts/deploy.sh ${{ github.event.inputs.version }}
+        env:
+          NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: |
+            ./dist/alloy.js
+            ./dist/alloy.min.js
+  prerelease:
+    name: "Prerelease"
+    runs-on: ubuntu-latest
+    needs: validate
+    # prerelease versions contain '-'
+    if: ${{ contains(github.event.inputs.version, '-') }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 15.x
+      - run: ./scripts/deploy.sh ${{ github.event.inputs.version }}
+        env:
+          NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: |
+            ./dist/alloy.js
+            ./dist/alloy.min.js
+  record:
+    name: "Record Version"
+    runs-on: ubuntu-latest
+    needs: [prerelease, release]
+    if: failure() == false
+    steps:
+      - uses: adobe/project-card-release-automation/record-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ github.event.inputs.version }}

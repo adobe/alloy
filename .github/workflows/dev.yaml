@@ -45,5 +45,5 @@ jobs:
     - name: Build
       run: npm run test:functional:build:int
     - name: Run Functional Test
-      run: npx testcafe -q -c 5 'saucelabs:Chrome@latest-1:macOS 11.00','saucelabs:IE@latest:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
-    
+      run: npx testcafe -q -c 5 'saucelabs:Chrome@latest:macOS 11.00','saucelabs:IE@latest:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
+      
