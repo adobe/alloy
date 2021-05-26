@@ -31,9 +31,11 @@ test("Test C205529: Receive offer based on device", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const result = await alloy.sendEvent({
-    xdm: {
-      device: {
-        screenWidth: 9999
+    data: {
+      __adobe: {
+        target: {
+          "device.screenWidth": 9999
+        }
       }
     }
   });
