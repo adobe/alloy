@@ -30,8 +30,8 @@ test.meta({
 
 const extractDecisionsMeta = payload => {
   return payload.map(decision => {
-    const { id, scope } = decision;
-    return { id, scope };
+    const { id, scope, scopeDetails } = decision;
+    return { id, scope, scopeDetails };
   });
 };
 
