@@ -33,7 +33,7 @@ test("Test C205529: Receive offer based on device", async () => {
   const result = await alloy.sendEvent({
     xdm: {
       device: {
-        screenWidth: 9999
+        customDeviceField: 9999
       }
     }
   });
