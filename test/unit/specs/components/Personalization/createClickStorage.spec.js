@@ -7,39 +7,66 @@ describe("Personalization::createClickStorage", () => {
     selector: "div:123:h2",
     meta: {
       id: "AT:123",
-      scope: "__view__"
+      scope: "__view__",
+      scopeDetails: {
+        test: "blah1"
+      }
     }
   };
   const SECOND_CLICK = {
     selector: "div:123:h2",
     meta: {
       id: "AT:123",
-      scope: "consent"
+      scope: "consent",
+      scopeDetails: {
+        test: "blah3"
+      }
     }
   };
   const THIRD_CLICK = {
     selector: "div:123:h2",
     meta: {
       id: "AT:234",
-      scope: "consent"
+      scope: "consent",
+      scopeDetails: {
+        test: "blah4"
+      }
     }
   };
   const FORTH_CLICK = {
     selector: "div:123:h1",
     meta: {
       id: "AT:123",
-      scope: "consent"
+      scope: "consent",
+      scopeDetails: {
+        test: "blah5"
+      }
     }
   };
 
   /*  this is how the clickStorage map should look like
   const expectedClicksInStorage = {
     "div:123:h1": {
-      "AT:123": "consent"
+      "AT:123": {
+        scope: "consent",
+        scopeDetails: {
+          blah: "blah"
+        }
+      }
     },
     "div:123:h2": {
-      "AT:123": "consent",
-      "AT:234": "consent"
+      "AT:123": {
+        scope: "consent",
+        scopeDetails: {
+          blah: "blah"
+          },
+        },
+      "AT:234": {
+        scope: "consent",
+        scopeDetails: {
+          blah: "blah"
+          }
+        }
     }
   }; */
   beforeEach(() => {
@@ -64,5 +91,18 @@ describe("Personalization::createClickStorage", () => {
     expect(clickStorage.getClickMetasBySelector("div:123:h2").length).toEqual(
       2
     );
+  });
+  it("getClickMetasBySelector returns the id, scopeDetails, scope", () => {
+    clickStorage.storeClickMetrics(FIRST_CLICK);
+
+    const meta = clickStorage.getClickMetasBySelector("div:123:h2");
+
+    expect(clickStorage.getClickSelectors().length).toEqual(1);
+    expect(meta.length).toEqual(1);
+    expect(meta[0]).toEqual({
+      id: "AT:123",
+      scope: "__view__",
+      scopeDetails: { test: "blah1" }
+    });
   });
 });

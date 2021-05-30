@@ -12,10 +12,10 @@ governing permissions and limitations under the License.
 
 const getRedirectDetails = redirectDecisions => {
   const decision = redirectDecisions[0];
-  const { items, id, scope } = decision;
+  const { items, id, scope, scopeDetails } = decision;
   const { content } = items[0].data;
 
-  return { content, decisions: [{ id, scope }] };
+  return { content, decisions: [{ id, scope, scopeDetails }] };
 };
 
 export default ({ collect, window, logger, showContainers }) => {

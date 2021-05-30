@@ -23,7 +23,8 @@ describe("Personalization::createRedirectDecisionHandler", () => {
   const decisionsMeta = [
     {
       id: decisions[0].id,
-      scope: decisions[0].scope
+      scope: decisions[0].scope,
+      scopeDetails: decisions[0].scopeDetails
     }
   ];
   const replace = jasmine.createSpy();
