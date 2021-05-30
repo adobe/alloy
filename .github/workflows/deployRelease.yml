@@ -70,3 +70,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ github.event.inputs.version }}
+          referencePrefixes: "PDCL-,CORE-,AN-"
+          referenceTargetUrlPrefix: "https://jira.corp.adobe.com/browse/"
