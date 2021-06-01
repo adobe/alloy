@@ -56,7 +56,7 @@ export default ({
       // response. We will hold up this request until the last request
       // requiring identity returns and awaitIdentityCookie confirms the
       // identity was set.
-      logger.log("Delaying request while retrieving ECID from server.");
+      logger.info("Delaying request while retrieving ECID from server.");
       const previousObtainedIdentityPromise = obtainedIdentityPromise;
 
       // This promise resolves when we have an identity cookie. Additional
@@ -70,7 +70,7 @@ export default ({
       return (
         previousObtainedIdentityPromise
           .then(() => {
-            logger.log("Resuming previously delayed request.");
+            logger.info("Resuming previously delayed request.");
             request.setIsIdentityEstablished();
           })
           // If Konductor did not set the identity cookie on the previous

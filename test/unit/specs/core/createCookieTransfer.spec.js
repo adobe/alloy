@@ -111,7 +111,10 @@ describe("createCookieTransfer", () => {
       expect(cookieJar.set).toHaveBeenCalledWith(
         "kndctr_ABC_CustomOrg_identity",
         "XYZ@CustomOrg",
-        { expires: 2, domain: "example.com" }
+        {
+          expires: 2,
+          domain: "example.com"
+        }
       );
 
       expect(cookieJar.set).toHaveBeenCalledWith(

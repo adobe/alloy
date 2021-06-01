@@ -15,6 +15,8 @@ import createConfig from "../../../../src/core/config/createConfig";
 import { defer } from "../../../../src/utils";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
 
+const CANCELLATION_MESSAGE_REGEX = /Event was canceled/;
+
 describe("createEventManager", () => {
   let config;
   let logger;
@@ -33,7 +35,7 @@ describe("createEventManager", () => {
       onBeforeEventSend: jasmine.createSpy(),
       debugEnabled: true
     });
-    logger = jasmine.createSpyObj("logger", ["error", "warn"]);
+    logger = jasmine.createSpyObj("logger", ["info"]);
     lifecycle = jasmine.createSpyObj("lifecycle", {
       onBeforeEvent: Promise.resolve(),
       onBeforeDataCollectionRequest: Promise.resolve(),
@@ -136,7 +138,10 @@ describe("createEventManager", () => {
         expect(
           onRequestFailureForOnBeforeEvent.calls.mostRecent().args[0].error
             .message
-        ).toBe("Event was cancelled.");
+        ).toMatch(CANCELLATION_MESSAGE_REGEX);
+        expect(logger.info).toHaveBeenCalledWith(
+          jasmine.stringMatching(CANCELLATION_MESSAGE_REGEX)
+        );
         expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
       });
     });

@@ -21,11 +21,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const config = compose(
-  orgMainConfigMain,
-  debugEnabled,
-  migrationEnabled
-);
+const config = compose(orgMainConfigMain, debugEnabled, migrationEnabled);
 
 test("C35448 - When ID migration is enabled and Visitor is on the page, Alloy waits for Visitor to get ECID and then uses this value.", async () => {
   const alloy = createAlloyProxy();

@@ -12,9 +12,7 @@ governing permissions and limitations under the License.
 
 import injectGetEcidFromVisitor from "../../../../../../src/components/Identity/visitorService/injectGetEcidFromVisitor";
 
-const logger = {
-  log() {}
-};
+const logger = jasmine.createSpyObj(["info"]);
 
 const Visitor = () => {};
 Visitor.getInstance = () => {

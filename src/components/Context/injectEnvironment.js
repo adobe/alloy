@@ -10,18 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { deepAssign } from "../../utils";
+import { deepAssign, isNumber } from "../../utils";
 
 export default window => {
   return xdm => {
-    const { innerWidth, innerHeight } = window;
+    const {
+      document: { documentElement: { clientWidth, clientHeight } = {} }
+    } = window;
+
     const environment = {
-      type: "browser",
-      browserDetails: {
-        viewportWidth: innerWidth,
-        viewportHeight: innerHeight
-      }
+      type: "browser"
     };
+    if (
+      isNumber(clientWidth) &&
+      clientWidth >= 0 &&
+      isNumber(clientHeight) &&
+      clientHeight >= 0
+    ) {
+      environment.browserDetails = {
+        viewportWidth: Math.round(clientWidth),
+        viewportHeight: Math.round(clientHeight)
+      };
+    }
 
     deepAssign(xdm, { environment });
   };

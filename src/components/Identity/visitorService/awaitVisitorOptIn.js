@@ -16,12 +16,12 @@ export default ({ logger }) => {
   return new Promise((resolve, reject) => {
     if (isObject(window.adobe) && isObject(window.adobe.optIn)) {
       const optInOld = window.adobe.optIn;
-      logger.log(
+      logger.info(
         "Delaying request while waiting for legacy opt-in to let Visitor retrieve ECID from server."
       );
       optInOld.fetchPermissions(() => {
         if (optInOld.isApproved([optInOld.Categories.ECID])) {
-          logger.log(
+          logger.info(
             "Received legacy opt-in approval to let Visitor retrieve ECID from server."
           );
           resolve();

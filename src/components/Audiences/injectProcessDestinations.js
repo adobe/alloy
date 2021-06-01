@@ -25,7 +25,7 @@ const processUrls = (fireReferrerHideableImage, logger, destinations) => {
     urlDestinations.map(urlDestination => {
       return fireReferrerHideableImage(urlDestination.spec)
         .then(() => {
-          logger.log(createResultLogMessage(urlDestination, true));
+          logger.info(createResultLogMessage(urlDestination, true));
         })
         .catch(() => {
           // We intentionally do not throw an error if destinations fail. We

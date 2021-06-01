@@ -28,26 +28,31 @@ const splitItems = (items, schema) => {
 };
 
 const createDecision = (decision, items) => {
-  return { id: decision.id, scope: decision.scope, items };
+  return {
+    id: decision.id,
+    scope: decision.scope,
+    items,
+    scopeDetails: decision.scopeDetails
+  };
 };
 
 const splitDecisions = (decisions, schema) => {
-  const domActionDecisions = [];
-  const nonDomActionDecisions = [];
+  const matchedDecisions = [];
+  const unmatchedDecisions = [];
 
   decisions.forEach(decision => {
     const { items = [] } = decision;
     const [matchedItems, nonMatchedItems] = splitItems(items, schema);
 
     if (isNonEmptyArray(matchedItems)) {
-      domActionDecisions.push(createDecision(decision, matchedItems));
+      matchedDecisions.push(createDecision(decision, matchedItems));
     }
 
     if (isNonEmptyArray(nonMatchedItems)) {
-      nonDomActionDecisions.push(createDecision(decision, nonMatchedItems));
+      unmatchedDecisions.push(createDecision(decision, nonMatchedItems));
     }
   });
-  return { domActionDecisions, nonDomActionDecisions };
+  return { matchedDecisions, unmatchedDecisions };
 };
 
 const extractDecisionsByScope = (decisions, scope) => {

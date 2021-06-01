@@ -14,11 +14,7 @@ import {
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import { LEGACY_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
 
-const config = compose(
-  orgMainConfigMain,
-  debugEnabled,
-  migrationEnabled
-);
+const config = compose(orgMainConfigMain, debugEnabled, migrationEnabled);
 
 const networkLogger = createNetworkLogger();
 

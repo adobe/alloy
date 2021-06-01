@@ -38,12 +38,13 @@ test("C2600 - Adds only environment context data when only device is specified i
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
-  const request = networkLogger.edgeEndpointLogs.requests[0].request.body;
-  const stringifyRequest = JSON.parse(request);
+  const parsedBody = JSON.parse(
+    networkLogger.edgeEndpointLogs.requests[0].request.body
+  );
 
-  await t.expect(stringifyRequest.events[0].xdm.environment).ok();
-  await t.expect(stringifyRequest.events[0].xdm.web.webPageDetails).ok();
+  await t.expect(parsedBody.events[0].xdm.environment).ok();
+  await t.expect(parsedBody.events[0].xdm.web.webPageDetails).ok();
 
-  await t.expect(stringifyRequest.events[0].xdm.device).notOk();
-  await t.expect(stringifyRequest.events[0].xdm.placeContext).notOk();
+  await t.expect(parsedBody.events[0].xdm.device).notOk();
+  await t.expect(parsedBody.events[0].xdm.placeContext).notOk();
 });

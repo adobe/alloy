@@ -112,7 +112,7 @@ describe("injectSendEdgeNetworkRequest", () => {
       getUseIdThirdPartyDomain: false,
       getUseSendBeacon: false
     });
-    logger = jasmine.createSpyObj("logger", ["log"]);
+    logger = jasmine.createSpyObj("logger", ["info"]);
     lifecycle = jasmine.createSpyObj("lifecycle", {
       onBeforeRequest: Promise.resolve(),
       onRequestFailure: Promise.resolve(),

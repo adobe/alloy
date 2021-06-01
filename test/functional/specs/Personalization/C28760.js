@@ -13,10 +13,7 @@ import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
-const config = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
 createFixture({
   title:
@@ -33,8 +30,8 @@ test.meta({
 
 const extractDecisionsMeta = payload => {
   return payload.map(decision => {
-    const { id, scope } = decision;
-    return { id, scope };
+    const { id, scope, scopeDetails } = decision;
+    return { id, scope, scopeDetails };
   });
 };
 

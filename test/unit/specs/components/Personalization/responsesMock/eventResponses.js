@@ -2,6 +2,9 @@ export const SCOPES_FOO1_FOO2_DECISIONS = [
   {
     id: "TNT:ABC:A",
     scope: "Foo1",
+    scopeDetails: {
+      blah: "test"
+    },
     items: [
       {
         schema: "https://ns.adove.com/experience/item-article",
@@ -48,6 +51,9 @@ export const PAGE_WIDE_SCOPE_DECISIONS = [
   {
     id: "TNT:activity1:experience1",
     scope: "__view__",
+    scopeDetails: {
+      blah: "test"
+    },
     items: [
       {
         schema: "https://ns.adobe.com/personalization/dom-action",
@@ -86,6 +92,9 @@ export const PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS = [
   {
     id: "TNT:activity1:experience1",
     scope: "__view__",
+    scopeDetails: {
+      blah: "test"
+    },
     items: [
       {
         schema: "https://ns.adove.com/experience/item",
@@ -108,6 +117,9 @@ export const PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS = [
   {
     id: "TNT:activity1:experience1",
     scope: "__view__",
+    scopeDetails: {
+      blah: "test"
+    },
     items: [
       {
         schema: "https://ns.adobe.com/personalization/dom-action",
@@ -133,6 +145,9 @@ export const CART_VIEW_DECISIONS = [
   {
     id: "TNT:activity4:experience9",
     scope: "cart",
+    scopeDetails: {
+      blah: "test"
+    },
     items: [
       {
         schema: "https://ns.adobe.com/personalization/dom-action",
@@ -157,6 +172,9 @@ export const PRODUCTS_VIEW_DECISIONS = [
   {
     id: "TNT:activity3:experience4",
     scope: "products",
+    scopeDetails: {
+      blah: "test"
+    },
     items: [
       {
         schema: "https://ns.adobe.com/personalization/dom-action",
@@ -172,6 +190,24 @@ export const PRODUCTS_VIEW_DECISIONS = [
           type: "setHtml",
           selector: "#foo4",
           content: "<div>here is a target activity for products view</div>"
+        }
+      }
+    ]
+  }
+];
+export const REDIRECT_PAGE_WIDE_SCOPE_DECISION = [
+  {
+    id: "TNT:activity15:experience1",
+    scope: "__view__",
+    scopeDetails: {
+      blah: "test"
+    },
+    items: [
+      {
+        schema: "https://ns.adobe.com/personalization/redirect-item",
+        data: {
+          type: "redirect",
+          content: "http://example.com/redirect/offer"
         }
       }
     ]

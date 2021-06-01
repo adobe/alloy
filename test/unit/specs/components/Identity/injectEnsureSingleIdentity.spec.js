@@ -32,7 +32,7 @@ describe("Identity::injectEnsureSingleIdentity", () => {
   let doesIdentityCookieExistBoolean;
 
   beforeEach(() => {
-    logger = jasmine.createSpyObj("logger", ["log"]);
+    logger = jasmine.createSpyObj("logger", ["info"]);
 
     sentIndex = 0;
     receivedIndex = 0;
@@ -173,19 +173,19 @@ describe("Identity::injectEnsureSingleIdentity", () => {
         return flushPromiseChains();
       })
       .then(() => {
-        expect(logger.log).not.toHaveBeenCalled();
+        expect(logger.info).not.toHaveBeenCalled();
         sendRequest();
         return flushPromiseChains();
       })
       .then(() => {
-        expect(logger.log).toHaveBeenCalledWith(
+        expect(logger.info).toHaveBeenCalledWith(
           "Delaying request while retrieving ECID from server."
         );
         simulateResponseWithIdentity();
         return flushPromiseChains();
       })
       .then(() => {
-        expect(logger.log).toHaveBeenCalledWith(
+        expect(logger.info).toHaveBeenCalledWith(
           "Resuming previously delayed request."
         );
       });

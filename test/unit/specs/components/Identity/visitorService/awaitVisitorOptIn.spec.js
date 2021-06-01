@@ -12,9 +12,7 @@ governing permissions and limitations under the License.
 
 import awaitVisitorOptIn from "../../../../../../src/components/Identity/visitorService/awaitVisitorOptIn";
 
-const logger = {
-  log() {}
-};
+const logger = jasmine.createSpyObj(["info"]);
 
 describe("awaitVisitorOptIn", () => {
   beforeEach(() => {

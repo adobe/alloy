@@ -15,9 +15,7 @@ import injectDevice from "./injectDevice";
 import injectEnvironment from "./injectEnvironment";
 import injectPlaceContext from "./injectPlaceContext";
 import injectTimestamp from "./injectTimestamp";
-import injectImplementationDetails from "./injectImplementationDetails";
-import libraryVersion from "../../constants/libraryVersion";
-import libraryName from "../../constants/libraryName";
+import implementationDetails from "./implementationDetails";
 import createComponent from "./createComponent";
 import { arrayOf, string } from "../../utils/validation";
 
@@ -26,11 +24,6 @@ const device = injectDevice(window);
 const environment = injectEnvironment(window);
 const placeContext = injectPlaceContext(() => new Date());
 const timestamp = injectTimestamp(() => new Date());
-const implementationDetails = injectImplementationDetails({
-  name: libraryName,
-  version: libraryVersion,
-  environment: "browser"
-});
 
 const optionalContexts = {
   web,

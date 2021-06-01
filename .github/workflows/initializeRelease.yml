@@ -11,7 +11,7 @@ jobs:
     name: "Initialize Intended Release"
     runs-on: ubuntu-latest
     steps:
-      - uses: jonsnyder/project-card-release-automation/initialize-card@v1
+      - uses: adobe/project-card-release-automation/initialize-card@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           releaseType: ${{ github.event.inputs.type }}
