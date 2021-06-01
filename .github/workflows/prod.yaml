@@ -52,6 +52,7 @@ jobs:
       - name: Run TestCafe Tests
         run: npm run test:functional:ci:prod -- -q -c 5 'saucelabs:Chrome@latest:macOS 11.00','saucelabs:IE@latest:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
         env:
+          ALLOY_PROD_VERSION: ${{ matrix.tag }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: craftech-io/slack-action@v1
         with:
