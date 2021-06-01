@@ -38,6 +38,7 @@ jobs:
     name: Trigger Test Matrix
     strategy:
       matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
+      fail-fast: false
     needs: get-testing-tags
     runs-on: ubuntu-latest
     steps:
