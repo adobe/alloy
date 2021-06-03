@@ -39,6 +39,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
       SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+      SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
       SAUCE_JOB: "Alloy Prod Workflow"
       ALLOY_ENV: prod
     steps:
