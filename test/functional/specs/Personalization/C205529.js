@@ -30,7 +30,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C205529: Receive offer based on device", async () => {
+test.skip("Test C205529: Receive offer based on device", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const result = await alloy.sendEvent({
