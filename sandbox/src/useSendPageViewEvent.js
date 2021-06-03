@@ -12,10 +12,16 @@ governing permissions and limitations under the License.
 
 import { useEffect } from "react";
 
-export default ({ instanceName = "alloy", viewName } = {}) => {
+export default ({
+  instanceName = "alloy",
+  viewName,
+  data = {},
+  xdm = {}
+} = {}) => {
   useEffect(() => {
-    const xdm = {};
     xdm.eventType = "page-view";
+
+    xdm.identityMap = {};
 
     if (viewName) {
       xdm.web = {
@@ -27,7 +33,8 @@ export default ({ instanceName = "alloy", viewName } = {}) => {
 
     window[instanceName]("sendEvent", {
       renderDecisions: true,
-      xdm
+      xdm,
+      data
     });
   }, [instanceName, viewName]);
 };
