@@ -14,10 +14,7 @@ const redirectEndpoint = /functional-test\/alloyTestPage.html\?redirectedTest=tr
 
 const redirectLogger = RequestLogger(redirectEndpoint);
 
-const config = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, debugEnabled);
 createFixture({
   title:
     "C205528 A redirect offer should redirect the page to the URL in the redirect decision",
