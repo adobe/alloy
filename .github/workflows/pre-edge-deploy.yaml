@@ -7,11 +7,11 @@ on:
         required: true
         default: 'warning'
 env:
-        SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-        SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
-        ALLOY_ENV: prod
-        EDGE_BASE_PATH: ee-pre-prd
+  SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+  SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+  SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
+  ALLOY_ENV: prod
+  EDGE_BASE_PATH: ee-pre-prd
 jobs:
   alloy-prod-e2e:
     name: "Pre Edge: Prod E2E Tests"
