@@ -10,10 +10,7 @@ import {
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
-const config = compose(
-  orgMainConfigMain,
-  debugEnabled
-);
+const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
 const decisionId =
   "AT:eyJhY3Rpdml0eUlkIjoiMTI2NTYxIiwiZXhwZXJpZW5jZUlkIjoiMCJ9";
@@ -30,13 +27,13 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test.skip("Test C205529: Receive offer based on device", async () => {
+test("Test C205529: Receive offer based on device", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const result = await alloy.sendEvent({
     xdm: {
       device: {
-        screenWidth: 9999
+        customDeviceField: 9999
       }
     }
   });
