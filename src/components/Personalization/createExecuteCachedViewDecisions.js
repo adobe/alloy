@@ -14,15 +14,14 @@ import isNonEmptyArray from "../../utils/isNonEmptyArray";
 
 export default ({ viewCache, executeViewDecisions, collect }) => {
   return ({ viewName }) => {
-    viewCache.getView(viewName).then(viewDecisions => {
+    return viewCache.getView(viewName).then(viewDecisions => {
       if (isNonEmptyArray(viewDecisions)) {
-        executeViewDecisions(viewDecisions);
-        return;
+        return executeViewDecisions(viewDecisions);
       }
       const xdm = { web: { webPageDetails: { viewName } } };
 
       // This collect function is not from createCollect. It's the function from createViewCollect.
-      collect({ decisionsMeta: [], xdm });
+      return collect({ decisionsMeta: [], xdm });
     });
   };
 };

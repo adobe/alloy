@@ -62,3 +62,4 @@ export { default as uuid } from "./uuid";
 export { default as updateErrorMessage } from "./updateErrorMessage";
 export { default as validateIdentityMap } from "./validateIdentityMap";
 export { default as values } from "./values";
+export { default as identity } from "./identity";

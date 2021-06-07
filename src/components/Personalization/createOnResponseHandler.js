@@ -21,11 +21,13 @@ export default ({
   executeDecisions,
   executeCachedViewDecisions,
   handleRedirectDecisions,
+  formatDecisions,
   showContainers
 }) => {
   return ({ decisionsDeferred, personalizationDetails, response }) => {
     const unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
     const viewName = personalizationDetails.getViewName();
+
     if (unprocessedDecisions.length === 0) {
       showContainers();
       decisionsDeferred.resolve({});
@@ -38,15 +40,15 @@ export default ({
         schema: REDIRECT_ITEM
       }
     );
+    const redirectDecisions =
+      decisionsGroupedByRedirectItemSchema.matchedDecisions;
 
     if (
-      isNonEmptyArray(decisionsGroupedByRedirectItemSchema.matchedDecisions) &&
+      isNonEmptyArray(redirectDecisions) &&
       personalizationDetails.isRenderDecisions()
     ) {
       decisionsDeferred.resolve({});
-      return handleRedirectDecisions(
-        decisionsGroupedByRedirectItemSchema.matchedDecisions
-      );
+      return handleRedirectDecisions(redirectDecisions);
     }
 
     const decisionsGroupedByDomActionSchema = decisionsExtractor.groupDecisionsBySchema(
@@ -55,11 +57,15 @@ export default ({
         schema: DOM_ACTION
       }
     );
+    const renderableDecisions =
+      decisionsGroupedByDomActionSchema.matchedDecisions;
+    const nonRenderableDecisions =
+      decisionsGroupedByDomActionSchema.unmatchedDecisions;
     const {
       pageWideScopeDecisions,
       nonPageWideScopeDecisions
     } = decisionsExtractor.groupDecisionsByScope({
-      decisions: decisionsGroupedByDomActionSchema.matchedDecisions,
+      decisions: renderableDecisions,
       scope: PAGE_WIDE_SCOPE
     });
 
@@ -68,27 +74,37 @@ export default ({
     } else {
       decisionsDeferred.resolve(nonPageWideScopeDecisions);
     }
+    const decisionsExecutorPromises = [];
 
     if (personalizationDetails.isRenderDecisions()) {
-      executeDecisions(pageWideScopeDecisions);
+      decisionsExecutorPromises.push(executeDecisions(pageWideScopeDecisions));
       if (viewName) {
-        executeCachedViewDecisions({ viewName });
+        decisionsExecutorPromises.push(
+          executeCachedViewDecisions({ viewName })
+        );
       }
+
       showContainers();
-      return {
-        decisions: decisionsGroupedByDomActionSchema.unmatchedDecisions
-      };
+
+      return Promise.all(decisionsExecutorPromises).then(
+        executedDecisionsResult => {
+          const decisions = formatDecisions({
+            executedDecisionsResult,
+            nonRenderableDecisions
+          });
+          return { decisions };
+        }
+      );
     }
-
-    const decisionsToBeReturned = [
-      ...pageWideScopeDecisions,
-      ...decisionsGroupedByDomActionSchema.unmatchedDecisions,
-      ...decisionsGroupedByRedirectItemSchema.matchedDecisions
-    ];
-
+    const notRenderedDecisions = [];
+    notRenderedDecisions.push(...pageWideScopeDecisions);
     if (viewName && nonPageWideScopeDecisions[viewName]) {
-      decisionsToBeReturned.push(...nonPageWideScopeDecisions[viewName]);
+      notRenderedDecisions.push(...nonPageWideScopeDecisions[viewName]);
     }
+    const decisionsToBeReturned = formatDecisions({
+      renderableDecisions: [...notRenderedDecisions, ...redirectDecisions],
+      nonRenderableDecisions
+    });
 
     return { decisions: decisionsToBeReturned };
   };

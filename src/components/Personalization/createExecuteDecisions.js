@@ -10,18 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, flatMap, isNonEmptyArray } from "../../utils";
-
-const identity = item => item;
+import { assign, flatMap, isNonEmptyArray, identity } from "../../utils";
 
 const buildActions = decision => {
-  const meta = {
-    id: decision.id,
-    scope: decision.scope,
-    scopeDetails: decision.scopeDetails
-  };
-
-  return decision.items.map(item => assign({}, item.data, { meta }));
+  return decision.items.map(item => {
+    const meta = {
+      id: decision.id,
+      scope: decision.scope,
+      scopeDetails: decision.scopeDetails,
+      item
+    };
+    return assign({}, item.data, { meta });
+  });
 };
 
 const processMetas = (collect, logger, actionResults) => {
@@ -53,6 +53,7 @@ const processMetas = (collect, logger, actionResults) => {
     // collect here can either be the function from createCollect or createViewCollect.
     collect({ decisionsMeta: finalMetas });
   }
+  return results;
 };
 
 export default ({ modules, logger, executeActions, collect }) => {

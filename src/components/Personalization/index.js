@@ -29,6 +29,7 @@ import decisionsExtractor from "./decisionsExtractor";
 import createOnResponseHandler from "./createOnResponseHandler";
 import createClickStorage from "./createClickStorage";
 import createRedirectHandler from "./createRedirectHandler";
+import decisionProcessor from "./decisionProcessor";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
@@ -38,6 +39,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     getClickSelectors,
     storeClickMetrics
   } = createClickStorage();
+  const { formatDecisions, addRenderedDecisionStatus } = decisionProcessor();
   const viewCache = createViewCacheManager();
   const modules = initDomActionsModules(storeClickMetrics);
   const executeDecisions = createExecuteDecisions({
@@ -68,6 +70,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     executeDecisions,
     executeCachedViewDecisions,
     handleRedirectDecisions,
+    formatDecisions,
     showContainers
   });
   const fetchDataHandler = createFetchDataHandler({
@@ -86,6 +89,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const viewChangeHandler = createViewChangeHandler({
     executeCachedViewDecisions,
     viewCache,
+    addRenderedDecisionStatus,
+    formatDecisions,
     showContainers
   });
   return createComponent({

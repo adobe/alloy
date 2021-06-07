@@ -10,17 +10,34 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ executeCachedViewDecisions, viewCache, showContainers }) => {
+import { NOT_RENDERED } from "./constants/decisionStatus";
+
+export default ({
+  executeCachedViewDecisions,
+  viewCache,
+  addRenderedDecisionStatus,
+  formatDecisions,
+  showContainers
+}) => {
   return ({ personalizationDetails, onResponse, onRequestFailure }) => {
     const viewName = personalizationDetails.getViewName();
-
+    const executedDecisionsResult = [];
     if (personalizationDetails.isRenderDecisions()) {
-      executeCachedViewDecisions({ viewName });
-      return;
+      executeCachedViewDecisions({ viewName }).then(result => {
+        executedDecisionsResult.push(result);
+      });
     }
 
     onResponse(() => {
-      return viewCache.getView(viewName).then(decisions => ({ decisions }));
+      if (personalizationDetails.isRenderDecisions()) {
+        return {
+          decisions: formatDecisions({ executedDecisionsResult })
+        };
+      }
+      return viewCache.getView(viewName).then(decisions => {
+        addRenderedDecisionStatus(decisions, NOT_RENDERED);
+        return { decisions };
+      });
     });
 
     onRequestFailure(() => {
