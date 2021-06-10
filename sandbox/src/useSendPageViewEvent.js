@@ -21,8 +21,6 @@ export default ({
   useEffect(() => {
     xdm.eventType = "page-view";
 
-    xdm.identityMap = {};
-
     if (viewName) {
       xdm.web = {
         webPageDetails: {
