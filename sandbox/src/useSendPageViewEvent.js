@@ -31,8 +31,11 @@ export default ({
 
     window[instanceName]("sendEvent", {
       renderDecisions: true,
+      //decisionScopes: ["sandbox-personalization-page"],
       xdm,
       data
+    }).then(res => {
+      console.log(res);
     });
   }, [instanceName, viewName]);
 };

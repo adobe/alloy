@@ -29,6 +29,8 @@ import decisionsExtractor from "./decisionsExtractor";
 import createOnResponseHandler from "./createOnResponseHandler";
 import createClickStorage from "./createClickStorage";
 import createRedirectHandler from "./createRedirectHandler";
+import createAutorenderingHandler from "./createAutoRenderingHandler";
+import createNonRenderingHandler from "./createNonRenderingHandler";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
@@ -63,10 +65,17 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     executeViewDecisions,
     collect: viewCollect
   });
-  const responseHandler = createOnResponseHandler({
-    decisionsExtractor,
+  const autoRenderingHandler = createAutorenderingHandler({
+    viewCache,
     executeDecisions,
     executeCachedViewDecisions,
+    showContainers
+  });
+  const nonRenderingHandler = createNonRenderingHandler({ viewCache });
+  const responseHandler = createOnResponseHandler({
+    autoRenderingHandler,
+    nonRenderingHandler,
+    decisionsExtractor,
     handleRedirectDecisions,
     showContainers
   });

@@ -10,17 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNonEmptyArray from "../../utils/isNonEmptyArray";
+import addRenderToExecutedDecisions from "../../../../../../src/components/Personalization/utils/addRenderToExecutedDecisions";
 
-export default ({ executeViewDecisions, collect }) => {
-  return ({ viewName, viewDecisions }) => {
-    if (isNonEmptyArray(viewDecisions)) {
-      executeViewDecisions(viewDecisions);
-      return;
-    }
-    const xdm = { web: { webPageDetails: { viewName } } };
-
-    // This collect function is not from createCollect. It's the function from createViewCollect.
-    collect({ decisionsMeta: [], xdm });
-  };
-};
+describe("Personalization::addRenderToExecutedDecisions", () => {
+  it("adds a render flag", () => {
+    const decisions = [
+      {
+        blah: "123"
+      },
+      {
+        blah: "345"
+      }
+    ];
+    const result = addRenderToExecutedDecisions(decisions);
+    expect(result[0].rendered).toEqual(true);
+    expect(result[1].rendered).toEqual(true);
+  });
+});

@@ -9,87 +9,57 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { isEmptyObject } from "../../utils";
-import { DOM_ACTION, REDIRECT_ITEM } from "./constants/schema";
-import PAGE_WIDE_SCOPE from "./constants/scope";
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 
 export default ({
+  autoRenderingHandler,
+  nonRenderingHandler,
   decisionsExtractor,
-  executeDecisions,
-  executeCachedViewDecisions,
   handleRedirectDecisions,
   showContainers
 }) => {
   return ({ decisionsDeferred, personalizationDetails, response }) => {
     const unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
     const viewName = personalizationDetails.getViewName();
+
+    // if personalization payload is empty return empty decisions array
     if (unprocessedDecisions.length === 0) {
       showContainers();
       decisionsDeferred.resolve({});
       return { decisions: [] };
     }
 
-    const decisionsGroupedByRedirectItemSchema = decisionsExtractor.groupDecisionsBySchema(
-      {
-        decisions: unprocessedDecisions,
-        schema: REDIRECT_ITEM
-      }
-    );
+    const {
+      redirectDecisions,
+      pageWideScopeDecisions,
+      viewDecisions,
+      formBasedComposedDecisions
+    } = decisionsExtractor.groupDecisions(unprocessedDecisions);
 
     if (
-      isNonEmptyArray(decisionsGroupedByRedirectItemSchema.matchedDecisions) &&
-      personalizationDetails.isRenderDecisions()
+      personalizationDetails.isRenderDecisions() &&
+      isNonEmptyArray(redirectDecisions)
     ) {
       decisionsDeferred.resolve({});
-      return handleRedirectDecisions(
-        decisionsGroupedByRedirectItemSchema.matchedDecisions
-      );
+      return handleRedirectDecisions(redirectDecisions);
     }
-
-    const decisionsGroupedByDomActionSchema = decisionsExtractor.groupDecisionsBySchema(
-      {
-        decisions: decisionsGroupedByRedirectItemSchema.unmatchedDecisions,
-        schema: DOM_ACTION
-      }
-    );
-    const {
-      pageWideScopeDecisions,
-      nonPageWideScopeDecisions
-    } = decisionsExtractor.groupDecisionsByScope({
-      decisions: decisionsGroupedByDomActionSchema.matchedDecisions,
-      scope: PAGE_WIDE_SCOPE
-    });
-
-    if (isEmptyObject(nonPageWideScopeDecisions)) {
-      decisionsDeferred.resolve({});
-    } else {
-      decisionsDeferred.resolve(nonPageWideScopeDecisions);
-    }
+    // save decisions for views in local cache
+    decisionsDeferred.resolve(viewDecisions);
 
     if (personalizationDetails.isRenderDecisions()) {
-      executeDecisions(pageWideScopeDecisions);
-      if (viewName) {
-        executeCachedViewDecisions({ viewName });
-      }
-      showContainers();
-      return {
-        decisions: decisionsGroupedByDomActionSchema.unmatchedDecisions
-      };
+      return autoRenderingHandler({
+        viewName,
+        pageWideScopeDecisions,
+        formBasedComposedDecisions
+      });
     }
-
-    const decisionsToBeReturned = [
-      ...pageWideScopeDecisions,
-      ...decisionsGroupedByDomActionSchema.unmatchedDecisions,
-      ...decisionsGroupedByRedirectItemSchema.matchedDecisions
-    ];
-
-    if (viewName && nonPageWideScopeDecisions[viewName]) {
-      decisionsToBeReturned.push(...nonPageWideScopeDecisions[viewName]);
-    }
-
-    return { decisions: decisionsToBeReturned };
+    return nonRenderingHandler({
+      viewName,
+      redirectDecisions,
+      pageWideScopeDecisions,
+      formBasedComposedDecisions
+    });
   };
 };

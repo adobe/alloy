@@ -14,45 +14,73 @@ import {
   PAGE_WIDE_SCOPE_DECISIONS,
   PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
   PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS,
-  CART_VIEW_DECISIONS
+  CART_VIEW_DECISIONS,
+  REDIRECT_PAGE_WIDE_SCOPE_DECISION,
+  PRODUCTS_VIEW_DECISIONS
 } from "./responsesMock/eventResponses";
 import decisionsExtractor from "../../../../../src/components/Personalization/decisionsExtractor";
-import { DOM_ACTION } from "../../../../../src/components/Personalization/constants/schema";
 
+let cartDecisions;
+let productDecisions;
+
+beforeEach(() => {
+  cartDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS.concat(
+    CART_VIEW_DECISIONS
+  );
+  productDecisions = PAGE_WIDE_SCOPE_DECISIONS.concat(
+    REDIRECT_PAGE_WIDE_SCOPE_DECISION
+  ).concat(PRODUCTS_VIEW_DECISIONS);
+});
 describe("Personalization::decisionsExtractor", () => {
   it("extracts decisions by scope", () => {
-    const decisions = PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS.concat(
-      CART_VIEW_DECISIONS
-    );
-
     const {
+      redirectDecisions,
       pageWideScopeDecisions,
-      nonPageWideScopeDecisions
-    } = decisionsExtractor.groupDecisionsByScope({
-      decisions,
-      scope: "__view__"
-    });
+      viewDecisions,
+      formBasedComposedDecisions
+    } = decisionsExtractor.groupDecisions(cartDecisions);
+
     expect(pageWideScopeDecisions).toEqual(
       PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
     );
-    expect(nonPageWideScopeDecisions).toEqual({ cart: CART_VIEW_DECISIONS });
+    expect(viewDecisions).toEqual({ cart: CART_VIEW_DECISIONS });
+    expect(formBasedComposedDecisions).toEqual([]);
+    expect(redirectDecisions).toEqual([]);
   });
 
-  it("extracts decisions by schema", () => {
-    const decisions = PAGE_WIDE_SCOPE_DECISIONS;
-
+  it("extracts decisions", () => {
+    const expectedViewDecisions = {
+      products: PRODUCTS_VIEW_DECISIONS
+    };
     const {
-      matchedDecisions,
-      unmatchedDecisions
-    } = decisionsExtractor.groupDecisionsBySchema({
-      decisions,
-      schema: DOM_ACTION
-    });
-    expect(unmatchedDecisions).toEqual(
+      redirectDecisions,
+      pageWideScopeDecisions,
+      viewDecisions,
+      formBasedComposedDecisions
+    } = decisionsExtractor.groupDecisions(productDecisions);
+
+    expect(formBasedComposedDecisions).toEqual(
       PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS
     );
-    expect(matchedDecisions).toEqual(
+    expect(pageWideScopeDecisions).toEqual(
       PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
     );
+    expect(redirectDecisions).toEqual(REDIRECT_PAGE_WIDE_SCOPE_DECISION);
+    expect(viewDecisions).toEqual(expectedViewDecisions);
+  });
+  it("extracts empty when no decisions", () => {
+    const decisions = [];
+
+    const {
+      redirectDecisions,
+      pageWideScopeDecisions,
+      viewDecisions,
+      formBasedComposedDecisions
+    } = decisionsExtractor.groupDecisions(decisions);
+
+    expect(formBasedComposedDecisions).toEqual([]);
+    expect(pageWideScopeDecisions).toEqual([]);
+    expect(redirectDecisions).toEqual([]);
+    expect(viewDecisions).toEqual({});
   });
 });

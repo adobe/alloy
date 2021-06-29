@@ -10,21 +10,29 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import addRenderToExecutedDecisions from "./utils/addRenderToExecutedDecisions";
+
 export default ({ executeCachedViewDecisions, viewCache, showContainers }) => {
   return ({ personalizationDetails, onResponse, onRequestFailure }) => {
     const viewName = personalizationDetails.getViewName();
 
-    if (personalizationDetails.isRenderDecisions()) {
-      executeCachedViewDecisions({ viewName });
-      return;
-    }
+    return viewCache.getView(viewName).then(currentViewDecisions => {
+      if (personalizationDetails.isRenderDecisions()) {
+        executeCachedViewDecisions({
+          viewName,
+          viewDecisions: currentViewDecisions
+        });
+      }
 
-    onResponse(() => {
-      return viewCache.getView(viewName).then(decisions => ({ decisions }));
-    });
+      onResponse(() => {
+        return personalizationDetails.isRenderDecisions()
+          ? { decisions: addRenderToExecutedDecisions(currentViewDecisions) }
+          : { decisions: currentViewDecisions };
+      });
 
-    onRequestFailure(() => {
-      showContainers();
+      onRequestFailure(() => {
+        showContainers();
+      });
     });
   };
 };
