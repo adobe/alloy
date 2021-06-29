@@ -28,7 +28,10 @@ export default ({
     if (unprocessedDecisions.length === 0) {
       showContainers();
       decisionsDeferred.resolve({});
-      return { decisions: [] };
+      return {
+        decisions: [],
+        propositions: []
+      };
     }
 
     const {

@@ -135,7 +135,8 @@ describe("Personalization::onResponseHandler", () => {
 
   it("should trigger showContainers if personalizationDetails payload is empty and return empty array", () => {
     const expectedResult = {
-      decisions: []
+      decisions: [],
+      propositions: []
     };
     response.getPayloadsByType.and.returnValue([]);
     personalizationDetails.isRenderDecisions.and.returnValue(false);

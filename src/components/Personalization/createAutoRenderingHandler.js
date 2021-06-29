@@ -17,7 +17,8 @@ export default ({
         showContainers();
 
         return {
-          decisions: [
+          decisions: [...formBasedComposedDecisions],
+          propositions: [
             ...addRenderToExecutedDecisions(pageWideScopeDecisions),
             ...addRenderToExecutedDecisions(currentViewDecisions),
             ...formBasedComposedDecisions
@@ -30,7 +31,8 @@ export default ({
     showContainers();
 
     return {
-      decisions: [
+      decisions: [...formBasedComposedDecisions],
+      propositions: [
         ...addRenderToExecutedDecisions(pageWideScopeDecisions),
         ...formBasedComposedDecisions
       ]

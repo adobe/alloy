@@ -69,6 +69,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
       }
     });
   });
+
   it("it should execute page wide scope decisions when no viewName", () => {
     const viewName = undefined;
     const autorenderingHandler = createAutoRenderingHandler({
@@ -83,15 +84,16 @@ describe("Personalization::createAutoRenderingHandler", () => {
       pageWideScopeDecisions,
       formBasedComposedDecisions
     });
+
+    result.propositions.forEach(proposition => {
+      if (proposition.scope === "__view__") {
+        expect(proposition.rendered).toEqual(true);
+      }
+    });
+
     expect(viewCache.getView).not.toHaveBeenCalled();
     expect(executeCachedViewDecisions).not.toHaveBeenCalled();
     expect(executeDecisions).toHaveBeenCalledWith(pageWideScopeDecisions);
     expect(showContainers).toHaveBeenCalled();
-
-    result.decisions.forEach(decision => {
-      if (decision.scope === "__view__") {
-        expect(decision.rendered).toEqual(true);
-      }
-    });
   });
 });

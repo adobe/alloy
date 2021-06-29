@@ -13,6 +13,12 @@ export default ({ viewCache }) => {
             ...pageWideScopeDecisions,
             ...currentViewDecisions,
             ...formBasedComposedDecisions
+          ],
+          propositions: [
+            ...redirectDecisions,
+            ...pageWideScopeDecisions,
+            ...currentViewDecisions,
+            ...formBasedComposedDecisions
           ]
         };
       });
@@ -20,6 +26,11 @@ export default ({ viewCache }) => {
 
     return {
       decisions: [
+        ...redirectDecisions,
+        ...pageWideScopeDecisions,
+        ...formBasedComposedDecisions
+      ],
+      propositions: [
         ...redirectDecisions,
         ...pageWideScopeDecisions,
         ...formBasedComposedDecisions

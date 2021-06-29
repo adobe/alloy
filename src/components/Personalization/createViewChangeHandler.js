@@ -26,8 +26,11 @@ export default ({ executeCachedViewDecisions, viewCache, showContainers }) => {
 
       onResponse(() => {
         return personalizationDetails.isRenderDecisions()
-          ? { decisions: addRenderToExecutedDecisions(currentViewDecisions) }
-          : { decisions: currentViewDecisions };
+          ? { propositions: addRenderToExecutedDecisions(currentViewDecisions) }
+          : {
+              decisions: currentViewDecisions,
+              propositions: currentViewDecisions
+            };
       });
 
       onRequestFailure(() => {
