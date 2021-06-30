@@ -18,7 +18,7 @@ import {
   REDIRECT_PAGE_WIDE_SCOPE_DECISION,
   PRODUCTS_VIEW_DECISIONS
 } from "./responsesMock/eventResponses";
-import decisionsExtractor from "../../../../../src/components/Personalization/decisionsExtractor";
+import groupDecisions from "../../../../../src/components/Personalization/groupDecisions";
 
 let cartDecisions;
 let productDecisions;
@@ -38,7 +38,7 @@ describe("Personalization::decisionsExtractor", () => {
       pageWideScopeDecisions,
       viewDecisions,
       formBasedComposedDecisions
-    } = decisionsExtractor.groupDecisions(cartDecisions);
+    } = groupDecisions(cartDecisions);
 
     expect(pageWideScopeDecisions).toEqual(
       PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
@@ -57,7 +57,7 @@ describe("Personalization::decisionsExtractor", () => {
       pageWideScopeDecisions,
       viewDecisions,
       formBasedComposedDecisions
-    } = decisionsExtractor.groupDecisions(productDecisions);
+    } = groupDecisions(productDecisions);
 
     expect(formBasedComposedDecisions).toEqual(
       PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS
@@ -76,7 +76,7 @@ describe("Personalization::decisionsExtractor", () => {
       pageWideScopeDecisions,
       viewDecisions,
       formBasedComposedDecisions
-    } = decisionsExtractor.groupDecisions(decisions);
+    } = groupDecisions(decisions);
 
     expect(formBasedComposedDecisions).toEqual([]);
     expect(pageWideScopeDecisions).toEqual([]);

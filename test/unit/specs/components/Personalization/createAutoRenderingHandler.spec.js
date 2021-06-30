@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Adobe. All rights reserved.
+Copyright 2021 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -24,6 +24,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
   let showContainers;
   let pageWideScopeDecisions;
   let formBasedComposedDecisions;
+  let logger;
 
   beforeEach(() => {
     pageWideScopeDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS;
@@ -34,6 +35,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
     executeCachedViewDecisions = jasmine.createSpy(
       "executeCachedViewDecisions"
     );
+    logger = jasmine.createSpyObj("logger", ["warn"]);
   });
 
   it("it should fetch decisions from cache when viewName is present", () => {
@@ -47,7 +49,8 @@ describe("Personalization::createAutoRenderingHandler", () => {
       viewCache,
       executeDecisions,
       executeCachedViewDecisions,
-      showContainers
+      showContainers,
+      logger
     });
 
     const result = autorenderingHandler({
@@ -76,7 +79,8 @@ describe("Personalization::createAutoRenderingHandler", () => {
       viewCache,
       executeDecisions,
       executeCachedViewDecisions,
-      showContainers
+      showContainers,
+      logger
     });
 
     const result = autorenderingHandler({

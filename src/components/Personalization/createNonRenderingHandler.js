@@ -1,40 +1,54 @@
-export default ({ viewCache }) => {
+/*
+Copyright 2021 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
+const getViewPropositions = ({ viewCache, viewName, propositions }) => {
+  if (!viewName) {
+    return propositions;
+  }
+
+  return viewCache
+    .getView(viewName)
+    .then(viewPropositions => [...viewPropositions, ...propositions]);
+};
+
+const buildFinalResult = ({ logger, propositions }) => {
+  return {
+    get decisions() {
+      // Added decisions for backward compatibility.
+      logger.warn("Decisions property is deprecated");
+
+      return propositions;
+    },
+    propositions
+  };
+};
+
+export default ({ viewCache, logger }) => {
   return ({
     viewName,
     redirectDecisions,
     pageWideScopeDecisions,
     formBasedComposedDecisions
   }) => {
-    if (viewName) {
-      return viewCache.getView(viewName).then(currentViewDecisions => {
-        return {
-          decisions: [
-            ...redirectDecisions,
-            ...pageWideScopeDecisions,
-            ...currentViewDecisions,
-            ...formBasedComposedDecisions
-          ],
-          propositions: [
-            ...redirectDecisions,
-            ...pageWideScopeDecisions,
-            ...currentViewDecisions,
-            ...formBasedComposedDecisions
-          ]
-        };
-      });
-    }
+    const propositions = [
+      ...redirectDecisions,
+      ...pageWideScopeDecisions,
+      ...formBasedComposedDecisions
+    ];
 
-    return {
-      decisions: [
-        ...redirectDecisions,
-        ...pageWideScopeDecisions,
-        ...formBasedComposedDecisions
-      ],
-      propositions: [
-        ...redirectDecisions,
-        ...pageWideScopeDecisions,
-        ...formBasedComposedDecisions
-      ]
-    };
+    return Promise.resolve(propositions)
+      .then(items =>
+        getViewPropositions({ viewCache, viewName, propositions: items })
+      )
+      .then(items => buildFinalResult({ logger, propositions: items }));
   };
 };

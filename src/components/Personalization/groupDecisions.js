@@ -104,8 +104,6 @@ const getGroupedDecisions = unprocessedDecisions => {
   };
 };
 
-export default {
-  groupDecisions(decisions) {
-    return getGroupedDecisions(decisions);
-  }
+export default decisions => {
+  return getGroupedDecisions(decisions);
 };

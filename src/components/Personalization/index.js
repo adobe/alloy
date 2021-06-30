@@ -25,7 +25,7 @@ import createOnClickHandler from "./createOnClickHandler";
 import createExecuteCachedViewDecisions from "./createExecuteCachedViewDecisions";
 import createViewCacheManager from "./createViewCacheManager";
 import createViewChangeHandler from "./createViewChangeHandler";
-import decisionsExtractor from "./decisionsExtractor";
+import groupDecisions from "./groupDecisions";
 import createOnResponseHandler from "./createOnResponseHandler";
 import createClickStorage from "./createClickStorage";
 import createRedirectHandler from "./createRedirectHandler";
@@ -69,15 +69,17 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     viewCache,
     executeDecisions,
     executeCachedViewDecisions,
-    showContainers
+    showContainers,
+    logger
   });
-  const nonRenderingHandler = createNonRenderingHandler({ viewCache });
+  const nonRenderingHandler = createNonRenderingHandler({ viewCache, logger });
   const responseHandler = createOnResponseHandler({
     autoRenderingHandler,
     nonRenderingHandler,
-    decisionsExtractor,
+    groupDecisions,
     handleRedirectDecisions,
-    showContainers
+    showContainers,
+    logger
   });
   const fetchDataHandler = createFetchDataHandler({
     config,
@@ -95,7 +97,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const viewChangeHandler = createViewChangeHandler({
     executeCachedViewDecisions,
     viewCache,
-    showContainers
+    showContainers,
+    logger
   });
   return createComponent({
     logger,

@@ -16,9 +16,10 @@ const DECISIONS_HANDLE = "personalization:decisions";
 export default ({
   autoRenderingHandler,
   nonRenderingHandler,
-  decisionsExtractor,
+  groupDecisions,
   handleRedirectDecisions,
-  showContainers
+  showContainers,
+  logger
 }) => {
   return ({ decisionsDeferred, personalizationDetails, response }) => {
     const unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
@@ -29,7 +30,10 @@ export default ({
       showContainers();
       decisionsDeferred.resolve({});
       return {
-        decisions: [],
+        get decisions() {
+          logger.warn("Decisions property is deprecated");
+          return [];
+        },
         propositions: []
       };
     }
@@ -39,7 +43,7 @@ export default ({
       pageWideScopeDecisions,
       viewDecisions,
       formBasedComposedDecisions
-    } = decisionsExtractor.groupDecisions(unprocessedDecisions);
+    } = groupDecisions(unprocessedDecisions);
 
     if (
       personalizationDetails.isRenderDecisions() &&

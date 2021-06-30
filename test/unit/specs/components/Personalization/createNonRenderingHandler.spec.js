@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Adobe. All rights reserved.
+Copyright 2021 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -24,8 +24,10 @@ describe("Personalization::createNonRenderingHandler", () => {
   let formBasedComposedDecisions;
   let cartViewDecisions;
   let redirectDecisions;
+  let logger;
 
   beforeEach(() => {
+    logger = jasmine.createSpyObj("logger", ["warn"]);
     redirectDecisions = REDIRECT_PAGE_WIDE_SCOPE_DECISION;
     cartViewDecisions = CART_VIEW_DECISIONS;
     pageWideScopeDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS;
@@ -41,31 +43,38 @@ describe("Personalization::createNonRenderingHandler", () => {
     viewCache.getView.and.returnValue(promise);
 
     const nonRenderingHandler = createNonRenderingHandler({
-      viewCache
+      viewCache,
+      logger
     });
 
-    const result = nonRenderingHandler({
+    nonRenderingHandler({
       viewName,
       redirectDecisions,
       pageWideScopeDecisions,
       formBasedComposedDecisions
+    }).then(result => {
+      expect(viewCache.getView).toHaveBeenCalledWith("cart");
+      expect(result.decisions.length).toBe(5);
+      expect(logger.warn).toHaveBeenCalled();
     });
-    expect(viewCache.getView).toHaveBeenCalledWith("cart");
-    expect(result.decisions.length).toBe(5);
   });
+
   it("it should not trigger viewCache when no viewName", () => {
     const viewName = undefined;
     const nonRenderingHandler = createNonRenderingHandler({
-      viewCache
+      viewCache,
+      logger
     });
 
-    const result = nonRenderingHandler({
+    nonRenderingHandler({
       viewName,
       redirectDecisions,
       pageWideScopeDecisions,
       formBasedComposedDecisions
+    }).then(result => {
+      expect(viewCache.getView).not.toHaveBeenCalled();
+      expect(result.decisions.length).toBe(4);
+      expect(logger.warn).toHaveBeenCalled();
     });
-    expect(viewCache.getView).not.toHaveBeenCalled();
-    expect(result.decisions.length).toBe(4);
   });
 });

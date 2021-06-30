@@ -12,7 +12,12 @@ governing permissions and limitations under the License.
 
 import addRenderToExecutedDecisions from "./utils/addRenderToExecutedDecisions";
 
-export default ({ executeCachedViewDecisions, viewCache, showContainers }) => {
+export default ({
+  executeCachedViewDecisions,
+  viewCache,
+  showContainers,
+  logger
+}) => {
   return ({ personalizationDetails, onResponse, onRequestFailure }) => {
     const viewName = personalizationDetails.getViewName();
 
@@ -28,7 +33,10 @@ export default ({ executeCachedViewDecisions, viewCache, showContainers }) => {
         return personalizationDetails.isRenderDecisions()
           ? { propositions: addRenderToExecutedDecisions(currentViewDecisions) }
           : {
-              decisions: currentViewDecisions,
+              get decisions() {
+                logger.warn("Decisions property is deprecated");
+                return currentViewDecisions;
+              },
               propositions: currentViewDecisions
             };
       });

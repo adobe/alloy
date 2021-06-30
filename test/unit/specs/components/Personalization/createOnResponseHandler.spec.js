@@ -29,7 +29,7 @@ describe("Personalization::onResponseHandler", () => {
   ];
   const pageWideScopeDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS;
 
-  let decisionsExtractor;
+  let groupDecisions;
   let autoRenderingHandler;
   let nonRenderingHandler;
   let showContainers;
@@ -37,16 +37,16 @@ describe("Personalization::onResponseHandler", () => {
   let personalizationDetails;
   let decisionsDeferred;
   let handleRedirectDecisions;
+  let logger;
 
   beforeEach(() => {
+    logger = jasmine.createSpyObj("logger", ["warn"]);
     response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
     personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
       "isRenderDecisions",
       "getViewName"
     ]);
-    decisionsExtractor = jasmine.createSpyObj("decisionsExtractor", [
-      "groupDecisions"
-    ]);
+    groupDecisions = jasmine.createSpy();
     decisionsDeferred = jasmine.createSpyObj("decisionsDeferred", [
       "defer",
       "reject",
@@ -63,7 +63,7 @@ describe("Personalization::onResponseHandler", () => {
       cart: CART_VIEW_DECISIONS,
       products: PRODUCTS_VIEW_DECISIONS
     };
-    decisionsExtractor.groupDecisions.and.returnValues({
+    groupDecisions.and.returnValues({
       redirectDecisions: [],
       pageWideScopeDecisions,
       viewDecisions: nonPageWideScopeDecisions,
@@ -74,11 +74,12 @@ describe("Personalization::onResponseHandler", () => {
     personalizationDetails.isRenderDecisions.and.returnValue(true);
     personalizationDetails.getViewName.and.returnValue(undefined);
     const onResponse = createOnResponseHandler({
-      decisionsExtractor,
+      groupDecisions,
       nonRenderingHandler,
       autoRenderingHandler,
       handleRedirectDecisions,
-      showContainers
+      showContainers,
+      logger
     });
 
     onResponse({
@@ -99,7 +100,7 @@ describe("Personalization::onResponseHandler", () => {
     const nonPageWideScopeDecisions = {
       products: PRODUCTS_VIEW_DECISIONS
     };
-    decisionsExtractor.groupDecisions.and.returnValues({
+    groupDecisions.and.returnValues({
       redirectDecisions: [],
       pageWideScopeDecisions,
       viewDecisions: nonPageWideScopeDecisions,
@@ -110,11 +111,12 @@ describe("Personalization::onResponseHandler", () => {
     personalizationDetails.isRenderDecisions.and.returnValue(false);
     personalizationDetails.getViewName.and.returnValue(undefined);
     const onResponse = createOnResponseHandler({
-      decisionsExtractor,
+      groupDecisions,
       nonRenderingHandler,
       autoRenderingHandler,
       handleRedirectDecisions,
-      showContainers
+      showContainers,
+      logger
     });
 
     onResponse({
@@ -143,11 +145,12 @@ describe("Personalization::onResponseHandler", () => {
     personalizationDetails.getViewName.and.returnValue("cart");
 
     const onResponse = createOnResponseHandler({
-      decisionsExtractor,
+      groupDecisions,
       nonRenderingHandler,
       autoRenderingHandler,
       handleRedirectDecisions,
-      showContainers
+      showContainers,
+      logger
     });
     const result = onResponse({
       decisionsDeferred,
@@ -156,7 +159,7 @@ describe("Personalization::onResponseHandler", () => {
     });
     expect(decisionsDeferred.resolve).toHaveBeenCalledWith({});
     expect(showContainers).toHaveBeenCalled();
-    expect(decisionsExtractor.groupDecisions).not.toHaveBeenCalled();
+    expect(groupDecisions).not.toHaveBeenCalled();
     expect(nonRenderingHandler).not.toHaveBeenCalled();
     expect(autoRenderingHandler).not.toHaveBeenCalled();
     expect(result).toEqual(expectedResult);
@@ -173,7 +176,7 @@ describe("Personalization::onResponseHandler", () => {
       cart: CART_VIEW_DECISIONS,
       products: PRODUCTS_VIEW_DECISIONS
     };
-    decisionsExtractor.groupDecisions.and.returnValues({
+    groupDecisions.and.returnValues({
       redirectDecisions: REDIRECT_PAGE_WIDE_SCOPE_DECISION,
       pageWideScopeDecisions,
       viewDecisions: nonPageWideScopeDecisions,
@@ -184,11 +187,12 @@ describe("Personalization::onResponseHandler", () => {
     personalizationDetails.isRenderDecisions.and.returnValue(true);
     personalizationDetails.getViewName.and.returnValue("cart");
     const onResponse = createOnResponseHandler({
-      decisionsExtractor,
+      groupDecisions,
       nonRenderingHandler,
       autoRenderingHandler,
       handleRedirectDecisions,
-      showContainers
+      showContainers,
+      logger
     });
     const result = onResponse({
       decisionsDeferred,
