@@ -56,6 +56,8 @@ test("Test C28756: A form based offer should return if event command contains it
 
   await t.expect(results).eql(true);
 
+  await t.expect(result.decisions[0].renderAttempted).eql(undefined);
+  await t.expect(result.propositions[0].renderAttempted).eql(false);
   const matchingDecision = result.decisions.find(decision => {
     return decision.id === decisionId;
   });
