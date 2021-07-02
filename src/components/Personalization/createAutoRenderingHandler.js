@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import addRenderToExecutedDecisions from "./utils/addRenderToExecutedDecisions";
+import addRenderAttemptedToDecisions from "./utils/addRenderAttemptedToDecisions";
+import { decisionsDeprecatedWarning } from "./constants/loggerMessages";
 
 export default ({
   viewCache,
@@ -31,14 +32,19 @@ export default ({
 
         return {
           get decisions() {
-            logger.warn("Decisions property is deprecated");
+            logger.warn(decisionsDeprecatedWarning);
 
             return [...formBasedComposedDecisions];
           },
           propositions: [
-            ...addRenderToExecutedDecisions(pageWideScopeDecisions),
-            ...addRenderToExecutedDecisions(currentViewDecisions),
-            ...formBasedComposedDecisions
+            ...addRenderAttemptedToDecisions({
+              decisions: [...pageWideScopeDecisions, ...currentViewDecisions],
+              renderAttempted: true
+            }),
+            ...addRenderAttemptedToDecisions({
+              decisions: formBasedComposedDecisions,
+              renderAttempted: false
+            })
           ]
         };
       });
@@ -49,13 +55,19 @@ export default ({
 
     return {
       get decisions() {
-        logger.warn("Decisions property is deprecated");
+        logger.warn(decisionsDeprecatedWarning);
 
         return [...formBasedComposedDecisions];
       },
       propositions: [
-        ...addRenderToExecutedDecisions(pageWideScopeDecisions),
-        ...formBasedComposedDecisions
+        ...addRenderAttemptedToDecisions({
+          decisions: pageWideScopeDecisions,
+          renderAttempted: true
+        }),
+        ...addRenderAttemptedToDecisions({
+          decisions: formBasedComposedDecisions,
+          renderAttempted: false
+        })
       ]
     };
   };

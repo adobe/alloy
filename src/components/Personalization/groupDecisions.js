@@ -77,7 +77,7 @@ const extractDecisionsByScope = (decisions, scope) => {
   return { pageWideScopeDecisions, nonPageWideScopeDecisions };
 };
 
-const getGroupedDecisions = unprocessedDecisions => {
+const groupDecisions = unprocessedDecisions => {
   const decisionsGroupedByRedirectItemSchema = splitDecisions(
     unprocessedDecisions,
     REDIRECT_ITEM
@@ -103,7 +103,4 @@ const getGroupedDecisions = unprocessedDecisions => {
       decisionsGroupedByDomActionSchema.unmatchedDecisions
   };
 };
-
-export default decisions => {
-  return getGroupedDecisions(decisions);
-};
+export default groupDecisions;

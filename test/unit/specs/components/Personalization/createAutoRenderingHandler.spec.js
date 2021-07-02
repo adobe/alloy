@@ -67,8 +67,14 @@ describe("Personalization::createAutoRenderingHandler", () => {
     expect(showContainers).toHaveBeenCalled();
 
     result.decisions.forEach(decision => {
-      if (decision.scope === "__view__" || decision.scope === viewName) {
-        expect(decision.rendered).toEqual(true);
+      expect(decision.renderAttempted).toBeUndefined();
+    });
+
+    result.propositions.forEach(proposition => {
+      if (proposition.scope === "__view__" || proposition.scope === viewName) {
+        expect(proposition.renderAttempted).toEqual(true);
+      } else {
+        expect(proposition.renderAttempted).toEqual(false);
       }
     });
   });
@@ -89,9 +95,15 @@ describe("Personalization::createAutoRenderingHandler", () => {
       formBasedComposedDecisions
     });
 
+    result.decisions.forEach(decision => {
+      expect(decision.renderAttempted).toBeUndefined();
+    });
+
     result.propositions.forEach(proposition => {
       if (proposition.scope === "__view__") {
-        expect(proposition.rendered).toEqual(true);
+        expect(proposition.renderAttempted).toEqual(true);
+      } else {
+        expect(proposition.renderAttempted).toEqual(false);
       }
     });
 

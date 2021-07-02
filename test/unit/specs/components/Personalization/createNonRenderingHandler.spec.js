@@ -56,6 +56,12 @@ describe("Personalization::createNonRenderingHandler", () => {
       expect(viewCache.getView).toHaveBeenCalledWith("cart");
       expect(result.decisions.length).toBe(5);
       expect(logger.warn).toHaveBeenCalled();
+      result.decisions.forEach(decision => {
+        expect(decision.renderAttempted).toBeUndefined();
+      });
+      result.propositions.forEach(proposition => {
+        expect(proposition.renderAttempted).toEqual(false);
+      });
     });
   });
 
@@ -75,6 +81,12 @@ describe("Personalization::createNonRenderingHandler", () => {
       expect(viewCache.getView).not.toHaveBeenCalled();
       expect(result.decisions.length).toBe(4);
       expect(logger.warn).toHaveBeenCalled();
+      result.decisions.forEach(decision => {
+        expect(decision.renderAttempted).toBeUndefined();
+      });
+      result.propositions.forEach(proposition => {
+        expect(proposition.renderAttempted).toEqual(false);
+      });
     });
   });
 });

@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import addRenderToExecutedDecisions from "./utils/addRenderToExecutedDecisions";
+import { decisionsDeprecatedWarning } from "./constants/loggerMessages";
+import addRenderAttemptedToDecisions from "./utils/addRenderAttemptedToDecisions";
 
 export default ({
   executeCachedViewDecisions,
@@ -31,13 +32,21 @@ export default ({
 
       onResponse(() => {
         return personalizationDetails.isRenderDecisions()
-          ? { propositions: addRenderToExecutedDecisions(currentViewDecisions) }
+          ? {
+              propositions: addRenderAttemptedToDecisions({
+                decisions: currentViewDecisions,
+                renderAttempted: true
+              })
+            }
           : {
               get decisions() {
-                logger.warn("Decisions property is deprecated");
+                logger.warn(decisionsDeprecatedWarning);
                 return currentViewDecisions;
               },
-              propositions: currentViewDecisions
+              propositions: addRenderAttemptedToDecisions({
+                decisions: currentViewDecisions,
+                renderAttempted: false
+              })
             };
       });
 

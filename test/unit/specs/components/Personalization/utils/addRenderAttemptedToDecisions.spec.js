@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import addRenderToExecutedDecisions from "../../../../../../src/components/Personalization/utils/addRenderToExecutedDecisions";
+import addRenderAttemptedToDecisions from "../../../../../../src/components/Personalization/utils/addRenderAttemptedToDecisions";
 
-describe("Personalization::addRenderToExecutedDecisions", () => {
-  it("adds a render flag", () => {
+describe("Personalization::addRenderAttemptedToDecisions", () => {
+  it("adds a renderAttempted flag", () => {
     const decisions = [
       {
         blah: "123"
@@ -22,10 +22,13 @@ describe("Personalization::addRenderToExecutedDecisions", () => {
         blah: "345"
       }
     ];
-    const result = addRenderToExecutedDecisions(decisions);
-    expect(result[0].rendered).toEqual(true);
-    expect(result[1].rendered).toEqual(true);
-    expect(decisions[0].rendered).toBeUndefined();
-    expect(decisions[1].rendered).toBeUndefined();
+    const result = addRenderAttemptedToDecisions({
+      decisions,
+      renderAttempted: true
+    });
+    expect(result[0].renderAttempted).toEqual(true);
+    expect(result[1].renderAttempted).toEqual(true);
+    expect(decisions[0].renderAttempted).toBeUndefined();
+    expect(decisions[1].renderAttempted).toBeUndefined();
   });
 });

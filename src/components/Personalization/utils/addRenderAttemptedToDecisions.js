@@ -12,6 +12,6 @@ governing permissions and limitations under the License.
 
 import { assign } from "../../../utils";
 
-export default decisions => {
-  return decisions.map(decision => assign({ rendered: true }, decision));
+export default ({ decisions, renderAttempted }) => {
+  return decisions.map(decision => assign({ renderAttempted }, decision));
 };
