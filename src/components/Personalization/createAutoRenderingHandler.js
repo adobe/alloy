@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import addRenderAttemptedToDecisions from "./utils/addRenderAttemptedToDecisions";
-import { decisionsDeprecatedWarning } from "./constants/loggerMessages";
+import { DECISIONS_DEPRECATED_WARNING } from "./constants/loggerMessage";
 
 export default ({
   viewCache,
@@ -32,7 +32,7 @@ export default ({
 
         return {
           get decisions() {
-            logger.warn(decisionsDeprecatedWarning);
+            logger.warn(DECISIONS_DEPRECATED_WARNING);
 
             return [...formBasedComposedDecisions];
           },
@@ -55,7 +55,7 @@ export default ({
 
     return {
       get decisions() {
-        logger.warn(decisionsDeprecatedWarning);
+        logger.warn(DECISIONS_DEPRECATED_WARNING);
 
         return [...formBasedComposedDecisions];
       },

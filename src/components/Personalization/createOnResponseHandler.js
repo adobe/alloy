@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
-import { decisionsDeprecatedWarning } from "./constants/loggerMessages";
+import { DECISIONS_DEPRECATED_WARNING } from "./constants/loggerMessage";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 
@@ -32,7 +32,7 @@ export default ({
       decisionsDeferred.resolve({});
       return {
         get decisions() {
-          logger.warn(decisionsDeprecatedWarning);
+          logger.warn(DECISIONS_DEPRECATED_WARNING);
           return [];
         },
         propositions: []

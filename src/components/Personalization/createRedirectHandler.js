@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { redirectExecutionError } from "./constants/loggerMessages";
+import { REDIRECT_EXECUTION_ERROR } from "./constants/loggerMessage";
 
 const getRedirectDetails = redirectDecisions => {
   const decision = redirectDecisions[0];
@@ -31,7 +31,7 @@ export default ({ collect, window, logger, showContainers }) => {
       })
       .catch(() => {
         showContainers();
-        logger.warn(redirectExecutionError);
+        logger.warn(REDIRECT_EXECUTION_ERROR);
       });
   };
 };

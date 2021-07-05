@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { decisionsDeprecatedWarning } from "./constants/loggerMessages";
+import { DECISIONS_DEPRECATED_WARNING } from "./constants/loggerMessage";
 import addRenderAttemptedToDecisions from "./utils/addRenderAttemptedToDecisions";
 
 export default ({
@@ -40,7 +40,7 @@ export default ({
             }
           : {
               get decisions() {
-                logger.warn(decisionsDeprecatedWarning);
+                logger.warn(DECISIONS_DEPRECATED_WARNING);
                 return currentViewDecisions;
               },
               propositions: addRenderAttemptedToDecisions({
