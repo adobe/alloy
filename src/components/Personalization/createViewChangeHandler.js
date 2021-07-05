@@ -22,7 +22,7 @@ export default ({
   return ({ personalizationDetails, onResponse, onRequestFailure }) => {
     const viewName = personalizationDetails.getViewName();
 
-    return viewCache.getView(viewName).then(currentViewDecisions => {
+    return viewCache.getView(viewName).then((currentViewDecisions = []) => {
       if (personalizationDetails.isRenderDecisions()) {
         executeCachedViewDecisions({
           viewName,
