@@ -23,12 +23,12 @@ describe("Personalization::createAutoRenderingHandler", () => {
   let executeCachedViewDecisions;
   let showContainers;
   let pageWideScopeDecisions;
-  let formBasedComposedDecisions;
+  let nonAutoRenderableDecisions;
   let logger;
 
   beforeEach(() => {
     pageWideScopeDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS;
-    formBasedComposedDecisions = SCOPES_FOO1_FOO2_DECISIONS;
+    nonAutoRenderableDecisions = SCOPES_FOO1_FOO2_DECISIONS;
     showContainers = jasmine.createSpy("showContainers");
     viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
     executeDecisions = jasmine.createSpy("executeDecisions");
@@ -56,7 +56,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
     const result = autorenderingHandler({
       viewName,
       pageWideScopeDecisions,
-      formBasedComposedDecisions
+      nonAutoRenderableDecisions
     });
     expect(viewCache.getView).toHaveBeenCalledWith("cart");
     expect(executeDecisions).toHaveBeenCalledWith(pageWideScopeDecisions);
@@ -92,7 +92,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
     const result = autorenderingHandler({
       viewName,
       pageWideScopeDecisions,
-      formBasedComposedDecisions
+      nonAutoRenderableDecisions
     });
 
     result.decisions.forEach(decision => {

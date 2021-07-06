@@ -99,7 +99,7 @@ const groupDecisions = unprocessedDecisions => {
     redirectDecisions: decisionsGroupedByRedirectItemSchema.matchedDecisions,
     pageWideScopeDecisions,
     viewDecisions: nonPageWideScopeDecisions,
-    formBasedComposedDecisions:
+    nonAutoRenderableDecisions:
       decisionsGroupedByDomActionSchema.unmatchedDecisions
   };
 };

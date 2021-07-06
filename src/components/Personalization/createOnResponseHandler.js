@@ -43,7 +43,7 @@ export default ({
       redirectDecisions,
       pageWideScopeDecisions,
       viewDecisions,
-      formBasedComposedDecisions
+      nonAutoRenderableDecisions
     } = groupDecisions(unprocessedDecisions);
 
     if (
@@ -60,14 +60,14 @@ export default ({
       return autoRenderingHandler({
         viewName,
         pageWideScopeDecisions,
-        formBasedComposedDecisions
+        nonAutoRenderableDecisions
       });
     }
     return nonRenderingHandler({
       viewName,
       redirectDecisions,
       pageWideScopeDecisions,
-      formBasedComposedDecisions
+      nonAutoRenderableDecisions
     });
   };
 };

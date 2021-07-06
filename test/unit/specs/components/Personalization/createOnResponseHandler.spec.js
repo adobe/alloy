@@ -67,7 +67,7 @@ describe("Personalization::onResponseHandler", () => {
       redirectDecisions: [],
       pageWideScopeDecisions,
       viewDecisions: nonPageWideScopeDecisions,
-      formBasedComposedDecisions: nonDomActionDecisions
+      nonAutoRenderableDecisions: nonDomActionDecisions
     });
 
     response.getPayloadsByType.and.returnValue(unprocessedDecisions);
@@ -93,7 +93,7 @@ describe("Personalization::onResponseHandler", () => {
     expect(autoRenderingHandler).toHaveBeenCalledWith({
       viewName: undefined,
       pageWideScopeDecisions,
-      formBasedComposedDecisions: nonDomActionDecisions
+      nonAutoRenderableDecisions: nonDomActionDecisions
     });
   });
   it("should trigger nonRenderingHandler when renderDecisions is false", () => {
@@ -104,7 +104,7 @@ describe("Personalization::onResponseHandler", () => {
       redirectDecisions: [],
       pageWideScopeDecisions,
       viewDecisions: nonPageWideScopeDecisions,
-      formBasedComposedDecisions: nonDomActionDecisions
+      nonAutoRenderableDecisions: nonDomActionDecisions
     });
 
     response.getPayloadsByType.and.returnValue(unprocessedDecisions);
@@ -131,7 +131,7 @@ describe("Personalization::onResponseHandler", () => {
       viewName: undefined,
       redirectDecisions: [],
       pageWideScopeDecisions,
-      formBasedComposedDecisions: nonDomActionDecisions
+      nonAutoRenderableDecisions: nonDomActionDecisions
     });
   });
 
@@ -180,7 +180,7 @@ describe("Personalization::onResponseHandler", () => {
       redirectDecisions: REDIRECT_PAGE_WIDE_SCOPE_DECISION,
       pageWideScopeDecisions,
       viewDecisions: nonPageWideScopeDecisions,
-      formBasedComposedDecisions: nonDomActionDecisions
+      nonAutoRenderableDecisions: nonDomActionDecisions
     });
 
     response.getPayloadsByType.and.returnValue(payload);

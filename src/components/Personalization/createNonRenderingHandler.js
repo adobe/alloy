@@ -43,12 +43,12 @@ export default ({ viewCache, logger }) => {
     viewName,
     redirectDecisions,
     pageWideScopeDecisions,
-    formBasedComposedDecisions
+    nonAutoRenderableDecisions
   }) => {
     const propositions = [
       ...redirectDecisions,
       ...pageWideScopeDecisions,
-      ...formBasedComposedDecisions
+      ...nonAutoRenderableDecisions
     ];
 
     return Promise.resolve(propositions)

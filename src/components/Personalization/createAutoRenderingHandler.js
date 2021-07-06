@@ -20,7 +20,7 @@ export default ({
   showContainers,
   logger
 }) => {
-  return ({ viewName, pageWideScopeDecisions, formBasedComposedDecisions }) => {
+  return ({ viewName, pageWideScopeDecisions, nonAutoRenderableDecisions }) => {
     if (viewName) {
       return viewCache.getView(viewName).then(currentViewDecisions => {
         executeDecisions(pageWideScopeDecisions);
@@ -34,7 +34,7 @@ export default ({
           get decisions() {
             logger.warn(DECISIONS_DEPRECATED_WARNING);
 
-            return [...formBasedComposedDecisions];
+            return [...nonAutoRenderableDecisions];
           },
           propositions: [
             ...addRenderAttemptedToDecisions({
@@ -42,7 +42,7 @@ export default ({
               renderAttempted: true
             }),
             ...addRenderAttemptedToDecisions({
-              decisions: formBasedComposedDecisions,
+              decisions: nonAutoRenderableDecisions,
               renderAttempted: false
             })
           ]
@@ -57,7 +57,7 @@ export default ({
       get decisions() {
         logger.warn(DECISIONS_DEPRECATED_WARNING);
 
-        return [...formBasedComposedDecisions];
+        return [...nonAutoRenderableDecisions];
       },
       propositions: [
         ...addRenderAttemptedToDecisions({
@@ -65,7 +65,7 @@ export default ({
           renderAttempted: true
         }),
         ...addRenderAttemptedToDecisions({
-          decisions: formBasedComposedDecisions,
+          decisions: nonAutoRenderableDecisions,
           renderAttempted: false
         })
       ]

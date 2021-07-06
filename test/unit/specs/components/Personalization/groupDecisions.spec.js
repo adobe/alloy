@@ -31,20 +31,20 @@ beforeEach(() => {
     REDIRECT_PAGE_WIDE_SCOPE_DECISION
   ).concat(PRODUCTS_VIEW_DECISIONS);
 });
-describe("Personalization::decisionsExtractor", () => {
+describe("Personalization::groupDecisions", () => {
   it("extracts decisions by scope", () => {
     const {
       redirectDecisions,
       pageWideScopeDecisions,
       viewDecisions,
-      formBasedComposedDecisions
+      nonAutoRenderableDecisions
     } = groupDecisions(cartDecisions);
 
     expect(pageWideScopeDecisions).toEqual(
       PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
     );
     expect(viewDecisions).toEqual({ cart: CART_VIEW_DECISIONS });
-    expect(formBasedComposedDecisions).toEqual([]);
+    expect(nonAutoRenderableDecisions).toEqual([]);
     expect(redirectDecisions).toEqual([]);
   });
 
@@ -56,10 +56,10 @@ describe("Personalization::decisionsExtractor", () => {
       redirectDecisions,
       pageWideScopeDecisions,
       viewDecisions,
-      formBasedComposedDecisions
+      nonAutoRenderableDecisions
     } = groupDecisions(productDecisions);
 
-    expect(formBasedComposedDecisions).toEqual(
+    expect(nonAutoRenderableDecisions).toEqual(
       PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS
     );
     expect(pageWideScopeDecisions).toEqual(
@@ -75,10 +75,10 @@ describe("Personalization::decisionsExtractor", () => {
       redirectDecisions,
       pageWideScopeDecisions,
       viewDecisions,
-      formBasedComposedDecisions
+      nonAutoRenderableDecisions
     } = groupDecisions(decisions);
 
-    expect(formBasedComposedDecisions).toEqual([]);
+    expect(nonAutoRenderableDecisions).toEqual([]);
     expect(pageWideScopeDecisions).toEqual([]);
     expect(redirectDecisions).toEqual([]);
     expect(viewDecisions).toEqual({});

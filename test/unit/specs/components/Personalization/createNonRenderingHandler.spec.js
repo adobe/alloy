@@ -21,7 +21,7 @@ import createNonRenderingHandler from "../../../../../src/components/Personaliza
 describe("Personalization::createNonRenderingHandler", () => {
   let viewCache;
   let pageWideScopeDecisions;
-  let formBasedComposedDecisions;
+  let nonAutoRenderableDecisions;
   let cartViewDecisions;
   let redirectDecisions;
   let logger;
@@ -31,7 +31,7 @@ describe("Personalization::createNonRenderingHandler", () => {
     redirectDecisions = REDIRECT_PAGE_WIDE_SCOPE_DECISION;
     cartViewDecisions = CART_VIEW_DECISIONS;
     pageWideScopeDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS;
-    formBasedComposedDecisions = SCOPES_FOO1_FOO2_DECISIONS;
+    nonAutoRenderableDecisions = SCOPES_FOO1_FOO2_DECISIONS;
     viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
   });
 
@@ -51,7 +51,7 @@ describe("Personalization::createNonRenderingHandler", () => {
       viewName,
       redirectDecisions,
       pageWideScopeDecisions,
-      formBasedComposedDecisions
+      nonAutoRenderableDecisions
     }).then(result => {
       expect(viewCache.getView).toHaveBeenCalledWith("cart");
       expect(result.decisions.length).toBe(5);
@@ -76,7 +76,7 @@ describe("Personalization::createNonRenderingHandler", () => {
       viewName,
       redirectDecisions,
       pageWideScopeDecisions,
-      formBasedComposedDecisions
+      nonAutoRenderableDecisions
     }).then(result => {
       expect(viewCache.getView).not.toHaveBeenCalled();
       expect(result.decisions.length).toBe(4);
