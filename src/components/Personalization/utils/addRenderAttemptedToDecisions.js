@@ -10,32 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { useEffect } from "react";
+import { assign } from "../../../utils";
 
-export default ({
-  instanceName = "alloy",
-  viewName,
-  data = {},
-  xdm = {}
-} = {}) => {
-  useEffect(() => {
-    xdm.eventType = "page-view";
-
-    if (viewName) {
-      xdm.web = {
-        webPageDetails: {
-          viewName
-        }
-      };
-    }
-
-    window[instanceName]("sendEvent", {
-      renderDecisions: true,
-      //decisionScopes: ["sandbox-personalization-page"],
-      xdm,
-      data
-    }).then(res => {
-      console.log(res);
-    });
-  }, [instanceName, viewName]);
+export default ({ decisions, renderAttempted }) => {
+  return decisions.map(decision => assign({ renderAttempted }, decision));
 };

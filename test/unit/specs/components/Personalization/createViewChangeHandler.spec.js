@@ -20,7 +20,6 @@ describe("Personalization::createViewChangeHandler", () => {
   const onRequestFailure = jasmine.createSpy();
   const executeCachedViewDecisions = jasmine.createSpy();
   const showContainers = jasmine.createSpy("showContainers");
-
   beforeEach(() => {
     personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
       "isRenderDecisions",
@@ -35,6 +34,11 @@ describe("Personalization::createViewChangeHandler", () => {
       viewCache,
       showContainers
     });
+    const promise = {
+      then: callback => callback(CART_VIEW_DECISIONS)
+    };
+    viewCache.getView.and.returnValue(promise);
+
     personalizationDetails.isRenderDecisions.and.returnValue(true);
     personalizationDetails.getViewName.and.returnValue("cart");
 
@@ -44,7 +48,8 @@ describe("Personalization::createViewChangeHandler", () => {
       onRequestFailure
     });
     expect(executeCachedViewDecisions).toHaveBeenCalledWith({
-      viewName: "cart"
+      viewName: "cart",
+      viewDecisions: CART_VIEW_DECISIONS
     });
   });
 

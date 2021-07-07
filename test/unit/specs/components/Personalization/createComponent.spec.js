@@ -68,7 +68,7 @@ describe("Personalization", () => {
     });
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "Rendering is disabled, authoring mode."
+      "Rendering is disabled for authoring mode."
     );
     expect(isAuthoringModeEnabled).toHaveBeenCalled();
     expect(mergeQuery).toHaveBeenCalledWith(event, { enabled: false });

@@ -12,17 +12,17 @@ governing permissions and limitations under the License.
 
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
 
-export default ({ viewCache, executeViewDecisions, collect }) => {
-  return ({ viewName }) => {
-    viewCache.getView(viewName).then(viewDecisions => {
-      if (isNonEmptyArray(viewDecisions)) {
-        executeViewDecisions(viewDecisions);
-        return;
-      }
-      const xdm = { web: { webPageDetails: { viewName } } };
+export default ({ executeViewDecisions, collect }) => {
+  return ({ viewName, viewDecisions }) => {
+    // if there are viewDecisions for current view we will execute them and then send the collect call
+    if (isNonEmptyArray(viewDecisions)) {
+      executeViewDecisions(viewDecisions);
+      return; // return here is to avoid the following code to be executed, that one is meant for the condition when viewDecisions is empty
+    }
+    // if there are no viewDecisions for current view we will send a collect call
+    const xdm = { web: { webPageDetails: { viewName } } };
 
-      // This collect function is not from createCollect. It's the function from createViewCollect.
-      collect({ decisionsMeta: [], xdm });
-    });
+    // This collect function is not from createCollect. It's the function from createViewCollect.
+    collect({ decisionsMeta: [], xdm });
   };
 };

@@ -36,7 +36,7 @@ const getDecisionContent = ClientFunction(() => {
 test("Test C28757: A VEC offer should render if renderDecision=true", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  await alloy.sendEvent({ renderDecisions: true });
+  const eventResult = await alloy.sendEvent({ renderDecisions: true });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
@@ -69,4 +69,7 @@ test("Test C28757: A VEC offer should render if renderDecision=true", async () =
 
   await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
   await t.expect(getDecisionContent()).eql("Here is an awesome target offer!");
+
+  await t.expect(eventResult.decisions).eql([]);
+  await t.expect(eventResult.propositions[0].renderAttempted).eql(true);
 });

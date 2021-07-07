@@ -9,87 +9,65 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { isEmptyObject } from "../../utils";
-import { DOM_ACTION, REDIRECT_ITEM } from "./constants/schema";
-import PAGE_WIDE_SCOPE from "./constants/scope";
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
+import { DECISIONS_DEPRECATED_WARNING } from "./constants/loggerMessage";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 
 export default ({
-  decisionsExtractor,
-  executeDecisions,
-  executeCachedViewDecisions,
+  autoRenderingHandler,
+  nonRenderingHandler,
+  groupDecisions,
   handleRedirectDecisions,
-  showContainers
+  showContainers,
+  logger
 }) => {
   return ({ decisionsDeferred, personalizationDetails, response }) => {
     const unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
     const viewName = personalizationDetails.getViewName();
+
+    // if personalization payload is empty return empty decisions array
     if (unprocessedDecisions.length === 0) {
       showContainers();
       decisionsDeferred.resolve({});
-      return { decisions: [] };
-    }
-
-    const decisionsGroupedByRedirectItemSchema = decisionsExtractor.groupDecisionsBySchema(
-      {
-        decisions: unprocessedDecisions,
-        schema: REDIRECT_ITEM
-      }
-    );
-
-    if (
-      isNonEmptyArray(decisionsGroupedByRedirectItemSchema.matchedDecisions) &&
-      personalizationDetails.isRenderDecisions()
-    ) {
-      decisionsDeferred.resolve({});
-      return handleRedirectDecisions(
-        decisionsGroupedByRedirectItemSchema.matchedDecisions
-      );
-    }
-
-    const decisionsGroupedByDomActionSchema = decisionsExtractor.groupDecisionsBySchema(
-      {
-        decisions: decisionsGroupedByRedirectItemSchema.unmatchedDecisions,
-        schema: DOM_ACTION
-      }
-    );
-    const {
-      pageWideScopeDecisions,
-      nonPageWideScopeDecisions
-    } = decisionsExtractor.groupDecisionsByScope({
-      decisions: decisionsGroupedByDomActionSchema.matchedDecisions,
-      scope: PAGE_WIDE_SCOPE
-    });
-
-    if (isEmptyObject(nonPageWideScopeDecisions)) {
-      decisionsDeferred.resolve({});
-    } else {
-      decisionsDeferred.resolve(nonPageWideScopeDecisions);
-    }
-
-    if (personalizationDetails.isRenderDecisions()) {
-      executeDecisions(pageWideScopeDecisions);
-      if (viewName) {
-        executeCachedViewDecisions({ viewName });
-      }
-      showContainers();
       return {
-        decisions: decisionsGroupedByDomActionSchema.unmatchedDecisions
+        get decisions() {
+          logger.warn(DECISIONS_DEPRECATED_WARNING);
+          return [];
+        },
+        propositions: []
       };
     }
 
-    const decisionsToBeReturned = [
-      ...pageWideScopeDecisions,
-      ...decisionsGroupedByDomActionSchema.unmatchedDecisions,
-      ...decisionsGroupedByRedirectItemSchema.matchedDecisions
-    ];
+    const {
+      redirectDecisions,
+      pageWideScopeDecisions,
+      viewDecisions,
+      nonAutoRenderableDecisions
+    } = groupDecisions(unprocessedDecisions);
 
-    if (viewName && nonPageWideScopeDecisions[viewName]) {
-      decisionsToBeReturned.push(...nonPageWideScopeDecisions[viewName]);
+    if (
+      personalizationDetails.isRenderDecisions() &&
+      isNonEmptyArray(redirectDecisions)
+    ) {
+      decisionsDeferred.resolve({});
+      return handleRedirectDecisions(redirectDecisions);
     }
+    // save decisions for views in local cache
+    decisionsDeferred.resolve(viewDecisions);
 
-    return { decisions: decisionsToBeReturned };
+    if (personalizationDetails.isRenderDecisions()) {
+      return autoRenderingHandler({
+        viewName,
+        pageWideScopeDecisions,
+        nonAutoRenderableDecisions
+      });
+    }
+    return nonRenderingHandler({
+      viewName,
+      redirectDecisions,
+      pageWideScopeDecisions,
+      nonAutoRenderableDecisions
+    });
   };
 };
