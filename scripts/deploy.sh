@@ -35,3 +35,4 @@ git push gh-origin HEAD:${GITHUB_REF} --follow-tags
 
 # build alloy.js and alloy.min.js to upload as release assets
 npm run build
+
