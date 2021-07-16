@@ -8,7 +8,7 @@ npm ci
 # setup configuration
 git config user.name $GITHUB_ACTOR
 git config user.email gh-actions-${GITHUB_ACTOR}@github.com
-git remote add gh-origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git/
+git remote add gh-origin git@github.com:${GITHUB_REPOSITORY}.git
 npm config set //registry.npmjs.org/:_authToken=${NPM_TOKEN}
 
 # update version in package.json and package-lock.json
