@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { REDIRECT_EXECUTION_ERROR } from "./constants/loggerMessage";
+
 const getRedirectDetails = redirectDecisions => {
   const decision = redirectDecisions[0];
   const { items, id, scope, scopeDetails } = decision;
@@ -29,7 +31,7 @@ export default ({ collect, window, logger, showContainers }) => {
       })
       .catch(() => {
         showContainers();
-        logger.warn("An error occurred while executing the redirect offer.");
+        logger.warn(REDIRECT_EXECUTION_ERROR);
       });
   };
 };

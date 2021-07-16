@@ -3,12 +3,6 @@ on:
   schedule:
     - cron: "0 */24 * * *"
   workflow_dispatch:
-env:
-  SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-  SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-  SAUCE_JOB: "Alloy Prod Workflow"
-  SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
-  ALLOY_ENV: prod
 
 jobs:
   get-testing-tags:
@@ -40,6 +34,13 @@ jobs:
       matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
     needs: get-testing-tags
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+      SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+      SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
+      SAUCE_JOB: "Alloy Prod Workflow"
+      ALLOY_ENV: prod
     steps:
       - name: Create a workflow dispatch event with ${{ matrix.tag }}
         uses: actions/checkout@v2.3.3
@@ -50,15 +51,18 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Get version from package
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
       - name: Build
         run: npm run test:functional:build:prod
       - name: Run TestCafe Tests
-        run: npm run test:functional:ci:prod
+        run: npx testcafe -q -c 5 'saucelabs:Chrome@latest:macOS 11.00','saucelabs:IE@latest:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALLOY_PROD_VERSION: ${{ steps.package-version.outputs.current-version }}    
       - uses: craftech-io/slack-action@v1
         with:
           slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}

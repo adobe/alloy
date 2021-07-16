@@ -11,6 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray } from "../../utils";
+import { DOM_ACTION, REDIRECT_ITEM } from "./constants/schema";
+import PAGE_WIDE_SCOPE from "./constants/scope";
 
 const splitItems = (items, schema) => {
   const matched = [];
@@ -75,11 +77,30 @@ const extractDecisionsByScope = (decisions, scope) => {
   return { pageWideScopeDecisions, nonPageWideScopeDecisions };
 };
 
-export default {
-  groupDecisionsBySchema({ decisions, schema }) {
-    return splitDecisions(decisions, schema);
-  },
-  groupDecisionsByScope({ decisions, scope }) {
-    return extractDecisionsByScope(decisions, scope);
-  }
+const groupDecisions = unprocessedDecisions => {
+  const decisionsGroupedByRedirectItemSchema = splitDecisions(
+    unprocessedDecisions,
+    REDIRECT_ITEM
+  );
+  const decisionsGroupedByDomActionSchema = splitDecisions(
+    decisionsGroupedByRedirectItemSchema.unmatchedDecisions,
+    DOM_ACTION
+  );
+
+  const {
+    pageWideScopeDecisions,
+    nonPageWideScopeDecisions
+  } = extractDecisionsByScope(
+    decisionsGroupedByDomActionSchema.matchedDecisions,
+    PAGE_WIDE_SCOPE
+  );
+
+  return {
+    redirectDecisions: decisionsGroupedByRedirectItemSchema.matchedDecisions,
+    pageWideScopeDecisions,
+    viewDecisions: nonPageWideScopeDecisions,
+    nonAutoRenderableDecisions:
+      decisionsGroupedByDomActionSchema.unmatchedDecisions
+  };
 };
+export default groupDecisions;

@@ -13,49 +13,38 @@ import createExecuteCachedViewDecisions from "../../../../../src/components/Pers
 import { CART_VIEW_DECISIONS } from "./responsesMock/eventResponses";
 
 describe("Personalization::createExecuteCachedViewDecisions", () => {
-  let viewCache;
   let executeViewDecisions;
   let collect;
+  let cartViewDecisions;
 
   beforeEach(() => {
-    viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
     executeViewDecisions = jasmine.createSpy("executeViewDecisions");
     collect = jasmine.createSpy();
+    cartViewDecisions = [...CART_VIEW_DECISIONS];
   });
 
   it("executes view decisions", () => {
-    const promise = {
-      then: callback => callback(CART_VIEW_DECISIONS)
-    };
-    viewCache.getView.and.returnValue(promise);
-
     const executeCachedViewDecisions = createExecuteCachedViewDecisions({
-      viewCache,
       executeViewDecisions,
       collect
     });
     const viewName = "cart";
-    executeCachedViewDecisions({ viewName });
-    expect(viewCache.getView).toHaveBeenCalledWith(viewName);
-    expect(executeViewDecisions).toHaveBeenCalledWith(CART_VIEW_DECISIONS);
+    executeCachedViewDecisions({
+      viewName,
+      viewDecisions: cartViewDecisions
+    });
+    expect(executeViewDecisions).toHaveBeenCalledWith(cartViewDecisions);
   });
 
   it("sends a collect call when no decisions in cache for a specific view", () => {
-    const promise = {
-      then: callback => callback([])
-    };
-    viewCache.getView.and.returnValue(promise);
-
     const executeCachedViewDecisions = createExecuteCachedViewDecisions({
-      viewCache,
       executeViewDecisions,
       collect
     });
     const viewName = "products";
     const xdm = { web: { webPageDetails: { viewName } } };
-    executeCachedViewDecisions({ viewName });
+    executeCachedViewDecisions({ viewName, viewDecisions: [] });
 
-    expect(viewCache.getView).toHaveBeenCalledWith(viewName);
     expect(executeViewDecisions).not.toHaveBeenCalled();
     expect(collect).toHaveBeenCalledWith({ decisionsMeta: [], xdm });
   });

@@ -1,4 +1,4 @@
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
@@ -15,28 +15,34 @@ import createAlloyProxy from "../../helpers/createAlloyProxy";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
+const decisionContent =
+  '<span id="action_insert_1622750393761927">C3272624: An activity based on profile data attribute: `favoriteCategory`</span>';
+
 createFixture({
-  title: "C28757 A VEC offer should render if renderDecision=true",
-  url: `${TEST_PAGE_URL}?test=C28755`,
+  title: "C3272624: Support passing profile attributes and qualify for offers",
+  url: `${TEST_PAGE_URL}?test=C3272624`,
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({
-  ID: "C28757",
+  ID: "C3272624",
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
 
-const getDecisionContent = ClientFunction(() => {
-  const container = document.getElementById("C28755");
-
-  return container.innerText;
-});
-
-test("Test C28757: A VEC offer should render if renderDecision=true", async () => {
+test("Test C3272624: Support passing profile attributes and qualify for offers", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  const eventResult = await alloy.sendEvent({ renderDecisions: true });
+  await alloy.sendEvent({
+    renderDecisions: true,
+    data: {
+      __adobe: {
+        target: {
+          "profile.favoriteCategory": "shoes"
+        }
+      }
+    }
+  });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
@@ -44,21 +50,10 @@ test("Test C28757: A VEC offer should render if renderDecision=true", async () =
 
   const sendEventRequest = networkLogger.edgeEndpointLogs.requests[0];
   const requestBody = JSON.parse(sendEventRequest.request.body);
+
   await t
     .expect(requestBody.events[0].query.personalization.decisionScopes)
     .eql([PAGE_WIDE_SCOPE]);
-
-  const personalizationSchemas =
-    requestBody.events[0].query.personalization.schemas;
-
-  const result = [
-    "https://ns.adobe.com/personalization/dom-action",
-    "https://ns.adobe.com/personalization/html-content-item",
-    "https://ns.adobe.com/personalization/json-content-item",
-    "https://ns.adobe.com/personalization/redirect-item"
-  ].every(schema => personalizationSchemas.includes(schema));
-
-  await t.expect(result).eql(true);
 
   const response = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
@@ -68,8 +63,31 @@ test("Test C28757: A VEC offer should render if renderDecision=true", async () =
   }).getPayloadsByType("personalization:decisions");
 
   await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
-  await t.expect(getDecisionContent()).eql("Here is an awesome target offer!");
 
-  await t.expect(eventResult.decisions).eql([]);
-  await t.expect(eventResult.propositions[0].renderAttempted).eql(true);
+  await t
+    .expect(personalizationPayload[0].items[0].data.content)
+    .eql(decisionContent);
+
+  // Change the value of `favoriteCategory` profile attribute to `shirts`.
+  // Offer should not return in the response.
+
+  await alloy.sendEvent({
+    renderDecisions: true,
+    data: {
+      __adobe: {
+        target: {
+          "profile.favoriteCategory": "shirts"
+        }
+      }
+    }
+  });
+
+  const responseTwo = JSON.parse(
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[1])
+  );
+  const personalizationPayloadTwo = createResponse({
+    content: responseTwo
+  }).getPayloadsByType("personalization:decisions");
+
+  await t.expect(personalizationPayloadTwo.length).eql(0);
 });

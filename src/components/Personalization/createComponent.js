@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import { noop, defer } from "../../utils";
 import createPersonalizationDetails from "./createPersonalizationDetails";
+import { AUTHORING_ENABLED } from "./constants/loggerMessage";
 
 export default ({
   logger,
@@ -32,7 +33,7 @@ export default ({
         onRequestFailure = noop
       }) {
         if (isAuthoringModeEnabled()) {
-          logger.warn("Rendering is disabled, authoring mode.");
+          logger.warn(AUTHORING_ENABLED);
 
           // If we are in authoring mode we disable personalization
           mergeQuery(event, { enabled: false });

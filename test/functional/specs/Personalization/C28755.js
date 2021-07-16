@@ -70,6 +70,8 @@ test("Test C28755: The first sendEvent on the page should fetch Personalization 
     .expect(personalizationPayload[0].items[0].data.content)
     .eql(decisionContent);
 
+  await t.expect(result.decisions[0].renderAttempted).eql(undefined);
+  await t.expect(result.propositions[0].renderAttempted).eql(false);
   await t.expect(result.decisions.length).eql(1);
   await t.expect(result.decisions[0].scope).eql(PAGE_WIDE_SCOPE);
   await t

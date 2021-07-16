@@ -10,21 +10,49 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ executeCachedViewDecisions, viewCache, showContainers }) => {
+import { DECISIONS_DEPRECATED_WARNING } from "./constants/loggerMessage";
+import addRenderAttemptedToDecisions from "./utils/addRenderAttemptedToDecisions";
+
+export default ({
+  executeCachedViewDecisions,
+  viewCache,
+  showContainers,
+  logger
+}) => {
   return ({ personalizationDetails, onResponse, onRequestFailure }) => {
     const viewName = personalizationDetails.getViewName();
 
-    if (personalizationDetails.isRenderDecisions()) {
-      executeCachedViewDecisions({ viewName });
-      return;
-    }
+    return viewCache.getView(viewName).then((currentViewDecisions = []) => {
+      if (personalizationDetails.isRenderDecisions()) {
+        executeCachedViewDecisions({
+          viewName,
+          viewDecisions: currentViewDecisions
+        });
+      }
 
-    onResponse(() => {
-      return viewCache.getView(viewName).then(decisions => ({ decisions }));
-    });
+      onResponse(() => {
+        return personalizationDetails.isRenderDecisions()
+          ? {
+              propositions: addRenderAttemptedToDecisions({
+                decisions: currentViewDecisions,
+                renderAttempted: true
+              })
+            }
+          : {
+              get decisions() {
+                logger.warn(DECISIONS_DEPRECATED_WARNING);
+                return currentViewDecisions;
+              },
+              propositions: addRenderAttemptedToDecisions({
+                decisions: currentViewDecisions,
+                renderAttempted: false
+              })
+            };
+      });
 
-    onRequestFailure(() => {
-      showContainers();
+      onRequestFailure(() => {
+        showContainers();
+      });
     });
   };
 };

@@ -7,12 +7,11 @@ on:
         required: true
         default: 'warning'
 env:
-        SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-        SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
-        ALLOY_ENV: prod
-        EDGE_BASE_PATH: ee-pre-prd
-
+  SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+  SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+  SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
+  ALLOY_ENV: prod
+  EDGE_BASE_PATH: ee-pre-prd
 jobs:
   alloy-prod-e2e:
     name: "Pre Edge: Prod E2E Tests"
@@ -27,6 +26,9 @@ jobs:
       - uses: actions/checkout@v2.3.3
         with:
           ref: ${{ steps.last_release.outputs.tag_name }}
+      - name: Get version from package
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
       - uses: actions/cache@v2
         id: npm-cache
         with:
@@ -38,6 +40,6 @@ jobs:
       - name: Build
         run: npm run test:functional:build:prod
       - name: Run TestCafe Tests
-        run: npm run test:functional:ci:prod
+        run: npx testcafe -q -c 5 'saucelabs:Chrome@latest:macOS 11.00','saucelabs:IE@latest:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALLOY_PROD_VERSION: ${{ steps.package-version.outputs.current-version }}    

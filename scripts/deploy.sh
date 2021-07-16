@@ -57,5 +57,3 @@ if [ $STATUS_CODE != "200" ]; then
 fi
 
 echo "Verified files are available on CDN"
-
-
