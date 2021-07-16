@@ -50,7 +50,7 @@ if [ $STATUS_CODE != "200" ]; then
 fi
 
 ALLOY_JS="https://cdn1.adoberesources.net/alloy/${VERSION}/alloy.js"
-STATUS_CODE=$(curl -o /dev/null -Isw '%{http_code}\n' "${ALLOY_JS}")
+STATUS_CODE=$(curl -o /dev/null -Isw '%{http_code}\n' $ALLOY_JS)
 if [ $STATUS_CODE != "200" ]; then
   echo "curl request to $ALLOY_JS returned status code $STATUS_CODE" 1>&2
   exit 1
