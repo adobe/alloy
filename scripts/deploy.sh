@@ -14,7 +14,7 @@ npm config set //registry.npmjs.org/:_authToken=${NPM_TOKEN}
 # update version in package.json and package-lock.json
 npm version ${VERSION} --git-tag-version=false
 git add package.json package-lock.json
-git commit -m "${VERSION}"
+git commit -m "[skip ci] ${VERSION}"
 
 # publish the package to NPM if it hasn't already been published
 if [[ -z "$(npm view @adobe/alloy@${VERSION})" ]]; then
@@ -29,7 +29,9 @@ npm install @adobe/alloy@${VERSION} --save-dev
 git add package.json package-lock.json
 
 # tag and push the release
-git commit -m "update self devDependency to ${VERSION}"
+# [skip ci] disables the triggering of github workflows on this push
+# https://github.blog/changelog/2021-02-08-github-actions-skip-pull-request-and-push-workflows-with-skip-ci/
+git commit -m "[skip ci] update self devDependency to ${VERSION}"
 git tag -a "v${VERSION}" -m "${VERSION}"
 git push gh-origin HEAD:${GITHUB_REF} --follow-tags
 
