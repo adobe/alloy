@@ -132,19 +132,6 @@ module.exports = {
       }
     },
     {
-      resolve: `@adobe/gatsby-source-github-file-contributors`,
-      options: {
-        root: process.env.REPO_ROOT,
-        repo: {
-          token: process.env.REPO_GITHUB_TOKEN,
-          owner: process.env.REPO_OWNER,
-          name: process.env.REPO_NAME,
-          branch: process.env.REPO_BRANCH,
-          default_branch: process.env.REPO_DEFAULT_BRANCH
-        }
-      }
-    },
-    {
       resolve: `@adobe/gatsby-add-launch-script`,
       options: {
         scriptUrl: process.env.ADOBE_LAUNCH_SRC,
