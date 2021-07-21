@@ -40,7 +40,7 @@ git push gh-origin HEAD:${GITHUB_REF} --follow-tags
 npm run build
 
 # upload alloy.js and alloy.min.js to CDN
-echo "$CDN_PRIVATE_KEY" > id_rsa
+printf "$CDN_PRIVATE_KEY" > id_rsa
 ./scripts/sftpCommands.sh ${VERSION} | \
   sftp -i ./id_rsa -oHostKeyAlgorithms=+ssh-dss -b - sshacs@dxresources.ssh.upload.akamai.com:/prod/alloy
 
