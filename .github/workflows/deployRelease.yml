@@ -33,11 +33,12 @@ jobs:
           node-version: 15.x
       - uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
+          ssh-private-key: |
+            ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
+            ${{ secrets.CDN_PRIVATE_KEY }}
       - run: ./scripts/deploy.sh ${{ github.event.inputs.version }} latest
         env:
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
-          CDN_PRIVATE_KEY: ${{ secrets.CDN_PRIVATE_KEY }}
       - uses: actions/upload-artifact@v2
         with:
           name: build
@@ -57,11 +58,12 @@ jobs:
           node-version: 15.x
       - uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
+          ssh-private-key: |
+            ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
+            ${{ secrets.CDN_PRIVATE_KEY }}
       - run: ./scripts/deploy.sh ${{ github.event.inputs.version }} next
         env:
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
-          CDN_PRIVATE_KEY: ${{ secrets.CDN_PRIVATE_KEY }}
       - uses: actions/upload-artifact@v2
         with:
           name: build
