@@ -61,6 +61,7 @@ jobs:
       - run: ./scripts/deploy.sh ${{ github.event.inputs.version }}
         env:
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+          CDN_PRIVATE_KEY: ${{ secrets.CDN_PRIVATE_KEY }}
       - uses: actions/upload-artifact@v2
         with:
           name: build
