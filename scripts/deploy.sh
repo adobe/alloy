@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 
 VERSION=$1
+NPM_TAG=$2
 
 # install dependencies
 npm ci
@@ -19,7 +20,7 @@ git commit -m "[skip ci] ${VERSION}"
 # publish the package to NPM if it hasn't already been published
 if [[ -z "$(npm view @adobe/alloy@${VERSION})" ]]; then
   echo "Publishing to NPM"
-  npm publish --access public
+  npm publish --access public --tag $NPM_TAG
 else
   echo "NPM already has version ${VERSION}"
 fi
