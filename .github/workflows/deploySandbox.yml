@@ -1,0 +1,18 @@
+name: Deploy Alloyio.com Sandbox
+on:
+  push:
+    branches:
+      - master
+
+start_workflow:
+  runs-on: ubuntu-latest
+  steps:
+    - name: 
+      uses: actions/checkout@v2.3.3
+    - uses: actions/cache@v2
+      id: npm-cache
+      with:
+        path: 'sandbox/**/node_modules'
+        key: ${{ runner.os }}-modules-${{ hashFiles('sandbox/**/package-lock.json') }}
+    - name: Build sandbox and deploy
+      run: npm run sandbox:deploy
