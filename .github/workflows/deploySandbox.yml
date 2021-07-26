@@ -2,7 +2,7 @@ name: Deploy Alloyio.com Sandbox
 on:
   push:
     branches:
-      - master
+      - main
 
 start_workflow:
   runs-on: ubuntu-latest
