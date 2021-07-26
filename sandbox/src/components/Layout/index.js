@@ -131,23 +131,6 @@ export default ({ children, pageContext, location }) => {
   const data = useStaticQuery(
     graphql`
       query {
-        allGithub {
-          nodes {
-            repository
-            default_branch
-            root
-          }
-        }
-        allGithubContributors {
-          nodes {
-            contributors {
-              date
-              login
-              name
-            }
-            path
-          }
-        }
         allMdx {
           nodes {
             tableOfContents
@@ -218,14 +201,7 @@ export default ({ children, pageContext, location }) => {
     `
   );
 
-  const {
-    allMdx,
-    allSitePage,
-    site,
-    allGithub,
-    allGithubContributors,
-    ParliamentSearchIndex
-  } = data;
+  const { allMdx, allSitePage, site, ParliamentSearchIndex } = data;
   const { siteMetadata, pathPrefix } = site;
   const { home, versions, pages, subPages, docs } = siteMetadata;
 
@@ -403,9 +379,7 @@ export default ({ children, pageContext, location }) => {
           siteMetadata,
           pathPrefix,
           allSitePage,
-          allMdx,
-          allGithub,
-          allGithubContributors
+          allMdx
         }}
       >
         <ContentSecurityPolicy

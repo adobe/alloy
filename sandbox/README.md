@@ -1,4 +1,6 @@
-# Alloyio.com Sandbox
+# Alloyio.com Sandbox 
+
+Your site is ready to be published at http://opensource.adobe.com/alloy/
 
 ## Getting started
 
