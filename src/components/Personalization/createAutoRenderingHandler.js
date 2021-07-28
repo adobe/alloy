@@ -38,7 +38,10 @@ export default ({
           },
           propositions: [
             ...addRenderAttemptedToDecisions({
-              decisions: [...pageWideScopeDecisions, ...currentViewDecisions],
+              decisions: [
+                ...pageWideScopeDecisions,
+                ...(currentViewDecisions || [])
+              ],
               renderAttempted: true
             }),
             ...addRenderAttemptedToDecisions({
