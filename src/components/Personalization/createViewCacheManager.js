@@ -35,7 +35,7 @@ export default () => {
   };
 
   const getView = viewName => {
-    return viewStorageDeferred.promise.then(() => viewStorage[viewName]);
+    return viewStorageDeferred.promise.then(() => viewStorage[viewName] || []);
   };
 
   const isInitialized = () => {
