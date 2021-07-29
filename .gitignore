@@ -3,6 +3,9 @@ dist
 coverage
 sandbox/public/alloy.js
 sandbox/build
+sandbox/public
+sandbox/.cache
+sandbox/node_modules
 .sonarlint
 .env
 .eslintcache

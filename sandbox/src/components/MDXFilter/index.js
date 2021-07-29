@@ -128,9 +128,7 @@ export default ({ children, pageContext, query }) => {
     siteMetadata,
     location,
     allSitePage,
-    allMdx,
-    allGithub,
-    allGithubContributors
+    allMdx
   } = useContext(Context);
   const isTranscludedContent = typeof pageContext === "undefined";
   let childrenArray = Children.toArray(children);
