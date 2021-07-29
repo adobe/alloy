@@ -16,6 +16,7 @@ import { defer } from "../../../../../src/utils";
 describe("Personalization::createCacheManager", () => {
   const cartView = "cart";
   const homeView = "home";
+  const productsView = "products";
   const viewDecisions = {
     home: [
       {
@@ -55,6 +56,18 @@ describe("Personalization::createCacheManager", () => {
     ]);
   });
 
+  it("gets an empty array if there is no decisions for a specific view", () => {
+    const viewCacheManager = createViewCacheManager();
+    const decisionsDeferred = defer();
+
+    viewCacheManager.storeViews(decisionsDeferred.promise);
+    decisionsDeferred.resolve(viewDecisions);
+
+    return Promise.all([
+      expectAsync(viewCacheManager.getView(productsView)).toBeResolvedTo([])
+    ]);
+  });
+
   it("should be no views when decisions deferred is rejected", () => {
     const viewCacheManager = createViewCacheManager();
     const decisionsDeferred = defer();
@@ -63,7 +76,7 @@ describe("Personalization::createCacheManager", () => {
     decisionsDeferred.reject();
 
     return expectAsync(viewCacheManager.getView("cart"))
-      .toBeResolvedTo(undefined)
+      .toBeResolvedTo([])
       .then(() => {
         expect(viewCacheManager.isInitialized()).toBeTrue();
       });

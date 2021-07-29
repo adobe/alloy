@@ -112,4 +112,45 @@ describe("Personalization::createAutoRenderingHandler", () => {
     expect(executeDecisions).toHaveBeenCalledWith(pageWideScopeDecisions);
     expect(showContainers).toHaveBeenCalled();
   });
+
+  it("it would pass empty array to executeCachedViewDecisions when cache returns empty array ", () => {
+    const viewName = "cart";
+    const promise = {
+      then: callback => callback([])
+    };
+    viewCache.getView.and.returnValue(promise);
+
+    const autorenderingHandler = createAutoRenderingHandler({
+      viewCache,
+      executeDecisions,
+      executeCachedViewDecisions,
+      showContainers,
+      logger
+    });
+
+    const result = autorenderingHandler({
+      viewName,
+      pageWideScopeDecisions,
+      nonAutoRenderableDecisions
+    });
+    expect(viewCache.getView).toHaveBeenCalledWith("cart");
+    expect(executeDecisions).toHaveBeenCalledWith(pageWideScopeDecisions);
+    expect(executeCachedViewDecisions).toHaveBeenCalledWith({
+      viewName,
+      viewDecisions: []
+    });
+    expect(showContainers).toHaveBeenCalled();
+
+    result.decisions.forEach(decision => {
+      expect(decision.renderAttempted).toBeUndefined();
+    });
+
+    result.propositions.forEach(proposition => {
+      if (proposition.scope === "__view__" || proposition.scope === viewName) {
+        expect(proposition.renderAttempted).toEqual(true);
+      } else {
+        expect(proposition.renderAttempted).toEqual(false);
+      }
+    });
+  });
 });
