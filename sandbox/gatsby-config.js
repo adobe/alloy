@@ -22,44 +22,36 @@ module.exports = {
       title: "Home",
       path: "index.md"
     },
-    pages: [
-      {
-        title: "Consent",
-        path: "/consent/index.md"
-      },
-      {
-        title: "Personalization",
-        path: "/personalization/index.md"
-      },
-      {
-        title: "Event Merge",
-        path: "/eventmerge/index.md"
-      },
-      {
-        title: "Links",
-        path: "/links/index.md"
-      },
-      {
-        title: "Large Payload",
-        path: "/largepayload/index.md"
-      },
-      {
-        title: "Multiple Orgs",
-        path: "/multipleorgs/index.md"
-      },
-      {
-        title: "Legacy Visitor ID",
-        path: "frame.md"
-      }
-      // {
-      //   title: 'Dual Tag',
-      //   path: '/home/index.md'
-      // },
-      // {
-      //   title: 'Legacy Visitor ID',
-      //   path: '/home/index.md'
-      // }
-    ]
+    versions: [
+          {
+            title: "Consent",
+            path: "/alloy/consent/index.md"
+          },
+          {
+            title: "Personalization",
+            path: "/alloy/personalization/index.md"
+          },
+          {
+            title: "Event Merge",
+            path: "/alloy/eventmerge/index.md"
+          },
+          {
+            title: "Links",
+            path: "/alloy/links/index.md"
+          },
+          {
+            title: "Large Payload",
+            path: "/alloy/largepayload/index.md"
+          },
+          {
+            title: "Multiple Orgs",
+            path: "/alloy/multipleorgs/index.md"
+          },
+          {
+            title: "Legacy Visitor ID",
+            path: "frame.md"
+          }
+    ],
   },
   plugins: [
     `gatsby-plugin-preact`,

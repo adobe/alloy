@@ -334,12 +334,6 @@ export default ({ children, pageContext, query }) => {
                         }
                       `}
                     >
-                      <GitHubActions
-                        repository={repository}
-                        branch={branch}
-                        root={root}
-                        pagePath={pagePath}
-                      />
                     </div>
                   </div>
                 )}

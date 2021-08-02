@@ -343,7 +343,7 @@ const GlobalHeader = ({
                         white-space: nowrap;
                       `}
                     >
-                      Alloy Web SDK
+                      Adobe Experience Platform Web SDK
                     </strong>
                   </div>
                 </a>

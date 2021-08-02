@@ -28,30 +28,6 @@ const { APIs, services, community, support, developer, legal, allAPIs } = {
     title: "View all",
     path: "/apis"
   },
-  community: [
-    {
-      title: "GitHub Repo",
-      path: "https://github.com/adobe/alloy"
-    },
-    {
-      title: "User Documentation",
-      path:
-        "https://experienceleague.adobe.com/docs/experience-platform/edge/home.html?lang=en"
-    },
-    {
-      title: "Adobe Experience Platform",
-      path:
-        "https://www.adobe.io/apis/experienceplatform/home/services/web-sdk.htmlGithub"
-    },
-    {
-      title: "Adobe Developer on Twitter",
-      path: "https://twitter.com/adobedevs"
-    },
-    {
-      title: "Community Forums",
-      path: "https://adobe.com/communities/index.html"
-    }
-  ],
   legal: [
     {
       title: "Terms of use",
@@ -186,24 +162,6 @@ const Footer = ({ hasSideNav = false }) => (
             <Divider height="100%" orientation="vertical" size="M" />
           </div>
         </div>
-        <div
-          css={css`
-            position: relative;
-            grid-area: blogs;
-          `}
-        >
-          <Heading>Alloy Web SDK</Heading>
-          <List>
-            {community.map(({ title, path }, i) => (
-              <li key={i}>
-                <Link isQuiet={true} variant="secondary">
-                  <a {...getExternalLinkProps(path)} href={path}>
-                    {title}
-                  </a>
-                </Link>
-              </li>
-            ))}
-          </List>
           <div
             css={css`
               position: absolute;
@@ -278,7 +236,6 @@ const Footer = ({ hasSideNav = false }) => (
           </span>
         </div>
       </div>
-    </div>
   </footer>
 );
 

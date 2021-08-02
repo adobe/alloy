@@ -3,6 +3,6 @@ title: Alloy | Consent
 description: Consent
 ---
 
-import Consent from '../../components/Consent.js'
+import Consent from '../../../components/Consent.js'
 
 <Consent/>

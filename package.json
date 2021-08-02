@@ -22,7 +22,7 @@
     "test:functional:build:int": "rollup -c --environment BASE_CODE_MIN,STANDALONE,NPM_PACKAGE_LOCAL",
     "test:functional:build:prod": "rollup -c --environment BASE_CODE_MIN,NPM_PACKAGE_PROD",
     "sandbox:build": "rollup -c --environment SANDBOX && cd sandbox && npm run build",
-    "sandbox:deploy": "cd sandbox && npm install && npm run build && cd .. && gh-pages -d sandbox/public",
+    "sandbox:deploy": "cd sandbox && npm install && npm run build && cd .. && gh-pages -d public",
     "dev": "concurrently --names build,sandbox \"rollup -c -w --environment SANDBOX\" \"cd sandbox && export REACT_APP_NONCE=321 && npm start\"",
     "build": "npm run format && npm run lint && npm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN && echo \"Base Code:\" && cat distTest/baseCode.min.js",
     "prepare": "husky install && cd sandbox && npm install",
