@@ -2,9 +2,10 @@
 
 const { execSync } = require("child_process");
 const urlExist = require("url-exist");
-const { version: currentVersion } = require("./package.json");
+const { version: currentVersion } = require("../package.json");
 
 const createLogger = require("./helpers/createLogger");
+const exec = require("./helpers/exec");
 const publishTag = require("./helpers/publishTag");
 const publishToNpm = require("./helpers/publishToNpm");
 const setupDeployment = require("./helpers/setupDeployment");
@@ -23,7 +24,7 @@ if (args.length < 2) {
   process.exit(1);
 }
 
-const [ version, npmTag ] = args;
+const [version, npmTag] = args;
 
 // dependency injection container
 const container = {

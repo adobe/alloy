@@ -2,9 +2,9 @@ const updatePackageVersion = require("../helpers/updatePackageVersion");
 
 describe("updatePackageVersion", () => {
   let exec;
-  let githubRef = "mygithubref";
+  const githubRef = "mygithubref";
   let logger;
-  let version = "1.2.3";
+  const version = "1.2.3";
   let container;
 
   beforeEach(() => {
@@ -17,13 +17,17 @@ describe("updatePackageVersion", () => {
   it("updates the package version", async () => {
     await updatePackageVersion({ currentVersion: "1.2.2", ...container });
     expect(logger.warn).not.toHaveBeenCalled();
-    expect(logger.info).toHaveBeenCalledOnceWith("Updating package.json with version 1.2.3.");
+    expect(logger.info).toHaveBeenCalledOnceWith(
+      "Updating package.json with version 1.2.3."
+    );
     expect(exec).toHaveBeenCalledTimes(4);
   });
 
   it("doesn't update the package version", async () => {
     await updatePackageVersion({ currentVersion: "1.2.3", ...container });
-    expect(logger.warn).toHaveBeenCalledOnceWith("Version in package.json is already 1.2.3.");
+    expect(logger.warn).toHaveBeenCalledOnceWith(
+      "Version in package.json is already 1.2.3."
+    );
     expect(logger.info).not.toHaveBeenCalled();
     expect(exec).not.toHaveBeenCalled();
   });

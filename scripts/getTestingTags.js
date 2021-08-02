@@ -35,18 +35,19 @@ module.exports = () => {
     octokit.repos.listReleases,
     {
       owner: "adobe",
-      repo: "alloy",
+      repo: "alloy"
     },
     ({ data: releases }, done) => {
       const prodReleases = releases
         .filter(release => !release.draft && !release.prerelease)
         .map(release => release.tag_name);
-      const prodReleasesToTest = prodReleases
-        .filter(tag => semver.lte("2.4.0", semver.clean(tag)));
+      const prodReleasesToTest = prodReleases.filter(tag =>
+        semver.lte("2.4.0", semver.clean(tag))
+      );
       if (prodReleasesToTest.length < prodReleases.length) {
         done();
       }
       return prodReleasesToTest;
     }
-  )
-}
+  );
+};

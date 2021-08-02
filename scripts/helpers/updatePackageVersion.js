@@ -1,4 +1,3 @@
-
 const updatePackage = async ({
   currentVersion,
   exec,

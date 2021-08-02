@@ -1,4 +1,3 @@
-const { v1 } = require("uuid");
 const publishTag = require("../helpers/publishTag");
 
 describe("publishTag", () => {
@@ -17,7 +16,9 @@ describe("publishTag", () => {
   it("doesn't publish a tag", async () => {
     execSync.and.returnValue("v1.2.3");
     await publishTag(container);
-    expect(logger.warn).toHaveBeenCalledOnceWith("Git tag v1.2.3 already published.");
+    expect(logger.warn).toHaveBeenCalledOnceWith(
+      "Git tag v1.2.3 already published."
+    );
     expect(logger.info).not.toHaveBeenCalled();
     expect(exec).not.toHaveBeenCalled();
   });

@@ -10,8 +10,8 @@
   ],
   "scripts": {
     "clean": "rimraf dist distTest libEs5 libEs6",
-    "lint": "eslint --cache --fix \"*.js\" \"{src,test}/**/*.js\"",
-    "format": "prettier --write \"*.{html,js}\" \"{sandbox,src,test}/**/*.{html,js}\"",
+    "lint": "eslint --cache --fix \"*.js\" \"{src,test,scripts}/**/*.js\"",
+    "format": "prettier --write \"*.{html,js}\" \"{sandbox,src,test,scripts}/**/*.{html,js}\"",
     "test": "npm run test:unit && npm run test:scripts && npm run test:functional",
     "test:unit": "karma start --single-run",
     "test:unit:watch": "karma start",
@@ -33,13 +33,13 @@
     "./*.js": [
       "eslint --cache --fix"
     ],
-    "./{src,test}/**/*.js": [
+    "./{src,test,scripts}/**/*.js": [
       "eslint --cache --fix"
     ],
     "./*.{html,js}": [
       "prettier --write"
     ],
-    "./{sandbox,src,test}/**/*.{html,js}": [
+    "./{sandbox,src,test,scripts}/**/*.{html,js}": [
       "prettier --write"
     ]
   },

@@ -36,8 +36,10 @@ describe("withErrorHandling", () => {
     await withErrorHandling(container, "Deploy", func);
     expect(logger.info).toHaveBeenCalledWith("Deploy.");
     expect(logger.error).toHaveBeenCalledWith("Deploy FAILED.");
-    expect(logger.error).toHaveBeenCalledWith("An unexpected error was thrown.", error);
+    expect(logger.error).toHaveBeenCalledWith(
+      "An unexpected error was thrown.",
+      error
+    );
     expect(process.exit).toHaveBeenCalledWith(1);
   });
-
 });
