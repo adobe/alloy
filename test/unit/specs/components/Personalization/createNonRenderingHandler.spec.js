@@ -24,10 +24,8 @@ describe("Personalization::createNonRenderingHandler", () => {
   let nonAutoRenderableDecisions;
   let cartViewDecisions;
   let redirectDecisions;
-  let logger;
 
   beforeEach(() => {
-    logger = jasmine.createSpyObj("logger", ["warn"]);
     redirectDecisions = REDIRECT_PAGE_WIDE_SCOPE_DECISION;
     cartViewDecisions = CART_VIEW_DECISIONS;
     pageWideScopeDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS;
@@ -43,8 +41,7 @@ describe("Personalization::createNonRenderingHandler", () => {
     viewCache.getView.and.returnValue(promise);
 
     const nonRenderingHandler = createNonRenderingHandler({
-      viewCache,
-      logger
+      viewCache
     });
 
     nonRenderingHandler({
@@ -55,7 +52,6 @@ describe("Personalization::createNonRenderingHandler", () => {
     }).then(result => {
       expect(viewCache.getView).toHaveBeenCalledWith("cart");
       expect(result.decisions.length).toBe(5);
-      expect(logger.warn).toHaveBeenCalled();
       result.decisions.forEach(decision => {
         expect(decision.renderAttempted).toBeUndefined();
       });
@@ -68,8 +64,7 @@ describe("Personalization::createNonRenderingHandler", () => {
   it("it should not trigger viewCache when no viewName", () => {
     const viewName = undefined;
     const nonRenderingHandler = createNonRenderingHandler({
-      viewCache,
-      logger
+      viewCache
     });
 
     nonRenderingHandler({
@@ -80,7 +75,6 @@ describe("Personalization::createNonRenderingHandler", () => {
     }).then(result => {
       expect(viewCache.getView).not.toHaveBeenCalled();
       expect(result.decisions.length).toBe(4);
-      expect(logger.warn).toHaveBeenCalled();
       result.decisions.forEach(decision => {
         expect(decision.renderAttempted).toBeUndefined();
       });

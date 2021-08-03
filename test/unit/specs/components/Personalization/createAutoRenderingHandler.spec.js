@@ -24,7 +24,6 @@ describe("Personalization::createAutoRenderingHandler", () => {
   let showContainers;
   let pageWideScopeDecisions;
   let nonAutoRenderableDecisions;
-  let logger;
 
   beforeEach(() => {
     pageWideScopeDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS;
@@ -35,7 +34,6 @@ describe("Personalization::createAutoRenderingHandler", () => {
     executeCachedViewDecisions = jasmine.createSpy(
       "executeCachedViewDecisions"
     );
-    logger = jasmine.createSpyObj("logger", ["warn"]);
   });
 
   it("it should fetch decisions from cache when viewName is present", () => {
@@ -49,8 +47,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
       viewCache,
       executeDecisions,
       executeCachedViewDecisions,
-      showContainers,
-      logger
+      showContainers
     });
 
     const result = autorenderingHandler({
@@ -85,8 +82,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
       viewCache,
       executeDecisions,
       executeCachedViewDecisions,
-      showContainers,
-      logger
+      showContainers
     });
 
     const result = autorenderingHandler({
@@ -124,8 +120,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
       viewCache,
       executeDecisions,
       executeCachedViewDecisions,
-      showContainers,
-      logger
+      showContainers
     });
 
     const result = autorenderingHandler({

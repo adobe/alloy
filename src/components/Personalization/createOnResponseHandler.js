@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
-import { DECISIONS_DEPRECATED_WARNING } from "./constants/loggerMessage";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 
@@ -19,8 +18,7 @@ export default ({
   nonRenderingHandler,
   groupDecisions,
   handleRedirectDecisions,
-  showContainers,
-  logger
+  showContainers
 }) => {
   return ({ decisionsDeferred, personalizationDetails, response }) => {
     const unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
@@ -31,10 +29,7 @@ export default ({
       showContainers();
       decisionsDeferred.resolve({});
       return {
-        get decisions() {
-          logger.warn(DECISIONS_DEPRECATED_WARNING);
-          return [];
-        },
+        decisions: [],
         propositions: []
       };
     }

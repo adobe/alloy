@@ -37,10 +37,8 @@ describe("Personalization::onResponseHandler", () => {
   let personalizationDetails;
   let decisionsDeferred;
   let handleRedirectDecisions;
-  let logger;
 
   beforeEach(() => {
-    logger = jasmine.createSpyObj("logger", ["warn"]);
     response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
     personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
       "isRenderDecisions",
@@ -78,8 +76,7 @@ describe("Personalization::onResponseHandler", () => {
       nonRenderingHandler,
       autoRenderingHandler,
       handleRedirectDecisions,
-      showContainers,
-      logger
+      showContainers
     });
 
     onResponse({
@@ -115,8 +112,7 @@ describe("Personalization::onResponseHandler", () => {
       nonRenderingHandler,
       autoRenderingHandler,
       handleRedirectDecisions,
-      showContainers,
-      logger
+      showContainers
     });
 
     onResponse({
@@ -149,8 +145,7 @@ describe("Personalization::onResponseHandler", () => {
       nonRenderingHandler,
       autoRenderingHandler,
       handleRedirectDecisions,
-      showContainers,
-      logger
+      showContainers
     });
     const result = onResponse({
       decisionsDeferred,
@@ -191,8 +186,7 @@ describe("Personalization::onResponseHandler", () => {
       nonRenderingHandler,
       autoRenderingHandler,
       handleRedirectDecisions,
-      showContainers,
-      logger
+      showContainers
     });
     const result = onResponse({
       decisionsDeferred,
