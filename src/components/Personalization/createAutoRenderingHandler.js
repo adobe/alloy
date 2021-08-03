@@ -11,14 +11,12 @@ governing permissions and limitations under the License.
 */
 
 import addRenderAttemptedToDecisions from "./utils/addRenderAttemptedToDecisions";
-import { DECISIONS_DEPRECATED_WARNING } from "./constants/loggerMessage";
 
 export default ({
   viewCache,
   executeDecisions,
   executeCachedViewDecisions,
-  showContainers,
-  logger
+  showContainers
 }) => {
   return ({ viewName, pageWideScopeDecisions, nonAutoRenderableDecisions }) => {
     if (viewName) {
@@ -31,11 +29,7 @@ export default ({
         showContainers();
 
         return {
-          get decisions() {
-            logger.warn(DECISIONS_DEPRECATED_WARNING);
-
-            return [...nonAutoRenderableDecisions];
-          },
+          decisions: [...nonAutoRenderableDecisions],
           propositions: [
             ...addRenderAttemptedToDecisions({
               decisions: [...pageWideScopeDecisions, ...currentViewDecisions],
@@ -54,11 +48,7 @@ export default ({
     showContainers();
 
     return {
-      get decisions() {
-        logger.warn(DECISIONS_DEPRECATED_WARNING);
-
-        return [...nonAutoRenderableDecisions];
-      },
+      decisions: [...nonAutoRenderableDecisions],
       propositions: [
         ...addRenderAttemptedToDecisions({
           decisions: pageWideScopeDecisions,

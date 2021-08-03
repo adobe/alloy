@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { DECISIONS_DEPRECATED_WARNING } from "./constants/loggerMessage";
 import addRenderAttemptedToDecisions from "./utils/addRenderAttemptedToDecisions";
 
 const getViewPropositions = ({ viewCache, viewName, propositions }) => {
@@ -23,14 +22,9 @@ const getViewPropositions = ({ viewCache, viewName, propositions }) => {
     .then(viewPropositions => [...viewPropositions, ...propositions]);
 };
 
-const buildFinalResult = ({ logger, propositions }) => {
+const buildFinalResult = ({ propositions }) => {
   return {
-    get decisions() {
-      // Added decisions for backward compatibility.
-      logger.warn(DECISIONS_DEPRECATED_WARNING);
-
-      return propositions;
-    },
+    decisions: propositions,
     propositions: addRenderAttemptedToDecisions({
       decisions: propositions,
       renderAttempted: false
@@ -38,7 +32,7 @@ const buildFinalResult = ({ logger, propositions }) => {
   };
 };
 
-export default ({ viewCache, logger }) => {
+export default ({ viewCache }) => {
   return ({
     viewName,
     redirectDecisions,
@@ -55,6 +49,6 @@ export default ({ viewCache, logger }) => {
       .then(items =>
         getViewPropositions({ viewCache, viewName, propositions: items })
       )
-      .then(items => buildFinalResult({ logger, propositions: items }));
+      .then(items => buildFinalResult({ propositions: items }));
   };
 };

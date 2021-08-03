@@ -10,15 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { DECISIONS_DEPRECATED_WARNING } from "./constants/loggerMessage";
 import addRenderAttemptedToDecisions from "./utils/addRenderAttemptedToDecisions";
 
-export default ({
-  executeCachedViewDecisions,
-  viewCache,
-  showContainers,
-  logger
-}) => {
+export default ({ executeCachedViewDecisions, viewCache, showContainers }) => {
   return ({ personalizationDetails, onResponse, onRequestFailure }) => {
     const viewName = personalizationDetails.getViewName();
 
@@ -39,10 +33,7 @@ export default ({
               })
             }
           : {
-              get decisions() {
-                logger.warn(DECISIONS_DEPRECATED_WARNING);
-                return currentViewDecisions;
-              },
+              decisions: currentViewDecisions,
               propositions: addRenderAttemptedToDecisions({
                 decisions: currentViewDecisions,
                 renderAttempted: false

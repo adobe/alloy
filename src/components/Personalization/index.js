@@ -69,17 +69,15 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     viewCache,
     executeDecisions,
     executeCachedViewDecisions,
-    showContainers,
-    logger
+    showContainers
   });
-  const nonRenderingHandler = createNonRenderingHandler({ viewCache, logger });
+  const nonRenderingHandler = createNonRenderingHandler({ viewCache });
   const responseHandler = createOnResponseHandler({
     autoRenderingHandler,
     nonRenderingHandler,
     groupDecisions,
     handleRedirectDecisions,
-    showContainers,
-    logger
+    showContainers
   });
   const fetchDataHandler = createFetchDataHandler({
     config,
@@ -97,8 +95,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const viewChangeHandler = createViewChangeHandler({
     executeCachedViewDecisions,
     viewCache,
-    showContainers,
-    logger
+    showContainers
   });
   return createComponent({
     logger,
