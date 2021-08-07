@@ -137,6 +137,8 @@ const simulatePageLoad = async alloy => {
     proposition => proposition.renderAttempted === true
   );
   await t.expect(assertRenderAttemptedFlag).eql(true);
+
+  return personalizationPayload;
 };
 
 const simulateViewChange = async (alloy, personalizationPayload) => {
@@ -232,8 +234,8 @@ test("Test C782718: SPA support with auto-rendering and view notifications", asy
   const alloy = createAlloyProxy();
   await alloy.configure(config);
 
-  await simulatePageLoad(alloy);
+  const personalizationPayload = await simulatePageLoad(alloy);
 
-  await simulateViewChange(alloy, {});
+  await simulateViewChange(alloy, personalizationPayload);
   await simulateViewChangeForNonExistingView(alloy);
 });
