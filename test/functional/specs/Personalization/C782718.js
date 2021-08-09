@@ -183,7 +183,7 @@ const simulateViewChange = async (alloy, personalizationPayload) => {
     )
     .eql(cartViewDecisionsMeta);
 
-  // assert we return the renderAttempted flag
+  // assert we return the renderAttempted flag set to true
   const assertRenderAttemptedFlag = resultingObject.propositions.every(
     proposition => proposition.renderAttempted === true
   );

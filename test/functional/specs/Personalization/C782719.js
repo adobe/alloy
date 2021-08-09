@@ -8,7 +8,7 @@ import {
 } from "../../helpers/constants/configParts";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../helpers/createResponse";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
+import { TEST_PAGE_WITH_CSP as TEST_PAGE_WITH_CSP_URL } from "../../helpers/constants/url";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
@@ -17,7 +17,7 @@ const PAGE_WIDE_SCOPE = "__view__";
 // spaImplementationTest=true is a query string param used for this specific target activity
 createFixture({
   title: "C782719 SPA support with auto-rendering disabled",
-  url: `${TEST_PAGE_URL}?spaImplementationTest=true`,
+  url: `${TEST_PAGE_WITH_CSP_URL}?spaImplementationTest=true`,
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
@@ -27,33 +27,24 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const getDecisionScopes = ({ decisions }) => {
-  return decisions.map(decision => {
-    return decision.scope;
-  });
-};
-
-// This test is skipped until the related activities are properly configured.
-// https://jira.corp.adobe.com/browse/PDCL-4597
-test.skip("Test C782719: SPA support with auto-rendering disabled", async () => {
-  const alloy = createAlloyProxy();
-  await alloy.configure(config);
-  const pageWideAndProductsViewDecisions = await alloy.sendEvent({
+const simulatePageLoad = async alloy => {
+  const resultingObject = await alloy.sendEvent({
     renderDecisions: false,
-    decisionScopes: [],
     xdm: {
       web: {
         webPageDetails: {
-          viewName: "/products"
+          viewName: "products"
         }
       }
     }
   });
 
-  // assert we get in sendEvent promise decisions for "__view__" and "/products"
-  await t
-    .expect(getDecisionScopes(pageWideAndProductsViewDecisions))
-    .eql(["__view__", "/products"]);
+  // assert we get in sendEvent promise decisions for "__view__" and "products"
+  const assertScope = resultingObject.propositions.every(proposition =>
+    ["__view__", "products"].includes(proposition.scope)
+  );
+  await t.expect(assertScope).eql(true);
+
   // only one request was fired, because we don't send notification calls
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
@@ -83,47 +74,70 @@ test.skip("Test C782719: SPA support with auto-rendering disabled", async () => 
   }).getPayloadsByType("personalization:decisions");
 
   await t.expect(personalizationPayload.length).eql(3);
+
+  const assertRenderAttemptedFlag = resultingObject.propositions.every(
+    proposition => proposition.renderAttempted === false
+  );
+  await t.expect(assertRenderAttemptedFlag).eql(true);
+
+  return personalizationPayload;
+};
+
+const simulateViewChange = async alloy => {
   // sendEvent at a view change, this shouldn't request any target data, it should use the existing cache
-  const transformersDecisions = await alloy.sendEvent({
+  const resultingObject = await alloy.sendEvent({
     renderDecisions: false,
     decisionScopes: [],
     xdm: {
       web: {
         webPageDetails: {
-          viewName: "/transformers"
+          viewName: "cart"
         }
       }
     }
   });
-
   const viewChangeRequest = networkLogger.edgeEndpointLogs.requests[1];
   const viewChangeRequestBody = JSON.parse(viewChangeRequest.request.body);
   // assert that no personalization query was attached to the request
   await t.expect(viewChangeRequestBody.events[0].query).eql(undefined);
-  // assert we have returned from cache decisions for "/transformers" view
-  await t
-    .expect(getDecisionScopes(transformersDecisions))
-    .eql(["/transformers"]);
 
-  // no decisions in cache for this specific view
-  const cartDecisions = await alloy.sendEvent({
-    renderDecisions: false,
+  // assert we return the renderAttempted flag set to false
+  const assertRenderAttemptedFlag = resultingObject.propositions.every(
+    proposition => proposition.renderAttempted === false
+  );
+  await t.expect(assertRenderAttemptedFlag).eql(true);
+};
+
+const simulateViewChangeForNonExistingView = async alloy => {
+  // no decisions in cache for this specific view should return empty array
+  const resultingObject = await alloy.sendEvent({
+    renderDecisions: true,
     decisionScopes: [],
     xdm: {
       web: {
         webPageDetails: {
-          viewName: "/cart"
+          viewName: "noView"
         }
       }
     }
   });
 
-  const cartViewChangeRequest = networkLogger.edgeEndpointLogs.requests[2];
-  const cartViewChangeRequestBody = JSON.parse(
-    cartViewChangeRequest.request.body
+  const noViewViewChangeRequest = networkLogger.edgeEndpointLogs.requests[2];
+  const noViewViewChangeRequestBody = JSON.parse(
+    noViewViewChangeRequest.request.body
   );
   // assert that no personalization query was attached to the request
-  await t.expect(cartViewChangeRequestBody.events[0].query).eql(undefined);
-  // assert that cart decisions is undefined since we don't have cart decisions in cache
-  await t.expect(cartDecisions).eql({ decisions: undefined });
+  await t.expect(noViewViewChangeRequestBody.events[0].query).eql(undefined);
+
+  await t.expect(resultingObject.propositions).eql([]);
+};
+
+test("Test C782719: SPA support with auto-rendering disabled", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+
+  await simulatePageLoad(alloy);
+
+  await simulateViewChange(alloy);
+  await simulateViewChangeForNonExistingView(alloy);
 });
