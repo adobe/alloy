@@ -343,7 +343,7 @@ const GlobalHeader = ({
                         white-space: nowrap;
                       `}
                     >
-                      Adobe Experience Platform Web SDK
+                      AEP Web SDK
                     </strong>
                   </div>
                 </a>

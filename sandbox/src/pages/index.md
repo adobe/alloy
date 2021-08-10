@@ -3,7 +3,7 @@ title: Alloy
 description: Mock website hosting Alloy
 ---
 
-import Home from '../../components/Home.js'
+import Home from '../components/Home.js'
 
 <Home/>
 

@@ -96,11 +96,12 @@ const updatePageSrc = (type, frontMatter, setIsLoading) => {
   }
 };
 
-export default ({ children, pageContext, location }) => {
+export default ({ children, pageContext, location, ...otherProps }) => {
+  console.log(pageContext, location, otherProps);
   const [ims, setIms] = useState(null);
   const [isLoadingIms, setIsLoadingIms] = useState(true);
-
-  // Load and initialize IMS
+  
+    // Load and initialize IMS
   useEffect(() => {
     const IMS_SRC = process.env.GATSBY_IMS_SRC;
     const IMS_CONFIG = process.env.GATSBY_IMS_CONFIG;
@@ -386,7 +387,7 @@ export default ({ children, pageContext, location }) => {
           title={frontMatter?.title}
           description={frontMatter?.description}
         />
-        <Basecode />
+        { (!pageContext.frontmatter.includeBasecode || pageContext.frontmatter.includeBasecode) && <Basecode /> }
         <div
           dir="ltr"
           className="spectrum spectrum--medium spectrum--large spectrum--light"

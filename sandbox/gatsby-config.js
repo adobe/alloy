@@ -20,37 +20,43 @@ module.exports = {
   siteMetadata: {
     home: {
       title: "Home",
-      path: "index.md"
+      path: "/index.md"
     },
     versions: [
-          {
-            title: "Consent",
-            path: "/alloy/consent/index.md"
-          },
-          {
-            title: "Personalization",
-            path: "/alloy/personalization/index.md"
-          },
-          {
-            title: "Event Merge",
-            path: "/alloy/eventmerge/index.md"
-          },
-          {
-            title: "Links",
-            path: "/alloy/links/index.md"
-          },
-          {
-            title: "Large Payload",
-            path: "/alloy/largepayload/index.md"
-          },
-          {
-            title: "Multiple Orgs",
-            path: "/alloy/multipleorgs/index.md"
-          },
-          {
-            title: "Legacy Visitor ID",
-            path: "frame.md"
-          }
+        {
+          title: "Consent",
+          path: "/alloy/consent/index.md"
+        },
+        {
+          title: "Personalization",
+          path: "/alloy/personalization/index.md"
+        },
+        {
+          title: "Event Merge",
+          path: "/alloy/eventmerge/index.md"
+        },
+        {
+          title: "Links",
+          path: "/alloy/links/index.md"
+        },
+        {
+          title: "Large Payload",
+          path: "/alloy/largepayload/index.md"
+        },
+        {
+          title: "Multiple Orgs",
+          path: "/alloy/multipleorgs/index.md"
+        },
+        {
+          title: "Legacy Visitor ID",
+          path: "/alloy/legacyvisitor/index.md"
+        }
+      ],
+    pages: [
+        {
+          title: "Sandbox Pages",
+          path: "/index.md"
+        }
     ],
   },
   plugins: [
@@ -123,13 +129,6 @@ module.exports = {
         ]
       }
     },
-    {
-      resolve: `@adobe/gatsby-add-launch-script`,
-      options: {
-        scriptUrl: process.env.ADOBE_LAUNCH_SRC,
-        includeInDevelopment:
-          process.env.ADOBE_LAUNCH_SRC_INCLUDE_IN_DEVELOPMENT || false
-      }
-    }
+
   ]
 };
