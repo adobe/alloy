@@ -133,10 +133,10 @@ const simulatePageLoad = async alloy => {
         .propositions
     )
     .eql(productsViewDecisionsMeta);
-  const assertRenderAttemptedFlag = resultingObject.propositions.every(
-    proposition => proposition.renderAttempted === true
+  const allPropositionsWereRendered = resultingObject.propositions.every(
+    proposition => proposition.renderAttempted
   );
-  await t.expect(assertRenderAttemptedFlag).eql(true);
+  await t.expect(allPropositionsWereRendered).eql(true);
 
   return personalizationPayload;
 };
@@ -184,10 +184,10 @@ const simulateViewChange = async (alloy, personalizationPayload) => {
     .eql(cartViewDecisionsMeta);
 
   // assert we return the renderAttempted flag set to true
-  const assertRenderAttemptedFlag = resultingObject.propositions.every(
-    proposition => proposition.renderAttempted === true
+  const allPropositionsWereRendered = resultingObject.propositions.every(
+    proposition => proposition.renderAttempted
   );
-  await t.expect(assertRenderAttemptedFlag).eql(true);
+  await t.expect(allPropositionsWereRendered).eql(true);
 };
 
 const simulateViewChangeForNonExistingView = async alloy => {

@@ -75,10 +75,10 @@ const simulatePageLoad = async alloy => {
 
   await t.expect(personalizationPayload.length).eql(3);
 
-  const assertRenderAttemptedFlag = resultingObject.propositions.every(
-    proposition => proposition.renderAttempted === false
+  const allPropositionsWereRendered = resultingObject.propositions.every(
+    proposition => proposition.renderAttempted
   );
-  await t.expect(assertRenderAttemptedFlag).eql(true);
+  await t.expect(allPropositionsWereRendered).eql(true);
 
   return personalizationPayload;
 };
@@ -102,10 +102,10 @@ const simulateViewChange = async alloy => {
   await t.expect(viewChangeRequestBody.events[0].query).eql(undefined);
 
   // assert we return the renderAttempted flag set to false
-  const assertRenderAttemptedFlag = resultingObject.propositions.every(
-    proposition => proposition.renderAttempted === false
+  const allPropositionsWereRendered = resultingObject.propositions.every(
+    proposition => proposition.renderAttempted
   );
-  await t.expect(assertRenderAttemptedFlag).eql(true);
+  await t.expect(allPropositionsWereRendered).eql(true);
 };
 
 const simulateViewChangeForNonExistingView = async alloy => {
