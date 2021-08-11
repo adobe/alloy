@@ -76,7 +76,7 @@ const simulatePageLoad = async alloy => {
   await t.expect(personalizationPayload.length).eql(3);
 
   const allPropositionsWereRendered = resultingObject.propositions.every(
-    proposition => proposition.renderAttempted
+    proposition => !proposition.renderAttempted
   );
   await t.expect(allPropositionsWereRendered).eql(true);
 
@@ -103,7 +103,7 @@ const simulateViewChange = async alloy => {
 
   // assert we return the renderAttempted flag set to false
   const allPropositionsWereRendered = resultingObject.propositions.every(
-    proposition => proposition.renderAttempted
+    proposition => !proposition.renderAttempted
   );
   await t.expect(allPropositionsWereRendered).eql(true);
 };
