@@ -210,9 +210,12 @@ describe("injectExecuteCommand", () => {
   });
 
   it("executes the core commands", () => {
+    const componentRegistry = {
+      getCommand() {}
+    };
     const configureCommand = jasmine
       .createSpy()
-      .and.returnValue(Promise.resolve("configureResult"));
+      .and.returnValue(Promise.resolve(componentRegistry));
     const setDebugCommand = jasmine.createSpy();
     const executeCommand = injectExecuteCommand({
       logger,
