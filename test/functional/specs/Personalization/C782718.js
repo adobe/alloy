@@ -41,33 +41,28 @@ const getDecisionsMetaByScope = (decisions, scope) => {
     if (decision.scope === scope) {
       metas.push({
         id: decision.id,
-        scope: decision.scope
+        scope: decision.scope,
+        scopeDetails: decision.scopeDetails
       });
     }
   });
   return metas;
 };
 
-// This test is skipped until the related activities are properly configured.
-// https://jira.corp.adobe.com/browse/PDCL-4597
-test.skip("Test C782718: SPA support with auto-rendering and view notifications", async () => {
-  const alloy = createAlloyProxy();
-  await alloy.configure(config);
-
-  await alloy.sendEvent({
+const simulatePageLoad = async alloy => {
+  const resultingObject = await alloy.sendEvent({
     renderDecisions: true,
-    decisionScopes: [],
     xdm: {
       web: {
         webPageDetails: {
-          viewName: "/products"
+          viewName: "products"
         }
       }
     }
   });
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
-  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(3);
+  // asserts the request fired to Experience Edge has the expected event query
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
   const sendEventRequest = networkLogger.edgeEndpointLogs.requests[0];
   const requestBody = JSON.parse(sendEventRequest.request.body);
@@ -95,13 +90,14 @@ test.skip("Test C782718: SPA support with auto-rendering and view notifications"
   }).getPayloadsByType("personalization:decisions");
 
   await t.expect(personalizationPayload.length).eql(3);
-  // here we should verify that we have rendered decisions for page-wide scope and for /products view
+
+  // assert propositions were rendered for both page_load and view
   await t
-    .expect(getDecisionContent("page-wide-scope-SPA_FUNCTIONAL_TEST"))
-    .eql("spa functional test - page wide scope");
+    .expect(getDecisionContent("pageWideScope"))
+    .eql("test for a page wide scope");
   await t
-    .expect(getDecisionContent("products-view-spa-functional-test"))
-    .eql("products decision for spa functional test");
+    .expect(getDecisionContent("personalization-products-container"))
+    .eql("This is product view");
 
   // Let promises resolve so that the notification is sent.
   await flushPromiseChains();
@@ -128,7 +124,7 @@ test.skip("Test C782718: SPA support with auto-rendering and view notifications"
   );
   const productsViewDecisionsMeta = getDecisionsMetaByScope(
     personalizationPayload,
-    "/products"
+    "products"
   );
   await t
     .expect(
@@ -137,15 +133,23 @@ test.skip("Test C782718: SPA support with auto-rendering and view notifications"
         .propositions
     )
     .eql(productsViewDecisionsMeta);
+  const allPropositionsWereRendered = resultingObject.propositions.every(
+    proposition => proposition.renderAttempted
+  );
+  await t.expect(allPropositionsWereRendered).eql(true);
 
+  return personalizationPayload;
+};
+
+const simulateViewChange = async (alloy, personalizationPayload) => {
   // sendEvent at a view change, this shouldn't request any target data, it should use the existing cache
-  await alloy.sendEvent({
+  const resultingObject = await alloy.sendEvent({
     renderDecisions: true,
     decisionScopes: [],
     xdm: {
       web: {
         webPageDetails: {
-          viewName: "/transformers"
+          viewName: "cart"
         }
       }
     }
@@ -154,33 +158,39 @@ test.skip("Test C782718: SPA support with auto-rendering and view notifications"
   const viewChangeRequestBody = JSON.parse(viewChangeRequest.request.body);
   // assert that no personalization query was attached to the request
   await t.expect(viewChangeRequestBody.events[0].query).eql(undefined);
-  await t
-    .expect(getDecisionContent("transformers-view-spa-functional-test"))
-    .eql("transformers decision for spa functional test");
+  await t.expect(getDecisionContent("cart")).eql("cart view proposition");
   // Let promises resolve so that the notification is sent.
   await flushPromiseChains();
   // check that a render view decision notification was sent
-  const transformersViewNotificationRequest =
+  const cartViewNotificationRequest =
     networkLogger.edgeEndpointLogs.requests[4];
-  const transformersViewNotificationRequestBody = JSON.parse(
-    transformersViewNotificationRequest.request.body
+  const cartViewNotificationRequestBody = JSON.parse(
+    cartViewNotificationRequest.request.body
   );
   await t
-    .expect(transformersViewNotificationRequestBody.events[0].xdm.eventType)
+    .expect(cartViewNotificationRequestBody.events[0].xdm.eventType)
     .eql("display");
-  const transformersViewDecisionsMeta = getDecisionsMetaByScope(
+  const cartViewDecisionsMeta = getDecisionsMetaByScope(
     personalizationPayload,
-    "/transformers"
+    "cart"
   );
 
   await t
     .expect(
       // eslint-disable-next-line no-underscore-dangle
-      transformersViewNotificationRequestBody.events[0].xdm._experience
-        .decisioning.propositions
+      cartViewNotificationRequestBody.events[0].xdm._experience.decisioning
+        .propositions
     )
-    .eql(transformersViewDecisionsMeta);
+    .eql(cartViewDecisionsMeta);
 
+  // assert we return the renderAttempted flag set to true
+  const allPropositionsWereRendered = resultingObject.propositions.every(
+    proposition => proposition.renderAttempted
+  );
+  await t.expect(allPropositionsWereRendered).eql(true);
+};
+
+const simulateViewChangeForNonExistingView = async alloy => {
   // no decisions in cache for this specific view, should only send a notification
   await alloy.sendEvent({
     renderDecisions: true,
@@ -188,35 +198,44 @@ test.skip("Test C782718: SPA support with auto-rendering and view notifications"
     xdm: {
       web: {
         webPageDetails: {
-          viewName: "/cart"
+          viewName: "noView"
         }
       }
     }
   });
 
-  const cartViewChangeRequest = networkLogger.edgeEndpointLogs.requests[5];
-  const cartViewChangeRequestBody = JSON.parse(
-    cartViewChangeRequest.request.body
+  const noViewViewChangeRequest = networkLogger.edgeEndpointLogs.requests[5];
+  const noViewViewChangeRequestBody = JSON.parse(
+    noViewViewChangeRequest.request.body
   );
   // assert that no personalization query was attached to the request
-  await t.expect(cartViewChangeRequestBody.events[0].query).eql(undefined);
+  await t.expect(noViewViewChangeRequestBody.events[0].query).eql(undefined);
   // assert that a notification call with xdm.web.webPageDetails.viewName and no personalization meta is sent
   await flushPromiseChains();
-  const cartViewNotificationRequest =
-    networkLogger.edgeEndpointLogs.requests[6];
-  const cartViewNotificationRequestBody = JSON.parse(
-    cartViewNotificationRequest.request.body
+  const noViewNotificationRequest = networkLogger.edgeEndpointLogs.requests[6];
+  const noViewNotificationRequestBody = JSON.parse(
+    noViewNotificationRequest.request.body
   );
   await t
-    .expect(cartViewNotificationRequestBody.events[0].xdm.eventType)
+    .expect(noViewNotificationRequestBody.events[0].xdm.eventType)
     .eql("display");
   await t
     .expect(
-      cartViewNotificationRequestBody.events[0].xdm.web.webPageDetails.viewName
+      noViewNotificationRequestBody.events[0].xdm.web.webPageDetails.viewName
     )
-    .eql("/cart");
+    .eql("noView");
   await t
     // eslint-disable-next-line no-underscore-dangle
-    .expect(cartViewNotificationRequestBody.events[0].xdm._experience)
+    .expect(noViewNotificationRequestBody.events[0].xdm._experience)
     .eql(undefined);
+};
+
+test("Test C782718: SPA support with auto-rendering and view notifications", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+
+  const personalizationPayload = await simulatePageLoad(alloy);
+
+  await simulateViewChange(alloy, personalizationPayload);
+  await simulateViewChangeForNonExistingView(alloy);
 });
