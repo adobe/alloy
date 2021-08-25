@@ -10,9 +10,9 @@
   ],
   "scripts": {
     "clean": "rimraf dist distTest libEs5 libEs6",
-    "lint": "eslint --cache --fix \"*.js\" \"{src,test}/**/*.js\"",
-    "format": "prettier --write \"*.{html,js}\" \"{sandbox,src,test}/**/*.{html,js}\"",
-    "test": "npm run test:unit && npm run test:functional",
+    "lint": "eslint --cache --fix \"*.js\" \"{src,test,scripts}/**/*.js\"",
+    "format": "prettier --write \"*.{html,js}\" \"{sandbox,src,test,scripts}/**/*.{html,js}\"",
+    "test": "npm run test:unit && npm run test:scripts && npm run test:functional",
     "test:unit": "karma start --single-run",
     "test:unit:watch": "karma start",
     "test:unit:saucelabs:local": "karma start karma.saucelabs.conf.js --single-run",
@@ -21,6 +21,7 @@
     "test:functional:watch": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ./scripts/watchFunctionalTests.js --browsers chrome",
     "test:functional:build:int": "rollup -c --environment BASE_CODE_MIN,STANDALONE,NPM_PACKAGE_LOCAL",
     "test:functional:build:prod": "rollup -c --environment BASE_CODE_MIN,NPM_PACKAGE_PROD",
+    "test:scripts": "jasmine --config=scripts/specs/jasmine.json",
     "sandbox:build": "rollup -c --environment SANDBOX && cd sandbox && npm run build",
     "dev": "concurrently --names build,sandbox \"rollup -c -w --environment SANDBOX\" \"cd sandbox && export REACT_APP_NONCE=321 && npm start\"",
     "build": "npm run format && npm run lint && npm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN && echo \"Base Code:\" && cat distTest/baseCode.min.js",
@@ -32,13 +33,13 @@
     "./*.js": [
       "eslint --cache --fix"
     ],
-    "./{src,test}/**/*.js": [
+    "./{src,test,scripts}/**/*.js": [
       "eslint --cache --fix"
     ],
     "./*.{html,js}": [
       "prettier --write"
     ],
-    "./{sandbox,src,test}/**/*.{html,js}": [
+    "./{sandbox,src,test,scripts}/**/*.{html,js}": [
       "prettier --write"
     ]
   },
@@ -71,7 +72,9 @@
     "@octokit/rest": "^18.3.5",
     "babel-plugin-version": "^0.2.3",
     "bundlesize": "^0.18.0",
+    "chalk": "^2.4.2",
     "concurrently": "^5.3.0",
+    "date-fns": "^2.23.0",
     "dotenv": "^8.1.0",
     "eslint": "^7.25.0",
     "eslint-config-airbnb-base": "^14.0.0",
@@ -114,6 +117,7 @@
     "testcafe-browser-provider-saucelabs": "^1.8.1",
     "testcafe-reporter-testrail": "^0.6.3",
     "ua-parser": "^0.3.5",
+    "url-exist": "^3.0.0",
     "url-parse": "^1.4.7",
     "yargs": "^16.2.0"
   }
