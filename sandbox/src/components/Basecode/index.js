@@ -11,11 +11,10 @@
  */
 
 import React from "react";
-import { Helmet } from "react-helmet";
 
 const Basecode = () => {
   return (
-    <Helmet>
+    <>
       <script nonce="321">
         {`!function(e,a,n,t){var i=e.head;if(i){
         if (a) return;
@@ -109,7 +108,7 @@ const Basecode = () => {
         clickCollectionEnabled: false
       });`}
       </script>
-    </Helmet>
+    </>
   );
 };
 

@@ -1,9 +1,10 @@
 import React, { useRef, useEffect } from "react";
 import useSendPageViewEvent from "./useSendPageViewEvent";
-import { window } from "./Window";
 
 export default function EventMerge() {
   useSendPageViewEvent();
+  console.log(window);
+  console.log(window.alloy);
   const eventMergeIdPromise = useRef(window.alloy("createEventMergeId"));
 
   useEffect(() => {

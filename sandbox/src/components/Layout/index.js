@@ -98,35 +98,35 @@ const updatePageSrc = (type, frontMatter, setIsLoading) => {
 
 export default ({ children, pageContext, location, ...otherProps }) => {
   console.log(pageContext, location, otherProps);
-  const [ims, setIms] = useState(null);
-  const [isLoadingIms, setIsLoadingIms] = useState(true);
+  // const [ims, setIms] = useState(null);
+  // const [isLoadingIms, setIsLoadingIms] = useState(true);
   
     // Load and initialize IMS
-  useEffect(() => {
-    const IMS_SRC = process.env.GATSBY_IMS_SRC;
-    const IMS_CONFIG = process.env.GATSBY_IMS_CONFIG;
+  // useEffect(() => {
+  //   const IMS_SRC = process.env.GATSBY_IMS_SRC;
+  //   const IMS_CONFIG = process.env.GATSBY_IMS_CONFIG;
 
-    if (IMS_SRC && IMS_CONFIG) {
-      (async () => {
-        try {
-          await addScript(`${IMS_SRC}`);
-          let IMS_CONFIG_JSON = JSON.parse(IMS_CONFIG);
-          IMS_CONFIG_JSON.onReady = () => {
-            setIms(window.adobeIMS);
-          };
-          window.adobeImsFactory.createIMSLib(IMS_CONFIG_JSON);
-          window.adobeIMS.initialize();
-        } catch (e) {
-          console.error(`AIO: IMS error.`);
-        } finally {
-          setIsLoadingIms(false);
-        }
-      })();
-    } else {
-      console.warn("AIO: IMS config missing.");
-      setIsLoadingIms(false);
-    }
-  }, []);
+  //   if (IMS_SRC && IMS_CONFIG) {
+  //     (async () => {
+  //       try {
+  //         await addScript(`${IMS_SRC}`);
+  //         let IMS_CONFIG_JSON = JSON.parse(IMS_CONFIG);
+  //         IMS_CONFIG_JSON.onReady = () => {
+  //           setIms(window.adobeIMS);
+  //         };
+  //         window.adobeImsFactory.createIMSLib(IMS_CONFIG_JSON);
+  //         window.adobeIMS.initialize();
+  //       } catch (e) {
+  //         console.error(`AIO: IMS error.`);
+  //       } finally {
+  //         setIsLoadingIms(false);
+  //       }
+  //     })();
+  //   } else {
+  //     console.warn("AIO: IMS config missing.");
+  //     setIsLoadingIms(false);
+  //   }
+  // }, []);
 
   // Load all data once and pass it to the Provider
   const data = useStaticQuery(
@@ -273,6 +273,15 @@ export default ({ children, pageContext, location, ...otherProps }) => {
   return (
     <>
       <Helmet>
+        {frontMatter.title && <title>{frontMatter.title}</title>}
+        {frontMatter.description && <meta name="description" content={frontMatter.description} />}
+        <meta
+          name="viewport"
+          content="width=device-width,minimum-scale=1,initial-scale=1"
+        />
+        { pageContext.frontmatter.includeCsp !== false && <ContentSecurityPolicy /> }
+
+        { pageContext.frontmatter.includeBasecode !== false && <Basecode /> }
         <noscript>{`
           <style>
             #${layoutId} {
@@ -289,7 +298,7 @@ export default ({ children, pageContext, location, ...otherProps }) => {
           </style>
         `}</noscript>
       </Helmet>
-
+      
       <Global
         styles={css`
           @font-face {
@@ -373,7 +382,6 @@ export default ({ children, pageContext, location, ...otherProps }) => {
       />
       <Provider
         value={{
-          ims,
           location,
           pageContext,
           hasSideNav,
@@ -383,11 +391,7 @@ export default ({ children, pageContext, location, ...otherProps }) => {
           allMdx
         }}
       >
-        <ContentSecurityPolicy
-          title={frontMatter?.title}
-          description={frontMatter?.description}
-        />
-        { (!pageContext.frontmatter.includeBasecode || pageContext.frontmatter.includeBasecode) && <Basecode /> }
+
         <div
           dir="ltr"
           className="spectrum spectrum--medium spectrum--large spectrum--light"
@@ -435,8 +439,6 @@ export default ({ children, pageContext, location, ...otherProps }) => {
                 `}
               >
                 <GlobalHeader
-                  ims={ims}
-                  isLoadingIms={isLoadingIms}
                   home={home}
                   versions={versions}
                   pages={pages}

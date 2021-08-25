@@ -1,6 +1,8 @@
 ---
-title: Frame with external URL
-frameSrc: https://alloyio.com/legacy.html
+title: Legacy Visitor
 includeBasecode: false
 includeCsp: false
+layout: none  
 ---
+
+

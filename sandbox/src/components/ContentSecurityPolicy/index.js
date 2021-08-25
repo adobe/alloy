@@ -11,19 +11,9 @@
  */
 
 import React from "react";
-import { Helmet } from "react-helmet";
-import PropTypes from "prop-types";
 
 // TODO Define additional meta properties
-const ContentSecurityPolicy = ({ title, description }) => (
-  <Helmet>
-    <html lang="en" />
-    {title && <title>{title}</title>}
-    {description && <meta name="description" content={description} />}
-    <meta
-      name="viewport"
-      content="width=device-width,minimum-scale=1,initial-scale=1"
-    />
+const ContentSecurityPolicy = () => (
     <meta
       http-equiv="Content-Security-Policy"
       // cdn.tt.omtrdc.net is necessary for Target VEC to function properly.
@@ -33,22 +23,6 @@ const ContentSecurityPolicy = ({ title, description }) => (
               img-src * data:;
               connect-src 'self' *.alloyio.com *.adobedc.net *.demdex.net`}
     />
-    <link
-      rel="icon"
-      href="https://www.adobe.com/favicon.ico"
-      type="image/x-icon"
-    />
-    <link
-      rel="shortcut icon"
-      href="https://www.adobe.com/favicon.ico"
-      type="image/x-icon"
-    />
-  </Helmet>
 );
-
-ContentSecurityPolicy.propTypes = {
-  title: PropTypes.string,
-  description: PropTypes.string
-};
 
 export { ContentSecurityPolicy };

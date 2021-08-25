@@ -29,6 +29,7 @@ export default ({
       };
     }
 
+    console.log(instanceName, window[instanceName]);    
     window[instanceName]("sendEvent", {
       renderDecisions: true,
       xdm,
