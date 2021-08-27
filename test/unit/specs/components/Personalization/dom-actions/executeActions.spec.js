@@ -30,6 +30,43 @@ describe("Personalization::executeActions", () => {
     });
   });
 
+  it("should preprocess actions", () => {
+    const setHtmlActionSpy = jasmine
+      .createSpy()
+      .and.returnValue(Promise.resolve(1));
+    const appendHtmlActionSpy = jasmine
+      .createSpy()
+      .and.returnValue(Promise.resolve(2));
+    const logger = jasmine.createSpyObj("logger", ["error", "info"]);
+    logger.enabled = true;
+    const actions = [
+      {
+        type: "setHtml",
+        selector: "head",
+        content:
+          '<script>\n console.log("Test Offer");\n</script><p>Unsupported tag content</p>'
+      }
+    ];
+    const modules = {
+      setHtml: setHtmlActionSpy,
+      appendHtml: appendHtmlActionSpy
+    };
+
+    return executeActions(actions, modules, logger).then(result => {
+      expect(result).toEqual([2]);
+      expect(setHtmlActionSpy).not.toHaveBeenCalled();
+      expect(appendHtmlActionSpy).toHaveBeenCalledOnceWith(
+        jasmine.objectContaining({
+          type: "appendHtml",
+          selector: "head",
+          content: '<script>\n console.log("Test Offer");\n</script>'
+        })
+      );
+      expect(logger.info.calls.count()).toEqual(1);
+      expect(logger.error).not.toHaveBeenCalled();
+    });
+  });
+
   it("should not invoke logger.info when logger is not enabled", () => {
     const actionSpy = jasmine.createSpy().and.returnValue(Promise.resolve(1));
     const logger = jasmine.createSpyObj("logger", ["error", "info"]);

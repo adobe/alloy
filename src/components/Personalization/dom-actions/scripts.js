@@ -15,9 +15,12 @@ import { selectNodes, createNode } from "../../../utils/dom";
 import { SRC, SCRIPT } from "../../../constants/tagName";
 import { getAttribute, getNonce } from "./dom";
 
-const is = (element, tagName) => element.tagName === tagName;
+export const is = (element, tagName) =>
+  !!element && element.tagName === tagName;
+
 const isInlineScript = element =>
   is(element, SCRIPT) && !getAttribute(element, SRC);
+
 const isRemoteScript = element =>
   is(element, SCRIPT) && getAttribute(element, SRC);
 
