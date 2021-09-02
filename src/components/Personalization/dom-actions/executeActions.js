@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import preprocess from "./remapHeadOffers";
+
 const logActionError = (logger, action, error) => {
   if (logger.enabled) {
     const details = JSON.stringify(action);
@@ -43,15 +45,16 @@ const executeAction = (logger, modules, type, args) => {
 
 export default (actions, modules, logger) => {
   const actionPromises = actions.map(action => {
-    const { type } = action;
+    const processedAction = preprocess(action);
+    const { type } = processedAction;
 
-    return executeAction(logger, modules, type, [action])
+    return executeAction(logger, modules, type, [processedAction])
       .then(result => {
-        logActionCompleted(logger, action);
+        logActionCompleted(logger, processedAction);
         return result;
       })
       .catch(error => {
-        logActionError(logger, action, error);
+        logActionError(logger, processedAction, error);
         throw error;
       });
   });
