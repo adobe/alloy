@@ -3,7 +3,7 @@ title: Alloy
 description: Mock website hosting Alloy
 ---
 
-import Links from '../../../components/links.js'
+import OrgTwo from '../../components/OrgTwo.js'
 
-<Links/>
+<OrgTwo/>
 

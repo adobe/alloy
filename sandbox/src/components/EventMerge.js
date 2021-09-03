@@ -1,8 +1,11 @@
 import React, { useRef, useEffect } from "react";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
+const isBrowser = typeof window !== "undefined"
+
 export default function EventMerge() {
   useSendPageViewEvent();
+  if (isBrowser) {
   const eventMergeIdPromise = useRef(window.alloy("createEventMergeId"));
 
   useEffect(() => {
@@ -39,4 +42,5 @@ export default function EventMerge() {
       </p>
     </div>
   );
+}
 }

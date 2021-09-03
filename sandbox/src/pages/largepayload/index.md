@@ -3,7 +3,7 @@ title: Alloy
 description: Mock website hosting Alloy
 ---
 
-import LargePayload from '../../../components/LargePayload.js'
+import LargePayload from '../../components/LargePayload.js'
 
 <LargePayload/>
 

@@ -25,31 +25,31 @@ module.exports = {
     versions: [
         {
           title: "Consent",
-          path: "/alloy/consent/index.md"
+          path: "/consent/index.md"
         },
         {
           title: "Personalization",
-          path: "/alloy/personalization/index.md"
+          path: "/personalization/index.md"
         },
         {
           title: "Event Merge",
-          path: "/alloy/eventmerge/index.md"
+          path: "/eventmerge/index.md"
         },
         {
           title: "Links",
-          path: "/alloy/links/index.md"
+          path: "/links/index.md"
         },
         {
           title: "Large Payload",
-          path: "/alloy/largepayload/index.md"
+          path: "/largepayload/index.md"
         },
         {
           title: "Multiple Orgs",
-          path: "/alloy/multipleorgs/index.md"
+          path: "/multipleorgs/index.md"
         },
         {
           title: "Legacy Visitor ID",
-          path: "/alloy/legacyvisitor/index.md"
+          path: "/legacyvisitor/index.md"
         }
       ],
     pages: [
