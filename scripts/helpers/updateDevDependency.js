@@ -9,7 +9,7 @@ const updateDevDependency = async ({
     dependencies: {
       "@adobe/alloy": { version: installedVersion }
     }
-  } = JSON.parse(execSync(`npm ls @adobe/alloy --json`));
+  } = JSON.parse(execSync(`npm ls @adobe/alloy --json`).toString());
   if (installedVersion === version) {
     logger.warn(`Dependency @adobe/alloy@${version} already installed.`);
   } else {
