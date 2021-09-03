@@ -1,8 +1,8 @@
 const ApplicationError = require("./applicationError");
 
-const uploadToCDN = async ({ exec, logger, urlExist, version }) => {
+const uploadToCDN = async ({ exec, logger, urlExists, version }) => {
   const ensureUrlResolves = async url => {
-    if (!(await urlExist(url))) {
+    if (!(await urlExists(url))) {
       throw new ApplicationError(`File not found on CDN: ${url}`);
     }
   };

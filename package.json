@@ -117,7 +117,7 @@
     "testcafe-browser-provider-saucelabs": "^1.8.1",
     "testcafe-reporter-testrail": "^0.6.3",
     "ua-parser": "^0.3.5",
-    "url-exist": "^3.0.0",
+    "url-exists-nodejs": "^0.1.0",
     "url-parse": "^1.4.7",
     "yargs": "^16.2.0"
   }

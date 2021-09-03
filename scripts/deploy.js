@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 
 const { execSync } = require("child_process");
-const urlExist = require("url-exist");
+const urlExists = require("url-exists-nodejs");
 const { version: currentVersion } = require("../package.json");
 
 const createLogger = require("./helpers/createLogger");
@@ -38,7 +38,7 @@ const container = {
   npmTag,
   npmToken: process.env.NPM_TOKEN,
   process,
-  urlExist,
+  urlExists,
   version
 };
 
