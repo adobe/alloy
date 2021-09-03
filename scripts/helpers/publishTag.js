@@ -1,6 +1,6 @@
 const publishTag = async ({ exec, execSync, logger, version }) => {
   const publishedTagData = execSync(
-    `npm ls-remote gh-origin v${version}`
+    `git ls-remote gh-origin v${version}`
   ).toString();
   if (publishedTagData !== "") {
     logger.warn(`Git tag v${version} already published.`);
