@@ -5,8 +5,6 @@ const setupDeployment = async ({
   logger,
   npmToken
 }) => {
-  logger.info("Installing dependencies.");
-  await exec("npm ci", "npm ci");
   logger.info("Configuring git.");
   await exec("git config", `git config user.name ${githubActor}`);
   await exec(

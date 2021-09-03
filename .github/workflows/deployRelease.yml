@@ -36,6 +36,14 @@ jobs:
           ssh-private-key: |
             ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
             ${{ secrets.CDN_PRIVATE_KEY }}
+      - uses: actions/cache@v2
+        id: npm-cache
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm ci
       - run: ./scripts/deploy.js ${{ github.event.inputs.version }} latest
         env:
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
@@ -61,6 +69,14 @@ jobs:
           ssh-private-key: |
             ${{ secrets.ALLOY_BOT_GITHUB_SSH_PRIVATE_KEY }}
             ${{ secrets.CDN_PRIVATE_KEY }}
+      - uses: actions/cache@v2
+        id: npm-cache
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm ci
       - run: ./scripts/deploy.js ${{ github.event.inputs.version }} next
         env:
           NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
