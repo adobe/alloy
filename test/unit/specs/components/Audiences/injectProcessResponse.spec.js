@@ -36,16 +36,12 @@ describe("injectProcessResponse", () => {
     });
   });
 
-  it("returns [] if no destinations were found", () => {
+  it("returns undefined if no destinations were found", () => {
     const responseWithNoDestinations = jasmine.createSpyObj("response", {
       getPayloadsByType: []
     });
-    return processResponse({ response: responseWithNoDestinations }).then(
-      result => {
-        expect(result).toEqual({
-          destinations: []
-        });
-      }
-    );
+    return processResponse({
+      response: responseWithNoDestinations
+    }).then(result => expect(result).toEqual(undefined));
   });
 });
