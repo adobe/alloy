@@ -4,36 +4,56 @@ on:
     - cron: "0 */24 * * *"
   workflow_dispatch:
 
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-  SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-  SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
-  SAUCE_JOB: "Alloy Prod Workflow"
-  ALLOY_ENV: prod
-
 jobs:
-  start_workflow:
-    name: "Prod E2E Tests"
+  get-testing-tags:
+    name: Fetch releases
     runs-on: ubuntu-latest
+    outputs:
+      matrixInput: ${{ steps.list-tags.outputs.matrixInput }}
     steps:
-      - name: "Get latest Alloy Release"
-        id: last_release
-        uses: InsonusK/get-latest-release@v1.0.1
+      - uses: actions/checkout@v2
         with:
-          myToken: ${{ github.token }}
-          exclude_types: "draft|prerelease"
-      - uses: actions/checkout@v2.3.3
+          fetch-depth: 0
+      - run: npm install @octokit/rest semver
+      - name: Retrieve tags
+        id: list-tags
+        uses: actions/github-script@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          ref: ${{ steps.last_release.outputs.tag_name }}
-      - name: Get version from package
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@master
+          script: |
+            const getTestingTags = require('./scripts/getTestingTags.js');
+            const tagsToTest = await getTestingTags();
+            const matrixInput = { include: tagsToTest.map(tag => ({tag})) }
+            core.setOutput("matrixInput", JSON.stringify(matrixInput));
+            console.log("matrixInput: ", matrixInput);
+
+  start_workflow:
+    name: Trigger Test Matrix
+    strategy:
+      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
+    needs: get-testing-tags
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+      SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+      SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
+      SAUCE_JOB: "Alloy Prod Workflow"
+      ALLOY_ENV: prod
+    steps:
+      - name: Create a workflow dispatch event with ${{ matrix.tag }}
+        uses: actions/checkout@v2.3.3
+        with:
+          ref: ${{ matrix.tag }}
       - uses: actions/cache@v2
         id: npm-cache
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Get version from package
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
@@ -42,7 +62,7 @@ jobs:
       - name: Run TestCafe Tests
         run: npx testcafe -q -c 5 'saucelabs:Chrome@latest:macOS 11.00','saucelabs:IE@latest:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
         env:
-          ALLOY_PROD_VERSION: ${{ steps.package-version.outputs.current-version }}
+          ALLOY_PROD_VERSION: ${{ steps.package-version.outputs.current-version }}    
       - uses: craftech-io/slack-action@v1
         with:
           slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}

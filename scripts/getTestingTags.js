@@ -42,7 +42,7 @@ module.exports = () => {
         .filter(release => !release.draft && !release.prerelease)
         .map(release => release.tag_name);
       const prodReleasesToTest = prodReleases.filter(tag =>
-        semver.lte("2.4.0", semver.clean(tag))
+        semver.lte("2.6.4", semver.clean(tag))
       );
       if (prodReleasesToTest.length < prodReleases.length) {
         done();
