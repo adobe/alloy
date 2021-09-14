@@ -28,7 +28,7 @@ export default ({ processDestinations }) => {
     const resolveValue = isNonEmptyArray(destinations)
       ? { destinations }
       : undefined;
-    return Promise.resolve(resolveValue);
+    return resolveValue;
   };
 
   return ({ response }) => {
