@@ -10,25 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray } from "../../utils";
-
 export default ({ processDestinations }) => {
   const processPushDestinations = ({ response }) => {
     const destinations = response.getPayloadsByType("activation:push");
     return processDestinations(destinations);
   };
 
-  // IMPORTANT: We are breaking our own interface here, and not returning
-  // a handle if it's not available in the response. We are doing this because
-  // a small group of customers need the edge destinations for a beta program.
-  // This behavior along with the `destinations` variable name will most probably
-  // change in the near future.
   const retrievePullDestinations = ({ response }) => {
-    const destinations = response.getPayloadsByType("activation:pull");
-    const resolveValue = isNonEmptyArray(destinations)
-      ? { destinations }
-      : undefined;
-    return resolveValue;
+    return {
+      destinations: response.getPayloadsByType("activation:pull")
+    };
   };
 
   return ({ response }) => {
