@@ -13,8 +13,8 @@ env:
   ALLOY_ENV: prod
   EDGE_BASE_PATH: ee-pre-prd
 jobs:
-  alloy-prod-e2e:
-    name: "Pre Edge: Prod E2E Tests"
+  alloy-prod-e2e-on-branch:
+    name: "Pre Edge: Prod E2E Tests on a branch"
     runs-on: ubuntu-latest
     steps:
       - name: "Testing pre-edge using current branch"
