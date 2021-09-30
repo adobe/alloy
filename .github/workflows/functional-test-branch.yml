@@ -1,4 +1,4 @@
-name: Pre-Edge-Deploy
+name: Branch-Test
 on:
   workflow_dispatch:
     inputs:
