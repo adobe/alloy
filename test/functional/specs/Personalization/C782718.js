@@ -1,6 +1,5 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions";
 import createFixture from "../../helpers/createFixture";
 import {
   compose,
@@ -62,8 +61,11 @@ const simulatePageLoad = async alloy => {
   });
 
   // asserts the request fired to Experience Edge has the expected event query
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
-
+  // await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  console.log(
+    "networkLogger.edgeEndpointLogs.requests",
+    networkLogger.edgeEndpointLogs.requests
+  );
   const sendEventRequest = networkLogger.edgeEndpointLogs.requests[0];
   const requestBody = JSON.parse(sendEventRequest.request.body);
   await t
