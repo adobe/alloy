@@ -107,6 +107,7 @@ const simulatePageLoad = async alloy => {
 
   const notificationRequest = networkLogger.edgeEndpointLogs.requests[1];
   const notificationRequestBody = JSON.parse(notificationRequest.request.body);
+  console.log("notification", notificationRequestBody);
   await t
     .expect(notificationRequestBody.events[0].xdm.eventType)
     .eql("display");
