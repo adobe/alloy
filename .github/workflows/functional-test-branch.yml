@@ -17,11 +17,7 @@ jobs:
     name: "Pre Edge: Prod E2E Tests on a branch"
     runs-on: ubuntu-latest
     steps:
-      - name: "Testing pre-edge using current branch"
       - uses: actions/checkout@v2
-      - name: Get version from package
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@master
       - uses: actions/cache@v2
         id: npm-cache
         with:
