@@ -11,14 +11,16 @@ governing permissions and limitations under the License.
 */
 
 import appendNode from "./appendNode";
+import document from "../document";
 import isObject from "../isObject";
+import ObjectKeys from "../Object.keys";
 
 const populateElementProperties = (element, props) => {
-  Object.keys(props).forEach(key => {
+  ObjectKeys(props).forEach(key => {
     // The following is to support setting style properties to avoid CSP errors.
     if (key === "style" && isObject(props[key])) {
       const styleProps = props[key];
-      Object.keys(styleProps).forEach(styleKey => {
+      ObjectKeys(styleProps).forEach(styleKey => {
         element.style[styleKey] = styleProps[styleKey];
       });
     } else {
@@ -29,7 +31,7 @@ const populateElementProperties = (element, props) => {
 
 export default (tag, attrs = {}, props = {}, children = [], doc = document) => {
   const result = doc.createElement(tag);
-  Object.keys(attrs).forEach(key => {
+  ObjectKeys(attrs).forEach(key => {
     // TODO: To highlight CSP problems consider throwing a descriptive error
     //       if nonce is available and key is style.
     result.setAttribute(key, attrs[key]);

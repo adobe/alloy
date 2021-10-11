@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { stackError } from "../../utils";
+import JSONStringify from "../../utils/JSON.stringify";
 
 export default ({
   logger,
@@ -29,7 +30,7 @@ export default ({
     // not recursive (it doesn't call toJSON() on the event objects).
     // Parsing the result of JSON.stringify(), however, gives the
     // fully recursive raw data.
-    const stringifiedPayload = JSON.stringify(payload);
+    const stringifiedPayload = JSONStringify(payload);
     const parsedPayload = JSON.parse(stringifiedPayload);
 
     logger.logOnBeforeNetworkRequest({

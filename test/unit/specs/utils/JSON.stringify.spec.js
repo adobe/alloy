@@ -9,13 +9,3 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-import isObject from "./isObject";
-import ObjectKeys from "./Object.keys";
-
-/**
- * Returns whether the value is an empty object.
- * @param {*} value
- * @returns {boolean}
- */
-export default value => isObject(value) && ObjectKeys(value).length === 0;

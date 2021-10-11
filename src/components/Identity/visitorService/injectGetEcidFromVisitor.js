@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import getVisitor from "./getVisitor";
+import window from "../../../utils/window";
 
 export default ({ logger, orgId, awaitVisitorOptIn }) => {
   const Visitor = getVisitor(window);

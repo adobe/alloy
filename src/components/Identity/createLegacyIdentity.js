@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { getApexDomain, cookieJar } from "../../utils";
+import window from "../../utils/window";
 
 // TODO: We are already retrieving the apex in core; find a way to reuse it.
 // Maybe default the domain in the cookieJar to apex while allowing overrides.

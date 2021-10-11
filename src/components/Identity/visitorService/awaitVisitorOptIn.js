@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { isObject } from "../../../utils";
+import window from "../../../utils/window";
 
 export default ({ logger }) => {
   return new Promise((resolve, reject) => {

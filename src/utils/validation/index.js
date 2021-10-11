@@ -32,6 +32,7 @@ import numberValidator from "./numberValidator";
 import regexpValidator from "./regexpValidator";
 import requiredValidator from "./requiredValidator";
 import stringValidator from "./stringValidator";
+import JSONStringify from "../JSON.stringify";
 
 // The base validator does no validation and just returns the value unchanged
 const base = value => value;
@@ -142,7 +143,7 @@ const boundString = string.bind(base);
 const boundEnumOf = function boundEnumOf(...values) {
   return boundAnyOf(
     values.map(boundLiteral),
-    `one of these values: [${JSON.stringify(values)}]`
+    `one of these values: [${JSONStringify(values)}]`
   );
 };
 

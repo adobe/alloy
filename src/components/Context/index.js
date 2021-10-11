@@ -17,7 +17,9 @@ import injectPlaceContext from "./injectPlaceContext";
 import injectTimestamp from "./injectTimestamp";
 import implementationDetails from "./implementationDetails";
 import createComponent from "./createComponent";
+import window from "../../utils/window";
 import { arrayOf, string } from "../../utils/validation";
+import ObjectKeys from "../../utils/Object.keys";
 
 const web = injectWeb(window);
 const device = injectDevice(window);
@@ -38,7 +40,7 @@ const createContext = ({ config, logger }) => {
 
 createContext.namespace = "Context";
 createContext.configValidators = {
-  context: arrayOf(string()).default(Object.keys(optionalContexts))
+  context: arrayOf(string()).default(ObjectKeys(optionalContexts))
 };
 
 export default createContext;

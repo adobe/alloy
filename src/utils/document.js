@@ -10,12 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isObject from "./isObject";
-import ObjectKeys from "./Object.keys";
-
-/**
- * Returns whether the value is an empty object.
- * @param {*} value
- * @returns {boolean}
- */
-export default value => isObject(value) && ObjectKeys(value).length === 0;
+// const d = globalThis.document;
+const d = document;
+export default d;

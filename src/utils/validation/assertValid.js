@@ -10,10 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import JSONStringify from "../JSON.stringify";
+
 export default (isValid, value, path, message) => {
   if (!isValid) {
     throw new Error(
-      `'${path}': Expected ${message}, but got ${JSON.stringify(value)}.`
+      `'${path}': Expected ${message}, but got ${JSONStringify(value)}.`
     );
   }
 };

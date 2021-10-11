@@ -12,3 +12,25 @@ governing permissions and limitations under the License.
 
 // eslint-disable-next-line no-unused-vars
 import querystring from "../../../../src/utils/querystring";
+
+describe("querystring", () => {
+  it("querystring.parse('?alloy_debug=true')", () => {
+    expect(querystring.parse("?alloy_debug=true")).toEqual({
+      alloy_debug: "true"
+    });
+  });
+
+  it("querystring.parse('?qp=one&alloy_debug=true&qp2=two')", () => {
+    expect(querystring.parse("?qp=one&alloy_debug=true&qp2=two")).toEqual({
+      qp: "one",
+      alloy_debug: "true",
+      qp2: "two"
+    });
+  });
+
+  it("querystring.parse('?qp=first&qp=second')", () => {
+    expect(querystring.parse("?qp=first&qp=second")).toEqual({
+      qp: ["first", "second"]
+    });
+  });
+});

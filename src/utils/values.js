@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import ObjectKeys from "./Object.keys";
+
 /**
  * Returns an array whose items are the provided object's own enumerable
  * property values.
@@ -17,5 +19,5 @@ governing permissions and limitations under the License.
  * @returns {Array}
  */
 export default obj => {
-  return Object.keys(obj).map(key => obj[key]);
+  return ObjectKeys(obj).map(key => obj[key]);
 };

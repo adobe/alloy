@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import attachClickActivityCollector from "./attachClickActivityCollector";
 import configValidators from "./configValidators";
 import createLinkClick from "./createLinkClick";
+import window from "../../utils/window";
 
 const createActivityCollector = ({ config, eventManager, handleError }) => {
   const linkClick = createLinkClick(window, config);

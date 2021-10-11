@@ -12,6 +12,8 @@ governing permissions and limitations under the License.
 
 import isFunction from "../isFunction";
 import isNonEmptyArray from "../isNonEmptyArray";
+import document from "../document";
+import window from "../window";
 import selectNodes from "./selectNodes";
 
 const MUTATION_OBSERVER = "MutationObserver";

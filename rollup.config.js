@@ -104,12 +104,17 @@ const buildConfig = (variant, minify) => {
       output: [
         {
           file: `${destDirectory}alloy${minifiedExtension}.js`,
-          format: "iife",
-          intro:
-            "if (document.documentMode && document.documentMode < 11) {\n" +
-            "  console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.');\n" +
-            "  return;\n" +
-            "}\n"
+          // NOTE: This is helpful for assessing the size of the alloy.min.js
+          // file and how much each module contributes to the overall size.
+          // sourcemap: true,
+          format: "iife"
+          // removing intro in favor of smaller code footprint...Should be in
+          // documentation anyway right? ;)
+          // intro:
+          //   "if (document.documentMode && document.documentMode < 11) {\n" +
+          //   "  console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.');\n" +
+          //   "  return;\n" +
+          //   "}\n"
         }
       ],
       plugins

@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { noop } from "../../utils";
+import document from "../../utils/document";
 
 const createClickHandler = ({ eventManager, lifecycle, handleError }) => {
   return clickEvent => {

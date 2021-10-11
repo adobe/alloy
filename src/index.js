@@ -19,6 +19,7 @@ import createLogger from "./core/createLogger";
 import createLogController from "./core/createLogController";
 import { injectStorage } from "./utils";
 import { arrayOf, objectOf, string } from "./utils/validation";
+import window from "./utils/window";
 
 const { console } = window;
 const createNamespacedStorage = injectStorage(window);

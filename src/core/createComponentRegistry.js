@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { intersection, stackError } from "../utils";
+import ObjectKeys from "../utils/Object.keys";
 
 const wrapForErrorHandling = (fn, stackMessage) => {
   return (...args) => {
@@ -43,8 +44,8 @@ export default () => {
     componentCommandsByName = {}
   ) => {
     const conflictingCommandNames = intersection(
-      Object.keys(commandsByName),
-      Object.keys(componentCommandsByName)
+      ObjectKeys(commandsByName),
+      ObjectKeys(componentCommandsByName)
     );
 
     if (conflictingCommandNames.length) {
@@ -56,7 +57,7 @@ export default () => {
       );
     }
 
-    Object.keys(componentCommandsByName).forEach(commandName => {
+    ObjectKeys(componentCommandsByName).forEach(commandName => {
       const command = componentCommandsByName[commandName];
       command.commandName = commandName;
       command.run = wrapForErrorHandling(
@@ -71,7 +72,7 @@ export default () => {
     namespace,
     componentLifecycleCallbacksByName = {}
   ) => {
-    Object.keys(componentLifecycleCallbacksByName).forEach(hookName => {
+    ObjectKeys(componentLifecycleCallbacksByName).forEach(hookName => {
       lifecycleCallbacksByName[hookName] =
         lifecycleCallbacksByName[hookName] || [];
 
@@ -95,7 +96,7 @@ export default () => {
       return commandsByName[commandName];
     },
     getCommandNames() {
-      return Object.keys(commandsByName);
+      return ObjectKeys(commandsByName);
     },
     getLifecycleCallbacks(hookName) {
       return lifecycleCallbacksByName[hookName] || [];

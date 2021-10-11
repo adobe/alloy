@@ -12,13 +12,14 @@ governing permissions and limitations under the License.
 
 import isObject from "../isObject";
 import assertValid from "./assertValid";
+import ObjectKeys from "../Object.keys";
 
 export default schema => (value, path) => {
   assertValid(isObject(value), value, path, "an object");
 
   const errors = [];
   const validatedObject = {};
-  Object.keys(schema).forEach(subKey => {
+  ObjectKeys(schema).forEach(subKey => {
     const subValue = value[subKey];
     const subSchema = schema[subKey];
     const subPath = path ? `${path}.${subKey}` : subKey;
@@ -33,7 +34,7 @@ export default schema => (value, path) => {
   });
 
   // copy over unknown properties
-  Object.keys(value).forEach(subKey => {
+  ObjectKeys(value).forEach(subKey => {
     if (!Object.prototype.hasOwnProperty.call(validatedObject, subKey)) {
       validatedObject[subKey] = value[subKey];
     }

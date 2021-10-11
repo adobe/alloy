@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import matchesSelectorWithEq from "../dom/matchesSelectorWithEq";
+import document from "../../../../utils/document";
 
 const getMetasIfMatches = (
   clickedElement,

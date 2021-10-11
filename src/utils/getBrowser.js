@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import memoize from "./memoize";
+import ObjectKeys from "./Object.keys";
 
 import {
   EDGE,
@@ -24,7 +25,7 @@ import {
 
 const matchUserAgent = regexs => {
   return userAgent => {
-    const keys = Object.keys(regexs);
+    const keys = ObjectKeys(regexs);
     for (let i = 0; i < keys.length; i += 1) {
       const key = keys[i];
       const regex = regexs[key];
