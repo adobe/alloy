@@ -35,8 +35,6 @@ test("C2599 - Adds only device context data when only device is specified in con
   await alloy.configure(deviceContextConfig);
   await alloy.sendEvent(sendEventOptions);
 
-  console.log("requests status", networkLogger.edgeEndpointLogs.requests);
-
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 

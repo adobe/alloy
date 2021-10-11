@@ -31,8 +31,6 @@ test("Test C2598 - Adds only web context data when only web is specified in conf
   await alloy.configure(webContextConfig);
   await alloy.sendEvent();
 
-  console.log("requests status", networkLogger.edgeEndpointLogs.requests);
-
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
