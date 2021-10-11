@@ -24,6 +24,7 @@ test("Test C2597 - Adds all context data to requests by default.", async () => {
   await alloy.configure(orgMainConfigMain);
   await alloy.sendEvent();
 
+  console.log("requests status", networkLogger.edgeEndpointLogs.requests);
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 

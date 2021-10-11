@@ -1,5 +1,6 @@
 import { t, ClientFunction } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
+import { responseStatus } from "../../helpers/assertions";
 import createFixture from "../../helpers/createFixture";
 import {
   compose,
@@ -66,6 +67,7 @@ const simulatePageLoad = async alloy => {
     "networkLogger.edgeEndpointLogs.requests",
     networkLogger.edgeEndpointLogs.requests
   );
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
   const sendEventRequest = networkLogger.edgeEndpointLogs.requests[0];
   const requestBody = JSON.parse(sendEventRequest.request.body);
   await t
@@ -93,6 +95,14 @@ const simulatePageLoad = async alloy => {
   }).getPayloadsByType("personalization:decisions");
 
   await t.expect(personalizationPayload.length).eql(3);
+  console.log(
+    "personalization payload characteristics",
+    personalizationPayload[1].scopeDetails.characteristics
+  );
+
+  personalizationPayload.forEach(decision => {
+    console.log(decision.scopeDetails.characteristics);
+  });
 
   // assert propositions were rendered for both page_load and view
   await t
