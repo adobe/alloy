@@ -11,8 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import querySelectorAll from "../../components/Personalization/dom-actions/dom/querySelectorAll";
-import selectNodesWithShadow from "../../components/Personalization/dom-actions/dom/selectNodesWithShadow";
-import { isNotShadowSelector } from "../../components/Personalization/dom-actions/dom/helperForShadow";
+import selectNodesWithShadow, {
+  isShadowSelector
+} from "../../components/Personalization/dom-actions/dom/selectNodesWithShadow";
 
 /**
  * Returns an array of matched DOM nodes.
@@ -21,7 +22,7 @@ import { isNotShadowSelector } from "../../components/Personalization/dom-action
  * @returns {Array} an array of DOM nodes
  */
 export default (selector, context = document) => {
-  if (isNotShadowSelector(selector)) {
+  if (!isShadowSelector(selector)) {
     return querySelectorAll(context, selector);
   }
 

@@ -15,7 +15,7 @@ import { isNonEmptyString } from "../../../../utils";
 const EQ_START = ":eq(";
 const EQ_PATTERN = /:eq\((\d+)\)/g;
 
-export const isNotEqSelector = str => str.indexOf(EQ_START) === -1;
+export const isEqSelector = str => str.indexOf(EQ_START) !== -1;
 
 export const splitWithEq = selector => {
   return selector.split(EQ_PATTERN).filter(isNonEmptyString);

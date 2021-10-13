@@ -18,14 +18,27 @@ import {
   removeNode
 } from "../../../../../../../src/utils/dom";
 import { selectNodesWithEq } from "../../../../../../../src/components/Personalization/dom-actions/dom";
+import {
+  transformPrefix,
+  isShadowSelector,
+  splitWithShadow
+} from "../../../../../../../src/components/Personalization/dom-actions/dom/selectNodesWithShadow";
 
 const defineCustomElements = () => {
   if (customElements.get("buy-now-button")) {
     return;
   }
 
-  const buyNowContent = `<div><input type="radio" id="buy" name="buy_btn" value="Buy NOW">
-        <label for="buy">Buy Now</label><br></div>`;
+  const buyNowContent = `
+    <div>
+      <input type="radio" id="buy" name="buy_btn" value="Buy NOW">
+      <label for="buy">Buy Now</label><br>
+      <div>
+        <input type="radio" id="buy_later" name="buy_btn_ltr" value="Buy LATER">
+        <label for="buy_later">Buy Later</label><br>
+      </div>
+    </div>
+  `;
   customElements.define(
     "buy-now-button",
     class extends HTMLElement {
@@ -88,6 +101,8 @@ describe("Personalization::DOM::selectNodesWithShadow", () => {
       "#abc:eq(0) > FORM:nth-of-type(1) > BUY-NOW-BUTTON:nth-of-type(2):shadow > DIV:nth-of-type(1) > LABEL:nth-of-type(1)"
     );
 
+    expect(result.length).toEqual(1);
+
     expect(result[0].tagName).toEqual("LABEL");
     expect(result[0].textContent).toEqual("Buy Now");
   });
@@ -115,5 +130,37 @@ describe("Personalization::DOM::selectNodesWithShadow", () => {
 
     expect(result[0].tagName).toEqual("LABEL");
     expect(result[0].textContent).toEqual("Buy Now");
+  });
+});
+
+describe("Personalization::DOM::selectNodesWithShadow:helpers", () => {
+  it("should detect shadow selectors", () => {
+    let selector =
+      "BODY > BUY-NOW-BUTTON:nth-of-type(2):shadow > DIV:nth-of-type(1)";
+    let result = isShadowSelector(selector);
+    expect(result).toBeTrue();
+    selector = "BODY > BUY-NOW-BUTTON:nth-of-type(2) > DIV:nth-of-type(1)";
+    result = isShadowSelector(selector);
+    expect(result).toBeFalse();
+  });
+
+  it("should split shadow selectors", () => {
+    const selector =
+      "BODY > BUY-NOW-BUTTON:nth-of-type(2):shadow > DIV:nth-of-type(1)";
+    const parts = splitWithShadow(selector);
+    expect(parts[0]).toEqual("BODY > BUY-NOW-BUTTON:nth-of-type(2)");
+    expect(parts[1]).toEqual(" > DIV:nth-of-type(1)");
+  });
+
+  it("should transform selector prefix", () => {
+    let selector = " > BUY-NOW-BUTTON:nth-of-type(2)";
+    let result = transformPrefix(selector);
+    expect(result).toEqual(":scope > BUY-NOW-BUTTON:nth-of-type(2)");
+    selector = ">  BUY-NOW-BUTTON:nth-of-type(2)";
+    result = transformPrefix(selector);
+    expect(result).toEqual(":scope >  BUY-NOW-BUTTON:nth-of-type(2)");
+    selector = ">BUY-NOW-BUTTON:nth-of-type(2)";
+    result = transformPrefix(selector);
+    expect(result).toEqual(":scope >BUY-NOW-BUTTON:nth-of-type(2)");
   });
 });

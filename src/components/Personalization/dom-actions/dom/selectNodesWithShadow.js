@@ -11,7 +11,20 @@ governing permissions and limitations under the License.
 */
 
 import querySelectorAll from "./querySelectorAll";
-import { cleanupPrefix, splitWithShadow } from "./helperForShadow";
+
+const SHADOW_SEPARATOR = ":shadow";
+
+export const splitWithShadow = selector => {
+  return selector.split(SHADOW_SEPARATOR);
+};
+
+export const transformPrefix = selector => {
+  const result = selector.trim();
+  const subselIdx = result.indexOf(">");
+  return subselIdx === 0 ? `:scope ${result}` : result;
+};
+
+export const isShadowSelector = str => str.indexOf(SHADOW_SEPARATOR) !== -1;
 
 export default (context, selector) => {
   const parts = splitWithShadow(selector);
@@ -24,7 +37,7 @@ export default (context, selector) => {
   // find each subselector element based on the previously selected node's shadowRoot
   let parent = context;
   for (let i = 0; i < parts.length; i += 1) {
-    const part = cleanupPrefix(parts[i]);
+    const part = transformPrefix(parts[i]);
     const partNode = querySelectorAll(parent, part);
 
     if (partNode.length === 0 || !partNode[0] || !partNode[0].shadowRoot) {
