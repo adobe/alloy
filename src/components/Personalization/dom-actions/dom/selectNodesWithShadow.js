@@ -27,6 +27,11 @@ export const transformPrefix = selector => {
 export const isShadowSelector = str => str.indexOf(SHADOW_SEPARATOR) !== -1;
 
 export default (context, selector) => {
+  // Shadow DOM is not supported in IE
+  if (window.document.documentMode) {
+    return querySelectorAll(context, selector.replace(SHADOW_SEPARATOR, ""));
+  }
+
   const parts = splitWithShadow(selector);
 
   if (parts.length < 2) {

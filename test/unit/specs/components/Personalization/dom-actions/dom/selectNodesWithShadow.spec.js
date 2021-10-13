@@ -24,8 +24,10 @@ import {
   splitWithShadow
 } from "../../../../../../../src/components/Personalization/dom-actions/dom/selectNodesWithShadow";
 
+const ieDetected = () => !!window.document.documentMode;
+
 const defineCustomElements = () => {
-  if (customElements.get("buy-now-button")) {
+  if (!customElements || customElements.get("buy-now-button")) {
     return;
   }
 
@@ -83,6 +85,10 @@ describe("Personalization::DOM::selectNodesWithShadow", () => {
   });
 
   it("should select when one shadow node", () => {
+    if (ieDetected()) {
+      return;
+    }
+
     defineCustomElements();
 
     const content = `
@@ -108,6 +114,10 @@ describe("Personalization::DOM::selectNodesWithShadow", () => {
   });
 
   it("should select when multiple nested shadow nodes", () => {
+    if (ieDetected()) {
+      return;
+    }
+
     defineCustomElements();
 
     const content = `
