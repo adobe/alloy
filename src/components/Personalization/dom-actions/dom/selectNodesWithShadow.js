@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import querySelectorAll from "./querySelectorAll";
+import { startsWith } from "../../../../utils";
 
 const SHADOW_SEPARATOR = ":shadow";
 
@@ -20,15 +21,24 @@ export const splitWithShadow = selector => {
 
 export const transformPrefix = selector => {
   const result = selector.trim();
-  const subselIdx = result.indexOf(">");
-  return subselIdx === 0 ? `:scope ${result}` : result;
+  const hasChildCombinatorPrefix = startsWith(result, ">");
+  if (!hasChildCombinatorPrefix) {
+    return result;
+  }
+
+  // IE doesn't support :scope
+  if (window.document.documentMode) {
+    return result.substring(1).trim();
+  }
+
+  return `:scope ${result}`;
 };
 
 export const isShadowSelector = str => str.indexOf(SHADOW_SEPARATOR) !== -1;
 
 export default (context, selector) => {
-  // Shadow DOM is not supported in IE
-  if (window.document.documentMode) {
+  // Shadow DOM should be supported
+  if (!window.document.documentElement.attachShadow) {
     return querySelectorAll(context, selector.replace(SHADOW_SEPARATOR, ""));
   }
 
