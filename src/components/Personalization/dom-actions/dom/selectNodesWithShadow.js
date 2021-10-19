@@ -15,11 +15,11 @@ import { startsWith } from "../../../../utils";
 
 const SHADOW_SEPARATOR = ":shadow";
 
-export const splitWithShadow = selector => {
+const splitWithShadow = selector => {
   return selector.split(SHADOW_SEPARATOR);
 };
 
-export const transformPrefix = selector => {
+const transformPrefix = selector => {
   const result = selector.trim();
   const hasChildCombinatorPrefix = startsWith(result, ">");
   if (!hasChildCombinatorPrefix) {
