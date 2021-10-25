@@ -92,9 +92,9 @@ const qaModeFromQueryString = locationSearch => {
     [URL_PARAM_FALSE_AUDIENCE_IDS, PROPERTY_FALSE_AUDIENCE_IDS]
   ].forEach(([paramName, qaObjectProperty]) => {
     if (paramNames.includes(paramName)) {
-      qaMode[qaObjectProperty] = parsedQueryString[paramName]
-        .split(UNDERSCORE_DELIMITER)
-        .map(intValue);
+      qaMode[qaObjectProperty] = parsedQueryString[paramName].split(
+        UNDERSCORE_DELIMITER
+      );
     }
   });
 

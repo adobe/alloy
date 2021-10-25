@@ -40,8 +40,8 @@ describe("Personalization::createQaModeController", () => {
       token: "g3PFzsGla-P0L3BEgkx-3awMH6U-J5MY5SqWCDuHAhs",
       listedActivitiesOnly: true,
       previewIndexes: [{ activityIndex: 1, experienceIndex: 2 }],
-      evaluateAsTrueAudienceIds: [12, 14],
-      evaluateAsFalseAudienceIds: [13, 15]
+      evaluateAsTrueAudienceIds: ["12", "14"],
+      evaluateAsFalseAudienceIds: ["13", "15"]
     });
   });
 
