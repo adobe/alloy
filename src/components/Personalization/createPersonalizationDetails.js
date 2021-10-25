@@ -19,9 +19,14 @@ import {
   REDIRECT_ITEM
 } from "./constants/schema";
 import isNonEmptyString from "../../utils/isNonEmptyString";
-import qaModeHelper from "./utils/qaModeHelper";
 
-export default ({ renderDecisions, decisionScopes, event, viewCache }) => {
+export default ({
+  renderDecisions,
+  decisionScopes,
+  event,
+  viewCache,
+  qaModeController
+}) => {
   const viewName = event.getViewName();
   return {
     isRenderDecisions() {
@@ -53,7 +58,11 @@ export default ({ renderDecisions, decisionScopes, event, viewCache }) => {
         decisionScopes: scopes
       };
 
-      const qaMode = qaModeHelper.getQaMode(window.location.search);
+      const qaMode =
+        qaModeController !== undefined
+          ? qaModeController.getQaMode()
+          : undefined;
+
       if (qaMode) {
         queryDetails.qaMode = qaMode;
       }

@@ -21,7 +21,8 @@ export default ({
   onClickHandler,
   isAuthoringModeEnabled,
   mergeQuery,
-  viewCache
+  viewCache,
+  qaModeController
 }) => {
   return {
     lifecycle: {
@@ -44,7 +45,8 @@ export default ({
           renderDecisions,
           decisionScopes,
           event,
-          viewCache
+          viewCache,
+          qaModeController
         });
 
         if (personalizationDetails.shouldFetchData()) {

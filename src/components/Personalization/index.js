@@ -31,6 +31,12 @@ import createClickStorage from "./createClickStorage";
 import createRedirectHandler from "./createRedirectHandler";
 import createAutorenderingHandler from "./createAutoRenderingHandler";
 import createNonRenderingHandler from "./createNonRenderingHandler";
+import createQaModeController from "./createQaModeController";
+import { injectStorage } from "../../utils";
+import storageNamespace from "./constants/storageNamespace";
+
+const createNamespacedStorage = injectStorage(window);
+const storage = createNamespacedStorage(`${storageNamespace}.`);
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
@@ -40,6 +46,12 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     getClickSelectors,
     storeClickMetrics
   } = createClickStorage();
+
+  const qaModeController = createQaModeController({
+    storage,
+    locationSearch: window.location.search
+  });
+
   const viewCache = createViewCacheManager();
   const modules = initDomActionsModules(storeClickMetrics);
   const executeDecisions = createExecuteDecisions({
@@ -97,6 +109,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     viewCache,
     showContainers
   });
+
   return createComponent({
     logger,
     fetchDataHandler,
@@ -104,7 +117,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     onClickHandler,
     isAuthoringModeEnabled,
     mergeQuery,
-    viewCache
+    viewCache,
+    qaModeController
   });
 };
 
