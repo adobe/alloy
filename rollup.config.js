@@ -16,6 +16,7 @@ import commonjs from "rollup-plugin-commonjs";
 import babel from "rollup-plugin-babel";
 import { terser } from "rollup-plugin-terser";
 import license from "rollup-plugin-license";
+import inject from "rollup-plugin-inject";
 
 // Set these boolean environment options to control which files are built:
 // build the snippet that must be add to the page
@@ -60,6 +61,23 @@ const buildPlugins = (variant, minify) => {
         })
       );
     } else {
+      plugins.unshift(
+        inject({
+          include: "src/**",
+          modules: {
+            window: "window",
+            document: "document",
+            "JSON.stringify": "jsonStringify",
+            "Object.keys": "objectKeys",
+            "Promise.resolve": "promiseResolve",
+            "Promise.reject": "promiseReject",
+            "Promise.all": "promiseAll",
+            Promise: "promise",
+            Error: "error",
+            undefined: "undefined"
+          }
+        })
+      );
       plugins.push(terser());
     }
   }
@@ -109,8 +127,33 @@ const buildConfig = (variant, minify) => {
             "if (document.documentMode && document.documentMode < 11) {\n" +
             "  console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.');\n" +
             "  return;\n" +
-            "}\n"
+            "}\n",
+          globals: {
+            window: "window",
+            document: "document",
+            jsonStringify: "JSON.stringify",
+            objectKeys: "Object.keys",
+            promiseResolve: "Promise.resolve",
+            promiseReject: "Promise.reject",
+            promiseAll: "Promise.all",
+            promise: "Promise",
+            error: "Error",
+            undefined: "undefined"
+          },
+          interop: false
         }
+      ],
+      external: [
+        "window",
+        "document",
+        "jsonStringify",
+        "objectKeys",
+        "promiseResolve",
+        "promiseReject",
+        "promiseAll",
+        "promise",
+        "error",
+        "undefined"
       ],
       plugins
     };

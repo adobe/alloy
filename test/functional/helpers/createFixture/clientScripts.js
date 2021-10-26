@@ -44,7 +44,10 @@ const baseCodePath = path.join(
   __dirname,
   "../../../../distTest/baseCode.min.js"
 );
-const localAlloyLibraryPath = path.join(__dirname, "../../../../dist/alloy.js");
+const localAlloyLibraryPath = path.join(
+  __dirname,
+  "../../../../dist/alloy.min.js"
+);
 const localNpmLibraryPath = path.join(
   __dirname,
   "../../../../distTest/npmPackageLocal.js"

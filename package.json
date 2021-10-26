@@ -19,7 +19,7 @@
     "test:unit:coverage": "karma start --single-run --reporters spec,coverage",
     "test:functional": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome",
     "test:functional:watch": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ./scripts/watchFunctionalTests.js --browsers chrome",
-    "test:functional:build:int": "rollup -c --environment BASE_CODE_MIN,STANDALONE,NPM_PACKAGE_LOCAL",
+    "test:functional:build:int": "rollup -c --environment BASE_CODE_MIN,STANDALONE_MIN,NPM_PACKAGE_LOCAL",
     "test:functional:build:prod": "rollup -c --environment BASE_CODE_MIN,NPM_PACKAGE_PROD",
     "test:scripts": "jasmine --config=scripts/specs/jasmine.json",
     "sandbox:build": "rollup -c --environment SANDBOX && cd sandbox && npm run build",
@@ -60,6 +60,7 @@
     "@adobe/reactor-object-assign": "^1.0.0",
     "@adobe/reactor-query-string": "^1.0.0",
     "css.escape": "^1.5.1",
+    "rollup-plugin-inject": "^3.0.2",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
