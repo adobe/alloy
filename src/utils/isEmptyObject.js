@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import isObject from "./isObject";
-import ObjectKeys from "./Object.keys";
+import objectKeys from "./Object.keys";
 
 /**
  * Returns whether the value is an empty object.
  * @param {*} value
  * @returns {boolean}
  */
-export default value => isObject(value) && ObjectKeys(value).length === 0;
+export default value => isObject(value) && objectKeys(value).length === 0;

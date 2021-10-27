@@ -10,5 +10,5 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const ObjectKeys = Object.keys;
-export default ObjectKeys;
+const objectKeys = Object.keys;
+export default objectKeys;

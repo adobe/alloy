@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import ObjectKeys from "../Object.keys";
+import objectKeys from "../Object.keys";
 
 export default schema => (value, path) => {
   const errors = [];
-  ObjectKeys(value).forEach(subKey => {
+  objectKeys(value).forEach(subKey => {
     if (!schema[subKey]) {
       const subPath = path ? `${path}.${subKey}` : subKey;
       errors.push(`'${subPath}': Unknown field.`);

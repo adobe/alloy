@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { NO_CONTENT } from "../../constants/httpStatusCode";
-import JSONStringify from "../../utils/JSON.stringify";
+import jsonStringify from "../../utils/JSON.stringify";
 
 const MESSAGE_PREFIX = "The server responded with a";
 
@@ -25,7 +25,7 @@ export default ({ logger }) => {
       (!parsedBody && statusCode !== NO_CONTENT) ||
       (parsedBody && !Array.isArray(parsedBody.handle))
     ) {
-      const bodyToLog = parsedBody ? JSONStringify(parsedBody, null, 2) : body;
+      const bodyToLog = parsedBody ? jsonStringify(parsedBody, null, 2) : body;
       const messageSuffix = bodyToLog
         ? `response body:\n${bodyToLog}`
         : `no response body.`;

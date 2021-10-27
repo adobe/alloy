@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import ObjectKeys from "../../../utils/Object.keys";
+import objectKeys from "../../../utils/Object.keys";
 import { setStyle } from "./dom";
 
 export default (container, styles) => {
   const { priority, ...style } = styles;
 
-  ObjectKeys(style).forEach(key => {
+  objectKeys(style).forEach(key => {
     setStyle(container, key, style[key], priority);
   });
 };

@@ -12,10 +12,10 @@ governing permissions and limitations under the License.
 
 import isNil from "./isNil";
 import isObject from "./isObject";
-import ObjectKeys from "./Object.keys";
+import objectKeys from "./Object.keys";
 
 const deepAssignObject = (target, source) => {
-  ObjectKeys(source).forEach(key => {
+  objectKeys(source).forEach(key => {
     if (isObject(target[key]) && isObject(source[key])) {
       deepAssignObject(target[key], source[key]);
       return;

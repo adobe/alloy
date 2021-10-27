@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import ObjectKeys from "../../utils/Object.keys";
-import JSONStringify from "../../utils/JSON.stringify";
+import objectKeys from "../../utils/Object.keys";
+import jsonStringify from "../../utils/JSON.stringify";
 import { crc32 } from "../../utils";
 
 // serialize an object with a consistent ordering
@@ -20,7 +20,7 @@ const serialize = obj => {
     return obj.map(i => serialize(i));
   }
   if (typeof obj === "object" && obj !== null) {
-    return ObjectKeys(obj)
+    return objectKeys(obj)
       .sort()
       .reduce((memo, key) => {
         memo[key] = serialize(obj[key]);
@@ -31,5 +31,5 @@ const serialize = obj => {
 };
 
 export default obj => {
-  return crc32(JSONStringify(serialize(obj)));
+  return crc32(jsonStringify(serialize(obj)));
 };

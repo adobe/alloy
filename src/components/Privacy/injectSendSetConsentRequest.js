@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import ObjectKeys from "../../utils/Object.keys";
+import objectKeys from "../../utils/Object.keys";
 import { isObject } from "../../utils";
 
 export default ({
@@ -21,7 +21,7 @@ export default ({
   const payload = createConsentRequestPayload();
   payload.setConsent(consentOptions);
   if (isObject(identityMap)) {
-    ObjectKeys(identityMap).forEach(key => {
+    objectKeys(identityMap).forEach(key => {
       identityMap[key].forEach(identity => {
         payload.addIdentity(key, identity);
       });

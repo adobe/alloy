@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// import loadScript from "@adobe/reactor-load-script";
 import document from "../../../utils/document";
 import { selectNodes, createNode } from "../../../utils/dom";
 import { SRC, SCRIPT } from "../../../constants/tagName";

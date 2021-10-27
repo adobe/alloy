@@ -12,14 +12,14 @@ governing permissions and limitations under the License.
 
 import isObject from "../isObject";
 import assertValid from "./assertValid";
-import ObjectKeys from "../Object.keys";
+import objectKeys from "../Object.keys";
 
 export default valueValidator => (value, path) => {
   assertValid(isObject(value), value, path, "an object");
 
   const errors = [];
   const validatedObject = {};
-  ObjectKeys(value).forEach(subKey => {
+  objectKeys(value).forEach(subKey => {
     const subValue = value[subKey];
     const subPath = path ? `${path}.${subKey}` : subKey;
     try {

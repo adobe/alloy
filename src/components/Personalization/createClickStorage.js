@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import ObjectKeys from "../../utils/Object.keys";
+import objectKeys from "../../utils/Object.keys";
 
 const metasToArray = metas => {
-  return ObjectKeys(metas).map(key => {
+  return objectKeys(metas).map(key => {
     return {
       id: key,
       scope: metas[key].scope,
@@ -36,7 +36,7 @@ export default () => {
   };
 
   const getClickSelectors = () => {
-    return ObjectKeys(clickStorage);
+    return objectKeys(clickStorage);
   };
 
   const getClickMetasBySelector = selector => {

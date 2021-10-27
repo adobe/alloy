@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import ObjectKeys from "../utils/Object.keys";
+import objectKeys from "../utils/Object.keys";
 import { endsWith, isNamespacedCookieName } from "../utils";
 import convertTimes, { DAY, SECOND } from "../utils/convertTimes";
 
@@ -37,7 +37,7 @@ export default ({ cookieJar, orgId, apexDomain }) => {
       if (!isEndpointFirstParty) {
         const cookies = cookieJar.get();
 
-        const entries = ObjectKeys(cookies)
+        const entries = objectKeys(cookies)
           .filter(name => {
             // We have a contract with the server that we will pass
             // all cookies whose names are namespaced according to the

@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import preprocess from "./remapHeadOffers";
-import JSONStringify from "../../../utils/JSON.stringify";
+import jsonStringify from "../../../utils/JSON.stringify";
 
 const logActionError = (logger, action, error) => {
   if (logger.enabled) {
-    const details = JSONStringify(action);
+    const details = jsonStringify(action);
     const { message, stack } = error;
     const errorMessage = `Failed to execute action ${details}. ${message} ${
       stack ? `\n ${stack}` : ""
@@ -27,7 +27,7 @@ const logActionError = (logger, action, error) => {
 
 const logActionCompleted = (logger, action) => {
   if (logger.enabled) {
-    const details = JSONStringify(action);
+    const details = jsonStringify(action);
 
     logger.info(`Action ${details} executed.`);
   }

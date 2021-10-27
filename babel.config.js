@@ -61,7 +61,6 @@ module.exports = {
           {
             modules: false,
             targets
-            // debug: true
           }
         ]
       ],

@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import JSONStringify from "./JSON.stringify";
+import jsonStringify from "./JSON.stringify";
 
 /**
  * Clones a value by serializing then deserializing the value.
  * @param {*} value
  * @returns {any}
  */
-export default value => JSON.parse(JSONStringify(value));
+export default value => JSON.parse(jsonStringify(value));
