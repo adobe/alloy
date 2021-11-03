@@ -1,0 +1,202 @@
+@import "../../styles/shared/color.scss";
+@import "../../styles/shared/mixins.scss";
+
+.wrapper {
+  width: 75vw;
+  min-height: 100%;
+  margin-bottom: 5rem;
+  transform: translateX(-110%);
+  position: fixed;
+  background: $white;
+  transition: transform 0.4s ease-in-out;
+
+  @include respond-to("small") {
+    width: 50vw;
+  }
+
+  &.show {
+    transform: translateX(0%);
+  }
+
+  @include respond-to("medium") {
+    width: 15.3125rem;
+    min-height: auto;
+    transform: translateX(0);
+    position: static;
+    background: transparent;
+  }
+
+  @include respond-to("med-large") {
+    width: 25%;
+  }
+
+  @include respond-to("large") {
+    width: 20%;
+  }
+}
+
+.list {
+  list-style: none;
+  padding-left: 0;
+  font-size: 0.875rem;
+
+  li {
+    + li {
+      margin-top: 0.8rem;
+    }
+  }
+
+  a,
+  .toggle {
+    text-decoration: none;
+    color: $black;
+    display: block;
+    line-height: 2rem;
+    padding: 0 0.5rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+
+    @media (pointer: fine) {
+      &:hover {
+        background-color: rgba($primary, 0.5);
+      }
+    }
+  }
+
+  .button {
+    background: $primary-dark;
+    color: $white;
+    display: flex;
+    align-items: center;
+    padding: 1rem 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+
+    @media (pointer: fine) {
+      &:hover {
+        background: $primary;
+      }
+    }
+
+    svg {
+      color: $white;
+      width: 1.5rem;
+      margin-right: 0.375rem;
+    }
+  }
+}
+
+.toggle {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%) rotate(0deg);
+    transition: transform 0.2s ease-out;
+    width: 0;
+    height: 0;
+    border-top: 0.3rem solid transparent;
+    border-bottom: 0.3rem solid transparent;
+
+    border-left: 0.3rem solid rgba($dark, 0.75);
+  }
+
+  &.on::after {
+    transform: translateY(-50%) rotate(90deg);
+  }
+}
+
+.main {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid $dark;
+
+  a,
+  .toggle {
+    font-weight: 700;
+  }
+}
+
+.subnav {
+  margin-top: 0.5rem;
+  list-style: none;
+  padding-left: 0.5625rem;
+
+  a {
+    font-weight: 600;
+    margin-left: 0.5625rem;
+  }
+
+  li {
+    // position: relative;
+    padding: 0.4rem 0;
+    border-left: solid 1px $primary;
+
+    + li {
+      margin-top: 0;
+    }
+
+    &.toggled {
+      border-width: 3px;
+      margin-left: -1px;
+    }
+  }
+
+  .subnav {
+    margin-left: 0.5625rem;
+
+    li {
+      border-color: $blue;
+
+      &.active {
+        border-width: 3px;
+        margin-left: -1px;
+      }
+    }
+
+    a {
+      font-weight: 600;
+    }
+  }
+
+  &.collections .subnav {
+    border-color: $green;
+  }
+
+  // .active::before {
+  //   position: absolute;
+  //   width: 2px;
+  //   height: 100%;
+  //   content: "";
+  //   left: -0.5625rem;
+  //   background: $blue;
+  // }
+}
+
+.subnav,
+.resource,
+.collection {
+  display: none;
+}
+
+.toggled {
+  display: block;
+}
+
+.avatar {
+  border-radius: 50%;
+  margin-right: 0.375rem;
+  width: 2.5rem;
+}
+
+.info {
+  line-height: 1;
+
+  .logout {
+    font-weight: 600;
+    font-size: 0.75rem;
+  }
+}

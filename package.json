@@ -59,6 +59,7 @@
     "@adobe/reactor-load-script": "^1.1.1",
     "@adobe/reactor-object-assign": "^1.0.0",
     "@adobe/reactor-query-string": "^1.0.0",
+    "classnames": "^2.3.1",
     "css.escape": "^1.5.1",
     "uuid": "^3.3.2"
   },

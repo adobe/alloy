@@ -1,0 +1,60 @@
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,200;0,300;1,200&display=swap");
+@import "./shared/color.scss";
+
+html {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.5rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  position: relative;
+
+  padding-top: 5rem;
+  overflow-x: hidden;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 600;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+a {
+  color: $blue;
+  text-decoration: none;
+
+  transition: color 0.2s ease-out;
+
+  @media (pointer: fine) {
+    &:hover {
+      color: darken($blue, 25%);
+    }
+  }
+}
+
+pre {
+  background: #272822;
+  color: $green;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+strong {
+  font-weight: 700;
+}
