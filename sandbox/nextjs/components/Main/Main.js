@@ -3,9 +3,8 @@ import { Switch, Route } from "react-router-dom";
 
 import appStyles from "../../app.module.scss";
 
-import Changelog from "../Changelog/Changelog";
 import Home from "../Home/Home";
-import Resource from "../Resource/Resource";
+import AlloyConfiguration from "../Configuration/Config";
 
 const Main = () => {
   return (
@@ -15,20 +14,8 @@ const Main = () => {
           <Home />
         </Route>
 
-        <Route path="/authentication">
-          <Changelog />
-        </Route>
-
-        <Route path="/resource">
-          <Resource />
-        </Route>
-
-        <Route path="/collection">
-          <Changelog />
-        </Route>
-
-        <Route path="/changelog">
-          <Changelog />
+        <Route path="/configuration">
+          <AlloyConfiguration />
         </Route>
       </Switch>
     </div>

@@ -38,6 +38,7 @@ export default function Layout({ children }) {
             {children}
           </div>
         </div>
+        <script>document.write("Hello");</script>
       </div>
       <Footer />
     </>

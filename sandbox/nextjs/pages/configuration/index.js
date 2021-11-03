@@ -1,9 +1,9 @@
-import Document, { Html, Head, Main, NextScript } from "next/document";
+import Head from "next/head";
 
 import Layout from "../../components/Layout/Layout";
 import AlloyConfiguration from "../../components/Configuration/Config";
 
-export default function AlloyConfig() {
+export default function Main() {
   return (
     <Layout>
       <Head>

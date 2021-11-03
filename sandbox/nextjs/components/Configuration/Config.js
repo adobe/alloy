@@ -52,9 +52,6 @@ const AlloyConfiguration = () => {
   };
   return (
     <>
-      <script>
-        window.addEventListener("scroll", function() {console.log("scroll!")});
-      </script>
       <h2 className={appStyles.public}>Configure the Platform Web SDK</h2>
       <p>Configuration for the SDK is done with the configure command.</p>
 

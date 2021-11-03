@@ -61,66 +61,33 @@ const Nav = ({ show }) => {
         {/*</li>*/}
       </ul>
 
-      {/*<ul className={styles.list}>*/}
-      {/*  <li>*/}
-      {/*    <Link href="/changelog" title="Changelog">*/}
-      {/*      Changelog*/}
-      {/*    </Link>*/}
-      {/*  </li>*/}
-      {/*  <li>*/}
-      {/*    <a*/}
-      {/*      href="https://github.com/adobe/alloy"*/}
-      {/*      target="_blank"*/}
-      {/*      title="Source on Github"*/}
-      {/*      rel="noopener noreferrer"*/}
-      {/*    >*/}
-      {/*      Github*/}
-      {/*    </a>*/}
-      {/*  </li>*/}
-      {/*  <li>*/}
-      {/*    <a*/}
-      {/*      href="https://www.npmjs.com/package/@adobe/alloy"*/}
-      {/*      target="_blank"*/}
-      {/*      title="NPM page"*/}
-      {/*      rel="noopener noreferrer"*/}
-      {/*    >*/}
-      {/*      NPM*/}
-      {/*    </a>*/}
-      {/*  </li>*/}
-      {/*  <li>*/}
-      {/*    {user.id ? (*/}
-      {/*      <Link*/}
-      {/*        href="/api/logout"*/}
-      {/*        onClick={logout}*/}
-      {/*        title="Logout"*/}
-      {/*        rel="noopener noreferrer"*/}
-      {/*      >*/}
-      {/*        <div className={styles.button}>*/}
-      {/*          <img*/}
-      {/*            src={user.avatar}*/}
-      {/*            className={styles.avatar}*/}
-      {/*            alt="user avatar"*/}
-      {/*          />*/}
-      {/*          <div className={styles.info}>*/}
-      {/*            <div className={styles.user}>{user.name}</div>*/}
-      {/*            <div className={styles.logout}>Logout</div>*/}
-      {/*          </div>*/}
-      {/*        </div>*/}
-      {/*      </Link>*/}
-      {/*    ) : (*/}
-      {/*      <Link*/}
-      {/*        href="/api/auth"*/}
-      {/*        title="Authenticate with Alloy"*/}
-      {/*        rel="noopener noreferrer"*/}
-      {/*        passHref*/}
-      {/*      >*/}
-      {/*        <a className={cx(styles.button, styles.login)}>*/}
-      {/*          Authenticate with Alloy*/}
-      {/*        </a>*/}
-      {/*      </Link>*/}
-      {/*    )}*/}
-      {/*  </li>*/}
-      {/*</ul>*/}
+      <ul className={styles.list}>
+        <li>
+          <Link href="/changelog" title="Changelog">
+            Changelog
+          </Link>
+        </li>
+        <li>
+          <a
+            href="https://github.com/adobe/alloy"
+            target="_blank"
+            title="Source on Github"
+            rel="noopener noreferrer"
+          >
+            Github
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://www.npmjs.com/package/@adobe/alloy"
+            target="_blank"
+            title="NPM page"
+            rel="noopener noreferrer"
+          >
+            NPM
+          </a>
+        </li>
+      </ul>
     </div>
   );
 };
