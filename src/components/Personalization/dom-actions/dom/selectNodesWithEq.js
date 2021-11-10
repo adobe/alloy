@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import escape from "css.escape";
 import { selectNodes } from "../../../../utils/dom";
-import { isEqSelector, splitWithEq } from "./helperForEq";
+import { isNotEqSelector, splitWithEq } from "./helperForEq";
 
 // Trying to match ID or CSS class
 const CSS_IDENTIFIER_PATTERN = /(#|\.)(-?\w+)/g;
@@ -62,7 +62,7 @@ export const parseSelector = rawSelector => {
 export const selectNodesWithEq = selector => {
   const doc = document;
 
-  if (!isEqSelector(selector)) {
+  if (isNotEqSelector(selector)) {
     return selectNodes(selector, doc);
   }
 

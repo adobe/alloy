@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import { matchesSelector } from "../../../../utils/dom";
-import { isEqSelector } from "./helperForEq";
+import { isNotEqSelector } from "./helperForEq";
 import { selectNodesWithEq } from "./selectNodesWithEq";
 
 export default (selector, element) => {
-  if (!isEqSelector(selector)) {
+  if (isNotEqSelector(selector)) {
     return matchesSelector(selector, element);
   }
 
