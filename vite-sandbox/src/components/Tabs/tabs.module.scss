@@ -1,0 +1,27 @@
+@import "../../styles/shared/color.scss";
+
+.tabs {
+  display: flex;
+
+  .tab {
+    cursor: pointer;
+    padding: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    user-select: none;
+
+    + .tab {
+      margin-left: 0.625rem;
+    }
+
+    @media (pointer: fine) {
+      &:hover {
+        border-bottom: 2px solid rgba($black, 0.4);
+      }
+    }
+
+    &.active {
+      border-bottom: 2px solid $black;
+    }
+  }
+}

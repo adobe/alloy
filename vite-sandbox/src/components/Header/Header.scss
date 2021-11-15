@@ -1,0 +1,41 @@
+@import "../../variables";
+
+.header {
+  height: 80px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 10px;
+
+  h1 {
+    font-size: 2.5rem;
+    color: $color-white;
+    font-family: $font;
+    flex: 1;
+  }
+
+  .header__menu {
+    .header__buttons__icon {
+      flex: 1;
+      cursor: pointer;
+      color: $color-white;
+      margin-left: 20px;
+    }
+  }
+}
+
+.header__buttons {
+  display: flex;
+  justify-content: flex-end;
+
+  .header__buttons__icon {
+    cursor: pointer;
+    color: $color-white;
+    margin-right: 20px;
+  }
+
+  @media (max-width: $tablet) {
+    flex: 1;
+  }
+}
