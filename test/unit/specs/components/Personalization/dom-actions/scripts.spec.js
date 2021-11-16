@@ -71,11 +71,13 @@ describe("Personalization::helper::scripts", () => {
       "<script>console.log('test');</script><script src='http://foo.com' ></script>";
     const fragment = createFragment(fragmentHTML);
     const inlineScripts = getInlineScripts(fragment);
-    const func = jasmine.createSpy();
     const container = createNode(DIV);
+    spyOn(container, "appendChild").and.callThrough();
+    spyOn(container, "removeChild").and.callThrough();
 
-    executeInlineScripts(container, inlineScripts, func);
+    executeInlineScripts(container, inlineScripts);
 
-    expect(func).toHaveBeenCalledWith(container, inlineScripts[0]);
+    expect(container.appendChild).toHaveBeenCalledWith(inlineScripts[0]);
+    expect(container.removeChild).toHaveBeenCalledWith(inlineScripts[0]);
   });
 });

@@ -52,7 +52,7 @@ export default (container, html) => {
     i -= 1;
   }
 
-  executeInlineScripts(container, scripts, appendNode);
+  executeInlineScripts(container, scripts);
 
   return executeRemoteScripts(scriptsUrls);
 };

@@ -80,8 +80,11 @@ export const getRemoteScriptsUrls = fragment => {
   return result;
 };
 
-export const executeInlineScripts = (container, scripts, func) => {
-  scripts.forEach(script => func(container, script));
+export const executeInlineScripts = (parent, scripts) => {
+  scripts.forEach(script => {
+    parent.appendChild(script);
+    parent.removeChild(script);
+  });
 };
 
 export const executeRemoteScripts = urls => {
