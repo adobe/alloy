@@ -10,10 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import querySelectorAll from "../../components/Personalization/dom-actions/dom/querySelectorAll";
-import selectNodesWithShadow, {
-  isShadowSelector
-} from "../../components/Personalization/dom-actions/dom/selectNodesWithShadow";
+import toArray from "../toArray";
 
 /**
  * Returns an array of matched DOM nodes.
@@ -22,9 +19,5 @@ import selectNodesWithShadow, {
  * @returns {Array} an array of DOM nodes
  */
 export default (selector, context = document) => {
-  if (!isShadowSelector(selector)) {
-    return querySelectorAll(context, selector);
-  }
-
-  return selectNodesWithShadow(context, selector);
+  return toArray(context.querySelectorAll(selector));
 };
