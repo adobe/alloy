@@ -19,7 +19,7 @@
     "test:unit:coverage": "karma start --single-run --reporters spec,coverage",
     "test:functional": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe chrome",
     "test:functional:watch": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" ./scripts/watchFunctionalTests.js --browsers chrome",
-    "test:functional:debug": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe --inspect-brk chrome -T \"Test C28758.*\"",
+    "test:functional:debug": "EDGE_BASE_PATH=\"ee-pre-prd\" ALLOY_ENV=\"int\" testcafe --inspect-brk chrome",
     "test:functional:build:int": "rollup -c --environment BASE_CODE_MIN,STANDALONE,NPM_PACKAGE_LOCAL",
     "test:functional:build:prod": "rollup -c --environment BASE_CODE_MIN,NPM_PACKAGE_PROD",
     "test:scripts": "jasmine --config=scripts/specs/jasmine.json",
