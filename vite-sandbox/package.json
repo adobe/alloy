@@ -3,15 +3,9 @@
   "private": true,
   "scripts": {
     "clean": "rimraf dist",
-    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
-    "client:dev": "vite",
-    "server:dev": "nodemon src/server/index.js",
-    "server:build": "babel --verbose --out-dir dist/server src/server",
-    "client:build": "vite build",
-    "build": "npm run server:build && npm run client:build",
-    "serve": "vite preview",
+    "dev": "vite",
+    "build": "vite build",
     "test": "prettier --check . && eslint . && stylelint \"**/*.css\"",
-    "start": "node dist/server/index.js"
   },
   "dependencies": {
     "dotenv": "^10.0.0",
