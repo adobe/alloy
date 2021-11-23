@@ -1,7 +1,11 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import 'focus-visible/dist/focus-visible'
+import React from "react";
+import ReactDOM from "react-dom";
+import "./globals.css";
+import App from "./App";
 
-import App from './App'
-
-ReactDOM.render(<App />, document.getElementById('root'))
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.querySelector("#root")
+);

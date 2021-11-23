@@ -1,37 +1,57 @@
-import React from 'react'
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
-import { ChakraProvider } from '@chakra-ui/react'
-import { ErrorBoundary } from 'react-error-boundary'
-import { ErrorMessage } from './components/ErrorMessage'
-import { Home } from './pages/Home'
-import { Offers } from './pages/Offers'
-import { OfferSingle } from './pages/OfferSingle'
-import { Cart } from './pages/Cart'
-import { Account } from './pages/Account'
-import { AuthProvider } from './pages/components/AuthProvider'
-import { HeaderFooter as HeaderFooterTemplate } from './pages/templates/HeaderFooter'
+import React, { useState } from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import logo from "./assets/images/adobe-logo.svg";
+import styles from "./App.module.css";
 
 function App() {
+  const [count, setCount] = useState(0);
+
   return (
-    <ChakraProvider>
-      <ErrorBoundary FallbackComponent={ErrorMessage}>
-        <AuthProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/*" element={<HeaderFooterTemplate />}>
-                <Route path="offers" element={<Offers />} />
-                <Route path="offers/:id" element={<OfferSingle />} />
-                <Route path="cart" element={<Cart />} />
-                <Route path="account" element={<Account />} />
-                <Route path="*" element={<>404</>} />
-              </Route>
-            </Routes>
-          </Router>
-        </AuthProvider>
-      </ErrorBoundary>
-    </ChakraProvider>
-  )
+    <Router>
+      <div className={styles.App}>
+        <header className={styles["App-header"]}>
+          <img src={logo} className={styles["App-logo"]} alt="logo" />
+          <p>
+            <button onClick={() => setCount(count => count + 1)}>
+              count is: {count}
+            </button>
+          </p>
+          <p>
+            Edit <code>App.jsx</code> and save to test HMR updates.
+          </p>
+          {/* Testing env variable - https://vitejs.dev/guide/env-and-mode.html#env-files */}
+          <p>SVG path: {`${import.meta.env.VITE_SVG_PATH}`}</p>
+          <p>
+            <a
+              className={styles["App-link"]}
+              href="https://reactjs.org"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Learn React
+            </a>
+            {" | "}
+            <a
+              className={styles["App-link"]}
+              href="https://vitejs.dev/guide/features.html"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Vite Docs
+            </a>
+          </p>
+          <Switch>
+            <Route path="/about">
+              <main>About</main>
+            </Route>
+            <Route path="/">
+              <main>Home</main>
+            </Route>
+          </Switch>
+        </header>
+      </div>
+    </Router>
+  );
 }
 
-export default App
+export default App;
