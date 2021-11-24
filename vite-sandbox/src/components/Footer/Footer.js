@@ -9,7 +9,7 @@ const Footer = () => {
   return (
     <div className={styles.wrapper}>
       <a
-        href="https://www.whatadewitt.com"
+        href="https://www.alloyio.com"
         target="_blank"
         title="My homepage"
         rel="noopener noreferrer"
@@ -17,7 +17,7 @@ const Footer = () => {
         <Home />
       </a>
       <a
-        href="https://www.github.com/whatadewitt"
+        href="https://www.github.com/adobe/alloy"
         target="_blank"
         title="Follow me on Github"
         rel="noopener noreferrer"
