@@ -1,0 +1,43 @@
+import { useState } from "react";
+
+import Header from "../Header/Header";
+import Footer from "../Footer/Footer";
+import Nav from "../Nav/Nav";
+
+import styles from "./Layout.module.scss";
+import cx from "classnames";
+
+export default function Layout({ children }) {
+  const [showNav, toggleNav] = useState(false);
+
+  return (
+    <>
+      <Head>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+          <title></title>
+
+      </Head>
+
+      <div className={styles.container}>
+        <Header
+          toggleNav={() => {
+            toggleNav(!showNav);
+          }}
+        />
+
+        <div className={styles.wrapper}>
+          <Nav show={showNav} />
+          <div
+            className={cx(styles.main, {
+              [styles.navToggled]: showNav,
+            })}
+          >
+            {children}
+          </div>
+        </div>
+      </div>
+      <Footer />
+    </>
+  );
+}

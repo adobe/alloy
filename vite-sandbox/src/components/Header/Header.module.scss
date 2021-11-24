@@ -1,0 +1,63 @@
+@import "../../scss/style.scss";
+
+.wrapper {
+  background: $primary;
+  height: 4rem;
+  box-shadow: 0 5px 4px rgba(0, 0, 0, 0.15);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  color: $black;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.9rem;
+}
+
+.toggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+
+  > div {
+    background: $black;
+    border-radius: 3px;
+    height: 0.2rem;
+    width: 2.2rem;
+  }
+
+  @include respond-to("medium") {
+    display: none;
+  }
+}
+
+.logo {
+  display: flex;
+}
+
+.title {
+  margin-left: 0.3125rem;
+  font-weight: 600;
+  line-height: 2.25;
+  font-size: 1.2rem;
+}
+
+.icon {
+  height: 125%;
+
+  svg {
+    height: 100%;
+    width: auto;
+  }
+}
+
+.hidden {
+  position: absolute !important; /* Outside the DOM flow */
+  height: 1px;
+  width: 1px; /* Nearly collapsed */
+  overflow: hidden;
+  clip: rect(1px 1px 1px 1px); /* IE 7+ only support clip without commas */
+  clip: rect(1px, 1px, 1px, 1px); /* All other browsers */
+}

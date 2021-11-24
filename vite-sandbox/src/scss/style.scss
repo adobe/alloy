@@ -1,5 +1,32 @@
 @import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,200;0,300;1,200&display=swap");
 
+$breakpoints: (
+  "small": 767px,
+  "medium": 992px,
+  "med-large": 1024px,
+  "large": 1200px,
+) !default;
+
+/// Mixin to manage responsive breakpoints
+/// @author Hugo Giraudel
+/// @param {String} $breakpoint - Breakpoint name
+/// @require $breakpoints
+@mixin respond-to($breakpoint) {
+  // If the key exists in the map
+  @if map-has-key($breakpoints, $breakpoint) {
+    // Prints a media query based on the value
+    @media (min-width: map-get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  }
+
+  // If the key doesn't exist in the map
+  @else {
+    @warn "Unfortunately, no value could be retrieved from `#{$breakpoint}`. "
+        + "Available breakpoints are: #{map-keys($breakpoints)}.";
+  }
+}
+
 $primary: #ededed;
 $primary-dark: #bfbfbf;
 
@@ -13,7 +40,6 @@ $cyan: rgb(98, 213, 210);
 $white: white;
 $black: black;
 $dark: hsl(0, 0%, 20%);
-
 
 html {
   box-sizing: border-box;
@@ -71,27 +97,4 @@ pre {
 
 strong {
   font-weight: 700;
-}
-
-$breakpoints: (
-        "small": 767px,
-        "medium": 992px,
-        "med-large": 1024px,
-        "large": 1200px,
-) !default;
-
-@mixin respond-to($breakpoint) {
-  // If the key exists in the map
-  @if map-has-key($breakpoints, $breakpoint) {
-    // Prints a media query based on the value
-    @media (min-width: map-get($breakpoints, $breakpoint)) {
-      @content;
-    }
-  }
-
-    // If the key doesn't exist in the map
-  @else {
-    @warn "Unfortunately, no value could be retrieved from `#{$breakpoint}`. "
-        + "Available breakpoints are: #{map-keys($breakpoints)}.";
-  }
 }

@@ -1,0 +1,35 @@
+@import "../../scss/style.scss";
+
+.wrapper {
+  background: $primary-dark;
+  color: $white;
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+
+  a {
+    display: block;
+    color: $white;
+    line-height: 1;
+    margin: 0 0.5rem;
+    transition: color 0.3s ease-in-out;
+    width: 1.25rem;
+
+    @media (pointer: fine) {
+      &:hover {
+        color: $primary;
+      }
+    }
+
+    svg {
+      height: 100%;
+      width: auto;
+    }
+  }
+}
