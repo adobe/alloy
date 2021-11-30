@@ -106,7 +106,7 @@ const simulatePageLoad = async alloy => {
   const notificationRequestBody = JSON.parse(notificationRequest.request.body);
   await t
     .expect(notificationRequestBody.events[0].xdm.eventType)
-    .eql("display");
+    .eql("decisioning.propositionDisplay");
   const pageWideScopeDecisionsMeta = getDecisionsMetaByScope(
     personalizationPayload,
     PAGE_WIDE_SCOPE
@@ -169,7 +169,7 @@ const simulateViewChange = async (alloy, personalizationPayload) => {
   );
   await t
     .expect(cartViewNotificationRequestBody.events[0].xdm.eventType)
-    .eql("display");
+    .eql("decisioning.propositionDisplay");
   const cartViewDecisionsMeta = getDecisionsMetaByScope(
     personalizationPayload,
     "cart"
@@ -218,7 +218,7 @@ const simulateViewChangeForNonExistingView = async alloy => {
   );
   await t
     .expect(noViewNotificationRequestBody.events[0].xdm.eventType)
-    .eql("display");
+    .eql("decisioning.propositionDisplay");
   await t
     .expect(
       noViewNotificationRequestBody.events[0].xdm.web.webPageDetails.viewName
