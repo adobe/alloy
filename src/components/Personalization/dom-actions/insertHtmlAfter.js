@@ -33,7 +33,7 @@ export default (container, html) => {
     insertAfter(container, element);
   });
 
-  executeInlineScripts(container, scripts, insertAfter);
+  executeInlineScripts(container, scripts);
 
   return executeRemoteScripts(scriptsUrls);
 };

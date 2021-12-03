@@ -34,7 +34,7 @@ export default (container, html) => {
     appendNode(container, element);
   });
 
-  executeInlineScripts(container, scripts, appendNode);
+  executeInlineScripts(container, scripts);
 
   return executeRemoteScripts(scriptsUrls);
 };

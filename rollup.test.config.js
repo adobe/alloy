@@ -31,7 +31,8 @@ const plugins = [
   commonjs(),
   babel({
     envName: "rollup",
-    configFile: path.resolve(__dirname, "babel.config.js")
+    runtimeHelpers: true,
+    configFile: path.resolve(__dirname, "babel.test.config.js")
   })
 ];
 

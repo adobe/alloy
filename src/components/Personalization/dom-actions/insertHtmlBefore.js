@@ -33,7 +33,7 @@ export default (container, html) => {
     insertBefore(container, element);
   });
 
-  executeInlineScripts(container, scripts, insertBefore);
+  executeInlineScripts(container, scripts);
 
   return executeRemoteScripts(scriptsUrls);
 };

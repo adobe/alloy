@@ -11,16 +11,15 @@ governing permissions and limitations under the License.
 */
 
 /*
- * This file is used in 5 scenarios:
+ * This file is used in 4 scenarios:
  * 1. Building files specified in rollup.config.js
- * 2. Building files specified in rollup.test.config.js as part of unit tests
- * 3. Building libEs5/ files when publishing to NPM
- * 4. Building libEs6/ files when publishing to NPM
- * 5. Testcafe compiling clientFunctions. Unfortunately, there is no configuration I've found
+ * 2. Building libEs5/ files when publishing to NPM
+ * 3. Building libEs6/ files when publishing to NPM
+ * 4. Testcafe compiling clientFunctions. Unfortunately, there is no configuration I've found
  *    to tell Testcafe not to use this file.
  *
  * Environments:
- * "rollup" - Used for rollup.config.js and rollup.test.config.js
+ * "rollup" - Used for rollup.config.js
  * "npmEs5" - Used for building libEs5 files when publishing to NPM
  * "npmEs6" - Used for building libEs6 files when publishing to NPM
  */
