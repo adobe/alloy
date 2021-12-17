@@ -46,3 +46,16 @@ jobs:
       run: npm run test:functional:build:int
     - name: Run Functional Test
       run: npx testcafe -q -c 5 'saucelabs:Chrome@latest:macOS 11.00','saucelabs:IE@latest:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Audit AlloyIO
+      uses: jakejarvis/lighthouse-action@master
+      with:
+        url: 'https://alloyio.com/demo/'
+    - name: Upload results as an artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: report
+        path: './report'
