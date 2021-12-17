@@ -48,6 +48,7 @@ jobs:
       run: npx testcafe -q -c 5 'saucelabs:Chrome@latest:macOS 11.00','saucelabs:IE@latest:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
 
   audit:
+    name: "Lighthouse Audit"
     runs-on: ubuntu-latest
     steps:
     - name: Audit AlloyIO
