@@ -1,4 +1,4 @@
-name: "Alloyio.com Status"
+name: "Alloy Sandbox Healthcheck"
 
 on:  
   schedule:
