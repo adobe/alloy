@@ -1,4 +1,4 @@
-name: Prod
+name: Prod-test
 on:
   workflow_dispatch:
     inputs:
