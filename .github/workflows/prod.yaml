@@ -44,8 +44,7 @@ jobs:
     steps:
       - name: Create a workflow dispatch event with ${{ matrix.tag }}
         uses: actions/checkout@v2.3.3
-      - if: ${{ matrix.tag != 'dev' }}
-        run: |
+      - run: |
           git fetch origin ${{ matrix.tag }}
           git checkout ${{ matrix.tag }}
       - uses: actions/cache@v2
