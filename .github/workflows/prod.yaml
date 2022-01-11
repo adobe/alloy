@@ -44,8 +44,9 @@ jobs:
     steps:
       - name: Create a workflow dispatch event with ${{ matrix.tag }}
         uses: actions/checkout@v2.3.3
-        with:
-          ref: ${{ matrix.tag }}
+      - run: |
+          git fetch origin ${{ matrix.tag }}
+          git checkout ${{ matrix.tag }}
       - uses: actions/cache@v2
         id: npm-cache
         with:
