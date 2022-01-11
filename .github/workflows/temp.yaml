@@ -1,9 +1,11 @@
 name: Prod
 on:
-  schedule:
-    - cron: "0 */24 * * *"
   workflow_dispatch:
-
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
 jobs:
   get-testing-tags:
     name: Fetch releases
@@ -65,8 +67,3 @@ jobs:
         run: npx testcafe -q -c 5 'saucelabs:Chrome@latest:macOS 11.00','saucelabs:IE@latest:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
         env:
           ALLOY_PROD_VERSION: ${{ steps.package-version.outputs.current-version }}
-      - uses: craftech-io/slack-action@v1
-        with:
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          status: failure
-        if: failure()
