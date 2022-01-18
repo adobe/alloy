@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import fireImage from "./fireImage";
-import { appendNode, awaitSelector, createNode, removeNode } from "./dom";
-import { BODY, IFRAME } from "../constants/tagName";
+import fireImage from "../fireImage";
+import { appendNode, awaitSelector, createNode, removeNode } from "../dom";
+import { BODY, IFRAME } from "../../constants/tagName";
 
 const fireOnPage = fireImage;
 

@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import {
-  fireReferrerHideableImage,
   areThirdPartyCookiesSupportedByDefault,
   injectDoesIdentityCookieExist
 } from "../../utils";
+import { fireReferrerHideableImage } from "../../utils/beacon";
 import injectProcessIdSyncs from "./injectProcessIdSyncs";
 import configValidators from "./configValidators";
 

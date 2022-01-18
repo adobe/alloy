@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { fireReferrerHideableImage } from "../../utils";
+import { fireReferrerHideableImage } from "../../utils/beacon";
 import injectProcessDestinations from "./injectProcessDestinations";
 import injectProcessResponse from "./injectProcessResponse";
 
