@@ -12,8 +12,7 @@ governing permissions and limitations under the License.
 
 import querySelectorAll from "./querySelectorAll";
 import startsWith from "../startsWith";
-
-const SHADOW_SEPARATOR = ":shadow";
+import SHADOW_SEPARATOR from "../../constants/shadowSeparator";
 
 const splitWithShadow = selector => {
   return selector.split(SHADOW_SEPARATOR);
@@ -38,8 +37,6 @@ const transformPrefix = (parent, selector) => {
 
   return `${prefix} ${result}`;
 };
-
-export const isShadowSelector = str => str.indexOf(SHADOW_SEPARATOR) !== -1;
 
 export default (context, selector) => {
   // Shadow DOM should be supported

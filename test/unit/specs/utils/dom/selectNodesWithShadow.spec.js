@@ -18,7 +18,6 @@ import {
   removeNode
 } from "../../../../../src/utils/dom";
 import { selectNodesWithEq } from "../../../../../src/components/Personalization/dom-actions/dom";
-import { isShadowSelector } from "../../../../../src/utils/dom/selectNodesWithShadow";
 
 const ieDetected = () => !!document.documentMode;
 
@@ -63,7 +62,7 @@ const defineCustomElements = () => {
   );
 };
 
-describe("Personalization::DOM::selectNodesWithShadow", () => {
+describe("Utils::DOM::selectNodesWithShadow", () => {
   afterEach(() => {
     selectNodes(".shadow").forEach(removeNode);
   });
@@ -136,17 +135,5 @@ describe("Personalization::DOM::selectNodesWithShadow", () => {
 
     expect(result[0].tagName).toEqual("LABEL");
     expect(result[0].textContent).toEqual("Buy Now");
-  });
-});
-
-describe("Personalization::DOM::selectNodesWithShadow:isShadowSelector", () => {
-  it("should detect shadow selectors", () => {
-    let selector =
-      "BODY > BUY-NOW-BUTTON:nth-of-type(2):shadow > DIV:nth-of-type(1)";
-    let result = isShadowSelector(selector);
-    expect(result).toBeTrue();
-    selector = "BODY > BUY-NOW-BUTTON:nth-of-type(2) > DIV:nth-of-type(1)";
-    result = isShadowSelector(selector);
-    expect(result).toBeFalse();
   });
 });

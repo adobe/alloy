@@ -11,9 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import querySelectorAll from "./querySelectorAll";
-import selectNodesWithShadow, {
-  isShadowSelector
-} from "./selectNodesWithShadow";
+import selectNodesWithShadow from "./selectNodesWithShadow";
+import isShadowSelector from "./isShadowSelector";
 
 /**
  * Returns an array of matched DOM nodes.
