@@ -16,9 +16,9 @@ import {
   appendNode,
   selectNodes,
   removeNode
-} from "../../../../../../../src/utils/dom";
-import { selectNodesWithEq } from "../../../../../../../src/components/Personalization/dom-actions/dom";
-import { isShadowSelector } from "../../../../../../../src/components/Personalization/dom-actions/dom/selectNodesWithShadow";
+} from "../../../../../src/utils/dom";
+import { selectNodesWithEq } from "../../../../../src/components/Personalization/dom-actions/dom";
+import { isShadowSelector } from "../../../../../src/utils/dom/selectNodesWithShadow";
 
 const ieDetected = () => !!document.documentMode;
 

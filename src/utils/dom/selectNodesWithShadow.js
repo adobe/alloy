@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import querySelectorAll from "./querySelectorAll";
-import { startsWith } from "../../../../utils";
+import startsWith from "../startsWith";
 
 const SHADOW_SEPARATOR = ":shadow";
 
