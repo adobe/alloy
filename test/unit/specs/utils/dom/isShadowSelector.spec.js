@@ -10,7 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import toArray from "../../../../utils/toArray";
+import isShadowSelector from "../../../../../src/utils/dom/isShadowSelector";
 
-export default (context, selector) =>
-  toArray(context.querySelectorAll(selector));
+describe("Utils::DOM::isShadowSelector", () => {
+  it("should detect shadow selectors", () => {
+    let selector =
+      "BODY > BUY-NOW-BUTTON:nth-of-type(2):shadow > DIV:nth-of-type(1)";
+    let result = isShadowSelector(selector);
+    expect(result).toBeTrue();
+    selector = "BODY > BUY-NOW-BUTTON:nth-of-type(2) > DIV:nth-of-type(1)";
+    result = isShadowSelector(selector);
+    expect(result).toBeFalse();
+  });
+});

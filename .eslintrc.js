@@ -25,7 +25,45 @@ module.exports = {
     // want to disallow importing extraneous dependencies.
     "import/no-extraneous-dependencies": "off",
     "prefer-destructuring": "off",
-    "import/prefer-default-export": "off"
+    "import/prefer-default-export": "off",
+    // Make rules about importing between the top level folders
+    // core can import from components, utils, and constants
+    // components can import from utils, and constants
+    // utils can import from constants
+    "import/no-restricted-paths": [
+      "error",
+      {
+        zones: [
+          // TODO: Remove dependencies from components into core
+          // Identity -> createIdentityRequest
+          // Consent -> createConsentRequest
+          // {
+          //  from: "./src/core",
+          //  target: "./src/components"
+          // },
+          {
+            from: "./src/core",
+            target: "./src/utils"
+          },
+          {
+            from: "./src/core",
+            target: "./src/constants"
+          },
+          {
+            from: "./src/components",
+            target: "./src/utils"
+          },
+          {
+            from: "./src/components",
+            target: "./src/constants"
+          },
+          {
+            from: "./src/utils",
+            target: "./src/constants"
+          }
+        ]
+      }
+    ]
   },
   globals: {
     expectAsync: "readonly", // newer jasmine feature
