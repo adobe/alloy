@@ -34,7 +34,7 @@ describe("Personalization::createViewCollect", () => {
 
   it("sends event with metadata when decisions is not empty", () => {
     const expectedXdmObject = {
-      eventType: "display",
+      eventType: "decisioning.propositionDisplay",
       web: {
         webPageDetails: {
           viewName: "cart"
@@ -60,7 +60,7 @@ describe("Personalization::createViewCollect", () => {
       }
     };
     const data = {
-      eventType: "display"
+      eventType: "decisioning.propositionDisplay"
     };
     const collect = createViewCollect({ eventManager, mergeDecisionsMeta });
 

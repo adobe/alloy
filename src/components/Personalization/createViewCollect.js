@@ -15,7 +15,7 @@ import { isNonEmptyArray } from "../../utils";
 export default ({ eventManager, mergeDecisionsMeta }) => {
   // Called when an offer for a specific SPA view is auto-rendered.
   return ({ decisionsMeta, xdm }) => {
-    const data = { eventType: "display" };
+    const data = { eventType: "decisioning.propositionDisplay" };
     const event = eventManager.createEvent();
 
     if (isNonEmptyArray(decisionsMeta)) {

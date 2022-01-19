@@ -36,7 +36,9 @@ describe("Personalization::createCollect", () => {
     const collect = createCollect({ eventManager, mergeDecisionsMeta });
     collect({ decisionsMeta });
     expect(eventManager.createEvent).toHaveBeenCalled();
-    expect(event.mergeXdm).toHaveBeenCalledWith({ eventType: "display" });
+    expect(event.mergeXdm).toHaveBeenCalledWith({
+      eventType: "decisioning.propositionDisplay"
+    });
     expect(mergeDecisionsMeta).toHaveBeenCalledWith(event, decisionsMeta);
     expect(eventManager.sendEvent).toHaveBeenCalled();
   });

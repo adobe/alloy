@@ -29,7 +29,7 @@ export default ({
       );
 
       if (isNonEmptyArray(decisionsMeta)) {
-        event.mergeXdm({ eventType: "click" });
+        event.mergeXdm({ eventType: "decisioning.propositionInteract" });
         mergeDecisionsMeta(event, decisionsMeta);
       }
     }

@@ -52,7 +52,9 @@ describe("Personalization::createOnClickHandler", () => {
 
     handleOnClick({ event, clickedElement });
 
-    expect(event.mergeXdm).toHaveBeenCalledWith({ eventType: "click" });
+    expect(event.mergeXdm).toHaveBeenCalledWith({
+      eventType: "decisioning.propositionInteract"
+    });
     expect(mergeDecisionsMeta).toHaveBeenCalledWith(event, decisionsMeta);
     expect(collectClicks).toHaveBeenCalledWith(
       clickedElement,

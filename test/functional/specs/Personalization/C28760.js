@@ -81,7 +81,7 @@ test("Test C28760: A notification collect should be triggered if a VEC dom actio
 
   await t
     .expect(notificationRequestBody.events[0].xdm.eventType)
-    .eql("display");
+    .eql("decisioning.propositionDisplay");
   await t
     .expect(
       // eslint-disable-next-line no-underscore-dangle
