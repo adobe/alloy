@@ -46,7 +46,6 @@ function BasicExample() {
           </li>
           <li>
             <Link to="/personalizationA4TClientSide">
-              {" "}
               Personalization - A4T Client Side
             </Link>
           </li>
