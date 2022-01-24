@@ -12,7 +12,18 @@
     <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
 
     <title>Mock website hosting Alloy</title>
+    <script src="perf/js/visitorapi.min.js"></script>
+    <script src="perf/js/AppMeasurement.js"></script>
 
+    <script>
+      var visitor = Visitor.getInstance("97D1F3F459CE0AD80A495CBE@AdobeOrg", {
+        disableIdSyncs: true
+      });
+      var s_account = "ujslecommerce";
+      var s = s_gi(s_account);
+      // Make sure data is sent to the correct location
+      s.trackingServer = "ujsl.sc.omtrdc.net";
+    </script>
     <!-- prettier-ignore -->
     <script nonce="%REACT_APP_NONCE%">
       !function(e,a,n,t){var i=e.head;if(i){
@@ -102,7 +113,7 @@
       // For Testing multiple instances.
       // We use a different orgId and edgeConfigId.
       organizationTwo("configure", {
-        edgeConfigId: "9999999",
+        edgeConfigId: "7984963a-6609-4e84-98d5-4e2ff8c0dd5e:prod",
         orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
         debugEnabled: true,
         clickCollectionEnabled: false
