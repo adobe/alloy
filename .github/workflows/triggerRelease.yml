@@ -10,6 +10,17 @@ on:
   workflow_dispatch:
 
 jobs:
+  createTestBranch:
+    name: Create test branch from release tag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: gagle/package-version@v1
+        id: package-version
+      - uses: peterjgrainger/action-create-branch@v2.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch: ${{ steps.package-version.outputs.version }}
   triggerReleaseIfNeeded:
     name: "Trigger Release If Needed"
     runs-on: ubuntu-latest
