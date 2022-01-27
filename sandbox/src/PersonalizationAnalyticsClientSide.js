@@ -47,18 +47,9 @@ const getECID = () => {
 };
 
 const triggerAnalyticsHit = ({ analyticsPayloads, identity, pageView }) => {
-  if (window.s === undefined) {
-    return;
-  }
-  window.s.tnt = analyticsPayloads;
-  window.s.pe = "tnt";
-  window.s.linkTrackVars = "tnt";
-  window.s.marketingCloudVisitorID = identity.identity.ECID;
-  if (pageView) {
-    window.s.t();
-  } else {
-    window.s.tl();
-  }
+  console.log(
+    "here should be the code that would send a request to Data Insertion API"
+  );
 };
 const getFormBasedOffer = () => {
   sendEvent({
