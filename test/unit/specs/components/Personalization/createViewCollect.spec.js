@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createViewCollect from "../../../../../src/components/Personalization/createViewCollect";
+import { DECISIONING_PROPOSITION_DISPLAY } from "../../../../../src/components/Personalization/constants/eventType";
 
 describe("Personalization::createViewCollect", () => {
   let eventManager;
@@ -34,7 +35,7 @@ describe("Personalization::createViewCollect", () => {
 
   it("sends event with metadata when decisions is not empty", () => {
     const expectedXdmObject = {
-      eventType: "decisioning.propositionDisplay",
+      eventType: DECISIONING_PROPOSITION_DISPLAY,
       web: {
         webPageDetails: {
           viewName: "cart"
@@ -60,7 +61,7 @@ describe("Personalization::createViewCollect", () => {
       }
     };
     const data = {
-      eventType: "decisioning.propositionDisplay"
+      eventType: DECISIONING_PROPOSITION_DISPLAY
     };
     const collect = createViewCollect({ eventManager, mergeDecisionsMeta });
 

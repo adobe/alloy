@@ -12,6 +12,7 @@ import createResponse from "../../helpers/createResponse";
 import { TEST_PAGE_WITH_CSP as TEST_PAGE_WITH_CSP_URL } from "../../helpers/constants/url";
 import flushPromiseChains from "../../helpers/flushPromiseChains";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
+import { DECISIONING_PROPOSITION_DISPLAY } from "../../../../src/components/Personalization/constants/eventType";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
@@ -106,7 +107,7 @@ const simulatePageLoad = async alloy => {
   const notificationRequestBody = JSON.parse(notificationRequest.request.body);
   await t
     .expect(notificationRequestBody.events[0].xdm.eventType)
-    .eql("decisioning.propositionDisplay");
+    .eql(DECISIONING_PROPOSITION_DISPLAY);
   const pageWideScopeDecisionsMeta = getDecisionsMetaByScope(
     personalizationPayload,
     PAGE_WIDE_SCOPE
@@ -169,7 +170,7 @@ const simulateViewChange = async (alloy, personalizationPayload) => {
   );
   await t
     .expect(cartViewNotificationRequestBody.events[0].xdm.eventType)
-    .eql("decisioning.propositionDisplay");
+    .eql(DECISIONING_PROPOSITION_DISPLAY);
   const cartViewDecisionsMeta = getDecisionsMetaByScope(
     personalizationPayload,
     "cart"
@@ -218,7 +219,7 @@ const simulateViewChangeForNonExistingView = async alloy => {
   );
   await t
     .expect(noViewNotificationRequestBody.events[0].xdm.eventType)
-    .eql("decisioning.propositionDisplay");
+    .eql(DECISIONING_PROPOSITION_DISPLAY);
   await t
     .expect(
       noViewNotificationRequestBody.events[0].xdm.web.webPageDetails.viewName

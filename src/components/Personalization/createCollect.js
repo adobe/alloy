@@ -9,12 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { DECISIONING_PROPOSITION_DISPLAY } from "./constants/eventType";
 
 export default ({ eventManager, mergeDecisionsMeta }) => {
   // Called when a decision is auto-rendered for the __view__ scope (non-SPA view).
   return ({ decisionsMeta, documentMayUnload = false }) => {
     const event = eventManager.createEvent();
-    event.mergeXdm({ eventType: "decisioning.propositionDisplay" });
+    event.mergeXdm({ eventType: DECISIONING_PROPOSITION_DISPLAY });
     mergeDecisionsMeta(event, decisionsMeta);
 
     if (documentMayUnload) {

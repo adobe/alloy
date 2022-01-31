@@ -11,6 +11,7 @@ import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../helpers/createResponse";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
+import { DECISIONING_PROPOSITION_DISPLAY } from "../../../../src/components/Personalization/constants/eventType";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
@@ -81,7 +82,7 @@ test("Test C28760: A notification collect should be triggered if a VEC dom actio
 
   await t
     .expect(notificationRequestBody.events[0].xdm.eventType)
-    .eql("decisioning.propositionDisplay");
+    .eql(DECISIONING_PROPOSITION_DISPLAY);
   await t
     .expect(
       // eslint-disable-next-line no-underscore-dangle
