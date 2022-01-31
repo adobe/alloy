@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray } from "../../utils";
+import { DECISIONING_PROPOSITION_INTERACT } from "./constants/eventType";
 
 export default ({
   mergeDecisionsMeta,
@@ -29,7 +30,7 @@ export default ({
       );
 
       if (isNonEmptyArray(decisionsMeta)) {
-        event.mergeXdm({ eventType: "decisioning.propositionInteract" });
+        event.mergeXdm({ eventType: DECISIONING_PROPOSITION_INTERACT });
         mergeDecisionsMeta(event, decisionsMeta);
       }
     }
