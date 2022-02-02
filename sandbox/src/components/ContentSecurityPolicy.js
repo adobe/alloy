@@ -23,7 +23,7 @@ export default function ContentSecurityPolicy() {
               script-src 'self' 'nonce-${process.env.REACT_APP_NONCE}' cdn.jsdelivr.net assets.adobedtm.com cdn.tt.omtrdc.net;
               style-src 'self' 'unsafe-inline';
               img-src * data:;
-              connect-src 'self' *.alloyio.com *.adobedc.net *.demdex.net`}
+              connect-src 'self' *.alloyio.com *.adobedc.net *.demdex.net *.sc.omtrdc.net`}
       />
     </Helmet>
   );

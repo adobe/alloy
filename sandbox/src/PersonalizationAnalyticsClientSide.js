@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
+import { triggerAnalyticsHit } from "./DataInsertionAPI";
 
 // offer types
 const HTML_SCHEMA = "https://ns.adobe.com/personalization/html-content-item";
@@ -17,6 +18,13 @@ const getAnalyticsPayload = proposition => {
     return;
   }
   return analyticsToken;
+};
+
+const concatinateAnalyticsPayloads = analyticsPayloads => {
+  if (analyticsPayloads.size > 1) {
+    return [...analyticsPayloads].join(",");
+  }
+  return [...analyticsPayloads].join();
 };
 
 const collectAnalyticsPayloadData = propositions => {
@@ -38,19 +46,12 @@ const collectAnalyticsPayloadData = propositions => {
     analyticsPayloads.add(analyticsPayload);
   });
 
-  return analyticsPayloads.size > 1
-    ? [...analyticsPayloads].join(",")
-    : [...analyticsPayloads].join("");
+  return concatinateAnalyticsPayloads(analyticsPayloads);
 };
 const getECID = () => {
   return window[instanceName]("getIdentity", { namespaces: ["ECID"] });
 };
 
-const triggerAnalyticsHit = ({ analyticsPayloads, identity, pageView }) => {
-  console.log(
-    "here should be the code that would send a request to Data Insertion API"
-  );
-};
 const getFormBasedOffer = () => {
   sendEvent({
     eventType: "form-based-offer",
@@ -59,6 +60,8 @@ const getFormBasedOffer = () => {
     if (!result.propositions) {
       return;
     }
+    const analyticsPayloads = new Set();
+    const executedPropositions = [];
 
     result.propositions.forEach(proposition => {
       proposition.items.forEach(item => {
@@ -66,22 +69,15 @@ const getFormBasedOffer = () => {
           // apply offer
           document.getElementById("form-based-offer-container").innerHTML =
             item.data.content;
-          const executedPropositions = [
-            {
-              id: proposition.id,
-              scope: proposition.scope,
-              scopeDetails: proposition.scopeDetails
-            }
-          ];
-          const analyticsPayloads = getAnalyticsPayload(proposition);
-          getECID().then(identity =>
-            triggerAnalyticsHit({ analyticsPayloads, identity })
-          );
 
-          sendEvent({
-            eventType: "decisioning.propositionDisplay",
-            executedPropositions
+          //collect the executed proposition to send the display notification event
+          executedPropositions.push({
+            id: proposition.id,
+            scope: proposition.scope,
+            scopeDetails: proposition.scopeDetails
           });
+
+          analyticsPayloads.add(getAnalyticsPayload(proposition));
         }
 
         if (item.schema === MEASUREMENT_SCHEMA) {
@@ -89,25 +85,28 @@ const getFormBasedOffer = () => {
           const button = document.getElementById("form-based-click-metric");
 
           button.addEventListener("click", event => {
-            const executedPropositions = [
-              {
+            sendEvent({
+              eventType: "decisioning.propositionInteract",
+              executedPropositions: {
                 id: proposition.id,
                 scope: proposition.scope,
                 scopeDetails: proposition.scopeDetails
               }
-            ];
-            const analyticsPayloads = getAnalyticsPayload(proposition);
-            getECID().then(identity =>
-              triggerAnalyticsHit({ analyticsPayloads, identity })
-            );
-
-            sendEvent({
-              eventType: "decisioning.propositionInteract",
-              executedPropositions
             });
           });
         }
       });
+    });
+
+    sendEvent({
+      eventType: "decisioning.propositionDisplay",
+      executedPropositions
+    });
+
+    getECID().then(result => {
+      const visitorID = result.identity.ECID;
+      const analyticsPayload = concatinateAnalyticsPayloads(analyticsPayloads);
+      triggerAnalyticsHit({ analyticsPayload, visitorID });
     });
   });
 };
@@ -156,13 +155,6 @@ const Products = () => {
       return;
     }
     const analyticsPayloads = collectAnalyticsPayloadData(result.propositions);
-    console.log(
-      "analyticsPayloads for propositions that were executed on view products change",
-      analyticsPayloads
-    );
-    getECID().then(identity =>
-      triggerAnalyticsHit({ analyticsPayloads, identity })
-    );
   });
   return (
     <div>
@@ -188,14 +180,6 @@ const Cart = () => {
       return;
     }
     const analyticsPayloads = collectAnalyticsPayloadData(result.propositions);
-
-    console.log(
-      "analyticsPayloads for propositions that were executed on view cart change",
-      Array.from(analyticsPayloads)
-    );
-    getECID().then(identity =>
-      triggerAnalyticsHit({ analyticsPayloads, identity })
-    );
   });
 
   return (
@@ -227,13 +211,6 @@ export default function PersonalizationAnalyticsClientSide() {
 
       const analyticsPayloads = collectAnalyticsPayloadData(
         result.propositions
-      );
-      console.log(
-        "analyticsPayloads for propositions that were executed on the pageLoad event",
-        analyticsPayloads
-      );
-      getECID().then(identity =>
-        triggerAnalyticsHit({ analyticsPayloads, identity, pageView: true })
       );
     });
   }, [instanceName]);
