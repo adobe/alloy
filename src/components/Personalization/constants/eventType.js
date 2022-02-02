@@ -10,5 +10,5 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export const DISPLAY_EVENT_TYPE = "decisioning.propositionDisplay";
-export const INTERACT_EVENT_TYPE = "decisioning.propositionInteract";
+export const DISPLAY = "decisioning.propositionDisplay";
+export const INTERACT = "decisioning.propositionInteract";

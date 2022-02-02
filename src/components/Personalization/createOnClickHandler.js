@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray } from "../../utils";
-import { INTERACT_EVENT_TYPE } from "./constants/eventType";
+import { INTERACT } from "./constants/eventType";
 
 export default ({
   mergeDecisionsMeta,
@@ -30,7 +30,7 @@ export default ({
       );
 
       if (isNonEmptyArray(decisionsMeta)) {
-        event.mergeXdm({ eventType: INTERACT_EVENT_TYPE });
+        event.mergeXdm({ eventType: INTERACT });
         mergeDecisionsMeta(event, decisionsMeta);
       }
     }
