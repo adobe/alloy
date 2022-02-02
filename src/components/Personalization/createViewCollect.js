@@ -11,12 +11,12 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray } from "../../utils";
-import { DECISIONING_PROPOSITION_DISPLAY } from "./constants/eventType";
+import { DISPLAY_EVENT_TYPE } from "./constants/eventType";
 
 export default ({ eventManager, mergeDecisionsMeta }) => {
   // Called when an offer for a specific SPA view is auto-rendered.
   return ({ decisionsMeta, xdm }) => {
-    const data = { eventType: DECISIONING_PROPOSITION_DISPLAY };
+    const data = { eventType: DISPLAY_EVENT_TYPE };
     const event = eventManager.createEvent();
 
     if (isNonEmptyArray(decisionsMeta)) {
