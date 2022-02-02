@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createOnClickHandler from "../../../../../src/components/Personalization/createOnClickHandler";
-import { DECISIONING_PROPOSITION_INTERACT } from "../../../../../src/components/Personalization/constants/eventType";
 
 describe("Personalization::createOnClickHandler", () => {
   let mergeDecisionsMeta;
@@ -54,7 +53,7 @@ describe("Personalization::createOnClickHandler", () => {
     handleOnClick({ event, clickedElement });
 
     expect(event.mergeXdm).toHaveBeenCalledWith({
-      eventType: DECISIONING_PROPOSITION_INTERACT
+      eventType: "decisioning.propositionInteract"
     });
     expect(mergeDecisionsMeta).toHaveBeenCalledWith(event, decisionsMeta);
     expect(collectClicks).toHaveBeenCalledWith(
