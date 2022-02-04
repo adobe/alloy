@@ -2,55 +2,17 @@ import React, { useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import { triggerAnalyticsHit } from "./DataInsertionAPI";
-
+import {
+  getECID,
+  concatinateAnalyticsPayloads,
+  collectAnalyticsPayloadData,
+  getAnalyticsToken
+} from "./analyticsTokenHandler";
 // offer types
 const HTML_SCHEMA = "https://ns.adobe.com/personalization/html-content-item";
 const MEASUREMENT_SCHEMA = "https://ns.adobe.com/personalization/measurement";
 
 const instanceName = "organizationTwo";
-
-const getAnalyticsPayload = proposition => {
-  const { scopeDetails = {} } = proposition;
-  const { characteristics = {} } = scopeDetails;
-  const { analyticsToken } = characteristics;
-
-  if (analyticsToken === undefined) {
-    return;
-  }
-  return analyticsToken;
-};
-
-const concatinateAnalyticsPayloads = analyticsPayloads => {
-  if (analyticsPayloads.size > 1) {
-    return [...analyticsPayloads].join(",");
-  }
-  return [...analyticsPayloads].join();
-};
-
-const collectAnalyticsPayloadData = propositions => {
-  const analyticsPayloads = new Set();
-
-  propositions.map(proposition => {
-    const { renderAttempted = false } = proposition;
-
-    if (renderAttempted !== true) {
-      return;
-    }
-
-    const analyticsPayload = getAnalyticsPayload(proposition);
-
-    if (analyticsPayload === undefined) {
-      return;
-    }
-
-    analyticsPayloads.add(analyticsPayload);
-  });
-
-  return concatinateAnalyticsPayloads(analyticsPayloads);
-};
-const getECID = () => {
-  return window[instanceName]("getIdentity", { namespaces: ["ECID"] });
-};
 
 const getFormBasedOffer = () => {
   sendEvent({
@@ -77,7 +39,7 @@ const getFormBasedOffer = () => {
             scopeDetails: proposition.scopeDetails
           });
 
-          analyticsPayloads.add(getAnalyticsPayload(proposition));
+          analyticsPayloads.add(getAnalyticsToken(proposition));
         }
 
         if (item.schema === MEASUREMENT_SCHEMA) {
@@ -87,11 +49,13 @@ const getFormBasedOffer = () => {
           button.addEventListener("click", event => {
             sendEvent({
               eventType: "decisioning.propositionInteract",
-              executedPropositions: {
-                id: proposition.id,
-                scope: proposition.scope,
-                scopeDetails: proposition.scopeDetails
-              }
+              executedPropositions: [
+                {
+                  id: proposition.id,
+                  scope: proposition.scope,
+                  scopeDetails: proposition.scopeDetails
+                }
+              ]
             });
           });
         }
@@ -103,8 +67,7 @@ const getFormBasedOffer = () => {
       executedPropositions
     });
 
-    getECID().then(result => {
-      const visitorID = result.identity.ECID;
+    getECID(instanceName).then(visitorID => {
       const analyticsPayload = concatinateAnalyticsPayloads(analyticsPayloads);
       triggerAnalyticsHit({ analyticsPayload, visitorID });
     });
@@ -154,7 +117,10 @@ const Products = () => {
     if (!result.propositions) {
       return;
     }
-    const analyticsPayloads = collectAnalyticsPayloadData(result.propositions);
+    const analyticsPayload = collectAnalyticsPayloadData(result.propositions);
+    getECID(instanceName).then(visitorID => {
+      triggerAnalyticsHit({ analyticsPayload, visitorID });
+    });
   });
   return (
     <div>
@@ -179,7 +145,10 @@ const Cart = () => {
     if (!result.propositions) {
       return;
     }
-    const analyticsPayloads = collectAnalyticsPayloadData(result.propositions);
+    const analyticsPayload = collectAnalyticsPayloadData(result.propositions);
+    getECID(instanceName).then(visitorID => {
+      triggerAnalyticsHit({ analyticsPayload, visitorID });
+    });
   });
 
   return (
@@ -209,11 +178,12 @@ export default function PersonalizationAnalyticsClientSide() {
         return;
       }
 
-      const analyticsPayloads = collectAnalyticsPayloadData(
-        result.propositions
-      );
+      const analyticsPayload = collectAnalyticsPayloadData(result.propositions);
+      getECID(instanceName).then(visitorID => {
+        triggerAnalyticsHit({ analyticsPayload, visitorID });
+      });
     });
-  }, [instanceName]);
+  }, []);
 
   const match = useRouteMatch();
 

@@ -9,6 +9,6 @@ export function triggerAnalyticsHit({ analyticsPayload, visitorID }) {
       console.log("success", success);
     })
     .catch(error => {
-      console.log("error while triggering Analytics hit", error);
+      console.warn("error while triggering Analytics hit", error);
     });
 }
