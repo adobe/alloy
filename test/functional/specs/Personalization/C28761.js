@@ -16,14 +16,13 @@ const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
 createFixture({
-  title:
-    "C28760: A notification collect should be triggered if a VEC dom actions offer has been rendered",
-  url: `${TEST_PAGE_URL}?test=C28760`,
+  title: "C28761: Default content offers should be delivered",
+  url: `${TEST_PAGE_URL}?test=C28761`,
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({
-  ID: "C28760",
+  ID: "C28761",
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
@@ -35,10 +34,10 @@ const extractDecisionsMeta = payload => {
   });
 };
 
-test("Test C28760: A notification collect should be triggered if a VEC dom actions offer has been rendered", async () => {
+test("Test C28761: Default content offers should be delivered", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  await alloy.sendEvent({ renderDecisions: true });
+  const eventResult = await alloy.sendEvent({ renderDecisions: true });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
@@ -71,7 +70,21 @@ test("Test C28760: A notification collect should be triggered if a VEC dom actio
   }).getPayloadsByType("personalization:decisions");
 
   await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
-  await t.expect(personalizationPayload[1].scope).eql(PAGE_WIDE_SCOPE);
+  await t.expect(personalizationPayload[0].items.length).eql(1);
+
+  const defaultContentItem = personalizationPayload[0].items[0];
+
+  await t.expect(defaultContentItem.id).eql("0");
+  await t
+    .expect(defaultContentItem.schema)
+    .eql("https://ns.adobe.com/personalization/default-content-item");
+  await t
+    .expect(defaultContentItem.meta["activity.name"])
+    .eql("Functional: C28761 AB");
+  await t.expect(defaultContentItem.meta["offer.name"]).eql("Default Content");
+  await t.expect(defaultContentItem.data).eql(undefined);
+
+  await t.expect(eventResult.propositions[0].renderAttempted).eql(true);
 
   const notificationPayload = extractDecisionsMeta(personalizationPayload);
 
