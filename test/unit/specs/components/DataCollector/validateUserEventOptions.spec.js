@@ -56,42 +56,4 @@ describe("DataCollector::validateUserEventOptions", () => {
       }).toThrowError();
     });
   });
-  it("logs warning when event type is required and missing", () => {
-    const options = { xdm: { test: "" } };
-    const logger = {
-      warn: jasmine.createSpy()
-    };
-    validateUserEventOptions({ options, logger });
-    expect(logger.warn).toHaveBeenCalledWith(
-      "No type or xdm.eventType specified."
-    );
-  });
-  it("does not throw errors when event options are valid", () => {
-    [
-      {},
-      { xdm: { eventType: "test" } },
-      { type: "test", xdm: { test: "" } },
-      { renderDecisions: true },
-      { data: { test: "" } },
-      { renderDecisions: true, data: { test: "" } },
-      { decisionScopes: ["test"] },
-      { datasetId: "12432ewfr12" },
-      {
-        xdm: {
-          eventType: "test",
-          identityMap: {
-            namespace1: [
-              { id: "123", primary: true, authenticatedState: "authenticated" },
-              { id: "3" }
-            ],
-            namespace2: [{ id: "23", authenticatedState: "ambiguous" }]
-          }
-        }
-      }
-    ].forEach(options => {
-      expect(() => {
-        validateUserEventOptions({ options });
-      }).not.toThrowError();
-    });
-  });
 });

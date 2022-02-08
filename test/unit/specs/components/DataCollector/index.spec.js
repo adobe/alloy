@@ -14,7 +14,6 @@ import { noop } from "../../../../../src/utils";
 
 describe("Event Command", () => {
   let event;
-  let logger;
   let eventManager;
   let sendEventCommand;
   beforeEach(() => {
@@ -25,7 +24,6 @@ describe("Event Command", () => {
       "mergeXdm",
       "mergeMeta"
     ]);
-    logger = jasmine.createSpyObj("logger", ["warn"]);
 
     eventManager = {
       createEvent() {
@@ -40,8 +38,7 @@ describe("Event Command", () => {
     };
 
     const dataCollector = createDataCollector({
-      eventManager,
-      logger
+      eventManager
     });
     sendEventCommand = dataCollector.commands.sendEvent;
   });
