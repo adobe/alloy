@@ -10,16 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createRequest } from "../../../utils/request";
+// eslint-disable-next-line no-unused-vars
+import { createRequest } from "../../../../../src/utils/request";
 
-export default identityRequestPayload => {
-  return createRequest({
-    payload: identityRequestPayload,
-    getAction() {
-      return "identity/acquire";
-    },
-    getUseSendBeacon() {
-      return false;
-    }
-  });
-};
+// This module is tested thoroughly through the different types of requests
+// that leverage this module.
