@@ -11,3 +11,4 @@ governing permissions and limitations under the License.
 */
 
 export { default as createRequest } from "./createRequest";
+export { default as createRequestPayload } from "./createRequestPayload";

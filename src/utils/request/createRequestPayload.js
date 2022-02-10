@@ -10,8 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
-import createPayload from "../../../../../../src/core/edgeNetwork/requests/createRequestPayload";
+import { createMerger } from "..";
 
-// This module is tested thoroughly through the different types of request
-// payloads that leverage this module.
+// This provides the base functionality that all types of
+// request payloads share.
+export default options => {
+  const { content, addIdentity } = options;
+  return {
+    mergeState: createMerger(content, "meta.state"),
+    mergeQuery: createMerger(content, "query"),
+    addIdentity,
+    toJSON() {
+      return content;
+    }
+  };
+};
