@@ -1,127 +1,14 @@
 import React, { useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
-import { triggerAnalyticsHit } from "./DataInsertionAPI";
 import {
-  getECID,
-  concatinateAnalyticsPayloads,
-  collectAnalyticsPayloadData,
-  getAnalyticsToken
-} from "./analyticsTokenHandler";
-// offer types
-const HTML_SCHEMA = "https://ns.adobe.com/personalization/html-content-item";
-const MEASUREMENT_SCHEMA = "https://ns.adobe.com/personalization/measurement";
-
-const instanceName = "organizationTwo";
-
-const getFormBasedOffer = () => {
-  sendEvent({
-    eventType: "form-based-offer",
-    decisionScopes: ["a4t-test"]
-  }).then(result => {
-    if (!result.propositions) {
-      return;
-    }
-    const analyticsPayloads = new Set();
-    const executedPropositions = [];
-
-    result.propositions.forEach(proposition => {
-      proposition.items.forEach(item => {
-        if (item.schema === HTML_SCHEMA) {
-          // apply offer
-          document.getElementById("form-based-offer-container").innerHTML =
-            item.data.content;
-
-          //collect the executed proposition to send the display notification event
-          executedPropositions.push({
-            id: proposition.id,
-            scope: proposition.scope,
-            scopeDetails: proposition.scopeDetails
-          });
-
-          analyticsPayloads.add(getAnalyticsToken(proposition));
-        }
-
-        if (item.schema === MEASUREMENT_SCHEMA) {
-          // add metric to the DOM element
-          const button = document.getElementById("form-based-click-metric");
-
-          button.addEventListener("click", event => {
-            sendEvent({
-              eventType: "decisioning.propositionInteract",
-              executedPropositions: [
-                {
-                  id: proposition.id,
-                  scope: proposition.scope,
-                  scopeDetails: proposition.scopeDetails
-                }
-              ]
-            });
-          });
-        }
-      });
-    });
-
-    sendEvent({
-      eventType: "decisioning.propositionDisplay",
-      executedPropositions
-    });
-
-    getECID(instanceName).then(visitorID => {
-      const analyticsPayload = concatinateAnalyticsPayloads(analyticsPayloads);
-      triggerAnalyticsHit({ analyticsPayload, visitorID });
-    });
-  });
-};
-
-const sendEvent = ({
-  eventType,
-  viewName,
-  decisionScopes,
-  renderDecisions,
-  executedPropositions
-}) => {
-  const xdm = {
-    eventType: eventType
-  };
-
-  if (viewName) {
-    xdm.web = {
-      webPageDetails: {
-        viewName
-      }
-    };
-  }
-
-  if (executedPropositions) {
-    xdm._experience = {
-      decisioning: {
-        propositions: executedPropositions
-      }
-    };
-  }
-
-  return window[instanceName]("sendEvent", {
-    renderDecisions,
-    decisionScopes,
-    xdm
-  });
-};
+  getFormBasedOffer,
+  pageLoadEvent,
+  viewChangeEvent
+} from "./personalizationAnalyticsClientSideHelper";
 
 const Products = () => {
-  sendEvent({
-    eventType: "view-change",
-    viewName: "products",
-    renderDecisions: true
-  }).then(result => {
-    if (!result.propositions) {
-      return;
-    }
-    const analyticsPayload = collectAnalyticsPayloadData(result.propositions);
-    getECID(instanceName).then(visitorID => {
-      triggerAnalyticsHit({ analyticsPayload, visitorID });
-    });
-  });
+  viewChangeEvent({ renderDecisions: true, viewName: "products" });
   return (
     <div>
       <h2>Products</h2>
@@ -137,20 +24,7 @@ const Products = () => {
 };
 
 const Cart = () => {
-  sendEvent({
-    eventType: "view-change",
-    viewName: "cart",
-    renderDecisions: true
-  }).then(result => {
-    if (!result.propositions) {
-      return;
-    }
-    const analyticsPayload = collectAnalyticsPayloadData(result.propositions);
-    getECID(instanceName).then(visitorID => {
-      triggerAnalyticsHit({ analyticsPayload, visitorID });
-    });
-  });
-
+  viewChangeEvent({ renderDecisions: true, viewName: "cart" });
   return (
     <div>
       <h2>Cart</h2>
@@ -167,22 +41,7 @@ const Cart = () => {
 
 export default function PersonalizationAnalyticsClientSide() {
   useEffect(() => {
-    const xdm = {};
-    xdm.eventType = "page-view";
-
-    window[instanceName]("sendEvent", {
-      renderDecisions: true,
-      xdm
-    }).then(result => {
-      if (!result.propositions) {
-        return;
-      }
-
-      const analyticsPayload = collectAnalyticsPayloadData(result.propositions);
-      getECID(instanceName).then(visitorID => {
-        triggerAnalyticsHit({ analyticsPayload, visitorID });
-      });
-    });
+    pageLoadEvent({ renderDecisions: true });
   }, []);
 
   const match = useRouteMatch();
@@ -192,10 +51,12 @@ export default function PersonalizationAnalyticsClientSide() {
       <ContentSecurityPolicy />
       <h1>Personalization with A4T client side logging</h1>
       <p>
-        This page tests rendering of activities using a <i>__view__</i> scope.
-        If you navigated here from another sandbox view, you will probably need
-        to refresh your browser because this is how to properly simulate a
-        non-SPA workflow.
+        This page tests rendering of activities using a <i>__view__</i> scope,
+        collecting the analyticsTokens from the rendered propositions and
+        trigger a Analytics hit using Data Insertion API. Important!!! If you
+        navigated here from another sandbox view, you will probably need to
+        refresh your browser because this is how to properly simulate a non-SPA
+        workflow.
       </p>
       <div style={{ border: "1px solid red" }} id="personalization-container">
         This is the personalization placeholder. Personalized content has not
