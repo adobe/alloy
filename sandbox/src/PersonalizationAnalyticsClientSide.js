@@ -3,12 +3,11 @@ import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import {
   getFormBasedOffer,
-  pageLoadEvent,
-  viewChangeEvent
+  personalizationEvent
 } from "./personalizationAnalyticsClientSideHelper";
 
 const Products = () => {
-  viewChangeEvent({ renderDecisions: true, viewName: "products" });
+  personalizationEvent({ renderDecisions: true });
   return (
     <div>
       <h2>Products</h2>
@@ -24,7 +23,7 @@ const Products = () => {
 };
 
 const Cart = () => {
-  viewChangeEvent({ renderDecisions: true, viewName: "cart" });
+  personalizationEvent({ renderDecisions: true });
   return (
     <div>
       <h2>Cart</h2>
@@ -41,7 +40,7 @@ const Cart = () => {
 
 export default function PersonalizationAnalyticsClientSide() {
   useEffect(() => {
-    pageLoadEvent({ renderDecisions: true });
+    personalizationEvent({ renderDecisions: true });
   }, []);
 
   const match = useRouteMatch();

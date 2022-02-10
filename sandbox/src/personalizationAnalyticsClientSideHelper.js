@@ -13,27 +13,21 @@ const instanceName = "organizationTwo";
 const HTML_SCHEMA = "https://ns.adobe.com/personalization/html-content-item";
 const MEASUREMENT_SCHEMA = "https://ns.adobe.com/personalization/measurement";
 
-export const pageLoadEvent = ({ renderDecisions }) => {
-  sendEvent({ eventType: "page-view", renderDecisions }).then(result => {
+const extractViewName = () => {
+  const pathname = window.location.pathname;
+  const viewName = pathname.split("personalizationA4TClientSide/");
+
+  return viewName[1];
+};
+
+export const personalizationEvent = ({ renderDecisions }) => {
+  const viewName = extractViewName();
+  const eventType = viewName ? "view-change" : "page-view";
+  sendEvent({ eventType, viewName, renderDecisions }).then(result => {
     if (!result.propositions) {
       return;
     }
 
-    const analyticsPayload = collectAnalyticsPayloadData(result.propositions);
-    getECID(instanceName).then(visitorID => {
-      triggerAnalyticsHit({ analyticsPayload, visitorID });
-    });
-  });
-};
-export const viewChangeEvent = ({ viewName, renderDecisions }) => {
-  return sendEvent({
-    eventType: "view-change",
-    renderDecisions,
-    viewName
-  }).then(result => {
-    if (!result.propositions) {
-      return;
-    }
     const analyticsPayload = collectAnalyticsPayloadData(result.propositions);
     getECID(instanceName).then(visitorID => {
       triggerAnalyticsHit({ analyticsPayload, visitorID });
