@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, flatMap, isNonEmptyArray } from "../../utils";
+import { assign, flatMap } from "../../utils";
 
 const DEFAULT_ACTION_TYPE = "defaultContent";
 
@@ -28,7 +28,7 @@ const buildActions = decision => {
   );
 };
 
-const processMetas = (collect, logger, actionResults) => {
+const processMetas = (logger, actionResults) => {
   const results = flatMap(actionResults, identity);
   const finalMetas = [];
   const set = new Set();
@@ -53,13 +53,10 @@ const processMetas = (collect, logger, actionResults) => {
     finalMetas.push(meta);
   });
 
-  if (isNonEmptyArray(finalMetas)) {
-    // collect here can either be the function from createCollect or createViewCollect.
-    collect({ decisionsMeta: finalMetas });
-  }
+  return finalMetas;
 };
 
-export default ({ modules, logger, executeActions, collect }) => {
+export default ({ modules, logger, executeActions }) => {
   return decisions => {
     const actionResultsPromises = decisions.map(decision => {
       const actions = buildActions(decision);
@@ -67,7 +64,7 @@ export default ({ modules, logger, executeActions, collect }) => {
       return executeActions(actions, modules, logger);
     });
     return Promise.all(actionResultsPromises)
-      .then(results => processMetas(collect, logger, results))
+      .then(results => processMetas(logger, results))
       .catch(error => {
         logger.error(error);
       });
