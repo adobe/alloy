@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 
 import loadScript from "@adobe/reactor-load-script";
 import { selectNodes, createNode } from "../../../utils/dom";
-import { SRC, SCRIPT } from "../../../constants/tagName";
+import { SCRIPT } from "../../../constants/tagName";
+import { SRC } from "../../../constants/elementAttribute";
 import { getAttribute, getNonce } from "./dom";
 
 export const is = (element, tagName) =>
