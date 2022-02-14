@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import { assign } from "../utils";
 import { objectOf } from "../utils/validation";
 
-const CONFIG_DOC_URI = "https://adobe.ly/2M4ErNE";
+const CONFIG_DOC_URI = "https://adobe.ly/3sHh553";
 
 const buildSchema = (coreConfigValidators, componentCreators) => {
   const schema = {};
