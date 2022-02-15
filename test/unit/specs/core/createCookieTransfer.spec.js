@@ -144,7 +144,7 @@ describe("createCookieTransfer", () => {
         {
           key: "mykey",
           value: "myvalue",
-          sameSite: "none"
+          sameSite: "None"
         }
       ]);
       cookieTransfer.responseToCookies(response);
@@ -157,7 +157,7 @@ describe("createCookieTransfer", () => {
         {
           key: "mykey",
           value: "myvalue",
-          sameSite: "strict"
+          sameSite: "Strict"
         }
       ]);
       cookieTransfer.responseToCookies(response);

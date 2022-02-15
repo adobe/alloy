@@ -67,15 +67,16 @@ export default ({ cookieJar, orgId, apexDomain }) => {
     responseToCookies(response) {
       response.getPayloadsByType(STATE_STORE_HANDLE_TYPE).forEach(stateItem => {
         const options = { domain: apexDomain };
+        const sameSite = stateItem.sameSite && stateItem.sameSite.toLowerCase();
 
         if (stateItem.maxAge !== undefined) {
           // cookieJar expects "expires" in days
           options.expires = convertTimes(SECOND, DAY, stateItem.maxAge);
         }
-        if (stateItem.sameSite !== undefined) {
-          options.sameSite = stateItem.sameSite;
+        if (sameSite !== undefined) {
+          options.sameSite = sameSite;
         }
-        if (stateItem.sameSite === "none" || stateItem.secure === true) {
+        if (sameSite === "none" || stateItem.secure === true) {
           options.secure = true;
         }
 
