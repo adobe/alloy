@@ -36,7 +36,7 @@ import createLogger from "./createLogger";
 import createEventManager from "./createEventManager";
 import createCookieTransfer from "./createCookieTransfer";
 import createDataCollectionRequestPayload from "./edgeNetwork/requests/createDataCollectionRequestPayload";
-import createDataCollectionRequest from "./edgeNetwork/requests/createDataCollectionRequest";
+import createDataCollectionRequest from "../utils/request";
 import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkRequest";
 import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors";
 import isRequestRetryable from "./network/isRequestRetryable";

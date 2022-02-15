@@ -10,5 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+export { default as createDataCollectionRequest } from "./createDataCollectionRequest";
 export { default as createRequest } from "./createRequest";
 export { default as createRequestPayload } from "./createRequestPayload";
