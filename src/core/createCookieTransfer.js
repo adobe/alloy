@@ -72,6 +72,12 @@ export default ({ cookieJar, orgId, apexDomain }) => {
           // cookieJar expects "expires" in days
           options.expires = convertTimes(SECOND, DAY, stateItem.maxAge);
         }
+        if (stateItem.sameSite !== undefined) {
+          options.sameSite = stateItem.sameSite;
+        }
+        if (stateItem.sameSite === "none" || stateItem.secure === true) {
+          options.secure = true;
+        }
 
         cookieJar.set(stateItem.key, stateItem.value, options);
       });
