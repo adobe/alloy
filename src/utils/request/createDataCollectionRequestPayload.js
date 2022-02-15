@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createRequestPayload from "./createRequestPayload";
-import { createAddIdentity } from "./contentModifiers";
+import createAddIdentity from "./createAddIdentity";
 
 export default () => {
   const content = {};
