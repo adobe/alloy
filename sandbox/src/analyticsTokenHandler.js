@@ -9,7 +9,7 @@ export function getAnalyticsToken(proposition) {
   return analyticsToken;
 }
 
-export const concatinateAnalyticsPayloads = analyticsPayloads => {
+export const concatenateAnalyticsPayloads = analyticsPayloads => {
   if (analyticsPayloads.size > 1) {
     return [...analyticsPayloads].join(",");
   }
@@ -35,7 +35,7 @@ export const collectAnalyticsPayloadData = propositions => {
     analyticsPayloads.add(analyticsPayload);
   });
 
-  return concatinateAnalyticsPayloads(analyticsPayloads);
+  return concatenateAnalyticsPayloads(analyticsPayloads);
 };
 
 export const getECID = instanceName => {

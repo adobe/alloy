@@ -120,10 +120,10 @@
             }
 
             getECID("organizationTwo").then(visitorID => {
-              const analyticsPayload = concatinateAnalyticsPayloads(
+              const analyticsPayload = concatenateAnalyticsPayloads(
                 analyticsPayloads
               );
-              triggerAnalyticsHit({ analyticsPayload, visitorID });
+              sendAnalyticsPayload({ analyticsPayload, visitorID });
             });
           }
         }

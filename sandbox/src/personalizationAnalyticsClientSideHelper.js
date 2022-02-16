@@ -1,10 +1,10 @@
 import {
   collectAnalyticsPayloadData,
-  concatinateAnalyticsPayloads,
+  concatenateAnalyticsPayloads,
   getAnalyticsToken,
   getECID
 } from "./analyticsTokenHandler";
-import { triggerAnalyticsHit } from "./DataInsertionAPI";
+import { sendAnalyticsPayload } from "./DataInsertionAPI";
 
 // this org is configured to have Analytics disabled thus it is A4T Client Side Logging
 const instanceName = "organizationTwo";
@@ -30,7 +30,7 @@ export const personalizationEvent = ({ renderDecisions }) => {
 
     const analyticsPayload = collectAnalyticsPayloadData(result.propositions);
     getECID(instanceName).then(visitorID => {
-      triggerAnalyticsHit({ analyticsPayload, visitorID });
+      sendAnalyticsPayload({ analyticsPayload, visitorID });
     });
   });
 };
@@ -124,8 +124,8 @@ export const getFormBasedOffer = () => {
     });
 
     getECID(instanceName).then(visitorID => {
-      const analyticsPayload = concatinateAnalyticsPayloads(analyticsPayloads);
-      triggerAnalyticsHit({ analyticsPayload, visitorID });
+      const analyticsPayload = concatenateAnalyticsPayloads(analyticsPayloads);
+      sendAnalyticsPayload({ analyticsPayload, visitorID });
     });
   });
 };
