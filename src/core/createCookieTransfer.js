@@ -76,6 +76,8 @@ export default ({ cookieJar, orgId, apexDomain }) => {
         if (sameSite !== undefined) {
           options.sameSite = sameSite;
         }
+        // When sameSite is set to none, the secure flag must be set.
+        // Experience edge will not set the secure flag in these cases.
         if (sameSite === "none" || stateItem.secure === true) {
           options.secure = true;
         }
