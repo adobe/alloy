@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createDataCollectionRequest from "../../../../../../src/core/edgeNetwork/requests/createDataCollectionRequest";
-import describeRequest from "../../../../helpers/describeRequest";
+import { createDataCollectionRequest } from "../../../../../src/utils/request";
+import describeRequest from "../../../helpers/describeRequest";
 
 describe("createDataCollectionRequest", () => {
   describeRequest(createDataCollectionRequest);
