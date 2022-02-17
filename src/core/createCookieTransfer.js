@@ -15,7 +15,7 @@ import convertTimes, { DAY, SECOND } from "../utils/convertTimes";
 
 const STATE_STORE_HANDLE_TYPE = "state:store";
 
-export default ({ cookieJar, orgId, apexDomain }) => {
+export default ({ cookieJar, orgId, apexDomain, logger }) => {
   return {
     /**
      * When sending to a third-party endpoint, the endpoint won't be able to
@@ -67,20 +67,23 @@ export default ({ cookieJar, orgId, apexDomain }) => {
     responseToCookies(response) {
       response.getPayloadsByType(STATE_STORE_HANDLE_TYPE).forEach(stateItem => {
         const options = { domain: apexDomain };
-        const sameSite = stateItem.sameSite && stateItem.sameSite.toLowerCase();
+
+        const sameSite = stateItem.attrs && stateItem.attrs.SameSite && stateItem.attrs.SameSite.toLowerCase();
 
         if (stateItem.maxAge !== undefined) {
           // cookieJar expects "expires" in days
-          options.expires = convertTimes(SECOND, DAY, stateItem.maxAge);
+          options.expires = new Date(new Date().getTime() + stateItem.maxAge * 1000);
+          //options.expires = convertTimes(SECOND, DAY, stateItem.maxAge);
         }
         if (sameSite !== undefined) {
           options.sameSite = sameSite;
         }
         // When sameSite is set to none, the secure flag must be set.
         // Experience edge will not set the secure flag in these cases.
-        if (sameSite === "none" || stateItem.secure === true) {
+        if (sameSite === "none") {
           options.secure = true;
         }
+
 
         cookieJar.set(stateItem.key, stateItem.value, options);
       });

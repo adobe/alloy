@@ -10,16 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { getApexDomain, cookieJar } from "../../utils";
-
-// TODO: We are already retrieving the apex in core; find a way to reuse it.
-// Maybe default the domain in the cookieJar to apex while allowing overrides.
-const apexDomain = getApexDomain(window, cookieJar);
-
 /**
  * Handles migration of ECID to and from Visitor.js.
  */
-export default ({ config, getEcidFromVisitor }) => {
+export default ({ config, getEcidFromVisitor, apexDomain, cookieJar }) => {
   const { idMigrationEnabled, orgId } = config;
   const amcvCookieName = `AMCV_${orgId}`;
 

@@ -41,6 +41,7 @@ import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkReq
 import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors";
 import isRequestRetryable from "./network/isRequestRetryable";
 import getRequestRetryDelay from "./network/getRequestRetryDelay";
+import createLoggingCookieJar from "../utils/createLoggingCookieJar";
 
 const createNamespacedStorage = injectStorage(window);
 
@@ -67,6 +68,8 @@ export const createExecuteCommand = ({
     setDebugEnabled(options.enabled, { fromConfig: false });
   };
 
+  const loggingCookieJar = createLoggingCookieJar({ logger });
+
   const configureCommand = options => {
     const config = buildAndValidateConfig({
       options,
@@ -77,9 +80,10 @@ export const createExecuteCommand = ({
       setDebugEnabled
     });
     const cookieTransfer = createCookieTransfer({
-      cookieJar,
+      cookieJar: loggingCookieJar,
       orgId: config.orgId,
-      apexDomain
+      apexDomain,
+      logger
     });
     const sendBeaconRequest = isFunction(navigator.sendBeacon)
       ? injectSendBeaconRequest({
@@ -143,7 +147,8 @@ export const createExecuteCommand = ({
             errorPrefix: `[${instanceName}] [${componentName}]`,
             logger: componentLogger
           }),
-          createNamespacedStorage
+          createNamespacedStorage,
+          apexDomain
         };
       }
     });

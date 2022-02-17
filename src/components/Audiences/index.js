@@ -10,14 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { fireReferrerHideableImage } from "../../utils";
+import { createLoggingCookieJar, fireReferrerHideableImage } from "../../utils";
 import injectProcessDestinations from "./injectProcessDestinations";
 import injectProcessResponse from "./injectProcessResponse";
 
 const createAudiences = ({ logger }) => {
+  const cookieJar = createLoggingCookieJar({ logger });
+
   const processDestinations = injectProcessDestinations({
     fireReferrerHideableImage,
-    logger
+    logger,
+    cookieJar
   });
 
   const processResponse = injectProcessResponse({ processDestinations });
