@@ -1,3 +1,4 @@
+import { t } from "testcafe";
 import createFixture from "../../helpers/createFixture";
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
@@ -21,18 +22,30 @@ test("Test C455258: sendEvent command sends a request to the collect endpoint wh
 
   // An identity has not yet been established. This request should go to the
   // interact endpoint.
-  await alloy.sendEvent({ documentUnloading: true });
+  let response = await alloy.sendEvent({ documentUnloading: true });
   await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  await t
+    .expect("propositions" in response)
+    .ok("The 'sendEvent()' response was missing the 'propositions' property");
+  response = null;
   await collectEndpointAsserter.reset();
 
   // An identity has been established. This request should go to the
   // collect endpoint.
-  await alloy.sendEvent({ documentUnloading: true });
+  response = await alloy.sendEvent({ documentUnloading: true });
   await collectEndpointAsserter.assertCollectCalledAndNotInteract();
+  await t
+    .expect("propositions" in response)
+    .ok("The 'sendEvent()' response was missing the 'propositions' property");
+  response = null;
   await collectEndpointAsserter.reset();
 
   // documentUnloading is not set to true. The request should go to the
   // interact endpoint.
-  await alloy.sendEvent();
+  response = await alloy.sendEvent();
   await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  await t
+    .expect("propositions" in response)
+    .ok("The 'sendEvent()' response was missing the 'propositions' property");
+  response = null;
 });
