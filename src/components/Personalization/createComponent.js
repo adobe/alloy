@@ -68,15 +68,13 @@ export default ({
             onResponse,
             onRequestFailure
           });
+          return;
         }
+
+        onResponse(() => ({ propositions: [] }));
       },
       onClick({ event, clickedElement }) {
         onClickHandler({ event, clickedElement });
-      },
-      onResponse({ response }) {
-        const content = response.toJSON();
-        content.propositions = content.propositions || [];
-        return content;
       }
     }
   };
