@@ -32,6 +32,8 @@ export default ({
         onResponse = noop,
         onRequestFailure = noop
       }) {
+        onResponse(() => ({ propositions: [] }));
+
         if (isAuthoringModeEnabled()) {
           logger.warn(AUTHORING_ENABLED);
 
@@ -68,10 +70,7 @@ export default ({
             onResponse,
             onRequestFailure
           });
-          return;
         }
-
-        onResponse(() => ({ propositions: [] }));
       },
       onClick({ event, clickedElement }) {
         onClickHandler({ event, clickedElement });
