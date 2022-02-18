@@ -19,7 +19,7 @@ test("Test C5298194: Include propositions on every request", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(orgMainConfigMain);
 
-  let response = await alloy.sendEvent({ documentUnloading: true });
+  let response = await alloy.sendEvent();
   await collectEndpointAsserter.assertInteractCalledAndNotCollect();
   await t
     .expect("propositions" in response)
@@ -27,10 +27,11 @@ test("Test C5298194: Include propositions on every request", async () => {
   response = null;
   await collectEndpointAsserter.reset();
 
-  response = await alloy.sendEvent();
-  await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  response = await alloy.sendEvent({ documentUnloading: true });
+  await collectEndpointAsserter.assertCollectCalledAndNotInteract();
   await t
     .expect("propositions" in response)
     .ok("The 'sendEvent()' response was missing the 'propositions' property");
   response = null;
+  await collectEndpointAsserter.reset();
 });
