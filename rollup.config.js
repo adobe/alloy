@@ -109,7 +109,8 @@ const buildConfig = (variant, minify) => {
             "if (document.documentMode && document.documentMode < 11) {\n" +
             "  console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.');\n" +
             "  return;\n" +
-            "}\n"
+            "}\n",
+          sourcemap: variant === SANDBOX
         }
       ],
       plugins

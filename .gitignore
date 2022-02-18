@@ -2,6 +2,7 @@ node_modules
 dist
 coverage
 sandbox/public/alloy.js
+sandbox/public/alloy.js.map
 sandbox/build
 .sonarlint
 .env
