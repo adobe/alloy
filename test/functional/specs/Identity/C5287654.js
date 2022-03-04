@@ -16,8 +16,6 @@ import cookies from "../../helpers/cookies";
 import {
   compose,
   orgMainConfigMain,
-  thirdPartyCookiesEnabled,
-  edgeDomainFirstParty,
   debugEnabled
 } from "../../helpers/constants/configParts";
 import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
@@ -28,7 +26,6 @@ import RefererHook from "../../helpers/requestHooks/refererHook";
 import createConsoleLogger from "../../helpers/consoleLogger";
 
 const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled);
-console.log(JSON.stringify(debugEnabledConfig, null, 2));
 const networkLogger = createNetworkLogger();
 
 createFixture({
@@ -42,7 +39,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test.only("Test C5287654: Cookies are set with sameSite=none", async () => {
+test("Test C5287654: Cookies are set with sameSite=none", async () => {
   const logger = await createConsoleLogger();
   const alloy = createAlloyProxy();
   await alloy.configure(debugEnabledConfig);
@@ -56,13 +53,28 @@ test.only("Test C5287654: Cookies are set with sameSite=none", async () => {
   await t.expect(identityCookieValue).ok("No identity cookie found.");
 
   // make sure the ecid was sent with sameSite = none
-  const response = JSON.parse(getResponseBody(networkLogger.edgeEndpointLogs.requests[0]));
+  const response = JSON.parse(
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+  );
 
-  const stateStoreHandle = response.handle.find(handle => handle.type === "state:store");
-  const identityCookie = stateStoreHandle.payload.find(cookie => cookie.key.endsWith("identity"));
+  const stateStoreHandle = response.handle.find(
+    handle => handle.type === "state:store"
+  );
+  const identityCookie = stateStoreHandle.payload.find(cookie =>
+    cookie.key.endsWith("identity")
+  );
   await t.expect(identityCookie.attrs).ok();
   await t.expect(identityCookie.attrs.SameSite).eql("None");
 
   const logs = await logger.info.getMessagesSinceReset();
-  console.log(JSON.stringify(logs, null, 2));
+  const setCookieAttributes = logs
+    .filter(message => message.length === 3 && message[1] === "Setting cookie")
+    .map(message => message[2])
+    .filter(
+      cookieSettings => cookieSettings.name === MAIN_IDENTITY_COOKIE_NAME
+    );
+
+  await t.expect(setCookieAttributes.length).eql(1);
+  await t.expect(setCookieAttributes[0].sameSite).eql("none");
+  await t.expect(setCookieAttributes[0].secure).eql(true);
 });

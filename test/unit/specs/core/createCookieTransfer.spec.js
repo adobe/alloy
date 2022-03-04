@@ -19,6 +19,8 @@ describe("createCookieTransfer", () => {
   let payload;
   let cookieJar;
   let cookieTransfer;
+  const date = new Date();
+  const dateProvider = () => date;
 
   beforeEach(() => {
     payload = jasmine.createSpyObj("payload", ["mergeState"]);
@@ -26,7 +28,8 @@ describe("createCookieTransfer", () => {
     cookieTransfer = createCookieTransfer({
       cookieJar,
       orgId,
-      apexDomain
+      apexDomain,
+      dateProvider
     });
   });
 
@@ -124,19 +127,9 @@ describe("createCookieTransfer", () => {
         }
       ]);
       cookieTransfer.responseToCookies(response);
-      expect(cookieJar.set.calls.argsFor(0)[2].expires).toEqual(2);
-    });
-
-    it("adds a secure cookie", () => {
-      response.getPayloadsByType.and.returnValue([
-        {
-          key: "mykey",
-          value: "myvalue",
-          secure: true
-        }
-      ]);
-      cookieTransfer.responseToCookies(response);
-      expect(cookieJar.set.calls.argsFor(0)[2].secure).toEqual(true);
+      expect(cookieJar.set.calls.argsFor(0)[2].expires.getTime()).toEqual(
+        date.getTime() + 172800 * 1000
+      );
     });
 
     it("adds a sameSite=none cookie with secure attribute", () => {
@@ -144,7 +137,7 @@ describe("createCookieTransfer", () => {
         {
           key: "mykey",
           value: "myvalue",
-          sameSite: "None"
+          attrs: { SameSite: "None" }
         }
       ]);
       cookieTransfer.responseToCookies(response);
@@ -157,7 +150,7 @@ describe("createCookieTransfer", () => {
         {
           key: "mykey",
           value: "myvalue",
-          sameSite: "Strict"
+          attrs: { SameSite: "Strict" }
         }
       ]);
       cookieTransfer.responseToCookies(response);

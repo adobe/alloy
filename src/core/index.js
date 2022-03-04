@@ -11,7 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import createInstanceFunction from "./createInstanceFunction";
-import { getApexDomain, injectStorage, cookieJar, isFunction } from "../utils";
+import {
+  getApexDomain,
+  injectStorage,
+  cookieJar,
+  isFunction,
+  createLoggingCookieJar
+} from "../utils";
 import createLogController from "./createLogController";
 import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
@@ -41,7 +47,6 @@ import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkReq
 import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors";
 import isRequestRetryable from "./network/isRequestRetryable";
 import getRequestRetryDelay from "./network/getRequestRetryDelay";
-import createLoggingCookieJar from "../utils/createLoggingCookieJar";
 
 const createNamespacedStorage = injectStorage(window);
 
@@ -68,7 +73,7 @@ export const createExecuteCommand = ({
     setDebugEnabled(options.enabled, { fromConfig: false });
   };
 
-  const loggingCookieJar = createLoggingCookieJar({ logger });
+  const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
 
   const configureCommand = options => {
     const config = buildAndValidateConfig({
@@ -83,7 +88,7 @@ export const createExecuteCommand = ({
       cookieJar: loggingCookieJar,
       orgId: config.orgId,
       apexDomain,
-      logger
+      dateProvider: () => new Date()
     });
     const sendBeaconRequest = isFunction(navigator.sendBeacon)
       ? injectSendBeaconRequest({

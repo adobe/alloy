@@ -13,7 +13,13 @@ governing permissions and limitations under the License.
 /**
  * Handles migration of ECID to and from Visitor.js.
  */
-export default ({ config, getEcidFromVisitor, apexDomain, cookieJar }) => {
+export default ({
+  config,
+  getEcidFromVisitor,
+  apexDomain,
+  isPageSsl,
+  cookieJar
+}) => {
   const { idMigrationEnabled, orgId } = config;
   const amcvCookieName = `AMCV_${orgId}`;
 
@@ -50,10 +56,14 @@ export default ({ config, getEcidFromVisitor, apexDomain, cookieJar }) => {
     },
     setEcid(ecid) {
       if (idMigrationEnabled && !cookieJar.get(amcvCookieName)) {
+        const extraOptions = isPageSsl
+          ? { sameSite: "none", secure: true }
+          : {};
         cookieJar.set(amcvCookieName, `MCMID|${ecid}`, {
           domain: apexDomain,
           // Without `expires` this will be a session cookie.
-          expires: 390 // days, or 13 months.
+          expires: 390, // days, or 13 months.
+          ...extraOptions
         });
       }
     }

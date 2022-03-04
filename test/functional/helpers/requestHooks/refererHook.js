@@ -13,16 +13,12 @@ governing permissions and limitations under the License.
 import { RequestHook } from "testcafe";
 import { TEST_PAGE as TEST_PAGE_URL } from "../constants/url";
 
-
 export default class RefererHook extends RequestHook {
-  constructor(...args) {
-    super(...args);
-  }
-
+  // eslint-disable-next-line class-methods-use-this
   async onRequest(event) {
-    event.requestOptions.headers["Referer"] = TEST_PAGE_URL;
+    event.requestOptions.headers.Referer = TEST_PAGE_URL;
   }
 
-  async onResponse() {
-  }
+  // eslint-disable-next-line class-methods-use-this
+  onResponse() {}
 }

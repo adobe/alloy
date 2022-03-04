@@ -14,7 +14,8 @@ import {
   fireReferrerHideableImage,
   areThirdPartyCookiesSupportedByDefault,
   injectDoesIdentityCookieExist,
-  createLoggingCookieJar
+  createLoggingCookieJar,
+  cookieJar
 } from "../../utils";
 import injectProcessIdSyncs from "./injectProcessIdSyncs";
 import configValidators from "./configValidators";
@@ -49,12 +50,13 @@ const createIdentity = ({
     orgId,
     awaitVisitorOptIn
   });
-  const cookieJar = createLoggingCookieJar({ logger });
+  const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
   const legacyIdentity = createLegacyIdentity({
     config,
     getEcidFromVisitor,
     apexDomain,
-    cookieJar
+    cookieJar: loggingCookieJar,
+    isPageSsl: window.location.protocol === "https:"
   });
   const doesIdentityCookieExist = injectDoesIdentityCookieExist({ orgId });
   const getIdentity = createGetIdentity({

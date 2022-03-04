@@ -11,11 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { endsWith, isNamespacedCookieName } from "../utils";
-import convertTimes, { DAY, SECOND } from "../utils/convertTimes";
 
 const STATE_STORE_HANDLE_TYPE = "state:store";
 
-export default ({ cookieJar, orgId, apexDomain, logger }) => {
+export default ({ cookieJar, orgId, apexDomain, dateProvider }) => {
   return {
     /**
      * When sending to a third-party endpoint, the endpoint won't be able to
@@ -68,12 +67,16 @@ export default ({ cookieJar, orgId, apexDomain, logger }) => {
       response.getPayloadsByType(STATE_STORE_HANDLE_TYPE).forEach(stateItem => {
         const options = { domain: apexDomain };
 
-        const sameSite = stateItem.attrs && stateItem.attrs.SameSite && stateItem.attrs.SameSite.toLowerCase();
+        const sameSite =
+          stateItem.attrs &&
+          stateItem.attrs.SameSite &&
+          stateItem.attrs.SameSite.toLowerCase();
 
         if (stateItem.maxAge !== undefined) {
-          // cookieJar expects "expires" in days
-          options.expires = new Date(new Date().getTime() + stateItem.maxAge * 1000);
-          //options.expires = convertTimes(SECOND, DAY, stateItem.maxAge);
+          // cookieJar expects "expires" as a date object
+          options.expires = new Date(
+            dateProvider().getTime() + stateItem.maxAge * 1000
+          );
         }
         if (sameSite !== undefined) {
           options.sameSite = sameSite;
@@ -83,7 +86,6 @@ export default ({ cookieJar, orgId, apexDomain, logger }) => {
         if (sameSite === "none") {
           options.secure = true;
         }
-
 
         cookieJar.set(stateItem.key, stateItem.value, options);
       });
