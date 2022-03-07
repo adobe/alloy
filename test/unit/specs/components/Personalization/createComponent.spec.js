@@ -54,11 +54,12 @@ describe("Personalization", () => {
       "isInitialized",
       "storeViews"
     ]);
+
+    build();
   });
 
   it("shouldn't do anything since authoringMode is enabled", () => {
     isAuthoringModeEnabled.and.returnValue(true);
-    build();
     const renderDecisions = true;
     const decisionScopes = ["foo"];
     personalizationComponent.lifecycle.onBeforeEvent({
@@ -80,7 +81,6 @@ describe("Personalization", () => {
   });
 
   it("should trigger pageLoad if there are decisionScopes", () => {
-    build();
     const renderDecisions = false;
     const decisionScopes = ["alloy1"];
     personalizationComponent.lifecycle.onBeforeEvent({
@@ -97,7 +97,6 @@ describe("Personalization", () => {
     expect(viewCache.storeViews).toHaveBeenCalled();
   });
   it("should trigger pageLoad if cache is not initialized", () => {
-    build();
     const renderDecisions = false;
     const decisionScopes = [];
     viewCache.isInitialized.and.returnValue(false);
@@ -116,7 +115,6 @@ describe("Personalization", () => {
     expect(viewCache.storeViews).toHaveBeenCalled();
   });
   it("should trigger viewHandler if cache is initialized and viewName is provided", () => {
-    build();
     const renderDecisions = false;
     const decisionScopes = [];
     viewCache.isInitialized.and.returnValue(true);
@@ -136,7 +134,6 @@ describe("Personalization", () => {
     expect(viewCache.storeViews).not.toHaveBeenCalled();
   });
   it("should trigger onClickHandler at onClick", () => {
-    build();
     personalizationComponent.lifecycle.onClick({ event });
 
     expect(onClickHandler).toHaveBeenCalled();
