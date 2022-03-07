@@ -25,6 +25,7 @@ import OrgTwo from "./OrgTwo";
 import DualTag from "./DualTag";
 import RedirectOffers from "./RedirectOffers";
 import RedirectedNewPage from "./RedirectedNewPage";
+import PersonalizationAnalyticsClientSide from "./PersonalizationAnalyticsClientSide";
 
 function BasicExample() {
   return (
@@ -42,6 +43,11 @@ function BasicExample() {
           </li>
           <li>
             <Link to="/personalizationSpa">Personalization - SPA</Link>
+          </li>
+          <li>
+            <Link to="/personalizationA4TClientSide">
+              Personalization - A4T Client Side
+            </Link>
           </li>
           <li>
             <Link to="/personalizationProfile">Personalization - Profile</Link>
@@ -76,6 +82,10 @@ function BasicExample() {
         <Route path="/consent" component={Consent} />
         <Route path="/personalization" component={Personalization} />
         <Route path="/personalizationSpa" component={PersonalizationSpa} />
+        <Route
+          path="/personalizationA4TClientSide"
+          component={PersonalizationAnalyticsClientSide}
+        />
         <Route
           path="/personalizationProfile"
           component={PersonalizationProfile}

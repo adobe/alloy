@@ -12,6 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
 
     <title>Mock website hosting Alloy</title>
+    <script src="/onBeforeEventSentHelper.js"></script>
 
     <!-- prettier-ignore -->
     <script nonce="%REACT_APP_NONCE%">
@@ -102,10 +103,30 @@
       // For Testing multiple instances.
       // We use a different orgId and edgeConfigId.
       organizationTwo("configure", {
-        edgeConfigId: "9999999",
+        edgeConfigId: "7984963a-6609-4e84-98d5-4e2ff8c0dd5e:prod",
         orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
         debugEnabled: true,
-        clickCollectionEnabled: false
+        clickCollectionEnabled: false,
+        onBeforeEventSend: function(options) {
+          const xdm = options.xdm;
+          const eventType = xdm.eventType;
+          if (eventType === "decisioning.propositionInteract") {
+            const analyticsPayloads = new Set();
+            const propositions = xdm._experience.decisioning.propositions;
+
+            for (var i = 0; i < propositions.length; i++) {
+              var proposition = propositions[i];
+              analyticsPayloads.add(getAnalyticsPayload(proposition));
+            }
+
+            getECID("organizationTwo").then(visitorID => {
+              const analyticsPayload = concatenateAnalyticsPayloads(
+                analyticsPayloads
+              );
+              sendAnalyticsPayload({ analyticsPayload, visitorID });
+            });
+          }
+        }
       });
     </script>
   </head>

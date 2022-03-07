@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 // eslint-disable-next-line no-unused-vars
-import createRequestPayload from "../../../../../../src/core/edgeNetwork/requests/createRequest";
+import { createRequest } from "../../../../../src/utils/request";
 
 // This module is tested thoroughly through the different types of requests
 // that leverage this module.

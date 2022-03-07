@@ -10,24 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createRequestPayload from "./createRequestPayload";
-import createAddIdentity from "./contentModifiers/createAddIdentity";
+import { createMerger } from "..";
 
-export default () => {
-  const content = {};
-  const payload = createRequestPayload({
-    content,
-    addIdentity: createAddIdentity(content)
-  });
-
-  payload.addEvent = event => {
-    content.events = content.events || [];
-    content.events.push(event);
+// This provides the base functionality that all types of
+// request payloads share.
+export default options => {
+  const { content, addIdentity } = options;
+  return {
+    mergeState: createMerger(content, "meta.state"),
+    mergeQuery: createMerger(content, "query"),
+    addIdentity,
+    toJSON() {
+      return content;
+    }
   };
-
-  payload.getDocumentMayUnload = () => {
-    return (content.events || []).some(event => event.getDocumentMayUnload());
-  };
-
-  return payload;
 };

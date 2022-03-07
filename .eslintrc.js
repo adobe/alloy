@@ -34,13 +34,10 @@ module.exports = {
       "error",
       {
         zones: [
-          // TODO: Remove dependencies from components into core
-          // Identity -> createIdentityRequest
-          // Consent -> createConsentRequest
-          // {
-          //  from: "./src/core",
-          //  target: "./src/components"
-          // },
+          {
+            from: "./src/core",
+            target: "./src/components"
+          },
           {
             from: "./src/core",
             target: "./src/utils"

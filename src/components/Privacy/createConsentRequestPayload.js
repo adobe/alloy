@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createRequestPayload from "../../core/edgeNetwork/requests/createRequestPayload";
+import { createRequestPayload } from "../../utils/request";
 
 export default () => {
   const content = {};
