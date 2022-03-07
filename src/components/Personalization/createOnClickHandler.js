@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import { isNonEmptyArray } from "../../utils";
 import { INTERACT } from "./constants/eventType";
+import PAGE_WIDE_SCOPE from "./constants/scope";
 
 export default ({
   mergeDecisionsMeta,
@@ -30,7 +31,18 @@ export default ({
       );
 
       if (isNonEmptyArray(decisionsMeta)) {
-        event.mergeXdm({ eventType: INTERACT });
+        const xdm = { eventType: INTERACT };
+        const scope = decisionsMeta[0].scope;
+
+        if (scope !== PAGE_WIDE_SCOPE) {
+          xdm.web = {
+            webPageDetails: {
+              viewName: scope
+            }
+          };
+        }
+
+        event.mergeXdm(xdm);
         mergeDecisionsMeta(event, decisionsMeta);
       }
     }
