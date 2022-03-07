@@ -14,7 +14,6 @@ import createFetchDataHandler from "../../../../../src/components/Personalizatio
 
 describe("Personalization::createFetchDataHandler", () => {
   let responseHandler;
-  let showContainers;
   let hideContainers;
   let mergeQuery;
   let personalizationDetails;
@@ -36,7 +35,6 @@ describe("Personalization::createFetchDataHandler", () => {
       "createQueryDetails"
     ]);
     hideContainers = jasmine.createSpy("hideContainers");
-    showContainers = jasmine.createSpy("showContainers");
     decisionsDeferred = jasmine.createSpyObj("decisionsDeferred", ["reject"]);
   });
 
@@ -44,7 +42,6 @@ describe("Personalization::createFetchDataHandler", () => {
     const fetchDataHandler = createFetchDataHandler({
       config,
       responseHandler,
-      showContainers,
       hideContainers,
       mergeQuery
     });
@@ -63,7 +60,6 @@ describe("Personalization::createFetchDataHandler", () => {
     const fetchDataHandler = createFetchDataHandler({
       config,
       responseHandler,
-      showContainers,
       hideContainers,
       mergeQuery
     });
@@ -83,7 +79,6 @@ describe("Personalization::createFetchDataHandler", () => {
     const fetchDataHandler = createFetchDataHandler({
       config,
       responseHandler,
-      showContainers,
       hideContainers,
       mergeQuery
     });
@@ -102,11 +97,10 @@ describe("Personalization::createFetchDataHandler", () => {
     expect(hideContainers).not.toHaveBeenCalled();
     expect(responseHandler).toHaveBeenCalled();
   });
-  it("should trigger showContainers at onRequestFailure", () => {
+  it("should reject decisionsDeferred at onRequestFailure", () => {
     const fetchDataHandler = createFetchDataHandler({
       config,
       responseHandler,
-      showContainers,
       hideContainers,
       mergeQuery
     });
@@ -122,8 +116,6 @@ describe("Personalization::createFetchDataHandler", () => {
       onRequestFailure
     });
 
-    expect(hideContainers).not.toHaveBeenCalled();
-    expect(showContainers).toHaveBeenCalled();
     expect(decisionsDeferred.reject).toHaveBeenCalled();
   });
 });
