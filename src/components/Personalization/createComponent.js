@@ -32,7 +32,7 @@ export default ({
         onResponse = noop,
         onRequestFailure = noop
       }) {
-        // Include proositions on all responses, overridden with data as needed
+        // Include propositions on all responses, overridden with data as needed
         onResponse(() => ({ propositions: [] }));
 
         if (isAuthoringModeEnabled()) {
