@@ -104,7 +104,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     onClickHandler,
     isAuthoringModeEnabled,
     mergeQuery,
-    viewCache
+    viewCache,
+    showContainers
   });
 };
 

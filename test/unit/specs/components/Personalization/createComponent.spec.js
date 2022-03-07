@@ -32,7 +32,8 @@ describe("Personalization", () => {
       onClickHandler,
       isAuthoringModeEnabled,
       mergeQuery,
-      viewCache
+      viewCache,
+      showContainers
     });
   };
 
@@ -137,5 +138,26 @@ describe("Personalization", () => {
     personalizationComponent.lifecycle.onClick({ event });
 
     expect(onClickHandler).toHaveBeenCalled();
+  });
+  it("should call showContainers() when a request fails", () => {
+    const useCallbackAggregator = () => {
+      const callbacks = [];
+      const addCallback = func => callbacks.push(func);
+      const callCallbacks = () => callbacks.map(func => func());
+      return [addCallback, callCallbacks];
+    };
+    const [
+      onRequestFailure,
+      callOnRequestFailureCallbacks
+    ] = useCallbackAggregator();
+
+    personalizationComponent.lifecycle.onBeforeEvent({
+      event,
+      onRequestFailure
+    });
+
+    callOnRequestFailureCallbacks();
+
+    expect(showContainers).toHaveBeenCalled();
   });
 });

@@ -21,7 +21,8 @@ export default ({
   onClickHandler,
   isAuthoringModeEnabled,
   mergeQuery,
-  viewCache
+  viewCache,
+  showContainers
 }) => {
   return {
     lifecycle: {
@@ -34,6 +35,7 @@ export default ({
       }) {
         // Include propositions on all responses, overridden with data as needed
         onResponse(() => ({ propositions: [] }));
+        onRequestFailure(() => showContainers());
 
         if (isAuthoringModeEnabled()) {
           logger.warn(AUTHORING_ENABLED);
