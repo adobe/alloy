@@ -36,12 +36,6 @@ describe("Personalization", () => {
       showContainers
     });
   };
-  const useCallbackAggregator = namePrefix => {
-    const addCallback = jasmine.createSpy(`${namePrefix}AddCallbacks`);
-    const callCallbacks = () =>
-      addCallback.calls.allArgs().map(([func]) => func());
-    return [addCallback, callCallbacks];
-  };
 
   beforeEach(() => {
     event = jasmine.createSpyObj("event", ["mergeQuery", "getViewName"]);
@@ -148,21 +142,14 @@ describe("Personalization", () => {
     expect(onClickHandler).toHaveBeenCalled();
   });
   it("should call showContainers() when a request fails", () => {
-    const [
-      onRequestFailure,
-      callOnRequestFailureCallbacks
-    ] = useCallbackAggregator("onRequestFailure");
+    const onRequestFailure = jasmine
+      .createSpy("onRequestFailure")
+      .and.callFake(func => func());
 
     personalizationComponent.lifecycle.onBeforeEvent({
       event,
       onRequestFailure
     });
-
-    try {
-      callOnRequestFailureCallbacks();
-    } catch (err) {
-      // catch rejected promise error for IE and Firefox tests.
-    }
 
     expect(onRequestFailure).toHaveBeenCalled();
     expect(showContainers).toHaveBeenCalled();
