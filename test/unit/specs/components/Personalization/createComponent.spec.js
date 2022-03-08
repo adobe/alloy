@@ -144,7 +144,7 @@ describe("Personalization", () => {
   it("should call showContainers() when a request fails", () => {
     const onRequestFailure = jasmine
       .createSpy("onRequestFailure")
-      .and.callFake(func => func());
+      .and.callFake(func => Promise.all([func()]).catch());
 
     personalizationComponent.lifecycle.onBeforeEvent({
       event,
