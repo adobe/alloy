@@ -61,8 +61,7 @@ export default ({
             decisionsDeferred,
             personalizationDetails,
             event,
-            onResponse,
-            onRequestFailure
+            onResponse
           });
           return;
         }

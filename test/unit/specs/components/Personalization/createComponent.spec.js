@@ -142,9 +142,10 @@ describe("Personalization", () => {
     expect(onClickHandler).toHaveBeenCalled();
   });
   it("should call showContainers() when a request fails", () => {
+    viewCache.isInitialized.and.returnValue(true);
     const onRequestFailure = jasmine
       .createSpy("onRequestFailure")
-      .and.callFake(func => Promise.all([func()]).catch());
+      .and.callFake(func => func());
 
     personalizationComponent.lifecycle.onBeforeEvent({
       event,
