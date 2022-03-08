@@ -158,7 +158,11 @@ describe("Personalization", () => {
       onRequestFailure
     });
 
-    callOnRequestFailureCallbacks();
+    try {
+      callOnRequestFailureCallbacks();
+    } catch (err) {
+      // catch rejected promise error for IE and Firefox tests.
+    }
 
     expect(onRequestFailure).toHaveBeenCalled();
     expect(showContainers).toHaveBeenCalled();
