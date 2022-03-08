@@ -42,15 +42,17 @@ describe("Personalization", () => {
     event.getViewName.and.returnValue({});
 
     logger = {
-      info: jasmine.createSpy(),
-      warn: jasmine.createSpy()
+      info: jasmine.createSpy("logger.info"),
+      warn: jasmine.createSpy("logger.warn")
     };
-    isAuthoringModeEnabled = jasmine.createSpy().and.returnValue(false);
-    fetchDataHandler = jasmine.createSpy();
-    viewChangeHandler = jasmine.createSpy();
-    onClickHandler = jasmine.createSpy();
-    showContainers = jasmine.createSpy();
-    mergeQuery = jasmine.createSpy();
+    isAuthoringModeEnabled = jasmine
+      .createSpy("isAuthoringModeEnabled")
+      .and.returnValue(false);
+    fetchDataHandler = jasmine.createSpy("fetchDataHandler");
+    viewChangeHandler = jasmine.createSpy("viewChangeHandler");
+    onClickHandler = jasmine.createSpy("onClickHandler");
+    showContainers = jasmine.createSpy("showContainers");
+    mergeQuery = jasmine.createSpy("mergeQuery");
     viewCache = jasmine.createSpyObj("viewCache", [
       "isInitialized",
       "storeViews"
@@ -140,16 +142,19 @@ describe("Personalization", () => {
     expect(onClickHandler).toHaveBeenCalled();
   });
   it("should call showContainers() when a request fails", () => {
-    const useCallbackAggregator = () => {
-      const callbacks = [];
-      const addCallback = func => callbacks.push(func);
-      const callCallbacks = () => callbacks.map(func => func());
+    const useCallbackAggregator = namePrefix => {
+      const addCallback = jasmine.createSpy(`${namePrefix}AddCallbacks`);
+      const callCallbacks = jasmine
+        .createSpy(`${namePrefix}CallCallbacks`)
+        .and.callFake(() =>
+          addCallback.calls.allArgs().map(([func]) => func())
+        );
       return [addCallback, callCallbacks];
     };
     const [
       onRequestFailure,
       callOnRequestFailureCallbacks
-    ] = useCallbackAggregator();
+    ] = useCallbackAggregator("onRequestFailure");
 
     personalizationComponent.lifecycle.onBeforeEvent({
       event,
@@ -158,6 +163,8 @@ describe("Personalization", () => {
 
     callOnRequestFailureCallbacks();
 
+    expect(callOnRequestFailureCallbacks).toHaveBeenCalled();
+    expect(onRequestFailure).toHaveBeenCalled();
     expect(showContainers).toHaveBeenCalled();
   });
 });
