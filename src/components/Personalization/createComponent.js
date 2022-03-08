@@ -56,7 +56,7 @@ export default ({
           const decisionsDeferred = defer();
 
           viewCache.storeViews(decisionsDeferred.promise);
-
+          onRequestFailure(() => decisionsDeferred.reject());
           fetchDataHandler({
             decisionsDeferred,
             personalizationDetails,

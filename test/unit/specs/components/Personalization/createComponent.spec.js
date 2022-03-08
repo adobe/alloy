@@ -36,6 +36,12 @@ describe("Personalization", () => {
       showContainers
     });
   };
+  const useCallbackAggregator = namePrefix => {
+    const addCallback = jasmine.createSpy(`${namePrefix}AddCallbacks`);
+    const callCallbacks = () =>
+      addCallback.calls.allArgs().map(([func]) => func());
+    return [addCallback, callCallbacks];
+  };
 
   beforeEach(() => {
     event = jasmine.createSpyObj("event", ["mergeQuery", "getViewName"]);
@@ -142,15 +148,6 @@ describe("Personalization", () => {
     expect(onClickHandler).toHaveBeenCalled();
   });
   it("should call showContainers() when a request fails", () => {
-    const useCallbackAggregator = namePrefix => {
-      const addCallback = jasmine.createSpy(`${namePrefix}AddCallbacks`);
-      const callCallbacks = jasmine
-        .createSpy(`${namePrefix}CallCallbacks`)
-        .and.callFake(() =>
-          addCallback.calls.allArgs().map(([func]) => func())
-        );
-      return [addCallback, callCallbacks];
-    };
     const [
       onRequestFailure,
       callOnRequestFailureCallbacks
@@ -163,7 +160,6 @@ describe("Personalization", () => {
 
     callOnRequestFailureCallbacks();
 
-    expect(callOnRequestFailureCallbacks).toHaveBeenCalled();
     expect(onRequestFailure).toHaveBeenCalled();
     expect(showContainers).toHaveBeenCalled();
   });

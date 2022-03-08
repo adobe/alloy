@@ -22,7 +22,6 @@ describe("Personalization::createFetchDataHandler", () => {
     prehidingStyle: "body {opacity:0;}"
   };
   let onResponse = jasmine.createSpy();
-  let onRequestFailure = jasmine.createSpy();
   const event = {};
   let response;
 
@@ -51,8 +50,7 @@ describe("Personalization::createFetchDataHandler", () => {
       decisionsDeferred,
       personalizationDetails,
       event,
-      onResponse,
-      onRequestFailure
+      onResponse
     });
     expect(hideContainers).toHaveBeenCalled();
   });
@@ -68,8 +66,7 @@ describe("Personalization::createFetchDataHandler", () => {
       decisionsDeferred,
       personalizationDetails,
       event,
-      onResponse,
-      onRequestFailure
+      onResponse
     });
 
     expect(hideContainers).not.toHaveBeenCalled();
@@ -90,32 +87,10 @@ describe("Personalization::createFetchDataHandler", () => {
       decisionsDeferred,
       personalizationDetails,
       event,
-      onResponse,
-      onRequestFailure
+      onResponse
     });
 
     expect(hideContainers).not.toHaveBeenCalled();
     expect(responseHandler).toHaveBeenCalled();
-  });
-  it("should reject decisionsDeferred at onRequestFailure", () => {
-    const fetchDataHandler = createFetchDataHandler({
-      config,
-      responseHandler,
-      hideContainers,
-      mergeQuery
-    });
-    personalizationDetails.isRenderDecisions.and.returnValue(false);
-    onRequestFailure = callback => {
-      callback();
-    };
-    fetchDataHandler({
-      decisionsDeferred,
-      personalizationDetails,
-      event,
-      onResponse,
-      onRequestFailure
-    });
-
-    expect(decisionsDeferred.reject).toHaveBeenCalled();
   });
 });

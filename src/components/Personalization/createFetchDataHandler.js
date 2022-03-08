@@ -11,13 +11,7 @@ governing permissions and limitations under the License.
 */
 
 export default ({ config, responseHandler, hideContainers, mergeQuery }) => {
-  return ({
-    decisionsDeferred,
-    personalizationDetails,
-    event,
-    onResponse,
-    onRequestFailure
-  }) => {
+  return ({ decisionsDeferred, personalizationDetails, event, onResponse }) => {
     const { prehidingStyle } = config;
 
     if (personalizationDetails.isRenderDecisions()) {
@@ -28,8 +22,5 @@ export default ({ config, responseHandler, hideContainers, mergeQuery }) => {
     onResponse(({ response }) =>
       responseHandler({ decisionsDeferred, personalizationDetails, response })
     );
-    onRequestFailure(() => {
-      decisionsDeferred.reject();
-    });
   };
 };
