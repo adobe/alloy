@@ -102,6 +102,8 @@ describe("privacy:createComponent", () => {
   const mockSetConsent = () => {
     const deferred = defer();
     sendSetConsentRequest.and.returnValue(deferred.promise);
+    // ensure that there will be no uncaught promise rejections
+    deferred.promise.catch(() => {});
     return {
       respondWithIn() {
         setConsentCookieIn();
