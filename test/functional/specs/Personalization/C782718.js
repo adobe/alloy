@@ -162,25 +162,15 @@ const simulateViewChange = async (alloy, personalizationPayload) => {
   await t.expect(getDecisionContent("cart")).eql("cart view proposition");
   // Let promises resolve so that the notification is sent.
   await flushPromiseChains();
-  // check that a render view decision notification was sent
-  const cartViewNotificationRequest =
-    networkLogger.edgeEndpointLogs.requests[4];
-  const cartViewNotificationRequestBody = JSON.parse(
-    cartViewNotificationRequest.request.body
-  );
-  await t
-    .expect(cartViewNotificationRequestBody.events[0].xdm.eventType)
-    .eql("decisioning.propositionDisplay");
+  // check that the view change request payload contains the decisions that were rendered
   const cartViewDecisionsMeta = getDecisionsMetaByScope(
     personalizationPayload,
     "cart"
   );
-
   await t
     .expect(
       // eslint-disable-next-line no-underscore-dangle
-      cartViewNotificationRequestBody.events[0].xdm._experience.decisioning
-        .propositions
+      viewChangeRequestBody.events[0].xdm._experience.decisioning.propositions
     )
     .eql(cartViewDecisionsMeta);
 
@@ -197,6 +187,7 @@ const simulateViewChangeForNonExistingView = async alloy => {
     renderDecisions: true,
     decisionScopes: [],
     xdm: {
+      eventType: "noviewoffers",
       web: {
         webPageDetails: {
           viewName: "noView"
@@ -205,7 +196,7 @@ const simulateViewChangeForNonExistingView = async alloy => {
     }
   });
 
-  const noViewViewChangeRequest = networkLogger.edgeEndpointLogs.requests[5];
+  const noViewViewChangeRequest = networkLogger.edgeEndpointLogs.requests[4];
   const noViewViewChangeRequestBody = JSON.parse(
     noViewViewChangeRequest.request.body
   );
@@ -213,7 +204,7 @@ const simulateViewChangeForNonExistingView = async alloy => {
   await t.expect(noViewViewChangeRequestBody.events[0].query).eql(undefined);
   // assert that a notification call with xdm.web.webPageDetails.viewName and no personalization meta is sent
   await flushPromiseChains();
-  const noViewNotificationRequest = networkLogger.edgeEndpointLogs.requests[6];
+  const noViewNotificationRequest = networkLogger.edgeEndpointLogs.requests[5];
   const noViewNotificationRequestBody = JSON.parse(
     noViewNotificationRequest.request.body
   );

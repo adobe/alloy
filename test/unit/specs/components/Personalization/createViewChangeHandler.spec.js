@@ -16,60 +16,101 @@ import { CART_VIEW_DECISIONS } from "./responsesMock/eventResponses";
 describe("Personalization::createViewChangeHandler", () => {
   let personalizationDetails;
   let viewCache;
-  let onResponse = jasmine.createSpy();
-  const executeCachedViewDecisions = jasmine.createSpy();
+  const event = {};
+
+  const onResponse = callback => callback();
+  let executeDecisions;
+  let showContainers;
+  let mergeDecisionsMeta;
+  let collect;
+
   beforeEach(() => {
     personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
       "isRenderDecisions",
       "getViewName"
     ]);
     viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
+    executeDecisions = jasmine.createSpy("executeDecisions");
+    onRequestFailure = jasmine.createSpy("onRequestFailure");
+    showContainers = jasmine.createSpy("showContainers");
+    mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
+    collect = jasmine.createSpy("collect");
   });
 
-  it("should trigger executeCachedViewDecisions if renderDecisions is true", () => {
-    const viewChangeHandler = createViewChangeHandler({
-      executeCachedViewDecisions,
-      viewCache
-    });
-    const promise = {
+  it("should trigger executeDecisions if renderDecisions is true", () => {
+    const cartViewPromise = {
       then: callback => callback(CART_VIEW_DECISIONS)
     };
-    viewCache.getView.and.returnValue(promise);
 
+    viewCache.getView.and.returnValue(cartViewPromise);
+    executeDecisions.and.returnValue(cartViewPromise);
     personalizationDetails.isRenderDecisions.and.returnValue(true);
     personalizationDetails.getViewName.and.returnValue("cart");
 
-    viewChangeHandler({
-      personalizationDetails,
-      onResponse
-    });
-    expect(executeCachedViewDecisions).toHaveBeenCalledWith({
-      viewName: "cart",
-      viewDecisions: CART_VIEW_DECISIONS
-    });
-  });
-
-  it("should return cached views if renderDecisions is false", () => {
-    const promise = {
-      then: callback => callback(CART_VIEW_DECISIONS)
-    };
-    viewCache.getView.and.returnValue(promise);
-
     const viewChangeHandler = createViewChangeHandler({
-      executeCachedViewDecisions,
+      mergeDecisionsMeta,
+      collect,
+      executeDecisions,
       viewCache
     });
+
+    viewChangeHandler({
+      event,
+      personalizationDetails,
+      onResponse,
+      onRequestFailure
+    });
+    expect(executeDecisions).toHaveBeenCalledWith(CART_VIEW_DECISIONS);
+    expect(mergeDecisionsMeta).toHaveBeenCalledWith(event, CART_VIEW_DECISIONS);
+    expect(collect).not.toHaveBeenCalled();
+  });
+
+  it("should not trigger executeDecisions when render decisions is false", () => {
+    const cartViewPromise = {
+      then: callback => callback(CART_VIEW_DECISIONS)
+    };
+    viewCache.getView.and.returnValue(cartViewPromise);
     personalizationDetails.isRenderDecisions.and.returnValue(false);
     personalizationDetails.getViewName.and.returnValue("cart");
 
-    onResponse = callback => {
-      callback();
-    };
+    const viewChangeHandler = createViewChangeHandler({
+      executeDecisions,
+      viewCache,
+      showContainers
+    });
 
     viewChangeHandler({
+      event,
       personalizationDetails,
       onResponse
     });
-    expect(viewCache.getView).toHaveBeenCalledWith("cart");
+    expect(executeDecisions).not.toHaveBeenCalled();
+    expect(collect).not.toHaveBeenCalled();
+  });
+
+  it("at onResponse it should trigger collect call when no decisions in cache", () => {
+    const cartViewPromise = {
+      then: callback => callback([])
+    };
+
+    viewCache.getView.and.returnValue(cartViewPromise);
+    executeDecisions.and.returnValue(cartViewPromise);
+    personalizationDetails.isRenderDecisions.and.returnValue(true);
+    personalizationDetails.getViewName.and.returnValue("cart");
+
+    const viewChangeHandler = createViewChangeHandler({
+      mergeDecisionsMeta,
+      collect,
+      executeDecisions,
+      viewCache
+    });
+
+    viewChangeHandler({
+      event,
+      personalizationDetails,
+      onResponse
+    });
+    expect(executeDecisions).toHaveBeenCalledWith([]);
+    expect(collect).toHaveBeenCalled();
   });
 });

@@ -67,8 +67,10 @@ export default ({
         }
 
         if (personalizationDetails.shouldUseCachedData()) {
-          viewChangeHandler({
+          // eslint-disable-next-line consistent-return
+          return viewChangeHandler({
             personalizationDetails,
+            event,
             onResponse,
             onRequestFailure
           });
