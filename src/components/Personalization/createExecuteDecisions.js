@@ -56,14 +56,18 @@ const processMetas = (collect, logger, actionResults) => {
 };
 
 export default ({ modules, logger, executeActions, collect }) => {
-  return decisions => {
+  return (decisions, notificationsEnabled = true) => {
     const actionResultsPromises = decisions.map(decision => {
       const actions = buildActions(decision);
 
       return executeActions(actions, modules, logger);
     });
     return Promise.all(actionResultsPromises)
-      .then(results => processMetas(collect, logger, results))
+      .then(results => {
+        if (notificationsEnabled) {
+          processMetas(collect, logger, results);
+        }
+      })
       .catch(error => {
         logger.error(error);
       });

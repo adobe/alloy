@@ -31,6 +31,7 @@ import createClickStorage from "./createClickStorage";
 import createRedirectHandler from "./createRedirectHandler";
 import createAutorenderingHandler from "./createAutoRenderingHandler";
 import createNonRenderingHandler from "./createNonRenderingHandler";
+import createApplyPropositions from "./createApplyPropositions";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
@@ -71,6 +72,11 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     executeCachedViewDecisions,
     showContainers
   });
+  const applyPropositions = createApplyPropositions({
+    executeDecisions,
+    executeViewDecisions,
+    showContainers
+  });
   const nonRenderingHandler = createNonRenderingHandler({ viewCache });
   const responseHandler = createOnResponseHandler({
     autoRenderingHandler,
@@ -104,7 +110,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     onClickHandler,
     isAuthoringModeEnabled,
     mergeQuery,
-    viewCache
+    viewCache,
+    applyPropositions
   });
 };
 

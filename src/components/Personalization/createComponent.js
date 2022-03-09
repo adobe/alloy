@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import { noop, defer } from "../../utils";
 import createPersonalizationDetails from "./createPersonalizationDetails";
 import { AUTHORING_ENABLED } from "./constants/loggerMessage";
+import validateApplyPropositionsOptions from "./validateApplyPropositionsOptions";
 
 export default ({
   logger,
@@ -21,7 +22,8 @@ export default ({
   onClickHandler,
   isAuthoringModeEnabled,
   mergeQuery,
-  viewCache
+  viewCache,
+  applyPropositions
 }) => {
   return {
     lifecycle: {
@@ -75,6 +77,12 @@ export default ({
       },
       onClick({ event, clickedElement }) {
         onClickHandler({ event, clickedElement });
+      }
+    },
+    commands: {
+      applyPropositions: {
+        optionsValidator: validateApplyPropositionsOptions,
+        run: applyPropositions
       }
     }
   };
