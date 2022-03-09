@@ -12,8 +12,8 @@ governing permissions and limitations under the License.
 
 import addRenderAttemptedToDecisions from "./utils/addRenderAttemptedToDecisions";
 
-export default ({ executeCachedViewDecisions, viewCache, showContainers }) => {
-  return ({ personalizationDetails, onResponse, onRequestFailure }) => {
+export default ({ executeCachedViewDecisions, viewCache }) => {
+  return ({ personalizationDetails, onResponse }) => {
     const viewName = personalizationDetails.getViewName();
 
     return viewCache.getView(viewName).then(currentViewDecisions => {
@@ -39,10 +39,6 @@ export default ({ executeCachedViewDecisions, viewCache, showContainers }) => {
                 renderAttempted: false
               })
             };
-      });
-
-      onRequestFailure(() => {
-        showContainers();
       });
     });
   };

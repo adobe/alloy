@@ -82,7 +82,6 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const fetchDataHandler = createFetchDataHandler({
     config,
     responseHandler,
-    showContainers,
     hideContainers,
     mergeQuery
   });
@@ -94,8 +93,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
   const viewChangeHandler = createViewChangeHandler({
     executeCachedViewDecisions,
-    viewCache,
-    showContainers
+    viewCache
   });
   return createComponent({
     logger,
@@ -104,7 +102,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     onClickHandler,
     isAuthoringModeEnabled,
     mergeQuery,
-    viewCache
+    viewCache,
+    showContainers
   });
 };
 

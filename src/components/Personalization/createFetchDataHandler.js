@@ -10,20 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({
-  config,
-  responseHandler,
-  showContainers,
-  hideContainers,
-  mergeQuery
-}) => {
-  return ({
-    decisionsDeferred,
-    personalizationDetails,
-    event,
-    onResponse,
-    onRequestFailure
-  }) => {
+export default ({ config, responseHandler, hideContainers, mergeQuery }) => {
+  return ({ decisionsDeferred, personalizationDetails, event, onResponse }) => {
     const { prehidingStyle } = config;
 
     if (personalizationDetails.isRenderDecisions()) {
@@ -34,9 +22,5 @@ export default ({
     onResponse(({ response }) =>
       responseHandler({ decisionsDeferred, personalizationDetails, response })
     );
-    onRequestFailure(() => {
-      decisionsDeferred.reject();
-      showContainers();
-    });
   };
 };
