@@ -16,7 +16,7 @@ const createDataCollector = ({ eventManager }) => {
   return {
     commands: {
       sendEvent: {
-        documentationUri: "https://adobe.ly/2r0uUjh",
+        documentationUri: "https://adobe.ly/3GQ3Q7t",
         optionsValidator: options => {
           return validateUserEventOptions({ options });
         },
