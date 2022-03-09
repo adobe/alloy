@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 import PAGE_WIDE_SCOPE from "../../../../../src/components/Personalization/constants/scope";
 import createPersonalizationDetails from "../../../../../src/components/Personalization/createPersonalizationDetails";
 import {
+  DEFAULT_CONTENT_ITEM,
   DOM_ACTION,
   HTML_CONTENT_ITEM,
   JSON_CONTENT_ITEM,
@@ -41,6 +42,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     const expectedDecisionScopes = [PAGE_WIDE_SCOPE];
     const expectedQueryDetails = {
       schemas: [
+        DEFAULT_CONTENT_ITEM,
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
@@ -72,6 +74,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     const expectedDecisionScopes = [PAGE_WIDE_SCOPE];
     const expectedQueryDetails = {
       schemas: [
+        DEFAULT_CONTENT_ITEM,
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
@@ -103,6 +106,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     const expectedDecisionScopes = ["test1", "__view__"];
     const expectedQueryDetails = {
       schemas: [
+        DEFAULT_CONTENT_ITEM,
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
@@ -133,7 +137,12 @@ describe("Personalization::createPersonalizationDetails", () => {
     viewCache.isInitialized.and.returnValue(true);
     const expectedDecisionScopes = ["test1"];
     const expectedQueryDetails = {
-      schemas: [HTML_CONTENT_ITEM, JSON_CONTENT_ITEM, REDIRECT_ITEM],
+      schemas: [
+        DEFAULT_CONTENT_ITEM,
+        HTML_CONTENT_ITEM,
+        JSON_CONTENT_ITEM,
+        REDIRECT_ITEM
+      ],
       decisionScopes: expectedDecisionScopes
     };
     const queryDetails = personalizationDetails.createQueryDetails();
@@ -161,7 +170,12 @@ describe("Personalization::createPersonalizationDetails", () => {
 
     const expectedDecisionScopes = ["test1", "test2"];
     const expectedQueryDetails = {
-      schemas: [HTML_CONTENT_ITEM, JSON_CONTENT_ITEM, REDIRECT_ITEM],
+      schemas: [
+        DEFAULT_CONTENT_ITEM,
+        HTML_CONTENT_ITEM,
+        JSON_CONTENT_ITEM,
+        REDIRECT_ITEM
+      ],
       decisionScopes: expectedDecisionScopes
     };
     const queryDetails = personalizationDetails.createQueryDetails();
@@ -264,6 +278,7 @@ describe("Personalization::createPersonalizationDetails", () => {
     const expectedDecisionScopes = ["__view__"];
     const expectedQueryDetails = {
       schemas: [
+        DEFAULT_CONTENT_ITEM,
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,

@@ -12,6 +12,8 @@ governing permissions and limitations under the License.
 
 import { assign, flatMap, isNonEmptyArray } from "../../utils";
 
+const DEFAULT_ACTION_TYPE = "defaultContent";
+
 const identity = item => item;
 
 const buildActions = decision => {
@@ -21,7 +23,9 @@ const buildActions = decision => {
     scopeDetails: decision.scopeDetails
   };
 
-  return decision.items.map(item => assign({}, item.data, { meta }));
+  return decision.items.map(item =>
+    assign({ type: DEFAULT_ACTION_TYPE }, item.data, { meta })
+  );
 };
 
 const processMetas = (collect, logger, actionResults) => {
