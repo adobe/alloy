@@ -31,7 +31,6 @@ describe("Personalization::createViewChangeHandler", () => {
     ]);
     viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
     executeDecisions = jasmine.createSpy("executeDecisions");
-    onRequestFailure = jasmine.createSpy("onRequestFailure");
     showContainers = jasmine.createSpy("showContainers");
     mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
     collect = jasmine.createSpy("collect");
@@ -57,8 +56,7 @@ describe("Personalization::createViewChangeHandler", () => {
     viewChangeHandler({
       event,
       personalizationDetails,
-      onResponse,
-      onRequestFailure
+      onResponse
     });
     expect(executeDecisions).toHaveBeenCalledWith(CART_VIEW_DECISIONS);
     expect(mergeDecisionsMeta).toHaveBeenCalledWith(event, CART_VIEW_DECISIONS);
