@@ -12,8 +12,12 @@ governing permissions and limitations under the License.
 
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
 
-export default ({ executeDecisions, showContainers, collect }) => {
-  return ({ propositions, notificationsEnabled = false, viewName }) => {
+export default ({ viewCache, executeDecisions, showContainers, collect }) => {
+  const applyPropositions = ({
+    propositions,
+    viewName,
+    notificationsEnabled
+  }) => {
     return executeDecisions(propositions).then(decisionsMeta => {
       if (isNonEmptyArray(decisionsMeta) && notificationsEnabled) {
         if (viewName) {
@@ -23,5 +27,21 @@ export default ({ executeDecisions, showContainers, collect }) => {
       }
       showContainers();
     });
+  };
+
+  return ({ propositions, viewName, notificationsEnabled = false }) => {
+    if (isNonEmptyArray(propositions)) {
+      return applyPropositions({ propositions, notificationsEnabled });
+    }
+    if (viewName) {
+      return viewCache.getView(viewName).then(viewPropositions =>
+        applyPropositions({
+          propositions: viewPropositions,
+          viewName,
+          notificationsEnabled
+        })
+      );
+    }
+    return Promise.resolve();
   };
 };

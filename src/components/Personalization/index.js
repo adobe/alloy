@@ -60,6 +60,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     collect
   });
   const applyPropositions = createApplyPropositions({
+    viewCache,
     executeDecisions,
     showContainers,
     collect
