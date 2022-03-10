@@ -82,6 +82,7 @@ test("Test C28758: A VEC offer with ShadowDOM selectors should render", async ()
     requestBody.events[0].query.personalization.schemas;
 
   const result = [
+    "https://ns.adobe.com/personalization/default-content-item",
     "https://ns.adobe.com/personalization/dom-action",
     "https://ns.adobe.com/personalization/html-content-item",
     "https://ns.adobe.com/personalization/json-content-item",

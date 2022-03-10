@@ -32,7 +32,8 @@ describe("Personalization", () => {
       onClickHandler,
       isAuthoringModeEnabled,
       mergeQuery,
-      viewCache
+      viewCache,
+      showContainers
     });
   };
 
@@ -41,24 +42,27 @@ describe("Personalization", () => {
     event.getViewName.and.returnValue({});
 
     logger = {
-      info: jasmine.createSpy(),
-      warn: jasmine.createSpy()
+      info: jasmine.createSpy("logger.info"),
+      warn: jasmine.createSpy("logger.warn")
     };
-    isAuthoringModeEnabled = jasmine.createSpy().and.returnValue(false);
-    fetchDataHandler = jasmine.createSpy();
-    viewChangeHandler = jasmine.createSpy();
-    onClickHandler = jasmine.createSpy();
-    showContainers = jasmine.createSpy();
-    mergeQuery = jasmine.createSpy();
+    isAuthoringModeEnabled = jasmine
+      .createSpy("isAuthoringModeEnabled")
+      .and.returnValue(false);
+    fetchDataHandler = jasmine.createSpy("fetchDataHandler");
+    viewChangeHandler = jasmine.createSpy("viewChangeHandler");
+    onClickHandler = jasmine.createSpy("onClickHandler");
+    showContainers = jasmine.createSpy("showContainers");
+    mergeQuery = jasmine.createSpy("mergeQuery");
     viewCache = jasmine.createSpyObj("viewCache", [
       "isInitialized",
       "storeViews"
     ]);
+
+    build();
   });
 
   it("shouldn't do anything since authoringMode is enabled", () => {
     isAuthoringModeEnabled.and.returnValue(true);
-    build();
     const renderDecisions = true;
     const decisionScopes = ["foo"];
     personalizationComponent.lifecycle.onBeforeEvent({
@@ -80,7 +84,6 @@ describe("Personalization", () => {
   });
 
   it("should trigger pageLoad if there are decisionScopes", () => {
-    build();
     const renderDecisions = false;
     const decisionScopes = ["alloy1"];
     personalizationComponent.lifecycle.onBeforeEvent({
@@ -97,7 +100,6 @@ describe("Personalization", () => {
     expect(viewCache.storeViews).toHaveBeenCalled();
   });
   it("should trigger pageLoad if cache is not initialized", () => {
-    build();
     const renderDecisions = false;
     const decisionScopes = [];
     viewCache.isInitialized.and.returnValue(false);
@@ -116,7 +118,6 @@ describe("Personalization", () => {
     expect(viewCache.storeViews).toHaveBeenCalled();
   });
   it("should trigger viewHandler if cache is initialized and viewName is provided", () => {
-    build();
     const renderDecisions = false;
     const decisionScopes = [];
     viewCache.isInitialized.and.returnValue(true);
@@ -136,9 +137,22 @@ describe("Personalization", () => {
     expect(viewCache.storeViews).not.toHaveBeenCalled();
   });
   it("should trigger onClickHandler at onClick", () => {
-    build();
     personalizationComponent.lifecycle.onClick({ event });
 
     expect(onClickHandler).toHaveBeenCalled();
+  });
+  it("should call showContainers() when a request fails", () => {
+    viewCache.isInitialized.and.returnValue(true);
+    const onRequestFailure = jasmine
+      .createSpy("onRequestFailure")
+      .and.callFake(func => func());
+
+    personalizationComponent.lifecycle.onBeforeEvent({
+      event,
+      onRequestFailure
+    });
+
+    expect(onRequestFailure).toHaveBeenCalled();
+    expect(showContainers).toHaveBeenCalled();
   });
 });

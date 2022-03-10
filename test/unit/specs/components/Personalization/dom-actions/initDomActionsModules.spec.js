@@ -32,6 +32,7 @@ const buildSet = () => {
   result.add("prependHtml");
   result.add("appendHtml");
   result.add("click");
+  result.add("defaultContent");
 
   return result;
 };

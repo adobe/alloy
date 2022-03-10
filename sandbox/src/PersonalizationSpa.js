@@ -34,6 +34,21 @@ const Cart = () => {
     </div>
   );
 };
+const Promotion = () => {
+  useSendPageViewEvent({ viewName: "promotion" });
+  return (
+    <div>
+      <h2>Cart</h2>
+      <div
+        style={{ border: "1px solid red" }}
+        id="personalization-cart-container"
+      >
+        This is the personalization placeholder for the promotion view. We use
+        this view to test the use case when nothing was stored in cache.
+      </div>
+    </div>
+  );
+};
 
 export default function Personalization() {
   useSendPageViewEvent();
@@ -55,6 +70,9 @@ export default function Personalization() {
         <li>
           <Link to={`${match.url}/cart`}>Cart</Link>
         </li>
+        <li>
+          <Link to={`${match.url}/promotion`}>Promotion</Link>
+        </li>
       </ul>
       <Switch>
         <Route path={`${match.path}/products`}>
@@ -62,6 +80,9 @@ export default function Personalization() {
         </Route>
         <Route path={`${match.path}/cart`}>
           <Cart />
+        </Route>
+        <Route path={`${match.path}/promotion`}>
+          <Promotion />
         </Route>
       </Switch>
     </div>

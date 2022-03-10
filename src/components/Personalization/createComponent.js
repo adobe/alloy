@@ -23,6 +23,7 @@ export default ({
   isAuthoringModeEnabled,
   mergeQuery,
   viewCache,
+  showContainers,
   applyPropositions
 }) => {
   return {
@@ -34,8 +35,9 @@ export default ({
         onResponse = noop,
         onRequestFailure = noop
       }) {
-        // Include proositions on all responses, overridden with data as needed
+        // Include propositions on all responses, overridden with data as needed
         onResponse(() => ({ propositions: [] }));
+        onRequestFailure(() => showContainers());
 
         if (isAuthoringModeEnabled()) {
           logger.warn(AUTHORING_ENABLED);
@@ -56,20 +58,21 @@ export default ({
           const decisionsDeferred = defer();
 
           viewCache.storeViews(decisionsDeferred.promise);
-
+          onRequestFailure(() => decisionsDeferred.reject());
           fetchDataHandler({
             decisionsDeferred,
             personalizationDetails,
             event,
-            onResponse,
-            onRequestFailure
+            onResponse
           });
           return;
         }
 
         if (personalizationDetails.shouldUseCachedData()) {
-          viewChangeHandler({
+          // eslint-disable-next-line consistent-return
+          return viewChangeHandler({
             personalizationDetails,
+            event,
             onResponse,
             onRequestFailure
           });

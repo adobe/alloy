@@ -52,6 +52,7 @@ test("Test C28757: A VEC offer should render if renderDecision=true", async () =
     requestBody.events[0].query.personalization.schemas;
 
   const result = [
+    "https://ns.adobe.com/personalization/default-content-item",
     "https://ns.adobe.com/personalization/dom-action",
     "https://ns.adobe.com/personalization/html-content-item",
     "https://ns.adobe.com/personalization/json-content-item",

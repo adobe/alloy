@@ -44,6 +44,7 @@ export default store => {
     replaceHtml: createAction(replaceHtml),
     prependHtml: createAction(prependHtml),
     appendHtml: createAction(appendHtml),
-    click: settings => click(settings, store)
+    click: settings => click(settings, store),
+    defaultContent: settings => Promise.resolve({ meta: settings.meta })
   };
 };
