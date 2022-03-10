@@ -10,22 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign } from "../../utils";
+import isNonEmptyArray from "../../utils/isNonEmptyArray";
 
-export default ({ executeDecisions, executeViewDecisions, showContainers }) => {
+export default ({ executeDecisions, showContainers, collect }) => {
   return ({
     propositions,
     notificationsEnabled = false,
     viewName = undefined
   }) => {
-    const updatedPropositions = propositions.map(proposition =>
-      assign(proposition, { renderAttempted: true })
-    );
-    if (viewName) {
-      executeViewDecisions(updatedPropositions, notificationsEnabled);
-    } else {
-      executeDecisions(updatedPropositions, notificationsEnabled);
-    }
-    showContainers();
+    return executeDecisions(propositions).then(decisionsMeta => {
+      if (isNonEmptyArray(decisionsMeta) && notificationsEnabled) {
+        if (viewName) {
+          collect({ decisionsMeta, viewName });
+        }
+        collect({ decisionsMeta });
+      }
+      showContainers();
+    });
   };
 };

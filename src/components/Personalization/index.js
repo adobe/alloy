@@ -61,8 +61,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
   const applyPropositions = createApplyPropositions({
     executeDecisions,
-    executeViewDecisions,
-    showContainers
+    showContainers,
+    collect
   });
   const nonRenderingHandler = createNonRenderingHandler({ viewCache });
   const responseHandler = createOnResponseHandler({
