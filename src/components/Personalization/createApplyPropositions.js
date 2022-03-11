@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
+import isNonEmptyString from "../../utils/isNonEmptyString";
 
 export default ({ viewCache, executeDecisions, showContainers, collect }) => {
   const applyPropositions = ({
@@ -22,8 +23,9 @@ export default ({ viewCache, executeDecisions, showContainers, collect }) => {
       if (isNonEmptyArray(decisionsMeta) && notificationsEnabled) {
         if (viewName) {
           collect({ decisionsMeta, viewName });
+        } else {
+          collect({ decisionsMeta });
         }
-        collect({ decisionsMeta });
       }
       showContainers();
     });
@@ -31,9 +33,11 @@ export default ({ viewCache, executeDecisions, showContainers, collect }) => {
 
   return ({ propositions, viewName, notificationsEnabled = false }) => {
     if (isNonEmptyArray(propositions)) {
-      return applyPropositions({ propositions, notificationsEnabled });
+      return Promise.resolve(
+        applyPropositions({ propositions, notificationsEnabled })
+      );
     }
-    if (viewName) {
+    if (isNonEmptyString(viewName)) {
       return viewCache.getView(viewName).then(viewPropositions =>
         applyPropositions({
           propositions: viewPropositions,
