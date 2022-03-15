@@ -35,6 +35,5 @@ export default objectOf({
       scopeDetails: objectOf(anything())
     })
   ).nonEmpty(),
-  viewName: string(),
-  notificationsEnabled: boolean()
+  viewName: string()
 }).required();

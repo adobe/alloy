@@ -10,39 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import composePersonalizationResultingObject from "./utils/composePersonalizationResultingObject";
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
 import isNonEmptyString from "../../utils/isNonEmptyString";
 
-export default ({ viewCache, executeDecisions, showContainers, collect }) => {
-  const applyPropositions = ({
-    propositions,
-    viewName,
-    notificationsEnabled
-  }) => {
-    return executeDecisions(propositions).then(decisionsMeta => {
-      if (isNonEmptyArray(decisionsMeta) && notificationsEnabled) {
-        if (viewName) {
-          collect({ decisionsMeta, viewName });
-        } else {
-          collect({ decisionsMeta });
-        }
-      }
+export default ({ viewCache, executeDecisions, showContainers }) => {
+  const applyPropositions = ({ propositions }) => {
+    return executeDecisions(propositions).then(() => {
       showContainers();
+      return composePersonalizationResultingObject(propositions, true);
     });
   };
 
-  return ({ propositions, viewName, notificationsEnabled = false }) => {
+  return ({ propositions, viewName }) => {
     if (isNonEmptyArray(propositions)) {
-      return Promise.resolve(
-        applyPropositions({ propositions, notificationsEnabled })
-      );
+      return Promise.resolve(applyPropositions({ propositions }));
     }
     if (isNonEmptyString(viewName)) {
       return viewCache.getView(viewName).then(viewPropositions =>
         applyPropositions({
-          propositions: viewPropositions,
-          viewName,
-          notificationsEnabled
+          propositions: viewPropositions
         })
       );
     }
