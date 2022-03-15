@@ -1,0 +1,25 @@
+name: Nightly
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * *" # every day at 1AM
+jobs:
+  linkChecker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Dead Link Checker
+        id: lychee
+        uses: lucheeverse/lychee-action@v1.3
+        args: "--no-progress --verbose --include=adobe.ly --include=experienceleague.adobe.com {src,scripts,test}/**/*.{md,js,html} *.{md,js}"
+        format: md
+        fail: true
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Create Issue From File
+        if: ${{ steps.lychee.outputs.exit_code }} != 0
+        uses: peter-evans/create-issue-from-file@v3.0
+        with:
+          title: Dead Link Checker Report
+          content-filepath: ./lychee/out.md
+          labels: Documentation, bug
