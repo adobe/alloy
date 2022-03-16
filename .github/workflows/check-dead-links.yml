@@ -11,15 +11,14 @@ jobs:
       - name: Dead Link Checker
         id: lychee
         uses: lucheeverse/lychee-action@v1.3
-        args: "--no-progress --verbose --include=adobe.ly --include=experienceleague.adobe.com {src,scripts,test}/**/*.{md,js,html} *.{md,js}"
-        format: md
+        args: "--no-progress --include=adobe.ly --include=experienceleague.adobe.com {src,scripts,test}/**/*.{md,js,html} *.{md,js}"
+        format: detailed
         fail: true
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: Create Issue From File
-        if: ${{ steps.lychee.outputs.exit_code }} != 0
-        uses: peter-evans/create-issue-from-file@v3.0
+      - name: Notify Slack
+        uses: craftech-io/slack-action@v1
         with:
-          title: Dead Link Checker Report
-          content-filepath: ./lychee/out.md
-          labels: Documentation, bug
+          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          status: failure
+        if: failure()
