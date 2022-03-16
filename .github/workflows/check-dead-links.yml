@@ -1,4 +1,4 @@
-name: Nightly
+name: Check Dead Links
 on:
   workflow_dispatch:
   schedule:
