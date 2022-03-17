@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import injectAwaitIdentityCookie from "../../../../../src/components/Identity/injectAwaitIdentityCookie";
 
 describe("Identity::injectAwaitIdentityCookie", () => {
-  let identityCookieExists;
+  let doesIdentityCookieExist;
   let awaitIdentityCookie;
   let runOnResponseCallbacks;
   let runOnRequestFailureCallbacks;
@@ -21,7 +21,9 @@ describe("Identity::injectAwaitIdentityCookie", () => {
   let onRequestFailure;
 
   beforeEach(() => {
-    identityCookieExists = true;
+    doesIdentityCookieExist = jasmine
+      .createSpy("doesIdentityCookieExist")
+      .and.returnValue(true);
     const onResponseCallbacks = [];
     runOnResponseCallbacks = () => {
       onResponseCallbacks.forEach(callback => {
@@ -36,9 +38,10 @@ describe("Identity::injectAwaitIdentityCookie", () => {
       });
     };
     onRequestFailure = callback => onRequestFailureCallbacks.push(callback);
+    const orgId = "org@adobe";
     awaitIdentityCookie = injectAwaitIdentityCookie({
-      orgId: "org@adobe",
-      doesIdentityCookieExist: () => identityCookieExists
+      orgId,
+      doesIdentityCookieExist
     });
   });
 
@@ -49,7 +52,7 @@ describe("Identity::injectAwaitIdentityCookie", () => {
   });
 
   it("rejects promise if identity cookie does not exist after response", () => {
-    identityCookieExists = false;
+    doesIdentityCookieExist.and.returnValue(false);
     const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
     const errorRegex = /verify that the org ID org@adobe configured/;
     expect(() => {
@@ -65,7 +68,7 @@ describe("Identity::injectAwaitIdentityCookie", () => {
   });
 
   it("rejects promise if identity cookie does not exist after request failure", () => {
-    identityCookieExists = false;
+    doesIdentityCookieExist.and.returnValue(false);
     const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
     runOnRequestFailureCallbacks();
     return expectAsync(promise).toBeRejected();
