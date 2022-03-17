@@ -14,6 +14,8 @@ import composePersonalizationResultingObject from "./utils/composePersonalizatio
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
 import isNonEmptyString from "../../utils/isNonEmptyString";
 
+const EMPTY_PROPOSITIONS = { propositions: [] };
+
 export default ({ viewCache, executeDecisions, showContainers }) => {
   const applyPropositions = ({ propositions }) => {
     return executeDecisions(propositions).then(() => {
@@ -33,6 +35,6 @@ export default ({ viewCache, executeDecisions, showContainers }) => {
         })
       );
     }
-    return Promise.resolve();
+    return Promise.resolve(EMPTY_PROPOSITIONS);
   };
 };

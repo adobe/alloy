@@ -160,7 +160,7 @@ describe("Personalization::createApplyPropositions", () => {
     });
   });
 
-  it("it should return an empty promise if viewName and propositions are both empty values", () => {
+  it("it should return an empty propositions promise if viewName and propositions are both empty values", () => {
     const executeDecisionsPromise = {
       then: callback => callback(SCOPES_FOO1_FOO2_DECISIONS)
     };
@@ -177,7 +177,7 @@ describe("Personalization::createApplyPropositions", () => {
       propositions: [],
       viewName: ""
     }).then(result => {
-      expect(result).toBeUndefined();
+      expect(result).toEqual({ propositions: [] });
       expect(viewCache.getView).toHaveBeenCalledTimes(0);
       expect(executeDecisions).toHaveBeenCalledTimes(0);
       expect(showContainers).toHaveBeenCalledTimes(0);
