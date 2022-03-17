@@ -15,6 +15,7 @@ import injectAwaitIdentityCookie from "../../../../../src/components/Identity/in
 describe("Identity::injectAwaitIdentityCookie", () => {
   let doesIdentityCookieExist;
   let awaitIdentityCookie;
+  let extractOrgIdsFromCookies;
   let runOnResponseCallbacks;
   let runOnRequestFailureCallbacks;
   let onResponse;
@@ -39,9 +40,11 @@ describe("Identity::injectAwaitIdentityCookie", () => {
     };
     onRequestFailure = callback => onRequestFailureCallbacks.push(callback);
     const orgId = "org@adobe";
+    extractOrgIdsFromCookies = jasmine.createSpy().and.returnValue([orgId]);
     awaitIdentityCookie = injectAwaitIdentityCookie({
       orgId,
-      doesIdentityCookieExist
+      doesIdentityCookieExist,
+      extractOrgIdsFromCookies
     });
   });
 
@@ -51,10 +54,21 @@ describe("Identity::injectAwaitIdentityCookie", () => {
     return promise;
   });
 
-  it("rejects promise if identity cookie does not exist after response", () => {
+  it("rejects promise if identity cookie does not exist after response and there are other org cookies on the page", () => {
+    doesIdentityCookieExist.and.returnValue(false);
+    extractOrgIdsFromCookies.and.returnValue(["org2@adobe"]);
+    const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
+    const errorRegex = /Valid organizations on this page are: org2@adobe/;
+    expect(() => {
+      runOnResponseCallbacks();
+    }).toThrowError(errorRegex);
+    return expectAsync(promise).toBeRejectedWithError(errorRegex);
+  });
+
+  it("rejects promise if identity cookie does not exist after response and there are no other cookies from other organizations", () => {
     doesIdentityCookieExist.and.returnValue(false);
     const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
-    const errorRegex = /verify that the org ID org@adobe configured/;
+    const errorRegex = /verify that cookies returned from/;
     expect(() => {
       runOnResponseCallbacks();
     }).toThrowError(errorRegex);

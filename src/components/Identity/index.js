@@ -13,7 +13,8 @@ governing permissions and limitations under the License.
 import {
   fireReferrerHideableImage,
   areThirdPartyCookiesSupportedByDefault,
-  injectDoesIdentityCookieExist
+  injectDoesIdentityCookieExist,
+  cookieJar
 } from "../../utils";
 import injectProcessIdSyncs from "./injectProcessIdSyncs";
 import configValidators from "./configValidators";
@@ -33,6 +34,7 @@ import getEcidFromResponse from "./getEcidFromResponse";
 import createGetIdentity from "./getIdentity/createGetIdentity";
 import createIdentityRequest from "./getIdentity/createIdentityRequest";
 import createIdentityRequestPayload from "./getIdentity/createIdentityRequestPayload";
+import injectExtractOrgIdsFromCookies from "./injectExtractOrgIdsFromCookies";
 
 const createIdentity = ({
   config,
@@ -67,9 +69,13 @@ const createIdentity = ({
     getLegacyEcid: legacyIdentity.getEcid,
     addEcidToPayload
   });
+  const extractOrgIdsFromCookies = injectExtractOrgIdsFromCookies({
+    cookieJar
+  });
   const awaitIdentityCookie = injectAwaitIdentityCookie({
     orgId,
-    doesIdentityCookieExist
+    doesIdentityCookieExist,
+    extractOrgIdsFromCookies
   });
   const ensureSingleIdentity = injectEnsureSingleIdentity({
     doesIdentityCookieExist,

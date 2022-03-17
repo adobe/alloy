@@ -10,7 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ orgId, doesIdentityCookieExist }) => {
+export default ({
+  orgId,
+  doesIdentityCookieExist,
+  extractOrgIdsFromCookies
+}) => {
   /**
    * Returns a promise that will be resolved once an identity cookie exists.
    * If an identity cookie doesn't already exist, it should always exist after
@@ -22,20 +26,31 @@ export default ({ orgId, doesIdentityCookieExist }) => {
         if (doesIdentityCookieExist()) {
           resolve();
         } else {
-          // This logic assumes that the code setting the cookie is working as expected and that
-          // the cookie was missing from the response.
-          const noIdentityCookieError = new Error(
-            `An identity was not set properly. Please verify that the org ID ${orgId} configured in Alloy matches the org ID specified in the edge configuration.`
-          );
+          const edgeDomain = "";
+          let errorMessage;
+
+          const orgIdsFromCookies = extractOrgIdsFromCookies();
+          if (
+            orgIdsFromCookies.length > 0 &&
+            !orgIdsFromCookies.includes(orgId)
+          ) {
+            errorMessage = `An identity for organzation ${orgId} was not found. Valid organizations on this page are: ${orgIdsFromCookies.join(
+              ", "
+            )}`;
+          } else {
+            errorMessage = `An identity was not set properly. Please verify that cookies returned from ${edgeDomain} can be set on this page.`;
+          }
+
+          const err = new Error(errorMessage);
 
           // Rejecting the promise will reject commands that were queued
           // by the Identity component while waiting on the response to
           // the initial request.
-          reject(noIdentityCookieError);
+          reject(err);
 
           // Throwing an error will reject the event command that initiated
           // the request.
-          throw noIdentityCookieError;
+          throw err;
         }
       });
       onRequestFailure(() => {
