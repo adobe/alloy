@@ -61,6 +61,7 @@
     "@adobe/reactor-object-assign": "^1.0.0",
     "@adobe/reactor-query-string": "^1.0.0",
     "css.escape": "^1.5.1",
+    "semver": "^7.3.5",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
