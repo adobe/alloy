@@ -20,7 +20,10 @@ const networkLogger = createNetworkLogger();
 createFixture({
   title:
     "C14404: User cannot consent to all purposes after consenting to no purposes",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [
+    networkLogger.edgeEndpointLogs,
+    networkLogger.setConsentEndpointLogs
+  ]
 });
 
 test.meta({
