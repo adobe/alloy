@@ -12,6 +12,8 @@ governing permissions and limitations under the License.
 
 import COOKIE_NAME_PREFIX from "../../constants/cookieNamePrefix";
 
+const cookieNamePrefixRegex = new RegExp(`^${COOKIE_NAME_PREFIX}`);
+
 export default ({ cookieJar }) =>
   /**
    * A function that reads all the cookies on the page and extracts the organization ID
@@ -21,9 +23,12 @@ export default ({ cookieJar }) =>
   () => {
     const allCookies = cookieJar.get();
     const orgIds = Object.keys(allCookies)
-      .filter(cookieName => cookieName.includes(COOKIE_NAME_PREFIX))
+      .filter(cookieName => cookieNamePrefixRegex.test(cookieName))
       .map(cookieName => cookieName.split("_")[1])
-      .reduce((orgIdsSet, orgId) => orgIdsSet.add(orgId), new Set());
+      .reduce((orgIdsSet, orgId) => {
+        orgIdsSet[orgId] = true;
+        return orgIdsSet;
+      }, {});
     // sort for determinism, since cookie order and set order are non-deterministic.
-    return Array.from(orgIds).sort();
+    return Object.keys(orgIds).sort();
   };

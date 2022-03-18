@@ -16,4 +16,7 @@ governing permissions and limitations under the License.
  * @param {string} apexDomain An apex domain, e.g. example.com
  * @returns {!boolean}
  */
-export default (domain, apexDomain) => domain.includes(apexDomain);
+export default (domain, apexDomain) => {
+  const regex = new RegExp(`${apexDomain}$`);
+  return regex.test(domain);
+};
