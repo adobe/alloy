@@ -22,7 +22,6 @@ export default ({ locationSearch, dateProvider, orgId }) => payload => {
     memo[key] = value;
     return memo;
   }, {});
-
   const ts = parseInt(properties.TS, 10);
   const mcmid = properties.MCMID;
   const mcorgid = properties.MCORGID;

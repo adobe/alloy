@@ -39,8 +39,7 @@ const createIdentity = ({
   config,
   logger,
   consent,
-  sendEdgeNetworkRequest,
-  window
+  sendEdgeNetworkRequest
 }) => {
   const { orgId, thirdPartyCookiesEnabled } = config;
 
@@ -71,7 +70,7 @@ const createIdentity = ({
   });
   const addQueryStringIdentityToPayload = injectAddQueryStringIdentityToPayload(
     {
-      locationSearch: window.document.search,
+      locationSearch: window.document.location.search,
       dateProvider: () => new Date(),
       orgId
     }
