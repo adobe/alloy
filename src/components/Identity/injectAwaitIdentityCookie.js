@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { domainMatchesApex } from "../../utils";
+import { domainMatchesApex, includes } from "../../utils";
 
 export default ({
   orgId,
@@ -35,7 +35,7 @@ export default ({
           const orgIdsFromCookies = extractOrgIdsFromCookies();
           if (
             orgIdsFromCookies.length > 0 &&
-            !orgIdsFromCookies.includes(orgId)
+            !includes(orgIdsFromCookies, orgId)
           ) {
             errorMessage = `An identity for organzation ${orgId} was not found. Valid organizations on this page are: ${orgIdsFromCookies.join(
               ", "
