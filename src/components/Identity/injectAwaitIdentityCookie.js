@@ -41,7 +41,7 @@ export default ({
               ", "
             )}`;
           } else if (!domainMatchesApex(edgeDomain, apexDomain)) {
-            errorMessage = `An identity was not set properly because edge domain ${edgeDomain} does not match apex domain ${apexDomain}, and ${edgeDomain} may not allow third-party cookies.`;
+            errorMessage = `An identity was not set properly because edge domain ${edgeDomain} does not match apex domain ${apexDomain}, and ${apexDomain} may not allow third-party cookies.`;
           } else {
             errorMessage = `An identity was not set properly. Please verify that cookies returned from ${edgeDomain} can be set on this page.`;
           }
