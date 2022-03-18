@@ -14,7 +14,8 @@ import {
   fireReferrerHideableImage,
   areThirdPartyCookiesSupportedByDefault,
   injectDoesIdentityCookieExist,
-  cookieJar
+  cookieJar,
+  getApexDomain
 } from "../../utils";
 import injectProcessIdSyncs from "./injectProcessIdSyncs";
 import configValidators from "./configValidators";
@@ -42,7 +43,8 @@ const createIdentity = ({
   consent,
   sendEdgeNetworkRequest
 }) => {
-  const { orgId, thirdPartyCookiesEnabled } = config;
+  const { orgId, thirdPartyCookiesEnabled, edgeDomain } = config;
+  const apexDomain = getApexDomain(window, cookieJar);
 
   const getEcidFromVisitor = injectGetEcidFromVisitor({
     logger,
@@ -75,7 +77,9 @@ const createIdentity = ({
   const awaitIdentityCookie = injectAwaitIdentityCookie({
     orgId,
     doesIdentityCookieExist,
-    extractOrgIdsFromCookies
+    extractOrgIdsFromCookies,
+    edgeDomain,
+    apexDomain
   });
   const ensureSingleIdentity = injectEnsureSingleIdentity({
     doesIdentityCookieExist,

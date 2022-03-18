@@ -13,6 +13,9 @@ governing permissions and limitations under the License.
 import injectAwaitIdentityCookie from "../../../../../src/components/Identity/injectAwaitIdentityCookie";
 
 describe("Identity::injectAwaitIdentityCookie", () => {
+  let edgeDomain;
+  let apexDomain;
+  let orgId;
   let doesIdentityCookieExist;
   let awaitIdentityCookie;
   let extractOrgIdsFromCookies;
@@ -25,6 +28,8 @@ describe("Identity::injectAwaitIdentityCookie", () => {
     doesIdentityCookieExist = jasmine
       .createSpy("doesIdentityCookieExist")
       .and.returnValue(true);
+    edgeDomain = "adobe.com";
+    apexDomain = "adobe.com";
     const onResponseCallbacks = [];
     runOnResponseCallbacks = () => {
       onResponseCallbacks.forEach(callback => {
@@ -39,12 +44,14 @@ describe("Identity::injectAwaitIdentityCookie", () => {
       });
     };
     onRequestFailure = callback => onRequestFailureCallbacks.push(callback);
-    const orgId = "org@adobe";
+    orgId = "org@adobe";
     extractOrgIdsFromCookies = jasmine.createSpy().and.returnValue([orgId]);
     awaitIdentityCookie = injectAwaitIdentityCookie({
       orgId,
       doesIdentityCookieExist,
-      extractOrgIdsFromCookies
+      extractOrgIdsFromCookies,
+      edgeDomain,
+      apexDomain
     });
   });
 
@@ -69,6 +76,25 @@ describe("Identity::injectAwaitIdentityCookie", () => {
     doesIdentityCookieExist.and.returnValue(false);
     const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
     const errorRegex = /verify that cookies returned from/;
+    expect(() => {
+      runOnResponseCallbacks();
+    }).toThrowError(errorRegex);
+    return expectAsync(promise).toBeRejectedWithError(errorRegex);
+  });
+
+  it("rejects promise if identity cookie does not exist after response and the edge domain does not match the apex domain", () => {
+    doesIdentityCookieExist.and.returnValue(false);
+    edgeDomain = "analytics.example.com";
+    apexDomain = "adobe.com";
+    awaitIdentityCookie = injectAwaitIdentityCookie({
+      orgId,
+      doesIdentityCookieExist,
+      extractOrgIdsFromCookies,
+      edgeDomain,
+      apexDomain
+    });
+    const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
+    const errorRegex = /does not match apex domain/;
     expect(() => {
       runOnResponseCallbacks();
     }).toThrowError(errorRegex);

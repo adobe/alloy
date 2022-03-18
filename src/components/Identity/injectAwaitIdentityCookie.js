@@ -10,10 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { domainMatchesApex } from "../../utils";
+
 export default ({
   orgId,
   doesIdentityCookieExist,
-  extractOrgIdsFromCookies
+  extractOrgIdsFromCookies,
+  edgeDomain,
+  apexDomain
 }) => {
   /**
    * Returns a promise that will be resolved once an identity cookie exists.
@@ -26,7 +30,6 @@ export default ({
         if (doesIdentityCookieExist()) {
           resolve();
         } else {
-          const edgeDomain = "";
           let errorMessage;
 
           const orgIdsFromCookies = extractOrgIdsFromCookies();
@@ -37,6 +40,8 @@ export default ({
             errorMessage = `An identity for organzation ${orgId} was not found. Valid organizations on this page are: ${orgIdsFromCookies.join(
               ", "
             )}`;
+          } else if (!domainMatchesApex(edgeDomain, apexDomain)) {
+            errorMessage = `An identity was not set properly because edge domain ${edgeDomain} does not match apex domain ${apexDomain}, and ${edgeDomain} may not allow third-party cookies.`;
           } else {
             errorMessage = `An identity was not set properly. Please verify that cookies returned from ${edgeDomain} can be set on this page.`;
           }
