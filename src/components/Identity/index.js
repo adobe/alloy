@@ -27,6 +27,7 @@ import injectEnsureSingleIdentity from "./injectEnsureSingleIdentity";
 import addEcidQueryToPayload from "./addEcidQueryToPayload";
 import injectSetDomainForInitialIdentityPayload from "./injectSetDomainForInitialIdentityPayload";
 import injectAddLegacyEcidToPayload from "./injectAddLegacyEcidToPayload";
+import injectAddQueryStringIdentityToPayload from "./injectAddQueryStringIdentityToPayload";
 import addEcidToPayload from "./addEcidToPayload";
 import injectAwaitIdentityCookie from "./injectAwaitIdentityCookie";
 import getEcidFromResponse from "./getEcidFromResponse";
@@ -38,7 +39,8 @@ const createIdentity = ({
   config,
   logger,
   consent,
-  sendEdgeNetworkRequest
+  sendEdgeNetworkRequest,
+  window
 }) => {
   const { orgId, thirdPartyCookiesEnabled } = config;
 
@@ -67,6 +69,13 @@ const createIdentity = ({
     getLegacyEcid: legacyIdentity.getEcid,
     addEcidToPayload
   });
+  const addQueryStringIdentityToPayload = injectAddQueryStringIdentityToPayload(
+    {
+      locationSearch: window.document.search,
+      dateProvider: () => new Date(),
+      orgId
+    }
+  );
   const awaitIdentityCookie = injectAwaitIdentityCookie({
     orgId,
     doesIdentityCookieExist
@@ -88,6 +97,7 @@ const createIdentity = ({
   return createComponent({
     ensureSingleIdentity,
     addEcidQueryToPayload,
+    addQueryStringIdentityToPayload,
     setLegacyEcid: legacyIdentity.setEcid,
     handleResponseForIdSyncs,
     getEcidFromResponse,

@@ -3,6 +3,7 @@ import getIdentityOptionsValidator from "./getIdentity/getIdentityOptionsValidat
 
 export default ({
   addEcidQueryToPayload,
+  addQueryStringIdentityToPayload,
   ensureSingleIdentity,
   setLegacyEcid,
   handleResponseForIdSyncs,
@@ -18,6 +19,7 @@ export default ({
         // Querying the ECID on every request to be able to set the legacy cookie, and make it
         // available for the `getIdentity` command.
         addEcidQueryToPayload(request.getPayload());
+        addQueryStringIdentityToPayload(request.getPayload());
         return ensureSingleIdentity({ request, onResponse, onRequestFailure });
       },
       onResponse({ response }) {

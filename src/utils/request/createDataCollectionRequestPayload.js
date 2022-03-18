@@ -17,7 +17,14 @@ export default () => {
   const content = {};
   const payload = createRequestPayload({
     content,
-    addIdentity: createAddIdentity(content)
+    addIdentity: createAddIdentity(content),
+    hasIdentity: namespaceCode => {
+      return (
+        (content.xdm &&
+          content.xdm.identityMap &&
+          content.xdm.identityMap[namespaceCode]) !== undefined
+      );
+    }
   });
 
   payload.addEvent = event => {

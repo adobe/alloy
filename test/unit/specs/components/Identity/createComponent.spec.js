@@ -17,6 +17,7 @@ import flushPromiseChains from "../../../helpers/flushPromiseChains";
 describe("Identity::createComponent", () => {
   let ensureSingleIdentity;
   let addEcidQueryToPayload;
+  let addQueryStringIdentityToPayload;
   let setLegacyEcid;
   let handleResponseForIdSyncs;
   let getEcidFromResponse;
@@ -30,6 +31,9 @@ describe("Identity::createComponent", () => {
   beforeEach(() => {
     ensureSingleIdentity = jasmine.createSpy("ensureSingleIdentity");
     addEcidQueryToPayload = jasmine.createSpy("addEcidQueryToPayload");
+    addQueryStringIdentityToPayload = jasmine.createSpy(
+      "addQueryStringIdentityToPayload"
+    );
     setLegacyEcid = jasmine.createSpy("setLegacyEcid");
     handleResponseForIdSyncs = jasmine.createSpy("handleResponseForIdSyncs");
     getEcidFromResponse = jasmine.createSpy("getEcidFromResponse");
@@ -44,6 +48,7 @@ describe("Identity::createComponent", () => {
     component = createComponent({
       ensureSingleIdentity,
       addEcidQueryToPayload,
+      addQueryStringIdentityToPayload,
       setLegacyEcid,
       handleResponseForIdSyncs,
       getEcidFromResponse,
@@ -63,6 +68,17 @@ describe("Identity::createComponent", () => {
     const onResponse = jasmine.createSpy("onResponse");
     component.lifecycle.onBeforeRequest({ request, onResponse });
     expect(addEcidQueryToPayload).toHaveBeenCalledWith(payload);
+  });
+
+  it("adds the query string identity to the payload", () => {
+    const payload = { type: "payload" };
+    const request = {
+      getPayload() {
+        return payload;
+      }
+    };
+    component.lifecycle.onBeforeRequest({ request });
+    expect(addQueryStringIdentityToPayload).toHaveBeenCalledOnceWith(payload);
   });
 
   it("ensures request has identity", () => {

@@ -27,12 +27,11 @@ describe("Identity::injectAddLegacyEcidToPayload", () => {
       getLegacyEcid,
       addEcidToPayload
     });
-    payload = {
-      type: "payload"
-    };
+    payload = jasmine.createSpyObj("payload", ["hasIdentity"]);
   });
 
   it("does not add legacy ECID to payload if legacy ECID does not exist", () => {
+    payload.hasIdentity.and.returnValue(false);
     getLegacyEcid.and.returnValue(Promise.resolve());
     return addLegacyEcidToPayload(payload).then(() => {
       expect(addEcidToPayload).not.toHaveBeenCalled();
@@ -40,8 +39,16 @@ describe("Identity::injectAddLegacyEcidToPayload", () => {
   });
 
   it("adds legacy ECID to payload if legacy ECID exists", () => {
+    payload.hasIdentity.and.returnValue(false);
     return addLegacyEcidToPayload(payload).then(() => {
       expect(addEcidToPayload).toHaveBeenCalledWith(payload, "legacy@adobe");
     });
+  });
+
+  it("does not add legacy ECID to payload if the payload already has an ecid", async () => {
+    payload.hasIdentity.and.returnValue(true);
+    const response = await addLegacyEcidToPayload(payload);
+    expect(getLegacyEcid).not.toHaveBeenCalled();
+    expect(response).toBeUndefined();
   });
 });
