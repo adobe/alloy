@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import injectExtractOrgIdsFromCookies from "../../../../../src/components/Identity/injectExtractOrgIdsFromCookies";
 import { cookieJar } from "../../../../../src/utils";
 
-describe("injectExtractOrIdsFromCookies", () => {
+describe("injectExtractOrgIdsFromCookies", () => {
   let allCookies = [];
   let extractOrgIdsFromCookies;
   beforeEach(() => {
