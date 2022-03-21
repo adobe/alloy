@@ -23,7 +23,6 @@ export { default as createTaskQueue } from "./createTaskQueue";
 export { default as crc32 } from "./crc32";
 export { default as defer } from "./defer";
 export { default as deepAssign } from "./deepAssign";
-export { default as domainMatchesApex } from "./domainMatchesApex";
 export { default as endsWith } from "./endsWith";
 export { default as find } from "./find";
 export { default as fireImage } from "./fireImage";
