@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { EDGE } from "../../constants/domain";
 import { endsWith, includes } from "../../utils";
 
 export default ({
@@ -40,7 +41,7 @@ export default ({
             errorMessage = `An identity for organzation ${orgId} was not found. Valid organizations on this page are: ${orgIdsFromCookies.join(
               ", "
             )}`;
-          } else if (!endsWith(edgeDomain, apexDomain)) {
+          } else if (!endsWith(edgeDomain, apexDomain) && edgeDomain !== EDGE) {
             errorMessage = `An identity was not set properly because edge domain ${edgeDomain} does not match apex domain ${apexDomain}, and ${apexDomain} may not allow third-party cookies.`;
           } else {
             errorMessage = `An identity was not set properly. Please verify that cookies returned from ${edgeDomain} can be set on this page.`;

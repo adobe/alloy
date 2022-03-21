@@ -101,6 +101,25 @@ describe("Identity::injectAwaitIdentityCookie", () => {
     return expectAsync(promise).toBeRejectedWithError(errorRegex);
   });
 
+  it("rejects promise with generic error message if identity cookie does not exist after response and the edge domain does not match the apex domain, but the edge domain is adobedc.net", () => {
+    doesIdentityCookieExist.and.returnValue(false);
+    edgeDomain = "edge.adobedc.net";
+    apexDomain = "adobe.com";
+    awaitIdentityCookie = injectAwaitIdentityCookie({
+      orgId,
+      doesIdentityCookieExist,
+      extractOrgIdsFromCookies,
+      edgeDomain,
+      apexDomain
+    });
+    const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
+    const errorRegex = /verify that cookies returned from/;
+    expect(() => {
+      runOnResponseCallbacks();
+    }).toThrowError(errorRegex);
+    return expectAsync(promise).toBeRejectedWithError(errorRegex);
+  });
+
   it("resolves promise if identity cookie exists after request failure", () => {
     const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
     runOnRequestFailureCallbacks();
