@@ -70,4 +70,12 @@ describe("injectExtractOrgIdsFromCookies", () => {
       "97D1F3F459CE0AD80A495CBE"
     ]);
   });
+
+  it("should return an empty array when there are no cookies", () => {
+    allCookies.forEach(({ name }) => cookieJar.remove(name));
+
+    const orgIds = extractOrgIdsFromCookies();
+
+    expect(orgIds).toEqual([]);
+  });
 });
