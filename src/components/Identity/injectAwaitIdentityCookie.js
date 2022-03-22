@@ -38,7 +38,7 @@ export default ({
             orgIdsFromCookies.length > 0 &&
             !includes(orgIdsFromCookies, orgId)
           ) {
-            errorMessage = `An identity for organzation ${orgId} was not found. Valid organizations on this page are: ${orgIdsFromCookies.join(
+            errorMessage = `An identity for organzation ${orgId} was not found. Valid organizations on this domain are: ${orgIdsFromCookies.join(
               ", "
             )}`;
           } else if (!endsWith(edgeDomain, apexDomain) && edgeDomain !== EDGE) {

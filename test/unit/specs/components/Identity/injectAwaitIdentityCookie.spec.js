@@ -65,7 +65,7 @@ describe("Identity::injectAwaitIdentityCookie", () => {
     doesIdentityCookieExist.and.returnValue(false);
     extractOrgIdsFromCookies.and.returnValue(["org2@adobe"]);
     const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
-    const errorRegex = /Valid organizations on this page are: org2@adobe/;
+    const errorRegex = /Valid organizations on this domain are: org2@adobe/;
     expect(() => {
       runOnResponseCallbacks();
     }).toThrowError(errorRegex);
