@@ -1,4 +1,7 @@
-<!--- Provide a general summary of your changes in the Title above -->
+<!--- The title above will be used as a bullet point in the release notes. -->
+<!--- In general, start the title with a past tense verb (i.e. added, optimized, removed.) -->
+<!--- For bug fixes, start with "fixed" (i.e. fixed an issue, fixed broken.) -->
+<!--- For PRs that should not be included in the release notes, attach the label "ignore-for-release" -->
 
 ## Description
 

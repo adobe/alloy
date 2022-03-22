@@ -11,6 +11,7 @@ const Products = () => {
       <div
         style={{ border: "1px solid red" }}
         id="personalization-products-container"
+        className="personalization-container"
       >
         This is the personalization placeholder for the products view.
         Personalized content has not been loaded.
@@ -27,6 +28,7 @@ const Cart = () => {
       <div
         style={{ border: "1px solid red" }}
         id="personalization-cart-container"
+        className="personalization-container"
       >
         This is the personalization placeholder for the cart view. Personalized
         content has not been loaded.
@@ -42,6 +44,7 @@ const Promotion = () => {
       <div
         style={{ border: "1px solid red" }}
         id="personalization-cart-container"
+        className="personalization-container"
       >
         This is the personalization placeholder for the promotion view. We use
         this view to test the use case when nothing was stored in cache.
