@@ -1,0 +1,8 @@
+# This config is used to control automatically generated release notes
+# see https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+    authors:
+      - dependabot

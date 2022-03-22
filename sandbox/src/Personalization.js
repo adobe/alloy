@@ -14,7 +14,10 @@ export default function Personalization() {
         to refresh your browser because this is how to properly simulate a
         non-SPA workflow.
       </p>
-      <div style={{ border: "1px solid red" }} id="personalization-container">
+      <div
+        style={{ border: "1px solid red" }}
+        className="personalization-container"
+      >
         This is the personalization placeholder. Personalized content has not
         been loaded.
       </div>
