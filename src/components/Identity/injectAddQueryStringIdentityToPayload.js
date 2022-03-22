@@ -5,7 +5,7 @@ import { queryString } from "../../utils";
 import queryStringIdentityParam from "../../constants/queryStringIdentityParam";
 import ecidNamespace from "../../constants/ecidNamespace";
 
-export default ({ locationSearch, dateProvider, orgId }) => payload => {
+export default ({ locationSearch, dateProvider, orgId, logger }) => payload => {
   if (payload.hasIdentity(ecidNamespace)) {
     // don't overwrite a user provided ecid identity
     return;
@@ -26,13 +26,17 @@ export default ({ locationSearch, dateProvider, orgId }) => payload => {
   const mcmid = properties.MCMID;
   const mcorgid = properties.MCORGID;
 
-  if (dateProvider().getTime() / 1000 > ts + 300) {
-    return;
+  // all inequalities with NaN variables are false in javascript
+  if (
+    dateProvider().getTime() / 1000 <= ts + 300 &&
+    mcorgid === orgId &&
+    mcmid
+  ) {
+    logger.info(`Adding ECID identity ${mcmid} to identityMap.`);
+    payload.addIdentity(ecidNamespace, {
+      id: mcmid
+    });
+  } else {
+    logger.info("Detected invalid or expired adobe_mc query string parameter.");
   }
-  if (mcorgid !== orgId) {
-    return;
-  }
-  payload.addIdentity(ecidNamespace, {
-    id: mcmid
-  });
 };

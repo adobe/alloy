@@ -16,6 +16,7 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
   let locationSearch;
   let dateProvider;
   let orgId;
+  let logger;
   let date;
   let payload;
 
@@ -27,13 +28,15 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
       "?foo=bar&adobe_mc=TS%3D1641432103%7CMCMID%3D77094828402023918047117570965393734545%7CMCORGID%3DFAF554945B90342F0A495E2C%40AdobeOrg&a=b";
     date = new Date(1641432103 * 1000);
     orgId = "FAF554945B90342F0A495E2C@AdobeOrg";
+    logger = jasmine.createSpyObj("logger", ["info"]);
   });
 
   const run = () => {
     injectAddQueryStringIdentityToPayload({
       locationSearch,
       dateProvider,
-      orgId
+      orgId,
+      logger
     })(payload);
   };
 
@@ -94,9 +97,25 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
     expect(payload.addIdentity).not.toHaveBeenCalled();
   });
 
-  ["adobe_mc=", "adobe_mc=a", "adobe_mc=a%3Db", "adobe_mc=%7C%7C"].forEach(
-    value => {
-      it(`handles garbage parameter value: ${value}`);
-    }
-  );
+  [
+    "adobe_mc=",
+    "adobe_mc=a",
+    "adobe_mc=a%3Db",
+    "adobe_mc=%7C%7C",
+    `adobe_mc=${encodeURIComponent(
+      "TS=foo|MCMID=12345|MCORGID=FAF554945B90342F0A495E2C@AdobeOrg"
+    )}`,
+    `adobe_mc=${encodeURIComponent(
+      "TS=1641432103|MCMID=|MCORGID=FAF554945B90342F0A495E2C@AdobeOrg"
+    )}`
+  ].forEach(value => {
+    it(`handles garbage parameter value: ${value}`, () => {
+      locationSearch = `?${value}`;
+      run();
+      expect(payload.addIdentity).not.toHaveBeenCalled();
+      expect(logger.info).toHaveBeenCalledOnceWith(
+        jasmine.stringMatching(/invalid/)
+      );
+    });
+  });
 });

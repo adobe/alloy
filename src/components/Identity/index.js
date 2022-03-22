@@ -72,7 +72,8 @@ const createIdentity = ({
     {
       locationSearch: window.document.location.search,
       dateProvider: () => new Date(),
-      orgId
+      orgId,
+      logger
     }
   );
   const awaitIdentityCookie = injectAwaitIdentityCookie({
