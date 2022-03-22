@@ -9,10 +9,16 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import crypto from "crypto";
 
-export { default as createAddIdentity } from "./createAddIdentity";
-export { default as createDataCollectionRequest } from "./createDataCollectionRequest";
-export { default as createDataCollectionRequestPayload } from "./createDataCollectionRequestPayload";
-export { default as createHasIdentity } from "./createHasIdentity";
-export { default as createRequest } from "./createRequest";
-export { default as createRequestPayload } from "./createRequestPayload";
+// 2 random 63 bit numbers padded with zeros to 19 digits and concatenated
+export default () => {
+  const randomBytesBuffer = crypto.randomBytes(16);
+  // eslint-disable-next-line no-bitwise
+  randomBytesBuffer[0] &= 0x7f;
+  // eslint-disable-next-line no-bitwise
+  randomBytesBuffer[8] &= 0x7f;
+  const high = randomBytesBuffer.readBigInt64BE(0).toString();
+  const low = randomBytesBuffer.readBigInt64BE(8).toString();
+  return high.padStart(19, "0") + low.padStart(19, "0");
+};

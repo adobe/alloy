@@ -37,8 +37,10 @@ const getCurrentUrl = ClientFunction(() => {
   return document.location.href;
 });
 
-export default async () => {
+export default async (newQueryString = "") => {
   const currentUrl = await getCurrentUrl();
+  const newUrl =
+    currentUrl + (newQueryString.length > 0 ? `?${newQueryString}` : "");
   // navigateTo waits for the server to respond after a redirect occurs,
   // which is why we use it instead of just calling document.location.reload()
   // in our client function.
@@ -52,6 +54,6 @@ export default async () => {
   const localStorageEntries = await getLocalStorageEntries();
   // We could navigate to any other page and then back again.
   await t.navigateTo(RELOAD_PAGE_URL);
-  await t.navigateTo(currentUrl);
+  await t.navigateTo(newUrl);
   await setLocalStorageEntries(localStorageEntries);
 };

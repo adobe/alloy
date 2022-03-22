@@ -10,9 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as createAddIdentity } from "./createAddIdentity";
-export { default as createDataCollectionRequest } from "./createDataCollectionRequest";
-export { default as createDataCollectionRequestPayload } from "./createDataCollectionRequestPayload";
-export { default as createHasIdentity } from "./createHasIdentity";
-export { default as createRequest } from "./createRequest";
-export { default as createRequestPayload } from "./createRequestPayload";
+export default content => namespaceCode => {
+  return (
+    (content.xdm &&
+      content.xdm.identityMap &&
+      content.xdm.identityMap[namespaceCode]) !== undefined
+  );
+};
