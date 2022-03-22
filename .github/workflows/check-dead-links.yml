@@ -1,0 +1,24 @@
+name: Check Dead Links
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * *" # every day at 1AM
+jobs:
+  linkChecker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Dead Link Checker
+        id: lychee
+        uses: lucheeverse/lychee-action@v1.3
+        args: "--no-progress --include=adobe.ly --include=experienceleague.adobe.com {src,scripts,test}/**/*.{md,js,html} *.{md,js}"
+        format: detailed
+        fail: true
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Notify Slack
+        uses: craftech-io/slack-action@v1
+        with:
+          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          status: failure
+        if: failure()
