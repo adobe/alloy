@@ -29,28 +29,26 @@ const config = compose(orgMainConfigMain, debugEnabled);
 const networkLogger = createNetworkLogger();
 
 const id = createRandomEcid();
-const adobemc = createAdobeMC({ id });
+// TTL is 5 minutes (300 seconds), but use 400 to account for differences in server time.
+const timestamp = new Date().getTime() / 1000 - 400;
+const adobemc = createAdobeMC({ timestamp, id });
 
 createFixture({
   url: `${TEST_PAGE_URL}?adobe_mc=${adobemc}`,
-  title:
-    "C5594865: Identity can be maintained across domains via the adobe_mc query string parameter",
+  title: "C5594872: An expired adobe_mc query string parameter is not used",
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({
-  ID: "C5594865",
+  ID: "C5594872",
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
 
-test("C5594865: Identity can be maintained across domains via the adobe_mc query string parameter", async () => {
+test("C5594872: An expired adobe_mc query string parameter is not used", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({});
   const ecid = getReturnedEcid(networkLogger.edgeEndpointLogs.requests[0]);
-  await t.expect(ecid).eql(id);
-
-  const { identity } = await alloy.getIdentity();
-  await t.expect(identity.ECID).eql(id);
+  await t.expect(ecid).notEql(id);
 });

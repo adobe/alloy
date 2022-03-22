@@ -1,3 +1,15 @@
+/*
+Copyright 2022 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
 import { t } from "testcafe";
 import createFixture from "../../helpers/createFixture";
 import {
@@ -6,22 +18,18 @@ import {
   debugEnabled
 } from "../../helpers/constants/configParts";
 import createNetworkLogger from "../../helpers/networkLogger";
-import createResponse from "../../helpers/createResponse";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import reloadPage from "../../helpers/reloadPage";
 import createRandomEcid from "../../helpers/createRandomEcid";
+import createAdobeMC from "../../helpers/createAdobeMC";
+import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
 
 const config = compose(orgMainConfigMain, debugEnabled);
 
 const networkLogger = createNetworkLogger();
 
-const TS = new Date().getTime() / 1000;
-const MCMID = createRandomEcid();
-const MCORGID = config.orgId;
-const adobemc = encodeURIComponent(
-  `TS=${TS}|MCMID=${MCMID}|MCORGID=${MCORGID}`
-);
+const id = createRandomEcid();
+const adobemc = createAdobeMC({ id });
 
 createFixture({
   title:
@@ -30,7 +38,7 @@ createFixture({
 });
 
 test.meta({
-  ID: "CqueryString1",
+  ID: "C5594866",
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
@@ -45,20 +53,9 @@ test("C5594866: Identity can be changed via the adobe_mc query string parameter"
   await alloy.configure(config);
   await alloy.sendEvent({});
 
-  const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[1])
-  );
+  const ecid = getReturnedEcid(networkLogger.edgeEndpointLogs.requests[1]);
+  await t.expect(ecid).eql(id);
 
-  const payloads = createResponse({ content: response }).getPayloadsByType(
-    "identity:result"
-  );
-
-  const ecidPayload = payloads.filter(
-    payload => payload.namespace.code === "ECID"
-  )[0];
-
-  await t.expect(ecidPayload.id).eql(MCMID);
-
-  const ecid = await alloy.getIdentity();
-  await t.expect(ecid.identity.ECID).eql(MCMID);
+  const { identity } = await alloy.getIdentity();
+  await t.expect(identity.ECID).eql(id);
 });

@@ -12,45 +12,36 @@ governing permissions and limitations under the License.
 
 import { t } from "testcafe";
 import createFixture from "../../helpers/createFixture";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
-import createNetworkLogger from "../../helpers/networkLogger";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import createRandomEcid from "../../helpers/createRandomEcid";
-import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
 import createAdobeMC from "../../helpers/createAdobeMC";
 
 const config = compose(orgMainConfigMain, debugEnabled);
-
-const networkLogger = createNetworkLogger();
 
 const id = createRandomEcid();
 const adobemc = createAdobeMC({ id });
 
 createFixture({
   url: `${TEST_PAGE_URL}?adobe_mc=${adobemc}`,
-  title:
-    "C5594865: Identity can be maintained across domains via the adobe_mc query string parameter",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  title: "C5594871: getIdentity works with adobe_mc query string parameter",
+  requestHooks: []
 });
 
 test.meta({
-  ID: "C5594865",
+  ID: "C5594871",
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
 
-test("C5594865: Identity can be maintained across domains via the adobe_mc query string parameter", async () => {
+test("C5594871: getIdentity works with adobe_mc query string parameter", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  await alloy.sendEvent({});
-  const ecid = getReturnedEcid(networkLogger.edgeEndpointLogs.requests[0]);
-  await t.expect(ecid).eql(id);
-
-  const { identity } = await alloy.getIdentity();
-  await t.expect(identity.ECID).eql(id);
+  const ecid = await alloy.getIdentity();
+  await t.expect(ecid.identity.ECID).eql(id);
 });

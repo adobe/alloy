@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import { t } from "testcafe";
 import createFixture from "../../helpers/createFixture";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
 import {
   compose,
   orgMainConfigMain,
@@ -21,10 +20,16 @@ import {
 import createNetworkLogger from "../../helpers/networkLogger";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import createRandomEcid from "../../helpers/createRandomEcid";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
+import { CONSENT_IN } from "../../helpers/constants/consent";
 import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
 import createAdobeMC from "../../helpers/createAdobeMC";
 
-const config = compose(orgMainConfigMain, debugEnabled);
+const config = compose(
+  orgMainConfigMain,
+  { defaultConsent: "pending" },
+  debugEnabled
+);
 
 const networkLogger = createNetworkLogger();
 
@@ -34,23 +39,23 @@ const adobemc = createAdobeMC({ id });
 createFixture({
   url: `${TEST_PAGE_URL}?adobe_mc=${adobemc}`,
   title:
-    "C5594865: Identity can be maintained across domains via the adobe_mc query string parameter",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+    "C5594870: Identity can be set via the adobe_mc query string parameter when calling set-consent",
+  requestHooks: [networkLogger.setConsentEndpointLogs]
 });
 
 test.meta({
-  ID: "C5594865",
+  ID: "C5594870",
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
 
-test("C5594865: Identity can be maintained across domains via the adobe_mc query string parameter", async () => {
+test("C5594870: Identity can be set via the adobe_mc query string parameter when calling set-consent", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  await alloy.sendEvent({});
-  const ecid = getReturnedEcid(networkLogger.edgeEndpointLogs.requests[0]);
-  await t.expect(ecid).eql(id);
 
-  const { identity } = await alloy.getIdentity();
-  await t.expect(identity.ECID).eql(id);
+  await alloy.setConsent(CONSENT_IN);
+  const ecid = getReturnedEcid(
+    networkLogger.setConsentEndpointLogs.requests[0]
+  );
+  await t.expect(ecid).eql(id);
 });
