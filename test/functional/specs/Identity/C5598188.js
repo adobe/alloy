@@ -42,4 +42,5 @@ test("C5598188: Informative error message given when using an invalid orgID", as
 
   await t.expect(errorMessage).contains("org ID");
   await t.expect(errorMessage).contains(mainConfig.orgId);
+  await t.expect(errorMessage).contains(mainConfig.edgeDomain);
 });
