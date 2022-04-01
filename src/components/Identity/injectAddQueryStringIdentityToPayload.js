@@ -5,6 +5,8 @@ import { queryString } from "../../utils";
 import queryStringIdentityParam from "../../constants/queryStringIdentityParam";
 import ecidNamespace from "../../constants/ecidNamespace";
 
+const LINK_TTL_SECONDS = 300; // 5 minute link time to live
+
 export default ({ locationSearch, dateProvider, orgId, logger }) => payload => {
   if (payload.hasIdentity(ecidNamespace)) {
     // don't overwrite a user provided ecid identity
@@ -26,9 +28,10 @@ export default ({ locationSearch, dateProvider, orgId, logger }) => payload => {
   const mcmid = properties.MCMID;
   const mcorgid = properties.MCORGID;
 
-  // all inequalities with NaN variables are false in javascript
   if (
-    dateProvider().getTime() / 1000 <= ts + 300 &&
+    // When TS is not specified or not a number, the following inequality returns false.
+    // All inequalities with NaN variables are false.
+    dateProvider().getTime() / 1000 <= ts + LINK_TTL_SECONDS &&
     mcorgid === orgId &&
     mcmid
   ) {
