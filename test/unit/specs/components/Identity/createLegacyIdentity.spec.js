@@ -101,7 +101,7 @@ describe("Identity::createLegacyIdentity", () => {
     });
     it("should not write AMCV cookie if already present", () => {
       build();
-      const cookieValue = "existing value";
+      const cookieValue = "MCMID|1234|otherstuff";
       cookieJar.set("AMCV_TEST_ORG", cookieValue);
       legacyIdentity.setEcid("1234");
       expect(cookieJar.get("AMCV_TEST_ORG")).toEqual(cookieValue);

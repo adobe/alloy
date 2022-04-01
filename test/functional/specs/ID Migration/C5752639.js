@@ -10,12 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { t } from "testcafe";
+import { t, ClientFunction } from "testcafe";
 import createFixture from "../../helpers/createFixture";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
+  migrationEnabled
 } from "../../helpers/constants/configParts";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
@@ -23,8 +24,10 @@ import reloadPage from "../../helpers/reloadPage";
 import createRandomEcid from "../../helpers/createRandomEcid";
 import createAdobeMC from "../../helpers/createAdobeMC";
 import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
+import setLegacyIdentityCookie from "../../helpers/setLegacyIdentityCookie";
+import { LEGACY_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
 
-const config = compose(orgMainConfigMain, debugEnabled);
+const config = compose(orgMainConfigMain, debugEnabled, migrationEnabled);
 
 const networkLogger = createNetworkLogger();
 
@@ -33,20 +36,23 @@ const adobemc = createAdobeMC({ id });
 
 createFixture({
   title:
-    "C5594866: Identity can be changed via the adobe_mc query string parameter",
+    "C5752639: Identity can be changed via the adobe_mc query string parameter when id_migration is enabled",
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({
-  ID: "C5594866",
+  ID: "C5752639",
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
 
-test("C5594866: Identity can be changed via the adobe_mc query string parameter", async () => {
+const getDocumentCookie = ClientFunction(() => document.cookie);
+
+test("C5752639: Identity can be changed via the adobe_mc query string parameter when id_migration is enabled", async () => {
+  setLegacyIdentityCookie();
+
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  // establish an identity cookie
   await alloy.sendEvent({});
 
   await reloadPage(`adobe_mc=${adobemc}`);
@@ -57,9 +63,11 @@ test("C5594866: Identity can be changed via the adobe_mc query string parameter"
   await alloy.configure(config);
   await alloy.sendEvent({});
 
+  const documentCookie = await getDocumentCookie();
+  await t
+    .expect(documentCookie)
+    .contains(`${LEGACY_IDENTITY_COOKIE_NAME}=MCMID|${id}`);
+
   const ecid = getReturnedEcid(networkLogger.edgeEndpointLogs.requests[2]);
   await t.expect(ecid).eql(id);
-
-  const { identity } = await alloy.getIdentity();
-  await t.expect(identity.ECID).eql(id);
 });

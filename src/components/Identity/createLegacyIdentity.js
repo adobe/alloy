@@ -55,7 +55,7 @@ export default ({ config, getEcidFromVisitor }) => {
       return Promise.resolve();
     },
     setEcid(ecid) {
-      if (idMigrationEnabled && !cookieJar.get(amcvCookieName)) {
+      if (idMigrationEnabled && getEcidFromLegacyCookies() !== ecid) {
         cookieJar.set(amcvCookieName, `MCMID|${ecid}`, {
           domain: apexDomain,
           // Without `expires` this will be a session cookie.
