@@ -1,5 +1,6 @@
 import { assign } from "../../utils";
 import getIdentityOptionsValidator from "./getIdentity/getIdentityOptionsValidator";
+import appendIdentityToUrlOptionsValidator from "./appendIdentityToUrl/appendIdentityToUrlOptionsValidator";
 
 export default ({
   addEcidQueryToPayload,
@@ -9,7 +10,9 @@ export default ({
   handleResponseForIdSyncs,
   getEcidFromResponse,
   getIdentity,
-  consent
+  consent,
+  appendIdentityToUrl,
+  logger
 }) => {
   let ecid;
   let edge = {};
@@ -55,6 +58,23 @@ export default ({
                 },
                 edge
               };
+            });
+        }
+      },
+      appendIdentityToUrl: {
+        optionsValidator: appendIdentityToUrlOptionsValidator,
+        run: options => {
+          return consent
+            .withConsent()
+            .then(() => {
+              return ecid ? undefined : getIdentity(options.namespaces);
+            })
+            .then(() => {
+              return { url: appendIdentityToUrl(ecid, options.url) };
+            })
+            .catch(error => {
+              logger.warn(`Unable to append identity to url. ${error.message}`);
+              return options;
             });
         }
       }

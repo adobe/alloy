@@ -51,7 +51,10 @@ export default ({ logger }) => {
     );
   const awaitOut = () =>
     Promise.reject(createDeclinedConsentError("The user declined consent."));
-  const awaitPending = () => {
+  const awaitPending = returnImmediately => {
+    if (returnImmediately) {
+      return Promise.reject(new Error("Consent is pending."));
+    }
     const deferred = defer();
     deferreds.push(deferred);
     return deferred.promise;
@@ -105,6 +108,9 @@ export default ({ logger }) => {
       }
       this.awaitConsent = awaitPending;
     },
-    awaitConsent: awaitInitial
+    awaitConsent: awaitInitial,
+    withConsent() {
+      return this.awaitConsent(true);
+    }
   };
 };

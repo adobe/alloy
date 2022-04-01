@@ -23,8 +23,11 @@ describe("Identity::createComponent", () => {
   let getEcidFromResponse;
   let component;
   let getIdentity;
-  let consentDeferred;
+  let awaitConsentDeferred;
+  let withConsentDeferred;
   let consent;
+  let appendIdentityToUrl;
+  let logger;
   let getIdentityDeferred;
   let response;
 
@@ -38,10 +41,14 @@ describe("Identity::createComponent", () => {
     handleResponseForIdSyncs = jasmine.createSpy("handleResponseForIdSyncs");
     getEcidFromResponse = jasmine.createSpy("getEcidFromResponse");
     getIdentityDeferred = defer();
-    consentDeferred = defer();
+    awaitConsentDeferred = defer();
+    withConsentDeferred = defer();
     consent = jasmine.createSpyObj("consent", {
-      awaitConsent: consentDeferred.promise
+      awaitConsent: awaitConsentDeferred.promise,
+      withConsent: withConsentDeferred.promise
     });
+    appendIdentityToUrl = jasmine.createSpy("appendIdentityToUrl");
+    logger = jasmine.createSpyObj("logger", ["warn"]);
     getIdentity = jasmine
       .createSpy("getIdentity")
       .and.returnValue(getIdentityDeferred.promise);
@@ -53,7 +60,9 @@ describe("Identity::createComponent", () => {
       handleResponseForIdSyncs,
       getEcidFromResponse,
       getIdentity,
-      consent
+      consent,
+      appendIdentityToUrl,
+      logger
     });
     response = jasmine.createSpyObj("response", ["getEdge"]);
   });
@@ -147,7 +156,7 @@ describe("Identity::createComponent", () => {
       .then(() => {
         expect(getIdentity).not.toHaveBeenCalled();
         expect(onResolved).not.toHaveBeenCalled();
-        consentDeferred.resolve();
+        awaitConsentDeferred.resolve();
         return flushPromiseChains();
       })
       .then(() => {
@@ -181,7 +190,7 @@ describe("Identity::createComponent", () => {
       .then(() => {
         expect(getIdentity).not.toHaveBeenCalled();
         expect(onResolved).not.toHaveBeenCalled();
-        consentDeferred.resolve();
+        awaitConsentDeferred.resolve();
         return flushPromiseChains();
       })
       .then(() => {
@@ -195,5 +204,78 @@ describe("Identity::createComponent", () => {
           }
         });
       });
+  });
+
+  it("appendIdentityToUrl should return the unmodified url when consent is not given.", () => {
+    const commandPromise = component.commands.appendIdentityToUrl.run({
+      url: "myurl"
+    });
+    withConsentDeferred.reject(new Error("My consent error."));
+    getIdentityDeferred.reject(new Error("My getIdentity error."));
+    return expectAsync(commandPromise)
+      .toBeResolvedTo({ url: "myurl" })
+      .then(() => {
+        expect(logger.warn).toHaveBeenCalledWith(
+          "Unable to append identity to url. My consent error."
+        );
+        expect(getIdentity).not.toHaveBeenCalled();
+        expect(appendIdentityToUrl).not.toHaveBeenCalled();
+      });
+  });
+
+  it("appendIdentityToUrl should return the unmodified url when getIdentity returns an error.", () => {
+    const commandPromise = component.commands.appendIdentityToUrl.run({
+      url: "myurl"
+    });
+    withConsentDeferred.resolve();
+    getIdentityDeferred.reject(new Error("My getIdentity error."));
+    return expectAsync(commandPromise)
+      .toBeResolvedTo({ url: "myurl" })
+      .then(() => {
+        expect(logger.warn).toHaveBeenCalledOnceWith(
+          "Unable to append identity to url. My getIdentity error."
+        );
+        expect(appendIdentityToUrl).not.toHaveBeenCalled();
+      });
+  });
+
+  it("appendIdentityToUrl should getIdentity when there isn't one.", () => {
+    appendIdentityToUrl.and.returnValue("modifiedUrl");
+    const commandPromise = component.commands.appendIdentityToUrl.run({
+      url: "myurl"
+    });
+    withConsentDeferred.resolve();
+    const idSyncsPromise = Promise.resolve();
+    handleResponseForIdSyncs.and.returnValue(idSyncsPromise);
+    getEcidFromResponse.and.returnValue("user@adobe");
+    response.getEdge.and.returnValue({ regionId: 7 });
+    component.lifecycle.onResponse({ response });
+    getIdentityDeferred.resolve();
+    return expectAsync(commandPromise)
+      .toBeResolvedTo({ url: "modifiedUrl" })
+      .then(() => {
+        expect(logger.warn).not.toHaveBeenCalled();
+        expect(appendIdentityToUrl).toHaveBeenCalledOnceWith(
+          "user@adobe",
+          "myurl"
+        );
+      });
+  });
+
+  it("appendIdentityToUrl should append the identity to a url when there is already an identity", () => {
+    // set the ECID
+    const idSyncsPromise = Promise.resolve();
+    handleResponseForIdSyncs.and.returnValue(idSyncsPromise);
+    getEcidFromResponse.and.returnValue("user@adobe");
+    response.getEdge.and.returnValue({ regionId: 7 });
+    component.lifecycle.onResponse({ response });
+
+    appendIdentityToUrl.and.returnValue("modifiedUrl");
+    const commandPromise = component.commands.appendIdentityToUrl.run({
+      url: "myurl"
+    });
+    withConsentDeferred.resolve();
+
+    return expectAsync(commandPromise).toBeResolvedTo({ url: "modifiedUrl" });
   });
 });

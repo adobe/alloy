@@ -107,7 +107,8 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
     )}`,
     `adobe_mc=${encodeURIComponent(
       "TS=1641432103|MCMID=|MCORGID=FAF554945B90342F0A495E2C@AdobeOrg"
-    )}`
+    )}`,
+    `adobe_mc=${encodeURIComponent("TS|MCMID")}`
   ].forEach(value => {
     it(`handles garbage parameter value: ${value}`, () => {
       locationSearch = `?${value}`;
