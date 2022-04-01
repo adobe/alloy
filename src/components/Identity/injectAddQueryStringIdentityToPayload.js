@@ -24,6 +24,7 @@ export default ({ locationSearch, dateProvider, orgId, logger }) => payload => {
     memo[key] = value;
     return memo;
   }, {});
+  // We are using MCMID and MCORGID to be compatible with Visitor.
   const ts = parseInt(properties.TS, 10);
   const mcmid = properties.MCMID;
   const mcorgid = properties.MCORGID;
@@ -35,7 +36,9 @@ export default ({ locationSearch, dateProvider, orgId, logger }) => payload => {
     mcorgid === orgId &&
     mcmid
   ) {
-    logger.info(`Adding ECID identity ${mcmid} to identityMap.`);
+    logger.info(
+      `Found valid ECID identity ${mcmid} from the adobe_mc query string parameter.`
+    );
     payload.addIdentity(ecidNamespace, {
       id: mcmid
     });
