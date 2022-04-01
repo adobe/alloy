@@ -33,7 +33,7 @@ jobs:
     strategy:
       matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
     needs: get-testing-tags
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
@@ -59,7 +59,7 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@master
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm install
       - name: Build
         run: npm run test:functional:build:prod
       - name: Run TestCafe Tests
