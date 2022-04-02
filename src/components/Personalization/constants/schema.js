@@ -19,3 +19,5 @@ export const JSON_CONTENT_ITEM =
   "https://ns.adobe.com/personalization/json-content-item";
 export const REDIRECT_ITEM =
   "https://ns.adobe.com/personalization/redirect-item";
+export const MEASUREMENT_SCHEMA =
+  "https://ns.adobe.com/personalization/measurement";
