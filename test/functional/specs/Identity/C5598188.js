@@ -20,7 +20,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy";
 import createFixture from "../../helpers/createFixture";
 
 const mainConfig = compose(orgMainConfigMain, {
-  orgId: orgMainConfigMain.orgId.replace("8", "eight")
+  orgId: "invalid-org-id@Adobe"
 });
 
 createFixture({
