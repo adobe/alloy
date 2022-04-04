@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ doesIdentityCookieExist, edgeDomain, orgId }) => {
+export default ({ doesIdentityCookieExist, orgId }) => {
   /**
    * Returns a promise that will be resolved once an identity cookie exists.
    * If an identity cookie doesn't already exist, it should always exist after
@@ -25,7 +25,7 @@ export default ({ doesIdentityCookieExist, edgeDomain, orgId }) => {
           // This logic assumes that the code setting the cookie is working as expected and that
           // the cookie was missing from the response.
           const noIdentityCookieError = new Error(
-            `An identity cookie could not be found. Verify that organization ID "${orgId}" matches the ID in the edge configuration and that cookies from "${edgeDomain}" can be set on the current domain.`
+            `An identity was not set properly. Please verify that the org ID ${orgId} configured in Alloy matches the org ID specified in the edge configuration.`
           );
 
           // Rejecting the promise will reject commands that were queued

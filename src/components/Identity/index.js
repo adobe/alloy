@@ -40,7 +40,7 @@ const createIdentity = ({
   consent,
   sendEdgeNetworkRequest
 }) => {
-  const { orgId, thirdPartyCookiesEnabled, edgeDomain } = config;
+  const { orgId, thirdPartyCookiesEnabled } = config;
 
   const getEcidFromVisitor = injectGetEcidFromVisitor({
     logger,
@@ -69,7 +69,6 @@ const createIdentity = ({
   });
   const awaitIdentityCookie = injectAwaitIdentityCookie({
     doesIdentityCookieExist,
-    edgeDomain,
     orgId
   });
   const ensureSingleIdentity = injectEnsureSingleIdentity({
