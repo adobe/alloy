@@ -75,15 +75,16 @@
     <script nonce="%REACT_APP_NONCE%">
       alloy("configure", {
         defaultConsent: getUrlParameter("defaultConsent") || "in",
-        edgeDomain: "firstparty.alloyio.com",
-        /*location.host.indexOf("alloyio.com") !== -1
+        edgeDomain:
+          location.host.indexOf("alloyio.com") !== -1
             ? "firstparty.alloyio.com"
-            : undefined,*/
+            : undefined,
         edgeConfigId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
         orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
         debugEnabled: true,
-        idMigrationEnabled: false,
-        thirdPartyCookiesEnabled: false,
+        idMigrationEnabled: !(
+          getUrlParameter("idMigrationEnabled") === "false"
+        ),
         prehidingStyle: ".personalization-container { opacity: 0 !important }",
         onBeforeEventSend: function(options) {
           const xdm = options.xdm;
