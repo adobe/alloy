@@ -51,10 +51,7 @@ export default function Identity() {
         </div>
       </section>
       <section>
-        <a
-          href="https://alternate-alloyio.com/identity"
-          onClick={appendIdentityToUrl}
-        >
+        <a href="https://alloyio2.com/identity" onClick={appendIdentityToUrl}>
           Cross domain linked identity.
         </a>
       </section>
