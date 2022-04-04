@@ -211,7 +211,6 @@ describe("Identity::createComponent", () => {
       url: "myurl"
     });
     withConsentDeferred.reject(new Error("My consent error."));
-    getIdentityDeferred.reject(new Error("My getIdentity error."));
     return expectAsync(commandPromise)
       .toBeResolvedTo({ url: "myurl" })
       .then(() => {
