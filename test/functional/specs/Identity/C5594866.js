@@ -15,21 +15,24 @@ import createFixture from "../../helpers/createFixture";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
+  thirdPartyCookiesDisabled
 } from "../../helpers/constants/configParts";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import reloadPage from "../../helpers/reloadPage";
-import createRandomEcid from "../../helpers/createRandomEcid";
-import createAdobeMC from "../../helpers/createAdobeMC";
 import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
+import { TEST_PAGE, SECONDARY_TEST_PAGE } from "../../helpers/constants/url";
 
-const config = compose(orgMainConfigMain, debugEnabled);
+// We disable third party cookies so that the domains don't share identities
+// through the demdex cookies.
+const config = compose(
+  orgMainConfigMain,
+  thirdPartyCookiesDisabled,
+  debugEnabled
+);
 
 const networkLogger = createNetworkLogger();
-
-const id = createRandomEcid();
-const adobemc = createAdobeMC({ id });
 
 createFixture({
   title:
@@ -49,7 +52,12 @@ test("C5594866: Identity can be changed via the adobe_mc query string parameter"
   // establish an identity cookie
   await alloy.sendEvent({});
 
-  await reloadPage(`adobe_mc=${adobemc}`);
+  await t.navigateTo(SECONDARY_TEST_PAGE);
+  await alloy.configure(config);
+  await alloy.sendEvent({});
+  const { url: newUrl } = await alloy.appendIdentityToUrl({ url: TEST_PAGE });
+
+  await t.navigateTo(newUrl);
   await alloy.configure(config);
   await alloy.sendEvent({});
 
@@ -57,9 +65,17 @@ test("C5594866: Identity can be changed via the adobe_mc query string parameter"
   await alloy.configure(config);
   await alloy.sendEvent({});
 
-  const ecid = getReturnedEcid(networkLogger.edgeEndpointLogs.requests[2]);
-  await t.expect(ecid).eql(id);
+  const [
+    originalEcid,
+    secondaryPageEcid,
+    newEcid,
+    reloadedEcid
+  ] = networkLogger.edgeEndpointLogs.requests.map(getReturnedEcid);
+
+  await t.expect(originalEcid).notEql(secondaryPageEcid);
+  await t.expect(newEcid).eql(secondaryPageEcid);
+  await t.expect(reloadedEcid).eql(secondaryPageEcid);
 
   const { identity } = await alloy.getIdentity();
-  await t.expect(identity.ECID).eql(id);
+  await t.expect(identity.ECID).eql(secondaryPageEcid);
 });

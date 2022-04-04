@@ -22,7 +22,7 @@ const getSeparator = queryString => {
 };
 
 export default ({ dateProvider, orgId }) => (ecid, url) => {
-  const ts = dateProvider().getTime() / 1000;
+  const ts = Math.round(dateProvider().getTime() / 1000);
   const adobemc = encodeURIComponent(`TS=${ts}|MCMID=${ecid}|MCORGID=${orgId}`);
   const [, location, queryString, fragment] = url.match(URL_REGEX);
   const separator = getSeparator(queryString);

@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import injectAppendIdentityToUrl from "../../../../../../src/components/Identity/appendIdentityToUrl/injectAppendIdentityToUrl";
 
 describe("appendIdentityToUrl", () => {
-  const date = new Date(1000);
+  const date = new Date(1234);
   const orgId = "myorg@adobe";
   const appendIdentityToUrl = injectAppendIdentityToUrl({
     dateProvider: () => date,

@@ -12,27 +12,29 @@ governing permissions and limitations under the License.
 
 import { t } from "testcafe";
 import createFixture from "../../helpers/createFixture";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
+import { SECONDARY_TEST_PAGE } from "../../helpers/constants/url";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
+  thirdPartyCookiesDisabled
 } from "../../helpers/constants/configParts";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createRandomEcid from "../../helpers/createRandomEcid";
 import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
-import createAdobeMC from "../../helpers/createAdobeMC";
 
-const config = compose(orgMainConfigMain, debugEnabled);
+// We disable third party cookies so that the domains don't share identities
+// through the demdex cookies.
+const config = compose(
+  orgMainConfigMain,
+  debugEnabled,
+  thirdPartyCookiesDisabled
+);
 
 const networkLogger = createNetworkLogger();
 
-const id = createRandomEcid();
-const adobemc = createAdobeMC({ id });
-
 createFixture({
-  url: `${TEST_PAGE_URL}?adobe_mc=${adobemc}`,
+  // url: `${TEST_PAGE_URL}?adobe_mc=${adobemc}`,
   title:
     "C5594865: Identity can be maintained across domains via the adobe_mc query string parameter",
   requestHooks: [networkLogger.edgeEndpointLogs]
@@ -48,9 +50,19 @@ test("C5594865: Identity can be maintained across domains via the adobe_mc query
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({});
-  const ecid = getReturnedEcid(networkLogger.edgeEndpointLogs.requests[0]);
-  await t.expect(ecid).eql(id);
+  const { url: newUrl } = await alloy.appendIdentityToUrl({
+    url: SECONDARY_TEST_PAGE
+  });
+
+  await t.navigateTo(newUrl);
+  await alloy.configure(config);
+  await alloy.sendEvent({});
+
+  const [originalEcid, newEcid] = networkLogger.edgeEndpointLogs.requests.map(
+    getReturnedEcid
+  );
+  await t.expect(newEcid).eql(originalEcid);
 
   const { identity } = await alloy.getIdentity();
-  await t.expect(identity.ECID).eql(id);
+  await t.expect(identity.ECID).eql(originalEcid);
 });
