@@ -27,7 +27,9 @@ describe("injectFireReferrerHideableImage", () => {
     awaitSelectorMock = jasmine
       .createSpy("awaitSelector")
       .and.callFake(() => Promise.resolve(["body"]));
-    createNodeMock = jasmine.createSpy("createNode");
+    createNodeMock = jasmine
+      .createSpy("createNode")
+      .and.callFake(() => ({ contentWindow: { document: {} } }));
     fireImageMock = jasmine
       .createSpy("fireImage")
       .and.callFake(() => Promise.resolve());
@@ -41,7 +43,7 @@ describe("injectFireReferrerHideableImage", () => {
     });
   });
 
-  it("should create and destroy an iframe for a request that hides the referrer", async () => {
+  it("should create an iframe for a request that hides the referrer", async () => {
     const request = {
       hideReferrer: true,
       url: "https://adobe.com/test-referrer.jpg"
@@ -51,7 +53,6 @@ describe("injectFireReferrerHideableImage", () => {
     expect(createNodeMock).toHaveBeenCalled();
     expect(createNodeMock.calls.argsFor(0)).toContain("IFRAME");
     expect(fireImageMock).toHaveBeenCalled();
-    expect(removeNodeMock).toHaveBeenCalled();
   });
 
   it("should fire the image on the page for a request that does not hide the referrer", async () => {
@@ -81,5 +82,24 @@ describe("injectFireReferrerHideableImage", () => {
       expect(fireImageMock).toHaveBeenCalled();
       expect(removeNodeMock).toHaveBeenCalled();
     }
+  });
+
+  it("should only create one iframe when called multiple times", async () => {
+    const request = {
+      hideReferrer: true,
+      url: "https://adobe.com/test-invalid-referrer.jpg"
+    };
+    const secondRequest = {
+      hideReferrer: true,
+      url: "https://adobe.com/test-invalid-referrer2.jpg"
+    };
+
+    await fireReferrerHideableImage(request);
+    await fireReferrerHideableImage(secondRequest);
+
+    expect(createNodeMock).toHaveBeenCalledTimes(1);
+    expect(createNodeMock.calls.argsFor(0)).toContain("IFRAME");
+    expect(fireImageMock).toHaveBeenCalledTimes(2);
+    expect(removeNodeMock).not.toHaveBeenCalled();
   });
 });

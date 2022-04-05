@@ -40,17 +40,23 @@ export default ({
 }) => {
   const fireOnPage = fireImage;
 
+  let hiddenIframe;
+
   const createIframe = () => {
+    if (hiddenIframe) {
+      return Promise.resolve(hiddenIframe);
+    }
     return awaitSelector(BODY).then(([body]) => {
-      const iframe = createNode(IFRAME, IFRAME_ATTRS, IFRAME_PROPS);
-      return appendNode(body, iframe);
+      hiddenIframe = createNode(IFRAME, IFRAME_ATTRS, IFRAME_PROPS);
+      return appendNode(body, hiddenIframe);
     });
   };
 
   const fireInIframe = ({ src }) => {
     return createIframe().then(iframe => {
       const currentDocument = iframe.contentWindow.document;
-      return fireImage({ src, currentDocument }).finally(() => {
+      return fireImage({ src, currentDocument }).catch(() => {
+        hiddenIframe = undefined;
         removeNode(iframe);
       });
     });
