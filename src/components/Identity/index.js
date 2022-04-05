@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import {
-  fireReferrerHideableImage,
+  injectFireReferrerHideableImage,
   areThirdPartyCookiesSupportedByDefault,
   injectDoesIdentityCookieExist
 } from "../../utils";
@@ -78,6 +78,7 @@ const createIdentity = ({
     awaitIdentityCookie,
     logger
   });
+  const fireReferrerHideableImage = injectFireReferrerHideableImage();
   const processIdSyncs = injectProcessIdSyncs({
     fireReferrerHideableImage,
     logger

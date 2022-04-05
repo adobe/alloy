@@ -11,4 +11,4 @@ governing permissions and limitations under the License.
 */
 
 // eslint-disable-next-line no-unused-vars
-import fireReferrerHideableImage from "../../../../src/utils/fireReferrerHideableImage";
+import injectFireReferrerHideableImage from "../../../../src/utils/injectFireReferrerHideableImage";
