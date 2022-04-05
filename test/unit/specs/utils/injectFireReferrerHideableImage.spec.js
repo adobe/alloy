@@ -64,4 +64,22 @@ describe("injectFireReferrerHideableImage", () => {
     expect(createNodeMock).not.toHaveBeenCalled();
     expect(fireImageMock).toHaveBeenCalled();
   });
+
+  it("should destroy the iframe when firing the image fails", async () => {
+    const request = {
+      hideReferrer: true,
+      url: "https://adobe.com/test-invalid-referrer.jpg"
+    };
+    fireImageMock.and.callFake(() =>
+      Promise.reject(new Error("Expected failure"))
+    );
+    try {
+      await fireReferrerHideableImage(request);
+    } catch (err) {
+      expect(createNodeMock).toHaveBeenCalled();
+      expect(createNodeMock.calls.argsFor(0)).toContain("IFRAME");
+      expect(fireImageMock).toHaveBeenCalled();
+      expect(removeNodeMock).toHaveBeenCalled();
+    }
+  });
 });

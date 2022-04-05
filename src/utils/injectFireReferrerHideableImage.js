@@ -50,7 +50,7 @@ export default ({
   const fireInIframe = ({ src }) => {
     return createIframe().then(iframe => {
       const currentDocument = iframe.contentWindow.document;
-      return fireImage({ src, currentDocument }).then(() => {
+      return fireImage({ src, currentDocument }).finally(() => {
         removeNode(iframe);
       });
     });
