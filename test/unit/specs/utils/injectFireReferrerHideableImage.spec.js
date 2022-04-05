@@ -10,5 +10,58 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// eslint-disable-next-line no-unused-vars
 import injectFireReferrerHideableImage from "../../../../src/utils/injectFireReferrerHideableImage";
+
+describe("injectFireReferrerHideableImage", () => {
+  let appendNodeMock;
+  let awaitSelectorMock;
+  let createNodeMock;
+  let fireImageMock;
+  let removeNodeMock;
+  let fireReferrerHideableImage;
+
+  beforeEach(() => {
+    appendNodeMock = jasmine
+      .createSpy("appendNode")
+      .and.callFake(() => ({ contentWindow: { document: {} } }));
+    awaitSelectorMock = jasmine
+      .createSpy("awaitSelector")
+      .and.callFake(() => Promise.resolve(["body"]));
+    createNodeMock = jasmine.createSpy("createNode");
+    fireImageMock = jasmine
+      .createSpy("fireImage")
+      .and.callFake(() => Promise.resolve());
+    removeNodeMock = jasmine.createSpy("removeNode");
+    fireReferrerHideableImage = injectFireReferrerHideableImage({
+      appendNode: appendNodeMock,
+      awaitSelector: awaitSelectorMock,
+      createNode: createNodeMock,
+      fireImage: fireImageMock,
+      removeNode: removeNodeMock
+    });
+  });
+
+  it("should create and destroy an iframe for a request that hides the referrer", async () => {
+    const request = {
+      hideReferrer: true,
+      url: "https://adobe.com/test-referrer.jpg"
+    };
+    await fireReferrerHideableImage(request);
+
+    expect(createNodeMock).toHaveBeenCalled();
+    expect(createNodeMock.calls.argsFor(0)).toContain("IFRAME");
+    expect(fireImageMock).toHaveBeenCalled();
+    expect(removeNodeMock).toHaveBeenCalled();
+  });
+
+  it("should fire the image on the page for a request that does not hide the referrer", async () => {
+    const request = {
+      hideReferrer: false,
+      url: "https://adobe.com/test-referrer.jpg"
+    };
+    await fireReferrerHideableImage(request);
+
+    expect(createNodeMock).not.toHaveBeenCalled();
+    expect(fireImageMock).toHaveBeenCalled();
+  });
+});
