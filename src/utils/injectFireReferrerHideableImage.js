@@ -37,7 +37,7 @@ export default ({
   createNode = createNodeInDocument,
   fireImage = fireImageInDocument,
   removeNode = removeNodeInDocument
-}) => {
+} = {}) => {
   const fireOnPage = fireImage;
 
   let hiddenIframe;
