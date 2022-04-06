@@ -63,6 +63,7 @@ const apexDomain = getApexDomain(window, cookieJar);
 const sendFetchRequest = isFunction(fetch)
   ? injectSendFetchRequest({ fetch })
   : injectSendXhrRequest({ XMLHttpRequest });
+const fireReferrerHideableImage = injectFireReferrerHideableImage();
 
 export const createExecuteCommand = ({
   instanceName,
@@ -140,7 +141,6 @@ export const createExecuteCommand = ({
       componentRegistry,
       getImmediatelyAvailableTools(componentName) {
         const componentLogger = createComponentLogger(componentName);
-        const fireReferrerHideableImage = injectFireReferrerHideableImage();
         return {
           config,
           consent,
