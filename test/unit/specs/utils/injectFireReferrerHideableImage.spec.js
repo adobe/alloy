@@ -17,7 +17,6 @@ describe("injectFireReferrerHideableImage", () => {
   let awaitSelectorMock;
   let createNodeMock;
   let fireImageMock;
-  let removeNodeMock;
   let fireReferrerHideableImage;
 
   beforeEach(() => {
@@ -33,13 +32,11 @@ describe("injectFireReferrerHideableImage", () => {
     fireImageMock = jasmine
       .createSpy("fireImage")
       .and.callFake(() => Promise.resolve());
-    removeNodeMock = jasmine.createSpy("removeNode");
     fireReferrerHideableImage = injectFireReferrerHideableImage({
       appendNode: appendNodeMock,
       awaitSelector: awaitSelectorMock,
       createNode: createNodeMock,
-      fireImage: fireImageMock,
-      removeNode: removeNodeMock
+      fireImage: fireImageMock
     });
   });
 
@@ -66,24 +63,6 @@ describe("injectFireReferrerHideableImage", () => {
     expect(fireImageMock).toHaveBeenCalled();
   });
 
-  it("should destroy the iframe when firing the image fails", async () => {
-    const request = {
-      hideReferrer: true,
-      url: "https://adobe.com/test-invalid-referrer.jpg"
-    };
-    fireImageMock.and.callFake(() =>
-      Promise.reject(new Error("Expected failure"))
-    );
-    try {
-      await fireReferrerHideableImage(request);
-    } catch (err) {
-      expect(createNodeMock).toHaveBeenCalled();
-      expect(createNodeMock.calls.argsFor(0)).toContain("IFRAME");
-      expect(fireImageMock).toHaveBeenCalled();
-      expect(removeNodeMock).toHaveBeenCalled();
-    }
-  });
-
   it("should only create one iframe when called multiple times", async () => {
     const request = {
       hideReferrer: true,
@@ -100,6 +79,5 @@ describe("injectFireReferrerHideableImage", () => {
     expect(createNodeMock).toHaveBeenCalledTimes(1);
     expect(createNodeMock.calls.argsFor(0)).toContain("IFRAME");
     expect(fireImageMock).toHaveBeenCalledTimes(2);
-    expect(removeNodeMock).not.toHaveBeenCalled();
   });
 });

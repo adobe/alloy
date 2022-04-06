@@ -14,8 +14,7 @@ import fireImageInDocument from "./fireImage";
 import {
   appendNode as appendNodeToDocument,
   awaitSelector as awaitSelectorInDocument,
-  createNode as createNodeInDocument,
-  removeNode as removeNodeInDocument
+  createNode as createNodeInDocument
 } from "./dom";
 import { BODY, IFRAME } from "../constants/tagName";
 
@@ -35,8 +34,7 @@ export default ({
   appendNode = appendNodeToDocument,
   awaitSelector = awaitSelectorInDocument,
   createNode = createNodeInDocument,
-  fireImage = fireImageInDocument,
-  removeNode = removeNodeInDocument
+  fireImage = fireImageInDocument
 } = {}) => {
   const fireOnPage = fireImage;
 
@@ -55,10 +53,7 @@ export default ({
   const fireInIframe = ({ src }) => {
     return createIframe().then(iframe => {
       const currentDocument = iframe.contentWindow.document;
-      return fireImage({ src, currentDocument }).catch(() => {
-        hiddenIframe = undefined;
-        removeNode(iframe);
-      });
+      return fireImage({ src, currentDocument });
     });
   };
 
