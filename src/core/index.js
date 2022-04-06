@@ -11,7 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import createInstanceFunction from "./createInstanceFunction";
-import { getApexDomain, injectStorage, cookieJar, isFunction } from "../utils";
+import {
+  getApexDomain,
+  injectStorage,
+  cookieJar,
+  isFunction,
+  injectFireReferrerHideableImage
+} from "../utils";
 import createLogController from "./createLogController";
 import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
@@ -134,10 +140,12 @@ export const createExecuteCommand = ({
       componentRegistry,
       getImmediatelyAvailableTools(componentName) {
         const componentLogger = createComponentLogger(componentName);
+        const fireReferrerHideableImage = injectFireReferrerHideableImage();
         return {
           config,
           consent,
           eventManager,
+          fireReferrerHideableImage,
           logger: componentLogger,
           lifecycle,
           sendEdgeNetworkRequest,
