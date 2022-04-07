@@ -68,8 +68,8 @@ const createIdentity = ({
     addEcidToPayload
   });
   const awaitIdentityCookie = injectAwaitIdentityCookie({
-    orgId,
-    doesIdentityCookieExist
+    doesIdentityCookieExist,
+    orgId
   });
   const ensureSingleIdentity = injectEnsureSingleIdentity({
     doesIdentityCookieExist,
