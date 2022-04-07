@@ -10,11 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import fireImage from "./fireImage";
-import { appendNode, awaitSelector, createNode, removeNode } from "./dom";
+import fireImageInDocument from "./fireImage";
+import {
+  appendNode as appendNodeToDocument,
+  awaitSelector as awaitSelectorInDocument,
+  createNode as createNodeInDocument
+} from "./dom";
 import { BODY, IFRAME } from "../constants/tagName";
-
-const fireOnPage = fireImage;
 
 const IFRAME_ATTRS = {
   name: "Adobe Alloy"
@@ -28,23 +30,35 @@ const IFRAME_PROPS = {
   }
 };
 
-export default request => {
+export default ({
+  appendNode = appendNodeToDocument,
+  awaitSelector = awaitSelectorInDocument,
+  createNode = createNodeInDocument,
+  fireImage = fireImageInDocument
+} = {}) => {
+  const fireOnPage = fireImage;
+
+  let hiddenIframe;
+
   const createIframe = () => {
+    if (hiddenIframe) {
+      return Promise.resolve(hiddenIframe);
+    }
     return awaitSelector(BODY).then(([body]) => {
-      const iframe = createNode(IFRAME, IFRAME_ATTRS, IFRAME_PROPS);
-      return appendNode(body, iframe);
+      hiddenIframe = createNode(IFRAME, IFRAME_ATTRS, IFRAME_PROPS);
+      return appendNode(body, hiddenIframe);
     });
   };
 
   const fireInIframe = ({ src }) => {
     return createIframe().then(iframe => {
       const currentDocument = iframe.contentWindow.document;
-      return fireImage({ src, currentDocument }).then(() => {
-        removeNode(iframe);
-      });
+      return fireImage({ src, currentDocument });
     });
   };
 
-  const { hideReferrer, url } = request;
-  return hideReferrer ? fireInIframe({ src: url }) : fireOnPage({ src: url });
+  return request => {
+    const { hideReferrer, url } = request;
+    return hideReferrer ? fireInIframe({ src: url }) : fireOnPage({ src: url });
+  };
 };

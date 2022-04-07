@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import {
-  fireReferrerHideableImage,
   areThirdPartyCookiesSupportedByDefault,
   injectDoesIdentityCookieExist
 } from "../../utils";
@@ -38,6 +37,7 @@ const createIdentity = ({
   config,
   logger,
   consent,
+  fireReferrerHideableImage,
   sendEdgeNetworkRequest
 }) => {
   const { orgId, thirdPartyCookiesEnabled } = config;
