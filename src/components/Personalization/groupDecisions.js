@@ -14,7 +14,8 @@ import { isNonEmptyArray, includes } from "../../utils";
 import {
   DOM_ACTION,
   REDIRECT_ITEM,
-  DEFAULT_CONTENT_ITEM
+  DEFAULT_CONTENT_ITEM,
+  MEASUREMENT_SCHEMA
 } from "./constants/schema";
 import { VIEW_SCOPE_TYPE } from "./constants/scopeType";
 import PAGE_WIDE_SCOPE from "./constants/scope";
@@ -41,6 +42,17 @@ const createDecision = (decision, items) => {
     items,
     scopeDetails: decision.scopeDetails
   };
+};
+
+const splitMergedMetricDecisions = decisions => {
+  const matchedDecisions = decisions.filter(decision => {
+    const { items = [] } = decision;
+    return items.some(item => item.schema === MEASUREMENT_SCHEMA);
+  });
+  const unmatchedDecisions = decisions.filter(
+    decision => !includes(matchedDecisions, decision)
+  );
+  return { matchedDecisions, unmatchedDecisions };
 };
 
 const splitDecisions = (decisions, ...schemas) => {
@@ -99,16 +111,22 @@ const extractDecisionsByScope = decisions => {
 };
 
 const groupDecisions = unprocessedDecisions => {
+  // split redirect decisions
   const decisionsGroupedByRedirectItemSchema = splitDecisions(
     unprocessedDecisions,
     REDIRECT_ITEM
   );
+  // split merged measurement decisions
+  const mergedMetricDecisions = splitMergedMetricDecisions(
+    decisionsGroupedByRedirectItemSchema.unmatchedDecisions
+  );
+  // split renderable decisions
   const decisionsGroupedByRenderableSchemas = splitDecisions(
-    decisionsGroupedByRedirectItemSchema.unmatchedDecisions,
+    mergedMetricDecisions.unmatchedDecisions,
     DOM_ACTION,
     DEFAULT_CONTENT_ITEM
   );
-
+  // group renderable decisions by scope
   const {
     pageWideScopeDecisions,
     nonPageWideScopeDecisions,
@@ -121,9 +139,11 @@ const groupDecisions = unprocessedDecisions => {
     redirectDecisions: decisionsGroupedByRedirectItemSchema.matchedDecisions,
     pageWideScopeDecisions,
     viewDecisions: viewScopeDecisions,
-    nonAutoRenderableDecisions: decisionsGroupedByRenderableSchemas.unmatchedDecisions.concat(
-      nonPageWideScopeDecisions
-    )
+    nonAutoRenderableDecisions: [
+      ...mergedMetricDecisions.matchedDecisions,
+      ...decisionsGroupedByRenderableSchemas.unmatchedDecisions,
+      ...nonPageWideScopeDecisions
+    ]
   };
 };
 export default groupDecisions;

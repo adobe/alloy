@@ -16,13 +16,13 @@ const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const PAGE_WIDE_SCOPE = "__view__";
 createFixture({
-  title: "C28761: Default content offers should be delivered",
-  url: `${TEST_PAGE_URL}?test=C28761`,
+  title: "C5805675: Default content offers should be delivered",
+  url: `${TEST_PAGE_URL}?test=C5805675`,
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({
-  ID: "C28761",
+  ID: "C5805675",
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
@@ -34,7 +34,7 @@ const extractDecisionsMeta = payload => {
   });
 };
 
-test("Test C28761: Default content offers should be delivered", async () => {
+test("Test C5805675: Default content offers should be delivered", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent({ renderDecisions: true });
@@ -80,7 +80,7 @@ test("Test C28761: Default content offers should be delivered", async () => {
     .eql("https://ns.adobe.com/personalization/default-content-item");
   await t
     .expect(defaultContentItem.meta["activity.name"])
-    .eql("Functional: C28761 AB");
+    .eql("Functional: C5805675 AB");
   await t.expect(defaultContentItem.meta["offer.name"]).eql("Default Content");
   await t.expect(defaultContentItem.data).eql(undefined);
 

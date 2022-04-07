@@ -228,3 +228,36 @@ export const REDIRECT_PAGE_WIDE_SCOPE_DECISION = [
     ]
   }
 ];
+export const MERGED_METRIC_DECISIONS = [
+  {
+    id: "TNT:activity6:experience1",
+    scope: "testScope",
+    scopeDetails: {
+      eventTokens: {
+        display: "displayToken1",
+        click: "clickToken1"
+      }
+    },
+    items: [
+      {
+        id: "0",
+        schema: "https://ns.adobe.com/personalization/html-content-item",
+        data: {
+          id: "0",
+          format: "text/html",
+          content: "testScope content1"
+        }
+      },
+      {
+        schema: "https://ns.adobe.com/personalization/default-content-item"
+      },
+      {
+        schema: "https://ns.adobe.com/personalization/measurement",
+        data: {
+          type: "click",
+          format: "application/vnd.adobe.target.metric"
+        }
+      }
+    ]
+  }
+];
