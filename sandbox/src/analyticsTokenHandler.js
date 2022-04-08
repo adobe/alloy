@@ -1,13 +1,13 @@
-export function getAnalyticsToken(proposition) {
+export const getDisplayAnalyticsToken = proposition => {
   const { scopeDetails = {} } = proposition;
   const { characteristics = {} } = scopeDetails;
-  const { analyticsToken } = characteristics;
+  const { analyticsTokens, analyticsToken } = characteristics;
 
-  if (analyticsToken === undefined) {
-    return;
+  if (analyticsTokens) {
+    return analyticsTokens.display;
   }
   return analyticsToken;
-}
+};
 
 export const concatenateAnalyticsPayloads = analyticsPayloads => {
   if (analyticsPayloads.size > 1) {
@@ -26,9 +26,9 @@ export const collectAnalyticsPayloadData = propositions => {
       return;
     }
 
-    const analyticsPayload = getAnalyticsToken(proposition);
+    const analyticsPayload = getDisplayAnalyticsToken(proposition);
 
-    if (analyticsPayload === undefined) {
+    if (!analyticsPayload) {
       return;
     }
 
