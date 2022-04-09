@@ -13,13 +13,23 @@ governing permissions and limitations under the License.
 import escape from "css.escape";
 import { selectNodes } from "../../../../utils/dom";
 import { isNotEqSelector, splitWithEq } from "./helperForEq";
+import startsWith from "../../../../utils/startsWith";
 
 // Trying to match ID or CSS class
 const CSS_IDENTIFIER_PATTERN = /(#|\.)(-?\w+)/g;
-// This is required to remove leading " > " from parsed pieces
-const SIBLING_PATTERN = /^\s*>?\s*/;
 
-const cleanUp = str => str.replace(SIBLING_PATTERN, "").trim();
+const cleanUp = selector => {
+  if (!startsWith(selector, ">")) {
+    return selector;
+  }
+
+  // IE doesn't support :scope
+  if (window.document.documentMode) {
+    return selector.substring(1).trim();
+  }
+
+  return `:scope ${selector}`;
+};
 
 // Here we use CSS.escape() to make sure we get
 // correct values for ID and CSS class
@@ -39,7 +49,7 @@ export const parseSelector = rawSelector => {
   let i = 0;
 
   while (i < length) {
-    const sel = cleanUp(parts[i]);
+    const sel = cleanUp(parts[i].trim());
     const eq = parts[i + 1];
 
     if (eq) {

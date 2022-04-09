@@ -22,6 +22,8 @@ import {
   selectNodesWithEq
 } from "../../../../../../../src/components/Personalization/dom-actions/dom/selectNodesWithEq";
 
+const ieDetected = () => !!document.documentMode;
+
 describe("Personalization::DOM::escapeIdentifiersInSelector", () => {
   it("should escape when digits only for ID selector", () => {
     const result = escapeIdentifiersInSelector("#123 > #foo div.345");
@@ -60,14 +62,20 @@ describe("Personalization::DOM::parseSelector", () => {
   });
 
   it("should parse selector when eq", () => {
+    let prefix = ":scope > ";
+
+    if (ieDetected()) {
+      prefix = "";
+    }
+
     const result = parseSelector(
       "HTML > BODY > DIV.wrapper:eq(0) > HEADER.header:eq(0) > DIV.pagehead:eq(0) > P:nth-of-type(1)"
     );
 
     expect(result[0]).toEqual({ sel: "HTML > BODY > DIV.wrapper", eq: 0 });
-    expect(result[1]).toEqual({ sel: "HEADER.header", eq: 0 });
-    expect(result[2]).toEqual({ sel: "DIV.pagehead", eq: 0 });
-    expect(result[3]).toEqual({ sel: "P:nth-of-type(1)" });
+    expect(result[1]).toEqual({ sel: `${prefix}HEADER.header`, eq: 0 });
+    expect(result[2]).toEqual({ sel: `${prefix}DIV.pagehead`, eq: 0 });
+    expect(result[3]).toEqual({ sel: `${prefix}P:nth-of-type(1)` });
   });
 });
 
@@ -186,5 +194,35 @@ describe("Personalization::DOM::selectNodesWithEq", () => {
     selectors.forEach(selector => {
       expect(() => selectNodesWithEq(selector)).toThrow();
     });
+  });
+
+  it("should respect child selectors", () => {
+    if (ieDetected()) {
+      // the :scope pseudo selector is not supported in IE
+      // Skip this test as it will fail on IE
+      return;
+    }
+
+    const content = `
+      <div>
+        <div>
+            <span id="wrong"></span>
+        </div>
+        <span id="right"></span>
+      </div>
+    `;
+
+    const node = createNode(
+      "DIV",
+      { id: "abc", class: "eq" },
+      { innerHTML: content }
+    );
+
+    appendNode(document.body, node);
+
+    const result = selectNodesWithEq("#abc > div:eq(0) > span");
+
+    expect(result[0].tagName).toEqual("SPAN");
+    expect(result[0].id).toEqual("right");
   });
 });

@@ -26,29 +26,29 @@ const defineCustomElements = () => {
     return;
   }
 
-  const buyNowContent = `
-    <div>
-      <input type="radio" id="buy" name="buy_btn" value="Buy NOW">
-      <label for="buy">Buy Now</label><br>
-      <div>
-        <input type="radio" id="buy_later" name="buy_btn_ltr" value="Buy LATER">
-        <label for="buy_later">Buy Later</label><br>
-      </div>
-    </div>
-  `;
   customElements.define(
     "buy-now-button",
     class extends HTMLElement {
       constructor() {
         super();
 
+        const prefix = this.dataset.prefix;
         const shadowRoot = this.attachShadow({ mode: "open" });
-        shadowRoot.innerHTML = buyNowContent;
+
+        shadowRoot.innerHTML = `
+          <div>
+            <div>
+              <input type="radio" id="buy_later" name="buy_btn_ltr" value="Buy LATER">
+              <label for="buy_later">${prefix} Buy Later</label><br>
+            </div>
+            <input type="radio" id="buy" name="buy_btn" value="Buy NOW">
+            <label for="buy">${prefix} Buy Now</label><br>
+          </div>
+        `;
       }
     }
   );
 
-  const productOrderContent = `<div><p>Product order</p><buy-now-button>Buy</buy-now-button></div>`;
   customElements.define(
     "product-order",
     class extends HTMLElement {
@@ -56,6 +56,18 @@ const defineCustomElements = () => {
         super();
 
         const shadowRoot = this.attachShadow({ mode: "open" });
+        const prefix = this.dataset.prefix;
+
+        const productOrderContent = `
+          <div>
+            <p>Product order</p>
+            <div>
+              <buy-now-button data-prefix="Skipped${prefix}"></buy-now-button>
+            </div>
+            <buy-now-button data-prefix="${prefix}"></buy-now-button>
+          </div>
+        `;
+
         shadowRoot.innerHTML = productOrderContent;
       }
     }
@@ -88,8 +100,11 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
 
     const content = `
     <form id="form" action="https://www.adobe.com" method="post">
-      <buy-now-button>FirstButton</buy-now-button>
-      <buy-now-button>SecondButton</buy-now-button>
+      <div>
+        <buy-now-button data-prefix="SkippedButton"></buy-now-button>
+      </div>
+      <buy-now-button data-prefix="FirstButton"></buy-now-button>
+      <buy-now-button data-prefix="SecondButton"></buy-now-button>
       <input type="submit" value="Submit"/>
     </form>`;
 
@@ -99,13 +114,13 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
     );
 
     const result = selectNodesWithEq(
-      "#abc:eq(0) > FORM:nth-of-type(1) > BUY-NOW-BUTTON:nth-of-type(2):shadow > DIV:nth-of-type(1) > LABEL:nth-of-type(1)"
+      "#abc:eq(0) > FORM:nth-of-type(1) > BUY-NOW-BUTTON:nth-of-type(2):shadow > DIV:eq(0) > LABEL:eq(0)"
     );
 
     expect(result.length).toEqual(1);
 
     expect(result[0].tagName).toEqual("LABEL");
-    expect(result[0].textContent).toEqual("Buy Now");
+    expect(result[0].textContent).toEqual("SecondButton Buy Now");
   });
 
   it("should select when multiple nested shadow nodes", () => {
@@ -117,10 +132,13 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
 
     const content = `
     <form id="form" action="https://www.adobe.com" method="post">
-      <buy-now-button>FirstButton</buy-now-button>
-      <buy-now-button>SecondButton</buy-now-button>
-      <product-order>FirstOrder</product-order>
-      <product-order>SecondOrder</product-order>
+      <buy-now-button data-prefix="FirstButton"></buy-now-button>
+      <buy-now-button data-prefix="SecondButton"></buy-now-button>
+      <div>
+        <product-order data-prefix="SkippedOrder"></product-order>
+      </div>
+      <product-order data-prefix="FirstOrder"></product-order>
+      <product-order data-prefix="SecondOrder"></product-order>
       <input type="submit" value="Submit"/>
     </form>`;
 
@@ -134,6 +152,6 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
     );
 
     expect(result[0].tagName).toEqual("LABEL");
-    expect(result[0].textContent).toEqual("Buy Now");
+    expect(result[0].textContent).toEqual("SecondOrder Buy Now");
   });
 });
