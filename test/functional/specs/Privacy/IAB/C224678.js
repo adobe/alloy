@@ -65,7 +65,7 @@ test("Test C224678: Passing a negative Consent in the sendEvent command", async 
 
   // 2. The ECID should not exist in the response payload as well, even if queried
   const identityHandle = response.getPayloadsByType("identity:result");
-  await t.expect(identityHandle.length).eql(0);
+  await t.expect(identityHandle.length).eql(1);
 
   // 3. Should not have any activation, ID Syncs or decisions in the response.
   const handlesThatShouldBeMissing = [

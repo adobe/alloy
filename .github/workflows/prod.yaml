@@ -59,7 +59,7 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@master
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm install
+        run: npm ci
       - name: Build
         run: npm run test:functional:build:prod
       - name: Run TestCafe Tests
