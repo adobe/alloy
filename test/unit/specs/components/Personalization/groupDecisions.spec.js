@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import {
   PAGE_WIDE_SCOPE_DECISIONS,
-  PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
+  PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
   PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS,
   CART_VIEW_DECISIONS,
   REDIRECT_PAGE_WIDE_SCOPE_DECISION,
@@ -26,7 +26,7 @@ let productDecisions;
 let mergedDecisions;
 
 beforeEach(() => {
-  cartDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS.concat(
+  cartDecisions = PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS.concat(
     CART_VIEW_DECISIONS
   );
   productDecisions = PAGE_WIDE_SCOPE_DECISIONS.concat(
@@ -34,6 +34,7 @@ beforeEach(() => {
   ).concat(PRODUCTS_VIEW_DECISIONS);
   mergedDecisions = productDecisions.concat(MERGED_METRIC_DECISIONS);
 });
+
 describe("Personalization::groupDecisions", () => {
   it("extracts decisions by scope", () => {
     const {
@@ -44,7 +45,7 @@ describe("Personalization::groupDecisions", () => {
     } = groupDecisions(cartDecisions);
 
     expect(pageWideScopeDecisions).toEqual(
-      PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
+      PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
     );
     expect(viewDecisions).toEqual({ cart: CART_VIEW_DECISIONS });
     expect(nonAutoRenderableDecisions).toEqual([]);
@@ -66,7 +67,7 @@ describe("Personalization::groupDecisions", () => {
       PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS
     );
     expect(pageWideScopeDecisions).toEqual(
-      PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
+      PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
     );
     expect(redirectDecisions).toEqual(REDIRECT_PAGE_WIDE_SCOPE_DECISION);
     expect(viewDecisions).toEqual(expectedViewDecisions);
@@ -89,7 +90,7 @@ describe("Personalization::groupDecisions", () => {
       )
     );
     expect(pageWideScopeDecisions).toEqual(
-      PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
+      PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
     );
     expect(redirectDecisions).toEqual(REDIRECT_PAGE_WIDE_SCOPE_DECISION);
     expect(viewDecisions).toEqual(expectedViewDecisions);

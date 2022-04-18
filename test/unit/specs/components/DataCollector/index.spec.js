@@ -60,7 +60,8 @@ describe("Event Command", () => {
       expect(event.setUserData).toHaveBeenCalledWith(data);
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: true,
-        decisionScopes: []
+        decisionScopes: [],
+        personalization: {}
       });
       expect(result).toEqual("sendEventResult");
     });
@@ -69,13 +70,39 @@ describe("Event Command", () => {
   it("sends event with decisionScopes parameter when decisionScopes is not empty", () => {
     const options = {
       renderDecisions: true,
-      decisionScopes: ["Foo1", "Foo2"]
+      decisionScopes: ["Foo1"],
+      personalization: {
+        decisionScopes: ["Foo2"]
+      }
     };
 
     return sendEventCommand.run(options).then(result => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: true,
-        decisionScopes: ["Foo1", "Foo2"]
+        decisionScopes: ["Foo1"],
+        personalization: {
+          decisionScopes: ["Foo2"]
+        }
+      });
+      expect(result).toEqual("sendEventResult");
+    });
+  });
+
+  it("sends event with surfaces parameter when surfaces is not empty", () => {
+    const options = {
+      renderDecisions: true,
+      personalization: {
+        surfaces: ["Foo1", "Foo2"]
+      }
+    };
+
+    return sendEventCommand.run(options).then(result => {
+      expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
+        renderDecisions: true,
+        decisionScopes: [],
+        personalization: {
+          surfaces: ["Foo1", "Foo2"]
+        }
       });
       expect(result).toEqual("sendEventResult");
     });
@@ -91,7 +118,8 @@ describe("Event Command", () => {
     return sendEventCommand.run({}).then(() => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: false,
-        decisionScopes: []
+        decisionScopes: [],
+        personalization: {}
       });
     });
   });

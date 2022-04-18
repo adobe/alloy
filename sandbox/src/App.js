@@ -17,6 +17,7 @@ import Home from "./Home";
 import Consent from "./Consent";
 import Personalization from "./Personalization";
 import PersonalizationSpa from "./PersonalizationSpa";
+import PersonalizationAjo from "./PersonalizationAjo";
 import PersonalizationProfile from "./PersonalizationProfile";
 import Links from "./Links";
 import EventMerge from "./EventMerge";
@@ -47,6 +48,9 @@ function BasicExample() {
             </li>
             <li>
               <Link to="/personalizationSpa">Personalization - SPA</Link>
+            </li>
+            <li>
+              <Link to="/personalizationAjo">Personalization - AJO</Link>
             </li>
             <li>
               <Link to="/personalizationA4TClientSide">
@@ -95,6 +99,7 @@ function BasicExample() {
           <Route path="/consent" component={Consent} />
           <Route path="/personalization" component={Personalization} />
           <Route path="/personalizationSpa" component={PersonalizationSpa} />
+          <Route path="/personalizationAjo" component={PersonalizationAjo} />
           <Route
             path="/personalizationA4TClientSide"
             component={PersonalizationAnalyticsClientSide}

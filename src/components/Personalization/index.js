@@ -30,6 +30,7 @@ import createRedirectHandler from "./createRedirectHandler";
 import createAutorenderingHandler from "./createAutoRenderingHandler";
 import createNonRenderingHandler from "./createNonRenderingHandler";
 import createApplyPropositions from "./createApplyPropositions";
+import createGetPageLocation from "./createGetPageLocation";
 import createSetTargetMigration from "./createSetTargetMigration";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
@@ -41,6 +42,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     getClickSelectors,
     storeClickMetrics
   } = createClickStorage();
+  const getPageLocation = createGetPageLocation({ window });
   const viewCache = createViewCacheManager();
   const modules = initDomActionsModules(storeClickMetrics);
   const executeDecisions = createExecuteDecisions({
@@ -54,7 +56,6 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     logger,
     showContainers
   });
-
   const autoRenderingHandler = createAutorenderingHandler({
     viewCache,
     executeDecisions,
@@ -94,6 +95,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     targetMigrationEnabled
   });
   return createComponent({
+    getPageLocation,
     logger,
     fetchDataHandler,
     viewChangeHandler,
