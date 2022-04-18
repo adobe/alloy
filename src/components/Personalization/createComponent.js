@@ -15,6 +15,7 @@ import createPersonalizationDetails from "./createPersonalizationDetails";
 import { AUTHORING_ENABLED } from "./constants/loggerMessage";
 
 export default ({
+  window,
   logger,
   fetchDataHandler,
   viewChangeHandler,
@@ -30,6 +31,7 @@ export default ({
         event,
         renderDecisions,
         decisionScopes = [],
+        surfaces = [],
         onResponse = noop,
         onRequestFailure = noop
       }) {
@@ -46,8 +48,10 @@ export default ({
         }
 
         const personalizationDetails = createPersonalizationDetails({
+          window,
           renderDecisions,
           decisionScopes,
+          surfaces,
           event,
           viewCache
         });

@@ -21,7 +21,21 @@ import {
 } from "./constants/schema";
 import isNonEmptyString from "../../utils/isNonEmptyString";
 
-export default ({ renderDecisions, decisionScopes, event, viewCache }) => {
+const WEB_SURFACE = "web";
+
+const buildPageSurface = window => {
+  const url = window.location.href;
+  return WEB_SURFACE + url.substring(url.indexOf(":"));
+};
+
+export default ({
+  window,
+  renderDecisions,
+  decisionScopes,
+  surfaces,
+  event,
+  viewCache
+}) => {
   const viewName = event.getViewName();
   return {
     isRenderDecisions() {
@@ -33,13 +47,18 @@ export default ({ renderDecisions, decisionScopes, event, viewCache }) => {
     hasScopes() {
       return decisionScopes.length > 0;
     },
+    hasSurfaces() {
+      return surfaces.length > 0;
+    },
     hasViewName() {
       return isNonEmptyString(viewName);
     },
     createQueryDetails() {
       const scopes = [...decisionScopes];
+      const eventSurfaces = [...surfaces];
       if (!this.isCacheInitialized() && !includes(scopes, PAGE_WIDE_SCOPE)) {
         scopes.push(PAGE_WIDE_SCOPE);
+        eventSurfaces.push(buildPageSurface(window));
       }
 
       const schemas = [
@@ -55,14 +74,17 @@ export default ({ renderDecisions, decisionScopes, event, viewCache }) => {
 
       return {
         schemas,
-        decisionScopes: scopes
+        decisionScopes: scopes,
+        surfaces: eventSurfaces
       };
     },
     isCacheInitialized() {
       return viewCache.isInitialized();
     },
     shouldFetchData() {
-      return this.hasScopes() || !this.isCacheInitialized();
+      return (
+        this.hasScopes() || this.hasSurfaces() || !this.isCacheInitialized()
+      );
     },
     shouldUseCachedData() {
       return this.hasViewName() && this.isCacheInitialized();

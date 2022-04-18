@@ -27,6 +27,7 @@ export default ({ options }) => {
     data: objectOf({}),
     renderDecisions: boolean(),
     decisionScopes: arrayOf(string()),
+    surfaces: arrayOf(string()),
     datasetId: string()
   }).required();
   return eventOptionsValidator(options);

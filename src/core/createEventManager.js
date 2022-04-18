@@ -38,12 +38,13 @@ export default ({
      * @param {Object} [options]
      * @param {boolean} [options.renderDecisions=false]
      * @param {Array} [options.decisionScopes]
+     * @param {Array} [options.surfaces]
      * This will be passed to components
      * so they can take appropriate action.
      * @returns {*}
      */
     sendEvent(event, options = {}) {
-      const { renderDecisions = false, decisionScopes } = options;
+      const { renderDecisions = false, decisionScopes, surfaces } = options;
       const payload = createDataCollectionRequestPayload();
       const request = createDataCollectionRequest(payload);
       const onResponseCallbackAggregator = createCallbackAggregator();
@@ -54,6 +55,7 @@ export default ({
           event,
           renderDecisions,
           decisionScopes,
+          surfaces,
           onResponse: onResponseCallbackAggregator.add,
           onRequestFailure: onRequestFailureCallbackAggregator.add
         })

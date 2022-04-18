@@ -29,6 +29,7 @@ const createDataCollector = ({ eventManager }) => {
             mergeId,
             renderDecisions = false,
             decisionScopes = [],
+            surfaces = [],
             datasetId
           } = options;
           const event = eventManager.createEvent();
@@ -62,7 +63,8 @@ const createDataCollector = ({ eventManager }) => {
 
           return eventManager.sendEvent(event, {
             renderDecisions,
-            decisionScopes
+            decisionScopes,
+            surfaces
           });
         }
       }

@@ -85,6 +85,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     viewCache
   });
   return createComponent({
+    window,
     logger,
     fetchDataHandler,
     viewChangeHandler,
