@@ -40,6 +40,17 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
     })(payload);
   };
 
+  it("handles parameter from mobile", () => {
+    locationSearch =
+      "?adobe_mc=TS%3D1649313745%7CMCMID%3D44902718526006715436785898720250463779%7CMCORGID%3D972C898555E9F7BC7F000101%40AdobeOrg";
+    date = new Date(1649313800 * 1000);
+    orgId = "972C898555E9F7BC7F000101@AdobeOrg";
+    run();
+    expect(payload.addIdentity).toHaveBeenCalledOnceWith("ECID", {
+      id: "44902718526006715436785898720250463779"
+    });
+  });
+
   it("adds the identity", () => {
     run();
     expect(payload.addIdentity).toHaveBeenCalledOnceWith("ECID", {
