@@ -116,7 +116,7 @@
 
             for (var i = 0; i < propositions.length; i++) {
               var proposition = propositions[i];
-              analyticsPayloads.add(getAnalyticsPayload(proposition));
+              analyticsPayloads.add(getClickAnalyticsToken(proposition));
             }
 
             getECID("organizationTwo").then(visitorID => {
