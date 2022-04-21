@@ -14,7 +14,7 @@ jobs:
     name: "Trigger Release If Needed"
     runs-on: ubuntu-latest
     steps:
-      - uses: adobe/project-card-release-automation/trigger-release@v1
+      - uses: adobe/project-card-release-automation/trigger-release@v2
         with:
           token: ${{ secrets.ALLOY_BOT_GITHUB_TOKEN }}
           workflowId: "deployRelease.yml"
