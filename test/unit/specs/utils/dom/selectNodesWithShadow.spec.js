@@ -151,8 +151,6 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
 
     appendNode(document.body, node);
 
-    console.log("foo", document.body.outerHTML);
-
     const result = selectNodesWithEq("#target > div:eq(0) > span");
 
     expect(result[0].tagName).toEqual("SPAN");
