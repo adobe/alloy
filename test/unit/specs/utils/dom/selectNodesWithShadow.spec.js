@@ -136,4 +136,26 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
     expect(result[0].tagName).toEqual("LABEL");
     expect(result[0].textContent).toEqual("Buy Now");
   });
+
+  it("should respect child selectors", () => {
+    const content = `
+      <div>
+        <div>
+          <span id="wrong"></span>
+        </div>
+        <span id="right"></span>
+      </div>
+    `;
+
+    const node = createNode("DIV", { id: "target" }, { innerHTML: content });
+
+    appendNode(document.body, node);
+
+    console.log("foo", document.body.outerHTML);
+
+    const result = selectNodesWithEq("#target > div:eq(0) > span");
+
+    expect(result[0].tagName).toEqual("SPAN");
+    expect(result[0].id).toEqual("right");
+  });
 });
