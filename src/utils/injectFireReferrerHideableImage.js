@@ -14,12 +14,14 @@ import fireImageInDocument from "./fireImage";
 import {
   appendNode as appendNodeToDocument,
   awaitSelector as awaitSelectorInDocument,
-  createNode as createNodeInDocument
+  createNode as createNodeInDocument,
+  querySelectorAll as querySelectorAllInDocument
 } from "./dom";
 import { BODY, IFRAME } from "../constants/tagName";
 
 const IFRAME_ATTRS = {
-  name: "Adobe Alloy"
+  name: "Adobe Alloy",
+  id: "alloy-sync-frame"
 };
 
 const IFRAME_PROPS = {
@@ -34,7 +36,8 @@ export default ({
   appendNode = appendNodeToDocument,
   awaitSelector = awaitSelectorInDocument,
   createNode = createNodeInDocument,
-  fireImage = fireImageInDocument
+  fireImage = fireImageInDocument,
+  querySelectorAll = querySelectorAllInDocument
 } = {}) => {
   const fireOnPage = fireImage;
 
@@ -42,6 +45,13 @@ export default ({
 
   const createIframe = () => {
     if (hiddenIframe) {
+      return Promise.resolve(hiddenIframe);
+    }
+    const potentialHiddenFrames = querySelectorAll(
+      `iframe#${IFRAME_ATTRS.id}}`
+    );
+    if (potentialHiddenFrames.length > 0) {
+      hiddenIframe = potentialHiddenFrames[0];
       return Promise.resolve(hiddenIframe);
     }
     return awaitSelector(BODY).then(([body]) => {

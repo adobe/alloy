@@ -17,6 +17,7 @@ describe("injectFireReferrerHideableImage", () => {
   let awaitSelectorMock;
   let createNodeMock;
   let fireImageMock;
+  let querySelectorAllMock;
   let fireReferrerHideableImage;
 
   beforeEach(() => {
@@ -32,11 +33,15 @@ describe("injectFireReferrerHideableImage", () => {
     fireImageMock = jasmine
       .createSpy("fireImage")
       .and.callFake(() => Promise.resolve());
+    querySelectorAllMock = jasmine
+      .createSpy("querySelectorAll")
+      .and.callFake(() => Promise.resolve([]));
     fireReferrerHideableImage = injectFireReferrerHideableImage({
       appendNode: appendNodeMock,
       awaitSelector: awaitSelectorMock,
       createNode: createNodeMock,
-      fireImage: fireImageMock
+      fireImage: fireImageMock,
+      querySelectorAll: querySelectorAllMock
     });
   });
 
