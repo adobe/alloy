@@ -15,7 +15,7 @@ import {
   appendNode as appendNodeToDocument,
   awaitSelector as awaitSelectorInDocument,
   createNode as createNodeInDocument,
-  querySelectorAll as querySelectorAllInDocument
+  selectNodes as selectNodesInDocument
 } from "./dom";
 import { BODY, IFRAME } from "../constants/tagName";
 
@@ -37,7 +37,7 @@ export default ({
   awaitSelector = awaitSelectorInDocument,
   createNode = createNodeInDocument,
   fireImage = fireImageInDocument,
-  querySelectorAll = querySelectorAllInDocument
+  selectNodes = selectNodesInDocument
 } = {}) => {
   const fireOnPage = fireImage;
 
@@ -47,9 +47,7 @@ export default ({
     if (hiddenIframe) {
       return Promise.resolve(hiddenIframe);
     }
-    const potentialHiddenFrames = querySelectorAll(
-      `iframe#${IFRAME_ATTRS.id}}`
-    );
+    const potentialHiddenFrames = selectNodes(`#${IFRAME_ATTRS.id}`);
     if (potentialHiddenFrames.length > 0) {
       hiddenIframe = potentialHiddenFrames[0];
       return Promise.resolve(hiddenIframe);
