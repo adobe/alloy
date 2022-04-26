@@ -1,39 +1,20 @@
-import {
-  anything,
-  boolean,
-  string,
-  objectOf,
-  arrayOf
-} from "../../utils/validation";
+import { anything, string, objectOf, arrayOf } from "../../utils/validation";
+import { EMPTY_PROPOSITIONS } from "./createApplyPropositions";
 
-export default objectOf({
-  propositions: arrayOf(
-    objectOf({
-      renderAttempted: boolean(),
-      id: string(),
-      scope: string(),
-      items: arrayOf(
-        objectOf({
-          id: string(),
-          schema: string(),
-          meta: objectOf({
-            "experience.id": string(),
-            "activity.id": string(),
-            "offer.name": string(),
-            "activity.name": string(),
-            "offer.id": string()
-          }),
-          data: objectOf({
-            type: string(),
-            format: string(),
-            content: string(),
-            selector: string(),
-            prehidingSelector: string()
-          })
-        })
-      ),
-      scopeDetails: objectOf(anything())
-    })
-  ).nonEmpty(),
-  viewName: string()
-}).required();
+export default ({ logger, options }) => {
+  const applyPropositionsOptionsValidator = objectOf({
+    propositions: arrayOf(objectOf(anything())).nonEmpty(),
+    metadata: objectOf(anything()),
+    viewName: string()
+  });
+
+  try {
+    return applyPropositionsOptionsValidator(options);
+  } catch (e) {
+    logger.warn(
+      "Invalid options for applyPropositions. No propositions will be applied.",
+      e
+    );
+    return Promise.resolve(EMPTY_PROPOSITIONS);
+  }
+};

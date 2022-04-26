@@ -84,7 +84,8 @@ export default ({
     },
     commands: {
       applyPropositions: {
-        optionsValidator: validateApplyPropositionsOptions,
+        optionsValidator: options =>
+          validateApplyPropositionsOptions({ logger, options }),
         run: applyPropositions
       }
     }

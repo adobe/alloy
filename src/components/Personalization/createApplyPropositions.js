@@ -13,20 +13,46 @@ governing permissions and limitations under the License.
 import composePersonalizationResultingObject from "./utils/composePersonalizationResultingObject";
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
 import isNonEmptyString from "../../utils/isNonEmptyString";
+import isObject from "../../utils/isObject";
 
-const EMPTY_PROPOSITIONS = { propositions: [] };
+export const EMPTY_PROPOSITIONS = { propositions: [] };
 
 export default ({ viewCache, executeDecisions, showContainers }) => {
-  const applyPropositions = ({ propositions }) => {
-    return executeDecisions(propositions).then(() => {
-      showContainers();
-      return composePersonalizationResultingObject(propositions, true);
-    });
+  const preparePropositions = ({ propositions, metadata }) => {
+    if (!isObject(metadata)) {
+      return Promise.resolve(propositions);
+    }
+
+    return Promise.resolve(
+      propositions.map(proposition => {
+        const completeProposition = { ...proposition };
+        if (
+          isObject(metadata[completeProposition.scope]) &&
+          isNonEmptyArray(completeProposition.items)
+        ) {
+          const metadataForScope = metadata[completeProposition.scope];
+          completeProposition.items.forEach(item => {
+            item.data.selector = metadataForScope.selector;
+            item.data.type = metadataForScope.actionType;
+          });
+        }
+        return completeProposition;
+      })
+    );
   };
 
-  return ({ propositions, viewName }) => {
+  const applyPropositions = ({ propositions, metadata }) => {
+    return preparePropositions({ propositions, metadata })
+      .then(completePropositions => executeDecisions(completePropositions))
+      .then(() => {
+        showContainers();
+        return composePersonalizationResultingObject(propositions, true);
+      });
+  };
+
+  return ({ propositions, viewName, metadata }) => {
     if (isNonEmptyArray(propositions)) {
-      return Promise.resolve(applyPropositions({ propositions }));
+      return Promise.resolve(applyPropositions({ propositions, metadata }));
     }
     if (isNonEmptyString(viewName)) {
       return viewCache.getView(viewName).then(viewPropositions =>
