@@ -14,14 +14,12 @@ import fireImageInDocument from "./fireImage";
 import {
   appendNode as appendNodeToDocument,
   awaitSelector as awaitSelectorInDocument,
-  createNode as createNodeInDocument,
-  selectNodes as selectNodesInDocument
+  createNode as createNodeInDocument
 } from "./dom";
 import { BODY, IFRAME } from "../constants/tagName";
 
 const IFRAME_ATTRS = {
-  name: "Adobe Alloy",
-  id: "alloy-sync-frame"
+  name: "Adobe Alloy"
 };
 
 const IFRAME_PROPS = {
@@ -36,23 +34,17 @@ export default ({
   appendNode = appendNodeToDocument,
   awaitSelector = awaitSelectorInDocument,
   createNode = createNodeInDocument,
-  fireImage = fireImageInDocument,
-  selectNodes = selectNodesInDocument
+  fireImage = fireImageInDocument
 } = {}) => {
   const fireOnPage = fireImage;
 
   let hiddenIframe;
 
   const createIframe = () => {
-    if (hiddenIframe) {
-      return Promise.resolve(hiddenIframe);
-    }
-    const potentialHiddenFrames = selectNodes(`#${IFRAME_ATTRS.id}`);
-    if (potentialHiddenFrames.length > 0) {
-      hiddenIframe = potentialHiddenFrames[0];
-      return Promise.resolve(hiddenIframe);
-    }
     return awaitSelector(BODY).then(([body]) => {
+      if (hiddenIframe) {
+        return hiddenIframe;
+      }
       hiddenIframe = createNode(IFRAME, IFRAME_ATTRS, IFRAME_PROPS);
       return appendNode(body, hiddenIframe);
     });
