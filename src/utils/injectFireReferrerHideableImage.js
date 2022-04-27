@@ -41,10 +41,10 @@ export default ({
   let hiddenIframe;
 
   const createIframe = () => {
-    if (hiddenIframe) {
-      return Promise.resolve(hiddenIframe);
-    }
     return awaitSelector(BODY).then(([body]) => {
+      if (hiddenIframe) {
+        return hiddenIframe;
+      }
       hiddenIframe = createNode(IFRAME, IFRAME_ATTRS, IFRAME_PROPS);
       return appendNode(body, hiddenIframe);
     });
