@@ -183,4 +183,73 @@ describe("Personalization::createApplyPropositions", () => {
       expect(showContainers).toHaveBeenCalledTimes(0);
     });
   });
+
+  it("it should merge metadata with propositions that have html-content-item schema", () => {
+    const propositions = [
+      {
+        id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn0=",
+        scope: "home",
+        items: [
+          {
+            id: "442358",
+            schema: "https://ns.adobe.com/personalization/dom-action",
+            data: {
+              type: "click",
+              format: "application/vnd.adobe.target.dom-action",
+              selector: "#root"
+            }
+          }
+        ]
+      },
+      {
+        id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
+        scope: "home",
+        items: [
+          {
+            id: "442359",
+            schema: "https://ns.adobe.com/personalization/html-content-item",
+            data: {
+              content: "<p>Some custom content for the home page</p>",
+              format: "text/html",
+              id: "1202448"
+            }
+          }
+        ]
+      }
+    ];
+    const metadata = {
+      home: {
+        selector: "#home-item1",
+        actionType: "setHtml"
+      }
+    };
+
+    const applyPropositions = createApplyPropositions({
+      viewCache,
+      executeDecisions,
+      showContainers
+    });
+
+    return applyPropositions({
+      propositions,
+      metadata
+    }).then(() => {
+      const executedPropositions = executeDecisions.calls.all()[0].args[0];
+      expect(executedPropositions.length).toEqual(2);
+      executedPropositions.forEach(proposition => {
+        expect(proposition.scope).toEqual("home");
+        expect(proposition.items.length).toEqual(1);
+        if (proposition.items[0].id === "442358") {
+          expect(proposition.items[0].data.selector).toEqual("#root");
+          expect(proposition.items[0].data.type).toEqual("click");
+        } else if (proposition.items[0].id === "442359") {
+          expect(proposition.items[0].data.selector).toEqual("#home-item1");
+          expect(proposition.items[0].data.type).toEqual("setHtml");
+        }
+      });
+      expect(viewCache.getView).toHaveBeenCalledTimes(0);
+      expect(executeDecisions).toHaveBeenCalledTimes(1);
+      expect(showContainers).toHaveBeenCalled();
+    });
+  });
 });

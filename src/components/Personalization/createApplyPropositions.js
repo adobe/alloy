@@ -16,8 +16,19 @@ import isNonEmptyString from "../../utils/isNonEmptyString";
 import isObject from "../../utils/isObject";
 
 export const EMPTY_PROPOSITIONS = { propositions: [] };
+export const HTML_CONTENT_ITEM = "html-content-item";
 
 export default ({ viewCache, executeDecisions, showContainers }) => {
+  const updatePropositions = ({ proposition, metadataForScope }) => {
+    proposition.items.forEach(item => {
+      if (item.schema.includes(HTML_CONTENT_ITEM)) {
+        item.data.selector = metadataForScope.selector;
+        item.data.type = metadataForScope.actionType;
+      }
+    });
+    return proposition;
+  };
+
   const preparePropositions = ({ propositions, metadata }) => {
     if (!isObject(metadata)) {
       return Promise.resolve(propositions);
@@ -31,9 +42,9 @@ export default ({ viewCache, executeDecisions, showContainers }) => {
           isNonEmptyArray(completeProposition.items)
         ) {
           const metadataForScope = metadata[completeProposition.scope];
-          completeProposition.items.forEach(item => {
-            item.data.selector = metadataForScope.selector;
-            item.data.type = metadataForScope.actionType;
+          return updatePropositions({
+            proposition: completeProposition,
+            metadataForScope
           });
         }
         return completeProposition;

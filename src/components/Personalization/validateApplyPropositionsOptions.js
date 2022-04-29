@@ -6,7 +6,7 @@ export default ({ logger, options }) => {
     propositions: arrayOf(objectOf(anything())).nonEmpty(),
     metadata: objectOf(anything()),
     viewName: string()
-  });
+  }).required();
 
   try {
     return applyPropositionsOptionsValidator(options);
@@ -15,6 +15,6 @@ export default ({ logger, options }) => {
       "Invalid options for applyPropositions. No propositions will be applied.",
       e
     );
-    return Promise.resolve(EMPTY_PROPOSITIONS);
+    return EMPTY_PROPOSITIONS;
   }
 };
