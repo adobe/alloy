@@ -52,11 +52,11 @@ const Promotion = () => {
 
 const usePropositions = ({ viewName }) => {
   const [propositions, setPropositions] = useState(undefined);
-  useSendPageViewEvent({ viewName, setPropositions, renderDecisions: true });
+  useSendPageViewEvent({ viewName, setPropositions });
   useEffect(() => {
     if (propositions) {
       window.alloy("applyPropositions", {
-        viewName
+        propositions
       });
     }
   });

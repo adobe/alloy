@@ -164,7 +164,7 @@ describe("Personalization::createApplyPropositions", () => {
     });
   });
 
-  it("it should use default metadata with propositions that have html-content-item schema but no user-provided metadata", () => {
+  it("it should use default metadata with propositions that have html-content-item schema when user has not provided metadata", () => {
     const applyPropositions = createApplyPropositions({
       executeDecisions,
       showContainers
@@ -182,7 +182,45 @@ describe("Personalization::createApplyPropositions", () => {
           expect(proposition.items[0].data.selector).toEqual("#root");
           expect(proposition.items[0].data.type).toEqual("click");
         } else if (proposition.items[0].id === "442359") {
-          expect(proposition.items[0].data.selector).toEqual("HEAD");
+          expect(proposition.items[0].data.selector).toEqual("head");
+          expect(proposition.items[0].data.type).toEqual("appendHtml");
+        } else if (proposition.items[0].id === "442360") {
+          expect(proposition.items[0].data.selector).toBeUndefined();
+          expect(proposition.items[0].data.type).toBeUndefined();
+        }
+      });
+      expect(executeDecisions).toHaveBeenCalledTimes(1);
+      expect(showContainers).toHaveBeenCalled();
+    });
+  });
+
+  it("it should use default metadata with propositions that have html-content-item schema when user-provided metadata is missing the matching scope", () => {
+    const applyPropositions = createApplyPropositions({
+      executeDecisions,
+      showContainers
+    });
+
+    const metadata = {
+      randomScope: {
+        selector: "#home-item1",
+        actionType: "setHtml"
+      }
+    };
+
+    return applyPropositions({
+      propositions: MIXED_PROPOSITIONS,
+      metadata
+    }).then(() => {
+      const executedPropositions = executeDecisions.calls.all()[0].args[0];
+      expect(executedPropositions.length).toEqual(3);
+      executedPropositions.forEach(proposition => {
+        expect(proposition.scope).toEqual("home");
+        expect(proposition.items.length).toEqual(1);
+        if (proposition.items[0].id === "442358") {
+          expect(proposition.items[0].data.selector).toEqual("#root");
+          expect(proposition.items[0].data.type).toEqual("click");
+        } else if (proposition.items[0].id === "442359") {
+          expect(proposition.items[0].data.selector).toEqual("head");
           expect(proposition.items[0].data.type).toEqual("appendHtml");
         } else if (proposition.items[0].id === "442360") {
           expect(proposition.items[0].data.selector).toBeUndefined();

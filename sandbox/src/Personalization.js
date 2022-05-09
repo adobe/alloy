@@ -1,36 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
-const usePropositions = () => {
-  const [propositions, setPropositions] = useState(undefined);
-  useSendPageViewEvent({ setPropositions, renderDecisions: true });
-  useEffect(() => {
-    if (propositions) {
-      window.alloy("applyPropositions", {
-        propositions
-      });
-    }
-  });
-};
-
-const updateComponent = ({ renderCounter, setRenderCounter }) => {
-  setRenderCounter(renderCounter + 1);
-};
-
 export default function Personalization() {
-  const [renderCounter, setRenderCounter] = useState(0);
-  usePropositions();
+  useSendPageViewEvent();
   return (
     <div>
       <ContentSecurityPolicy />
       <h1>Personalization</h1>
-      <h2>Number of times rendered: {renderCounter}</h2>
-      <button
-        onClick={() => updateComponent({ renderCounter, setRenderCounter })}
-      >
-        Re-render component
-      </button>
       <p>
         This page tests rendering of activities using a <i>__view__</i> scope.
         If you navigated here from another sandbox view, you will probably need

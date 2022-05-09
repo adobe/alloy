@@ -26,6 +26,7 @@ import DualTag from "./DualTag";
 import RedirectOffers from "./RedirectOffers";
 import RedirectedNewPage from "./RedirectedNewPage";
 import PersonalizationAnalyticsClientSide from "./PersonalizationAnalyticsClientSide";
+import PersonalizationFormBased from "./PersonalizationFormBased";
 
 function BasicExample() {
   return (
@@ -51,6 +52,11 @@ function BasicExample() {
           </li>
           <li>
             <Link to="/personalizationProfile">Personalization - Profile</Link>
+          </li>
+          <li>
+            <Link to="/personalizationFormBased">
+              Personalization - Form Based
+            </Link>
           </li>
           <li>
             <Link to="/links">Links</Link>
@@ -89,6 +95,10 @@ function BasicExample() {
         <Route
           path="/personalizationProfile"
           component={PersonalizationProfile}
+        />
+        <Route
+          path="/personalizationFormBased"
+          component={PersonalizationFormBased}
         />
         <Route path="/links" component={Links} />
         <Route path="/eventMerge" component={EventMerge} />

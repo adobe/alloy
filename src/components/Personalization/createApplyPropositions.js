@@ -13,11 +13,12 @@ governing permissions and limitations under the License.
 import composePersonalizationResultingObject from "./utils/composePersonalizationResultingObject";
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
 import isEmptyObject from "../../utils/isEmptyObject";
+import isObject from "../../utils/isObject";
 
 export const EMPTY_PROPOSITIONS = { propositions: [] };
 export const HTML_CONTENT_ITEM = "html-content-item";
 export const DEFAULT_METADATA = {
-  selector: "HEAD",
+  selector: "head",
   type: "appendHtml"
 };
 
@@ -40,7 +41,7 @@ export default ({ executeDecisions, showContainers }) => {
         if (isNonEmptyArray(completeProposition.items)) {
           const metadataForScope =
             !isEmptyObject(metadata) &&
-            !isEmptyObject(metadata[completeProposition.scope])
+            isObject(metadata[completeProposition.scope])
               ? metadata[completeProposition.scope]
               : DEFAULT_METADATA;
           return updatePropositions({
