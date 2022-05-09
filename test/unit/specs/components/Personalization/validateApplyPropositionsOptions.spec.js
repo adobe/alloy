@@ -149,36 +149,10 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
     expect(result).toEqual(EMPTY_PROPOSITIONS);
   });
 
-  it("it should not log a warning when only viewName is present", () => {
+  it("it should not log a warning when propositions and metadata are present", () => {
     const result = validateApplyPropositionsOptions({
       logger,
       options: {
-        viewName: "cart"
-      }
-    });
-
-    expect(loggerSpy).not.toHaveBeenCalled();
-    expect(result).not.toEqual(EMPTY_PROPOSITIONS);
-  });
-
-  it("it should not log a warning when viewName and propositions are present", () => {
-    const result = validateApplyPropositionsOptions({
-      logger,
-      options: {
-        viewName: "cart",
-        propositions: PROPOSITIONS
-      }
-    });
-
-    expect(loggerSpy).not.toHaveBeenCalled();
-    expect(result).not.toEqual(EMPTY_PROPOSITIONS);
-  });
-
-  it("it should not log a warning when viewName, propositions, and metadata are present", () => {
-    const result = validateApplyPropositionsOptions({
-      logger,
-      options: {
-        viewName: "cart",
         propositions: PROPOSITIONS,
         metadata: METADATA
       }

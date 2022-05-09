@@ -12,36 +12,37 @@ governing permissions and limitations under the License.
 
 import composePersonalizationResultingObject from "./utils/composePersonalizationResultingObject";
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
-import isNonEmptyString from "../../utils/isNonEmptyString";
-import isObject from "../../utils/isObject";
+import isEmptyObject from "../../utils/isEmptyObject";
 
 export const EMPTY_PROPOSITIONS = { propositions: [] };
 export const HTML_CONTENT_ITEM = "html-content-item";
+export const DEFAULT_METADATA = {
+  selector: "HEAD",
+  type: "appendHtml"
+};
 
-export default ({ viewCache, executeDecisions, showContainers }) => {
+export default ({ executeDecisions, showContainers }) => {
   const updatePropositions = ({ proposition, metadataForScope }) => {
     proposition.items.forEach(item => {
       if (item.schema.includes(HTML_CONTENT_ITEM)) {
-        item.data.selector = metadataForScope.selector;
-        item.data.type = metadataForScope.actionType;
+        item.data.selector =
+          metadataForScope.selector || DEFAULT_METADATA.selector;
+        item.data.type = metadataForScope.actionType || DEFAULT_METADATA.type;
       }
     });
     return proposition;
   };
 
   const preparePropositions = ({ propositions, metadata }) => {
-    if (!isObject(metadata)) {
-      return Promise.resolve(propositions);
-    }
-
     return Promise.resolve(
       propositions.map(proposition => {
         const completeProposition = { ...proposition };
-        if (
-          isObject(metadata[completeProposition.scope]) &&
-          isNonEmptyArray(completeProposition.items)
-        ) {
-          const metadataForScope = metadata[completeProposition.scope];
+        if (isNonEmptyArray(completeProposition.items)) {
+          const metadataForScope =
+            !isEmptyObject(metadata) &&
+            !isEmptyObject(metadata[completeProposition.scope])
+              ? metadata[completeProposition.scope]
+              : DEFAULT_METADATA;
           return updatePropositions({
             proposition: completeProposition,
             metadataForScope
@@ -57,20 +58,14 @@ export default ({ viewCache, executeDecisions, showContainers }) => {
       .then(completePropositions => executeDecisions(completePropositions))
       .then(() => {
         showContainers();
+        propositions.forEach(proposition => delete proposition.renderAttempted);
         return composePersonalizationResultingObject(propositions, true);
       });
   };
 
-  return ({ propositions, viewName, metadata }) => {
+  return ({ propositions, metadata = {} }) => {
     if (isNonEmptyArray(propositions)) {
       return Promise.resolve(applyPropositions({ propositions, metadata }));
-    }
-    if (isNonEmptyString(viewName)) {
-      return viewCache.getView(viewName).then(viewPropositions =>
-        applyPropositions({
-          propositions: viewPropositions
-        })
-      );
     }
     return Promise.resolve(EMPTY_PROPOSITIONS);
   };

@@ -1,11 +1,10 @@
-import { anything, string, objectOf, arrayOf } from "../../utils/validation";
+import { anything, objectOf, arrayOf } from "../../utils/validation";
 import { EMPTY_PROPOSITIONS } from "./createApplyPropositions";
 
 export default ({ logger, options }) => {
   const applyPropositionsOptionsValidator = objectOf({
     propositions: arrayOf(objectOf(anything())).nonEmpty(),
-    metadata: objectOf(anything()),
-    viewName: string()
+    metadata: objectOf(anything())
   }).required();
 
   try {
