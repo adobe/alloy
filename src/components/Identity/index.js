@@ -42,7 +42,7 @@ const createIdentity = ({
   consent,
   sendEdgeNetworkRequest
 }) => {
-  const { orgId, thirdPartyCookiesEnabled } = config;
+  const { orgId, thirdPartyCookiesEnabled, idOverwriteEnabled } = config;
 
   const getEcidFromVisitor = injectGetEcidFromVisitor({
     logger,
@@ -74,7 +74,8 @@ const createIdentity = ({
       locationSearch: window.document.location.search,
       dateProvider: () => new Date(),
       orgId,
-      logger
+      logger,
+      idOverwriteEnabled
     }
   );
   const awaitIdentityCookie = injectAwaitIdentityCookie({

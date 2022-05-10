@@ -7,7 +7,13 @@ import ecidNamespace from "../../constants/ecidNamespace";
 
 const LINK_TTL_SECONDS = 300; // 5 minute link time to live
 
-export default ({ locationSearch, dateProvider, orgId, logger }) => payload => {
+export default ({
+  locationSearch,
+  dateProvider,
+  orgId,
+  logger,
+  idOverwriteEnabled
+}) => payload => {
   if (payload.hasIdentity(ecidNamespace)) {
     // don't overwrite a user provided ecid identity
     return;
@@ -42,6 +48,13 @@ export default ({ locationSearch, dateProvider, orgId, logger }) => payload => {
     payload.addIdentity(ecidNamespace, {
       id: mcmid
     });
+    if (idOverwriteEnabled) {
+      payload.mergeQuery({
+        identity: {
+          overwriteExisting: true
+        }
+      });
+    }
   } else {
     logger.info("Detected invalid or expired adobe_mc query string parameter.");
   }
