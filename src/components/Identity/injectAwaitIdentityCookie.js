@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ orgId, doesIdentityCookieExist }) => {
+export default ({ doesIdentityCookieExist, orgId }) => {
   /**
    * Returns a promise that will be resolved once an identity cookie exists.
    * If an identity cookie doesn't already exist, it should always exist after

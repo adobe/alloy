@@ -14,16 +14,17 @@ function sendAnalyticsPayload({ analyticsPayload, visitorID }) {
     });
 }
 
-function getAnalyticsPayload(proposition) {
+function getClickAnalyticsToken(proposition) {
   const { scopeDetails = {} } = proposition;
   const { characteristics = {} } = scopeDetails;
-  const { analyticsToken } = characteristics;
+  const { analyticsTokens, analyticsToken } = characteristics;
 
-  if (analyticsToken === undefined) {
-    return;
+  if (analyticsTokens) {
+    return analyticsTokens.click;
   }
   return analyticsToken;
 }
+
 const concatenateAnalyticsPayloads = analyticsPayloads => {
   if (analyticsPayloads.size > 1) {
     return [...analyticsPayloads].join(",");

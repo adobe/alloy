@@ -1,7 +1,7 @@
 import {
   collectAnalyticsPayloadData,
   concatenateAnalyticsPayloads,
-  getAnalyticsToken,
+  getDisplayAnalyticsToken,
   getECID
 } from "./analyticsTokenHandler";
 import { sendAnalyticsPayload } from "./DataInsertionAPI";
@@ -93,7 +93,7 @@ export const getFormBasedOffer = () => {
             scopeDetails: proposition.scopeDetails
           });
 
-          analyticsPayloads.add(getAnalyticsToken(proposition));
+          analyticsPayloads.add(getDisplayAnalyticsToken(proposition));
         }
 
         if (item.schema === MEASUREMENT_SCHEMA) {

@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy",
-  "version": "2.9.0",
+  "version": "2.10.1",
   "description": "Adobe Experience Platform Web SDK",
   "main": "libEs5/index.js",
   "module": "libEs6/index.js",
@@ -64,7 +64,7 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "@adobe/alloy": "^2.9.0",
+    "@adobe/alloy": "^2.10.1",
     "@babel/cli": "^7.12.8",
     "@babel/core": "^7.2.2",
     "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
@@ -114,6 +114,7 @@
     "rollup-plugin-license": "^2.2.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-terser": "^7.0.2",
+    "semver": "^7.3.7",
     "start-server-and-test": "^1.10.6",
     "testcafe": "^1.17.1",
     "testcafe-browser-provider-saucelabs": "^1.8.3",
