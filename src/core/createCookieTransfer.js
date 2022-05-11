@@ -10,13 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { endsWith, isNamespacedCookieName } from "../utils";
+import {
+  endsWith,
+  getNamespacedCookieName,
+  isNamespacedCookieName
+} from "../utils";
 import convertTimes, { DAY, SECOND } from "../utils/convertTimes";
+import { EDGE_PATH } from "../constants/cookieNameKey";
 
 const STATE_STORE_HANDLE_TYPE = "state:store";
 
 export default ({ cookieJar, orgId, apexDomain }) => {
   return {
+    getPathFromCookie: () =>
+      cookieJar.get(getNamespacedCookieName(orgId, EDGE_PATH)),
+
     /**
      * When sending to a third-party endpoint, the endpoint won't be able to
      * access first-party cookies, therefore we transfer cookies into

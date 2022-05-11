@@ -14,6 +14,20 @@ import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain"
 import apiVersion from "../../constants/apiVersion";
 import { createCallbackAggregator, noop, assign } from "../../utils";
 
+const extractResponseFromServerState = serverState => {
+  const { response = {} } = serverState;
+  const { headers = {}, body = {} } = response;
+
+  const getHeader = key => headers[key];
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(body),
+    parsedBody: body,
+    getHeader
+  };
+};
+
 export default ({
   config,
   lifecycle,
@@ -31,7 +45,8 @@ export default ({
   return ({
     request,
     runOnResponseCallbacks = noop,
-    runOnRequestFailureCallbacks = noop
+    runOnRequestFailureCallbacks = noop,
+    serverState = undefined
   }) => {
     const onResponseCallbackAggregator = createCallbackAggregator();
     onResponseCallbackAggregator.add(lifecycle.onResponse);
@@ -51,14 +66,24 @@ export default ({
         const endpointDomain = request.getUseIdThirdPartyDomain()
           ? ID_THIRD_PARTY_DOMAIN
           : edgeDomain;
-        const url = `https://${endpointDomain}/${edgeBasePath}/${apiVersion}/${request.getAction()}?configId=${edgeConfigId}&requestId=${request.getId()}`;
+
+        const pathFromCookie = cookieTransfer.getPathFromCookie();
+
+        const basePath =
+          pathFromCookie !== undefined
+            ? pathFromCookie
+            : `${endpointDomain}/${edgeBasePath}`;
+
+        const url = `https://${basePath}/${apiVersion}/${request.getAction()}?configId=${edgeConfigId}&requestId=${request.getId()}`;
         cookieTransfer.cookiesToPayload(request.getPayload(), endpointDomain);
-        return sendNetworkRequest({
-          requestId: request.getId(),
-          url,
-          payload: request.getPayload(),
-          useSendBeacon: request.getUseSendBeacon()
-        });
+        return serverState
+          ? extractResponseFromServerState(serverState)
+          : sendNetworkRequest({
+              requestId: request.getId(),
+              url,
+              payload: request.getPayload(),
+              useSendBeacon: request.getUseSendBeacon()
+            });
       })
       .then(networkResponse => {
         processWarningsAndErrors(networkResponse);

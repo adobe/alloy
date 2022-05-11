@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import validateUserEventOptions from "./validateUserEventOptions";
+import validateServerState from "./validateServerState";
 
 const createDataCollector = ({ eventManager }) => {
   return {
@@ -64,6 +65,40 @@ const createDataCollector = ({ eventManager }) => {
             renderDecisions,
             decisionScopes
           });
+        }
+      },
+      applyEvents: {
+        documentationUri: "",
+        optionsValidator: serverState => {
+          return validateServerState({ options: serverState });
+        },
+        run: serverState => {
+          const { request = {}, renderDecisions = false } = serverState;
+
+          const { events: fulfilledEvents = [] } = request.body;
+
+          return Promise.all(
+            fulfilledEvents.map(fulfilledEvent => {
+              const event = eventManager.createEvent();
+
+              const {
+                xdm = {},
+                query = { personalization: { decisionScopes: [] } },
+                data = {}
+              } = fulfilledEvent;
+
+              const decisionScopes = query.personalization.decisionScopes;
+
+              event.setUserXdm(xdm);
+              event.setUserData(data);
+
+              return eventManager.sendEvent(event, {
+                renderDecisions,
+                decisionScopes,
+                serverState
+              });
+            })
+          );
         }
       }
     }

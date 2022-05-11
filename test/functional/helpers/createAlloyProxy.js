@@ -84,6 +84,7 @@ const getLastErrorMessage = ClientFunction(() => {
 const commands = [
   "configure",
   "sendEvent",
+  "applyEvents",
   "setConsent",
   "getIdentity",
   "setDebug",
