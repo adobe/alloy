@@ -19,15 +19,13 @@ export default (context, selector) => {
     return toArray(context.querySelectorAll(selector));
   }
 
-  const tag = `alloy${+new Date()}`;
+  const tag = `alloy-${Date.now()}`;
 
-  try { // adding a dummy css class to be able to select the children
-    context.classList.add(tag); // needs to be IE compliant
+  try {
+    context.classList.add(tag);
 
     return toArray(context.querySelectorAll(`.${tag} ${selector}`));
-  } catch (e) {
-    throw e;
   } finally {
-    context.classList.remove(tag); // needs to be IE compliant
+    context.classList.remove(tag);
   }
 };

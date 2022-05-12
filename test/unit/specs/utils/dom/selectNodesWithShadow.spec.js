@@ -63,14 +63,16 @@ const defineCustomElements = () => {
 };
 
 describe("Utils::DOM::selectNodesWithShadow", () => {
+  const CLEANUP_CLASS = "cleanup";
+
   afterEach(() => {
-    selectNodes(".shadow").forEach(removeNode);
+    selectNodes(`.${CLEANUP_CLASS}`).forEach(removeNode);
   });
 
   it("should select when no shadow", () => {
     appendNode(
       document.body,
-      createNode("DIV", { id: "noShadow", class: "shadow" })
+      createNode("DIV", { id: "noShadow", class: CLEANUP_CLASS })
     );
 
     const result = selectNodes("#noShadow");
@@ -95,7 +97,11 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
 
     appendNode(
       document.body,
-      createNode("DIV", { id: "abc", class: "shadow" }, { innerHTML: content })
+      createNode(
+        "DIV",
+        { id: "abc", class: CLEANUP_CLASS },
+        { innerHTML: content }
+      )
     );
 
     const result = selectNodesWithEq(
@@ -126,7 +132,11 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
 
     appendNode(
       document.body,
-      createNode("DIV", { id: "abc", class: "shadow" }, { innerHTML: content })
+      createNode(
+        "DIV",
+        { id: "abc", class: CLEANUP_CLASS },
+        { innerHTML: content }
+      )
     );
 
     const result = selectNodesWithEq(
@@ -147,7 +157,11 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
       </div>
     `;
 
-    const node = createNode("DIV", { id: "target" }, { innerHTML: content });
+    const node = createNode(
+      "DIV",
+      { id: "target", class: CLEANUP_CLASS },
+      { innerHTML: content }
+    );
 
     appendNode(document.body, node);
 
