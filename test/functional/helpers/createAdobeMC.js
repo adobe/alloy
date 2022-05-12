@@ -1,5 +1,5 @@
 /*
-Copyright 2019 Adobe. All rights reserved.
+Copyright 2022 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,12 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean } from "../../utils/validation";
+import createRandomEcid from "./createRandomEcid";
+import { orgMainConfigMain } from "./constants/configParts";
 
-const configValidators = {
-  thirdPartyCookiesEnabled: boolean().default(true),
-  idMigrationEnabled: boolean().default(true),
-  idOverwriteEnabled: boolean().default(false)
+export default ({ timestamp, id, orgId } = {}) => {
+  const ts = timestamp || new Date().getTime() / 1000;
+  const mcmid = id || createRandomEcid();
+  const mcorgid = orgId || orgMainConfigMain.orgId;
+
+  return encodeURIComponent(`TS=${ts}|MCMID=${mcmid}|MCORGID=${mcorgid}`);
 };
-
-export default configValidators;

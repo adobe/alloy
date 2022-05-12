@@ -15,11 +15,12 @@ import { createMerger } from "..";
 // This provides the base functionality that all types of
 // request payloads share.
 export default options => {
-  const { content, addIdentity } = options;
+  const { content, addIdentity, hasIdentity } = options;
   return {
     mergeState: createMerger(content, "meta.state"),
     mergeQuery: createMerger(content, "query"),
     addIdentity,
+    hasIdentity,
     toJSON() {
       return content;
     }

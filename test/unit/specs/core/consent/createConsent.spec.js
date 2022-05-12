@@ -22,7 +22,8 @@ describe("createConsent", () => {
       "in",
       "out",
       "pending",
-      "awaitConsent"
+      "awaitConsent",
+      "withConsent"
     ]);
     logger = jasmine.createSpyObj("logger", ["warn"]);
     subject = createConsent({ generalConsentState: state, logger });
@@ -66,5 +67,9 @@ describe("createConsent", () => {
   it("calls await consent", () => {
     state.awaitConsent.and.returnValue("mypromise");
     expect(subject.awaitConsent()).toEqual("mypromise");
+  });
+  it("calls with consent", () => {
+    state.withConsent.and.returnValue("mypromise");
+    expect(subject.withConsent()).toEqual("mypromise");
   });
 });

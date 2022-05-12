@@ -17,3 +17,6 @@ export const TEST_PAGE_WITH_CSP = `${baseUrl}/testPageWithCsp.html`;
 // This page is only used by reloadPage.js as an interim workaround for
 // https://github.com/DevExpress/testcafe/issues/5992
 export const RELOAD_PAGE = `${baseUrl}/reloadPage.html`;
+
+const secondaryBaseUrl = `https://alloyio2.com/functional-test`;
+export const SECONDARY_TEST_PAGE = `${secondaryBaseUrl}/testPage.html`;

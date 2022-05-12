@@ -26,12 +26,14 @@ import injectEnsureSingleIdentity from "./injectEnsureSingleIdentity";
 import addEcidQueryToPayload from "./addEcidQueryToPayload";
 import injectSetDomainForInitialIdentityPayload from "./injectSetDomainForInitialIdentityPayload";
 import injectAddLegacyEcidToPayload from "./injectAddLegacyEcidToPayload";
+import injectAddQueryStringIdentityToPayload from "./injectAddQueryStringIdentityToPayload";
 import addEcidToPayload from "./addEcidToPayload";
 import injectAwaitIdentityCookie from "./injectAwaitIdentityCookie";
 import getEcidFromResponse from "./getEcidFromResponse";
 import createGetIdentity from "./getIdentity/createGetIdentity";
 import createIdentityRequest from "./getIdentity/createIdentityRequest";
 import createIdentityRequestPayload from "./getIdentity/createIdentityRequestPayload";
+import injectAppendIdentityToUrl from "./appendIdentityToUrl/injectAppendIdentityToUrl";
 
 const createIdentity = ({
   config,
@@ -40,7 +42,7 @@ const createIdentity = ({
   fireReferrerHideableImage,
   sendEdgeNetworkRequest
 }) => {
-  const { orgId, thirdPartyCookiesEnabled } = config;
+  const { orgId, thirdPartyCookiesEnabled, idOverwriteEnabled } = config;
 
   const getEcidFromVisitor = injectGetEcidFromVisitor({
     logger,
@@ -67,6 +69,15 @@ const createIdentity = ({
     getLegacyEcid: legacyIdentity.getEcid,
     addEcidToPayload
   });
+  const addQueryStringIdentityToPayload = injectAddQueryStringIdentityToPayload(
+    {
+      locationSearch: window.document.location.search,
+      dateProvider: () => new Date(),
+      orgId,
+      logger,
+      idOverwriteEnabled
+    }
+  );
   const awaitIdentityCookie = injectAwaitIdentityCookie({
     doesIdentityCookieExist,
     orgId
@@ -85,14 +96,21 @@ const createIdentity = ({
   const handleResponseForIdSyncs = injectHandleResponseForIdSyncs({
     processIdSyncs
   });
+  const appendIdentityToUrl = injectAppendIdentityToUrl({
+    dateProvider: () => new Date(),
+    orgId
+  });
   return createComponent({
-    ensureSingleIdentity,
     addEcidQueryToPayload,
+    addQueryStringIdentityToPayload,
+    ensureSingleIdentity,
     setLegacyEcid: legacyIdentity.setEcid,
     handleResponseForIdSyncs,
     getEcidFromResponse,
     getIdentity,
-    consent
+    consent,
+    appendIdentityToUrl,
+    logger
   });
 };
 
