@@ -79,12 +79,14 @@
           location.host.indexOf("alloyio.com") !== -1
             ? "firstparty.alloyio.com"
             : undefined,
+        edgeBasePath: getUrlParameter("edgeBasePath") || "ee",
         edgeConfigId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
         orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
         debugEnabled: true,
         idMigrationEnabled: !(
           getUrlParameter("idMigrationEnabled") === "false"
         ),
+        idOverwriteEnabled: getUrlParameter("idOverwriteEnabled") === "true",
         prehidingStyle: ".personalization-container { opacity: 0 !important }",
         onBeforeEventSend: function(options) {
           const xdm = options.xdm;
