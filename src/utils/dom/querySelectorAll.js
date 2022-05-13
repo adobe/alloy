@@ -21,6 +21,8 @@ export default (context, selector) => {
 
   const tag = `alloy-${Date.now()}`;
 
+  // We could use a :scope selector here, but we want to be IE compliant
+  // so we add a dummy css class to be able to select the children
   try {
     context.classList.add(tag);
 
