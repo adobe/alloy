@@ -28,7 +28,7 @@ export default ({ mergeDecisionsMeta, executeDecisions, viewCache }) => {
             });
             return;
           }
-          // if there are no decisions in cache for this view, we will send a empty notification
+          // if there are no decisions in cache for this view, we will merge the events.
           onResponse(() => {
             return composePersonalizationResultingObject(viewDecisions, true);
           });
