@@ -13,12 +13,7 @@ governing permissions and limitations under the License.
 import composePersonalizationResultingObject from "./utils/composePersonalizationResultingObject";
 import { isNonEmptyArray } from "../../utils";
 
-export default ({
-  mergeDecisionsMeta,
-  collect,
-  executeDecisions,
-  viewCache
-}) => {
+export default ({ mergeDecisionsMeta, executeDecisions, viewCache }) => {
   return ({ personalizationDetails, event, onResponse }) => {
     const viewName = personalizationDetails.getViewName();
 
@@ -35,7 +30,6 @@ export default ({
           }
           // if there are no decisions in cache for this view, we will send a empty notification
           onResponse(() => {
-            collect({ decisionsMeta: [], viewName });
             return composePersonalizationResultingObject(viewDecisions, true);
           });
         });
