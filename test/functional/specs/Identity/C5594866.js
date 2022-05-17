@@ -26,17 +26,10 @@ import { TEST_PAGE, SECONDARY_TEST_PAGE } from "../../helpers/constants/url";
 
 // We disable third party cookies so that the domains don't share identities
 // through the demdex cookies.
-const configOverwriteEnabled = compose(
+const config = compose(
   orgMainConfigMain,
   thirdPartyCookiesDisabled,
-  debugEnabled,
-  { idOverwriteEnabled: true }
-);
-const configOverwriteDisabled = compose(
-  orgMainConfigMain,
-  thirdPartyCookiesDisabled,
-  debugEnabled,
-  { idOverwriteEnabled: false }
+  debugEnabled
 );
 
 const networkLogger = createNetworkLogger();
@@ -53,23 +46,23 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test.skip("C5594866: Identity can be changed via the adobe_mc query string parameter", async () => {
+test("C5594866: Identity can be changed via the adobe_mc query string parameter", async () => {
   const alloy = createAlloyProxy();
-  await alloy.configure(configOverwriteEnabled);
+  await alloy.configure(config);
   // establish an identity cookie
   await alloy.sendEvent({});
 
   await t.navigateTo(SECONDARY_TEST_PAGE);
-  await alloy.configure(configOverwriteEnabled);
+  await alloy.configure(config);
   await alloy.sendEvent({});
   const { url: newUrl } = await alloy.appendIdentityToUrl({ url: TEST_PAGE });
 
   await t.navigateTo(newUrl);
-  await alloy.configure(configOverwriteEnabled);
+  await alloy.configure(config);
   await alloy.sendEvent({});
 
   await reloadPage("");
-  await alloy.configure(configOverwriteEnabled);
+  await alloy.configure(config);
   await alloy.sendEvent({});
 
   const [
@@ -85,38 +78,4 @@ test.skip("C5594866: Identity can be changed via the adobe_mc query string param
 
   const { identity } = await alloy.getIdentity();
   await t.expect(identity.ECID).eql(secondaryPageEcid);
-});
-
-test("C5594866: Identity can be changed temporarily via the adobe_mc query string parameter", async () => {
-  const alloy = createAlloyProxy();
-  await alloy.configure(configOverwriteDisabled);
-  // establish an identity cookie
-  await alloy.sendEvent({});
-
-  await t.navigateTo(SECONDARY_TEST_PAGE);
-  await alloy.configure(configOverwriteDisabled);
-  await alloy.sendEvent({});
-  const { url: newUrl } = await alloy.appendIdentityToUrl({ url: TEST_PAGE });
-
-  await t.navigateTo(newUrl);
-  await alloy.configure(configOverwriteDisabled);
-  await alloy.sendEvent({});
-
-  await reloadPage("");
-  await alloy.configure(configOverwriteDisabled);
-  await alloy.sendEvent({});
-
-  const [
-    originalEcid,
-    secondaryPageEcid,
-    newEcid,
-    reloadedEcid
-  ] = networkLogger.edgeEndpointLogs.requests.map(getReturnedEcid);
-
-  await t.expect(originalEcid).notEql(secondaryPageEcid);
-  await t.expect(newEcid).eql(secondaryPageEcid);
-  await t.expect(reloadedEcid).eql(originalEcid);
-
-  const { identity } = await alloy.getIdentity();
-  await t.expect(identity.ECID).eql(originalEcid);
 });

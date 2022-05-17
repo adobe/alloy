@@ -48,7 +48,7 @@ test.meta({
 
 const getDocumentCookie = ClientFunction(() => document.cookie);
 
-test.skip("C5752639: Identity can be changed via the adobe_mc query string parameter when id_migration is enabled", async () => {
+test("C5752639: Identity can be changed via the adobe_mc query string parameter when id_migration is enabled", async () => {
   setLegacyIdentityCookie();
 
   const alloy = createAlloyProxy();

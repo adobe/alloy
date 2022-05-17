@@ -22,7 +22,6 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
   let logger;
   let date;
   let payload;
-  let idOverwriteEnabled;
 
   beforeEach(() => {
     dateProvider = () => date;
@@ -31,7 +30,6 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
     date = new Date(1641432103 * 1000);
     orgId = "FAF554945B90342F0A495E2C@AdobeOrg";
     logger = jasmine.createSpyObj("logger", ["info"]);
-    idOverwriteEnabled = true;
   });
 
   const run = () => {
@@ -39,13 +37,10 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
       locationSearch,
       dateProvider,
       orgId,
-      logger,
-      idOverwriteEnabled
+      logger
     })(payload);
   };
 
-  const getOverwriteExisting = p =>
-    p.query && p.query.identity && p.query.identity.overwriteExisting;
   [
     [
       "DataCollection",
@@ -69,20 +64,6 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
             }
           ]
         });
-        expect(getOverwriteExisting(payload.toJSON())).toEqual(true);
-      });
-
-      it("adds the identity and doesn't overwrite existing", () => {
-        idOverwriteEnabled = false;
-        run();
-        expect(getIdentityMap(payload.toJSON())).toEqual({
-          ECID: [
-            {
-              id: "77094828402023918047117570965393734545"
-            }
-          ]
-        });
-        expect(getOverwriteExisting(payload.toJSON())).toEqual(undefined);
       });
 
       it("doesn't overwrite an existing identity in the identityMap", () => {
@@ -95,7 +76,6 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
             }
           ]
         });
-        expect(getOverwriteExisting(payload.toJSON())).toEqual(undefined);
       });
     });
   });
@@ -139,7 +119,6 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
     });
 
     it("adds the identity for an exactly 5 minute old link", () => {
-      idOverwriteEnabled = false;
       date = new Date((1641432103 + 300) * 1000);
       run();
       expect(payload.addIdentity).toHaveBeenCalled();
