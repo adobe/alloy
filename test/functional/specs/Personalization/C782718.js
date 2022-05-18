@@ -202,24 +202,21 @@ const simulateViewChangeForNonExistingView = async alloy => {
   );
   // assert that no personalization query was attached to the request
   await t.expect(noViewViewChangeRequestBody.events[0].query).eql(undefined);
-  // assert that a notification call with xdm.web.webPageDetails.viewName and no personalization meta is sent
-  await flushPromiseChains();
-  const noViewNotificationRequest = networkLogger.edgeEndpointLogs.requests[5];
-  const noViewNotificationRequestBody = JSON.parse(
-    noViewNotificationRequest.request.body
-  );
-  await t
-    .expect(noViewNotificationRequestBody.events[0].xdm.eventType)
-    .eql("decisioning.propositionDisplay");
+  // assert that after events merge viewName is passed down from view change
   await t
     .expect(
-      noViewNotificationRequestBody.events[0].xdm.web.webPageDetails.viewName
+      noViewViewChangeRequestBody.events[0].xdm.web.webPageDetails.viewName
     )
     .eql("noView");
   await t
     // eslint-disable-next-line no-underscore-dangle
-    .expect(noViewNotificationRequestBody.events[0].xdm._experience)
+    .expect(noViewViewChangeRequestBody.events[0].xdm._experience)
     .eql(undefined);
+  // assert that after events merge eventType is not decisioning.propositionDisplay instead  noviewoffers
+  await t
+    .expect(noViewViewChangeRequestBody.events[0].xdm.eventType)
+    .eql("noviewoffers");
+  await flushPromiseChains();
 };
 
 test("Test C782718: SPA support with auto-rendering and view notifications", async () => {

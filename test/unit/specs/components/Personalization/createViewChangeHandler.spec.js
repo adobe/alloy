@@ -86,7 +86,7 @@ describe("Personalization::createViewChangeHandler", () => {
     expect(collect).not.toHaveBeenCalled();
   });
 
-  it("at onResponse it should trigger collect call when no decisions in cache", () => {
+  it("at onResponse it should trigger only executeDecisions but no collect call when there are no decisions in cache", () => {
     const cartViewPromise = {
       then: callback => callback([])
     };
@@ -109,6 +109,6 @@ describe("Personalization::createViewChangeHandler", () => {
       onResponse
     });
     expect(executeDecisions).toHaveBeenCalledWith([]);
-    expect(collect).toHaveBeenCalled();
+    expect(collect).not.toHaveBeenCalled();
   });
 });
