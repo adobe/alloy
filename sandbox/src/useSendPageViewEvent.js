@@ -19,6 +19,7 @@ export default ({
   viewName,
   data = {},
   xdm = {},
+  decisionScopes = ["sandbox-personalization-page"],
   setPropositions
 } = {}) => {
   useEffect(() => {
@@ -34,10 +35,7 @@ export default ({
 
     window[instanceName]("sendEvent", {
       renderDecisions: true,
-      decisionScopes: [
-        "sandbox-personalization-page",
-        "sandbox-personalization-page2"
-      ],
+      decisionScopes,
       xdm,
       data
     }).then(res => {

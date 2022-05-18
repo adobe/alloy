@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
-const VIEW_SCOPE = "__view__";
+const SCOPES_FOR_PAGE = ["sandbox-personalization-page2"];
 
 const metadata = {
   "sandbox-personalization-page2": {
@@ -13,14 +13,11 @@ const metadata = {
 
 const usePropositions = () => {
   const [propositions, setPropositions] = useState(undefined);
-  useSendPageViewEvent({ setPropositions });
+  useSendPageViewEvent({ setPropositions, decisionScopes: SCOPES_FOR_PAGE });
   useEffect(() => {
     if (propositions) {
-      const formBasedPropositions = propositions.filter(
-        proposition => proposition.scope !== VIEW_SCOPE
-      );
       window.alloy("applyPropositions", {
-        propositions: formBasedPropositions,
+        propositions,
         metadata
       });
     }
