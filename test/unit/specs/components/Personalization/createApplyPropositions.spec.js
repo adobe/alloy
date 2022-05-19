@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import "jasmine-expect";
-import { SCOPES_FOO1_FOO2_DECISIONS } from "./responsesMock/eventResponses";
+import { PAGE_WIDE_SCOPE_DECISIONS } from "./responsesMock/eventResponses";
 import createApplyPropositions from "../../../../../src/components/Personalization/createApplyPropositions";
 
 const MIXED_PROPOSITIONS = [
@@ -60,6 +60,43 @@ const MIXED_PROPOSITIONS = [
       }
     ],
     renderAttempted: false
+  },
+  {
+    id: "AT:eyJhY3Rpdml0eUlkIjoiMTQxNjY0IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
+    scope: "home",
+    items: [
+      {
+        id: "xcore:personalized-offer:134ce877e13a04ca",
+        etag: "4",
+        schema:
+          "https://ns.adobe.com/experience/offer-management/content-component-html",
+        data: {
+          id: "xcore:personalized-offer:134ce877e13a04ca",
+          format: "text/html",
+          language: ["en-us"],
+          content: "<p>An html offer from Offer Decisioning</p>",
+          characteristics: {
+            testing: "true"
+          }
+        }
+      }
+    ]
+  },
+  {
+    id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
+    scope: "__view__",
+    renderAttempted: true,
+    items: [
+      {
+        id: "442358",
+        schema: "https://ns.adobe.com/personalization/dom-action",
+        data: {
+          type: "click",
+          format: "application/vnd.adobe.target.dom-action",
+          selector: "#root"
+        }
+      }
+    ]
   }
 ];
 
@@ -72,23 +109,20 @@ const METADATA = {
 
 describe("Personalization::createApplyPropositions", () => {
   let executeDecisions;
-  let showContainers;
 
   beforeEach(() => {
-    showContainers = jasmine.createSpy("showContainers");
     executeDecisions = jasmine.createSpy("executeDecisions");
   });
 
   it("it should return an empty propositions promise if propositions is empty array", () => {
     const executeDecisionsPromise = {
-      then: callback => callback(SCOPES_FOO1_FOO2_DECISIONS)
+      then: callback => callback(PAGE_WIDE_SCOPE_DECISIONS)
     };
 
     executeDecisions.and.returnValue(executeDecisionsPromise);
 
     const applyPropositions = createApplyPropositions({
-      executeDecisions,
-      showContainers
+      executeDecisions
     });
 
     return applyPropositions({
@@ -96,47 +130,55 @@ describe("Personalization::createApplyPropositions", () => {
     }).then(result => {
       expect(result).toEqual({ propositions: [] });
       expect(executeDecisions).toHaveBeenCalledTimes(0);
-      expect(showContainers).toHaveBeenCalledTimes(0);
     });
   });
 
   it("it should apply user-provided dom-action schema propositions", () => {
     const executeDecisionsPromise = {
-      then: callback => callback(SCOPES_FOO1_FOO2_DECISIONS)
+      then: callback => callback(PAGE_WIDE_SCOPE_DECISIONS)
     };
 
     executeDecisions.and.returnValue(executeDecisionsPromise);
+    const expectedExecuteDecisionsPropositions = Array.from(
+      PAGE_WIDE_SCOPE_DECISIONS
+    );
+    expectedExecuteDecisionsPropositions[0].items = expectedExecuteDecisionsPropositions[0].items.slice(
+      0,
+      2
+    );
 
     const applyPropositions = createApplyPropositions({
-      executeDecisions,
-      showContainers
+      executeDecisions
     });
 
     return applyPropositions({
-      propositions: SCOPES_FOO1_FOO2_DECISIONS
+      propositions: PAGE_WIDE_SCOPE_DECISIONS
     }).then(result => {
       expect(executeDecisions).toHaveBeenCalledTimes(1);
       expect(executeDecisions.calls.all()[0].args[0]).toEqual(
-        SCOPES_FOO1_FOO2_DECISIONS
+        expectedExecuteDecisionsPropositions
       );
 
-      const expectedScopes = SCOPES_FOO1_FOO2_DECISIONS.map(
+      const expectedScopes = expectedExecuteDecisionsPropositions.map(
         proposition => proposition.scope
       );
       result.propositions.forEach(proposition => {
         expect(proposition.renderAttempted).toBeTrue();
         expect(expectedScopes).toContain(proposition.scope);
         expect(proposition.items).toBeArrayOfObjects();
+        expect(proposition.items.length).toEqual(2);
       });
-
-      expect(showContainers).toHaveBeenCalled();
     });
   });
 
   it("it should merge metadata with propositions that have html-content-item schema", () => {
+    const executeDecisionsPromise = {
+      then: callback => callback(MIXED_PROPOSITIONS)
+    };
+    executeDecisions.and.returnValue(executeDecisionsPromise);
+
     const applyPropositions = createApplyPropositions({
-      executeDecisions,
-      showContainers
+      executeDecisions
     });
 
     return applyPropositions({
@@ -144,7 +186,7 @@ describe("Personalization::createApplyPropositions", () => {
       metadata: METADATA
     }).then(() => {
       const executedPropositions = executeDecisions.calls.all()[0].args[0];
-      expect(executedPropositions.length).toEqual(3);
+      expect(executedPropositions.length).toEqual(2);
       executedPropositions.forEach(proposition => {
         expect(proposition.scope).toEqual("home");
         expect(proposition.items.length).toEqual(1);
@@ -154,96 +196,75 @@ describe("Personalization::createApplyPropositions", () => {
         } else if (proposition.items[0].id === "442359") {
           expect(proposition.items[0].data.selector).toEqual("#home-item1");
           expect(proposition.items[0].data.type).toEqual("setHtml");
-        } else if (proposition.items[0].id === "442360") {
-          expect(proposition.items[0].data.selector).toBeUndefined();
-          expect(proposition.items[0].data.type).toBeUndefined();
         }
       });
       expect(executeDecisions).toHaveBeenCalledTimes(1);
-      expect(showContainers).toHaveBeenCalled();
     });
   });
 
-  it("it should use default metadata with propositions that have html-content-item schema when user has not provided metadata", () => {
-    const applyPropositions = createApplyPropositions({
-      executeDecisions,
-      showContainers
-    });
-
-    return applyPropositions({
-      propositions: MIXED_PROPOSITIONS
-    }).then(() => {
-      const executedPropositions = executeDecisions.calls.all()[0].args[0];
-      expect(executedPropositions.length).toEqual(3);
-      executedPropositions.forEach(proposition => {
-        expect(proposition.scope).toEqual("home");
-        expect(proposition.items.length).toEqual(1);
-        if (proposition.items[0].id === "442358") {
-          expect(proposition.items[0].data.selector).toEqual("#root");
-          expect(proposition.items[0].data.type).toEqual("click");
-        } else if (proposition.items[0].id === "442359") {
-          expect(proposition.items[0].data.selector).toEqual("head");
-          expect(proposition.items[0].data.type).toEqual("appendHtml");
-        } else if (proposition.items[0].id === "442360") {
-          expect(proposition.items[0].data.selector).toBeUndefined();
-          expect(proposition.items[0].data.type).toBeUndefined();
-        }
-      });
-      expect(executeDecisions).toHaveBeenCalledTimes(1);
-      expect(showContainers).toHaveBeenCalled();
-    });
-  });
-
-  it("it should use default metadata with propositions that have html-content-item schema when user-provided metadata is missing the matching scope", () => {
-    const applyPropositions = createApplyPropositions({
-      executeDecisions,
-      showContainers
-    });
-
-    const metadata = {
-      randomScope: {
-        selector: "#home-item1",
-        actionType: "setHtml"
-      }
+  it("it should return renderAttempted = true on resulting propositions", () => {
+    const executeDecisionsPromise = {
+      then: callback => callback(MIXED_PROPOSITIONS)
     };
+    executeDecisions.and.returnValue(executeDecisionsPromise);
 
-    return applyPropositions({
-      propositions: MIXED_PROPOSITIONS,
-      metadata
-    }).then(() => {
-      const executedPropositions = executeDecisions.calls.all()[0].args[0];
-      expect(executedPropositions.length).toEqual(3);
-      executedPropositions.forEach(proposition => {
-        expect(proposition.scope).toEqual("home");
-        expect(proposition.items.length).toEqual(1);
-        if (proposition.items[0].id === "442358") {
-          expect(proposition.items[0].data.selector).toEqual("#root");
-          expect(proposition.items[0].data.type).toEqual("click");
-        } else if (proposition.items[0].id === "442359") {
-          expect(proposition.items[0].data.selector).toEqual("head");
-          expect(proposition.items[0].data.type).toEqual("appendHtml");
-        } else if (proposition.items[0].id === "442360") {
-          expect(proposition.items[0].data.selector).toBeUndefined();
-          expect(proposition.items[0].data.type).toBeUndefined();
-        }
-      });
-      expect(executeDecisions).toHaveBeenCalledTimes(1);
-      expect(showContainers).toHaveBeenCalled();
-    });
-  });
-
-  it("it should set renderAttempted = true for all user-provided propositions", () => {
     const applyPropositions = createApplyPropositions({
-      executeDecisions,
-      showContainers
+      executeDecisions
     });
 
     return applyPropositions({
       propositions: MIXED_PROPOSITIONS
     }).then(result => {
-      expect(result.propositions.length).toEqual(3);
+      expect(result.propositions.length).toEqual(2);
       result.propositions.forEach(proposition => {
         expect(proposition.renderAttempted).toBeTrue();
+      });
+    });
+  });
+
+  it("it should ignore propositions with __view__ scope that have already been rendered", () => {
+    const executeDecisionsPromise = {
+      then: callback => callback(MIXED_PROPOSITIONS)
+    };
+    executeDecisions.and.returnValue(executeDecisionsPromise);
+
+    const applyPropositions = createApplyPropositions({
+      executeDecisions
+    });
+
+    return applyPropositions({
+      propositions: MIXED_PROPOSITIONS
+    }).then(result => {
+      expect(result.propositions.length).toEqual(2);
+      result.propositions.forEach(proposition => {
+        expect(proposition.scope).toEqual("home");
+        expect(proposition.renderAttempted).toBeTrue();
+      });
+    });
+  });
+
+  it("it should ignore items with unsupported schemas", () => {
+    const executeDecisionsPromise = {
+      then: callback => callback(MIXED_PROPOSITIONS)
+    };
+    executeDecisions.and.returnValue(executeDecisionsPromise);
+
+    const expectedItemIds = ["442358", "442359"];
+
+    const applyPropositions = createApplyPropositions({
+      executeDecisions
+    });
+
+    return applyPropositions({
+      propositions: MIXED_PROPOSITIONS
+    }).then(() => {
+      const executedPropositions = executeDecisions.calls.all()[0].args[0];
+      expect(executedPropositions.length).toEqual(2);
+      executedPropositions.forEach(proposition => {
+        expect(proposition.items.length).toEqual(1);
+        proposition.items.forEach(item => {
+          expect(expectedItemIds.includes(item.id));
+        });
       });
     });
   });

@@ -12,61 +12,78 @@ governing permissions and limitations under the License.
 
 import composePersonalizationResultingObject from "./utils/composePersonalizationResultingObject";
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
-import isEmptyObject from "../../utils/isEmptyObject";
 import isObject from "../../utils/isObject";
+import { DOM_ACTION, HTML_CONTENT_ITEM } from "./constants/schema";
+import PAGE_WIDE_SCOPE from "./constants/scope";
 
 export const EMPTY_PROPOSITIONS = { propositions: [] };
-export const HTML_CONTENT_ITEM = "html-content-item";
-export const DEFAULT_METADATA = {
-  selector: "head",
-  type: "appendHtml"
-};
+export const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
 
-export default ({ executeDecisions, showContainers }) => {
-  const updatePropositions = ({ proposition, metadataForScope }) => {
-    proposition.items.forEach(item => {
-      if (item.schema.includes(HTML_CONTENT_ITEM)) {
-        item.data.selector =
-          metadataForScope.selector || DEFAULT_METADATA.selector;
-        item.data.type = metadataForScope.actionType || DEFAULT_METADATA.type;
-      }
-    });
+export default ({ executeDecisions }) => {
+  const filterItemsPredicate = item => {
+    if (SUPPORTED_SCHEMAS.includes(item.schema)) {
+      return true;
+    }
+    return false;
+  };
+
+  const updatePropositionItems = ({ proposition, metadataForScope }) => {
+    proposition.items = proposition.items
+      .filter(filterItemsPredicate)
+      .map(item => {
+        if (item.schema === HTML_CONTENT_ITEM && isObject(metadataForScope)) {
+          item.data.selector = metadataForScope.selector;
+          item.data.type = metadataForScope.actionType;
+        }
+        return item;
+      });
     return proposition;
   };
 
+  const filterPropositionsPredicate = proposition => {
+    if (proposition.scope === PAGE_WIDE_SCOPE && proposition.renderAttempted) {
+      return false;
+    }
+
+    return true;
+  };
+
   const preparePropositions = ({ propositions, metadata }) => {
-    return Promise.resolve(
-      propositions.map(proposition => {
-        const completeProposition = { ...proposition };
+    return propositions
+      .filter(filterPropositionsPredicate)
+      .map(proposition => {
+        const completeProposition = (({ id, items, scope, scopeDetails }) => ({
+          id,
+          items,
+          scope,
+          scopeDetails
+        }))(proposition);
         if (isNonEmptyArray(completeProposition.items)) {
-          const metadataForScope =
-            !isEmptyObject(metadata) &&
-            isObject(metadata[completeProposition.scope])
-              ? metadata[completeProposition.scope]
-              : DEFAULT_METADATA;
-          return updatePropositions({
+          return updatePropositionItems({
             proposition: completeProposition,
-            metadataForScope
+            metadataForScope: metadata[completeProposition.scope]
           });
         }
         return completeProposition;
       })
-    );
+      .filter(proposition => isNonEmptyArray(proposition.items));
   };
 
   const applyPropositions = ({ propositions, metadata }) => {
-    return preparePropositions({ propositions, metadata })
-      .then(completePropositions => executeDecisions(completePropositions))
-      .then(() => {
-        showContainers();
-        propositions.forEach(proposition => delete proposition.renderAttempted);
-        return composePersonalizationResultingObject(propositions, true);
-      });
+    const propositionsToExecute = preparePropositions({
+      propositions,
+      metadata
+    });
+    return executeDecisions(propositionsToExecute).then(() => {
+      return Promise.resolve(
+        composePersonalizationResultingObject(propositionsToExecute, true)
+      );
+    });
   };
 
   return ({ propositions, metadata = {} }) => {
     if (isNonEmptyArray(propositions)) {
-      return Promise.resolve(applyPropositions({ propositions, metadata }));
+      return applyPropositions({ propositions, metadata });
     }
     return Promise.resolve(EMPTY_PROPOSITIONS);
   };
