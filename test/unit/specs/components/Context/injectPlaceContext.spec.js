@@ -28,7 +28,7 @@ describe("Context::injectPlaceContext", () => {
 
   it("handles string values from timezoneOffset", () => {
     const date = new Date("May 19, 2022 13:43:42");
-    spyOn(date, "getTimezoneOffset").and.returnValue("55");
+    spyOn(date, "getTimezoneOffset").and.returnValue("55.1");
     const xdm = {};
     injectPlaceContext(() => date)(xdm);
     expect(xdm).toEqual({

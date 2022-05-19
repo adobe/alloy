@@ -14,7 +14,7 @@ governing permissions and limitations under the License.
  * coerce `value` to a number or return `defaultValue` if it cannot be.
  */
 export default (value, defaultValue) => {
-  const n = Number(value);
+  const n = Math.round(Number(value));
   // eslint-disable-next-line no-restricted-globals
   return isNaN(n) ? defaultValue : n;
 };

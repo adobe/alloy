@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import padStart from "./padStart";
-import toNumber from "./toNumber";
+import toInteger from "./toInteger";
 
 /**
  * Formats the date into an ISO date-time string in the local timezone
@@ -30,7 +30,7 @@ export default date => {
   // The time-zone offset is the difference, in minutes, from local time to UTC. Note that this
   // means that the offset is positive if the local timezone is behind UTC and negative if it is
   // ahead. For example, for time zone UTC+10:00, -600 will be returned.
-  const timezoneOffset = toNumber(date.getTimezoneOffset(), 0);
+  const timezoneOffset = toInteger(date.getTimezoneOffset(), 0);
   const ts = timezoneOffset > 0 ? "-" : "+";
   const th = padStart(Math.floor(Math.abs(timezoneOffset) / 60), 2, "0");
   const tm = padStart(Math.abs(timezoneOffset) % 60, 2, "0");

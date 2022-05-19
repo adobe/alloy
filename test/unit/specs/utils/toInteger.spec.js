@@ -10,25 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import toNumber from "../../../../src/utils/toNumber";
+import toInteger from "../../../../src/utils/toInteger";
 
-describe("toNumber", () => {
+describe("toInteger", () => {
   [
     ["0", 0],
     ["1", 1],
     ["true", undefined],
-    ["1.1", 1.1],
+    ["1.1", 1],
     ["-4", -4],
     ["123abc", undefined],
     [-42, -42],
-    [3.14, 3.14]
+    [3.14, 3],
+    [3.99, 4]
   ].forEach(([input, output]) => {
     it(`converts "${input}" to ${output}`, () => {
-      expect(toNumber(input)).toEqual(output);
+      expect(toInteger(input)).toEqual(output);
     });
   });
 
   it("uses the passed value for the default", () => {
-    expect(toNumber("foo", 0)).toEqual(0);
+    expect(toInteger("foo", 0)).toEqual(0);
   });
 });

@@ -9,8 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { deepAssign, toISOStringLocal } from "../../utils";
-import toNumber from "../../utils/toNumber";
+import { deepAssign, toISOStringLocal, toInteger } from "../../utils";
 
 export default dateProvider => {
   return xdm => {
@@ -20,7 +19,7 @@ export default dateProvider => {
       localTime: toISOStringLocal(date)
     };
 
-    const localTimezoneOffset = toNumber(date.getTimezoneOffset());
+    const localTimezoneOffset = toInteger(date.getTimezoneOffset());
     if (localTimezoneOffset !== undefined) {
       placeContext.localTimezoneOffset = localTimezoneOffset;
     }

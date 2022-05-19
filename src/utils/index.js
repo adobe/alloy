@@ -57,6 +57,7 @@ export { default as startsWith } from "./startsWith";
 export { default as stringToBoolean } from "./stringToBoolean";
 export { default as toArray } from "./toArray";
 export { default as toError } from "./toError";
+export { default as toInteger } from "./toInteger";
 export { default as toISOStringLocal } from "./toISOStringLocal";
 export { default as uuid } from "./uuid";
 export { default as updateErrorMessage } from "./updateErrorMessage";
