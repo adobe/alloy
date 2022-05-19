@@ -80,11 +80,9 @@ const appendIdentityToUrl = event => {
   });
 };
 
-const linkedUrl = new URL(window.location.href);
-linkedUrl.protocol = "https";
-linkedUrl.port = "";
-linkedUrl.host =
-  linkedUrl.host === "alloyio2.com" ? "alloyio.com" : "alloyio2.com";
+const host =
+  document.location.hostname === "alloyio.com" ? "alloyio2.com" : "alloyio.com";
+const linkedUrl = `https://${host}/identity${document.location.search}`;
 
 export default function Identity() {
   const [originalIdentityCookie, setOriginalIdentityCookie] = useState("");
