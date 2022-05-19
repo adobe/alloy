@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import "jasmine-expect";
 import { PAGE_WIDE_SCOPE_DECISIONS } from "./responsesMock/eventResponses";
 import createApplyPropositions from "../../../../../src/components/Personalization/createApplyPropositions";
+import clone from "../../../../../src/utils/clone";
 
 const MIXED_PROPOSITIONS = [
   {
@@ -139,7 +140,7 @@ describe("Personalization::createApplyPropositions", () => {
     };
 
     executeDecisions.and.returnValue(executeDecisionsPromise);
-    const expectedExecuteDecisionsPropositions = Array.from(
+    const expectedExecuteDecisionsPropositions = clone(
       PAGE_WIDE_SCOPE_DECISIONS
     );
     expectedExecuteDecisionsPropositions[0].items = expectedExecuteDecisionsPropositions[0].items.slice(
