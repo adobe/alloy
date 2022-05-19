@@ -16,7 +16,8 @@ import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  thirdPartyCookiesDisabled
+  thirdPartyCookiesDisabled,
+  migrationDisabled
 } from "../../helpers/constants/configParts";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
@@ -29,7 +30,8 @@ import { TEST_PAGE, SECONDARY_TEST_PAGE } from "../../helpers/constants/url";
 const config = compose(
   orgMainConfigMain,
   thirdPartyCookiesDisabled,
-  debugEnabled
+  debugEnabled,
+  migrationDisabled
 );
 
 const networkLogger = createNetworkLogger();
