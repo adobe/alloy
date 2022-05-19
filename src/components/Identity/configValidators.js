@@ -14,8 +14,7 @@ import { boolean } from "../../utils/validation";
 
 const configValidators = {
   thirdPartyCookiesEnabled: boolean().default(true),
-  idMigrationEnabled: boolean().default(true),
-  idOverwriteEnabled: boolean().default(false)
+  idMigrationEnabled: boolean().default(true)
 };
 
 export default configValidators;

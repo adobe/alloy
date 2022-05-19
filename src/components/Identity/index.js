@@ -42,7 +42,7 @@ const createIdentity = ({
   fireReferrerHideableImage,
   sendEdgeNetworkRequest
 }) => {
-  const { orgId, thirdPartyCookiesEnabled, idOverwriteEnabled } = config;
+  const { orgId, thirdPartyCookiesEnabled } = config;
 
   const getEcidFromVisitor = injectGetEcidFromVisitor({
     logger,
@@ -74,8 +74,7 @@ const createIdentity = ({
       locationSearch: window.document.location.search,
       dateProvider: () => new Date(),
       orgId,
-      logger,
-      idOverwriteEnabled
+      logger
     }
   );
   const awaitIdentityCookie = injectAwaitIdentityCookie({
