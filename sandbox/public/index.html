@@ -86,7 +86,6 @@
         idMigrationEnabled: !(
           getUrlParameter("idMigrationEnabled") === "false"
         ),
-        idOverwriteEnabled: getUrlParameter("idOverwriteEnabled") === "true",
         prehidingStyle: ".personalization-container { opacity: 0 !important }",
         onBeforeEventSend: function(options) {
           const xdm = options.xdm;
