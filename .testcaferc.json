@@ -1,4 +1,5 @@
 {
   "src": "test/functional/specs/**/*.js",
-  "skipJsErrors": "true"
+  "skipJsErrors": true,
+  "disablePageCaching": true
 }

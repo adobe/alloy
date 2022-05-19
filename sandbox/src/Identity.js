@@ -12,21 +12,6 @@
 
 import React, { useEffect, useState } from "react";
 
-const getQueryStringParameter = key => {
-  var searchParams = new URLSearchParams(window.location.search);
-  return searchParams.get(key);
-};
-
-const urlWithUpdatedQueryStringParameter = (key, value, defaultValue) => {
-  var searchParams = new URLSearchParams(window.location.search);
-  if (value !== defaultValue) {
-    searchParams.set(key, value);
-  } else {
-    searchParams.delete(key);
-  }
-  return window.location.pathname + "?" + searchParams;
-};
-
 const readCookies = () => {
   const cookies = {};
   document.cookie.split(";").forEach(function(c) {
@@ -95,14 +80,9 @@ const appendIdentityToUrl = event => {
   });
 };
 
-const linkedUrl = new URL(window.location.href);
-linkedUrl.protocol = "https";
-linkedUrl.port = "";
-linkedUrl.host =
-  linkedUrl.host === "alloyio2.com" ? "alloyio.com" : "alloyio2.com";
-
-const idOverwriteEnabled =
-  getQueryStringParameter("idOverwriteEnabled") === "true";
+const host =
+  document.location.hostname === "alloyio.com" ? "alloyio2.com" : "alloyio.com";
+const linkedUrl = `https://${host}/identity${document.location.search}`;
 
 export default function Identity() {
   const [originalIdentityCookie, setOriginalIdentityCookie] = useState("");
@@ -124,45 +104,11 @@ export default function Identity() {
     <div>
       <h1>Identity</h1>
       <section>
-        This page demonstrates recieving or sending identity within the URL. The
-        current value of the `idOverwriteEnabled` configuration parameter is
-        shown in the first table. No calls to experience edge are made until you
-        press one of the buttons below. The second table shows the current and
-        original identities. If you click on the link on the bottom, it will
-        generate a link to another domain with the ID included in the URL.
-      </section>
-      <section>
-        <table>
-          <tbody>
-            <tr>
-              <td>idOverwriteEnabled</td>
-              <td>{idOverwriteEnabled ? "true" : "false"}</td>
-              <td>
-                {idOverwriteEnabled ? (
-                  <a
-                    href={urlWithUpdatedQueryStringParameter(
-                      "idOverwriteEnabled",
-                      "false",
-                      "false"
-                    )}
-                  >
-                    Disable
-                  </a>
-                ) : (
-                  <a
-                    href={urlWithUpdatedQueryStringParameter(
-                      "idOverwriteEnabled",
-                      "true",
-                      "false"
-                    )}
-                  >
-                    Enable
-                  </a>
-                )}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        This page demonstrates recieving or sending identity within the URL. No
+        calls to experience edge are made until you press one of the buttons
+        below. The table shows the current and original identities. If you click
+        on the link on the bottom, it will generate a link to another domain
+        with the ID included in the URL.
       </section>
       <section>
         <button onClick={getIdentity(wrappedSetIdentity)}>Get Identity</button>
