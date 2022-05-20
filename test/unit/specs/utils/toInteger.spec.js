@@ -1,5 +1,5 @@
 /*
-Copyright 2019 Adobe. All rights reserved.
+Copyright 2022 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,20 +9,27 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { deepAssign, toISOStringLocal, toInteger } from "../../utils";
 
-export default dateProvider => {
-  return xdm => {
-    const date = dateProvider();
+import toInteger from "../../../../src/utils/toInteger";
 
-    const placeContext = {
-      localTime: toISOStringLocal(date)
-    };
+describe("toInteger", () => {
+  [
+    ["0", 0],
+    ["1", 1],
+    ["true", undefined],
+    ["1.1", 1],
+    ["-4", -4],
+    ["123abc", undefined],
+    [-42, -42],
+    [3.14, 3],
+    [3.99, 4]
+  ].forEach(([input, output]) => {
+    it(`converts "${input}" to ${output}`, () => {
+      expect(toInteger(input)).toEqual(output);
+    });
+  });
 
-    const localTimezoneOffset = toInteger(date.getTimezoneOffset());
-    if (localTimezoneOffset !== undefined) {
-      placeContext.localTimezoneOffset = localTimezoneOffset;
-    }
-    deepAssign(xdm, { placeContext });
-  };
-};
+  it("uses the passed value for the default", () => {
+    expect(toInteger("foo", 0)).toEqual(0);
+  });
+});
