@@ -240,8 +240,7 @@ describe("createEventManager", () => {
         expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
           request,
           runOnResponseCallbacks: jasmine.any(Function),
-          runOnRequestFailureCallbacks: jasmine.any(Function),
-          serverState: undefined
+          runOnRequestFailureCallbacks: jasmine.any(Function)
         });
       });
     });

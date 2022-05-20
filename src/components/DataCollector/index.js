@@ -67,38 +67,25 @@ const createDataCollector = ({ eventManager }) => {
           });
         }
       },
-      applyEvents: {
+      applyHandles: {
         documentationUri: "",
         optionsValidator: serverState => {
           return validateServerState({ options: serverState });
         },
-        run: serverState => {
-          const { request = {}, renderDecisions = false } = serverState;
+        run: options => {
+          const {
+            renderDecisions = false,
+            decisionScopes,
+            handles = []
+          } = options;
 
-          const { events: fulfilledEvents = [] } = request.body;
+          const event = eventManager.createEvent();
 
-          return Promise.all(
-            fulfilledEvents.map(fulfilledEvent => {
-              const event = eventManager.createEvent();
-
-              const {
-                xdm = {},
-                query = { personalization: { decisionScopes: [] } },
-                data = {}
-              } = fulfilledEvent;
-
-              const decisionScopes = query.personalization.decisionScopes;
-
-              event.setUserXdm(xdm);
-              event.setUserData(data);
-
-              return eventManager.sendEvent(event, {
-                renderDecisions,
-                decisionScopes,
-                serverState
-              });
-            })
-          );
+          return eventManager.applyHandles(event, {
+            renderDecisions,
+            decisionScopes,
+            handles
+          });
         }
       }
     }

@@ -38,7 +38,9 @@ describe("publishVersionBranch", () => {
     execSync.and.returnValue("");
     exec.and.returnValue(Promise.resolve(), Promise.resolve());
     await publishVersionBranch(container);
-    expect(logger.info).toHaveBeenCalledOnceWith("Publishing Git branch v1.2.3.");
+    expect(logger.info).toHaveBeenCalledOnceWith(
+      "Publishing Git branch v1.2.3."
+    );
     expect(logger.warn).not.toHaveBeenCalled();
     expect(exec).toHaveBeenCalledWith("git branch", jasmine.any(String));
     expect(exec).toHaveBeenCalledWith("git push", jasmine.any(String));

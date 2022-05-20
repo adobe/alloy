@@ -49,6 +49,7 @@ import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkReq
 import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors";
 import isRequestRetryable from "./network/isRequestRetryable";
 import getRequestRetryDelay from "./network/getRequestRetryDelay";
+import injectApplyEdgeResponseHandles from "./edgeNetwork/injectApplyEdgeResponseHandles";
 
 const createNamespacedStorage = injectStorage(window);
 
@@ -120,6 +121,12 @@ export const createExecuteCommand = ({
       processWarningsAndErrors
     });
 
+    const applyEdgeResponseHandles = injectApplyEdgeResponseHandles({
+      lifecycle,
+      cookieTransfer,
+      createResponse
+    });
+
     const generalConsentState = createConsentStateMachine({ logger });
     const consent = createConsent({
       generalConsentState,
@@ -133,7 +140,8 @@ export const createExecuteCommand = ({
       createEvent,
       createDataCollectionRequestPayload,
       createDataCollectionRequest,
-      sendEdgeNetworkRequest
+      sendEdgeNetworkRequest,
+      applyEdgeResponseHandles
     });
     return initializeComponents({
       componentCreators,

@@ -12,21 +12,8 @@ governing permissions and limitations under the License.
 
 import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain";
 import apiVersion from "../../constants/apiVersion";
-import { createCallbackAggregator, noop, assign } from "../../utils";
-
-const extractResponseFromServerState = serverState => {
-  const { response = {} } = serverState;
-  const { headers = {}, body = {} } = response;
-
-  const getHeader = key => headers[key];
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify(body),
-    parsedBody: body,
-    getHeader
-  };
-};
+import { createCallbackAggregator, noop } from "../../utils";
+import mergeLifecycleResponses from "./mergeLifecycleResponses";
 
 export default ({
   config,
@@ -45,8 +32,7 @@ export default ({
   return ({
     request,
     runOnResponseCallbacks = noop,
-    runOnRequestFailureCallbacks = noop,
-    serverState = undefined
+    runOnRequestFailureCallbacks = noop
   }) => {
     const onResponseCallbackAggregator = createCallbackAggregator();
     onResponseCallbackAggregator.add(lifecycle.onResponse);
@@ -76,14 +62,12 @@ export default ({
 
         const url = `https://${basePath}/${apiVersion}/${request.getAction()}?configId=${edgeConfigId}&requestId=${request.getId()}`;
         cookieTransfer.cookiesToPayload(request.getPayload(), endpointDomain);
-        return serverState
-          ? extractResponseFromServerState(serverState)
-          : sendNetworkRequest({
-              requestId: request.getId(),
-              url,
-              payload: request.getPayload(),
-              useSendBeacon: request.getUseSendBeacon()
-            });
+        return sendNetworkRequest({
+          requestId: request.getId(),
+          url,
+          payload: request.getPayload(),
+          useSendBeacon: request.getUseSendBeacon()
+        });
       })
       .then(networkResponse => {
         processWarningsAndErrors(networkResponse);
@@ -114,19 +98,7 @@ export default ({
           .call({
             response
           })
-          .then(returnValues => {
-            // Merges all returned objects from all `onResponse` callbacks into
-            // a single object that can later be returned to the customer.
-            const lifecycleOnResponseReturnValues = returnValues.shift() || [];
-            const consumerOnResponseReturnValues = returnValues.shift() || [];
-            const lifecycleOnBeforeRequestReturnValues = returnValues;
-            return assign(
-              {},
-              ...lifecycleOnResponseReturnValues,
-              ...consumerOnResponseReturnValues,
-              ...lifecycleOnBeforeRequestReturnValues
-            );
-          });
+          .then(mergeLifecycleResponses);
       });
   };
 };

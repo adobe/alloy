@@ -5,14 +5,12 @@ describe("DataCollector::validateServerState", () => {
     expect(() => {
       validateServerState({
         options: {
-          request: {
-            headers: {},
-            body: {}
-          },
-          response: {
-            headers: {},
-            body: {}
-          }
+          handles: [
+            {
+              type: "something:special",
+              payload: {}
+            }
+          ]
         }
       });
     }).not.toThrowError();
@@ -22,8 +20,7 @@ describe("DataCollector::validateServerState", () => {
     expect(() => {
       validateServerState({
         options: {
-          request: {},
-          response: {}
+          who_dis: true
         }
       });
     }).toThrowError();

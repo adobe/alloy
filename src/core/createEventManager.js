@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /*
 Copyright 2019 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -23,7 +24,8 @@ export default ({
   createEvent,
   createDataCollectionRequestPayload,
   createDataCollectionRequest,
-  sendEdgeNetworkRequest
+  sendEdgeNetworkRequest,
+  applyEdgeResponseHandles
 }) => {
   const { onBeforeEventSend } = config;
 
@@ -44,7 +46,7 @@ export default ({
      * @returns {*}
      */
     sendEvent(event, options = {}) {
-      const { renderDecisions = false, decisionScopes, serverState } = options;
+      const { renderDecisions = false, decisionScopes } = options;
       const payload = createDataCollectionRequestPayload();
       const request = createDataCollectionRequest(payload);
       const onResponseCallbackAggregator = createCallbackAggregator();
@@ -93,8 +95,38 @@ export default ({
             request,
             runOnResponseCallbacks: onResponseCallbackAggregator.call,
             runOnRequestFailureCallbacks:
-              onRequestFailureCallbackAggregator.call,
-            serverState
+              onRequestFailureCallbackAggregator.call
+          });
+        });
+    },
+    applyHandles(event, options = {}) {
+      const {
+        renderDecisions = false,
+        decisionScopes = [],
+        handles = []
+      } = options;
+
+      const payload = createDataCollectionRequestPayload();
+      const request = createDataCollectionRequest(payload);
+      const onResponseCallbackAggregator = createCallbackAggregator();
+      const onRequestFailureCallbackAggregator = createCallbackAggregator();
+
+      return lifecycle
+        .onBeforeEvent({
+          event,
+          renderDecisions,
+          decisionScopes,
+          onResponse: onResponseCallbackAggregator.add,
+          onRequestFailure: onRequestFailureCallbackAggregator.add
+        })
+        .then(() => {
+          payload.addEvent(event);
+          return applyEdgeResponseHandles({
+            request,
+            handles,
+            runOnResponseCallbacks: onResponseCallbackAggregator.call,
+            runOnRequestFailureCallbacks:
+              onRequestFailureCallbackAggregator.call
           });
         });
     }

@@ -1,16 +1,20 @@
-import { anything, boolean, objectOf } from "../../utils/validation";
+import {
+  anything,
+  arrayOf,
+  boolean,
+  objectOf,
+  string
+} from "../../utils/validation";
 
 export default ({ options }) => {
   const validator = objectOf({
     renderDecisions: boolean(),
-    request: objectOf({
-      headers: anything().required(),
-      body: anything().required()
-    }).required(),
-    response: objectOf({
-      headers: anything().required(),
-      body: anything().required()
-    }).required()
+    handles: arrayOf(
+      objectOf({
+        type: string().required(),
+        payload: anything().required()
+      })
+    ).required()
   });
 
   return validator(options);
