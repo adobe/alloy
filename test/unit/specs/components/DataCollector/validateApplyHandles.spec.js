@@ -1,9 +1,9 @@
-import validateServerState from "../../../../../src/components/DataCollector/validateServerState";
+import validateApplyHandles from "../../../../../src/components/DataCollector/validateApplyHandles";
 
-describe("DataCollector::validateServerState", () => {
+describe("DataCollector::validateApplyHandles", () => {
   it("does not throw error for valid options", () => {
     expect(() => {
-      validateServerState({
+      validateApplyHandles({
         options: {
           handles: [
             {
@@ -18,7 +18,7 @@ describe("DataCollector::validateServerState", () => {
 
   it("throws error for invalid options", () => {
     expect(() => {
-      validateServerState({
+      validateApplyHandles({
         options: {
           who_dis: true
         }

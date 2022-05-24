@@ -2,25 +2,16 @@ import { createCallbackAggregator, noop } from "../../utils";
 import mergeLifecycleResponses from "./mergeLifecycleResponses";
 
 export default ({ cookieTransfer, lifecycle, createResponse }) => {
-  return ({
-    request,
-    handles,
-    runOnResponseCallbacks = noop,
-    runOnRequestFailureCallbacks = noop
-  }) => {
+  return ({ request, handles, runOnResponseCallbacks = noop }) => {
     const onResponseCallbackAggregator = createCallbackAggregator();
     onResponseCallbackAggregator.add(lifecycle.onResponse);
     onResponseCallbackAggregator.add(runOnResponseCallbacks);
-
-    const onRequestFailureCallbackAggregator = createCallbackAggregator();
-    onRequestFailureCallbackAggregator.add(lifecycle.onRequestFailure);
-    onRequestFailureCallbackAggregator.add(runOnRequestFailureCallbacks);
 
     return lifecycle
       .onBeforeRequest({
         request,
         onResponse: onResponseCallbackAggregator.add,
-        onRequestFailure: onRequestFailureCallbackAggregator.add
+        onRequestFailure: noop
       })
       .then(() => {
         const response = createResponse({

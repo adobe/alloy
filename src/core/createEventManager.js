@@ -11,7 +11,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createCallbackAggregator } from "../utils";
+import { createCallbackAggregator, noop } from "../utils";
 
 const EVENT_CANCELLATION_MESSAGE =
   "Event was canceled because the onBeforeEventSend callback returned false.";
@@ -100,33 +100,26 @@ export default ({
         });
     },
     applyHandles(event, options = {}) {
-      const {
-        renderDecisions = false,
-        decisionScopes = [],
-        handles = []
-      } = options;
+      const { renderDecisions = false, handles = [] } = options;
 
       const payload = createDataCollectionRequestPayload();
       const request = createDataCollectionRequest(payload);
       const onResponseCallbackAggregator = createCallbackAggregator();
-      const onRequestFailureCallbackAggregator = createCallbackAggregator();
 
       return lifecycle
         .onBeforeEvent({
           event,
           renderDecisions,
-          decisionScopes,
+          decisionScopes: [],
           onResponse: onResponseCallbackAggregator.add,
-          onRequestFailure: onRequestFailureCallbackAggregator.add
+          onRequestFailure: noop
         })
         .then(() => {
           payload.addEvent(event);
           return applyEdgeResponseHandles({
             request,
             handles,
-            runOnResponseCallbacks: onResponseCallbackAggregator.call,
-            runOnRequestFailureCallbacks:
-              onRequestFailureCallbackAggregator.call
+            runOnResponseCallbacks: onResponseCallbackAggregator.call
           });
         });
     }

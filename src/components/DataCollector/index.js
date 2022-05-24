@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import validateUserEventOptions from "./validateUserEventOptions";
-import validateServerState from "./validateServerState";
+import validateApplyHandles from "./validateApplyHandles";
 
 const createDataCollector = ({ eventManager }) => {
   return {
@@ -70,20 +70,15 @@ const createDataCollector = ({ eventManager }) => {
       applyHandles: {
         documentationUri: "",
         optionsValidator: serverState => {
-          return validateServerState({ options: serverState });
+          return validateApplyHandles({ options: serverState });
         },
         run: options => {
-          const {
-            renderDecisions = false,
-            decisionScopes,
-            handles = []
-          } = options;
+          const { renderDecisions = false, handles = [] } = options;
 
           const event = eventManager.createEvent();
 
           return eventManager.applyHandles(event, {
             renderDecisions,
-            decisionScopes,
             handles
           });
         }
