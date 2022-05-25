@@ -80,9 +80,8 @@ const appendIdentityToUrl = event => {
   });
 };
 
-const host =
+const otherHost =
   document.location.hostname === "alloyio.com" ? "alloyio2.com" : "alloyio.com";
-const linkedUrl = `https://${host}/identity${document.location.search}`;
 
 export default function Identity() {
   const [originalIdentityCookie, setOriginalIdentityCookie] = useState("");
@@ -140,9 +139,24 @@ export default function Identity() {
         </table>
       </section>
       <section>
-        <a href={linkedUrl.toString()} onClick={appendIdentityToUrl}>
-          Cross domain linked identity.
+        <a href={`/legacy.html${document.location.search}`}>
+          Legacy identity page
         </a>
+        <br />
+        <a
+          href={`https://${otherHost}/identity${document.location.search}`}
+          onClick={appendIdentityToUrl}
+        >
+          Cross domain Web SDK identity page
+        </a>
+        <br />
+        <a
+          href={`https://${otherHost}/legacy.html${document.location.search}`}
+          onClick={appendIdentityToUrl}
+        >
+          Cross domain Legacy identity page
+        </a>
+        <br />
       </section>
     </div>
   );

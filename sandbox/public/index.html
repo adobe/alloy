@@ -80,8 +80,10 @@
             ? "firstparty.alloyio.com"
             : undefined,
         edgeBasePath: getUrlParameter("edgeBasePath") || "ee",
-        edgeConfigId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
-        orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
+        edgeConfigId:
+          getUrlParameter("edgeConfigId") ||
+          "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
+        orgId: getUrlParameter("orgId") || "5BFE274A5F6980A50A495C08@AdobeOrg",
         debugEnabled: true,
         idMigrationEnabled: !(
           getUrlParameter("idMigrationEnabled") === "false"
