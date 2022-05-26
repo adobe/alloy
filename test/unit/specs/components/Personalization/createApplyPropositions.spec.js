@@ -130,7 +130,7 @@ describe("Personalization::createApplyPropositions", () => {
       propositions: []
     }).then(result => {
       expect(result).toEqual({ propositions: [] });
-      expect(executeDecisions).toHaveBeenCalledTimes(0);
+      expect(executeDecisions).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -267,6 +267,36 @@ describe("Personalization::createApplyPropositions", () => {
           expect(expectedItemIds.includes(item.id));
         });
       });
+    });
+  });
+
+  it("it should not mutate original propositions", () => {
+    const executeDecisionsPromise = {
+      then: callback => callback(MIXED_PROPOSITIONS)
+    };
+    executeDecisions.and.returnValue(executeDecisionsPromise);
+
+    const applyPropositions = createApplyPropositions({
+      executeDecisions
+    });
+
+    const originalPropositions = clone(MIXED_PROPOSITIONS);
+    return applyPropositions({
+      propositions: originalPropositions,
+      metadata: METADATA
+    }).then(result => {
+      let numReturnedPropositions = 0;
+      expect(originalPropositions).toEqual(MIXED_PROPOSITIONS);
+      result.propositions.forEach(proposition => {
+        const original = originalPropositions.find(
+          originalProposition => originalProposition.id === proposition.id
+        );
+        if (original) {
+          numReturnedPropositions += 1;
+          expect(proposition).not.toBe(original);
+        }
+      });
+      expect(numReturnedPropositions).toEqual(2);
     });
   });
 });

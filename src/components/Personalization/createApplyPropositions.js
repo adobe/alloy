@@ -11,8 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import composePersonalizationResultingObject from "./utils/composePersonalizationResultingObject";
-import isNonEmptyArray from "../../utils/isNonEmptyArray";
-import isObject from "../../utils/isObject";
+import { isNonEmptyArray, isObject } from "../../utils";
 import { DOM_ACTION, HTML_CONTENT_ITEM } from "./constants/schema";
 import PAGE_WIDE_SCOPE from "./constants/scope";
 
@@ -20,51 +19,44 @@ export const EMPTY_PROPOSITIONS = { propositions: [] };
 export const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
 
 export default ({ executeDecisions }) => {
-  const filterItemsPredicate = item => {
-    if (SUPPORTED_SCHEMAS.includes(item.schema)) {
-      return true;
-    }
-    return false;
-  };
+  const filterItemsPredicate = item => SUPPORTED_SCHEMAS.includes(item.schema);
 
-  const updatePropositionItems = ({ proposition, metadataForScope }) => {
-    proposition.items = proposition.items
-      .filter(filterItemsPredicate)
-      .map(item => {
-        if (item.schema === HTML_CONTENT_ITEM && isObject(metadataForScope)) {
-          item.data.selector = metadataForScope.selector;
-          item.data.type = metadataForScope.actionType;
-        }
-        return item;
-      });
-    return proposition;
+  const updatePropositionItems = ({ items, metadataForScope }) => {
+    return items.filter(filterItemsPredicate).map(item => {
+      if (item.schema === HTML_CONTENT_ITEM && isObject(metadataForScope)) {
+        return {
+          ...item,
+          data: {
+            ...item.data,
+            selector: metadataForScope.selector,
+            type: metadataForScope.actionType
+          }
+        };
+      }
+      return item;
+    });
   };
 
   const filterPropositionsPredicate = proposition => {
-    if (proposition.scope === PAGE_WIDE_SCOPE && proposition.renderAttempted) {
-      return false;
-    }
-
-    return true;
+    return !(
+      proposition.scope === PAGE_WIDE_SCOPE && proposition.renderAttempted
+    );
   };
 
   const preparePropositions = ({ propositions, metadata }) => {
     return propositions
       .filter(filterPropositionsPredicate)
       .map(proposition => {
-        const completeProposition = (({ id, items, scope, scopeDetails }) => ({
-          id,
-          items,
-          scope,
-          scopeDetails
-        }))(proposition);
-        if (isNonEmptyArray(completeProposition.items)) {
-          return updatePropositionItems({
-            proposition: completeProposition,
-            metadataForScope: metadata[completeProposition.scope]
-          });
+        if (isNonEmptyArray(proposition.items)) {
+          return {
+            ...proposition,
+            items: updatePropositionItems({
+              items: proposition.items,
+              metadataForScope: metadata[proposition.scope]
+            })
+          };
         }
-        return completeProposition;
+        return proposition;
       })
       .filter(proposition => isNonEmptyArray(proposition.items));
   };
@@ -82,9 +74,6 @@ export default ({ executeDecisions }) => {
   };
 
   return ({ propositions, metadata = {} }) => {
-    if (isNonEmptyArray(propositions)) {
-      return applyPropositions({ propositions, metadata });
-    }
-    return Promise.resolve(EMPTY_PROPOSITIONS);
+    return applyPropositions({ propositions, metadata });
   };
 };
