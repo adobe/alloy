@@ -75,10 +75,17 @@ const setConsent = setIdentity => () => {
 const appendIdentityToUrl = event => {
   const url = event.target.href;
   event.preventDefault();
-  window.alloy("appendIdentityToUrl", { url }).then(({ url }) => {
-    document.location = url;
+  window.alloy("appendIdentityToUrl", { url }).then(({ url: newUrl }) => {
+    document.location = newUrl;
   });
 };
+
+const removeUrlParameter = name => {
+  name = name.replace(/[[]/, "\\[").replace(/[\]]/, "\\]");
+  var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+  return document.location.search.replace(regex, "").replace(/^&/, "?");
+};
+const searchWithoutAdobeMc = removeUrlParameter("adobe_mc");
 
 const otherHost =
   document.location.hostname === "alloyio.com" ? "alloyio2.com" : "alloyio.com";
@@ -139,22 +146,22 @@ export default function Identity() {
         </table>
       </section>
       <section>
-        <a href={`/legacy.html${document.location.search}`}>
-          Legacy identity page
-        </a>
+        <a href={`/Identity${searchWithoutAdobeMc}`}>Web SDK identity page</a>
+        <br />
+        <a href={`/legacy.html${searchWithoutAdobeMc}`}>Legacy identity page</a>
         <br />
         <a
-          href={`https://${otherHost}/identity${document.location.search}`}
+          href={`https://${otherHost}/identity${searchWithoutAdobeMc}`}
           onClick={appendIdentityToUrl}
         >
           Cross domain Web SDK identity page
         </a>
         <br />
         <a
-          href={`https://${otherHost}/legacy.html${document.location.search}`}
+          href={`https://${otherHost}/legacy.html${searchWithoutAdobeMc}`}
           onClick={appendIdentityToUrl}
         >
-          Cross domain Legacy identity page
+          Cross domain legacy identity page
         </a>
         <br />
       </section>

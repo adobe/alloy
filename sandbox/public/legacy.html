@@ -89,10 +89,13 @@
         </table>
       </section>
       <section>
-        <a id="webSdkIdentityLink">Web SDK identity page</a><br />
-        <a id="webSdkCrossDomainLink">Cross domain Web SDK identity page</a
+        <a id="webSdkLink">Web SDK identity page</a><br />
+        <a id="legacyLink">Legacy identity page</a><br />
+        <a id="webSdkCrossDomainLink">
+          Cross domain Web SDK identity page </a
         ><br />
-        <a id="legacyCrossDomainLink">Cross domain Legacy identity page</a
+        <a id="legacyCrossDomainLink">
+          Cross domain legacy identity page </a
         ><br />
       </section>
     </div>
@@ -104,6 +107,12 @@
         return results === null
           ? ""
           : decodeURIComponent(results[1].replace(/\+/g, " "));
+      }
+
+      function removeUrlParameter(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        return location.search.replace(regex, "").replace(/^&/, "?");
       }
 
       function readCookies() {
@@ -175,22 +184,26 @@
         "currentAMCVIdentity"
       ).innerText = readIdentityCookie();
 
+      var searchWithoutAdobeMc = removeUrlParameter("adobe_mc");
       var otherHost =
         document.location.hostname === "alloyio.com"
           ? "alloyio2.com"
           : "alloyio.com";
-      var webSdkIdentityLink = document.getElementById("webSdkIdentityLink");
-      webSdkIdentityLink.href = "/identity" + document.location.search;
+      var webSdkLink = document.getElementById("webSdkLink");
+      webSdkLink.href = "/identity" + searchWithoutAdobeMc;
+      var legacyLink = document.getElementById("legacyLink");
+      legacyLink.href = "/legacy.html" + searchWithoutAdobeMc;
+
       var webSdkCrossDomainLink = document.getElementById(
         "webSdkCrossDomainLink"
       );
       webSdkCrossDomainLink.href =
-        "https://" + otherHost + "/identity" + document.location.search;
+        "https://" + otherHost + "/identity" + searchWithoutAdobeMc;
       var legacyCrossDomainLink = document.getElementById(
         "legacyCrossDomainLink"
       );
       legacyCrossDomainLink.href =
-        "https://" + otherHost + "/legacy.html" + document.location.search;
+        "https://" + otherHost + "/legacy.html" + searchWithoutAdobeMc;
 
       function handleCrossDomainClick(event) {
         event.preventDefault();
