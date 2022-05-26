@@ -8,6 +8,7 @@ const createLogger = require("./helpers/createLogger");
 const exec = require("./helpers/exec");
 const publishTag = require("./helpers/publishTag");
 const publishToNpm = require("./helpers/publishToNpm");
+const publishVersionBranch = require("./helpers/publishVersionBranch");
 const setupDeployment = require("./helpers/setupDeployment");
 const updateDevDependency = require("./helpers/updateDevDependency");
 const updatePackageVersion = require("./helpers/updatePackageVersion");
@@ -48,6 +49,7 @@ const run = async () => {
   await publishToNpm(container);
   await updateDevDependency(container);
   await publishTag(container);
+  await publishVersionBranch(container);
   await uploadToCDN(container);
 };
 

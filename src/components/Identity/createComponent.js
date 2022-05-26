@@ -1,14 +1,18 @@
 import { assign } from "../../utils";
 import getIdentityOptionsValidator from "./getIdentity/getIdentityOptionsValidator";
+import appendIdentityToUrlOptionsValidator from "./appendIdentityToUrl/appendIdentityToUrlOptionsValidator";
 
 export default ({
   addEcidQueryToPayload,
+  addQueryStringIdentityToPayload,
   ensureSingleIdentity,
   setLegacyEcid,
   handleResponseForIdSyncs,
   getEcidFromResponse,
   getIdentity,
-  consent
+  consent,
+  appendIdentityToUrl,
+  logger
 }) => {
   let ecid;
   let edge = {};
@@ -18,6 +22,7 @@ export default ({
         // Querying the ECID on every request to be able to set the legacy cookie, and make it
         // available for the `getIdentity` command.
         addEcidQueryToPayload(request.getPayload());
+        addQueryStringIdentityToPayload(request.getPayload());
         return ensureSingleIdentity({ request, onResponse, onRequestFailure });
       },
       onResponse({ response }) {
@@ -53,6 +58,23 @@ export default ({
                 },
                 edge
               };
+            });
+        }
+      },
+      appendIdentityToUrl: {
+        optionsValidator: appendIdentityToUrlOptionsValidator,
+        run: options => {
+          return consent
+            .withConsent()
+            .then(() => {
+              return ecid ? undefined : getIdentity(options.namespaces);
+            })
+            .then(() => {
+              return { url: appendIdentityToUrl(ecid, options.url) };
+            })
+            .catch(error => {
+              logger.warn(`Unable to append identity to url. ${error.message}`);
+              return options;
             });
         }
       }

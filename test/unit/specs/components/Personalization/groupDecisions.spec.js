@@ -16,12 +16,14 @@ import {
   PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS,
   CART_VIEW_DECISIONS,
   REDIRECT_PAGE_WIDE_SCOPE_DECISION,
-  PRODUCTS_VIEW_DECISIONS
+  PRODUCTS_VIEW_DECISIONS,
+  MERGED_METRIC_DECISIONS
 } from "./responsesMock/eventResponses";
 import groupDecisions from "../../../../../src/components/Personalization/groupDecisions";
 
 let cartDecisions;
 let productDecisions;
+let mergedDecisions;
 
 beforeEach(() => {
   cartDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS.concat(
@@ -30,6 +32,7 @@ beforeEach(() => {
   productDecisions = PAGE_WIDE_SCOPE_DECISIONS.concat(
     REDIRECT_PAGE_WIDE_SCOPE_DECISION
   ).concat(PRODUCTS_VIEW_DECISIONS);
+  mergedDecisions = productDecisions.concat(MERGED_METRIC_DECISIONS);
 });
 describe("Personalization::groupDecisions", () => {
   it("extracts decisions by scope", () => {
@@ -68,6 +71,30 @@ describe("Personalization::groupDecisions", () => {
     expect(redirectDecisions).toEqual(REDIRECT_PAGE_WIDE_SCOPE_DECISION);
     expect(viewDecisions).toEqual(expectedViewDecisions);
   });
+
+  it("extracts merged decisions", () => {
+    const expectedViewDecisions = {
+      products: PRODUCTS_VIEW_DECISIONS
+    };
+    const {
+      redirectDecisions,
+      pageWideScopeDecisions,
+      viewDecisions,
+      nonAutoRenderableDecisions
+    } = groupDecisions(mergedDecisions);
+
+    expect(nonAutoRenderableDecisions).toEqual(
+      MERGED_METRIC_DECISIONS.concat(
+        PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS
+      )
+    );
+    expect(pageWideScopeDecisions).toEqual(
+      PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
+    );
+    expect(redirectDecisions).toEqual(REDIRECT_PAGE_WIDE_SCOPE_DECISION);
+    expect(viewDecisions).toEqual(expectedViewDecisions);
+  });
+
   it("extracts empty when no decisions", () => {
     const decisions = [];
 

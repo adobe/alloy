@@ -11,7 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import createInstanceFunction from "./createInstanceFunction";
-import { getApexDomain, injectStorage, cookieJar, isFunction } from "../utils";
+import {
+  getApexDomain,
+  injectStorage,
+  cookieJar,
+  isFunction,
+  injectFireReferrerHideableImage
+} from "../utils";
 import createLogController from "./createLogController";
 import createLifecycle from "./createLifecycle";
 import createComponentRegistry from "./createComponentRegistry";
@@ -57,6 +63,7 @@ const apexDomain = getApexDomain(window, cookieJar);
 const sendFetchRequest = isFunction(fetch)
   ? injectSendFetchRequest({ fetch })
   : injectSendXhrRequest({ XMLHttpRequest });
+const fireReferrerHideableImage = injectFireReferrerHideableImage();
 
 export const createExecuteCommand = ({
   instanceName,
@@ -138,6 +145,7 @@ export const createExecuteCommand = ({
           config,
           consent,
           eventManager,
+          fireReferrerHideableImage,
           logger: componentLogger,
           lifecycle,
           sendEdgeNetworkRequest,

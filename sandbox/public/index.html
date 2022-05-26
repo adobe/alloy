@@ -79,6 +79,7 @@
           location.host.indexOf("alloyio.com") !== -1
             ? "firstparty.alloyio.com"
             : undefined,
+        edgeBasePath: getUrlParameter("edgeBasePath") || "ee",
         edgeConfigId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
         orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
         debugEnabled: true,
@@ -116,7 +117,7 @@
 
             for (var i = 0; i < propositions.length; i++) {
               var proposition = propositions[i];
-              analyticsPayloads.add(getAnalyticsPayload(proposition));
+              analyticsPayloads.add(getClickAnalyticsToken(proposition));
             }
 
             getECID("organizationTwo").then(visitorID => {

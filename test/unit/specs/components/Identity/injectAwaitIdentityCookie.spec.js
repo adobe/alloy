@@ -51,7 +51,7 @@ describe("Identity::injectAwaitIdentityCookie", () => {
   it("rejects promise if identity cookie does not exist after response", () => {
     identityCookieExists = false;
     const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
-    const errorRegex = /verify that the org ID org@adobe configured/;
+    const errorRegex = /An identity was not set properly/i;
     expect(() => {
       runOnResponseCallbacks();
     }).toThrowError(errorRegex);

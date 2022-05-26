@@ -14,7 +14,7 @@ jobs:
     name: "Validate"
     runs-on: ubuntu-latest
     steps:
-      - uses: adobe/project-card-release-automation/validate-version@v1
+      - uses: adobe/project-card-release-automation/validate-version@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ github.event.inputs.version }}
@@ -53,18 +53,6 @@ jobs:
           path: |
             ./dist/alloy.js
             ./dist/alloy.min.js
-  createTestBranch:
-    name: Create test branch from release tag
-    runs-on: ubuntu-latest
-    needs: release
-    steps:
-      - uses: gagle/package-version@v1
-        id: package-version
-      - uses: peterjgrainger/action-create-branch@v2.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          branch: ${{ steps.package-version.outputs.version }}
   prerelease:
     name: "Prerelease"
     runs-on: ubuntu-latest
@@ -101,12 +89,10 @@ jobs:
   record:
     name: "Record Version"
     runs-on: ubuntu-latest
-    needs: [prerelease, createTestBranch]
+    needs: [prerelease, release]
     if: failure() == false
     steps:
-      - uses: adobe/project-card-release-automation/record-release@v1
+      - uses: adobe/project-card-release-automation/record-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ github.event.inputs.version }}
-          referencePrefixes: "PDCL-,CORE-,AN-"
-          referenceTargetUrlPrefix: "https://jira.corp.adobe.com/browse/"
