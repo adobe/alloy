@@ -116,11 +116,9 @@ describe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should return an empty propositions promise if propositions is empty array", () => {
-    const executeDecisionsPromise = {
-      then: callback => callback(PAGE_WIDE_SCOPE_DECISIONS)
-    };
-
-    executeDecisions.and.returnValue(executeDecisionsPromise);
+    executeDecisions.and.returnValue(
+      Promise.resolve(PAGE_WIDE_SCOPE_DECISIONS)
+    );
 
     const applyPropositions = createApplyPropositions({
       executeDecisions
@@ -135,11 +133,9 @@ describe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should apply user-provided dom-action schema propositions", () => {
-    const executeDecisionsPromise = {
-      then: callback => callback(PAGE_WIDE_SCOPE_DECISIONS)
-    };
-
-    executeDecisions.and.returnValue(executeDecisionsPromise);
+    executeDecisions.and.returnValue(
+      Promise.resolve(PAGE_WIDE_SCOPE_DECISIONS)
+    );
     const expectedExecuteDecisionsPropositions = clone(
       PAGE_WIDE_SCOPE_DECISIONS
     );
@@ -173,10 +169,7 @@ describe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should merge metadata with propositions that have html-content-item schema", () => {
-    const executeDecisionsPromise = {
-      then: callback => callback(MIXED_PROPOSITIONS)
-    };
-    executeDecisions.and.returnValue(executeDecisionsPromise);
+    executeDecisions.and.returnValue(Promise.resolve(MIXED_PROPOSITIONS));
 
     const applyPropositions = createApplyPropositions({
       executeDecisions
@@ -204,10 +197,7 @@ describe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should return renderAttempted = true on resulting propositions", () => {
-    const executeDecisionsPromise = {
-      then: callback => callback(MIXED_PROPOSITIONS)
-    };
-    executeDecisions.and.returnValue(executeDecisionsPromise);
+    executeDecisions.and.returnValue(Promise.resolve(MIXED_PROPOSITIONS));
 
     const applyPropositions = createApplyPropositions({
       executeDecisions
@@ -224,10 +214,7 @@ describe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should ignore propositions with __view__ scope that have already been rendered", () => {
-    const executeDecisionsPromise = {
-      then: callback => callback(MIXED_PROPOSITIONS)
-    };
-    executeDecisions.and.returnValue(executeDecisionsPromise);
+    executeDecisions.and.returnValue(Promise.resolve(MIXED_PROPOSITIONS));
 
     const applyPropositions = createApplyPropositions({
       executeDecisions
@@ -245,10 +232,7 @@ describe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should ignore items with unsupported schemas", () => {
-    const executeDecisionsPromise = {
-      then: callback => callback(MIXED_PROPOSITIONS)
-    };
-    executeDecisions.and.returnValue(executeDecisionsPromise);
+    executeDecisions.and.returnValue(Promise.resolve(MIXED_PROPOSITIONS));
 
     const expectedItemIds = ["442358", "442359"];
 
@@ -271,10 +255,7 @@ describe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should not mutate original propositions", () => {
-    const executeDecisionsPromise = {
-      then: callback => callback(MIXED_PROPOSITIONS)
-    };
-    executeDecisions.and.returnValue(executeDecisionsPromise);
+    executeDecisions.and.returnValue(Promise.resolve(MIXED_PROPOSITIONS));
 
     const applyPropositions = createApplyPropositions({
       executeDecisions

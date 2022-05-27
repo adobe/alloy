@@ -67,9 +67,7 @@ export default ({ executeDecisions }) => {
       metadata
     });
     return executeDecisions(propositionsToExecute).then(() => {
-      return Promise.resolve(
-        composePersonalizationResultingObject(propositionsToExecute, true)
-      );
+      return composePersonalizationResultingObject(propositionsToExecute, true);
     });
   };
 
