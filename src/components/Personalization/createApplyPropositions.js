@@ -48,8 +48,11 @@ export default ({ executeDecisions }) => {
       .filter(filterPropositionsPredicate)
       .map(proposition => {
         if (isNonEmptyArray(proposition.items)) {
+          const { id, scope, scopeDetails } = proposition;
           return {
-            ...proposition,
+            id,
+            scope,
+            scopeDetails,
             items: updatePropositionItems({
               items: proposition.items,
               metadataForScope: metadata[proposition.scope]

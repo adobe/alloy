@@ -98,6 +98,22 @@ const MIXED_PROPOSITIONS = [
         }
       }
     ]
+  },
+  {
+    id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn2=",
+    scope: "__view__",
+    renderAttempted: false,
+    items: [
+      {
+        id: "442379",
+        schema: "https://ns.adobe.com/personalization/dom-action",
+        data: {
+          type: "click",
+          format: "application/vnd.adobe.target.dom-action",
+          selector: "#root"
+        }
+      }
+    ]
   }
 ];
 
@@ -180,14 +196,15 @@ describe("Personalization::createApplyPropositions", () => {
       metadata: METADATA
     }).then(() => {
       const executedPropositions = executeDecisions.calls.all()[0].args[0];
-      expect(executedPropositions.length).toEqual(2);
+      expect(executedPropositions.length).toEqual(3);
       executedPropositions.forEach(proposition => {
-        expect(proposition.scope).toEqual("home");
         expect(proposition.items.length).toEqual(1);
         if (proposition.items[0].id === "442358") {
+          expect(proposition.scope).toEqual("home");
           expect(proposition.items[0].data.selector).toEqual("#root");
           expect(proposition.items[0].data.type).toEqual("click");
         } else if (proposition.items[0].id === "442359") {
+          expect(proposition.scope).toEqual("home");
           expect(proposition.items[0].data.selector).toEqual("#home-item1");
           expect(proposition.items[0].data.type).toEqual("setHtml");
         }
@@ -206,7 +223,7 @@ describe("Personalization::createApplyPropositions", () => {
     return applyPropositions({
       propositions: MIXED_PROPOSITIONS
     }).then(result => {
-      expect(result.propositions.length).toEqual(2);
+      expect(result.propositions.length).toEqual(3);
       result.propositions.forEach(proposition => {
         expect(proposition.renderAttempted).toBeTrue();
       });
@@ -223,10 +240,14 @@ describe("Personalization::createApplyPropositions", () => {
     return applyPropositions({
       propositions: MIXED_PROPOSITIONS
     }).then(result => {
-      expect(result.propositions.length).toEqual(2);
+      expect(result.propositions.length).toEqual(3);
       result.propositions.forEach(proposition => {
-        expect(proposition.scope).toEqual("home");
         expect(proposition.renderAttempted).toBeTrue();
+        if (proposition.scope === "__view__") {
+          expect(proposition.items[0].id).not.toEqual("442358");
+        } else {
+          expect(proposition.scope).toEqual("home");
+        }
       });
     });
   });
@@ -244,7 +265,7 @@ describe("Personalization::createApplyPropositions", () => {
       propositions: MIXED_PROPOSITIONS
     }).then(() => {
       const executedPropositions = executeDecisions.calls.all()[0].args[0];
-      expect(executedPropositions.length).toEqual(2);
+      expect(executedPropositions.length).toEqual(3);
       executedPropositions.forEach(proposition => {
         expect(proposition.items.length).toEqual(1);
         proposition.items.forEach(item => {
@@ -277,7 +298,7 @@ describe("Personalization::createApplyPropositions", () => {
           expect(proposition).not.toBe(original);
         }
       });
-      expect(numReturnedPropositions).toEqual(2);
+      expect(numReturnedPropositions).toEqual(3);
     });
   });
 });
