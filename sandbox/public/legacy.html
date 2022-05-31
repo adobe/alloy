@@ -18,10 +18,8 @@
             connect-src 'self' *.adobedc.net *.demdex.net"
     />
     <script src="https://github.com/Adobe-Marketing-Cloud/id-service/releases/download/4.5.1/visitorapi.min.js"></script>
+    <script src="/AppMeasurement.js"></script>
     <title>Mock website hosting Alloy</title>
-    <script>
-      Visitor.getInstance("5BFE274A5F6980A50A495C08@AdobeOrg", {});
-    </script>
   </head>
   <body>
     <div>
@@ -63,7 +61,156 @@
     </div>
     <hr />
     <div>
-      <h2>Only the legacy VisitorAPI library is loaded on this page.</h2>
+      <h1>
+        Only the legacy VisitorAPI library and AppMeasurement is loaded on this
+        page.
+      </h1>
+      <section>
+        <button id="initializeButton">Initialize</button>
+        <button id="getVisitorValuesButton" disabled>Get Visitor Values</button>
+        <button id="trackButton" disabled>AppMeasurment Track</button>
+      </section>
+      <section>
+        <table>
+          <tbody>
+            <tr>
+              <td>Original AMCV Identity</td>
+              <td id="originalAMCVIdentity"></td>
+            </tr>
+            <tr>
+              <td>Current AMCV Identity</td>
+              <td id="currentAMCVIdentity"></td>
+            </tr>
+            <tr>
+              <td>Identity from Visitor</td>
+              <td id="visitorIdentity"></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      <section>
+        <a id="webSdkLink">Web SDK identity page</a><br />
+        <a id="legacyLink">Legacy identity page</a><br />
+        <a id="webSdkCrossDomainLink">
+          Cross domain Web SDK identity page </a
+        ><br />
+        <a id="legacyCrossDomainLink">
+          Cross domain legacy identity page </a
+        ><br />
+      </section>
     </div>
+    <script>
+      function getUrlParameter(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        var results = regex.exec(location.search);
+        return results === null
+          ? ""
+          : decodeURIComponent(results[1].replace(/\+/g, " "));
+      }
+
+      function removeUrlParameter(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        return location.search.replace(regex, "").replace(/^&/, "?");
+      }
+
+      function readCookies() {
+        const cookies = {};
+        document.cookie.split(";").forEach(function(c) {
+          const ct = c.trim();
+          const index = ct.indexOf("=");
+          const key = ct.slice(0, index);
+          const value = ct.slice(index + 1);
+          cookies[key] = value;
+        });
+        return cookies;
+      }
+
+      function readIdentityCookie() {
+        const cookies = readCookies();
+        const value = cookies["AMCV_5BFE274A5F6980A50A495C08%40AdobeOrg"];
+        if (!value) {
+          return "None";
+        }
+        var parts = decodeURIComponent(value).split("|");
+        var i = 0;
+        while (parts[i] !== "MCMID" && i < parts.length) {
+          i += 1;
+        }
+        if (i >= parts.length) {
+          return "None";
+        }
+        return parts[i + 1];
+      }
+
+      document.getElementById("initializeButton").onclick = function() {
+        var rsid = getUrlParameter("rsid") || "alloy";
+        window.s = s_gi(rsid);
+        s.trackingServer = "alloy.sc.omtrdc.net";
+        s.visitor = Visitor.getInstance("5BFE274A5F6980A50A495C08@AdobeOrg", {
+          overwriteCrossDomainMCIDAndAID: true
+        });
+        s.eVar1 = "alloy1";
+        document.getElementById("getVisitorValuesButton").disabled = false;
+        document.getElementById("trackButton").disabled = false;
+        document.getElementById("initializeButton").disabled = true;
+        document.getElementById(
+          "currentAMCVIdentity"
+        ).innerText = readIdentityCookie();
+      };
+
+      function getVisitorValues() {
+        s.visitor.getVisitorValues(values => {
+          document.getElementById("visitorIdentity").innerText = values.MCMID;
+          document.getElementById(
+            "currentAMCVIdentity"
+          ).innerText = readIdentityCookie();
+        });
+      }
+
+      document.getElementById(
+        "getVisitorValuesButton"
+      ).onclick = getVisitorValues;
+      document.getElementById("trackButton").onclick = () => {
+        s.t();
+        setTimeout(getVisitorValues, 500);
+      };
+
+      document.getElementById(
+        "originalAMCVIdentity"
+      ).innerText = readIdentityCookie();
+      document.getElementById(
+        "currentAMCVIdentity"
+      ).innerText = readIdentityCookie();
+
+      var searchWithoutAdobeMc = removeUrlParameter("adobe_mc");
+      var otherHost =
+        document.location.hostname === "alloyio.com"
+          ? "alloyio2.com"
+          : "alloyio.com";
+      var webSdkLink = document.getElementById("webSdkLink");
+      webSdkLink.href = "/identity" + searchWithoutAdobeMc;
+      var legacyLink = document.getElementById("legacyLink");
+      legacyLink.href = "/legacy.html" + searchWithoutAdobeMc;
+
+      var webSdkCrossDomainLink = document.getElementById(
+        "webSdkCrossDomainLink"
+      );
+      webSdkCrossDomainLink.href =
+        "https://" + otherHost + "/identity" + searchWithoutAdobeMc;
+      var legacyCrossDomainLink = document.getElementById(
+        "legacyCrossDomainLink"
+      );
+      legacyCrossDomainLink.href =
+        "https://" + otherHost + "/legacy.html" + searchWithoutAdobeMc;
+
+      function handleCrossDomainClick(event) {
+        event.preventDefault();
+        document.location = s.visitor.appendVisitorIDsTo(event.target.href);
+      }
+      webSdkCrossDomainLink.onclick = handleCrossDomainClick;
+      legacyCrossDomainLink.onclick = handleCrossDomainClick;
+    </script>
   </body>
 </html>

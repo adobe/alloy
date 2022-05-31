@@ -20,7 +20,7 @@ describe("appendIdentityToUrl", () => {
     orgId
   });
   const ecid = "1234";
-  const qsp = "adobe_mc=TS%3D1%7CMCMID%3D1234%7CMCORGID%3Dmyorg%40adobe";
+  const qsp = "adobe_mc=TS%3D1%7CMCMID%3D1234%7CMCORGID%3Dmyorg%2540adobe";
 
   const test = (original, expected) => {
     it(`appends to "${original}"`, () => {

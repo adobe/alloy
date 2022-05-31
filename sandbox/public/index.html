@@ -80,7 +80,9 @@
             ? "firstparty.alloyio.com"
             : undefined,
         edgeBasePath: getUrlParameter("edgeBasePath") || "ee",
-        edgeConfigId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
+        edgeConfigId:
+          getUrlParameter("edgeConfigId") ||
+          "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
         orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
         debugEnabled: true,
         idMigrationEnabled: !(
@@ -98,6 +100,10 @@
           if (campaignParam) {
             data.campaign = campaignParam;
           }
+
+          const _unifiedjsqeonly = xdm._unifiedjsqeonly || {};
+          _unifiedjsqeonly.rawTimestamp = new Date().getTime();
+          xdm._unifiedjsqeonly = _unifiedjsqeonly;
         }
       });
 
