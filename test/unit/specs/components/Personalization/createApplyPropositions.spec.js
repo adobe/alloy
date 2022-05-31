@@ -11,111 +11,12 @@ governing permissions and limitations under the License.
 */
 
 import "jasmine-expect";
-import { PAGE_WIDE_SCOPE_DECISIONS } from "./responsesMock/eventResponses";
+import {
+  MIXED_PROPOSITIONS,
+  PAGE_WIDE_SCOPE_DECISIONS
+} from "./responsesMock/eventResponses";
 import createApplyPropositions from "../../../../../src/components/Personalization/createApplyPropositions";
 import clone from "../../../../../src/utils/clone";
-
-const MIXED_PROPOSITIONS = [
-  {
-    id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn0=",
-    scope: "home",
-    items: [
-      {
-        id: "442358",
-        schema: "https://ns.adobe.com/personalization/dom-action",
-        data: {
-          type: "click",
-          format: "application/vnd.adobe.target.dom-action",
-          selector: "#root"
-        }
-      }
-    ]
-  },
-  {
-    id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
-    scope: "home",
-    items: [
-      {
-        id: "442359",
-        schema: "https://ns.adobe.com/personalization/html-content-item",
-        data: {
-          content: "<p>Some custom content for the home page</p>",
-          format: "text/html",
-          id: "1202448"
-        }
-      }
-    ]
-  },
-  {
-    id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
-    scope: "home",
-    items: [
-      {
-        id: "442360",
-        schema: "https://ns.adobe.com/personalization/json-content-item",
-        data: {
-          content: "{'field1': 'custom content'}",
-          format: "text/javascript",
-          id: "1202449"
-        }
-      }
-    ],
-    renderAttempted: false
-  },
-  {
-    id: "AT:eyJhY3Rpdml0eUlkIjoiMTQxNjY0IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
-    scope: "home",
-    items: [
-      {
-        id: "xcore:personalized-offer:134ce877e13a04ca",
-        etag: "4",
-        schema:
-          "https://ns.adobe.com/experience/offer-management/content-component-html",
-        data: {
-          id: "xcore:personalized-offer:134ce877e13a04ca",
-          format: "text/html",
-          language: ["en-us"],
-          content: "<p>An html offer from Offer Decisioning</p>",
-          characteristics: {
-            testing: "true"
-          }
-        }
-      }
-    ]
-  },
-  {
-    id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
-    scope: "__view__",
-    renderAttempted: true,
-    items: [
-      {
-        id: "442358",
-        schema: "https://ns.adobe.com/personalization/dom-action",
-        data: {
-          type: "click",
-          format: "application/vnd.adobe.target.dom-action",
-          selector: "#root"
-        }
-      }
-    ]
-  },
-  {
-    id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn2=",
-    scope: "__view__",
-    renderAttempted: false,
-    items: [
-      {
-        id: "442379",
-        schema: "https://ns.adobe.com/personalization/dom-action",
-        data: {
-          type: "click",
-          format: "application/vnd.adobe.target.dom-action",
-          selector: "#root"
-        }
-      }
-    ]
-  }
-];
 
 const METADATA = {
   home: {
@@ -213,6 +114,50 @@ describe("Personalization::createApplyPropositions", () => {
     });
   });
 
+  it("it should drop items with html-content-item schema when there is no metadata", () => {
+    const propositions = [
+      {
+        id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
+        scope: "home",
+        items: [
+          {
+            id: "442359",
+            schema: "https://ns.adobe.com/personalization/html-content-item",
+            data: {
+              content: "<p>Some custom content for the home page</p>",
+              format: "text/html",
+              id: "1202448"
+            }
+          },
+          {
+            id: "442358",
+            schema: "https://ns.adobe.com/personalization/dom-action",
+            data: {
+              type: "click",
+              format: "application/vnd.adobe.target.dom-action",
+              selector: "#root"
+            }
+          }
+        ]
+      }
+    ];
+
+    executeDecisions.and.returnValue(Promise.resolve(MIXED_PROPOSITIONS));
+
+    const applyPropositions = createApplyPropositions({
+      executeDecisions
+    });
+
+    return applyPropositions({
+      propositions
+    }).then(result => {
+      expect(result.propositions.length).toEqual(1);
+      expect(result.propositions[0].items.length).toEqual(1);
+      expect(result.propositions[0].items[0].id).toEqual("442358");
+      expect(result.propositions[0].renderAttempted).toBeTrue();
+    });
+  });
+
   it("it should return renderAttempted = true on resulting propositions", () => {
     executeDecisions.and.returnValue(Promise.resolve(MIXED_PROPOSITIONS));
 
@@ -223,7 +168,7 @@ describe("Personalization::createApplyPropositions", () => {
     return applyPropositions({
       propositions: MIXED_PROPOSITIONS
     }).then(result => {
-      expect(result.propositions.length).toEqual(3);
+      expect(result.propositions.length).toEqual(2);
       result.propositions.forEach(proposition => {
         expect(proposition.renderAttempted).toBeTrue();
       });
@@ -240,7 +185,7 @@ describe("Personalization::createApplyPropositions", () => {
     return applyPropositions({
       propositions: MIXED_PROPOSITIONS
     }).then(result => {
-      expect(result.propositions.length).toEqual(3);
+      expect(result.propositions.length).toEqual(2);
       result.propositions.forEach(proposition => {
         expect(proposition.renderAttempted).toBeTrue();
         if (proposition.scope === "__view__") {
@@ -265,7 +210,7 @@ describe("Personalization::createApplyPropositions", () => {
       propositions: MIXED_PROPOSITIONS
     }).then(() => {
       const executedPropositions = executeDecisions.calls.all()[0].args[0];
-      expect(executedPropositions.length).toEqual(3);
+      expect(executedPropositions.length).toEqual(2);
       executedPropositions.forEach(proposition => {
         expect(proposition.items.length).toEqual(1);
         proposition.items.forEach(item => {

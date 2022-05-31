@@ -22,19 +22,25 @@ export default ({ executeDecisions }) => {
   const filterItemsPredicate = item => SUPPORTED_SCHEMAS.includes(item.schema);
 
   const updatePropositionItems = ({ items, metadataForScope }) => {
-    return items.filter(filterItemsPredicate).map(item => {
-      if (item.schema === HTML_CONTENT_ITEM && isObject(metadataForScope)) {
-        return {
-          ...item,
-          data: {
-            ...item.data,
-            selector: metadataForScope.selector,
-            type: metadataForScope.actionType
-          }
-        };
-      }
-      return item;
-    });
+    return items
+      .filter(filterItemsPredicate)
+      .map(item => {
+        if (item.schema !== HTML_CONTENT_ITEM) {
+          return { ...item };
+        }
+        if (isObject(metadataForScope)) {
+          return {
+            ...item,
+            data: {
+              ...item.data,
+              selector: metadataForScope.selector,
+              type: metadataForScope.actionType
+            }
+          };
+        }
+        return undefined;
+      })
+      .filter(item => item);
   };
 
   const filterPropositionsPredicate = proposition => {
