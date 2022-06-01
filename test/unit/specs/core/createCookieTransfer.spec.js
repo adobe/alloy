@@ -57,7 +57,8 @@ describe("createCookieTransfer", () => {
       cookieJar.get.and.returnValue({
         kndctr_ABC_CustomOrg_identity: "XYZ@CustomOrg",
         ineligible_cookie: "foo",
-        kndctr_ABC_CustomOrg_optIn: "all"
+        kndctr_ABC_CustomOrg_optIn: "all",
+        at_qa_mode: "95ad54cf-058b-4a6d-9c3a-3729ca4c8aec"
       });
       cookieTransfer = createCookieTransfer({
         cookieJar,
@@ -76,6 +77,10 @@ describe("createCookieTransfer", () => {
           {
             key: "kndctr_ABC_CustomOrg_optIn",
             value: "all"
+          },
+          {
+            key: "at_qa_mode",
+            value: "95ad54cf-058b-4a6d-9c3a-3729ca4c8aec"
           }
         ]
       });
