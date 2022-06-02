@@ -54,6 +54,7 @@ test("Test C28760: A notification collect should be triggered if a VEC dom actio
     .eql([PAGE_WIDE_SCOPE]);
 
   const result = [
+    "https://ns.adobe.com/personalization/default-content-item",
     "https://ns.adobe.com/personalization/dom-action",
     "https://ns.adobe.com/personalization/html-content-item",
     "https://ns.adobe.com/personalization/json-content-item",

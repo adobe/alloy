@@ -14,7 +14,6 @@ import { string } from "../../utils/validation";
 import createComponent from "./createComponent";
 import { initDomActionsModules, executeActions } from "./dom-actions";
 import createCollect from "./createCollect";
-import createViewCollect from "./createViewCollect";
 import createExecuteDecisions from "./createExecuteDecisions";
 import { hideContainers, showContainers } from "./flicker";
 import createFetchDataHandler from "./createFetchDataHandler";
@@ -22,7 +21,6 @@ import collectClicks from "./dom-actions/clicks/collectClicks";
 import isAuthoringModeEnabled from "./utils/isAuthoringModeEnabled";
 import { mergeDecisionsMeta, mergeQuery } from "./event";
 import createOnClickHandler from "./createOnClickHandler";
-import createExecuteCachedViewDecisions from "./createExecuteCachedViewDecisions";
 import createViewCacheManager from "./createViewCacheManager";
 import createViewChangeHandler from "./createViewChangeHandler";
 import groupDecisions from "./groupDecisions";
@@ -34,7 +32,7 @@ import createNonRenderingHandler from "./createNonRenderingHandler";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
-  const viewCollect = createViewCollect({ eventManager, mergeDecisionsMeta });
+
   const {
     getClickMetasBySelector,
     getClickSelectors,
@@ -45,14 +43,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const executeDecisions = createExecuteDecisions({
     modules,
     logger,
-    executeActions,
-    collect
-  });
-  const executeViewDecisions = createExecuteDecisions({
-    modules,
-    logger,
-    executeActions,
-    collect: viewCollect
+    executeActions
   });
   const handleRedirectDecisions = createRedirectHandler({
     collect,
@@ -60,16 +51,12 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     logger,
     showContainers
   });
-  const executeCachedViewDecisions = createExecuteCachedViewDecisions({
-    viewCache,
-    executeViewDecisions,
-    collect: viewCollect
-  });
+
   const autoRenderingHandler = createAutorenderingHandler({
     viewCache,
     executeDecisions,
-    executeCachedViewDecisions,
-    showContainers
+    showContainers,
+    collect
   });
   const nonRenderingHandler = createNonRenderingHandler({ viewCache });
   const responseHandler = createOnResponseHandler({
@@ -82,7 +69,6 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const fetchDataHandler = createFetchDataHandler({
     config,
     responseHandler,
-    showContainers,
     hideContainers,
     mergeQuery
   });
@@ -93,9 +79,10 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     getClickMetasBySelector
   });
   const viewChangeHandler = createViewChangeHandler({
-    executeCachedViewDecisions,
-    viewCache,
-    showContainers
+    mergeDecisionsMeta,
+    collect,
+    executeDecisions,
+    viewCache
   });
   return createComponent({
     logger,
@@ -104,7 +91,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     onClickHandler,
     isAuthoringModeEnabled,
     mergeQuery,
-    viewCache
+    viewCache,
+    showContainers
   });
 };
 

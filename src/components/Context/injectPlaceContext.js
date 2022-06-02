@@ -9,15 +9,20 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { deepAssign, toISOStringLocal } from "../../utils";
+import { deepAssign, toISOStringLocal, toInteger } from "../../utils";
 
 export default dateProvider => {
   return xdm => {
     const date = dateProvider();
+
     const placeContext = {
-      localTime: toISOStringLocal(date),
-      localTimezoneOffset: date.getTimezoneOffset()
+      localTime: toISOStringLocal(date)
     };
+
+    const localTimezoneOffset = toInteger(date.getTimezoneOffset());
+    if (localTimezoneOffset !== undefined) {
+      placeContext.localTimezoneOffset = localTimezoneOffset;
+    }
     deepAssign(xdm, { placeContext });
   };
 };

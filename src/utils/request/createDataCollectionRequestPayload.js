@@ -9,15 +9,16 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
 import createRequestPayload from "./createRequestPayload";
 import createAddIdentity from "./createAddIdentity";
+import createHasIdentity from "./createHasIdentity";
 
 export default () => {
   const content = {};
   const payload = createRequestPayload({
     content,
-    addIdentity: createAddIdentity(content)
+    addIdentity: createAddIdentity(content),
+    hasIdentity: createHasIdentity(content)
   });
 
   payload.addEvent = event => {

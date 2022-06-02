@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import {
-  fireReferrerHideableImage,
   areThirdPartyCookiesSupportedByDefault,
   injectDoesIdentityCookieExist,
   createLoggingCookieJar,
@@ -29,17 +28,20 @@ import injectEnsureSingleIdentity from "./injectEnsureSingleIdentity";
 import addEcidQueryToPayload from "./addEcidQueryToPayload";
 import injectSetDomainForInitialIdentityPayload from "./injectSetDomainForInitialIdentityPayload";
 import injectAddLegacyEcidToPayload from "./injectAddLegacyEcidToPayload";
+import injectAddQueryStringIdentityToPayload from "./injectAddQueryStringIdentityToPayload";
 import addEcidToPayload from "./addEcidToPayload";
 import injectAwaitIdentityCookie from "./injectAwaitIdentityCookie";
 import getEcidFromResponse from "./getEcidFromResponse";
 import createGetIdentity from "./getIdentity/createGetIdentity";
 import createIdentityRequest from "./getIdentity/createIdentityRequest";
 import createIdentityRequestPayload from "./getIdentity/createIdentityRequestPayload";
+import injectAppendIdentityToUrl from "./appendIdentityToUrl/injectAppendIdentityToUrl";
 
 const createIdentity = ({
   config,
   logger,
   consent,
+  fireReferrerHideableImage,
   sendEdgeNetworkRequest,
   apexDomain
 }) => {
@@ -74,9 +76,17 @@ const createIdentity = ({
     getLegacyEcid: legacyIdentity.getEcid,
     addEcidToPayload
   });
+  const addQueryStringIdentityToPayload = injectAddQueryStringIdentityToPayload(
+    {
+      locationSearch: window.document.location.search,
+      dateProvider: () => new Date(),
+      orgId,
+      logger
+    }
+  );
   const awaitIdentityCookie = injectAwaitIdentityCookie({
-    orgId,
-    doesIdentityCookieExist
+    doesIdentityCookieExist,
+    orgId
   });
   const ensureSingleIdentity = injectEnsureSingleIdentity({
     doesIdentityCookieExist,
@@ -92,14 +102,21 @@ const createIdentity = ({
   const handleResponseForIdSyncs = injectHandleResponseForIdSyncs({
     processIdSyncs
   });
+  const appendIdentityToUrl = injectAppendIdentityToUrl({
+    dateProvider: () => new Date(),
+    orgId
+  });
   return createComponent({
-    ensureSingleIdentity,
     addEcidQueryToPayload,
+    addQueryStringIdentityToPayload,
+    ensureSingleIdentity,
     setLegacyEcid: legacyIdentity.setEcid,
     handleResponseForIdSyncs,
     getEcidFromResponse,
     getIdentity,
-    consent
+    consent,
+    appendIdentityToUrl,
+    logger
   });
 };
 

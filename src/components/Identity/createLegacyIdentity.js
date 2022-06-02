@@ -55,10 +55,11 @@ export default ({
       return Promise.resolve();
     },
     setEcid(ecid) {
-      if (idMigrationEnabled && !cookieJar.get(amcvCookieName)) {
+      if (idMigrationEnabled && getEcidFromLegacyCookies() !== ecid) {
         const extraOptions = isPageSsl
           ? { sameSite: "none", secure: true }
           : {};
+
         cookieJar.set(amcvCookieName, `MCMID|${ecid}`, {
           domain: apexDomain,
           // Without `expires` this will be a session cookie.

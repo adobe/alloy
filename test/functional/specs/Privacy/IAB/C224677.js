@@ -57,18 +57,18 @@ test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
   await t.expect(identityHandle.length).eql(1);
   await t.expect(returnedNamespaces).contains("ECID");
 
-  // 3. Event calls going forward should be opted out because AAM opts out consents with no purpose 10.
+  // 3. Event calls going forward should remain opted in, even though AAM opts out consents with no purpose 10.
   await alloy.sendEvent();
   const rawEventResponse = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
   const eventResponse = createResponse({ content: rawEventResponse });
 
-  // 4. And a warning message should be returned, confirming the opt-out
+  // 4. No warning message regarding opt-out should be returned anymore
   const warningTypes = eventResponse.getWarnings().map(w => w.type);
   await t
     .expect(warningTypes)
-    .contains("https://ns.adobe.com/aep/errors/EXEG-0301-200");
+    .notContains("https://ns.adobe.com/aep/errors/EXEG-0301-200");
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);

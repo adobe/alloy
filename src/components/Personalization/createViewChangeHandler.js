@@ -10,40 +10,41 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import addRenderAttemptedToDecisions from "./utils/addRenderAttemptedToDecisions";
+import composePersonalizationResultingObject from "./utils/composePersonalizationResultingObject";
+import { isNonEmptyArray } from "../../utils";
 
-export default ({ executeCachedViewDecisions, viewCache, showContainers }) => {
-  return ({ personalizationDetails, onResponse, onRequestFailure }) => {
+export default ({
+  mergeDecisionsMeta,
+  collect,
+  executeDecisions,
+  viewCache
+}) => {
+  return ({ personalizationDetails, event, onResponse }) => {
     const viewName = personalizationDetails.getViewName();
 
-    return viewCache.getView(viewName).then(currentViewDecisions => {
+    return viewCache.getView(viewName).then(viewDecisions => {
       if (personalizationDetails.isRenderDecisions()) {
-        executeCachedViewDecisions({
-          viewName,
-          viewDecisions: currentViewDecisions
+        return executeDecisions(viewDecisions).then(decisionsMeta => {
+          // if there are decisions to be rendered we render them and attach the result in experience.decisions.propositions
+          if (isNonEmptyArray(decisionsMeta)) {
+            mergeDecisionsMeta(event, decisionsMeta);
+            onResponse(() => {
+              return composePersonalizationResultingObject(viewDecisions, true);
+            });
+            return;
+          }
+          // if there are no decisions in cache for this view, we will send a empty notification
+          onResponse(() => {
+            collect({ decisionsMeta: [], viewName });
+            return composePersonalizationResultingObject(viewDecisions, true);
+          });
         });
       }
 
       onResponse(() => {
-        return personalizationDetails.isRenderDecisions()
-          ? {
-              propositions: addRenderAttemptedToDecisions({
-                decisions: currentViewDecisions,
-                renderAttempted: true
-              })
-            }
-          : {
-              decisions: currentViewDecisions,
-              propositions: addRenderAttemptedToDecisions({
-                decisions: currentViewDecisions,
-                renderAttempted: false
-              })
-            };
+        return composePersonalizationResultingObject(viewDecisions, false);
       });
-
-      onRequestFailure(() => {
-        showContainers();
-      });
+      return {};
     });
   };
 };

@@ -50,6 +50,7 @@ test("Test C28755: The first sendEvent on the page should fetch Personalization 
     .eql([PAGE_WIDE_SCOPE]);
 
   const results = [
+    "https://ns.adobe.com/personalization/default-content-item",
     "https://ns.adobe.com/personalization/dom-action",
     "https://ns.adobe.com/personalization/html-content-item",
     "https://ns.adobe.com/personalization/json-content-item",

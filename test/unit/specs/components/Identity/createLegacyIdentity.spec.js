@@ -138,7 +138,7 @@ describe("Identity::createLegacyIdentity", () => {
     });
 
     it("should not write AMCV cookie if already present", () => {
-      cookieJar.get.and.returnValue("existing value");
+      cookieJar.get.and.returnValue("MCMID|1234|otherstuff");
       build();
       legacyIdentity.setEcid("1234");
       expect(cookieJar.set).not.toHaveBeenCalled();

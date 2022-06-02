@@ -172,4 +172,21 @@ describe("createConsentStateMachine", () => {
       expect(logger.warn).not.toHaveBeenCalled();
     });
   });
+
+  describe("withConsent", () => {
+    ["default", "initial", "new"].forEach(source => {
+      it(`returns immediately when ${source} consent is set to "in"`, () => {
+        subject.in(source);
+        return expectAsync(subject.withConsent()).toBeResolvedTo();
+      });
+      it(`rejects when ${source} consent is set to "out"`, () => {
+        subject.out(source);
+        return expectAsync(subject.withConsent()).toBeRejected();
+      });
+      it(`rejects when ${source} consent is set to "pending"`, () => {
+        subject.pending(source);
+        return expectAsync(subject.withConsent()).toBeRejected();
+      });
+    });
+  });
 });

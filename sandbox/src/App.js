@@ -26,6 +26,7 @@ import DualTag from "./DualTag";
 import RedirectOffers from "./RedirectOffers";
 import RedirectedNewPage from "./RedirectedNewPage";
 import PersonalizationAnalyticsClientSide from "./PersonalizationAnalyticsClientSide";
+import Identity from "./Identity";
 
 function BasicExample() {
   return (
@@ -74,6 +75,9 @@ function BasicExample() {
           <li>
             <a href="/redirectOffers">Redirect Offers</a>
           </li>
+          <li>
+            <a href="/identity">Identity</a>
+          </li>
         </ul>
 
         <hr />
@@ -97,6 +101,7 @@ function BasicExample() {
         <Route path="/dualTag" component={DualTag} />
         <Route path="/redirectOffers" component={RedirectOffers} />
         <Route path="/redirectedNewPage" component={RedirectedNewPage} />
+        <Route path="/identity" component={Identity} />
       </div>
     </Router>
   );

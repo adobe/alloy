@@ -84,6 +84,9 @@ export const PAGE_WIDE_SCOPE_DECISIONS = [
           id: "B",
           content: "Banner B ...."
         }
+      },
+      {
+        schema: "https://ns.adobe.com/personalization/default-content-item"
       }
     ]
   }
@@ -136,6 +139,9 @@ export const PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS = [
           selector: "#foo2",
           content: "<div>here is a target activity</div>"
         }
+      },
+      {
+        schema: "https://ns.adobe.com/personalization/default-content-item"
       }
     ]
   }
@@ -146,7 +152,10 @@ export const CART_VIEW_DECISIONS = [
     id: "TNT:activity4:experience9",
     scope: "cart",
     scopeDetails: {
-      blah: "test"
+      blah: "test",
+      characteristics: {
+        scopeType: "view"
+      }
     },
     items: [
       {
@@ -164,6 +173,9 @@ export const CART_VIEW_DECISIONS = [
           selector: "#foo2",
           content: "<div>here is a target activity for cart view</div>"
         }
+      },
+      {
+        schema: "https://ns.adobe.com/personalization/default-content-item"
       }
     ]
   }
@@ -173,7 +185,10 @@ export const PRODUCTS_VIEW_DECISIONS = [
     id: "TNT:activity3:experience4",
     scope: "products",
     scopeDetails: {
-      blah: "test"
+      blah: "test",
+      characteristics: {
+        scopeType: "view"
+      }
     },
     items: [
       {
@@ -208,6 +223,39 @@ export const REDIRECT_PAGE_WIDE_SCOPE_DECISION = [
         data: {
           type: "redirect",
           content: "http://example.com/redirect/offer"
+        }
+      }
+    ]
+  }
+];
+export const MERGED_METRIC_DECISIONS = [
+  {
+    id: "TNT:activity6:experience1",
+    scope: "testScope",
+    scopeDetails: {
+      eventTokens: {
+        display: "displayToken1",
+        click: "clickToken1"
+      }
+    },
+    items: [
+      {
+        id: "0",
+        schema: "https://ns.adobe.com/personalization/html-content-item",
+        data: {
+          id: "0",
+          format: "text/html",
+          content: "testScope content1"
+        }
+      },
+      {
+        schema: "https://ns.adobe.com/personalization/default-content-item"
+      },
+      {
+        schema: "https://ns.adobe.com/personalization/measurement",
+        data: {
+          type: "click",
+          format: "application/vnd.adobe.target.metric"
         }
       }
     ]

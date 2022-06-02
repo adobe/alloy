@@ -16,7 +16,8 @@ import {
   injectStorage,
   cookieJar,
   isFunction,
-  createLoggingCookieJar
+  createLoggingCookieJar,
+  injectFireReferrerHideableImage
 } from "../utils";
 import createLogController from "./createLogController";
 import createLifecycle from "./createLifecycle";
@@ -63,6 +64,7 @@ const apexDomain = getApexDomain(window, cookieJar);
 const sendFetchRequest = isFunction(fetch)
   ? injectSendFetchRequest({ fetch })
   : injectSendXhrRequest({ XMLHttpRequest });
+const fireReferrerHideableImage = injectFireReferrerHideableImage();
 
 export const createExecuteCommand = ({
   instanceName,
@@ -147,6 +149,7 @@ export const createExecuteCommand = ({
           config,
           consent,
           eventManager,
+          fireReferrerHideableImage,
           logger: componentLogger,
           lifecycle,
           sendEdgeNetworkRequest,

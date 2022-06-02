@@ -14,7 +14,6 @@ import createFetchDataHandler from "../../../../../src/components/Personalizatio
 
 describe("Personalization::createFetchDataHandler", () => {
   let responseHandler;
-  let showContainers;
   let hideContainers;
   let mergeQuery;
   let personalizationDetails;
@@ -23,7 +22,6 @@ describe("Personalization::createFetchDataHandler", () => {
     prehidingStyle: "body {opacity:0;}"
   };
   let onResponse = jasmine.createSpy();
-  let onRequestFailure = jasmine.createSpy();
   const event = {};
   let response;
 
@@ -36,7 +34,6 @@ describe("Personalization::createFetchDataHandler", () => {
       "createQueryDetails"
     ]);
     hideContainers = jasmine.createSpy("hideContainers");
-    showContainers = jasmine.createSpy("showContainers");
     decisionsDeferred = jasmine.createSpyObj("decisionsDeferred", ["reject"]);
   });
 
@@ -44,7 +41,6 @@ describe("Personalization::createFetchDataHandler", () => {
     const fetchDataHandler = createFetchDataHandler({
       config,
       responseHandler,
-      showContainers,
       hideContainers,
       mergeQuery
     });
@@ -54,8 +50,7 @@ describe("Personalization::createFetchDataHandler", () => {
       decisionsDeferred,
       personalizationDetails,
       event,
-      onResponse,
-      onRequestFailure
+      onResponse
     });
     expect(hideContainers).toHaveBeenCalled();
   });
@@ -63,7 +58,6 @@ describe("Personalization::createFetchDataHandler", () => {
     const fetchDataHandler = createFetchDataHandler({
       config,
       responseHandler,
-      showContainers,
       hideContainers,
       mergeQuery
     });
@@ -72,8 +66,7 @@ describe("Personalization::createFetchDataHandler", () => {
       decisionsDeferred,
       personalizationDetails,
       event,
-      onResponse,
-      onRequestFailure
+      onResponse
     });
 
     expect(hideContainers).not.toHaveBeenCalled();
@@ -83,7 +76,6 @@ describe("Personalization::createFetchDataHandler", () => {
     const fetchDataHandler = createFetchDataHandler({
       config,
       responseHandler,
-      showContainers,
       hideContainers,
       mergeQuery
     });
@@ -95,35 +87,10 @@ describe("Personalization::createFetchDataHandler", () => {
       decisionsDeferred,
       personalizationDetails,
       event,
-      onResponse,
-      onRequestFailure
+      onResponse
     });
 
     expect(hideContainers).not.toHaveBeenCalled();
     expect(responseHandler).toHaveBeenCalled();
-  });
-  it("should trigger showContainers at onRequestFailure", () => {
-    const fetchDataHandler = createFetchDataHandler({
-      config,
-      responseHandler,
-      showContainers,
-      hideContainers,
-      mergeQuery
-    });
-    personalizationDetails.isRenderDecisions.and.returnValue(false);
-    onRequestFailure = callback => {
-      callback();
-    };
-    fetchDataHandler({
-      decisionsDeferred,
-      personalizationDetails,
-      event,
-      onResponse,
-      onRequestFailure
-    });
-
-    expect(hideContainers).not.toHaveBeenCalled();
-    expect(showContainers).toHaveBeenCalled();
-    expect(decisionsDeferred.reject).toHaveBeenCalled();
   });
 });

@@ -16,11 +16,6 @@ import { isNotEqSelector, splitWithEq } from "./helperForEq";
 
 // Trying to match ID or CSS class
 const CSS_IDENTIFIER_PATTERN = /(#|\.)(-?\w+)/g;
-// This is required to remove leading " > " from parsed pieces
-const SIBLING_PATTERN = /^\s*>?\s*/;
-
-const cleanUp = str => str.replace(SIBLING_PATTERN, "").trim();
-
 // Here we use CSS.escape() to make sure we get
 // correct values for ID and CSS class
 // Please check:  https://www.w3.org/TR/css-syntax-3/#escaping
@@ -39,7 +34,7 @@ export const parseSelector = rawSelector => {
   let i = 0;
 
   while (i < length) {
-    const sel = cleanUp(parts[i]);
+    const sel = parts[i];
     const eq = parts[i + 1];
 
     if (eq) {
