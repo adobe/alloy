@@ -45,7 +45,6 @@ describe("Personalization::createApplyPropositions", () => {
       propositions: []
     }).then(result => {
       expect(result).toEqual({ propositions: [] });
-      expect(executeDecisions).toHaveBeenCalledTimes(1);
     });
   });
 
