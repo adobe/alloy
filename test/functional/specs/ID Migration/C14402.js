@@ -12,7 +12,11 @@ import {
   migrationEnabled
 } from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
-import { LEGACY_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
+import {
+  LEGACY_IDENTITY_COOKIE_NAME,
+  LEGACY_IDENTITY_COOKIE_UNESCAPED_NAME
+} from "../../helpers/constants/cookies";
+import createConsoleLogger from "../../helpers/consoleLogger";
 
 const config = compose(orgMainConfigMain, debugEnabled, migrationEnabled);
 
@@ -33,8 +37,10 @@ test.meta({
 const getDocumentCookie = ClientFunction(() => document.cookie);
 
 test("Test C14402: When ID migration is enabled and no legacy AMCV cookie is found, an AMCV cookie should be created", async () => {
+  const logger = await createConsoleLogger();
   const alloy = createAlloyProxy();
   await alloy.configure(config);
+  await logger.reset();
   await alloy.sendEvent({ renderDecisions: true });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
@@ -59,4 +65,17 @@ test("Test C14402: When ID migration is enabled and no legacy AMCV cookie is fou
   await t
     .expect(documentCookie)
     .contains(`${LEGACY_IDENTITY_COOKIE_NAME}=MCMID|${ecidPayload.id}`);
+
+  const logs = await logger.info.getMessagesSinceReset();
+  const setCookieAttributes = logs
+    .filter(message => message.length === 3 && message[1] === "Setting cookie")
+    .map(message => message[2])
+    .filter(
+      cookieSettings =>
+        cookieSettings.name === LEGACY_IDENTITY_COOKIE_UNESCAPED_NAME
+    );
+
+  await t.expect(setCookieAttributes.length).eql(1);
+  await t.expect(setCookieAttributes[0].sameSite).eql("none");
+  await t.expect(setCookieAttributes[0].secure).eql(true);
 });

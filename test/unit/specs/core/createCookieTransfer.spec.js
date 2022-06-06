@@ -19,19 +19,22 @@ describe("createCookieTransfer", () => {
   let payload;
   let cookieJar;
   let cookieTransfer;
+  const date = new Date();
+  const dateProvider = () => date;
 
   beforeEach(() => {
     payload = jasmine.createSpyObj("payload", ["mergeState"]);
     cookieJar = jasmine.createSpyObj("cookieJar", ["get", "set"]);
+    cookieTransfer = createCookieTransfer({
+      cookieJar,
+      orgId,
+      apexDomain,
+      dateProvider
+    });
   });
 
   describe("cookiesToPayload", () => {
     it("does not transfer cookies to payload if endpoint is first-party", () => {
-      cookieTransfer = createCookieTransfer({
-        cookieJar,
-        orgId,
-        apexDomain
-      });
       cookieTransfer.cookiesToPayload(payload, "edge.example.com");
       expect(payload.mergeState).toHaveBeenCalledWith({
         domain: apexDomain,
@@ -41,11 +44,6 @@ describe("createCookieTransfer", () => {
 
     it("does not set state.entries if there are no qualifying cookies", () => {
       cookieJar.get.and.returnValue({});
-      cookieTransfer = createCookieTransfer({
-        cookieJar,
-        orgId,
-        apexDomain
-      });
       cookieTransfer.cookiesToPayload(payload, endpointDomain);
       expect(payload.mergeState).toHaveBeenCalledWith({
         domain: apexDomain,
@@ -58,11 +56,6 @@ describe("createCookieTransfer", () => {
         kndctr_ABC_CustomOrg_identity: "XYZ@CustomOrg",
         ineligible_cookie: "foo",
         kndctr_ABC_CustomOrg_optIn: "all"
-      });
-      cookieTransfer = createCookieTransfer({
-        cookieJar,
-        orgId,
-        apexDomain
       });
       cookieTransfer.cookiesToPayload(payload, endpointDomain);
       expect(payload.mergeState).toHaveBeenCalledWith({
@@ -83,45 +76,86 @@ describe("createCookieTransfer", () => {
   });
 
   describe("responseToCookies", () => {
-    it("transfers state to cookies", () => {
-      cookieTransfer = createCookieTransfer({
-        cookieJar,
-        orgId,
-        apexDomain
-      });
+    let response;
+    beforeEach(() => {
+      response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
+    });
 
-      const response = {
-        getPayloadsByType() {
-          return [
-            {
-              key: "kndctr_ABC_CustomOrg_identity",
-              value: "XYZ@CustomOrg",
-              maxAge: 172800
-            },
-            {
-              key: "kndctr_ABC_CustomOrg_optIn",
-              value: "all"
-            }
-          ];
-        }
-      };
-
-      cookieTransfer.responseToCookies(response);
-
-      expect(cookieJar.set).toHaveBeenCalledWith(
-        "kndctr_ABC_CustomOrg_identity",
-        "XYZ@CustomOrg",
+    it("adds a cookie with the correct domain", () => {
+      response.getPayloadsByType.and.returnValue([
         {
-          expires: 2,
-          domain: "example.com"
+          key: "mykey",
+          value: "myvalue"
         }
-      );
+      ]);
+      cookieTransfer.responseToCookies(response);
+      expect(cookieJar.set).toHaveBeenCalledOnceWith("mykey", "myvalue", {
+        domain: "example.com"
+      });
+    });
 
+    it("adds multiple cookies", () => {
+      response.getPayloadsByType.and.returnValue([
+        {
+          key: "mykey1",
+          value: "myvalue1"
+        },
+        {
+          key: "mykey2",
+          value: "myvalue2"
+        }
+      ]);
+      cookieTransfer.responseToCookies(response);
       expect(cookieJar.set).toHaveBeenCalledWith(
-        "kndctr_ABC_CustomOrg_optIn",
-        "all",
-        { domain: "example.com" }
+        "mykey1",
+        "myvalue1",
+        jasmine.any(Object)
       );
+      expect(cookieJar.set).toHaveBeenCalledWith(
+        "mykey2",
+        "myvalue2",
+        jasmine.any(Object)
+      );
+    });
+
+    it("sets the expires attribute", () => {
+      response.getPayloadsByType.and.returnValue([
+        {
+          key: "mykey",
+          value: "myvalue",
+          maxAge: 172800 // 24 * 60 * 60 * 2
+        }
+      ]);
+      cookieTransfer.responseToCookies(response);
+      expect(cookieJar.set.calls.argsFor(0)[2].expires.getTime()).toEqual(
+        date.getTime() + 172800 * 1000
+      );
+    });
+
+    it("adds a sameSite=none cookie with secure attribute", () => {
+      response.getPayloadsByType.and.returnValue([
+        {
+          key: "mykey",
+          value: "myvalue",
+          attrs: { SameSite: "None" }
+        }
+      ]);
+      cookieTransfer.responseToCookies(response);
+      expect(cookieJar.set.calls.argsFor(0)[2].sameSite).toEqual("none");
+      expect(cookieJar.set.calls.argsFor(0)[2].secure).toEqual(true);
+    });
+
+    it("adds a sameSite=strict cookie", () => {
+      response.getPayloadsByType.and.returnValue([
+        {
+          key: "mykey",
+          value: "myvalue",
+          attrs: { SameSite: "Strict" }
+        }
+      ]);
+      cookieTransfer.responseToCookies(response);
+      expect(cookieJar.set.calls.argsFor(0)[2].sameSite).toEqual("strict");
+      expect(cookieJar.set.calls.argsFor(0)[2].secure).toBeUndefined();
     });
   });
 });
