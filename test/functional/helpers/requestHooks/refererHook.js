@@ -16,7 +16,7 @@ import { TEST_PAGE as TEST_PAGE_URL } from "../constants/url";
 export default class RefererHook extends RequestHook {
   // eslint-disable-next-line class-methods-use-this
   async onRequest(event) {
-    event.requestOptions.headers.Referer = TEST_PAGE_URL;
+    event.requestOptions.headers.referer = TEST_PAGE_URL;
   }
 
   // eslint-disable-next-line class-methods-use-this
