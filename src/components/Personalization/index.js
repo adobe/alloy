@@ -29,6 +29,7 @@ import createClickStorage from "./createClickStorage";
 import createRedirectHandler from "./createRedirectHandler";
 import createAutorenderingHandler from "./createAutoRenderingHandler";
 import createNonRenderingHandler from "./createNonRenderingHandler";
+import createApplyPropositions from "./createApplyPropositions";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
@@ -57,6 +58,9 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     executeDecisions,
     showContainers,
     collect
+  });
+  const applyPropositions = createApplyPropositions({
+    executeDecisions
   });
   const nonRenderingHandler = createNonRenderingHandler({ viewCache });
   const responseHandler = createOnResponseHandler({
@@ -92,7 +96,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     isAuthoringModeEnabled,
     mergeQuery,
     viewCache,
-    showContainers
+    showContainers,
+    applyPropositions
   });
 };
 
