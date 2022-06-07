@@ -1,5 +1,6 @@
 import { anything, objectOf, arrayOf } from "../../utils/validation";
-import { EMPTY_PROPOSITIONS } from "./createApplyPropositions";
+
+export const EMPTY_PROPOSITIONS = { propositions: [] };
 
 export default ({ logger, options }) => {
   const applyPropositionsOptionsValidator = objectOf({

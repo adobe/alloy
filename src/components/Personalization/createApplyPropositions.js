@@ -14,8 +14,8 @@ import composePersonalizationResultingObject from "./utils/composePersonalizatio
 import { isNonEmptyArray, isObject } from "../../utils";
 import { DOM_ACTION, HTML_CONTENT_ITEM } from "./constants/schema";
 import PAGE_WIDE_SCOPE from "./constants/scope";
+import { EMPTY_PROPOSITIONS } from "./validateApplyPropositionsOptions";
 
-export const EMPTY_PROPOSITIONS = { propositions: [] };
 export const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
 
 export default ({ executeDecisions }) => {
@@ -81,6 +81,9 @@ export default ({ executeDecisions }) => {
   };
 
   return ({ propositions, metadata = {} }) => {
-    return applyPropositions({ propositions, metadata });
+    if (isNonEmptyArray(propositions)) {
+      return applyPropositions({ propositions, metadata });
+    }
+    return Promise.resolve(EMPTY_PROPOSITIONS);
   };
 };

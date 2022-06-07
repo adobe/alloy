@@ -11,8 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import "jasmine-expect";
-import validateApplyPropositionsOptions from "../../../../../src/components/Personalization/validateApplyPropositionsOptions";
-import { EMPTY_PROPOSITIONS } from "../../../../../src/components/Personalization/createApplyPropositions";
+import validateApplyPropositionsOptions, {
+  EMPTY_PROPOSITIONS
+} from "../../../../../src/components/Personalization/validateApplyPropositionsOptions";
 
 const PROPOSITIONS = [
   {
