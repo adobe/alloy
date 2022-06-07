@@ -116,9 +116,6 @@ export default ({
         })
         .then(() => {
           payload.addEvent(event);
-          return consent.awaitConsent();
-        })
-        .then(() => {
           return applyEdgeResponseHandles({
             request,
             handles,
