@@ -17,12 +17,10 @@ describe("LibraryInfo", () => {
   it("returns library, command, and config information", () => {
     expect(createLibraryInfo(toolsMock).commands.getLibraryInfo.run()).toEqual({
       libraryInfo: {
-        version: `__VERSION__`
-      },
-      configInfo: {
-        foo: "bar"
-      },
-      commandInfo: ["bar"]
+        version: `__VERSION__`,
+        configs: { foo: "bar" },
+        commands: ["bar"]
+      }
     });
   });
 });
