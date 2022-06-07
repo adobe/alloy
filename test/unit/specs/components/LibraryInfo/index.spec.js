@@ -19,7 +19,7 @@ describe("LibraryInfo", () => {
       libraryInfo: {
         version: `__VERSION__`,
         configs: { foo: "bar" },
-        commands: ["bar"]
+        commands: ["bar", "configure", "setDebug"]
       }
     });
   });

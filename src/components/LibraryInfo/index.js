@@ -13,6 +13,8 @@ governing permissions and limitations under the License.
 import libraryVersion from "../../constants/libraryVersion";
 
 const createLibraryInfo = ({ config, componentRegistry }) => {
+  const coreCommandsArr = componentRegistry.getCommandNames();
+  coreCommandsArr.push("configure", "setDebug");
   return {
     commands: {
       getLibraryInfo: {
@@ -21,7 +23,7 @@ const createLibraryInfo = ({ config, componentRegistry }) => {
             libraryInfo: {
               version: libraryVersion,
               configs: config,
-              commands: componentRegistry.getCommandNames().sort()
+              commands: coreCommandsArr.sort()
             }
           };
         }
