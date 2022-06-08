@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { cookieJar, noop } from "../../utils";
+import { noop } from "../../utils";
 
 const createResultLogMessage = (urlDestination, success) => {
   return `URL destination ${success ? "succeeded" : "failed"}: ${
@@ -18,40 +18,51 @@ const createResultLogMessage = (urlDestination, success) => {
   }`;
 };
 
-const processUrls = (fireReferrerHideableImage, logger, destinations) => {
-  const urlDestinations = destinations.filter(dest => dest.type === "url");
+export default ({
+  fireReferrerHideableImage,
+  logger,
+  cookieJar,
+  isPageSsl
+}) => {
+  const extraCookieOptions = isPageSsl
+    ? { sameSite: "none", secure: true }
+    : {};
+  const processCookies = destinations => {
+    const cookieDestinations = destinations.filter(
+      dest => dest.type === "cookie"
+    );
 
-  return Promise.all(
-    urlDestinations.map(urlDestination => {
-      return fireReferrerHideableImage(urlDestination.spec)
-        .then(() => {
-          logger.info(createResultLogMessage(urlDestination, true));
-        })
-        .catch(() => {
-          // We intentionally do not throw an error if destinations fail. We
-          // consider it a non-critical failure and therefore do not want it to
-          // reject the promise handed back to the customer.
-          logger.error(createResultLogMessage(urlDestination, false));
-        });
-    })
-  ).then(noop);
-};
-
-const processCookies = destinations => {
-  const cookieDestinations = destinations.filter(
-    dest => dest.type === "cookie"
-  );
-
-  cookieDestinations.forEach(dest => {
-    const { name, value, domain, ttlDays } = dest.spec;
-    cookieJar.set(name, value || "", {
-      domain: domain || "",
-      expires: ttlDays || 10 // days
+    cookieDestinations.forEach(dest => {
+      const { name, value, domain, ttlDays } = dest.spec;
+      cookieJar.set(name, value || "", {
+        domain: domain || "",
+        expires: ttlDays || 10, // days
+        ...extraCookieOptions
+      });
     });
-  });
-};
+  };
 
-export default ({ fireReferrerHideableImage, logger }) => destinations => {
-  processCookies(destinations);
-  return processUrls(fireReferrerHideableImage, logger, destinations);
+  const processUrls = destinations => {
+    const urlDestinations = destinations.filter(dest => dest.type === "url");
+
+    return Promise.all(
+      urlDestinations.map(urlDestination => {
+        return fireReferrerHideableImage(urlDestination.spec)
+          .then(() => {
+            logger.info(createResultLogMessage(urlDestination, true));
+          })
+          .catch(() => {
+            // We intentionally do not throw an error if destinations fail. We
+            // consider it a non-critical failure and therefore do not want it to
+            // reject the promise handed back to the customer.
+            logger.error(createResultLogMessage(urlDestination, false));
+          });
+      })
+    ).then(noop);
+  };
+
+  return destinations => {
+    processCookies(destinations);
+    return processUrls(destinations);
+  };
 };

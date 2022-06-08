@@ -12,7 +12,9 @@ governing permissions and limitations under the License.
 
 import {
   areThirdPartyCookiesSupportedByDefault,
-  injectDoesIdentityCookieExist
+  injectDoesIdentityCookieExist,
+  createLoggingCookieJar,
+  cookieJar
 } from "../../utils";
 import injectProcessIdSyncs from "./injectProcessIdSyncs";
 import configValidators from "./configValidators";
@@ -40,7 +42,8 @@ const createIdentity = ({
   logger,
   consent,
   fireReferrerHideableImage,
-  sendEdgeNetworkRequest
+  sendEdgeNetworkRequest,
+  apexDomain
 }) => {
   const { orgId, thirdPartyCookiesEnabled } = config;
 
@@ -49,9 +52,13 @@ const createIdentity = ({
     orgId,
     awaitVisitorOptIn
   });
+  const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
   const legacyIdentity = createLegacyIdentity({
     config,
-    getEcidFromVisitor
+    getEcidFromVisitor,
+    apexDomain,
+    cookieJar: loggingCookieJar,
+    isPageSsl: window.location.protocol === "https:"
   });
   const doesIdentityCookieExist = injectDoesIdentityCookieExist({ orgId });
   const getIdentity = createGetIdentity({

@@ -27,7 +27,7 @@ export default ({ locationSearch, dateProvider, orgId, logger }) => payload => {
   // We are using MCMID and MCORGID to be compatible with Visitor.
   const ts = parseInt(properties.TS, 10);
   const mcmid = properties.MCMID;
-  const mcorgid = properties.MCORGID;
+  const mcorgid = decodeURIComponent(properties.MCORGID);
 
   if (
     // When TS is not specified or not a number, the following inequality returns false.

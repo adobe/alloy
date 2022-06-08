@@ -54,10 +54,32 @@ const createConsoleLogger = async () => {
   const messagesWhenCreated = await t.getBrowserConsoleMessages();
   updateCursorByLogLevel(messagesWhenCreated);
 
+  // testCafe just calls toString on each parameter to the console log, so when
+  // logging objects, it just shows [object Object]. So this JSON stringifys the
+  // args and logs that.
+  await t.eval(
+    () => {
+      logLevels.forEach(logLevel => {
+        const original = window.console[logLevel];
+        window.console[logLevel] = (...args) => original(JSON.stringify(args));
+      });
+    },
+    { dependencies: { logLevels } }
+  );
+
   const getMessagesSinceReset = async logLevel => {
     const consoleMessages = await t.getBrowserConsoleMessages();
     const messagesForLevel = consoleMessages[logLevel];
-    return messagesForLevel.slice(cursorByLogLevel[logLevel]);
+    return messagesForLevel
+      .slice(cursorByLogLevel[logLevel])
+      .map(message => JSON.parse(message));
+  };
+
+  const getMessagesSinceResetAsStrings = async logLevel => {
+    const messages = await getMessagesSinceReset(logLevel);
+    return messages.map(message =>
+      message.map(part => part.toString()).join(" ")
+    );
   };
 
   const reset = async () => {
@@ -66,7 +88,7 @@ const createConsoleLogger = async () => {
   };
 
   const expectMessageMatching = async (logLevel, messageRegex) => {
-    const messages = await getMessagesSinceReset(logLevel);
+    const messages = await getMessagesSinceResetAsStrings(logLevel);
     await t
       .expect(containsMessageMatchingRegex(messages, messageRegex))
       .ok(
@@ -77,7 +99,7 @@ const createConsoleLogger = async () => {
   };
 
   const expectNoMessageMatching = async (logLevel, messageRegex) => {
-    const messages = await getMessagesSinceReset(logLevel);
+    const messages = await getMessagesSinceResetAsStrings(logLevel);
     await t
       .expect(containsMessageMatchingRegex(messages, messageRegex))
       .notOk(
@@ -86,7 +108,7 @@ const createConsoleLogger = async () => {
   };
 
   const expectNoMessages = async logLevel => {
-    const messages = await getMessagesSinceReset(logLevel);
+    const messages = await getMessagesSinceResetAsStrings(logLevel);
     await t
       .expect(messages.length)
       .notOk(

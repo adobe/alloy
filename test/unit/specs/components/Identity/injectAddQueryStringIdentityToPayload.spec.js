@@ -152,5 +152,16 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
         );
       });
     });
+
+    it("reads an identity from visitor", () => {
+      locationSearch =
+        "?adobe_mc=MCMID%3D06387190804794960331430905673364101813%7CMCORGID%3D5BFE274A5F6980A50A495C08%2540AdobeOrg%7CTS%3D1653516560";
+      orgId = "5BFE274A5F6980A50A495C08@AdobeOrg";
+      date = new Date(1653516560 * 1000);
+      run();
+      expect(payload.addIdentity).toHaveBeenCalledOnceWith("ECID", {
+        id: "06387190804794960331430905673364101813"
+      });
+    });
   });
 });
