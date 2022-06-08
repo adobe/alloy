@@ -12,8 +12,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy";
 const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled);
 
 createFixture({
-  title: "C2589: getLibraryInfo command returns library information",
-  includeAlloyLibrary: false
+  title: "C2589: getLibraryInfo command returns library information"
 });
 
 test.meta({
@@ -23,8 +22,9 @@ test.meta({
 });
 
 test("C2589: getLibraryInfo command returns library information.", async () => {
+  const { version: currentVersion } = process.env.npm_package_version;
   const alloy = createAlloyProxy();
   await alloy.configureAsync(debugEnabledConfig);
   const libraryInfo = await alloy.getLibraryInfoAsync();
-  await t.expect(libraryInfo.version).eql(2);
+  await t.expect(libraryInfo.version).eql(currentVersion);
 });

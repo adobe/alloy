@@ -11,10 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import { isFunction, isObject, values } from "../utils";
+import { CONFIGURE, SET_DEBUG } from "../constants/libraryInfo";
 
 const coreCommands = {
-  CONFIGURE: "configure",
-  SET_DEBUG: "setDebug"
+  CONFIGURE,
+  SET_DEBUG
 };
 
 export default ({
@@ -29,7 +30,7 @@ export default ({
   const getExecutor = (commandName, options) => {
     let executor;
 
-    if (commandName === coreCommands.CONFIGURE) {
+    if (commandName === CONFIGURE) {
       if (configurePromise) {
         throw new Error(
           "The library has already been configured and may only be configured once."
@@ -47,7 +48,7 @@ export default ({
           `The library must be configured first. Please do so by executing the configure command.`
         );
       }
-      if (commandName === coreCommands.SET_DEBUG) {
+      if (commandName === SET_DEBUG) {
         executor = () => setDebugCommand(options);
       } else {
         executor = () => {

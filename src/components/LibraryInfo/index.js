@@ -11,10 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import libraryVersion from "../../constants/libraryVersion";
+import { CONFIGURE, SET_DEBUG } from "../../constants/libraryInfo";
 
 const createLibraryInfo = ({ config, componentRegistry }) => {
-  const coreCommandsArr = componentRegistry.getCommandNames();
-  coreCommandsArr.push("configure", "setDebug");
+  const allCommands = componentRegistry.getCommandNames();
+  allCommands.push(CONFIGURE, SET_DEBUG);
   return {
     commands: {
       getLibraryInfo: {
@@ -23,7 +24,7 @@ const createLibraryInfo = ({ config, componentRegistry }) => {
             libraryInfo: {
               version: libraryVersion,
               configs: config,
-              commands: coreCommandsArr.sort()
+              commands: allCommands.sort()
             }
           };
         }
