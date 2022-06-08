@@ -56,7 +56,8 @@ describe("createCookieTransfer", () => {
         kndctr_ABC_CustomOrg_identity: "XYZ@CustomOrg",
         ineligible_cookie: "foo",
         kndctr_ABC_CustomOrg_optIn: "all",
-        at_qa_mode: "95ad54cf-058b-4a6d-9c3a-3729ca4c8aec"
+        at_qa_mode:
+          '{"token":"QATokenString","listedActivitiesOnly":true,"evaluateAsTrueAudienceIds":["2480042"],"previewIndexes":[{"activityIndex":1,"experienceIndex":1}]}'
       });
       cookieTransfer.cookiesToPayload(payload, endpointDomain);
       expect(payload.mergeState).toHaveBeenCalledWith({
@@ -73,7 +74,8 @@ describe("createCookieTransfer", () => {
           },
           {
             key: "at_qa_mode",
-            value: "95ad54cf-058b-4a6d-9c3a-3729ca4c8aec"
+            value:
+              '{"token":"QATokenString","listedActivitiesOnly":true,"evaluateAsTrueAudienceIds":["2480042"],"previewIndexes":[{"activityIndex":1,"experienceIndex":1}]}'
           }
         ]
       });
