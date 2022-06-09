@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import libraryVersion from "../../constants/libraryVersion";
-import { CONFIGURE, SET_DEBUG } from "../../constants/libraryInfo";
+import { CONFIGURE, SET_DEBUG } from "../../constants/coreCommands";
 
 const createLibraryInfo = ({ config, componentRegistry }) => {
   const allCommands = componentRegistry.getCommandNames();

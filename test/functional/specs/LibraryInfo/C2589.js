@@ -22,9 +22,36 @@ test.meta({
 });
 
 test("C2589: getLibraryInfo command returns library information.", async () => {
-  const { version: currentVersion } = process.env.npm_package_version;
+  const currentVersion = process.env.npm_package_version;
+  const currentCommand = [
+    "appendIdentityToUrl",
+    "configure",
+    "createEventMergeId",
+    "getIdentity",
+    "sendEvent",
+    "setConsent",
+    "setDebug"
+  ];
+  const currentConfigs = {
+    clickCollectionEnabled: true,
+    context: ["web", "device", "environment", "placeContext"],
+    debugEnabled: true,
+    defaultConsent: "in",
+    downloadLinkQualifier:
+      "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$",
+    edgeConfigId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
+    edgeDomain: "edge.adobedc.net",
+    idMigrationEnabled: true,
+    onBeforeEventSend: undefined,
+    orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
+    thirdPartyCookiesEnabled: true
+  };
+
   const alloy = createAlloyProxy();
-  await alloy.configureAsync(debugEnabledConfig);
-  const libraryInfo = await alloy.getLibraryInfoAsync();
-  await t.expect(libraryInfo.version).eql(currentVersion);
+  await alloy.configure(debugEnabledConfig);
+  const libraryInfo = await alloy.getLibraryInfo();
+  delete libraryInfo.libraryInfo.configs.edgeBasePath;
+  await t.expect(libraryInfo.libraryInfo.version).eql(currentVersion);
+  await t.expect(libraryInfo.libraryInfo.commands).eql(currentCommand);
+  await t.expect(libraryInfo.libraryInfo.configs).eql(currentConfigs);
 });

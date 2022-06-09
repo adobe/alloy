@@ -10,13 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isFunction, isObject, values } from "../utils";
-import { CONFIGURE, SET_DEBUG } from "../constants/libraryInfo";
-
-const coreCommands = {
-  CONFIGURE,
-  SET_DEBUG
-};
+import { isFunction, isObject } from "../utils";
+import { CONFIGURE, SET_DEBUG } from "../constants/coreCommands";
 
 export default ({
   logger,
@@ -56,7 +51,7 @@ export default ({
             componentRegistry => {
               const command = componentRegistry.getCommand(commandName);
               if (!command || !isFunction(command.run)) {
-                const commandNames = values(coreCommands)
+                const commandNames = [CONFIGURE, SET_DEBUG]
                   .concat(componentRegistry.getCommandNames())
                   .join(", ");
                 throw new Error(
