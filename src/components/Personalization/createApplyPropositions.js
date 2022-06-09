@@ -19,7 +19,8 @@ import { EMPTY_PROPOSITIONS } from "./validateApplyPropositionsOptions";
 export const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
 
 export default ({ executeDecisions }) => {
-  const filterItemsPredicate = item => SUPPORTED_SCHEMAS.includes(item.schema);
+  const filterItemsPredicate = item =>
+    SUPPORTED_SCHEMAS.indexOf(item.schema) > -1;
 
   const updatePropositionItems = ({ items, metadataForScope }) => {
     return items

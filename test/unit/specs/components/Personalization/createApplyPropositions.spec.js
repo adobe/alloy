@@ -214,7 +214,7 @@ describe("Personalization::createApplyPropositions", () => {
       executedPropositions.forEach(proposition => {
         expect(proposition.items.length).toEqual(1);
         proposition.items.forEach(item => {
-          expect(expectedItemIds.includes(item.id));
+          expect(expectedItemIds.indexOf(item.id) > -1);
         });
       });
     });
