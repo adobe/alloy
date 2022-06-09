@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy",
-  "version": "2.11.0-beta.0",
+  "version": "2.11.0-beta.1",
   "description": "Adobe Experience Platform Web SDK",
   "main": "libEs5/index.js",
   "module": "libEs6/index.js",
@@ -64,7 +64,7 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "@adobe/alloy": "^2.11.0-beta.0",
+    "@adobe/alloy": "^2.11.0-beta.1",
     "@babel/cli": "^7.12.8",
     "@babel/core": "^7.2.2",
     "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
