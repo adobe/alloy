@@ -235,7 +235,7 @@ describe("Personalization::createApplyPropositions", () => {
       let numReturnedPropositions = 0;
       expect(originalPropositions).toEqual(MIXED_PROPOSITIONS);
       result.propositions.forEach(proposition => {
-        const original = originalPropositions.find(
+        const [original] = originalPropositions.filter(
           originalProposition => originalProposition.id === proposition.id
         );
         if (original) {
