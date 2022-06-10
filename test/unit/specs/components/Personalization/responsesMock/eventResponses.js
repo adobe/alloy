@@ -261,3 +261,105 @@ export const MERGED_METRIC_DECISIONS = [
     ]
   }
 ];
+
+export const MIXED_PROPOSITIONS = [
+  {
+    id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn0=",
+    scope: "home",
+    items: [
+      {
+        id: "442358",
+        schema: "https://ns.adobe.com/personalization/dom-action",
+        data: {
+          type: "click",
+          format: "application/vnd.adobe.target.dom-action",
+          selector: "#root"
+        }
+      }
+    ]
+  },
+  {
+    id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
+    scope: "home",
+    items: [
+      {
+        id: "442359",
+        schema: "https://ns.adobe.com/personalization/html-content-item",
+        data: {
+          content: "<p>Some custom content for the home page</p>",
+          format: "text/html",
+          id: "1202448"
+        }
+      }
+    ]
+  },
+  {
+    id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
+    scope: "home",
+    items: [
+      {
+        id: "442360",
+        schema: "https://ns.adobe.com/personalization/json-content-item",
+        data: {
+          content: "{'field1': 'custom content'}",
+          format: "text/javascript",
+          id: "1202449"
+        }
+      }
+    ],
+    renderAttempted: false
+  },
+  {
+    id: "AT:eyJhY3Rpdml0eUlkIjoiMTQxNjY0IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
+    scope: "home",
+    items: [
+      {
+        id: "xcore:personalized-offer:134ce877e13a04ca",
+        etag: "4",
+        schema:
+          "https://ns.adobe.com/experience/offer-management/content-component-html",
+        data: {
+          id: "xcore:personalized-offer:134ce877e13a04ca",
+          format: "text/html",
+          language: ["en-us"],
+          content: "<p>An html offer from Offer Decisioning</p>",
+          characteristics: {
+            testing: "true"
+          }
+        }
+      }
+    ]
+  },
+  {
+    id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
+    scope: "__view__",
+    renderAttempted: true,
+    items: [
+      {
+        id: "442358",
+        schema: "https://ns.adobe.com/personalization/dom-action",
+        data: {
+          type: "click",
+          format: "application/vnd.adobe.target.dom-action",
+          selector: "#root"
+        }
+      }
+    ]
+  },
+  {
+    id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn2=",
+    scope: "__view__",
+    renderAttempted: false,
+    items: [
+      {
+        id: "442379",
+        schema: "https://ns.adobe.com/personalization/dom-action",
+        data: {
+          type: "click",
+          format: "application/vnd.adobe.target.dom-action",
+          selector: "#root"
+        }
+      }
+    ]
+  }
+];

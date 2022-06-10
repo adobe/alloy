@@ -21,6 +21,12 @@ export default () => {
       content.identityMap[namespaceCode] =
         content.identityMap[namespaceCode] || [];
       content.identityMap[namespaceCode].push(identity);
+    },
+    hasIdentity: namespaceCode => {
+      return (
+        (content.identityMap && content.identityMap[namespaceCode]) !==
+        undefined
+      );
     }
   });
 

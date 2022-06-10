@@ -88,7 +88,9 @@ const commands = [
   "setConsent",
   "getIdentity",
   "setDebug",
-  "getLibraryInfo"
+  "getLibraryInfo",
+  "appendIdentityToUrl",
+  "applyPropositions"
 ];
 
 export default (instanceName = "alloy") => {

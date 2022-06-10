@@ -15,12 +15,11 @@ import {
   getNamespacedCookieName,
   isNamespacedCookieName
 } from "../utils";
-import convertTimes, { DAY, SECOND } from "../utils/convertTimes";
 import { EDGE_PATH } from "../constants/cookieNameKey";
 
 const STATE_STORE_HANDLE_TYPE = "state:store";
 
-export default ({ cookieJar, orgId, apexDomain }) => {
+export default ({ cookieJar, orgId, apexDomain, dateProvider }) => {
   return {
     getPathFromCookie: () =>
       cookieJar.get(getNamespacedCookieName(orgId, EDGE_PATH)),
@@ -76,9 +75,24 @@ export default ({ cookieJar, orgId, apexDomain }) => {
       response.getPayloadsByType(STATE_STORE_HANDLE_TYPE).forEach(stateItem => {
         const options = { domain: apexDomain };
 
+        const sameSite =
+          stateItem.attrs &&
+          stateItem.attrs.SameSite &&
+          stateItem.attrs.SameSite.toLowerCase();
+
         if (stateItem.maxAge !== undefined) {
-          // cookieJar expects "expires" in days
-          options.expires = convertTimes(SECOND, DAY, stateItem.maxAge);
+          // cookieJar expects "expires" as a date object
+          options.expires = new Date(
+            dateProvider().getTime() + stateItem.maxAge * 1000
+          );
+        }
+        if (sameSite !== undefined) {
+          options.sameSite = sameSite;
+        }
+        // When sameSite is set to none, the secure flag must be set.
+        // Experience edge will not set the secure flag in these cases.
+        if (sameSite === "none") {
+          options.secure = true;
         }
 
         cookieJar.set(stateItem.key, stateItem.value, options);

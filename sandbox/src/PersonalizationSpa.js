@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Switch, Route, useRouteMatch, Link } from "react-router-dom";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
 const Products = () => {
-  useSendPageViewEvent({ viewName: "products" });
+  usePropositions({ viewName: "products" });
   return (
     <div>
       <h2>Products</h2>
@@ -21,7 +21,7 @@ const Products = () => {
 };
 
 const Cart = () => {
-  useSendPageViewEvent({ viewName: "cart" });
+  usePropositions({ viewName: "cart" });
   return (
     <div>
       <h2>Cart</h2>
@@ -37,7 +37,7 @@ const Cart = () => {
   );
 };
 const Promotion = () => {
-  useSendPageViewEvent({ viewName: "promotion" });
+  usePropositions({ viewName: "promotion" });
   return (
     <div>
       <h2>Cart</h2>
@@ -51,6 +51,18 @@ const Promotion = () => {
       </div>
     </div>
   );
+};
+
+const usePropositions = ({ viewName }) => {
+  const [propositions, setPropositions] = useState(undefined);
+  useSendPageViewEvent({ viewName, setPropositions });
+  useEffect(() => {
+    if (propositions) {
+      window.alloy("applyPropositions", {
+        propositions
+      });
+    }
+  });
 };
 
 export default function Personalization() {

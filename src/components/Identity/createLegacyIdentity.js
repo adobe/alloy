@@ -10,16 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { getApexDomain, cookieJar } from "../../utils";
-
-// TODO: We are already retrieving the apex in core; find a way to reuse it.
-// Maybe default the domain in the cookieJar to apex while allowing overrides.
-const apexDomain = getApexDomain(window, cookieJar);
-
 /**
  * Handles migration of ECID to and from Visitor.js.
  */
-export default ({ config, getEcidFromVisitor }) => {
+export default ({
+  config,
+  getEcidFromVisitor,
+  apexDomain,
+  isPageSsl,
+  cookieJar
+}) => {
   const { idMigrationEnabled, orgId } = config;
   const amcvCookieName = `AMCV_${orgId}`;
 
@@ -55,11 +55,16 @@ export default ({ config, getEcidFromVisitor }) => {
       return Promise.resolve();
     },
     setEcid(ecid) {
-      if (idMigrationEnabled && !cookieJar.get(amcvCookieName)) {
+      if (idMigrationEnabled && getEcidFromLegacyCookies() !== ecid) {
+        const extraOptions = isPageSsl
+          ? { sameSite: "none", secure: true }
+          : {};
+
         cookieJar.set(amcvCookieName, `MCMID|${ecid}`, {
           domain: apexDomain,
           // Without `expires` this will be a session cookie.
-          expires: 390 // days, or 13 months.
+          expires: 390, // days, or 13 months.
+          ...extraOptions
         });
       }
     }

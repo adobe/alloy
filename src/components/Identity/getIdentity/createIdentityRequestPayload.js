@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import {
   createAddIdentity,
+  createHasIdentity,
   createRequestPayload
 } from "../../../utils/request";
 
@@ -25,6 +26,7 @@ export default namespaces => {
   };
   return createRequestPayload({
     content,
-    addIdentity: createAddIdentity(content)
+    addIdentity: createAddIdentity(content),
+    hasIdentity: createHasIdentity(content)
   });
 };

@@ -65,9 +65,9 @@ describe("Personalization::DOM::parseSelector", () => {
     );
 
     expect(result[0]).toEqual({ sel: "HTML > BODY > DIV.wrapper", eq: 0 });
-    expect(result[1]).toEqual({ sel: "HEADER.header", eq: 0 });
-    expect(result[2]).toEqual({ sel: "DIV.pagehead", eq: 0 });
-    expect(result[3]).toEqual({ sel: "P:nth-of-type(1)" });
+    expect(result[1]).toEqual({ sel: " > HEADER.header", eq: 0 });
+    expect(result[2]).toEqual({ sel: " > DIV.pagehead", eq: 0 });
+    expect(result[3]).toEqual({ sel: " > P:nth-of-type(1)" });
   });
 });
 

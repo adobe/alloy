@@ -63,14 +63,16 @@ const defineCustomElements = () => {
 };
 
 describe("Utils::DOM::selectNodesWithShadow", () => {
+  const CLEANUP_CLASS = "cleanup";
+
   afterEach(() => {
-    selectNodes(".shadow").forEach(removeNode);
+    selectNodes(`.${CLEANUP_CLASS}`).forEach(removeNode);
   });
 
   it("should select when no shadow", () => {
     appendNode(
       document.body,
-      createNode("DIV", { id: "noShadow", class: "shadow" })
+      createNode("DIV", { id: "noShadow", class: CLEANUP_CLASS })
     );
 
     const result = selectNodes("#noShadow");
@@ -95,7 +97,11 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
 
     appendNode(
       document.body,
-      createNode("DIV", { id: "abc", class: "shadow" }, { innerHTML: content })
+      createNode(
+        "DIV",
+        { id: "abc", class: CLEANUP_CLASS },
+        { innerHTML: content }
+      )
     );
 
     const result = selectNodesWithEq(
@@ -126,7 +132,11 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
 
     appendNode(
       document.body,
-      createNode("DIV", { id: "abc", class: "shadow" }, { innerHTML: content })
+      createNode(
+        "DIV",
+        { id: "abc", class: CLEANUP_CLASS },
+        { innerHTML: content }
+      )
     );
 
     const result = selectNodesWithEq(
@@ -135,5 +145,29 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
 
     expect(result[0].tagName).toEqual("LABEL");
     expect(result[0].textContent).toEqual("Buy Now");
+  });
+
+  it("should respect child selectors", () => {
+    const content = `
+      <div>
+        <div>
+          <span id="wrong"></span>
+        </div>
+        <span id="right"></span>
+      </div>
+    `;
+
+    const node = createNode(
+      "DIV",
+      { id: "target", class: CLEANUP_CLASS },
+      { innerHTML: content }
+    );
+
+    appendNode(document.body, node);
+
+    const result = selectNodesWithEq("#target > div:eq(0) > span");
+
+    expect(result[0].tagName).toEqual("SPAN");
+    expect(result[0].id).toEqual("right");
   });
 });
