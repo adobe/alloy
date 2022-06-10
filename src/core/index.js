@@ -147,6 +147,7 @@ export const createExecuteCommand = ({
         const componentLogger = createComponentLogger(componentName);
         return {
           config,
+          componentRegistry,
           consent,
           eventManager,
           fireReferrerHideableImage,

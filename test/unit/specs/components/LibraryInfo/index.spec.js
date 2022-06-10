@@ -1,10 +1,25 @@
 import createLibraryInfo from "../../../../../src/components/LibraryInfo";
 
 describe("LibraryInfo", () => {
-  it("returns library information", () => {
-    expect(createLibraryInfo().commands.getLibraryInfo.run()).toEqual({
+  let toolsMock;
+
+  beforeEach(() => {
+    toolsMock = {
+      config: {
+        foo: "bar"
+      },
+      componentRegistry: {
+        getCommandNames: () => ["bar"]
+      }
+    };
+  });
+
+  it("returns library, command, and config information", () => {
+    expect(createLibraryInfo(toolsMock).commands.getLibraryInfo.run()).toEqual({
       libraryInfo: {
-        version: `__VERSION__`
+        version: `__VERSION__`,
+        configs: { foo: "bar" },
+        commands: ["bar", "configure", "setDebug"]
       }
     });
   });
