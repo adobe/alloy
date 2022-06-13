@@ -16,6 +16,8 @@ import {
   isDownloadLink,
   isExitLink
 } from "./utils";
+import getLinkName from "./getLinkName";
+import getLinkRegion from "./getLinkRegion";
 
 const determineLinkType = (window, config, linkUrl, clickedObj) => {
   let linkType = "other";
@@ -39,7 +41,13 @@ const findSupportedAnchorElement = targetElement => {
 };
 
 export default (window, config) => {
+  const linkClickCollectionEnabled = config.linkClickCollectionEnabled;
+
   return (event, targetElement) => {
+    if (!linkClickCollectionEnabled) {
+      return;
+    }
+
     // Search parent elements for an anchor element
     // TODO: Replace with generic DOM tool that can fetch configured properties
     const anchorElement = findSupportedAnchorElement(targetElement);
@@ -53,8 +61,11 @@ export default (window, config) => {
     }
 
     const linkType = determineLinkType(window, config, linkUrl, anchorElement);
-    // TODO: Update link name from the clicked element context
-    const linkName = "Link Click";
+    // TODO: The user provided link click function needs to be called here
+    const linkRegion = getLinkRegion(anchorElement);
+    const linkName = getLinkName(anchorElement);
+    // console.log("Link name: ", linkName);
+    // console.log("Link region: ", linkRegion);
 
     event.documentMayUnload();
     event.mergeXdm({
@@ -62,6 +73,7 @@ export default (window, config) => {
       web: {
         webInteraction: {
           name: linkName,
+          region: linkRegion,
           type: linkType,
           URL: linkUrl,
           linkClicks: {
