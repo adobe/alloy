@@ -37,10 +37,10 @@ export default () => {
         padding: "0",
         opacity: 0.4,
         margin: "4px",
-        pointerEvents: "none",
         position: "absolute",
         right: 0,
-        size: "0.8rem"
+        size: "0.8rem",
+        userSelect: "none"
       }}
     >
       {alloyVersion}
