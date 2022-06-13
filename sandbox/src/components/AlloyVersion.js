@@ -27,7 +27,7 @@ const useAlloyVersion = (instanceName = "alloy") => {
  * Display the Alloy version in the
  */
 export default () => {
-  const alloyVersion = useAlloyVersion();
+  const alloyVersion = useAlloyVersion(window.__alloyNS[0]);
   return (
     <div
       style={{
