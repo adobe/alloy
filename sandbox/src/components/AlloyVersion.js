@@ -36,7 +36,7 @@ export default () => {
         margin: "4px",
         padding: "0",
         opacity: 0.4,
-        position: "absolute",
+        position: "fixed",
         right: 0,
         size: "0.8rem",
         userSelect: "none"
