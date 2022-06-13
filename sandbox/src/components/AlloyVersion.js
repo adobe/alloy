@@ -33,10 +33,9 @@ export default () => {
       style={{
         bottom: 0,
         fontFamily: "monospace",
-        margin: "0",
+        margin: "4px",
         padding: "0",
         opacity: 0.4,
-        margin: "4px",
         position: "absolute",
         right: 0,
         size: "0.8rem",
