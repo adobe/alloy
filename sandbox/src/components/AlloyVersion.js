@@ -24,7 +24,7 @@ const useAlloyVersion = (instanceName = "alloy") => {
 };
 
 /**
- * Display the Alloy version in the
+ * Display the Alloy version in a footer in the bottom right.
  */
 export default () => {
   const alloyVersion = useAlloyVersion(window.__alloyNS[0]);
