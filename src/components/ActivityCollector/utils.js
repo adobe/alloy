@@ -63,10 +63,27 @@ const isExitLink = (window, linkUrl) => {
   return true;
 };
 
+/**
+ * Reduces repeated whitespace within a string. Whitespace surrounding the string
+ * is trimmed and any occurrence of whitespace within the string is replaced with
+ * a single space.
+ * @param {string} str String to be formatted.
+ * @returns {string} Formatted string.
+ */
+const truncateWhiteSpace = str => {
+  return str && str.replace(/\s+/g, " ").trim();
+};
+
+const isEmptyString = str => {
+  return !str || str.length === 0;
+};
+
 export {
   urlStartsWithScheme,
   getAbsoluteUrlFromAnchorElement,
   isSupportedAnchorElement,
   isDownloadLink,
-  isExitLink
+  isEmptyString,
+  isExitLink,
+  truncateWhiteSpace
 };

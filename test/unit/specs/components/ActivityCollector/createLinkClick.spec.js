@@ -16,7 +16,8 @@ import configValidators from "../../../../../src/components/ActivityCollector/co
 
 describe("ActivityCollector::createLinkClick", () => {
   const config = {
-    downloadLinkQualifier: configValidators.downloadLinkQualifier.defaultValue
+    downloadLinkQualifier: configValidators.downloadLinkQualifier.defaultValue,
+    linkClickCollectionEnabled: true
   };
   const mockWindow = {
     location: {
