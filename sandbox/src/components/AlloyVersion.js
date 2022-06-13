@@ -19,7 +19,7 @@ const useAlloyVersion = (instanceName = "alloy") => {
         setVersion(version);
       }
     );
-  }, []);
+  }, [instanceName]);
   return version;
 };
 
