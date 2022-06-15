@@ -13,19 +13,35 @@ governing permissions and limitations under the License.
 import libraryVersion from "../../constants/libraryVersion";
 import { CONFIGURE, SET_DEBUG } from "../../constants/coreCommands";
 
+const prepareLibraryInfo = ({ config, componentRegistry }) => {
+  const allCommands = [
+    ...componentRegistry.getCommandNames(),
+    CONFIGURE,
+    SET_DEBUG
+  ].sort();
+  const resultConfig = { ...config };
+  Object.keys(config).forEach(key => {
+    const value = config[key];
+    if (typeof value !== "function") {
+      return;
+    }
+    resultConfig[key] = value.toString();
+  });
+  return {
+    version: libraryVersion,
+    configs: resultConfig,
+    commands: allCommands
+  };
+};
+
 const createLibraryInfo = ({ config, componentRegistry }) => {
-  const allCommands = componentRegistry.getCommandNames();
-  allCommands.push(CONFIGURE, SET_DEBUG);
+  const libraryInfo = prepareLibraryInfo({ config, componentRegistry });
   return {
     commands: {
       getLibraryInfo: {
         run: () => {
           return {
-            libraryInfo: {
-              version: libraryVersion,
-              configs: config,
-              commands: allCommands.sort()
-            }
+            libraryInfo
           };
         }
       }
