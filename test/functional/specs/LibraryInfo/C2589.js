@@ -9,7 +9,9 @@ import {
 
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
-const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled);
+const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled, {
+  onBeforeEventSend: () => {}
+});
 
 createFixture({
   title: "C2589: getLibraryInfo command returns library information"
@@ -43,7 +45,7 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
     edgeConfigId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
     edgeDomain: "edge.adobedc.net",
     idMigrationEnabled: true,
-    onBeforeEventSend: undefined,
+    onBeforeEventSend: "function func() {}",
     orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
     thirdPartyCookiesEnabled: true
   };
