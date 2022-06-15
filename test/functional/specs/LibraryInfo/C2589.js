@@ -49,9 +49,16 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
 
   const alloy = createAlloyProxy();
   await alloy.configure(debugEnabledConfig);
-  const libraryInfo = await alloy.getLibraryInfo();
-  delete libraryInfo.libraryInfo.configs.edgeBasePath;
-  await t.expect(libraryInfo.libraryInfo.version).eql(currentVersion);
-  await t.expect(libraryInfo.libraryInfo.commands).eql(currentCommand);
-  await t.expect(libraryInfo.libraryInfo.configs).eql(currentConfigs);
+  const { libraryInfo } = await alloy.getLibraryInfo();
+  delete libraryInfo.configs.edgeBasePath;
+  await t.expect(libraryInfo.version).eql(currentVersion);
+  await t.expect(libraryInfo.commands).eql(currentCommand);
+  await t.expect(libraryInfo.configs).eql(currentConfigs);
+});
+
+test("C2589: getLibraryInfo correctly serializes functions in the config", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(debugEnabledConfig);
+  const { libraryInfo } = await alloy.getLibraryInfo();
+  await t.expect(typeof libraryInfo.configs.onBeforeEventSend).eql("string");
 });
