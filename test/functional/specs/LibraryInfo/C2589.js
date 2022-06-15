@@ -25,6 +25,7 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
   const currentVersion = process.env.npm_package_version;
   const currentCommand = [
     "appendIdentityToUrl",
+    "applyPropositions",
     "configure",
     "createEventMergeId",
     "getIdentity",
