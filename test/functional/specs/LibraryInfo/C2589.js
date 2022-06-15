@@ -1,4 +1,4 @@
-import { t } from "testcafe";
+import { t, ClientFunction } from "testcafe";
 import createFixture from "../../helpers/createFixture";
 
 import {
@@ -64,4 +64,22 @@ test("C2589: getLibraryInfo correctly serializes functions in the config", async
   await alloy.configure(debugEnabledConfig);
   const { libraryInfo } = await alloy.getLibraryInfo();
   await t.expect(typeof libraryInfo.configs.onBeforeEventSend).eql("string");
+});
+
+test("C2589: libraryInfo can be marshaled to postMessage", async () => {
+  const instanceName = "alloy";
+  const alloy = createAlloyProxy(instanceName);
+  await alloy.configure(debugEnabledConfig);
+  const postLibraryInfo = ClientFunction(
+    () => {
+      return window[instanceName]("getLibraryInfo").then(({ libraryInfo }) => {
+        window.postMessage(libraryInfo, "*");
+      });
+    },
+    { dependencies: { instanceName } }
+  );
+  const result = await postLibraryInfo();
+  // This is really just asserting that we got this far. If libraryInfo cannot be
+  // marshaled, postLibraryInfo() will throw an exception about cloning functions.
+  await t.expect(result).notOk("getLibraryInfo can be marshaled successfully");
 });
