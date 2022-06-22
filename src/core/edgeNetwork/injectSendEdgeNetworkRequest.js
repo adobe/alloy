@@ -20,7 +20,8 @@ export default ({
   cookieTransfer,
   sendNetworkRequest,
   createResponse,
-  processWarningsAndErrors
+  processWarningsAndErrors,
+  getLocationHint
 }) => {
   const { edgeDomain, edgeBasePath, edgeConfigId } = config;
 
@@ -51,7 +52,11 @@ export default ({
         const endpointDomain = request.getUseIdThirdPartyDomain()
           ? ID_THIRD_PARTY_DOMAIN
           : edgeDomain;
-        const url = `https://${endpointDomain}/${edgeBasePath}/${apiVersion}/${request.getAction()}?configId=${edgeConfigId}&requestId=${request.getId()}`;
+        const locationHint = getLocationHint();
+        const edgeBasePathWithLocationHint = locationHint
+          ? `${edgeBasePath}/${locationHint}`
+          : edgeBasePath;
+        const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${edgeConfigId}&requestId=${request.getId()}`;
         cookieTransfer.cookiesToPayload(request.getPayload(), endpointDomain);
         return sendNetworkRequest({
           requestId: request.getId(),
