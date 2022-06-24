@@ -120,8 +120,7 @@ describe("injectSendEdgeNetworkRequest", () => {
     });
     cookieTransfer = jasmine.createSpyObj("cookieTransfer", [
       "cookiesToPayload",
-      "responseToCookies",
-      "getPathFromCookie"
+      "responseToCookies"
     ]);
     networkResult = {
       parsedBody: { my: "parsedBody" },

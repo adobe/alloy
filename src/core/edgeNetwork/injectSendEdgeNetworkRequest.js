@@ -53,12 +53,7 @@ export default ({
           ? ID_THIRD_PARTY_DOMAIN
           : edgeDomain;
 
-        const pathFromCookie = cookieTransfer.getPathFromCookie();
-
-        const basePath =
-          pathFromCookie !== undefined
-            ? pathFromCookie
-            : `${endpointDomain}/${edgeBasePath}`;
+        const basePath = `${endpointDomain}/${edgeBasePath}`;
 
         const url = `https://${basePath}/${apiVersion}/${request.getAction()}?configId=${edgeConfigId}&requestId=${request.getId()}`;
         cookieTransfer.cookiesToPayload(request.getPayload(), endpointDomain);

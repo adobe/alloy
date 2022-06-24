@@ -17,8 +17,7 @@ describe("injectApplyEdgeResponseHandles", () => {
     });
     cookieTransfer = jasmine.createSpyObj("cookieTransfer", [
       "cookiesToPayload",
-      "responseToCookies",
-      "getPathFromCookie"
+      "responseToCookies"
     ]);
 
     request = jasmine.createSpyObj("request", {
