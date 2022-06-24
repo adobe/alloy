@@ -10,12 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isFunction, isObject, values } from "../utils";
-
-const coreCommands = {
-  CONFIGURE: "configure",
-  SET_DEBUG: "setDebug"
-};
+import { isFunction, isObject } from "../utils";
+import { CONFIGURE, SET_DEBUG } from "../constants/coreCommands";
 
 export default ({
   logger,
@@ -29,7 +25,7 @@ export default ({
   const getExecutor = (commandName, options) => {
     let executor;
 
-    if (commandName === coreCommands.CONFIGURE) {
+    if (commandName === CONFIGURE) {
       if (configurePromise) {
         throw new Error(
           "The library has already been configured and may only be configured once."
@@ -47,7 +43,7 @@ export default ({
           `The library must be configured first. Please do so by executing the configure command.`
         );
       }
-      if (commandName === coreCommands.SET_DEBUG) {
+      if (commandName === SET_DEBUG) {
         executor = () => setDebugCommand(options);
       } else {
         executor = () => {
@@ -55,7 +51,7 @@ export default ({
             componentRegistry => {
               const command = componentRegistry.getCommand(commandName);
               if (!command || !isFunction(command.run)) {
-                const commandNames = values(coreCommands)
+                const commandNames = [CONFIGURE, SET_DEBUG]
                   .concat(componentRegistry.getCommandNames())
                   .join(", ");
                 throw new Error(
