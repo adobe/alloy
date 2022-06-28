@@ -11,6 +11,14 @@ export default {
       document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT`;
     }
   }),
+  set: ClientFunction(options => {
+    const { name, value, duration = 3600 } = options;
+    const durationMs = duration * 1000;
+    const expires = new Date(Date.now() + durationMs);
+    document.cookie = `${name}=${escape(
+      value
+    )}; expires=${expires.toUTCString()}; domain=".alloyio.com"`;
+  }),
   get: ClientFunction(name => {
     const cookies = document.cookie
       .split(";")
