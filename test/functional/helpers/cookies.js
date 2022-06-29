@@ -1,4 +1,5 @@
 import { ClientFunction } from "testcafe";
+import { FIRST_PARTY_DOMAIN } from "./constants/domain";
 
 export default {
   clear: ClientFunction(() => {
@@ -12,12 +13,17 @@ export default {
     }
   }),
   set: ClientFunction(options => {
-    const { name, value, duration = 3600 } = options;
+    const {
+      name,
+      value,
+      duration = 3600,
+      domain = FIRST_PARTY_DOMAIN
+    } = options;
     const durationMs = duration * 1000;
     const expires = new Date(Date.now() + durationMs);
     document.cookie = `${name}=${escape(
       value
-    )}; expires=${expires.toUTCString()}; domain=".alloyio.com"`;
+    )}; expires=${expires.toUTCString()}; domain=${domain}`;
   }),
   get: ClientFunction(name => {
     const cookies = document.cookie
