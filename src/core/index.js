@@ -48,6 +48,7 @@ import {
 } from "../utils/request";
 import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkRequest";
 import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors";
+import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint";
 import isRequestRetryable from "./network/isRequestRetryable";
 import getRequestRetryDelay from "./network/getRequestRetryDelay";
 
@@ -88,9 +89,10 @@ export const createExecuteCommand = ({
       logger,
       setDebugEnabled
     });
+    const { orgId } = config;
     const cookieTransfer = createCookieTransfer({
       cookieJar: loggingCookieJar,
-      orgId: config.orgId,
+      orgId,
       apexDomain,
       dateProvider: () => new Date()
     });
@@ -115,13 +117,15 @@ export const createExecuteCommand = ({
     });
     const extractEdgeInfo = injectExtractEdgeInfo({ logger });
     const createResponse = injectCreateResponse({ extractEdgeInfo });
+    const getLocationHint = injectGetLocationHint({ orgId, cookieJar });
     const sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
       config,
       lifecycle,
       cookieTransfer,
       sendNetworkRequest,
       createResponse,
-      processWarningsAndErrors
+      processWarningsAndErrors,
+      getLocationHint
     });
 
     const generalConsentState = createConsentStateMachine({ logger });
