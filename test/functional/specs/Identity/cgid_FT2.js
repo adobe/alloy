@@ -16,7 +16,8 @@ import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  migrationDisabled
+  migrationDisabled,
+  thirdPartyCookiesEnabled
 } from "../../helpers/constants/configParts";
 import { TEST_PAGE } from "../../helpers/constants/url";
 import createNetworkLogger from "../../helpers/networkLogger";
@@ -29,7 +30,12 @@ import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
 import { FIRST_PARTY_DOMAIN } from "../../helpers/constants/domain";
 
 const networkLogger = createNetworkLogger();
-const config = compose(orgMainConfigMain, debugEnabled, migrationDisabled);
+const config = compose(
+  orgMainConfigMain,
+  debugEnabled,
+  migrationDisabled,
+  thirdPartyCookiesEnabled
+);
 
 createFixture({
   url: TEST_PAGE,
