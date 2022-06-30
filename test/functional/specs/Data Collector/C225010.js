@@ -7,7 +7,8 @@ import {
   compose,
   orgMainConfigMain,
   consentPending,
-  debugEnabled
+  debugEnabled,
+  linkClickCollectionEnabled
 } from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import { CONSENT_OUT } from "../../helpers/constants/consent";
@@ -25,7 +26,12 @@ test.meta({
 test("Test C225010: Click collection handles errors when user declines consent", async () => {
   const alloy = createAlloyProxy();
   const getLocation = ClientFunction(() => document.location.href.toString());
-  const testConfig = compose(orgMainConfigMain, consentPending, debugEnabled);
+  const testConfig = compose(
+    orgMainConfigMain,
+    consentPending,
+    debugEnabled,
+    linkClickCollectionEnabled
+  );
   await alloy.configure(testConfig);
   await alloy.setConsent(CONSENT_OUT);
 

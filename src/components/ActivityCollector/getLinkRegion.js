@@ -33,26 +33,18 @@ const getSectionNodeName = node => {
 };
 
 /**
- * Extracts a link-region from a given node.
+ * Extracts a node link-region.
  *
- * The returned link-region is set to one of the following (in order of priority):
+ * The link-region is determined by traversing up the DOM
+ * looking for a region that is determined in order of priority:
  *
- * TODO: Update this list with the correct logic.
- *
- * 1. Clicked node innerText
- * 2. Clicked node textContent
- * 3. Clicked node and its child nodes nodeValue appended together.
- * 4. Clicked node alt attribute or node descendant alt attribute.
- *    Whichever is found first.
- * 5. Clicked node text attribute or node descendant text attribute.
- *    Whichever is found first.
- * 6. Clicked node INPUT descendant value attribute.
- *    Whichever is found first.
- * 7. Clicked node IMG descendant src attribute.
- *    Whichever is found first.
+ * 1. element.id
+ * 2. Aria region label
+ * 3. Semantic element name
+ * 4. BODY (if no other link-region is found).
  *
  * @param {*} node The node to find link region for.
- * @returns {string} link-region or BODY if no link-region is found.
+ * @returns {string} link-region.
  */
 export default targetElement => {
   let node = targetElement.parentNode;

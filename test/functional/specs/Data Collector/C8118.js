@@ -1,7 +1,11 @@
 import { t, Selector } from "testcafe";
 import createFixture from "../../helpers/createFixture";
 import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
-import { orgMainConfigMain } from "../../helpers/constants/configParts";
+import {
+  compose,
+  orgMainConfigMain,
+  linkClickCollectionEnabled
+} from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import preventLinkNavigation from "../../helpers/preventLinkNavigation";
 import createCollectEndpointAsserter from "../../helpers/createCollectEndpointAsserter";
@@ -31,7 +35,8 @@ const assertRequestXdm = async request => {
   const eventXdm = requestBody.events[0].xdm;
   await t.expect(eventXdm.eventType).eql("web.webinteraction.linkClicks");
   await t.expect(eventXdm.web.webInteraction).eql({
-    name: "Link Click",
+    name: "Test Link",
+    region: "BODY",
     type: "other",
     URL: "https://alloyio.com/functional-test/blank.html",
     linkClicks: { value: 1 }
@@ -42,7 +47,8 @@ test("Test C8118: Verify link click sends a request to the collect endpoint when
   const collectEndpointAsserter = await createCollectEndpointAsserter();
   await preventLinkNavigation();
   const alloy = createAlloyProxy();
-  await alloy.configure(orgMainConfigMain);
+  const testConfig = compose(orgMainConfigMain, linkClickCollectionEnabled);
+  await alloy.configure(testConfig);
   await addLinkToBody();
   await clickLink();
   await collectEndpointAsserter.assertInteractCalledAndNotCollect();
