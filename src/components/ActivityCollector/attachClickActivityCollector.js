@@ -12,18 +12,37 @@ governing permissions and limitations under the License.
 
 import { noop } from "../../utils";
 
-const createClickHandler = ({ eventManager, lifecycle, handleError }) => {
+const createClickHandler = ({
+  eventManager,
+  lifecycle,
+  handleError,
+  onLinkClick
+}) => {
   return clickEvent => {
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
-    const clickedElement = clickEvent.target;
+    const linkElement = clickEvent.target;
     const event = eventManager.createEvent();
     return (
       lifecycle
-        .onClick({ event, clickedElement })
+        .onClick({ event, linkElement })
         .then(() => {
-          if (event.isEmpty()) {
+          const options = {
+            linkElement
+          };
+          try {
+            const shouldEventBeSent = event.augmentEvent(onLinkClick, options);
+
+            if (event.isEmpty() || !shouldEventBeSent) {
+              return Promise.resolve();
+            }
+          } catch (error) {
+            handleError(
+              error,
+              "An error occurred while executing the onLinkClick callback function."
+            );
             return Promise.resolve();
           }
+
           return eventManager.sendEvent(event);
         })
         // eventManager.sendEvent() will return a promise resolved to an
@@ -42,11 +61,12 @@ export default ({ config, eventManager, lifecycle, handleError }) => {
   if (!enabled) {
     return;
   }
-
+  const { onLinkClick } = config;
   const clickHandler = createClickHandler({
     eventManager,
     lifecycle,
-    handleError
+    handleError,
+    onLinkClick
   });
 
   document.addEventListener("click", clickHandler, true);

@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 import { assign } from "../utils";
 import { objectOf } from "../utils/validation";
+import createGetLinkElementDetails from "./createGetLinkElementDetails";
 
 const CONFIG_DOC_URI = "https://adobe.ly/3sHh553";
 
@@ -52,6 +53,7 @@ export default ({
   const schema = buildSchema(coreConfigValidators, componentCreators);
   const config = createConfig(transformOptions(schema, options));
   setDebugEnabled(config.debugEnabled, { fromConfig: true });
-  logger.logOnInstanceConfigured({ config });
+  const getLinkDetails = createGetLinkElementDetails(window, config, logger);
+  logger.logOnInstanceConfigured({ config, getLinkDetails });
   return config;
 };

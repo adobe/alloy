@@ -10,72 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  getAbsoluteUrlFromAnchorElement,
-  isSupportedAnchorElement,
-  isDownloadLink,
-  isExitLink
-} from "./utils";
-import getLinkName from "./getLinkName";
-import getLinkRegion from "./getLinkRegion";
-
-const determineLinkType = (window, config, linkUrl, clickedObj) => {
-  let linkType = "other";
-  if (isDownloadLink(config.downloadLinkQualifier, linkUrl, clickedObj)) {
-    linkType = "download";
-  } else if (isExitLink(window, linkUrl)) {
-    linkType = "exit";
-  }
-  return linkType;
-};
-
-const findSupportedAnchorElement = targetElement => {
-  let node = targetElement;
-  while (node) {
-    if (isSupportedAnchorElement(node)) {
-      return node;
-    }
-    node = node.parentNode;
-  }
-  return null;
-};
-
-export default (window, config) => {
-  const linkClickCollectionEnabled = config.linkClickCollectionEnabled;
-
+export default getLinkDetails => {
   return (event, targetElement) => {
-    if (!linkClickCollectionEnabled) {
+    const linkDetails = getLinkDetails(targetElement);
+    if (!linkDetails) {
       return;
     }
-
-    // Search parent elements for an anchor element
-    // TODO: Replace with generic DOM tool that can fetch configured properties
-    const anchorElement = findSupportedAnchorElement(targetElement);
-    if (!anchorElement) {
-      return;
-    }
-
-    const linkUrl = getAbsoluteUrlFromAnchorElement(window, anchorElement);
-    if (!linkUrl) {
-      return;
-    }
-
-    const linkType = determineLinkType(window, config, linkUrl, anchorElement);
-    // TODO: The user provided link click function needs to be called here
-    const linkRegion = getLinkRegion(anchorElement);
-    const linkName = getLinkName(anchorElement);
-    // console.log("Link name: ", linkName);
-    // console.log("Link region: ", linkRegion);
-
     event.documentMayUnload();
     event.mergeXdm({
       eventType: "web.webinteraction.linkClicks",
       web: {
         webInteraction: {
-          name: linkName,
-          region: linkRegion,
-          type: linkType,
-          URL: linkUrl,
+          name: linkDetails.linkName,
+          region: linkDetails.linkRegion,
+          type: linkDetails.linkType,
+          URL: linkDetails.linkUrl,
           linkClicks: {
             value: 1
           }

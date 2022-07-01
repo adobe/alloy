@@ -58,6 +58,20 @@ export default () => {
     documentMayUnload() {
       documentMayUnload = true;
     },
+    augmentEvent(callback, extraOptions) {
+      const tempContent = {
+        xdm: content.xdm || {},
+        data: content.data || {},
+        ...extraOptions
+      };
+
+      const result = callback(tempContent);
+
+      content.xdm = tempContent.xdm || {};
+      content.data = tempContent.data || {};
+
+      return result;
+    },
     finalize(onBeforeEventSend) {
       if (isFinalized) {
         return;
@@ -80,17 +94,8 @@ export default () => {
 
         // this allows the user to replace the xdm and data properties
         // on the object passed to the callback
-        const tempContent = {
-          xdm: content.xdm || {},
-          data: content.data || {}
-        };
-
-        const result = onBeforeEventSend(tempContent);
-
+        const result = this.augmentEvent(onBeforeEventSend);
         shouldSendEvent = result !== false;
-
-        content.xdm = tempContent.xdm || {};
-        content.data = tempContent.data || {};
 
         if (isEmptyObject(content.xdm)) {
           delete content.xdm;
