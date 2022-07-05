@@ -1,3 +1,3 @@
 export default {
-  linkClickCollectionEnabled: true
+  linkClickCollectionEnabled: false
 };
