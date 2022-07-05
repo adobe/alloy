@@ -2,7 +2,7 @@
 import createGetLinkDetails from "../components/ActivityCollector/createGetLinkDetails";
 
 export default (window, config, logger) => {
-  const { onLinkClick } = config;
+  const { onBeforeLinkClickSent } = config;
   return element => {
     if (!element) {
       return undefined;
@@ -32,7 +32,7 @@ export default (window, config, logger) => {
       clickedElement: element
     };
     try {
-      const shouldLinkBeCounted = onLinkClick(tempContent);
+      const shouldLinkBeCounted = onBeforeLinkClickSent(tempContent);
 
       if (shouldLinkBeCounted) {
         return tempContent.xdm;
@@ -41,7 +41,7 @@ export default (window, config, logger) => {
       return undefined;
     } catch (error) {
       logger.info(
-        "An error occurred while executing the onLinkClick callback function.",
+        "An error occurred while executing the onBeforeLinkClickSent callback function.",
         error
       );
       return undefined;

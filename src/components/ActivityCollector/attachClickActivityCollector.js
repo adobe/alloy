@@ -16,7 +16,7 @@ const createClickHandler = ({
   eventManager,
   lifecycle,
   handleError,
-  onLinkClick
+  onBeforeLinkClickSent
 }) => {
   return clickEvent => {
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
@@ -30,7 +30,10 @@ const createClickHandler = ({
             linkElement
           };
           try {
-            const shouldEventBeSent = event.augmentEvent(onLinkClick, options);
+            const shouldEventBeSent = event.augmentEvent(
+              onBeforeLinkClickSent,
+              options
+            );
 
             if (event.isEmpty() || !shouldEventBeSent) {
               return Promise.resolve();
@@ -38,7 +41,7 @@ const createClickHandler = ({
           } catch (error) {
             handleError(
               error,
-              "An error occurred while executing the onLinkClick callback function."
+              "An error occurred while executing the onBeforeLinkClickSent callback function."
             );
             return Promise.resolve();
           }
@@ -61,12 +64,12 @@ export default ({ config, eventManager, lifecycle, handleError }) => {
   if (!enabled) {
     return;
   }
-  const { onLinkClick } = config;
+  const { onBeforeLinkClickSent } = config;
   const clickHandler = createClickHandler({
     eventManager,
     lifecycle,
     handleError,
-    onLinkClick
+    onBeforeLinkClickSent
   });
 
   document.addEventListener("click", clickHandler, true);

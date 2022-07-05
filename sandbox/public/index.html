@@ -28,10 +28,10 @@
 
           const listOfLinks = document.links;
 
-          listOfLinks.forEach(link => {
-            const getDetails = getLinkDetails(link);
+          for (var i = 0; i < listOfLinks.length; i++) {
+            const getDetails = getLinkDetails(listOfLinks[i]);
             console.log("link details", getDetails);
-          });
+          }
         }
       });
     </script>
@@ -109,7 +109,7 @@
           "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
         orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
         debugEnabled: true,
-        linkClickCollectionEnabled: false, // false by default
+        linkClickCollectionEnabled: true, // false by default
         idMigrationEnabled: !(
           getUrlParameter("idMigrationEnabled") === "false"
         ),
@@ -131,7 +131,7 @@
           xdm._unifiedjsqeonly = _unifiedjsqeonly;
           return true;
         },
-        onLinkClick: function(options) {
+        onBeforeLinkClickSent: function(options) {
           // options.linkElement
           // options.xdm
           // options.data
