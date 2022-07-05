@@ -10,10 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as createAddIdentity } from "./createAddIdentity";
-export { default as createDataCollectionRequest } from "./createDataCollectionRequest";
-export { default as createDataCollectionRequestPayload } from "./createDataCollectionRequestPayload";
-export { default as createHasIdentity } from "./createHasIdentity";
-export { default as createRequest } from "./createRequest";
-export { default as createRequestPayload } from "./createRequestPayload";
-export { default as createGetValidationQuery } from "./createGetValidationQuery";
+import { queryString } from "../index";
+
+const VALIDATION_URL_PARAM = "adobeAepValidationToken";
+
+export default ({ window }) => () => {
+  const parsedQuery = queryString.parse(window.location.search);
+  const validationToken = parsedQuery[VALIDATION_URL_PARAM];
+  return validationToken
+    ? `&${queryString.stringify({ adobeAepValidationToken: validationToken })}`
+    : "";
+};

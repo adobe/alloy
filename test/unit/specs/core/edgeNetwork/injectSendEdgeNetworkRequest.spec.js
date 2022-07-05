@@ -31,6 +31,7 @@ describe("injectSendEdgeNetworkRequest", () => {
   let createResponse;
   let processWarningsAndErrors;
   let getLocationHint;
+  let getValidationQuery;
   let sendEdgeNetworkRequest;
   let request;
 
@@ -136,6 +137,9 @@ describe("injectSendEdgeNetworkRequest", () => {
       .and.returnValue(response);
     processWarningsAndErrors = jasmine.createSpy("processWarningsAndErrors");
     getLocationHint = jasmine.createSpy("getLocationHint");
+    getValidationQuery = jasmine
+      .createSpy("getValidationQuery")
+      .and.returnValue("");
     sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
       config,
       logger,
@@ -144,7 +148,8 @@ describe("injectSendEdgeNetworkRequest", () => {
       sendNetworkRequest,
       createResponse,
       processWarningsAndErrors,
-      getLocationHint
+      getLocationHint,
+      getValidationQuery
     });
   });
 
@@ -455,6 +460,21 @@ describe("injectSendEdgeNetworkRequest", () => {
         requestId: "RID123",
         url:
           "https://edge.example.com/ee/va6/v1/test-action?configId=myconfigId&requestId=RID123",
+        payload: {
+          type: "payload"
+        },
+        useSendBeacon: false
+      });
+    });
+  });
+
+  it("sets validation query", () => {
+    getValidationQuery.and.returnValue("&adobeAepValidationToken=abc-123");
+    return sendEdgeNetworkRequest({ request }).then(() => {
+      expect(sendNetworkRequest).toHaveBeenCalledWith({
+        requestId: "RID123",
+        url:
+          "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123&adobeAepValidationToken=abc-123",
         payload: {
           type: "payload"
         },
