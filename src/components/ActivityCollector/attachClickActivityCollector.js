@@ -20,14 +20,14 @@ const createClickHandler = ({
 }) => {
   return clickEvent => {
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
-    const linkElement = clickEvent.target;
+    const clickedElement = clickEvent.target;
     const event = eventManager.createEvent();
     return (
       lifecycle
-        .onClick({ event, linkElement })
+        .onClick({ event, clickedElement })
         .then(() => {
           const options = {
-            linkElement
+            clickedElement
           };
           try {
             const shouldEventBeSent = event.augmentEvent(
