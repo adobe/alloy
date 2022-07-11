@@ -17,7 +17,7 @@ import {
   orgMainConfigMain,
   debugEnabled,
   migrationDisabled,
-  thirdPartyCookiesEnabled
+  thirdPartyCookiesDisabled
 } from "../../helpers/constants/configParts";
 import { TEST_PAGE } from "../../helpers/constants/url";
 import createNetworkLogger from "../../helpers/networkLogger";
@@ -27,14 +27,13 @@ import createFixture from "../../helpers/createFixture";
 import reloadPage from "../../helpers/reloadPage";
 import cookies from "../../helpers/cookies";
 import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
-import { FIRST_PARTY_DOMAIN } from "../../helpers/constants/domain";
 
 const networkLogger = createNetworkLogger();
 const config = compose(
   orgMainConfigMain,
   debugEnabled,
   migrationDisabled,
-  thirdPartyCookiesEnabled
+  thirdPartyCookiesDisabled
 );
 
 createFixture({
@@ -55,16 +54,18 @@ test("cgif_FT2: FPID from FPID cookie generates ECID", async () => {
   await cookies.set({
     name: "FPID",
     value: uuid(),
-    domain: FIRST_PARTY_DOMAIN
+    domain: "alloyio.com"
   });
   await alloy.sendEvent();
   const ecid = getReturnedEcid(networkLogger.edgeEndpointLogs.requests[0]);
   await reloadPage();
   await cookies.remove(MAIN_IDENTITY_COOKIE_NAME);
+
   await alloy.configure(config);
   await alloy.sendEvent();
   const ecidCompare = getReturnedEcid(
     networkLogger.edgeEndpointLogs.requests[1]
   );
+
   await t.expect(ecid).eql(ecidCompare);
 });
