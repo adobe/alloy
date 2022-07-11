@@ -1,13 +1,14 @@
-import injectApplyEdgeResponseHandles from "../../../../../src/core/edgeNetwork/injectApplyEdgeResponseHandles";
+import injectApplyAepEdgeResponse from "../../../../../src/core/edgeNetwork/injectApplyAepEdgeResponse";
 import assertFunctionCallOrder from "../../../helpers/assertFunctionCallOrder";
 
-describe("injectApplyEdgeResponseHandles", () => {
+describe("injectApplyAepEdgeResponse", () => {
   let lifecycle;
   let cookieTransfer;
   let createResponse;
   let request;
   let response;
-  let handles;
+  let responseHeaders;
+  let responseBody;
 
   beforeEach(() => {
     lifecycle = jasmine.createSpyObj("lifecycle", {
@@ -32,7 +33,8 @@ describe("injectApplyEdgeResponseHandles", () => {
   });
 
   it("works", () => {
-    handles = [];
+    responseHeaders = {};
+    responseBody = { handle: [] };
 
     response = { type: "response" };
 
@@ -40,7 +42,7 @@ describe("injectApplyEdgeResponseHandles", () => {
       .createSpy("createResponse")
       .and.returnValue(response);
 
-    const applyEdgeResponseHandles = injectApplyEdgeResponseHandles({
+    const applyAepEdgeResponse = injectApplyAepEdgeResponse({
       cookieTransfer,
       lifecycle,
       createResponse
@@ -50,9 +52,10 @@ describe("injectApplyEdgeResponseHandles", () => {
       .createSpy("runOnResponseCallbacks")
       .and.returnValue(Promise.resolve([{ c: 2 }, { h: 9 }, undefined]));
 
-    return applyEdgeResponseHandles({
+    return applyAepEdgeResponse({
       request,
-      handles,
+      responseHeaders,
+      responseBody,
       runOnResponseCallbacks
     }).then(result => {
       expect(runOnResponseCallbacks).toHaveBeenCalledWith({ response });
