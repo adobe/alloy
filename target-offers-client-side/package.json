@@ -1,0 +1,23 @@
+{
+  "name": "target-offers-client-side-aep-sample",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "node src/build.js",
+    "prestart": "npm run build",
+    "start": "http-server public -p 80"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:adobe/target-nodejs-sdk-samples.git"
+  },
+  "author": "Adobe Systems Inc.",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "handlebars": "^4.7.7"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

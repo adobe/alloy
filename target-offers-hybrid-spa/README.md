@@ -1,4 +1,4 @@
-# Target Offers Hybrid
+# Target Offers Hybrid with Single-page app (SPA)
 
 ## Overview
 
@@ -6,13 +6,14 @@ This sample demonstrates using Adobe Experience Platform to get personalization 
 
 This sample retrieves personalization content server-side using the [Adobe Experience Platform APIs](https://developer.adobe.com/experience-platform-apis/) and renders it on the client-side using [Adobe Experience Platform Web SDK](https://experienceleague.adobe.com/docs/experience-platform/edge/home.html) using the `applyAepEdgeResponse` command.
 
+The page is also a single-page app (SPA) using react.
+
 Here is what the page looks like before and after personalization content is rendered.
 
-| without target personalization                              | with target personalization                                       |
-|-------------------------------------------------------------|-------------------------------------------------------------------|
-| <img src="../.assets/plain.png" alt="drawing" width="800"/> | <img src="../.assets/with-offers.png" alt="drawing" width="800"/> |
+| without target personalization                                  | with target personalization                                            |
+|-----------------------------------------------------------------|------------------------------------------------------------------------|
+| <img src="../.assets/spa-plain.png" alt="drawing" width="800"/> | <img src="../.assets/spa-personalized.png" alt="drawing" width="800"/> |
 
-Please review the [summary of target activities used](../TargetActivities.md) for this sample.
 
 
 ## Running the sample
@@ -162,32 +163,19 @@ alloy("applyAepEdgeResponse", {
 
 ```
 
-6. Alloy renders page load Visual Experience Composer (VEC) offers automatically because the `renderDecisions` flag is set to true.
-7. Form-based JSON offers are manually applied by the sample implementation code (in the [`applyPersonalization`](./public/script.js) method) to update the DOM based on the offer.
-8. For form-based activities, display events must manually be sent to indicate when the offer has been displayed. This is done via the `sendEvent` command.
-
+6. The react app uses the `sendEvent` command to tell alloy when a view has been rendered.  In other words, each time a primary navigation link is clicked a sendEvent command is invoked with the corresponding view name.  This is important because SPAs update the DOM via javascript rather than via page reload.  When the command is fired, alloy knows to update the DOM with relevant personalization experiences automatically.
 
 ```javascript
-function sendDisplayEvent(decision) {
-  const { id, scope, scopeDetails = {} } = decision;
-
-  alloy("sendEvent", {
-    xdm: {
-      eventType: "decisioning.propositionDisplay",
-      _experience: {
-        decisioning: {
-          propositions: [
-            {
-              id: id,
-              scope: scope,
-              scopeDetails: scopeDetails,
-            },
-          ],
-        },
-      },
-    },
-  });
-}
+alloy("sendEvent", {
+  "renderDecisions": true,
+  "xdm": {
+    "web": {
+      "webPageDetails": {
+        "viewName":"home"
+      }
+    }
+  }
+});
 ```
 
 ## Key Observations
@@ -212,7 +200,7 @@ Requests to Adobe Experience Platform API are required to get propositions and s
 
 ### Flow Diagram
 
-<img src="../.assets/diagram-hybrid.png" alt="drawing" />
+<img src="../.assets/diagram-hybrid-spa.png" alt="drawing" />
 
 ## Beyond the sample
 

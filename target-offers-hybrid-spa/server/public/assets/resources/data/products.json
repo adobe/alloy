@@ -1,0 +1,98 @@
+[
+  {
+    "description": "This luxurious sweater will look great with everything from jeans to chinos, Classic fit, Cotton/polyester, Machine washable, Imported",
+    "id": 1,
+    "image": "https://cimage.adobe.com/acs/reactreduxdemo/poc.png",
+    "price": 29.0,
+    "title": "Danbury grey sweater with round buttons",
+    "userId": 1
+  },
+  {
+    "description": "Fashionable and functional medium size tote with a triple-compartment interior and plenty of pockets, Magnetic-snap closure, Gold-tone exterior hardware & logo charm, Imported",
+    "id": 2,
+    "image": "https://cimage.adobe.com/acs/reactreduxdemo/products/bag.jpeg",
+    "price": 59.0,
+    "title": "Cara black tote handbag ",
+    "userId": 1
+  },
+  {
+    "description": "Delicate flowers decorate this classic jean dress by Amore, Jean Pants – Pull on style, Machine Washable.",
+    "id": 3,
+    "image": "https://cimage.adobe.com/acs/reactreduxdemo/products/baby.png",
+    "price": 30,
+    "title": "Amore floral print dress and pants set",
+    "userId": 1
+  },
+  {
+    "description": "Spring inspired floral look, All cotton, Machine washable",
+    "id": 4,
+    "image": "https://cimage.adobe.com/acs/reactreduxdemo/products/floraldress.png",
+    "price": 29.0,
+    "title": "Short floral spring dress",
+    "userId": 1
+  },
+  {
+    "description": "Adjustable, foldable headband, Controls: Volume, play/pause, answers/end call, 2 years Warranty",
+    "id": 5,
+    "image": "https://cimage.adobe.com/acs/reactreduxdemo/products/headphone.png",
+    "price": 45.0,
+    "title": "DBeatz wireless headphones",
+    "userId": 1
+  },
+  {
+    "description": "Hardcase matte-finish plastic, striped polyester lining, 1 yr Warranty.",
+    "id": 6,
+    "image": "https://cimage.adobe.com/acs/reactreduxdemo/products/luggage.png",
+    "price": 119.0,
+    "title": "Voyage 3- piece luggage set",
+    "userId": 1
+  },
+  {
+    "description": "Rich botanicals helps hydrate sensitive skin and reduce appearance of fine lines and wrinkles.",
+    "id": 7,
+    "image": "https://cimage.adobe.com/acs/reactreduxdemo/products/moisturizer.png",
+    "price": 99.0,
+    "title": "Roselle age defying moisturizer",
+    "userId": 1
+  },
+  {
+    "description": "Fresh Floral Fragance with hints of Rose and Jasmine, Eau de Parfum Spray, 3.4 oz.",
+    "id": 8,
+    "image": "https://cimage.adobe.com/acs/reactreduxdemo/products/perfume.png",
+    "price": 86,
+    "title": "MADEMOISELLE collection for women",
+    "userId": 1
+  },
+  {
+    "description": "Built for lightweight performance, Men's athletic footwear from Airz, Synthetic upper; rubber sole.",
+    "id": 9,
+    "image": "https://cimage.adobe.com/acs/reactreduxdemo/products/shoes.png",
+    "price": 59.0,
+    "title": "Airz Running Sneakers for men",
+    "userId": 1
+  },
+  {
+    "description": "Ultra-soft and extra-absorbent, Imported, Mashine Washable",
+    "id": 10,
+    "image": "https://cimage.adobe.com/acs/reactreduxdemo/products/towels.png",
+    "price": 19.0,
+    "title": "Multi color Luxe Cotton Towels",
+    "userId": 1
+  },
+  {
+    "description": "Modern comfort long-sleeved cotton t-shirt, Machine Washable",
+    "id": 11,
+    "image": "https://cimage.adobe.com/acs/reactreduxdemo/products/tshirt.png",
+    "price": 18.0,
+    "title": "White AlfaMen Casual Tshirt",
+    "userId": 2
+  },
+  {
+    "description": "Dress Watch from Euro Style,  Round case, 44mm, Water resistance, Warranty: 3-year limited",
+    "id": 12,
+    "image": "https://cimage.adobe.com/acs/reactreduxdemo/products/watch.png",
+    "price": 75,
+    "title": "Men’s Black Stainless Steel Watch",
+    "userId": 2
+  }
+]

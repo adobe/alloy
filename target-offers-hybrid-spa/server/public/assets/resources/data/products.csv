@@ -1,0 +1,19 @@
+## RECSRecommendations Upload File
+## RECS''## RECS'' indicates a Recommendations pre-process header. Please do not remove these lines.
+## RECS
+## RECSUse this file to upload product display information to Recommendations. Each product has its own row. Each line must contain 19 values and if not all are filled a space should be left.
+## RECSThe last 100 columns (entity.custom1 - entity.custom100) are custom. The name 'customN' can be replaced with a custom name such as 'onSale' or 'brand'.
+## RECSIf the products already exist in Recommendations then changes uploaded here will override the data in Recommendations. Any new attributes entered here will be added to the product''s entry in Recommendations.
+## RECSentity.id,entity.name,entity.categoryId,entity.message,entity.thumbnailUrl,entity.value,entity.pageUrl,entity.inventory,entity.margin,entity.custom1,entity.custom2,entity.custom3,entity.custom4,entity.custom5,entity.custom6,entity.custom7,entity.custom8,entity.custom9,entity.custom10
+1,Danbury grey sweater with round buttons, , ,https://cimage.adobe.com/acs/reactreduxdemo/poc.png, , , , , , , , , , , , , , 
+2,Cara black tote handbag , , ,https://cimage.adobe.com/acs/reactreduxdemo/products/bag.jpeg, , , , , , , , , , , , , , 
+3,Amore floral print dress and pants set, , ,https://cimage.adobe.com/acs/reactreduxdemo/products/baby.png, , , , , , , , , , , , , , 
+4,Short floral spring dress, , ,https://cimage.adobe.com/acs/reactreduxdemo/products/floraldress.png, , , , , , , , , , , , , , 
+5,DBeatz wireless headphones, , ,https://cimage.adobe.com/acs/reactreduxdemo/products/headphone.png, , , , , , , , , , , , , , 
+6,Voyage 3- piece luggage set, , ,https://cimage.adobe.com/acs/reactreduxdemo/products/luggage.png, , , , , , , , , , , , , , 
+7,Roselle age defying moisturizer, , ,https://cimage.adobe.com/acs/reactreduxdemo/products/moisturizer.png, , , , , , , , , , , , , , 
+8,MADEMOISELLE collection for women, , ,https://cimage.adobe.com/acs/reactreduxdemo/products/perfume.png, , , , , , , , , , , , , , 
+9,Airz Running Sneakers for men, , ,https://cimage.adobe.com/acs/reactreduxdemo/products/shoes.png, , , , , , , , , , , , , , 
+10,Multi color Luxe Cotton Towels, , ,https://cimage.adobe.com/acs/reactreduxdemo/products/towels.png, , , , , , , , , , , , , , 
+11,White AlfaMen Casual Tshirt, , ,https://cimage.adobe.com/acs/reactreduxdemo/products/tshirt.png, , , , , , , , , , , , , , 
+12,Men’s Black Stainless Steel Watch, , ,https://cimage.adobe.com/acs/reactreduxdemo/products/watch.png, , , , , , , , , , , , , , 
