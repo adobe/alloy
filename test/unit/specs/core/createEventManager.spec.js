@@ -26,6 +26,7 @@ describe("createEventManager", () => {
   let requestPayload;
   let request;
   let sendEdgeNetworkRequest;
+  let applyAepEdgeResponse;
   let onRequestFailureForOnBeforeEvent;
   let fakeOnRequestFailure;
   let eventManager;
@@ -73,6 +74,9 @@ describe("createEventManager", () => {
     sendEdgeNetworkRequest = jasmine
       .createSpy("sendEdgeNetworkRequest")
       .and.returnValue(Promise.resolve());
+    applyAepEdgeResponse = jasmine
+      .createSpy("applyAepEdgeResponse")
+      .and.returnValue(Promise.resolve());
     eventManager = createEventManager({
       config,
       logger,
@@ -81,7 +85,8 @@ describe("createEventManager", () => {
       createEvent,
       createDataCollectionRequestPayload,
       createDataCollectionRequest,
-      sendEdgeNetworkRequest
+      sendEdgeNetworkRequest,
+      applyAepEdgeResponse
     });
   });
 
@@ -252,6 +257,70 @@ describe("createEventManager", () => {
       return expectAsync(eventManager.sendEvent(event)).toBeRejectedWithError(
         "no connection"
       );
+    });
+  });
+
+  describe("applyAepEdgeResponse", () => {
+    const responseHeaders = {
+      "x-request-id": "474ec8af-6326-4cb5-952a-4b7dc6be5749"
+    };
+    const responseBody = {
+      requestId: "474ec8af-6326-4cb5-952a-4b7dc6be5749",
+      handle: []
+    };
+
+    const options = {
+      renderDecisions: false,
+      responseHeaders,
+      responseBody
+    };
+
+    it("creates the payload and adds event and meta", () => {
+      return eventManager.applyAepEdgeResponse(event, options).then(() => {
+        expect(requestPayload.addEvent).toHaveBeenCalledWith(event);
+      });
+    });
+
+    it("events no not call finalize with onBeforeEventSend callback", () => {
+      return eventManager.applyAepEdgeResponse(event, options).then(() => {
+        expect(event.finalize).not.toHaveBeenCalled();
+      });
+    });
+
+    it("calls onResponse callbacks", () => {
+      const onResponseForOnBeforeEvent = jasmine.createSpy(
+        "onResponseForOnBeforeEvent"
+      );
+      lifecycle.onBeforeEvent.and.callFake(({ onResponse }) => {
+        onResponse(onResponseForOnBeforeEvent);
+        return Promise.resolve();
+      });
+      const response = { type: "response" };
+
+      applyAepEdgeResponse.and.callFake(({ runOnResponseCallbacks }) => {
+        runOnResponseCallbacks({ response });
+        return Promise.resolve();
+      });
+
+      return eventManager.applyAepEdgeResponse(event, options).then(() => {
+        expect(onResponseForOnBeforeEvent).toHaveBeenCalledWith({ response });
+      });
+    });
+
+    it("applies AEP edge response headers and body and returns result", () => {
+      const mockResult = { response: "yep" };
+      applyAepEdgeResponse.and.returnValue(mockResult);
+
+      return eventManager.applyAepEdgeResponse(event, options).then(result => {
+        expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
+        expect(applyAepEdgeResponse).toHaveBeenCalledWith({
+          request,
+          responseHeaders,
+          responseBody,
+          runOnResponseCallbacks: jasmine.any(Function)
+        });
+        expect(result).toEqual(mockResult);
+      });
     });
   });
 });
