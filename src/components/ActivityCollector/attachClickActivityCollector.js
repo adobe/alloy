@@ -36,13 +36,7 @@ const createClickHandler = ({ eventManager, lifecycle, handleError }) => {
   };
 };
 
-export default ({ config, eventManager, lifecycle, handleError }) => {
-  const enabled = config.clickCollectionEnabled;
-
-  if (!enabled) {
-    return;
-  }
-
+export default ({ eventManager, lifecycle, handleError }) => {
   const clickHandler = createClickHandler({
     eventManager,
     lifecycle,

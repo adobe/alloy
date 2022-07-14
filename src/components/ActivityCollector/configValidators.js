@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { string, boolean } from "../../utils/validation";
 
 export default {
-  clickCollectionEnabled: boolean().default(true),
+  clickCollectionEnabled: boolean().default(false),
   downloadLinkQualifier: string()
     .regexp()
     .default(
