@@ -13,15 +13,19 @@ governing permissions and limitations under the License.
 import { deepAssign } from "../../utils";
 
 export default window => {
+  let referrerPopulatedOnce = false;
   return xdm => {
     const web = {
       webPageDetails: {
         URL: window.location.href || window.location
-      },
-      webReferrer: {
-        URL: window.document.referrer
       }
     };
+    if (!referrerPopulatedOnce) {
+      web.webReferrer = {
+        URL: window.document.referrer
+      };
+      referrerPopulatedOnce = true;
+    }
     deepAssign(xdm, { web });
   };
 };

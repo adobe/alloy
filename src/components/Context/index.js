@@ -19,21 +19,27 @@ import implementationDetails from "./implementationDetails";
 import createComponent from "./createComponent";
 import { arrayOf, string } from "../../utils/validation";
 
-const web = injectWeb(window);
 const device = injectDevice(window);
 const environment = injectEnvironment(window);
 const placeContext = injectPlaceContext(() => new Date());
 const timestamp = injectTimestamp(() => new Date());
 
 const optionalContexts = {
-  web,
   device,
   environment,
   placeContext
 };
 const requiredContexts = [timestamp, implementationDetails];
 const createContext = ({ config, logger }) => {
-  return createComponent(config, logger, optionalContexts, requiredContexts);
+  // The web context is created for each instance so that the referrer is sent once
+  // per instance per page load.
+  const web = injectWeb(window);
+  return createComponent(
+    config,
+    logger,
+    { web, ...optionalContexts },
+    requiredContexts
+  );
 };
 
 createContext.namespace = "Context";
