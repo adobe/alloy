@@ -10,8 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// ORIGINAL TEST BELOW
-
 import { t } from "testcafe";
 import uuid from "uuid/v4";
 import {
@@ -42,17 +40,17 @@ const config = compose(
 
 createFixture({
   url: TEST_PAGE,
-  title: "cgif_FT2: FPID from a custom FPID cookie is used to generate an ECID",
+  title: "C6842981: FPID from a custom FPID cookie is used to generate an ECID",
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({
-  ID: "cgif_FT2",
+  ID: "C6842981",
   SEVERTIY: "P0",
   TEST_RUN: "Regression"
 });
 
-test("cgif_FT2: FPID from a custom FPID cookie generates an ECID", async () => {
+test("C6842981: FPID from a custom FPID cookie generates an ECID", async () => {
   await t.setCookies({
     name: "myFPID",
     value: uuid(),
