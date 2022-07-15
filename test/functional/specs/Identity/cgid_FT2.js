@@ -12,67 +12,6 @@ governing permissions and limitations under the License.
 
 // ORIGINAL TEST BELOW
 
-// import { t } from "testcafe";
-// import uuid from "uuid/v4";
-// import {
-//   compose,
-//   orgMainConfigMain,
-//   debugEnabled,
-//   migrationDisabled,
-//   thirdPartyCookiesDisabled
-// } from "../../helpers/constants/configParts";
-// import { TEST_PAGE } from "../../helpers/constants/url";
-// import createNetworkLogger from "../../helpers/networkLogger";
-// import createAlloyProxy from "../../helpers/createAlloyProxy";
-// import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
-// import createFixture from "../../helpers/createFixture";
-// import reloadPage from "../../helpers/reloadPage";
-// import cookies from "../../helpers/cookies";
-// import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
-
-// const networkLogger = createNetworkLogger();
-// const config = compose(
-//   orgMainConfigMain,
-//   debugEnabled,
-//   migrationDisabled,
-//   thirdPartyCookiesDisabled
-// );
-
-// createFixture({
-//   url: TEST_PAGE,
-//   title: "cgif_FT2: FPID from a FPID cookie is used to generate an ECID",
-//   requestHooks: [networkLogger.edgeEndpointLogs]
-// });
-
-// test.meta({
-//   ID: "cgif_FT2",
-//   SEVERTIY: "P0",
-//   TEST_RUN: "Regression"
-// });
-
-// test("cgif_FT2: FPID from FPID cookie generates ECID", async () => {
-//   const alloy = createAlloyProxy();
-//   await alloy.configure(config);
-//   await cookies.set({
-//     name: "FPID",
-//     value: uuid(),
-//     domain: "alloyio.com"
-//   });
-//   await alloy.sendEvent();
-//   const ecid = getReturnedEcid(networkLogger.edgeEndpointLogs.requests[0]);
-//   await reloadPage();
-//   await cookies.remove(MAIN_IDENTITY_COOKIE_NAME);
-
-//   await alloy.configure(config);
-//   await alloy.sendEvent();
-//   const ecidCompare = getReturnedEcid(
-//     networkLogger.edgeEndpointLogs.requests[1]
-//   );
-
-//   await t.expect(ecid).eql(ecidCompare);
-// });
-
-// DEBUGGING TEST
 import { t } from "testcafe";
 import uuid from "uuid/v4";
 import {
@@ -88,6 +27,9 @@ import createNetworkLogger from "../../helpers/networkLogger";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
 import createFixture from "../../helpers/createFixture";
+import reloadPage from "../../helpers/reloadPage";
+import cookies from "../../helpers/cookies";
+import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
 
 const networkLogger = createNetworkLogger();
 const config = compose(
@@ -100,7 +42,7 @@ const config = compose(
 
 createFixture({
   url: TEST_PAGE,
-  title: "cgif_FT2: FPID from a FPID cookie is used to generate an ECID",
+  title: "cgif_FT2: FPID from a custom FPID cookie is used to generate an ECID",
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
@@ -110,37 +52,28 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("cgif_FT2: FPID from FPID cookie generates ECID", async () => {
-  const alloy = createAlloyProxy();
+test("cgif_FT2: FPID from a custom FPID cookie generates an ECID", async () => {
+  await t.setCookies({
+    name: "myFPID",
+    value: uuid(),
+    domain: "alloyio.com",
+    path: "/"
+  });
 
-  await t.setCookies({ name: "FPID", value: uuid(), domain: "alloyio.com" });
-  const c = await t.getCookies();
-  console.log("Test Cookies", c);
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  await alloy.sendEvent();
+
+  const ecid = getReturnedEcid(networkLogger.edgeEndpointLogs.requests[0]);
+  await reloadPage();
+
+  await cookies.remove(MAIN_IDENTITY_COOKIE_NAME);
 
   await alloy.configure(config);
-  console.log("Config", config);
   await alloy.sendEvent();
-  console.log(
-    "Headers",
-    networkLogger.edgeEndpointLogs.requests[0].request.headers
-  );
-  const ecid = getReturnedEcid(networkLogger.edgeEndpointLogs.requests[0]);
-  // await cookies.remove(MAIN_IDENTITY_COOKIE_NAME);
 
-  // await alloy.configure(config);
-  await alloy.sendEvent();
   const ecidCompare = getReturnedEcid(
     networkLogger.edgeEndpointLogs.requests[1]
   );
-  console.log(
-    "Cookies",
-    networkLogger.edgeEndpointLogs.requests[1].request.headers
-  );
-
-  t.debug();
-  await t
-    .expect(networkLogger.edgeEndpointLogs.requests[1].request.headers.cookies)
-    .contains("FPID");
-  t.debug();
   await t.expect(ecid).eql(ecidCompare);
 });

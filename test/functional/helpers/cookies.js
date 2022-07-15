@@ -1,4 +1,8 @@
-import { ClientFunction } from "testcafe";
+import { ClientFunction, t } from "testcafe";
+
+const blankOutCookieInBrowser = ClientFunction(name => {
+  document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+});
 
 export default {
   clear: ClientFunction(() => {
@@ -32,7 +36,11 @@ export default {
 
     return cookies[name] || undefined;
   }),
-  remove: ClientFunction(name => {
-    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-  })
+  async remove(name) {
+    // From testing, I noticed that Web SDK no longer has access to the cookies
+    // when we use cookies.remove, and the browser no longer has access to the cookies
+    // when we use t.deleteCookies. So I call both here.
+    await blankOutCookieInBrowser(name);
+    await t.deleteCookies(name);
+  }
 };
