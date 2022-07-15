@@ -12,9 +12,20 @@ governing permissions and limitations under the License.
 
 import { getNamespacedCookieName } from "../../utils";
 import { CLUSTER } from "../../constants/cookieNameKey";
+import { MBOX_EDGE_CLUSTER } from "../../constants/legacyCookies";
 
 export default ({ orgId, cookieJar }) => {
   const clusterCookieName = getNamespacedCookieName(orgId, CLUSTER);
+  const fromClusterCookie = () => cookieJar.get(clusterCookieName);
+  const fromTarget = () => {
+    const mboxEdgeCluster = cookieJar.get(MBOX_EDGE_CLUSTER);
+    if (mboxEdgeCluster) {
+      return `t${mboxEdgeCluster}`;
+    }
+    return undefined;
+  };
 
-  return () => cookieJar.get(clusterCookieName);
+  return () => {
+    return fromClusterCookie() || fromTarget();
+  };
 };
