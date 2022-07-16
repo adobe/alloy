@@ -23,7 +23,8 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
     config.clickCollectionEnabled = true;
     eventManager = jasmine.createSpyObj("eventManager", {
       createEvent: {
-        isEmpty: () => false
+        isEmpty: () => false,
+        documentMayUnload: () => false
       },
       sendEvent: Promise.resolve()
     });
@@ -89,7 +90,8 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
 
   it("Does not send empty events", () => {
     eventManager.createEvent.and.returnValue({
-      isEmpty: () => true
+      isEmpty: () => true,
+      documentMayUnload: () => false
     });
     build();
     return clickHandler({})

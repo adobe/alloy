@@ -41,8 +41,6 @@ export default ({
             }
           };
         }
-        // TODO: move this in attachClickActivityCollector get link details here and determine whether should set use beacon
-        event.documentMayUnload(); // this is needed in case it is an exit link and but clickCollection is disabled
 
         event.mergeXdm(xdm);
         mergeDecisionsMeta(event, decisionsMeta);

@@ -30,7 +30,6 @@ describe("Personalization::createOnClickHandler", () => {
       .and.returnValue(decisionsMeta);
     event.mergeXdm = jasmine.createSpy("mergeXdm");
     event.mergeMeta = jasmine.createSpy("mergeMeta");
-    event.documentMayUnload = jasmine.createSpy("documentMayUnload");
     mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
     collectClicks = jasmine
       .createSpy("collectClicks")
@@ -59,7 +58,6 @@ describe("Personalization::createOnClickHandler", () => {
         webPageDetails: { viewName: "foo" }
       }
     });
-    expect(event.documentMayUnload).toHaveBeenCalled();
     expect(mergeDecisionsMeta).toHaveBeenCalledWith(event, decisionsMeta);
     expect(collectClicks).toHaveBeenCalledWith(
       clickedElement,
@@ -81,7 +79,6 @@ describe("Personalization::createOnClickHandler", () => {
     handleOnClick({ event, clickedElement });
 
     expect(event.mergeXdm).not.toHaveBeenCalled();
-    expect(event.documentMayUnload).not.toHaveBeenCalled();
     expect(mergeDecisionsMeta).not.toHaveBeenCalled();
     expect(collectClicks).not.toHaveBeenCalled();
   });
