@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 import { assign } from "../utils";
 import { objectOf } from "../utils/validation";
-import createGetLinkElementDetails from "./createGetLinkElementDetails";
 
 const CONFIG_DOC_URI = "https://adobe.ly/3sHh553";
 
@@ -48,12 +47,14 @@ export default ({
   coreConfigValidators,
   createConfig,
   logger,
+  getLinkDetails,
   setDebugEnabled
 }) => {
   const schema = buildSchema(coreConfigValidators, componentCreators);
   const config = createConfig(transformOptions(schema, options));
   setDebugEnabled(config.debugEnabled, { fromConfig: true });
-  const getLinkDetails = createGetLinkElementDetails(window, config, logger);
-  logger.logOnInstanceConfigured({ config, getLinkDetails });
+  // eslint-disable-next-line no-underscore-dangle
+  const ___getLinkDetails = getLinkDetails(config);
+  logger.logOnInstanceConfigured({ config, ___getLinkDetails });
   return config;
 };
