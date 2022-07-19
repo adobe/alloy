@@ -132,7 +132,8 @@ export const createExecuteCommand = ({
     const applyAepEdgeResponse = injectApplyAepEdgeResponse({
       lifecycle,
       cookieTransfer,
-      createResponse
+      createResponse,
+      processWarningsAndErrors
     });
 
     const generalConsentState = createConsentStateMachine({ logger });

@@ -14,6 +14,7 @@ import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain"
 import apiVersion from "../../constants/apiVersion";
 import { createCallbackAggregator, noop } from "../../utils";
 import mergeLifecycleResponses from "./mergeLifecycleResponses";
+import handleRequestFailure from "./handleRequestFailure";
 
 export default ({
   config,
@@ -70,17 +71,7 @@ export default ({
         processWarningsAndErrors(networkResponse);
         return networkResponse;
       })
-      .catch(error => {
-        // Regardless of whether the network call failed, an unexpected status
-        // code was returned, or the response body was malformed, we want to call
-        // the onRequestFailure callbacks, but still throw the exception.
-        const throwError = () => {
-          throw error;
-        };
-        return onRequestFailureCallbackAggregator
-          .call({ error })
-          .then(throwError, throwError);
-      })
+      .catch(handleRequestFailure(onRequestFailureCallbackAggregator))
       .then(({ parsedBody, getHeader }) => {
         // Note that networkResponse.parsedBody may be undefined if it was a
         // 204 No Content response. That's fine.

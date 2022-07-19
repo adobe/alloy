@@ -6,6 +6,7 @@ import flushPromiseChains from "../../../helpers/flushPromiseChains";
 describe("injectApplyAepEdgeResponse", () => {
   let lifecycle;
   let cookieTransfer;
+  let processWarningsAndErrors;
   let createResponse;
   let applyAepEdgeResponse;
   let request;
@@ -47,6 +48,8 @@ describe("injectApplyAepEdgeResponse", () => {
       "responseToCookies"
     ]);
 
+    processWarningsAndErrors = jasmine.createSpy("processWarningsAndErrors");
+
     request = jasmine.createSpyObj("request", {
       getId: "RID123",
       getAction: "test-action",
@@ -69,7 +72,8 @@ describe("injectApplyAepEdgeResponse", () => {
     applyAepEdgeResponse = injectApplyAepEdgeResponse({
       cookieTransfer,
       lifecycle,
-      createResponse
+      createResponse,
+      processWarningsAndErrors
     });
   });
 
@@ -176,6 +180,40 @@ describe("injectApplyAepEdgeResponse", () => {
         getHeader: jasmine.any(Function)
       });
     });
+  });
+
+  it("catches when warnings and errors in response", () => {
+    const error = new Error("whoopsie");
+    processWarningsAndErrors = jasmine
+      .createSpy("processWarningsAndErrors")
+      .and.throwError(error);
+
+    applyAepEdgeResponse = injectApplyAepEdgeResponse({
+      cookieTransfer,
+      lifecycle,
+      createResponse,
+      processWarningsAndErrors
+    });
+
+    const runOnResponseCallbacks = jasmine.createSpy("runOnResponseCallbacks");
+    const runOnRequestFailureCallbacks = jasmine.createSpy(
+      "runOnRequestFailureCallbacks"
+    );
+
+    return applyAepEdgeResponse({
+      request,
+      responseHeaders,
+      responseBody,
+      runOnResponseCallbacks,
+      runOnRequestFailureCallbacks
+    })
+      .catch(err => {
+        expect(runOnRequestFailureCallbacks).toHaveBeenCalledWith({
+          error
+        });
+        expect(err).toEqual(error);
+      })
+      .then(() => {});
   });
 
   it("returns combined result", () => {
