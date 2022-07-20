@@ -1,16 +1,16 @@
-# Target Offers Hybrid with Single-page app (SPA)
+# Personalization via Hybrid implementation and Single-page app (SPA)
 
 ## Overview
 
 This sample demonstrates using Adobe Experience Platform to get personalization content from Adobe Target.  The web page changes based on the personalization content returned.
 
-This sample retrieves personalization content server-side using the [Adobe Experience Platform APIs](https://developer.adobe.com/experience-platform-apis/) and renders it on the client-side using [Adobe Experience Platform Web SDK](https://experienceleague.adobe.com/docs/experience-platform/edge/home.html) using the `applyAepEdgeResponse` command.
+This sample retrieves personalization content server-side using the [Adobe Experience Platform APIs](https://developer.adobe.com/experience-platform-apis/) and renders it on the client-side using [Adobe Experience Platform Web SDK](https://experienceleague.adobe.com/docs/experience-platform/edge/home.html) using the `applyResponse` command.
 
 The page is also a single-page app (SPA) using react.
 
 Here is what the page looks like before and after personalization content is rendered.
 
-| without target personalization                                  | with target personalization                                            |
+| without personalization                                         | with personalization                                                   |
 |-----------------------------------------------------------------|------------------------------------------------------------------------|
 | <img src="../.assets/spa-plain.png" alt="drawing" width="800"/> | <img src="../.assets/spa-personalized.png" alt="drawing" width="800"/> |
 
@@ -111,11 +111,11 @@ fetch(
 ).then((res) => res.json());
 ```
 
-4. The appliction server returns a response with HTML and the identity and cluster cookies.
-5. Within the page, the `applyAepEdgeResponse` command is invoked passing in the headers and body of AEP response.
+4. The application server returns a response with HTML and the identity and cluster cookies.
+5. Within the page, the `applyResponse` command is invoked passing in the headers and body of AEP response.
 
 ```javascript
-alloy("applyAepEdgeResponse", {
+alloy("applyResponse", {
     "renderDecisions": true,
     "responseHeaders": {
       "cache-control": "no-cache, no-store, max-age=0, no-transform, private",
@@ -163,7 +163,7 @@ alloy("applyAepEdgeResponse", {
 
 ```
 
-6. The react app uses the `sendEvent` command to tell alloy when a view has been rendered.  In other words, each time a primary navigation link is clicked a sendEvent command is invoked with the corresponding view name.  This is important because SPAs update the DOM via javascript rather than via page reload.  When the command is fired, alloy knows to update the DOM with relevant personalization experiences automatically.
+6. The React app uses the `sendEvent` command to tell alloy when a view has been rendered.  In other words, each time a primary navigation link is clicked a sendEvent command is invoked with the corresponding view name.  This is important because SPAs update the DOM via javascript rather than via page reload.  When the command is fired, alloy knows to update the DOM with relevant personalization experiences automatically.
 
 ```javascript
 alloy("sendEvent", {
@@ -183,15 +183,15 @@ alloy("sendEvent", {
 ### Cookies
 Cookies are used to persist user identity and cluster information.  When using a hybrid implementation, the application server must handle the storing and sending of these cookies during the request lifecycle.
 
-| Cookie                   | Purpose                                                                   | Stored by          | Sent by            |
-|--------------------------|---------------------------------------------------------------------------|--------------------|--------------------|
-| kndctr_AdobeOrg_identity | Contains user identity details                                            | application server | application server |
-| kndctr_AdobeOrg_cluster  | Indicates which experience edge cluser should be used to fulfill requests | application server | application server |
+| Cookie                   | Purpose                                                                    | Stored by          | Sent by            |
+|--------------------------|----------------------------------------------------------------------------|--------------------|--------------------|
+| kndctr_AdobeOrg_identity | Contains user identity details                                             | application server | application server |
+| kndctr_AdobeOrg_cluster  | Indicates which experience edge cluster should be used to fulfill requests | application server | application server |
 
 
 ### Request placement
 
-Requests to Adobe Experience Platform API are required to get propositions and send a display notification.  When using a client-side implementation, the Web SDK makes these reqeusts when the `sendEvent` command is used.
+Requests to Adobe Experience Platform API are required to get propositions and send a display notification.  When using a client-side implementation, the Web SDK makes these requests when the `sendEvent` command is used.
 
 | Request                                        | Made by                                                      |
 |------------------------------------------------|--------------------------------------------------------------|
@@ -200,8 +200,28 @@ Requests to Adobe Experience Platform API are required to get propositions and s
 
 ### Flow Diagram
 
-<img src="../.assets/diagram-hybrid-spa.png" alt="drawing" />
-
+```mermaid
+sequenceDiagram
+  participant App server
+  participant Browser
+  participant SPA as Single Page App
+  participant Alloy
+  participant DOM
+  participant Browser Cookies
+  participant API as Adobe Experience Platform API
+  autonumber
+  Browser Cookies->>Browser: Read identity and cluster cookies
+  Browser->>App server: Page request w/cookies
+  App server->>API: Interact request
+  API->>App server: Return propositions
+  App server->>Browser: HTML response
+  Browser->>Browser Cookies: Set identity and cluster cookies
+  Browser->>Alloy: applyResponse({...});
+  SPA->>DOM: Render app view
+  SPA->>Alloy: sendEvent call w/view name
+  Alloy->>DOM: Render propositions
+  Alloy->>API: Send display notification(s)
+```
 ## Beyond the sample
 
-This sample app can serve as a starting point for you to experiment and learn more about Adobe Experience Platform. For example, you can change a few environment variables so the sample app pulls in offers from your own AEP configuration.  To do so, just open the `.env` file at the root of this repository and modify the variables.  Restart the sample app, and you're ready to experiemnt using your own personalization content.
+This sample app can serve as a starting point for you to experiment and learn more about Adobe Experience Platform. For example, you can change a few environment variables so the sample app pulls in offers from your own AEP configuration.  To do so, just open the `.env` file at the root of this repository and modify the variables.  Restart the sample app, and you're ready to experiment using your own personalization content.

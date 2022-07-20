@@ -1,4 +1,4 @@
-# Summary of Target Activities Used
+# Summary of personalization content
 
 There are two target activities that impact the page.
 

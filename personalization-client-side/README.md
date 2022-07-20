@@ -1,4 +1,4 @@
-# Target Offers Client-side
+# Client-side Personalization
 
 ## Overview
 
@@ -8,11 +8,11 @@ This sample uses the [Adobe Experience Platform Web SDK](https://experienceleagu
 
 Here is what the page looks like before and after personalization content is rendered. 
 
-| without target personalization                              | with target personalization                                       |
+| without personalization                                     | with personalization                                              |
 |-------------------------------------------------------------|-------------------------------------------------------------------|
 | <img src="../.assets/plain.png" alt="drawing" width="800"/> | <img src="../.assets/with-offers.png" alt="drawing" width="800"/> |
 
-Please review the [summary of target activities used](../TargetActivities.md) for this sample. 
+Please review the [summary of personalization content](../TargetActivities.md) for this sample. 
 
 
 ## Running the sample
@@ -72,15 +72,15 @@ function sendDisplayEvent(decision) {
 ### Cookies
 Cookies are used to persist user identity and cluster information.  When using a client-side implementation, the Web SDK handles the storing and sending of these cookies automatically during the request lifecycle.
 
-| Cookie                   | Purpose                                                                   | Stored by | Sent by |
-|--------------------------|---------------------------------------------------------------------------|-----------|---------|
-| kndctr_AdobeOrg_identity | Contains user identity details                                            | Web SDK   | Web SDK |
-| kndctr_AdobeOrg_cluster  | Indicates which experience edge cluser should be used to fulfill requests | Web SDK   | Web SDK |
+| Cookie                   | Purpose                                                                    | Stored by | Sent by |
+|--------------------------|----------------------------------------------------------------------------|-----------|---------|
+| kndctr_AdobeOrg_identity | Contains user identity details                                             | Web SDK   | Web SDK |
+| kndctr_AdobeOrg_cluster  | Indicates which experience edge cluster should be used to fulfill requests | Web SDK   | Web SDK |
 
 
 ### Request placement
 
-Requests to Adobe Experience Platform API are required to get propositions and send a display notification.  When using a client-side implementation, the Web SDK makes these reqeusts when the `sendEvent` command is used.
+Requests to Adobe Experience Platform API are required to get propositions and send a display notification.  When using a client-side implementation, the Web SDK makes these requests when the `sendEvent` command is used.
 
 | Request                                        | Made by                             |
 |------------------------------------------------|-------------------------------------|
@@ -89,8 +89,23 @@ Requests to Adobe Experience Platform API are required to get propositions and s
 
 ### Flow Diagram
 
-<img src="../.assets/diagram-client-side.png" alt="drawing" />
+```mermaid
+sequenceDiagram
+  participant Browser
+  participant Alloy
+  participant DOM
+  participant Browser Cookies
+  participant API as Adobe Experience Platform API
+  autonumber
+  Browser->>Alloy: Page load
+  Browser Cookies->>Alloy: Read identity and cluster cookies
+  Alloy->>API: Interact request
+  API->>Alloy: Return propositions
+  Alloy->>Browser Cookies: Set identity and cluster cookies
+  Alloy->>DOM: Render propositions
+  Alloy->>API: Send display notification(s)
+```
 
 ## Beyond the sample
 
-This sample app can serve as a starting point for you to experiment and learn more about Adobe Experience Platform. For example, you can change a few environment variables so the sample app pulls in offers from your own AEP configuration.  To do so, just open the `.env` file at the root of this repository and modify the variables.  Restart the sample app, and you're ready to experiemnt using your own personalization content.
+This sample app can serve as a starting point for you to experiment and learn more about Adobe Experience Platform. For example, you can change a few environment variables so the sample app pulls in offers from your own AEP configuration.  To do so, just open the `.env` file at the root of this repository and modify the variables.  Restart the sample app, and you're ready to experiment using your own personalization content.

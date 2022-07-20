@@ -45,7 +45,7 @@ function prepareTemplateVariables({ response = {} }) {
     demoDecisionScopeName,
     edgeConfigId: EDGE_CONFIG_ID,
     orgId: ORGANIZATION_ID,
-    applyAepEdgeResponseParam: JSON.stringify(
+    applyResponseParam: JSON.stringify(
       {
         renderDecisions: true,
         responseHeaders: headers,
