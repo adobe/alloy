@@ -30,6 +30,7 @@ describe("injectSendEdgeNetworkRequest", () => {
   let response;
   let createResponse;
   let processWarningsAndErrors;
+  let getLocationHint;
   let sendEdgeNetworkRequest;
   let request;
 
@@ -134,6 +135,7 @@ describe("injectSendEdgeNetworkRequest", () => {
       .createSpy("createResponse")
       .and.returnValue(response);
     processWarningsAndErrors = jasmine.createSpy("processWarningsAndErrors");
+    getLocationHint = jasmine.createSpy("getLocationHint");
     sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
       config,
       logger,
@@ -141,7 +143,8 @@ describe("injectSendEdgeNetworkRequest", () => {
       cookieTransfer,
       sendNetworkRequest,
       createResponse,
-      processWarningsAndErrors
+      processWarningsAndErrors,
+      getLocationHint
     });
   });
 
@@ -441,6 +444,21 @@ describe("injectSendEdgeNetworkRequest", () => {
       expect(createResponse).toHaveBeenCalledWith({
         content: { my: "parsedBody" },
         getHeader: networkResult.getHeader
+      });
+    });
+  });
+
+  it("uses the cluster cookie location hint", () => {
+    getLocationHint.and.returnValue("va6");
+    return sendEdgeNetworkRequest({ request }).then(() => {
+      expect(sendNetworkRequest).toHaveBeenCalledWith({
+        requestId: "RID123",
+        url:
+          "https://edge.example.com/ee/va6/v1/test-action?configId=myconfigId&requestId=RID123",
+        payload: {
+          type: "payload"
+        },
+        useSendBeacon: false
       });
     });
   });
