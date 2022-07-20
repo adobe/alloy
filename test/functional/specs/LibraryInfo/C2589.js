@@ -27,7 +27,7 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
   const currentVersion = process.env.npm_package_version;
   const currentCommand = [
     "appendIdentityToUrl",
-    "applyAepEdgeResponse",
+    "applyResponse",
     "applyPropositions",
     "configure",
     "createEventMergeId",

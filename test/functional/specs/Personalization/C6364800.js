@@ -115,7 +115,7 @@ test.meta({
 
 createFixture({
   title:
-    "C6364800 applyAepEdgeResponse accepts a response, updates DOM and returns decisions",
+    "C6364800 applyResponse accepts a response, updates DOM and returns decisions",
   url: `${TEST_PAGE_URL}?test=C6364800`,
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
@@ -154,7 +154,7 @@ const getEdgeResponseDecision = responseBody => {
   );
 };
 
-test("C6364800 applyAepEdgeResponse accepts a response, updates DOM and returns decisions", async () => {
+test("C6364800 applyResponse accepts a response, updates DOM and returns decisions", async () => {
   const [responseHeaders, responseBody] = await getAepEdgeResponse(uuid());
 
   await addHtmlToHeader(testPageHead);
@@ -162,7 +162,7 @@ test("C6364800 applyAepEdgeResponse accepts a response, updates DOM and returns 
 
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  const { decisions } = await alloy.applyAepEdgeResponse({
+  const { decisions } = await alloy.applyResponse({
     renderDecisions: true,
     responseHeaders,
     responseBody

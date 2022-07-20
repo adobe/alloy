@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import validateUserEventOptions from "./validateUserEventOptions";
-import validateApplyAepEdgeResponse from "./validateApplyAepEdgeResponse";
+import validateApplyResponse from "./validateApplyResponse";
 
 const createDataCollector = ({ eventManager }) => {
   return {
@@ -67,10 +67,10 @@ const createDataCollector = ({ eventManager }) => {
           });
         }
       },
-      applyAepEdgeResponse: {
+      applyResponse: {
         documentationUri: "",
         optionsValidator: options => {
-          return validateApplyAepEdgeResponse({ options });
+          return validateApplyResponse({ options });
         },
         run: options => {
           const {
@@ -81,7 +81,7 @@ const createDataCollector = ({ eventManager }) => {
 
           const event = eventManager.createEvent();
 
-          return eventManager.applyAepEdgeResponse(event, {
+          return eventManager.applyResponse(event, {
             renderDecisions,
             responseHeaders,
             responseBody

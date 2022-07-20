@@ -25,7 +25,7 @@ export default ({
   createDataCollectionRequestPayload,
   createDataCollectionRequest,
   sendEdgeNetworkRequest,
-  applyAepEdgeResponse
+  applyResponse
 }) => {
   const { onBeforeEventSend } = config;
 
@@ -99,7 +99,7 @@ export default ({
           });
         });
     },
-    applyAepEdgeResponse(event, options = {}) {
+    applyResponse(event, options = {}) {
       const {
         renderDecisions = false,
         responseHeaders = {},
@@ -120,7 +120,7 @@ export default ({
         })
         .then(() => {
           payload.addEvent(event);
-          return applyAepEdgeResponse({
+          return applyResponse({
             request,
             responseHeaders,
             responseBody,

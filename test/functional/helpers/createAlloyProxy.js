@@ -84,7 +84,7 @@ const getLastErrorMessage = ClientFunction(() => {
 const commands = [
   "configure",
   "sendEvent",
-  "applyAepEdgeResponse",
+  "applyResponse",
   "setConsent",
   "getIdentity",
   "setDebug",

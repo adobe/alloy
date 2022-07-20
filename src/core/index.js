@@ -51,7 +51,7 @@ import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsA
 import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint";
 import isRequestRetryable from "./network/isRequestRetryable";
 import getRequestRetryDelay from "./network/getRequestRetryDelay";
-import injectApplyAepEdgeResponse from "./edgeNetwork/injectApplyAepEdgeResponse";
+import injectApplyResponse from "./edgeNetwork/injectApplyResponse";
 
 const createNamespacedStorage = injectStorage(window);
 
@@ -129,7 +129,7 @@ export const createExecuteCommand = ({
       getLocationHint
     });
 
-    const applyAepEdgeResponse = injectApplyAepEdgeResponse({
+    const applyResponse = injectApplyResponse({
       lifecycle,
       cookieTransfer,
       createResponse,
@@ -150,7 +150,7 @@ export const createExecuteCommand = ({
       createDataCollectionRequestPayload,
       createDataCollectionRequest,
       sendEdgeNetworkRequest,
-      applyAepEdgeResponse
+      applyResponse
     });
     return initializeComponents({
       componentCreators,

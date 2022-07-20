@@ -1,9 +1,9 @@
-import validateApplyAepEdgeResponse from "../../../../../src/components/DataCollector/validateApplyAepEdgeResponse";
+import validateApplyResponse from "../../../../../src/components/DataCollector/validateApplyResponse";
 
-describe("DataCollector::validateApplyAepEdgeResponse", () => {
+describe("DataCollector::validateApplyResponse", () => {
   it("does not throw error for valid options", () => {
     expect(() => {
-      validateApplyAepEdgeResponse({
+      validateApplyResponse({
         options: {
           responseBody: {
             handle: [
@@ -20,7 +20,7 @@ describe("DataCollector::validateApplyAepEdgeResponse", () => {
 
   it("throws error for invalid options", () => {
     expect(() => {
-      validateApplyAepEdgeResponse({
+      validateApplyResponse({
         options: {
           who_dis: true
         }

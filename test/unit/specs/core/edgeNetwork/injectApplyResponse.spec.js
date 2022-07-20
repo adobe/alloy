@@ -1,14 +1,14 @@
-import injectApplyAepEdgeResponse from "../../../../../src/core/edgeNetwork/injectApplyAepEdgeResponse";
+import injectApplyResponse from "../../../../../src/core/edgeNetwork/injectApplyResponse";
 import assertFunctionCallOrder from "../../../helpers/assertFunctionCallOrder";
 import { defer } from "../../../../../src/utils";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
-describe("injectApplyAepEdgeResponse", () => {
+describe("injectApplyResponse", () => {
   let lifecycle;
   let cookieTransfer;
   let processWarningsAndErrors;
   let createResponse;
-  let applyAepEdgeResponse;
+  let applyResponse;
   let request;
   let response;
   let responseHeaders;
@@ -19,7 +19,7 @@ describe("injectApplyAepEdgeResponse", () => {
     assertLifecycleCall
   }) => {
     const successHandler = jasmine.createSpy("successHandler");
-    applyAepEdgeResponse({
+    applyResponse({
       request,
       responseHeaders,
       responseBody,
@@ -69,7 +69,7 @@ describe("injectApplyAepEdgeResponse", () => {
       .createSpy("createResponse")
       .and.returnValue(response);
 
-    applyAepEdgeResponse = injectApplyAepEdgeResponse({
+    applyResponse = injectApplyResponse({
       cookieTransfer,
       lifecycle,
       createResponse,
@@ -120,7 +120,7 @@ describe("injectApplyAepEdgeResponse", () => {
   });
 
   it("transfers cookies from response before lifecycle.onResponse", () => {
-    return applyAepEdgeResponse({
+    return applyResponse({
       request,
       responseHeaders,
       responseBody
@@ -143,7 +143,7 @@ describe("injectApplyAepEdgeResponse", () => {
     );
 
     return expectAsync(
-      applyAepEdgeResponse({
+      applyResponse({
         request,
         responseHeaders,
         responseBody,
@@ -161,7 +161,7 @@ describe("injectApplyAepEdgeResponse", () => {
     });
     lifecycle.onResponse.and.returnValue(Promise.resolve([{ c: 2 }]));
     return expectAsync(
-      applyAepEdgeResponse({ request, responseHeaders, responseBody })
+      applyResponse({ request, responseHeaders, responseBody })
     ).toBeResolvedTo({
       a: 1,
       b: 1,
@@ -170,7 +170,7 @@ describe("injectApplyAepEdgeResponse", () => {
   });
 
   it("creates the response with the correct parameters", () => {
-    return applyAepEdgeResponse({
+    return applyResponse({
       request,
       responseHeaders,
       responseBody
@@ -188,7 +188,7 @@ describe("injectApplyAepEdgeResponse", () => {
       .createSpy("processWarningsAndErrors")
       .and.throwError(error);
 
-    applyAepEdgeResponse = injectApplyAepEdgeResponse({
+    applyResponse = injectApplyResponse({
       cookieTransfer,
       lifecycle,
       createResponse,
@@ -200,7 +200,7 @@ describe("injectApplyAepEdgeResponse", () => {
       "runOnRequestFailureCallbacks"
     );
 
-    return applyAepEdgeResponse({
+    return applyResponse({
       request,
       responseHeaders,
       responseBody,
@@ -221,7 +221,7 @@ describe("injectApplyAepEdgeResponse", () => {
       .createSpy("runOnResponseCallbacks")
       .and.returnValue(Promise.resolve([{ c: 2 }, { h: 9 }, undefined]));
 
-    return applyAepEdgeResponse({
+    return applyResponse({
       request,
       responseHeaders,
       responseBody,
