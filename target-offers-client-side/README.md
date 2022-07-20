@@ -74,7 +74,7 @@ Cookies are used to persist user identity and cluster information.  When using a
 
 | Cookie                   | Purpose                                                                   | Stored by | Sent by |
 |--------------------------|---------------------------------------------------------------------------|-----------|---------|
-| kndctr_AdobeOrg_identity | Contains user idenity details                                             | Web SDK   | Web SDK |
+| kndctr_AdobeOrg_identity | Contains user identity details                                            | Web SDK   | Web SDK |
 | kndctr_AdobeOrg_cluster  | Indicates which experience edge cluser should be used to fulfill requests | Web SDK   | Web SDK |
 
 
