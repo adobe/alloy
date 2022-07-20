@@ -16,9 +16,10 @@ const createClickHandler = ({
   eventManager,
   lifecycle,
   handleError,
-  onBeforeLinkClickSent
+  config
 }) => {
   return clickEvent => {
+    const { onBeforeLinkClickSend, clickCollectionEnabled } = config;
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
     const clickedElement = clickEvent.target;
     const event = eventManager.createEvent();
@@ -28,23 +29,24 @@ const createClickHandler = ({
       lifecycle
         .onClick({ event, clickedElement })
         .then(() => {
-          const options = {
-            clickedElement
-          };
-          try {
-            const shouldEventBeSent = event.augmentEvent(
-              onBeforeLinkClickSent,
-              options
-            );
-
-            if (event.isEmpty() || !shouldEventBeSent) {
+          let shouldEventBeSent = true;
+          const options = { clickedElement };
+          if (clickCollectionEnabled) {
+            try {
+              shouldEventBeSent = event.augmentEvent(
+                onBeforeLinkClickSend,
+                options
+              );
+            } catch (error) {
+              handleError(
+                error,
+                "An error occurred while executing the onBeforeLinkClickSend callback function."
+              );
               return Promise.resolve();
             }
-          } catch (error) {
-            handleError(
-              error,
-              "An error occurred while executing the onBeforeLinkClickSent callback function."
-            );
+          }
+
+          if (event.isEmpty() || !shouldEventBeSent) {
             return Promise.resolve();
           }
 
@@ -61,17 +63,11 @@ const createClickHandler = ({
 };
 
 export default ({ config, eventManager, lifecycle, handleError }) => {
-  const enabled = config.clickCollectionEnabled;
-
-  if (!enabled) {
-    return;
-  }
-  const { onBeforeLinkClickSent } = config;
   const clickHandler = createClickHandler({
     eventManager,
     lifecycle,
     handleError,
-    onBeforeLinkClickSent
+    config
   });
 
   document.addEventListener("click", clickHandler, true);

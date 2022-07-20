@@ -14,7 +14,6 @@ import { string, boolean } from "../../utils/validation";
 
 export default {
   clickCollectionEnabled: boolean().default(true),
-  linkClickCollectionEnabled: boolean().default(false),
   downloadLinkQualifier: string()
     .regexp()
     .default(

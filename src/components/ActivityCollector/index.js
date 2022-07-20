@@ -32,7 +32,10 @@ const createActivityCollector = ({ config, eventManager, handleError }) => {
         // TODO: createScrollActivityCollector ...
       },
       onClick({ event, clickedElement }) {
-        linkClick(event, clickedElement);
+        const { clickCollectionEnabled } = config;
+        if (clickCollectionEnabled) {
+          linkClick(event, clickedElement);
+        }
       }
     }
   };

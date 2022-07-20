@@ -41,12 +41,7 @@ const findSupportedAnchorElement = targetElement => {
 };
 
 export default (window, config) => {
-  const linkClickCollectionEnabled = config.linkClickCollectionEnabled;
   return targetElement => {
-    if (!linkClickCollectionEnabled) {
-      return undefined;
-    }
-
     // Search parent elements for an anchor element
     // TODO: Replace with generic DOM tool that can fetch configured properties
     const anchorElement = findSupportedAnchorElement(targetElement);
