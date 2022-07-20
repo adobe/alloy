@@ -1,14 +1,10 @@
-// eslint-disable-next-line import/no-named-as-default
-import createGetLinkDetails from "../components/ActivityCollector/createGetLinkDetails";
-
-export default (window, logger) => {
+export default (logger, getLinkDetails) => {
   return config => {
     const { onBeforeLinkClickSend } = config;
     return element => {
       if (!element) {
         return undefined;
       }
-      const getLinkDetails = createGetLinkDetails(window, config);
       const linkDetails = getLinkDetails(element);
       if (!linkDetails) {
         return undefined;
@@ -33,9 +29,9 @@ export default (window, logger) => {
         clickedElement: element
       };
       try {
-        const shouldLinkBeCounted = onBeforeLinkClickSend(tempContent);
+        const shouldSendLinkClick = onBeforeLinkClickSend(tempContent);
 
-        if (shouldLinkBeCounted) {
+        if (shouldSendLinkClick) {
           return tempContent.xdm;
         }
 

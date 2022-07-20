@@ -52,6 +52,7 @@ import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint";
 import isRequestRetryable from "./network/isRequestRetryable";
 import getRequestRetryDelay from "./network/getRequestRetryDelay";
 import createGetLinkElementDetails from "./createGetLinkElementDetails";
+import createGetLinkDetails from "../components/ActivityCollector/createGetLinkDetails";
 
 const createNamespacedStorage = injectStorage(window);
 
@@ -80,8 +81,13 @@ export const createExecuteCommand = ({
   };
 
   const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
-  const getLinkDetails = createGetLinkElementDetails(window, logger);
   const configureCommand = options => {
+    const getLinkClickDetails = createGetLinkDetails(window, options);
+    const getLinkDetails = createGetLinkElementDetails(
+      logger,
+      getLinkClickDetails
+    );
+
     const config = buildAndValidateConfig({
       options,
       componentCreators,

@@ -32,5 +32,5 @@ export default () => ({
     .unique()
     .required(),
   onBeforeEventSend: callback().default(noop),
-  onBeforeLinkClickSent: callback().default(noop)
+  onBeforeLinkClickSend: callback().default(noop)
 });

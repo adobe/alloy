@@ -47,8 +47,8 @@ export default ({
   coreConfigValidators,
   createConfig,
   logger,
-  getLinkDetails,
-  setDebugEnabled
+  setDebugEnabled,
+  getLinkDetails
 }) => {
   const schema = buildSchema(coreConfigValidators, componentCreators);
   const config = createConfig(transformOptions(schema, options));
