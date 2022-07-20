@@ -16,6 +16,7 @@ import configValidators from "../../../../../src/components/ActivityCollector/co
 
 describe("ActivityCollector::createLinkClick", () => {
   const config = {
+    clickCollectionEnabled: true,
     downloadLinkQualifier: configValidators.downloadLinkQualifier.defaultValue
   };
   const mockWindow = {
@@ -36,15 +37,31 @@ describe("ActivityCollector::createLinkClick", () => {
     href: "index.html",
     nodeType: 1
   };
-  const linkClick = createLinkClick(mockWindow, config);
+
   it("Extends event XDM data with link information for supported anchor elements", () => {
+    const linkClick = createLinkClick(mockWindow, config);
     const event = createEvent();
     linkClick(event, supportedLinkElement);
     expect(event.isEmpty()).toBe(false);
   });
   it("Does not extend event XDM data with link information for unsupported anchor elements", () => {
+    const linkClick = createLinkClick(mockWindow, config);
     const event = createEvent();
     linkClick(event, unsupportedLinkElement);
+    expect(event.isEmpty()).toBe(true);
+  });
+
+  it("Does not extend event XDM data with link information when clickCollectionEnabled disabled", () => {
+    const clickCollectionDisabledConfig = {
+      clickCollectionEnabled: false,
+      downloadLinkQualifier: configValidators.downloadLinkQualifier.defaultValue
+    };
+    const linkClick = createLinkClick(
+      mockWindow,
+      clickCollectionDisabledConfig
+    );
+    const event = createEvent();
+    linkClick(event, supportedLinkElement);
     expect(event.isEmpty()).toBe(true);
   });
 });

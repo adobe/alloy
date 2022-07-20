@@ -17,6 +17,8 @@ const createClickHandler = ({ eventManager, lifecycle, handleError }) => {
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
     const clickedElement = clickEvent.target;
     const event = eventManager.createEvent();
+    // this is to make sure a exit link personalization metric use send beacon
+    event.documentMayUnload();
     return (
       lifecycle
         .onClick({ event, clickedElement })
@@ -36,13 +38,7 @@ const createClickHandler = ({ eventManager, lifecycle, handleError }) => {
   };
 };
 
-export default ({ config, eventManager, lifecycle, handleError }) => {
-  const enabled = config.clickCollectionEnabled;
-
-  if (!enabled) {
-    return;
-  }
-
+export default ({ eventManager, lifecycle, handleError }) => {
   const clickHandler = createClickHandler({
     eventManager,
     lifecycle,
