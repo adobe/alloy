@@ -48,13 +48,13 @@ export default ({
   createConfig,
   logger,
   setDebugEnabled,
-  getLinkDetails
+  getAnchorElementDetails
 }) => {
   const schema = buildSchema(coreConfigValidators, componentCreators);
   const config = createConfig(transformOptions(schema, options));
   setDebugEnabled(config.debugEnabled, { fromConfig: true });
   // eslint-disable-next-line no-underscore-dangle
-  const ___getLinkDetails = getLinkDetails(config);
+  const ___getLinkDetails = getAnchorElementDetails(config);
   logger.logOnInstanceConfigured({ config, ___getLinkDetails });
   return config;
 };

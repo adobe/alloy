@@ -16,8 +16,8 @@ import createLinkClick from "./createLinkClick";
 import createGetLinkDetails from "./createGetLinkDetails";
 
 const createActivityCollector = ({ config, eventManager, handleError }) => {
-  const getLinkDetails = createGetLinkDetails(window, config);
-  const linkClick = createLinkClick(getLinkDetails);
+  const getLinkDetails = createGetLinkDetails(window);
+  const linkClick = createLinkClick(getLinkDetails, config);
 
   return {
     lifecycle: {
@@ -32,10 +32,7 @@ const createActivityCollector = ({ config, eventManager, handleError }) => {
         // TODO: createScrollActivityCollector ...
       },
       onClick({ event, clickedElement }) {
-        const { clickCollectionEnabled } = config;
-        if (clickCollectionEnabled) {
-          linkClick(event, clickedElement);
-        }
+        linkClick(event, clickedElement);
       }
     }
   };

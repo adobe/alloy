@@ -5,7 +5,7 @@ export default (logger, getLinkDetails) => {
       if (!element) {
         return undefined;
       }
-      const linkDetails = getLinkDetails(element);
+      const linkDetails = getLinkDetails(element, config);
       if (!linkDetails) {
         return undefined;
       }

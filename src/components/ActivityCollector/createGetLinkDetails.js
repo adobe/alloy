@@ -40,8 +40,8 @@ const findSupportedAnchorElement = targetElement => {
   return null;
 };
 
-export default (window, config) => {
-  return targetElement => {
+export default window => {
+  return (targetElement, config) => {
     // Search parent elements for an anchor element
     // TODO: Replace with generic DOM tool that can fetch configured properties
     const anchorElement = findSupportedAnchorElement(targetElement);
