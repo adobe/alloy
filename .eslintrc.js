@@ -27,13 +27,17 @@ module.exports = {
     "prefer-destructuring": "off",
     "import/prefer-default-export": "off",
     // Make rules about importing between the top level folders
-    // core can import from components, utils, and constants
+    // core can import from utils, and constants
     // components can import from utils, and constants
     // utils can import from constants
     "import/no-restricted-paths": [
       "error",
       {
         zones: [
+          {
+            from: "./src/components",
+            target: "./src/core"
+          },
           {
             from: "./src/core",
             target: "./src/components"

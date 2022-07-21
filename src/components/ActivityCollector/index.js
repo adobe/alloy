@@ -14,9 +14,11 @@ import attachClickActivityCollector from "./attachClickActivityCollector";
 import configValidators from "./configValidators";
 import createLinkClick from "./createLinkClick";
 import createGetLinkDetails from "./createGetLinkDetails";
+import createGetAnchorElementDetails from "./createGetAnchorElementDetails";
+
+const getLinkDetails = createGetLinkDetails(window);
 
 const createActivityCollector = ({ config, eventManager, handleError }) => {
-  const getLinkDetails = createGetLinkDetails(window);
   const linkClick = createLinkClick(getLinkDetails, config);
 
   return {
@@ -40,5 +42,19 @@ const createActivityCollector = ({ config, eventManager, handleError }) => {
 
 createActivityCollector.namespace = "ActivityCollector";
 createActivityCollector.configValidators = configValidators;
+createActivityCollector.buildOnInstanceConfiguredExtraParams = ({
+  config,
+  logger
+}) => {
+  const getAnchorElementDetails = createGetAnchorElementDetails({
+    logger,
+    getLinkDetails,
+    config
+  });
+
+  return {
+    onLinkClick: getAnchorElementDetails
+  };
+};
 
 export default createActivityCollector;

@@ -51,8 +51,6 @@ import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsA
 import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint";
 import isRequestRetryable from "./network/isRequestRetryable";
 import getRequestRetryDelay from "./network/getRequestRetryDelay";
-import createGetAnchorElementDetails from "./createGetAnchorElementDetails";
-import createGetLinkDetails from "../components/ActivityCollector/createGetLinkDetails";
 
 const createNamespacedStorage = injectStorage(window);
 
@@ -82,18 +80,11 @@ export const createExecuteCommand = ({
 
   const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
   const configureCommand = options => {
-    const getLinkDetails = createGetLinkDetails(window);
-    const getAnchorElementDetails = createGetAnchorElementDetails(
-      logger,
-      getLinkDetails
-    );
-
     const config = buildAndValidateConfig({
       options,
       componentCreators,
       coreConfigValidators,
       createConfig,
-      getAnchorElementDetails,
       logger,
       setDebugEnabled
     });
