@@ -13,7 +13,6 @@ import assertValid from "./assertValid";
 import isUnique from "../isUnique";
 
 export default () => {
-  // const values = [];
   return (value, path) => {
     assertValid(isUnique(value), value, path, "array values to be unique");
   };
