@@ -20,6 +20,14 @@ describe("Identity::getIdentityOptionsValidator", () => {
     );
 
     expect(() => {
+      getIdentityOptionsValidator({ namespaces: ["ECID", "ECID"] });
+    }).toThrow(
+      new Error(
+        `'namespaces': Expected array values to be unique, but got ["ECID","ECID"].`
+      )
+    );
+
+    expect(() => {
       getIdentityOptionsValidator({ namespaces: ["ACD"] });
     }).toThrow(new Error(`'namespaces[0]': Expected ECID, but got "ACD".`));
   });
