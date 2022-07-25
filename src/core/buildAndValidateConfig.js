@@ -74,6 +74,6 @@ export default ({
     logger,
     componentCreators
   );
-  logger.onInstanceConfigured({ ...extraParams, config });
+  logger.logOnInstanceConfigured({ ...extraParams, config });
   return config;
 };

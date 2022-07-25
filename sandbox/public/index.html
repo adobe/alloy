@@ -109,7 +109,6 @@
           "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
         orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
         debugEnabled: true,
-        linkClickCollectionEnabled: true, // false by default
         idMigrationEnabled: !(
           getUrlParameter("idMigrationEnabled") === "false"
         ),
@@ -131,25 +130,22 @@
           xdm._unifiedjsqeonly = _unifiedjsqeonly;
           return true;
         },
-        onBeforeLinkClickSent: function(options) {
+        onBeforeLinkClickSend: function(options) {
           // options.linkElement
           // options.xdm
           // options.data
-          const linkElement = options.linkElement;
-          if (linkElement === "") {
-          }
+
           const xdm = options.xdm;
           const data = options.data;
 
-          xdm.web.webInteraction.region = "header-1";
-
-          xdm.web.webPageDetails = {
-            viewName: "link-click-test-view-name",
-            pageName: "test-page-name"
-          };
           data.custom = "custom field";
+          if(xdm && xdm.web && xdm.web.webInteraction && xdm.web.webInteraction.name === "Large Payload") {
+            xdm.web.webInteraction.name = "changed link name";
 
-          return true;
+            return true;
+          }
+
+          return false;
         }
       });
 

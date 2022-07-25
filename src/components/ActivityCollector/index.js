@@ -53,7 +53,7 @@ createActivityCollector.buildOnInstanceConfiguredExtraParams = ({
   });
 
   return {
-    onLinkClick: getAnchorElementDetails
+    getLinkDetails: getAnchorElementDetails
   };
 };
 
