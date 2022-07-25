@@ -23,7 +23,8 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
     config.clickCollectionEnabled = true;
     eventManager = jasmine.createSpyObj("eventManager", {
       createEvent: {
-        isEmpty: () => false
+        isEmpty: () => false,
+        documentMayUnload: () => false
       },
       sendEvent: Promise.resolve()
     });
@@ -51,10 +52,10 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
     expect(document.addEventListener).toHaveBeenCalled();
   });
 
-  it("Does not attach click handler if clickCollectionEnabled is set to false", () => {
+  it("Attaches click handler if clickCollectionEnabled is set to false", () => {
     config.clickCollectionEnabled = false;
     build();
-    expect(document.addEventListener).not.toHaveBeenCalled();
+    expect(document.addEventListener).toHaveBeenCalled();
   });
 
   it("Publishes onClick lifecycle events at clicks when clickCollectionEnabled is set to true", () => {
@@ -89,7 +90,8 @@ describe("ActivityCollector::attachClickActivityCollector", () => {
 
   it("Does not send empty events", () => {
     eventManager.createEvent.and.returnValue({
-      isEmpty: () => true
+      isEmpty: () => true,
+      documentMayUnload: () => false
     });
     build();
     return clickHandler({})

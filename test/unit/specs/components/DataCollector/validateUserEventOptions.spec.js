@@ -49,6 +49,9 @@ describe("DataCollector::validateUserEventOptions", () => {
             ]
           }
         }
+      },
+      {
+        decisionScopes: ["item1", "item1"]
       }
     ].forEach(options => {
       expect(() => {

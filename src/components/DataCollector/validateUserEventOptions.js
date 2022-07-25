@@ -26,7 +26,7 @@ export default ({ options }) => {
     }),
     data: objectOf({}),
     renderDecisions: boolean(),
-    decisionScopes: arrayOf(string()),
+    decisionScopes: arrayOf(string()).uniqueItems(),
     datasetId: string()
   }).required();
   return eventOptionsValidator(options);

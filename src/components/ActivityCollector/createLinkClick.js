@@ -40,6 +40,10 @@ const findSupportedAnchorElement = targetElement => {
 
 export default (window, config) => {
   return (event, targetElement) => {
+    const clickCollectionEnabled = config.clickCollectionEnabled;
+    if (!clickCollectionEnabled) {
+      return;
+    }
     // Search parent elements for an anchor element
     // TODO: Replace with generic DOM tool that can fetch configured properties
     const anchorElement = findSupportedAnchorElement(targetElement);
