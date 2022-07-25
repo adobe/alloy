@@ -29,9 +29,13 @@ export default ({ logger, getLinkDetails, config }) => {
     };
 
     try {
-      onBeforeLinkClickSend(fakeEventContent);
+      const trackedLinkClickEvent = onBeforeLinkClickSend(fakeEventContent);
 
-      return fakeEventContent.xdm;
+      if (trackedLinkClickEvent) {
+        return fakeEventContent.xdm;
+      }
+
+      return undefined;
     } catch (error) {
       logger.info(
         "An error occurred while executing the onBeforeLinkClickSend callback function.",
