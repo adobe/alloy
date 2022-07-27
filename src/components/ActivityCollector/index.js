@@ -14,12 +14,26 @@ import attachClickActivityCollector from "./attachClickActivityCollector";
 import configValidators from "./configValidators";
 import createLinkClick from "./createLinkClick";
 import createGetLinkDetails from "./createGetLinkDetails";
-import createGetAnchorElementDetails from "./createGetAnchorElementDetails";
+import getLinkName from "./getLinkName";
+import getLinkRegion from "./getLinkRegion";
+import {
+  determineLinkType,
+  findSupportedAnchorElement,
+  getAbsoluteUrlFromAnchorElement
+} from "./utils";
 
-const getLinkDetails = createGetLinkDetails(window);
+const getLinkDetails = createGetLinkDetails({
+  window,
+  getLinkName,
+  getLinkRegion,
+  getAbsoluteUrlFromAnchorElement,
+  findSupportedAnchorElement,
+  determineLinkType
+});
 
 const createActivityCollector = ({ config, eventManager, handleError }) => {
-  const linkClick = createLinkClick(getLinkDetails, config);
+  const { clickCollectionEnabled } = config;
+  const linkClick = createLinkClick({ getLinkDetails, config });
 
   return {
     lifecycle: {
@@ -34,7 +48,13 @@ const createActivityCollector = ({ config, eventManager, handleError }) => {
         // TODO: createScrollActivityCollector ...
       },
       onClick({ event, clickedElement }) {
-        linkClick(event, clickedElement);
+        if (clickCollectionEnabled) {
+          const options = linkClick(clickedElement);
+          if (options) {
+            event.mergeXdm(options.xdm);
+            event.setUserData(options.data);
+          }
+        }
       }
     }
   };
@@ -42,18 +62,13 @@ const createActivityCollector = ({ config, eventManager, handleError }) => {
 
 createActivityCollector.namespace = "ActivityCollector";
 createActivityCollector.configValidators = configValidators;
-createActivityCollector.buildOnInstanceConfiguredExtraParams = ({
-  config,
-  logger
-}) => {
-  const getAnchorElementDetails = createGetAnchorElementDetails({
-    logger,
+createActivityCollector.buildOnInstanceConfiguredExtraParams = ({ config }) => {
+  const getLinkClickDetails = createLinkClick({
     getLinkDetails,
     config
   });
-
   return {
-    getLinkDetails: getAnchorElementDetails
+    getLinkDetails: getLinkClickDetails
   };
 };
 

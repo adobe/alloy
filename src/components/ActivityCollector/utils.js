@@ -77,6 +77,26 @@ const truncateWhiteSpace = str => {
 const isEmptyString = str => {
   return !str || str.length === 0;
 };
+const determineLinkType = (window, config, linkUrl, clickedObj) => {
+  let linkType = "other";
+  if (isDownloadLink(config.downloadLinkQualifier, linkUrl, clickedObj)) {
+    linkType = "download";
+  } else if (isExitLink(window, linkUrl)) {
+    linkType = "exit";
+  }
+  return linkType;
+};
+
+const findSupportedAnchorElement = targetElement => {
+  let node = targetElement;
+  while (node) {
+    if (isSupportedAnchorElement(node)) {
+      return node;
+    }
+    node = node.parentNode;
+  }
+  return null;
+};
 
 export {
   urlStartsWithScheme,
@@ -85,5 +105,7 @@ export {
   isDownloadLink,
   isEmptyString,
   isExitLink,
-  truncateWhiteSpace
+  truncateWhiteSpace,
+  findSupportedAnchorElement,
+  determineLinkType
 };

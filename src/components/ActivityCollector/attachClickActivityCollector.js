@@ -1,5 +1,5 @@
 /*
-Copyright 2019 Adobe. All rights reserved.
+Copyright 2022 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -12,14 +12,8 @@ governing permissions and limitations under the License.
 
 import { noop } from "../../utils";
 
-const createClickHandler = ({
-  eventManager,
-  lifecycle,
-  handleError,
-  config
-}) => {
+const createClickHandler = ({ eventManager, lifecycle, handleError }) => {
   return clickEvent => {
-    const { onBeforeLinkClickSend, clickCollectionEnabled } = config;
     // TODO: Consider safeguarding from the same object being clicked multiple times in rapid succession?
     const clickedElement = clickEvent.target;
     const event = eventManager.createEvent();
@@ -29,24 +23,7 @@ const createClickHandler = ({
       lifecycle
         .onClick({ event, clickedElement })
         .then(() => {
-          let shouldEventBeSent = true;
-          const options = { clickedElement };
-          if (clickCollectionEnabled) {
-            try {
-              shouldEventBeSent = event.augmentEvent(
-                onBeforeLinkClickSend,
-                options
-              );
-            } catch (error) {
-              handleError(
-                error,
-                "An error occurred while executing the onBeforeLinkClickSend callback function."
-              );
-              return Promise.resolve();
-            }
-          }
-
-          if (event.isEmpty() || !shouldEventBeSent) {
+          if (event.isEmpty()) {
             return Promise.resolve();
           }
 
