@@ -100,6 +100,7 @@
     "karma-sauce-launcher": "^4.3.6",
     "karma-spec-reporter": "0.0.32",
     "lint-staged": "^10.5.4",
+    "node-fetch": "^2.6.7",
     "prettier": "^1.16.4",
     "promise-polyfill": "^8.1.0",
     "read-cache": "^1.0.0",

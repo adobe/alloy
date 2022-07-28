@@ -28,6 +28,7 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
   const currentCommand = [
     "appendIdentityToUrl",
     "applyPropositions",
+    "applyResponse",
     "configure",
     "createEventMergeId",
     "getIdentity",
