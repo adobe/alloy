@@ -10,13 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isEmptyString, truncateWhiteSpace } from "./utils";
+import { truncateWhiteSpace } from "./utils";
+import { isNonEmptyString } from "../../utils";
 
 const semanticElements = /^(HEADER|MAIN|FOOTER|NAV)$/i;
 
 const getAriaRegionLabel = node => {
   let regionLabel;
-  if (node.role === "region" && !isEmptyString(node["aria-label"])) {
+  if (node.role === "region" && isNonEmptyString(node["aria-label"])) {
     regionLabel = node["aria-label"];
   }
   return regionLabel;

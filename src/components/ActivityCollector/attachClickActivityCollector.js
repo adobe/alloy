@@ -39,12 +39,11 @@ const createClickHandler = ({ eventManager, lifecycle, handleError }) => {
   };
 };
 
-export default ({ config, eventManager, lifecycle, handleError }) => {
+export default ({ eventManager, lifecycle, handleError }) => {
   const clickHandler = createClickHandler({
     eventManager,
     lifecycle,
-    handleError,
-    config
+    handleError
   });
 
   document.addEventListener("click", clickHandler, true);

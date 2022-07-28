@@ -39,7 +39,6 @@ const createActivityCollector = ({ config, eventManager, handleError }) => {
       onComponentsRegistered(tools) {
         const { lifecycle } = tools;
         attachClickActivityCollector({
-          config,
           eventManager,
           lifecycle,
           handleError
