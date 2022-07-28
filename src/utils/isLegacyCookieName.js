@@ -12,4 +12,4 @@ governing permissions and limitations under the License.
 
 import { AT_QA_MODE } from "../constants/cookieNameKey";
 
-export default name => name.indexOf(AT_QA_MODE) !== -1;
+export default name => name === AT_QA_MODE;
