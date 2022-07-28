@@ -51,6 +51,7 @@ import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsA
 import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint";
 import isRequestRetryable from "./network/isRequestRetryable";
 import getRequestRetryDelay from "./network/getRequestRetryDelay";
+import injectApplyResponse from "./edgeNetwork/injectApplyResponse";
 
 const createNamespacedStorage = injectStorage(window);
 
@@ -128,6 +129,13 @@ export const createExecuteCommand = ({
       getLocationHint
     });
 
+    const applyResponse = injectApplyResponse({
+      lifecycle,
+      cookieTransfer,
+      createResponse,
+      processWarningsAndErrors
+    });
+
     const generalConsentState = createConsentStateMachine({ logger });
     const consent = createConsent({
       generalConsentState,
@@ -141,7 +149,8 @@ export const createExecuteCommand = ({
       createEvent,
       createDataCollectionRequestPayload,
       createDataCollectionRequest,
-      sendEdgeNetworkRequest
+      sendEdgeNetworkRequest,
+      applyResponse
     });
     return initializeComponents({
       componentCreators,
