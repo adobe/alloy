@@ -10,39 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 export default ({ getLinkDetails, config }) => {
-  return targetElement => {
-    const { onBeforeLinkClickSend } = config;
+  return ({ targetElement, event }) => {
+    const { clickCollectionEnabled } = config;
+    const linkDetails = getLinkDetails({ targetElement, config });
 
-    const linkDetails = getLinkDetails(targetElement, config);
-    if (!linkDetails) {
-      return undefined;
+    if (clickCollectionEnabled && linkDetails) {
+      event.mergeXdm(linkDetails.xdm);
+      event.setUserData(linkDetails.data);
     }
-
-    const options = {
-      xdm: {
-        eventType: "web.webinteraction.linkClicks",
-        web: {
-          webInteraction: {
-            name: linkDetails.linkName,
-            region: linkDetails.linkRegion,
-            type: linkDetails.linkType,
-            URL: linkDetails.linkUrl,
-            linkClicks: {
-              value: 1
-            }
-          }
-        }
-      },
-      data: {},
-      clickedElement: targetElement
-    };
-
-    const shouldEventBeTracked = onBeforeLinkClickSend(options);
-
-    if (!shouldEventBeTracked) {
-      return undefined;
-    }
-
-    return options;
   };
 };

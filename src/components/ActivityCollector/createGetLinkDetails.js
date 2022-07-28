@@ -18,7 +18,7 @@ export default ({
   findSupportedAnchorElement,
   determineLinkType
 }) => {
-  return (targetElement, config) => {
+  return ({ targetElement, config }) => {
     // Search parent elements for an anchor element
     // TODO: Replace with generic DOM tool that can fetch configured properties
     const anchorElement = findSupportedAnchorElement(targetElement);
@@ -35,14 +35,34 @@ export default ({
     // TODO: The user provided link click function needs to be called here
     const linkRegion = getLinkRegion(anchorElement);
     const linkName = getLinkName(anchorElement);
-    // console.log("Link name: ", linkName);
-    // console.log("Link region: ", linkRegion);
 
-    return {
-      linkType,
-      linkRegion,
-      linkName,
-      linkUrl
+    const { onBeforeLinkClickSend } = config;
+
+    const options = {
+      xdm: {
+        eventType: "web.webinteraction.linkClicks",
+        web: {
+          webInteraction: {
+            name: linkName,
+            region: linkRegion,
+            type: linkType,
+            URL: linkUrl,
+            linkClicks: {
+              value: 1
+            }
+          }
+        }
+      },
+      data: {},
+      clickedElement: targetElement
     };
+
+    const shouldEventBeTracked = onBeforeLinkClickSend(options);
+
+    if (!shouldEventBeTracked) {
+      return undefined;
+    }
+
+    return options;
   };
 };

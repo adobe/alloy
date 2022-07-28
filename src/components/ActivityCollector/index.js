@@ -32,7 +32,6 @@ const getLinkDetails = createGetLinkDetails({
 });
 
 const createActivityCollector = ({ config, eventManager, handleError }) => {
-  const { clickCollectionEnabled } = config;
   const linkClick = createLinkClick({ getLinkDetails, config });
 
   return {
@@ -48,13 +47,7 @@ const createActivityCollector = ({ config, eventManager, handleError }) => {
         // TODO: createScrollActivityCollector ...
       },
       onClick({ event, clickedElement }) {
-        if (clickCollectionEnabled) {
-          const options = linkClick(clickedElement);
-          if (options) {
-            event.mergeXdm(options.xdm);
-            event.setUserData(options.data);
-          }
-        }
+        linkClick({ targetElement: clickedElement, event });
       }
     }
   };
@@ -63,12 +56,10 @@ const createActivityCollector = ({ config, eventManager, handleError }) => {
 createActivityCollector.namespace = "ActivityCollector";
 createActivityCollector.configValidators = configValidators;
 createActivityCollector.buildOnInstanceConfiguredExtraParams = ({ config }) => {
-  const getLinkClickDetails = createLinkClick({
-    getLinkDetails,
-    config
-  });
   return {
-    getLinkDetails: getLinkClickDetails
+    getLinkDetails: targetElement => {
+      return getLinkDetails({ targetElement, config });
+    }
   };
 };
 
