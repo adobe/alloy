@@ -11,3 +11,4 @@ governing permissions and limitations under the License.
 */
 
 export const MBOX_EDGE_CLUSTER = "mboxEdgeCluster";
+export const AT_QA_MODE = "at_qa_mode";
