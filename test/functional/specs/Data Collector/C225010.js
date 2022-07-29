@@ -8,7 +8,7 @@ import {
   orgMainConfigMain,
   consentPending,
   debugEnabled,
-  linkClickCollectionEnabled
+  clickCollectionEnabled
 } from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import { CONSENT_OUT } from "../../helpers/constants/consent";
@@ -30,7 +30,7 @@ test("Test C225010: Click collection handles errors when user declines consent",
     orgMainConfigMain,
     consentPending,
     debugEnabled,
-    linkClickCollectionEnabled
+    clickCollectionEnabled
   );
   await alloy.configure(testConfig);
   await alloy.setConsent(CONSENT_OUT);

@@ -56,6 +56,9 @@ export default ({
       data: {},
       clickedElement: targetElement
     };
+    if (!onBeforeLinkClickSend) {
+      return options;
+    }
 
     const shouldEventBeTracked = onBeforeLinkClickSend(options);
 
