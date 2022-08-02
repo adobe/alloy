@@ -1,0 +1,34 @@
+[
+  {
+    "description": "This luxurious sweater will look great with everything from jeans to chinos, Classic fit, Cotton/polyester, Machine washable, Imported",
+    "id": 1,
+    "image": "https://cimage.adobe.com/acs/reactreduxdemo/poc.png",
+    "price": 29.0,
+    "title": "Danbury grey sweater with round buttons",
+    "userId": 1
+  },
+  {
+    "description": "Adjustable, foldable headband, Controls: Volume, play/pause, answers/end call, 2 years Warranty",
+    "id": 5,
+    "image": "https://cimage.adobe.com/acs/reactreduxdemo/products/headphone.png",
+    "price": 45.0,
+    "title": "DBeatz wireless headphones",
+    "userId": 1
+  },
+  {
+    "description": "Built for lightweight performance, Men's athletic footwear from Airz, Synthetic upper; rubber sole.",
+    "id": 9,
+    "image": "https://cimage.adobe.com/acs/reactreduxdemo/products/shoes.png",
+    "price": 59.0,
+    "title": "Airz Running Sneakers for men",
+    "userId": 1
+  },
+  {
+    "description": "Dress Watch from Euro Style,  Round case, 44mm, Water resistance, Warranty: 3-year limited",
+    "id": 12,
+    "image": "https://cimage.adobe.com/acs/reactreduxdemo/products/watch.png",
+    "price": 75,
+    "title": "Men’s Black Stainless Steel Watch",
+    "userId": 2
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "name": "aep-edge-samples-common",
+  "version": "1.0.0",
+  "description": "",
+  "main": "aepEdgeClient.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Adobe Systems Inc.",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@adobe/target-tools": "^1.7.0",
+    "handlebars": "^4.7.7",
+    "node-fetch": "^2.6.7"
+  }
+}

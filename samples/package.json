@@ -1,0 +1,22 @@
+{
+  "name": "alloy-samples",
+  "version": "1.0.0",
+  "description": "This repository contains code samples for the Adobe Experience Platform Web SDK. The intent is to provide working code that illustrates various implementation strategies and techniques.",
+  "scripts": {
+    "add-license": "node add-license.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adobe/alloy-samples.git"
+  },
+  "keywords": ["Adobe", "Alloy", "AEP"],
+  "author": "Jason Waters",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/adobe/alloy-samples/issues"
+  },
+  "homepage": "https://github.com/adobe/alloy-samples#readme",
+  "devDependencies": {
+    "handlebars": "^4.7.7"
+  }
+}

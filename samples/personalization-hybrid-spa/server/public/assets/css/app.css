@@ -1,0 +1,142 @@
+.loading-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 5;
+  background: #fff; }
+  .loading-wrapper .loading {
+    display: table;
+    width: 100vw;
+    height: 100vh; }
+    .loading-wrapper .loading span {
+      display: table-cell;
+      vertical-align: middle;
+      text-align: center;
+      width: 100vw;
+      height: 100vh; }
+  .loading-wrapper.is-loading {
+    visibility: visible; }
+  .loading-wrapper.is-loaded {
+    -webkit-animation: hideLoading 1s forwards;
+    -moz-animation: hideLoading 1s forwards;
+    -o-animation: hideLoading 1s forwards;
+    animation: hideLoading 1s forwards; }
+
+.btn-margin {
+  margin-top: 1.5rem;
+  margin-right: 1.5rem; }
+
+.badge {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem; }
+
+.slick-next:before, .slick-prev:before {
+  color: #e41f1f; }
+
+.notice {
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border: 2px solid #a41c23;
+  padding: 0.3rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.3rem;
+  background-color: #c5eff5;
+  text-align: center;
+  color: #4682b4; }
+
+.button.menu {
+  background-color: #3273dc;
+  border-color: #3273dc;
+  color: #ffffff; }
+
+.button.menu:focus, .button.menu:hover {
+  background-color: #cd1e27;
+  border-color: #f1560c;
+  color: #ffffff; }
+
+.section {
+  padding: 1.5rem; }
+
+.nav-item img {
+  max-height: 4rem; }
+
+.heading {
+  text-transform: none; }
+
+body.isLoading {
+  overflow: hidden; }
+
+@-webkit-keyframes hideLoading {
+  0% {
+    visibility: visible; }
+  100% {
+    visibility: hidden; } }
+@-moz-keyframes hideLoading {
+  0% {
+    visibility: visible; }
+  100% {
+    visibility: hidden; } }
+@-o-keyframes hideLoading {
+  0% {
+    visibility: visible; }
+  100% {
+    visibility: hidden; } }
+@keyframes hideLoading {
+  0% {
+    visibility: visible; }
+  100% {
+    visibility: hidden; } }
+
+
+/* CUSTOM STYLES */
+:root {
+  overflow: auto;
+}
+
+.footer {
+  margin-top: 30px;
+}
+
+:root, body, #app, .app-container {
+  height: 100%;
+}
+
+.page-container {
+  min-height: calc(100% - 156px);
+}
+
+.Footernav-disclaimers {
+  float: right;
+  font-size: 12px;
+}
+
+li.Footernav-disclaimer {
+  display: inline-block;
+}
+
+li:not(:last-child).Footernav-disclaimer:after {
+  content: '/';
+  margin: 0 8px;
+}
+
+.sub-text {
+  font-size: 11px;
+}
+
+.slick-slide img {
+  width: 100% !important;
+}
+
+.cart-popover {
+  right: 25px !important;
+  width: 400px !important;
+  left: auto !important;
+  top: 56px !important;
+  max-width: 100% !important;
+}
+
+/*# sourceMappingURL=app.css.map */
