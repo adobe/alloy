@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Visitor Race</title>
+    <script src="https://github.com/Adobe-Marketing-Cloud/id-service/releases/download/4.5.1/visitorapi.min.js"></script>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' *.demdex.net;
+            script-src 'self' 'unsafe-inline' assets.adobedtm.com cdn.tt.omtrdc.net;
+            style-src 'self' 'unsafe-inline' cdn.tt.omtrdc.net;
+            img-src * data:;
+            connect-src 'self' *.localalloy.com *.alloyio.com ws://localhost:3000 http://localhost:8080 unifiedjslab.tt.omtrdc.net *.demdex.net *.adobedc.net https://edgegateway.azurewebsites.net konductor-qe.apps-exp-edge-npe-va6.experience-edge.adobeinternal.net"
+    />
+    <!-- prettier-ignore -->
+    <script>
+        Visitor.getInstance("53A16ACB5CC1D3760A495C99@AdobeOrg", {});
+
+      !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
+        []).push(o),n[o]=function(){var u=arguments;return new Promise(
+        function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
+      (window,["alloy"]);
+    </script>
+    <script src="alloy.js" async></script>
+
+    <script>
+      function getUrlParameter(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        var results = regex.exec(location.search);
+        return results === null
+          ? ""
+          : decodeURIComponent(results[1].replace(/\+/g, " "));
+      }
+
+      alloy("configure", {
+        edgeDomain:
+          location.host.indexOf("alloyio.com") !== -1
+            ? "firstparty.alloyio.com"
+            : undefined,
+        edgeConfigId: "9999999",
+        orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
+        debugEnabled: true,
+        prehidingStyle: ".personalization-container { opacity: 0 !important }",
+        idMigrationEnabled: !(
+          location.href.indexOf("idMigrationEnabled=false") >= 0
+        )
+      });
+
+      alloy("sendEvent", {
+        renderDecisions: true,
+        xdm: {
+          // Demonstrates overriding automatically collected data
+          device: {
+            screenHeight: 1
+          }
+        }
+      }).then(function(data) {
+        console.log("Sandbox: View start event has completed.", data);
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Visitor Race</h1>
+  </body>
+</html>
