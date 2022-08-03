@@ -23,11 +23,13 @@ export default ({ options }) => {
     xdm: objectOf({
       eventType: string(),
       identityMap: validateIdentityMap
-    }),
-    data: objectOf({}),
+    }).noUnknownFields(),
+    data: objectOf({}).noUnknownFields(),
     renderDecisions: boolean(),
     decisionScopes: arrayOf(string()).uniqueItems(),
     datasetId: string()
-  }).required();
+  })
+    .required()
+    .noUnknownFields();
   return eventOptionsValidator(options);
 };

@@ -16,10 +16,12 @@ export default ({ options }) => {
         objectOf({
           type: string().required(),
           payload: anything().required()
-        })
+        }).noUnknownFields()
       ).required()
-    }).required()
-  });
+    })
+      .required()
+      .noUnknownFields()
+  }).noUnknownFields();
 
   return validator(options);
 };

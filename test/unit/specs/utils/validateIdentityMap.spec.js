@@ -24,7 +24,7 @@ describeValidation("utils:validateIdentityMap", validateIdentityMap, [
   { value: { a: [{ primary: true }] } },
   { value: { a: [{ xid: 123 }] }, error: true },
   { value: { a: [{ xid: "123" }] } },
-  { value: { a: [{ unknown: "field" }] } },
+  { value: { a: [{ unknown: "field" }] }, error: true },
   { value: null },
   { value: undefined },
   { value: [], error: true },
