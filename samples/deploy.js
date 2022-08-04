@@ -1,10 +1,10 @@
 const fs = require("fs");
 const pm2 = require("pm2-deploy");
 
-const branch = process.env.GITHUB_REF_NAME;
+const branch = process.env.BRANCH_NAME;
 
 if (!branch) {
-  console.error(`GITHUB_REF_NAME is a required env var, got ${ref}`);
+  console.error(`BRANCH_NAME is a required env var, got ${ref}`);
   process.exit(1);
 }
 const path = `/var/www/${branch}.alloyio.com`;

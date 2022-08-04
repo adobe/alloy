@@ -14,5 +14,8 @@ jobs:
       run: cd samples && npm ci
     - name: Run deploy script
       run: node samples/deploy.js
+      env:
+        BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+
 
 
