@@ -49,7 +49,7 @@ const run = async () => {
   }
 
   // start servers
-  await deploy(["exec", "npm run start"]);
+  await deploy(["exec", "cd samples && npm run init && npm run start"]);
 
 };
 
