@@ -1,6 +1,7 @@
 const fs = require("fs");
 const pm2 = require("pm2-deploy");
 
+
 const branch = process.env.BRANCH_NAME;
 
 if (!branch) {
@@ -23,17 +24,34 @@ const deployConfig = {
   }
 };
 
-if (!fs.existsSync(path)) {
-  fs.mkdirSync(path);
-  pm2.deployForEnv(deployConfig, "prod", ["setup"]);
-}
+const deploy = (args) => {
+  console.log(`Running deploy with ${args.join(" ")}`);
+  return new Promise((resolve, reject) => {
+    pm2.deployForEnv(deployConfig, "prod", args, err => {
+      if (err) {
+        console.error(err.message);
+        reject(err);
+      } else {
+        console.log('Success!');
+        resolve()
+      }
+    });
+  });
+};
 
-// deploy via PM2
-pm2.deployForEnv(deployConfig, "prod", []);
+(async ()=>{
 
-// start servers
-pm2.deployForEnv(deployConfig, "prod", ["exec", "pm2 start"])
+  if (!fs.existsSync(path)) {
+    fs.mkdirSync(path);
+    await deploy(["setup"]);
+  }
 
+  // deploy via PM2
+  await deploy([]);
 
+  // start servers
+  await deploy(["exec", "pm2 start"]);
+
+})();
 
 
