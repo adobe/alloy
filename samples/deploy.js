@@ -18,7 +18,7 @@ const deployConfig = {
     ref: `origin/${branch}`,
     "repo": "git@github.com:adobe/alloy.git",
     path,
-    "post-deploy": "./samples/install.sh"
+    "post-deploy": "cd samples && ./install.sh"
   }
 };
 console.log(JSON.stringify(deployConfig, null, 2));
