@@ -49,7 +49,7 @@ const run = async () => {
   }
 
   // start servers
-  await deploy(["exec", "pm2 start"]);
+  await deploy(["exec", "npm run start"]);
 
 };
 
