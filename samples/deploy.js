@@ -3,11 +3,11 @@ const pm2 = require("pm2-deploy");
 
 const ref = process.env.GITHUB_REF;
 
-if (!ref || !ref.startsWith("/refs/heads")) {
-  console.error("GITHUB_REF is a required env var and must start with /refs/heads");
+if (!ref || !ref.startsWith("refs/heads")) {
+  console.error(`GITHUB_REF is a required env var and must start with refs/heads, got ${ref}`);
   process.exit(1);
 }
-const branch = ref.substring("/refs/heads".length);
+const branch = ref.substring("refs/heads".length);
 const path = `/var/www/${branch}.alloyio.com`;
 
 const deployConfig = {
