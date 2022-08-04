@@ -12,17 +12,16 @@ const path = `/var/www/${branch}.alloyio.com`;
 console.log(`Deploying to ${path}`);
 
 const deployConfig = {
-  "deploy": {
-    "prod": {
-      "user": "jonsnyder",
-      "host": ["localhost"],
-      ref: `refs/heads/${branch}`,
-      "repo": "git@github.com:adobe/alloy.git",
-      path,
-      "post-deploy": "./install.sh"
-    }
+  "prod": {
+    "user": "josnyder",
+    "host": ["localhost"],
+    ref: `refs/heads/${branch}`,
+    "repo": "git@github.com:adobe/alloy.git",
+    path,
+    "post-deploy": "./install.sh"
   }
 };
+console.log(JSON.stringify(deployConfig, null, 2));
 
 const deploy = (args) => {
   console.log(`Running deploy with ${args.join(" ")}`);
@@ -39,7 +38,7 @@ const deploy = (args) => {
   });
 };
 
-(async ()=>{
+const run = async () => {
 
   if (!fs.existsSync(path)) {
     fs.mkdirSync(path);
@@ -52,6 +51,15 @@ const deploy = (args) => {
   // start servers
   await deploy(["exec", "pm2 start"]);
 
+};
+
+(async () => {
+  try {
+    run();
+  } catch (e) {
+    console.error(e);
+    process.exit(1);
+  }
 })();
 
 
