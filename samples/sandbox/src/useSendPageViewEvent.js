@@ -45,5 +45,6 @@ export default ({
         setPropositions(propositions);
       }
     });
-  }, [instanceName, viewName]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [instanceName, viewName]);
 };
