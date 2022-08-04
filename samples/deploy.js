@@ -43,10 +43,10 @@ const run = async () => {
   if (!fs.existsSync(path)) {
     fs.mkdirSync(path);
     await deploy(["setup"]);
+  } else {
+    // deploy via PM2
+    await deploy(["update"]);
   }
-
-  // deploy via PM2
-  await deploy([]);
 
   // start servers
   await deploy(["exec", "pm2 start"]);
