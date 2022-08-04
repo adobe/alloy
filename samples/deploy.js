@@ -45,7 +45,7 @@ const run = async () => {
     await deploy(["setup"]);
   } else {
     // deploy via PM2
-    await deploy(["update"]);
+    await deploy(["update", "--force"]);
   }
 
   // start servers
