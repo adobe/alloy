@@ -11,7 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
-      run: cd samples && npm ci
+      run: cd samples && npm ci && npm run init
     - name: Run deploy script
       run: node samples/deploy.js
       env:
