@@ -15,7 +15,7 @@ const deployConfig = {
   "prod": {
     "user": "josnyder",
     "host": ["localhost"],
-    ref: `refs/heads/${branch}`,
+    ref: branch,
     "repo": "git@github.com:adobe/alloy.git",
     path,
     "post-deploy": "./install.sh"
@@ -55,7 +55,7 @@ const run = async () => {
 
 (async () => {
   try {
-    run();
+    await run();
   } catch (e) {
     console.error(e);
     process.exit(1);
