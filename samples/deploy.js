@@ -15,7 +15,7 @@ const deployConfig = {
   "prod": {
     "user": "josnyder",
     "host": ["localhost"],
-    ref: process.env.GITHUB_SHA,
+    ref: `origin/${branch}`,
     "repo": "git@github.com:adobe/alloy.git",
     path,
     "post-deploy": "./install.sh"
