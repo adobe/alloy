@@ -2,6 +2,7 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://alloyio.com/sandbox",
   "dependencies": {
     "@babel/polyfill": "^7.4.3",
     "react": "^16.8.6",

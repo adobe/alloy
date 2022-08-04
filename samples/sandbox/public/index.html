@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
-    <link rel="stylesheet" href="/index.css" />
+    <link rel="stylesheet" href="%PUBLIC_URL%/index.css" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
@@ -12,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
 
     <title>Mock website hosting Alloy</title>
-    <script src="/onBeforeEventSentHelper.js"></script>
+    <script src="%PUBLIC_URL%/onBeforeEventSentHelper.js"></script>
 
     <!-- prettier-ignore -->
     <script nonce="%REACT_APP_NONCE%">
@@ -65,10 +65,10 @@
             doesOptInApply: getUrlParameter("legacyOptIn") === "true"
           });
           // Alloy only looks for window.Visitor when it initially loads, so only load Alloy after Visitor loaded.
-          includeScript("/alloy.js");
+          includeScript("%PUBLIC_URL%/alloy.js");
         });
       } else {
-        includeScript("/alloy.js");
+        includeScript("%PUBLIC_URL%/alloy.js");
       }
     </script>
 

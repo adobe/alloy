@@ -33,7 +33,7 @@ import AlloyVersion from "./components/AlloyVersion";
 function BasicExample() {
   return (
     <>
-      <Router>
+      <Router basename={process.env.PUBLIC_URL}>
         <div>
           <ul>
             <li>
