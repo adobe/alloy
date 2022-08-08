@@ -25,9 +25,12 @@ export default ({ options }) => {
       identityMap: validateIdentityMap
     }),
     data: objectOf({}),
+    documentUnload: boolean(),
     renderDecisions: boolean(),
     decisionScopes: arrayOf(string()).uniqueItems(),
     datasetId: string()
-  }).required();
+  })
+    .required()
+    .noUnknownFields();
   return eventOptionsValidator(options);
 };
