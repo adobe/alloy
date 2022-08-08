@@ -28,8 +28,6 @@ export default ({ options }) => {
     renderDecisions: boolean(),
     decisionScopes: arrayOf(string()).uniqueItems(),
     datasetId: string()
-  })
-    .required()
-    .noUnknownFields();
+  }).required();
   return eventOptionsValidator(options);
 };
