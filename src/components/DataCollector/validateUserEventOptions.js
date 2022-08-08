@@ -25,7 +25,7 @@ export default ({ options }) => {
       identityMap: validateIdentityMap
     }),
     data: objectOf({}),
-    documentUnload: boolean(),
+    documentUnloading: boolean(),
     renderDecisions: boolean(),
     decisionScopes: arrayOf(string()).uniqueItems(),
     datasetId: string()
