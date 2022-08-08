@@ -18,9 +18,7 @@ export default ({ options }) => {
           payload: anything().required()
         })
       ).required()
-    })
-      .required()
-      .noUnknownFields()
+    }).required()
   }).noUnknownFields();
 
   return validator(options);
