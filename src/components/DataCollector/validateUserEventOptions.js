@@ -23,8 +23,8 @@ export default ({ options }) => {
     xdm: objectOf({
       eventType: string(),
       identityMap: validateIdentityMap
-    }).noUnknownFields(),
-    data: objectOf({}).noUnknownFields(),
+    }),
+    data: objectOf({}),
     renderDecisions: boolean(),
     decisionScopes: arrayOf(string()).uniqueItems(),
     datasetId: string()
