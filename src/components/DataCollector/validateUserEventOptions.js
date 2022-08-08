@@ -28,7 +28,8 @@ export default ({ options }) => {
     documentUnloading: boolean(),
     renderDecisions: boolean(),
     decisionScopes: arrayOf(string()).uniqueItems(),
-    datasetId: string()
+    datasetId: string(),
+    mergeId: string()
   })
     .required()
     .noUnknownFields();
