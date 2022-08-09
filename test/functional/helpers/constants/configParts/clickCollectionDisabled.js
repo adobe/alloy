@@ -1,3 +1,3 @@
 export default {
-  clickCollectionEnabled: true
+  clickCollectionEnabled: false
 };
