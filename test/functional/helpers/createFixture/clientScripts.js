@@ -103,6 +103,11 @@ const addRemoteUrlClientScript = ({ clientScripts, url, async = false }) => {
 const getFixtureClientScriptsForInt = options => {
   const clientScripts = [];
 
+  if (options.monitoringHooksScript) {
+    clientScripts.push({
+      content: options.monitoringHooksScript
+    });
+  }
   // We load a promise polyfill because promises aren't supported in IE
   // and that's what customers supporting IE will need to do as part
   // of installing Alloy.
@@ -154,6 +159,13 @@ const getFixtureClientScriptsForInt = options => {
  */
 const getFixtureClientScriptsForProd = options => {
   const clientScripts = [];
+
+  if (options.monitoringHooksScript) {
+    clientScripts.push({
+      content: options.monitoringHooksScript
+    });
+  }
+
   addRemoteUrlClientScript({
     clientScripts,
     url: remotePromisePolyfillPath
