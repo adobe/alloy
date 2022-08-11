@@ -12,7 +12,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy";
 const alloyMonitorScript = `
 window.__alloyMonitors = window.__alloyMonitors || [];
 window.__alloyMonitors.push({ 
-    onInstanceConfigured(data) {   
+    onInstanceConfigured: function(data) {   
         window.___getLinkDetails = data.getLinkDetails;
        }
     });`;
