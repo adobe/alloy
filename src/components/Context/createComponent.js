@@ -28,8 +28,13 @@ export default (config, logger, availableContexts, requiredContexts) => {
     lifecycle: {
       onBeforeEvent({ event }) {
         const xdm = {};
-        contexts.forEach(context => context(xdm));
-        event.mergeXdm(xdm);
+        return Promise.all(
+          contexts.map(context => {
+            return new Promise(resolve => {
+              resolve(context(xdm));
+            });
+          })
+        ).then(event.mergeXdm(xdm));
       }
     }
   };

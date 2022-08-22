@@ -5,17 +5,20 @@ import createFixture from "../../helpers/createFixture";
 import deviceContextConfig from "../../helpers/constants/deviceContextConfig";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
+import isUserAgentClientHintsSupported from "../../helpers/isUserAgentClientHintsSupported";
 
 const networkLogger = createNetworkLogger();
 
+const ID = "C2599";
+const DESCRIPTION = `${ID} - Adds only device context data when only device is specified in configuration.`;
+
 createFixture({
-  title:
-    "C2599 - Adds only device context data when only device is specified in configuration.",
+  title: DESCRIPTION,
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({
-  ID: "C2599",
+  ID,
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
@@ -30,7 +33,7 @@ const sendEventOptions = {
   }
 };
 
-test("C2599 - Adds only device context data when only device is specified in configuration.", async () => {
+test(DESCRIPTION, async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(deviceContextConfig);
   await alloy.sendEvent(sendEventOptions);
@@ -44,7 +47,13 @@ test("C2599 - Adds only device context data when only device is specified in con
 
   await t.expect(parsedBody.events[0].xdm.device).ok();
   await t.expect(parsedBody.events[0].xdm.web.webPageDetails).ok();
-
   await t.expect(parsedBody.events[0].xdm.placeContext).notOk();
   await t.expect(parsedBody.events[0].xdm.environment).notOk();
+  if (await isUserAgentClientHintsSupported()) {
+    await t
+      .expect(
+        parsedBody.events[0].xdm.environment.browserDetails.userAgentClientHints
+      )
+      .notOk();
+  }
 });
