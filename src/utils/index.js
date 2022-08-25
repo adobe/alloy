@@ -27,6 +27,7 @@ export { default as endsWith } from "./endsWith";
 export { default as find } from "./find";
 export { default as fireImage } from "./fireImage";
 export { default as injectFireReferrerHideableImage } from "./injectFireReferrerHideableImage";
+export { default as filterObject } from "./filterObject";
 export { default as flatMap } from "./flatMap";
 export { default as getApexDomain } from "./getApexDomain";
 export { default as getLastArrayItems } from "./getLastArrayItems";
