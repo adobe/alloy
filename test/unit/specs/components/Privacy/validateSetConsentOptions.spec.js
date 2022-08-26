@@ -104,5 +104,20 @@ describeValidation(
       },
       error: true
     }
+    // TODO find a way to make these tests pass.
+    // Right now, they say "Expected $.configuration not to have properties
+    // default: Function and required: Function". Those are added by the validator
+    // itself.
+    // {
+    //   value: {
+    //     consent: validGeneralConsent,
+    //     configuration: {
+    //       identity: {
+    //         idSyncContainerId: "123"
+    //       }
+    //     }
+    //   }
+    // },
+    // { value: { consent: validGeneralConsent, configuration: {} } }
   ]
 );

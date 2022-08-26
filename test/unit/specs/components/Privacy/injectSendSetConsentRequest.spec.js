@@ -12,7 +12,8 @@ describe("Privacy:injectSendSetConsentRequest", () => {
     sendEdgeNetworkRequest = jasmine.createSpy("sendEdgeNetworkRequest");
     requestPayload = jasmine.createSpyObj("requestPayload", [
       "setConsent",
-      "addIdentity"
+      "addIdentity",
+      "mergeConfigOverride"
     ]);
     createConsentRequestPayload = jasmine
       .createSpy("createConsentRequestPayload")
@@ -49,6 +50,29 @@ describe("Privacy:injectSendSetConsentRequest", () => {
       expect(requestPayload.addIdentity).toHaveBeenCalledWith("a", { id: "1" });
       expect(requestPayload.addIdentity).toHaveBeenCalledWith("a", { id: "2" });
       expect(requestPayload.addIdentity).toHaveBeenCalledWith("b", { id: "3" });
+    });
+  });
+
+  it("sets the configuration overrides on the payload, if provided", () => {
+    sendEdgeNetworkRequest.and.returnValue(Promise.resolve());
+    return sendSetConsentRequest({
+      consentOptions: "anything",
+      identityMap: {
+        a: [{ id: "1" }, { id: "2" }],
+        b: [{ id: "3" }]
+      },
+      configuration: {
+        identity: {
+          idSyncContainerId: "123"
+        }
+      }
+    }).then(() => {
+      expect(requestPayload.setConsent).toHaveBeenCalledWith("anything");
+      expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
+        com_adobe_identity: {
+          idSyncContainerId: "123"
+        }
+      });
     });
   });
 });

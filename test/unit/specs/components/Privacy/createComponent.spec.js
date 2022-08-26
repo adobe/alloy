@@ -153,6 +153,40 @@ describe("privacy:createComponent", () => {
     });
   });
 
+  it("handles the setConsent command with overrides, if provided", () => {
+    defaultConsent = "pending";
+    clearConsentCookie();
+    build();
+    const setConsentMock = mockSetConsent();
+    const onResolved = jasmine.createSpy("onResolved");
+    component.commands.setConsent
+      .run({
+        identityMap: { my: "map" },
+        configuration: {
+          identity: {
+            idSyncContainerId: "1234"
+          }
+        },
+        ...CONSENT_IN
+      })
+      .then(onResolved);
+    expect(consent.suspend).toHaveBeenCalled();
+    setConsentMock.respondWithIn();
+    return flushPromiseChains().then(() => {
+      expect(sendSetConsentRequest).toHaveBeenCalledWith({
+        consentOptions: CONSENT_IN.consent,
+        identityMap: { my: "map" },
+        configuration: {
+          identity: {
+            idSyncContainerId: "1234"
+          }
+        }
+      });
+      expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
+      expect(onResolved).toHaveBeenCalledWith(undefined);
+    });
+  });
+
   it("updates the consent object even after a request failure", () => {
     defaultConsent = "pending";
     clearConsentCookie();

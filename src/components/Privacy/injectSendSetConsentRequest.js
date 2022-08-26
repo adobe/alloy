@@ -10,15 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isObject } from "../../utils";
+import { isObject, prepareConfigOverridesForKonductor } from "../../utils";
 
 export default ({
   createConsentRequestPayload,
   createConsentRequest,
   sendEdgeNetworkRequest
-}) => ({ consentOptions, identityMap }) => {
+}) => ({ consentOptions, identityMap, configuration }) => {
   const payload = createConsentRequestPayload();
   payload.setConsent(consentOptions);
+  if (isObject(configuration)) {
+    payload.mergeConfigOverride(
+      prepareConfigOverridesForKonductor(configuration)
+    );
+  }
   if (isObject(identityMap)) {
     Object.keys(identityMap).forEach(key => {
       identityMap[key].forEach(identity => {

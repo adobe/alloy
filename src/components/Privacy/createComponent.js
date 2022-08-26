@@ -54,16 +54,20 @@ export default ({
     commands: {
       setConsent: {
         optionsValidator: validateSetConsentOptions,
-        run: ({ consent: consentOptions, identityMap }) => {
+        run: ({ consent: consentOptions, identityMap, configuration }) => {
           consent.suspend();
           const consentHashes = consentHashStore.lookup(consentOptions);
           return taskQueue
             .addTask(() => {
               if (consentHashes.isNew()) {
-                return sendSetConsentRequest({
+                const consentRequestOptions = {
                   consentOptions,
                   identityMap
-                });
+                };
+                if (configuration) {
+                  consentRequestOptions.configuration = configuration;
+                }
+                return sendSetConsentRequest(consentRequestOptions);
               }
               return Promise.resolve();
             })
