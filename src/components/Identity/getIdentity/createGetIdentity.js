@@ -10,14 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { prepareConfigOverridesForKonductor } from "../../../utils";
+
 export default ({
   sendEdgeNetworkRequest,
   createIdentityRequestPayload,
   createIdentityRequest
 }) => {
-  return namespaces => {
+  return (namespaces, configuration) => {
     const payload = createIdentityRequestPayload(namespaces);
     const request = createIdentityRequest(payload);
+    if (configuration) {
+      const preparedConfig = prepareConfigOverridesForKonductor(configuration);
+      if (preparedConfig) {
+        payload.mergeConfigOverride(preparedConfig);
+      }
+    }
     return sendEdgeNetworkRequest({
       request
     });

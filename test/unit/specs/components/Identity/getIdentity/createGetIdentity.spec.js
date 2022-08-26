@@ -4,13 +4,18 @@ describe("Identity::createGetIdentity", () => {
   let sendEdgeNetworkRequest;
   let createIdentityRequestPayload;
   let createIdentityRequest;
+  let requestPayload;
   let request;
 
   beforeEach(() => {
     sendEdgeNetworkRequest = jasmine.createSpy("sendEdgeNetworkRequest");
-    const requestPayload = {
-      type: "payload"
-    };
+    requestPayload = jasmine.createSpyObj(
+      "requestPayload",
+      ["mergeConfigOverride"],
+      {
+        type: "payload"
+      }
+    );
     createIdentityRequestPayload = jasmine
       .createSpy("createIdentityRequestPayload")
       .and.returnValue(requestPayload);
@@ -61,6 +66,33 @@ describe("Identity::createGetIdentity", () => {
     expect(createIdentityRequest).toHaveBeenCalledWith(payload2);
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
       request: request2
+    });
+  });
+
+  it("send override configuration, when provided", () => {
+    const request1 = { type: "request1" };
+    createIdentityRequestPayload.and.returnValues(requestPayload);
+    createIdentityRequest.and.returnValues(request1);
+    const getIdentity = createGetIdentity({
+      sendEdgeNetworkRequest,
+      createIdentityRequestPayload,
+      createIdentityRequest
+    });
+    const configuration = {
+      identity: {
+        idSyncContainerId: "123"
+      }
+    };
+    getIdentity(["namespace1"], configuration);
+    expect(createIdentityRequestPayload).toHaveBeenCalledWith(["namespace1"]);
+    expect(createIdentityRequest).toHaveBeenCalledWith(requestPayload);
+    expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
+      request: request1
+    });
+    expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
+      com_adobe_identity: {
+        idSyncContainerId: configuration.identity.idSyncContainerId
+      }
     });
   });
 });

@@ -46,4 +46,20 @@ describe("Identity::getIdentityOptionsValidator", () => {
       getIdentityOptionsValidator({ namespaces: [ECID] });
     }).not.toThrow();
   });
+
+  it("should return valid options when configuration is passed", () => {
+    expect(() => {
+      getIdentityOptionsValidator({
+        configuration: { identity: { idSyncContainerId: "123" } }
+      });
+    }).not.toThrow();
+  });
+
+  it("should return valid options when an empty configuration is passed", () => {
+    expect(() => {
+      getIdentityOptionsValidator({
+        configuration: {}
+      });
+    }).not.toThrow();
+  });
 });

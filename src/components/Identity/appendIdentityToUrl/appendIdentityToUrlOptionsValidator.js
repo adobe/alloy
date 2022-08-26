@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { objectOf, string } from "../../../utils/validation";
+import { objectOf, string, anything } from "../../../utils/validation";
 /**
  * Verifies user provided event options.
  * @param {*} options The user event options to validate
@@ -19,7 +19,8 @@ import { objectOf, string } from "../../../utils/validation";
 export default objectOf({
   url: string()
     .required()
-    .nonEmpty()
+    .nonEmpty(),
+  configuration: anything()
 })
   .required()
   .noUnknownFields();

@@ -20,4 +20,28 @@ describe("Identity::appendIdentityToUrlOptionsValidator", () => {
       appendIdentityToUrlOptionsValidator({ url: "http://google.com" })
     ).toEqual({ url: "http://google.com" });
   });
+
+  it("should accept override configuration", () => {
+    expect(
+      appendIdentityToUrlOptionsValidator({
+        url: "http://google.com",
+        configuration: { identity: { idSyncContainerId: "123" } }
+      })
+    ).toEqual({
+      url: "http://google.com",
+      configuration: { identity: { idSyncContainerId: "123" } }
+    });
+  });
+
+  it("should accept an empty override configuration", () => {
+    expect(
+      appendIdentityToUrlOptionsValidator({
+        url: "http://google.com",
+        configuration: {}
+      })
+    ).toEqual({
+      url: "http://google.com",
+      configuration: {}
+    });
+  });
 });
