@@ -22,26 +22,17 @@ describe("Identity::appendIdentityToUrlOptionsValidator", () => {
   });
 
   it("should accept override configuration", () => {
-    expect(
+    expect(() => {
       appendIdentityToUrlOptionsValidator({
         url: "http://google.com",
         configuration: { identity: { idSyncContainerId: "123" } }
-      })
-    ).toEqual({
-      url: "http://google.com",
-      configuration: { identity: { idSyncContainerId: "123" } }
-    });
-  });
-
-  it("should accept an empty override configuration", () => {
-    expect(
+      });
+    }).not.toThrowError();
+    expect(() => {
       appendIdentityToUrlOptionsValidator({
         url: "http://google.com",
         configuration: {}
-      })
-    ).toEqual({
-      url: "http://google.com",
-      configuration: {}
-    });
+      });
+    }).not.toThrowError();
   });
 });

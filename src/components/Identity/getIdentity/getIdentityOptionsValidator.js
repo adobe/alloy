@@ -10,12 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  objectOf,
-  literal,
-  arrayOf,
-  anything
-} from "../../../utils/validation";
+import { validateConfigOverride } from "../../../utils";
+import { objectOf, literal, arrayOf } from "../../../utils/validation";
 /**
  * Verifies user provided event options.
  * @param {*} options The user event options to validate
@@ -26,7 +22,7 @@ export default options => {
     namespaces: arrayOf(literal("ECID"))
       .nonEmpty()
       .uniqueItems(),
-    configuration: anything()
+    configuration: validateConfigOverride
   }).noUnknownFields();
   getIdentityOptionsValidator(options);
   // Return default options for now

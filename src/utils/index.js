@@ -65,4 +65,5 @@ export { default as toISOStringLocal } from "./toISOStringLocal";
 export { default as uuid } from "./uuid";
 export { default as updateErrorMessage } from "./updateErrorMessage";
 export { default as validateIdentityMap } from "./validateIdentityMap";
+export { default as validateConfigOverride } from "./validateConfigOverride";
 export { default as values } from "./values";

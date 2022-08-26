@@ -10,18 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { validateConfigOverride } from "../../../utils";
-import { objectOf, string } from "../../../utils/validation";
-/**
- * Verifies user provided event options.
- * @param {*} options The user event options to validate
- * @returns {*} Validated options
- */
-export default objectOf({
-  url: string()
-    .required()
-    .nonEmpty(),
-  configuration: validateConfigOverride
-})
-  .required()
-  .noUnknownFields();
+import { objectOf, anything } from "./validation";
+
+export default objectOf(anything());
