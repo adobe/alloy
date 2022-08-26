@@ -53,6 +53,15 @@ const getIdentity = configuration => {
   });
 };
 
+const appendIdentityToUrl = configuration => {
+  window.alloy("appendIdentityToUrl", {
+    url: "https://example.com",
+    configuration: {
+      ...configuration
+    }
+  }).then(url => console.log("URL with appended identity: ", url));
+};
+
 export default function ConfigOverrides() {
   const [isValidJson, setIsValidJson] = useState(true);
   const [overrides, setOverrides] = useState({ ...defaultOverrides });
@@ -156,6 +165,7 @@ export default function ConfigOverrides() {
         <button type="button" onClick={callWithOverrides(getIdentity)}>
           Get Identity
         </button>
+        <button type="button" onClick={callWithOverrides(appendIdentityToUrl)}>Append Identity to URL</button>
         <button type="button" onClick={callWithOverrides(setConsent)}>
           Set Consent
         </button>
