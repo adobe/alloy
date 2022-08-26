@@ -121,17 +121,27 @@ describe("Event Command", () => {
       });
   });
 
-  it("merges datasetId", () => {
+  it("merges datasetId into the override configuration", () => {
+    const datasetId = "mydatasetId";
     return sendEventCommand
       .run({
-        datasetId: "mydatasetId"
+        datasetId
       })
       .then(() => {
-        expect(event.mergeMeta).toHaveBeenCalledWith({
-          collect: {
-            datasetId: "mydatasetId"
+        expect(eventManager.sendEvent).toHaveBeenCalledWith(
+          jasmine.any(Object),
+          {
+            renderDecisions: false,
+            decisionScopes: [],
+            configuration: {
+              experience_platform: {
+                datasets: {
+                  event: datasetId
+                }
+              }
+            }
           }
-        });
+        );
       });
   });
 

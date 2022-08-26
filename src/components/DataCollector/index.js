@@ -54,20 +54,27 @@ const createDataCollector = ({ eventManager }) => {
             });
           }
 
-          if (datasetId) {
-            event.mergeMeta({
-              collect: {
-                datasetId
-              }
-            });
-          }
-
           const sendEventOptions = {
             renderDecisions,
             decisionScopes
           };
+
           if (configuration) {
             sendEventOptions.configuration = configuration;
+          }
+
+          if (datasetId) {
+            // TODO Add deprecation warning for config.datasetId and meta.collect.datasetId?
+            if (!sendEventOptions.configuration) {
+              sendEventOptions.configuration = {};
+            }
+            if (!sendEventOptions.configuration.experience_platform) {
+              sendEventOptions.configuration.experience_platform = {};
+            }
+            if (!sendEventOptions.configuration.experience_platform.datasets) {
+              sendEventOptions.configuration.experience_platform.datasets = {};
+            }
+            sendEventOptions.configuration.experience_platform.datasets.event = datasetId;
           }
           return eventManager.sendEvent(event, sendEventOptions);
         }
