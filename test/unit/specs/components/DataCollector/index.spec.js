@@ -22,7 +22,8 @@ describe("Event Command", () => {
       "setUserData",
       "setUserXdm",
       "mergeXdm",
-      "mergeMeta"
+      "mergeMeta",
+      "mergeConfigOverride"
     ]);
 
     eventManager = {
@@ -131,6 +132,32 @@ describe("Event Command", () => {
             datasetId: "mydatasetId"
           }
         });
+      });
+  });
+
+  it("includes configuration if provided", () => {
+    return sendEventCommand
+      .run({
+        renderDecisions: true,
+        configuration: {
+          target: {
+            propertyToken: "hello"
+          }
+        }
+      })
+      .then(() => {
+        expect(eventManager.sendEvent).toHaveBeenCalledWith(
+          jasmine.any(Object),
+          {
+            renderDecisions: true,
+            decisionScopes: [],
+            configuration: {
+              target: {
+                propertyToken: "hello"
+              }
+            }
+          }
+        );
       });
   });
 });

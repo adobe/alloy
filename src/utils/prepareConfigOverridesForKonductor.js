@@ -11,8 +11,7 @@ governing permissions and limitations under the License.
 */
 import isNil from "./isNil";
 import filterObject from "./filterObject";
-
-const PREFIX = "com_adobe_";
+import { CONFIG_KEY_PREFIX } from "../constants/blackbird";
 
 // We want to avoid mapping between specific keys because we want Konductor
 // to be able to add overrides in the future without us needing to make
@@ -46,7 +45,10 @@ export default configuration => {
 
   // add "com_adobe_" to top level keys
   configOverrides = Object.entries(configOverrides).reduce(
-    (result, [key, value]) => ({ ...result, [PREFIX + key]: value }),
+    (result, [key, value]) => ({
+      ...result,
+      [`${CONFIG_KEY_PREFIX}_${key}`]: value
+    }),
     {}
   );
 

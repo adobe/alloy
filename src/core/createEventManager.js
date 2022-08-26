@@ -10,7 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createCallbackAggregator, noop } from "../utils";
+import {
+  createCallbackAggregator,
+  noop,
+  prepareConfigOverridesForKonductor
+} from "../utils";
 
 const EVENT_CANCELLATION_MESSAGE =
   "Event was canceled because the onBeforeEventSend callback returned false.";
@@ -45,11 +49,24 @@ export default ({
      * @returns {*}
      */
     sendEvent(event, options = {}) {
-      const { renderDecisions = false, decisionScopes } = options;
+      const {
+        renderDecisions = false,
+        decisionScopes,
+        configuration
+      } = options;
       const payload = createDataCollectionRequestPayload();
       const request = createDataCollectionRequest(payload);
       const onResponseCallbackAggregator = createCallbackAggregator();
       const onRequestFailureCallbackAggregator = createCallbackAggregator();
+
+      if (configuration) {
+        const preparedOverrides = prepareConfigOverridesForKonductor(
+          configuration
+        );
+        if (preparedOverrides) {
+          payload.mergeConfigOverride(preparedOverrides);
+        }
+      }
 
       return lifecycle
         .onBeforeEvent({

@@ -59,7 +59,10 @@ describe("createEventManager", () => {
     const createEvent = () => {
       return event;
     };
-    requestPayload = jasmine.createSpyObj("requestPayload", ["addEvent"]);
+    requestPayload = jasmine.createSpyObj("requestPayload", [
+      "addEvent",
+      "mergeConfigOverride"
+    ]);
     const createDataCollectionRequestPayload = () => {
       return requestPayload;
     };
@@ -321,6 +324,35 @@ describe("createEventManager", () => {
         });
         expect(result).toEqual(mockResult);
       });
+    });
+
+    it("includes override configuration, if provided", done => {
+      eventManager
+        .sendEvent(event, {
+          configuration: {
+            experience_platform: {
+              event: "456",
+              profile: ""
+            },
+            identity: {
+              idSyncContainerId: "123"
+            },
+            target: {
+              propertyToken: ""
+            }
+          }
+        })
+        .then(() => {
+          expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
+            com_adobe_identity: {
+              idSyncContainerId: "123"
+            },
+            com_adobe_experience_platform: {
+              event: "456"
+            }
+          });
+          done();
+        });
     });
   });
 });

@@ -30,7 +30,8 @@ const createDataCollector = ({ eventManager }) => {
             mergeId,
             renderDecisions = false,
             decisionScopes = [],
-            datasetId
+            datasetId,
+            configuration
           } = options;
           const event = eventManager.createEvent();
 
@@ -61,10 +62,14 @@ const createDataCollector = ({ eventManager }) => {
             });
           }
 
-          return eventManager.sendEvent(event, {
+          const sendEventOptions = {
             renderDecisions,
             decisionScopes
-          });
+          };
+          if (configuration) {
+            sendEventOptions.configuration = configuration;
+          }
+          return eventManager.sendEvent(event, sendEventOptions);
         }
       },
       applyResponse: {
