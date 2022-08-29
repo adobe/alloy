@@ -116,7 +116,8 @@ const createIdentity = ({
     getIdentity,
     consent,
     appendIdentityToUrl,
-    logger
+    logger,
+    config
   });
 };
 

@@ -60,7 +60,8 @@ const createPrivacy = ({
     sendSetConsentRequest,
     validateSetConsentOptions,
     consentHashStore,
-    doesIdentityCookieExist
+    doesIdentityCookieExist,
+    config
   });
 };
 
