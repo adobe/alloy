@@ -40,6 +40,7 @@ describe("privacy:createComponent", () => {
   let doesIdentityCookieExist;
   let requestFailureError;
   let component;
+  let config;
 
   const setIdentityCookie = () => {
     doesIdentityCookieExist.and.returnValue(true);
@@ -72,6 +73,9 @@ describe("privacy:createComponent", () => {
     setIdentityCookie();
     consentHashes.isNew.and.returnValue(true);
     requestFailureError = new Error("Request for setting test consent failed.");
+    config = {
+      configurationOverrides: {}
+    };
   });
 
   const build = () => {
@@ -83,7 +87,8 @@ describe("privacy:createComponent", () => {
       sendSetConsentRequest,
       validateSetConsentOptions,
       consentHashStore,
-      doesIdentityCookieExist
+      doesIdentityCookieExist,
+      config
     });
   };
 
@@ -179,6 +184,75 @@ describe("privacy:createComponent", () => {
         configuration: {
           identity: {
             idSyncContainerId: "1234"
+          }
+        }
+      });
+      expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
+      expect(onResolved).toHaveBeenCalledWith(undefined);
+    });
+  });
+
+  it("handles the setConsent command with global overrides, if provided", () => {
+    config.configurationOverrides.identity = {
+      idSyncContainerId: "123"
+    };
+    defaultConsent = "pending";
+    clearConsentCookie();
+    build();
+    const setConsentMock = mockSetConsent();
+    const onResolved = jasmine.createSpy("onResolved");
+    component.commands.setConsent
+      .run({
+        identityMap: { my: "map" },
+        ...CONSENT_IN
+      })
+      .then(onResolved);
+    expect(consent.suspend).toHaveBeenCalled();
+    setConsentMock.respondWithIn();
+    return flushPromiseChains().then(() => {
+      expect(sendSetConsentRequest).toHaveBeenCalledWith({
+        consentOptions: CONSENT_IN.consent,
+        identityMap: { my: "map" },
+        configuration: {
+          identity: {
+            idSyncContainerId: "123"
+          }
+        }
+      });
+      expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
+      expect(onResolved).toHaveBeenCalledWith(undefined);
+    });
+  });
+
+  it("handles the setConsent command and prefers local over global overrides", () => {
+    config.configurationOverrides.identity = {
+      idSyncContainerId: "456"
+    };
+    defaultConsent = "pending";
+    clearConsentCookie();
+    build();
+    const setConsentMock = mockSetConsent();
+    const onResolved = jasmine.createSpy("onResolved");
+    component.commands.setConsent
+      .run({
+        identityMap: { my: "map" },
+        configuration: {
+          identity: {
+            idSyncContainerId: "123"
+          }
+        },
+        ...CONSENT_IN
+      })
+      .then(onResolved);
+    expect(consent.suspend).toHaveBeenCalled();
+    setConsentMock.respondWithIn();
+    return flushPromiseChains().then(() => {
+      expect(sendSetConsentRequest).toHaveBeenCalledWith({
+        consentOptions: CONSENT_IN.consent,
+        identityMap: { my: "map" },
+        configuration: {
+          identity: {
+            idSyncContainerId: "123"
           }
         }
       });

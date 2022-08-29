@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { GENERAL } from "../../constants/consentPurpose";
+import { isEmptyObject } from "../../utils";
 
 export default ({
   storedConsent,
@@ -20,8 +21,10 @@ export default ({
   sendSetConsentRequest,
   validateSetConsentOptions,
   consentHashStore,
-  doesIdentityCookieExist
+  doesIdentityCookieExist,
+  config
 }) => {
+  const { configurationOverrides } = config;
   const defaultConsentByPurpose = { [GENERAL]: defaultConsent };
   let storedConsentByPurpose = storedConsent.read();
 
@@ -64,8 +67,12 @@ export default ({
                   consentOptions,
                   identityMap
                 };
-                if (configuration) {
-                  consentRequestOptions.configuration = configuration;
+                const overrides = {
+                  ...configurationOverrides,
+                  ...configuration
+                };
+                if (!isEmptyObject(overrides)) {
+                  consentRequestOptions.configuration = overrides;
                 }
                 return sendSetConsentRequest(consentRequestOptions);
               }
