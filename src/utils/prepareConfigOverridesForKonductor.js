@@ -39,7 +39,7 @@ export default configuration => {
     }
     return false;
   });
-  if (Object.values(configOverrides).length === 0) {
+  if (Object.keys(configOverrides).length === 0) {
     return null;
   }
 

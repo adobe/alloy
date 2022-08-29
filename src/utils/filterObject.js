@@ -32,7 +32,7 @@ const filterObject = (obj, predicate) => {
     if (typeof value === "object" && !Array.isArray(value)) {
       // value is object, go deeper
       const filteredValue = filterObject(value, predicate);
-      if (Object.values(filteredValue).length === 0) {
+      if (Object.keys(filteredValue).length === 0) {
         return result;
       }
       return { ...result, [key]: filteredValue };
