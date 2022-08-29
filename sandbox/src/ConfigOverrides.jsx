@@ -19,7 +19,7 @@ const defaultOverrides = {
 };
 
 const sendEvent = configuration => {
-  window.alloy("sendEvent", {
+  return window.alloy("sendEvent", {
     renderDecisions: true,
     configuration: {
       ...configuration
@@ -27,7 +27,7 @@ const sendEvent = configuration => {
   });
 };
 const setConsent = configuration => {
-  window.alloy("setConsent", {
+  return window.alloy("setConsent", {
     consent: [
       {
         standard: "Adobe",
@@ -45,7 +45,7 @@ const setConsent = configuration => {
   });
 };
 const getIdentity = configuration => {
-  window.alloy("getIdentity", {
+  return window.alloy("getIdentity", {
     namespaces: ["ECID"],
     configuration: {
       ...configuration
@@ -54,43 +54,40 @@ const getIdentity = configuration => {
 };
 
 const appendIdentityToUrl = configuration => {
-  window.alloy("appendIdentityToUrl", {
-    url: "https://example.com",
-    configuration: {
-      ...configuration
-    }
-  }).then(url => console.log("URL with appended identity: ", url));
+  return window
+    .alloy("appendIdentityToUrl", {
+      url: "https://example.com",
+      configuration: {
+        ...configuration
+      }
+    })
+    .then(url => console.log("URL with appended identity: ", url));
 };
 
 export default function ConfigOverrides() {
-  const [isValidJson, setIsValidJson] = useState(true);
+  const [error, setError] = useState("");
   const [overrides, setOverrides] = useState({ ...defaultOverrides });
   const overridesString = JSON.stringify(overrides, null, 2);
   const onTextareaChange = event => {
     try {
       const newOverrides = JSON.parse(event.target.value);
       setOverrides(newOverrides);
-      setIsValidJson(true);
+      setError("");
     } catch (err) {
       console.error(err);
-      setIsValidJson(false);
+      setError(
+        "The text you just entered is not valid JSON. Try again.\n" + err
+      );
     }
   };
-  const textareaStyles = {
-    fontFamily: "monospace",
-    boxSizing: "border-box"
-  };
-  if (!isValidJson) {
-    textareaStyles.border = "1px solid red";
-  }
   const addReportSuite = () => {
     console.log("Add report suite");
     setOverrides({
       ...overrides,
-      identity: {
-        ...overrides.configuration.identity,
+      analytics: {
+        ...overrides.analytics,
         analyticsReportSuites: [
-          ...overrides.configuration.identity.analyticsReportSuites,
+          ...((overrides.analytics || {}).analyticsReportSuites || []),
           ""
         ]
       }
@@ -99,25 +96,30 @@ export default function ConfigOverrides() {
   const resetOverrides = () => {
     setOverrides({ ...defaultOverrides });
   };
-  const callWithOverrides = callback => () => callback(overrides);
+  const callWithOverrides = callback => () =>
+    callback(overrides).catch(err => {
+      console.error(err);
+      setError("The request failed.\n" + err.toString());
+    });
   return (
     <div>
       <h2>Overrides</h2>
-      {!isValidJson && (
-        <div style={{ margin: "8px" }}>
-          <span
-            role="img"
-            aria-label="A siren, signifying something to be alerted by"
-          >
-            🚨
-          </span>{" "}
-          The text you just entered is not valid JSON. Try again.{" "}
+      {error && (
+        <div
+          style={{
+            margin: "8px",
+            border: "1px solid red",
+            borderRadius: "8px",
+            padding: "8px"
+          }}
+        >
           <span
             role="img"
             aria-label="A siren, signifying something to be alerted by"
           >
             🚨
           </span>
+          <pre style={{ wordWrap: "break-word" }}>{error}</pre>
         </div>
       )}
       <div style={{ margin: "8px" }}>
@@ -138,7 +140,10 @@ export default function ConfigOverrides() {
         }}
       >
         <textarea
-          style={textareaStyles}
+          style={{
+            fontFamily: "monospace",
+            boxSizing: "border-box"
+          }}
           name="overrideEditor"
           id="overrideEditor"
           cols="50"
@@ -165,7 +170,9 @@ export default function ConfigOverrides() {
         <button type="button" onClick={callWithOverrides(getIdentity)}>
           Get Identity
         </button>
-        <button type="button" onClick={callWithOverrides(appendIdentityToUrl)}>Append Identity to URL</button>
+        <button type="button" onClick={callWithOverrides(appendIdentityToUrl)}>
+          Append Identity to URL
+        </button>
         <button type="button" onClick={callWithOverrides(setConsent)}>
           Set Consent
         </button>
