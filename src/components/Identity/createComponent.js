@@ -1,4 +1,4 @@
-import { assign } from "../../utils";
+import { assign, isEmptyObject, isNil } from "../../utils";
 import getIdentityOptionsValidator from "./getIdentity/getIdentityOptionsValidator";
 import appendIdentityToUrlOptionsValidator from "./appendIdentityToUrl/appendIdentityToUrlOptionsValidator";
 
@@ -12,8 +12,10 @@ export default ({
   getIdentity,
   consent,
   appendIdentityToUrl,
-  logger
+  logger,
+  config
 }) => {
+  const { configurationOverrides } = config;
   let ecid;
   let edge = {};
   return {
@@ -49,9 +51,19 @@ export default ({
           return consent
             .awaitConsent()
             .then(() => {
-              return ecid
-                ? undefined
-                : getIdentity(options.namespaces, options.configuration);
+              const getIdentityOptions = [];
+              if (!isNil(options) && !isEmptyObject(options)) {
+                getIdentityOptions.push(options.namespaces);
+
+                const overrides = {
+                  ...configurationOverrides,
+                  ...options.configuration
+                };
+                if (!isEmptyObject(overrides)) {
+                  getIdentityOptions.push(overrides);
+                }
+              }
+              return ecid ? undefined : getIdentity(...getIdentityOptions);
             })
             .then(() => {
               return {
@@ -69,9 +81,17 @@ export default ({
           return consent
             .withConsent()
             .then(() => {
-              const getIdentityOptions = [options.namespaces];
-              if (options.configuration) {
-                getIdentityOptions.push(options.configuration);
+              const getIdentityOptions = [];
+              if (!isNil(options) && !isEmptyObject(options)) {
+                getIdentityOptions.push(options.namespaces);
+
+                const overrides = {
+                  ...configurationOverrides,
+                  ...options.configuration
+                };
+                if (!isEmptyObject(overrides)) {
+                  getIdentityOptions.push(overrides);
+                }
               }
               return ecid ? undefined : getIdentity(...getIdentityOptions);
             })

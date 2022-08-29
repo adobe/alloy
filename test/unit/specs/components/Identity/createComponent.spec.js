@@ -30,6 +30,7 @@ describe("Identity::createComponent", () => {
   let logger;
   let getIdentityDeferred;
   let response;
+  let config;
 
   beforeEach(() => {
     ensureSingleIdentity = jasmine.createSpy("ensureSingleIdentity");
@@ -52,6 +53,9 @@ describe("Identity::createComponent", () => {
     getIdentity = jasmine
       .createSpy("getIdentity")
       .and.returnValue(getIdentityDeferred.promise);
+    config = {
+      configurationOverrides: {}
+    };
     component = createComponent({
       ensureSingleIdentity,
       addEcidQueryToPayload,
@@ -62,7 +66,8 @@ describe("Identity::createComponent", () => {
       getIdentity,
       consent,
       appendIdentityToUrl,
-      logger
+      logger,
+      config
     });
     response = jasmine.createSpyObj("response", ["getEdge"]);
   });
@@ -250,6 +255,96 @@ describe("Identity::createComponent", () => {
       });
   });
 
+  it("getIdentity command is called with configuration overrides from global configure command", () => {
+    config.configurationOverrides.identity = {
+      idSyncContainerId: "123"
+    };
+    const idSyncsPromise = Promise.resolve();
+    handleResponseForIdSyncs.and.returnValue(idSyncsPromise);
+    const onResolved = jasmine.createSpy("onResolved");
+    response.getEdge.and.returnValue({ regionId: 42 });
+    const getIdentityOptions = {
+      namespaces: ["ECID"],
+      configuration: {}
+    };
+    component.commands.getIdentity.run(getIdentityOptions).then(onResolved);
+
+    return flushPromiseChains()
+      .then(() => {
+        expect(getIdentity).not.toHaveBeenCalled();
+        expect(onResolved).not.toHaveBeenCalled();
+        awaitConsentDeferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(getIdentity).toHaveBeenCalledWith(
+          getIdentityOptions.namespaces,
+          config.configurationOverrides
+        );
+        getEcidFromResponse.and.returnValue("user@adobe");
+        component.lifecycle.onResponse({ response });
+        getIdentityDeferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(onResolved).toHaveBeenCalledWith({
+          identity: {
+            ECID: "user@adobe"
+          },
+          edge: {
+            regionId: 42
+          }
+        });
+      });
+  });
+
+  it("getIdentity command gives preference to local config overrides over global ones", () => {
+    config.configurationOverrides.identity = {
+      idSyncContainerId: "123"
+    };
+    const idSyncsPromise = Promise.resolve();
+    handleResponseForIdSyncs.and.returnValue(idSyncsPromise);
+    const onResolved = jasmine.createSpy("onResolved");
+    response.getEdge.and.returnValue({ regionId: 42 });
+    const getIdentityOptions = {
+      namespaces: ["ECID"],
+      configuration: {
+        identity: {
+          idSyncContainerId: "456"
+        }
+      }
+    };
+    component.commands.getIdentity.run(getIdentityOptions).then(onResolved);
+
+    return flushPromiseChains()
+      .then(() => {
+        expect(getIdentity).not.toHaveBeenCalled();
+        expect(onResolved).not.toHaveBeenCalled();
+        awaitConsentDeferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(getIdentity).toHaveBeenCalledWith(
+          getIdentityOptions.namespaces,
+          getIdentityOptions.configuration
+        );
+        getEcidFromResponse.and.returnValue("user@adobe");
+        component.lifecycle.onResponse({ response });
+        getIdentityDeferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(onResolved).toHaveBeenCalledWith({
+          identity: {
+            ECID: "user@adobe"
+          },
+          edge: {
+            regionId: 42
+          }
+        });
+      });
+  });
+
   it("appendIdentityToUrl should return the unmodified url when consent is not given.", () => {
     const commandPromise = component.commands.appendIdentityToUrl.run({
       url: "myurl"
@@ -333,6 +428,86 @@ describe("Identity::createComponent", () => {
   });
 
   it("appendIdentityToUrl should call getIdentity with configuration overrides, if provided", () => {
+    const idSyncsPromise = Promise.resolve();
+    handleResponseForIdSyncs.and.returnValue(idSyncsPromise);
+    appendIdentityToUrl.and.returnValue("modifiedUrl");
+    const onResolved = jasmine.createSpy("onResolved");
+    response.getEdge.and.returnValue({ regionId: 42 });
+    const configuration = {
+      identity: {
+        idSyncContainerId: "123"
+      }
+    };
+    component.commands.appendIdentityToUrl
+      .run({ namespaces: ["ECID"], url: "myurl", configuration })
+      .then(onResolved);
+
+    return flushPromiseChains()
+      .then(() => {
+        expect(getIdentity).not.toHaveBeenCalled();
+        expect(onResolved).not.toHaveBeenCalled();
+        withConsentDeferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(getIdentity).toHaveBeenCalledWith(["ECID"], configuration);
+        getEcidFromResponse.and.returnValue("user@adobe");
+        component.lifecycle.onResponse({ response });
+        getIdentityDeferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(logger.warn).not.toHaveBeenCalled();
+        expect(appendIdentityToUrl).toHaveBeenCalledOnceWith(
+          "user@adobe",
+          "myurl"
+        );
+      });
+  });
+
+  it("appendIdentityToUrl should call getIdentity with global configuration overrides, if provided", () => {
+    config.configurationOverrides.identity = {
+      idSyncContainerId: "123"
+    };
+    const idSyncsPromise = Promise.resolve();
+    handleResponseForIdSyncs.and.returnValue(idSyncsPromise);
+    appendIdentityToUrl.and.returnValue("modifiedUrl");
+    const onResolved = jasmine.createSpy("onResolved");
+    response.getEdge.and.returnValue({ regionId: 42 });
+    component.commands.appendIdentityToUrl
+      .run({ namespaces: ["ECID"], url: "myurl" })
+      .then(onResolved);
+
+    return flushPromiseChains()
+      .then(() => {
+        expect(getIdentity).not.toHaveBeenCalled();
+        expect(onResolved).not.toHaveBeenCalled();
+        withConsentDeferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(getIdentity).toHaveBeenCalledWith(
+          ["ECID"],
+          config.configurationOverrides
+        );
+        getEcidFromResponse.and.returnValue("user@adobe");
+        component.lifecycle.onResponse({ response });
+        getIdentityDeferred.resolve();
+        return flushPromiseChains();
+      })
+      .then(() => {
+        expect(logger.warn).not.toHaveBeenCalled();
+        expect(appendIdentityToUrl).toHaveBeenCalledOnceWith(
+          "user@adobe",
+          "myurl"
+        );
+      });
+  });
+
+  it("appendIdentityToUrl should call getIdentity and prefer local overrides over global ones", () => {
+    config.configurationOverrides.identity = {
+      idSyncContainerId: "456"
+    };
     const idSyncsPromise = Promise.resolve();
     handleResponseForIdSyncs.and.returnValue(idSyncsPromise);
     appendIdentityToUrl.and.returnValue("modifiedUrl");
