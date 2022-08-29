@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { boolean, string, callback, enumOf } from "../../utils/validation";
-import { noop } from "../../utils";
+import { noop, validateConfigOverride } from "../../utils";
 import { EDGE as EDGE_DOMAIN } from "../../constants/domain";
 import EDGE_BASE_PATH from "../../constants/edgeBasePath";
 import { IN, OUT, PENDING } from "../../constants/consentStatus";
@@ -31,5 +31,6 @@ export default () => ({
   orgId: string()
     .unique()
     .required(),
-  onBeforeEventSend: callback().default(noop)
+  onBeforeEventSend: callback().default(noop),
+  configurationOverrides: validateConfigOverride
 });

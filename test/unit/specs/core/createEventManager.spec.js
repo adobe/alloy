@@ -34,7 +34,8 @@ describe("createEventManager", () => {
     config = createConfig({
       orgId: "ABC123",
       onBeforeEventSend: jasmine.createSpy(),
-      debugEnabled: true
+      debugEnabled: true,
+      configurationOverrides: {}
     });
     logger = jasmine.createSpyObj("logger", ["info"]);
     lifecycle = jasmine.createSpyObj("lifecycle", {
@@ -349,6 +350,48 @@ describe("createEventManager", () => {
             },
             com_adobe_experience_platform: {
               event: "456"
+            }
+          });
+          done();
+        });
+    });
+
+    it("includes global override configuration, if provided", done => {
+      config.configurationOverrides.identity = {
+        idSyncContainerId: "123"
+      };
+
+      eventManager
+        .sendEvent(event, {
+          configuration: {}
+        })
+        .then(() => {
+          expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
+            com_adobe_identity: {
+              idSyncContainerId: "123"
+            }
+          });
+          done();
+        });
+    });
+
+    it("prefers local override configuration over global", done => {
+      config.configurationOverrides.identity = {
+        idSyncContainerId: "123"
+      };
+
+      eventManager
+        .sendEvent(event, {
+          configuration: {
+            identity: {
+              idSyncContainerId: "456"
+            }
+          }
+        })
+        .then(() => {
+          expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
+            com_adobe_identity: {
+              idSyncContainerId: "456"
             }
           });
           done();

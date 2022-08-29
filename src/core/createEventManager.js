@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import {
   createCallbackAggregator,
+  isEmptyObject,
   noop,
   prepareConfigOverridesForKonductor
 } from "../utils";
@@ -30,7 +31,7 @@ export default ({
   sendEdgeNetworkRequest,
   applyResponse
 }) => {
-  const { onBeforeEventSend } = config;
+  const { onBeforeEventSend, configurationOverrides } = config;
 
   return {
     createEvent,
@@ -58,11 +59,9 @@ export default ({
       const request = createDataCollectionRequest(payload);
       const onResponseCallbackAggregator = createCallbackAggregator();
       const onRequestFailureCallbackAggregator = createCallbackAggregator();
-
-      if (configuration) {
-        const preparedOverrides = prepareConfigOverridesForKonductor(
-          configuration
-        );
+      const overrides = { ...configurationOverrides, ...configuration };
+      if (!isEmptyObject(overrides)) {
+        const preparedOverrides = prepareConfigOverridesForKonductor(overrides);
         if (preparedOverrides) {
           payload.mergeConfigOverride(preparedOverrides);
         }
