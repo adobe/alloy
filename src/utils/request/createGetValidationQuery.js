@@ -10,14 +10,34 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { queryString } from "../index";
+import { injectStorage, uuid, queryString } from "../index";
 
-const VALIDATION_URL_PARAM = "adobeAepValidationToken";
+const VALIDATION_URL_PARAM = "adb_validation_sessionid";
+const VALIDATION_NAMESPACE = "validation.";
+const CLIENT_ID = "clientId";
 
-export default ({ window }) => () => {
-  const parsedQuery = queryString.parse(window.location.search);
-  const validationToken = parsedQuery[VALIDATION_URL_PARAM];
-  return validationToken
-    ? `&${queryString.stringify({ adobeAepValidationToken: validationToken })}`
-    : "";
+const getValidationClientId = storage => {
+  let clientId = storage.persistent.getItem(CLIENT_ID);
+  if (!clientId) {
+    clientId = uuid();
+    storage.persistent.setItem(CLIENT_ID, clientId);
+  }
+  return clientId;
+};
+
+export default ({ window }) => {
+  const createNamespacedStorage = injectStorage(window);
+  const storage = createNamespacedStorage(VALIDATION_NAMESPACE);
+  return () => {
+    const parsedQuery = queryString.parse(window.location.search);
+    const validationSessionId = parsedQuery[VALIDATION_URL_PARAM];
+    if (!validationSessionId) {
+      return "";
+    }
+    const clientId = getValidationClientId(storage);
+    const validationToken = `${validationSessionId}|${clientId}`;
+    return `&${queryString.stringify({
+      adobeAepValidationToken: validationToken
+    })}`;
+  };
 };

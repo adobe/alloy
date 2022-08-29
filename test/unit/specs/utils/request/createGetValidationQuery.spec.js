@@ -11,35 +11,53 @@ governing permissions and limitations under the License.
 */
 
 import { createGetValidationQuery } from "../../../../../src/utils/request";
+import { injectStorage } from "../../../../../src/utils";
+import uuidV4Regex from "../../../constants/uuidV4Regex";
 
 const win = {
   location: {
     search: ""
-  }
+  },
+  localStorage: window.localStorage
 };
 
 describe("createGetValidationQuery", () => {
   it("gets validation query", () => {
-    const getValidationQuery = createGetValidationQuery({ window: win });
+    let result;
+    let token;
+    let firstClientId;
+    let clientId;
+    const getValidationQuery = createGetValidationQuery({
+      window: win,
+      injectStorage
+    });
     expect(getValidationQuery()).toEqual("");
 
-    win.location.search = "?adobeAepValidationToken=abc-123";
-    expect(getValidationQuery()).toEqual("&adobeAepValidationToken=abc-123");
+    win.location.search = "?adb_validation_sessionid=abc-123";
+    result = getValidationQuery();
+    // eslint-disable-next-line prefer-const
+    [token, firstClientId] = result.split("%7C");
+    expect(token).toEqual("&adobeAepValidationToken=abc-123");
+    expect(uuidV4Regex.test(firstClientId)).toBeTrue();
 
-    win.location.search = "?adobeAepValidationToken=abc-123%20fgh";
-    expect(getValidationQuery()).toEqual(
-      "&adobeAepValidationToken=abc-123%20fgh"
-    );
+    win.location.search = "?adb_validation_sessionid=abc-123%20fgh";
+    result = getValidationQuery();
+    [token, clientId] = result.split("%7C");
+    expect(token).toEqual("&adobeAepValidationToken=abc-123%20fgh");
+    expect(clientId).toEqual(firstClientId);
 
     win.location.search =
-      "?lang=en&sort=relevancy&f:el_product=[Data%20Collection]&adobeAepValidationToken=abc-123";
-    expect(getValidationQuery()).toEqual("&adobeAepValidationToken=abc-123");
+      "?lang=en&sort=relevancy&f:el_product=[Data%20Collection]&adb_validation_sessionid=abc-123";
+    result = getValidationQuery();
+    [token, clientId] = result.split("%7C");
+    expect(token).toEqual("&adobeAepValidationToken=abc-123");
+    expect(clientId).toEqual(firstClientId);
 
     win.location.search =
       "?lang=en&sort=relevancy&f:el_product=[Data%20Collection]";
     expect(getValidationQuery()).toEqual("");
 
-    win.location.search = "?adobeAepValidationToken=";
+    win.location.search = "?adb_validation_sessionid=";
     expect(getValidationQuery()).toEqual("");
   });
 });
