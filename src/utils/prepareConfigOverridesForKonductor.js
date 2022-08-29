@@ -44,13 +44,13 @@ export default configuration => {
   }
 
   // add "com_adobe_" to top level keys
-  configOverrides = Object.entries(configOverrides).reduce(
-    (result, [key, value]) => ({
+  configOverrides = Object.keys(configOverrides).reduce((result, key) => {
+    const value = configOverrides[key];
+    return {
       ...result,
       [`${CONFIG_KEY_PREFIX}_${key}`]: value
-    }),
-    {}
-  );
+    };
+  }, {});
 
   return configOverrides;
 };

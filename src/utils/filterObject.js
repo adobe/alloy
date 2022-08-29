@@ -27,7 +27,8 @@ const filterObject = (obj, predicate) => {
   if (isNil(obj) || typeof obj !== "object") {
     return obj;
   }
-  return Object.entries(obj).reduce((result, [key, value]) => {
+  return Object.keys(obj).reduce((result, key) => {
+    const value = obj[key];
     if (typeof value === "object" && !Array.isArray(value)) {
       // value is object, go deeper
       const filteredValue = filterObject(value, predicate);
