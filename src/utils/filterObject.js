@@ -10,7 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import isEmptyObject from "./isEmptyObject";
 import isNil from "./isNil";
+import isObject from "./isObject";
 
 /**
  * Given an object and a function that takes a value and returns a predicate, filter out
@@ -24,15 +26,15 @@ import isNil from "./isNil";
  * @returns A copy of the original object with the values that fail the predicate, filtered out.
  */
 const filterObject = (obj, predicate) => {
-  if (isNil(obj) || typeof obj !== "object") {
+  if (isNil(obj) || !isObject(obj)) {
     return obj;
   }
   return Object.keys(obj).reduce((result, key) => {
     const value = obj[key];
-    if (typeof value === "object" && !Array.isArray(value)) {
+    if (isObject(value)) {
       // value is object, go deeper
       const filteredValue = filterObject(value, predicate);
-      if (Object.keys(filteredValue).length === 0) {
+      if (isEmptyObject(filteredValue)) {
         return result;
       }
       return { ...result, [key]: filteredValue };

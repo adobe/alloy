@@ -12,6 +12,11 @@ governing permissions and limitations under the License.
 import isNil from "./isNil";
 import filterObject from "./filterObject";
 import { CONFIG_KEY_PREFIX } from "../constants/blackbird";
+import isEmptyObject from "./isEmptyObject";
+import isNonEmptyArray from "./isNonEmptyArray";
+import isNonEmptyString from "./isNonEmptyString";
+import isNumber from "./isNumber";
+import isBoolean from "./isBoolean";
 
 // We want to avoid mapping between specific keys because we want Konductor
 // to be able to add overrides in the future without us needing to make
@@ -25,21 +30,21 @@ export default configuration => {
     if (isNil(value)) {
       return false;
     }
-    if (typeof value === "boolean") {
+    if (isBoolean(value)) {
       return true;
     }
-    if (typeof value === "number") {
+    if (isNumber(value)) {
       return true;
     }
-    if (typeof value === "string" && value !== "") {
+    if (isNonEmptyString(value)) {
       return true;
     }
-    if (Array.isArray(value) && value.length > 0) {
+    if (isNonEmptyArray(value)) {
       return true;
     }
     return false;
   });
-  if (Object.keys(configOverrides).length === 0) {
+  if (isEmptyObject(configOverrides)) {
     return null;
   }
 
