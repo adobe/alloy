@@ -29,11 +29,7 @@ export default (config, logger, availableContexts, requiredContexts) => {
       onBeforeEvent({ event }) {
         const xdm = {};
         return Promise.all(
-          contexts.map(context => {
-            return new Promise(resolve => {
-              resolve(context(xdm));
-            });
-          })
+          contexts.map(context => Promise.resolve(context(xdm)))
         ).then(event.mergeXdm(xdm));
       }
     }
