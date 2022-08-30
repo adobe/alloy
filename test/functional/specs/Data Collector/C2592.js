@@ -42,7 +42,9 @@ test("Test C2592: Event command sends a request.", async () => {
     .expect(request.events[0].xdm.implementationDetails.name)
     .eql("https://ns.adobe.com/experience/alloy");
   await t
-    .expect(request.events[0].meta.collect.datasetId)
+    .expect(
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+    )
     .eql("5eb9aaa6a3b16e18a818e06f");
   await t.expect(request.meta.state.cookiesEnabled).eql(true);
   await t.expect(request.meta.state.domain).ok();
