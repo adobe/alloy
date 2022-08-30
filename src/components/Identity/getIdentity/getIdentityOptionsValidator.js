@@ -27,7 +27,9 @@ export default options => {
   getIdentityOptionsValidator(options);
   // Return default options for now
   // To-Do: Accept namespace from given options
-  return {
-    namespaces: ["ECID"]
-  };
+  const result = { namespaces: ["ECID"] };
+  if (options && options.configuration) {
+    result.configuration = options.configuration;
+  }
+  return result;
 };
