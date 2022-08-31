@@ -14,30 +14,52 @@ import validateConfigOverride from "../../../../src/utils/validateConfigOverride
 import describeValidation from "../../helpers/describeValidation";
 
 describeValidation("utils:validateConfigOverride", validateConfigOverride, [
-  // TODO find a way to make these tests pass.
-  // Right now, they say "Expected $.configuration not to have properties
-  // default: Function and required: Function". Those are added by the validator
-  // itself.
-  // { value: {} },
-  // {
-  //   value: {
-  //     experience_platform: {
-  //       datasets: {
-  //         event: "werewr",
-  //         profile: "www"
-  //       }
-  //     },
-  //     analytics: {
-  //       reportSuites: ["sdfsfd"]
-  //     },
-  //     identity: {
-  //       idSyncContainerId: "rrr"
-  //     },
-  //     target: {
-  //       propertyToken: "rrr"
-  //     }
-  //   }
-  // },
+  // empty configuration
+  { value: {} },
+  // standard configuration
+  {
+    value: {
+      experience_platform: {
+        datasets: {
+          event: "werewr",
+          profile: "www"
+        }
+      },
+      analytics: {
+        reportSuites: ["sdfsfd"]
+      },
+      identity: {
+        idSyncContainerId: "rrr"
+      },
+      target: {
+        propertyToken: "rrr"
+      }
+    }
+  },
+  // arbitrarily nested objects
+  {
+    value: {
+      experience_platform: {
+        datasets: {
+          event: {
+            morning: {
+              first: {
+                withoutAction: "222"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  // all top-level keys must be objects
+  {
+    value: {
+      foo: "bar"
+    },
+    error: true
+  },
+  // value must be an object
   { value: true, error: true },
   { value: false, error: true },
   { value: "", error: true },
