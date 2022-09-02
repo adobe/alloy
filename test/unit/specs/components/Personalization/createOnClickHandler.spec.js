@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createOnClickHandler from "../../../../../src/components/Personalization/createOnClickHandler";
+import { EventType } from "../../../../../src/components/Personalization/constants/eventType";
 
 describe("Personalization::createOnClickHandler", () => {
   let mergeDecisionsMeta;
@@ -58,7 +59,11 @@ describe("Personalization::createOnClickHandler", () => {
         webPageDetails: { viewName: "foo" }
       }
     });
-    expect(mergeDecisionsMeta).toHaveBeenCalledWith(event, decisionsMeta);
+    expect(mergeDecisionsMeta).toHaveBeenCalledWith(
+      event,
+      decisionsMeta,
+      EventType.INTERACT
+    );
     expect(collectClicks).toHaveBeenCalledWith(
       clickedElement,
       selectors,

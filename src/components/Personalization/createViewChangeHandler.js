@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import composePersonalizationResultingObject from "./utils/composePersonalizationResultingObject";
 import { isNonEmptyArray } from "../../utils";
+import { EventType } from "./constants/eventType";
 
 export default ({
   mergeDecisionsMeta,
@@ -27,7 +28,7 @@ export default ({
         return executeDecisions(viewDecisions).then(decisionsMeta => {
           // if there are decisions to be rendered we render them and attach the result in experience.decisions.propositions
           if (isNonEmptyArray(decisionsMeta)) {
-            mergeDecisionsMeta(event, decisionsMeta);
+            mergeDecisionsMeta(event, decisionsMeta, EventType.DISPLAY);
             onResponse(() => {
               return composePersonalizationResultingObject(viewDecisions, true);
             });

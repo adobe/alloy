@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createViewChangeHandler from "../../../../../src/components/Personalization/createViewChangeHandler";
+import { EventType } from "../../../../../src/components/Personalization/constants/eventType";
 import { CART_VIEW_DECISIONS } from "./responsesMock/eventResponses";
 
 describe("Personalization::createViewChangeHandler", () => {
@@ -59,7 +60,11 @@ describe("Personalization::createViewChangeHandler", () => {
       onResponse
     });
     expect(executeDecisions).toHaveBeenCalledWith(CART_VIEW_DECISIONS);
-    expect(mergeDecisionsMeta).toHaveBeenCalledWith(event, CART_VIEW_DECISIONS);
+    expect(mergeDecisionsMeta).toHaveBeenCalledWith(
+      event,
+      CART_VIEW_DECISIONS,
+      EventType.DISPLAY
+    );
     expect(collect).not.toHaveBeenCalled();
   });
 

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray } from "../../utils";
-import { INTERACT } from "./constants/eventType";
+import { INTERACT, EventType } from "./constants/eventType";
 import PAGE_WIDE_SCOPE from "./constants/scope";
 
 export default ({
@@ -43,7 +43,7 @@ export default ({
         }
 
         event.mergeXdm(xdm);
-        mergeDecisionsMeta(event, decisionsMeta);
+        mergeDecisionsMeta(event, decisionsMeta, EventType.INTERACT);
       }
     }
   };
