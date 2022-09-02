@@ -14,7 +14,8 @@ import { endsWith, isLegacyCookieName, isNamespacedCookieName } from "../utils";
 
 const STATE_STORE_HANDLE_TYPE = "state:store";
 
-export default ({ cookieJar, orgId, apexDomain, dateProvider }) => {
+export default ({ cookieJar, config, apexDomain, dateProvider }) => {
+  const { orgId } = config;
   return {
     /**
      * When sending to a third-party endpoint, the endpoint won't be able to
@@ -43,7 +44,8 @@ export default ({ cookieJar, orgId, apexDomain, dateProvider }) => {
             // cookie names (so that the server can handle migrating
             // identities on websites previously using Visitor.js)
             return (
-              isNamespacedCookieName(orgId, name) || isLegacyCookieName(name)
+              isNamespacedCookieName(orgId, name) ||
+              isLegacyCookieName(name, config)
             );
           })
           .map(qualifyingCookieName => {

@@ -13,20 +13,26 @@ governing permissions and limitations under the License.
 import isLegacyCookieName from "../../../../src/utils/isLegacyCookieName";
 
 describe("isLegacyCookieName", () => {
+  const config = {};
+
   it("returns true if it's at_qa_mode cookie", () => {
-    const result = isLegacyCookieName("at_qa_mode");
+    const result = isLegacyCookieName("at_qa_mode", config);
     expect(result).toBeTrue();
   });
 
-  if (
-    ("returns true if it's mbox cookie",
-    () => {
-      expect(isLegacyCookieName("mbox")).toBeTrue();
-    })
-  );
+  it("returns true if it's mbox cookie and targetMigrationEnabled=true", () => {
+    const targetMigrationEnabledConfig = {
+      targetMigrationEnabled: true
+    };
+    expect(isLegacyCookieName("mbox", targetMigrationEnabledConfig)).toBeTrue();
+  });
+
+  it("returns false if it's mbox cookie and targetMigrationEnabled=false", () => {
+    expect(isLegacyCookieName("mbox", config)).toBeFalse();
+  });
 
   it("returns false if it's not a legacy cookie name", () => {
-    const result = isLegacyCookieName("ABC@CustomOrg");
+    const result = isLegacyCookieName("ABC@CustomOrg", config);
     expect(result).toBeFalse();
   });
 });

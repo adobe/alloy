@@ -21,13 +21,14 @@ describe("createCookieTransfer", () => {
   let cookieTransfer;
   const date = new Date();
   const dateProvider = () => date;
+  const config = { orgId };
 
   beforeEach(() => {
     payload = jasmine.createSpyObj("payload", ["mergeState"]);
     cookieJar = jasmine.createSpyObj("cookieJar", ["get", "set"]);
     cookieTransfer = createCookieTransfer({
       cookieJar,
-      orgId,
+      config,
       apexDomain,
       dateProvider
     });

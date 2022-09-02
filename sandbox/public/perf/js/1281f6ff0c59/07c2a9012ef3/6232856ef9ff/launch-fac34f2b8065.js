@@ -7913,7 +7913,7 @@ module.exports = function (instanceNames) {
 
       var createCookieTransfer = function createCookieTransfer(_ref) {
         var cookieJar = _ref.cookieJar,
-            orgId = _ref.orgId,
+            orgId = _ref.config.orgId,
             apexDomain = _ref.apexDomain;
         return {
           /**
@@ -8264,7 +8264,7 @@ module.exports = function (instanceNames) {
             });
             var cookieTransfer = createCookieTransfer({
               cookieJar: cookie__default['default'],
-              orgId: config.orgId,
+              config,
               apexDomain: apexDomain$1
             });
             var sendNetworkRequest = injectSendNetworkRequest({

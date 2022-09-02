@@ -93,7 +93,7 @@ export const createExecuteCommand = ({
     const { orgId } = config;
     const cookieTransfer = createCookieTransfer({
       cookieJar: loggingCookieJar,
-      orgId,
+      config,
       apexDomain,
       dateProvider: () => new Date()
     });
