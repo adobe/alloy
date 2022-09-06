@@ -24,7 +24,7 @@ export default ({
   doesIdentityCookieExist,
   config
 }) => {
-  const { configurationOverrides } = config;
+  const { datastreamConfigOverrides: globalConfigOverrides } = config;
   const defaultConsentByPurpose = { [GENERAL]: defaultConsent };
   let storedConsentByPurpose = storedConsent.read();
 
@@ -57,7 +57,11 @@ export default ({
     commands: {
       setConsent: {
         optionsValidator: validateSetConsentOptions,
-        run: ({ consent: consentOptions, identityMap, configuration }) => {
+        run: ({
+          consent: consentOptions,
+          identityMap,
+          datastreamConfigOverrides: commandConfigOverrides
+        }) => {
           consent.suspend();
           const consentHashes = consentHashStore.lookup(consentOptions);
           return taskQueue
@@ -68,11 +72,11 @@ export default ({
                   identityMap
                 };
                 const overrides = {
-                  ...configurationOverrides,
-                  ...configuration
+                  ...globalConfigOverrides,
+                  ...commandConfigOverrides
                 };
                 if (!isEmptyObject(overrides)) {
-                  consentRequestOptions.configuration = overrides;
+                  consentRequestOptions.datastreamConfigOverrides = overrides;
                 }
                 return sendSetConsentRequest(consentRequestOptions);
               }

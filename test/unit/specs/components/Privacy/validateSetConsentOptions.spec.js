@@ -107,13 +107,13 @@ describeValidation(
     {
       value: {
         consent: validGeneralConsent,
-        configuration: {
+        datastreamConfigOverrides: {
           identity: {
             idSyncContainerId: "123"
           }
         }
       }
     },
-    { value: { consent: validGeneralConsent, configuration: {} } }
+    { value: { consent: validGeneralConsent, datastreamConfigOverrides: {} } }
   ]
 );

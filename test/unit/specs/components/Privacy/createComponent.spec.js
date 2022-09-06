@@ -74,7 +74,7 @@ describe("privacy:createComponent", () => {
     consentHashes.isNew.and.returnValue(true);
     requestFailureError = new Error("Request for setting test consent failed.");
     config = {
-      configurationOverrides: {}
+      datastreamConfigOverrides: {}
     };
   });
 
@@ -167,7 +167,7 @@ describe("privacy:createComponent", () => {
     component.commands.setConsent
       .run({
         identityMap: { my: "map" },
-        configuration: {
+        datastreamConfigOverrides: {
           identity: {
             idSyncContainerId: "1234"
           }
@@ -181,7 +181,7 @@ describe("privacy:createComponent", () => {
       expect(sendSetConsentRequest).toHaveBeenCalledWith({
         consentOptions: CONSENT_IN.consent,
         identityMap: { my: "map" },
-        configuration: {
+        datastreamConfigOverrides: {
           identity: {
             idSyncContainerId: "1234"
           }
@@ -193,7 +193,7 @@ describe("privacy:createComponent", () => {
   });
 
   it("handles the setConsent command with global overrides, if provided", () => {
-    config.configurationOverrides.identity = {
+    config.datastreamConfigOverrides.identity = {
       idSyncContainerId: "123"
     };
     defaultConsent = "pending";
@@ -213,7 +213,7 @@ describe("privacy:createComponent", () => {
       expect(sendSetConsentRequest).toHaveBeenCalledWith({
         consentOptions: CONSENT_IN.consent,
         identityMap: { my: "map" },
-        configuration: {
+        datastreamConfigOverrides: {
           identity: {
             idSyncContainerId: "123"
           }
@@ -225,7 +225,7 @@ describe("privacy:createComponent", () => {
   });
 
   it("handles the setConsent command and prefers local over global overrides", () => {
-    config.configurationOverrides.identity = {
+    config.datastreamConfigOverrides.identity = {
       idSyncContainerId: "456"
     };
     defaultConsent = "pending";
@@ -236,7 +236,7 @@ describe("privacy:createComponent", () => {
     component.commands.setConsent
       .run({
         identityMap: { my: "map" },
-        configuration: {
+        datastreamConfigOverrides: {
           identity: {
             idSyncContainerId: "123"
           }
@@ -250,7 +250,7 @@ describe("privacy:createComponent", () => {
       expect(sendSetConsentRequest).toHaveBeenCalledWith({
         consentOptions: CONSENT_IN.consent,
         identityMap: { my: "map" },
-        configuration: {
+        datastreamConfigOverrides: {
           identity: {
             idSyncContainerId: "123"
           }

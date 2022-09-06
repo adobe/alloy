@@ -29,7 +29,9 @@ test.meta({
 test("Test C7437533: `setConsent` can receive config overrides in command options", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  await alloy.setConsent(compose(IAB_CONSENT_IN, { configuration: overrides }));
+  await alloy.setConsent(
+    compose(IAB_CONSENT_IN, { datastreamConfigOverrides: overrides })
+  );
 
   await responseStatus(networkLogger.setConsentEndpointLogs.requests, 200);
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
@@ -45,7 +47,9 @@ test("Test C7437533: `setConsent` can receive config overrides in command option
 
 test("Test C7437533: `setConsent` can receive config overrides from `configure`", async () => {
   const alloy = createAlloyProxy();
-  await alloy.configure(compose(config, { configurationOverrides: overrides }));
+  await alloy.configure(
+    compose(config, { datastreamConfigOverrides: overrides })
+  );
   await alloy.setConsent(IAB_CONSENT_IN);
 
   await responseStatus(networkLogger.setConsentEndpointLogs.requests, 200);
