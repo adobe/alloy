@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 import { AT_QA_MODE, MBOX } from "../constants/legacyCookies";
 
 export default (name, config) => {
-  return (
-    name === AT_QA_MODE || (name === MBOX && !!config.targetMigrationEnabled)
-  );
+  const { targetMigrationEnabled } = config;
+  return name === AT_QA_MODE || (name === MBOX && !!targetMigrationEnabled);
 };
