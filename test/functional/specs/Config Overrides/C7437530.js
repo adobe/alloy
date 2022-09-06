@@ -8,7 +8,6 @@ import {
   debugEnabled
 } from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
-// import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
@@ -36,7 +35,7 @@ test("Test C7437530: sendEvent can receive config overrides in command options",
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({
-    configuration: { ...overrides }
+    configuration: overrides
   });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
@@ -61,10 +60,11 @@ test("Test C7437530: sendEvent can receive config overrides in command options",
 
 test("Test C7437530: sendEvent can receive config overrides from configure", async () => {
   const alloy = createAlloyProxy();
-  await alloy.configure({
-    ...config,
-    configurationOverrides: { ...overrides }
-  });
+  await alloy.configure(
+    compose(config, {
+      configurationOverrides: overrides
+    })
+  );
   await alloy.sendEvent({});
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
