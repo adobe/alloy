@@ -133,7 +133,7 @@ describe("Event Command", () => {
           {
             renderDecisions: false,
             decisionScopes: [],
-            configuration: {
+            datastreamConfigOverrides: {
               experience_platform: {
                 datasets: {
                   event: datasetId
@@ -149,7 +149,7 @@ describe("Event Command", () => {
     return sendEventCommand
       .run({
         renderDecisions: true,
-        configuration: {
+        datastreamConfigOverrides: {
           target: {
             propertyToken: "hello"
           }
@@ -161,7 +161,7 @@ describe("Event Command", () => {
           {
             renderDecisions: true,
             decisionScopes: [],
-            configuration: {
+            datastreamConfigOverrides: {
               target: {
                 propertyToken: "hello"
               }

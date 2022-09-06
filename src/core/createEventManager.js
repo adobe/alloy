@@ -31,7 +31,10 @@ export default ({
   sendEdgeNetworkRequest,
   applyResponse
 }) => {
-  const { onBeforeEventSend, configurationOverrides } = config;
+  const {
+    onBeforeEventSend,
+    datastreamConfigOverrides: globalConfigOverrides
+  } = config;
 
   return {
     createEvent,
@@ -53,13 +56,13 @@ export default ({
       const {
         renderDecisions = false,
         decisionScopes,
-        configuration
+        datastreamConfigOverrides: commandConfigOverrides
       } = options;
       const payload = createDataCollectionRequestPayload();
       const request = createDataCollectionRequest(payload);
       const onResponseCallbackAggregator = createCallbackAggregator();
       const onRequestFailureCallbackAggregator = createCallbackAggregator();
-      const overrides = { ...configurationOverrides, ...configuration };
+      const overrides = { ...globalConfigOverrides, ...commandConfigOverrides };
       if (!isEmptyObject(overrides)) {
         const preparedOverrides = prepareConfigOverridesForKonductor(overrides);
         if (preparedOverrides) {

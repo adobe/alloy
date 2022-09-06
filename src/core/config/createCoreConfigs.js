@@ -32,5 +32,7 @@ export default () => ({
     .unique()
     .required(),
   onBeforeEventSend: callback().default(noop),
+  datastreamConfigOverrides: validateConfigOverride,
+  // TODO: Remove this
   configurationOverrides: validateConfigOverride
 });

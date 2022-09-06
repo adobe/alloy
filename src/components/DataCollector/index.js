@@ -31,7 +31,7 @@ const createDataCollector = ({ eventManager }) => {
             renderDecisions = false,
             decisionScopes = [],
             datasetId,
-            configuration
+            datastreamConfigOverrides
           } = options;
           const event = eventManager.createEvent();
 
@@ -59,22 +59,27 @@ const createDataCollector = ({ eventManager }) => {
             decisionScopes
           };
 
-          if (configuration) {
-            sendEventOptions.configuration = configuration;
+          if (datastreamConfigOverrides) {
+            sendEventOptions.datastreamConfigOverrides = datastreamConfigOverrides;
           }
 
           if (datasetId) {
             // TODO Add deprecation warning for config.datasetId and meta.collect.datasetId?
-            if (!sendEventOptions.configuration) {
-              sendEventOptions.configuration = {};
+            if (!sendEventOptions.datastreamConfigOverrides) {
+              sendEventOptions.datastreamConfigOverrides = {};
             }
-            if (!sendEventOptions.configuration.experience_platform) {
-              sendEventOptions.configuration.experience_platform = {};
+            if (
+              !sendEventOptions.datastreamConfigOverrides.experience_platform
+            ) {
+              sendEventOptions.datastreamConfigOverrides.experience_platform = {};
             }
-            if (!sendEventOptions.configuration.experience_platform.datasets) {
-              sendEventOptions.configuration.experience_platform.datasets = {};
+            if (
+              !sendEventOptions.datastreamConfigOverrides.experience_platform
+                .datasets
+            ) {
+              sendEventOptions.datastreamConfigOverrides.experience_platform.datasets = {};
             }
-            sendEventOptions.configuration.experience_platform.datasets.event = datasetId;
+            sendEventOptions.datastreamConfigOverrides.experience_platform.datasets.event = datasetId;
           }
           return eventManager.sendEvent(event, sendEventOptions);
         }

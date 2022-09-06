@@ -35,7 +35,7 @@ describe("createEventManager", () => {
       orgId: "ABC123",
       onBeforeEventSend: jasmine.createSpy(),
       debugEnabled: true,
-      configurationOverrides: {}
+      datastreamConfigOverrides: {}
     });
     logger = jasmine.createSpyObj("logger", ["info"]);
     lifecycle = jasmine.createSpyObj("lifecycle", {
@@ -330,7 +330,7 @@ describe("createEventManager", () => {
     it("includes override configuration, if provided", done => {
       eventManager
         .sendEvent(event, {
-          configuration: {
+          datastreamConfigOverrides: {
             experience_platform: {
               event: "456",
               profile: ""
@@ -357,13 +357,13 @@ describe("createEventManager", () => {
     });
 
     it("includes global override configuration, if provided", done => {
-      config.configurationOverrides.identity = {
+      config.datastreamConfigOverrides.identity = {
         idSyncContainerId: "123"
       };
 
       eventManager
         .sendEvent(event, {
-          configuration: {}
+          datastreamConfigOverrides: {}
         })
         .then(() => {
           expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
@@ -376,13 +376,13 @@ describe("createEventManager", () => {
     });
 
     it("prefers local override configuration over global", done => {
-      config.configurationOverrides.identity = {
+      config.datastreamConfigOverrides.identity = {
         idSyncContainerId: "123"
       };
 
       eventManager
         .sendEvent(event, {
-          configuration: {
+          datastreamConfigOverrides: {
             identity: {
               idSyncContainerId: "456"
             }
