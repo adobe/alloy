@@ -25,13 +25,13 @@ describe("Identity::appendIdentityToUrlOptionsValidator", () => {
     expect(() => {
       appendIdentityToUrlOptionsValidator({
         url: "http://google.com",
-        configuration: { identity: { idSyncContainerId: "123" } }
+        datastreamConfigOverrides: { identity: { idSyncContainerId: "123" } }
       });
     }).not.toThrowError();
     expect(() => {
       appendIdentityToUrlOptionsValidator({
         url: "http://google.com",
-        configuration: {}
+        datastreamConfigOverrides: {}
       });
     }).not.toThrowError();
   });

@@ -22,14 +22,14 @@ export default options => {
     namespaces: arrayOf(literal("ECID"))
       .nonEmpty()
       .uniqueItems(),
-    configuration: validateConfigOverride
+    datastreamConfigOverrides: validateConfigOverride
   }).noUnknownFields();
   getIdentityOptionsValidator(options);
   // Return default options for now
   // To-Do: Accept namespace from given options
   const result = { namespaces: ["ECID"] };
-  if (options && options.configuration) {
-    result.configuration = options.configuration;
+  if (options && options.datastreamConfigOverrides) {
+    result.datastreamConfigOverrides = options.datastreamConfigOverrides;
   }
   return result;
 };

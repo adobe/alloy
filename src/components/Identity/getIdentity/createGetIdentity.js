@@ -17,11 +17,13 @@ export default ({
   createIdentityRequestPayload,
   createIdentityRequest
 }) => {
-  return (namespaces, configuration) => {
+  return (namespaces, datastreamConfigOverrides) => {
     const payload = createIdentityRequestPayload(namespaces);
     const request = createIdentityRequest(payload);
-    if (configuration) {
-      const preparedConfig = prepareConfigOverridesForKonductor(configuration);
+    if (datastreamConfigOverrides) {
+      const preparedConfig = prepareConfigOverridesForKonductor(
+        datastreamConfigOverrides
+      );
       if (preparedConfig) {
         payload.mergeConfigOverride(preparedConfig);
       }

@@ -15,7 +15,7 @@ export default ({
   logger,
   config
 }) => {
-  const { configurationOverrides } = config;
+  const { datastreamConfigOverrides: globalConfigOverrides } = config;
   let ecid;
   let edge = {};
   return {
@@ -55,9 +55,12 @@ export default ({
               if (!isNil(options) && !isEmptyObject(options)) {
                 getIdentityOptions.push(options.namespaces);
 
+                const {
+                  datastreamConfigOverrides: localConfigOverrides
+                } = options;
                 const overrides = {
-                  ...configurationOverrides,
-                  ...options.configuration
+                  ...globalConfigOverrides,
+                  ...localConfigOverrides
                 };
                 if (!isEmptyObject(overrides)) {
                   getIdentityOptions.push(overrides);
@@ -85,9 +88,12 @@ export default ({
               if (!isNil(options) && !isEmptyObject(options)) {
                 getIdentityOptions.push(options.namespaces);
 
+                const {
+                  datastreamConfigOverrides: localConfigOverrides
+                } = options;
                 const overrides = {
-                  ...configurationOverrides,
-                  ...options.configuration
+                  ...globalConfigOverrides,
+                  ...localConfigOverrides
                 };
                 if (!isEmptyObject(overrides)) {
                   getIdentityOptions.push(overrides);
