@@ -44,7 +44,9 @@ test("Test C6984408: The legacy Adobe Target mbox cookie is included in requests
 
   const alloy = createAlloyProxy();
   await alloy.configure(migrationEnabledConfig);
-  await alloy.sendEvent({});
+  await alloy.sendEvent({
+    decisionScopes: ["scope1"]
+  });
 
   const request = JSON.parse(
     networkLogger.edgeEndpointLogs.requests[0].request.body
@@ -55,5 +57,5 @@ test("Test C6984408: The legacy Adobe Target mbox cookie is included in requests
   await t
     .expect(request.meta.state.entries.find(({ key }) => key === "mbox"))
     .ok();
-  await t.expect(request.meta.target.migration).ok();
+  await t.expect(request.meta.target.migration).eql(true);
 });

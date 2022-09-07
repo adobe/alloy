@@ -48,7 +48,8 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
     idMigrationEnabled: true,
     onBeforeEventSend: "function func() {}",
     orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
-    thirdPartyCookiesEnabled: true
+    thirdPartyCookiesEnabled: true,
+    targetMigrationEnabled: false
   };
 
   const alloy = createAlloyProxy();

@@ -40,16 +40,15 @@ test("Test C7498683: The legacy Adobe Target mbox cookie is not included in requ
 
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  await alloy.sendEvent({});
+  await alloy.sendEvent({
+    decisionScopes: ["scope1"]
+  });
 
   const request = JSON.parse(
     networkLogger.edgeEndpointLogs.requests[0].request.body
   );
   await t.expect(request.meta).ok();
   await t.expect(request.meta.state).ok();
-  await t.expect(request.meta.state.entries).ok();
-  await t
-    .expect(request.meta.state.entries.find(({ key }) => key === "mbox"))
-    .notOk();
+  await t.expect(request.meta.state.entries).notOk();
   await t.expect(request.meta.target).notOk();
 });
