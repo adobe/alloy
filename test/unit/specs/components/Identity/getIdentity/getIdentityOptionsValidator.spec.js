@@ -50,7 +50,7 @@ describe("Identity::getIdentityOptionsValidator", () => {
   it("should return valid options when configuration is passed", () => {
     expect(() => {
       getIdentityOptionsValidator({
-        datastreamConfigOverrides: { identity: { idSyncContainerId: "123" } }
+        edgeConfigOverrides: { identity: { idSyncContainerId: "123" } }
       });
     }).not.toThrow();
   });
@@ -58,7 +58,7 @@ describe("Identity::getIdentityOptionsValidator", () => {
   it("should return valid options when an empty configuration is passed", () => {
     expect(() => {
       getIdentityOptionsValidator({
-        datastreamConfigOverrides: {}
+        edgeConfigOverrides: {}
       });
     }).not.toThrow();
   });

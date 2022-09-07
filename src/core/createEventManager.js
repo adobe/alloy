@@ -33,7 +33,7 @@ export default ({
 }) => {
   const {
     onBeforeEventSend,
-    datastreamConfigOverrides: globalConfigOverrides
+    edgeConfigOverrides: globalConfigOverrides
   } = config;
 
   return {
@@ -56,7 +56,7 @@ export default ({
       const {
         renderDecisions = false,
         decisionScopes,
-        datastreamConfigOverrides: commandConfigOverrides
+        edgeConfigOverrides: commandConfigOverrides
       } = options;
       const payload = createDataCollectionRequestPayload();
       const request = createDataCollectionRequest(payload);

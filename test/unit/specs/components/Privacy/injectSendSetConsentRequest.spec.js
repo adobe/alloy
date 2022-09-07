@@ -61,7 +61,7 @@ describe("Privacy:injectSendSetConsentRequest", () => {
         a: [{ id: "1" }, { id: "2" }],
         b: [{ id: "3" }]
       },
-      datastreamConfigOverrides: {
+      edgeConfigOverrides: {
         identity: {
           idSyncContainerId: "123"
         }

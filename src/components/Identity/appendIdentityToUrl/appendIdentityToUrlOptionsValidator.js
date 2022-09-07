@@ -21,7 +21,7 @@ export default objectOf({
   url: string()
     .required()
     .nonEmpty(),
-  datastreamConfigOverrides: validateConfigOverride
+  edgeConfigOverrides: validateConfigOverride
 })
   .required()
   .noUnknownFields();

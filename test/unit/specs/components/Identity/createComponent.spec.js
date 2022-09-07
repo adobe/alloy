@@ -54,7 +54,7 @@ describe("Identity::createComponent", () => {
       .createSpy("getIdentity")
       .and.returnValue(getIdentityDeferred.promise);
     config = {
-      datastreamConfigOverrides: {}
+      edgeConfigOverrides: {}
     };
     component = createComponent({
       ensureSingleIdentity,
@@ -218,7 +218,7 @@ describe("Identity::createComponent", () => {
     response.getEdge.and.returnValue({ regionId: 42 });
     const getIdentityOptions = {
       namespaces: ["ECID"],
-      datastreamConfigOverrides: {
+      edgeConfigOverrides: {
         identity: {
           idSyncContainerId: "123"
         }
@@ -236,7 +236,7 @@ describe("Identity::createComponent", () => {
       .then(() => {
         expect(getIdentity).toHaveBeenCalledWith(
           getIdentityOptions.namespaces,
-          getIdentityOptions.datastreamConfigOverrides
+          getIdentityOptions.edgeConfigOverrides
         );
         getEcidFromResponse.and.returnValue("user@adobe");
         component.lifecycle.onResponse({ response });
@@ -256,7 +256,7 @@ describe("Identity::createComponent", () => {
   });
 
   it("getIdentity command is called with configuration overrides from global configure command", () => {
-    config.datastreamConfigOverrides.identity = {
+    config.edgeConfigOverrides.identity = {
       idSyncContainerId: "123"
     };
     const idSyncsPromise = Promise.resolve();
@@ -265,7 +265,7 @@ describe("Identity::createComponent", () => {
     response.getEdge.and.returnValue({ regionId: 42 });
     const getIdentityOptions = {
       namespaces: ["ECID"],
-      datastreamConfigOverrides: {}
+      edgeConfigOverrides: {}
     };
     component.commands.getIdentity.run(getIdentityOptions).then(onResolved);
 
@@ -279,7 +279,7 @@ describe("Identity::createComponent", () => {
       .then(() => {
         expect(getIdentity).toHaveBeenCalledWith(
           getIdentityOptions.namespaces,
-          config.datastreamConfigOverrides
+          config.edgeConfigOverrides
         );
         getEcidFromResponse.and.returnValue("user@adobe");
         component.lifecycle.onResponse({ response });
@@ -299,7 +299,7 @@ describe("Identity::createComponent", () => {
   });
 
   it("getIdentity command gives preference to local config overrides over global ones", () => {
-    config.datastreamConfigOverrides.identity = {
+    config.edgeConfigOverrides.identity = {
       idSyncContainerId: "123"
     };
     const idSyncsPromise = Promise.resolve();
@@ -308,7 +308,7 @@ describe("Identity::createComponent", () => {
     response.getEdge.and.returnValue({ regionId: 42 });
     const getIdentityOptions = {
       namespaces: ["ECID"],
-      datastreamConfigOverrides: {
+      edgeConfigOverrides: {
         identity: {
           idSyncContainerId: "456"
         }
@@ -326,7 +326,7 @@ describe("Identity::createComponent", () => {
       .then(() => {
         expect(getIdentity).toHaveBeenCalledWith(
           getIdentityOptions.namespaces,
-          getIdentityOptions.datastreamConfigOverrides
+          getIdentityOptions.edgeConfigOverrides
         );
         getEcidFromResponse.and.returnValue("user@adobe");
         component.lifecycle.onResponse({ response });
@@ -433,13 +433,13 @@ describe("Identity::createComponent", () => {
     appendIdentityToUrl.and.returnValue("modifiedUrl");
     const onResolved = jasmine.createSpy("onResolved");
     response.getEdge.and.returnValue({ regionId: 42 });
-    const datastreamConfigOverrides = {
+    const edgeConfigOverrides = {
       identity: {
         idSyncContainerId: "123"
       }
     };
     component.commands.appendIdentityToUrl
-      .run({ namespaces: ["ECID"], url: "myurl", datastreamConfigOverrides })
+      .run({ namespaces: ["ECID"], url: "myurl", edgeConfigOverrides })
       .then(onResolved);
 
     return flushPromiseChains()
@@ -450,10 +450,7 @@ describe("Identity::createComponent", () => {
         return flushPromiseChains();
       })
       .then(() => {
-        expect(getIdentity).toHaveBeenCalledWith(
-          ["ECID"],
-          datastreamConfigOverrides
-        );
+        expect(getIdentity).toHaveBeenCalledWith(["ECID"], edgeConfigOverrides);
         getEcidFromResponse.and.returnValue("user@adobe");
         component.lifecycle.onResponse({ response });
         getIdentityDeferred.resolve();
@@ -469,7 +466,7 @@ describe("Identity::createComponent", () => {
   });
 
   it("appendIdentityToUrl should call getIdentity with global configuration overrides, if provided", () => {
-    config.datastreamConfigOverrides.identity = {
+    config.edgeConfigOverrides.identity = {
       idSyncContainerId: "123"
     };
     const idSyncsPromise = Promise.resolve();
@@ -491,7 +488,7 @@ describe("Identity::createComponent", () => {
       .then(() => {
         expect(getIdentity).toHaveBeenCalledWith(
           ["ECID"],
-          config.datastreamConfigOverrides
+          config.edgeConfigOverrides
         );
         getEcidFromResponse.and.returnValue("user@adobe");
         component.lifecycle.onResponse({ response });
@@ -508,7 +505,7 @@ describe("Identity::createComponent", () => {
   });
 
   it("appendIdentityToUrl should call getIdentity and prefer local overrides over global ones", () => {
-    config.datastreamConfigOverrides.identity = {
+    config.edgeConfigOverrides.identity = {
       idSyncContainerId: "456"
     };
     const idSyncsPromise = Promise.resolve();
@@ -516,7 +513,7 @@ describe("Identity::createComponent", () => {
     appendIdentityToUrl.and.returnValue("modifiedUrl");
     const onResolved = jasmine.createSpy("onResolved");
     response.getEdge.and.returnValue({ regionId: 42 });
-    const datastreamConfigOverrides = {
+    const edgeConfigOverrides = {
       identity: {
         idSyncContainerId: "123"
       }
@@ -525,7 +522,7 @@ describe("Identity::createComponent", () => {
       .run({
         namespaces: ["ECID"],
         url: "myurl",
-        datastreamConfigOverrides
+        edgeConfigOverrides
       })
       .then(onResolved);
 
@@ -537,10 +534,7 @@ describe("Identity::createComponent", () => {
         return flushPromiseChains();
       })
       .then(() => {
-        expect(getIdentity).toHaveBeenCalledWith(
-          ["ECID"],
-          datastreamConfigOverrides
-        );
+        expect(getIdentity).toHaveBeenCalledWith(["ECID"], edgeConfigOverrides);
         getEcidFromResponse.and.returnValue("user@adobe");
         component.lifecycle.onResponse({ response });
         getIdentityDeferred.resolve();

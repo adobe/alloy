@@ -32,5 +32,5 @@ export default () => ({
     .unique()
     .required(),
   onBeforeEventSend: callback().default(noop),
-  datastreamConfigOverrides: validateConfigOverride
+  edgeConfigOverrides: validateConfigOverride
 });

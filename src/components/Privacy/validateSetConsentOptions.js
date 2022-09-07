@@ -6,7 +6,7 @@ export default objectOf({
     .required()
     .nonEmpty(),
   identityMap: validateIdentityMap,
-  datastreamConfigOverrides: validateConfigOverride
+  edgeConfigOverrides: validateConfigOverride
 })
   .noUnknownFields()
   .required();

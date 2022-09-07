@@ -35,7 +35,7 @@ test("Test C7437530: sendEvent can receive config overrides in command options",
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({
-    datastreamConfigOverrides: overrides
+    edgeConfigOverrides: overrides
   });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
@@ -62,7 +62,7 @@ test("Test C7437530: sendEvent can receive config overrides from configure", asy
   const alloy = createAlloyProxy();
   await alloy.configure(
     compose(config, {
-      datastreamConfigOverrides: overrides
+      edgeConfigOverrides: overrides
     })
   );
   await alloy.sendEvent({});

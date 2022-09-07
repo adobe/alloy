@@ -16,12 +16,12 @@ export default ({
   createConsentRequestPayload,
   createConsentRequest,
   sendEdgeNetworkRequest
-}) => ({ consentOptions, identityMap, datastreamConfigOverrides }) => {
+}) => ({ consentOptions, identityMap, edgeConfigOverrides }) => {
   const payload = createConsentRequestPayload();
   payload.setConsent(consentOptions);
-  if (isObject(datastreamConfigOverrides)) {
+  if (isObject(edgeConfigOverrides)) {
     payload.mergeConfigOverride(
-      prepareConfigOverridesForKonductor(datastreamConfigOverrides)
+      prepareConfigOverridesForKonductor(edgeConfigOverrides)
     );
   }
   if (isObject(identityMap)) {

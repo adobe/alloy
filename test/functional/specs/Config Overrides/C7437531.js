@@ -30,7 +30,7 @@ test("Test C7437531: `getIdentity` can receive config overrides in command optio
   await alloy.configure(config);
   // this should get an ECID
   await alloy.getIdentity({
-    datastreamConfigOverrides: overrides
+    edgeConfigOverrides: overrides
   });
 
   await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
@@ -47,9 +47,7 @@ test("Test C7437531: `getIdentity` can receive config overrides in command optio
 
 test("Test C7437531: `getIdentity` can receive config overrides from `configure`", async () => {
   const alloy = createAlloyProxy();
-  await alloy.configure(
-    compose(config, { datastreamConfigOverrides: overrides })
-  );
+  await alloy.configure(compose(config, { edgeConfigOverrides: overrides }));
   // this should get an ECID
   await alloy.getIdentity();
 

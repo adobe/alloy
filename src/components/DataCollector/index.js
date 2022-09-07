@@ -31,7 +31,7 @@ const createDataCollector = ({ eventManager }) => {
             renderDecisions = false,
             decisionScopes = [],
             datasetId,
-            datastreamConfigOverrides
+            edgeConfigOverrides
           } = options;
           const event = eventManager.createEvent();
 
@@ -59,27 +59,24 @@ const createDataCollector = ({ eventManager }) => {
             decisionScopes
           };
 
-          if (datastreamConfigOverrides) {
-            sendEventOptions.datastreamConfigOverrides = datastreamConfigOverrides;
+          if (edgeConfigOverrides) {
+            sendEventOptions.edgeConfigOverrides = edgeConfigOverrides;
           }
 
           if (datasetId) {
             // TODO Add deprecation warning for config.datasetId and meta.collect.datasetId?
-            if (!sendEventOptions.datastreamConfigOverrides) {
-              sendEventOptions.datastreamConfigOverrides = {};
+            if (!sendEventOptions.edgeConfigOverrides) {
+              sendEventOptions.edgeConfigOverrides = {};
+            }
+            if (!sendEventOptions.edgeConfigOverrides.experience_platform) {
+              sendEventOptions.edgeConfigOverrides.experience_platform = {};
             }
             if (
-              !sendEventOptions.datastreamConfigOverrides.experience_platform
+              !sendEventOptions.edgeConfigOverrides.experience_platform.datasets
             ) {
-              sendEventOptions.datastreamConfigOverrides.experience_platform = {};
+              sendEventOptions.edgeConfigOverrides.experience_platform.datasets = {};
             }
-            if (
-              !sendEventOptions.datastreamConfigOverrides.experience_platform
-                .datasets
-            ) {
-              sendEventOptions.datastreamConfigOverrides.experience_platform.datasets = {};
-            }
-            sendEventOptions.datastreamConfigOverrides.experience_platform.datasets.event = datasetId;
+            sendEventOptions.edgeConfigOverrides.experience_platform.datasets.event = datasetId;
           }
           return eventManager.sendEvent(event, sendEventOptions);
         }

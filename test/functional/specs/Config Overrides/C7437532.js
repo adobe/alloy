@@ -32,7 +32,7 @@ test("Test C7437532: `appendIdentityToUrl` can receive config overrides in comma
   // this should get an ECID
   await alloy.appendIdentityToUrl({
     url: "https://example.com",
-    datastreamConfigOverrides: overrides
+    edgeConfigOverrides: overrides
   });
 
   await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
@@ -49,9 +49,7 @@ test("Test C7437532: `appendIdentityToUrl` can receive config overrides in comma
 
 test("Test C7437532: `appendIdentityToUrl` can receive config overrides from `configure`", async () => {
   const alloy = createAlloyProxy();
-  await alloy.configure(
-    compose(config, { datastreamConfigOverrides: overrides })
-  );
+  await alloy.configure(compose(config, { edgeConfigOverrides: overrides }));
   // this should get an ECID
   await alloy.appendIdentityToUrl({
     url: "https://example.com"
