@@ -31,10 +31,10 @@ const defaultContexts = {
   web,
   device,
   environment,
-  placeContext,
-  highEntropyUserAgentHints
+  placeContext
 };
 const optionalContexts = {
+  highEntropyUserAgentHints,
   ...defaultContexts
 };
 const requiredContexts = [timestamp, implementationDetails];

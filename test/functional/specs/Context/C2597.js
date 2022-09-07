@@ -43,6 +43,6 @@ test(DESCRIPTION, async () => {
       .expect(
         parsedBody.events[0].xdm.environment.browserDetails.userAgentClientHints
       )
-      .ok();
+      .notOk();
   }
 });
