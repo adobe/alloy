@@ -18,15 +18,15 @@ const defaultOverrides = {
   }
 };
 
-const sendEvent = configuration => {
+const sendEvent = datastreamConfigOverrides => {
   return window.alloy("sendEvent", {
     renderDecisions: true,
-    configuration: {
-      ...configuration
+    datastreamConfigOverrides: {
+      ...datastreamConfigOverrides
     }
   });
 };
-const setConsent = configuration => {
+const setConsent = datastreamConfigOverrides => {
   return window.alloy("setConsent", {
     consent: [
       {
@@ -39,26 +39,26 @@ const setConsent = configuration => {
         }
       }
     ],
-    configuration: {
-      ...configuration
+    datastreamConfigOverrides: {
+      ...datastreamConfigOverrides
     }
   });
 };
-const getIdentity = configuration => {
+const getIdentity = datastreamConfigOverrides => {
   return window.alloy("getIdentity", {
     namespaces: ["ECID"],
-    configuration: {
-      ...configuration
+    datastreamConfigOverrides: {
+      ...datastreamConfigOverrides
     }
   });
 };
 
-const appendIdentityToUrl = configuration => {
+const appendIdentityToUrl = datastreamConfigOverrides => {
   return window
     .alloy("appendIdentityToUrl", {
       url: "https://example.com",
-      configuration: {
-        ...configuration
+      datastreamConfigOverrides: {
+        ...datastreamConfigOverrides
       }
     })
     .then(url => console.log("URL with appended identity: ", url));
@@ -155,7 +155,7 @@ export default function ConfigOverrides() {
           <code>
             alloy("sendEvent",{" "}
             {JSON.stringify(
-              { renderDecisions: true, configuration: overrides },
+              { renderDecisions: true, datastreamConfigOverrides: overrides },
               null,
               2
             )}
