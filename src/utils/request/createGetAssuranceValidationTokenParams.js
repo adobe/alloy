@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { injectStorage, uuid, queryString } from "../index";
+import { uuid, queryString } from "../index";
 
-const VALIDATION_URL_PARAM = "adb_validation_sessionid";
-const VALIDATION_NAMESPACE = "validation.";
+const ASSURANCE_VALIDATION_SESSION_URL_PARAM = "adb_validation_sessionid";
+const ASSURANCE_VALIDATION_NAMESPACE = "validation.";
 const CLIENT_ID = "clientId";
 
-const getValidationClientId = storage => {
+const getOrCreateAssuranceClientId = storage => {
   let clientId = storage.persistent.getItem(CLIENT_ID);
   if (!clientId) {
     clientId = uuid();
@@ -25,16 +25,16 @@ const getValidationClientId = storage => {
   return clientId;
 };
 
-export default ({ window }) => {
-  const createNamespacedStorage = injectStorage(window);
-  const storage = createNamespacedStorage(VALIDATION_NAMESPACE);
+export default ({ window, createNamespacedStorage }) => {
+  const storage = createNamespacedStorage(ASSURANCE_VALIDATION_NAMESPACE);
   return () => {
     const parsedQuery = queryString.parse(window.location.search);
-    const validationSessionId = parsedQuery[VALIDATION_URL_PARAM];
+    const validationSessionId =
+      parsedQuery[ASSURANCE_VALIDATION_SESSION_URL_PARAM];
     if (!validationSessionId) {
       return "";
     }
-    const clientId = getValidationClientId(storage);
+    const clientId = getOrCreateAssuranceClientId(storage);
     const validationToken = `${validationSessionId}|${clientId}`;
     return `&${queryString.stringify({
       adobeAepValidationToken: validationToken

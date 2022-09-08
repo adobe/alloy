@@ -31,7 +31,7 @@ describe("injectSendEdgeNetworkRequest", () => {
   let createResponse;
   let processWarningsAndErrors;
   let getLocationHint;
-  let getValidationQuery;
+  let getAssuranceValidationTokenParams;
   let sendEdgeNetworkRequest;
   let request;
 
@@ -137,8 +137,8 @@ describe("injectSendEdgeNetworkRequest", () => {
       .and.returnValue(response);
     processWarningsAndErrors = jasmine.createSpy("processWarningsAndErrors");
     getLocationHint = jasmine.createSpy("getLocationHint");
-    getValidationQuery = jasmine
-      .createSpy("getValidationQuery")
+    getAssuranceValidationTokenParams = jasmine
+      .createSpy("getAssuranceValidationTokenParams")
       .and.returnValue("");
     sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
       config,
@@ -149,7 +149,7 @@ describe("injectSendEdgeNetworkRequest", () => {
       createResponse,
       processWarningsAndErrors,
       getLocationHint,
-      getValidationQuery
+      getAssuranceValidationTokenParams
     });
   });
 
@@ -468,8 +468,10 @@ describe("injectSendEdgeNetworkRequest", () => {
     });
   });
 
-  it("sets validation query", () => {
-    getValidationQuery.and.returnValue("&adobeAepValidationToken=abc-123");
+  it("sets validation token params", () => {
+    getAssuranceValidationTokenParams.and.returnValue(
+      "&adobeAepValidationToken=abc-123"
+    );
     return sendEdgeNetworkRequest({ request }).then(() => {
       expect(sendNetworkRequest).toHaveBeenCalledWith({
         requestId: "RID123",

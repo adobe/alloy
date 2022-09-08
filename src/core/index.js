@@ -45,7 +45,7 @@ import createCookieTransfer from "./createCookieTransfer";
 import {
   createDataCollectionRequest,
   createDataCollectionRequestPayload,
-  createGetValidationQuery
+  createGetAssuranceValidationTokenParams
 } from "../utils/request";
 import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkRequest";
 import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors";
@@ -67,7 +67,9 @@ const sendFetchRequest = isFunction(fetch)
   ? injectSendFetchRequest({ fetch })
   : injectSendXhrRequest({ XMLHttpRequest });
 const fireReferrerHideableImage = injectFireReferrerHideableImage();
-const getValidationQuery = createGetValidationQuery({ window });
+const getAssuranceValidationTokenParams = createGetAssuranceValidationTokenParams(
+  { window, createNamespacedStorage }
+);
 
 export const createExecuteCommand = ({
   instanceName,
@@ -128,7 +130,7 @@ export const createExecuteCommand = ({
       createResponse,
       processWarningsAndErrors,
       getLocationHint,
-      getValidationQuery
+      getAssuranceValidationTokenParams
     });
 
     const generalConsentState = createConsentStateMachine({ logger });
