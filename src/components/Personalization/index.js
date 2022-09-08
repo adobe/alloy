@@ -19,7 +19,7 @@ import { hideContainers, showContainers } from "./flicker";
 import createFetchDataHandler from "./createFetchDataHandler";
 import collectClicks from "./dom-actions/clicks/collectClicks";
 import isAuthoringModeEnabled from "./utils/isAuthoringModeEnabled";
-import { mergeDecisionsMeta, mergeQuery, mergeMeta } from "./event";
+import { mergeDecisionsMeta, mergeQuery } from "./event";
 import createOnClickHandler from "./createOnClickHandler";
 import createViewCacheManager from "./createViewCacheManager";
 import createViewChangeHandler from "./createViewChangeHandler";
@@ -30,6 +30,7 @@ import createRedirectHandler from "./createRedirectHandler";
 import createAutorenderingHandler from "./createAutoRenderingHandler";
 import createNonRenderingHandler from "./createNonRenderingHandler";
 import createApplyPropositions from "./createApplyPropositions";
+import setMigrationEnabled from "./utils/setMigrationEnabled";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
@@ -74,8 +75,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     config,
     responseHandler,
     hideContainers,
-    mergeQuery,
-    mergeMeta
+    mergeQuery
   });
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
@@ -90,6 +90,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     viewCache
   });
   return createComponent({
+    config,
     logger,
     fetchDataHandler,
     viewChangeHandler,
@@ -98,7 +99,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     mergeQuery,
     viewCache,
     showContainers,
-    applyPropositions
+    applyPropositions,
+    setMigrationEnabled
   });
 };
 

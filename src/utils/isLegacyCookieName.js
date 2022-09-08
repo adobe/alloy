@@ -14,5 +14,5 @@ import { AT_QA_MODE, MBOX } from "../constants/legacyCookies";
 
 export default (name, config) => {
   const { targetMigrationEnabled } = config;
-  return name === AT_QA_MODE || (name === MBOX && !!targetMigrationEnabled);
+  return name === AT_QA_MODE || (name === MBOX && targetMigrationEnabled);
 };

@@ -28,7 +28,7 @@ describe("isLegacyCookieName", () => {
   });
 
   it("returns false if it's mbox cookie and targetMigrationEnabled=false", () => {
-    expect(isLegacyCookieName("mbox", config)).toBeFalse();
+    expect(isLegacyCookieName("mbox", config)).toBeFalsy();
   });
 
   it("returns false if it's not a legacy cookie name", () => {

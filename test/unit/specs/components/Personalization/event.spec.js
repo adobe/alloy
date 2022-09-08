@@ -12,19 +12,14 @@ governing permissions and limitations under the License.
 
 import {
   mergeDecisionsMeta,
-  mergeQuery,
-  mergeMeta
+  mergeQuery
 } from "../../../../../src/components/Personalization/event";
 
 describe("Personalization::event", () => {
   let event;
 
   beforeEach(() => {
-    event = jasmine.createSpyObj("event", [
-      "mergeXdm",
-      "mergeQuery",
-      "mergeMeta"
-    ]);
+    event = jasmine.createSpyObj("event", ["mergeXdm", "mergeQuery"]);
   });
 
   describe("mergeDecisionsMeta", () => {
@@ -67,20 +62,6 @@ describe("Personalization::event", () => {
       mergeQuery(event, details);
       expect(event.mergeQuery).toHaveBeenCalledWith({
         personalization: {
-          foo: "bar"
-        }
-      });
-    });
-  });
-
-  describe("mergeMeta", () => {
-    it("merges meta details", () => {
-      const meta = {
-        foo: "bar"
-      };
-      mergeMeta(event, meta);
-      expect(event.mergeMeta).toHaveBeenCalledWith({
-        target: {
           foo: "bar"
         }
       });
