@@ -23,7 +23,3 @@ export const mergeDecisionsMeta = (event, decisionsMeta) => {
 export const mergeQuery = (event, details) => {
   event.mergeQuery({ personalization: { ...details } });
 };
-
-export const mergeMeta = (event, targetMeta) => {
-  event.mergeMeta({ target: { ...targetMeta } });
-};

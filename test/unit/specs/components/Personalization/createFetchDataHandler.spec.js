@@ -24,7 +24,6 @@ describe("Personalization::createFetchDataHandler", () => {
   let onResponse = jasmine.createSpy();
   const event = {};
   let response;
-  let mergeMeta;
 
   beforeEach(() => {
     response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
@@ -36,7 +35,6 @@ describe("Personalization::createFetchDataHandler", () => {
     ]);
     hideContainers = jasmine.createSpy("hideContainers");
     decisionsDeferred = jasmine.createSpyObj("decisionsDeferred", ["reject"]);
-    mergeMeta = jasmine.createSpy();
   });
 
   it("should hide containers if renderDecisions is true", () => {
@@ -44,8 +42,7 @@ describe("Personalization::createFetchDataHandler", () => {
       config,
       responseHandler,
       hideContainers,
-      mergeQuery,
-      mergeMeta
+      mergeQuery
     });
     personalizationDetails.isRenderDecisions.and.returnValue(true);
 
@@ -62,8 +59,7 @@ describe("Personalization::createFetchDataHandler", () => {
       config,
       responseHandler,
       hideContainers,
-      mergeQuery,
-      mergeMeta
+      mergeQuery
     });
     personalizationDetails.isRenderDecisions.and.returnValue(false);
     fetchDataHandler({
@@ -81,8 +77,7 @@ describe("Personalization::createFetchDataHandler", () => {
       config,
       responseHandler,
       hideContainers,
-      mergeQuery,
-      mergeMeta
+      mergeQuery
     });
     personalizationDetails.isRenderDecisions.and.returnValue(false);
     onResponse = callback => {
@@ -97,49 +92,5 @@ describe("Personalization::createFetchDataHandler", () => {
 
     expect(hideContainers).not.toHaveBeenCalled();
     expect(responseHandler).toHaveBeenCalled();
-  });
-
-  it("should include migration = true on event meta when targetMigrationEnabled set to true in config", () => {
-    const migrationConfig = {
-      ...config,
-      targetMigrationEnabled: true
-    };
-    const fetchDataHandler = createFetchDataHandler({
-      config: migrationConfig,
-      responseHandler,
-      hideContainers,
-      mergeQuery,
-      mergeMeta
-    });
-
-    fetchDataHandler({
-      decisionsDeferred,
-      personalizationDetails,
-      event,
-      onResponse
-    });
-
-    expect(mergeMeta).toHaveBeenCalledWith(event, {
-      migration: true
-    });
-  });
-
-  it("should not include migration = true on event meta when targetMigrationEnabled is missing from config", () => {
-    const fetchDataHandler = createFetchDataHandler({
-      config,
-      responseHandler,
-      hideContainers,
-      mergeQuery,
-      mergeMeta
-    });
-
-    fetchDataHandler({
-      decisionsDeferred,
-      personalizationDetails,
-      event,
-      onResponse
-    });
-
-    expect(mergeMeta).not.toHaveBeenCalled();
   });
 });

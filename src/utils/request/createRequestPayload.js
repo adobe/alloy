@@ -17,6 +17,7 @@ import { createMerger } from "..";
 export default options => {
   const { content, addIdentity, hasIdentity } = options;
   return {
+    mergeMeta: createMerger(content, "meta"),
     mergeState: createMerger(content, "meta.state"),
     mergeQuery: createMerger(content, "query"),
     addIdentity,

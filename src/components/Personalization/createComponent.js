@@ -16,6 +16,7 @@ import { AUTHORING_ENABLED } from "./constants/loggerMessage";
 import validateApplyPropositionsOptions from "./validateApplyPropositionsOptions";
 
 export default ({
+  config,
   logger,
   fetchDataHandler,
   viewChangeHandler,
@@ -24,10 +25,15 @@ export default ({
   mergeQuery,
   viewCache,
   showContainers,
-  applyPropositions
+  applyPropositions,
+  setMigrationEnabled
 }) => {
   return {
     lifecycle: {
+      onBeforeRequest({ request }) {
+        setMigrationEnabled(config, request);
+        return Promise.resolve();
+      },
       onBeforeEvent({
         event,
         renderDecisions,
