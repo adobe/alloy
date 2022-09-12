@@ -30,7 +30,7 @@ import createRedirectHandler from "./createRedirectHandler";
 import createAutorenderingHandler from "./createAutoRenderingHandler";
 import createNonRenderingHandler from "./createNonRenderingHandler";
 import createApplyPropositions from "./createApplyPropositions";
-import setMigrationEnabled from "./utils/setMigrationEnabled";
+import setMigrationEnabled from "./migration/setMigrationEnabled";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
