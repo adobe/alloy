@@ -32,7 +32,7 @@ describe("injectGetLocationHint", () => {
 
   it("returns mbox edge cluster cookie", () => {
     cookieJar.get.and.returnValues(undefined, "35");
-    expect(getLocationHint()).toEqual("t35");
+    expect(getLocationHint()).toEqual("35");
   });
 
   it("returns undefined", () => {

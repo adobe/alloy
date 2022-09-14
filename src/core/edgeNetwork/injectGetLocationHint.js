@@ -17,13 +17,7 @@ import { MBOX_EDGE_CLUSTER } from "../../constants/legacyCookies";
 export default ({ orgId, cookieJar }) => {
   const clusterCookieName = getNamespacedCookieName(orgId, CLUSTER);
   const fromClusterCookie = () => cookieJar.get(clusterCookieName);
-  const fromTarget = () => {
-    const mboxEdgeCluster = cookieJar.get(MBOX_EDGE_CLUSTER);
-    if (mboxEdgeCluster) {
-      return `t${mboxEdgeCluster}`;
-    }
-    return undefined;
-  };
+  const fromTarget = () => cookieJar.get(MBOX_EDGE_CLUSTER);
 
   return () => {
     return fromClusterCookie() || fromTarget();
