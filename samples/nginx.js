@@ -1,4 +1,4 @@
-const buildConfig = (getPort, namePrefix, dirname, dnsPrefix) => {
+const buildConfig = (getPort, dirname, dnsPrefix) => {
   return `
 
 server {
@@ -10,27 +10,27 @@ server {
   # rewrite ^([^.]*[^/])$ $1/ permanent;
   server_name ${dnsPrefix}alloyio.com;
 
-  location /${namePrefix}personalization-client-side {
+  location /personalization-client-side {
     alias ${dirname}/personalization-client-side/public/;
     index index.html;
     try_files $uri $uri/ =404;
   }
-  location /${namePrefix}personalization-hybrid/ {
+  location /personalization-hybrid/ {
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_pass http://127.0.0.1:${getPort()}/;
   }
-  location /${namePrefix}personalization-hybrid-spa/ {
+  location /personalization-hybrid-spa/ {
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_pass http://127.0.0.1:${getPort()}/;
   }
-  location /${namePrefix}personalization-server-side/ {
+  location /personalization-server-side/ {
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_pass http://127.0.0.1:${getPort()}/;
   }
-  location /${namePrefix}sandbox {
+  location /sandbox {
     alias ${dirname}/sandbox/build;
     try_files $uri $uri/ /sandbox/index.html;
   }
@@ -45,7 +45,7 @@ if (require.main === module) {
     port += 1;
     return port;
   }
-  const config = buildConfig(getPort, "", __dirname, "gw-samples.");
+  const config = buildConfig(getPort, __dirname, "samples.");
   console.log(config);
 }
 
