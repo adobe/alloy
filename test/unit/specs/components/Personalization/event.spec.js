@@ -14,7 +14,7 @@ import {
   mergeDecisionsMeta,
   mergeQuery
 } from "../../../../../src/components/Personalization/event";
-import { EventType } from "../../../../../src/components/Personalization/constants/eventType";
+import { PropositionEventType } from "../../../../../src/components/Personalization/constants/propositionEventType";
 
 describe("Personalization::event", () => {
   let event;
@@ -35,7 +35,7 @@ describe("Personalization::event", () => {
           scope: "cart"
         }
       ];
-      mergeDecisionsMeta(event, decisionsMeta, EventType.DISPLAY);
+      mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.DISPLAY);
       expect(event.mergeXdm).toHaveBeenCalledWith({
         _experience: {
           decisioning: {

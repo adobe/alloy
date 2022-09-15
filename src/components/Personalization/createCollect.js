@@ -9,7 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { DISPLAY, EventType } from "./constants/eventType";
+import { DISPLAY } from "./constants/eventType";
+import { PropositionEventType } from "./constants/propositionEventType";
 import { isNonEmptyArray } from "../../utils";
 
 export default ({ eventManager, mergeDecisionsMeta }) => {
@@ -24,7 +25,7 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
       };
     }
     if (isNonEmptyArray(decisionsMeta)) {
-      mergeDecisionsMeta(event, decisionsMeta, EventType.DISPLAY);
+      mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.DISPLAY);
     }
 
     event.mergeXdm(data);
