@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isObject, prepareConfigOverridesForKonductor } from "../../utils";
+import { isObject, prepareConfigOverridesForEdge } from "../../utils";
 
 export default ({
   createConsentRequestPayload,
@@ -21,7 +21,7 @@ export default ({
   payload.setConsent(consentOptions);
   if (isObject(edgeConfigOverrides)) {
     payload.mergeConfigOverride(
-      prepareConfigOverridesForKonductor(edgeConfigOverrides)
+      prepareConfigOverridesForEdge(edgeConfigOverrides)
     );
   }
   if (isObject(identityMap)) {

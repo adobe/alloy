@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { prepareConfigOverridesForKonductor } from "../../../utils";
+import { prepareConfigOverridesForEdge } from "../../../utils";
 
 export default ({
   sendEdgeNetworkRequest,
@@ -21,9 +21,7 @@ export default ({
     const payload = createIdentityRequestPayload(namespaces);
     const request = createIdentityRequest(payload);
     if (edgeConfigOverrides) {
-      const preparedConfig = prepareConfigOverridesForKonductor(
-        edgeConfigOverrides
-      );
+      const preparedConfig = prepareConfigOverridesForEdge(edgeConfigOverrides);
       if (preparedConfig) {
         payload.mergeConfigOverride(preparedConfig);
       }

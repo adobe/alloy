@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { prepareConfigOverridesForKonductor } from "../../../../src/utils";
+import { prepareConfigOverridesForEdge } from "../../../../src/utils";
 
-describe("utils:prepareConfigOverridesForKonductor", () => {
+describe("utils:prepareConfigOverridesForEdge", () => {
   it("should add com_adobe_ to the beginning of top level keys", () => {
     expect(
-      prepareConfigOverridesForKonductor({
+      prepareConfigOverridesForEdge({
         experience_platform: {
           datasets: {
             event: "werewr",
@@ -53,7 +53,7 @@ describe("utils:prepareConfigOverridesForKonductor", () => {
 
   it("should filter out unusesd objects and keys", () => {
     expect(
-      prepareConfigOverridesForKonductor({
+      prepareConfigOverridesForEdge({
         experience_platform: {
           datasets: {
             event: "werewr"
@@ -83,7 +83,7 @@ describe("utils:prepareConfigOverridesForKonductor", () => {
 
   it("should return null for empty config objects", () => {
     expect(
-      prepareConfigOverridesForKonductor({
+      prepareConfigOverridesForEdge({
         experience_platform: {
           datasets: {
             event: "",

@@ -14,7 +14,7 @@ import {
   createCallbackAggregator,
   isEmptyObject,
   noop,
-  prepareConfigOverridesForKonductor
+  prepareConfigOverridesForEdge
 } from "../utils";
 
 const EVENT_CANCELLATION_MESSAGE =
@@ -64,7 +64,7 @@ export default ({
       const onRequestFailureCallbackAggregator = createCallbackAggregator();
       const overrides = { ...globalConfigOverrides, ...commandConfigOverrides };
       if (!isEmptyObject(overrides)) {
-        const preparedOverrides = prepareConfigOverridesForKonductor(overrides);
+        const preparedOverrides = prepareConfigOverridesForEdge(overrides);
         if (preparedOverrides) {
           payload.mergeConfigOverride(preparedOverrides);
         }
