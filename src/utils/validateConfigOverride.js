@@ -10,6 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { anything, mapOfValues } from "./validation";
+import { objectOf } from "./validation";
 
-export default mapOfValues(mapOfValues(anything()));
+export default objectOf({});

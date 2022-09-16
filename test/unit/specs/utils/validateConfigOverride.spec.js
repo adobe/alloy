@@ -52,12 +52,12 @@ describeValidation("utils:validateConfigOverride", validateConfigOverride, [
       }
     }
   },
-  // all top-level keys must be objects
+  // non-object top level keys are valid
   {
     value: {
-      foo: "bar"
-    },
-    error: true
+      foo: "bar",
+      biz: {}
+    }
   },
   // value must be an object
   { value: true, error: true },
