@@ -51,13 +51,14 @@ describe("utils:prepareConfigOverridesForEdge", () => {
     });
   });
 
-  it("should filter out unusesd objects and keys", () => {
+  it("should filter out functions, unusesd objects and keys, empty arrays, and empty strings", () => {
     expect(
       prepareConfigOverridesForEdge({
         experience_platform: {
           datasets: {
             event: "werewr"
-          }
+          },
+          enabled: false
         },
         analytics: {
           reportSuites: []
@@ -66,17 +67,21 @@ describe("utils:prepareConfigOverridesForEdge", () => {
           idSyncContainerId: ""
         },
         target: {
-          propertyToken: "rrr"
-        }
+          propertyToken: "rrr",
+          environmentId: 0
+        },
+        toString: () => "{ com_adobe_experience_platform: '' }"
       })
     ).toEqual({
       com_adobe_experience_platform: {
         datasets: {
           event: "werewr"
-        }
+        },
+        enabled: false
       },
       com_adobe_target: {
-        propertyToken: "rrr"
+        propertyToken: "rrr",
+        environmentId: 0
       }
     });
   });
