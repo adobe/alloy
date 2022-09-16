@@ -30,7 +30,7 @@ describe("Context::injectHighEntropyUserAgentHints", () => {
 
   it("works", done => {
     const xdm = {};
-    injectHighEntropyUserAgentHints(navigator)(xdm).then(() => {
+    injectHighEntropyUserAgentHints(navigator)(xdm, console).then(() => {
       expect(xdm).toEqual({
         environment: {
           browserDetails: {

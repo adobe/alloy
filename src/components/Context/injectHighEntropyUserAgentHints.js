@@ -21,23 +21,30 @@ export default navigator => {
   if (!browserSupportsUserAgentClientHints(navigator)) {
     return noop;
   }
-  return xdm => {
-    return navigator.userAgentData
-      .getHighEntropyValues(highEntropyUserAgentHints)
-      .then(hints => {
-        const userAgentClientHints = {};
-        highEntropyUserAgentHints.forEach(hint => {
-          if (Object.prototype.hasOwnProperty.call(hints, hint)) {
-            userAgentClientHints[hint] = hints[hint];
-          }
-        });
-        deepAssign(xdm, {
-          environment: {
-            browserDetails: {
-              userAgentClientHints
+  return (xdm, logger) => {
+    try {
+      return navigator.userAgentData
+        .getHighEntropyValues(highEntropyUserAgentHints)
+        .then(hints => {
+          const userAgentClientHints = {};
+          highEntropyUserAgentHints.forEach(hint => {
+            if (Object.prototype.hasOwnProperty.call(hints, hint)) {
+              userAgentClientHints[hint] = hints[hint];
             }
-          }
+          });
+          deepAssign(xdm, {
+            environment: {
+              browserDetails: {
+                userAgentClientHints
+              }
+            }
+          });
         });
-      });
+    } catch (error) {
+      logger.warn(
+        `Unable to collect user-agent client hints. ${error.message}`
+      );
+      return noop;
+    }
   };
 };

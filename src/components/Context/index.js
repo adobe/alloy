@@ -27,24 +27,27 @@ const placeContext = injectPlaceContext(() => new Date());
 const timestamp = injectTimestamp(() => new Date());
 const highEntropyUserAgentHints = injectHighEntropyUserAgentHints(navigator);
 
-const defaultContexts = {
+const defaultEnabledContexts = {
   web,
   device,
   environment,
   placeContext
 };
+const defaultDisabledContexts = {
+  highEntropyUserAgentHints
+};
 const optionalContexts = {
-  highEntropyUserAgentHints,
-  ...defaultContexts
+  ...defaultEnabledContexts,
+  ...defaultDisabledContexts
 };
 const requiredContexts = [timestamp, implementationDetails];
+
 const createContext = ({ config, logger }) => {
   return createComponent(config, logger, optionalContexts, requiredContexts);
 };
-
 createContext.namespace = "Context";
 createContext.configValidators = {
-  context: arrayOf(string()).default(Object.keys(defaultContexts))
+  context: arrayOf(string()).default(Object.keys(defaultEnabledContexts))
 };
 
 export default createContext;
