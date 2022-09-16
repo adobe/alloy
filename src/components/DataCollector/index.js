@@ -12,8 +12,9 @@ governing permissions and limitations under the License.
 
 import validateUserEventOptions from "./validateUserEventOptions";
 import validateApplyResponse from "./validateApplyResponse";
+import { deepAssign } from "../../utils";
 
-const createDataCollector = ({ eventManager }) => {
+const createDataCollector = ({ eventManager, logger }) => {
   return {
     commands: {
       sendEvent: {
@@ -64,19 +65,13 @@ const createDataCollector = ({ eventManager }) => {
           }
 
           if (datasetId) {
-            // TODO Add deprecation warning for config.datasetId and meta.collect.datasetId?
-            if (!sendEventOptions.edgeConfigOverrides) {
-              sendEventOptions.edgeConfigOverrides = {};
-            }
-            if (!sendEventOptions.edgeConfigOverrides.experience_platform) {
-              sendEventOptions.edgeConfigOverrides.experience_platform = {};
-            }
-            if (
-              !sendEventOptions.edgeConfigOverrides.experience_platform.datasets
-            ) {
-              sendEventOptions.edgeConfigOverrides.experience_platform.datasets = {};
-            }
-            sendEventOptions.edgeConfigOverrides.experience_platform.datasets.event = datasetId;
+            logger.warn(
+              "Configuration 'datasetId' has been deprecated. Please use 'edgeConfigOverrides.experience_platform.datasets.event' instead."
+            );
+            sendEventOptions.edgeConfigOverrides = edgeConfigOverrides || {};
+            deepAssign(sendEventOptions.edgeConfigOverrides, {
+              experience_platform: { datasets: { event: datasetId } }
+            });
           }
           return eventManager.sendEvent(event, sendEventOptions);
         }

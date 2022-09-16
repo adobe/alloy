@@ -15,6 +15,7 @@ import { noop } from "../../../../../src/utils";
 describe("Event Command", () => {
   let event;
   let eventManager;
+  let logger;
   let sendEventCommand;
   beforeEach(() => {
     event = jasmine.createSpyObj("event", [
@@ -25,6 +26,7 @@ describe("Event Command", () => {
       "mergeMeta",
       "mergeConfigOverride"
     ]);
+    logger = jasmine.createSpyObj("logger", ["warn"]);
 
     eventManager = {
       createEvent() {
@@ -39,7 +41,8 @@ describe("Event Command", () => {
     };
 
     const dataCollector = createDataCollector({
-      eventManager
+      eventManager,
+      logger
     });
     sendEventCommand = dataCollector.commands.sendEvent;
   });
