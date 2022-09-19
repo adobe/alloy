@@ -12,6 +12,9 @@ import createAlloyProxy from "../../helpers/createAlloyProxy";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const overrides = { com_adobe_identity: { idSyncContainerId: "1234" } };
+const alternateOverrides = {
+  com_adobe_identity: { idSyncContainerId: "5678" }
+};
 
 createFixture({
   title:
@@ -42,7 +45,7 @@ test("Test C7437531: `getIdentity` can receive config overrides in command optio
 
   await t
     .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
-    .eql("1234");
+    .eql(overrides.com_adobe_identity.idSyncContainerId);
 });
 
 test("Test C7437531: `getIdentity` can receive config overrides from `configure`", async () => {
@@ -60,5 +63,25 @@ test("Test C7437531: `getIdentity` can receive config overrides from `configure`
 
   await t
     .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
-    .eql("1234");
+    .eql(overrides.com_adobe_identity.idSyncContainerId);
+});
+
+test("Test C7437531: overrides from `getIdentity` should take precedence over the ones from `configure`", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(
+    compose(config, { edgeConfigOverrides: alternateOverrides })
+  );
+  // this should get an ECID
+  await alloy.getIdentity({ edgeConfigOverrides: overrides });
+
+  await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
+  await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
+
+  const request = JSON.parse(
+    networkLogger.acquireEndpointLogs.requests[0].request.body
+  );
+
+  await t
+    .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
+    .eql(overrides.com_adobe_identity.idSyncContainerId);
 });

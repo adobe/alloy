@@ -13,6 +13,9 @@ import { IAB_CONSENT_IN } from "../../helpers/constants/consent";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const overrides = { com_adobe_identity: { idSyncContainerId: "1234" } };
+const alternateOverrides = {
+  com_adobe_identity: { idSyncContainerId: "5678" }
+};
 
 createFixture({
   title:
@@ -42,7 +45,7 @@ test("Test C7437533: `setConsent` can receive config overrides in command option
 
   await t
     .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
-    .eql("1234");
+    .eql(overrides.com_adobe_identity.idSyncContainerId);
 });
 
 test("Test C7437533: `setConsent` can receive config overrides from `configure`", async () => {
@@ -59,5 +62,24 @@ test("Test C7437533: `setConsent` can receive config overrides from `configure`"
 
   await t
     .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
-    .eql("1234");
+    .eql(overrides.com_adobe_identity.idSyncContainerId);
+});
+
+test("Test C7437533: overrides from `setConsent` should take precedence over the ones from `configure`", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(compose(config, { edgeConfigOverrides: overrides }));
+  await alloy.setConsent(IAB_CONSENT_IN, {
+    edgeConfigOverrides: alternateOverrides
+  });
+
+  await responseStatus(networkLogger.setConsentEndpointLogs.requests, 200);
+  await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
+
+  const request = JSON.parse(
+    networkLogger.setConsentEndpointLogs.requests[0].request.body
+  );
+
+  await t
+    .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
+    .eql(overrides.com_adobe_identity.idSyncContainerId);
 });

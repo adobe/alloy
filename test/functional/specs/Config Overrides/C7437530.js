@@ -18,6 +18,14 @@ const overrides = {
     }
   }
 };
+const alternateOverrides = {
+  com_adobe_experience_platform: {
+    datasets: {
+      // not a real dataset ID
+      event: "319f2905fea61bbb9623997f"
+    }
+  }
+};
 
 createFixture({
   title:
@@ -31,7 +39,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C7437530: sendEvent can receive config overrides in command options", async () => {
+test("Test C7437530: `sendEvent` can receive config overrides in command options", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({
@@ -53,12 +61,12 @@ test("Test C7437530: sendEvent can receive config overrides in command options",
     .expect(
       request.meta.configOverrides.com_adobe_experience_platform.datasets.event
     )
-    .eql("5eb9aaa6a3b16e18a818e06f");
+    .eql(overrides.com_adobe_experience_platform.datasets.event);
   await t.expect(request.meta.state.cookiesEnabled).eql(true);
   await t.expect(request.meta.state.domain).ok();
 });
 
-test("Test C7437530: sendEvent can receive config overrides from configure", async () => {
+test("Test C7437530: `sendEvent` can receive config overrides from configure", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(
     compose(config, {
@@ -86,7 +94,42 @@ test("Test C7437530: sendEvent can receive config overrides from configure", asy
     .expect(
       request.meta.configOverrides.com_adobe_experience_platform.datasets.event
     )
-    .eql("5eb9aaa6a3b16e18a818e06f");
+    .eql(overrides.com_adobe_experience_platform.datasets.event);
+  await t.expect(request.meta.state.cookiesEnabled).eql(true);
+  await t.expect(request.meta.state.domain).ok();
+});
+
+test("Test C7437530: overrides from `sendEvent` should take precedence over the ones from `configure`", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(
+    compose(config, {
+      edgeConfigOverrides: alternateOverrides
+    })
+  );
+  await alloy.sendEvent({
+    edgeConfigOverrides: overrides
+  });
+
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+
+  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
+
+  const request = JSON.parse(
+    networkLogger.edgeEndpointLogs.requests[0].request.body
+  );
+  // const response = JSON.parse(
+  //   getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+  // );
+  // console.log(JSON.stringify(response, null, 2));
+
+  await t
+    .expect(request.events[0].xdm.implementationDetails.name)
+    .eql("https://ns.adobe.com/experience/alloy");
+  await t
+    .expect(
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+    )
+    .eql(overrides.com_adobe_experience_platform.datasets.event);
   await t.expect(request.meta.state.cookiesEnabled).eql(true);
   await t.expect(request.meta.state.domain).ok();
 });
