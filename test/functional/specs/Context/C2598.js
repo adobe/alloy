@@ -5,23 +5,26 @@ import createFixture from "../../helpers/createFixture";
 import webContextConfig from "../../helpers/constants/webContextConfig";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
+import isUserAgentClientHintsSupported from "../../helpers/isUserAgentClientHintsSupported";
 
 const networkLogger = createNetworkLogger();
 
+const ID = "C2598";
+const DESCRIPTION = `${ID} - Adds only web context data when only web is specified in configuration.`;
+
 createFixture({
-  title:
-    "C2598 - Adds only web context data when only web is specified in configuration.",
+  title: DESCRIPTION,
   requestHooks: [networkLogger.edgeEndpointLogs],
   url: TEST_PAGE_URL
 });
 
 test.meta({
-  ID: "C2598",
+  ID,
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
 
-test("Test C2598 - Adds only web context data when only web is specified in configuration.", async () => {
+test(DESCRIPTION, async () => {
   // navigate to set the document.referrer
   await t.eval(() => {
     window.document.location = `${window.document.location}`;
@@ -51,4 +54,11 @@ test("Test C2598 - Adds only web context data when only web is specified in conf
   await t.expect(parsedBody.events[0].xdm.device).notOk();
   await t.expect(parsedBody.events[0].xdm.placeContext).notOk();
   await t.expect(parsedBody.events[0].xdm.environment).notOk();
+  if (await isUserAgentClientHintsSupported()) {
+    await t
+      .expect(
+        parsedBody.events[0].xdm.environment.browserDetails.userAgentClientHints
+      )
+      .notOk();
+  }
 });

@@ -12,12 +12,12 @@ governing permissions and limitations under the License.
 
 import { flatMap } from "../../utils";
 
-export default (config, logger, availableContexts, requiredContexts) => {
+export default (config, logger, optionalContexts, requiredContexts) => {
   const configuredContexts = config.context;
 
   const contexts = flatMap(configuredContexts, (context, i) => {
-    if (availableContexts[context]) {
-      return [availableContexts[context]];
+    if (optionalContexts[context]) {
+      return [optionalContexts[context]];
     }
     logger.warn(`Invalid context[${i}]: '${context}' is not available.`);
     return [];
@@ -28,8 +28,9 @@ export default (config, logger, availableContexts, requiredContexts) => {
     lifecycle: {
       onBeforeEvent({ event }) {
         const xdm = {};
-        contexts.forEach(context => context(xdm));
-        event.mergeXdm(xdm);
+        return Promise.all(
+          contexts.map(context => Promise.resolve(context(xdm, logger)))
+        ).then(() => event.mergeXdm(xdm));
       }
     }
   };
