@@ -16,7 +16,7 @@ import isObject from "./isObject";
 
 /**
  * Given an object and a function that takes a value and returns a predicate, filter out
- * all deeply nested values that do not pass the predicate.
+ * all non-object deeply nested values that do not pass the predicate.
  *
  * Example: filterObject({ a: 2, b: { c: 6 } }, (val) => val > 5) returns { b { c: 6 } }
  *
