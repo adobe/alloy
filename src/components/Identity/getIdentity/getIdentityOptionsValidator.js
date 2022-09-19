@@ -17,19 +17,14 @@ import { objectOf, literal, arrayOf } from "../../../utils/validation";
  * @param {*} options The user event options to validate
  * @returns {*} Validated options
  */
-export default options => {
-  const getIdentityOptionsValidator = objectOf({
-    namespaces: arrayOf(literal("ECID"))
-      .nonEmpty()
-      .uniqueItems(),
-    edgeConfigOverrides: validateConfigOverride
-  }).noUnknownFields();
-  getIdentityOptionsValidator(options);
-  // Return default options for now
-  // To-Do: Accept namespace from given options
-  const result = { namespaces: ["ECID"] };
-  if (options && options.edgeConfigOverrides) {
-    result.edgeConfigOverrides = options.edgeConfigOverrides;
-  }
-  return result;
-};
+export default objectOf({
+  namespaces: arrayOf(literal("ECID"))
+    .nonEmpty()
+    .uniqueItems()
+    .default(["ECID"]),
+  edgeConfigOverrides: validateConfigOverride
+})
+  .noUnknownFields()
+  .default({
+    namespaces: ["ECID"]
+  });
