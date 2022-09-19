@@ -1,4 +1,4 @@
-import { assign, isEmptyObject, isNil } from "../../utils";
+import { assign } from "../../utils";
 import getIdentityOptionsValidator from "./getIdentity/getIdentityOptionsValidator";
 import appendIdentityToUrlOptionsValidator from "./appendIdentityToUrl/appendIdentityToUrlOptionsValidator";
 
@@ -12,10 +12,8 @@ export default ({
   getIdentity,
   consent,
   appendIdentityToUrl,
-  logger,
-  config
+  logger
 }) => {
-  const { edgeConfigOverrides: globalConfigOverrides } = config;
   let ecid;
   let edge = {};
   return {
@@ -51,20 +49,7 @@ export default ({
           return consent
             .awaitConsent()
             .then(() => {
-              const getIdentityOptions = [];
-              if (!isNil(options) && !isEmptyObject(options)) {
-                getIdentityOptions.push(options.namespaces);
-
-                const { edgeConfigOverrides: localConfigOverrides } = options;
-                const overrides = {
-                  ...globalConfigOverrides,
-                  ...localConfigOverrides
-                };
-                if (!isEmptyObject(overrides)) {
-                  getIdentityOptions.push(overrides);
-                }
-              }
-              return ecid ? undefined : getIdentity(...getIdentityOptions);
+              return ecid ? undefined : getIdentity(options);
             })
             .then(() => {
               return {
@@ -82,20 +67,7 @@ export default ({
           return consent
             .withConsent()
             .then(() => {
-              const getIdentityOptions = [];
-              if (!isNil(options) && !isEmptyObject(options)) {
-                getIdentityOptions.push(options.namespaces);
-
-                const { edgeConfigOverrides: localConfigOverrides } = options;
-                const overrides = {
-                  ...globalConfigOverrides,
-                  ...localConfigOverrides
-                };
-                if (!isEmptyObject(overrides)) {
-                  getIdentityOptions.push(overrides);
-                }
-              }
-              return ecid ? undefined : getIdentity(...getIdentityOptions);
+              return ecid ? undefined : getIdentity(options);
             })
             .then(() => {
               return { url: appendIdentityToUrl(ecid, options.url) };

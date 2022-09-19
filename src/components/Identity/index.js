@@ -45,7 +45,11 @@ const createIdentity = ({
   sendEdgeNetworkRequest,
   apexDomain
 }) => {
-  const { orgId, thirdPartyCookiesEnabled } = config;
+  const {
+    orgId,
+    thirdPartyCookiesEnabled,
+    edgeConfigOverrides: globalConfigOverrides
+  } = config;
 
   const getEcidFromVisitor = injectGetEcidFromVisitor({
     logger,
@@ -64,7 +68,8 @@ const createIdentity = ({
   const getIdentity = createGetIdentity({
     sendEdgeNetworkRequest,
     createIdentityRequestPayload,
-    createIdentityRequest
+    createIdentityRequest,
+    globalConfigOverrides
   });
   const setDomainForInitialIdentityPayload = injectSetDomainForInitialIdentityPayload(
     {
@@ -104,7 +109,8 @@ const createIdentity = ({
   });
   const appendIdentityToUrl = injectAppendIdentityToUrl({
     dateProvider: () => new Date(),
-    orgId
+    orgId,
+    globalConfigOverrides
   });
   return createComponent({
     addEcidQueryToPayload,

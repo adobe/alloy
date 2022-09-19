@@ -65,7 +65,7 @@ describe("Identity::createGetIdentity", () => {
       createIdentityRequestPayload,
       createIdentityRequest
     });
-    getIdentity(["namespace1", "namespace2"]);
+    getIdentity({ namespaces: ["namespace1", "namespace2"] });
     expect(createIdentityRequestPayload).toHaveBeenCalledWith([
       "namespace1",
       "namespace2"
@@ -95,7 +95,40 @@ describe("Identity::createGetIdentity", () => {
         idSyncContainerId: "123"
       }
     };
-    getIdentity(["namespace1"], configuration);
+    getIdentity({
+      namespaces: ["namespace1"],
+      edgeConfigOverrides: configuration
+    });
+    expect(createIdentityRequestPayload).toHaveBeenCalledWith(["namespace1"]);
+    expect(createIdentityRequest).toHaveBeenCalledWith(requestPayload);
+    expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
+      request: request1
+    });
+    expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
+      com_adobe_identity: {
+        idSyncContainerId: configuration.com_adobe_identity.idSyncContainerId
+      }
+    });
+  });
+
+  it("send global override configuration, when provided", () => {
+    const request1 = { type: "request1" };
+    createIdentityRequestPayload.and.returnValues(requestPayload);
+    createIdentityRequest.and.returnValues(request1);
+    const configuration = {
+      com_adobe_identity: {
+        idSyncContainerId: "123"
+      }
+    };
+    const getIdentity = createGetIdentity({
+      sendEdgeNetworkRequest,
+      createIdentityRequestPayload,
+      createIdentityRequest,
+      globalConfigOverrides: configuration
+    });
+    getIdentity({
+      namespaces: ["namespace1"]
+    });
     expect(createIdentityRequestPayload).toHaveBeenCalledWith(["namespace1"]);
     expect(createIdentityRequest).toHaveBeenCalledWith(requestPayload);
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({

@@ -13,12 +13,15 @@ governing permissions and limitations under the License.
 export default ({
   sendEdgeNetworkRequest,
   createIdentityRequestPayload,
-  createIdentityRequest
+  createIdentityRequest,
+  globalConfigOverrides
 }) => {
-  return (namespaces, edgeConfigOverrides) => {
+  return ({ namespaces, edgeConfigOverrides: localConfigOverrides } = {}) => {
     const payload = createIdentityRequestPayload(namespaces);
     const request = createIdentityRequest(payload);
-    payload.mergeConfigOverride(edgeConfigOverrides);
+    // merge the configurations, but give preference to the command-local configs
+    payload.mergeConfigOverride(globalConfigOverrides);
+    payload.mergeConfigOverride(localConfigOverrides);
     return sendEdgeNetworkRequest({
       request
     });
