@@ -10,7 +10,7 @@ import isUserAgentClientHintsSupported from "../../helpers/isUserAgentClientHint
 const networkLogger = createNetworkLogger();
 
 const ID = "C7311732";
-const DESCRIPTION = `${ID} - Adds only userAgencClientHints context data when only highEntropyUserAgentHints is specified in configuration.`;
+const DESCRIPTION = `${ID} - Adds only userAgentClientHints context data when only highEntropyUserAgentHints is specified in configuration.`;
 
 createFixture({
   title: DESCRIPTION,

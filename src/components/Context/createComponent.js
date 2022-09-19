@@ -30,7 +30,7 @@ export default (config, logger, optionalContexts, requiredContexts) => {
         const xdm = {};
         return Promise.all(
           contexts.map(context => Promise.resolve(context(xdm, logger)))
-        ).then(event.mergeXdm(xdm));
+        ).then(() => event.mergeXdm(xdm));
       }
     }
   };
