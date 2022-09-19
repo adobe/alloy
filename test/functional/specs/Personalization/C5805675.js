@@ -102,4 +102,11 @@ test("Test C5805675: Default content offers should be delivered", async () => {
       notificationRequestBody.events[0].xdm._experience.decisioning.propositions
     )
     .eql(notificationPayload);
+  await t
+    .expect(
+      // eslint-disable-next-line no-underscore-dangle
+      notificationRequestBody.events[0].xdm._experience.decisioning
+        .propositionEventType.display
+    )
+    .eql(1);
 });
