@@ -12,7 +12,7 @@ import { IAB_CONSENT_IN } from "../../helpers/constants/consent";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
-const overrides = { identity: { idSyncContainerId: "1234" } };
+const overrides = { com_adobe_identity: { idSyncContainerId: "1234" } };
 
 createFixture({
   title:

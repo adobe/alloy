@@ -13,60 +13,22 @@ governing permissions and limitations under the License.
 import { prepareConfigOverridesForEdge } from "../../../../src/utils";
 
 describe("utils:prepareConfigOverridesForEdge", () => {
-  it("should add com_adobe_ to the beginning of top level keys", () => {
-    expect(
-      prepareConfigOverridesForEdge({
-        experience_platform: {
-          datasets: {
-            event: "werewr",
-            profile: "www"
-          }
-        },
-        analytics: {
-          reportSuites: ["sdfsfd"]
-        },
-        identity: {
-          idSyncContainerId: "rrr"
-        },
-        target: {
-          propertyToken: "rrr"
-        }
-      })
-    ).toEqual({
-      com_adobe_experience_platform: {
-        datasets: {
-          event: "werewr",
-          profile: "www"
-        }
-      },
-      com_adobe_analytics: {
-        reportSuites: ["sdfsfd"]
-      },
-      com_adobe_identity: {
-        idSyncContainerId: "rrr"
-      },
-      com_adobe_target: {
-        propertyToken: "rrr"
-      }
-    });
-  });
-
   it("should filter out functions, unusesd objects and keys, empty arrays, and empty strings", () => {
     expect(
       prepareConfigOverridesForEdge({
-        experience_platform: {
+        com_adobe_experience_platform: {
           datasets: {
             event: "werewr"
           },
           enabled: false
         },
-        analytics: {
+        com_adobe_analytics: {
           reportSuites: []
         },
-        identity: {
+        com_adobe_identity: {
           idSyncContainerId: ""
         },
-        target: {
+        com_adobe_target: {
           propertyToken: "rrr",
           environmentId: 0
         },
@@ -89,19 +51,19 @@ describe("utils:prepareConfigOverridesForEdge", () => {
   it("should return null for empty config objects", () => {
     expect(
       prepareConfigOverridesForEdge({
-        experience_platform: {
+        com_adobe_experience_platform: {
           datasets: {
             event: "",
             profile: ""
           }
         },
-        analytics: {
+        com_adobe_analytics: {
           reportSuites: []
         },
-        identity: {
+        com_adobe_identity: {
           idSyncContainerId: ""
         },
-        target: {
+        com_adobe_target: {
           propertyToken: ""
         }
       })

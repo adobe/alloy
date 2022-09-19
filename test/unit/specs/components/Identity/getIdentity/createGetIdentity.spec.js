@@ -79,7 +79,7 @@ describe("Identity::createGetIdentity", () => {
       createIdentityRequest
     });
     const configuration = {
-      identity: {
+      com_adobe_identity: {
         idSyncContainerId: "123"
       }
     };
@@ -91,7 +91,7 @@ describe("Identity::createGetIdentity", () => {
     });
     expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
       com_adobe_identity: {
-        idSyncContainerId: configuration.identity.idSyncContainerId
+        idSyncContainerId: configuration.com_adobe_identity.idSyncContainerId
       }
     });
   });

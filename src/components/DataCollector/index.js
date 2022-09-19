@@ -70,7 +70,7 @@ const createDataCollector = ({ eventManager, logger }) => {
             );
             sendEventOptions.edgeConfigOverrides = edgeConfigOverrides || {};
             deepAssign(sendEventOptions.edgeConfigOverrides, {
-              experience_platform: { datasets: { event: datasetId } }
+              com_adobe_experience_platform: { datasets: { event: datasetId } }
             });
           }
           return eventManager.sendEvent(event, sendEventOptions);

@@ -331,14 +331,14 @@ describe("createEventManager", () => {
       eventManager
         .sendEvent(event, {
           edgeConfigOverrides: {
-            experience_platform: {
+            com_adobe_experience_platform: {
               event: "456",
               profile: ""
             },
-            identity: {
+            com_adobe_identity: {
               idSyncContainerId: "123"
             },
-            target: {
+            com_adobe_target: {
               propertyToken: ""
             }
           }
@@ -357,7 +357,7 @@ describe("createEventManager", () => {
     });
 
     it("includes global override configuration, if provided", done => {
-      config.edgeConfigOverrides.identity = {
+      config.edgeConfigOverrides.com_adobe_identity = {
         idSyncContainerId: "123"
       };
 
@@ -376,14 +376,14 @@ describe("createEventManager", () => {
     });
 
     it("prefers local override configuration over global", done => {
-      config.edgeConfigOverrides.identity = {
+      config.edgeConfigOverrides.com_adobe_identity = {
         idSyncContainerId: "123"
       };
 
       eventManager
         .sendEvent(event, {
           edgeConfigOverrides: {
-            identity: {
+            com_adobe_identity: {
               idSyncContainerId: "456"
             }
           }

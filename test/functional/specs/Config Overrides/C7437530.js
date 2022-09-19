@@ -12,7 +12,7 @@ import createAlloyProxy from "../../helpers/createAlloyProxy";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 const overrides = {
-  experience_platform: {
+  com_adobe_experience_platform: {
     datasets: {
       event: "5eb9aaa6a3b16e18a818e06f"
     }

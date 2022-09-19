@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 
 const defaultOverrides = {
-  experience_platform: {
+  com_adobe_experience_platform: {
     datasets: {
       event: "",
       profile: ""
     }
   },
-  analytics: {
+  com_adobe_analytics: {
     reportSuites: []
   },
-  identity: {
+  com_adobe_identity: {
     idSyncContainerId: ""
   },
-  target: {
+  com_adobe_target: {
     propertyToken: ""
   }
 };
@@ -84,10 +84,10 @@ export default function ConfigOverrides() {
     console.log("Add report suite");
     setOverrides({
       ...overrides,
-      analytics: {
-        ...overrides.analytics,
+      com_adobe_analytics: {
+        ...overrides.com_adobe_analytics,
         analyticsReportSuites: [
-          ...((overrides.analytics || {}).analyticsReportSuites || []),
+          ...((overrides.com_adobe_analytics || {}).analyticsReportSuites || []),
           ""
         ]
       }

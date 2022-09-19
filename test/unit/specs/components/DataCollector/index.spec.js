@@ -137,7 +137,7 @@ describe("Event Command", () => {
             renderDecisions: false,
             decisionScopes: [],
             edgeConfigOverrides: {
-              experience_platform: {
+              com_adobe_experience_platform: {
                 datasets: {
                   event: datasetId
                 }

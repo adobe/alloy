@@ -62,7 +62,7 @@ describe("Privacy:injectSendSetConsentRequest", () => {
         b: [{ id: "3" }]
       },
       edgeConfigOverrides: {
-        identity: {
+        com_adobe_identity: {
           idSyncContainerId: "123"
         }
       }

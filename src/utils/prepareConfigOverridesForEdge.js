@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 import isNil from "./isNil";
 import filterObject from "./filterObject";
-import { CONFIG_KEY_PREFIX } from "../constants/blackbird";
 import isEmptyObject from "./isEmptyObject";
 import isNonEmptyArray from "./isNonEmptyArray";
 import isNonEmptyString from "./isNonEmptyString";
@@ -26,7 +25,7 @@ export default configuration => {
     return null;
   }
   // remove entries that are empty strings or arrays
-  let configOverrides = filterObject(configuration, value => {
+  const configOverrides = filterObject(configuration, value => {
     if (isNil(value)) {
       return false;
     }
@@ -47,15 +46,6 @@ export default configuration => {
   if (isEmptyObject(configOverrides)) {
     return null;
   }
-
-  // add "com_adobe_" to top level keys
-  configOverrides = Object.keys(configOverrides).reduce((result, key) => {
-    const value = configOverrides[key];
-    return {
-      ...result,
-      [`${CONFIG_KEY_PREFIX}_${key}`]: value
-    };
-  }, {});
 
   return configOverrides;
 };
