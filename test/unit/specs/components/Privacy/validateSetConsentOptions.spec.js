@@ -78,7 +78,8 @@ describeValidation(
             }
           ]
         }
-      }
+      },
+      error: true
     },
     {
       value: {

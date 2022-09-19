@@ -34,6 +34,6 @@ export default mapOfValues(
       }).noUnknownFields(),
       primary: boolean(),
       xid: string()
-    })
+    }).noUnknownFields()
   ).required()
 );
