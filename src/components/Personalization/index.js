@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "../../utils/validation";
+import { string, boolean } from "../../utils/validation";
 import createComponent from "./createComponent";
 import { initDomActionsModules, executeActions } from "./dom-actions";
 import createCollect from "./createCollect";
@@ -30,8 +30,10 @@ import createRedirectHandler from "./createRedirectHandler";
 import createAutorenderingHandler from "./createAutoRenderingHandler";
 import createNonRenderingHandler from "./createNonRenderingHandler";
 import createApplyPropositions from "./createApplyPropositions";
+import createSetTargetMigration from "./createSetTargetMigration";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
+  const { targetMigrationEnabled, prehidingStyle } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
 
   const {
@@ -71,7 +73,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     showContainers
   });
   const fetchDataHandler = createFetchDataHandler({
-    config,
+    prehidingStyle,
     responseHandler,
     hideContainers,
     mergeQuery
@@ -88,6 +90,9 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     executeDecisions,
     viewCache
   });
+  const setTargetMigration = createSetTargetMigration({
+    targetMigrationEnabled
+  });
   return createComponent({
     logger,
     fetchDataHandler,
@@ -97,14 +102,16 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     mergeQuery,
     viewCache,
     showContainers,
-    applyPropositions
+    applyPropositions,
+    setTargetMigration
   });
 };
 
 createPersonalization.namespace = "Personalization";
 
 createPersonalization.configValidators = {
-  prehidingStyle: string().nonEmpty()
+  prehidingStyle: string().nonEmpty(),
+  targetMigrationEnabled: boolean().default(false)
 };
 
 export default createPersonalization;

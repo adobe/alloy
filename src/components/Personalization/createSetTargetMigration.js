@@ -10,16 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isLegacyCookieName from "../../../../src/utils/isLegacyCookieName";
+import { noop } from "../../utils";
 
-describe("isLegacyCookieName", () => {
-  it("returns true if it's a legacy cookie name", () => {
-    const result = isLegacyCookieName("at_qa_mode");
-    expect(result).toBeTrue();
-  });
-
-  it("returns false if it's not a legacy cookie name", () => {
-    const result = isLegacyCookieName("ABC@CustomOrg");
-    expect(result).toBeFalse();
-  });
-});
+export default ({ targetMigrationEnabled }) => {
+  if (targetMigrationEnabled) {
+    return request => {
+      request.getPayload().mergeMeta({ target: { migration: true } });
+    };
+  }
+  return noop;
+};

@@ -42,6 +42,7 @@ import injectSendBeaconRequest from "./network/requestMethods/injectSendBeaconRe
 import createLogger from "./createLogger";
 import createEventManager from "./createEventManager";
 import createCookieTransfer from "./createCookieTransfer";
+import injectShouldTransferCookie from "./injectShouldTransferCookie";
 import {
   createDataCollectionRequest,
   createDataCollectionRequestPayload
@@ -90,10 +91,14 @@ export const createExecuteCommand = ({
       logger,
       setDebugEnabled
     });
-    const { orgId } = config;
+    const { orgId, targetMigrationEnabled } = config;
+    const shouldTransferCookie = injectShouldTransferCookie({
+      orgId,
+      targetMigrationEnabled
+    });
     const cookieTransfer = createCookieTransfer({
       cookieJar: loggingCookieJar,
-      orgId,
+      shouldTransferCookie,
       apexDomain,
       dateProvider: () => new Date()
     });
