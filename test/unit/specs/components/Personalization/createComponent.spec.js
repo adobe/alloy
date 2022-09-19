@@ -23,11 +23,10 @@ describe("Personalization", () => {
   let mergeQuery;
   let event;
   let personalizationComponent;
-  let setMigrationEnabled;
+  let setTargetMigration;
 
   const build = () => {
     personalizationComponent = createComponent({
-      config: {},
       logger,
       fetchDataHandler,
       viewChangeHandler,
@@ -36,7 +35,7 @@ describe("Personalization", () => {
       mergeQuery,
       viewCache,
       showContainers,
-      setMigrationEnabled
+      setTargetMigration
     });
   };
 
@@ -59,7 +58,7 @@ describe("Personalization", () => {
       "isInitialized",
       "storeViews"
     ]);
-    setMigrationEnabled = jasmine.createSpy("setMigrationEnabled");
+    setTargetMigration = jasmine.createSpy("setTargetMigration");
 
     build();
   });
@@ -162,13 +161,13 @@ describe("Personalization", () => {
   });
 
   describe("onBeforeRequest", () => {
-    it("should always call setMigrationEnabled during onBeforeRequest", () => {
+    it("should always call setTargetMigration during onBeforeRequest", () => {
       const request = jasmine.createSpyObj("request", ["getPayload"]);
       personalizationComponent.lifecycle.onBeforeRequest({
         request
       });
 
-      expect(setMigrationEnabled).toHaveBeenCalled();
+      expect(setTargetMigration).toHaveBeenCalledOnceWith(request);
     });
   });
 });

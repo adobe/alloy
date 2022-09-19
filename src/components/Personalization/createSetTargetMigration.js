@@ -10,9 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { AT_QA_MODE, MBOX } from "../constants/legacyCookies";
+import { noop } from "../../utils";
 
-export default (name, config) => {
-  const { targetMigrationEnabled } = config;
-  return name === AT_QA_MODE || (name === MBOX && targetMigrationEnabled);
+export default ({ targetMigrationEnabled }) => {
+  if (targetMigrationEnabled) {
+    return request => {
+      request.getPayload().mergeMeta({ target: { migration: true } });
+    };
+  }
+  return noop;
 };

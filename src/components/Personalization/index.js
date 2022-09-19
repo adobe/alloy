@@ -30,9 +30,10 @@ import createRedirectHandler from "./createRedirectHandler";
 import createAutorenderingHandler from "./createAutoRenderingHandler";
 import createNonRenderingHandler from "./createNonRenderingHandler";
 import createApplyPropositions from "./createApplyPropositions";
-import setMigrationEnabled from "./migration/setMigrationEnabled";
+import createSetTargetMigration from "./createSetTargetMigration";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
+  const { targetMigrationEnabled, prehidingStyle } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
 
   const {
@@ -72,7 +73,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     showContainers
   });
   const fetchDataHandler = createFetchDataHandler({
-    config,
+    prehidingStyle,
     responseHandler,
     hideContainers,
     mergeQuery
@@ -89,8 +90,10 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     executeDecisions,
     viewCache
   });
+  const setTargetMigration = createSetTargetMigration({
+    targetMigrationEnabled
+  });
   return createComponent({
-    config,
     logger,
     fetchDataHandler,
     viewChangeHandler,
@@ -100,7 +103,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     viewCache,
     showContainers,
     applyPropositions,
-    setMigrationEnabled
+    setTargetMigration
   });
 };
 

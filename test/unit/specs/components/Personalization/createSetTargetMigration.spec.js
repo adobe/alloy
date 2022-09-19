@@ -10,32 +10,33 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import setMigrationEnabled from "../../../../../../src/components/Personalization/migration/setMigrationEnabled";
+import createSetTargetMigration from "../../../../../src/components/Personalization/createSetTargetMigration";
 
-describe("Personalization::setMigrationEnabled", () => {
+describe("Personalization::createSetTargetMigration", () => {
+  let request;
+  let payload;
+
+  beforeEach(() => {
+    request = jasmine.createSpyObj("request", ["getPayload"]);
+    payload = jasmine.createSpyObj("payload", ["mergeMeta"]);
+    request.getPayload.and.returnValue(payload);
+  });
+
   it("adds to request meta if targetMigrationEnabled=true is configured", () => {
-    const request = {
-      getPayload: jasmine
-        .createSpy("getPayload")
-        .and.returnValue(jasmine.createSpyObj("getPayloadObj", ["mergeMeta"]))
-    };
-    const config = {
+    const setTargetMigration = createSetTargetMigration({
       targetMigrationEnabled: true
-    };
-
-    setMigrationEnabled(config, request);
-
-    expect(request.getPayload).toHaveBeenCalled();
+    });
+    setTargetMigration(request);
+    expect(payload.mergeMeta).toHaveBeenCalledOnceWith({
+      target: { migration: true }
+    });
   });
 
   it("does not add to request meta if targetMigrationEnabled is not configured", () => {
-    const request = {
-      getPayload: jasmine.createSpy("getPayload")
-    };
-    const config = {};
-
-    setMigrationEnabled(config, request);
-
-    expect(request.getPayload).not.toHaveBeenCalled();
+    const setTargetMigration = createSetTargetMigration({
+      targetMigrationEnabled: false
+    });
+    setTargetMigration(request);
+    expect(payload.mergeMeta).not.toHaveBeenCalled();
   });
 });

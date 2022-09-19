@@ -41,7 +41,6 @@ export { default as isEmptyObject } from "./isEmptyObject";
 export { default as isFunction } from "./isFunction";
 export { default as isInteger } from "./isInteger";
 export { default as isNamespacedCookieName } from "./isNamespacedCookieName";
-export { default as isLegacyCookieName } from "./isLegacyCookieName";
 export { default as isNonEmptyArray } from "./isNonEmptyArray";
 export { default as isNonEmptyString } from "./isNonEmptyString";
 export { default as isNil } from "./isNil";
