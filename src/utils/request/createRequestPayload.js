@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createMerger } from "..";
+import { createMerger, prepareConfigOverridesForEdge } from "..";
 
 // This provides the base functionality that all types of
 // request payloads share.
@@ -23,6 +23,10 @@ export default options => {
     addIdentity,
     hasIdentity,
     toJSON() {
+      const json = { ...content };
+      json.edgeConfigOverrides = prepareConfigOverridesForEdge(
+        json.edgeConfigOverrides
+      );
       return content;
     }
   };

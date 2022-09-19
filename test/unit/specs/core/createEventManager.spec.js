@@ -332,14 +332,10 @@ describe("createEventManager", () => {
         .sendEvent(event, {
           edgeConfigOverrides: {
             com_adobe_experience_platform: {
-              event: "456",
-              profile: ""
+              event: "456"
             },
             com_adobe_identity: {
               idSyncContainerId: "123"
-            },
-            com_adobe_target: {
-              propertyToken: ""
             }
           }
         })

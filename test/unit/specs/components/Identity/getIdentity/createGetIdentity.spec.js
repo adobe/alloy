@@ -42,8 +42,20 @@ describe("Identity::createGetIdentity", () => {
   });
 
   it("each getIdentity call should create new payloads and requests", () => {
-    const payload1 = { type: "payload1" };
-    const payload2 = { type: "payload2" };
+    const payload1 = jasmine.createSpyObj(
+      "requestPayload",
+      ["mergeConfigOverride"],
+      {
+        type: "payload1"
+      }
+    );
+    const payload2 = jasmine.createSpyObj(
+      "requestPayload",
+      ["mergeConfigOverride"],
+      {
+        type: "payload2"
+      }
+    );
     const request1 = { type: "request1" };
     const request2 = { type: "request2" };
     createIdentityRequestPayload.and.returnValues(payload1, payload2);

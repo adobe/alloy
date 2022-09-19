@@ -10,12 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  createCallbackAggregator,
-  isEmptyObject,
-  noop,
-  prepareConfigOverridesForEdge
-} from "../utils";
+import { createCallbackAggregator, noop } from "../utils";
 
 const EVENT_CANCELLATION_MESSAGE =
   "Event was canceled because the onBeforeEventSend callback returned false.";
@@ -63,12 +58,7 @@ export default ({
       const onResponseCallbackAggregator = createCallbackAggregator();
       const onRequestFailureCallbackAggregator = createCallbackAggregator();
       const overrides = { ...globalConfigOverrides, ...commandConfigOverrides };
-      if (!isEmptyObject(overrides)) {
-        const preparedOverrides = prepareConfigOverridesForEdge(overrides);
-        if (preparedOverrides) {
-          payload.mergeConfigOverride(preparedOverrides);
-        }
-      }
+      payload.mergeConfigOverride(overrides);
 
       return lifecycle
         .onBeforeEvent({
