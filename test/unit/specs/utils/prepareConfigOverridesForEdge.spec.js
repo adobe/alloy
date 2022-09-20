@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { prepareConfigOverridesForEdge } from "../../../../src/utils";
 
 describe("utils:prepareConfigOverridesForEdge", () => {
-  it("should filter out functions, unusesd objects and keys, empty arrays, and empty strings", () => {
+  it("should filter out functions, unused objects and keys, empty arrays, and empty strings", () => {
     expect(
       prepareConfigOverridesForEdge({
         com_adobe_experience_platform: {
