@@ -16,17 +16,15 @@ import { createMerger, prepareConfigOverridesForEdge } from "..";
 // request payloads share.
 export default options => {
   const { content, addIdentity, hasIdentity } = options;
+  const mergeConfigOverride = createMerger(content, "meta.configOverrides");
   return {
     mergeState: createMerger(content, "meta.state"),
     mergeQuery: createMerger(content, "query"),
-    mergeConfigOverride: createMerger(content, "meta.configOverrides"),
+    mergeConfigOverride: updates =>
+      mergeConfigOverride(prepareConfigOverridesForEdge(updates)),
     addIdentity,
     hasIdentity,
     toJSON() {
-      const json = { ...content };
-      json.edgeConfigOverrides = prepareConfigOverridesForEdge(
-        json.edgeConfigOverrides
-      );
       return content;
     }
   };

@@ -83,3 +83,29 @@ test("Test C7437533: overrides from `setConsent` should take precedence over the
     .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
     .eql(overrides.com_adobe_identity.idSyncContainerId);
 });
+
+test("Test C7437533: empty configuration overrides should not be sent to the Edge", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  await alloy.setConsent(
+    compose(IAB_CONSENT_IN, {
+      edgeConfigOverrides: compose(overrides, {
+        com_adobe_target: {
+          propertyToken: ""
+        }
+      })
+    })
+  );
+
+  await responseStatus(networkLogger.setConsentEndpointLogs.requests, 200);
+  await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
+
+  const request = JSON.parse(
+    networkLogger.setConsentEndpointLogs.requests[0].request.body
+  );
+
+  await t
+    .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
+    .eql(overrides.com_adobe_identity.idSyncContainerId);
+  await t.expect(request.meta.configOverrides.com_adobe_target).eql(undefined);
+});

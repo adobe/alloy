@@ -133,3 +133,47 @@ test("Test C7437530: overrides from `sendEvent` should take precedence over the 
   await t.expect(request.meta.state.cookiesEnabled).eql(true);
   await t.expect(request.meta.state.domain).ok();
 });
+
+test("Test C7437530: empty configuration overrides should not be sent to the Edge", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(
+    compose(
+      config,
+      {
+        edgeConfigOverrides: alternateOverrides
+      },
+      {}
+    )
+  );
+  await alloy.sendEvent({
+    edgeConfigOverrides: compose(overrides, {
+      com_adobe_target: {
+        propertyToken: ""
+      }
+    })
+  });
+
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+
+  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
+
+  const request = JSON.parse(
+    networkLogger.edgeEndpointLogs.requests[0].request.body
+  );
+  // const response = JSON.parse(
+  //   getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+  // );
+  // console.log(JSON.stringify(response, null, 2));
+
+  await t
+    .expect(request.events[0].xdm.implementationDetails.name)
+    .eql("https://ns.adobe.com/experience/alloy");
+  await t
+    .expect(
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+    )
+    .eql(overrides.com_adobe_experience_platform.datasets.event);
+  await t.expect(request.meta.configOverrides.com_adobe_target).eql(undefined);
+  await t.expect(request.meta.state.cookiesEnabled).eql(true);
+  await t.expect(request.meta.state.domain).ok();
+});

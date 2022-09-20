@@ -85,3 +85,29 @@ test("Test C7437531: overrides from `getIdentity` should take precedence over th
     .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
     .eql(overrides.com_adobe_identity.idSyncContainerId);
 });
+
+test("Test C7437531: empty configuration overrides should not be sent to the Edge", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  // this should get an ECID
+  await alloy.getIdentity({
+    edgeConfigOverrides: compose(overrides, {
+      com_adobe_target: {
+        propertyToken: ""
+      }
+    })
+  });
+
+  await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
+  await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
+
+  const request = JSON.parse(
+    networkLogger.acquireEndpointLogs.requests[0].request.body
+  );
+
+  await t
+    .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
+    .eql(overrides.com_adobe_identity.idSyncContainerId);
+
+  await t.expect(request.meta.configOverrides.com_adobe_target).eql(undefined);
+});
