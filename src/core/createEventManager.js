@@ -51,14 +51,14 @@ export default ({
       const {
         renderDecisions = false,
         decisionScopes,
-        edgeConfigOverrides: commandConfigOverrides
+        edgeConfigOverrides: localConfigOverrides
       } = options;
       const payload = createDataCollectionRequestPayload();
       const request = createDataCollectionRequest(payload);
       const onResponseCallbackAggregator = createCallbackAggregator();
       const onRequestFailureCallbackAggregator = createCallbackAggregator();
-      const overrides = { ...globalConfigOverrides, ...commandConfigOverrides };
-      payload.mergeConfigOverride(overrides);
+      payload.mergeConfigOverride(globalConfigOverrides);
+      payload.mergeConfigOverride(localConfigOverrides);
 
       return lifecycle
         .onBeforeEvent({

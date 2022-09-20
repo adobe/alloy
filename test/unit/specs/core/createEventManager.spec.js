@@ -370,28 +370,5 @@ describe("createEventManager", () => {
           done();
         });
     });
-
-    it("prefers local override configuration over global", done => {
-      config.edgeConfigOverrides.com_adobe_identity = {
-        idSyncContainerId: "123"
-      };
-
-      eventManager
-        .sendEvent(event, {
-          edgeConfigOverrides: {
-            com_adobe_identity: {
-              idSyncContainerId: "456"
-            }
-          }
-        })
-        .then(() => {
-          expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
-            com_adobe_identity: {
-              idSyncContainerId: "456"
-            }
-          });
-          done();
-        });
-    });
   });
 });
