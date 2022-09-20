@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import { GENERAL } from "../../constants/consentPurpose";
-import { isEmptyObject } from "../../utils";
 
 export default ({
   storedConsent,
@@ -21,10 +20,8 @@ export default ({
   sendSetConsentRequest,
   validateSetConsentOptions,
   consentHashStore,
-  doesIdentityCookieExist,
-  config
+  doesIdentityCookieExist
 }) => {
-  const { edgeConfigOverrides: globalConfigOverrides } = config;
   const defaultConsentByPurpose = { [GENERAL]: defaultConsent };
   let storedConsentByPurpose = storedConsent.read();
 
@@ -60,25 +57,18 @@ export default ({
         run: ({
           consent: consentOptions,
           identityMap,
-          edgeConfigOverrides: commandConfigOverrides
+          edgeConfigOverrides
         }) => {
           consent.suspend();
           const consentHashes = consentHashStore.lookup(consentOptions);
           return taskQueue
             .addTask(() => {
               if (consentHashes.isNew()) {
-                const consentRequestOptions = {
+                return sendSetConsentRequest({
                   consentOptions,
-                  identityMap
-                };
-                const overrides = {
-                  ...globalConfigOverrides,
-                  ...commandConfigOverrides
-                };
-                if (!isEmptyObject(overrides)) {
-                  consentRequestOptions.edgeConfigOverrides = overrides;
-                }
-                return sendSetConsentRequest(consentRequestOptions);
+                  identityMap,
+                  edgeConfigOverrides
+                });
               }
               return Promise.resolve();
             })
