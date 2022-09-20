@@ -145,6 +145,7 @@ describe("Event Command", () => {
             }
           }
         );
+        expect(logger.warn).toHaveBeenCalled();
       });
   });
 
