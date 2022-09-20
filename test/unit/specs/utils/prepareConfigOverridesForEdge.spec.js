@@ -18,16 +18,15 @@ describe("utils:prepareConfigOverridesForEdge", () => {
       prepareConfigOverridesForEdge({
         com_adobe_experience_platform: {
           datasets: {
-            event: "werewr"
+            event: "werewr",
+            profile: ""
           },
           enabled: false
         },
         com_adobe_analytics: {
           reportSuites: []
         },
-        com_adobe_identity: {
-          idSyncContainerId: ""
-        },
+        com_adobe_identity: {},
         com_adobe_target: {
           propertyToken: "rrr",
           environmentId: 0
