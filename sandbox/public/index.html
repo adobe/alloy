@@ -83,7 +83,7 @@
         edgeConfigId:
           getUrlParameter("edgeConfigId") ||
           "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
-        orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
+        orgId: "5BFE274A5F6980A50A495C08@AdobeOrg", // UnifiedJS QE Only
         debugEnabled: true,
         idMigrationEnabled: !(
           getUrlParameter("idMigrationEnabled") === "false"
@@ -104,7 +104,8 @@
           const _unifiedjsqeonly = xdm._unifiedjsqeonly || {};
           _unifiedjsqeonly.rawTimestamp = new Date().getTime();
           xdm._unifiedjsqeonly = _unifiedjsqeonly;
-        }
+        },
+        targetMigrationEnabled: true
       });
 
       // For Testing multiple instances.
