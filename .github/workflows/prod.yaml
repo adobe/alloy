@@ -63,7 +63,7 @@ jobs:
       - name: Build
         run: npm run test:functional:build:prod
       - name: Run TestCafe Tests
-        run: npx testcafe -q -c 10 "saucelabs:Chrome@latest:macOS 11.00"
+        run: npx testcafe -q -c 5 "saucelabs:Chrome@latest:macOS 11.00"
         env:
           ALLOY_PROD_VERSION: ${{ steps.package-version.outputs.current-version }}
       - uses: craftech-io/slack-action@v1
@@ -107,7 +107,7 @@ jobs:
       - name: Build
         run: npm run test:functional:build:prod
       - name: Run TestCafe Tests
-        run: npx testcafe -q -c 10 'saucelabs:Safari@latest:macOS 11.00'
+        run: npx testcafe -q -c 5 'saucelabs:Safari@latest:macOS 11.00'
         env:
           ALLOY_PROD_VERSION: ${{ steps.package-version.outputs.current-version }}
       - uses: craftech-io/slack-action@v1
@@ -151,7 +151,7 @@ jobs:
       - name: Build
         run: npm run test:functional:build:prod
       - name: Run TestCafe Tests
-        run: npx testcafe -q -c 10 'saucelabs:IE@latest:Windows 10'
+        run: npx testcafe -q -c 5 'saucelabs:IE@latest:Windows 10'
         env:
           ALLOY_PROD_VERSION: ${{ steps.package-version.outputs.current-version }}
       - uses: craftech-io/slack-action@v1
@@ -195,7 +195,7 @@ jobs:
       - name: Build
         run: npm run test:functional:build:prod
       - name: Run TestCafe Tests
-        run: npx testcafe -q -c 10 'saucelabs:Firefox@latest:Windows 10'
+        run: npx testcafe -q -c 5 'saucelabs:Firefox@latest:Windows 10'
         env:
           ALLOY_PROD_VERSION: ${{ steps.package-version.outputs.current-version }}
       - uses: craftech-io/slack-action@v1
