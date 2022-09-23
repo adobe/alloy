@@ -20,3 +20,6 @@ export const RELOAD_PAGE = `${baseUrl}/reloadPage.html`;
 
 const secondaryBaseUrl = `https://alloyio2.com/functional-test`;
 export const SECONDARY_TEST_PAGE = `${secondaryBaseUrl}/testPage.html`;
+
+export const AT_JS_VERSION_TWO = `${baseUrl}/legacyLibraries/at2.js`;
+export const AT_JS_VERSION_ONE = `${baseUrl}/legacyLibraries/at.js`;

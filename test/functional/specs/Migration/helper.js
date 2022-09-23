@@ -1,14 +1,8 @@
 import { ClientFunction, t } from "testcafe";
-import readCache from "read-cache";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import createConsoleLogger from "../../helpers/consoleLogger";
 import { injectAlloyDuringTest } from "../../helpers/createFixture/clientScripts";
 import cookies from "../../helpers/cookies";
-
-export const AT_JS_VERSION_TWO =
-  "./sandbox/public/functional-test/legacyJs/at2.js";
-export const AT_JS_VERSION_ONE =
-  "./sandbox/public/functional-test/legacyJs/at.js";
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -52,22 +46,16 @@ export const assertKonductorReturnsCookieAndCookieIsSet = async (
   return cookieValue;
 };
 
-const getLocalAtjsCode = libraryPath => {
-  // readCache caches file content until the file is modified, at which
-  // point it will retrieve fresh file content, cache it, and return it.
-  return readCache.sync(libraryPath, "utf8");
-};
-
-const injectAtjsScript = ClientFunction(code => {
+const injectAtjsScript = ClientFunction(remoteUrl => {
   const scriptElement = document.createElement("script");
   // eslint-disable-next-line no-undef
-  scriptElement.innerHTML = code;
+  scriptElement.src = remoteUrl;
   document.getElementsByTagName("head")[0].appendChild(scriptElement);
 });
 
 export const injectAtjsOnThePage = async (libraryPath, libraryVersion) => {
-  const localAtjs = getLocalAtjsCode(libraryPath);
-  await injectAtjsScript(localAtjs);
+  await injectAtjsScript(libraryPath);
+  await sleep(2000);
 
   const version = await getAtjsVersion();
   await t.expect(version).eql(libraryVersion);

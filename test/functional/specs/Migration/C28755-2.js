@@ -1,4 +1,4 @@
-import { ClientFunction, t } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import createFixture from "../../helpers/createFixture";
 import {
@@ -6,13 +6,15 @@ import {
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
-import { LEGACY, TEST_PAGE } from "../../helpers/constants/url";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createConsoleLogger from "../../helpers/consoleLogger";
-import { injectAlloyDuringTest } from "../../helpers/createFixture/clientScripts";
+import { AT_JS_VERSION_TWO, TEST_PAGE } from "../../helpers/constants/url";
 import cookies from "../../helpers/cookies";
 import { MBOX } from "../../../../src/constants/cookieNameKey";
 import { MBOX_EDGE_CLUSTER } from "../../../../src/constants/legacyCookies";
+import {
+  assertTargetMigrationEnabledIsSent,
+  injectAlloyAndSendEvent,
+  injectAtjsOnThePage
+} from "./helper";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled, {
@@ -26,7 +28,7 @@ createFixture({
     networkLogger.edgeEndpointLogs,
     networkLogger.targetDeliveryEndpointLogs
   ],
-  url: `${LEGACY}`,
+  url: `${TEST_PAGE}`,
   includeAlloyLibrary: false
 });
 
@@ -36,12 +38,6 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const clientFunction = ClientFunction(() => {
-  const target = window.adobe.target;
-
-  return target.VERSION;
-});
-
 const getLocationHint = pathname => {
   const values = pathname.split("/");
   const locationHint = values[2];
@@ -49,41 +45,35 @@ const getLocationHint = pathname => {
   return Number(locationHint.split("t")[1]);
 };
 
-test("Visit a page with at.js first then navigate to a page with Web SDK", async () => {
-  const version = await clientFunction();
-  await t.expect(version).eql("2.0.0");
-  // get delivery API request
+test("Visit a page with at.js 2.x first then navigate to a page with Web SDK", async () => {
+  await injectAtjsOnThePage(AT_JS_VERSION_TWO, "2.9.0");
+
+  // Get delivery API request
   const deliveryRequest = networkLogger.targetDeliveryEndpointLogs.requests[0];
   await t.expect(deliveryRequest.response.statusCode).eql(200);
   const { searchParams } = new URL(deliveryRequest.request.url);
-  // extract the session ID from the request query params
+  // Extract the session ID from the request query params
   const sessionIdFromDeliveryRequest = searchParams.get("sessionId");
   const mboxEdgeClusterCookieValue = await cookies.get(MBOX_EDGE_CLUSTER);
   await t.expect(mboxEdgeClusterCookieValue).ok();
-  // 3. Check that mbox  cookie is set
+  // Check that mbox  cookie is set
   const mboxCookieValue = await cookies.get(MBOX);
   await t.expect(mboxCookieValue).ok();
 
   // NAVIGATE to a web sdk page
   await t.navigateTo(TEST_PAGE);
-  const alloy = createAlloyProxy();
-  await alloy.configureAsync(config);
-  await alloy.getLibraryInfoAsync();
-  const logger = await createConsoleLogger();
-  await injectAlloyDuringTest();
-  await logger.info.expectMessageMatching(/Executing getLibraryInfo command/);
-  await alloy.sendEvent();
+  await injectAlloyAndSendEvent(config);
   const sendEventRequest = networkLogger.edgeEndpointLogs.requests[0];
   const requestBody = JSON.parse(sendEventRequest.request.body);
 
-  // 1. Check that targetMigrationEnabled is sent in meta
-  await t.expect(requestBody.meta.target).eql({ migration: true });
+  // Check that targetMigrationEnabled is sent in meta
+  await assertTargetMigrationEnabledIsSent(requestBody);
   // Extract location hint
   const { pathname } = new URL(sendEventRequest.request.url);
   const aepRequestLocationHint = getLocationHint(pathname);
-  // assert the location hint used for interact endpoint is the same as in mboxEdgeCluster Cookie value
+  // Assert the location hint used for interact endpoint is the same as in mboxEdgeCluster Cookie value
   await t.expect(mboxEdgeClusterCookieValue).eql(aepRequestLocationHint);
-  // 2. Check that mbox cookie is present in the request state
+  // Check that mbox cookie is present in the request state
   const { entries: stateStore } = requestBody.meta.state;
 
   const requestMboxCookie = stateStore.find(entry => {
