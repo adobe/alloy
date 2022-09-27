@@ -113,7 +113,7 @@ export default ({
         .onBeforeEvent({
           event,
           renderDecisions,
-          decisionScopes: [],
+          decisionScopes: ["__view__"],
           onResponse: onResponseCallbackAggregator.add,
           onRequestFailure: noop
         })
