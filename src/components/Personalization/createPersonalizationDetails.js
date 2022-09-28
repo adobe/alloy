@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { includes } from "../../utils";
-import PAGE_WIDE_SCOPE from "./constants/scope";
+import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
 import {
   DEFAULT_CONTENT_ITEM,
   DOM_ACTION,

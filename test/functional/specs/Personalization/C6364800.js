@@ -185,3 +185,36 @@ test("C6364800 applyResponse accepts a response, updates DOM and returns decisio
   await t.expect(pageHeaderText).match(/(Greetings.+)|(Thanks.+)/);
   await t.expect(getAlertText()).match(/This is Experience [AB]\./);
 });
+
+test("C6364800 applyResponse applies personalization when called after a sendEvent", async () => {
+  const [responseHeaders, responseBody] = await getAepEdgeResponse(uuid());
+
+  await addHtmlToHeader(testPageHead);
+  await addHtmlToBody(testPageBody, true);
+
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  await alloy.sendEvent({});
+  const { decisions } = await alloy.applyResponse({
+    renderDecisions: true,
+    responseHeaders,
+    responseBody
+  });
+
+  const edgeResponseDecision = getEdgeResponseDecision(responseBody);
+
+  const alloyDecision = decisions.find(
+    decision => decision.scope === testMboxName
+  );
+
+  // validate the decision is found in the result for a target form-based activity
+  // https://experience.adobe.com/#/@unifiedjslab/target/activities/activitydetails/A-B/aep-edge-samplessample-hero-image
+  await t.expect(alloyDecision).eql(edgeResponseDecision);
+
+  // validate alloy updated the DOM for target VEC activity in response
+  // https://experience.adobe.com/#/@unifiedjslab/target/activities/activitydetails/A-B/aep-edge-samplesvecoffer
+  const pageHeaderText = getPageHeaderText();
+  await t.expect(pageHeaderText).notEql("Hello World!");
+  await t.expect(pageHeaderText).match(/(Greetings.+)|(Thanks.+)/);
+  await t.expect(getAlertText()).match(/This is Experience [AB]\./);
+});
