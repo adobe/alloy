@@ -119,7 +119,7 @@
     "start-server-and-test": "^1.10.6",
     "testcafe": "^1.19.0",
     "testcafe-browser-provider-saucelabs": "^1.8.3",
-    "testcafe-reporter-testrail": "^0.6.3",
+    "testcafe-reporter-json": "^2.2.0",
     "url-exists-nodejs": "^0.1.0",
     "url-parse": "^1.4.7",
     "yargs": "^16.2.0"
