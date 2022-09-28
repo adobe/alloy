@@ -105,7 +105,9 @@
           _unifiedjsqeonly.rawTimestamp = new Date().getTime();
           xdm._unifiedjsqeonly = _unifiedjsqeonly;
         },
-        targetMigrationEnabled: true
+        targetMigrationEnabled: true,
+        clickCollectionEnabled:
+          getUrlParameter("clickCollectionEnabled") !== "false"
       });
 
       // For Testing multiple instances.
