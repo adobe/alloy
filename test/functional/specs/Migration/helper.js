@@ -55,10 +55,9 @@ const injectAtjsScript = ClientFunction(remoteUrl => {
 
 export const injectAtjsOnThePage = async (libraryPath, libraryVersion) => {
   await injectAtjsScript(libraryPath);
-  await sleep(2000);
+  // we need this to make sure at.js had enough time to trigger the delivery request
+  await sleep(3000);
 
   const version = await getAtjsVersion();
   await t.expect(version).eql(libraryVersion);
-  // we need this to make sure at.js had enough time to trigger the delivery request
-  await sleep(1000);
 };
