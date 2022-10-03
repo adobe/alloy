@@ -4,6 +4,8 @@ import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
 import {
   compose,
+  configOverridesMain as overrides,
+  configOverridesAlt as alternateOverrides,
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
@@ -11,10 +13,6 @@ import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
-const overrides = { com_adobe_identity: { idSyncContainerId: "1234" } };
-const alternateOverrides = {
-  com_adobe_identity: { idSyncContainerId: "5678" }
-};
 
 createFixture({
   title:
@@ -44,8 +42,19 @@ test("Test C7437531: `getIdentity` can receive config overrides in command optio
   );
 
   await t
+    .expect(
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+    )
+    .eql(overrides.com_adobe_experience_platform.datasets.event);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_analytics.reportSuites)
+    .eql(overrides.com_adobe_analytics.reportSuites);
+  await t
     .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
     .eql(overrides.com_adobe_identity.idSyncContainerId);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_target.propertyToken)
+    .eql(overrides.com_adobe_target.propertyToken);
 });
 
 test("Test C7437531: `getIdentity` can receive config overrides from `configure`", async () => {
@@ -62,8 +71,19 @@ test("Test C7437531: `getIdentity` can receive config overrides from `configure`
   );
 
   await t
+    .expect(
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+    )
+    .eql(overrides.com_adobe_experience_platform.datasets.event);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_analytics.reportSuites)
+    .eql(overrides.com_adobe_analytics.reportSuites);
+  await t
     .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
     .eql(overrides.com_adobe_identity.idSyncContainerId);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_target.propertyToken)
+    .eql(overrides.com_adobe_target.propertyToken);
 });
 
 test("Test C7437531: overrides from `getIdentity` should take precedence over the ones from `configure`", async () => {
@@ -82,8 +102,19 @@ test("Test C7437531: overrides from `getIdentity` should take precedence over th
   );
 
   await t
+    .expect(
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+    )
+    .eql(overrides.com_adobe_experience_platform.datasets.event);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_analytics.reportSuites)
+    .eql(overrides.com_adobe_analytics.reportSuites);
+  await t
     .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
     .eql(overrides.com_adobe_identity.idSyncContainerId);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_target.propertyToken)
+    .eql(overrides.com_adobe_target.propertyToken);
 });
 
 test("Test C7437531: empty configuration overrides should not be sent to the Edge", async () => {
@@ -106,8 +137,15 @@ test("Test C7437531: empty configuration overrides should not be sent to the Edg
   );
 
   await t
+    .expect(
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+    )
+    .eql(overrides.com_adobe_experience_platform.datasets.event);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_analytics.reportSuites)
+    .eql(overrides.com_adobe_analytics.reportSuites);
+  await t
     .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
     .eql(overrides.com_adobe_identity.idSyncContainerId);
-
   await t.expect(request.meta.configOverrides.com_adobe_target).eql(undefined);
 });

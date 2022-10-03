@@ -4,6 +4,8 @@ import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
 import {
   compose,
+  configOverridesMain as overrides,
+  configOverridesAlt as alternateOverrides,
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
@@ -11,21 +13,6 @@ import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
-const overrides = {
-  com_adobe_experience_platform: {
-    datasets: {
-      event: "5eb9aaa6a3b16e18a818e06f"
-    }
-  }
-};
-const alternateOverrides = {
-  com_adobe_experience_platform: {
-    datasets: {
-      // not a real dataset ID
-      event: "319f2905fea61bbb9623997f"
-    }
-  }
-};
 
 createFixture({
   title:
@@ -62,6 +49,15 @@ test("Test C7437530: `sendEvent` can receive config overrides in command options
       request.meta.configOverrides.com_adobe_experience_platform.datasets.event
     )
     .eql(overrides.com_adobe_experience_platform.datasets.event);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_analytics.reportSuites)
+    .eql(overrides.com_adobe_analytics.reportSuites);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
+    .eql(overrides.com_adobe_identity.idSyncContainerId);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_target.propertyToken)
+    .eql(overrides.com_adobe_target.propertyToken);
   await t.expect(request.meta.state.cookiesEnabled).eql(true);
   await t.expect(request.meta.state.domain).ok();
 });
@@ -82,10 +78,6 @@ test("Test C7437530: `sendEvent` can receive config overrides from configure", a
   const request = JSON.parse(
     networkLogger.edgeEndpointLogs.requests[0].request.body
   );
-  // const response = JSON.parse(
-  //   getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
-  // );
-  // console.log(JSON.stringify(response, null, 2));
 
   await t
     .expect(request.events[0].xdm.implementationDetails.name)
@@ -95,6 +87,15 @@ test("Test C7437530: `sendEvent` can receive config overrides from configure", a
       request.meta.configOverrides.com_adobe_experience_platform.datasets.event
     )
     .eql(overrides.com_adobe_experience_platform.datasets.event);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_analytics.reportSuites)
+    .eql(overrides.com_adobe_analytics.reportSuites);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
+    .eql(overrides.com_adobe_identity.idSyncContainerId);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_target.propertyToken)
+    .eql(overrides.com_adobe_target.propertyToken);
   await t.expect(request.meta.state.cookiesEnabled).eql(true);
   await t.expect(request.meta.state.domain).ok();
 });
@@ -117,10 +118,6 @@ test("Test C7437530: overrides from `sendEvent` should take precedence over the 
   const request = JSON.parse(
     networkLogger.edgeEndpointLogs.requests[0].request.body
   );
-  // const response = JSON.parse(
-  //   getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
-  // );
-  // console.log(JSON.stringify(response, null, 2));
 
   await t
     .expect(request.events[0].xdm.implementationDetails.name)
@@ -130,6 +127,15 @@ test("Test C7437530: overrides from `sendEvent` should take precedence over the 
       request.meta.configOverrides.com_adobe_experience_platform.datasets.event
     )
     .eql(overrides.com_adobe_experience_platform.datasets.event);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_analytics.reportSuites)
+    .eql(overrides.com_adobe_analytics.reportSuites);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
+    .eql(overrides.com_adobe_identity.idSyncContainerId);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_target.propertyToken)
+    .eql(overrides.com_adobe_target.propertyToken);
   await t.expect(request.meta.state.cookiesEnabled).eql(true);
   await t.expect(request.meta.state.domain).ok();
 });
@@ -137,13 +143,13 @@ test("Test C7437530: overrides from `sendEvent` should take precedence over the 
 test("Test C7437530: empty configuration overrides should not be sent to the Edge", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(
-    compose(
-      config,
-      {
-        edgeConfigOverrides: alternateOverrides
-      },
-      {}
-    )
+    compose(config, {
+      edgeConfigOverrides: compose(alternateOverrides, {
+        com_adobe_target: {
+          propertyToken: ""
+        }
+      })
+    })
   );
   await alloy.sendEvent({
     edgeConfigOverrides: compose(overrides, {
@@ -160,10 +166,6 @@ test("Test C7437530: empty configuration overrides should not be sent to the Edg
   const request = JSON.parse(
     networkLogger.edgeEndpointLogs.requests[0].request.body
   );
-  // const response = JSON.parse(
-  //   getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
-  // );
-  // console.log(JSON.stringify(response, null, 2));
 
   await t
     .expect(request.events[0].xdm.implementationDetails.name)
@@ -173,6 +175,12 @@ test("Test C7437530: empty configuration overrides should not be sent to the Edg
       request.meta.configOverrides.com_adobe_experience_platform.datasets.event
     )
     .eql(overrides.com_adobe_experience_platform.datasets.event);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_analytics.reportSuites)
+    .eql(overrides.com_adobe_analytics.reportSuites);
+  await t
+    .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
+    .eql(overrides.com_adobe_identity.idSyncContainerId);
   await t.expect(request.meta.configOverrides.com_adobe_target).eql(undefined);
   await t.expect(request.meta.state.cookiesEnabled).eql(true);
   await t.expect(request.meta.state.domain).ok();
