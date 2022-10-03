@@ -139,7 +139,7 @@ describe("Event Command", () => {
             edgeConfigOverrides: {
               com_adobe_experience_platform: {
                 datasets: {
-                  event: datasetId
+                  event: { datasetId }
                 }
               }
             }

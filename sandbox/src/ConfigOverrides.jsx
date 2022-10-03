@@ -3,8 +3,12 @@ import React, { useState } from "react";
 const defaultOverrides = {
   com_adobe_experience_platform: {
     datasets: {
-      event: "",
-      profile: ""
+      event: {
+        datasetId: ""
+      },
+      profile: {
+        datasetId: ""
+      }
     }
   },
   com_adobe_analytics: {

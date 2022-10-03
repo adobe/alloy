@@ -332,7 +332,9 @@ describe("createEventManager", () => {
         .sendEvent(event, {
           edgeConfigOverrides: {
             com_adobe_experience_platform: {
-              event: "456"
+              event: {
+                datasetId: "456"
+              }
             },
             com_adobe_identity: {
               idSyncContainerId: "123"
@@ -345,7 +347,9 @@ describe("createEventManager", () => {
               idSyncContainerId: "123"
             },
             com_adobe_experience_platform: {
-              event: "456"
+              event: {
+                datasetId: "456"
+              }
             }
           });
           done();

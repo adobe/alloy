@@ -18,8 +18,8 @@ describe("utils:prepareConfigOverridesForEdge", () => {
       prepareConfigOverridesForEdge({
         com_adobe_experience_platform: {
           datasets: {
-            event: "werewr",
-            profile: ""
+            event: { datasetId: "werewr" },
+            profile: { datasetId: "" }
           },
           enabled: false
         },
@@ -36,7 +36,7 @@ describe("utils:prepareConfigOverridesForEdge", () => {
     ).toEqual({
       com_adobe_experience_platform: {
         datasets: {
-          event: "werewr"
+          event: { datasetId: "werewr" }
         },
         enabled: false
       },
@@ -52,8 +52,8 @@ describe("utils:prepareConfigOverridesForEdge", () => {
       prepareConfigOverridesForEdge({
         com_adobe_experience_platform: {
           datasets: {
-            event: "",
-            profile: ""
+            event: { datasetId: "" },
+            profile: { datasetId: "" }
           }
         },
         com_adobe_analytics: {
