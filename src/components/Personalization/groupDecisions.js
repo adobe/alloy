@@ -18,7 +18,7 @@ import {
   MEASUREMENT_SCHEMA
 } from "./constants/schema";
 import { VIEW_SCOPE_TYPE } from "./constants/scopeType";
-import PAGE_WIDE_SCOPE from "./constants/scope";
+import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
 
 const splitItems = (items, schemas) => {
   const matched = [];

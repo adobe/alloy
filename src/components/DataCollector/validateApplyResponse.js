@@ -19,7 +19,7 @@ export default ({ options }) => {
         })
       ).required()
     }).required()
-  });
+  }).noUnknownFields();
 
   return validator(options);
 };

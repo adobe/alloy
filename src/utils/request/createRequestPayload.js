@@ -18,6 +18,7 @@ export default options => {
   const { content, addIdentity, hasIdentity } = options;
   const mergeConfigOverride = createMerger(content, "meta.configOverrides");
   return {
+    mergeMeta: createMerger(content, "meta"),
     mergeState: createMerger(content, "meta.state"),
     mergeQuery: createMerger(content, "query"),
     mergeConfigOverride: updates =>

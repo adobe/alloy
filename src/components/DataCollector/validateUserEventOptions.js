@@ -25,9 +25,13 @@ export default ({ options }) => {
       identityMap: validateIdentityMap
     }),
     data: objectOf({}),
+    documentUnloading: boolean(),
     renderDecisions: boolean(),
     decisionScopes: arrayOf(string()).uniqueItems(),
-    datasetId: string()
-  }).required();
+    datasetId: string(),
+    mergeId: string()
+  })
+    .required()
+    .noUnknownFields();
   return eventOptionsValidator(options);
 };

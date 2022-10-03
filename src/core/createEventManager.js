@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import PAGE_WIDE_SCOPE from "../constants/pageWideScope";
 import { createCallbackAggregator, noop } from "../utils";
 
 const EVENT_CANCELLATION_MESSAGE =
@@ -122,7 +123,7 @@ export default ({
         .onBeforeEvent({
           event,
           renderDecisions,
-          decisionScopes: [],
+          decisionScopes: [PAGE_WIDE_SCOPE],
           onResponse: onResponseCallbackAggregator.add,
           onRequestFailure: noop
         })

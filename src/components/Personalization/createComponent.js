@@ -24,10 +24,15 @@ export default ({
   mergeQuery,
   viewCache,
   showContainers,
-  applyPropositions
+  applyPropositions,
+  setTargetMigration
 }) => {
   return {
     lifecycle: {
+      onBeforeRequest({ request }) {
+        setTargetMigration(request);
+        return Promise.resolve();
+      },
       onBeforeEvent({
         event,
         renderDecisions,

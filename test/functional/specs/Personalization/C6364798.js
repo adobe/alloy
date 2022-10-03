@@ -119,6 +119,13 @@ const simulatePageLoad = async alloy => {
       notificationRequestBody.events[0].xdm._experience.decisioning.propositions
     )
     .eql(pageWideScopeDecisionsMeta);
+  await t
+    .expect(
+      // eslint-disable-next-line no-underscore-dangle
+      notificationRequestBody.events[0].xdm._experience.decisioning
+        .propositionEventType.display
+    )
+    .eql(1);
   // notification for view rendered decisions
   const viewNotificationRequest = networkLogger.edgeEndpointLogs.requests[2];
   const viewNotificationRequestBody = JSON.parse(
@@ -135,6 +142,13 @@ const simulatePageLoad = async alloy => {
         .propositions
     )
     .eql(productsViewDecisionsMeta);
+  await t
+    .expect(
+      // eslint-disable-next-line no-underscore-dangle
+      viewNotificationRequestBody.events[0].xdm._experience.decisioning
+        .propositionEventType.display
+    )
+    .eql(1);
   const allPropositionsWereRendered = resultingObject.propositions.every(
     proposition => proposition.renderAttempted
   );
@@ -174,7 +188,13 @@ const simulateViewChange = async (alloy, personalizationPayload) => {
       viewChangeRequestBody.events[0].xdm._experience.decisioning.propositions
     )
     .eql(cartViewDecisionsMeta);
-
+  await t
+    .expect(
+      // eslint-disable-next-line no-underscore-dangle
+      viewChangeRequestBody.events[0].xdm._experience.decisioning
+        .propositionEventType.display
+    )
+    .eql(1);
   // assert we return the renderAttempted flag set to true
   const allPropositionsWereRendered = resultingObject.propositions.every(
     proposition => proposition.renderAttempted

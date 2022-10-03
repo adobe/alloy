@@ -6,8 +6,8 @@ import { orgMainConfigMain } from "../../helpers/constants/configParts";
 
 const networkLogger = createNetworkLogger();
 
-const DESCRIPTION =
-  "C1911390 - Adds only device context data when only device is specified in configuration.";
+const ID = "C1911390";
+const DESCRIPTION = `${ID} - Ensure user-provided fields for context data don't leak across requests.`;
 
 createFixture({
   title: DESCRIPTION,
@@ -15,7 +15,7 @@ createFixture({
 });
 
 test.meta({
-  ID: "C1911390",
+  ID,
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
