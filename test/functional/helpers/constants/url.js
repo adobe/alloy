@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 const baseUrl = `https://alloyio.com/functional-test`;
 
 export const TEST_PAGE = `${baseUrl}/testPage.html`;
+export const TEST_PAGE_AT_JS_TWO = `${baseUrl}/testPageWithAtjs2.html`;
 export const TEST_PAGE_WITH_CSP = `${baseUrl}/testPageWithCsp.html`;
 // This page is only used by reloadPage.js as an interim workaround for
 // https://github.com/DevExpress/testcafe/issues/5992
