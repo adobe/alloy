@@ -8,7 +8,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const getAtjsVersion = ClientFunction(() => {
   const target = window.adobe.target;
-
+  console.log("target", window.adobe.target);
   return target.VERSION;
 });
 
@@ -56,7 +56,7 @@ const injectAtjsScript = ClientFunction(remoteUrl => {
 export const injectAtjsOnThePage = async (libraryPath, libraryVersion) => {
   await injectAtjsScript(libraryPath);
   // we need this to make sure at.js had enough time to trigger the delivery request
-  await sleep(3000);
+  await sleep(5000);
 
   const version = await getAtjsVersion();
   await t.expect(version).eql(libraryVersion);
