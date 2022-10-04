@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy",
-  "version": "2.13.0-beta.2",
+  "version": "2.13.0",
   "description": "Adobe Experience Platform Web SDK",
   "main": "libEs5/index.js",
   "module": "libEs6/index.js",
@@ -64,7 +64,7 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "@adobe/alloy": "^2.13.0-beta.2",
+    "@adobe/alloy": "^2.13.0",
     "@babel/cli": "^7.12.8",
     "@babel/core": "^7.2.2",
     "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
@@ -119,7 +119,7 @@
     "start-server-and-test": "^1.10.6",
     "testcafe": "^1.19.0",
     "testcafe-browser-provider-saucelabs": "^1.8.3",
-    "testcafe-reporter-testrail": "^0.6.3",
+    "testcafe-reporter-json": "^2.2.0",
     "url-exists-nodejs": "^0.1.0",
     "url-parse": "^1.4.7",
     "yargs": "^16.2.0"

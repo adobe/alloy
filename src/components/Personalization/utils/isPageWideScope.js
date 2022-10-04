@@ -11,6 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import { isPageWideSurface } from "./surfaceUtils";
-import PAGE_WIDE_SCOPE from "../constants/scope";
+import PAGE_WIDE_SCOPE from "../../../constants/pageWideScope";
 
 export default scope => scope === PAGE_WIDE_SCOPE || isPageWideSurface(scope);
