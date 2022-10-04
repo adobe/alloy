@@ -10,10 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export { default as createAddIdentity } from "./createAddIdentity";
-export { default as createDataCollectionRequest } from "./createDataCollectionRequest";
-export { default as createDataCollectionRequestPayload } from "./createDataCollectionRequestPayload";
-export { default as createHasIdentity } from "./createHasIdentity";
-export { default as createRequest } from "./createRequest";
-export { default as createRequestPayload } from "./createRequestPayload";
-export { default as createGetAssuranceValidationTokenParams } from "./createGetAssuranceValidationTokenParams";
+import createGetPageLocation from "../../../../../src/components/Personalization/createGetPageLocation";
+
+describe("Personalization::createGetPageLocation", () => {
+  it("it should return page location object", () => {
+    const win = {
+      location: {
+        href: "https://alloy.test.com/test/page/1/",
+        host: "alloy.test.com",
+        pathname: "/test/page/1/"
+      }
+    };
+    const getPageLocation = createGetPageLocation({ window: win });
+    const location = getPageLocation();
+
+    expect(location).toEqual(win.location);
+  });
+});

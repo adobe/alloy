@@ -28,6 +28,10 @@ export default ({ options }) => {
     documentUnloading: boolean(),
     renderDecisions: boolean(),
     decisionScopes: arrayOf(string()).uniqueItems(),
+    personalization: objectOf({
+      decisionScopes: arrayOf(string()).uniqueItems(),
+      surfaces: arrayOf(string()).uniqueItems()
+    }),
     datasetId: string(),
     mergeId: string(),
     edgeConfigOverrides: validateConfigOverride

@@ -12,10 +12,11 @@ governing permissions and limitations under the License.
 
 import {
   CART_VIEW_DECISIONS,
-  PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
+  PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
   SCOPES_FOO1_FOO2_DECISIONS
 } from "./responsesMock/eventResponses";
 import createAutoRenderingHandler from "../../../../../src/components/Personalization/createAutoRenderingHandler";
+import isPageWideScope from "../../../../../src/components/Personalization/utils/isPageWideScope";
 
 describe("Personalization::createAutoRenderingHandler", () => {
   let viewCache;
@@ -30,7 +31,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
     viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
     collect = jasmine.createSpy("collect");
     executeDecisions = jasmine.createSpy("executeDecisions");
-    pageWideScopeDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS;
+    pageWideScopeDecisions = PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS;
     nonAutoRenderableDecisions = SCOPES_FOO1_FOO2_DECISIONS;
   });
 
@@ -41,7 +42,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
     };
     const executePageWideScopeDecisionsPromise = {
       then: callback =>
-        callback(PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS)
+        callback(PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS)
     };
 
     viewCache.getView.and.returnValue(Promise.resolve(CART_VIEW_DECISIONS));
@@ -65,7 +66,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
       expect(viewCache.getView).toHaveBeenCalledWith("cart");
       expect(executeDecisions).toHaveBeenCalledTimes(2);
       expect(executeDecisions.calls.all()[0].args[0]).toEqual(
-        PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
+        PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
       );
       expect(executeDecisions.calls.all()[1].args[0]).toEqual(
         CART_VIEW_DECISIONS
@@ -77,7 +78,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
 
       result.propositions.forEach(proposition => {
         if (
-          proposition.scope === "__view__" ||
+          isPageWideScope(proposition.scope) ||
           proposition.scope === viewName
         ) {
           expect(proposition.renderAttempted).toEqual(true);
@@ -88,7 +89,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
 
       expect(collect).toHaveBeenCalledTimes(2);
       expect(collect.calls.all()[0].args[0]).toEqual({
-        decisionsMeta: PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
+        decisionsMeta: PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
       });
       expect(collect.calls.all()[1].args[0]).toEqual({
         decisionsMeta: CART_VIEW_DECISIONS,
@@ -102,7 +103,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
     const viewName = undefined;
     const executePageWideScopeDecisionsPromise = {
       then: callback =>
-        callback(PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS)
+        callback(PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS)
     };
     executeDecisions.and.returnValue(executePageWideScopeDecisionsPromise);
 
@@ -123,7 +124,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
       });
 
       result.propositions.forEach(proposition => {
-        if (proposition.scope === "__view__") {
+        if (isPageWideScope(proposition.scope)) {
           expect(proposition.renderAttempted).toEqual(true);
         } else {
           expect(proposition.renderAttempted).toEqual(false);
@@ -147,7 +148,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
     };
     const executePageWideScopeDecisionsPromise = {
       then: callback =>
-        callback(PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS)
+        callback(PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS)
     };
     const executeViewDecisionsPromise = {
       then: callback => callback([])
@@ -184,7 +185,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
 
       result.propositions.forEach(proposition => {
         if (
-          proposition.scope === "__view__" ||
+          isPageWideScope(proposition.scope) ||
           proposition.scope === viewName
         ) {
           expect(proposition.renderAttempted).toEqual(true);
@@ -225,7 +226,7 @@ describe("Personalization::createAutoRenderingHandler", () => {
 
       result.propositions.forEach(proposition => {
         if (
-          proposition.scope === "__view__" ||
+          isPageWideScope(proposition.scope) ||
           proposition.scope === viewName
         ) {
           expect(proposition.renderAttempted).toEqual(true);

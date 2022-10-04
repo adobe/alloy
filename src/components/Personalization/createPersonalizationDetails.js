@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { includes } from "../../utils";
+import { includes, isNonEmptyString, isNonEmptyArray } from "../../utils";
+import { buildPageSurface, normalizeSurfaces } from "./utils/surfaceUtils";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
 import {
   DEFAULT_CONTENT_ITEM,
@@ -19,9 +20,32 @@ import {
   JSON_CONTENT_ITEM,
   REDIRECT_ITEM
 } from "./constants/schema";
-import isNonEmptyString from "../../utils/isNonEmptyString";
 
-export default ({ renderDecisions, decisionScopes, event, viewCache }) => {
+const addPageWideScope = scopes => {
+  if (!includes(scopes, PAGE_WIDE_SCOPE)) {
+    scopes.push(PAGE_WIDE_SCOPE);
+  }
+};
+
+const addPageSurface = (surfaces, getPageLocation) => {
+  const pageSurface = buildPageSurface(getPageLocation);
+  if (!includes(surfaces, pageSurface)) {
+    surfaces.push(pageSurface);
+  }
+};
+
+const dedupe = array =>
+  array.filter((item, pos) => array.indexOf(item) === pos);
+
+export default ({
+  getPageLocation,
+  renderDecisions,
+  decisionScopes,
+  personalization,
+  event,
+  viewCache,
+  logger
+}) => {
   const viewName = event.getViewName();
   return {
     isRenderDecisions() {
@@ -31,15 +55,31 @@ export default ({ renderDecisions, decisionScopes, event, viewCache }) => {
       return viewName;
     },
     hasScopes() {
-      return decisionScopes.length > 0;
+      return (
+        decisionScopes.length > 0 ||
+        isNonEmptyArray(personalization.decisionScopes)
+      );
+    },
+    hasSurfaces() {
+      return isNonEmptyArray(personalization.surfaces);
     },
     hasViewName() {
       return isNonEmptyString(viewName);
     },
     createQueryDetails() {
       const scopes = [...decisionScopes];
-      if (!this.isCacheInitialized() && !includes(scopes, PAGE_WIDE_SCOPE)) {
-        scopes.push(PAGE_WIDE_SCOPE);
+      if (isNonEmptyArray(personalization.decisionScopes)) {
+        scopes.push(...personalization.decisionScopes);
+      }
+      const eventSurfaces = normalizeSurfaces(
+        personalization.surfaces,
+        getPageLocation,
+        logger
+      );
+
+      if (!this.isCacheInitialized()) {
+        addPageWideScope(scopes);
+        addPageSurface(eventSurfaces, getPageLocation);
       }
 
       const schemas = [
@@ -55,14 +95,17 @@ export default ({ renderDecisions, decisionScopes, event, viewCache }) => {
 
       return {
         schemas,
-        decisionScopes: scopes
+        decisionScopes: dedupe(scopes),
+        surfaces: dedupe(eventSurfaces)
       };
     },
     isCacheInitialized() {
       return viewCache.isInitialized();
     },
     shouldFetchData() {
-      return this.hasScopes() || !this.isCacheInitialized();
+      return (
+        this.hasScopes() || this.hasSurfaces() || !this.isCacheInitialized()
+      );
     },
     shouldUseCachedData() {
       return this.hasViewName() && this.isCacheInitialized();

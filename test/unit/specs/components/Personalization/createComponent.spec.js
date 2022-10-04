@@ -67,11 +67,13 @@ describe("Personalization", () => {
     it("shouldn't do anything since authoringMode is enabled", () => {
       isAuthoringModeEnabled.and.returnValue(true);
       const renderDecisions = true;
-      const decisionScopes = ["foo"];
+      const personalization = {
+        decisionScopes: ["foo"]
+      };
       personalizationComponent.lifecycle.onBeforeEvent({
         event,
         renderDecisions,
-        decisionScopes
+        personalization
       });
 
       expect(logger.warn).toHaveBeenCalledWith(
@@ -88,11 +90,13 @@ describe("Personalization", () => {
 
     it("should trigger pageLoad if there are decisionScopes", () => {
       const renderDecisions = false;
-      const decisionScopes = ["alloy1"];
+      const personalization = {
+        decisionScopes: ["alloy1"]
+      };
       personalizationComponent.lifecycle.onBeforeEvent({
         event,
         renderDecisions,
-        decisionScopes
+        personalization
       });
 
       expect(isAuthoringModeEnabled).toHaveBeenCalled();
@@ -104,13 +108,15 @@ describe("Personalization", () => {
     });
     it("should trigger pageLoad if cache is not initialized", () => {
       const renderDecisions = false;
-      const decisionScopes = [];
+      const personalization = {
+        decisionScopes: []
+      };
       viewCache.isInitialized.and.returnValue(false);
 
       personalizationComponent.lifecycle.onBeforeEvent({
         event,
         renderDecisions,
-        decisionScopes
+        personalization
       });
 
       expect(isAuthoringModeEnabled).toHaveBeenCalled();
@@ -122,14 +128,16 @@ describe("Personalization", () => {
     });
     it("should trigger viewHandler if cache is initialized and viewName is provided", () => {
       const renderDecisions = false;
-      const decisionScopes = [];
+      const personalization = {
+        decisionScopes: []
+      };
       viewCache.isInitialized.and.returnValue(true);
       event.getViewName.and.returnValue("cart");
 
       personalizationComponent.lifecycle.onBeforeEvent({
         event,
         renderDecisions,
-        decisionScopes
+        personalization
       });
 
       expect(isAuthoringModeEnabled).toHaveBeenCalled();

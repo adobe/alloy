@@ -13,7 +13,10 @@ const metadata = {
 
 const usePropositions = () => {
   const [propositions, setPropositions] = useState(undefined);
-  useSendPageViewEvent({ setPropositions, decisionScopes: SCOPES_FOR_PAGE });
+  useSendPageViewEvent({
+    setPropositions,
+    decisionScopes: SCOPES_FOR_PAGE // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
+  });
   useEffect(() => {
     if (propositions) {
       window.alloy("applyPropositions", {

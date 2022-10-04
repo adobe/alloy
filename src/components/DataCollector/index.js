@@ -30,7 +30,8 @@ const createDataCollector = ({ eventManager, logger }) => {
             type,
             mergeId,
             renderDecisions = false,
-            decisionScopes = [],
+            decisionScopes = [], // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
+            personalization = {},
             datasetId,
             edgeConfigOverrides
           } = options;
@@ -57,7 +58,8 @@ const createDataCollector = ({ eventManager, logger }) => {
 
           const sendEventOptions = {
             renderDecisions,
-            decisionScopes
+            decisionScopes,
+            personalization
           };
 
           if (edgeConfigOverrides) {

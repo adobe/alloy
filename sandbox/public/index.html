@@ -30,7 +30,7 @@
       !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
       []).push(o),n[o]=function(){var u=arguments;return new Promise(
       function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
-      (window,["alloy", "organizationTwo"]);
+      (window,["alloy", "organizationTwo", "cjmStage"]);
     </script>
 
     <script nonce="%REACT_APP_NONCE%">
@@ -135,6 +135,18 @@
             });
           }
         }
+      });
+
+      // For AJO testing in Stage.
+      // We use a different orgId and edgeConfigId.
+      cjmStage("configure", {
+        edgeDomain: "edge-int.adobedc.net",
+        edgeConfigId: "19fc5fe9-37df-46da-8f5c-9eeff4f75ed9:prod",
+        orgId: "745F37C35E4B776E0A49421B@AdobeOrg",
+        edgeBasePath: "ee",
+        thirdPartyCookiesEnabled: false,
+        debugEnabled: true,
+        clickCollectionEnabled: false
       });
     </script>
   </head>

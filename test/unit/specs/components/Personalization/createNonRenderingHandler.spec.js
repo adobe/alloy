@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import {
   CART_VIEW_DECISIONS,
-  PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
+  PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
   REDIRECT_PAGE_WIDE_SCOPE_DECISION,
   SCOPES_FOO1_FOO2_DECISIONS
 } from "./responsesMock/eventResponses";
@@ -28,7 +28,7 @@ describe("Personalization::createNonRenderingHandler", () => {
   beforeEach(() => {
     redirectDecisions = REDIRECT_PAGE_WIDE_SCOPE_DECISION;
     cartViewDecisions = CART_VIEW_DECISIONS;
-    pageWideScopeDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS;
+    pageWideScopeDecisions = PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS;
     nonAutoRenderableDecisions = SCOPES_FOO1_FOO2_DECISIONS;
     viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
   });
@@ -44,14 +44,14 @@ describe("Personalization::createNonRenderingHandler", () => {
       viewCache
     });
 
-    nonRenderingHandler({
+    return nonRenderingHandler({
       viewName,
       redirectDecisions,
       pageWideScopeDecisions,
       nonAutoRenderableDecisions
     }).then(result => {
       expect(viewCache.getView).toHaveBeenCalledWith("cart");
-      expect(result.decisions.length).toBe(5);
+      expect(result.decisions.length).toBe(6);
       result.decisions.forEach(decision => {
         expect(decision.renderAttempted).toBeUndefined();
       });
@@ -67,14 +67,14 @@ describe("Personalization::createNonRenderingHandler", () => {
       viewCache
     });
 
-    nonRenderingHandler({
+    return nonRenderingHandler({
       viewName,
       redirectDecisions,
       pageWideScopeDecisions,
       nonAutoRenderableDecisions
     }).then(result => {
       expect(viewCache.getView).not.toHaveBeenCalled();
-      expect(result.decisions.length).toBe(4);
+      expect(result.decisions.length).toBe(5);
       result.decisions.forEach(decision => {
         expect(decision.renderAttempted).toBeUndefined();
       });

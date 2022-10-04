@@ -35,7 +35,7 @@ export default ({
 
     window[instanceName]("sendEvent", {
       renderDecisions: true,
-      decisionScopes,
+      decisionScopes, // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
       xdm,
       data
     }).then(res => {
