@@ -45,7 +45,8 @@ import createCookieTransfer from "./createCookieTransfer";
 import injectShouldTransferCookie from "./injectShouldTransferCookie";
 import {
   createDataCollectionRequest,
-  createDataCollectionRequestPayload
+  createDataCollectionRequestPayload,
+  createGetAssuranceValidationTokenParams
 } from "../utils/request";
 import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkRequest";
 import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors";
@@ -68,6 +69,9 @@ const sendFetchRequest = isFunction(fetch)
   ? injectSendFetchRequest({ fetch })
   : injectSendXhrRequest({ XMLHttpRequest });
 const fireReferrerHideableImage = injectFireReferrerHideableImage();
+const getAssuranceValidationTokenParams = createGetAssuranceValidationTokenParams(
+  { window, createNamespacedStorage }
+);
 
 export const createExecuteCommand = ({
   instanceName,
@@ -131,7 +135,8 @@ export const createExecuteCommand = ({
       sendNetworkRequest,
       createResponse,
       processWarningsAndErrors,
-      getLocationHint
+      getLocationHint,
+      getAssuranceValidationTokenParams
     });
 
     const applyResponse = injectApplyResponse({

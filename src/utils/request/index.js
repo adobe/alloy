@@ -16,3 +16,4 @@ export { default as createDataCollectionRequestPayload } from "./createDataColle
 export { default as createHasIdentity } from "./createHasIdentity";
 export { default as createRequest } from "./createRequest";
 export { default as createRequestPayload } from "./createRequestPayload";
+export { default as createGetAssuranceValidationTokenParams } from "./createGetAssuranceValidationTokenParams";
