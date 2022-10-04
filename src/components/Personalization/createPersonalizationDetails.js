@@ -92,8 +92,8 @@ export default ({
 
       return {
         schemas,
-        decisionScopes: [...new Set(scopes)],
-        surfaces: [...new Set(eventSurfaces)]
+        decisionScopes: [...new Set(scopes).values()],
+        surfaces: [...new Set(eventSurfaces).values()]
       };
     },
     isCacheInitialized() {
