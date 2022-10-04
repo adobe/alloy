@@ -74,4 +74,18 @@ describe("getEcidFromVisitor", () => {
       return expectAsync(getEcidFromVisitor()).toBeResolvedTo(undefined);
     });
   });
+
+  it("should find Visitor if it was defined after Web SDK initialization.", () => {
+    const awaitVisitorOptIn = () => {
+      return Promise.resolve();
+    };
+
+    const getEcidFromVisitor = injectGetEcidFromVisitor({
+      logger,
+      orgId,
+      awaitVisitorOptIn
+    });
+    window.Visitor = Visitor;
+    return expectAsync(getEcidFromVisitor()).toBeResolvedTo("ecid123");
+  });
 });
