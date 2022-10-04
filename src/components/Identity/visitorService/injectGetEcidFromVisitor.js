@@ -13,8 +13,8 @@ governing permissions and limitations under the License.
 import getVisitor from "./getVisitor";
 
 export default ({ logger, orgId, awaitVisitorOptIn }) => {
-  const Visitor = getVisitor(window);
   return () => {
+    const Visitor = getVisitor(window);
     if (Visitor) {
       // Need to explicitly wait for optIn because visitor will call callback
       // with invalid values prior to optIn being approved
