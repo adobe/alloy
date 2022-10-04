@@ -34,6 +34,9 @@ const addPageSurface = (surfaces, getPageLocation) => {
   }
 };
 
+const dedupe = array =>
+  array.filter((item, pos) => array.indexOf(item) === pos);
+
 export default ({
   getPageLocation,
   renderDecisions,
@@ -92,8 +95,8 @@ export default ({
 
       return {
         schemas,
-        decisionScopes: [...new Set(scopes).values()],
-        surfaces: [...new Set(eventSurfaces).values()]
+        decisionScopes: dedupe(scopes),
+        surfaces: dedupe(eventSurfaces)
       };
     },
     isCacheInitialized() {
