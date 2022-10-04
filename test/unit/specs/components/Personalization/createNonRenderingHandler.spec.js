@@ -44,7 +44,7 @@ describe("Personalization::createNonRenderingHandler", () => {
       viewCache
     });
 
-    nonRenderingHandler({
+    return nonRenderingHandler({
       viewName,
       redirectDecisions,
       pageWideScopeDecisions,
@@ -67,7 +67,7 @@ describe("Personalization::createNonRenderingHandler", () => {
       viewCache
     });
 
-    nonRenderingHandler({
+    return nonRenderingHandler({
       viewName,
       redirectDecisions,
       pageWideScopeDecisions,
