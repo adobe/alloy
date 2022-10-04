@@ -53,13 +53,13 @@ describe("Personalization::createApplyPropositions", () => {
     executeDecisions.and.returnValue(
       Promise.resolve(PAGE_WIDE_SCOPE_DECISIONS)
     );
+
     const expectedExecuteDecisionsPropositions = clone(
       PAGE_WIDE_SCOPE_DECISIONS
-    );
-    expectedExecuteDecisionsPropositions[0].items = expectedExecuteDecisionsPropositions[0].items.slice(
-      0,
-      2
-    );
+    ).map(proposition => {
+      proposition.items = proposition.items.slice(0, 2);
+      return proposition;
+    });
 
     const applyPropositions = createApplyPropositions({
       executeDecisions
@@ -69,7 +69,7 @@ describe("Personalization::createApplyPropositions", () => {
       propositions: PAGE_WIDE_SCOPE_DECISIONS
     }).then(result => {
       expect(executeDecisions).toHaveBeenCalledTimes(1);
-      expect(executeDecisions.calls.all()[0].args[0]).toEqual(
+      expect(executeDecisions.calls.first().args[0]).toEqual(
         expectedExecuteDecisionsPropositions
       );
 
@@ -96,7 +96,7 @@ describe("Personalization::createApplyPropositions", () => {
       propositions: MIXED_PROPOSITIONS,
       metadata: METADATA
     }).then(() => {
-      const executedPropositions = executeDecisions.calls.all()[0].args[0];
+      const executedPropositions = executeDecisions.calls.first().args[0];
       expect(executedPropositions.length).toEqual(3);
       executedPropositions.forEach(proposition => {
         expect(proposition.items.length).toEqual(1);
@@ -209,7 +209,7 @@ describe("Personalization::createApplyPropositions", () => {
     return applyPropositions({
       propositions: MIXED_PROPOSITIONS
     }).then(() => {
-      const executedPropositions = executeDecisions.calls.all()[0].args[0];
+      const executedPropositions = executeDecisions.calls.first().args[0];
       expect(executedPropositions.length).toEqual(2);
       executedPropositions.forEach(proposition => {
         expect(proposition.items.length).toEqual(1);

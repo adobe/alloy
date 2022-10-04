@@ -63,7 +63,7 @@ const sendEvent = ({
 
   return window[instanceName]("sendEvent", {
     renderDecisions,
-    decisionScopes,
+    decisionScopes, // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
     xdm
   });
 };
@@ -71,7 +71,7 @@ const sendEvent = ({
 export const getFormBasedOffer = () => {
   sendEvent({
     eventType: "form-based-offer",
-    decisionScopes: ["a4t-test"]
+    decisionScopes: ["a4t-test"] // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
   }).then(result => {
     if (!result.propositions) {
       return;

@@ -39,14 +39,20 @@ export default ({
      * the request payload.
      * @param {Object} [options]
      * @param {boolean} [options.renderDecisions=false]
-     * @param {Array} [options.decisionScopes]
+     * @param {Array} [options.decisionScopes] Note: this option will soon
+     * be deprecated, please use *personalization.decisionScopes* instead
+     * @param {Object} [options.personalization]
      * @param {Object} [options.serverState]
      * This will be passed to components
      * so they can take appropriate action.
      * @returns {*}
      */
     sendEvent(event, options = {}) {
-      const { renderDecisions = false, decisionScopes } = options;
+      const {
+        renderDecisions = false,
+        decisionScopes,
+        personalization
+      } = options;
       const payload = createDataCollectionRequestPayload();
       const request = createDataCollectionRequest(payload);
       const onResponseCallbackAggregator = createCallbackAggregator();
@@ -57,6 +63,7 @@ export default ({
           event,
           renderDecisions,
           decisionScopes,
+          personalization,
           onResponse: onResponseCallbackAggregator.add,
           onRequestFailure: onRequestFailureCallbackAggregator.add
         })
@@ -115,6 +122,7 @@ export default ({
           event,
           renderDecisions,
           decisionScopes: [PAGE_WIDE_SCOPE],
+          personalization: {},
           onResponse: onResponseCallbackAggregator.add,
           onRequestFailure: noop
         })

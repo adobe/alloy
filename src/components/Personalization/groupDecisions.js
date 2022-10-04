@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray, includes } from "../../utils";
+import isPageWideScope from "./utils/isPageWideScope";
 import {
   DOM_ACTION,
   REDIRECT_ITEM,
@@ -18,7 +19,6 @@ import {
   MEASUREMENT_SCHEMA
 } from "./constants/schema";
 import { VIEW_SCOPE_TYPE } from "./constants/scopeType";
-import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
 
 const splitItems = (items, schemas) => {
   const matched = [];
@@ -93,7 +93,7 @@ const extractDecisionsByScope = decisions => {
 
   if (isNonEmptyArray(decisions)) {
     decisions.forEach(decision => {
-      if (decision.scope === PAGE_WIDE_SCOPE) {
+      if (isPageWideScope(decision.scope)) {
         pageWideScopeDecisions.push(decision);
       } else if (isViewScope(decision.scopeDetails)) {
         appendScopeDecision(viewScopeDecisions, decision);

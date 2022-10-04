@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import {
   CART_VIEW_DECISIONS,
   PAGE_WIDE_SCOPE_DECISIONS,
-  PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
+  PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS,
   PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS,
   PRODUCTS_VIEW_DECISIONS,
   REDIRECT_PAGE_WIDE_SCOPE_DECISION
@@ -27,7 +27,7 @@ describe("Personalization::onResponseHandler", () => {
     ...CART_VIEW_DECISIONS,
     ...PRODUCTS_VIEW_DECISIONS
   ];
-  const pageWideScopeDecisions = PAGE_WIDE_SCOPE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS;
+  const pageWideScopeDecisions = PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS;
 
   let groupDecisions;
   let autoRenderingHandler;
@@ -72,6 +72,7 @@ describe("Personalization::onResponseHandler", () => {
     personalizationDetails.isRenderDecisions.and.returnValue(true);
     personalizationDetails.getViewName.and.returnValue(undefined);
     const onResponse = createOnResponseHandler({
+      window,
       groupDecisions,
       nonRenderingHandler,
       autoRenderingHandler,
@@ -108,6 +109,7 @@ describe("Personalization::onResponseHandler", () => {
     personalizationDetails.isRenderDecisions.and.returnValue(false);
     personalizationDetails.getViewName.and.returnValue(undefined);
     const onResponse = createOnResponseHandler({
+      window,
       groupDecisions,
       nonRenderingHandler,
       autoRenderingHandler,
@@ -141,6 +143,7 @@ describe("Personalization::onResponseHandler", () => {
     personalizationDetails.getViewName.and.returnValue("cart");
 
     const onResponse = createOnResponseHandler({
+      window,
       groupDecisions,
       nonRenderingHandler,
       autoRenderingHandler,
@@ -182,6 +185,7 @@ describe("Personalization::onResponseHandler", () => {
     personalizationDetails.isRenderDecisions.and.returnValue(true);
     personalizationDetails.getViewName.and.returnValue("cart");
     const onResponse = createOnResponseHandler({
+      window,
       groupDecisions,
       nonRenderingHandler,
       autoRenderingHandler,
