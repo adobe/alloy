@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { deepAssign } from "../../utils";
+import { deepAssign, isFunction, toInteger } from "../../utils";
 
 const getScreenOrientationViaProperty = window => {
   const {
@@ -35,11 +35,13 @@ const getScreenOrientationViaProperty = window => {
 };
 
 const getScreenOrientationViaMediaQuery = window => {
-  if (window.matchMedia("(orientation: portrait)").matches) {
-    return "portrait";
-  }
-  if (window.matchMedia("(orientation: landscape)").matches) {
-    return "landscape";
+  if (isFunction(window.matchMedia)) {
+    if (window.matchMedia("(orientation: portrait)").matches) {
+      return "portrait";
+    }
+    if (window.matchMedia("(orientation: landscape)").matches) {
+      return "landscape";
+    }
   }
 
   return null;
@@ -50,10 +52,17 @@ export default window => {
     const {
       screen: { width, height }
     } = window;
-    const device = {
-      screenHeight: height,
-      screenWidth: width
-    };
+    const device = {};
+
+    const screenHeight = toInteger(height);
+    if (screenHeight >= 0) {
+      device.screenHeight = screenHeight;
+    }
+
+    const screenWidth = toInteger(width);
+    if (screenWidth >= 0) {
+      device.screenWidth = screenWidth;
+    }
 
     const orientation =
       getScreenOrientationViaProperty(window) ||
@@ -61,6 +70,8 @@ export default window => {
     if (orientation) {
       device.screenOrientation = orientation;
     }
-    deepAssign(xdm, { device });
+    if (Object.keys(device).length > 0) {
+      deepAssign(xdm, { device });
+    }
   };
 };

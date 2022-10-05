@@ -10,11 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import isNumber from "./isNumber";
+import isString from "./isString";
+
 /*
  * coerce `value` to a number or return `defaultValue` if it cannot be.
+ *
+ * The coersion is attempted if value is a number or string.
  */
 export default (value, defaultValue) => {
-  const n = Math.round(Number(value));
-  // eslint-disable-next-line no-restricted-globals
-  return isNaN(n) ? defaultValue : n;
+  if (isNumber(value) || isString(value)) {
+    const n = Math.round(Number(value));
+    // eslint-disable-next-line no-restricted-globals
+    if (!isNaN(n)) {
+      return n;
+    }
+  }
+  return defaultValue;
 };
