@@ -6,7 +6,7 @@ import {
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
-import { AT_JS_VERSION_TWO, TEST_PAGE } from "../../helpers/constants/url";
+import { TEST_PAGE, TEST_PAGE_AT_JS_TWO } from "../../helpers/constants/url";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../helpers/createResponse";
 import { MBOX } from "../../../../src/constants/cookieNameKey";
@@ -16,7 +16,7 @@ import {
   assertTargetMigrationEnabledIsSent,
   extractCluster,
   injectAlloyAndSendEvent,
-  injectAtjsOnThePage
+  sleep
 } from "./helper";
 
 const networkLogger = createNetworkLogger();
@@ -72,10 +72,9 @@ test("First loaded a page web sdk and navigate to a page with at.js 2.x", async 
   );
 
   // NAVIGATE to clean page
-  await t.navigateTo(TEST_PAGE);
-  await injectAtjsOnThePage(AT_JS_VERSION_TWO, "2.9.0");
-
-  // get delivery API request
+  await t.navigateTo(TEST_PAGE_AT_JS_TWO);
+  // get delivery API request adding sleep to make sure the request was triggered
+  await sleep(3000);
   const deliveryRequest = networkLogger.targetDeliveryEndpointLogs.requests[0];
   const requestUrl = deliveryRequest.request.url;
   const { searchParams, hostname } = new URL(requestUrl);

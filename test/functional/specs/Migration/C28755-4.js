@@ -6,7 +6,7 @@ import {
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
-import { AT_JS_VERSION_ONE, TEST_PAGE } from "../../helpers/constants/url";
+import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../helpers/createResponse";
 import { MBOX } from "../../../../src/constants/cookieNameKey";
@@ -16,7 +16,7 @@ import {
   assertTargetMigrationEnabledIsSent,
   extractCluster,
   injectAlloyAndSendEvent,
-  injectAtjsOnThePage
+  sleep
 } from "./helper";
 
 const networkLogger = createNetworkLogger();
@@ -72,9 +72,8 @@ test("First loaded a page web sdk and navigate to a page with at.js 1.x", async 
   );
 
   // NAVIGATE to clean page
-  await t.navigateTo(TEST_PAGE);
-  await injectAtjsOnThePage(AT_JS_VERSION_ONE, "1.8.3");
-
+  await t.navigateTo(TEST_PAGE_AT_JS_ONE);
+  await sleep("3000");
   // get mbox json API request
   const mboxJsonRequest = networkLogger.targetMboxJsonEndpointLogs.requests[0];
   const requestUrl = mboxJsonRequest.request.url;

@@ -6,14 +6,14 @@ import {
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
-import {AT_JS_VERSION_TWO, TEST_PAGE, TEST_PAGE_AT_JS_TWO} from "../../helpers/constants/url";
+import { TEST_PAGE, TEST_PAGE_AT_JS_TWO } from "../../helpers/constants/url";
 import cookies from "../../helpers/cookies";
 import { MBOX } from "../../../../src/constants/cookieNameKey";
 import { MBOX_EDGE_CLUSTER } from "../../../../src/constants/legacyCookies";
 import {
   assertTargetMigrationEnabledIsSent,
   injectAlloyAndSendEvent,
-  injectAtjsOnThePage
+  sleep
 } from "./helper";
 
 const networkLogger = createNetworkLogger();
@@ -46,8 +46,7 @@ const getLocationHint = pathname => {
 };
 
 test("Visit a page with at.js 2.x first then navigate to a page with Web SDK", async () => {
-  //await injectAtjsOnThePage(AT_JS_VERSION_TWO, "2.9.0");
-
+  await sleep(3000);
   // Get delivery API request
   const deliveryRequest = networkLogger.targetDeliveryEndpointLogs.requests[0];
   await t.expect(deliveryRequest.response.statusCode).eql(200);

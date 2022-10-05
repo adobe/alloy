@@ -6,11 +6,11 @@ import {
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
-import { AT_JS_VERSION_ONE, TEST_PAGE } from "../../helpers/constants/url";
+import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url";
 import cookies from "../../helpers/cookies";
 import { MBOX } from "../../../../src/constants/cookieNameKey";
 import { MBOX_EDGE_CLUSTER } from "../../../../src/constants/legacyCookies";
-import { injectAlloyAndSendEvent, injectAtjsOnThePage } from "./helper";
+import { injectAlloyAndSendEvent, sleep } from "./helper";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled, {
@@ -19,12 +19,12 @@ const config = compose(orgMainConfigMain, debugEnabled, {
 
 createFixture({
   title:
-    "Mixed mode: Web SDK is called first then we navigate to a page with AT.js",
+    "Mixed mode: A page with AT.js is called first then we navigate to a page with Web SDK ",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
     networkLogger.targetMboxJsonEndpointLogs
   ],
-  url: `${TEST_PAGE}`,
+  url: `${TEST_PAGE_AT_JS_ONE}`,
   includeAlloyLibrary: false
 });
 
@@ -42,7 +42,7 @@ const getLocationHint = pathname => {
 };
 
 test("Visit a page with at.js 1.x first then navigate to a page with Web SDK", async () => {
-  await injectAtjsOnThePage(AT_JS_VERSION_ONE, "1.8.3");
+  await sleep(2000);
   // Get mbox/json API request
   const mboxJsonRequest = networkLogger.targetMboxJsonEndpointLogs.requests[0];
   await t.expect(mboxJsonRequest.response.statusCode).eql(200);

@@ -1,15 +1,10 @@
-import { ClientFunction, t } from "testcafe";
+import { t } from "testcafe";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import createConsoleLogger from "../../helpers/consoleLogger";
 import { injectAlloyDuringTest } from "../../helpers/createFixture/clientScripts";
 import cookies from "../../helpers/cookies";
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-const getAtjsVersion = ClientFunction(() => {
-  const target = window.adobe.target;
-  return target.VERSION;
-});
+export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 export const extractCluster = hostname => {
   const values = hostname.split(".");
@@ -43,20 +38,4 @@ export const assertKonductorReturnsCookieAndCookieIsSet = async (
   await t.expect(cookieValue).ok();
 
   return cookieValue;
-};
-
-const injectAtjsScript = ClientFunction(remoteUrl => {
-  const scriptElement = document.createElement("script");
-  // eslint-disable-next-line no-undef
-  scriptElement.src = remoteUrl;
-  document.getElementsByTagName("head")[0].appendChild(scriptElement);
-});
-
-export const injectAtjsOnThePage = async (libraryPath, libraryVersion) => {
-  await injectAtjsScript(libraryPath);
-  // we need this to make sure at.js had enough time to trigger the delivery request
-  await sleep(5000);
-
-  const version = await getAtjsVersion();
-  await t.expect(version).eql(libraryVersion);
 };
