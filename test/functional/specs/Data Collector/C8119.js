@@ -30,7 +30,7 @@ const clickLink = async () => {
   await t.click(Selector("#alloy-link-test"));
 };
 
-test("Test C8119: Load page with link. Click link. Verify no event sent.", async () => {
+test("C8119: Load page with link. Click link. Verify no event sent.", async () => {
   const collectEndpointAsserter = await createCollectEndpointAsserter();
   await preventLinkNavigation();
   const alloy = createAlloyProxy();

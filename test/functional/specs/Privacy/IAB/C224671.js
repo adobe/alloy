@@ -37,7 +37,7 @@ test.meta({
 });
 
 [IAB_NO_PURPOSE_ONE, IAB_NO_ADOBE_VENDOR].forEach(consent => {
-  test("Test C224671: Opt out of IAB - No Purpose 1 & No Vendor", async () => {
+  test("C224671: Opt out of IAB - No Purpose 1 & No Vendor", async () => {
     const alloy = createAlloyProxy();
     await alloy.configure(config);
     await alloy.setConsent(consent);

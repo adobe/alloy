@@ -39,7 +39,7 @@ const setupLogger = ClientFunction(() => {
   });
 });
 
-test("Test C532204: Logged objects can be stringified", async () => {
+test("C532204: Logged objects can be stringified", async () => {
   await setupLogger();
   const alloy = createAlloyProxy();
   await alloy.configure(debugEnabledConfig);

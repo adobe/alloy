@@ -22,7 +22,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C14411: User consents to no purposes after consenting to no purposes with cache", async () => {
+test("C14411: User consents to no purposes after consenting to no purposes with cache", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.setConsent(CONSENT_OUT);
@@ -30,7 +30,7 @@ test("Test C14411: User consents to no purposes after consenting to no purposes 
   await alloy.setConsent(CONSENT_OUT);
 });
 
-test("Test C14411: User consents to no purposes after consenting to no purposes without cache", async () => {
+test("C14411: User consents to no purposes after consenting to no purposes without cache", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.setConsent(CONSENT_OUT);

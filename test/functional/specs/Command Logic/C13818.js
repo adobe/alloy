@@ -44,7 +44,7 @@ const apiCalls = ClientFunction((configObject, alternateConfigObject) => {
   });
 });
 
-test("Test C13818: Changing the options object after configure doesn't change the computed config", async t => {
+test("C13818: Changing the options object after configure doesn't change the computed config", async t => {
   await apiCalls(orgMainConfigMain, orgAltConfigAlt);
 
   await t.expect(networkLogger1.requests.length).eql(1);

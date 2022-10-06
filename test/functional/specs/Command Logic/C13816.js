@@ -11,7 +11,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C13816: Throws error when configure has no options", async t => {
+test("C13816: Throws error when configure has no options", async t => {
   const alloy = createAlloyProxy();
   const configureErrorMessage = await alloy.configureErrorMessage();
 

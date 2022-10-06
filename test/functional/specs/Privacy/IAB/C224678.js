@@ -43,7 +43,7 @@ const sendEventOptions = {
   }
 };
 
-test("Test C224678: Passing a negative Consent in the sendEvent command", async () => {
+test("C224678: Passing a negative Consent in the sendEvent command", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const errorMessage = await alloy.sendEventErrorMessage(sendEventOptions);

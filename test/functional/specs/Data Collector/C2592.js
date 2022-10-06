@@ -24,7 +24,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C2592: Event command sends a request.", async () => {
+test("C2592: Event command sends a request.", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({

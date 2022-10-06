@@ -31,7 +31,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C6364797: applyPropositions should render page-wide propositions that have not previously been rendered", async () => {
+test("C6364797: applyPropositions should render page-wide propositions that have not previously been rendered", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const result = await alloy.sendEvent();

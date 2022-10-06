@@ -26,7 +26,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C7437530: `sendEvent` can receive config overrides in command options", async () => {
+test("C7437530: `sendEvent` can receive config overrides in command options", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({
@@ -62,7 +62,7 @@ test("Test C7437530: `sendEvent` can receive config overrides in command options
   await t.expect(request.meta.state.domain).ok();
 });
 
-test("Test C7437530: `sendEvent` can receive config overrides from configure", async () => {
+test("C7437530: `sendEvent` can receive config overrides from configure", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(
     compose(config, {
@@ -100,7 +100,7 @@ test("Test C7437530: `sendEvent` can receive config overrides from configure", a
   await t.expect(request.meta.state.domain).ok();
 });
 
-test("Test C7437530: overrides from `sendEvent` should take precedence over the ones from `configure`", async () => {
+test("C7437530: overrides from `sendEvent` should take precedence over the ones from `configure`", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(
     compose(config, {
@@ -140,7 +140,7 @@ test("Test C7437530: overrides from `sendEvent` should take precedence over the 
   await t.expect(request.meta.state.domain).ok();
 });
 
-test("Test C7437530: empty configuration overrides should not be sent to the Edge", async () => {
+test("C7437530: empty configuration overrides should not be sent to the Edge", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(
     compose(config, {

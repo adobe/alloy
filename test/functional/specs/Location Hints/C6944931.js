@@ -29,7 +29,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C6944931: The legacy Adobe Target location hint is used.", async () => {
+test("C6944931: The legacy Adobe Target location hint is used.", async () => {
   // 38 = singapore, Konductor region ID 3
   await t.setCookies({
     name: "mboxEdgeCluster",

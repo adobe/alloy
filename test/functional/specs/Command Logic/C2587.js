@@ -26,7 +26,7 @@ const bogusCommand = ClientFunction(() => {
   );
 });
 
-test("Test C2587: Throw error when executing command that doesn't exist", async t => {
+test("C2587: Throw error when executing command that doesn't exist", async t => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
 

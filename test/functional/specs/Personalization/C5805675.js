@@ -34,7 +34,7 @@ const extractDecisionsMeta = payload => {
   });
 };
 
-test("Test C5805675: Default content offers should be delivered", async () => {
+test("C5805675: Default content offers should be delivered", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent({ renderDecisions: true });

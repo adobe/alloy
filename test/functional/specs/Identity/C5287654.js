@@ -39,7 +39,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C5287654: Cookies are set with sameSite=none", async () => {
+test("C5287654: Cookies are set with sameSite=none", async () => {
   const logger = await createConsoleLogger();
   const alloy = createAlloyProxy();
   await alloy.configure(debugEnabledConfig);

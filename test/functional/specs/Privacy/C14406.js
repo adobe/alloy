@@ -26,7 +26,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C14406: Unidentified user can consent to no purposes", async t => {
+test("C14406: Unidentified user can consent to no purposes", async t => {
   const logger = await createConsoleLogger();
   const alloy = createAlloyProxy();
   await alloy.configure(config);

@@ -27,7 +27,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C225953: Identity map can be sent on a setConsent command", async () => {
+test("C225953: Identity map can be sent on a setConsent command", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.setConsent({

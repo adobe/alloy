@@ -30,7 +30,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C3272624: Support passing profile attributes and qualify for offers", async () => {
+test("C3272624: Support passing profile attributes and qualify for offers", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({

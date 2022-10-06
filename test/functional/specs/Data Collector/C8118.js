@@ -38,7 +38,7 @@ const assertRequestXdm = async request => {
   });
 };
 
-test("Test C8118: Verify link click sends a request to the collect endpoint when identity has been established, interact endpoint otherwise", async () => {
+test("C8118: Verify link click sends a request to the collect endpoint when identity has been established, interact endpoint otherwise", async () => {
   const collectEndpointAsserter = await createCollectEndpointAsserter();
   await preventLinkNavigation();
   const alloy = createAlloyProxy();

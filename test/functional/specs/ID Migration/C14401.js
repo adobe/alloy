@@ -30,7 +30,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C14401: When ID migration is disabled and no identity cookie is found but legacy identity cookie is found, the ECID will not be sent on the request", async () => {
+test("C14401: When ID migration is disabled and no identity cookie is found but legacy identity cookie is found, the ECID will not be sent on the request", async () => {
   await setLegacyIdentityCookie(orgMainConfigMain.orgId);
   const alloy = createAlloyProxy();
   await alloy.configure(config);

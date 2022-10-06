@@ -32,7 +32,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C14404: User can consent to all purposes after consenting to no purposes", async () => {
+test("C14404: User can consent to all purposes after consenting to no purposes", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.setConsent(CONSENT_OUT);

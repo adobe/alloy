@@ -131,7 +131,7 @@ const simulateViewChangeForNonExistingView = async alloy => {
   await t.expect(resultingObject.propositions).eql([]);
 };
 
-test("Test C782719: SPA support with auto-rendering disabled", async () => {
+test("C782719: SPA support with auto-rendering disabled", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
 

@@ -14,7 +14,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C2586: Toggle logging through the querystring parameter.", async t => {
+test("C2586: Toggle logging through the querystring parameter.", async t => {
   const alloy = createAlloyProxy();
   await alloy.configure(orgMainConfigMain);
   await alloy.getLibraryInfo();

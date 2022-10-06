@@ -31,7 +31,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C28755: The first sendEvent on the page should fetch Personalization VEC offers", async () => {
+test("C28755: The first sendEvent on the page should fetch Personalization VEC offers", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const result = await alloy.sendEvent();

@@ -261,7 +261,7 @@ const simulateViewRerender = async (alloy, propositions) => {
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(4);
 };
 
-test("Test C6364798: applyPropositions should re-render SPA view without sending view notifications", async () => {
+test("C6364798: applyPropositions should re-render SPA view without sending view notifications", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
 

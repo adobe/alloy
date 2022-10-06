@@ -22,7 +22,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C225010: Click collection handles errors when user declines consent", async () => {
+test("C225010: Click collection handles errors when user declines consent", async () => {
   const alloy = createAlloyProxy();
   const getLocation = ClientFunction(() => document.location.href.toString());
   const testConfig = compose(orgMainConfigMain, consentPending, debugEnabled);

@@ -14,7 +14,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C455258: sendEvent command sends a request to the collect endpoint when identity has been established and documentUnloading is set to true, interact otherwise.", async () => {
+test("C455258: sendEvent command sends a request to the collect endpoint when identity has been established and documentUnloading is set to true, interact otherwise.", async () => {
   const collectEndpointAsserter = await createCollectEndpointAsserter();
   const alloy = createAlloyProxy();
   await alloy.configure(orgMainConfigMain);

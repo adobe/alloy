@@ -29,7 +29,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C1631712: Requests are dropped when default consent is out", async t => {
+test("C1631712: Requests are dropped when default consent is out", async t => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const logger = await createConsoleLogger();

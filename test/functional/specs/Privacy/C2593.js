@@ -20,7 +20,7 @@ test.meta({
   TEST_RUN: "REGRESSION"
 });
 
-test("Test C2593: Event command consents to all purposes", async () => {
+test("C2593: Event command consents to all purposes", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure({
     defaultConsent: "pending",

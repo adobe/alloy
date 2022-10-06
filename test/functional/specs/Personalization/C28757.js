@@ -33,7 +33,7 @@ const getDecisionContent = ClientFunction(() => {
   return container.innerText;
 });
 
-test("Test C28757: A VEC offer should render if renderDecision=true", async () => {
+test("C28757: A VEC offer should render if renderDecision=true", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent({ renderDecisions: true });

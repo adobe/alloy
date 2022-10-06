@@ -37,7 +37,7 @@ const sendEvent = ClientFunction(() => {
   return window.alloy("sendEvent").catch(e => e.message);
 });
 
-test("Test C13819: Sending invalid config ID rejects command promise with useful error", async t => {
+test("C13819: Sending invalid config ID rejects command promise with useful error", async t => {
   await configureAlloyInstance("alloy", config);
   const errorMessage = await sendEvent();
   await t

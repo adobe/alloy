@@ -33,7 +33,7 @@ test.meta({
   TEST_RUN: "REGRESSION"
 });
 
-test("Test C224670: Opt in to IAB", async () => {
+test("C224670: Opt in to IAB", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.setConsent(IAB_CONSENT_IN);

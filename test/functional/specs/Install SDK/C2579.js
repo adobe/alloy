@@ -49,7 +49,7 @@ const getIdentityCookieValue = request => {
   return identityEntry.value;
 };
 
-test("Test C2579: Separate ECIDs are used for multiple SDK instances.", async () => {
+test("C2579: Separate ECIDs are used for multiple SDK instances.", async () => {
   const instance1 = createAlloyProxy();
   const instance2 = createAlloyProxy("instance2");
   await instance1.configure(altConfig);

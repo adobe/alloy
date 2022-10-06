@@ -34,7 +34,7 @@ test.meta({
   TEST_RUN: "REGRESSION"
 });
 
-test("Test C224672: Passing the `gdprContainsPersonalData` flag should return in the response", async () => {
+test("C224672: Passing the `gdprContainsPersonalData` flag should return in the response", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.setConsent(IAB_CONSENT_IN_PERSONAL_DATA);

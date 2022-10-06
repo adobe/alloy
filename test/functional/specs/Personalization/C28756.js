@@ -28,7 +28,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C28756: A form based offer should return if event command contains its scope.", async () => {
+test("C28756: A form based offer should return if event command contains its scope.", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const result = await alloy.sendEvent({

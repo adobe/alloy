@@ -54,7 +54,7 @@ const getNestedShadowLabelText = ClientFunction(() => {
   return nestedShadowLabel.innerText;
 });
 
-test("Test C28758: A VEC offer with ShadowDOM selectors should render", async () => {
+test("C28758: A VEC offer with ShadowDOM selectors should render", async () => {
   if (await ieDetected()) {
     return;
   }

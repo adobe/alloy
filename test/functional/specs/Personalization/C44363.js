@@ -16,7 +16,7 @@ const config = compose(
   debugEnabled
 );
 
-test("Test C44363: Return proposition when QA mode set up with token of experience A", async () => {
+test("C44363: Return proposition when QA mode set up with token of experience A", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await t.setCookies({
@@ -36,7 +36,7 @@ test("Test C44363: Return proposition when QA mode set up with token of experien
     .eql(EXPERIENCE_A);
 });
 
-test("Test C44363: Return proposition  when QA mode set up with token of experience B", async () => {
+test("C44363: Return proposition  when QA mode set up with token of experience B", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await t.setCookies({

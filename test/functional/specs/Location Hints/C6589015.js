@@ -30,7 +30,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C6589015: The Experience Edge location hint is used on the second request.", async () => {
+test("C6589015: The Experience Edge location hint is used on the second request.", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({});

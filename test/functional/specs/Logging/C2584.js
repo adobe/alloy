@@ -14,7 +14,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C2584: setDebug command with enable: true. getLibraryInfo. refresh. toggle and repeat.", async () => {
+test("C2584: setDebug command with enable: true. getLibraryInfo. refresh. toggle and repeat.", async () => {
   const logger = await createConsoleLogger();
   const alloy = createAlloyProxy();
   await alloy.configure(orgMainConfigMain);

@@ -13,7 +13,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C2560: The global function named alloy is accessible.", async () => {
+test("C2560: The global function named alloy is accessible.", async () => {
   const alloy = await getAlloyFunction();
   await t.expect(alloy).ok();
 });

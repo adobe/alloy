@@ -11,7 +11,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C13817: Throws error when running command after bad configure", async t => {
+test("C13817: Throws error when running command after bad configure", async t => {
   const alloy = createAlloyProxy();
   await alloy.configureErrorMessage();
   const eventErrorMessage = await alloy.sendEventErrorMessage();

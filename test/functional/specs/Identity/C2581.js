@@ -25,7 +25,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C2581: Queue requests until we receive an ECID.", async () => {
+test("C2581: Queue requests until we receive an ECID.", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(debugEnabledConfig);
   // this should get an ECID

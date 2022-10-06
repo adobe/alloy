@@ -34,7 +34,7 @@ test
   .after(async t => {
     await t.removeRequestHooks(t.ctx.setConsentHook);
   })(
-  "Test C14414: Requests are queued while consent changes are pending",
+  "C14414: Requests are queued while consent changes are pending",
   async t => {
     const alloy = createAlloyProxy();
     await alloy.configure(config);

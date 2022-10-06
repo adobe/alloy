@@ -242,7 +242,7 @@ const simulateViewChangeForNonExistingView = async alloy => {
     .eql(undefined);
 };
 
-test("Test C782718: SPA support with auto-rendering and view notifications", async () => {
+test("C782718: SPA support with auto-rendering and view notifications", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
 

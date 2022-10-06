@@ -28,7 +28,7 @@ test.meta({
   TEST_RUN: "REGRESSION"
 });
 
-test("Test C224675: Passing invalid consent options should throw a validation error", async () => {
+test("C224675: Passing invalid consent options should throw a validation error", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
 

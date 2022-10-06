@@ -48,7 +48,7 @@ const setupPropositions = () => {
   ];
 };
 
-test("Test C6364799: applyPropositions should render html-content-item schemas when metadata is provided by the user", async () => {
+test("C6364799: applyPropositions should render html-content-item schemas when metadata is provided by the user", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const result = await alloy.sendEvent({

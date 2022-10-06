@@ -31,7 +31,7 @@ const getScriptExecutionResult = ClientFunction(() => {
   return window.someEvar123;
 });
 
-test("Test C28759: Inline scripts should render when renderDecision=true", async () => {
+test("C28759: Inline scripts should render when renderDecision=true", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent({ renderDecisions: true });

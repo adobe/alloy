@@ -48,7 +48,7 @@ const getHeaderTextContent = ClientFunction(
   () => document.querySelectorAll("body > h1")[0].innerText
 );
 
-test.skip("Test C7494472: AJO offers should be delivered", async () => {
+test.skip("C7494472: AJO offers should be delivered", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent({ renderDecisions: true });

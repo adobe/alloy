@@ -27,7 +27,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C7437532: `appendIdentityToUrl` can receive config overrides in command options", async () => {
+test("C7437532: `appendIdentityToUrl` can receive config overrides in command options", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   // this should get an ECID
@@ -59,7 +59,7 @@ test("Test C7437532: `appendIdentityToUrl` can receive config overrides in comma
     .eql(overrides.com_adobe_target.propertyToken);
 });
 
-test("Test C7437532: `appendIdentityToUrl` can receive config overrides from `configure`", async () => {
+test("C7437532: `appendIdentityToUrl` can receive config overrides from `configure`", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(compose(config, { edgeConfigOverrides: overrides }));
   // this should get an ECID
@@ -90,7 +90,7 @@ test("Test C7437532: `appendIdentityToUrl` can receive config overrides from `co
     .eql(overrides.com_adobe_target.propertyToken);
 });
 
-test("Test C7437532: overrides from the `appendIdentityToUrl` should take precedence over the ones from `configure`", async () => {
+test("C7437532: overrides from the `appendIdentityToUrl` should take precedence over the ones from `configure`", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(
     compose(config, { edgeConfigOverrides: alternateOverrides })
@@ -124,7 +124,7 @@ test("Test C7437532: overrides from the `appendIdentityToUrl` should take preced
     .eql(overrides.com_adobe_target.propertyToken);
 });
 
-test("Test C7437532: empty configuration overrides should not be sent to the Edge", async () => {
+test("C7437532: empty configuration overrides should not be sent to the Edge", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   // this should get an ECID

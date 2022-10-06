@@ -50,7 +50,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C5805676: Merged metric propositions should be delivered", async () => {
+test("C5805676: Merged metric propositions should be delivered", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent({

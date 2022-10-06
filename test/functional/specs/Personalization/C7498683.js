@@ -28,7 +28,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C7498683: The legacy Adobe Target mbox cookie is not included in requests when targetMigrationEnabled is not set", async () => {
+test("C7498683: The legacy Adobe Target mbox cookie is not included in requests when targetMigrationEnabled is not set", async () => {
   // This is just a cookie that at.js created
   await t.setCookies({
     name: "mbox",

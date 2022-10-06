@@ -34,7 +34,7 @@ const setEcidCookie = ClientFunction(() => {
 
 const getDocumentCookie = ClientFunction(() => document.cookie);
 
-test("Test C14399: When ID migration is enabled and no identity cookie is found but legacy s_ecid cookie is found, the ECID will be sent on the request", async () => {
+test("C14399: When ID migration is enabled and no identity cookie is found but legacy s_ecid cookie is found, the ECID will be sent on the request", async () => {
   await setEcidCookie();
   const alloy = createAlloyProxy();
   await alloy.configure(config);

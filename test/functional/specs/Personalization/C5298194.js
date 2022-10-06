@@ -45,9 +45,9 @@ const runTest = async () => {
   await collectEndpointAsserter.reset();
 };
 
-test("Test C5298194: Include propositions on every request", runTest);
+test("C5298194: Include propositions on every request", runTest);
 
 test.page(`${TEST_PAGE_URL}?adobe_authoring_enabled=true`)(
-  "Test C5298194: Include propositions on every request in authoring mode",
+  "C5298194: Include propositions on every request in authoring mode",
   runTest
 );

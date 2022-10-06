@@ -36,7 +36,7 @@ test.meta({
 
 const getDocumentCookie = ClientFunction(() => document.cookie);
 
-test("Test C14402: When ID migration is enabled and no legacy AMCV cookie is found, an AMCV cookie should be created", async () => {
+test("C14402: When ID migration is enabled and no legacy AMCV cookie is found, an AMCV cookie should be created", async () => {
   const logger = await createConsoleLogger();
   const alloy = createAlloyProxy();
   await alloy.configure(config);

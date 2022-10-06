@@ -33,7 +33,7 @@ test.meta({
   TEST_RUN: "REGRESSION"
 });
 
-test("Test C224674: Opt out to IAB while gdprApplies is FALSE", async () => {
+test("C224674: Opt out to IAB while gdprApplies is FALSE", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.setConsent(IAB_NO_PURPOSE_ONE_NO_GRPR);
