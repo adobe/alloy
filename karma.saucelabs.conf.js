@@ -1,5 +1,4 @@
 const karmaSauceLauncher = require("karma-sauce-launcher");
-
 const karmaConfig = require("./karma.conf");
 
 module.exports = config => {
@@ -9,17 +8,7 @@ module.exports = config => {
       base: "SauceLabs",
       browserName: "chrome",
       browserVersion: "latest",
-      "sauce:options": {
-        tags: ["w3c-chrome"]
-      }
-    },
-    sl_firefoxW3C: {
-      base: "SauceLabs",
-      browserName: "firefox",
-      browserVersion: "latest",
-      "sauce:options": {
-        tags: ["w3c-firefox"]
-      }
+      platform: "Windows 11"
     },
     sl_safariW3C: {
       base: "SauceLabs",
@@ -27,18 +16,33 @@ module.exports = config => {
       browserVersion: "latest",
       platform: "macOS 11.00"
     },
-    sl_ieW3C: {
+    sl_firefoxW3C: {
       base: "SauceLabs",
-      browserName: "internet explorer",
+      browserName: "firefox",
+      platformName: "Windows 11",
       browserVersion: "latest",
-      platform: "Windows 10"
+      "sauce:options": {
+        geckodriverVersion: "0.27.0"
+      }
+    },
+    sl_edgeW3C: {
+      base: "SauceLabs",
+      browserName: "microsoftedge",
+      browserVersion: "latest",
+      platform: "Windows 11"
     }
   };
 
   config.set({
     browsers: Object.keys(customLaunchers),
     customLaunchers,
-
+    concurrency: 10,
+    colors: true,
+    sauceLabs: {
+      screenResolution: "800x600",
+      build: `GH #${process.env.BUILD_NUMBER} (${process.env.BUILD_ID})`,
+      tunnelIdentifier: process.env.JOB_NUMBER
+    },
     plugins: [
       "karma-jasmine",
       "karma-coverage",
