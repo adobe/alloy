@@ -133,4 +133,59 @@ describe("Context::injectEnvironment", () => {
       }
     }
   );
+
+  run(
+    "handles null values",
+    {
+      document: {
+        documentElement: {
+          clientWidth: null,
+          clientHeight: null
+        }
+      }
+    },
+    {
+      environment: {
+        type: "browser"
+      }
+    }
+  );
+
+  run(
+    "handles only width",
+    {
+      document: {
+        documentElement: {
+          clientWidth: 1234
+        }
+      }
+    },
+    {
+      environment: {
+        type: "browser",
+        browserDetails: {
+          viewportWidth: 1234
+        }
+      }
+    }
+  );
+
+  run(
+    "handles only height",
+    {
+      document: {
+        documentElement: {
+          clientHeight: "1234.5"
+        }
+      }
+    },
+    {
+      environment: {
+        type: "browser",
+        browserDetails: {
+          viewportHeight: 1235
+        }
+      }
+    }
+  );
 });

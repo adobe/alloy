@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { deepAssign, isNumber } from "../../utils";
+import { deepAssign, toInteger } from "../../utils";
 
 export default window => {
   return xdm => {
@@ -21,16 +21,16 @@ export default window => {
     const environment = {
       type: "browser"
     };
-    if (
-      isNumber(clientWidth) &&
-      clientWidth >= 0 &&
-      isNumber(clientHeight) &&
-      clientHeight >= 0
-    ) {
-      environment.browserDetails = {
-        viewportWidth: Math.round(clientWidth),
-        viewportHeight: Math.round(clientHeight)
-      };
+
+    const viewportWidth = toInteger(clientWidth);
+    if (viewportWidth >= 0) {
+      environment.browserDetails = { viewportWidth };
+    }
+
+    const viewportHeight = toInteger(clientHeight);
+    if (viewportHeight >= 0) {
+      environment.browserDetails = environment.browserDetails || {};
+      environment.browserDetails.viewportHeight = viewportHeight;
     }
 
     deepAssign(xdm, { environment });
