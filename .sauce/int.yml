@@ -1,0 +1,75 @@
+apiVersion: v1alpha
+kind: testcafe
+defaults:
+  mode: sauce
+sauce:
+  region: us-west-1
+  concurrency: 20
+  sauceignore: .sauceignore
+metadata:
+  name: Alloy SDK Int Functional Test 
+  tags:
+    - e2e
+  build: Release $CI_COMMIT_SHORT_SHA
+quarantineMode:
+  attemptLimit: 3
+  successThreshold: 1
+docker:
+  fileTransfer: mount
+disablePageCaching: true
+npm:
+  dependencies:
+    - read-cache
+    - uuid
+    - css.escape
+    - "@adobe/reactor-object-assign"
+    - "@adobe/reactor-load-script"
+    - "@adobe/reactor-cookie"
+    - "@adobe/reactor-query-string"
+    - "@adobe/reactor-promise"
+suites:
+  - name: "Chrome Latest | Windows 11"
+    shard: concurrency
+    browserName: "chrome"
+    src:
+      - "test/functional/specs/**/*.js"
+    platformName: "Windows 11"
+  
+  - name: "Safari Latest | macOS 12"
+    shard: concurrency
+    browserName: "safari"
+    src:
+      - "test/functional/specs/**/*.js"
+    platformName: "macOS 12"
+
+  - name: "Edge Latest | Windows 11"
+    shard: concurrency
+    browserName: "microsoftedge"
+    src:
+      - "test/functional/specs/**/*.js"
+    platformName: "Windows 11"
+
+  - name: "Firefox Latest | Windows 11"
+    shard: concurrency
+    browserName: "firefox"
+    src:
+      - "test/functional/specs/**/*.js"
+    platformName: "Windows 11"
+
+testcafe:
+  version: 2.0.0
+reporters:
+  json:
+    enabled: true
+    filename: intTestResults.json
+env:
+  ALLOY_ENV: int
+  EDGE_BASE_PATH: ee-pre-prd
+  NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
+rootDir: ./
+artifacts:
+  download:
+    match:
+    - '*'
+    when: fail
+    directory: ./artifacts
