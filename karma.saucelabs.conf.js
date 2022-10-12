@@ -19,8 +19,8 @@ module.exports = config => {
     sl_firefoxW3C: {
       base: "SauceLabs",
       browserName: "firefox",
+      platformName: "Windows 11",
       browserVersion: "latest",
-      platformName: "macOS 12",
       "sauce:options": {
         geckodriverVersion: "0.27.0"
       }
