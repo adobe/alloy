@@ -15,6 +15,7 @@ import fs from "fs";
 import readCache from "read-cache";
 import { ClientFunction } from "testcafe";
 import { INTEGRATION, PRODUCTION } from "../constants/alloyEnvironment";
+import REMOTE_VISITOR_LIBRARY_URL from "../constants/remoteVisitorLibraryUrl";
 
 const alloyEnv = process.env.ALLOY_ENV || INTEGRATION;
 const alloyProdVersion = process.env.ALLOY_PROD_VERSION;
@@ -38,8 +39,7 @@ const localPromisePolyfillPath = path.join(
 );
 const remotePromisePolyfillPath =
   "https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js";
-const remoteVisitorLibraryUrl =
-  "https://github.com/Adobe-Marketing-Cloud/id-service/releases/latest/download/visitorapi.min.js";
+
 const baseCodePath = path.join(
   __dirname,
   "../../../../distTest/baseCode.min.js"
@@ -116,7 +116,7 @@ const getFixtureClientScriptsForInt = options => {
   if (options.includeVisitorLibrary) {
     addRemoteUrlClientScript({
       clientScripts,
-      url: remoteVisitorLibraryUrl
+      url: REMOTE_VISITOR_LIBRARY_URL
     });
   }
 
@@ -163,7 +163,7 @@ const getFixtureClientScriptsForProd = options => {
   if (options.includeVisitorLibrary) {
     addRemoteUrlClientScript({
       clientScripts,
-      url: remoteVisitorLibraryUrl
+      url: REMOTE_VISITOR_LIBRARY_URL
     });
   }
 
