@@ -22,10 +22,6 @@ jobs:
         with:
           fetch-depth: 0
       - run: npm install @octokit/rest semver
-      - uses: actions/upload-artifact@v3
-        with:
-          name: sauce-config
-          path: .sauce
       - name: Retrieve tags
         id: list-tags
         uses: actions/github-script@v4
@@ -40,21 +36,34 @@ jobs:
             console.log("matrixInput: ", matrixInput);
 
   functional_matrix:
-    name: Funtional Test | Alloy
-    strategy:
-      max-parallel: 10
-      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
+    name: Funtional Test
     needs: get-testing-tags
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 15
+      matrix:
+        alloytags: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput).include }}
+        browsers:
+          [
+            "'saucelabs:Chrome@latest:Windows 10'",
+            "'saucelabs:MicrosoftEdge@latest:Windows 10'",
+            "'saucelabs:IE@latest:Windows 10'",
+            "'saucelabs:Firefox@latest:Windows 10'",
+            "'saucelabs:Safari@latest:macOS 11.00'",
+          ]
+
     steps:
-      - name: Create a workflow dispatch event with ${{ matrix.tag }}
-        uses: actions/checkout@v2.3.3
+      - name: Create a workflow dispatch event with ${{ matrix.alloytags.tag }}
+        uses: actions/checkout@v3
         with:
-          ref: refs/heads/${{ matrix.tag }}
+          ref: refs/heads/${{ matrix.alloytags.tag }}
       - uses: actions/setup-node@v3
         with:
           node-version: "16"
-      - uses: actions/cache@v2
+      - uses: testspace-com/setup-testspace@v1
+        with:
+          domain: ${{github.repository_owner}}
+      - uses: actions/cache@v3
         id: npm-cache
         with:
           path: "**/node_modules"
@@ -62,36 +71,24 @@ jobs:
       - name: Get version from package
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
-      - uses: actions/download-artifact@v3
-        with:
-          name: sauce-config
-          path: .sauce
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
-      - uses: browser-actions/setup-geckodriver@latest
-        with:
-          geckodriver-version: "0.27.0"
+      # - uses: browser-actions/setup-geckodriver@latest
+      #   with:
+      #     geckodriver-version: "0.27.0"
+      - name: Install TestCafe dependencies
+        run: |
+          npm install testcafe-reporter-junit --save-dev
       - name: Build
         run: npm run test:functional:build:prod
+      - name: Run TestCafe Tests
+        run: npx testcafe -e -q attemptLimit=5,successThreshold=1 -c 3 ${{ matrix.browsers }} --disable-page-caching -r spec,junit:report.xml
         env:
           ALLOY_PROD_VERSION: ${{ steps.package-version.outputs.current-version }}
-      - name: Initiate Saucelabs Functional Tests
-        uses: saucelabs/saucectl-run-action@v1
-        with:
-          sauce-username: ${{ secrets.SAUCE_USERNAME }}
-          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          saucectl-version: v0.109.0
-          config-file: .sauce/prod.yml
-        env:
-          ALLOY_PROD_VERSION: ${{ steps.package-version.outputs.current-version }}
-          NPM_PACKAGE_VERSION: ${{ steps.package-version.outputs.current-version }}
-          ALLOY_ENV: prod
-      - uses: actions/upload-artifact@v3
+      - name: Publish Results to Testspace
+        run: testspace report.xml
         if: always()
-        with:
-          name: test-report
-          path: prodTestResults.json
       - uses: craftech-io/slack-action@v1
         with:
           slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
