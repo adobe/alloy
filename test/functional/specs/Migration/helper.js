@@ -1,4 +1,4 @@
-import { t } from "testcafe";
+import { ClientFunction, t } from "testcafe";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import createConsoleLogger from "../../helpers/consoleLogger";
 import { injectAlloyDuringTest } from "../../helpers/createFixture/clientScripts";
@@ -11,14 +11,14 @@ export const extractCluster = hostname => {
   return values[0];
 };
 
-export const injectAlloyAndSendEvent = async config => {
+export const injectAlloyAndSendEvent = async (config, options = {}) => {
   const alloy = createAlloyProxy();
   await alloy.configureAsync(config);
   await alloy.getLibraryInfoAsync();
   const logger = await createConsoleLogger();
   await injectAlloyDuringTest();
   await logger.info.expectMessageMatching(/Executing getLibraryInfo command/);
-  await alloy.sendEvent();
+  await alloy.sendEvent(options);
 };
 
 export const assertTargetMigrationEnabledIsSent = async requestBody => {
@@ -39,3 +39,35 @@ export const assertKonductorReturnsCookieAndCookieIsSet = async (
 
   return cookieValue;
 };
+
+export const fetchMboxOffer = ClientFunction(() => {
+  window.adobe.target.getOffer({
+    mbox: "nina1234",
+    success(response) {
+      console.log("response", response);
+    },
+    error: console.error
+  });
+});
+export const getEcid = identityPayload => {
+  return identityPayload.filter(obj => obj.namespace.code === "ECID");
+};
+export const getPropositionCustomContent = personalizationPayload => {
+  const decisionScopeProposition = personalizationPayload.filter(
+    proposition => proposition.scope === "nina1234"
+  );
+
+  return decisionScopeProposition[0].items[0].data.content;
+};
+export const fetchMboxOfferWithParam = ClientFunction(color => {
+  return window.adobe.target.getOffer({
+    mbox: "target-global-mbox",
+    params: {
+      "profile.favoriteColor": color
+    },
+    success(response) {
+      console.log("response", response);
+    },
+    error: console.error
+  });
+});
