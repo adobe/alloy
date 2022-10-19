@@ -40,7 +40,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Assert same session ID is used for both of the requests interact and delivery API", async () => {
+test("Assert same session ID is used for both of the requests interact and mbox/json API", async () => {
   // Loaded a page with Alloy
   await injectAlloyAndSendEvent(config);
 

@@ -40,7 +40,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Assert same session ID, edge cluster is used for both of the requests interact and delivery API", async () => {
+test("Assert same session ID, edge cluster are used for both of the requests interact and delivery API", async () => {
   // Loaded a page with Alloy
   await injectAlloyAndSendEvent(config);
 

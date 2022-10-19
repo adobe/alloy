@@ -33,7 +33,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Assert same session ID is used for both of the requests interact and delivery API", async () => {
+test("Assert same session ID is used for both of the requests interact and mbox/json API", async () => {
   await sleep(2000);
   // Get mbox/json API request
   const mboxJsonRequest = networkLogger.targetMboxJsonEndpointLogs.requests[0];
