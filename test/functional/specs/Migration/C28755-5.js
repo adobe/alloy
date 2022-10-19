@@ -15,26 +15,26 @@ import {
   assertKonductorReturnsCookieAndCookieIsSet,
   assertTargetMigrationEnabledIsSent,
   extractCluster,
-  fetchMboxOffer,
-  injectAlloyAndSendEvent,
+  fetchMboxOfferForMbox,
+  MIGRATION_LOCATION,
   sleep
 } from "./helper";
 import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
+const favoriteColor = "violet-1234";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled, migrationEnabled, {
   targetMigrationEnabled: true
 });
-const favoriteColor = "violet-1234";
 createFixture({
-  title:
-    "Mixed mode and same profile across pages: Web SDK first then navigating to a page with at.js 2.x",
+  title: "Use same visitor profile in mixed mode implementation.",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
     networkLogger.targetDeliveryEndpointLogs
   ],
-  url: `${TEST_PAGE}`,
-  includeAlloyLibrary: false
+  url: TEST_PAGE,
+  includeAlloyLibrary: true
 });
 
 test.meta({
@@ -43,7 +43,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Profile test: First loaded a page web sdk and navigate to a page with at.js 2.x", async () => {
+test("Update profile attribute using web sdk and fetch offer based on profile attr using at.js 2.x", async () => {
   const options = {
     renderDecisions: true,
     data: {
@@ -55,8 +55,9 @@ test("Profile test: First loaded a page web sdk and navigate to a page with at.j
     }
   };
   // Loaded a page with Alloy
-  await injectAlloyAndSendEvent(config, options);
-
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  await alloy.sendEvent(options);
   const sendEventRequest = networkLogger.edgeEndpointLogs.requests[0];
   const requestBody = JSON.parse(sendEventRequest.request.body);
 
@@ -88,7 +89,7 @@ test("Profile test: First loaded a page web sdk and navigate to a page with at.j
   await t.navigateTo(TEST_PAGE_AT_JS_TWO);
   // get delivery API request adding sleep to make sure the request was triggered
   await sleep(3000);
-  await fetchMboxOffer();
+  await fetchMboxOfferForMbox({ mbox: MIGRATION_LOCATION });
   const deliveryRequest = networkLogger.targetDeliveryEndpointLogs.requests[1];
   await sleep(3000);
   // Extract state:store payload

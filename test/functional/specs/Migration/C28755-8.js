@@ -8,29 +8,31 @@ import {
 } from "../../helpers/constants/configParts";
 import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url";
 import {
-  fetchMboxOfferWithParam,
+  fetchMboxOfferForMbox,
   getEcid,
   getPropositionCustomContent,
   injectAlloyAndSendEvent,
+  MIGRATION_LOCATION,
   sleep
 } from "./helper";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../helpers/createResponse";
 import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled";
 
+const favoriteColor = "green-1234";
 const networkLogger = createNetworkLogger();
+
 const config = compose(orgMainConfigMain, debugEnabled, migrationEnabled, {
   targetMigrationEnabled: true
 });
 
 createFixture({
-  title:
-    "Mixed mode: A page with AT.js is called first then we navigate to a page with Web SDK ",
+  title: "Use same visitor profile in mixed mode implementation.",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
     networkLogger.targetMboxJsonEndpointLogs
   ],
-  url: `${TEST_PAGE_AT_JS_ONE}`,
+  url: TEST_PAGE_AT_JS_ONE,
   includeAlloyLibrary: false
 });
 
@@ -39,11 +41,15 @@ test.meta({
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
-const favoriteColor = "green-1234";
-test("Visit a page with at.js 1.x first then navigate to a page with Web SDK", async () => {
+
+test("Update profile attribute using at.js 1.x and fetch proposition based on profile attr using web sdk", async () => {
   //  delivery API request
   await sleep(2000);
-  await fetchMboxOfferWithParam(favoriteColor);
+  await fetchMboxOfferForMbox({
+    params: {
+      "profile.favoriteColor": favoriteColor
+    }
+  });
   await sleep(2000);
   const mboxJsonRequest = networkLogger.targetMboxJsonEndpointLogs.requests[1];
   await t.expect(mboxJsonRequest.response.statusCode).eql(200);
@@ -52,7 +58,9 @@ test("Visit a page with at.js 1.x first then navigate to a page with Web SDK", a
 
   // NAVIGATE to a web sdk page
   await t.navigateTo(TEST_PAGE);
-  await injectAlloyAndSendEvent(config, { decisionScopes: ["nina1234"] });
+  await injectAlloyAndSendEvent(config, {
+    decisionScopes: [MIGRATION_LOCATION]
+  });
   const sendEventRequest = networkLogger.edgeEndpointLogs.requests[0];
   const response = JSON.parse(getResponseBody(sendEventRequest));
   const identityPayload = createResponse({

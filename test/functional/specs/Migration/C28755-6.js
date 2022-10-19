@@ -10,26 +10,30 @@ import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import {
   assertTargetMigrationEnabledIsSent,
-  fetchMboxOffer,
+  fetchMboxOfferForMbox,
   getEcid,
+  MIGRATION_LOCATION,
   sleep
 } from "./helper";
 import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import createResponse from "../../helpers/createResponse";
 
+const favoriteColor = "purple-123";
 const networkLogger = createNetworkLogger();
+
 const config = compose(orgMainConfigMain, debugEnabled, migrationEnabled, {
   targetMigrationEnabled: true
 });
-const favoriteColor = "purple-123";
+
 createFixture({
-  title: "Mixed mode: Web SDK first then navigating to a page with at.js 1.x",
+  title: "Use same visitor profile in mixed mode implementation.",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
     networkLogger.targetMboxJsonEndpointLogs
   ],
-  url: `${TEST_PAGE}`
+  url: TEST_PAGE,
+  includeAlloyLibrary: true
 });
 
 test.meta({
@@ -38,7 +42,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("First loaded a page web sdk and navigate to a page with at.js 1.x", async () => {
+test("Update profile attribute using web sdk and fetch offer based on profile attr using at.js 1.x", async () => {
   const options = {
     renderDecisions: true,
     data: {
@@ -66,14 +70,15 @@ test("First loaded a page web sdk and navigate to a page with at.js 1.x", async 
     content: response
   }).getPayloadsByType("identity:result");
   const ecid = getEcid(identityPayload)[0].id;
-
-  await sleep(6000);
+  await sleep(3000);
 
   // NAVIGATE to clean page
   await t.navigateTo(TEST_PAGE_AT_JS_ONE);
   // get mbox json API request
   await sleep(3000);
-  await fetchMboxOffer();
+  await fetchMboxOfferForMbox({
+    mbox: MIGRATION_LOCATION
+  });
   const customMboxJsonRequest =
     networkLogger.targetMboxJsonEndpointLogs.requests[1];
   await sleep(3000);

@@ -4,6 +4,7 @@ import createConsoleLogger from "../../helpers/consoleLogger";
 import { injectAlloyDuringTest } from "../../helpers/createFixture/clientScripts";
 import cookies from "../../helpers/cookies";
 
+export const MIGRATION_LOCATION = "location-for-migration-testing";
 export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 export const extractCluster = hostname => {
@@ -40,34 +41,34 @@ export const assertKonductorReturnsCookieAndCookieIsSet = async (
   return cookieValue;
 };
 
-export const fetchMboxOffer = ClientFunction(() => {
-  window.adobe.target.getOffer({
-    mbox: "nina1234",
-    success(response) {
-      console.log("response", response);
-    },
-    error: console.error
-  });
-});
+export const getLocationHint = pathname => {
+  const values = pathname.split("/");
+  const locationHint = values[2];
+
+  return Number(locationHint.split("t")[1]);
+};
+
 export const getEcid = identityPayload => {
   return identityPayload.filter(obj => obj.namespace.code === "ECID");
 };
+
 export const getPropositionCustomContent = personalizationPayload => {
   const decisionScopeProposition = personalizationPayload.filter(
-    proposition => proposition.scope === "nina1234"
+    proposition => proposition.scope === MIGRATION_LOCATION
   );
 
   return decisionScopeProposition[0].items[0].data.content;
 };
-export const fetchMboxOfferWithParam = ClientFunction(color => {
-  return window.adobe.target.getOffer({
-    mbox: "target-global-mbox",
-    params: {
-      "profile.favoriteColor": color
-    },
-    success(response) {
-      console.log("response", response);
-    },
-    error: console.error
-  });
-});
+
+export const fetchMboxOfferForMbox = ClientFunction(
+  ({ params = {}, mbox = "target-global-mbox" }) => {
+    return window.adobe.target.getOffer({
+      mbox,
+      params,
+      success(response) {
+        return response;
+      },
+      error: console.error
+    });
+  }
+);

@@ -10,7 +10,7 @@ import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url";
 import cookies from "../../helpers/cookies";
 import { MBOX } from "../../../../src/constants/cookieNameKey";
 import { MBOX_EDGE_CLUSTER } from "../../../../src/constants/legacyCookies";
-import { injectAlloyAndSendEvent, sleep } from "./helper";
+import { getLocationHint, injectAlloyAndSendEvent, sleep } from "./helper";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled, {
@@ -18,13 +18,12 @@ const config = compose(orgMainConfigMain, debugEnabled, {
 });
 
 createFixture({
-  title:
-    "Mixed mode: A page with AT.js is called first then we navigate to a page with Web SDK ",
+  title: "Mixed mode: at.js 1.x => web sdk",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
     networkLogger.targetMboxJsonEndpointLogs
   ],
-  url: `${TEST_PAGE_AT_JS_ONE}`,
+  url: TEST_PAGE_AT_JS_ONE,
   includeAlloyLibrary: false
 });
 
@@ -34,14 +33,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const getLocationHint = pathname => {
-  const values = pathname.split("/");
-  const locationHint = values[2];
-
-  return Number(locationHint.split("t")[1]);
-};
-
-test("Visit a page with at.js 1.x first then navigate to a page with Web SDK", async () => {
+test("Assert same session ID is used for both of the requests interact and delivery API", async () => {
   await sleep(2000);
   // Get mbox/json API request
   const mboxJsonRequest = networkLogger.targetMboxJsonEndpointLogs.requests[0];

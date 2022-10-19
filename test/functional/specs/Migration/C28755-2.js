@@ -12,6 +12,7 @@ import { MBOX } from "../../../../src/constants/cookieNameKey";
 import { MBOX_EDGE_CLUSTER } from "../../../../src/constants/legacyCookies";
 import {
   assertTargetMigrationEnabledIsSent,
+  getLocationHint,
   injectAlloyAndSendEvent,
   sleep
 } from "./helper";
@@ -22,13 +23,12 @@ const config = compose(orgMainConfigMain, debugEnabled, {
 });
 
 createFixture({
-  title:
-    "Mixed mode: AT.js is called first then we navigate to a page with Web SDK",
+  title: "Mixed mode: at.js 2.x => web sdk",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
     networkLogger.targetDeliveryEndpointLogs
   ],
-  url: `${TEST_PAGE_AT_JS_TWO}`,
+  url: TEST_PAGE_AT_JS_TWO,
   includeAlloyLibrary: false
 });
 
@@ -38,14 +38,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const getLocationHint = pathname => {
-  const values = pathname.split("/");
-  const locationHint = values[2];
-
-  return Number(locationHint.split("t")[1]);
-};
-
-test("Visit a page with at.js 2.x first then navigate to a page with Web SDK", async () => {
+test("Assert same session ID is used for both of the requests interact and delivery API", async () => {
   await sleep(3000);
   // Get delivery API request
   const deliveryRequest = networkLogger.targetDeliveryEndpointLogs.requests[0];

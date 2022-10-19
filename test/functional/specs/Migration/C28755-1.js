@@ -25,12 +25,12 @@ const config = compose(orgMainConfigMain, debugEnabled, {
 });
 
 createFixture({
-  title: "Mixed mode: Web SDK first then navigating to a page with at.js 2.x",
+  title: "Mixed mode: web sdk => at.js 2.x",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
     networkLogger.targetDeliveryEndpointLogs
   ],
-  url: `${TEST_PAGE}`,
+  url: TEST_PAGE,
   includeAlloyLibrary: false
 });
 
@@ -40,7 +40,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("First loaded a page web sdk and navigate to a page with at.js 2.x", async () => {
+test("Assert same session ID, edge cluster is used for both of the requests interact and delivery API", async () => {
   // Loaded a page with Alloy
   await injectAlloyAndSendEvent(config);
 
