@@ -8,8 +8,10 @@ import {
 } from "../../helpers/constants/configParts";
 import { TEST_PAGE, TEST_PAGE_AT_JS_TWO } from "../../helpers/constants/url";
 import cookies from "../../helpers/cookies";
-import { MBOX } from "../../../../src/constants/cookieNameKey";
-import { MBOX_EDGE_CLUSTER } from "../../../../src/constants/legacyCookies";
+import {
+  MBOX_EDGE_CLUSTER,
+  MBOX
+} from "../../../../src/constants/legacyCookies";
 import {
   assertTargetMigrationEnabledIsSent,
   getLocationHint,

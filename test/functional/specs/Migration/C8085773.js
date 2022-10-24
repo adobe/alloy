@@ -9,8 +9,10 @@ import {
 import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../helpers/createResponse";
-import { MBOX } from "../../../../src/constants/cookieNameKey";
-import { MBOX_EDGE_CLUSTER } from "../../../../src/constants/legacyCookies";
+import {
+  MBOX_EDGE_CLUSTER,
+  MBOX
+} from "../../../../src/constants/legacyCookies";
 import {
   assertKonductorReturnsCookieAndCookieIsSet,
   assertTargetMigrationEnabledIsSent,

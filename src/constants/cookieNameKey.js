@@ -13,4 +13,3 @@ governing permissions and limitations under the License.
 export const IDENTITY = "identity";
 export const CONSENT = "consent";
 export const CLUSTER = "cluster";
-export const MBOX = "mbox";
