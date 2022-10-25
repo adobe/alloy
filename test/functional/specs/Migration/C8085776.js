@@ -4,7 +4,8 @@ import createFixture from "../../helpers/createFixture";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
+  targetMigrationEnabled
 } from "../../helpers/constants/configParts";
 import { TEST_PAGE, TEST_PAGE_AT_JS_TWO } from "../../helpers/constants/url";
 import cookies from "../../helpers/cookies";
@@ -15,14 +16,11 @@ import {
 import {
   assertTargetMigrationEnabledIsSent,
   getLocationHint,
-  injectAlloyAndSendEvent,
-  sleep
+  injectAlloyAndSendEvent
 } from "./helper";
 
 const networkLogger = createNetworkLogger();
-const config = compose(orgMainConfigMain, debugEnabled, {
-  targetMigrationEnabled: true
-});
+const config = compose(orgMainConfigMain, debugEnabled, targetMigrationEnabled);
 
 createFixture({
   title:
@@ -46,7 +44,9 @@ test(
   "C8085776: At.js 2.x to Web SDK - Assert same session ID, edge cluster are used " +
     "for both of the requests interact and delivery API",
   async () => {
-    await sleep(3000);
+    await t
+      .expect(networkLogger.targetDeliveryEndpointLogs.count(() => true))
+      .eql(1);
     // Get delivery API request
     const deliveryRequest =
       networkLogger.targetDeliveryEndpointLogs.requests[0];
@@ -67,7 +67,7 @@ test(
     const requestBody = JSON.parse(sendEventRequest.request.body);
 
     // Check that targetMigrationEnabled is sent in meta
-    await assertTargetMigrationEnabledIsSent(requestBody);
+    await assertTargetMigrationEnabledIsSent(sendEventRequest);
     // Extract location hint
     const { pathname } = new URL(sendEventRequest.request.url);
     const aepRequestLocationHint = getLocationHint(pathname);

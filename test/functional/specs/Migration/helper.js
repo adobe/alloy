@@ -3,6 +3,8 @@ import createAlloyProxy from "../../helpers/createAlloyProxy";
 import createConsoleLogger from "../../helpers/consoleLogger";
 import { injectAlloyDuringTest } from "../../helpers/createFixture/clientScripts";
 import cookies from "../../helpers/cookies";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody";
+import createResponse from "../../helpers/createResponse";
 
 export const MIGRATION_LOCATION = "location-for-migration-testing";
 export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -22,14 +24,23 @@ export const injectAlloyAndSendEvent = async (config, options = {}) => {
   await alloy.sendEvent(options);
 };
 
-export const assertTargetMigrationEnabledIsSent = async requestBody => {
+export const assertTargetMigrationEnabledIsSent = async sendEventRequest => {
+  const requestBody = JSON.parse(sendEventRequest.request.body);
+
   await t.expect(requestBody.meta.target).eql({ migration: true });
 };
 
 export const assertKonductorReturnsCookieAndCookieIsSet = async (
   cookieKey,
-  stateStorePayload
+  sendEventRequest
 ) => {
+  // Extract state:store payload
+  const response = JSON.parse(getResponseBody(sendEventRequest));
+  const stateStorePayload = createResponse({
+    content: response
+  }).getPayloadsByType("state:store");
+  await t.expect(stateStorePayload.length).gte(0);
+
   const responseContainsCookie = stateStorePayload.find(entry => {
     return entry.key.includes(cookieKey);
   });

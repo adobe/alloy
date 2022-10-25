@@ -4,7 +4,8 @@ import createFixture from "../../helpers/createFixture";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
+  targetMigrationEnabled
 } from "../../helpers/constants/configParts";
 import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
@@ -12,8 +13,7 @@ import {
   assertTargetMigrationEnabledIsSent,
   fetchMboxOffer,
   getEcid,
-  MIGRATION_LOCATION,
-  sleep
+  MIGRATION_LOCATION
 } from "./helper";
 import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
@@ -22,9 +22,12 @@ import createResponse from "../../helpers/createResponse";
 const favoriteColor = "purple-123";
 const networkLogger = createNetworkLogger();
 
-const config = compose(orgMainConfigMain, debugEnabled, migrationEnabled, {
-  targetMigrationEnabled: true
-});
+const config = compose(
+  orgMainConfigMain,
+  debugEnabled,
+  migrationEnabled,
+  targetMigrationEnabled
+);
 
 createFixture({
   title:
@@ -62,9 +65,8 @@ test(
     await alloy.configure(config);
     await alloy.sendEvent(options);
     const sendEventRequest = networkLogger.edgeEndpointLogs.requests[0];
-    const requestBody = JSON.parse(sendEventRequest.request.body);
     // Check that targetMigrationEnabled flag is sent in meta
-    await assertTargetMigrationEnabledIsSent(requestBody);
+    await assertTargetMigrationEnabledIsSent(sendEventRequest);
 
     // Extract state:store payload
     const response = JSON.parse(
@@ -75,18 +77,21 @@ test(
       content: response
     }).getPayloadsByType("identity:result");
     const ecid = getEcid(identityPayload)[0].id;
-    await sleep(3000);
 
     // NAVIGATE to clean page
     await t.navigateTo(TEST_PAGE_AT_JS_ONE);
     // get mbox json API request
-    await sleep(3000);
+    await t
+      .expect(networkLogger.targetMboxJsonEndpointLogs.count(() => true))
+      .eql(1);
     await fetchMboxOffer({
       mbox: MIGRATION_LOCATION
     });
+    await t
+      .expect(networkLogger.targetMboxJsonEndpointLogs.count(() => true))
+      .eql(2);
     const customMboxJsonRequest =
       networkLogger.targetMboxJsonEndpointLogs.requests[1];
-    await sleep(3000);
     const mboxRequestUrlQuery = new URL(customMboxJsonRequest.request.url)
       .searchParams;
     const ecidMboxJsonRequest = mboxRequestUrlQuery.get("mboxMCGVID");

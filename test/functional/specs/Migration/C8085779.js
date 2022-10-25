@@ -4,7 +4,8 @@ import createFixture from "../../helpers/createFixture";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
+  targetMigrationEnabled
 } from "../../helpers/constants/configParts";
 import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url";
 import {
@@ -12,8 +13,7 @@ import {
   getEcid,
   getPropositionCustomContent,
   injectAlloyAndSendEvent,
-  MIGRATION_LOCATION,
-  sleep
+  MIGRATION_LOCATION
 } from "./helper";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../helpers/createResponse";
@@ -22,9 +22,12 @@ import migrationEnabled from "../../helpers/constants/configParts/migrationEnabl
 const favoriteColor = "green-1234";
 const networkLogger = createNetworkLogger();
 
-const config = compose(orgMainConfigMain, debugEnabled, migrationEnabled, {
-  targetMigrationEnabled: true
-});
+const config = compose(
+  orgMainConfigMain,
+  debugEnabled,
+  migrationEnabled,
+  targetMigrationEnabled
+);
 
 createFixture({
   title:
@@ -49,13 +52,14 @@ test(
     "at.js 1.x and fetch proposition offer based on profile attr using web sdk",
   async () => {
     //  delivery API request
-    await sleep(2000);
     await fetchMboxOffer({
       params: {
         "profile.favoriteColor": favoriteColor
       }
     });
-    await sleep(2000);
+    await t
+      .expect(networkLogger.targetMboxJsonEndpointLogs.count(() => true))
+      .eql(2);
     const mboxJsonRequest =
       networkLogger.targetMboxJsonEndpointLogs.requests[1];
     await t.expect(mboxJsonRequest.response.statusCode).eql(200);

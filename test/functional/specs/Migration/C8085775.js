@@ -4,7 +4,8 @@ import createFixture from "../../helpers/createFixture";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
+  targetMigrationEnabled
 } from "../../helpers/constants/configParts";
 import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url";
 import cookies from "../../helpers/cookies";
@@ -12,12 +13,14 @@ import {
   MBOX_EDGE_CLUSTER,
   MBOX
 } from "../../../../src/constants/legacyCookies";
-import { getLocationHint, injectAlloyAndSendEvent, sleep } from "./helper";
+import {
+  assertTargetMigrationEnabledIsSent,
+  getLocationHint,
+  injectAlloyAndSendEvent
+} from "./helper";
 
 const networkLogger = createNetworkLogger();
-const config = compose(orgMainConfigMain, debugEnabled, {
-  targetMigrationEnabled: true
-});
+const config = compose(orgMainConfigMain, debugEnabled, targetMigrationEnabled);
 
 createFixture({
   title:
@@ -41,7 +44,9 @@ test(
   "C8085775: At.js 1.x to Web SDK - Assert same session ID, edge cluster are " +
     "used for both of the requests interact and delivery API",
   async () => {
-    await sleep(2000);
+    await t
+      .expect(networkLogger.targetMboxJsonEndpointLogs.count(() => true))
+      .eql(1);
     // Get mbox/json API request
     const mboxJsonRequest =
       networkLogger.targetMboxJsonEndpointLogs.requests[0];
@@ -62,7 +67,7 @@ test(
     const requestBody = JSON.parse(sendEventRequest.request.body);
 
     // Check that targetMigrationEnabled is sent in meta
-    await t.expect(requestBody.meta.target).eql({ migration: true });
+    await assertTargetMigrationEnabledIsSent(sendEventRequest);
     // Extract location hint
     const { pathname } = new URL(sendEventRequest.request.url);
     const aepRequestLocationHint = getLocationHint(pathname);

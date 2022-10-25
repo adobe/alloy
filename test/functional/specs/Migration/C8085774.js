@@ -4,11 +4,10 @@ import createFixture from "../../helpers/createFixture";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
+  targetMigrationEnabled
 } from "../../helpers/constants/configParts";
 import { TEST_PAGE, TEST_PAGE_AT_JS_TWO } from "../../helpers/constants/url";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../helpers/createResponse";
 import {
   MBOX_EDGE_CLUSTER,
   MBOX
@@ -16,15 +15,12 @@ import {
 import {
   assertKonductorReturnsCookieAndCookieIsSet,
   assertTargetMigrationEnabledIsSent,
-  extractCluster,
-  injectAlloyAndSendEvent,
-  sleep
+  extractCluster
 } from "./helper";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const networkLogger = createNetworkLogger();
-const config = compose(orgMainConfigMain, debugEnabled, {
-  targetMigrationEnabled: true
-});
+const config = compose(orgMainConfigMain, debugEnabled, targetMigrationEnabled);
 
 createFixture({
   title:
@@ -35,7 +31,7 @@ createFixture({
     networkLogger.targetDeliveryEndpointLogs
   ],
   url: TEST_PAGE,
-  includeAlloyLibrary: false
+  includeAlloyLibrary: true
 });
 
 test.meta({
@@ -49,39 +45,32 @@ test(
     "requests interact and delivery API",
   async () => {
     // Loaded a page with Alloy
-    await injectAlloyAndSendEvent(config);
+    const alloy = createAlloyProxy();
+    await alloy.configure(config);
+    await alloy.sendEvent();
 
     const sendEventRequest = networkLogger.edgeEndpointLogs.requests[0];
-    const requestBody = JSON.parse(sendEventRequest.request.body);
 
     // Check that targetMigrationEnabled flag is sent in meta
-    await assertTargetMigrationEnabledIsSent(requestBody);
-
-    // Extract state:store payload
-    const response = JSON.parse(
-      getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
-    );
-    const stateStorePayload = createResponse({
-      content: response
-    }).getPayloadsByType("state:store");
-    await t.expect(stateStorePayload.length).gte(0);
-
+    await assertTargetMigrationEnabledIsSent(sendEventRequest);
     // Check that mbox cookie is present in the response from Konductor
     const mboxCookie = await assertKonductorReturnsCookieAndCookieIsSet(
       MBOX,
-      stateStorePayload
+      sendEventRequest
     );
 
     // Check that mboxEdgeCluster cookie is present in the response from Konductor
     const mboxEdgeClusterCookie = await assertKonductorReturnsCookieAndCookieIsSet(
       MBOX_EDGE_CLUSTER,
-      stateStorePayload
+      sendEventRequest
     );
 
     // NAVIGATE to clean page
     await t.navigateTo(TEST_PAGE_AT_JS_TWO);
     // get delivery API request adding sleep to make sure the request was triggered
-    await sleep(3000);
+    await t
+      .expect(networkLogger.targetDeliveryEndpointLogs.count(() => true))
+      .eql(1);
     const deliveryRequest =
       networkLogger.targetDeliveryEndpointLogs.requests[0];
     const requestUrl = deliveryRequest.request.url;
