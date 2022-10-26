@@ -14,8 +14,8 @@ import {
 } from "../../../../src/constants/legacyCookies";
 import {
   assertKonductorReturnsCookieAndCookieIsSet,
-  assertTargetMigrationEnabledIsSent,
-  extractCluster
+  assertSameLocationHintIsUsed,
+  assertTargetMigrationEnabledIsSent
 } from "./helper";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
@@ -86,12 +86,6 @@ test(
       );
 
     // assert the same cluster is used
-    const cluster = await extractCluster(hostname);
-    await t
-      .expect(`mboxedge${mboxEdgeClusterCookie}`)
-      .eql(
-        cluster,
-        "Cluster ID returned from Target Upstream does not match the cluster ID  used in the path to delivery API"
-      );
+    await assertSameLocationHintIsUsed(hostname, mboxEdgeClusterCookie);
   }
 );
