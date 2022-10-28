@@ -95,6 +95,7 @@
     "karma-jasmine": "^2.0.1",
     "karma-jasmine-html-reporter": "^1.4.2",
     "karma-jasmine-matchers": "^4.0.1",
+    "karma-junit-reporter": "^2.0.1",
     "karma-rollup-preprocessor": "^7.0.5",
     "karma-safari-launcher": "^1.0.0",
     "karma-sauce-launcher": "^4.3.6",
@@ -118,9 +119,8 @@
     "semver": "^7.3.7",
     "start-server-and-test": "^1.10.6",
     "testcafe": "^1.19.0",
-    "testcafe-browser-provider-saucelabs": "^1.8.3",
+    "testcafe-browser-provider-saucelabs": "^1.9.0",
     "testcafe-reporter-junit": "^3.0.2",
-    "testcafe-reporter-saucelabs": "^0.3.0",
     "url-exists-nodejs": "^0.1.0",
     "url-parse": "^1.4.7",
     "yargs": "^16.2.0"

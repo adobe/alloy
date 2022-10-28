@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18"
       - uses: actions/cache@v3
         id: npm-cache
         with:
@@ -41,19 +41,8 @@ jobs:
           BUILD_ID: $GITHUB_RUN_ID
           JOB_NUMBER: $GITHUB_JOB
 
-  functional-test:
-    name: "Functional Test"
-    strategy:
-      max-parallel: 5
-      matrix:
-        browsers:
-          [
-            "'saucelabs:Chrome@latest:Windows 10'",
-            "'saucelabs:MicrosoftEdge@latest:Windows 10'",
-            "'saucelabs:IE@latest:Windows 10'",
-            "'saucelabs:Firefox@latest:Windows 10'",
-            "'saucelabs:Safari@latest:macOS 11.00'",
-          ]
+  functional_safari:
+    name: Safari
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -62,16 +51,81 @@ jobs:
         with:
           path: "**/node_modules"
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }} # increment NPM_CACHE_VERSION secret to force cache reset
-      - uses: testspace-com/setup-testspace@v1
-        with:
-          domain: ${{github.repository_owner}}
+      - name: Get version from package
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
       - name: Build
         run: npm run test:functional:build:int
       - name: Run Functional Test
-        run: npx testcafe -e -q attemptLimit=5,successThreshold=1 -c 3 ${{ matrix.browsers }} --disable-page-caching -r spec,junit:report.xml
-      - name: Publish Results to Testspace
-        run: testspace report.xml
-        if: always()
+        timeout-minutes: 20
+        run: npx testcafe 'saucelabs:Safari@latest:macOS 11.00' -c 5 --speed 0.5
+
+  functional_firefox:
+    name: Firefox
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        id: npm-cache
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }} # increment NPM_CACHE_VERSION secret to force cache reset
+      - name: Get version from package
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
+      - name: Install dependencies
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Build
+        run: npm run test:functional:build:int
+      - name: Run Functional Test
+        timeout-minutes: 20
+        run: npx testcafe 'saucelabs:Firefox@latest:macOS 11.00' -c 5 --speed 0.05
+
+  functional_chrome:
+    name: Chrome
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        id: npm-cache
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }} # increment NPM_CACHE_VERSION secret to force cache reset
+      - name: Get version from package
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
+      - name: Install dependencies
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Build
+        run: npm run test:functional:build:int
+      - name: Run Functional Test
+        timeout-minutes: 20
+        run: npx testcafe 'saucelabs:Chrome@latest:Windows 10' -c 5 --speed 0.5
+
+  functional_edge:
+    name: Edge
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        id: npm-cache
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }} # increment NPM_CACHE_VERSION secret to force cache reset
+      - name: Get version from package
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
+      - name: Install dependencies
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Build
+        run: npm run test:functional:build:int
+      - name: Run Functional Test
+        timeout-minutes: 20
+        run: npx testcafe 'saucelabs:MicrosoftEdge@latest:Windows 10' -c 5 --speed 0.5
+
