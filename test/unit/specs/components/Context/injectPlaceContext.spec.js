@@ -50,4 +50,29 @@ describe("Context::injectPlaceContext", () => {
       }
     });
   });
+
+  it("handles large timezoneOffsets 1", () => {
+    const date = new Date("October 28, 2022 11:57:42");
+    spyOn(date, "getTimezoneOffset").and.returnValue(-5999);
+    const xdm = {};
+    injectPlaceContext(() => date)(xdm);
+    expect(xdm).toEqual({
+      placeContext: {
+        localTime: "2022-10-28T11:57:42.000+99:59",
+        localTimezoneOffset: -5999
+      }
+    });
+  });
+
+  it("handles large timezoneOffsets 2", () => {
+    const date = new Date("October 28, 2022 11:57:42");
+    spyOn(date, "getTimezoneOffset").and.returnValue(-6000);
+    const xdm = {};
+    injectPlaceContext(() => date)(xdm);
+    expect(xdm).toEqual({
+      placeContext: {
+        localTimezoneOffset: -6000
+      }
+    });
+  });
 });

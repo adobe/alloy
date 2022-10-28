@@ -15,14 +15,20 @@ export default dateProvider => {
   return xdm => {
     const date = dateProvider();
 
-    const placeContext = {
-      localTime: toISOStringLocal(date)
-    };
+    const placeContext = {};
 
     const localTimezoneOffset = toInteger(date.getTimezoneOffset());
     if (localTimezoneOffset !== undefined) {
       placeContext.localTimezoneOffset = localTimezoneOffset;
     }
+    // make sure the timezone offset only uses two digits
+    if (
+      localTimezoneOffset === undefined ||
+      Math.abs(localTimezoneOffset) < 6000
+    ) {
+      placeContext.localTime = toISOStringLocal(date);
+    }
+
     deepAssign(xdm, { placeContext });
   };
 };
