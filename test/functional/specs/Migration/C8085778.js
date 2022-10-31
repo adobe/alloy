@@ -13,7 +13,8 @@ import {
   assertTargetMigrationEnabledIsSent,
   fetchMboxOffer,
   getEcid,
-  MIGRATION_LOCATION
+  MIGRATION_LOCATION,
+  sleep
 } from "./helper";
 import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
@@ -64,7 +65,7 @@ test(
     const alloy = createAlloyProxy();
     await alloy.configure(config);
     await alloy.sendEvent(options);
-    await t.expect(networkLogger.edgeEndpointLogs.count(() => true)).eql(1);
+    await sleep(3000);
     const sendEventRequest = networkLogger.edgeEndpointLogs.requests[0];
     // Check that targetMigrationEnabled flag is sent in meta
     await assertTargetMigrationEnabledIsSent(sendEventRequest);
