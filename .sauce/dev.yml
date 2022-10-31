@@ -4,9 +4,10 @@ defaults:
   mode: sauce
 sauce:
   region: us-west-1
+  concurrency: 2
   sauceignore: .sauceignore
 metadata:
-  name: Alloy SDK Prod Functional Test
+  name: Alloy SDK Int Functional Test
   tags:
     - e2e
   build: Release $CI_COMMIT_SHORT_SHA
@@ -15,12 +16,12 @@ docker:
   fileTransfer: copy
   image: saucelabs/stt-testcafe-node:latest
 env:
-  ALLOY_ENV: prod
-  ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
+  ALLOY_ENV: int
+  EDGE_BASE_PATH: ee-pre-prd
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
   version: 2.0.1
-speed: 0.05
+timeout: 15m
 timeZone: New_York
 npm:
   dependencies:
@@ -46,22 +47,11 @@ suites:
     browserName: "microsoftedge"
     src:
       - "test/functional/specs/**/*.js"
-    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js" ]
-  - name: "Firefox"
+    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Personalization/C3272624.js" ]
+  - name: "Firefox Latest"
     shard: concurrency
     platformName: "Windows 11"
     browserName: "firefox"
     src:
       - "test/functional/specs/**/*.js"
     excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js" ]
-  - name: "Safari"
-    shard: concurrency
-    platformName: "macOS 12"
-    browserName: "safari"
-    env:
-      ALLOY_ENV: prod
-      ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
-      NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
-    src:
-      - "test/functional/specs/**/*.js"
-    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Personalization/C205528.js" ]

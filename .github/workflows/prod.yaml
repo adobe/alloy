@@ -1,7 +1,7 @@
 name: Prod
 on:
   schedule:
-    - cron: "0 */24 * * *"
+    - cron: "0 */18 * * *"
   workflow_dispatch:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -18,10 +18,18 @@ jobs:
     outputs:
       matrixInput: ${{ steps.list-tags.outputs.matrixInput }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - run: npm install @octokit/rest semver
+      - uses: actions/upload-artifact@v3
+        with:
+          name: sauce-config
+          path: .sauce
+      - uses: actions/upload-artifact@v3
+        with:
+          name: sauce-ignore
+          path: .sauceignore
       - name: Retrieve tags
         id: list-tags
         uses: actions/github-script@v4
@@ -36,59 +44,57 @@ jobs:
             console.log("matrixInput: ", matrixInput);
 
   functional_matrix:
-    name: Funtional Test
+    name: Alloy
+    strategy:
+      max-parallel: 20
+      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
     needs: get-testing-tags
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 15
-      matrix:
-        alloytags: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput).include }}
-        browsers:
-          [
-            "'saucelabs:Chrome@latest:Windows 10'",
-            "'saucelabs:MicrosoftEdge@latest:Windows 10'",
-            "'saucelabs:IE@latest:Windows 10'",
-            "'saucelabs:Firefox@latest:Windows 10'",
-            "'saucelabs:Safari@latest:macOS 11.00'",
-          ]
-
     steps:
-      - name: Create a workflow dispatch event with ${{ matrix.alloytags.tag }}
+      - name: Create a workflow dispatch event with ${{ matrix.tag }}
         uses: actions/checkout@v3
         with:
-          ref: refs/heads/${{ matrix.alloytags.tag }}
+          ref: refs/heads/${{ matrix.tag }}
       - uses: actions/setup-node@v3
         with:
-          node-version: "16"
-      - uses: testspace-com/setup-testspace@v1
-        with:
-          domain: ${{github.repository_owner}}
+          node-version: "18"
       - uses: actions/cache@v3
         id: npm-cache
         with:
           path: "**/node_modules"
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }} # increment NPM_CACHE_VERSION secret to force cache reset
-      - name: Get version from package
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@master
+      - uses: nyaa8/package-version@v1
+      - uses: actions/download-artifact@v3
+        with:
+          name: sauce-config
+          path: .sauce
+      - name: Remove File
+        uses: JesseTG/rm@v1.0.3
+        with:
+          path: .sauceignore
+      - uses: actions/download-artifact@v3
+        with:
+          name: sauce-ignore
+          path: .sauceignore
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
-      # - uses: browser-actions/setup-geckodriver@latest
-      #   with:
-      #     geckodriver-version: "0.27.0"
-      - name: Install TestCafe dependencies
-        run: |
-          npm install testcafe-reporter-junit --save-dev
       - name: Build
         run: npm run test:functional:build:prod
-      - name: Run TestCafe Tests
-        run: npx testcafe -e -q attemptLimit=5,successThreshold=1 -c 3 ${{ matrix.browsers }} --disable-page-caching -r spec,junit:report.xml
         env:
-          ALLOY_PROD_VERSION: ${{ steps.package-version.outputs.current-version }}
-      - name: Publish Results to Testspace
-        run: testspace report.xml
-        if: always()
+          ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
+      - name: Initiate Saucelabs Functional Tests
+        timeout-minutes: 20
+        uses: saucelabs/saucectl-run-action@v2
+        with:
+          sauce-username: ${{ secrets.SAUCE_USERNAME }}
+          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+          saucectl-version: v0.111.0
+          config-file: .sauce/prod.yml
+        env:
+          ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
+          NPM_PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
+          ALLOY_ENV: prod
       - uses: craftech-io/slack-action@v1
         with:
           slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
