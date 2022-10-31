@@ -64,6 +64,7 @@ test(
     const alloy = createAlloyProxy();
     await alloy.configure(config);
     await alloy.sendEvent(options);
+    await t.expect(networkLogger.edgeEndpointLogs.count(() => true)).eql(1);
     const sendEventRequest = networkLogger.edgeEndpointLogs.requests[0];
     // Check that targetMigrationEnabled flag is sent in meta
     await assertTargetMigrationEnabledIsSent(sendEventRequest);
