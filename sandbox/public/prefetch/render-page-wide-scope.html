@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="stylesheet" href="/index.css" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="theme-color" content="#000000" />
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
+
+    <title>Mock website hosting Alloy</title>
+
+    <!-- prettier-ignore -->
+    <script nonce="%REACT_APP_NONCE%">
+      !function(e,a,n,t){var i=e.head;if(i){
+        if (a) return;
+        var o=e.createElement("style");
+        o.setAttribute("nonce", "%REACT_APP_NONCE%");
+        o.id="alloy-prehiding",o.innerText=n,i.appendChild(o),
+          setTimeout(function(){o.parentNode&&o.parentNode.removeChild(o)},t)}}
+      (document, document.location.href.indexOf("mboxEdit") !== -1, ".personalization-container { opacity: 0 !important }", 3000);
+    </script>
+
+    <!-- prettier-ignore -->
+    <script nonce="%REACT_APP_NONCE%">
+      !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
+        []).push(o),n[o]=function(){var u=arguments;return new Promise(
+        function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
+      (window,["alloy"]);
+    </script>
+
+    <script nonce="%REACT_APP_NONCE%">
+      alloy("configure", {
+        defaultConsent: "in",
+        edgeDomain:
+          location.host.indexOf("alloyio.com") !== -1
+            ? "firstparty.alloyio.com"
+            : undefined,
+        edgeBasePath: "ee",
+        edgeConfigId: "7f256d21-f4ee-473e-8e66-1fb57f32c0c4",
+        orgId: "5BFE274A5F6980A50A495C08@AdobeOrg", // UnifiedJS QE Only
+        debugEnabled: true,
+        idMigrationEnabled: false,
+        prehidingStyle: ".personalization-container { opacity: 0 !important }",
+        onBeforeEventSend: function(options) {},
+        targetMigrationEnabled: true,
+        clickCollectionEnabled: "false"
+      });
+    </script>
+  </head>
+  <body>
+    <div id="root">
+      <h2>Hello World!</h2>
+      <h3>
+        Here we use a sendEvent with renderDecisions: true to capture the
+        impressions
+      </h3>
+    </div>
+    <div>
+      <h3>Another title to personalize!</h3>
+    </div>
+  </body>
+</html>
