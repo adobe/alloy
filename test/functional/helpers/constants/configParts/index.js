@@ -7,6 +7,7 @@ import debugDisabled from "./debugDisabled";
 import edgeDomainFirstParty from "./edgeDomainFirstParty";
 import edgeDomainThirdParty from "./edgeDomainThirdParty";
 import migrationEnabled from "./migrationEnabled";
+import targetMigrationEnabled from "./targetMigrationEnabled";
 import migrationDisabled from "./migrationDisabled";
 import consentIn from "./consentIn";
 import consentPending from "./consentPending";
@@ -30,5 +31,6 @@ export {
   consentIn,
   consentPending,
   thirdPartyCookiesEnabled,
-  thirdPartyCookiesDisabled
+  thirdPartyCookiesDisabled,
+  targetMigrationEnabled
 };
