@@ -27,9 +27,7 @@ export default navigator => {
         .getHighEntropyValues(highEntropyUserAgentHints.map(hint => hint[0]))
         .then(hints => {
           const userAgentClientHints = {};
-          highEntropyUserAgentHints.forEach(hint => {
-            const hintName = hint[0];
-            const hintType = hint[1];
+          highEntropyUserAgentHints.forEach(([hintName, hintType]) => {
             if (
               Object.prototype.hasOwnProperty.call(hints, hintName) &&
               /* eslint-disable-next-line valid-typeof */
