@@ -17,6 +17,7 @@ import injectPlaceContext from "./injectPlaceContext";
 import injectTimestamp from "./injectTimestamp";
 import implementationDetails from "./implementationDetails";
 import createComponent from "./createComponent";
+import injectHighEntropyUserAgentHints from "./injectHighEntropyUserAgentHints";
 import { arrayOf, string } from "../../utils/validation";
 
 const web = injectWeb(window);
@@ -24,21 +25,29 @@ const device = injectDevice(window);
 const environment = injectEnvironment(window);
 const placeContext = injectPlaceContext(() => new Date());
 const timestamp = injectTimestamp(() => new Date());
+const highEntropyUserAgentHints = injectHighEntropyUserAgentHints(navigator);
 
-const optionalContexts = {
+const defaultEnabledContexts = {
   web,
   device,
   environment,
   placeContext
 };
+const defaultDisabledContexts = {
+  highEntropyUserAgentHints
+};
+const optionalContexts = {
+  ...defaultEnabledContexts,
+  ...defaultDisabledContexts
+};
 const requiredContexts = [timestamp, implementationDetails];
+
 const createContext = ({ config, logger }) => {
   return createComponent(config, logger, optionalContexts, requiredContexts);
 };
-
 createContext.namespace = "Context";
 createContext.configValidators = {
-  context: arrayOf(string()).default(Object.keys(optionalContexts))
+  context: arrayOf(string()).default(Object.keys(defaultEnabledContexts))
 };
 
 export default createContext;

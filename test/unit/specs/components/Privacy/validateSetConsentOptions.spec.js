@@ -78,7 +78,8 @@ describeValidation(
             }
           ]
         }
-      }
+      },
+      error: true
     },
     {
       value: {
@@ -103,6 +104,17 @@ describeValidation(
         }
       },
       error: true
-    }
+    },
+    {
+      value: {
+        consent: validGeneralConsent,
+        edgeConfigOverrides: {
+          identity: {
+            idSyncContainerId: "123"
+          }
+        }
+      }
+    },
+    { value: { consent: validGeneralConsent, edgeConfigOverrides: {} } }
   ]
 );

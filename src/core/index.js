@@ -42,15 +42,18 @@ import injectSendBeaconRequest from "./network/requestMethods/injectSendBeaconRe
 import createLogger from "./createLogger";
 import createEventManager from "./createEventManager";
 import createCookieTransfer from "./createCookieTransfer";
+import injectShouldTransferCookie from "./injectShouldTransferCookie";
 import {
   createDataCollectionRequest,
-  createDataCollectionRequestPayload
+  createDataCollectionRequestPayload,
+  createGetAssuranceValidationTokenParams
 } from "../utils/request";
 import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkRequest";
 import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors";
 import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint";
 import isRequestRetryable from "./network/isRequestRetryable";
 import getRequestRetryDelay from "./network/getRequestRetryDelay";
+import injectApplyResponse from "./edgeNetwork/injectApplyResponse";
 
 const createNamespacedStorage = injectStorage(window);
 
@@ -66,6 +69,9 @@ const sendFetchRequest = isFunction(fetch)
   ? injectSendFetchRequest({ fetch })
   : injectSendXhrRequest({ XMLHttpRequest });
 const fireReferrerHideableImage = injectFireReferrerHideableImage();
+const getAssuranceValidationTokenParams = createGetAssuranceValidationTokenParams(
+  { window, createNamespacedStorage }
+);
 
 export const createExecuteCommand = ({
   instanceName,
@@ -88,10 +94,14 @@ export const createExecuteCommand = ({
       logger,
       setDebugEnabled
     });
-    const { orgId } = config;
+    const { orgId, targetMigrationEnabled } = config;
+    const shouldTransferCookie = injectShouldTransferCookie({
+      orgId,
+      targetMigrationEnabled
+    });
     const cookieTransfer = createCookieTransfer({
       cookieJar: loggingCookieJar,
-      orgId,
+      shouldTransferCookie,
       apexDomain,
       dateProvider: () => new Date()
     });
@@ -124,7 +134,15 @@ export const createExecuteCommand = ({
       sendNetworkRequest,
       createResponse,
       processWarningsAndErrors,
-      getLocationHint
+      getLocationHint,
+      getAssuranceValidationTokenParams
+    });
+
+    const applyResponse = injectApplyResponse({
+      lifecycle,
+      cookieTransfer,
+      createResponse,
+      processWarningsAndErrors
     });
 
     const generalConsentState = createConsentStateMachine({ logger });
@@ -140,7 +158,8 @@ export const createExecuteCommand = ({
       createEvent,
       createDataCollectionRequestPayload,
       createDataCollectionRequest,
-      sendEdgeNetworkRequest
+      sendEdgeNetworkRequest,
+      applyResponse
     });
     return initializeComponents({
       componentCreators,

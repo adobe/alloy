@@ -7,12 +7,14 @@ describe("Privacy:injectSendSetConsentRequest", () => {
   let createConsentRequestPayload;
   let createConsentRequest;
   let sendSetConsentRequest;
+  let globalEdgeConfigOverrides;
 
   beforeEach(() => {
     sendEdgeNetworkRequest = jasmine.createSpy("sendEdgeNetworkRequest");
     requestPayload = jasmine.createSpyObj("requestPayload", [
       "setConsent",
-      "addIdentity"
+      "addIdentity",
+      "mergeConfigOverride"
     ]);
     createConsentRequestPayload = jasmine
       .createSpy("createConsentRequestPayload")
@@ -25,10 +27,12 @@ describe("Privacy:injectSendSetConsentRequest", () => {
     createConsentRequest = jasmine
       .createSpy("createConsentRequest")
       .and.returnValue(request);
+    globalEdgeConfigOverrides = {};
     sendSetConsentRequest = injectSendSetConsentRequest({
       createConsentRequestPayload,
       createConsentRequest,
-      sendEdgeNetworkRequest
+      sendEdgeNetworkRequest,
+      edgeConfigOverrides: globalEdgeConfigOverrides
     });
   });
 
@@ -49,6 +53,50 @@ describe("Privacy:injectSendSetConsentRequest", () => {
       expect(requestPayload.addIdentity).toHaveBeenCalledWith("a", { id: "1" });
       expect(requestPayload.addIdentity).toHaveBeenCalledWith("a", { id: "2" });
       expect(requestPayload.addIdentity).toHaveBeenCalledWith("b", { id: "3" });
+    });
+  });
+
+  it("sets the configuration overrides on the payload, if provided", () => {
+    sendEdgeNetworkRequest.and.returnValue(Promise.resolve());
+    return sendSetConsentRequest({
+      consentOptions: "anything",
+      identityMap: {
+        a: [{ id: "1" }, { id: "2" }],
+        b: [{ id: "3" }]
+      },
+      edgeConfigOverrides: {
+        com_adobe_identity: {
+          idSyncContainerId: "123"
+        }
+      }
+    }).then(() => {
+      expect(requestPayload.setConsent).toHaveBeenCalledWith("anything");
+      expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
+        com_adobe_identity: {
+          idSyncContainerId: "123"
+        }
+      });
+    });
+  });
+
+  it("sets the configuration overrides on the payload, if provided, from the global config", () => {
+    sendEdgeNetworkRequest.and.returnValue(Promise.resolve());
+    globalEdgeConfigOverrides.com_adobe_identity = {
+      idSyncContainerId: "123"
+    };
+    return sendSetConsentRequest({
+      consentOptions: "anything",
+      identityMap: {
+        a: [{ id: "1" }, { id: "2" }],
+        b: [{ id: "3" }]
+      }
+    }).then(() => {
+      expect(requestPayload.setConsent).toHaveBeenCalledWith("anything");
+      expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
+        com_adobe_identity: {
+          idSyncContainerId: "123"
+        }
+      });
     });
   });
 });

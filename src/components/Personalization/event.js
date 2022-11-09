@@ -10,11 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export const mergeDecisionsMeta = (event, decisionsMeta) => {
+const EVENT_TYPE_TRUE = 1;
+
+export const mergeDecisionsMeta = (event, decisionsMeta, eventType) => {
   event.mergeXdm({
     _experience: {
       decisioning: {
-        propositions: decisionsMeta
+        propositions: decisionsMeta,
+        propositionEventType: {
+          [eventType]: EVENT_TYPE_TRUE
+        }
       }
     }
   });

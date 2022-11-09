@@ -20,6 +20,14 @@ describe("Identity::getIdentityOptionsValidator", () => {
     );
 
     expect(() => {
+      getIdentityOptionsValidator({ namespaces: ["ECID", "ECID"] });
+    }).toThrow(
+      new Error(
+        `'namespaces': Expected array values to be unique, but got ["ECID","ECID"].`
+      )
+    );
+
+    expect(() => {
       getIdentityOptionsValidator({ namespaces: ["ACD"] });
     }).toThrow(new Error(`'namespaces[0]': Expected ECID, but got "ACD".`));
   });
@@ -36,6 +44,22 @@ describe("Identity::getIdentityOptionsValidator", () => {
     const ECID = "ECID";
     expect(() => {
       getIdentityOptionsValidator({ namespaces: [ECID] });
+    }).not.toThrow();
+  });
+
+  it("should return valid options when configuration is passed", () => {
+    expect(() => {
+      getIdentityOptionsValidator({
+        edgeConfigOverrides: { identity: { idSyncContainerId: "123" } }
+      });
+    }).not.toThrow();
+  });
+
+  it("should return valid options when an empty configuration is passed", () => {
+    expect(() => {
+      getIdentityOptionsValidator({
+        edgeConfigOverrides: {}
+      });
     }).not.toThrow();
   });
 });

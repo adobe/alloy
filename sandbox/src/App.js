@@ -17,6 +17,7 @@ import Home from "./Home";
 import Consent from "./Consent";
 import Personalization from "./Personalization";
 import PersonalizationSpa from "./PersonalizationSpa";
+import PersonalizationAjo from "./PersonalizationAjo";
 import PersonalizationProfile from "./PersonalizationProfile";
 import Links from "./Links";
 import EventMerge from "./EventMerge";
@@ -29,6 +30,7 @@ import PersonalizationAnalyticsClientSide from "./PersonalizationAnalyticsClient
 import PersonalizationFormBased from "./PersonalizationFormBased";
 import Identity from "./Identity";
 import AlloyVersion from "./components/AlloyVersion";
+import ConfigOverrides from "./ConfigOverrides.jsx";
 
 function BasicExample() {
   return (
@@ -47,6 +49,9 @@ function BasicExample() {
             </li>
             <li>
               <Link to="/personalizationSpa">Personalization - SPA</Link>
+            </li>
+            <li>
+              <Link to="/personalizationAjo">Personalization - AJO</Link>
             </li>
             <li>
               <Link to="/personalizationA4TClientSide">
@@ -88,6 +93,9 @@ function BasicExample() {
             <li>
               <a href="/identity">Identity</a>
             </li>
+            <li>
+              <a href="/configOverrides">Config Overrides</a>
+            </li>
           </ul>
           <hr />
 
@@ -95,6 +103,7 @@ function BasicExample() {
           <Route path="/consent" component={Consent} />
           <Route path="/personalization" component={Personalization} />
           <Route path="/personalizationSpa" component={PersonalizationSpa} />
+          <Route path="/personalizationAjo" component={PersonalizationAjo} />
           <Route
             path="/personalizationA4TClientSide"
             component={PersonalizationAnalyticsClientSide}
@@ -115,6 +124,7 @@ function BasicExample() {
           <Route path="/redirectOffers" component={RedirectOffers} />
           <Route path="/redirectedNewPage" component={RedirectedNewPage} />
           <Route path="/identity" component={Identity} />
+          <Route path="/configOverrides" component={ConfigOverrides} />
         </div>
       </Router>
       <AlloyVersion />

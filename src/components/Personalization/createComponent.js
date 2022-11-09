@@ -16,6 +16,7 @@ import { AUTHORING_ENABLED } from "./constants/loggerMessage";
 import validateApplyPropositionsOptions from "./validateApplyPropositionsOptions";
 
 export default ({
+  getPageLocation,
   logger,
   fetchDataHandler,
   viewChangeHandler,
@@ -24,14 +25,20 @@ export default ({
   mergeQuery,
   viewCache,
   showContainers,
-  applyPropositions
+  applyPropositions,
+  setTargetMigration
 }) => {
   return {
     lifecycle: {
+      onBeforeRequest({ request }) {
+        setTargetMigration(request);
+        return Promise.resolve();
+      },
       onBeforeEvent({
         event,
         renderDecisions,
         decisionScopes = [],
+        personalization = {},
         onResponse = noop,
         onRequestFailure = noop
       }) {
@@ -48,10 +55,13 @@ export default ({
         }
 
         const personalizationDetails = createPersonalizationDetails({
+          getPageLocation,
           renderDecisions,
           decisionScopes,
+          personalization,
           event,
-          viewCache
+          viewCache,
+          logger
         });
 
         if (personalizationDetails.shouldFetchData()) {

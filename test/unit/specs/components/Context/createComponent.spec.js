@@ -34,31 +34,31 @@ describe("Context::createComponent", () => {
     event = jasmine.createSpyObj("event", ["mergeXdm"]);
   });
 
-  it("enables the configured contexts", () => {
+  it("enables the configured contexts", async () => {
     const config = createConfig({ context: ["context1", "context2"] });
     const component = createComponent(config, logger, availableContexts, [
       requiredContext
     ]);
-    component.lifecycle.onBeforeEvent({ event });
+    await component.lifecycle.onBeforeEvent({ event });
 
     expect(event.mergeXdm).toHaveBeenCalledWith({ a: "1", b: "2", c: "3" });
   });
-  it("ignores unknown contexts", () => {
+  it("ignores unknown contexts", async () => {
     const config = createConfig({ context: ["unknowncontext", "context1"] });
     const component = createComponent(config, logger, availableContexts, [
       requiredContext
     ]);
-    component.lifecycle.onBeforeEvent({ event });
+    await component.lifecycle.onBeforeEvent({ event });
 
     expect(event.mergeXdm).toHaveBeenCalledWith({ a: "1", c: "3" });
   });
 
-  it("can disable non-required contexts", () => {
+  it("can disable non-required contexts", async () => {
     const config = createConfig({ context: [] });
     const component = createComponent(config, logger, availableContexts, [
       requiredContext
     ]);
-    component.lifecycle.onBeforeEvent({ event });
+    await component.lifecycle.onBeforeEvent({ event });
 
     expect(event.mergeXdm).toHaveBeenCalledWith({ c: "3" });
   });

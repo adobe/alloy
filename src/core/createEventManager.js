@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createCallbackAggregator } from "../utils";
+import PAGE_WIDE_SCOPE from "../constants/pageWideScope";
+import { createCallbackAggregator, noop } from "../utils";
 
 const EVENT_CANCELLATION_MESSAGE =
   "Event was canceled because the onBeforeEventSend callback returned false.";
@@ -23,9 +24,13 @@ export default ({
   createEvent,
   createDataCollectionRequestPayload,
   createDataCollectionRequest,
-  sendEdgeNetworkRequest
+  sendEdgeNetworkRequest,
+  applyResponse
 }) => {
-  const { onBeforeEventSend } = config;
+  const {
+    onBeforeEventSend,
+    edgeConfigOverrides: globalConfigOverrides
+  } = config;
 
   return {
     createEvent,
@@ -37,23 +42,34 @@ export default ({
      * the request payload.
      * @param {Object} [options]
      * @param {boolean} [options.renderDecisions=false]
-     * @param {Array} [options.decisionScopes]
+     * @param {Array} [options.decisionScopes] Note: this option will soon
+     * be deprecated, please use *personalization.decisionScopes* instead
+     * @param {Object} [options.personalization]
+     * @param {Object} [options.serverState]
      * This will be passed to components
      * so they can take appropriate action.
      * @returns {*}
      */
     sendEvent(event, options = {}) {
-      const { renderDecisions = false, decisionScopes } = options;
+      const {
+        renderDecisions = false,
+        decisionScopes,
+        edgeConfigOverrides: localConfigOverrides,
+        personalization
+      } = options;
       const payload = createDataCollectionRequestPayload();
       const request = createDataCollectionRequest(payload);
       const onResponseCallbackAggregator = createCallbackAggregator();
       const onRequestFailureCallbackAggregator = createCallbackAggregator();
+      payload.mergeConfigOverride(globalConfigOverrides);
+      payload.mergeConfigOverride(localConfigOverrides);
 
       return lifecycle
         .onBeforeEvent({
           event,
           renderDecisions,
           decisionScopes,
+          personalization,
           onResponse: onResponseCallbackAggregator.add,
           onRequestFailure: onRequestFailureCallbackAggregator.add
         })
@@ -93,6 +109,36 @@ export default ({
             runOnResponseCallbacks: onResponseCallbackAggregator.call,
             runOnRequestFailureCallbacks:
               onRequestFailureCallbackAggregator.call
+          });
+        });
+    },
+    applyResponse(event, options = {}) {
+      const {
+        renderDecisions = false,
+        responseHeaders = {},
+        responseBody = { handle: [] }
+      } = options;
+
+      const payload = createDataCollectionRequestPayload();
+      const request = createDataCollectionRequest(payload);
+      const onResponseCallbackAggregator = createCallbackAggregator();
+
+      return lifecycle
+        .onBeforeEvent({
+          event,
+          renderDecisions,
+          decisionScopes: [PAGE_WIDE_SCOPE],
+          personalization: {},
+          onResponse: onResponseCallbackAggregator.add,
+          onRequestFailure: noop
+        })
+        .then(() => {
+          payload.addEvent(event);
+          return applyResponse({
+            request,
+            responseHeaders,
+            responseBody,
+            runOnResponseCallbacks: onResponseCallbackAggregator.call
           });
         });
     }

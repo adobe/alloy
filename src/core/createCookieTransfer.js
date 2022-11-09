@@ -10,11 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { endsWith, isNamespacedCookieName } from "../utils";
+import { endsWith } from "../utils";
 
 const STATE_STORE_HANDLE_TYPE = "state:store";
 
-export default ({ cookieJar, orgId, apexDomain, dateProvider }) => {
+export default ({
+  cookieJar,
+  shouldTransferCookie,
+  apexDomain,
+  dateProvider
+}) => {
   return {
     /**
      * When sending to a third-party endpoint, the endpoint won't be able to
@@ -36,14 +41,7 @@ export default ({ cookieJar, orgId, apexDomain, dateProvider }) => {
         const cookies = cookieJar.get();
 
         const entries = Object.keys(cookies)
-          .filter(name => {
-            // We have a contract with the server that we will pass
-            // all cookies whose names are namespaced according to the
-            // logic in isNamespacedCookieName as well as any legacy
-            // cookie names (so that the server can handle migrating
-            // identities on websites previously using Visitor.js)
-            return isNamespacedCookieName(orgId, name);
-          })
+          .filter(shouldTransferCookie)
           .map(qualifyingCookieName => {
             return {
               key: qualifyingCookieName,

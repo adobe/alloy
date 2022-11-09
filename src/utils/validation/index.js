@@ -26,6 +26,7 @@ import createNonEmptyValidator from "./createNonEmptyValidator";
 import createObjectOfValidator from "./createObjectOfValidator";
 import createAnyOfValidator from "./createAnyOfValidator";
 import createUniqueValidator from "./createUniqueValidator";
+import createUniqueItemsValidator from "./createUniqueItemsValidator";
 import domainValidator from "./domainValidator";
 import integerValidator from "./integerValidator";
 import numberValidator from "./numberValidator";
@@ -74,6 +75,10 @@ const unique = function createUnique() {
   return nullSafeChain(this, createUniqueValidator());
 };
 
+const uniqueItems = function createUniqueItems() {
+  return nullSafeChain(this, createUniqueItemsValidator());
+};
+
 // top-level validators.  These are the first functions that are called to create a validator.
 const anyOf = function anyOf(validators, message) {
   // use chain here because we don't want to accept null or undefined unless at least
@@ -85,7 +90,8 @@ const anything = function anything() {
 };
 const arrayOf = function arrayOf(elementValidator) {
   return nullSafeChain(this, createArrayOfValidator(elementValidator), {
-    nonEmpty: nonEmptyArray
+    nonEmpty: nonEmptyArray,
+    uniqueItems
   });
 };
 const boolean = function boolean() {

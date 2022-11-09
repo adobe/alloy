@@ -88,7 +88,6 @@ const simulateViewChange = async alloy => {
   // sendEvent at a view change, this shouldn't request any target data, it should use the existing cache
   const resultingObject = await alloy.sendEvent({
     renderDecisions: false,
-    decisionScopes: [],
     xdm: {
       web: {
         webPageDetails: {
@@ -113,7 +112,6 @@ const simulateViewChangeForNonExistingView = async alloy => {
   // no decisions in cache for this specific view should return empty array
   const resultingObject = await alloy.sendEvent({
     renderDecisions: true,
-    decisionScopes: [],
     xdm: {
       web: {
         webPageDetails: {

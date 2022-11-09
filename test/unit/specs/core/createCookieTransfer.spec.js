@@ -13,9 +13,9 @@ governing permissions and limitations under the License.
 import createCookieTransfer from "../../../../src/core/createCookieTransfer";
 
 describe("createCookieTransfer", () => {
-  const orgId = "ABC@CustomOrg";
   const apexDomain = "example.com";
   const endpointDomain = "thirdparty.com";
+  let shouldTransferCookie;
   let payload;
   let cookieJar;
   let cookieTransfer;
@@ -23,11 +23,13 @@ describe("createCookieTransfer", () => {
   const dateProvider = () => date;
 
   beforeEach(() => {
+    shouldTransferCookie = jasmine.createSpy("shouldTransferCookie");
+    shouldTransferCookie.and.returnValue(false);
     payload = jasmine.createSpyObj("payload", ["mergeState"]);
     cookieJar = jasmine.createSpyObj("cookieJar", ["get", "set"]);
     cookieTransfer = createCookieTransfer({
       cookieJar,
-      orgId,
+      shouldTransferCookie,
       apexDomain,
       dateProvider
     });
@@ -55,8 +57,11 @@ describe("createCookieTransfer", () => {
       cookieJar.get.and.returnValue({
         kndctr_ABC_CustomOrg_identity: "XYZ@CustomOrg",
         ineligible_cookie: "foo",
-        kndctr_ABC_CustomOrg_optIn: "all"
+        kndctr_ABC_CustomOrg_optIn: "all",
+        at_qa_mode:
+          '{"token":"QATokenString","listedActivitiesOnly":true,"evaluateAsTrueAudienceIds":["2480042"],"previewIndexes":[{"activityIndex":1,"experienceIndex":1}]}'
       });
+      shouldTransferCookie.and.returnValues(true, false, true, true);
       cookieTransfer.cookiesToPayload(payload, endpointDomain);
       expect(payload.mergeState).toHaveBeenCalledWith({
         domain: apexDomain,
@@ -69,6 +74,11 @@ describe("createCookieTransfer", () => {
           {
             key: "kndctr_ABC_CustomOrg_optIn",
             value: "all"
+          },
+          {
+            key: "at_qa_mode",
+            value:
+              '{"token":"QATokenString","listedActivitiesOnly":true,"evaluateAsTrueAudienceIds":["2480042"],"previewIndexes":[{"activityIndex":1,"experienceIndex":1}]}'
           }
         ]
       });

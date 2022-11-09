@@ -1,0 +1,57 @@
+apiVersion: v1alpha
+kind: testcafe
+defaults:
+  mode: sauce
+sauce:
+  region: us-west-1
+  concurrency: 2
+  sauceignore: .sauceignore
+metadata:
+  name: Alloy SDK Int Functional Test
+  tags:
+    - e2e
+  build: Release $CI_COMMIT_SHORT_SHA
+rootDir: ./
+docker:
+  fileTransfer: copy
+  image: saucelabs/stt-testcafe-node:latest
+env:
+  ALLOY_ENV: int
+  EDGE_BASE_PATH: ee-pre-prd
+  NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
+testcafe:
+  version: 2.0.1
+timeout: 15m
+timeZone: New_York
+npm:
+  dependencies:
+    - read-cache
+    - uuid
+    - css.escape
+    - "@adobe/reactor-object-assign"
+    - "@adobe/reactor-load-script"
+    - "@adobe/reactor-cookie"
+    - "@adobe/reactor-query-string"
+    - "@adobe/reactor-promise"
+suites:
+  - name: "Chrome"
+    shard: concurrency
+    platformName: "Windows 11"
+    browserName: "chrome"
+    src:
+      - "test/functional/specs/**/*.js"
+    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js" ]
+  - name: "Edge"
+    shard: concurrency
+    platformName: "Windows 11"
+    browserName: "microsoftedge"
+    src:
+      - "test/functional/specs/**/*.js"
+    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Personalization/C3272624.js" ]
+  - name: "Firefox Latest"
+    shard: concurrency
+    platformName: "Windows 11"
+    browserName: "firefox"
+    src:
+      - "test/functional/specs/**/*.js"
+    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js" ]

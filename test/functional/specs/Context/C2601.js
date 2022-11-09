@@ -5,17 +5,20 @@ import createFixture from "../../helpers/createFixture";
 import placeContextConfig from "../../helpers/constants/placeContextConfig";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
+import isUserAgentClientHintsSupported from "../../helpers/isUserAgentClientHintsSupported";
 
 const networkLogger = createNetworkLogger();
 
+const ID = "C2601";
+const DESCRIPTION = `${ID} - Adds only placeContext context data when only device is specified in configuration.`;
+
 createFixture({
-  title:
-    "C2601 - Adds only placeContext context data when only device is specified in configuration.",
+  title: DESCRIPTION,
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({
-  ID: "C2601",
+  ID,
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
@@ -30,7 +33,7 @@ const sendEventOptions = {
   }
 };
 
-test("C2601 - Adds only placeContext context data when only device is specified in configuration.", async () => {
+test(DESCRIPTION, async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(placeContextConfig);
   await alloy.sendEvent(sendEventOptions);
@@ -44,7 +47,13 @@ test("C2601 - Adds only placeContext context data when only device is specified 
 
   await t.expect(parsedBody.events[0].xdm.placeContext).ok();
   await t.expect(parsedBody.events[0].xdm.web.webPageDetails).ok();
-
   await t.expect(parsedBody.events[0].xdm.environment).notOk();
   await t.expect(parsedBody.events[0].xdm.device).notOk();
+  if (await isUserAgentClientHintsSupported()) {
+    await t
+      .expect(
+        parsedBody.events[0].xdm.environment.browserDetails.userAgentClientHints
+      )
+      .notOk();
+  }
 });

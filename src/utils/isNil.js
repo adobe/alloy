@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 /**
- * Returns true whether the value is null or undefined.
+ * Returns true when the value is null.
  * @param {*} value
  * @returns {boolean}
  */

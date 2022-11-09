@@ -12,7 +12,9 @@ governing permissions and limitations under the License.
 
 import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain";
 import apiVersion from "../../constants/apiVersion";
-import { createCallbackAggregator, noop, assign } from "../../utils";
+import { createCallbackAggregator, noop } from "../../utils";
+import mergeLifecycleResponses from "./mergeLifecycleResponses";
+import handleRequestFailure from "./handleRequestFailure";
 
 export default ({
   config,
@@ -21,7 +23,8 @@ export default ({
   sendNetworkRequest,
   createResponse,
   processWarningsAndErrors,
-  getLocationHint
+  getLocationHint,
+  getAssuranceValidationTokenParams
 }) => {
   const { edgeDomain, edgeBasePath, edgeConfigId } = config;
 
@@ -56,7 +59,7 @@ export default ({
         const edgeBasePathWithLocationHint = locationHint
           ? `${edgeBasePath}/${locationHint}`
           : edgeBasePath;
-        const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${edgeConfigId}&requestId=${request.getId()}`;
+        const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${edgeConfigId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
         cookieTransfer.cookiesToPayload(request.getPayload(), endpointDomain);
         return sendNetworkRequest({
           requestId: request.getId(),
@@ -69,17 +72,7 @@ export default ({
         processWarningsAndErrors(networkResponse);
         return networkResponse;
       })
-      .catch(error => {
-        // Regardless of whether the network call failed, an unexpected status
-        // code was returned, or the response body was malformed, we want to call
-        // the onRequestFailure callbacks, but still throw the exception.
-        const throwError = () => {
-          throw error;
-        };
-        return onRequestFailureCallbackAggregator
-          .call({ error })
-          .then(throwError, throwError);
-      })
+      .catch(handleRequestFailure(onRequestFailureCallbackAggregator))
       .then(({ parsedBody, getHeader }) => {
         // Note that networkResponse.parsedBody may be undefined if it was a
         // 204 No Content response. That's fine.
@@ -94,19 +87,7 @@ export default ({
           .call({
             response
           })
-          .then(returnValues => {
-            // Merges all returned objects from all `onResponse` callbacks into
-            // a single object that can later be returned to the customer.
-            const lifecycleOnResponseReturnValues = returnValues.shift() || [];
-            const consumerOnResponseReturnValues = returnValues.shift() || [];
-            const lifecycleOnBeforeRequestReturnValues = returnValues;
-            return assign(
-              {},
-              ...lifecycleOnResponseReturnValues,
-              ...consumerOnResponseReturnValues,
-              ...lifecycleOnBeforeRequestReturnValues
-            );
-          });
+          .then(mergeLifecycleResponses);
       });
   };
 };

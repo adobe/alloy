@@ -36,7 +36,7 @@ const configuration = {
   ...orgMainConfigMain
 };
 
-test("C1576777: When identity cookie is missing, stored consent is cleared", async () => {
+test.skip("C1576777: When identity cookie is missing, stored consent is cleared", async () => {
   // set consent to out
   const alloy = createAlloyProxy();
   await alloy.configure(configuration);

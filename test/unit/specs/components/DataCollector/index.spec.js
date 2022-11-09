@@ -15,6 +15,7 @@ import { noop } from "../../../../../src/utils";
 describe("Event Command", () => {
   let event;
   let eventManager;
+  let logger;
   let sendEventCommand;
   beforeEach(() => {
     event = jasmine.createSpyObj("event", [
@@ -22,8 +23,10 @@ describe("Event Command", () => {
       "setUserData",
       "setUserXdm",
       "mergeXdm",
-      "mergeMeta"
+      "mergeMeta",
+      "mergeConfigOverride"
     ]);
+    logger = jasmine.createSpyObj("logger", ["warn"]);
 
     eventManager = {
       createEvent() {
@@ -38,7 +41,8 @@ describe("Event Command", () => {
     };
 
     const dataCollector = createDataCollector({
-      eventManager
+      eventManager,
+      logger
     });
     sendEventCommand = dataCollector.commands.sendEvent;
   });
@@ -60,7 +64,8 @@ describe("Event Command", () => {
       expect(event.setUserData).toHaveBeenCalledWith(data);
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: true,
-        decisionScopes: []
+        decisionScopes: [],
+        personalization: {}
       });
       expect(result).toEqual("sendEventResult");
     });
@@ -69,13 +74,39 @@ describe("Event Command", () => {
   it("sends event with decisionScopes parameter when decisionScopes is not empty", () => {
     const options = {
       renderDecisions: true,
-      decisionScopes: ["Foo1", "Foo2"]
+      decisionScopes: ["Foo1"],
+      personalization: {
+        decisionScopes: ["Foo2"]
+      }
     };
 
     return sendEventCommand.run(options).then(result => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: true,
-        decisionScopes: ["Foo1", "Foo2"]
+        decisionScopes: ["Foo1"],
+        personalization: {
+          decisionScopes: ["Foo2"]
+        }
+      });
+      expect(result).toEqual("sendEventResult");
+    });
+  });
+
+  it("sends event with surfaces parameter when surfaces is not empty", () => {
+    const options = {
+      renderDecisions: true,
+      personalization: {
+        surfaces: ["Foo1", "Foo2"]
+      }
+    };
+
+    return sendEventCommand.run(options).then(result => {
+      expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
+        renderDecisions: true,
+        decisionScopes: [],
+        personalization: {
+          surfaces: ["Foo1", "Foo2"]
+        }
       });
       expect(result).toEqual("sendEventResult");
     });
@@ -91,7 +122,8 @@ describe("Event Command", () => {
     return sendEventCommand.run({}).then(() => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: false,
-        decisionScopes: []
+        decisionScopes: [],
+        personalization: {}
       });
     });
   });
@@ -120,17 +152,56 @@ describe("Event Command", () => {
       });
   });
 
-  it("merges datasetId", () => {
+  it("merges datasetId into the override configuration", () => {
+    const datasetId = "mydatasetId";
     return sendEventCommand
       .run({
-        datasetId: "mydatasetId"
+        datasetId
       })
       .then(() => {
-        expect(event.mergeMeta).toHaveBeenCalledWith({
-          collect: {
-            datasetId: "mydatasetId"
+        expect(eventManager.sendEvent).toHaveBeenCalledWith(
+          jasmine.any(Object),
+          {
+            renderDecisions: false,
+            decisionScopes: [],
+            personalization: {},
+            edgeConfigOverrides: {
+              com_adobe_experience_platform: {
+                datasets: {
+                  event: { datasetId }
+                }
+              }
+            }
           }
-        });
+        );
+        expect(logger.warn).toHaveBeenCalled();
+      });
+  });
+
+  it("includes configuration if provided", () => {
+    return sendEventCommand
+      .run({
+        renderDecisions: true,
+        edgeConfigOverrides: {
+          target: {
+            propertyToken: "hello"
+          }
+        }
+      })
+      .then(() => {
+        expect(eventManager.sendEvent).toHaveBeenCalledWith(
+          jasmine.any(Object),
+          {
+            renderDecisions: true,
+            decisionScopes: [],
+            personalization: {},
+            edgeConfigOverrides: {
+              target: {
+                propertyToken: "hello"
+              }
+            }
+          }
+        );
       });
   });
 });

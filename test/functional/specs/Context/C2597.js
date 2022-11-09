@@ -2,24 +2,27 @@ import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
-
 import { orgMainConfigMain } from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
+import isUserAgentClientHintsSupported from "../../helpers/isUserAgentClientHintsSupported";
 
 const networkLogger = createNetworkLogger();
 
+const ID = "C2597";
+const DESCRIPTION = `${ID} - Adds all context data to requests by default.`;
+
 createFixture({
-  title: "C2597 - Adds all context data to requests by default.",
+  title: DESCRIPTION,
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({
-  ID: "C2597",
+  ID,
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
 
-test("Test C2597 - Adds all context data to requests by default.", async () => {
+test(DESCRIPTION, async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(orgMainConfigMain);
   await alloy.sendEvent();
@@ -35,4 +38,11 @@ test("Test C2597 - Adds all context data to requests by default.", async () => {
   await t.expect(parsedBody.events[0].xdm.placeContext).ok();
   await t.expect(parsedBody.events[0].xdm.environment.type).ok();
   await t.expect(parsedBody.events[0].xdm.web.webPageDetails).ok();
+  if (await isUserAgentClientHintsSupported()) {
+    await t
+      .expect(
+        parsedBody.events[0].xdm.environment.browserDetails.userAgentClientHints
+      )
+      .notOk();
+  }
 });

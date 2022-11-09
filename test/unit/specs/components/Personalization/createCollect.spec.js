@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createCollect from "../../../../../src/components/Personalization/createCollect";
+import { PropositionEventType } from "../../../../../src/components/Personalization/constants/propositionEventType";
 
 describe("Personalization::createCollect", () => {
   let eventManager;
@@ -39,7 +40,11 @@ describe("Personalization::createCollect", () => {
     expect(event.mergeXdm).toHaveBeenCalledWith({
       eventType: "decisioning.propositionDisplay"
     });
-    expect(mergeDecisionsMeta).toHaveBeenCalledWith(event, decisionsMeta);
+    expect(mergeDecisionsMeta).toHaveBeenCalledWith(
+      event,
+      decisionsMeta,
+      PropositionEventType.DISPLAY
+    );
     expect(eventManager.sendEvent).toHaveBeenCalled();
   });
 });

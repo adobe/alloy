@@ -26,6 +26,7 @@ describe("createEventManager", () => {
   let requestPayload;
   let request;
   let sendEdgeNetworkRequest;
+  let applyResponse;
   let onRequestFailureForOnBeforeEvent;
   let fakeOnRequestFailure;
   let eventManager;
@@ -33,7 +34,8 @@ describe("createEventManager", () => {
     config = createConfig({
       orgId: "ABC123",
       onBeforeEventSend: jasmine.createSpy(),
-      debugEnabled: true
+      debugEnabled: true,
+      edgeConfigOverrides: {}
     });
     logger = jasmine.createSpyObj("logger", ["info"]);
     lifecycle = jasmine.createSpyObj("lifecycle", {
@@ -58,7 +60,10 @@ describe("createEventManager", () => {
     const createEvent = () => {
       return event;
     };
-    requestPayload = jasmine.createSpyObj("requestPayload", ["addEvent"]);
+    requestPayload = jasmine.createSpyObj("requestPayload", [
+      "addEvent",
+      "mergeConfigOverride"
+    ]);
     const createDataCollectionRequestPayload = () => {
       return requestPayload;
     };
@@ -73,6 +78,9 @@ describe("createEventManager", () => {
     sendEdgeNetworkRequest = jasmine
       .createSpy("sendEdgeNetworkRequest")
       .and.returnValue(Promise.resolve());
+    applyResponse = jasmine
+      .createSpy("applyResponse")
+      .and.returnValue(Promise.resolve());
     eventManager = createEventManager({
       config,
       logger,
@@ -81,7 +89,8 @@ describe("createEventManager", () => {
       createEvent,
       createDataCollectionRequestPayload,
       createDataCollectionRequest,
-      sendEdgeNetworkRequest
+      sendEdgeNetworkRequest,
+      applyResponse
     });
   });
 
@@ -111,6 +120,7 @@ describe("createEventManager", () => {
             event,
             renderDecisions: true,
             decisionScopes: undefined,
+            personalization: undefined,
             onResponse: jasmine.any(Function),
             onRequestFailure: jasmine.any(Function)
           });
@@ -252,6 +262,118 @@ describe("createEventManager", () => {
       return expectAsync(eventManager.sendEvent(event)).toBeRejectedWithError(
         "no connection"
       );
+    });
+  });
+
+  describe("applyResponse", () => {
+    const responseHeaders = {
+      "x-request-id": "474ec8af-6326-4cb5-952a-4b7dc6be5749"
+    };
+    const responseBody = {
+      requestId: "474ec8af-6326-4cb5-952a-4b7dc6be5749",
+      handle: []
+    };
+
+    const options = {
+      renderDecisions: false,
+      responseHeaders,
+      responseBody
+    };
+
+    it("creates the payload and adds event and meta", () => {
+      return eventManager.applyResponse(event, options).then(() => {
+        expect(requestPayload.addEvent).toHaveBeenCalledWith(event);
+      });
+    });
+
+    it("events no not call finalize with onBeforeEventSend callback", () => {
+      return eventManager.applyResponse(event, options).then(() => {
+        expect(event.finalize).not.toHaveBeenCalled();
+      });
+    });
+
+    it("calls onResponse callbacks", () => {
+      const onResponseForOnBeforeEvent = jasmine.createSpy(
+        "onResponseForOnBeforeEvent"
+      );
+      lifecycle.onBeforeEvent.and.callFake(({ onResponse }) => {
+        onResponse(onResponseForOnBeforeEvent);
+        return Promise.resolve();
+      });
+      const response = { type: "response" };
+
+      applyResponse.and.callFake(({ runOnResponseCallbacks }) => {
+        runOnResponseCallbacks({ response });
+        return Promise.resolve();
+      });
+
+      return eventManager.applyResponse(event, options).then(() => {
+        expect(onResponseForOnBeforeEvent).toHaveBeenCalledWith({ response });
+      });
+    });
+
+    it("applies AEP edge response headers and body and returns result", () => {
+      const mockResult = { response: "yep" };
+      applyResponse.and.returnValue(mockResult);
+
+      return eventManager.applyResponse(event, options).then(result => {
+        expect(sendEdgeNetworkRequest).not.toHaveBeenCalled();
+        expect(applyResponse).toHaveBeenCalledWith({
+          request,
+          responseHeaders,
+          responseBody,
+          runOnResponseCallbacks: jasmine.any(Function)
+        });
+        expect(result).toEqual(mockResult);
+      });
+    });
+
+    it("includes override configuration, if provided", done => {
+      eventManager
+        .sendEvent(event, {
+          edgeConfigOverrides: {
+            com_adobe_experience_platform: {
+              event: {
+                datasetId: "456"
+              }
+            },
+            com_adobe_identity: {
+              idSyncContainerId: "123"
+            }
+          }
+        })
+        .then(() => {
+          expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
+            com_adobe_identity: {
+              idSyncContainerId: "123"
+            },
+            com_adobe_experience_platform: {
+              event: {
+                datasetId: "456"
+              }
+            }
+          });
+          done();
+        });
+    });
+
+    it("includes global override configuration, if provided", done => {
+      config.edgeConfigOverrides.com_adobe_identity = {
+        idSyncContainerId: "123"
+      };
+
+      eventManager
+        .sendEvent(event, {
+          edgeConfigOverrides: {}
+        })
+        .then(() => {
+          expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
+            com_adobe_identity: {
+              idSyncContainerId: "123"
+            }
+          });
+          done();
+        });
     });
   });
 });
