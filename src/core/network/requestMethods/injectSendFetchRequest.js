@@ -19,7 +19,7 @@ export default ({ fetch }) => {
       headers: {
         "Content-Type": "text/plain; charset=UTF-8"
       },
-      referrer: window.document.referrer,
+      referrerPolicy: "no-referrer-when-downgrade",
       body
     }).then(response => {
       return response.text().then(responseBody => ({
