@@ -15,7 +15,7 @@ import isUserAgentClientHintsSupported from "../../helpers/isUserAgentClientHint
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 
-const ID = "C7311732";
+const ID = "C8631576";
 const DESCRIPTION = `${ID} - Visitor should qualify for an experience based on low entropy client hint`;
 
 createFixture({

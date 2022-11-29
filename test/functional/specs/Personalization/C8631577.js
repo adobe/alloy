@@ -11,7 +11,7 @@ import isUserAgentClientHintsSupported from "../../helpers/isUserAgentClientHint
 const networkLogger = createNetworkLogger();
 const config = compose(highEntropyUserAgentHintsContextConfig, debugEnabled);
 
-const ID = "C7311732";
+const ID = "C8631577";
 const DESCRIPTION = `${ID} - Visitor should qualify for an experience based on high entropy client hint`;
 
 createFixture({
@@ -26,7 +26,7 @@ test.meta({
 });
 
 const sendEventOptions = {
-  decisionScopes: ["64BitClientHint"] // TODO - create this in UI
+  decisionScopes: ["64BitClientHint"]
   // xdm: {
   //   web: {
   //     webPageDetails: {
