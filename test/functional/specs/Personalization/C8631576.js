@@ -7,9 +7,7 @@ import {
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
-// import highEntropyUserAgentHintsContextConfig from "../../helpers/constants/highEntropyUserAgentHintsContextConfig";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
-// import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
 import isUserAgentClientHintsSupported from "../../helpers/isUserAgentClientHintsSupported";
 
 const networkLogger = createNetworkLogger();
@@ -31,13 +29,6 @@ test.meta({
 
 const sendEventOptions = {
   decisionScopes: ["chromeBrowserClientHint"]
-  // xdm: {
-  //   web: {
-  //     webPageDetails: {
-  //       URL: TEST_PAGE_URL
-  //     }
-  //   }
-  // }
 };
 
 test(DESCRIPTION, async () => {
@@ -48,6 +39,7 @@ test(DESCRIPTION, async () => {
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
+  // Tests must be run using https otherwise this will return false
   if (await isUserAgentClientHintsSupported()) {
     const requestHeaders =
       networkLogger.edgeEndpointLogs.requests[0].request.headers;
