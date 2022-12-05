@@ -46,6 +46,8 @@ import injectShouldTransferCookie from "./injectShouldTransferCookie";
 import {
   createDataCollectionRequest,
   createDataCollectionRequestPayload,
+  createFetchRequest,
+  createFetchRequestPayload,
   createGetAssuranceValidationTokenParams
 } from "../utils/request";
 import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkRequest";
@@ -159,6 +161,8 @@ export const createExecuteCommand = ({
       createEvent,
       createDataCollectionRequestPayload,
       createDataCollectionRequest,
+      createFetchRequestPayload,
+      createFetchRequest,
       sendEdgeNetworkRequest,
       applyResponse
     });

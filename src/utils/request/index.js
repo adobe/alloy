@@ -14,6 +14,8 @@ export { default as createAddIdentity } from "./createAddIdentity";
 export { default as createDataCollectionRequest } from "./createDataCollectionRequest";
 export { default as createDataCollectionRequestPayload } from "./createDataCollectionRequestPayload";
 export { default as createHasIdentity } from "./createHasIdentity";
+export { default as createFetchRequest } from "./createFetchRequest";
+export { default as createFetchRequestPayload } from "./createFetchRequestPayload";
 export { default as createRequest } from "./createRequest";
 export { default as createRequestPayload } from "./createRequestPayload";
 export { default as createGetAssuranceValidationTokenParams } from "./createGetAssuranceValidationTokenParams";
