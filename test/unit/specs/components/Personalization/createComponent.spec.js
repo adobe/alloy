@@ -15,6 +15,7 @@ import createComponent from "../../../../../src/components/Personalization/creat
 describe("Personalization", () => {
   let logger;
   let fetchDataHandler;
+  let prefetchDataHandler;
   let onClickHandler;
   let viewChangeHandler;
   let showContainers;
@@ -24,18 +25,21 @@ describe("Personalization", () => {
   let event;
   let personalizationComponent;
   let setTargetMigration;
+  let decisionsMetaCache;
 
   const build = () => {
     personalizationComponent = createComponent({
       logger,
       fetchDataHandler,
+      prefetchDataHandler,
       viewChangeHandler,
       onClickHandler,
       isAuthoringModeEnabled,
       mergeQuery,
       viewCache,
       showContainers,
-      setTargetMigration
+      setTargetMigration,
+      decisionsMetaCache
     });
   };
 
@@ -50,6 +54,7 @@ describe("Personalization", () => {
       .createSpy("isAuthoringModeEnabled")
       .and.returnValue(false);
     fetchDataHandler = jasmine.createSpy("fetchDataHandler");
+    prefetchDataHandler = jasmine.createSpy("prefetchDataHandler");
     viewChangeHandler = jasmine.createSpy("viewChangeHandler");
     onClickHandler = jasmine.createSpy("onClickHandler");
     showContainers = jasmine.createSpy("showContainers");
@@ -59,6 +64,9 @@ describe("Personalization", () => {
       "storeViews"
     ]);
     setTargetMigration = jasmine.createSpy("setTargetMigration");
+    decisionsMetaCache = jasmine.createSpyObj("decisionsMetaCache", [
+      "flushToEvent"
+    ]);
 
     build();
   });

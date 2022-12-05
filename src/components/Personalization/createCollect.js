@@ -17,10 +17,10 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
   // Called when a decision is auto-rendered for the __view__ scope or a SPA view(display and empty display notification)
   return ({ decisionsMeta = [], documentMayUnload = false, viewName }) => {
     const event = eventManager.createEvent();
-    const data = { eventType: DISPLAY };
+    const xdm = { eventType: DISPLAY };
 
     if (viewName) {
-      data.web = {
+      xdm.web = {
         webPageDetails: { viewName }
       };
     }
@@ -28,7 +28,7 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
       mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.DISPLAY);
     }
 
-    event.mergeXdm(data);
+    event.mergeXdm(xdm);
 
     if (documentMayUnload) {
       event.documentMayUnload();

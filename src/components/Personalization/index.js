@@ -32,10 +32,16 @@ import createNonRenderingHandler from "./createNonRenderingHandler";
 import createApplyPropositions from "./createApplyPropositions";
 import createGetPageLocation from "./createGetPageLocation";
 import createSetTargetMigration from "./createSetTargetMigration";
+import createCollectToDecisionsMetaCache from "./createCollectToDecisionsMetaCache";
+import createDecisionsMetaCache from "./createDecisionsMetaCache";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
+  const decisionsMetaCache = createDecisionsMetaCache({ mergeDecisionsMeta });
+  const prefetchCollect = createCollectToDecisionsMetaCache({
+    decisionsMetaCache
+  });
 
   const {
     getClickMetasBySelector,
@@ -62,6 +68,12 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     showContainers,
     collect
   });
+  const prefetchAutoRenderingHandler = createAutorenderingHandler({
+    viewCache,
+    executeDecisions,
+    showContainers,
+    collect: prefetchCollect
+  });
   const applyPropositions = createApplyPropositions({
     executeDecisions
   });
@@ -73,9 +85,22 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     handleRedirectDecisions,
     showContainers
   });
+  const prefetchResponseHandler = createOnResponseHandler({
+    autoRenderingHandler: prefetchAutoRenderingHandler,
+    nonRenderingHandler,
+    groupDecisions,
+    handleRedirectDecisions,
+    showContainers
+  });
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
     responseHandler,
+    hideContainers,
+    mergeQuery
+  });
+  const prefetchDataHandler = createFetchDataHandler({
+    prehidingStyle,
+    responseHandler: prefetchResponseHandler,
     hideContainers,
     mergeQuery
   });
@@ -98,6 +123,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     getPageLocation,
     logger,
     fetchDataHandler,
+    prefetchDataHandler,
     viewChangeHandler,
     onClickHandler,
     isAuthoringModeEnabled,

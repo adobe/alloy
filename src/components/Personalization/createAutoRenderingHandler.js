@@ -30,7 +30,6 @@ export default ({ viewCache, executeDecisions, showContainers, collect }) => {
         getPropositions({
           viewCache,
           viewName,
-          executeDecisions,
           pageWideScopeDecisions: propositions
         })
       )

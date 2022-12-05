@@ -19,6 +19,7 @@ export default ({
   getPageLocation,
   logger,
   fetchDataHandler,
+  prefetchDataHandler,
   viewChangeHandler,
   onClickHandler,
   isAuthoringModeEnabled,
@@ -26,7 +27,8 @@ export default ({
   viewCache,
   showContainers,
   applyPropositions,
-  setTargetMigration
+  setTargetMigration,
+  decisionsMetaCache
 }) => {
   return {
     lifecycle: {
@@ -54,6 +56,8 @@ export default ({
           return;
         }
 
+        decisionsMetaCache.flushToEvent(event);
+
         const personalizationDetails = createPersonalizationDetails({
           getPageLocation,
           renderDecisions,
@@ -61,7 +65,8 @@ export default ({
           personalization,
           event,
           viewCache,
-          logger
+          logger,
+          isFetchCommand: false
         });
 
         if (personalizationDetails.shouldFetchData()) {
@@ -87,6 +92,51 @@ export default ({
             onRequestFailure
           });
         }
+      },
+      onBeforeFetch({
+        event,
+        renderDecisions,
+        personalization = {},
+        onResponse = noop,
+        onRequestFailure = noop
+      }) {
+        // TODO: DRY against onBeforeEvent
+
+        // Include propositions on all responses, overridden with data as needed
+        onResponse(() => ({ propositions: [] }));
+        onRequestFailure(() => showContainers());
+
+        if (isAuthoringModeEnabled()) {
+          logger.warn(AUTHORING_ENABLED);
+
+          // If we are in authoring mode we disable personalization
+          mergeQuery(event, { enabled: false });
+          return;
+        }
+
+        const personalizationDetails = createPersonalizationDetails({
+          getPageLocation,
+          renderDecisions,
+          personalization,
+          event,
+          viewCache,
+          logger
+        });
+
+        if (personalizationDetails.shouldFetchData()) {
+          const decisionsDeferred = defer();
+
+          viewCache.storeViews(decisionsDeferred.promise);
+          onRequestFailure(() => decisionsDeferred.reject());
+          prefetchDataHandler({
+            decisionsDeferred,
+            personalizationDetails,
+            event,
+            onResponse
+          });
+        }
+
+        // TODO log warning if personalizationDetails.shouldUseCachedData()
       },
       onClick({ event, clickedElement }) {
         onClickHandler({ event, clickedElement });
