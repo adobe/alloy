@@ -22,8 +22,12 @@ export default ({
   lifecycle,
   consent,
   createEvent,
+  // TODO: put these payload and request objects in the components and pass
+  //       them into the methods here.
   createDataCollectionRequestPayload,
   createDataCollectionRequest,
+  createFetchRequestPayload,
+  createFetchRequest,
   sendEdgeNetworkRequest,
   applyResponse
 }) => {
@@ -139,6 +143,69 @@ export default ({
             responseHeaders,
             responseBody,
             runOnResponseCallbacks: onResponseCallbackAggregator.call
+          });
+        });
+    },
+    fetch(event, options = {}) {
+      const {
+        renderDecisions = false,
+        edgeConfigOverrides: localConfigOverrides,
+        personalization
+      } = options;
+      const payload = createFetchRequestPayload();
+      const request = createFetchRequest(payload);
+
+      // TODO: DRY this method and sendEvent once the semantics are nailed down.
+      //       The only differences are the payload and request objects.
+      const onResponseCallbackAggregator = createCallbackAggregator();
+      const onRequestFailureCallbackAggregator = createCallbackAggregator();
+      payload.mergeConfigOverride(globalConfigOverrides);
+      payload.mergeConfigOverride(localConfigOverrides);
+
+      return lifecycle
+        .onBeforeEvent({
+          event,
+          renderDecisions,
+          personalization,
+          onResponse: onResponseCallbackAggregator.add,
+          onRequestFailure: onRequestFailureCallbackAggregator.add
+        })
+        .then(() => {
+          payload.addEvent(event);
+          return consent.awaitConsent();
+        })
+        .then(() => {
+          try {
+            // NOTE: this calls onBeforeEventSend callback (if configured)
+            event.finalize(onBeforeEventSend);
+          } catch (error) {
+            const throwError = () => {
+              throw error;
+            };
+            onRequestFailureCallbackAggregator.add(lifecycle.onRequestFailure);
+            return onRequestFailureCallbackAggregator
+              .call({ error })
+              .then(throwError, throwError);
+          }
+
+          // if the callback returns false, the event should not be sent
+          if (!event.shouldSend()) {
+            onRequestFailureCallbackAggregator.add(lifecycle.onRequestFailure);
+            logger.info(EVENT_CANCELLATION_MESSAGE);
+            const error = new Error(EVENT_CANCELLATION_MESSAGE);
+            return onRequestFailureCallbackAggregator
+              .call({ error })
+              .then(() => {
+                // Ensure the promise gets resolved with undefined instead
+                // of an array of return values from the callbacks.
+              });
+          }
+
+          return sendEdgeNetworkRequest({
+            request,
+            runOnResponseCallbacks: onResponseCallbackAggregator.call,
+            runOnRequestFailureCallbacks:
+              onRequestFailureCallbackAggregator.call
           });
         });
     }
