@@ -52,7 +52,6 @@ import {
 } from "../utils/request";
 import injectSendEdgeNetworkRequest from "./edgeNetwork/injectSendEdgeNetworkRequest";
 import injectProcessWarningsAndErrors from "./edgeNetwork/injectProcessWarningsAndErrors";
-import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint";
 import isRequestRetryable from "./network/isRequestRetryable";
 import getRequestRetryDelay from "./network/getRequestRetryDelay";
 import injectApplyResponse from "./edgeNetwork/injectApplyResponse";
@@ -129,7 +128,6 @@ export const createExecuteCommand = ({
     });
     const extractEdgeInfo = injectExtractEdgeInfo({ logger });
     const createResponse = injectCreateResponse({ extractEdgeInfo });
-    const getLocationHint = injectGetLocationHint({ orgId, cookieJar });
     const sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
       config,
       lifecycle,
@@ -137,7 +135,7 @@ export const createExecuteCommand = ({
       sendNetworkRequest,
       createResponse,
       processWarningsAndErrors,
-      getLocationHint,
+      getLocationHint: () => undefined,
       getAssuranceValidationTokenParams
     });
 

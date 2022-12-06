@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 import { boolean, string, callback, enumOf } from "../../utils/validation";
 import { noop, validateConfigOverride } from "../../utils";
 import { EDGE as EDGE_DOMAIN } from "../../constants/domain";
-import EDGE_BASE_PATH from "../../constants/edgeBasePath";
 import { IN, OUT, PENDING } from "../../constants/consentStatus";
 
 export default () => ({
@@ -25,9 +24,7 @@ export default () => ({
   edgeDomain: string()
     .domain()
     .default(EDGE_DOMAIN),
-  edgeBasePath: string()
-    .nonEmpty()
-    .default(EDGE_BASE_PATH),
+  edgeBasePath: string(),
   orgId: string()
     .unique()
     .required(),

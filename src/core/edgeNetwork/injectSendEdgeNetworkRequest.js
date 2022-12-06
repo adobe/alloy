@@ -55,11 +55,16 @@ export default ({
         const endpointDomain = request.getUseIdThirdPartyDomain()
           ? ID_THIRD_PARTY_DOMAIN
           : edgeDomain;
-        const locationHint = getLocationHint();
-        const edgeBasePathWithLocationHint = locationHint
-          ? `${edgeBasePath}/${locationHint}`
-          : edgeBasePath;
-        const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${edgeConfigId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
+        const parts = [
+          endpointDomain,
+          edgeBasePath,
+          getLocationHint(),
+          apiVersion,
+          request.getAction()
+        ].filter(part => part);
+        const url = `https://${parts.join(
+          "/"
+        )}?configId=${edgeConfigId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
         cookieTransfer.cookiesToPayload(request.getPayload(), endpointDomain);
         return sendNetworkRequest({
           requestId: request.getId(),
