@@ -10,9 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { defer } from "../../utils";
 import validateFetchOptions from "./validateFetchOptions";
 
 const createFetch = ({ eventManager }) => {
+  let fetchCallsDone = Promise.resolve();
   return {
     commands: {
       fetch: {
@@ -37,6 +39,19 @@ const createFetch = ({ eventManager }) => {
             edgeConfigOverrides
           });
         }
+      }
+    },
+    lifecycle: {
+      onBeforeEvent() {
+        return fetchCallsDone;
+      },
+      onBeforeFetch({ onComplete, onRequestFailure }) {
+        const deferred = defer();
+        fetchCallsDone = fetchCallsDone.then(() => {
+          return deferred.promise;
+        });
+        onComplete(() => deferred.resolve());
+        onRequestFailure(() => deferred.resolve());
       }
     }
   };

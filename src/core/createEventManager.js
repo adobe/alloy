@@ -155,6 +155,7 @@ export default ({
       const payload = createFetchRequestPayload();
       const request = createFetchRequest(payload);
 
+      const onCompleteCallbackAggregator = createCallbackAggregator();
       const onResponseCallbackAggregator = createCallbackAggregator();
       const onRequestFailureCallbackAggregator = createCallbackAggregator();
       payload.mergeConfigOverride(globalConfigOverrides);
@@ -165,6 +166,7 @@ export default ({
           event,
           renderDecisions,
           personalization,
+          onComplete: onCompleteCallbackAggregator.add,
           onResponse: onResponseCallbackAggregator.add,
           onRequestFailure: onRequestFailureCallbackAggregator.add
         })
@@ -182,6 +184,11 @@ export default ({
             runOnRequestFailureCallbacks:
               onRequestFailureCallbackAggregator.call
           });
+        })
+        .then(result => {
+          return onCompleteCallbackAggregator
+            .call({ result })
+            .then(() => result);
         });
     }
   };
