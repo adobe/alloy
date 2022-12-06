@@ -25,11 +25,11 @@ const readCookies = () => {
 };
 const readIdentityCookie = () => {
   const cookies = readCookies();
-  const value = cookies["kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_identity"];
+  const value = cookies.kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_identity;
   if (!value) {
     return "None";
   }
-  const decoded = Buffer.from(value, "base64").toString();
+  const decoded = atob(value.substring(0, 60));
   return decoded.substring(2, 40);
 };
 
@@ -81,8 +81,8 @@ const appendIdentityToUrl = event => {
 };
 
 const removeUrlParameter = name => {
-  name = name.replace(/[[]/, "\\[").replace(/[\]]/, "\\]");
-  var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+  const escapedName = name.replace(/[[]/, "\\[").replace(/[\]]/, "\\]");
+  const regex = new RegExp(`[\\?&]${escapedName}=([^&#]*)`);
   return document.location.search.replace(regex, "").replace(/^&/, "?");
 };
 const searchWithoutAdobeMc = removeUrlParameter("adobe_mc");
