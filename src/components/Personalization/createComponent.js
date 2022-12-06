@@ -117,6 +117,7 @@ export default ({
         const personalizationDetails = createPersonalizationDetails({
           getPageLocation,
           renderDecisions,
+          decisionScopes: [],
           personalization,
           event,
           viewCache,

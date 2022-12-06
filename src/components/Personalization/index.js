@@ -131,7 +131,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     viewCache,
     showContainers,
     applyPropositions,
-    setTargetMigration
+    setTargetMigration,
+    decisionsMetaCache
   });
 };
 
