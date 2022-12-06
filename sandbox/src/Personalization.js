@@ -1,9 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
 
 export default function Personalization() {
-  useSendPageViewEvent();
+  useEffect(() => {
+    window
+      .alloy("fetch", {
+        renderDecisions: true,
+        personalization: {
+          decisionScopes: ["sandbox-personalization-page"]
+        }
+      })
+      .then(() => {
+        // simulate doing lots of "stuff" until the bottom of the page with a setTimeout.
+        setTimeout(() => {
+          window.alloy("sendEvent", {
+            xdm: {
+              eventType: "page-view"
+            }
+          });
+        }, 2000);
+      });
+  }, []);
   return (
     <div>
       <ContentSecurityPolicy />
