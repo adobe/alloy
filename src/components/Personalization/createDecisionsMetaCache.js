@@ -10,23 +10,46 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { isNonEmptyArray, defer } from "../../utils";
 import { PropositionEventType } from "./constants/propositionEventType";
 
 export default ({ mergeDecisionsMeta }) => {
+  let resolve;
+  let promise;
   let items = [];
   return {
     hold({ decisionsMeta, viewName }) {
       items.push({ decisionsMeta, viewName });
+      promise = null;
+      resolve();
     },
+    // called for sendEvent
     flushToEvent(event) {
-      items.forEach(({ decisionsMeta, viewName }) => {
-        mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.DISPLAY);
-        if (viewName) {
-          // TODO: possibly add this viewName logic to mergeDecisionsMeta
-          event.mergeXdm({ web: { webPageDetails: { viewName } } });
-        }
-      });
-      items = [];
+      if (promise) {
+        promise = promise.then(() => {
+          items.forEach(({ decisionsMeta, viewName }) => {
+            if (isNonEmptyArray(decisionsMeta)) {
+              mergeDecisionsMeta(
+                event,
+                decisionsMeta,
+                PropositionEventType.DISPLAY
+              );
+            }
+            if (viewName) {
+              // TODO: possibly add this viewName logic to mergeDecisionsMeta
+              event.mergeXdm({ web: { webPageDetails: { viewName } } });
+            }
+          });
+          items = [];
+        });
+      }
+      return promise;
+    },
+    // called for fetch
+    expectDecisionsMeta() {
+      if (!promise) {
+        ({ resolve, promise } = defer());
+      }
     }
   };
 };

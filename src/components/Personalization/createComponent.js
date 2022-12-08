@@ -53,10 +53,10 @@ export default ({
 
           // If we are in authoring mode we disable personalization
           mergeQuery(event, { enabled: false });
-          return;
+          return undefined;
         }
 
-        decisionsMetaCache.flushToEvent(event);
+        const flushToEventPromise = decisionsMetaCache.flushToEvent(event);
 
         const personalizationDetails = createPersonalizationDetails({
           getPageLocation,
@@ -80,18 +80,22 @@ export default ({
             event,
             onResponse
           });
-          return;
+          return flushToEventPromise;
         }
 
         if (personalizationDetails.shouldUseCachedData()) {
-          // eslint-disable-next-line consistent-return
-          return viewChangeHandler({
+          const viewChangeHandlerPromise = viewChangeHandler({
             personalizationDetails,
             event,
             onResponse,
             onRequestFailure
           });
+          // Wait for both flushToEvent and viewChangeHandler to finish,
+          // but use the return value from viewChangeHandler.
+          return flushToEventPromise.then(() => viewChangeHandlerPromise);
         }
+
+        return flushToEventPromise;
       },
       onBeforeFetch({
         event,
@@ -113,6 +117,8 @@ export default ({
           mergeQuery(event, { enabled: false });
           return;
         }
+
+        decisionsMetaCache.expectDecisionsMeta();
 
         const personalizationDetails = createPersonalizationDetails({
           getPageLocation,

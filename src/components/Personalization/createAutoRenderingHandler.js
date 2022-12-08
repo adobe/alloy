@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import addRenderAttemptedToDecisions from "./utils/addRenderAttemptedToDecisions";
-import isNonEmptyArray from "../../utils/isNonEmptyArray";
 
 const getPropositions = ({ viewCache, viewName, pageWideScopeDecisions }) => {
   if (!viewName) {
@@ -34,22 +33,24 @@ export default ({ viewCache, executeDecisions, showContainers, collect }) => {
         })
       )
       .then(propositions => {
-        executeDecisions(propositions.pageWideScopeDecisions).then(
-          decisionsMeta => {
-            if (isNonEmptyArray(decisionsMeta)) {
-              collect({ decisionsMeta });
-            }
-          }
-        );
-
+        // GW-TODO: update getPropositions so that it just returns all the propositions together
+        const executeDecisionCalls = [
+          executeDecisions(propositions.pageWideScopeDecisions)
+        ];
         if (viewName) {
-          executeDecisions(propositions.viewPropositions).then(
-            decisionsMeta => {
-              collect({ decisionsMeta, viewName });
-            }
+          executeDecisionCalls.push(
+            executeDecisions(propositions.viewPropositions)
           );
         }
+        Promise.all(executeDecisionCalls).then(decisionsMetas => {
+          const decisionsMeta = decisionsMetas.reduce(
+            (memo, a) => memo.concat(a),
+            []
+          );
+          collect({ decisionsMeta, viewName });
+        });
 
+        // GW-TODO: understand why this is done before rendering is done.
         showContainers();
 
         return [

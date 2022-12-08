@@ -3,23 +3,18 @@ import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 
 export default function Personalization() {
   useEffect(() => {
-    window
-      .alloy("fetch", {
-        renderDecisions: true,
-        personalization: {
-          decisionScopes: ["sandbox-personalization-page"]
-        }
-      })
-      .then(() => {
-        // simulate doing lots of "stuff" until the bottom of the page with a setTimeout.
-        setTimeout(() => {
-          window.alloy("sendEvent", {
-            xdm: {
-              eventType: "page-view"
-            }
-          });
-        }, 2000);
-      });
+    window.alloy("fetch", {
+      renderDecisions: true,
+      personalization: {
+        decisionScopes: ["sandbox-personalization-page"]
+      }
+    });
+
+    window.alloy("sendEvent", {
+      xdm: {
+        eventType: "page-view"
+      }
+    });
   }, []);
   return (
     <div>

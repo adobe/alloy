@@ -34,6 +34,10 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
       event.documentMayUnload();
     }
 
-    return eventManager.sendEvent(event);
+    if (viewName || isNonEmptyArray(decisionsMeta)) {
+      // Always send a display notification when a view is rendered
+      return eventManager.sendEvent(event);
+    }
+    return undefined;
   };
 };
