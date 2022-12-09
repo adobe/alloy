@@ -33,6 +33,9 @@ export default ({
       }
       executor = () => {
         configurePromise = configureCommand(options);
+        // TODO: Fix usecases (like invalid config options)
+        // where configureCommand rejects the promise that it
+        // returns
         return configurePromise.then(() => {
           // Don't expose internals to the user.
         });

@@ -49,6 +49,7 @@ if (argv.reporters && argv.reporters.split(",").includes("coverage")) {
 module.exports = {
   output: {
     format: "iife",
+    inlineDynamicImports: true,
     // Allow non-IE browsers and IE11
     // document.documentMode was added in IE8, and is specific to IE.
     // IE7 and lower are not ES5 compatible so will get a parse error loading the library.

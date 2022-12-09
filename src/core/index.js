@@ -30,7 +30,7 @@ import createEvent from "./createEvent";
 import injectCreateResponse from "./injectCreateResponse";
 import injectExecuteCommand from "./injectExecuteCommand";
 import validateCommandOptions from "./validateCommandOptions";
-import componentCreators from "./componentCreators";
+import getComponentCreators from "./getComponentCreators";
 import buildAndValidateConfig from "./buildAndValidateConfig";
 import initializeComponents from "./initializeComponents";
 import createConfig from "./config/createConfig";
@@ -87,104 +87,106 @@ export const createExecuteCommand = ({
   const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
 
   const configureCommand = options => {
-    const config = buildAndValidateConfig({
-      options,
-      componentCreators,
-      coreConfigValidators,
-      createConfig,
-      logger,
-      setDebugEnabled
-    });
-    const { orgId, targetMigrationEnabled } = config;
-    const shouldTransferCookie = injectShouldTransferCookie({
-      orgId,
-      targetMigrationEnabled
-    });
-    const cookieTransfer = createCookieTransfer({
-      cookieJar: loggingCookieJar,
-      shouldTransferCookie,
-      apexDomain,
-      dateProvider: () => new Date()
-    });
-    const sendBeaconRequest = isFunction(navigator.sendBeacon)
-      ? injectSendBeaconRequest({
-          // Without the bind(), the browser will complain about an
-          // illegal invocation.
-          sendBeacon: navigator.sendBeacon.bind(navigator),
-          sendFetchRequest,
-          logger
-        })
-      : sendFetchRequest;
-    const sendNetworkRequest = injectSendNetworkRequest({
-      logger,
-      sendFetchRequest,
-      sendBeaconRequest,
-      isRequestRetryable,
-      getRequestRetryDelay
-    });
-    const processWarningsAndErrors = injectProcessWarningsAndErrors({
-      logger
-    });
-    const extractEdgeInfo = injectExtractEdgeInfo({ logger });
-    const createResponse = injectCreateResponse({ extractEdgeInfo });
-    const getLocationHint = injectGetLocationHint({ orgId, cookieJar });
-    const sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
-      config,
-      lifecycle,
-      cookieTransfer,
-      sendNetworkRequest,
-      createResponse,
-      processWarningsAndErrors,
-      getLocationHint,
-      getAssuranceValidationTokenParams
-    });
+    return Promise.all(getComponentCreators()).then(componentCreators => {
+      const config = buildAndValidateConfig({
+        options,
+        componentCreators,
+        coreConfigValidators,
+        createConfig,
+        logger,
+        setDebugEnabled
+      });
+      const { orgId, targetMigrationEnabled } = config;
+      const shouldTransferCookie = injectShouldTransferCookie({
+        orgId,
+        targetMigrationEnabled
+      });
+      const cookieTransfer = createCookieTransfer({
+        cookieJar: loggingCookieJar,
+        shouldTransferCookie,
+        apexDomain,
+        dateProvider: () => new Date()
+      });
+      const sendBeaconRequest = isFunction(navigator.sendBeacon)
+        ? injectSendBeaconRequest({
+            // Without the bind(), the browser will complain about an
+            // illegal invocation.
+            sendBeacon: navigator.sendBeacon.bind(navigator),
+            sendFetchRequest,
+            logger
+          })
+        : sendFetchRequest;
+      const sendNetworkRequest = injectSendNetworkRequest({
+        logger,
+        sendFetchRequest,
+        sendBeaconRequest,
+        isRequestRetryable,
+        getRequestRetryDelay
+      });
+      const processWarningsAndErrors = injectProcessWarningsAndErrors({
+        logger
+      });
+      const extractEdgeInfo = injectExtractEdgeInfo({ logger });
+      const createResponse = injectCreateResponse({ extractEdgeInfo });
+      const getLocationHint = injectGetLocationHint({ orgId, cookieJar });
+      const sendEdgeNetworkRequest = injectSendEdgeNetworkRequest({
+        config,
+        lifecycle,
+        cookieTransfer,
+        sendNetworkRequest,
+        createResponse,
+        processWarningsAndErrors,
+        getLocationHint,
+        getAssuranceValidationTokenParams
+      });
 
-    const applyResponse = injectApplyResponse({
-      lifecycle,
-      cookieTransfer,
-      createResponse,
-      processWarningsAndErrors
-    });
+      const applyResponse = injectApplyResponse({
+        lifecycle,
+        cookieTransfer,
+        createResponse,
+        processWarningsAndErrors
+      });
 
-    const generalConsentState = createConsentStateMachine({ logger });
-    const consent = createConsent({
-      generalConsentState,
-      logger
-    });
-    const eventManager = createEventManager({
-      config,
-      logger,
-      lifecycle,
-      consent,
-      createEvent,
-      createDataCollectionRequestPayload,
-      createDataCollectionRequest,
-      sendEdgeNetworkRequest,
-      applyResponse
-    });
-    return initializeComponents({
-      componentCreators,
-      lifecycle,
-      componentRegistry,
-      getImmediatelyAvailableTools(componentName) {
-        const componentLogger = createComponentLogger(componentName);
-        return {
-          config,
-          componentRegistry,
-          consent,
-          eventManager,
-          fireReferrerHideableImage,
-          logger: componentLogger,
-          lifecycle,
-          sendEdgeNetworkRequest,
-          handleError: injectHandleError({
-            errorPrefix: `[${instanceName}] [${componentName}]`,
-            logger: componentLogger
-          }),
-          createNamespacedStorage,
-          apexDomain
-        };
-      }
+      const generalConsentState = createConsentStateMachine({ logger });
+      const consent = createConsent({
+        generalConsentState,
+        logger
+      });
+      const eventManager = createEventManager({
+        config,
+        logger,
+        lifecycle,
+        consent,
+        createEvent,
+        createDataCollectionRequestPayload,
+        createDataCollectionRequest,
+        sendEdgeNetworkRequest,
+        applyResponse
+      });
+      return initializeComponents({
+        componentCreators,
+        lifecycle,
+        componentRegistry,
+        getImmediatelyAvailableTools(componentName) {
+          const componentLogger = createComponentLogger(componentName);
+          return {
+            config,
+            componentRegistry,
+            consent,
+            eventManager,
+            fireReferrerHideableImage,
+            logger: componentLogger,
+            lifecycle,
+            sendEdgeNetworkRequest,
+            handleError: injectHandleError({
+              errorPrefix: `[${instanceName}] [${componentName}]`,
+              logger: componentLogger
+            }),
+            createNamespacedStorage,
+            apexDomain
+          };
+        }
+      });
     });
   };
 

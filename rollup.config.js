@@ -110,6 +110,7 @@ const buildConfig = (variant, minify) => {
             "  console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.');\n" +
             "  return;\n" +
             "}\n",
+          inlineDynamicImports: true,
           sourcemap: variant === SANDBOX
         }
       ],
@@ -126,7 +127,8 @@ const buildConfig = (variant, minify) => {
     output: [
       {
         file: `distTest/${filename}${minifiedExtension}.js`,
-        format: "iife"
+        format: "iife",
+        inlineDynamicImports: true
       }
     ],
     plugins

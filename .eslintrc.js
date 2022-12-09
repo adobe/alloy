@@ -1,5 +1,8 @@
 module.exports = {
   extends: ["airbnb-base", "prettier", "plugin:testcafe/recommended"],
+  parserOptions: {
+    ecmaVersion: "2020"
+  },
   env: {
     browser: true,
     node: true,
@@ -65,5 +68,6 @@ module.exports = {
   globals: {
     expectAsync: "readonly", // newer jasmine feature
     spyOnAllFunctions: "readonly" // newer jasmine feature
-  }
+  },
+  root: true // prevent ESLint from looking in any parent directories for plugins
 };
