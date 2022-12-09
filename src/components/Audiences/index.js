@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { AUDIENCES } from "../../constants/componentNames";
 import { createLoggingCookieJar, cookieJar } from "../../utils";
 import injectProcessDestinations from "./injectProcessDestinations";
 import injectProcessResponse from "./injectProcessResponse";
@@ -34,7 +35,7 @@ const createAudiences = ({ logger, fireReferrerHideableImage }) => {
   };
 };
 
-createAudiences.namespace = "Audiences";
+createAudiences.namespace = AUDIENCES;
 createAudiences.configValidators = {};
 
 export default createAudiences;

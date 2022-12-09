@@ -11,11 +11,16 @@ governing permissions and limitations under the License.
 */
 
 import getComponentCreators from "../../../../src/core/getComponentCreators";
+import {
+  allComponents,
+  LIBRARY_INFO
+} from "../../../../src/constants/componentNames";
 
 describe("getComponentImporters", () => {
   it("returns an array of Promises that resolve to component creators", async () => {
-    const componentCreators = await getComponentCreators();
+    const componentCreators = getComponentCreators();
     expect(componentCreators).toEqual(jasmine.any(Array));
+    expect(componentCreators.length).toBe(allComponents.length);
     await Promise.all(
       componentCreators.map(async creatorPromise => {
         expect(creatorPromise).toBeInstanceOf(Promise);
@@ -30,5 +35,19 @@ describe("getComponentImporters", () => {
         }
       })
     );
+  });
+
+  it("includes only the requested components", async () => {
+    const componentCreators = getComponentCreators([LIBRARY_INFO]);
+    expect(componentCreators.length).toBe(1);
+    const libraryInfoComponent = await componentCreators[0];
+    expect(libraryInfoComponent).toEqual(jasmine.any(Function));
+    expect(libraryInfoComponent.namespace).toEqual(jasmine.any(String));
+
+    if (libraryInfoComponent.configValidators) {
+      expect(libraryInfoComponent.configValidators).toEqual(
+        jasmine.any(Object)
+      );
+    }
   });
 });

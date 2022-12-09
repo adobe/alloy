@@ -12,12 +12,13 @@ governing permissions and limitations under the License.
 
 import createEventMergeId from "./createEventMergeId";
 import createComponent from "./createComponent";
+import { EVENT_MERGE } from "../../constants/componentNames";
 
 const createEventMerge = () => {
   return createComponent({ createEventMergeId });
 };
 
-createEventMerge.namespace = "EventMerge";
+createEventMerge.namespace = EVENT_MERGE;
 createEventMerge.configValidators = {};
 
 export default createEventMerge;

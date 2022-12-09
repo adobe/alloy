@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import validateUserEventOptions from "./validateUserEventOptions";
 import validateApplyResponse from "./validateApplyResponse";
 import { deepAssign } from "../../utils";
+import { DATA_COLLECTOR } from "../../constants/componentNames";
 
 const createDataCollector = ({ eventManager, logger }) => {
   return {
@@ -105,7 +106,7 @@ const createDataCollector = ({ eventManager, logger }) => {
   };
 };
 
-createDataCollector.namespace = "DataCollector";
+createDataCollector.namespace = DATA_COLLECTOR;
 createDataCollector.configValidators = {};
 
 export default createDataCollector;

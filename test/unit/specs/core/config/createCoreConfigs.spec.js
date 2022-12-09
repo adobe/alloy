@@ -13,6 +13,10 @@ governing permissions and limitations under the License.
 import createCoreConfigs from "../../../../../src/core/config/createCoreConfigs";
 import { objectOf } from "../../../../../src/utils/validation";
 import { IN, OUT, PENDING } from "../../../../../src/constants/consentStatus";
+import {
+  allComponents,
+  LIBRARY_INFO
+} from "../../../../../src/constants/componentNames";
 
 describe("createCoreConfigs", () => {
   const baseConfig = { edgeConfigId: "1234", orgId: "org1" };
@@ -119,7 +123,10 @@ describe("createCoreConfigs", () => {
           }
         }
       }
-    }
+    },
+    { edgeConfigId: "", orgId: "", components: [] },
+    { edgeConfigId: "", orgId: "", components: [LIBRARY_INFO] },
+    { edgeConfigId: "", orgId: "", components: allComponents }
   ].forEach((cfg, i) => {
     it(`validates configuration (${i})`, () => {
       objectOf(createCoreConfigs())(cfg);
@@ -138,7 +145,9 @@ describe("createCoreConfigs", () => {
     {
       edgeConfigId: "myproperty1",
       edgeBasePath: 123
-    }
+    },
+    { edgeConfigId: "", orgId: "", components: {} },
+    { edgeConfigId: "", orgId: "", components: ["SendEvent"] }
   ].forEach((cfg, i) => {
     it(`invalidates configuration (${i})`, () => {
       expect(() => objectOf(createCoreConfigs())(cfg)).toThrowError();

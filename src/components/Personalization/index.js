@@ -32,6 +32,7 @@ import createNonRenderingHandler from "./createNonRenderingHandler";
 import createApplyPropositions from "./createApplyPropositions";
 import createGetPageLocation from "./createGetPageLocation";
 import createSetTargetMigration from "./createSetTargetMigration";
+import { PERSONALIZATION } from "../../constants/componentNames";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -109,7 +110,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
 };
 
-createPersonalization.namespace = "Personalization";
+createPersonalization.namespace = PERSONALIZATION;
 
 createPersonalization.configValidators = {
   prehidingStyle: string().nonEmpty(),

@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import libraryVersion from "../../constants/libraryVersion";
 import { CONFIGURE, SET_DEBUG } from "../../constants/coreCommands";
+import { LIBRARY_INFO } from "../../constants/componentNames";
 
 const prepareLibraryInfo = ({ config, componentRegistry }) => {
   const allCommands = [
@@ -49,5 +50,5 @@ const createLibraryInfo = ({ config, componentRegistry }) => {
   };
 };
 
-createLibraryInfo.namespace = "LibraryInfo";
+createLibraryInfo.namespace = LIBRARY_INFO;
 export default createLibraryInfo;

@@ -36,6 +36,7 @@ import createGetIdentity from "./getIdentity/createGetIdentity";
 import createIdentityRequest from "./getIdentity/createIdentityRequest";
 import createIdentityRequestPayload from "./getIdentity/createIdentityRequestPayload";
 import injectAppendIdentityToUrl from "./appendIdentityToUrl/injectAppendIdentityToUrl";
+import { IDENTITY } from "../../constants/cookieNameKey";
 
 const createIdentity = ({
   config,
@@ -127,7 +128,7 @@ const createIdentity = ({
   });
 };
 
-createIdentity.namespace = "Identity";
+createIdentity.namespace = IDENTITY;
 createIdentity.configValidators = configValidators;
 
 export default createIdentity;

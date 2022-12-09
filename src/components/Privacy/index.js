@@ -24,6 +24,7 @@ import createStoredConsent from "./createStoredConsent";
 import injectSendSetConsentRequest from "./injectSendSetConsentRequest";
 import parseConsentCookie from "./parseConsentCookie";
 import validateSetConsentOptions from "./validateSetConsentOptions";
+import { PRIVACY } from "../../constants/componentNames";
 
 const createPrivacy = ({
   config,
@@ -65,6 +66,6 @@ const createPrivacy = ({
   });
 };
 
-createPrivacy.namespace = "Privacy";
+createPrivacy.namespace = PRIVACY;
 
 export default createPrivacy;

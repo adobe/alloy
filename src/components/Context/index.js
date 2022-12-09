@@ -19,6 +19,7 @@ import implementationDetails from "./implementationDetails";
 import createComponent from "./createComponent";
 import injectHighEntropyUserAgentHints from "./injectHighEntropyUserAgentHints";
 import { arrayOf, string } from "../../utils/validation";
+import { CONTEXT } from "../../constants/componentNames";
 
 const web = injectWeb(window);
 const device = injectDevice(window);
@@ -45,7 +46,7 @@ const requiredContexts = [timestamp, implementationDetails];
 const createContext = ({ config, logger }) => {
   return createComponent(config, logger, optionalContexts, requiredContexts);
 };
-createContext.namespace = "Context";
+createContext.namespace = CONTEXT;
 createContext.configValidators = {
   context: arrayOf(string()).default(Object.keys(defaultEnabledContexts))
 };

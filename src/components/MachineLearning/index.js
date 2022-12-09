@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { MACHINE_LEARNING } from "../../constants/componentNames";
 import processResponse from "./processResponse";
 
 const createMachineLearning = () => {
@@ -21,7 +22,7 @@ const createMachineLearning = () => {
   };
 };
 
-createMachineLearning.namespace = "MachineLearning";
+createMachineLearning.namespace = MACHINE_LEARNING;
 createMachineLearning.configValidators = {};
 
 export default createMachineLearning;

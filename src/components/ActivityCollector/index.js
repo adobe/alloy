@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { ACTIVITY_COLLECTOR } from "../../constants/componentNames";
 import attachClickActivityCollector from "./attachClickActivityCollector";
 import configValidators from "./configValidators";
 import createLinkClick from "./createLinkClick";
@@ -36,7 +37,7 @@ const createActivityCollector = ({ config, eventManager, handleError }) => {
   };
 };
 
-createActivityCollector.namespace = "ActivityCollector";
+createActivityCollector.namespace = ACTIVITY_COLLECTOR;
 createActivityCollector.configValidators = configValidators;
 
 export default createActivityCollector;
