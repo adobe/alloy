@@ -55,13 +55,13 @@ const Promotion = () => {
 
 const usePropositions = ({ viewName }) => {
   const [propositions, setPropositions] = useState(undefined);
-  useSendPageViewEvent({ viewName, setPropositions });
+  //useSendPageViewEvent({ viewName, setPropositions });
   useEffect(() => {
-    if (propositions) {
+    /*if (propositions) {
       window.alloy("applyPropositions", {
         propositions
       });
-    }
+    }*/
   });
 };
 

@@ -131,6 +131,7 @@
           return true;
         },
         onBeforeLinkClickSend: function(options) {
+          console.log("options", options);
           // options.linkElement
           // options.xdm
           // options.data
@@ -150,11 +151,10 @@
             return true;
           }
 
-          return false;
+          return true;
         },
         targetMigrationEnabled: true,
-        clickCollectionEnabled:
-          getUrlParameter("clickCollectionEnabled") !== "false"
+        clickCollectionEnabled: true
       });
 
       // For Testing multiple instances.
