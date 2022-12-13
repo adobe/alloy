@@ -36,14 +36,14 @@ test(DESCRIPTION, async () => {
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
+  const requestHeaders =
+    networkLogger.edgeEndpointLogs.requests[0].request.headers;
+  const parsedBody = JSON.parse(
+    networkLogger.edgeEndpointLogs.requests[0].request.body
+  );
+
   // Tests must be run using https otherwise this will return false
   if (await isUserAgentClientHintsSupported()) {
-    const requestHeaders =
-      networkLogger.edgeEndpointLogs.requests[0].request.headers;
-    const parsedBody = JSON.parse(
-      networkLogger.edgeEndpointLogs.requests[0].request.body
-    );
-
     await t.expect(requestHeaders["sec-ch-ua"]).ok();
     await t.expect(requestHeaders["sec-ch-ua-mobile"]).ok();
     await t.expect(requestHeaders["sec-ch-ua-platform"]).ok();
@@ -80,6 +80,12 @@ test(DESCRIPTION, async () => {
         proposition => proposition.scope === "64BitClientHint"
       );
       await t.expect(expectedProposition).ok();
+    } else {
+      // Users on 32-bit platforms will not qualify
+      await t.expect(eventResult.propositions.length).notOk();
     }
+  } else {
+    // Firefox, Safari do not currently support client hints
+    await t.expect(eventResult.propositions.length).notOk();
   }
 });
