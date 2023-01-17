@@ -1,6 +1,6 @@
 {
   "name": "@adobe/alloy",
-  "version": "2.14.0-alpha.15",
+  "version": "2.14.0-alpha.16",
   "description": "Adobe Experience Platform Web SDK",
   "main": "libEs5/index.js",
   "module": "libEs6/index.js",
