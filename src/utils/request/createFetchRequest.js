@@ -16,7 +16,7 @@ export default fetchRequestPayload => {
   return createRequest({
     payload: fetchRequestPayload,
     getAction() {
-      return "interact";
+      return "fetch";
     },
     getUseSendBeacon() {
       return false;

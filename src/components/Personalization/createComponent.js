@@ -134,13 +134,18 @@ export default ({
           const decisionsDeferred = defer();
 
           viewCache.storeViews(decisionsDeferred.promise);
-          onRequestFailure(() => decisionsDeferred.reject());
+          onRequestFailure(() => {
+            decisionsDeferred.reject();
+            decisionsMetaCache.hold({});
+          });
           prefetchDataHandler({
             decisionsDeferred,
             personalizationDetails,
             event,
             onResponse
           });
+        } else {
+          decisionsMetaCache.hold({});
         }
 
         // TODO log warning if personalizationDetails.shouldUseCachedData()

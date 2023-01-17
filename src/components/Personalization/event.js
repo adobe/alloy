@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 const EVENT_TYPE_TRUE = 1;
 
 export const mergeDecisionsMeta = (event, decisionsMeta, eventType) => {
+  // TODO: merge propositions array with userXdm
   event.mergeXdm({
     _experience: {
       decisioning: {

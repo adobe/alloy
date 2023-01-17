@@ -18,7 +18,8 @@ export default ({
   nonRenderingHandler,
   groupDecisions,
   handleRedirectDecisions,
-  showContainers
+  showContainers,
+  decisionsMetaCache
 }) => {
   return ({ decisionsDeferred, personalizationDetails, response }) => {
     const unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
@@ -27,6 +28,7 @@ export default ({
     // if personalization payload is empty return empty decisions array
     if (unprocessedDecisions.length === 0) {
       showContainers();
+      decisionsMetaCache.hold({});
       decisionsDeferred.resolve({});
       return {
         decisions: [],
@@ -58,6 +60,7 @@ export default ({
         nonAutoRenderableDecisions
       });
     }
+    decisionsMetaCache.hold({});
     return nonRenderingHandler({
       viewName,
       redirectDecisions,

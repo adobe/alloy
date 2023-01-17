@@ -83,14 +83,19 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     nonRenderingHandler,
     groupDecisions,
     handleRedirectDecisions,
-    showContainers
+    showContainers,
+    decisionsMetaCache: {
+      // no need to do this on a sendEvent call
+      hold() {}
+    }
   });
   const prefetchResponseHandler = createOnResponseHandler({
     autoRenderingHandler: prefetchAutoRenderingHandler,
     nonRenderingHandler,
     groupDecisions,
     handleRedirectDecisions,
-    showContainers
+    showContainers,
+    decisionsMetaCache
   });
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
