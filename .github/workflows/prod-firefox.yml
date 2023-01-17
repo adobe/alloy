@@ -21,9 +21,6 @@ jobs:
     outputs:
       matrixInput: ${{ steps.list-tags.outputs.matrixInput }}
     steps:
-      - uses: actions/labeler@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -51,70 +48,6 @@ jobs:
             core.setOutput("matrixInput", JSON.stringify(matrixInput));
             console.log("matrixInput: ", matrixInput);
 
-  functional_chrome:
-    name: Chrome
-    strategy:
-      max-parallel: 10
-      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
-    needs: get-testing-tags
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/labeler@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create a workflow dispatch event with ${{ matrix.tag }}
-        uses: actions/checkout@v3
-        with:
-          ref: refs/heads/${{ matrix.tag }}
-        env:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-      - uses: actions/cache@v3
-        id: npm-cache
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }} # increment NPM_CACHE_VERSION secret to force cache reset
-      - uses: nyaa8/package-version@v1
-      - uses: actions/download-artifact@v3
-        with:
-          name: sauce-config
-          path: .sauce
-      - name: Remove File
-        uses: JesseTG/rm@v1.0.3
-        with:
-          path: .sauceignore
-      - uses: actions/download-artifact@v3
-        with:
-          name: sauce-ignore
-          path: .sauceignore
-      - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
-      - name: Build
-        run: npm run test:functional:build:prod
-        env:
-          ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
-      - name: Initiate Saucelabs Functional Tests
-        timeout-minutes: 60
-        uses: saucelabs/saucectl-run-action@v2
-        with:
-          sauce-username: ${{ secrets.SAUCE_USERNAME }}
-          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          saucectl-version: v0.119.0
-          config-file: .sauce/prod-chrome.yml
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
-          NPM_PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
-          ALLOY_ENV: prod
-      - uses: craftech-io/slack-action@v1
-        with:
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          status: failure
-        if: failure()
-
   functional_firefox:
     name: Firefox
     strategy:
@@ -123,9 +56,9 @@ jobs:
     needs: get-testing-tags
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/labeler@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: gh api -X GET /rate_limit -q .resources.core.remaining | tee -a $GITHUB_STEP_SUMMARY
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create a workflow dispatch event with ${{ matrix.tag }}
         uses: actions/checkout@v3
         with:
@@ -160,147 +93,17 @@ jobs:
         run: npm run test:functional:build:prod
         env:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
-      - name: Initiate Saucelabs Functional Tests
+      - name: Install saucectl
+        run: npm i -g saucectl
+      - name: Run Functional Test
         timeout-minutes: 60
-        uses: saucelabs/saucectl-run-action@v2
-        with:
+        run: saucectl run -c ./.sauce/prod-firefox.yml
+        env:
           sauce-username: ${{ secrets.SAUCE_USERNAME }}
           sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          saucectl-version: v0.119.0
-          config-file: .sauce/prod-firefox.yml
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
-          NPM_PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
-          ALLOY_ENV: prod
-      - uses: craftech-io/slack-action@v1
-        with:
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          status: failure
-        if: failure()
+          ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
+          NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 
-  functional_edge:
-    name: Edge
-    strategy:
-      max-parallel: 10
-      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
-    needs: get-testing-tags
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/labeler@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create a workflow dispatch event with ${{ matrix.tag }}
-        uses: actions/checkout@v3
-        with:
-          ref: refs/heads/${{ matrix.tag }}
-        env:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-      - uses: actions/cache@v3
-        id: npm-cache
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }} # increment NPM_CACHE_VERSION secret to force cache reset
-      - uses: nyaa8/package-version@v1
-      - uses: actions/download-artifact@v3
-        with:
-          name: sauce-config
-          path: .sauce
-      - name: Remove File
-        uses: JesseTG/rm@v1.0.3
-        with:
-          path: .sauceignore
-      - uses: actions/download-artifact@v3
-        with:
-          name: sauce-ignore
-          path: .sauceignore
-      - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
-      - name: Build
-        run: npm run test:functional:build:prod
-        env:
-          ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
-      - name: Initiate Saucelabs Functional Tests
-        timeout-minutes: 60
-        uses: saucelabs/saucectl-run-action@v2
-        with:
-          sauce-username: ${{ secrets.SAUCE_USERNAME }}
-          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          saucectl-version: v0.119.0
-          config-file: .sauce/prod-edge.yml
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
-          NPM_PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
-          ALLOY_ENV: prod
-      - uses: craftech-io/slack-action@v1
-        with:
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          status: failure
-        if: failure()
-
-  functional_safari:
-    name: Safari
-    strategy:
-      max-parallel: 10
-      matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
-    needs: get-testing-tags
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/labeler@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create a workflow dispatch event with ${{ matrix.tag }}
-        uses: actions/checkout@v3
-        with:
-          ref: refs/heads/${{ matrix.tag }}
-        env:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-      - uses: actions/cache@v3
-        id: npm-cache
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}-${{ secrets.NPM_CACHE_VERSION }} # increment NPM_CACHE_VERSION secret to force cache reset
-      - uses: nyaa8/package-version@v1
-      - uses: actions/download-artifact@v3
-        with:
-          name: sauce-config
-          path: .sauce
-      - name: Remove File
-        uses: JesseTG/rm@v1.0.3
-        with:
-          path: .sauceignore
-      - uses: actions/download-artifact@v3
-        with:
-          name: sauce-ignore
-          path: .sauceignore
-      - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
-      - name: Build
-        run: npm run test:functional:build:prod
-        env:
-          ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
-      - name: Initiate Saucelabs Functional Tests
-        timeout-minutes: 60
-        uses: saucelabs/saucectl-run-action@v2
-        with:
-          sauce-username: ${{ secrets.SAUCE_USERNAME }}
-          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          saucectl-version: v0.119.0
-          config-file: .sauce/prod-safari.yml
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
-          NPM_PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
-          ALLOY_ENV: prod
       - uses: craftech-io/slack-action@v1
         with:
           slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
