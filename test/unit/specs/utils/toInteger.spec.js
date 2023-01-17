@@ -22,7 +22,14 @@ describe("toInteger", () => {
     ["123abc", undefined],
     [-42, -42],
     [3.14, 3],
-    [3.99, 4]
+    [3.99, 4],
+    [null, undefined],
+    [undefined, undefined],
+    [{}, undefined],
+    [true, undefined],
+    [false, undefined],
+    [() => 42, undefined],
+    ["1234.5", 1235]
   ].forEach(([input, output]) => {
     it(`converts "${input}" to ${output}`, () => {
       expect(toInteger(input)).toEqual(output);

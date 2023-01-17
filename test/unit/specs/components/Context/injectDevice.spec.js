@@ -66,6 +66,30 @@ describe("Context::injectDevice", () => {
     });
   });
 
+  it("handles string values for the height and width", () => {
+    window = {
+      screen: {
+        width: "600",
+        height: "800"
+      }
+    };
+    expect(run()).toEqual({
+      device: {
+        screenHeight: 800,
+        screenWidth: 600
+      }
+    });
+  });
+  it("handles no good values", () => {
+    window = {
+      screen: {
+        width: null,
+        height: undefined
+      }
+    };
+    expect(run()).toEqual({});
+  });
+
   [
     undefined,
     null,
