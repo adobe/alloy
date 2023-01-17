@@ -10,4 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ["architecture", "bitness", "model", "platformVersion", "wow64"];
+export default [
+  ["architecture", "string"],
+  ["bitness", "string"],
+  ["model", "string"],
+  ["platformVersion", "string"],
+  ["wow64", "boolean"]
+];
