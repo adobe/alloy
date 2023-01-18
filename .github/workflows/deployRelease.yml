@@ -5,6 +5,8 @@ on:
       version:
         description: "Version"
         required: true
+# Only allow one workflow instance for this branch to run at a time
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 # This workflow is split into release and prerelease jobs so that the
 # release job can require a manual approval. Otherwise, the release and
