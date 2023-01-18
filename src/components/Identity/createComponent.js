@@ -49,7 +49,7 @@ export default ({
           return consent
             .awaitConsent()
             .then(() => {
-              return ecid ? undefined : getIdentity(options.namespaces);
+              return ecid ? undefined : getIdentity(options);
             })
             .then(() => {
               return {
@@ -67,7 +67,7 @@ export default ({
           return consent
             .withConsent()
             .then(() => {
-              return ecid ? undefined : getIdentity(options.namespaces);
+              return ecid ? undefined : getIdentity(options);
             })
             .then(() => {
               return { url: appendIdentityToUrl(ecid, options.url) };
