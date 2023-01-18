@@ -27,10 +27,7 @@ export default ({
   sendEdgeNetworkRequest,
   applyResponse
 }) => {
-  const {
-    onBeforeEventSend,
-    edgeConfigOverrides: globalConfigOverrides
-  } = config;
+  const { onBeforeEventSend } = config;
 
   return {
     createEvent,
@@ -54,15 +51,12 @@ export default ({
       const {
         renderDecisions = false,
         decisionScopes,
-        edgeConfigOverrides: localConfigOverrides,
         personalization
       } = options;
       const payload = createDataCollectionRequestPayload();
       const request = createDataCollectionRequest(payload);
       const onResponseCallbackAggregator = createCallbackAggregator();
       const onRequestFailureCallbackAggregator = createCallbackAggregator();
-      payload.mergeConfigOverride(globalConfigOverrides);
-      payload.mergeConfigOverride(localConfigOverrides);
 
       return lifecycle
         .onBeforeEvent({

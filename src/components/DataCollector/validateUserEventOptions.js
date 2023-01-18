@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { string, objectOf, boolean, arrayOf } from "../../utils/validation";
-import { validateConfigOverride, validateIdentityMap } from "../../utils";
+import { validateIdentityMap } from "../../utils";
 /**
  * Verifies user provided event options.
  * @param {*} options The user event options to validate
@@ -33,8 +33,7 @@ export default ({ options }) => {
       surfaces: arrayOf(string()).uniqueItems()
     }),
     datasetId: string(),
-    mergeId: string(),
-    edgeConfigOverrides: validateConfigOverride
+    mergeId: string()
   })
     .required()
     .noUnknownFields();
