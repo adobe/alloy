@@ -19,7 +19,7 @@ env:
   ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
-  version: 1.19.0
+  version: 2.1.0
 speed: 0.01
 disablePageCaching: true
 retryTestPages: true

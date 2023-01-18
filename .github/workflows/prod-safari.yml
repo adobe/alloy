@@ -10,6 +10,9 @@ permissions:
 env:
   SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
   SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+  SAUCE_TUNNEL_ID: "alloy_sc"
+  SAUCECTL_VERSION: "0.120.0"
+  BUILD_PREFIX: true
   SAUCE_CAPABILITIES_OVERRIDES_PATH: "sauceLabsCapabilities.json"
   SAUCE_JOB: "Alloy Prod Workflow"
   ALLOY_ENV: prod
@@ -64,7 +67,7 @@ jobs:
         with:
           ref: refs/heads/${{ matrix.tag }}
         env:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-node@v3
         with:
           node-version: "18"
@@ -93,19 +96,21 @@ jobs:
         run: npm run test:functional:build:prod
         env:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
-      - name: Install saucectl
-        run: npm i saucectl
-      - name: Run Functional Test
+      - name: Initiate Saucelabs Functional Tests
         timeout-minutes: 60
-        run: saucectl run -c ./.sauce/prod-safari.yml
-        env:
+        uses: saucelabs/saucectl-run-action@main
+        with:
           sauce-username: ${{ secrets.SAUCE_USERNAME }}
           sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
-          NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
-
-      - uses: craftech-io/slack-action@v1
-        with:
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          status: failure
-        if: failure()
+          saucectl-version: v0.119.0
+          config-file: .sauce/prod-safari.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
+          NPM_PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
+          ALLOY_ENV: prod
+      # - uses: craftech-io/slack-action@v1
+      #   with:
+      #     slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #     status: failure
+      #   if: failure()

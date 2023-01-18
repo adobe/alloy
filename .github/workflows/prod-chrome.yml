@@ -67,7 +67,7 @@ jobs:
         with:
           ref: refs/heads/${{ matrix.tag }}
         env:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-node@v3
         with:
           node-version: "18"
@@ -96,16 +96,19 @@ jobs:
         run: npm run test:functional:build:prod
         env:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
-      - name: Install saucectl
-        run: npm i -g saucectl
-      - name: Run Functional Test
+      - name: Initiate Saucelabs Functional Tests
         timeout-minutes: 60
-        run: saucectl run -c ./.sauce/prod-safari.yml
-        env:
+        uses: saucelabs/saucectl-run-action@main
+        with:
           sauce-username: ${{ secrets.SAUCE_USERNAME }}
           sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
-          NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
+          saucectl-version: v0.119.0
+          config-file: .sauce/prod-chrome.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
+          NPM_PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
+          ALLOY_ENV: prod
 
       # - uses: craftech-io/slack-action@v1
       #   with:

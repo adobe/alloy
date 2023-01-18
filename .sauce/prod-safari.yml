@@ -5,6 +5,7 @@ defaults:
 sauce:
   region: us-west-1
   sauceignore: .sauceignore
+  concurrency: 1
 metadata:
   name: Alloy SDK Prod Functional Test
   tags:
@@ -12,7 +13,7 @@ metadata:
   build: Release $CI_COMMIT_SHORT_SHA
 rootDir: ./
 docker:
-  fileTransfer: mount
+  fileTransfer: copy
   image: saucelabs/stt-testcafe-node:latest
 env:
   ALLOY_ENV: prod
