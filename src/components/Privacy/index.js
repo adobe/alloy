@@ -41,8 +41,7 @@ const createPrivacy = ({
   const sendSetConsentRequest = injectSendSetConsentRequest({
     createConsentRequestPayload,
     createConsentRequest,
-    sendEdgeNetworkRequest,
-    edgeConfigOverrides: config.edgeConfigOverrides
+    sendEdgeNetworkRequest
   });
   const storage = createNamespacedStorage(
     `${sanitizeOrgIdForCookieName(orgId)}.consentHashes.`

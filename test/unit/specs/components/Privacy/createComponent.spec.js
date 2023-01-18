@@ -40,7 +40,6 @@ describe("privacy:createComponent", () => {
   let doesIdentityCookieExist;
   let requestFailureError;
   let component;
-  let config;
 
   const setIdentityCookie = () => {
     doesIdentityCookieExist.and.returnValue(true);
@@ -73,9 +72,6 @@ describe("privacy:createComponent", () => {
     setIdentityCookie();
     consentHashes.isNew.and.returnValue(true);
     requestFailureError = new Error("Request for setting test consent failed.");
-    config = {
-      edgeConfigOverrides: {}
-    };
   });
 
   const build = () => {
@@ -87,8 +83,7 @@ describe("privacy:createComponent", () => {
       sendSetConsentRequest,
       validateSetConsentOptions,
       consentHashStore,
-      doesIdentityCookieExist,
-      config
+      doesIdentityCookieExist
     });
   };
 
@@ -149,45 +144,9 @@ describe("privacy:createComponent", () => {
     expect(consent.suspend).toHaveBeenCalled();
     setConsentMock.respondWithIn();
     return flushPromiseChains().then(() => {
-      expect(sendSetConsentRequest).toHaveBeenCalledWith(
-        jasmine.objectContaining({
-          consentOptions: CONSENT_IN.consent,
-          identityMap: { my: "map" }
-        })
-      );
-      expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
-      expect(onResolved).toHaveBeenCalledWith(undefined);
-    });
-  });
-
-  it("handles the setConsent command with overrides, if provided", () => {
-    defaultConsent = "pending";
-    clearConsentCookie();
-    build();
-    const setConsentMock = mockSetConsent();
-    const onResolved = jasmine.createSpy("onResolved");
-    component.commands.setConsent
-      .run({
-        identityMap: { my: "map" },
-        edgeConfigOverrides: {
-          com_adobe_identity: {
-            idSyncContainerId: "1234"
-          }
-        },
-        ...CONSENT_IN
-      })
-      .then(onResolved);
-    expect(consent.suspend).toHaveBeenCalled();
-    setConsentMock.respondWithIn();
-    return flushPromiseChains().then(() => {
       expect(sendSetConsentRequest).toHaveBeenCalledWith({
         consentOptions: CONSENT_IN.consent,
-        identityMap: { my: "map" },
-        edgeConfigOverrides: {
-          com_adobe_identity: {
-            idSyncContainerId: "1234"
-          }
-        }
+        identityMap: { my: "map" }
       });
       expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
       expect(onResolved).toHaveBeenCalledWith(undefined);
@@ -217,11 +176,10 @@ describe("privacy:createComponent", () => {
     component.commands.setConsent.run(CONSENT_IN);
     return flushPromiseChains()
       .then(() => {
-        expect(sendSetConsentRequest).toHaveBeenCalledWith(
-          jasmine.objectContaining({
-            consentOptions: CONSENT_IN.consent
-          })
-        );
+        expect(sendSetConsentRequest).toHaveBeenCalledWith({
+          consentOptions: CONSENT_IN.consent,
+          identityMap: undefined
+        });
         expect(consent.setConsent).not.toHaveBeenCalledWith({ general: "in" });
         setConsentMock.respondWithIn();
         return flushPromiseChains();
@@ -241,22 +199,20 @@ describe("privacy:createComponent", () => {
     component.commands.setConsent.run(CONSENT_IN);
     return flushPromiseChains()
       .then(() => {
-        expect(sendSetConsentRequest).toHaveBeenCalledWith(
-          jasmine.objectContaining({
-            consentOptions: CONSENT_IN.consent
-          })
-        );
+        expect(sendSetConsentRequest).toHaveBeenCalledWith({
+          consentOptions: CONSENT_IN.consent,
+          identityMap: undefined
+        });
         setConsentMock2 = mockSetConsent();
         component.commands.setConsent.run(CONSENT_OUT);
         setConsentMock1.respondWithIn();
         return flushPromiseChains();
       })
       .then(() => {
-        expect(sendSetConsentRequest).toHaveBeenCalledWith(
-          jasmine.objectContaining({
-            consentOptions: CONSENT_OUT.consent
-          })
-        );
+        expect(sendSetConsentRequest).toHaveBeenCalledWith({
+          consentOptions: CONSENT_OUT.consent,
+          identityMap: undefined
+        });
         setConsentMock2.respondWithOut();
         return flushPromiseChains();
       })
