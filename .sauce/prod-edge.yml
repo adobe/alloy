@@ -20,7 +20,7 @@ env:
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
   version: 2.1.0
-speed: 0.01
+speed: 1
 disablePageCaching: true
 retryTestPages: true
 timeZone: New_York
@@ -36,7 +36,6 @@ npm:
     - "@adobe/reactor-promise"
 suites:
   - name: "Edge"
-    shard: concurrency
     platformName: "Windows 11"
     browserName: "microsoftedge"
     browserVersion: "latest"
