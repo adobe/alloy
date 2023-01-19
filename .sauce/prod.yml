@@ -5,6 +5,7 @@ defaults:
 sauce:
   region: us-west-1
   sauceignore: .sauceignore
+  concurrency: 2
 metadata:
   name: Alloy SDK Prod Functional Test
   tags:
@@ -18,8 +19,9 @@ env:
 testcafe:
   version: 2.1.0
 speed: 0.01
-disablePageCaching: true
-retryTestPages: true
+quarantineMode:
+  attemptLimit: 10
+  successThreshold: 1
 timeZone: New_York
 npm:
   dependencies:
@@ -32,7 +34,47 @@ npm:
     - "@adobe/reactor-query-string"
     - "@adobe/reactor-promise"
 suites:
+  - name: "Chrome"
+    shard: concurrency
+    platformName: "Windows 11"
+    browserName: "chrome"
+    browserVersion: "latest"
+    src:
+      - "test/functional/specs/**/*.js"
+    excludedTestFiles:
+      [
+        "test/functional/specs/Privacy/C1576777.js",
+        "test/functional/specs/Personalization/C205528.js",
+      ]
+
+  - name: "Firefox"
+    shard: concurrency
+    platformName: "Windows 11"
+    browserName: "firefox"
+    browserVersion: "latest"
+    src:
+      - "test/functional/specs/**/*.js"
+    excludedTestFiles:
+      [
+        "test/functional/specs/Privacy/C1576777.js",
+        "test/functional/specs/Personalization/C205528.js",
+      ]
+
+  - name: "Edge"
+    shard: concurrency
+    platformName: "Windows 11"
+    browserName: "microsoftedge"
+    browserVersion: "latest"
+    src:
+      - "test/functional/specs/**/*.js"
+    excludedTestFiles:
+      [
+        "test/functional/specs/Privacy/C1576777.js",
+        "test/functional/specs/Personalization/C205528.js",
+      ]
+
   - name: "Safari"
+    shard: concurrency
     platformName: "macOS 12"
     browserName: "safari"
     browserVersion: "latest"
@@ -46,41 +88,6 @@ suites:
       [
         "test/functional/specs/Privacy/C1576777.js",
         "test/functional/specs/Context/C2598.js",
-        "test/functional/specs/Personalization/C205528.js",
-      ]
-
-  - name: "Chrome"
-    platformName: "Windows 11"
-    browserName: "chrome"
-    browserVersion: "latest"
-    src:
-      - "test/functional/specs/**/*.js"
-    excludedTestFiles:
-      [
-        "test/functional/specs/Privacy/C1576777.js",
-        "test/functional/specs/Personalization/C205528.js",
-      ]
-
-  - name: "Firefox"
-    platformName: "Windows 11"
-    browserName: "firefox"
-    browserVersion: "latest"
-    src:
-      - "test/functional/specs/**/*.js"
-    excludedTestFiles:
-      [
-        "test/functional/specs/Privacy/C1576777.js",
-        "test/functional/specs/Personalization/C205528.js",
-      ]
-
-  - name: "Edge"
-    platformName: "Windows 11"
-    browserName: "microsoftedge"
-    browserVersion: "latest"
-    src:
-      - "test/functional/specs/**/*.js"
-    excludedTestFiles:
-      [
-        "test/functional/specs/Privacy/C1576777.js",
+        "test/functional/specs/LibraryInfo/C2589.js",
         "test/functional/specs/Personalization/C205528.js",
       ]
