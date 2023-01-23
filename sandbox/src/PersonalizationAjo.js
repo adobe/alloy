@@ -3,7 +3,7 @@ import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
 export default function PersonalizationAjo() {
-  useSendPageViewEvent({ instanceName: "cjmStage" });
+  useSendPageViewEvent({ instanceName: "cjmProd" });
   return (
     <div>
       <ContentSecurityPolicy />
