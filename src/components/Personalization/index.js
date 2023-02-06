@@ -50,18 +50,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     logger,
     executeActions
   });
-  const handleRedirectDecisions = createRedirectHandler({
-    collect,
-    window,
-    logger,
-    showContainers
-  });
-  const autoRenderingHandler = createAutorenderingHandler({
-    viewCache,
-    executeDecisions,
-    showContainers,
-    collect
-  });
+
   const applyPropositions = createApplyPropositions({
     executeDecisions
   });

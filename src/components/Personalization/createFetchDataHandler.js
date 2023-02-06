@@ -12,9 +12,12 @@ governing permissions and limitations under the License.
 
 export default ({
   prehidingStyle,
-  responseHandler,
+  propositionHandler,
   hideContainers,
-  mergeQuery
+  mergeQuery,
+  renderHandler,
+  nonRenderHandler,
+  collect
 }) => {
   return ({ decisionsDeferred, personalizationDetails, event, onResponse }) => {
     if (personalizationDetails.isRenderDecisions()) {
@@ -22,8 +25,17 @@ export default ({
     }
     mergeQuery(event, personalizationDetails.createQueryDetails());
 
-    onResponse(({ response }) =>
-      responseHandler({ decisionsDeferred, personalizationDetails, response })
+    onResponse(({ response }) => {
+      const handles = response.getPayloadsByType(DECISIONS_HANDLE);
+      const handler = personalizationDetails.isRenderDecisions() ? renderHandler : nonRenderHandler;
+      const viewName = personalizationDetails.getViewName();
+      const sendDisplayNotification = decisionsMeta => {
+        if (decisionsMeta.length > 0) {
+          collect({ decisionsMeta, viewName });
+        }
+      };
+
+      return propositionHandler({ handles, handler, viewName, decisionsDeferred, sendDisplayNotification});
     );
   };
 };
