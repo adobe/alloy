@@ -10,46 +10,45 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import composePersonalizationResultingObject from "./utils/composePersonalizationResultingObject";
-import { isNonEmptyArray } from "../../utils";
+import { defer, isNonEmptyArray } from "../../utils";
 import { PropositionEventType } from "./constants/propositionEventType";
 
 export default ({
   mergeDecisionsMeta,
   collect,
-  executeDecisions,
-  viewCache
+  viewCache,
+  renderHandler,
+  nonRenderHandler,
+  propositionHandler
 }) => {
   return ({ personalizationDetails, event, onResponse }) => {
     const viewName = personalizationDetails.getViewName();
 
-    return viewCache.getView(viewName).then(viewDecisions => {
-      if (personalizationDetails.isRenderDecisions()) {
-        return executeDecisions(viewDecisions).then(decisionsMeta => {
-          // if there are decisions to be rendered we render them and attach the result in experience.decisions.propositions
-          if (isNonEmptyArray(decisionsMeta)) {
-            mergeDecisionsMeta(
-              event,
-              decisionsMeta,
-              PropositionEventType.DISPLAY
-            );
-            onResponse(() => {
-              return composePersonalizationResultingObject(viewDecisions, true);
-            });
-            return;
-          }
-          // if there are no decisions in cache for this view, we will send a empty notification
+    return viewCache.getView(viewName).then(handles => {
+      const handler = personalizationDetails.isRenderDecisions() ? renderHandler : nonRenderHandler;
+      const viewName = personalizationDetails.getViewName();
+      const decisionsDeferred = defer();
+      const sendDisplayNotificationDeferred = defer();
+      const sendDisplayNotification = decisionsMeta => {
+        if (isNonEmptyArray(decisionsMeta)) {
+          mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.DISPLAY);
+        } else {
+          // if there are no decisions in cache for this view, we will send an empty notification
           onResponse(() => {
             collect({ decisionsMeta: [], viewName });
-            return composePersonalizationResultingObject(viewDecisions, true);
           });
-        });
+        }
+        sendDisplayNotificationDeferred.resolve();
       }
-
-      onResponse(() => {
-        return composePersonalizationResultingObject(viewDecisions, false);
+      const returnValue = propositionHandler({
+        handles,
+        handler,
+        viewName,
+        decisionsDeferred,
+        sendDisplayNotification
       });
-      return {};
+      onResponse(() => returnValue);
+      return sendDisplayNotificationDeferred;
     });
   };
 };
