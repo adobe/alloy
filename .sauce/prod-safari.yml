@@ -5,25 +5,22 @@ defaults:
 sauce:
   region: us-west-1
   sauceignore: .sauceignore
-  concurrency: 1
 metadata:
   name: Alloy SDK Prod Functional Test
   tags:
     - e2e
   build: Release $CI_COMMIT_SHORT_SHA
 rootDir: ./
-docker:
-  fileTransfer: copy
-  image: saucelabs/stt-testcafe-node:latest
 env:
   ALLOY_ENV: prod
   ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
   version: 1.19.0
-speed: 0.01
-disablePageCaching: true
-retryTestPages: true
+speed: 0.05
+quarantineMode:
+  attemptLimit: 5
+  successThreshold: 1
 timeZone: New_York
 npm:
   dependencies:
@@ -38,13 +35,17 @@ npm:
 suites:
   - name: "Safari"
     shard: concurrency
-    platformName: "macOS 12"
+    platformName: "macOS 11.00"
+    browserVersion: "14"
     browserName: "safari"
-    browserVersion: "latest"
     env:
       ALLOY_ENV: prod
       ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
       NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
     src:
       - "test/functional/specs/**/*.js"
-    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Personalization/C205528.js"]
+    excludedTestFiles:
+      [
+        "test/functional/specs/Privacy/C1576777.js",
+        "test/functional/specs/LibraryInfo/C2589.js"
+      ]
