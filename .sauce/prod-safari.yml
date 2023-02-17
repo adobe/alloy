@@ -18,8 +18,9 @@ env:
   ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
-  version: 2.2.0
-pageLoadTimeout: 1000
+  version: 1.19.0
+speed: 1
+pageLoadTimeout: 3000
 disablePageCaching: true
 timeZone: New_York
 npm:
@@ -34,9 +35,7 @@ npm:
     - "@adobe/reactor-promise"
 suites:
   - name: "Safari"
-    shard: concurrency
-    platformName: "macOS 11.00"
-    browserVersion: "14"
+    platformName: "macOS 12"
     browserName: "safari"
     env:
       ALLOY_ENV: prod
