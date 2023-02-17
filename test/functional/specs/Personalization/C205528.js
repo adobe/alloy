@@ -28,7 +28,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test.only("Test C205528: A redirect offer should redirect the page to the URL in the redirect decision", async () => {
+test("Test C205528: A redirect offer should redirect the page to the URL in the redirect decision", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   try {
