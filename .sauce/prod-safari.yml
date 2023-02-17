@@ -16,8 +16,8 @@ env:
   ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
-  version: 1.19.0
-speed: 0.05
+  version: 2.2.0
+speed: 1
 quarantineMode:
   attemptLimit: 5
   successThreshold: 1

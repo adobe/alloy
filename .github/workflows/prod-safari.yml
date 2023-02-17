@@ -88,6 +88,7 @@ jobs:
         uses: JesseTG/rm@v1.0.3
         with:
           path: .sauceignore
+
       - uses: actions/download-artifact@v3
         with:
           name: sauce-ignore
