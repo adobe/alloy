@@ -1,19 +1,18 @@
 apiVersion: v1alpha
 kind: testcafe
+showConsoleLog: true
 defaults:
   mode: sauce
 sauce:
   region: us-west-1
   sauceignore: .sauceignore
+  retries: 4
 metadata:
   name: Alloy SDK Prod Functional Test
   tags:
     - e2e
   build: Release $CI_COMMIT_SHORT_SHA
 rootDir: ./
-docker:
-  fileTransfer: copy
-  image: saucelabs/stt-testcafe-node:latest
 env:
   ALLOY_ENV: prod
   ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
@@ -21,9 +20,8 @@ env:
 testcafe:
   version: 1.19.0
 speed: 0.05
-quarantineMode:
-  attemptLimit: 5
-  successThreshold: 1
+pageLoadTimeout: 3000
+disablePageCaching: true
 timeZone: New_York
 npm:
   dependencies:
@@ -37,6 +35,7 @@ npm:
     - "@adobe/reactor-promise"
 suites:
   - name: "Chrome"
+    shard: concurrency
     platformName: "Windows 11"
     browserName: "chrome"
     browserVersion: "latest"

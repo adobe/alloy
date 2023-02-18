@@ -15,6 +15,7 @@ metadata:
 rootDir: ./
 env:
   ALLOY_ENV: prod
+  EDGE_BASE_PATH: ee-pre-prd
   ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
@@ -34,10 +35,9 @@ npm:
     - "@adobe/reactor-query-string"
     - "@adobe/reactor-promise"
 suites:
-  - name: "Edge"
-    shard: concurrency
+  - name: "Firefox"
     platformName: "Windows 11"
-    browserName: "microsoftedge"
+    browserName: "firefox"
     browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"

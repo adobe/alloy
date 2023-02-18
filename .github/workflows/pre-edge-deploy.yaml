@@ -23,23 +23,41 @@ jobs:
         with:
           myToken: ${{ github.token }}
           exclude_types: "draft|prerelease"
+
       - uses: actions/checkout@v2.3.3
         with:
           ref: refs/heads/${{ steps.last_release.outputs.tag_name }}
-      - name: Get version from package
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@master
-      - uses: actions/cache@v2
-        id: npm-cache
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Store Alloy version into env
+        uses: nyaa8/package-version@v1
+
+      - name: NPM Install
+        run: npm install
+
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
+
       - name: Build
         run: npm run test:functional:build:prod
-      - name: Run TestCafe Tests
-        run: npx testcafe -q -c 5 'saucelabs:Chrome@latest:macOS 11.00','saucelabs:IE@latest:Windows 10','saucelabs:Firefox@latest:Windows 10','saucelabs:Safari@latest:macOS 11.00'
         env:
-          ALLOY_PROD_VERSION: ${{ steps.package-version.outputs.current-version }}    
+          ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
+
+      - name: Install sauceCtl
+        run: |
+            npm install -g saucectl
+            saucectl --version
+
+      - name: Install TestCafe
+        run: |
+          npm install -g testcafe
+          testcafe --version
+
+      - name: Run functional tests
+        run: saucectl run --config ./.sauce/pre-edge-deploy.yml
+        env:
+          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+          ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
+          NPM_PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
+          ALLOY_ENV: prod
