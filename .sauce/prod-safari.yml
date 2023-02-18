@@ -6,7 +6,7 @@ defaults:
 sauce:
   region: us-west-1
   sauceignore: .sauceignore
-  retries: 3
+  retries: 4
 metadata:
   name: Alloy SDK Prod Functional Test
   tags:
@@ -19,7 +19,7 @@ env:
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
   version: 1.19.0
-speed: 1
+speed: 0.05
 pageLoadTimeout: 3000
 disablePageCaching: true
 timeZone: New_York
@@ -35,8 +35,10 @@ npm:
     - "@adobe/reactor-promise"
 suites:
   - name: "Safari"
+    shard: concurrency
     platformName: "macOS 12"
     browserName: "safari"
+    browserVersion: "latest"
     env:
       ALLOY_ENV: prod
       ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
