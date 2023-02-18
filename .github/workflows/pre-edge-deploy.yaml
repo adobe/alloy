@@ -23,23 +23,16 @@ jobs:
         with:
           myToken: ${{ github.token }}
           exclude_types: "draft|prerelease"
+
       - uses: actions/checkout@v2.3.3
         with:
           ref: refs/heads/${{ steps.last_release.outputs.tag_name }}
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: sauce-config
-          path: .sauce
-
-      - name: Download suace config into tags
-        uses: actions/download-artifact@v3
-        with:
-          name: sauce-config
-          path: .sauce
-
       - name: Store Alloy version into env
         uses: nyaa8/package-version@v1
+
+      - name: NPM Install
+        run: npm install
 
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'

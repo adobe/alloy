@@ -48,14 +48,16 @@ jobs:
             core.setOutput("matrixInput", JSON.stringify(matrixInput));
             console.log("matrixInput: ", matrixInput);
 
-  functional_firefox:
-    name: Firefox
+  functional_test:
+    name: Alloy Functional Test
     strategy:
-      max-parallel: 2
+      max-parallel: 4
       matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
     needs: get-testing-tags
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
+
       - name: Create a workflow dispatch event with ${{ matrix.tag }}
         uses: actions/checkout@v3
         with:
@@ -87,10 +89,14 @@ jobs:
         uses: JesseTG/rm@v1.0.3
         with:
           path: .sauceignore
+
       - uses: actions/download-artifact@v3
         with:
           name: sauce-ignore
           path: .sauceignore
+
+      - name: NPM Install
+        run: npm install
 
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'

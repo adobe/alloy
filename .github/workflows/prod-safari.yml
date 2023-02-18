@@ -126,8 +126,8 @@ jobs:
           NPM_PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
           ALLOY_ENV: prod
 
-      # - uses: craftech-io/slack-action@v1
-      #   with:
-      #     slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #     status: failure
-      #   if: failure()
+      - uses: craftech-io/slack-action@v1
+        with:
+          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          status: failure
+        if: failure()

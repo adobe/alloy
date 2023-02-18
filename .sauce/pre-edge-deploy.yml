@@ -1,10 +1,12 @@
 apiVersion: v1alpha
 kind: testcafe
+showConsoleLog: true
 defaults:
   mode: sauce
 sauce:
   region: us-west-1
   sauceignore: .sauceignore
+  retries: 4
 metadata:
   name: Alloy SDK Prod Functional Test
   tags:
@@ -19,9 +21,8 @@ env:
 testcafe:
   version: 1.19.0
 speed: 0.05
-quarantineMode:
-  attemptLimit: 5
-  successThreshold: 1
+pageLoadTimeout: 3000
+disablePageCaching: true
 timeZone: New_York
 npm:
   dependencies:
