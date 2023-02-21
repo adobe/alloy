@@ -1,6 +1,8 @@
-import { DOM_ACTION } from "../constants/schema";
+import { DEFAULT_CONTENT_ITEM, DOM_ACTION } from "../constants/schema";
+import PAGE_WIDE_SCOPE from "../../../constants/pageWideScope";
+import { VIEW_SCOPE_TYPE } from "../constants/scopeType"
 
-export default ({ next }) => args => {
+export default ({ next, executeDecisions, isPageWideSurface }) => args => {
   const { proposition, viewName } = args;
   const {
     scope,
@@ -15,22 +17,10 @@ export default ({ next }) => args => {
   if (scope === PAGE_WIDE_SCOPE || isPageWideSurface(scope) ||
     scopeType === VIEW_SCOPE_TYPE && scope === viewName) {
 
-    if (items.some(({ schema }) => schema === DOM_ACTION )) {
-      //render(createItemRenderer(items));
-      /*
-  const { schema, data } = item;
-  if (schema === DOM_ACTION) {
-    const execute = modules[type]
-    const remappedData = remapHeadOffers(data);
-    render(() => {
-      if (!execute) {
-        logger.error(`DOM action "${type}" not found`);
-        return;
-      }
-      return execute();
-    });
-  }
-*/
+    if (items.some(({ schema }) => schema === DOM_ACTION || schema === DEFAULT_CONTENT_ITEM )) {
+      proposition.addRenderer(() => {
+        return executeDecisions([proposition.getHandle()]);
+      });
     }
   }
   // this proposition may contain items that need to be rendered or cached by other handlers.

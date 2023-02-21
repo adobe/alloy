@@ -1,12 +1,14 @@
-import { REDIRECT_ITEM } from "../constants/schema"
+import { REDIRECT_ITEM } from "../constants/schema";
+import { find } from "../../../utils";
 
 export default ({ next }) => args => {
-  const { handle: { items }, redirect } = args;
+  const { proposition } = args;
+  const { items } = proposition.getHandle();
 
   const redirectItem = find(items, ({ schema }) => schema === REDIRECT_ITEM);
   if (redirectItem) {
     const { data: { content } } = redirectItem;
-    redirect(content);
+    proposition.redirect(content);
     // On a redirect, nothing else needs to handle this.
   } else {
     next(args);

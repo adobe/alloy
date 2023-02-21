@@ -1,4 +1,5 @@
 // renderDecisions=true
+// --------------------
 // redirectHandler
 // measurementSchemaHandler
 // domActionHandler
@@ -6,6 +7,7 @@
 // no-op
 
 // renderDecisions=false
+// ---------------------
 // cachingHandler
 // no-op
 
@@ -20,7 +22,9 @@ export default ({ handles, handler, viewName, decisionsDeferred, sendDisplayNoti
     handler({ proposition, viewName });
     const redirectUrl = proposition.getRedirectUrl();
     if (redirectUrl) {
-      return sendDisplayNotification([proposition.toNotification()]).then(() => {
+      const notifications = [];
+      proposition.addToNotifications(notifications);
+      return sendDisplayNotification(notifications).then(() => {
         window.location.replace(redirectUrl);
       }); // TODO add error log message
     }
@@ -38,7 +42,7 @@ export default ({ handles, handler, viewName, decisionsDeferred, sendDisplayNoti
   propositions.forEach(p => {
     p.addToCache(cachedPropositions)
     p.addToReturnedPropositions(returnedPropositions);
-    p.addtoReturnedDecisions(returnedDecisions);
+    p.addToReturnedDecisions(returnedDecisions);
   });
   decisionsDeferred.resolve(cachedPropositions);
   return {

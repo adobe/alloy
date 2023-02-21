@@ -41,11 +41,11 @@ export default (handle) => {
       cache[scope].push(handle);
     },
     addToReturnedPropositions(propositions) {
-      propositions.push({ id, scope, scopeDetails, renderAttempted });
+      propositions.push({ ...handle, renderAttempted });
     },
     addToReturnedDecisions(decisions) {
       if (!renderAttempted) {
-        decisions.push({ id, scope, scopeDetails });
+        decisions.push({ ...handle });
       }
     }
   };

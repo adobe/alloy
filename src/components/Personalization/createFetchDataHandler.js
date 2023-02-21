@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+const DECISIONS_HANDLE = "personalization:decisions";
 
 export default ({
   prehidingStyle,
@@ -31,11 +32,13 @@ export default ({
       const viewName = personalizationDetails.getViewName();
       const sendDisplayNotification = decisionsMeta => {
         if (decisionsMeta.length > 0) {
-          collect({ decisionsMeta, viewName });
+          return collect({ decisionsMeta, viewName });
+        } else {
+          return Promise.resolve();
         }
       };
 
       return propositionHandler({ handles, handler, viewName, decisionsDeferred, sendDisplayNotification});
-    );
+    });
   };
 };

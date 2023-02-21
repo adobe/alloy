@@ -1,3 +1,5 @@
+import { VIEW_SCOPE_TYPE } from "../constants/scopeType";
+
 export default ({ next }) => args => {
   const { proposition } = args;
   const {
@@ -9,7 +11,7 @@ export default ({ next }) => args => {
   } = proposition.getHandle();
 
   if (scopeType === VIEW_SCOPE_TYPE) {
-    cache();
+    proposition.cache();
   }
 
   // this proposition may contain items that need to be rendered or cached by other handlers.

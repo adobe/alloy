@@ -23,15 +23,16 @@ import { mergeDecisionsMeta, mergeQuery } from "./event";
 import createOnClickHandler from "./createOnClickHandler";
 import createViewCacheManager from "./createViewCacheManager";
 import createViewChangeHandler from "./createViewChangeHandler";
-import groupDecisions from "./groupDecisions";
-import createOnResponseHandler from "./createOnResponseHandler";
 import createClickStorage from "./createClickStorage";
-import createRedirectHandler from "./createRedirectHandler";
-import createAutorenderingHandler from "./createAutoRenderingHandler";
-import createNonRenderingHandler from "./createNonRenderingHandler";
 import createApplyPropositions from "./createApplyPropositions";
 import createGetPageLocation from "./createGetPageLocation";
 import createSetTargetMigration from "./createSetTargetMigration";
+import propositionHandler from "./handlers/propositionHandler";
+import createRedirectHandler from "./handlers/createRedirectHandler";
+import createCachingHandler from "./handlers/createCachingHandler";
+import createDomActionHandler from "./handlers/createDomActionHandler";
+import createMeasurementSchemaHandler from "./handlers/createMeasurementSchemaHandler";
+import { isPageWideSurface } from "./utils/surfaceUtils";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -54,19 +55,21 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const applyPropositions = createApplyPropositions({
     executeDecisions
   });
-  const nonRenderingHandler = createNonRenderingHandler({ viewCache });
-  const responseHandler = createOnResponseHandler({
-    autoRenderingHandler,
-    nonRenderingHandler,
-    groupDecisions,
-    handleRedirectDecisions,
-    showContainers
-  });
+
+  const noOpHandler = () => undefined;
+  const cachingHandler = createCachingHandler({ next: noOpHandler });
+  const domActionHandler = createDomActionHandler({ next: cachingHandler, executeDecisions, isPageWideSurface });
+  const measurementSchemaHandler = createMeasurementSchemaHandler({ next: domActionHandler });
+  const redirectHandler = createRedirectHandler({ next: measurementSchemaHandler });
+
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
-    responseHandler,
+    propositionHandler,
     hideContainers,
-    mergeQuery
+    mergeQuery,
+    renderHandler: redirectHandler,
+    nonRenderHandler: cachingHandler,
+    collect
   });
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,

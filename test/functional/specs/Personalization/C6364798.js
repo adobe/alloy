@@ -113,6 +113,8 @@ const simulatePageLoad = async alloy => {
     personalizationPayload,
     PAGE_WIDE_SCOPE
   );
+  console.log(JSON.stringify(pageWideScopeDecisionsMeta, null, 2));
+  await t.debug();
   await t
     .expect(
       // eslint-disable-next-line no-underscore-dangle
@@ -261,7 +263,7 @@ const simulateViewRerender = async (alloy, propositions) => {
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(4);
 };
 
-test("Test C6364798: applyPropositions should re-render SPA view without sending view notifications", async () => {
+test.only("Test C6364798: applyPropositions should re-render SPA view without sending view notifications", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
 
