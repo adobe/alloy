@@ -97,7 +97,8 @@ const buildConfig = (variant, minify) => {
     };
   }
   if (variant === STANDALONE || variant === SANDBOX) {
-    const destDirectory = variant === SANDBOX ? "sandbox/public/" : "dist/";
+    const destDirectory =
+      variant === SANDBOX ? "sandbox/latest/public/" : "dist/";
 
     return {
       input: "src/standalone.js",
