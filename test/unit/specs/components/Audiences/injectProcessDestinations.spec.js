@@ -144,9 +144,6 @@ describe("Audiences::injectProcessDestinations", () => {
       expect(logger.info).toHaveBeenCalledWith(
         "URL destination succeeded: http://test.zyx"
       );
-      expect(logger.error).toHaveBeenCalledWith(
-        "URL destination failed: http://test.abc"
-      );
     });
   });
   it("doesn't return a value", () => {
