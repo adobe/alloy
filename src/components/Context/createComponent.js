@@ -23,15 +23,18 @@ export default (config, logger, optionalContexts, requiredContexts) => {
     return [];
   }).concat(requiredContexts);
 
+  const addContexts = ({ event }) => {
+    const xdm = {};
+    return Promise.all(
+      contexts.map(context => Promise.resolve(context(xdm, logger)))
+    ).then(() => event.mergeXdm(xdm));
+  };
+
   return {
     namespace: "Context",
     lifecycle: {
-      onBeforeEvent({ event }) {
-        const xdm = {};
-        return Promise.all(
-          contexts.map(context => Promise.resolve(context(xdm, logger)))
-        ).then(() => event.mergeXdm(xdm));
-      }
+      onBeforeEvent: addContexts,
+      onBeforeFetch: addContexts
     }
   };
 };

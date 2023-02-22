@@ -28,6 +28,48 @@ export default ({
   applyPropositions,
   setTargetMigration
 }) => {
+  const handlePersonalizationDetails = ({
+    personalizationDetails,
+    event,
+    onResponse,
+    onRequestFailure
+  }) => {
+    // Include propositions on all responses, overridden with data as needed
+    onResponse(() => ({ propositions: [] }));
+
+    if (isAuthoringModeEnabled()) {
+      logger.warn(AUTHORING_ENABLED);
+
+      // If we are in authoring mode we disable personalization
+      mergeQuery(event, { enabled: false });
+      return;
+    }
+
+    if (personalizationDetails.shouldFetchData()) {
+      const decisionsDeferred = defer();
+
+      viewCache.storeViews(decisionsDeferred.promise);
+      onRequestFailure(() => decisionsDeferred.reject());
+      fetchDataHandler({
+        decisionsDeferred,
+        personalizationDetails,
+        event,
+        onResponse
+      });
+      return;
+    }
+
+    if (personalizationDetails.shouldUseCachedData()) {
+      // eslint-disable-next-line consistent-return
+      return viewChangeHandler({
+        personalizationDetails,
+        event,
+        onResponse,
+        onRequestFailure
+      });
+    }
+  };
+
   return {
     lifecycle: {
       onBeforeRequest({ request }) {
@@ -42,18 +84,7 @@ export default ({
         onResponse = noop,
         onRequestFailure = noop
       }) {
-        // Include propositions on all responses, overridden with data as needed
-        onResponse(() => ({ propositions: [] }));
         onRequestFailure(() => showContainers());
-
-        if (isAuthoringModeEnabled()) {
-          logger.warn(AUTHORING_ENABLED);
-
-          // If we are in authoring mode we disable personalization
-          mergeQuery(event, { enabled: false });
-          return;
-        }
-
         const personalizationDetails = createPersonalizationDetails({
           getPageLocation,
           renderDecisions,
@@ -63,30 +94,35 @@ export default ({
           viewCache,
           logger
         });
+        return handlePersonalizationDetails({
+          personalizationDetails,
+          event,
+          onResponse,
+          onRequestFailure
+        });
+      },
+      onBeforeFetch({
+        event,
+        personalization = {},
+        onResponse = noop,
+        onRequestFailure = noop
+      }) {
+        const personalizationDetails = createPersonalizationDetails({
+          getPageLocation,
+          renderDecisions: false,
+          decisionScopes: [],
+          personalization,
+          event,
+          viewCache,
+          logger
+        });
 
-        if (personalizationDetails.shouldFetchData()) {
-          const decisionsDeferred = defer();
-
-          viewCache.storeViews(decisionsDeferred.promise);
-          onRequestFailure(() => decisionsDeferred.reject());
-          fetchDataHandler({
-            decisionsDeferred,
-            personalizationDetails,
-            event,
-            onResponse
-          });
-          return;
-        }
-
-        if (personalizationDetails.shouldUseCachedData()) {
-          // eslint-disable-next-line consistent-return
-          return viewChangeHandler({
-            personalizationDetails,
-            event,
-            onResponse,
-            onRequestFailure
-          });
-        }
+        return handlePersonalizationDetails({
+          personalizationDetails,
+          event,
+          onResponse,
+          onRequestFailure
+        });
       },
       onClick({ event, clickedElement }) {
         onClickHandler({ event, clickedElement });

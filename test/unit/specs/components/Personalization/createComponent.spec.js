@@ -168,6 +168,102 @@ describe("Personalization", () => {
     });
   });
 
+  describe("onBeforeFetch", () => {
+    it("shouldn't do anything since authoringMode is enabled", () => {
+      isAuthoringModeEnabled.and.returnValue(true);
+      const personalization = {
+        decisionScopes: ["foo"]
+      };
+      personalizationComponent.lifecycle.onBeforeFetch({
+        event,
+        personalization
+      });
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        "Rendering is disabled for authoring mode."
+      );
+      expect(isAuthoringModeEnabled).toHaveBeenCalled();
+      expect(mergeQuery).toHaveBeenCalledWith(event, { enabled: false });
+      expect(fetchDataHandler).not.toHaveBeenCalled();
+      expect(viewChangeHandler).not.toHaveBeenCalled();
+      expect(onClickHandler).not.toHaveBeenCalled();
+      expect(showContainers).not.toHaveBeenCalled();
+      expect(viewCache.storeViews).not.toHaveBeenCalled();
+    });
+
+    it("should trigger pageLoad if there are decisionScopes", () => {
+      const personalization = {
+        decisionScopes: ["alloy1"]
+      };
+      personalizationComponent.lifecycle.onBeforeFetch({
+        event,
+        personalization
+      });
+
+      expect(isAuthoringModeEnabled).toHaveBeenCalled();
+      expect(fetchDataHandler).toHaveBeenCalled();
+      expect(viewChangeHandler).not.toHaveBeenCalled();
+      expect(mergeQuery).not.toHaveBeenCalled();
+      expect(onClickHandler).not.toHaveBeenCalled();
+      expect(viewCache.storeViews).toHaveBeenCalled();
+    });
+
+    it("should trigger pageLoad if cache is not initialized", () => {
+      const personalization = {
+        decisionScopes: []
+      };
+      viewCache.isInitialized.and.returnValue(false);
+
+      personalizationComponent.lifecycle.onBeforeFetch({
+        event,
+        personalization
+      });
+
+      expect(isAuthoringModeEnabled).toHaveBeenCalled();
+      expect(fetchDataHandler).toHaveBeenCalled();
+      expect(viewChangeHandler).not.toHaveBeenCalled();
+      expect(mergeQuery).not.toHaveBeenCalled();
+      expect(onClickHandler).not.toHaveBeenCalled();
+      expect(viewCache.storeViews).toHaveBeenCalled();
+    });
+
+    it("should trigger viewHandler if cache is initialized and viewName is provided", () => {
+      const renderDecisions = false;
+      const personalization = {
+        decisionScopes: []
+      };
+      viewCache.isInitialized.and.returnValue(true);
+      event.getViewName.and.returnValue("cart");
+
+      personalizationComponent.lifecycle.onBeforeFetch({
+        event,
+        renderDecisions,
+        personalization
+      });
+
+      expect(isAuthoringModeEnabled).toHaveBeenCalled();
+      expect(fetchDataHandler).not.toHaveBeenCalled();
+      expect(viewChangeHandler).toHaveBeenCalled();
+      expect(mergeQuery).not.toHaveBeenCalled();
+      expect(onClickHandler).not.toHaveBeenCalled();
+      expect(viewCache.storeViews).not.toHaveBeenCalled();
+    });
+
+    it("should not call showContainers() when a request fails", () => {
+      viewCache.isInitialized.and.returnValue(true);
+      const onRequestFailure = jasmine
+        .createSpy("onRequestFailure")
+        .and.callFake(func => func());
+
+      personalizationComponent.lifecycle.onBeforeFetch({
+        event,
+        onRequestFailure
+      });
+
+      expect(showContainers).not.toHaveBeenCalled();
+    });
+  });
+
   describe("onBeforeRequest", () => {
     it("should always call setTargetMigration during onBeforeRequest", () => {
       const request = jasmine.createSpyObj("request", ["getPayload"]);

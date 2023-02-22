@@ -24,6 +24,8 @@ export default ({
   createEvent,
   createDataCollectionRequestPayload,
   createDataCollectionRequest,
+  createFetchRequestPayload,
+  createFetchRequest,
   sendEdgeNetworkRequest,
   applyResponse
 }) => {
@@ -97,6 +99,51 @@ export default ({
                 // of an array of return values from the callbacks.
               });
           }
+
+          return sendEdgeNetworkRequest({
+            request,
+            runOnResponseCallbacks: onResponseCallbackAggregator.call,
+            runOnRequestFailureCallbacks:
+              onRequestFailureCallbackAggregator.call
+          });
+        });
+    },
+    /**
+     * Sends an event. This includes running the event and payload through
+     * the appropriate lifecycle hooks, sending the request to the server,
+     * and handling the response.
+     * @param {Object} event This will be JSON stringified and used inside
+     * the request payload.
+     * @param {Object} [options]
+     * @param {boolean} [options.renderDecisions=false]
+     * @param {Array} [options.decisionScopes] Note: this option will soon
+     * be deprecated, please use *personalization.decisionScopes* instead
+     * @param {Object} [options.personalization]
+     * @param {Object} [options.serverState]
+     * This will be passed to components
+     * so they can take appropriate action.
+     * @returns {*}
+     */
+    fetch(event, options = {}) {
+      const { personalization } = options;
+      const payload = createFetchRequestPayload();
+      const request = createFetchRequest(payload);
+      const onResponseCallbackAggregator = createCallbackAggregator();
+      const onRequestFailureCallbackAggregator = createCallbackAggregator();
+
+      return lifecycle
+        .onBeforeFetch({
+          event,
+          personalization,
+          onResponse: onResponseCallbackAggregator.add,
+          onRequestFailure: onRequestFailureCallbackAggregator.add
+        })
+        .then(() => {
+          payload.addEvent(event);
+          return consent.awaitConsent();
+        })
+        .then(() => {
+          event.finalize();
 
           return sendEdgeNetworkRequest({
             request,

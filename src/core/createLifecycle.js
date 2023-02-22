@@ -16,6 +16,8 @@ const hookNames = [
   "onComponentsRegistered",
   // Called before an event is sent on a data collection request
   "onBeforeEvent",
+  // Called before a fetch call is sent to the edge.
+  "onBeforeFetch",
   // Called before each request is made to the edge.
   "onBeforeRequest",
   // Called after each response is returned from the edge with a successful

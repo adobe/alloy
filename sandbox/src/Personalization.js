@@ -1,9 +1,25 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
 
 export default function Personalization() {
-  useSendPageViewEvent();
+  useEffect(() => {
+    window
+      .alloy("fetch", {
+        personalization: {
+          decisionScopes: ["sandbox-personalization-page"]
+        }
+      })
+      .then(({ propositions }) => {
+        return window.alloy("applyPropositions", { propositions });
+      })
+      .then(() => {
+        window.alloy("sendEvent", {
+          xdm: {
+            eventType: "page-view"
+          }
+        });
+      });
+  }, []);
   return (
     <div>
       <ContentSecurityPolicy />
