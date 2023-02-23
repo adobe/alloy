@@ -79,7 +79,7 @@ jobs:
       - name: Store Alloy version into env
         uses: nyaa8/package-version@v1
 
-      - name: Download suace config into tags
+      - name: Download sauce config into tags
         uses: actions/download-artifact@v3
         with:
           name: sauce-config
