@@ -8,14 +8,14 @@ sauce:
   sauceignore: .sauceignore
   retries: 4
 metadata:
-  name: Alloy SDK Prod ee-pre-prd
+  name: Alloy SDK Prod pre-prod-upstreams
   tags:
     - e2e
   build: Release $CI_COMMIT_SHORT_SHA
 rootDir: ./
 env:
   ALLOY_ENV: prod
-  EDGE_BASE_PATH: ee-pre-prd
+  EDGE_BASE_PATH: pre-prod-upstreams
   ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
@@ -68,7 +68,7 @@ suites:
     browserVersion: "latest"
     env:
       ALLOY_ENV: prod
-      EDGE_BASE_PATH: ee-pre-prd
+      EDGE_BASE_PATH: pre-prod-upstreams
       ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
       NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
     src:
