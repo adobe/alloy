@@ -12,8 +12,14 @@ governing permissions and limitations under the License.
 
 const EVENT_TYPE_TRUE = 1;
 
-export const mergeDecisionsMeta = (event, decisionsMeta, eventType) => {
-  event.mergeXdm({
+/* eslint-disable no-underscore-dangle */
+export const mergeDecisionsMeta = (
+  event,
+  decisionsMeta,
+  eventType,
+  eventLabel = ""
+) => {
+  const xdm = {
     _experience: {
       decisioning: {
         propositions: decisionsMeta,
@@ -22,7 +28,13 @@ export const mergeDecisionsMeta = (event, decisionsMeta, eventType) => {
         }
       }
     }
-  });
+  };
+  if (eventLabel) {
+    xdm._experience.decisioning.propositionAction = {
+      label: eventLabel
+    };
+  }
+  event.mergeXdm(xdm);
 };
 
 export const mergeQuery = (event, details) => {
