@@ -15,7 +15,7 @@ env:
 
 jobs:
   store-sauce-configs:
-    name: Fetch releases
+    name: Upload sauce configs to artifact
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -35,7 +35,7 @@ jobs:
           path: .sauceignore
 
   alloy-prod-e2e:
-    name: "Pre Edge: Prod E2E Tests"
+    name: "pre-prod-upstreams: Prod E2E Tests"
     runs-on: ubuntu-latest
     needs: store-sauce-configs
     timeout-minutes: 60
@@ -93,7 +93,7 @@ jobs:
           testcafe --version
 
       - name: Run functional tests
-        run: saucectl run --config ./.sauce/pre-edge-deploy.yml
+        run: saucectl run --config ./.sauce/pre-prod-upstreams.yml
         env:
           SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
           SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}

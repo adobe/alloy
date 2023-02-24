@@ -15,7 +15,7 @@ env:
 
 jobs:
   store-sauce-configs:
-    name: Fetch releases
+    name: Upload sauce configs to artifact
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
