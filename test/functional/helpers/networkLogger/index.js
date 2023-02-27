@@ -15,6 +15,7 @@ const createRequestLogger = endpoint => {
 
 const createNetworkLogger = () => {
   const edgeEndpoint = /v1\/(interact|collect)\?configId=/;
+  const fetchEndpoint = /v1\/fetch\?configId=/;
   const edgeCollectEndpoint = /v1\/collect\?configId=/;
   const edgeInteractEndpoint = /v1\/interact\?configId=/;
   const setConsentEndpoint = /v1\/privacy\/set-consent\?configId=/;
@@ -23,6 +24,7 @@ const createNetworkLogger = () => {
   const targetMboxJsonEndpoint = /m2\/unifiedjsqeonly\/mbox\/json\?mbox=/;
 
   const edgeEndpointLogs = createRequestLogger(edgeEndpoint);
+  const fetchEndpointLogs = createRequestLogger(fetchEndpoint);
   const edgeCollectEndpointLogs = createRequestLogger(edgeCollectEndpoint);
   const edgeInteractEndpointLogs = createRequestLogger(edgeInteractEndpoint);
   const setConsentEndpointLogs = createRequestLogger(setConsentEndpoint);
@@ -36,6 +38,7 @@ const createNetworkLogger = () => {
 
   const clearLogs = async () => {
     await edgeEndpointLogs.clear();
+    await fetchEndpointLogs.clear();
     await edgeCollectEndpointLogs.clear();
     await edgeInteractEndpointLogs.clear();
     await setConsentEndpointLogs.clear();
@@ -46,6 +49,7 @@ const createNetworkLogger = () => {
 
   return {
     edgeEndpointLogs,
+    fetchEndpointLogs,
     // Before using edgeCollectEndpointLogs in a test, check to see if you
     // should be using the createCollectEndpointAssertion.js module instead.
     edgeCollectEndpointLogs,

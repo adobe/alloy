@@ -1,0 +1,80 @@
+import { t } from "testcafe";
+import createNetworkLogger from "../../helpers/networkLogger";
+import { responseStatus } from "../../helpers/assertions/index";
+import createFixture from "../../helpers/createFixture";
+import {
+  compose,
+  orgMainConfigMain,
+  debugEnabled
+} from "../../helpers/constants/configParts";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody";
+import createResponse from "../../helpers/createResponse";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
+import createAlloyProxy from "../../helpers/createAlloyProxy";
+
+const networkLogger = createNetworkLogger();
+const config = compose(orgMainConfigMain, debugEnabled);
+const PAGE_WIDE_SCOPE = "__view__";
+const decisionContent =
+  '<div id="C28755">Here is an awesome target offer!</div>';
+
+createFixture({
+  title: "C????: Fetch command should fetch Personalization VEC offers",
+  requestHooks: [networkLogger.fetchEndpointLogs],
+  url: `${TEST_PAGE_URL}?test=C28755`
+});
+
+test.meta({
+  ID: "C????",
+  SEVERITY: "P0",
+  TEST_RUN: "Regression"
+});
+
+test("Test C????: Fetch command should fetch Personalization VEC offers", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  const result = await alloy.fetch();
+
+  await responseStatus(networkLogger.fetchEndpointLogs.requests, 200);
+
+  await t.expect(networkLogger.fetchEndpointLogs.requests.length).eql(1);
+
+  const request = networkLogger.fetchEndpointLogs.requests[0];
+  const requestBody = JSON.parse(request.request.body);
+  const personalizationSchemas =
+    requestBody.events[0].query.personalization.schemas;
+
+  await t
+    .expect(requestBody.events[0].query.personalization.decisionScopes)
+    .eql([PAGE_WIDE_SCOPE]);
+
+  const results = [
+    "https://ns.adobe.com/personalization/default-content-item",
+    "https://ns.adobe.com/personalization/dom-action",
+    "https://ns.adobe.com/personalization/html-content-item",
+    "https://ns.adobe.com/personalization/json-content-item",
+    "https://ns.adobe.com/personalization/redirect-item"
+  ].every(schema => personalizationSchemas.includes(schema));
+
+  await t.expect(results).eql(true);
+
+  const response = JSON.parse(
+    getResponseBody(networkLogger.fetchEndpointLogs.requests[0])
+  );
+  const personalizationPayload = createResponse({
+    content: response
+  }).getPayloadsByType("personalization:decisions");
+
+  await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
+  await t
+    .expect(personalizationPayload[0].items[0].data.content)
+    .eql(decisionContent);
+
+  await t.expect(result.decisions[0].renderAttempted).eql(undefined);
+  await t.expect(result.propositions[0].renderAttempted).eql(false);
+  await t.expect(result.decisions.length).eql(1);
+  await t.expect(result.decisions[0].scope).eql(PAGE_WIDE_SCOPE);
+  await t
+    .expect(result.decisions[0].items[0].data.content)
+    .eql(decisionContent);
+});
