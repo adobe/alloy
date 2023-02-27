@@ -53,7 +53,8 @@ export default ({
       const {
         renderDecisions = false,
         decisionScopes,
-        personalization
+        personalization,
+        propositions
       } = options;
       const payload = createDataCollectionRequestPayload();
       const request = createDataCollectionRequest(payload);
@@ -66,6 +67,7 @@ export default ({
           renderDecisions,
           decisionScopes,
           personalization,
+          propositions,
           onResponse: onResponseCallbackAggregator.add,
           onRequestFailure: onRequestFailureCallbackAggregator.add
         })

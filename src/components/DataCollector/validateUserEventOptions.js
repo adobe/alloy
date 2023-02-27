@@ -10,7 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, objectOf, boolean, arrayOf } from "../../utils/validation";
+import {
+  string,
+  objectOf,
+  boolean,
+  arrayOf,
+  anything
+} from "../../utils/validation";
 import { validateIdentityMap } from "../../utils";
 /**
  * Verifies user provided event options.
@@ -33,7 +39,8 @@ export default ({ options }) => {
       surfaces: arrayOf(string()).uniqueItems()
     }),
     datasetId: string(),
-    mergeId: string()
+    mergeId: string(),
+    propositions: arrayOf(objectOf(anything()))
   })
     .required()
     .noUnknownFields();

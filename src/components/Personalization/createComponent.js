@@ -14,6 +14,7 @@ import { noop, defer } from "../../utils";
 import createPersonalizationDetails from "./createPersonalizationDetails";
 import { AUTHORING_ENABLED } from "./constants/loggerMessage";
 import validateApplyPropositionsOptions from "./validateApplyPropositionsOptions";
+import { PropositionEventType } from "./constants/propositionEventType";
 
 export default ({
   getPageLocation,
@@ -81,10 +82,29 @@ export default ({
         renderDecisions,
         decisionScopes = [],
         personalization = {},
+        propositions = [],
         onResponse = noop,
         onRequestFailure = noop
       }) {
         onRequestFailure(() => showContainers());
+
+        if (propositions.length > 0) {
+          event.mergeXdm({
+            _experience: {
+              decisioning: {
+                propositions: propositions
+                  .filter(({ renderAttempted }) => renderAttempted)
+                  .map(({ id, scope, scopeDetails }) => ({
+                    id,
+                    scope,
+                    scopeDetails
+                  })),
+                propositionEventType: PropositionEventType.DISPLAY
+              }
+            }
+          });
+        }
+
         const personalizationDetails = createPersonalizationDetails({
           getPageLocation,
           renderDecisions,

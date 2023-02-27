@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createComponent from "../../../../../src/components/Personalization/createComponent";
+import createEvent from "../../../../../src/core/createEvent";
 
 describe("Personalization", () => {
   let logger;
@@ -165,6 +166,60 @@ describe("Personalization", () => {
 
       expect(onRequestFailure).toHaveBeenCalled();
       expect(showContainers).toHaveBeenCalled();
+    });
+    it("should add the propositions to XDM", () => {
+      event = createEvent();
+      personalizationComponent.lifecycle.onBeforeEvent({
+        event,
+        renderDecisions: false,
+        propositions: [
+          {
+            id: "id1",
+            scope: "id1scope",
+            scopeDetails: { scopeDetailsKey: "value1" },
+            items: [{ a: 1 }],
+            renderAttempted: true
+          },
+          {
+            id: "id2",
+            scope: "id1scope",
+            scopeDetails: { scopeDetailsKey: "value2" },
+            items: [{ a: 1 }],
+            renderAttempted: false
+          },
+          {
+            id: "id3",
+            scope: "__view__",
+            scopeDetails: { scopeDetailsKey: "value3" },
+            items: [{ a: 1 }],
+            renderAttempted: true
+          }
+        ]
+      });
+      event.finalize(() => undefined);
+      expect(event.toJSON().xdm).toEqual({
+        _experience: {
+          decisioning: {
+            propositions: [
+              {
+                id: "id1",
+                scope: "id1scope",
+                scopeDetails: {
+                  scopeDetailsKey: "value1"
+                }
+              },
+              {
+                id: "id3",
+                scope: "__view__",
+                scopeDetails: {
+                  scopeDetailsKey: "value3"
+                }
+              }
+            ],
+            propositionEventType: "display"
+          }
+        }
+      });
     });
   });
 

@@ -61,7 +61,8 @@ describe("Event Command", () => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: true,
         decisionScopes: [],
-        personalization: {}
+        personalization: {},
+        propositions: []
       });
       expect(result).toEqual("sendEventResult");
     });
@@ -82,7 +83,8 @@ describe("Event Command", () => {
         decisionScopes: ["Foo1"],
         personalization: {
           decisionScopes: ["Foo2"]
-        }
+        },
+        propositions: []
       });
       expect(result).toEqual("sendEventResult");
     });
@@ -102,7 +104,8 @@ describe("Event Command", () => {
         decisionScopes: [],
         personalization: {
           surfaces: ["Foo1", "Foo2"]
-        }
+        },
+        propositions: []
       });
       expect(result).toEqual("sendEventResult");
     });
@@ -119,7 +122,19 @@ describe("Event Command", () => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: false,
         decisionScopes: [],
-        personalization: {}
+        personalization: {},
+        propositions: []
+      });
+    });
+  });
+
+  it("passes on propositions", () => {
+    return sendEventCommand.run({ propositions: ["foo"] }).then(() => {
+      expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
+        renderDecisions: false,
+        decisionScopes: [],
+        personalization: {},
+        propositions: ["foo"]
       });
     });
   });

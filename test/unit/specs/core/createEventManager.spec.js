@@ -117,6 +117,7 @@ describe("createEventManager", () => {
             renderDecisions: true,
             decisionScopes: undefined,
             personalization: undefined,
+            propositions: undefined,
             onResponse: jasmine.any(Function),
             onRequestFailure: jasmine.any(Function)
           });

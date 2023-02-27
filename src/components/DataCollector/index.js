@@ -31,7 +31,8 @@ const createDataCollector = ({ eventManager }) => {
             renderDecisions = false,
             decisionScopes = [], // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
             personalization = {},
-            datasetId
+            datasetId,
+            propositions = []
           } = options;
           const event = eventManager.createEvent();
 
@@ -65,7 +66,8 @@ const createDataCollector = ({ eventManager }) => {
           return eventManager.sendEvent(event, {
             renderDecisions,
             decisionScopes,
-            personalization
+            personalization,
+            propositions
           });
         }
       },
