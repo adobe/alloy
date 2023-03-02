@@ -16,6 +16,14 @@ const DEFAULT_ACTION_TYPE = "defaultContent";
 
 const identity = item => item;
 
+const getItemMeta = (item, decisionMeta) =>
+  item.characteristics && item.characteristics.trackingLabel
+    ? assign(
+        { trackingLabel: item.characteristics.trackingLabel },
+        decisionMeta
+      )
+    : decisionMeta;
+
 const buildActions = decision => {
   const decisionMeta = {
     id: decision.id,
@@ -23,16 +31,11 @@ const buildActions = decision => {
     scopeDetails: decision.scopeDetails
   };
 
-  return decision.items.map(item => {
-    const meta =
-      item.characteristics && item.characteristics.trackingLabel
-        ? assign(
-            { trackingLabel: item.characteristics.trackingLabel },
-            decisionMeta
-          )
-        : decisionMeta;
-    return assign({ type: DEFAULT_ACTION_TYPE }, item.data, { meta });
-  });
+  return decision.items.map(item =>
+    assign({ type: DEFAULT_ACTION_TYPE }, item.data, {
+      meta: getItemMeta(item, decisionMeta)
+    })
+  );
 };
 
 const processMetas = (logger, actionResults) => {
