@@ -1,4 +1,4 @@
-name: ee-prd
+name: ee
 on:
   workflow_dispatch:
     inputs:
@@ -11,7 +11,7 @@ env:
   SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
   SAUCE_CAPABILITIES_OVERRIDES_PATH: 'sauceLabsCapabilities.json'
   ALLOY_ENV: prod
-  EDGE_BASE_PATH: ee-prd
+  EDGE_BASE_PATH: ee
 
 jobs:
   store-sauce-configs:
@@ -35,7 +35,7 @@ jobs:
           path: .sauceignore
 
   alloy-prod-e2e:
-    name: "ee-prd: Prod E2E Tests"
+    name: "ee: Prod E2E Tests"
     runs-on: ubuntu-latest
     needs: store-sauce-configs
     timeout-minutes: 60
@@ -93,7 +93,7 @@ jobs:
           testcafe --version
 
       - name: Run functional tests
-        run: saucectl run --config ./.sauce/ee-prd.yml
+        run: saucectl run --config ./.sauce/ee.yml
         env:
           SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
           SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
