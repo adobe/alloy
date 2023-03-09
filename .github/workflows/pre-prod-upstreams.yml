@@ -93,7 +93,7 @@ jobs:
           testcafe --version
 
       - name: Run functional tests
-        run: saucectl run --config ./.sauce/ee.yml
+        run: saucectl run --config ./.sauce/ee-prd.yml
         env:
           SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
           SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
