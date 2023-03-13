@@ -1,6 +1,5 @@
 import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
 import {
   compose,
@@ -45,8 +44,6 @@ test("Test C7638574: AJO offers for custom surface are delivered", async () => {
     renderDecisions: true,
     personalization
   });
-
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 

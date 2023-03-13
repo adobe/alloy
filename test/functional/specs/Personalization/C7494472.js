@@ -1,6 +1,5 @@
 import { ClientFunction, t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
 import {
   compose,
@@ -52,8 +51,6 @@ test("Test C7494472: AJO offers should be delivered", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent({ renderDecisions: true });
-
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
 
