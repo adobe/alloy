@@ -49,6 +49,21 @@ const transformModulesCommonjsPlugin = [
   }
 ];
 
+const transformInlineEnv = [
+  [
+    "transform-inline-environment-variables",
+    {
+      include: ["Object.keys", "window", "document", "JSON.stringify"],
+      replacements: {
+        "Object.keys": "a",
+        window: "b",
+        document: "c",
+        "JSON.stringify": "d"
+      }
+    }
+  ]
+];
+
 const npmIgnoreFiles = ["src/baseCode.js", "src/standalone.js"];
 
 module.exports = {
@@ -78,6 +93,7 @@ module.exports = {
       plugins: [
         transformTemplateLiteralsPlugin,
         versionPlugin,
+        transformInlineEnv,
         transformModulesCommonjsPlugin
       ]
     },

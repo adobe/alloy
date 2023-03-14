@@ -72,6 +72,7 @@
     "@babel/plugin-transform-template-literals": "^7.4.4",
     "@babel/preset-env": "^7.4.5",
     "@octokit/rest": "^18.3.5",
+    "babel-plugin-transform-inline-environment-variables": "^0.4.4",
     "babel-plugin-version": "^0.2.3",
     "bundlesize": "^0.18.0",
     "chalk": "^2.4.2",
