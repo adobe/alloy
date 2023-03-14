@@ -1,6 +1,5 @@
 import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
 import {
   compose,
@@ -18,7 +17,7 @@ const AJO_TEST_SURFACE = "web://alloyio.com/personalizationAjo";
 const networkLogger = createNetworkLogger();
 const cjmStageOrgConfig = {
   edgeDomain: "edge-int.adobedc.net",
-  edgeConfigId: "19fc5fe9-37df-46da-8f5c-9eeff4f75ed9:prod",
+  edgeConfigId: "19fc5fe9-37df-46da-8f5c-9eeff4f75ed9",
   orgId: "745F37C35E4B776E0A49421B@AdobeOrg",
   edgeBasePath: "ee",
   thirdPartyCookiesEnabled: false
@@ -37,7 +36,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test.skip("Test C7638574: AJO offers for custom surface are delivered", async () => {
+test("Test C7638574: AJO offers for custom surface are delivered", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const personalization = { surfaces: [AJO_TEST_SURFACE] };
@@ -45,8 +44,6 @@ test.skip("Test C7638574: AJO offers for custom surface are delivered", async ()
     renderDecisions: true,
     personalization
   });
-
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
@@ -78,12 +75,17 @@ test.skip("Test C7638574: AJO offers for custom surface are delivered", async ()
   );
   const personalizationPayload = createResponse({
     content: response
-  }).getPayloadsByType("personalization:decisions");
+  })
+    .getPayloadsByType("personalization:decisions")
+    .filter(
+      payload =>
+        payload.scope === AJO_TEST_SURFACE &&
+        payload.items.some(item => item.data.type === "setHtml")
+    )[0];
 
-  await t.expect(personalizationPayload[0].scope).eql(AJO_TEST_SURFACE);
-  await t.expect(personalizationPayload[0].items.length).eql(1);
+  await t.expect(personalizationPayload.items.length).eql(1);
   await t
-    .expect(personalizationPayload[0].items[0].data.content)
+    .expect(personalizationPayload.items[0].data.content)
     .eql("Welcome AJO Sandbox!");
 
   await t.expect(eventResult.propositions[0].renderAttempted).eql(true);

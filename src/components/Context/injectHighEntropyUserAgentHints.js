@@ -24,12 +24,16 @@ export default navigator => {
   return (xdm, logger) => {
     try {
       return navigator.userAgentData
-        .getHighEntropyValues(highEntropyUserAgentHints)
+        .getHighEntropyValues(highEntropyUserAgentHints.map(hint => hint[0]))
         .then(hints => {
           const userAgentClientHints = {};
-          highEntropyUserAgentHints.forEach(hint => {
-            if (Object.prototype.hasOwnProperty.call(hints, hint)) {
-              userAgentClientHints[hint] = hints[hint];
+          highEntropyUserAgentHints.forEach(([hintName, hintType]) => {
+            if (
+              Object.prototype.hasOwnProperty.call(hints, hintName) &&
+              /* eslint-disable-next-line valid-typeof */
+              typeof hints[hintName] === hintType
+            ) {
+              userAgentClientHints[hintName] = hints[hintName];
             }
           });
           deepAssign(xdm, {

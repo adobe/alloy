@@ -31,11 +31,15 @@ describe("Personalization::executeActions", () => {
   });
 
   it("should preprocess actions", () => {
+    const customCodeActionSpy = jasmine
+      .createSpy("customCodeActionSpy")
+      .and.returnValue(Promise.resolve(9));
+
     const setHtmlActionSpy = jasmine
-      .createSpy()
+      .createSpy("setHtmlActionSpy")
       .and.returnValue(Promise.resolve(1));
     const appendHtmlActionSpy = jasmine
-      .createSpy()
+      .createSpy("appendHtmlActionSpy")
       .and.returnValue(Promise.resolve(2));
     const logger = jasmine.createSpyObj("logger", ["error", "info"]);
     logger.enabled = true;
@@ -45,15 +49,21 @@ describe("Personalization::executeActions", () => {
         selector: "head",
         content:
           '<script>\n console.log("Test Offer");\n</script><p>Unsupported tag content</p>'
+      },
+      {
+        type: "customCode",
+        selector: "BODY > *:eq(0)",
+        content: "<div>superfluous</div>"
       }
     ];
     const modules = {
       setHtml: setHtmlActionSpy,
-      appendHtml: appendHtmlActionSpy
+      appendHtml: appendHtmlActionSpy,
+      customCode: customCodeActionSpy
     };
 
     return executeActions(actions, modules, logger).then(result => {
-      expect(result).toEqual([2]);
+      expect(result).toEqual([2, 9]);
       expect(setHtmlActionSpy).not.toHaveBeenCalled();
       expect(appendHtmlActionSpy).toHaveBeenCalledOnceWith(
         jasmine.objectContaining({
@@ -62,8 +72,16 @@ describe("Personalization::executeActions", () => {
           content: '<script>\n console.log("Test Offer");\n</script>'
         })
       );
-      expect(logger.info.calls.count()).toEqual(1);
+      expect(logger.info.calls.count()).toEqual(2);
       expect(logger.error).not.toHaveBeenCalled();
+
+      expect(customCodeActionSpy).toHaveBeenCalledOnceWith(
+        jasmine.objectContaining({
+          type: "customCode",
+          selector: "BODY",
+          content: "<div>superfluous</div>"
+        })
+      );
     });
   });
 

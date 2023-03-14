@@ -1,6 +1,5 @@
 import { ClientFunction, t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
 import {
   compose,
@@ -48,12 +47,10 @@ const getHeaderTextContent = ClientFunction(
   () => document.querySelectorAll("body > h1")[0].innerText
 );
 
-test.skip("Test C7494472: AJO offers should be delivered", async () => {
+test("Test C7494472: AJO offers should be delivered", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent({ renderDecisions: true });
-
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
 
@@ -87,11 +84,12 @@ test.skip("Test C7494472: AJO offers should be delivered", async () => {
     content: response
   }).getPayloadsByType("personalization:decisions");
 
-  await t.expect(personalizationPayload[0].scope).eql(AJO_TEST_SURFACE);
-  await t.expect(personalizationPayload[0].items.length).eql(1);
-  await t
-    .expect(personalizationPayload[0].items[0].data.content)
-    .eql("Welcome AJO!");
+  const testSurfacePayload = personalizationPayload.filter(
+    payload => payload.scope === AJO_TEST_SURFACE
+  )[0];
+
+  await t.expect(testSurfacePayload.items.length).eql(1);
+  await t.expect(testSurfacePayload.items[0].data.content).eql("Welcome AJO!");
 
   await t.expect(getHeaderTextContent()).eql("Welcome AJO!");
 

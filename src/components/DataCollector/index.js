@@ -12,9 +12,8 @@ governing permissions and limitations under the License.
 
 import validateUserEventOptions from "./validateUserEventOptions";
 import validateApplyResponse from "./validateApplyResponse";
-import { deepAssign } from "../../utils";
 
-const createDataCollector = ({ eventManager, logger }) => {
+const createDataCollector = ({ eventManager }) => {
   return {
     commands: {
       sendEvent: {
@@ -32,8 +31,7 @@ const createDataCollector = ({ eventManager, logger }) => {
             renderDecisions = false,
             decisionScopes = [], // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
             personalization = {},
-            datasetId,
-            edgeConfigOverrides
+            datasetId
           } = options;
           const event = eventManager.createEvent();
 
@@ -56,28 +54,19 @@ const createDataCollector = ({ eventManager, logger }) => {
             });
           }
 
-          const sendEventOptions = {
-            renderDecisions,
-            decisionScopes,
-            personalization
-          };
-
-          if (edgeConfigOverrides) {
-            sendEventOptions.edgeConfigOverrides = edgeConfigOverrides;
-          }
-
           if (datasetId) {
-            logger.warn(
-              "The 'datasetId' option has been deprecated. Please use 'edgeConfigOverrides.experience_platform.datasets.event' instead."
-            );
-            sendEventOptions.edgeConfigOverrides = edgeConfigOverrides || {};
-            deepAssign(sendEventOptions.edgeConfigOverrides, {
-              com_adobe_experience_platform: {
-                datasets: { event: { datasetId } }
+            event.mergeMeta({
+              collect: {
+                datasetId
               }
             });
           }
-          return eventManager.sendEvent(event, sendEventOptions);
+
+          return eventManager.sendEvent(event, {
+            renderDecisions,
+            decisionScopes,
+            personalization
+          });
         }
       },
       applyResponse: {

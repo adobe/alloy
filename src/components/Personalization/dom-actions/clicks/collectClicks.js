@@ -19,31 +19,76 @@ const getMetasIfMatches = (
 ) => {
   const { documentElement } = document;
   let element = clickedElement;
+  let i = 0;
 
   while (element && element !== documentElement) {
     if (matchesSelectorWithEq(selector, element)) {
-      return getClickMetasBySelector(selector);
+      const matchedMetas = getClickMetasBySelector(selector);
+      const foundMetaWithLabel = matchedMetas.find(meta => meta.trackingLabel);
+      if (foundMetaWithLabel) {
+        return {
+          metas: matchedMetas,
+          label: foundMetaWithLabel.trackingLabel,
+          weight: i
+        };
+      }
+      return {
+        metas: matchedMetas
+      };
     }
 
     element = element.parentNode;
+    i += 1;
   }
 
-  return null;
+  return {
+    metas: null
+  };
 };
+
+const cleanMetas = metas =>
+  metas.map(meta => {
+    delete meta.trackingLabel;
+    return meta;
+  });
+
+const dedupMetas = metas =>
+  metas.filter((meta, index) => {
+    const stringifiedMeta = JSON.stringify(meta);
+    return (
+      index ===
+      metas.findIndex(
+        innerMeta => JSON.stringify(innerMeta) === stringifiedMeta
+      )
+    );
+  });
 
 export default (clickedElement, selectors, getClickMetasBySelector) => {
   const result = [];
+  let resultLabel = "";
+  let resultLabelWeight = Number.MAX_SAFE_INTEGER;
+
+  /* eslint-disable no-continue */
   for (let i = 0; i < selectors.length; i += 1) {
-    const metas = getMetasIfMatches(
+    const { metas, label, weight } = getMetasIfMatches(
       clickedElement,
       selectors[i],
       getClickMetasBySelector
     );
 
-    if (metas) {
-      result.push(...metas);
+    if (!metas) {
+      continue;
     }
+
+    if (label && weight <= resultLabelWeight) {
+      resultLabel = label;
+      resultLabelWeight = weight;
+    }
+    result.push(...cleanMetas(metas));
   }
 
-  return result;
+  return {
+    decisionsMeta: dedupMetas(result),
+    eventLabel: resultLabel
+  };
 };

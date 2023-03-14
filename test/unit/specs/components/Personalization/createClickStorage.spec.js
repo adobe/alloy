@@ -102,7 +102,8 @@ describe("Personalization::createClickStorage", () => {
     expect(meta[0]).toEqual({
       id: "AT:123",
       scope: "__view__",
-      scopeDetails: { test: "blah1" }
+      scopeDetails: { test: "blah1" },
+      trackingLabel: undefined
     });
   });
 });

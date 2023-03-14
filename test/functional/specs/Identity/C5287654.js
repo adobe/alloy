@@ -22,7 +22,6 @@ import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import createNetworkLogger from "../../helpers/networkLogger";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import RefererHook from "../../helpers/requestHooks/refererHook";
 import createConsoleLogger from "../../helpers/consoleLogger";
 
 const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled);
@@ -30,7 +29,7 @@ const networkLogger = createNetworkLogger();
 
 createFixture({
   title: "C5287654: Cookies are set with sameSite=none",
-  requestHooks: [networkLogger.edgeEndpointLogs, new RefererHook()]
+  requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({

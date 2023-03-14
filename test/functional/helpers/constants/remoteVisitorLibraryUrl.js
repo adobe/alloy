@@ -10,15 +10,4 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { RequestHook } from "testcafe";
-import { TEST_PAGE as TEST_PAGE_URL } from "../constants/url";
-
-export default class RefererHook extends RequestHook {
-  // eslint-disable-next-line class-methods-use-this
-  async onRequest(event) {
-    event.requestOptions.headers.referer = TEST_PAGE_URL;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  onResponse() {}
-}
+export default "https://github.com/Adobe-Marketing-Cloud/id-service/releases/latest/download/visitorapi.min.js";

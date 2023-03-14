@@ -16,15 +16,25 @@ const DEFAULT_ACTION_TYPE = "defaultContent";
 
 const identity = item => item;
 
+const getItemMeta = (item, decisionMeta) =>
+  item.characteristics && item.characteristics.trackingLabel
+    ? assign(
+        { trackingLabel: item.characteristics.trackingLabel },
+        decisionMeta
+      )
+    : decisionMeta;
+
 const buildActions = decision => {
-  const meta = {
+  const decisionMeta = {
     id: decision.id,
     scope: decision.scope,
     scopeDetails: decision.scopeDetails
   };
 
   return decision.items.map(item =>
-    assign({ type: DEFAULT_ACTION_TYPE }, item.data, { meta })
+    assign({ type: DEFAULT_ACTION_TYPE }, item.data, {
+      meta: getItemMeta(item, decisionMeta)
+    })
   );
 };
 
