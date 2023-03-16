@@ -49,21 +49,6 @@ const transformModulesCommonjsPlugin = [
   }
 ];
 
-const transformInlineEnv = [
-  [
-    "transform-inline-environment-variables",
-    {
-      include: ["Object.keys", "window", "document", "JSON.stringify"],
-      replacements: {
-        "Object.keys": "a",
-        window: "b",
-        document: "c",
-        "JSON.stringify": "d"
-      }
-    }
-  ]
-];
-
 const npmIgnoreFiles = ["src/baseCode.js", "src/standalone.js"];
 
 module.exports = {
@@ -74,7 +59,9 @@ module.exports = {
           "@babel/preset-env",
           {
             modules: false,
-            targets
+            targets,
+            useBuiltIns: "usage",
+            bugfixes: true
           }
         ]
       ],
@@ -85,7 +72,9 @@ module.exports = {
         [
           "@babel/preset-env",
           {
-            targets
+            targets,
+            useBuiltIns: "usage",
+            bugfixes: true
           }
         ]
       ],
@@ -93,7 +82,6 @@ module.exports = {
       plugins: [
         transformTemplateLiteralsPlugin,
         versionPlugin,
-        transformInlineEnv,
         transformModulesCommonjsPlugin
       ]
     },

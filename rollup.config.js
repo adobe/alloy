@@ -11,34 +11,29 @@ governing permissions and limitations under the License.
 */
 
 import path from "path";
-import resolve from "rollup-plugin-node-resolve";
-import commonjs from "rollup-plugin-commonjs";
-import babel from "rollup-plugin-babel";
+import nodeResolve from "@rollup/plugin-node-resolve"; // Replace rollup-plugin-node-resolve
+import commonjs from "@rollup/plugin-commonjs"; // Replace rollup-plugin-commonjs
+import { babel } from "@rollup/plugin-babel";
+import inject from "@rollup/plugin-inject";
 import { terser } from "rollup-plugin-terser";
 import license from "rollup-plugin-license";
+import { visualizer } from "rollup-plugin-visualizer";
 
-// Set these boolean environment options to control which files are built:
-// build the snippet that must be add to the page
-const BASE_CODE = "BASE_CODE";
-// build the standalone distribution
-const STANDALONE = "STANDALONE";
-// build the standalone distribution, but put it in the sandbox directory
-const SANDBOX = "SANDBOX";
-// build the npm package entrypoint (createInstance)
-const NPM_PACKAGE_LOCAL = "NPM_PACKAGE_LOCAL";
-// build from the published npm package
-const NPM_PACKAGE_PROD = "NPM_PACKAGE_PROD";
-// Add "_MIN" to the end of the option name to build the minified version
-
+const VARIANTS = [
+  "BASE_CODE",
+  "STANDALONE",
+  "SANDBOX",
+  "NPM_PACKAGE_LOCAL",
+  "NPM_PACKAGE_PROD"
+];
 const buildPlugins = (variant, minify) => {
   const plugins = [
-    resolve({
+    nodeResolve({
       preferBuiltins: false,
-      // Support the browser field in dependencies' package.json.
-      // Useful for the uuid package.
       mainFields: ["module", "main", "browser"]
     }),
     commonjs(),
+    visualizer(),
     babel({
       envName: "rollup",
       configFile: path.resolve(__dirname, "babel.config.js")
@@ -46,7 +41,7 @@ const buildPlugins = (variant, minify) => {
   ];
 
   if (minify) {
-    if (variant === BASE_CODE) {
+    if (variant === "BASE_CODE") {
       plugins.push(
         terser({
           mangle: true,
@@ -60,11 +55,28 @@ const buildPlugins = (variant, minify) => {
         })
       );
     } else {
+      plugins.unshift(
+        inject({
+          include: "src/**",
+          modules: {
+            window: "window",
+            document: "document",
+            "JSON.stringify": "jsonStringify",
+            "Object.keys": "objectKeys",
+            "Promise.resolve": "promiseResolve",
+            "Promise.reject": "promiseReject",
+            "Promise.all": "promiseAll",
+            Promise: "promise",
+            Error: "error",
+            undefined: "undefined"
+          }
+        })
+      );
       plugins.push(terser());
     }
   }
 
-  if (variant === STANDALONE) {
+  if (variant === "STANDALONE") {
     plugins.push(
       license({
         banner: {
@@ -83,21 +95,21 @@ const buildConfig = (variant, minify) => {
   const plugins = buildPlugins(variant, minify);
   const minifiedExtension = minify ? ".min" : "";
 
-  if (variant === BASE_CODE) {
+  if (variant === "BASE_CODE") {
     return {
       input: "src/baseCode.js",
       output: [
         {
           file: `distTest/baseCode${minifiedExtension}.js`,
-          format: "cjs",
+          format: "iife",
           strict: false
         }
       ],
       plugins
     };
   }
-  if (variant === STANDALONE || variant === SANDBOX) {
-    const destDirectory = variant === SANDBOX ? "sandbox/public/" : "dist/";
+  if (variant === "STANDALONE" || variant === "SANDBOX") {
+    const destDirectory = variant === "SANDBOX" ? "sandbox/public/" : "dist/";
 
     return {
       input: "src/standalone.js",
@@ -110,16 +122,41 @@ const buildConfig = (variant, minify) => {
             "  console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.');\n" +
             "  return;\n" +
             "}\n",
-          sourcemap: variant === SANDBOX
+          globals: {
+            window: "window",
+            document: "document",
+            jsonStringify: "JSON.stringify",
+            objectKeys: "Object.keys",
+            promiseResolve: "Promise.resolve",
+            promiseReject: "Promise.reject",
+            promiseAll: "Promise.all",
+            promise: "Promise",
+            error: "Error",
+            undefined: "undefined"
+          },
+          sourcemap: variant === "SANDBOX",
+          interop: false
         }
       ],
+      external: [
+        "window",
+        "document",
+        "jsonStringify",
+        "objectKeys",
+        "promiseResolve",
+        "promiseReject",
+        "promiseAll",
+        "promise",
+        "error",
+        "undefined"
+      ],
+
       plugins
     };
   }
 
-  // NPM_PACKAGE_LOCAL or NPM_PACKAGE_PROD
   const filename =
-    variant === NPM_PACKAGE_LOCAL ? "npmPackageLocal" : "npmPackageProd";
+    variant === "NPM_PACKAGE_LOCAL" ? "npmPackageLocal" : "npmPackageProd";
 
   return {
     input: `test/functional/helpers/${filename}.js`,
@@ -143,16 +180,12 @@ const addConfig = version => {
     config.push(buildConfig(version, true));
   }
 };
-
-addConfig(BASE_CODE);
-addConfig(STANDALONE);
-addConfig(SANDBOX);
-addConfig(NPM_PACKAGE_LOCAL);
-addConfig(NPM_PACKAGE_PROD);
+VARIANTS.forEach(variant => addConfig(variant));
 
 if (config.length === 0) {
   throw new Error(
     "No files specified. Usage: rollup -c --environment BASE_CODE,STANDALONE,SANDBOX,NPM_PACKAGE_LOCAL,NPM_PACKAGE_PROD"
   );
 }
+
 export default config;
