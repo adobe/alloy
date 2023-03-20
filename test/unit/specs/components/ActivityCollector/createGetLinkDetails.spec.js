@@ -165,7 +165,7 @@ describe("ActivityCollector::createGetLinkDetails", () => {
     expect(result).toEqual(undefined);
   });
 
-  it("Returns undefined when callback does not return true ", () => {
+  it("Returns the object when callback does not return explicit false ", () => {
     const config = {
       onBeforeLinkClickSend: () => {}
     };
@@ -185,6 +185,6 @@ describe("ActivityCollector::createGetLinkDetails", () => {
     });
 
     const result = getLinkDetails({ targetElement: {}, config });
-    expect(result).toEqual(undefined);
+    expect(result).not.toBe(undefined);
   });
 });

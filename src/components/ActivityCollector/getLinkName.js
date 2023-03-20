@@ -73,6 +73,43 @@ const getNodeAttributeValue = (node, attributeName, nodeName) => {
 };
 
 /**
+ * Extracts the children supported nodes attributes map
+ * @param {*} nodes The nodes array holding the children nodes.
+ * The returned map contains the supported not empty children attributes values.
+ * */
+const getChildrenAttributes = nodes => {
+  const attributes = {
+    texts: []
+  };
+  nodes.supportedNodes.forEach(supportedNode => {
+    if (supportedNode.getAttribute) {
+      if (!attributes.alt) {
+        attributes.alt = truncateWhiteSpace(supportedNode.getAttribute("alt"));
+      }
+      if (!attributes.title) {
+        attributes.title = truncateWhiteSpace(
+          supportedNode.getAttribute("title")
+        );
+      }
+      if (!attributes.inputValue) {
+        attributes.inputValue = truncateWhiteSpace(
+          getNodeAttributeValue(supportedNode, "value", "INPUT")
+        );
+      }
+      if (!attributes.imgSrc) {
+        attributes.imgSrc = truncateWhiteSpace(
+          getNodeAttributeValue(supportedNode, "src", "IMG")
+        );
+      }
+    }
+    if (supportedNode.nodeValue) {
+      attributes.texts.push(supportedNode.nodeValue);
+    }
+  });
+  return attributes;
+};
+
+/**
  * Extracts a link-name from a given node.
  *
  * The returned link-name is set to one of the following (in order of priority):
@@ -95,35 +132,16 @@ const getNodeAttributeValue = (node, attributeName, nodeName) => {
 export default node => {
   let nodeText = truncateWhiteSpace(node.innerText || node.textContent);
   const nodes = extractSupportedNodes(node);
+  // if contains unsupported nodes we want children node attributes
   if (!nodeText || nodes.includesUnsupportedNodes) {
-    let alt;
-    let title;
-    let inputValue;
-    let imgSrc;
-    const texts = [];
-    nodes.supportedNodes.forEach(supportedNode => {
-      if (supportedNode.getAttribute) {
-        alt = alt || truncateWhiteSpace(supportedNode.getAttribute("alt"));
-        title =
-          title || truncateWhiteSpace(supportedNode.getAttribute("title"));
-        inputValue =
-          inputValue ||
-          truncateWhiteSpace(
-            getNodeAttributeValue(supportedNode, "value", "INPUT")
-          );
-        imgSrc =
-          imgSrc ||
-          truncateWhiteSpace(
-            getNodeAttributeValue(supportedNode, "src", "IMG")
-          );
-      }
-      if (supportedNode.nodeValue) {
-        texts.push(supportedNode.nodeValue);
-      }
-    });
-    nodeText = truncateWhiteSpace(texts.join(""));
+    const attributesMap = getChildrenAttributes(nodes);
+    nodeText = truncateWhiteSpace(attributesMap.texts.join(""));
     if (!nodeText) {
-      nodeText = truncateWhiteSpace(alt || title || inputValue || imgSrc || "");
+      nodeText =
+        attributesMap.alt ||
+        attributesMap.title ||
+        attributesMap.inputValue ||
+        attributesMap.imgSrc;
     }
   }
   return nodeText || "";

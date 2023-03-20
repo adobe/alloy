@@ -19,8 +19,6 @@ export default ({
   determineLinkType
 }) => {
   return ({ targetElement, config }) => {
-    // Search parent elements for an anchor element
-    // TODO: Replace with generic DOM tool that can fetch configured properties
     const anchorElement = findSupportedAnchorElement(targetElement);
     if (!anchorElement) {
       return undefined;
@@ -32,7 +30,6 @@ export default ({
     }
 
     const linkType = determineLinkType(window, config, linkUrl, anchorElement);
-    // TODO: The user provided link click function needs to be called here
     const linkRegion = getLinkRegion(anchorElement);
     const linkName = getLinkName(anchorElement);
 
@@ -62,10 +59,10 @@ export default ({
 
     const shouldEventBeTracked = onBeforeLinkClickSend(options);
 
-    if (!shouldEventBeTracked) {
-      return undefined;
+    if (shouldEventBeTracked !== false) {
+      return options;
     }
 
-    return options;
+    return undefined;
   };
 };

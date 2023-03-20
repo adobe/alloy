@@ -57,7 +57,8 @@ describe("ActivityCollector::getLinkName", () => {
       })
     ).toBe("content");
   });
-
+  // this is an use case when in the children nodes there is an unsupported node,
+  // thus the innerText might contain some unrelated data
   it("Excludes unsupported nodes", () => {
     expect(
       getLinkName({
@@ -134,4 +135,19 @@ describe("ActivityCollector::getLinkName", () => {
       })
     ).toBe("ab c");
   });
+});
+
+it("Ignores the spaces attributes", () => {
+  expect(
+    getLinkName({
+      nodeName: "A",
+      childNodes: [
+        createNodeWithAttribute("IMG", "title", "title"),
+        createNodeWithAttribute("IMG", "src", "image.jpg"),
+        createNodeWithAttribute("IMG", "alt", "  "),
+        createNodeWithAttribute("IMG", "alt", "alt"),
+        createNodeWithAttribute("INPUT", "value", "input")
+      ]
+    })
+  ).toBe("alt");
 });

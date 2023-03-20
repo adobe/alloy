@@ -47,17 +47,19 @@ const getSectionNodeName = node => {
  * @param {*} node The node to find link region for.
  * @returns {string} link-region.
  */
-export default targetElement => {
-  let node = targetElement.parentNode;
+export default node => {
+  let linkParentNode = node.parentNode;
   let regionName;
-  while (node) {
+  while (linkParentNode) {
     regionName = truncateWhiteSpace(
-      node.id || getAriaRegionLabel(node) || getSectionNodeName(node)
+      linkParentNode.id ||
+        getAriaRegionLabel(linkParentNode) ||
+        getSectionNodeName(linkParentNode)
     );
     if (regionName) {
       return regionName;
     }
-    node = node.parentNode;
+    linkParentNode = linkParentNode.parentNode;
   }
   return "BODY";
 };
