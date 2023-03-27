@@ -18,14 +18,21 @@ export default ({
   findSupportedAnchorElement,
   determineLinkType
 }) => {
-  return ({ targetElement, config }) => {
+  return ({ targetElement, config, logger }) => {
     const anchorElement = findSupportedAnchorElement(targetElement);
+
     if (!anchorElement) {
+      logger.info(
+        "This link click event is not triggered because the HTML element is not an anchor."
+      );
       return undefined;
     }
 
     const linkUrl = getAbsoluteUrlFromAnchorElement(window, anchorElement);
     if (!linkUrl) {
+      logger.info(
+        "This link click event is not triggered because the HTML element doesn't have an URL."
+      );
       return undefined;
     }
 
@@ -62,7 +69,9 @@ export default ({
     if (shouldEventBeTracked !== false) {
       return options;
     }
-
+    logger.info(
+      "This link click event is not triggered because the callback function canceled it."
+    );
     return undefined;
   };
 };

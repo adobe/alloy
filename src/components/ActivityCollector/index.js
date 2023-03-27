@@ -31,8 +31,13 @@ const getLinkDetails = createGetLinkDetails({
   determineLinkType
 });
 
-const createActivityCollector = ({ config, eventManager, handleError }) => {
-  const linkClick = createLinkClick({ getLinkDetails, config });
+const createActivityCollector = ({
+  config,
+  eventManager,
+  handleError,
+  logger
+}) => {
+  const linkClick = createLinkClick({ getLinkDetails, config, logger });
 
   return {
     lifecycle: {
@@ -54,10 +59,13 @@ const createActivityCollector = ({ config, eventManager, handleError }) => {
 
 createActivityCollector.namespace = "ActivityCollector";
 createActivityCollector.configValidators = configValidators;
-createActivityCollector.buildOnInstanceConfiguredExtraParams = ({ config }) => {
+createActivityCollector.buildOnInstanceConfiguredExtraParams = ({
+  config,
+  logger
+}) => {
   return {
     getLinkDetails: targetElement => {
-      return getLinkDetails({ targetElement, config });
+      return getLinkDetails({ targetElement, config, logger });
     }
   };
 };

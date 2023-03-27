@@ -32,7 +32,7 @@ describe("ActivityCollector::createGetLinkDetails", () => {
   let getAbsoluteUrlFromAnchorElement;
   let findSupportedAnchorElement;
   let determineLinkType;
-
+  const logger = jasmine.createSpyObj("logger", ["info"]);
   beforeEach(() => {
     getLinkName = jasmine.createSpy("getLinkName");
     getLinkRegion = jasmine.createSpy("getLinkRegion");
@@ -67,7 +67,7 @@ describe("ActivityCollector::createGetLinkDetails", () => {
       window: mockWindow
     });
 
-    const result = getLinkDetails({ targetElement: {}, config });
+    const result = getLinkDetails({ targetElement: {}, config, logger });
     expect(result).toEqual({
       xdm: {
         eventType: "web.webinteraction.linkClicks",
@@ -111,7 +111,7 @@ describe("ActivityCollector::createGetLinkDetails", () => {
       window: mockWindow
     });
 
-    const result = getLinkDetails({ targetElement: {}, config });
+    const result = getLinkDetails({ targetElement: {}, config, logger });
     expect(result).toEqual(undefined);
   });
 
@@ -136,7 +136,7 @@ describe("ActivityCollector::createGetLinkDetails", () => {
       window: mockWindow
     });
 
-    const result = getLinkDetails({ targetElement: {}, config });
+    const result = getLinkDetails({ targetElement: {}, config, logger });
     expect(result).toEqual(undefined);
   });
 
@@ -161,7 +161,7 @@ describe("ActivityCollector::createGetLinkDetails", () => {
       window: mockWindow
     });
 
-    const result = getLinkDetails({ targetElement: {}, config });
+    const result = getLinkDetails({ targetElement: {}, config, logger });
     expect(result).toEqual(undefined);
   });
 
@@ -184,7 +184,7 @@ describe("ActivityCollector::createGetLinkDetails", () => {
       window: mockWindow
     });
 
-    const result = getLinkDetails({ targetElement: {}, config });
+    const result = getLinkDetails({ targetElement: {}, config, logger });
     expect(result).not.toBe(undefined);
   });
 });
