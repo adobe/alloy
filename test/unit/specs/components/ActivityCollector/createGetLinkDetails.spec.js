@@ -32,7 +32,7 @@ describe("ActivityCollector::createGetLinkDetails", () => {
   let getAbsoluteUrlFromAnchorElement;
   let findSupportedAnchorElement;
   let determineLinkType;
-  const logger = jasmine.createSpyObj("logger", ["info"]);
+  let logger;
   beforeEach(() => {
     getLinkName = jasmine.createSpy("getLinkName");
     getLinkRegion = jasmine.createSpy("getLinkRegion");
@@ -43,6 +43,7 @@ describe("ActivityCollector::createGetLinkDetails", () => {
       "findSupportedAnchorElement"
     );
     determineLinkType = jasmine.createSpy("determineLinkType");
+    logger = jasmine.createSpyObj("logger", ["info"]);
   });
 
   it("Returns complete linkDetails when it is a supported anchor element", () => {
@@ -112,6 +113,9 @@ describe("ActivityCollector::createGetLinkDetails", () => {
     });
 
     const result = getLinkDetails({ targetElement: {}, config, logger });
+    expect(logger.info).toHaveBeenCalledWith(
+      "This link click event is not triggered because the callback function canceled it."
+    );
     expect(result).toEqual(undefined);
   });
 
@@ -137,10 +141,13 @@ describe("ActivityCollector::createGetLinkDetails", () => {
     });
 
     const result = getLinkDetails({ targetElement: {}, config, logger });
+    expect(logger.info).toHaveBeenCalledWith(
+      "This link click event is not triggered because the HTML element is not an anchor."
+    );
     expect(result).toEqual(undefined);
   });
 
-  it("Returns undefined when element without url ", () => {
+  it("Returns undefined when element without url and logs a message", () => {
     const config = {
       onBeforeLinkClickSend: () => {
         return true;
@@ -162,6 +169,9 @@ describe("ActivityCollector::createGetLinkDetails", () => {
     });
 
     const result = getLinkDetails({ targetElement: {}, config, logger });
+    expect(logger.info).toHaveBeenCalledWith(
+      "This link click event is not triggered because the HTML element doesn't have an URL."
+    );
     expect(result).toEqual(undefined);
   });
 
