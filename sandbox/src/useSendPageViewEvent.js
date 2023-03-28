@@ -19,7 +19,7 @@ export default ({
   viewName,
   data = {},
   xdm = {},
-  decisionScopes = ["sandbox-personalization-page"],
+  decisionScopes,
   setPropositions
 } = {}) => {
   useEffect(() => {

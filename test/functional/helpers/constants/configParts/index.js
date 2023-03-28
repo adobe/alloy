@@ -4,6 +4,8 @@ import debugEnabled from "./debugEnabled";
 import debugDisabled from "./debugDisabled";
 import edgeDomainFirstParty from "./edgeDomainFirstParty";
 import edgeDomainThirdParty from "./edgeDomainThirdParty";
+import clickCollectionEnabled from "./clickCollectionEnabled";
+import clickCollectionDisabled from "./clickCollectionDisabled";
 import migrationEnabled from "./migrationEnabled";
 import targetMigrationEnabled from "./targetMigrationEnabled";
 import migrationDisabled from "./migrationDisabled";
@@ -22,6 +24,8 @@ export {
   debugDisabled,
   edgeDomainFirstParty,
   edgeDomainThirdParty,
+  clickCollectionEnabled,
+  clickCollectionDisabled,
   migrationEnabled,
   migrationDisabled,
   consentIn,

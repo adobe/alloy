@@ -9,7 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
+// This is the only place where core is allowed to import from components.
+// This makes sure that each component could be removed without breaking the library
+/* eslint-disable import/no-restricted-paths */
 import createDataCollector from "../components/DataCollector";
 import createActivityCollector from "../components/ActivityCollector";
 import createIdentity from "../components/Identity";

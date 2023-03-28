@@ -41,6 +41,22 @@ const transformOptions = (schema, options) => {
   }
 };
 
+const buildAllOnInstanceConfiguredExtraParams = (
+  config,
+  logger,
+  componentCreators
+) => {
+  return componentCreators.reduce(
+    (memo, { buildOnInstanceConfiguredExtraParams }) => {
+      if (buildOnInstanceConfiguredExtraParams) {
+        assign(memo, buildOnInstanceConfiguredExtraParams({ config, logger }));
+      }
+      return memo;
+    },
+    {}
+  );
+};
+
 export default ({
   options,
   componentCreators,
@@ -52,6 +68,12 @@ export default ({
   const schema = buildSchema(coreConfigValidators, componentCreators);
   const config = createConfig(transformOptions(schema, options));
   setDebugEnabled(config.debugEnabled, { fromConfig: true });
-  logger.logOnInstanceConfigured({ config });
+  // eslint-disable-next-line no-underscore-dangle
+  const extraParams = buildAllOnInstanceConfiguredExtraParams(
+    config,
+    logger,
+    componentCreators
+  );
+  logger.logOnInstanceConfigured({ ...extraParams, config });
   return config;
 };

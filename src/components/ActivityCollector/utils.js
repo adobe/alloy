@@ -63,10 +63,49 @@ const isExitLink = (window, linkUrl) => {
   return true;
 };
 
+/**
+ * Reduces repeated whitespace within a string. Whitespace surrounding the string
+ * is trimmed and any occurrence of whitespace within the string is replaced with
+ * a single space.
+ * @param {string} str String to be formatted.
+ * @returns {string} Formatted string.
+ */
+const truncateWhiteSpace = str => {
+  return str && str.replace(/\s+/g, " ").trim();
+};
+
+const isEmptyString = str => {
+  return !str || str.length === 0;
+};
+const determineLinkType = (window, config, linkUrl, clickedObj) => {
+  let linkType = "other";
+  if (isDownloadLink(config.downloadLinkQualifier, linkUrl, clickedObj)) {
+    linkType = "download";
+  } else if (isExitLink(window, linkUrl)) {
+    linkType = "exit";
+  }
+  return linkType;
+};
+
+const findSupportedAnchorElement = targetElement => {
+  let node = targetElement;
+  while (node) {
+    if (isSupportedAnchorElement(node)) {
+      return node;
+    }
+    node = node.parentNode;
+  }
+  return null;
+};
+
 export {
   urlStartsWithScheme,
   getAbsoluteUrlFromAnchorElement,
   isSupportedAnchorElement,
   isDownloadLink,
-  isExitLink
+  isEmptyString,
+  isExitLink,
+  truncateWhiteSpace,
+  findSupportedAnchorElement,
+  determineLinkType
 };
