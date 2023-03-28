@@ -128,6 +128,7 @@ test("Test C81181: Verify that onBeforeLinkClickSend augments a request", async 
 
         return true;
       }
+      return false;
     }
   });
   await alloy.configure(testConfig);
