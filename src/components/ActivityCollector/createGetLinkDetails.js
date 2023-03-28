@@ -70,7 +70,7 @@ export default ({
       return options;
     }
     logger.info(
-      "This link click event is not triggered because the callback function canceled it."
+      "This link click event is not triggered because it was canceled in onBeforeLinkClickSend."
     );
     return undefined;
   };
