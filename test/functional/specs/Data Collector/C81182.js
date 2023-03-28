@@ -38,6 +38,9 @@ const clickLink = async selector => {
 };
 
 const expectedExprienceDecisioning = {
+  propositionEventType: {
+    interact: 1
+  },
   propositions: [
     {
       id: "AT:eyJhY3Rpdml0eUlkIjoiMTQ1NDQ4IiwiZXhwZXJpZW5jZUlkIjoiIn0=",
