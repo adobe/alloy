@@ -138,17 +138,21 @@
 
           const xdm = options.xdm;
           const data = options.data;
+          const { webInteraction } = xdm.web;
 
-          data.custom = "custom field";
-          if (
-            xdm &&
-            xdm.web &&
-            xdm.web.webInteraction &&
-            xdm.web.webInteraction.name === "Large Payload"
-          ) {
+          if (webInteraction.name === "Large Payload") {
             xdm.web.webInteraction.name = "changed link name";
+            data.custom = "custom field for changed link name";
 
             return true;
+          }
+
+          if (webInteraction.name === "Personalization") {
+            return false;
+          }
+
+          if (webInteraction.URL === "https://alloyio.com/download.zip") {
+            return false;
           }
 
           return true;
