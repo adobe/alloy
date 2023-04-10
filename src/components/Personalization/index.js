@@ -10,9 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, boolean } from "../../utils/validation";
+import { boolean, string } from "../../utils/validation";
 import createComponent from "./createComponent";
-import { initDomActionsModules, executeActions } from "./dom-actions";
 import createCollect from "./createCollect";
 import createExecuteDecisions from "./createExecuteDecisions";
 import { hideContainers, showContainers } from "./flicker";
@@ -32,6 +31,10 @@ import createNonRenderingHandler from "./createNonRenderingHandler";
 import createApplyPropositions from "./createApplyPropositions";
 import createGetPageLocation from "./createGetPageLocation";
 import createSetTargetMigration from "./createSetTargetMigration";
+import createModulesProvider from "./createModulesProvider";
+import executeActions from "./executeActions";
+import createModules from "./createModules";
+import createPreprocessors from "./createPreprocessors";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -44,9 +47,14 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   } = createClickStorage();
   const getPageLocation = createGetPageLocation({ window });
   const viewCache = createViewCacheManager();
-  const modules = initDomActionsModules(storeClickMetrics);
+
+  const modulesProvider = createModulesProvider({
+    modules: createModules(storeClickMetrics),
+    preprocessors: createPreprocessors()
+  });
+
   const executeDecisions = createExecuteDecisions({
-    modules,
+    modulesProvider,
     logger,
     executeActions
   });

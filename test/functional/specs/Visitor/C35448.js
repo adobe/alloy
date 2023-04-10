@@ -31,6 +31,7 @@ const visitorReady = ClientFunction(() => {
 });
 const injectVisitor = ClientFunction(
   () => {
+    // eslint-disable-next-line no-console
     console.log(REMOTE_VISITOR_LIBRARY_URL);
     const s = document.createElement("script");
     s.src = REMOTE_VISITOR_LIBRARY_URL;

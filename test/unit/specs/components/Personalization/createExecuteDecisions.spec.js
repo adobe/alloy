@@ -11,11 +11,12 @@ governing permissions and limitations under the License.
 */
 
 import createExecuteDecisions from "../../../../../src/components/Personalization/createExecuteDecisions";
+import { DOM_ACTION } from "../../../../../src/components/Personalization/constants/schema";
+import createModulesProvider from "../../../../../src/components/Personalization/createModulesProvider";
 
 describe("Personalization::createExecuteDecisions", () => {
   let logger;
   let executeActions;
-  let collect;
 
   const decisions = [
     {
@@ -56,6 +57,7 @@ describe("Personalization::createExecuteDecisions", () => {
   const expectedAction = [
     {
       type: "setHtml",
+      schema: DOM_ACTION,
       selector: "#foo",
       content: "<div>Hola Mundo</div>",
       meta: {
@@ -79,13 +81,17 @@ describe("Personalization::createExecuteDecisions", () => {
       scopeDetails: decisions[1].scopeDetails
     }
   ];
-  const modules = {
-    foo() {}
-  };
+
+  const modulesProvider = createModulesProvider({
+    modules: {
+      [DOM_ACTION]: {
+        foo() {}
+      }
+    }
+  });
 
   beforeEach(() => {
     logger = jasmine.createSpyObj("logger", ["info", "warn", "error"]);
-    collect = jasmine.createSpy();
     executeActions = jasmine.createSpy();
   });
 
@@ -95,14 +101,14 @@ describe("Personalization::createExecuteDecisions", () => {
       [{ meta: metas[1], error: "could not render this item" }]
     );
     const executeDecisions = createExecuteDecisions({
-      modules,
+      modulesProvider,
       logger,
       executeActions
     });
     return executeDecisions(decisions).then(() => {
       expect(executeActions).toHaveBeenCalledWith(
         expectedAction,
-        modules,
+        modulesProvider,
         logger
       );
       expect(logger.warn).toHaveBeenCalledWith({
@@ -115,10 +121,9 @@ describe("Personalization::createExecuteDecisions", () => {
   it("shouldn't trigger executeActions when provided with empty array of actions", () => {
     executeActions.and.callThrough();
     const executeDecisions = createExecuteDecisions({
-      modules,
+      modulesProvider,
       logger,
-      executeActions,
-      collect
+      executeActions
     });
     return executeDecisions([]).then(() => {
       expect(executeActions).not.toHaveBeenCalled();

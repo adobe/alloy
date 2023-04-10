@@ -33,7 +33,8 @@ const buildActions = decision => {
 
   return decision.items.map(item =>
     assign({ type: DEFAULT_ACTION_TYPE }, item.data, {
-      meta: getItemMeta(item, decisionMeta)
+      schema: item.schema,
+      meta: getItemMeta(item, { ...decisionMeta })
     })
   );
 };
@@ -66,12 +67,12 @@ const processMetas = (logger, actionResults) => {
   return finalMetas;
 };
 
-export default ({ modules, logger, executeActions }) => {
+export default ({ modulesProvider, logger, executeActions }) => {
   return decisions => {
     const actionResultsPromises = decisions.map(decision => {
       const actions = buildActions(decision);
 
-      return executeActions(actions, modules, logger);
+      return executeActions(actions, modulesProvider, logger);
     });
     return Promise.all(actionResultsPromises)
       .then(results => processMetas(logger, results))

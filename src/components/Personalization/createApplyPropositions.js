@@ -12,11 +12,19 @@ governing permissions and limitations under the License.
 
 import composePersonalizationResultingObject from "./utils/composePersonalizationResultingObject";
 import { isNonEmptyArray, isObject } from "../../utils";
-import { DOM_ACTION, HTML_CONTENT_ITEM } from "./constants/schema";
+import {
+  DOM_ACTION,
+  HTML_CONTENT_ITEM,
+  IN_APP_MESSAGE
+} from "./constants/schema";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
 import { EMPTY_PROPOSITIONS } from "./validateApplyPropositionsOptions";
 
-export const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
+export const SUPPORTED_SCHEMAS = [
+  DOM_ACTION,
+  HTML_CONTENT_ITEM,
+  IN_APP_MESSAGE
+];
 
 export default ({ executeDecisions }) => {
   const filterItemsPredicate = item =>
