@@ -1,6 +1,7 @@
 import { addStyle, removeElements } from "../utils";
 
 const STYLE_TAG_ID = "alloy-messaging-banner-styles";
+const ELEMENT_TAG_ID = "alloy-messaging-banner";
 const BANNER_CSS_CLASSNAME = "alloy-banner";
 
 const showBanner = ({ background, content }) => {
@@ -19,6 +20,7 @@ const showBanner = ({ background, content }) => {
   );
 
   const banner = document.createElement("div");
+  banner.id = ELEMENT_TAG_ID;
   banner.className = BANNER_CSS_CLASSNAME;
 
   const bannerContent = document.createElement("div");
