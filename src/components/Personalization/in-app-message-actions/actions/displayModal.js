@@ -1,6 +1,7 @@
 import { addStyle, removeElements } from "../utils";
 
 const STYLE_TAG_ID = "alloy-messaging-modal-styles";
+const ELEMENT_TAG_ID = "alloy-messaging-modal";
 const MODAL_CSS_CLASSNAME = "alloy-modal";
 
 const closeModal = () => {
@@ -57,6 +58,7 @@ const showModal = ({ buttons = [], content }) => {
   );
 
   const modal = document.createElement("div");
+  modal.id = ELEMENT_TAG_ID;
   modal.className = `${MODAL_CSS_CLASSNAME} alloy-align-center alloy-align-vertical alloy-modal--show`;
 
   const modalContainer = document.createElement("div");
