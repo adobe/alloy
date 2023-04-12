@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import attachClickActivityCollector from "./attachClickActivityCollector";
 import configValidators from "./configValidators";
 import createLinkClick from "./createLinkClick";
+import window from "../../utils/window";
 import createGetLinkDetails from "./createGetLinkDetails";
 import getLinkName from "./getLinkName";
 import getLinkRegion from "./getLinkRegion";

@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import document from "../../../utils/document";
+
 export default (doc = document) => {
   return doc.location.href.indexOf("adobe_authoring_enabled") !== -1;
 };

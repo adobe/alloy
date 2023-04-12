@@ -13,6 +13,8 @@ governing permissions and limitations under the License.
 import isFunction from "../isFunction";
 import isNonEmptyArray from "../isNonEmptyArray";
 import selectNodes from "./selectNodes";
+import document from "../document";
+import window from "../window";
 
 const MUTATION_OBSERVER = "MutationObserver";
 const RAF = "requestAnimationFrame";

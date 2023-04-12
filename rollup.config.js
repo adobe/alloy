@@ -44,15 +44,41 @@ const buildPlugins = (variant, minify) => {
     if (variant === "BASE_CODE") {
       plugins.push(
         terser({
-          mangle: true,
+          mangle: {
+            toplevel: true,
+            properties: {
+              regex: /^_/ // Mangle private properties starting with an underscore
+            }
+          },
           compress: {
-            unused: true
+            defaults: false,
+            dead_code: true,
+            unused: true,
+            arguments: true,
+            join_vars: true,
+            drop_console: true,
+            collapse_vars: true,
+            reduce_vars: true,
+            pure_getters: true,
+            passes: 5 // Increase the number of optimization passes
           },
           output: {
+            comments: false,
             wrap_func_args: false
           },
           toplevel: true
         })
+
+        // terser({
+        //   mangle: true,
+        //   compress: {
+        //     unused: true
+        //   },
+        //   output: {
+        //     wrap_func_args: false
+        //   },
+        //   toplevel: true
+        // })
       );
     } else {
       plugins.unshift(

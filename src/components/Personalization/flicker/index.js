@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import document from "../../../utils/document";
 import { createNode, appendNode, removeNode } from "../../../utils/dom";
 import { STYLE } from "../../../constants/tagName";
 import { getElementById, getNonce } from "../dom-actions/dom";

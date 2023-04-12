@@ -18,6 +18,7 @@ import injectTimestamp from "./injectTimestamp";
 import implementationDetails from "./implementationDetails";
 import createComponent from "./createComponent";
 import injectHighEntropyUserAgentHints from "./injectHighEntropyUserAgentHints";
+import window from "../../utils/window";
 import { arrayOf, string } from "../../utils/validation";
 
 const web = injectWeb(window);

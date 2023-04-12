@@ -10,14 +10,5 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import document from "../../../../utils/document";
-
-/**
- * Returns an array of matched DOM nodes.
- * @param {String} id
- * @param {Node} [context=document] defaults to document
- * @returns {HTMLElement} an element of null
- */
-export default (id, context = document) => {
-  return context.getElementById(id);
-};
+const d = document;
+export default d;

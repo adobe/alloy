@@ -10,11 +10,35 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import loadScript from "@adobe/reactor-load-script";
+import document from "../../../utils/document";
 import { selectNodes, createNode } from "../../../utils/dom";
 import { SCRIPT } from "../../../constants/tagName";
 import { SRC } from "../../../constants/elementAttribute";
 import { getAttribute, getNonce } from "./dom";
+
+const getPromise = (url, script) => {
+  return new Promise((resolve, reject) => {
+    script.onload = () => {
+      resolve(script);
+    };
+
+    script.onerror = () => {
+      reject(new Error(`Failed to load script ${url}`));
+    };
+  });
+};
+
+const loadScript = url => {
+  const script = document.createElement("script");
+  script.src = url;
+  script.async = true;
+
+  const promise = getPromise(url, script);
+
+  document.head.appendChild(script);
+
+  return promise;
+};
 
 export const is = (element, tagName) =>
   !!element && element.tagName === tagName;

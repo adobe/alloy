@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createInstanceFunction from "./createInstanceFunction";
+import window from "../utils/window";
 import {
   getApexDomain,
   injectStorage,

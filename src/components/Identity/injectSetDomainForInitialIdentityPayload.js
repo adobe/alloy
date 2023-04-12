@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import getBrowser from "../../utils/getBrowser";
+import window from "../../utils/window";
 
 export default ({
   thirdPartyCookiesEnabled,
