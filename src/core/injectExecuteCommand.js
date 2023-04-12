@@ -18,7 +18,8 @@ export default ({
   configureCommand,
   setDebugCommand,
   handleError,
-  validateCommandOptions
+  validateCommandOptions,
+  usageStorage
 }) => {
   let configurePromise;
 
@@ -91,6 +92,8 @@ export default ({
       // will be rejected if getExecutor() throws errors.
       const executor = getExecutor(commandName, options);
       logger.logOnBeforeCommand({ commandName, options });
+      // log the usage
+      usageStorage.storeUsage({ commandName, options });
       resolve(executor());
     })
       .catch(error => {

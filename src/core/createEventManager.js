@@ -25,7 +25,8 @@ export default ({
   createDataCollectionRequestPayload,
   createDataCollectionRequest,
   sendEdgeNetworkRequest,
-  applyResponse
+  applyResponse,
+  usageStorage
 }) => {
   const { onBeforeEventSend } = config;
 
@@ -73,6 +74,11 @@ export default ({
         })
         .then(() => {
           try {
+            const usages = usageStorage.getUsages();
+            event.mergeMeta({
+              telemetry: usages
+            });
+
             // NOTE: this calls onBeforeEventSend callback (if configured)
             event.finalize(onBeforeEventSend);
           } catch (error) {
@@ -98,6 +104,7 @@ export default ({
               });
           }
 
+          usageStorage.clearUsageStorage();
           return sendEdgeNetworkRequest({
             request,
             runOnResponseCallbacks: onResponseCallbackAggregator.call,

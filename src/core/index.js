@@ -54,6 +54,7 @@ import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint";
 import isRequestRetryable from "./network/isRequestRetryable";
 import getRequestRetryDelay from "./network/getRequestRetryDelay";
 import injectApplyResponse from "./edgeNetwork/injectApplyResponse";
+import createUsageStorage from "./createUsageStorage";
 
 const createNamespacedStorage = injectStorage(window);
 
@@ -62,6 +63,7 @@ const { console, fetch, navigator, XMLHttpRequest } = window;
 // set this up as a function so that monitors can be added at anytime
 // eslint-disable-next-line no-underscore-dangle
 const getMonitors = () => window.__alloyMonitors || [];
+const usageStorage = createUsageStorage();
 
 const coreConfigValidators = createCoreConfigs();
 const apexDomain = getApexDomain(window, cookieJar);
@@ -159,7 +161,8 @@ export const createExecuteCommand = ({
       createDataCollectionRequestPayload,
       createDataCollectionRequest,
       sendEdgeNetworkRequest,
-      applyResponse
+      applyResponse,
+      usageStorage
     });
     return initializeComponents({
       componentCreators,
@@ -197,7 +200,8 @@ export const createExecuteCommand = ({
     configureCommand,
     setDebugCommand,
     handleError,
-    validateCommandOptions
+    validateCommandOptions,
+    usageStorage
   });
   return executeCommand;
 };
