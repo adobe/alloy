@@ -34,7 +34,9 @@ export default ({
 
     cookieDestinations.forEach(dest => {
       const { name, value, domain, ttlDays } = dest.spec;
-      cookieJar.set(name, value || "", {
+      const encodedCookieValue = value ? encodeURIComponent(value) : "";
+
+      cookieJar.set(name, encodedCookieValue, {
         domain: domain || "",
         expires: ttlDays || 10, // days
         ...extraCookieOptions
