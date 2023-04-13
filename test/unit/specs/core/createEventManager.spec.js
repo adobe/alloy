@@ -115,6 +115,7 @@ describe("createEventManager", () => {
           expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith({
             event,
             renderDecisions: true,
+            decisionContext: undefined,
             decisionScopes: undefined,
             personalization: undefined,
             onResponse: jasmine.any(Function),

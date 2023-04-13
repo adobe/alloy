@@ -60,6 +60,7 @@ describe("Event Command", () => {
       expect(event.setUserData).toHaveBeenCalledWith(data);
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: true,
+        decisionContext: {},
         decisionScopes: [],
         personalization: {}
       });
@@ -79,6 +80,7 @@ describe("Event Command", () => {
     return sendEventCommand.run(options).then(result => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: true,
+        decisionContext: {},
         decisionScopes: ["Foo1"],
         personalization: {
           decisionScopes: ["Foo2"]
@@ -99,6 +101,7 @@ describe("Event Command", () => {
     return sendEventCommand.run(options).then(result => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: true,
+        decisionContext: {},
         decisionScopes: [],
         personalization: {
           surfaces: ["Foo1", "Foo2"]
@@ -118,6 +121,7 @@ describe("Event Command", () => {
     return sendEventCommand.run({}).then(() => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: false,
+        decisionContext: {},
         decisionScopes: [],
         personalization: {}
       });

@@ -31,7 +31,6 @@ const visitorReady = ClientFunction(() => {
 });
 const injectVisitor = ClientFunction(
   () => {
-    console.log(REMOTE_VISITOR_LIBRARY_URL);
     const s = document.createElement("script");
     s.src = REMOTE_VISITOR_LIBRARY_URL;
     document.body.appendChild(s);
