@@ -9,7 +9,6 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-/* eslint-disable */
 const fs = require("fs");
 const path = require("path");
 const stagedGitFiles = require("staged-git-files");
@@ -21,14 +20,15 @@ const SOURCE_TEMPLATE = "source-header.handlebars";
 const GIT_DELETED = "Deleted";
 const SOURCE_FILE_EXTENSIONS = ["js", "ts", "cjs", "mjs"];
 const IGNORE_PATTERNS = [
-  /sandbox/gi,
+  /\/sandbox\//gi,
+  /\/scripts\//gi,
   /launch.+\.js/gi,
   /at\.js/gi,
   /\.min\.js/gi,
   /AppMeasurement/gi
 ];
 
-async function walk(dir, matchesFilter) {
+const walk = async (dir, matchesFilter) => {
   let files = fs.readdirSync(dir);
   files = await Promise.all(
     files
@@ -38,16 +38,15 @@ async function walk(dir, matchesFilter) {
         const stats = fs.statSync(filePath);
         if (stats.isDirectory()) {
           return walk(filePath, matchesFilter);
-        } else if (stats.isFile()) {
-          return filePath;
         }
+        return filePath;
       })
   );
 
   return files.reduce((all, folderContents) => all.concat(folderContents), []);
-}
+};
 
-async function getStagedGitFiles() {
+const getStagedGitFiles = async () => {
   return (await stagedGitFiles())
     .filter(detail => {
       const parts = detail.filename.split(".");
@@ -58,16 +57,16 @@ async function getStagedGitFiles() {
       );
     })
     .map(detail => path.join(PROJECT_ROOT, detail.filename));
-}
+};
 
-async function getAllSourceFiles() {
+const getAllSourceFiles = async () => {
   const IGNORED = ["node_modules", ".git", "dist"];
-  return await walk(PROJECT_ROOT, (file, dir) => {
+  return walk(PROJECT_ROOT, (file, dir) => {
     const filePath = path.join(dir, file);
     const stats = fs.statSync(filePath);
 
-    for (const ignoredString of IGNORED) {
-      if (filePath.includes(ignoredString)) {
+    for (let i = 0; i < IGNORED.length; i += 1) {
+      if (filePath.includes(IGNORED[i])) {
         return false;
       }
     }
@@ -77,8 +76,8 @@ async function getAllSourceFiles() {
     }
 
     if (stats.isFile()) {
-      for (const extension of SOURCE_FILE_EXTENSIONS) {
-        if (file.endsWith(extension)) {
+      for (let i = 0; i < SOURCE_FILE_EXTENSIONS.length; i += 1) {
+        if (file.endsWith(SOURCE_FILE_EXTENSIONS[i])) {
           return true;
         }
       }
@@ -86,9 +85,9 @@ async function getAllSourceFiles() {
 
     return false;
   });
-}
+};
 
-async function run() {
+const run = async () => {
   const stagedOnly = typeof process.env.STAGED_ONLY !== "undefined";
 
   const template = fs.readFileSync(
@@ -108,9 +107,8 @@ async function run() {
 
   sourceFiles
     .filter(file => {
-      // eslint-disable-next-line no-restricted-syntax
-      for (const ignorePattern of IGNORE_PATTERNS) {
-        if (ignorePattern.test(file)) {
+      for (let i = 0; i < IGNORE_PATTERNS.length; i += 1) {
+        if (file.match(IGNORE_PATTERNS[i])) {
           return false;
         }
       }
@@ -122,6 +120,6 @@ async function run() {
         fs.writeFileSync(path.resolve(file), `${templateText}${contents}`);
       }
     });
-}
+};
 
 run();
