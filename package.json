@@ -29,7 +29,7 @@
     "prepare": "husky install && cd sandbox && npm install",
     "prepublishOnly": "rimraf libEs5 libEs6 && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
-    "add-license": "node scripts/add-license.js"
+    "add-license": "./scripts/add-license.js"
   },
   "lint-staged": {
     "./*.js": [
