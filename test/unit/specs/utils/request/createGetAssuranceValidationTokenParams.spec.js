@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import { createGetAssuranceValidationTokenParams } from "../../../../../src/utils/request";
 import { injectStorage } from "../../../../../src/utils";
+
 import uuidV4Regex from "../../../constants/uuidV4Regex";
 
 const win = {

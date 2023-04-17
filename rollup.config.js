@@ -56,7 +56,7 @@ const buildPlugins = (variant, minify) => {
             unused: true,
             arguments: true,
             join_vars: true,
-            drop_console: true,
+            drop_console: false,
             collapse_vars: true,
             reduce_vars: true,
             pure_getters: true,

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// import queryString from "@adobe/reactor-query-string";
+import * as querystring from "querystring";
 
 const queryString = {
   // NOTE: This has been optimized to only include functionality that is being
@@ -19,7 +19,7 @@ const queryString = {
     const obj = {};
 
     if (typeof string === "string") {
-      // Remove leading ?, #, & for some leniency so you can pass in location.search or
+      // Remove leading ?, #, & for some leniency, so you can pass in location.search or
       // location.hash directly.
       let str = string.trim().replace(/^[?#&]/, "");
 
@@ -55,12 +55,11 @@ const queryString = {
     }
 
     return obj;
-  }
+  },
 
-  // This is not used in the alloy codebase...
-  // stringify: object => {
-  //   return querystring.stringify(object);
-  // }
+  stringify: object => {
+    return querystring.stringify(object);
+  }
 };
 
 export default queryString;
