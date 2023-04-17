@@ -47,9 +47,9 @@ describe("Personalization::IAM:modal", () => {
     expect(modal.previousElementSibling).toEqual(something);
     expect(modal.nextElementSibling).toBeNull();
 
-    expect(modal.querySelector(".alloy-modal-content").innerText).toEqual(
-      "Special offer, don't delay!"
-    );
+    expect(
+      modal.querySelector(".alloy-modal-content").innerText.trim()
+    ).toEqual("Special offer, don't delay!");
 
     const buttons = modal.querySelector(".alloy-modal-buttons");
 
