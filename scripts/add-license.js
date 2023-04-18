@@ -108,14 +108,7 @@ const run = async () => {
     : await getAllSourceFiles();
 
   sourceFiles
-    .filter(file => {
-      for (let i = 0; i < IGNORE_PATTERNS.length; i += 1) {
-        if (file.match(IGNORE_PATTERNS[i])) {
-          return false;
-        }
-      }
-      return true;
-    })
+    .filter(file => IGNORE_PATTERNS.every(pattern => !file.match(pattern)))
     .forEach(file => {
       const contents = fs.readFileSync(path.resolve(file), "utf-8");
       if (templateText.slice(0, 2) !== contents.slice(0, 2)) {
