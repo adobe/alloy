@@ -31,7 +31,7 @@ import createNonRenderingHandler from "./createNonRenderingHandler";
 import createApplyPropositions from "./createApplyPropositions";
 import createGetPageLocation from "./createGetPageLocation";
 import createSetTargetMigration from "./createSetTargetMigration";
-import createModulesProvider from "./createModulesProvider";
+import createActionsProvider from "./createActionsProvider";
 import executeActions from "./executeActions";
 import createModules from "./createModules";
 import createPreprocessors from "./createPreprocessors";
@@ -48,13 +48,14 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const getPageLocation = createGetPageLocation({ window });
   const viewCache = createViewCacheManager();
 
-  const modulesProvider = createModulesProvider({
+  const actionsProvider = createActionsProvider({
     modules: createModules(storeClickMetrics),
-    preprocessors: createPreprocessors()
+    preprocessors: createPreprocessors(),
+    logger
   });
 
   const executeDecisions = createExecuteDecisions({
-    modulesProvider,
+    actionsProvider,
     logger,
     executeActions
   });

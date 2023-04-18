@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { DOM_ACTION } from "@adobe/alloy/libEs5/components/Personalization/constants/schema";
 import executeActions from "../../../../../src/components/Personalization/executeActions";
-import createModulesProvider from "../../../../../src/components/Personalization/createModulesProvider";
+import createActionsProvider from "../../../../../src/components/Personalization/createActionsProvider";
 
 describe("Personalization::executeActions", () => {
   it("should execute actions", () => {
@@ -23,14 +23,14 @@ describe("Personalization::executeActions", () => {
 
     return executeActions(
       actions,
-      createModulesProvider({
+      createActionsProvider({
         modules: {
           [DOM_ACTION]: {
             foo: actionSpy
           }
-        }
-      }),
-      logger
+        },
+        logger
+      })
     ).then(result => {
       expect(result).toEqual([1]);
       expect(actionSpy).toHaveBeenCalled();
@@ -68,17 +68,18 @@ describe("Personalization::executeActions", () => {
       }
     ];
 
-    const modulesProvider = createModulesProvider({
+    const actionsProvider = createActionsProvider({
       modules: {
         [DOM_ACTION]: {
           setHtml: setHtmlActionSpy,
           appendHtml: appendHtmlActionSpy,
           customCode: customCodeActionSpy
         }
-      }
+      },
+      logger
     });
 
-    return executeActions(actions, modulesProvider, logger).then(result => {
+    return executeActions(actions, actionsProvider).then(result => {
       expect(result).toEqual([2, 9]);
       expect(setHtmlActionSpy).not.toHaveBeenCalled();
       expect(appendHtmlActionSpy).toHaveBeenCalledOnceWith(
@@ -107,15 +108,16 @@ describe("Personalization::executeActions", () => {
     logger.enabled = false;
     const actions = [{ type: "foo", schema: DOM_ACTION }];
 
-    const modulesProvider = createModulesProvider({
+    const actionsProvider = createActionsProvider({
       modules: {
         [DOM_ACTION]: {
           foo: actionSpy
         }
-      }
+      },
+      logger
     });
 
-    return executeActions(actions, modulesProvider, logger).then(result => {
+    return executeActions(actions, actionsProvider).then(result => {
       expect(result).toEqual([1]);
       expect(actionSpy).toHaveBeenCalled();
       expect(logger.info.calls.count()).toEqual(0);
@@ -131,7 +133,7 @@ describe("Personalization::executeActions", () => {
       foo: jasmine.createSpy().and.throwError("foo's error")
     };
 
-    expect(() => executeActions(actions, modules, logger)).toThrowError();
+    expect(() => executeActions(actions, modules)).toThrowError();
   });
 
   it("should log nothing when there are no actions", () => {
@@ -139,7 +141,7 @@ describe("Personalization::executeActions", () => {
     const actions = [];
     const modules = {};
 
-    return executeActions(actions, modules, logger).then(result => {
+    return executeActions(actions, modules).then(result => {
       expect(result).toEqual([]);
       expect(logger.info).not.toHaveBeenCalled();
       expect(logger.error).not.toHaveBeenCalled();
@@ -153,6 +155,6 @@ describe("Personalization::executeActions", () => {
     const modules = {
       foo: () => {}
     };
-    expect(() => executeActions(actions, modules, logger)).toThrowError();
+    expect(() => executeActions(actions, modules)).toThrowError();
   });
 });

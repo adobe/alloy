@@ -10,69 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign } from "../../utils";
-
-const logActionError = (logger, action, error) => {
-  if (logger.enabled) {
-    const details = JSON.stringify(action);
-    const { message, stack } = error;
-    const errorMessage = `Failed to execute action ${details}. ${message} ${
-      stack ? `\n ${stack}` : ""
-    }`;
-
-    logger.error(errorMessage);
-  }
-};
-
-const logActionCompleted = (logger, action) => {
-  if (logger.enabled) {
-    const details = JSON.stringify(action);
-
-    logger.info(`Action ${details} executed.`);
-  }
-};
-
-const executeAction = (logger, modules, type, args) => {
-  const execute = modules.getAction(type);
-
-  if (!execute) {
-    const error = new Error(
-      `Action "${type}" not found for schema ${modules.getSchema()}`
-    );
-    logActionError(logger, args[0], error);
-    throw error;
-  }
-  return execute(...args);
-};
-
-const preprocess = (preprocessors, action) => {
-  if (!(preprocessors instanceof Array) || preprocessors.length === 0) {
-    return action;
-  }
-
-  return preprocessors.reduce(
-    (processed, fn) => assign(processed, fn(processed)),
-    action
+export default (actions, actionsProvider) => {
+  const actionPromises = actions.map(action =>
+    actionsProvider.executeAction(action)
   );
-};
-export default (actions, modulesProvider, logger) => {
-  const actionPromises = actions.map(action => {
-    const { schema } = action;
-
-    const modules = modulesProvider.getModules(schema);
-
-    const processedAction = preprocess(modules.getPreprocessors(), action);
-    const { type } = processedAction;
-
-    return executeAction(logger, modules, type, [processedAction])
-      .then(result => {
-        logActionCompleted(logger, processedAction);
-        return result;
-      })
-      .catch(error => {
-        logActionError(logger, processedAction, error);
-        throw error;
-      });
-  });
   return Promise.all(actionPromises);
 };

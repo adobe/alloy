@@ -12,11 +12,12 @@ governing permissions and limitations under the License.
 
 import createExecuteDecisions from "../../../../../src/components/Personalization/createExecuteDecisions";
 import { DOM_ACTION } from "../../../../../src/components/Personalization/constants/schema";
-import createModulesProvider from "../../../../../src/components/Personalization/createModulesProvider";
+import createActionsProvider from "../../../../../src/components/Personalization/createActionsProvider";
 
 describe("Personalization::createExecuteDecisions", () => {
   let logger;
   let executeActions;
+  let actionsProvider;
 
   const decisions = [
     {
@@ -82,17 +83,18 @@ describe("Personalization::createExecuteDecisions", () => {
     }
   ];
 
-  const modulesProvider = createModulesProvider({
-    modules: {
-      [DOM_ACTION]: {
-        foo() {}
-      }
-    }
-  });
-
   beforeEach(() => {
     logger = jasmine.createSpyObj("logger", ["info", "warn", "error"]);
     executeActions = jasmine.createSpy();
+
+    actionsProvider = createActionsProvider({
+      modules: {
+        [DOM_ACTION]: {
+          foo() {}
+        }
+      },
+      logger
+    });
   });
 
   it("should trigger executeActions when provided with an array of actions", () => {
@@ -101,15 +103,14 @@ describe("Personalization::createExecuteDecisions", () => {
       [{ meta: metas[1], error: "could not render this item" }]
     );
     const executeDecisions = createExecuteDecisions({
-      modulesProvider,
+      actionsProvider,
       logger,
       executeActions
     });
     return executeDecisions(decisions).then(() => {
       expect(executeActions).toHaveBeenCalledWith(
         expectedAction,
-        modulesProvider,
-        logger
+        actionsProvider
       );
       expect(logger.warn).toHaveBeenCalledWith({
         meta: metas[1],
@@ -121,7 +122,7 @@ describe("Personalization::createExecuteDecisions", () => {
   it("shouldn't trigger executeActions when provided with empty array of actions", () => {
     executeActions.and.callThrough();
     const executeDecisions = createExecuteDecisions({
-      modulesProvider,
+      actionsProvider,
       logger,
       executeActions
     });

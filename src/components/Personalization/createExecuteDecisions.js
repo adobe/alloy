@@ -67,12 +67,11 @@ const processMetas = (logger, actionResults) => {
   return finalMetas;
 };
 
-export default ({ modulesProvider, logger, executeActions }) => {
+export default ({ actionsProvider, logger, executeActions }) => {
   return decisions => {
     const actionResultsPromises = decisions.map(decision => {
       const actions = buildActions(decision);
-
-      return executeActions(actions, modulesProvider, logger);
+      return executeActions(actions, actionsProvider);
     });
     return Promise.all(actionResultsPromises)
       .then(results => processMetas(logger, results))
