@@ -28,7 +28,8 @@
     "build": "npm run format && npm run lint && npm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN && echo \"Base Code:\" && cat distTest/baseCode.min.js",
     "prepare": "husky install && cd sandbox && npm install",
     "prepublishOnly": "rimraf libEs5 libEs6 && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6",
-    "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js"
+    "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
+    "add-license": "./scripts/add-license.js"
   },
   "lint-staged": {
     "./*.js": [
@@ -86,6 +87,7 @@
     "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-testcafe": "^0.2.1",
     "glob": "^7.1.3",
+    "handlebars": "^4.7.7",
     "husky": "^6.0.0",
     "jasmine-core": "^3.4.0",
     "karma": "^6.3.9",
@@ -117,6 +119,7 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-terser": "^7.0.2",
     "semver": "^7.3.7",
+    "staged-git-files": "^1.3.0",
     "start-server-and-test": "^1.10.6",
     "testcafe": "^2.3.1",
     "testcafe-browser-provider-saucelabs": "^1.9.0",
