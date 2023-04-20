@@ -55,7 +55,6 @@ export default ({
             // We intentionally do not throw an error if destinations fail. We
             // consider it a non-critical failure and therefore do not want it to
             // reject the promise handed back to the customer.
-            logger.error(createResultLogMessage(urlDestination, false));
           });
       })
     ).then(noop);

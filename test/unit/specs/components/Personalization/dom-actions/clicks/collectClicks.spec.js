@@ -53,8 +53,106 @@ describe("Personalization::tracking::clicks", () => {
     const selectors = ["#abc:eq(0) > div.b:eq(0) > div.c"];
 
     const element = document.getElementById("one");
-    const result = collectClicks(element, selectors, getClickMetasBySelector);
+    const { decisionsMeta, eventLabel } = collectClicks(
+      element,
+      selectors,
+      getClickMetasBySelector
+    );
 
-    expect(result).toEqual(meta);
+    expect(decisionsMeta).toEqual(meta);
+    expect(eventLabel).toEqual("");
+  });
+
+  it("should collect and dedup clicks with labels", () => {
+    const metaOuter = [
+      {
+        id: "AT:outer-id-1",
+        scope: "outer-scope1"
+      },
+      {
+        id: "AJO:inner-id-2",
+        scope: "inner-scope2",
+        trackingLabel: "outer-label-2"
+      },
+      {
+        id: "AJO:outer-id-3",
+        scope: "outer-scope3",
+        trackingLabel: "outer-label-3"
+      }
+    ];
+    const metaInner = [
+      {
+        id: "AT:inner-id-1",
+        scope: "inner-scope1"
+      },
+      {
+        id: "AJO:inner-id-2",
+        scope: "inner-scope2",
+        trackingLabel: "inner-label-2"
+      },
+      {
+        id: "AJO:inner-id-3",
+        scope: "inner-scope3",
+        trackingLabel: "inner-label-3"
+      }
+    ];
+    const getClickMetasBySelector = jasmine
+      .createSpy("getClickMetasBySelector")
+      .withArgs("#abc:eq(0) > div.b:eq(0)")
+      .and.returnValue(metaOuter)
+      .withArgs("#abc:eq(0) > div.b:eq(0) > div.c")
+      .and.returnValue(metaInner);
+    const content = `
+      <div class="b">
+        <div id="one" class="c">first</div>
+
+        <div id="two" class="c">second</div>
+        
+        <div id="three" class="c">third</div>
+      </div>
+    `;
+    const node = createNode(
+      "DIV",
+      { id: "abc", class: "eq" },
+      { innerHTML: content }
+    );
+
+    appendNode(document.body, node);
+
+    const selectors = [
+      "#abc:eq(0) > div.b:eq(0)",
+      "#abc:eq(0) > div.b:eq(0) > div.c"
+    ];
+
+    const element = document.getElementById("one");
+    const { decisionsMeta, eventLabel } = collectClicks(
+      element,
+      selectors,
+      getClickMetasBySelector
+    );
+
+    expect(decisionsMeta).toEqual([
+      {
+        id: "AT:outer-id-1",
+        scope: "outer-scope1"
+      },
+      {
+        id: "AJO:inner-id-2",
+        scope: "inner-scope2"
+      },
+      {
+        id: "AJO:outer-id-3",
+        scope: "outer-scope3"
+      },
+      {
+        id: "AT:inner-id-1",
+        scope: "inner-scope1"
+      },
+      {
+        id: "AJO:inner-id-3",
+        scope: "inner-scope3"
+      }
+    ]);
+    expect(eventLabel).toEqual("inner-label-2");
   });
 });

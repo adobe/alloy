@@ -13,16 +13,37 @@ governing permissions and limitations under the License.
 import attachClickActivityCollector from "./attachClickActivityCollector";
 import configValidators from "./configValidators";
 import createLinkClick from "./createLinkClick";
+import createGetLinkDetails from "./createGetLinkDetails";
+import getLinkName from "./getLinkName";
+import getLinkRegion from "./getLinkRegion";
+import {
+  determineLinkType,
+  findSupportedAnchorElement,
+  getAbsoluteUrlFromAnchorElement
+} from "./utils";
 
-const createActivityCollector = ({ config, eventManager, handleError }) => {
-  const linkClick = createLinkClick(window, config);
+const getLinkDetails = createGetLinkDetails({
+  window,
+  getLinkName,
+  getLinkRegion,
+  getAbsoluteUrlFromAnchorElement,
+  findSupportedAnchorElement,
+  determineLinkType
+});
+
+const createActivityCollector = ({
+  config,
+  eventManager,
+  handleError,
+  logger
+}) => {
+  const linkClick = createLinkClick({ getLinkDetails, config, logger });
 
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
         const { lifecycle } = tools;
         attachClickActivityCollector({
-          config,
           eventManager,
           lifecycle,
           handleError
@@ -30,7 +51,7 @@ const createActivityCollector = ({ config, eventManager, handleError }) => {
         // TODO: createScrollActivityCollector ...
       },
       onClick({ event, clickedElement }) {
-        linkClick(event, clickedElement);
+        linkClick({ targetElement: clickedElement, event });
       }
     }
   };
@@ -38,5 +59,15 @@ const createActivityCollector = ({ config, eventManager, handleError }) => {
 
 createActivityCollector.namespace = "ActivityCollector";
 createActivityCollector.configValidators = configValidators;
+createActivityCollector.buildOnInstanceConfiguredExtraParams = ({
+  config,
+  logger
+}) => {
+  return {
+    getLinkDetails: targetElement => {
+      return getLinkDetails({ targetElement, config, logger });
+    }
+  };
+};
 
 export default createActivityCollector;

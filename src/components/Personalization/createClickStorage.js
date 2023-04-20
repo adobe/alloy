@@ -15,7 +15,8 @@ const metasToArray = metas => {
     return {
       id: key,
       scope: metas[key].scope,
-      scopeDetails: metas[key].scopeDetails
+      scopeDetails: metas[key].scopeDetails,
+      trackingLabel: metas[key].trackingLabel
     };
   });
 };
@@ -29,7 +30,8 @@ export default () => {
     }
     clickStorage[value.selector][value.meta.id] = {
       scope: value.meta.scope,
-      scopeDetails: value.meta.scopeDetails
+      scopeDetails: value.meta.scopeDetails,
+      trackingLabel: value.meta.trackingLabel
     };
   };
 

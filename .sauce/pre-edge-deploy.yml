@@ -1,0 +1,80 @@
+apiVersion: v1alpha
+kind: testcafe
+showConsoleLog: true
+defaults:
+  mode: sauce
+sauce:
+  region: us-west-1
+  sauceignore: .sauceignore
+  retries: 4
+metadata:
+  name: Alloy SDK Prod ee-pre-prd
+  tags:
+    - e2e
+  build: Release $CI_COMMIT_SHORT_SHA
+rootDir: ./
+env:
+  ALLOY_ENV: prod
+  EDGE_BASE_PATH: ee-pre-prd
+  ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
+  NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
+testcafe:
+  version: 1.19.0
+speed: 0.05
+pageLoadTimeout: 3000
+disablePageCaching: true
+timeZone: New_York
+npm:
+  dependencies:
+    - read-cache
+    - uuid
+    - css.escape
+    - "@adobe/reactor-object-assign"
+    - "@adobe/reactor-load-script"
+    - "@adobe/reactor-cookie"
+    - "@adobe/reactor-query-string"
+    - "@adobe/reactor-promise"
+suites:
+  - name: "Firefox"
+    platformName: "Windows 11"
+    browserName: "firefox"
+    browserVersion: "latest"
+    src:
+      - "test/functional/specs/**/*.js"
+    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js" ]
+
+  - name: "Chrome"
+    shard: concurrency
+    platformName: "Windows 11"
+    browserName: "chrome"
+    browserVersion: "latest"
+    src:
+      - "test/functional/specs/**/*.js"
+    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js" ]
+
+  - name: "Edge"
+    shard: concurrency
+    platformName: "Windows 11"
+    browserName: "microsoftedge"
+    browserVersion: "latest"
+    src:
+      - "test/functional/specs/**/*.js"
+    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js" ]
+
+  - name: "Safari"
+    shard: concurrency
+    platformName: "macOS 12"
+    browserName: "safari"
+    browserVersion: "latest"
+    env:
+      ALLOY_ENV: prod
+      EDGE_BASE_PATH: ee-pre-prd
+      ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
+      NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
+    src:
+      - "test/functional/specs/**/*.js"
+    excludedTestFiles:
+      [
+        "test/functional/specs/Privacy/C1576777.js",
+        "test/functional/specs/LibraryInfo/C2589.js"
+      ]

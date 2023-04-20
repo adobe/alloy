@@ -1,26 +1,28 @@
 apiVersion: v1alpha
 kind: testcafe
+showConsoleLog: true
 defaults:
   mode: sauce
 sauce:
   region: us-west-1
   sauceignore: .sauceignore
+  retries: 4
 metadata:
-  name: Alloy SDK Prod Functional Test
+  name: Alloy SDK Prod pre-prod-upstreams
   tags:
     - e2e
   build: Release $CI_COMMIT_SHORT_SHA
 rootDir: ./
-docker:
-  fileTransfer: copy
-  image: saucelabs/stt-testcafe-node:latest
 env:
   ALLOY_ENV: prod
+  EDGE_BASE_PATH: pre-prod-upstreams
   ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
-  version: 2.0.1
+  version: 1.19.0
 speed: 0.05
+pageLoadTimeout: 3000
+disablePageCaching: true
 timeZone: New_York
 npm:
   dependencies:
@@ -33,35 +35,46 @@ npm:
     - "@adobe/reactor-query-string"
     - "@adobe/reactor-promise"
 suites:
+  - name: "Firefox"
+    platformName: "Windows 11"
+    browserName: "firefox"
+    browserVersion: "latest"
+    src:
+      - "test/functional/specs/**/*.js"
+    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js" ]
+
   - name: "Chrome"
     shard: concurrency
     platformName: "Windows 11"
     browserName: "chrome"
+    browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
     excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js" ]
+
   - name: "Edge"
     shard: concurrency
     platformName: "Windows 11"
     browserName: "microsoftedge"
+    browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
     excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js" ]
-  - name: "Firefox"
-    shard: concurrency
-    platformName: "Windows 11"
-    browserName: "firefox"
-    src:
-      - "test/functional/specs/**/*.js"
-    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js" ]
+
   - name: "Safari"
     shard: concurrency
     platformName: "macOS 12"
     browserName: "safari"
+    browserVersion: "latest"
     env:
       ALLOY_ENV: prod
+      EDGE_BASE_PATH: pre-prod-upstreams
       ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
       NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
     src:
       - "test/functional/specs/**/*.js"
-    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Personalization/C205528.js" ]
+    excludedTestFiles:
+      [
+        "test/functional/specs/Privacy/C1576777.js",
+        "test/functional/specs/LibraryInfo/C2589.js"
+      ]

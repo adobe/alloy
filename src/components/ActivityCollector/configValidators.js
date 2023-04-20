@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, boolean } from "../../utils/validation";
+import { string, boolean, callback } from "../../utils/validation";
 
 export default {
   clickCollectionEnabled: boolean().default(true),
@@ -18,5 +18,6 @@ export default {
     .regexp()
     .default(
       "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$"
-    )
+    ),
+  onBeforeLinkClickSend: callback()
 };

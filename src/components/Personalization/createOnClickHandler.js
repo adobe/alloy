@@ -25,7 +25,7 @@ export default ({
   return ({ event, clickedElement }) => {
     const selectors = getClickSelectors();
     if (isNonEmptyArray(selectors)) {
-      const decisionsMeta = collectClicks(
+      const { decisionsMeta, eventLabel } = collectClicks(
         clickedElement,
         selectors,
         getClickMetasBySelector
@@ -44,7 +44,12 @@ export default ({
         }
 
         event.mergeXdm(xdm);
-        mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.INTERACT);
+        mergeDecisionsMeta(
+          event,
+          decisionsMeta,
+          PropositionEventType.INTERACT,
+          eventLabel
+        );
       }
     }
   };

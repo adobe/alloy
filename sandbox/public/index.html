@@ -12,6 +12,30 @@
     <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
 
     <title>Mock website hosting Alloy</title>
+
+    <script>
+      window.__alloyMonitors = window.__alloyMonitors || [];
+      window.__alloyMonitors.push({
+        onInstanceCreated(data) {
+          console.log("Alloy Instance Created");
+          console.log(data.instanceName);
+          console.log(data.instance);
+        },
+        onInstanceConfigured(data) {
+          console.log("Alloy Instance Configured");
+          console.log(JSON.stringify(data.config, null, 2));
+          const { getLinkDetails } = data;
+
+          const listOfLinks = document.links;
+
+          for (var i = 0; i < listOfLinks.length; i++) {
+            const linkDetails = getLinkDetails(listOfLinks[i]);
+            console.log("link details", linkDetails);
+          }
+        }
+      });
+    </script>
+
     <script src="/onBeforeEventSentHelper.js"></script>
 
     <!-- prettier-ignore -->
@@ -30,7 +54,7 @@
       !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
       []).push(o),n[o]=function(){var u=arguments;return new Promise(
       function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
-      (window,["alloy", "organizationTwo", "cjmStage"]);
+      (window,["alloy", "organizationTwo", "cjmProd"]);
     </script>
 
     <script nonce="%REACT_APP_NONCE%">
@@ -104,10 +128,37 @@
           const _unifiedjsqeonly = xdm._unifiedjsqeonly || {};
           _unifiedjsqeonly.rawTimestamp = new Date().getTime();
           xdm._unifiedjsqeonly = _unifiedjsqeonly;
+          return true;
+        },
+        onBeforeLinkClickSend: function(options) {
+          console.log("options", options);
+          // options.linkElement
+          // options.xdm
+          // options.data
+
+          const xdm = options.xdm;
+          const data = options.data;
+          const { webInteraction } = xdm.web;
+
+          if (webInteraction.name === "Large Payload") {
+            xdm.web.webInteraction.name = "changed link name";
+            data.custom = "custom field for changed link name";
+
+            return true;
+          }
+
+          if (webInteraction.name === "Personalization") {
+            return false;
+          }
+
+          if (webInteraction.URL === "https://alloyio.com/download.zip") {
+            return false;
+          }
+
+          return true;
         },
         targetMigrationEnabled: true,
-        clickCollectionEnabled:
-          getUrlParameter("clickCollectionEnabled") !== "false"
+        clickCollectionEnabled: true
       });
 
       // For Testing multiple instances.
@@ -139,13 +190,11 @@
         }
       });
 
-      // For AJO testing in Stage.
+      // For AJO testing in Prod.
       // We use a different orgId and edgeConfigId.
-      cjmStage("configure", {
-        edgeDomain: "edge-int.adobedc.net",
-        edgeConfigId: "19fc5fe9-37df-46da-8f5c-9eeff4f75ed9:prod",
-        orgId: "745F37C35E4B776E0A49421B@AdobeOrg",
-        edgeBasePath: "ee",
+      cjmProd("configure", {
+        edgeConfigId: "3e808bee-74f7-468f-be1d-99b498f36fa8:prod",
+        orgId: "4DA0571C5FDC4BF70A495FC2@AdobeOrg",
         thirdPartyCookiesEnabled: false,
         debugEnabled: true,
         clickCollectionEnabled: false

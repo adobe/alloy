@@ -1,7 +1,22 @@
+/*
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
 import { t, Selector } from "testcafe";
 import createFixture from "../../helpers/createFixture";
 import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
-import { orgMainConfigMain } from "../../helpers/constants/configParts";
+import {
+  compose,
+  orgMainConfigMain,
+  clickCollectionEnabled
+} from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import preventLinkNavigation from "../../helpers/preventLinkNavigation";
 import createCollectEndpointAsserter from "../../helpers/createCollectEndpointAsserter";
@@ -31,7 +46,8 @@ const assertRequestXdm = async request => {
   const eventXdm = requestBody.events[0].xdm;
   await t.expect(eventXdm.eventType).eql("web.webinteraction.linkClicks");
   await t.expect(eventXdm.web.webInteraction).eql({
-    name: "Link Click",
+    name: "Test Link",
+    region: "BODY",
     type: "other",
     URL: "https://alloyio.com/functional-test/blank.html",
     linkClicks: { value: 1 }
@@ -42,7 +58,8 @@ test("Test C8118: Verify link click sends a request to the collect endpoint when
   const collectEndpointAsserter = await createCollectEndpointAsserter();
   await preventLinkNavigation();
   const alloy = createAlloyProxy();
-  await alloy.configure(orgMainConfigMain);
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled);
+  await alloy.configure(testConfig);
   await addLinkToBody();
   await clickLink();
   await collectEndpointAsserter.assertInteractCalledAndNotCollect();

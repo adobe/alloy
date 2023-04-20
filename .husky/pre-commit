@@ -2,5 +2,6 @@
 . "$(dirname "$0")/_/husky.sh"
 
 npm run checkthattestfilesexist
+STAGED_ONLY=true npm run add-license
 npx lint-staged
 npm run test:unit
