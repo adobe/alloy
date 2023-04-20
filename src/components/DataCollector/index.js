@@ -12,8 +12,9 @@ governing permissions and limitations under the License.
 
 import validateUserEventOptions from "./validateUserEventOptions";
 import validateApplyResponse from "./validateApplyResponse";
+import { deepAssign } from "../../utils";
 
-const createDataCollector = ({ eventManager }) => {
+const createDataCollector = ({ eventManager, logger }) => {
   return {
     commands: {
       sendEvent: {
@@ -31,7 +32,8 @@ const createDataCollector = ({ eventManager }) => {
             renderDecisions = false,
             decisionScopes = [], // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
             personalization = {},
-            datasetId
+            datasetId,
+            edgeConfigOverrides
           } = options;
           const event = eventManager.createEvent();
 
@@ -54,19 +56,28 @@ const createDataCollector = ({ eventManager }) => {
             });
           }
 
-          if (datasetId) {
-            event.mergeMeta({
-              collect: {
-                datasetId
-              }
-            });
-          }
-
-          return eventManager.sendEvent(event, {
+          const sendEventOptions = {
             renderDecisions,
             decisionScopes,
             personalization
-          });
+          };
+
+          if (edgeConfigOverrides) {
+            sendEventOptions.edgeConfigOverrides = edgeConfigOverrides;
+          }
+
+          if (datasetId) {
+            logger.warn(
+              "The 'datasetId' option has been deprecated. Please use 'edgeConfigOverrides.experience_platform.datasets.event' instead."
+            );
+            sendEventOptions.edgeConfigOverrides = edgeConfigOverrides || {};
+            deepAssign(sendEventOptions.edgeConfigOverrides, {
+              com_adobe_experience_platform: {
+                datasets: { event: { datasetId } }
+              }
+            });
+          }
+          return eventManager.sendEvent(event, sendEventOptions);
         }
       },
       applyResponse: {

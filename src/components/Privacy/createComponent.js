@@ -54,7 +54,11 @@ export default ({
     commands: {
       setConsent: {
         optionsValidator: validateSetConsentOptions,
-        run: ({ consent: consentOptions, identityMap }) => {
+        run: ({
+          consent: consentOptions,
+          identityMap,
+          edgeConfigOverrides
+        }) => {
           consent.suspend();
           const consentHashes = consentHashStore.lookup(consentOptions);
           return taskQueue
@@ -62,7 +66,8 @@ export default ({
               if (consentHashes.isNew()) {
                 return sendSetConsentRequest({
                   consentOptions,
-                  identityMap
+                  identityMap,
+                  edgeConfigOverrides
                 });
               }
               return Promise.resolve();
