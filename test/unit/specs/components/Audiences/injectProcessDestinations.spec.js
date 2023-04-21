@@ -57,7 +57,7 @@ describe("Audiences::injectProcessDestinations", () => {
     return processDestinations(SAMPLE_DESTINATIONS1).then(() => {
       expect(cookieJar.set).toHaveBeenCalledWith(
         "audlabcookie",
-        "dgtest%3Ddevicegraphtestdestination1",
+        "dgtest\u003ddevicegraphtestdestination1",
         {
           domain: "",
           expires: 10,
@@ -67,7 +67,7 @@ describe("Audiences::injectProcessDestinations", () => {
       );
       expect(cookieJar.set).toHaveBeenCalledWith(
         "testCookieDestination",
-        "destination%3Ds2",
+        "destination\u003ds2",
         {
           domain: "adobe.com",
           expires: 30,
@@ -84,7 +84,7 @@ describe("Audiences::injectProcessDestinations", () => {
     return processDestinations(SAMPLE_DESTINATIONS1).then(() => {
       expect(cookieJar.set).toHaveBeenCalledWith(
         "audlabcookie",
-        "dgtest%3Ddevicegraphtestdestination1",
+        "dgtest\u003ddevicegraphtestdestination1",
         {
           domain: "",
           expires: 10
@@ -92,7 +92,7 @@ describe("Audiences::injectProcessDestinations", () => {
       );
       expect(cookieJar.set).toHaveBeenCalledWith(
         "testCookieDestination",
-        "destination%3Ds2",
+        "destination\u003ds2",
         {
           domain: "adobe.com",
           expires: 30
@@ -119,7 +119,7 @@ describe("Audiences::injectProcessDestinations", () => {
         type: "cookie",
         spec: {
           name: "testCookieDestination",
-          value: "destination%3Ds2",
+          value: "destination\u003ds2",
           domain: "",
           ttlDays: 30
         }

@@ -12,4 +12,9 @@ governing permissions and limitations under the License.
 
 import cookie from "@adobe/reactor-cookie";
 
-export default cookie;
+ export const cookieJarWithEncoding = cookie.withConverter({
+  write: (value) => {
+    return encodeURIComponent(value);
+  }
+});
+ export const cookieJar = cookie;
