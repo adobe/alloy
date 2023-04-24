@@ -9,29 +9,27 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import {
-  anything,
-  arrayOf,
-  boolean,
-  mapOfValues,
-  objectOf,
-  string
-} from "../../utils/validation";
+const isPlainObject = obj =>
+  obj !== null &&
+  typeof obj === "object" &&
+  Object.getPrototypeOf(obj) === Object.prototype;
 
-export default ({ options }) => {
-  const validator = objectOf({
-    renderDecisions: boolean(),
-    decisionContext: objectOf({}),
-    responseHeaders: mapOfValues(string().required()),
-    responseBody: objectOf({
-      handle: arrayOf(
-        objectOf({
-          type: string().required(),
-          payload: anything().required()
-        })
-      ).required()
-    }).required()
-  }).noUnknownFields();
+const flattenObject = (obj, result = {}, keys = []) => {
+  Object.keys(obj).forEach(key => {
+    if (isPlainObject(obj[key]) || Array.isArray(obj[key])) {
+      flattenObject(obj[key], result, [...keys, key]);
+    } else {
+      result[[...keys, key].join(".")] = obj[key];
+    }
+  });
 
-  return validator(options);
+  return result;
+};
+
+export default obj => {
+  if (!isPlainObject(obj)) {
+    return obj;
+  }
+
+  return flattenObject(obj);
 };
