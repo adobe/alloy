@@ -16,7 +16,8 @@ import {
   DOM_ACTION,
   REDIRECT_ITEM,
   DEFAULT_CONTENT_ITEM,
-  MEASUREMENT_SCHEMA
+  MEASUREMENT_SCHEMA,
+  IN_APP_MESSAGE
 } from "./constants/schema";
 import { VIEW_SCOPE_TYPE } from "./constants/scopeType";
 
@@ -124,6 +125,7 @@ const groupDecisions = unprocessedDecisions => {
   const decisionsGroupedByRenderableSchemas = splitDecisions(
     mergedMetricDecisions.unmatchedDecisions,
     DOM_ACTION,
+    IN_APP_MESSAGE,
     DEFAULT_CONTENT_ITEM
   );
   // group renderable decisions by scope

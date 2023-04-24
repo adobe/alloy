@@ -11,11 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import createExecuteDecisions from "../../../../../src/components/Personalization/createExecuteDecisions";
+import { DOM_ACTION } from "../../../../../src/components/Personalization/constants/schema";
+import createActionsProvider from "../../../../../src/components/Personalization/createActionsProvider";
 
 describe("Personalization::createExecuteDecisions", () => {
   let logger;
   let executeActions;
-  let collect;
+  let actionsProvider;
 
   const decisions = [
     {
@@ -56,6 +58,7 @@ describe("Personalization::createExecuteDecisions", () => {
   const expectedAction = [
     {
       type: "setHtml",
+      schema: DOM_ACTION,
       selector: "#foo",
       content: "<div>Hola Mundo</div>",
       meta: {
@@ -79,14 +82,19 @@ describe("Personalization::createExecuteDecisions", () => {
       scopeDetails: decisions[1].scopeDetails
     }
   ];
-  const modules = {
-    foo() {}
-  };
 
   beforeEach(() => {
     logger = jasmine.createSpyObj("logger", ["info", "warn", "error"]);
-    collect = jasmine.createSpy();
     executeActions = jasmine.createSpy();
+
+    actionsProvider = createActionsProvider({
+      modules: {
+        [DOM_ACTION]: {
+          foo() {}
+        }
+      },
+      logger
+    });
   });
 
   it("should trigger executeActions when provided with an array of actions", () => {
@@ -95,15 +103,14 @@ describe("Personalization::createExecuteDecisions", () => {
       [{ meta: metas[1], error: "could not render this item" }]
     );
     const executeDecisions = createExecuteDecisions({
-      modules,
+      actionsProvider,
       logger,
       executeActions
     });
     return executeDecisions(decisions).then(() => {
       expect(executeActions).toHaveBeenCalledWith(
         expectedAction,
-        modules,
-        logger
+        actionsProvider
       );
       expect(logger.warn).toHaveBeenCalledWith({
         meta: metas[1],
@@ -115,10 +122,9 @@ describe("Personalization::createExecuteDecisions", () => {
   it("shouldn't trigger executeActions when provided with empty array of actions", () => {
     executeActions.and.callThrough();
     const executeDecisions = createExecuteDecisions({
-      modules,
+      actionsProvider,
       logger,
-      executeActions,
-      collect
+      executeActions
     });
     return executeDecisions([]).then(() => {
       expect(executeActions).not.toHaveBeenCalled();

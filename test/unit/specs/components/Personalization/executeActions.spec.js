@@ -10,19 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import executeActions from "../../../../../../src/components/Personalization/dom-actions/executeActions";
+import { DOM_ACTION } from "@adobe/alloy/libEs5/components/Personalization/constants/schema";
+import executeActions from "../../../../../src/components/Personalization/executeActions";
+import createActionsProvider from "../../../../../src/components/Personalization/createActionsProvider";
 
 describe("Personalization::executeActions", () => {
   it("should execute actions", () => {
     const actionSpy = jasmine.createSpy().and.returnValue(Promise.resolve(1));
     const logger = jasmine.createSpyObj("logger", ["error", "info"]);
     logger.enabled = true;
-    const actions = [{ type: "foo" }];
-    const modules = {
-      foo: actionSpy
-    };
+    const actions = [{ type: "foo", schema: DOM_ACTION }];
 
-    return executeActions(actions, modules, logger).then(result => {
+    return executeActions(
+      actions,
+      createActionsProvider({
+        modules: {
+          [DOM_ACTION]: {
+            foo: actionSpy
+          }
+        },
+        logger
+      })
+    ).then(result => {
       expect(result).toEqual([1]);
       expect(actionSpy).toHaveBeenCalled();
       expect(logger.info.calls.count()).toEqual(1);
@@ -46,23 +55,31 @@ describe("Personalization::executeActions", () => {
     const actions = [
       {
         type: "setHtml",
+        schema: DOM_ACTION,
         selector: "head",
         content:
           '<script>\n console.log("Test Offer");\n</script><p>Unsupported tag content</p>'
       },
       {
         type: "customCode",
+        schema: DOM_ACTION,
         selector: "BODY > *:eq(0)",
         content: "<div>superfluous</div>"
       }
     ];
-    const modules = {
-      setHtml: setHtmlActionSpy,
-      appendHtml: appendHtmlActionSpy,
-      customCode: customCodeActionSpy
-    };
 
-    return executeActions(actions, modules, logger).then(result => {
+    const actionsProvider = createActionsProvider({
+      modules: {
+        [DOM_ACTION]: {
+          setHtml: setHtmlActionSpy,
+          appendHtml: appendHtmlActionSpy,
+          customCode: customCodeActionSpy
+        }
+      },
+      logger
+    });
+
+    return executeActions(actions, actionsProvider).then(result => {
       expect(result).toEqual([2, 9]);
       expect(setHtmlActionSpy).not.toHaveBeenCalled();
       expect(appendHtmlActionSpy).toHaveBeenCalledOnceWith(
@@ -89,11 +106,18 @@ describe("Personalization::executeActions", () => {
     const actionSpy = jasmine.createSpy().and.returnValue(Promise.resolve(1));
     const logger = jasmine.createSpyObj("logger", ["error", "info"]);
     logger.enabled = false;
-    const actions = [{ type: "foo" }];
-    const modules = {
-      foo: actionSpy
-    };
-    return executeActions(actions, modules, logger).then(result => {
+    const actions = [{ type: "foo", schema: DOM_ACTION }];
+
+    const actionsProvider = createActionsProvider({
+      modules: {
+        [DOM_ACTION]: {
+          foo: actionSpy
+        }
+      },
+      logger
+    });
+
+    return executeActions(actions, actionsProvider).then(result => {
       expect(result).toEqual([1]);
       expect(actionSpy).toHaveBeenCalled();
       expect(logger.info.calls.count()).toEqual(0);
@@ -109,7 +133,7 @@ describe("Personalization::executeActions", () => {
       foo: jasmine.createSpy().and.throwError("foo's error")
     };
 
-    expect(() => executeActions(actions, modules, logger)).toThrowError();
+    expect(() => executeActions(actions, modules)).toThrowError();
   });
 
   it("should log nothing when there are no actions", () => {
@@ -117,7 +141,7 @@ describe("Personalization::executeActions", () => {
     const actions = [];
     const modules = {};
 
-    return executeActions(actions, modules, logger).then(result => {
+    return executeActions(actions, modules).then(result => {
       expect(result).toEqual([]);
       expect(logger.info).not.toHaveBeenCalled();
       expect(logger.error).not.toHaveBeenCalled();
@@ -131,6 +155,6 @@ describe("Personalization::executeActions", () => {
     const modules = {
       foo: () => {}
     };
-    expect(() => executeActions(actions, modules, logger)).toThrowError();
+    expect(() => executeActions(actions, modules)).toThrowError();
   });
 });
