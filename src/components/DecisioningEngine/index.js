@@ -14,11 +14,13 @@ import createOnResponseHandler from "./createOnResponseHandler";
 import createDecisionProvider from "./createDecisionProvider";
 import createApplyResponse from "./createApplyResponse";
 import createEventRegistry from "./createEventRegistry";
+import createContextProvider from "./createContextProvider";
 
 const createDecisioningEngine = () => {
   const eventRegistry = createEventRegistry();
   let applyResponse = createApplyResponse();
   const decisionProvider = createDecisionProvider();
+  const contextProvider = createContextProvider({ eventRegistry });
 
   return {
     lifecycle: {
@@ -37,7 +39,7 @@ const createDecisioningEngine = () => {
               decisionProvider,
               applyResponse,
               event,
-              decisionContext
+              decisionContext: contextProvider.getContext(decisionContext)
             })
           );
           return;
@@ -50,7 +52,9 @@ const createDecisioningEngine = () => {
       renderDecisions: {
         run: decisionContext =>
           applyResponse({
-            propositions: decisionProvider.evaluate(decisionContext)
+            propositions: decisionProvider.evaluate(
+              contextProvider.getContext(decisionContext)
+            )
           })
       }
     }
