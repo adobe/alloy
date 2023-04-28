@@ -10,16 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createEvaluableRulesetPayload from "./createEvaluableRulesetPayload";
+import createDecisionHistory from "./createDecisionHistory";
 
-export default () => {
+export default ({ eventRegistry, storage }) => {
   const payloads = {};
+
+  const decisionHistory = createDecisionHistory({ storage });
 
   const addPayload = payload => {
     if (!payload.id) {
       return;
     }
 
-    const evaluableRulesetPayload = createEvaluableRulesetPayload(payload);
+    const evaluableRulesetPayload = createEvaluableRulesetPayload(
+      payload,
+      eventRegistry,
+      decisionHistory
+    );
 
     if (evaluableRulesetPayload.isEvaluable) {
       payloads[payload.id] = evaluableRulesetPayload;

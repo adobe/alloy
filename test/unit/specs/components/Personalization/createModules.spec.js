@@ -41,14 +41,16 @@ describe("createModules", () => {
 
     expect(Object.keys(modules[DOM_ACTION]).length).toEqual(17);
   });
+
   it("has in-app-message modules", () => {
     const modules = createModules(() => undefined);
 
     expect(modules[IN_APP_MESSAGE]).toEqual({
       modal: jasmine.any(Function),
-      banner: jasmine.any(Function)
+      banner: jasmine.any(Function),
+      feed: jasmine.any(Function)
     });
 
-    expect(Object.keys(modules[IN_APP_MESSAGE]).length).toEqual(2);
+    expect(Object.keys(modules[IN_APP_MESSAGE]).length).toEqual(3);
   });
 });

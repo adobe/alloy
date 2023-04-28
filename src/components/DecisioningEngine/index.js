@@ -9,17 +9,25 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { noop } from "../../utils";
+import { noop, sanitizeOrgIdForCookieName } from "../../utils";
 import createOnResponseHandler from "./createOnResponseHandler";
 import createDecisionProvider from "./createDecisionProvider";
 import createApplyResponse from "./createApplyResponse";
 import createEventRegistry from "./createEventRegistry";
 import createContextProvider from "./createContextProvider";
 
-const createDecisioningEngine = () => {
-  const eventRegistry = createEventRegistry();
+const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
+  const { orgId } = config;
+  const storage = createNamespacedStorage(
+    `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`
+  );
+
+  const eventRegistry = createEventRegistry({ storage: storage.persistent });
   let applyResponse = createApplyResponse();
-  const decisionProvider = createDecisionProvider();
+  const decisionProvider = createDecisionProvider({
+    eventRegistry,
+    storage: storage.persistent
+  });
   const contextProvider = createContextProvider({ eventRegistry });
 
   return {

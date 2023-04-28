@@ -12,8 +12,14 @@ governing permissions and limitations under the License.
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
 
 describe("DecisioningEngine:createEventRegistry", () => {
+  let storage;
+
+  beforeEach(() => {
+    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
+  });
+
   it("registers events", () => {
-    const eventRegistry = createEventRegistry();
+    const eventRegistry = createEventRegistry({ storage });
 
     const getContent = () => ({
       xdm: {
@@ -33,18 +39,21 @@ describe("DecisioningEngine:createEventRegistry", () => {
     eventRegistry.rememberEvent(event);
 
     expect(eventRegistry.toJSON()).toEqual({
-      abc: {
+      "display|abc": {
         event: { id: "abc", type: "display" },
+        firstTimestamp: jasmine.any(Number),
         timestamp: jasmine.any(Number),
         count: 1
       },
-      def: {
+      "display|def": {
         event: { id: "def", type: "display" },
+        firstTimestamp: jasmine.any(Number),
         timestamp: jasmine.any(Number),
         count: 1
       },
-      ghi: {
+      "display|ghi": {
         event: { id: "ghi", type: "display" },
+        firstTimestamp: jasmine.any(Number),
         timestamp: jasmine.any(Number),
         count: 1
       }
@@ -52,7 +61,7 @@ describe("DecisioningEngine:createEventRegistry", () => {
   });
 
   it("does not register invalid events", () => {
-    const eventRegistry = createEventRegistry();
+    const eventRegistry = createEventRegistry({ storage });
 
     eventRegistry.rememberEvent({
       getContent: () => ({
@@ -87,7 +96,7 @@ describe("DecisioningEngine:createEventRegistry", () => {
   });
 
   it("increments count and sets timestamp", done => {
-    const eventRegistry = createEventRegistry();
+    const eventRegistry = createEventRegistry({ storage });
 
     const getContent = () => ({
       xdm: {
@@ -106,27 +115,29 @@ describe("DecisioningEngine:createEventRegistry", () => {
     let lastEventTime = 0;
     eventRegistry.rememberEvent(event);
 
-    expect(eventRegistry.getEvent("abc")).toEqual({
+    expect(eventRegistry.getEvent("display", "abc")).toEqual({
       event: { id: "abc", type: "display" },
+      firstTimestamp: jasmine.any(Number),
       timestamp: jasmine.any(Number),
       count: 1
     });
-    expect(eventRegistry.getEvent("abc").timestamp).toBeGreaterThan(
+    expect(eventRegistry.getEvent("display", "abc").timestamp).toBeGreaterThan(
       lastEventTime
     );
-    lastEventTime = eventRegistry.getEvent("abc").timestamp;
+    lastEventTime = eventRegistry.getEvent("display", "abc").timestamp;
 
     setTimeout(() => {
       eventRegistry.rememberEvent(event); // again
 
-      expect(eventRegistry.getEvent("abc")).toEqual({
+      expect(eventRegistry.getEvent("display", "abc")).toEqual({
         event: { id: "abc", type: "display" },
+        firstTimestamp: jasmine.any(Number),
         timestamp: jasmine.any(Number),
         count: 2
       });
-      expect(eventRegistry.getEvent("abc").timestamp).toBeGreaterThan(
-        lastEventTime
-      );
+      expect(
+        eventRegistry.getEvent("display", "abc").timestamp
+      ).toBeGreaterThan(lastEventTime);
       done();
     }, 10);
   });

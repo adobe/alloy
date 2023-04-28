@@ -12,8 +12,9 @@ governing permissions and limitations under the License.
 import RulesEngine from "@adobe/aep-rules-engine";
 import { JSON_RULESET_ITEM } from "../Personalization/constants/schema";
 import flattenArray from "../../utils/flattenArray";
+import { DISPLAY } from "../Personalization/constants/eventType";
 
-export default payload => {
+export default (payload, eventRegistry, decisionHistory) => {
   const items = [];
 
   const addItem = item => {
@@ -28,11 +29,22 @@ export default payload => {
   };
 
   const evaluate = context => {
+    const displayEvent = eventRegistry.getEvent(DISPLAY, payload.id);
+
+    const displayedDate = displayEvent
+      ? displayEvent.firstTimestamp
+      : undefined;
+
+    const qualifyingItems = flattenArray(
+      items.map(item => item.execute(context))
+    ).map(item => {
+      const qualifiedDate = decisionHistory.recordDecision(item.id);
+      return { ...item.detail, qualifiedDate, displayedDate };
+    });
+
     return {
       ...payload,
-      items: flattenArray(items.map(item => item.execute(context))).map(
-        item => item.detail
-      )
+      items: qualifyingItems
     };
   };
 

@@ -9,8 +9,17 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-export default () => {
-  const events = {};
+import { createRestoreStorage, createSaveStorage } from "./utils";
+
+const STORAGE_KEY = "events";
+const eventKey = (eventType, eventId) => `${eventType}|${eventId}`;
+
+export default ({ storage }) => {
+  const restore = createRestoreStorage(storage, STORAGE_KEY);
+  const save = createSaveStorage(storage, STORAGE_KEY, 150);
+
+  const events = restore({});
+
   const rememberEvent = event => {
     const { xdm = {} } = event.getContent();
     const { eventType = "", _experience } = xdm;
@@ -28,21 +37,29 @@ export default () => {
     const { propositions = [] } = decisioning;
 
     propositions.forEach(proposition => {
+      const key = eventKey(eventType, proposition.id);
       let count = 0;
-      const existingEvent = events[proposition.id];
+      const timestamp = new Date().getTime();
+      let firstTimestamp = timestamp;
+
+      const existingEvent = events[key];
       if (existingEvent) {
         count = existingEvent.count;
+        firstTimestamp =
+          existingEvent.firstTimestamp || existingEvent.timestamp;
       }
 
-      events[proposition.id] = {
+      events[key] = {
         event: { id: proposition.id, type: eventType },
-        timestamp: new Date().getTime(),
+        firstTimestamp,
+        timestamp,
         count: count + 1
       };
     });
-  };
 
-  const getEvent = eventId => events[eventId];
+    save(events);
+  };
+  const getEvent = (eventType, eventId) => events[eventKey(eventType, eventId)];
 
   return { rememberEvent, getEvent, toJSON: () => events };
 };

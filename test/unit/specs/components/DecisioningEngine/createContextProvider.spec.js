@@ -16,8 +16,14 @@ describe("DecisioningEngine:createContextProvider", () => {
   let contextProvider;
   let eventRegistry;
 
+  let storage;
+
+  beforeEach(() => {
+    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
+  });
+
   it("includes provided context passed in", () => {
-    eventRegistry = createEventRegistry();
+    eventRegistry = createEventRegistry({ storage });
     contextProvider = createContextProvider({ eventRegistry });
 
     expect(contextProvider.getContext({ cool: "beans" })).toEqual({

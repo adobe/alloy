@@ -12,14 +12,23 @@ governing permissions and limitations under the License.
 import createOnResponseHandler from "../../../../../src/components/DecisioningEngine/createOnResponseHandler";
 import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider";
 import createApplyResponse from "../../../../../src/components/DecisioningEngine/createApplyResponse";
+import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
 
 describe("DecisioningEngine:createOnResponseHandler", () => {
+  let eventRegistry;
+  let storage;
+
+  beforeEach(() => {
+    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
+    eventRegistry = createEventRegistry({ storage });
+  });
+
   it("calls lifecycle.onDecision with propositions based on decisionContext", () => {
     const lifecycle = jasmine.createSpyObj("lifecycle", {
       onDecision: Promise.resolve()
     });
 
-    const decisionProvider = createDecisionProvider();
+    const decisionProvider = createDecisionProvider({ eventRegistry, storage });
     const applyResponse = createApplyResponse(lifecycle);
 
     const event = {
@@ -175,7 +184,9 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                 prehidingSelector:
                   "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)"
               },
-              id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
+              id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             },
             {
               schema: "https://ns.adobe.com/personalization/dom-action",
@@ -187,7 +198,9 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                 prehidingSelector:
                   "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
               },
-              id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
+              id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             }
           ],
           scope: "web://target.jasonwaters.dev/aep.html"
@@ -201,7 +214,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
       onDecision: Promise.resolve()
     });
 
-    const decisionProvider = createDecisionProvider();
+    const decisionProvider = createDecisionProvider({ eventRegistry, storage });
     const applyResponse = createApplyResponse(lifecycle);
 
     const event = {
@@ -342,7 +355,9 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                 prehidingSelector:
                   "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
               },
-              id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
+              id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             }
           ],
           scope: "web://target.jasonwaters.dev/aep.html"
