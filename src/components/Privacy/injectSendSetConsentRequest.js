@@ -15,10 +15,17 @@ import { isObject } from "../../utils";
 export default ({
   createConsentRequestPayload,
   createConsentRequest,
-  sendEdgeNetworkRequest
-}) => ({ consentOptions, identityMap }) => {
+  sendEdgeNetworkRequest,
+  edgeConfigOverrides: globalConfigOverrides
+}) => ({
+  consentOptions,
+  identityMap,
+  edgeConfigOverrides: localConfigOverrides
+}) => {
   const payload = createConsentRequestPayload();
   payload.setConsent(consentOptions);
+  payload.mergeConfigOverride(globalConfigOverrides);
+  payload.mergeConfigOverride(localConfigOverrides);
   if (isObject(identityMap)) {
     Object.keys(identityMap).forEach(key => {
       identityMap[key].forEach(identity => {

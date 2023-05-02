@@ -106,6 +106,19 @@ describe("createCoreConfigs", () => {
       edgeConfigId: "myproperty1",
       edgeDomain: "STATS.FIRSTPARTY.COM",
       orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+    },
+    {
+      edgeConfigId: "myproperty1",
+      edgeDomain: "STATS.FIRSTPARTY.COM",
+      orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
+      configurationOverrides: {
+        experience_platform: {
+          datasets: {
+            event: "werewr",
+            profile: "www"
+          }
+        }
+      }
     }
   ].forEach((cfg, i) => {
     it(`validates configuration (${i})`, () => {
