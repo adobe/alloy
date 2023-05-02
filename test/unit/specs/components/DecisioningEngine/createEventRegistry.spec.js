@@ -39,23 +39,25 @@ describe("DecisioningEngine:createEventRegistry", () => {
     eventRegistry.rememberEvent(event);
 
     expect(eventRegistry.toJSON()).toEqual({
-      "display|abc": {
-        event: { id: "abc", type: "display" },
-        firstTimestamp: jasmine.any(Number),
-        timestamp: jasmine.any(Number),
-        count: 1
-      },
-      "display|def": {
-        event: { id: "def", type: "display" },
-        firstTimestamp: jasmine.any(Number),
-        timestamp: jasmine.any(Number),
-        count: 1
-      },
-      "display|ghi": {
-        event: { id: "ghi", type: "display" },
-        firstTimestamp: jasmine.any(Number),
-        timestamp: jasmine.any(Number),
-        count: 1
+      display: {
+        abc: {
+          event: { id: "abc", type: "display" },
+          firstTimestamp: jasmine.any(Number),
+          timestamp: jasmine.any(Number),
+          count: 1
+        },
+        def: {
+          event: { id: "def", type: "display" },
+          firstTimestamp: jasmine.any(Number),
+          timestamp: jasmine.any(Number),
+          count: 1
+        },
+        ghi: {
+          event: { id: "ghi", type: "display" },
+          firstTimestamp: jasmine.any(Number),
+          timestamp: jasmine.any(Number),
+          count: 1
+        }
       }
     });
   });

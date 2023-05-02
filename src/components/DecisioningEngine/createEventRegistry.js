@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 import { createRestoreStorage, createSaveStorage } from "./utils";
 
 const STORAGE_KEY = "events";
-const eventKey = (eventType, eventId) => `${eventType}|${eventId}`;
 
 export default ({ storage }) => {
   const restore = createRestoreStorage(storage, STORAGE_KEY);
@@ -37,19 +36,22 @@ export default ({ storage }) => {
     const { propositions = [] } = decisioning;
 
     propositions.forEach(proposition => {
-      const key = eventKey(eventType, proposition.id);
       let count = 0;
       const timestamp = new Date().getTime();
       let firstTimestamp = timestamp;
 
-      const existingEvent = events[key];
+      if (!events[eventType]) {
+        events[eventType] = {};
+      }
+
+      const existingEvent = events[eventType][proposition.id];
       if (existingEvent) {
         count = existingEvent.count;
         firstTimestamp =
           existingEvent.firstTimestamp || existingEvent.timestamp;
       }
 
-      events[key] = {
+      events[eventType][proposition.id] = {
         event: { id: proposition.id, type: eventType },
         firstTimestamp,
         timestamp,
@@ -59,7 +61,13 @@ export default ({ storage }) => {
 
     save(events);
   };
-  const getEvent = (eventType, eventId) => events[eventKey(eventType, eventId)];
+  const getEvent = (eventType, eventId) => {
+    if (!events[eventType]) {
+      return undefined;
+    }
+
+    return events[eventType][eventId];
+  };
 
   return { rememberEvent, getEvent, toJSON: () => events };
 };

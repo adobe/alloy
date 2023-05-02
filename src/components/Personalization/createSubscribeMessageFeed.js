@@ -33,7 +33,7 @@ export default ({ collect }) => {
       ...content,
       qualifiedDate,
       displayedDate,
-      getSurface: () => item.meta.surface,
+      getSurface: () => data.meta.surface,
       getAnalyticsDetail: () => {
         return { id, scope, scopeDetails };
       }
