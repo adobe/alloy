@@ -12,10 +12,32 @@ governing permissions and limitations under the License.
 import { createRestoreStorage, createSaveStorage } from "./utils";
 
 const STORAGE_KEY = "events";
+const MAX_EVENT_RECORDS = 1000;
+
+export const createEventPruner = (limit = MAX_EVENT_RECORDS) => {
+  return events => {
+    const pruned = {};
+    Object.keys(events).forEach(eventType => {
+      pruned[eventType] = {};
+      Object.values(events[eventType])
+        .sort((a, b) => a.firstTimestamp - b.firstTimestamp)
+        .slice(-1 * limit)
+        .forEach(entry => {
+          pruned[eventType][entry.event.id] = entry;
+        });
+    });
+    return pruned;
+  };
+};
 
 export default ({ storage }) => {
   const restore = createRestoreStorage(storage, STORAGE_KEY);
-  const save = createSaveStorage(storage, STORAGE_KEY, 150);
+  const save = createSaveStorage(
+    storage,
+    STORAGE_KEY,
+    150,
+    createEventPruner(MAX_EVENT_RECORDS)
+  );
 
   const events = restore({});
 

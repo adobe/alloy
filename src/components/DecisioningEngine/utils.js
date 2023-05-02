@@ -26,8 +26,13 @@ export const createRestoreStorage = (storage, storageKey) => {
   };
 };
 
-export const createSaveStorage = (storage, storageKey, debounceDelay = 150) => {
+export const createSaveStorage = (
+  storage,
+  storageKey,
+  debounceDelay = 150,
+  prepareFn = value => value
+) => {
   return debounce(value => {
-    storage.setItem(storageKey, JSON.stringify(value));
+    storage.setItem(storageKey, JSON.stringify(prepareFn(value)));
   }, debounceDelay);
 };
