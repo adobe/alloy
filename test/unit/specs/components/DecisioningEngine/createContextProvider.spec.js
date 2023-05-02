@@ -32,7 +32,7 @@ describe("DecisioningEngine:createContextProvider", () => {
     });
   });
 
-  it("includes provided context passed in", () => {
+  it("includes events context", () => {
     const events = {
       abc: {
         event: { id: "abc", type: "display" },
