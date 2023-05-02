@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { validateConfigOverride } from "../../../utils";
 import { objectOf, string } from "../../../utils/validation";
 /**
  * Verifies user provided event options.
@@ -19,7 +20,8 @@ import { objectOf, string } from "../../../utils/validation";
 export default objectOf({
   url: string()
     .required()
-    .nonEmpty()
+    .nonEmpty(),
+  edgeConfigOverrides: validateConfigOverride
 })
   .required()
   .noUnknownFields();

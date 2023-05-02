@@ -30,6 +30,7 @@ import PersonalizationAnalyticsClientSide from "./PersonalizationAnalyticsClient
 import PersonalizationFormBased from "./PersonalizationFormBased";
 import Identity from "./Identity";
 import AlloyVersion from "./components/AlloyVersion";
+import ConfigOverrides from "./ConfigOverrides.jsx";
 
 function BasicExample() {
   return (
@@ -92,6 +93,9 @@ function BasicExample() {
             <li>
               <a href="/identity">Identity</a>
             </li>
+            <li>
+              <a href="/configOverrides">Config Overrides</a>
+            </li>
           </ul>
           <hr />
 
@@ -120,6 +124,7 @@ function BasicExample() {
           <Route path="/redirectOffers" component={RedirectOffers} />
           <Route path="/redirectedNewPage" component={RedirectedNewPage} />
           <Route path="/identity" component={Identity} />
+          <Route path="/configOverrides" component={ConfigOverrides} />
         </div>
       </Router>
       <AlloyVersion />

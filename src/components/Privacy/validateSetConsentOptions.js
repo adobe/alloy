@@ -10,13 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { objectOf, anything, arrayOf } from "../../utils/validation";
-import { validateIdentityMap } from "../../utils";
+import { validateIdentityMap, validateConfigOverride } from "../../utils";
 
 export default objectOf({
   consent: arrayOf(anything())
     .required()
     .nonEmpty(),
-  identityMap: validateIdentityMap
+  identityMap: validateIdentityMap,
+  edgeConfigOverrides: validateConfigOverride
 })
   .noUnknownFields()
   .required();
