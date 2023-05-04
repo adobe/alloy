@@ -19,8 +19,12 @@ export default ({ storage }) => {
   const history = restore({});
 
   const recordDecision = id => {
-    if (typeof history[id] !== "number") {
-      history[id] = new Date().getTime();
+    if (!history[id]) {
+      history[id] = {};
+    }
+
+    if (typeof history[id].timestamp !== "number") {
+      history[id].timestamp = new Date().getTime();
       save(history);
     }
     return history[id];

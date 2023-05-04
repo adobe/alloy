@@ -10,16 +10,19 @@ describe("DecisioningEngine:decisionHistory", () => {
   });
 
   it("records decision time", () => {
-    const decisionTime = history.recordDecision("abc");
+    const decision = history.recordDecision("abc");
 
-    expect(decisionTime).toEqual(jasmine.any(Number));
+    expect(Object.getPrototypeOf(decision)).toEqual(Object.prototype);
+    expect(decision.timestamp).toEqual(jasmine.any(Number));
   });
 
   it("uses prior decision time, if decision already recorded", done => {
-    const firstDecisionTime = history.recordDecision("abc");
+    const firstDecision = history.recordDecision("abc");
 
     setTimeout(() => {
-      expect(history.recordDecision("abc")).toEqual(firstDecisionTime);
+      expect(history.recordDecision("abc").timestamp).toEqual(
+        firstDecision.timestamp
+      );
       done();
     }, 200);
   });
