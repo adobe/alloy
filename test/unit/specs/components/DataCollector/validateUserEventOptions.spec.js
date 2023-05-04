@@ -12,6 +12,21 @@ governing permissions and limitations under the License.
 import validateUserEventOptions from "../../../../../src/components/DataCollector/validateUserEventOptions";
 
 describe("DataCollector::validateUserEventOptions", () => {
+  it("validates valid options", () => {
+    [
+      {
+        propositions: []
+      },
+      {
+        propositions: [{ id: "foo", scope: "bar", scopeDetails: { a: 1 } }]
+      }
+    ].forEach(options => {
+      expect(() => {
+        validateUserEventOptions({ options });
+      }).not.toThrowError();
+    });
+  });
+
   it("throws error for invalid options", () => {
     [
       {
@@ -52,6 +67,12 @@ describe("DataCollector::validateUserEventOptions", () => {
       },
       {
         decisionScopes: ["item1", "item1"]
+      },
+      {
+        propositions: "foo"
+      },
+      {
+        propositions: [{}]
       }
     ].forEach(options => {
       expect(() => {

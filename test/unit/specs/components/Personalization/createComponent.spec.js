@@ -40,7 +40,13 @@ describe("Personalization", () => {
   };
 
   beforeEach(() => {
-    event = jasmine.createSpyObj("event", ["mergeQuery", "getViewName"]);
+    event = jasmine.createSpyObj("event", [
+      "mergeQuery",
+      "mergeXdm",
+      "getViewName",
+      "getEventType",
+      "getPropositionEventType"
+    ]);
     event.getViewName.and.returnValue({});
     logger = {
       info: jasmine.createSpy("logger.info"),
@@ -165,6 +171,124 @@ describe("Personalization", () => {
 
       expect(onRequestFailure).toHaveBeenCalled();
       expect(showContainers).toHaveBeenCalled();
+    });
+
+    it("should set _experience.decisioning properties and default to display", () => {
+      const renderDecisions = false;
+      const personalization = {};
+      const propositions = [
+        {
+          id: "prop1",
+          scope: "prop1Scope",
+          scopeDetails: { a: 1 },
+          extra: "extra"
+        },
+        {
+          id: "prop2",
+          scope: "prop2Scope",
+          scopeDetails: { b: 2 }
+        }
+      ];
+      personalizationComponent.lifecycle.onBeforeEvent({
+        event,
+        renderDecisions,
+        personalization,
+        propositions
+      });
+
+      expect(event.mergeXdm).toHaveBeenCalledWith({
+        _experience: {
+          decisioning: {
+            propositions: [
+              {
+                id: "prop1",
+                scope: "prop1Scope",
+                scopeDetails: { a: 1 }
+              },
+              {
+                id: "prop2",
+                scope: "prop2Scope",
+                scopeDetails: { b: 2 }
+              }
+            ],
+            propositionEventType: {
+              display: 1
+            }
+          }
+        }
+      });
+    });
+    it("should use the interact event type from the xdm event", () => {
+      const renderDecisions = false;
+      const personalization = {};
+      const propositions = [
+        {
+          id: "prop1",
+          scope: "prop1Scope",
+          scopeDetails: { a: 1 },
+          extra: "extra"
+        }
+      ];
+      event.getEventType.and.returnValue("decisioning.propositionInteract");
+      personalizationComponent.lifecycle.onBeforeEvent({
+        event,
+        renderDecisions,
+        personalization,
+        propositions
+      });
+
+      expect(event.mergeXdm).toHaveBeenCalledWith({
+        _experience: {
+          decisioning: {
+            propositions: [
+              {
+                id: "prop1",
+                scope: "prop1Scope",
+                scopeDetails: { a: 1 }
+              }
+            ],
+            propositionEventType: {
+              interact: 1
+            }
+          }
+        }
+      });
+    });
+    it("should use the event type from _experience.decisioning.propositionEventType", () => {
+      const renderDecisions = false;
+      const personalization = {};
+      const propositions = [
+        {
+          id: "prop1",
+          scope: "prop1Scope",
+          scopeDetails: { a: 1 },
+          extra: "extra"
+        }
+      ];
+      event.getPropositionEventType.and.returnValue("interact");
+      personalizationComponent.lifecycle.onBeforeEvent({
+        event,
+        renderDecisions,
+        personalization,
+        propositions
+      });
+
+      expect(event.mergeXdm).toHaveBeenCalledWith({
+        _experience: {
+          decisioning: {
+            propositions: [
+              {
+                id: "prop1",
+                scope: "prop1Scope",
+                scopeDetails: { a: 1 }
+              }
+            ],
+            propositionEventType: {
+              interact: 1
+            }
+          }
+        }
+      });
     });
   });
 

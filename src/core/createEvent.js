@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isEmptyObject, deepAssign } from "../utils";
+import { isEmptyObject, deepAssign, find } from "../utils";
 
 export default () => {
   const content = {};
@@ -120,6 +120,27 @@ export default () => {
       }
 
       return userXdm.web.webPageDetails.viewName;
+    },
+    getEventType() {
+      return (
+        (userXdm && userXdm.eventType) ||
+        (content.xdm && content.xdm.eventType) ||
+        undefined
+      );
+    },
+    getPropositionEventType() {
+      if (
+        !userXdm ||
+        !userXdm._experience ||
+        !userXdm._experience.decisioning ||
+        !userXdm._experience.decisioning.propositionEventType
+      ) {
+        return undefined;
+      }
+      return find(
+        Object.keys(userXdm._experience.decisioning.propositionEventType),
+        key => userXdm._experience.decisioning.propositionEventType[key] === 1
+      );
     },
     toJSON() {
       if (!isFinalized) {

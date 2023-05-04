@@ -33,7 +33,13 @@ export default ({ options }) => {
       surfaces: arrayOf(string()).uniqueItems()
     }),
     datasetId: string(),
-    mergeId: string()
+    mergeId: string(),
+    propositions: arrayOf(
+      objectOf({
+        id: string().required(),
+        scope: string().required()
+      })
+    )
   })
     .required()
     .noUnknownFields();

@@ -39,6 +39,7 @@ export default ({
         renderDecisions,
         decisionScopes = [],
         personalization = {},
+        propositions,
         onResponse = noop,
         onRequestFailure = noop
       }) {
@@ -63,6 +64,27 @@ export default ({
           viewCache,
           logger
         });
+
+        if (propositions && propositions.length > 0) {
+          const propositionEventType =
+            event.getEventType() === "decisioning.propositionInteract" ||
+            event.getPropositionEventType() === "interact"
+              ? "interact"
+              : "display";
+
+          event.mergeXdm({
+            _experience: {
+              decisioning: {
+                propositions: propositions.map(
+                  ({ id, scope, scopeDetails }) => ({ id, scope, scopeDetails })
+                ),
+                propositionEventType: {
+                  [propositionEventType]: 1
+                }
+              }
+            }
+          });
+        }
 
         if (personalizationDetails.shouldFetchData()) {
           const decisionsDeferred = defer();

@@ -64,7 +64,8 @@ module.exports = {
           }
         ]
       }
-    ]
+    ],
+    "no-underscore-dangle": ["error", { allow: ["_experience"] }]
   },
   globals: {
     expectAsync: "readonly", // newer jasmine feature

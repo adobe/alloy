@@ -228,6 +228,34 @@ describe("createEvent", () => {
     event.setUserXdm({ web: { webPageDetails: { viewName: "cart" } } });
     expect(event.getViewName()).toBe("cart");
   });
+  it("returns undefined eventType", () => {
+    expect(event.getEventType()).toBeUndefined();
+  });
+  it("returns user XDM eventType", () => {
+    event.setUserXdm({ eventType: "myevent" });
+    expect(event.getEventType()).toBe("myevent");
+  });
+  it("returns merged XDM eventType", () => {
+    event.mergeXdm({ eventType: "myevent" });
+    expect(event.getEventType()).toBe("myevent");
+  });
+  it("returns an undefined proposition event type", () => {
+    expect(event.getPropositionEventType()).toBeUndefined();
+  });
+  it("returns a proposition event type", () => {
+    event.setUserXdm({
+      _experience: {
+        decisioning: {
+          propositionEventType: {
+            otherField: "foo",
+            myevent: 1
+          }
+        }
+      }
+    });
+    expect(event.getPropositionEventType()).toBe("myevent");
+  });
+
   describe("applyCallback", () => {
     it("can add fields to empty xdm", () => {
       const callback = ({ xdm, data }) => {
