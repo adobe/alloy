@@ -9,26 +9,17 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { createRestoreStorage, createSaveStorage } from "./utils";
 
-const STORAGE_KEY = "history";
-export default ({ storage }) => {
-  const restore = createRestoreStorage(storage, STORAGE_KEY);
-  const save = createSaveStorage(storage, STORAGE_KEY);
+const QUALIFIED_EVENT_TYPE = "decisioning.qualifiedItem";
 
-  const history = restore({});
-
-  const recordDecision = id => {
-    if (!history[id]) {
-      history[id] = {};
+export default ({ eventRegistry }) => {
+  const recordQualified = item => {
+    const { id } = item;
+    if (!id) {
+      return undefined;
     }
-
-    if (typeof history[id].timestamp !== "number") {
-      history[id].timestamp = new Date().getTime();
-      save(history);
-    }
-    return history[id];
+    return eventRegistry.addEvent(item, QUALIFIED_EVENT_TYPE, id);
   };
 
-  return { recordDecision };
+  return { recordQualified };
 };

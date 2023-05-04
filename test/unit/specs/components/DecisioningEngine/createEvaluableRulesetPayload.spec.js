@@ -21,7 +21,7 @@ describe("DecisioningEngine:createEvaluableRulesetPayload", () => {
   beforeEach(() => {
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
     eventRegistry = createEventRegistry({ storage });
-    decisionHistory = createDecisionHistory({ storage });
+    decisionHistory = createDecisionHistory({ eventRegistry });
   });
 
   it("evaluates rules and return a payload", () => {

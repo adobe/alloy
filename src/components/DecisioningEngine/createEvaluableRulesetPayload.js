@@ -38,8 +38,8 @@ export default (payload, eventRegistry, decisionHistory) => {
     const qualifyingItems = flattenArray(
       items.map(item => item.execute(context))
     ).map(item => {
-      const { timestamp: qualifiedDate } = decisionHistory.recordDecision(
-        item.id
+      const { firstTimestamp: qualifiedDate } = decisionHistory.recordQualified(
+        item
       );
       return { ...item.detail, qualifiedDate, displayedDate };
     });

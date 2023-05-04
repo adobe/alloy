@@ -12,10 +12,10 @@ governing permissions and limitations under the License.
 import createEvaluableRulesetPayload from "./createEvaluableRulesetPayload";
 import createDecisionHistory from "./createDecisionHistory";
 
-export default ({ eventRegistry, storage }) => {
+export default ({ eventRegistry }) => {
   const payloads = {};
 
-  const decisionHistory = createDecisionHistory({ storage });
+  const decisionHistory = createDecisionHistory({ eventRegistry });
 
   const addPayload = payload => {
     if (!payload.id) {

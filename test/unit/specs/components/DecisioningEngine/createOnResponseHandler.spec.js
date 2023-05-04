@@ -28,7 +28,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
       onDecision: Promise.resolve()
     });
 
-    const decisionProvider = createDecisionProvider({ eventRegistry, storage });
+    const decisionProvider = createDecisionProvider({ eventRegistry });
     const applyResponse = createApplyResponse(lifecycle);
 
     const event = {
@@ -214,7 +214,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
       onDecision: Promise.resolve()
     });
 
-    const decisionProvider = createDecisionProvider({ eventRegistry, storage });
+    const decisionProvider = createDecisionProvider({ eventRegistry });
     const applyResponse = createApplyResponse(lifecycle);
 
     const event = {

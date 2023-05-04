@@ -25,8 +25,7 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
   const eventRegistry = createEventRegistry({ storage: storage.persistent });
   let applyResponse = createApplyResponse();
   const decisionProvider = createDecisionProvider({
-    eventRegistry,
-    storage: storage.persistent
+    eventRegistry
   });
   const contextProvider = createContextProvider({ eventRegistry });
 
@@ -53,7 +52,7 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
           return;
         }
 
-        eventRegistry.rememberEvent(event);
+        eventRegistry.addExperienceEdgeEvent(event);
       }
     },
     commands: {
