@@ -40,7 +40,7 @@ suites:
     browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
-    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Personalization/C7638574.js", "test/functional/specs/Personalization/C9932846.js", "test/functional/specs/Personalization/C205528.js", "test/functional/specs/Personalization/C7494472.js"]
+    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Personalization/C7638574.js", "test/functional/specs/Personalization/C9932846.js", "test/functional/specs/Personalization/C205528.js"]
 
   - name: "Chrome"
     shard: concurrency
@@ -49,7 +49,7 @@ suites:
     browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
-    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Personalization/C7638574.js", "test/functional/specs/Personalization/C9932846.js", "test/functional/specs/Personalization/C205528.js", "test/functional/specs/Personalization/C7494472.js"]
+    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Personalization/C7638574.js", "test/functional/specs/Personalization/C9932846.js", "test/functional/specs/Personalization/C205528.js"]
 
   - name: "Edge"
     shard: concurrency
@@ -58,7 +58,7 @@ suites:
     browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
-    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Personalization/C7638574.js", "test/functional/specs/Personalization/C9932846.js", "test/functional/specs/Personalization/C205528.js", "test/functional/specs/Personalization/C7494472.js"]
+    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Personalization/C7638574.js", "test/functional/specs/Personalization/C9932846.js", "test/functional/specs/Personalization/C205528.js"]
 
   - name: "Safari"
     shard: concurrency
@@ -71,5 +71,5 @@ suites:
       NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
     src:
       - "test/functional/specs/**/*.js"
-    excludedTestFiles: [ "test/functional/specs/LibraryInfo/C2589.js", "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Personalization/C7638574.js", "test/functional/specs/Personalization/C9932846.js", "test/functional/specs/Personalization/C205528.js", "test/functional/specs/Personalization/C7494472.js"]
+    excludedTestFiles: [ "test/functional/specs/LibraryInfo/C2589.js", "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Personalization/C7638574.js", "test/functional/specs/Personalization/C9932846.js", "test/functional/specs/Personalization/C205528.js"]
 
