@@ -38,24 +38,24 @@ describe("DecisioningEngine:createEventRegistry", () => {
       getContent
     };
 
-    eventRegistry.rememberEvent(event);
+    eventRegistry.addExperienceEdgeEvent(event);
 
     expect(eventRegistry.toJSON()).toEqual({
       display: {
         abc: {
-          event: { id: "abc", type: "display" },
+          event: jasmine.objectContaining({ id: "abc", type: "display" }),
           firstTimestamp: jasmine.any(Number),
           timestamp: jasmine.any(Number),
           count: 1
         },
         def: {
-          event: { id: "def", type: "display" },
+          event: jasmine.objectContaining({ id: "def", type: "display" }),
           firstTimestamp: jasmine.any(Number),
           timestamp: jasmine.any(Number),
           count: 1
         },
         ghi: {
-          event: { id: "ghi", type: "display" },
+          event: jasmine.objectContaining({ id: "ghi", type: "display" }),
           firstTimestamp: jasmine.any(Number),
           timestamp: jasmine.any(Number),
           count: 1
@@ -67,14 +67,14 @@ describe("DecisioningEngine:createEventRegistry", () => {
   it("does not register invalid events", () => {
     const eventRegistry = createEventRegistry({ storage });
 
-    eventRegistry.rememberEvent({
+    eventRegistry.addExperienceEdgeEvent({
       getContent: () => ({
         xdm: {
           eventType: "display"
         }
       })
     });
-    eventRegistry.rememberEvent({
+    eventRegistry.addExperienceEdgeEvent({
       getContent: () => ({
         xdm: {
           eventType: "display",
@@ -82,7 +82,7 @@ describe("DecisioningEngine:createEventRegistry", () => {
         }
       })
     });
-    eventRegistry.rememberEvent({
+    eventRegistry.addExperienceEdgeEvent({
       getContent: () => ({
         xdm: {
           eventType: "display",
@@ -92,7 +92,7 @@ describe("DecisioningEngine:createEventRegistry", () => {
         }
       })
     });
-    eventRegistry.rememberEvent({
+    eventRegistry.addExperienceEdgeEvent({
       getContent: () => ({})
     });
 
@@ -100,7 +100,7 @@ describe("DecisioningEngine:createEventRegistry", () => {
   });
 
   it("increments count and sets timestamp", done => {
-    const eventRegistry = createEventRegistry({ storage });
+    const eventRegistry = createEventRegistry({ storage, saveDelay: 10 });
 
     const getContent = () => ({
       xdm: {
@@ -117,10 +117,10 @@ describe("DecisioningEngine:createEventRegistry", () => {
       getContent
     };
     let lastEventTime = 0;
-    eventRegistry.rememberEvent(event);
+    eventRegistry.addExperienceEdgeEvent(event);
 
     expect(eventRegistry.getEvent("display", "abc")).toEqual({
-      event: { id: "abc", type: "display" },
+      event: jasmine.objectContaining({ id: "abc", type: "display" }),
       firstTimestamp: jasmine.any(Number),
       timestamp: jasmine.any(Number),
       count: 1
@@ -131,10 +131,10 @@ describe("DecisioningEngine:createEventRegistry", () => {
     lastEventTime = eventRegistry.getEvent("display", "abc").timestamp;
 
     setTimeout(() => {
-      eventRegistry.rememberEvent(event); // again
+      eventRegistry.addExperienceEdgeEvent(event); // again
 
       expect(eventRegistry.getEvent("display", "abc")).toEqual({
-        event: { id: "abc", type: "display" },
+        event: jasmine.objectContaining({ id: "abc", type: "display" }),
         firstTimestamp: jasmine.any(Number),
         timestamp: jasmine.any(Number),
         count: 2
@@ -143,7 +143,7 @@ describe("DecisioningEngine:createEventRegistry", () => {
         eventRegistry.getEvent("display", "abc").timestamp
       ).toBeGreaterThan(lastEventTime);
       done();
-    }, 10);
+    }, 50);
   });
 
   it("limits events to 1000 events", () => {

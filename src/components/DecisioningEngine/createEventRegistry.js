@@ -13,6 +13,7 @@ import { createRestoreStorage, createSaveStorage } from "./utils";
 
 const STORAGE_KEY = "events";
 const MAX_EVENT_RECORDS = 1000;
+const DEFAULT_SAVE_DELAY = 500;
 
 export const createEventPruner = (limit = MAX_EVENT_RECORDS) => {
   return events => {
@@ -30,18 +31,42 @@ export const createEventPruner = (limit = MAX_EVENT_RECORDS) => {
   };
 };
 
-export default ({ storage }) => {
+export default ({ storage, saveDelay = DEFAULT_SAVE_DELAY }) => {
   const restore = createRestoreStorage(storage, STORAGE_KEY);
   const save = createSaveStorage(
     storage,
     STORAGE_KEY,
-    150,
+    saveDelay,
     createEventPruner(MAX_EVENT_RECORDS)
   );
 
   const events = restore({});
+  const addEvent = (event, eventType, eventId) => {
+    if (!events[eventType]) {
+      events[eventType] = {};
+    }
 
-  const rememberEvent = event => {
+    const existingEvent = events[eventType][eventId];
+
+    const count = existingEvent ? existingEvent.count : 0;
+    const timestamp = new Date().getTime();
+    const firstTimestamp = existingEvent
+      ? existingEvent.firstTimestamp || existingEvent.timestamp
+      : timestamp;
+
+    events[eventType][eventId] = {
+      event: { ...event, id: eventId, type: eventType },
+      firstTimestamp,
+      timestamp,
+      count: count + 1
+    };
+
+    save(events);
+
+    return events[eventType][eventId];
+  };
+
+  const addExperienceEdgeEvent = event => {
     const { xdm = {} } = event.getContent();
     const { eventType = "", _experience } = xdm;
 
@@ -57,31 +82,9 @@ export default ({ storage }) => {
     const { decisioning = {} } = _experience;
     const { propositions = [] } = decisioning;
 
-    propositions.forEach(proposition => {
-      let count = 0;
-      const timestamp = new Date().getTime();
-      let firstTimestamp = timestamp;
-
-      if (!events[eventType]) {
-        events[eventType] = {};
-      }
-
-      const existingEvent = events[eventType][proposition.id];
-      if (existingEvent) {
-        count = existingEvent.count;
-        firstTimestamp =
-          existingEvent.firstTimestamp || existingEvent.timestamp;
-      }
-
-      events[eventType][proposition.id] = {
-        event: { id: proposition.id, type: eventType },
-        firstTimestamp,
-        timestamp,
-        count: count + 1
-      };
-    });
-
-    save(events);
+    propositions.forEach(proposition =>
+      addEvent({ proposition }, eventType, proposition.id)
+    );
   };
   const getEvent = (eventType, eventId) => {
     if (!events[eventType]) {
@@ -91,5 +94,5 @@ export default ({ storage }) => {
     return events[eventType][eventId];
   };
 
-  return { rememberEvent, getEvent, toJSON: () => events };
+  return { addExperienceEdgeEvent, addEvent, getEvent, toJSON: () => events };
 };
