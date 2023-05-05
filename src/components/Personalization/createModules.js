@@ -13,9 +13,9 @@ import { DOM_ACTION, IN_APP_MESSAGE } from "./constants/schema";
 import { initDomActionsModules } from "./dom-actions";
 import initMessagingActionsModules from "./in-app-message-actions/initMessagingActionsModules";
 
-export default storeClickMetrics => {
+export default ({ storeClickMetrics, collect }) => {
   return {
     [DOM_ACTION]: initDomActionsModules(storeClickMetrics),
-    [IN_APP_MESSAGE]: initMessagingActionsModules(storeClickMetrics)
+    [IN_APP_MESSAGE]: initMessagingActionsModules(collect)
   };
 };

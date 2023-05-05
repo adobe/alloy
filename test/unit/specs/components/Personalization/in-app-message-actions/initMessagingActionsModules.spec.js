@@ -15,7 +15,8 @@ import createModules from "../../../../../../src/components/Personalization/crea
 import { IN_APP_MESSAGE } from "../../../../../../src/components/Personalization/constants/schema";
 
 describe("Personalization::turbine::initMessagingActionsModules", () => {
-  const modules = createModules(() => undefined);
+  const noop = () => undefined;
+  const modules = createModules({ storeClickMetrics: noop, collect: noop });
   const expectedModules = modules[IN_APP_MESSAGE];
 
   it("should have all the required modules", () => {
