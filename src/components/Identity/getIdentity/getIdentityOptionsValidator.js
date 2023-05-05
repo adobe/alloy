@@ -10,22 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { validateConfigOverride } from "../../../utils";
 import { objectOf, literal, arrayOf } from "../../../utils/validation";
 /**
  * Verifies user provided event options.
  * @param {*} options The user event options to validate
  * @returns {*} Validated options
  */
-export default options => {
-  const getIdentityOptionsValidator = objectOf({
-    namespaces: arrayOf(literal("ECID"))
-      .nonEmpty()
-      .uniqueItems()
-  }).noUnknownFields();
-  getIdentityOptionsValidator(options);
-  // Return default options for now
-  // To-Do: Accept namespace from given options
-  return {
+export default objectOf({
+  namespaces: arrayOf(literal("ECID"))
+    .nonEmpty()
+    .uniqueItems()
+    .default(["ECID"]),
+  edgeConfigOverrides: validateConfigOverride
+})
+  .noUnknownFields()
+  .default({
     namespaces: ["ECID"]
-  };
-};
+  });

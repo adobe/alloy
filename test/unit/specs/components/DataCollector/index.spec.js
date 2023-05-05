@@ -15,6 +15,7 @@ import { noop } from "../../../../../src/utils";
 describe("Event Command", () => {
   let event;
   let eventManager;
+  let logger;
   let sendEventCommand;
   beforeEach(() => {
     event = jasmine.createSpyObj("event", [
@@ -22,8 +23,10 @@ describe("Event Command", () => {
       "setUserData",
       "setUserXdm",
       "mergeXdm",
-      "mergeMeta"
+      "mergeMeta",
+      "mergeConfigOverride"
     ]);
+    logger = jasmine.createSpyObj("logger", ["warn"]);
 
     eventManager = {
       createEvent() {
@@ -38,7 +41,8 @@ describe("Event Command", () => {
     };
 
     const dataCollector = createDataCollector({
-      eventManager
+      eventManager,
+      logger
     });
     sendEventCommand = dataCollector.commands.sendEvent;
   });
@@ -153,17 +157,58 @@ describe("Event Command", () => {
       });
   });
 
-  it("merges datasetId", () => {
+  it("merges datasetId into the override configuration", () => {
+    const datasetId = "mydatasetId";
     return sendEventCommand
       .run({
-        datasetId: "mydatasetId"
+        datasetId
       })
       .then(() => {
-        expect(event.mergeMeta).toHaveBeenCalledWith({
-          collect: {
-            datasetId: "mydatasetId"
+        expect(eventManager.sendEvent).toHaveBeenCalledWith(
+          jasmine.any(Object),
+          {
+            renderDecisions: false,
+            decisionScopes: [],
+            personalization: {},
+            propositions: [],
+            edgeConfigOverrides: {
+              com_adobe_experience_platform: {
+                datasets: {
+                  event: { datasetId }
+                }
+              }
+            }
           }
-        });
+        );
+        expect(logger.warn).toHaveBeenCalled();
+      });
+  });
+
+  it("includes configuration if provided", () => {
+    return sendEventCommand
+      .run({
+        renderDecisions: true,
+        edgeConfigOverrides: {
+          target: {
+            propertyToken: "hello"
+          }
+        }
+      })
+      .then(() => {
+        expect(eventManager.sendEvent).toHaveBeenCalledWith(
+          jasmine.any(Object),
+          {
+            renderDecisions: true,
+            decisionScopes: [],
+            personalization: {},
+            propositions: [],
+            edgeConfigOverrides: {
+              target: {
+                propertyToken: "hello"
+              }
+            }
+          }
+        );
       });
   });
 

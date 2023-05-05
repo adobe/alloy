@@ -34,7 +34,8 @@ describe("createEventManager", () => {
     config = createConfig({
       orgId: "ABC123",
       onBeforeEventSend: jasmine.createSpy(),
-      debugEnabled: true
+      debugEnabled: true,
+      edgeConfigOverrides: {}
     });
     logger = jasmine.createSpyObj("logger", ["info"]);
     lifecycle = jasmine.createSpyObj("lifecycle", {
@@ -59,7 +60,10 @@ describe("createEventManager", () => {
     const createEvent = () => {
       return event;
     };
-    requestPayload = jasmine.createSpyObj("requestPayload", ["addEvent"]);
+    requestPayload = jasmine.createSpyObj("requestPayload", [
+      "addEvent",
+      "mergeConfigOverride"
+    ]);
     const createDataCollectionRequestPayload = () => {
       return requestPayload;
     };
@@ -323,6 +327,54 @@ describe("createEventManager", () => {
         });
         expect(result).toEqual(mockResult);
       });
+    });
+
+    it("includes override configuration, if provided", done => {
+      eventManager
+        .sendEvent(event, {
+          edgeConfigOverrides: {
+            com_adobe_experience_platform: {
+              event: {
+                datasetId: "456"
+              }
+            },
+            com_adobe_identity: {
+              idSyncContainerId: "123"
+            }
+          }
+        })
+        .then(() => {
+          expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
+            com_adobe_identity: {
+              idSyncContainerId: "123"
+            },
+            com_adobe_experience_platform: {
+              event: {
+                datasetId: "456"
+              }
+            }
+          });
+          done();
+        });
+    });
+
+    it("includes global override configuration, if provided", done => {
+      config.edgeConfigOverrides.com_adobe_identity = {
+        idSyncContainerId: "123"
+      };
+
+      eventManager
+        .sendEvent(event, {
+          edgeConfigOverrides: {}
+        })
+        .then(() => {
+          expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
+            com_adobe_identity: {
+              idSyncContainerId: "123"
+            }
+          });
+          done();
+        });
     });
   });
 });

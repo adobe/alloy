@@ -47,5 +47,5 @@ export default ({
         setPropositions(propositions);
       }
     });
-  }, [instanceName, viewName]);
+  }, [data, decisionScopes, instanceName, setPropositions, viewName, xdm]);
 };
