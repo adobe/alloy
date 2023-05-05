@@ -20,6 +20,19 @@ describe("DecisioningEngine:createContextProvider", () => {
 
   beforeEach(() => {
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
+
+    spyOnProperty(document, "title").and.returnValue("Title");
+    spyOnProperty(document, "referrer").and.returnValue("http://localhost/");
+    spyOnProperty(window, "innerHeight").and.returnValue(887);
+    spyOnProperty(window, "innerWidth").and.returnValue(1200);
+
+    jasmine.clock().install();
+    const mockedTime = new Date("2023-05-05T11:38:06.107Z");
+    jasmine.clock().mockDate(mockedTime);
+  });
+
+  afterEach(() => {
+    jasmine.clock().uninstall();
   });
 
   it("includes provided context passed in", () => {
@@ -28,7 +41,25 @@ describe("DecisioningEngine:createContextProvider", () => {
 
     expect(contextProvider.getContext({ cool: "beans" })).toEqual({
       cool: "beans",
-      events: {}
+      events: {},
+      timePageLoaded: 1683286686107,
+      datePageLoaded: 5,
+      dayPageLoaded: 5,
+      currentDate: 5,
+      currentTime: 1683286686107,
+      currentDay: 5,
+      scrollPosition: 0,
+      browserDetails: {
+        browserName: "Google Chrome",
+        browserVersion: "112.0"
+      },
+      pageContext: {
+        pageName: "Title",
+        pageURL: window.location.href,
+        pageReferrer: "http://localhost/",
+        pageHeight: 887,
+        pageWidth: 1200
+      }
     });
   });
 
@@ -48,7 +79,25 @@ describe("DecisioningEngine:createContextProvider", () => {
 
     expect(contextProvider.getContext({ cool: "beans" })).toEqual({
       cool: "beans",
-      events
+      events,
+      timePageLoaded: 1683286686107,
+      datePageLoaded: 5,
+      dayPageLoaded: 5,
+      currentDate: 5,
+      currentTime: 1683286686107,
+      currentDay: 5,
+      scrollPosition: 0,
+      browserDetails: {
+        browserName: "Google Chrome",
+        browserVersion: "112.0"
+      },
+      pageContext: {
+        pageName: "Title",
+        pageURL: window.location.href,
+        pageReferrer: "http://localhost/",
+        pageHeight: 887,
+        pageWidth: 1200
+      }
     });
   });
 });
