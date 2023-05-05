@@ -1,7 +1,7 @@
 name: Dev
 on:
-  push:
-  workflow_dispatch:
+  pull_request:
+    types: [opened, reopened]
 env:
   SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
   SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
