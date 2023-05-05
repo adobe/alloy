@@ -29,6 +29,7 @@ import RedirectedNewPage from "./RedirectedNewPage";
 import PersonalizationAnalyticsClientSide from "./PersonalizationAnalyticsClientSide";
 import PersonalizationFormBased from "./PersonalizationFormBased";
 import Identity from "./Identity";
+import TopBottom from "./TopBottom";
 import AlloyVersion from "./components/AlloyVersion";
 
 function BasicExample() {
@@ -92,6 +93,9 @@ function BasicExample() {
             <li>
               <a href="/identity">Identity</a>
             </li>
+            <li>
+              <a href="/topBottom">Top/Bottom</a>
+            </li>
           </ul>
           <hr />
 
@@ -120,6 +124,7 @@ function BasicExample() {
           <Route path="/redirectOffers" component={RedirectOffers} />
           <Route path="/redirectedNewPage" component={RedirectedNewPage} />
           <Route path="/identity" component={Identity} />
+          <Route path="/topBottom" component={TopBottom} />
         </div>
       </Router>
       <AlloyVersion />

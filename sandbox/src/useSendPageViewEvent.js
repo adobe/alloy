@@ -23,7 +23,9 @@ export default ({
   setPropositions
 } = {}) => {
   useEffect(() => {
-    xdm.eventType = "page-view";
+    if (!xdm.eventType) {
+      xdm.eventType = "page-view";
+    }
 
     if (viewName) {
       xdm.web = {
