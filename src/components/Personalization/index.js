@@ -50,7 +50,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const viewCache = createViewCacheManager();
 
   const actionsProvider = createActionsProvider({
-    modules: createModules(storeClickMetrics),
+    modules: createModules({ storeClickMetrics, collect }),
     preprocessors: createPreprocessors(),
     logger
   });

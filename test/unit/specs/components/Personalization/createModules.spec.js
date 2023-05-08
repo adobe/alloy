@@ -16,8 +16,10 @@ import {
 } from "../../../../../src/components/Personalization/constants/schema";
 
 describe("createModules", () => {
+  const noop = () => undefined;
+
   it("has dom-action modules", () => {
-    const modules = createModules(() => undefined);
+    const modules = createModules({ storeClickMetrics: noop, collect: noop });
 
     expect(modules[DOM_ACTION]).toEqual({
       setHtml: jasmine.any(Function),
@@ -43,7 +45,7 @@ describe("createModules", () => {
   });
 
   it("has in-app-message modules", () => {
-    const modules = createModules(() => undefined);
+    const modules = createModules({ storeClickMetrics: noop, collect: noop });
 
     expect(modules[IN_APP_MESSAGE]).toEqual({
       modal: jasmine.any(Function),
