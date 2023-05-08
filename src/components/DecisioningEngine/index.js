@@ -50,7 +50,7 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
           return;
         }
 
-        eventRegistry.rememberEvent(event);
+        eventRegistry.addExperienceEdgeEvent(event);
       }
     },
     commands: {

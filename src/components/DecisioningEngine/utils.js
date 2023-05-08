@@ -28,7 +28,7 @@ export const createRestoreStorage = (storage, storageKey) => {
 export const createSaveStorage = (
   storage,
   storageKey,
-  debounceDelay = 150,
+  debounceDelay = 500,
   prepareFn = value => value
 ) => {
   return debounce(value => {

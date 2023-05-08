@@ -33,7 +33,7 @@ describe("debounce", () => {
   });
 
   it("calls a function only once per delay period", done => {
-    const fn = debounce(callback, 20);
+    const fn = debounce(callback, 10);
     fn("oh", "hai");
     fn("oh", "hai");
 
