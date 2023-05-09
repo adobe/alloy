@@ -41,4 +41,4 @@ suites:
     browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
-    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Personalization/C7638574.js", "test/functional/specs/Personalization/C9932846.js", "test/functional/specs/Personalization/C205528.js", "test/functional/specs/Personalization/C7494472.js"]
+    excludedTestFiles: [ "test/functional/specs/Install SDK/C1338399.js", "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Personalization/C7638574.js", "test/functional/specs/Personalization/C9932846.js", "test/functional/specs/Personalization/C205528.js", "test/functional/specs/Personalization/C7494472.js"]

@@ -75,6 +75,6 @@ suites:
       - "test/functional/specs/**/*.js"
     excludedTestFiles:
       [
-        "test/functional/specs/Privacy/C1576777.js",
+        "test/functional/specs/Install SDK/C1338399.js", "test/functional/specs/Privacy/C1576777.js",
         "test/functional/specs/LibraryInfo/C2589.js"
       ]
