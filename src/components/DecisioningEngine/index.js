@@ -23,7 +23,7 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
   );
 
   const eventRegistry = createEventRegistry({ storage: storage.persistent });
-  let applyResponse = createApplyResponse();
+  let applyResponse;
   const decisionProvider = createDecisionProvider();
   const contextProvider = createContextProvider({ eventRegistry });
 
