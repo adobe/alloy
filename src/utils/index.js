@@ -66,3 +66,5 @@ export { default as updateErrorMessage } from "./updateErrorMessage";
 export { default as validateIdentityMap } from "./validateIdentityMap";
 export { default as validateConfigOverride } from "./validateConfigOverride";
 export { default as values } from "./values";
+export { default as parseUri } from "./parseUri";
+export { default as parseUrl } from "./parseUrl";

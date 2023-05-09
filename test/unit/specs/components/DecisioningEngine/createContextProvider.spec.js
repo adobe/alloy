@@ -11,7 +11,8 @@ governing permissions and limitations under the License.
 */
 import createContextProvider from "../../../../../src/components/DecisioningEngine/createContextProvider";
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
-
+import parseUrl from "../../../../../src/utils/parseUrl";
+// TODO: Need to mock url using some library like sinon, also write comprehensive tests for all the scenarios
 describe("DecisioningEngine:createContextProvider", () => {
   let contextProvider;
   let eventRegistry;
@@ -21,20 +22,21 @@ describe("DecisioningEngine:createContextProvider", () => {
   beforeEach(() => {
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
 
-    spyOnProperty(document, "title").and.returnValue("Title");
-    spyOnProperty(document, "referrer").and.returnValue("http://localhost/");
+    spyOnProperty(document, "title").and.returnValue("My awesome website");
+    spyOnProperty(document, "referrer").and.returnValue(
+      "https://stage.applookout.net/"
+    );
     spyOnProperty(window, "innerHeight").and.returnValue(887);
     spyOnProperty(window, "innerWidth").and.returnValue(1200);
 
     jasmine.clock().install();
-    const mockedTime = new Date("2023-05-05T11:38:06.107Z");
-    jasmine.clock().mockDate(mockedTime);
+    const mockedTimestamp = new Date("2023-05-05T11:38:06.107Z");
+    jasmine.clock().mockDate(mockedTimestamp);
   });
 
   afterEach(() => {
     jasmine.clock().uninstall();
   });
-
   it("includes provided context passed in", () => {
     eventRegistry = createEventRegistry({ storage });
     contextProvider = createContextProvider({ eventRegistry });
@@ -42,23 +44,42 @@ describe("DecisioningEngine:createContextProvider", () => {
     expect(contextProvider.getContext({ cool: "beans" })).toEqual({
       cool: "beans",
       events: {},
-      timePageLoaded: 1683286686107,
-      datePageLoaded: 5,
-      dayPageLoaded: 5,
+      currentTimestamp: 1683286686107,
+      currentHour: 4,
+      currentMinute: 38,
+      currentYear: 2023,
+      currentMonth: 4,
       currentDate: 5,
-      currentTime: 1683286686107,
       currentDay: 5,
-      scrollPosition: 0,
-      browserDetails: {
-        browserName: "Google Chrome",
-        browserVersion: "112.0"
+      pageLoadTime: 1683286686107,
+      pageVisitDuration: 0,
+      browser: {
+        name: "Chrome"
       },
-      pageContext: {
-        pageName: "Title",
-        pageURL: window.location.href,
-        pageReferrer: "http://localhost/",
-        pageHeight: 887,
-        pageWidth: 1200
+      window: {
+        height: 887,
+        width: 1200,
+        scrollY: 0,
+        scrollX: 0
+      },
+      page: {
+        title: "My awesome website",
+        url: window.location.href,
+        path: parseUrl(window.location.href).path,
+        query: parseUrl(window.location.href).query,
+        fragment: parseUrl(window.location.href).fragment,
+        domain: parseUrl(window.location.href).domain,
+        subdomain: parseUrl(window.location.href).subdomain,
+        topLevelDomain: parseUrl(window.location.href).topLevelDomain
+      },
+      referringPage: {
+        url: "https://stage.applookout.net/",
+        path: "/",
+        query: "",
+        fragment: "",
+        domain: "stage.applookout.net",
+        subdomain: "stage",
+        topLevelDomain: "net"
       }
     });
   });
@@ -71,7 +92,6 @@ describe("DecisioningEngine:createContextProvider", () => {
         count: 1
       }
     };
-
     eventRegistry = {
       toJSON: () => events
     };
@@ -80,23 +100,42 @@ describe("DecisioningEngine:createContextProvider", () => {
     expect(contextProvider.getContext({ cool: "beans" })).toEqual({
       cool: "beans",
       events,
-      timePageLoaded: 1683286686107,
-      datePageLoaded: 5,
-      dayPageLoaded: 5,
+      currentTimestamp: 1683286686107,
+      currentHour: 4,
+      currentMinute: 38,
+      currentYear: 2023,
+      currentMonth: 4,
       currentDate: 5,
-      currentTime: 1683286686107,
       currentDay: 5,
-      scrollPosition: 0,
-      browserDetails: {
-        browserName: "Google Chrome",
-        browserVersion: "112.0"
+      pageLoadTime: 1683286686107,
+      pageVisitDuration: 0,
+      browser: {
+        name: "Chrome"
       },
-      pageContext: {
-        pageName: "Title",
-        pageURL: window.location.href,
-        pageReferrer: "http://localhost/",
-        pageHeight: 887,
-        pageWidth: 1200
+      window: {
+        height: 887,
+        width: 1200,
+        scrollY: 0,
+        scrollX: 0
+      },
+      page: {
+        title: "My awesome website",
+        url: window.location.href,
+        path: parseUrl(window.location.href).path,
+        query: parseUrl(window.location.href).query,
+        fragment: parseUrl(window.location.href).fragment,
+        domain: parseUrl(window.location.href).domain,
+        subdomain: parseUrl(window.location.href).subdomain,
+        topLevelDomain: parseUrl(window.location.href).topLevelDomain
+      },
+      referringPage: {
+        url: "https://stage.applookout.net/",
+        path: "/",
+        query: "",
+        fragment: "",
+        domain: "stage.applookout.net",
+        subdomain: "stage",
+        topLevelDomain: "net"
       }
     });
   });
