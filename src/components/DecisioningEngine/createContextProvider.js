@@ -22,7 +22,7 @@ export default ({ eventRegistry }, currentWindow) => {
   };
   const getBrowserContext = () => {
     return {
-      name: getBrowser(window)
+      name: getBrowser(currentWindow)
     };
   };
   const getPageContext = () => {

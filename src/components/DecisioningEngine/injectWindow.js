@@ -17,6 +17,9 @@ export default window => {
     width: window.innerWidth,
     height: window.innerHeight,
     scrollX: window.scrollX,
-    scrollY: window.scrollY
+    scrollY: window.scrollY,
+    navigator: {
+      userAgent: window.navigator.userAgent
+    }
   };
 };

@@ -28,7 +28,11 @@ describe("DecisioningEngine:createContextProvider", () => {
       width: 100,
       height: 100,
       scrollX: 10,
-      scrollY: 10
+      scrollY: 10,
+      navigator: {
+        userAgent:
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36"
+      }
     };
     jasmine.clock().install();
     const mockedTimestamp = new Date("2023-05-05T11:38:06.107Z");

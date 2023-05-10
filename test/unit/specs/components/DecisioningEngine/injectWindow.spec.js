@@ -22,7 +22,11 @@ describe("DecisioningEngine::injectWindow", () => {
     innerWidth: 100,
     innerHeight: 100,
     scrollX: 10,
-    scrollY: 10
+    scrollY: 10,
+    navigator: {
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36"
+    }
   };
   it("should return window information", () => {
     const windowInfo = injectWindow(window);
