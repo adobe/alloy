@@ -11,24 +11,25 @@ governing permissions and limitations under the License.
 */
 import createContextProvider from "../../../../../src/components/DecisioningEngine/createContextProvider";
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
-import parseUrl from "../../../../../src/utils/parseUrl";
-// TODO: Need to mock url using some library like sinon, also write comprehensive tests for all the scenarios
+
+// TODO:  write more comprehensive tests for all the scenarios...in progress
 describe("DecisioningEngine:createContextProvider", () => {
   let contextProvider;
   let eventRegistry;
-
   let storage;
+  let window;
 
   beforeEach(() => {
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
-
-    spyOnProperty(document, "title").and.returnValue("My awesome website");
-    spyOnProperty(document, "referrer").and.returnValue(
-      "https://stage.applookout.net/"
-    );
-    spyOnProperty(window, "innerHeight").and.returnValue(887);
-    spyOnProperty(window, "innerWidth").and.returnValue(1200);
-
+    window = {
+      title: "My awesome website",
+      referrer: "https://stage.applookout.net/",
+      url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
+      width: 100,
+      height: 100,
+      scrollX: 10,
+      scrollY: 10
+    };
     jasmine.clock().install();
     const mockedTimestamp = new Date("2023-05-05T11:38:06.107Z");
     jasmine.clock().mockDate(mockedTimestamp);
@@ -39,7 +40,7 @@ describe("DecisioningEngine:createContextProvider", () => {
   });
   it("includes provided context passed in", () => {
     eventRegistry = createEventRegistry({ storage });
-    contextProvider = createContextProvider({ eventRegistry });
+    contextProvider = createContextProvider({ eventRegistry }, window);
 
     expect(contextProvider.getContext({ cool: "beans" })).toEqual({
       cool: "beans",
@@ -57,20 +58,20 @@ describe("DecisioningEngine:createContextProvider", () => {
         name: "Chrome"
       },
       window: {
-        height: 887,
-        width: 1200,
-        scrollY: 0,
-        scrollX: 0
+        height: 100,
+        width: 100,
+        scrollY: 10,
+        scrollX: 10
       },
       page: {
         title: "My awesome website",
-        url: window.location.href,
-        path: parseUrl(window.location.href).path,
-        query: parseUrl(window.location.href).query,
-        fragment: parseUrl(window.location.href).fragment,
-        domain: parseUrl(window.location.href).domain,
-        subdomain: parseUrl(window.location.href).subdomain,
-        topLevelDomain: parseUrl(window.location.href).topLevelDomain
+        url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
+        path: "/about",
+        query: "m=1&t=5&name=jimmy",
+        fragment: "home",
+        domain: "my.web-site.net",
+        subdomain: "my",
+        topLevelDomain: "net"
       },
       referringPage: {
         url: "https://stage.applookout.net/",
@@ -95,7 +96,7 @@ describe("DecisioningEngine:createContextProvider", () => {
     eventRegistry = {
       toJSON: () => events
     };
-    contextProvider = createContextProvider({ eventRegistry });
+    contextProvider = createContextProvider({ eventRegistry }, window);
 
     expect(contextProvider.getContext({ cool: "beans" })).toEqual({
       cool: "beans",
@@ -113,20 +114,20 @@ describe("DecisioningEngine:createContextProvider", () => {
         name: "Chrome"
       },
       window: {
-        height: 887,
-        width: 1200,
-        scrollY: 0,
-        scrollX: 0
+        height: 100,
+        width: 100,
+        scrollY: 10,
+        scrollX: 10
       },
       page: {
         title: "My awesome website",
-        url: window.location.href,
-        path: parseUrl(window.location.href).path,
-        query: parseUrl(window.location.href).query,
-        fragment: parseUrl(window.location.href).fragment,
-        domain: parseUrl(window.location.href).domain,
-        subdomain: parseUrl(window.location.href).subdomain,
-        topLevelDomain: parseUrl(window.location.href).topLevelDomain
+        url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
+        path: "/about",
+        query: "m=1&t=5&name=jimmy",
+        fragment: "home",
+        domain: "my.web-site.net",
+        subdomain: "my",
+        topLevelDomain: "net"
       },
       referringPage: {
         url: "https://stage.applookout.net/",

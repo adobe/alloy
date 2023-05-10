@@ -12,66 +12,74 @@ governing permissions and limitations under the License.
 import getBrowser from "../../utils/getBrowser";
 import parseUrl from "../../utils/parseUrl";
 
-export default ({ eventRegistry }) => {
-  const timestamp = new Date();
-  const globalContext = {
-    currentTimestamp: timestamp.getTime(),
-    currentHour: timestamp.getHours(),
-    currentMinute: timestamp.getMinutes(),
-    currentYear: timestamp.getFullYear(),
-    currentMonth: timestamp.getMonth(),
-    currentDate: timestamp.getDate(),
-    currentDay: timestamp.getDay(),
-    pageLoadTime: timestamp.getTime(),
-    pageVisitDuration: 0,
-    browser: {
+export default ({ eventRegistry }, currentWindow) => {
+  const initialTimeStamp = new Date();
+  const getPageLoadTime = () => {
+    const pageLoadTime = initialTimeStamp.getTime();
+    return {
+      pageLoadTime
+    };
+  };
+  const getBrowserContext = () => {
+    return {
       name: getBrowser(window)
-    },
-    window: {
-      height: window.innerHeight,
-      width: window.innerWidth,
-      scrollY: window.scrollY,
-      scrollX: window.scrollX
-    },
-    page: {
-      title: document.title,
-      url: window.location.href,
-      ...parseUrl(window.location.href)
-    },
-    referringPage: {
-      url: window.document.referrer,
-      ...parseUrl(window.document.referrer)
-    }
+    };
+  };
+  const getPageContext = () => {
+    return {
+      title: currentWindow.title,
+      url: currentWindow.url,
+      ...parseUrl(currentWindow.url)
+    };
   };
 
-  const updateTimeWindowContext = () => {
+  const getReferrerContext = () => {
+    return {
+      url: currentWindow.referrer,
+      ...parseUrl(currentWindow.referrer)
+    };
+  };
+  const getTimeContext = () => {
     const newTimeStamp = new Date();
-    globalContext.currentTimestamp = newTimeStamp.getTime();
-    globalContext.currentDate = newTimeStamp.getDate();
-    globalContext.currentDay = newTimeStamp.getDay();
-    globalContext.currentHour = newTimeStamp.getHours();
-    globalContext.currentMinute = newTimeStamp.getMinutes();
-    globalContext.currentMonth = newTimeStamp.getMonth();
-    globalContext.currentYear = newTimeStamp.getFullYear();
-    globalContext.pageVisitDuration =
-      newTimeStamp.getTime() - globalContext.pageLoadTime;
-    globalContext.window = {
-      height: window.innerHeight,
-      width: window.innerWidth,
-      scrollY: window.scrollY,
-      scrollX: window.scrollX
+    return {
+      currentTimestamp: newTimeStamp.getTime(),
+      currentDate: newTimeStamp.getDate(),
+      currentDay: newTimeStamp.getDay(),
+      currentHour: newTimeStamp.getHours(),
+      currentMinute: newTimeStamp.getMinutes(),
+      currentMonth: newTimeStamp.getMonth(),
+      currentYear: newTimeStamp.getFullYear(),
+      pageVisitDuration: newTimeStamp.getTime() - getPageLoadTime().pageLoadTime
+    };
+  };
+
+  const getWindowContext = () => {
+    const height = currentWindow.height;
+    const width = currentWindow.width;
+    const scrollY = currentWindow.scrollY;
+    const scrollX = currentWindow.scrollX;
+    return {
+      height,
+      width,
+      scrollY,
+      scrollX
     };
   };
 
   const getContext = addedContext => {
-    updateTimeWindowContext();
+    getTimeContext();
+    getWindowContext();
     return {
-      ...globalContext,
       ...addedContext,
+      ...getTimeContext(),
+      ...getPageLoadTime(),
+      browser: getBrowserContext(),
+      page: getPageContext(),
+      referringPage: getReferrerContext(),
+      window: getWindowContext(),
       events: eventRegistry.toJSON()
     };
   };
-
   return {
     getContext
   };
