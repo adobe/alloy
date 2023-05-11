@@ -11,13 +11,13 @@ governing permissions and limitations under the License.
 */
 import createContextProvider from "../../../../../src/components/DecisioningEngine/createContextProvider";
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
-
 // TODO:  write more comprehensive tests for all the scenarios...in progress
 describe("DecisioningEngine:createContextProvider", () => {
   let contextProvider;
   let eventRegistry;
   let storage;
   let window;
+  let mockedTimestamp;
 
   beforeEach(() => {
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
@@ -34,8 +34,8 @@ describe("DecisioningEngine:createContextProvider", () => {
           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36"
       }
     };
+    mockedTimestamp = new Date(Date.UTC(2023, 4, 11, 12, 34, 56));
     jasmine.clock().install();
-    const mockedTimestamp = new Date("2023-05-05T11:38:06.107Z");
     jasmine.clock().mockDate(mockedTimestamp);
   });
 
@@ -49,14 +49,14 @@ describe("DecisioningEngine:createContextProvider", () => {
     expect(contextProvider.getContext({ cool: "beans" })).toEqual({
       cool: "beans",
       events: {},
-      currentTimestamp: 1683286686107,
-      currentHour: 4,
-      currentMinute: 38,
-      currentYear: 2023,
-      currentMonth: 4,
-      currentDate: 5,
-      currentDay: 5,
-      pageLoadTime: 1683286686107,
+      currentTimestamp: mockedTimestamp.getTime(),
+      currentHour: mockedTimestamp.getHours(),
+      currentMinute: mockedTimestamp.getMinutes(),
+      currentYear: mockedTimestamp.getFullYear(),
+      currentMonth: mockedTimestamp.getMonth(),
+      currentDate: mockedTimestamp.getDate(),
+      currentDay: mockedTimestamp.getDay(),
+      pageLoadTime: mockedTimestamp.getTime(),
       pageVisitDuration: 0,
       browser: {
         name: "Chrome"
@@ -105,14 +105,14 @@ describe("DecisioningEngine:createContextProvider", () => {
     expect(contextProvider.getContext({ cool: "beans" })).toEqual({
       cool: "beans",
       events,
-      currentTimestamp: 1683286686107,
-      currentHour: 4,
-      currentMinute: 38,
-      currentYear: 2023,
-      currentMonth: 4,
-      currentDate: 5,
-      currentDay: 5,
-      pageLoadTime: 1683286686107,
+      currentTimestamp: mockedTimestamp.getTime(),
+      currentHour: mockedTimestamp.getHours(),
+      currentMinute: mockedTimestamp.getMinutes(),
+      currentYear: mockedTimestamp.getFullYear(),
+      currentMonth: mockedTimestamp.getMonth(),
+      currentDate: mockedTimestamp.getDate(),
+      currentDay: mockedTimestamp.getDay(),
+      pageLoadTime: mockedTimestamp.getTime(),
       pageVisitDuration: 0,
       browser: {
         name: "Chrome"
