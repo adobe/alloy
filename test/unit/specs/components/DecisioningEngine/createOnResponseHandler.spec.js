@@ -14,6 +14,45 @@ import createDecisionProvider from "../../../../../src/components/DecisioningEng
 import createApplyResponse from "../../../../../src/components/DecisioningEngine/createApplyResponse";
 
 describe("DecisioningEngine:createOnResponseHandler", () => {
+  const DECISION_CONTEXT = {
+    browser: {
+      name: "Chrome"
+    },
+    page: {
+      title: "My awesome website",
+      url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
+      path: "/about",
+      query: "m=1&t=5&name=jimmy",
+      fragment: "home",
+      domain: "my.web-site.net",
+      subdomain: "my",
+      topLevelDomain: "net"
+    },
+    referringPage: {
+      url: "https://stage.applookout.net/",
+      path: "/",
+      query: "",
+      fragment: "",
+      domain: "stage.applookout.net",
+      subdomain: "stage",
+      topLevelDomain: "net"
+    },
+    pageLoadTimestamp: 1683838834925,
+    currentTimestamp: 1683838834941,
+    currentDate: 11,
+    currentDay: 4,
+    currentHour: 14,
+    currentMinute: 0,
+    currentMonth: 4,
+    currentYear: 2023,
+    pageVisitDuration: 16,
+    window: {
+      height: 253,
+      width: 1706,
+      scrollY: 10,
+      scrollX: 10
+    }
+  };
   it("calls lifecycle.onDecision with propositions based on decisionContext", () => {
     const lifecycle = jasmine.createSpyObj("lifecycle", {
       onDecision: Promise.resolve()
@@ -48,10 +87,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
       })
     };
 
-    const decisionContext = {
-      color: "orange",
-      action: "lipstick"
-    };
+    const decisionContext = DECISION_CONTEXT;
 
     const responseHandler = createOnResponseHandler({
       decisionProvider,
@@ -81,17 +117,17 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                                 conditions: [
                                   {
                                     definition: {
-                                      key: "color",
+                                      key: "page.fragment",
                                       matcher: "eq",
-                                      values: ["orange", "blue"]
+                                      values: ["home", "sweet"]
                                     },
                                     type: "matcher"
                                   },
                                   {
                                     definition: {
-                                      key: "action",
+                                      key: "referringPage.domain",
                                       matcher: "eq",
-                                      values: ["lipstick"]
+                                      values: ["stage.applookout.net"]
                                     },
                                     type: "matcher"
                                   }
@@ -230,7 +266,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
       })
     };
 
-    const decisionContext = {};
+    const decisionContext = DECISION_CONTEXT;
 
     const responseHandler = createOnResponseHandler({
       decisionProvider,
@@ -382,45 +418,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
         }
       })
     };
-    const decisionContext = {
-      currentTimestamp: 1683838834941,
-      currentHour: 14,
-      currentMinute: 0,
-      currentYear: 2023,
-      currentMonth: 4,
-      currentDate: 11,
-      currentDay: 4,
-      pageLoadTime: 1683838834925,
-      pageVisitDuration: 16,
-      browser: {
-        name: "Chrome"
-      },
-      window: {
-        height: 253,
-        width: 1706,
-        scrollY: 10,
-        scrollX: 10
-      },
-      page: {
-        title: "My awesome website",
-        url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
-        path: "/about",
-        query: "m=1&t=5&name=jimmy",
-        fragment: "home",
-        domain: "my.web-site.net",
-        subdomain: "my",
-        topLevelDomain: "net"
-      },
-      referringPage: {
-        url: "https://stage.applookout.net/",
-        path: "/",
-        query: "",
-        fragment: "",
-        domain: "stage.applookout.net",
-        subdomain: "stage",
-        topLevelDomain: "net"
-      }
-    };
+    const decisionContext = DECISION_CONTEXT;
     const responseHandler = createOnResponseHandler({
       decisionProvider,
       applyResponse,
@@ -601,45 +599,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
         }
       })
     };
-    const decisionContext = {
-      currentTimestamp: 1683838834941,
-      currentHour: 14,
-      currentMinute: 0,
-      currentYear: 2023,
-      currentMonth: 4,
-      currentDate: 11,
-      currentDay: 4,
-      pageLoadTime: 1683838834925,
-      pageVisitDuration: 16,
-      browser: {
-        name: "Chrome"
-      },
-      window: {
-        height: 253,
-        width: 1706,
-        scrollY: 10,
-        scrollX: 10
-      },
-      page: {
-        title: "My awesome website",
-        url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
-        path: "/about",
-        query: "m=1&t=5&name=jimmy",
-        fragment: "home",
-        domain: "my.web-site.net",
-        subdomain: "my",
-        topLevelDomain: "net"
-      },
-      referringPage: {
-        url: "https://stage.applookout.net/",
-        path: "/",
-        query: "",
-        fragment: "",
-        domain: "stage.applookout.net",
-        subdomain: "stage",
-        topLevelDomain: "net"
-      }
-    };
+    const decisionContext = DECISION_CONTEXT;
     const responseHandler = createOnResponseHandler({
       decisionProvider,
       applyResponse,
