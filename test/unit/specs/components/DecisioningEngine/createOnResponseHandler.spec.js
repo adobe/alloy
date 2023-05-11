@@ -350,4 +350,407 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
       ]
     });
   });
+  it("calls lifecycle.onDecision with propositions based on the global context", () => {
+    const lifecycle = jasmine.createSpyObj("lifecycle", {
+      onDecision: Promise.resolve()
+    });
+
+    const decisionProvider = createDecisionProvider();
+    const applyResponse = createApplyResponse(lifecycle);
+    const event = {
+      getViewName: () => undefined,
+      getContent: () => ({
+        xdm: {
+          web: {
+            webPageDetails: {
+              viewName: "contact",
+              URL: "https://mywebsite.com"
+            },
+            webReferrer: {
+              URL: "https://google.com"
+            }
+          },
+          timestamp: new Date().toISOString(),
+          implementationDetails: {
+            name: "https://ns.adobe.com/experience/alloy",
+            version: "2.15.0",
+            environment: "browser"
+          }
+        },
+        data: {
+          moo: "woof"
+        }
+      })
+    };
+    const decisionContext = {
+      currentTimestamp: 1683838834941,
+      currentHour: 14,
+      currentMinute: 0,
+      currentYear: 2023,
+      currentMonth: 4,
+      currentDate: 11,
+      currentDay: 4,
+      pageLoadTime: 1683838834925,
+      pageVisitDuration: 16,
+      browser: {
+        name: "Chrome"
+      },
+      window: {
+        height: 253,
+        width: 1706,
+        scrollY: 10,
+        scrollX: 10
+      },
+      page: {
+        title: "My awesome website",
+        url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
+        path: "/about",
+        query: "m=1&t=5&name=jimmy",
+        fragment: "home",
+        domain: "my.web-site.net",
+        subdomain: "my",
+        topLevelDomain: "net"
+      },
+      referringPage: {
+        url: "https://stage.applookout.net/",
+        path: "/",
+        query: "",
+        fragment: "",
+        domain: "stage.applookout.net",
+        subdomain: "stage",
+        topLevelDomain: "net"
+      }
+    };
+    const responseHandler = createOnResponseHandler({
+      decisionProvider,
+      applyResponse,
+      event,
+      decisionContext
+    });
+    const response = {
+      getPayloadsByType: () => [
+        {
+          id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44afabc",
+          items: [
+            {
+              id: "79129ecf-6430-4fbd-955a-b4f1dfdaa123",
+              schema: "https://ns.adobe.com/personalization/json-ruleset-item",
+              data: {
+                content: JSON.stringify({
+                  version: 1,
+                  rules: [
+                    {
+                      condition: {
+                        definition: {
+                          conditions: [
+                            {
+                              definition: {
+                                conditions: [
+                                  {
+                                    definition: {
+                                      key: "browser.name",
+                                      matcher: "eq",
+                                      values: ["Chrome", "safari"]
+                                    },
+                                    type: "matcher"
+                                  },
+                                  {
+                                    definition: {
+                                      key: "page.domain",
+                                      matcher: "eq",
+                                      values: ["my.web-site.net"]
+                                    },
+                                    type: "matcher"
+                                  },
+                                  {
+                                    definition: {
+                                      key: "pageVisitDuration",
+                                      matcher: "gt",
+                                      values: [10]
+                                    },
+                                    type: "matcher"
+                                  }
+                                ],
+                                logic: "and"
+                              },
+                              type: "group"
+                            }
+                          ],
+                          logic: "and"
+                        },
+                        type: "group"
+                      },
+                      consequences: [
+                        {
+                          type: "item",
+                          detail: {
+                            schema:
+                              "https://ns.adobe.com/personalization/dom-action",
+                            data: {
+                              selector:
+                                "HTML > BODY > DIV.offer:eq(0) > IMG:nth-of-type(1)",
+                              type: "setAttribute",
+                              content: {
+                                src: "img/demo-marketing-offer1-exp-A.png"
+                              },
+                              prehidingSelector:
+                                "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)"
+                            },
+                            id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
+                          },
+                          id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
+                        },
+                        {
+                          type: "item",
+                          detail: {
+                            schema:
+                              "https://ns.adobe.com/personalization/dom-action",
+                            data: {
+                              selector:
+                                "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                              type: "setHtml",
+                              content: "Hello Treatment A!",
+                              prehidingSelector:
+                                "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
+                            },
+                            id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
+                          },
+                          id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
+                        }
+                      ]
+                    }
+                  ]
+                })
+              }
+            }
+          ],
+          scope: "web://target.jasonwaters.dev/aep.html"
+        }
+      ]
+    };
+
+    responseHandler({
+      response
+    });
+    expect(lifecycle.onDecision).toHaveBeenCalledWith({
+      viewName: undefined,
+      propositions: [
+        {
+          id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44afabc",
+          items: [
+            {
+              schema: "https://ns.adobe.com/personalization/dom-action",
+              data: {
+                selector: "HTML > BODY > DIV.offer:eq(0) > IMG:nth-of-type(1)",
+                type: "setAttribute",
+                content: {
+                  src: "img/demo-marketing-offer1-exp-A.png"
+                },
+                prehidingSelector:
+                  "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)"
+              },
+              id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
+            },
+            {
+              schema: "https://ns.adobe.com/personalization/dom-action",
+              data: {
+                selector:
+                  "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                type: "setHtml",
+                content: "Hello Treatment A!",
+                prehidingSelector:
+                  "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
+              },
+              id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
+            }
+          ],
+          scope: "web://target.jasonwaters.dev/aep.html"
+        }
+      ]
+    });
+  });
+  it("does not  call lifecycle.onDecision with propositions based on non matching values from the global context", () => {
+    const lifecycle = jasmine.createSpyObj("lifecycle", {
+      onDecision: Promise.resolve()
+    });
+
+    const decisionProvider = createDecisionProvider();
+    const applyResponse = createApplyResponse(lifecycle);
+    const event = {
+      getViewName: () => undefined,
+      getContent: () => ({
+        xdm: {
+          web: {
+            webPageDetails: {
+              viewName: "contact",
+              URL: "https://mywebsite.com"
+            },
+            webReferrer: {
+              URL: "https://google.com"
+            }
+          },
+          timestamp: new Date().toISOString(),
+          implementationDetails: {
+            name: "https://ns.adobe.com/experience/alloy",
+            version: "2.15.0",
+            environment: "browser"
+          }
+        },
+        data: {
+          moo: "woof"
+        }
+      })
+    };
+    const decisionContext = {
+      currentTimestamp: 1683838834941,
+      currentHour: 14,
+      currentMinute: 0,
+      currentYear: 2023,
+      currentMonth: 4,
+      currentDate: 11,
+      currentDay: 4,
+      pageLoadTime: 1683838834925,
+      pageVisitDuration: 16,
+      browser: {
+        name: "Chrome"
+      },
+      window: {
+        height: 253,
+        width: 1706,
+        scrollY: 10,
+        scrollX: 10
+      },
+      page: {
+        title: "My awesome website",
+        url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
+        path: "/about",
+        query: "m=1&t=5&name=jimmy",
+        fragment: "home",
+        domain: "my.web-site.net",
+        subdomain: "my",
+        topLevelDomain: "net"
+      },
+      referringPage: {
+        url: "https://stage.applookout.net/",
+        path: "/",
+        query: "",
+        fragment: "",
+        domain: "stage.applookout.net",
+        subdomain: "stage",
+        topLevelDomain: "net"
+      }
+    };
+    const responseHandler = createOnResponseHandler({
+      decisionProvider,
+      applyResponse,
+      event,
+      decisionContext
+    });
+    const response = {
+      getPayloadsByType: () => [
+        {
+          id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44afabc",
+          items: [
+            {
+              id: "79129ecf-6430-4fbd-955a-b4f1dfdaa123",
+              schema: "https://ns.adobe.com/personalization/json-ruleset-item",
+              data: {
+                content: JSON.stringify({
+                  version: 1,
+                  rules: [
+                    {
+                      condition: {
+                        definition: {
+                          conditions: [
+                            {
+                              definition: {
+                                conditions: [
+                                  {
+                                    definition: {
+                                      key: "browser.name",
+                                      matcher: "eq",
+                                      values: ["Chrome", "safari"]
+                                    },
+                                    type: "matcher"
+                                  },
+                                  {
+                                    definition: {
+                                      key: "page.domain",
+                                      matcher: "eq",
+                                      values: ["my.web-site.net"]
+                                    },
+                                    type: "matcher"
+                                  },
+                                  {
+                                    definition: {
+                                      key: "pageVisitDuration",
+                                      matcher: "gt",
+                                      values: [100]
+                                    },
+                                    type: "matcher"
+                                  }
+                                ],
+                                logic: "and"
+                              },
+                              type: "group"
+                            }
+                          ],
+                          logic: "and"
+                        },
+                        type: "group"
+                      },
+                      consequences: [
+                        {
+                          type: "item",
+                          detail: {
+                            schema:
+                              "https://ns.adobe.com/personalization/dom-action",
+                            data: {
+                              selector:
+                                "HTML > BODY > DIV.offer:eq(0) > IMG:nth-of-type(1)",
+                              type: "setAttribute",
+                              content: {
+                                src: "img/demo-marketing-offer1-exp-A.png"
+                              },
+                              prehidingSelector:
+                                "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)"
+                            },
+                            id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
+                          },
+                          id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
+                        },
+                        {
+                          type: "item",
+                          detail: {
+                            schema:
+                              "https://ns.adobe.com/personalization/dom-action",
+                            data: {
+                              selector:
+                                "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                              type: "setHtml",
+                              content: "Hello Treatment A!",
+                              prehidingSelector:
+                                "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
+                            },
+                            id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
+                          },
+                          id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
+                        }
+                      ]
+                    }
+                  ]
+                })
+              }
+            }
+          ],
+          scope: "web://target.jasonwaters.dev/aep.html"
+        }
+      ]
+    };
+
+    responseHandler({
+      response
+    });
+    expect(lifecycle.onDecision).not.toHaveBeenCalled();
+  });
 });
