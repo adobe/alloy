@@ -12,52 +12,49 @@ governing permissions and limitations under the License.
 import getBrowser from "../../utils/getBrowser";
 import parseUrl from "../../utils/parseUrl";
 
-export default ({ eventRegistry }, currentWindow) => {
-  const initialTimeStamp = new Date();
-  const getPageLoadTime = () => {
-    const pageLoadTime = initialTimeStamp.getTime();
-    return {
-      pageLoadTime
-    };
-  };
+export default ({ eventRegistry, window }) => {
+  const pageLoadTimestamp = new Date().getTime();
   const getBrowserContext = () => {
     return {
-      name: getBrowser(currentWindow)
+      name: getBrowser(window)
     };
   };
   const getPageContext = () => {
     return {
-      title: currentWindow.title,
-      url: currentWindow.url,
-      ...parseUrl(currentWindow.url)
+      title: window.title,
+      url: window.url,
+      ...parseUrl(window.url)
     };
   };
 
   const getReferrerContext = () => {
     return {
-      url: currentWindow.referrer,
-      ...parseUrl(currentWindow.referrer)
+      url: window.referrer,
+      ...parseUrl(window.referrer)
     };
   };
   const getTimeContext = () => {
-    const newTimeStamp = new Date();
+    const now = new Date();
+    const currentTimestamp = now.getTime();
+
     return {
-      currentTimestamp: newTimeStamp.getTime(),
-      currentDate: newTimeStamp.getDate(),
-      currentDay: newTimeStamp.getDay(),
-      currentHour: newTimeStamp.getHours(),
-      currentMinute: newTimeStamp.getMinutes(),
-      currentMonth: newTimeStamp.getMonth(),
-      currentYear: newTimeStamp.getFullYear(),
-      pageVisitDuration: newTimeStamp.getTime() - getPageLoadTime().pageLoadTime
+      pageLoadTimestamp,
+      currentTimestamp,
+      currentDate: now.getDate(),
+      currentDay: now.getDay(),
+      currentHour: now.getHours(),
+      currentMinute: now.getMinutes(),
+      currentMonth: now.getMonth(),
+      currentYear: now.getFullYear(),
+      pageVisitDuration: currentTimestamp - pageLoadTimestamp
     };
   };
 
   const getWindowContext = () => {
-    const height = currentWindow.height;
-    const width = currentWindow.width;
-    const scrollY = currentWindow.scrollY;
-    const scrollX = currentWindow.scrollX;
+    const height = window.height;
+    const width = window.width;
+    const scrollY = window.scrollY;
+    const scrollX = window.scrollX;
     return {
       height,
       width,
@@ -66,17 +63,24 @@ export default ({ eventRegistry }, currentWindow) => {
     };
   };
 
-  const getContext = addedContext => {
-    getTimeContext();
-    getWindowContext();
+  const coreGlobalContext = {
+    browser: getBrowserContext(),
+    page: getPageContext(),
+    referringPage: getReferrerContext()
+  };
+
+  const getGlobalContext = () => {
     return {
-      ...addedContext,
+      ...coreGlobalContext,
       ...getTimeContext(),
-      ...getPageLoadTime(),
-      browser: getBrowserContext(),
-      page: getPageContext(),
-      referringPage: getReferrerContext(),
-      window: getWindowContext(),
+      window: getWindowContext()
+    };
+  };
+
+  const getContext = addedContext => {
+    return {
+      ...getGlobalContext(),
+      ...addedContext,
       events: eventRegistry.toJSON()
     };
   };

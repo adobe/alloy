@@ -44,7 +44,7 @@ describe("DecisioningEngine:createContextProvider", () => {
   });
   it("includes provided context passed in", () => {
     eventRegistry = createEventRegistry({ storage });
-    contextProvider = createContextProvider({ eventRegistry }, window);
+    contextProvider = createContextProvider({ eventRegistry, window });
 
     expect(contextProvider.getContext({ cool: "beans" })).toEqual({
       cool: "beans",
@@ -56,7 +56,7 @@ describe("DecisioningEngine:createContextProvider", () => {
       currentMonth: mockedTimestamp.getMonth(),
       currentDate: mockedTimestamp.getDate(),
       currentDay: mockedTimestamp.getDay(),
-      pageLoadTime: mockedTimestamp.getTime(),
+      pageLoadTimestamp: mockedTimestamp.getTime(),
       pageVisitDuration: 0,
       browser: {
         name: "Chrome"
@@ -100,7 +100,7 @@ describe("DecisioningEngine:createContextProvider", () => {
     eventRegistry = {
       toJSON: () => events
     };
-    contextProvider = createContextProvider({ eventRegistry }, window);
+    contextProvider = createContextProvider({ eventRegistry, window });
 
     expect(contextProvider.getContext({ cool: "beans" })).toEqual({
       cool: "beans",
@@ -112,7 +112,7 @@ describe("DecisioningEngine:createContextProvider", () => {
       currentMonth: mockedTimestamp.getMonth(),
       currentDate: mockedTimestamp.getDate(),
       currentDay: mockedTimestamp.getDay(),
-      pageLoadTime: mockedTimestamp.getTime(),
+      pageLoadTimestamp: mockedTimestamp.getTime(),
       pageVisitDuration: 0,
       browser: {
         name: "Chrome"

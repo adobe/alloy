@@ -15,21 +15,16 @@ import createDecisionProvider from "./createDecisionProvider";
 import createApplyResponse from "./createApplyResponse";
 import createEventRegistry from "./createEventRegistry";
 import createContextProvider from "./createContextProvider";
-import injectWindow from "./injectWindow";
 
 const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
   const { orgId } = config;
   const storage = createNamespacedStorage(
     `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`
   );
-  const currentWindow = injectWindow(window);
   const eventRegistry = createEventRegistry({ storage: storage.persistent });
   let applyResponse = createApplyResponse();
   const decisionProvider = createDecisionProvider();
-  const contextProvider = createContextProvider(
-    { eventRegistry },
-    currentWindow
-  );
+  const contextProvider = createContextProvider({ eventRegistry, window });
 
   return {
     lifecycle: {

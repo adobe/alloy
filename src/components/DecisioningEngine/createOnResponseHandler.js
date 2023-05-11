@@ -19,8 +19,7 @@ export default ({
   decisionContext
 }) => {
   const context = {
-    ...flattenObject(event.getContent()),
-    ...flattenObject(decisionContext)
+    ...flattenObject({ ...event.getContent(), ...decisionContext })
   };
 
   const viewName = event.getViewName();
