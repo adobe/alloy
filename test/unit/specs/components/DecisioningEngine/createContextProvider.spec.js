@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 import createContextProvider from "../../../../../src/components/DecisioningEngine/createContextProvider";
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
-// TODO:  write more comprehensive tests for all the scenarios...in progress
+
 describe("DecisioningEngine:createContextProvider", () => {
   let contextProvider;
   let eventRegistry;
@@ -41,6 +41,62 @@ describe("DecisioningEngine:createContextProvider", () => {
 
   afterEach(() => {
     jasmine.clock().uninstall();
+  });
+  it("returns page context", () => {
+    eventRegistry = createEventRegistry({ storage });
+    contextProvider = createContextProvider({ eventRegistry, window });
+
+    expect(contextProvider.getContext().page).toEqual({
+      title: "My awesome website",
+      url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
+      path: "/about",
+      query: "m=1&t=5&name=jimmy",
+      fragment: "home",
+      domain: "my.web-site.net",
+      subdomain: "my",
+      topLevelDomain: "net"
+    });
+  });
+  it("returns referring page context", () => {
+    eventRegistry = createEventRegistry({ storage });
+    contextProvider = createContextProvider({ eventRegistry, window });
+
+    expect(contextProvider.getContext().referringPage).toEqual({
+      url: "https://stage.applookout.net/",
+      path: "/",
+      query: "",
+      fragment: "",
+      domain: "stage.applookout.net",
+      subdomain: "stage",
+      topLevelDomain: "net"
+    });
+  });
+  it("returns page context", () => {
+    eventRegistry = createEventRegistry({ storage });
+    contextProvider = createContextProvider({ eventRegistry, window });
+
+    expect(contextProvider.getContext().page).toEqual({
+      title: "My awesome website",
+      url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
+      path: "/about",
+      query: "m=1&t=5&name=jimmy",
+      fragment: "home",
+      domain: "my.web-site.net",
+      subdomain: "my",
+      topLevelDomain: "net"
+    });
+  });
+
+  it("returns windows context", () => {
+    eventRegistry = createEventRegistry({ storage });
+    contextProvider = createContextProvider({ eventRegistry, window });
+
+    expect(contextProvider.getContext().window).toEqual({
+      height: 100,
+      width: 100,
+      scrollY: 10,
+      scrollX: 10
+    });
   });
   it("includes provided context passed in", () => {
     eventRegistry = createEventRegistry({ storage });
