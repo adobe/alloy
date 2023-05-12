@@ -71,22 +71,14 @@ describe("DecisioningEngine:createContextProvider", () => {
       topLevelDomain: "net"
     });
   });
-  it("returns page context", () => {
+  it("returns browser context", () => {
     eventRegistry = createEventRegistry({ storage });
     contextProvider = createContextProvider({ eventRegistry, window });
 
-    expect(contextProvider.getContext().page).toEqual({
-      title: "My awesome website",
-      url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
-      path: "/about",
-      query: "m=1&t=5&name=jimmy",
-      fragment: "home",
-      domain: "my.web-site.net",
-      subdomain: "my",
-      topLevelDomain: "net"
+    expect(contextProvider.getContext().browser).toEqual({
+      name: "Chrome"
     });
   });
-
   it("returns windows context", () => {
     eventRegistry = createEventRegistry({ storage });
     contextProvider = createContextProvider({ eventRegistry, window });
