@@ -15,7 +15,15 @@ import injectProcessDestinations from "./injectProcessDestinations";
 import injectProcessResponse from "./injectProcessResponse";
 
 const createAudiences = ({ logger, fireReferrerHideableImage }) => {
-  const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
+  const cookieJarWithEncoding = cookieJar.withConverter({
+    write: value => {
+      return encodeURIComponent(value);
+    }
+  });
+  const loggingCookieJar = createLoggingCookieJar({
+    logger,
+    cookieJar: cookieJarWithEncoding
+  });
 
   const processDestinations = injectProcessDestinations({
     fireReferrerHideableImage,
