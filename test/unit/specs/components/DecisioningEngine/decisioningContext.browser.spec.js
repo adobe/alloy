@@ -135,7 +135,7 @@ describe("DecisioningEngine:globalContext:browser", () => {
       definition: {
         key: "browser.name",
         matcher: "eq",
-        values: ["chrome", "safari"]
+        values: ["chrome"]
       },
       type: "matcher"
     });

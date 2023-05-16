@@ -23,6 +23,7 @@ import Links from "./Links";
 import EventMerge from "./EventMerge";
 import LargePayload from "./LargePayload";
 import OrgTwo from "./OrgTwo";
+import DecisionEngine from "./DecisionEngine";
 import DualTag from "./DualTag";
 import RedirectOffers from "./RedirectOffers";
 import RedirectedNewPage from "./RedirectedNewPage";
@@ -96,6 +97,9 @@ function BasicExample() {
             <li>
               <a href="/configOverrides">Config Overrides</a>
             </li>
+            <li>
+              <Link to="/decisionEngine">Decisioning Engine</Link>
+            </li>
           </ul>
           <hr />
 
@@ -125,6 +129,7 @@ function BasicExample() {
           <Route path="/redirectedNewPage" component={RedirectedNewPage} />
           <Route path="/identity" component={Identity} />
           <Route path="/configOverrides" component={ConfigOverrides} />
+          <Route path="/decisionEngine" component={DecisionEngine} />
         </div>
       </Router>
       <AlloyVersion />
