@@ -135,7 +135,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
       definition: {
         key: "referringPage.domain",
         matcher: "eq",
-        values: ["business.adobe.com"]
+        values: ["business.adobe.com", "go.adobe.com"]
       },
       type: "matcher"
     });
@@ -157,7 +157,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
         definition: {
           key: "referringPage.domain",
           matcher: "co",
-          values: ["business.adobe.com"]
+          values: ["www.google.com", "www.bing.com"]
         },
         type: "matcher"
       }
@@ -175,7 +175,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
       definition: {
         key: "referringPage.subdomain",
         matcher: "co",
-        values: ["business"]
+        values: ["business", "bing"]
       },
       type: "matcher"
     });
@@ -197,7 +197,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
         definition: {
           key: "referringPage.subdomain",
           matcher: "eq",
-          values: ["business"]
+          values: ["business", "bing"]
         },
         type: "matcher"
       }
@@ -215,7 +215,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
       definition: {
         key: "referringPage.topLevelDomain",
         matcher: "eq",
-        values: ["com"]
+        values: ["com", "net"]
       },
       type: "matcher"
     });
@@ -237,7 +237,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
         definition: {
           key: "referringPage.topLevelDomain",
           matcher: "eq",
-          values: ["com"]
+          values: ["com", "net"]
         },
         type: "matcher"
       }
@@ -255,7 +255,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
       definition: {
         key: "referringPage.path",
         matcher: "co",
-        values: ["/search"]
+        values: ["/search", "/contact"]
       },
       type: "matcher"
     });
@@ -277,7 +277,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
         definition: {
           key: "referringPage.path",
           matcher: "co",
-          values: ["/search"]
+          values: ["/search", "/contact"]
         },
         type: "matcher"
       }
@@ -295,7 +295,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
       definition: {
         key: "referringPage.query",
         matcher: "co",
-        values: ["q=adobe+journey+optimizer&oq=adobe+journey+optimizer"]
+        values: ["q=adobe+journey+optimizer&oq=adobe+journey+optimizer", "m=1"]
       },
       type: "matcher"
     });
@@ -317,7 +317,10 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
         definition: {
           key: "referringPage.query",
           matcher: "co",
-          values: ["q=adobe+journey+optimizer&oq=adobe+journey+optimizer"]
+          values: [
+            "q=adobe+journey+optimizer&oq=adobe+journey+optimizer",
+            "m=2"
+          ]
         },
         type: "matcher"
       }
@@ -335,7 +338,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
       definition: {
         key: "referringPage.fragment",
         matcher: "co",
-        values: ["home"]
+        values: ["home", "about"]
       },
       type: "matcher"
     });
@@ -356,7 +359,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
         definition: {
           key: "referringPage.fragment",
           matcher: "co",
-          values: ["home"]
+          values: ["home", "contact"]
         },
         type: "matcher"
       }
