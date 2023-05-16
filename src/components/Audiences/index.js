@@ -15,6 +15,7 @@ import injectProcessDestinations from "./injectProcessDestinations";
 import injectProcessResponse from "./injectProcessResponse";
 
 const createAudiences = ({ logger, fireReferrerHideableImage }) => {
+  // we override the js-cookie converter to encode the cookie value similar on how it is in DIL (PDCL-10238)
   const cookieJarWithEncoding = cookieJar.withConverter({
     write: value => {
       return encodeURIComponent(value);
