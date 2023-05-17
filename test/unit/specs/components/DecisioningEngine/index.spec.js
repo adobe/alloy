@@ -33,8 +33,8 @@ describe("createDecisioningEngine:commands:renderDecisions", () => {
         response: mockRulesetResponseWithCondition({
           definition: {
             key: "browser.name",
-            matcher: "eq",
-            values: ["chrome"]
+            matcher: "nc",
+            values: ["sampleBrowser"]
           },
           type: "matcher"
         })
