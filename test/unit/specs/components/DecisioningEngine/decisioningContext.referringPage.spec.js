@@ -1,144 +1,31 @@
-import createOnResponseHandler from "../../../../../src/components/DecisioningEngine/createOnResponseHandler";
-import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider";
-import createContextProvider from "../../../../../src/components/DecisioningEngine/createContextProvider";
-import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
-
-const mockWindow = ({
-  title = "Adobe Journey Optimizer",
-  referrer = "https://business.adobe.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer#home",
-  url = "https://pro.mywebsite.org:8080/about?m=1&t=5&name=jimmy#home",
-  width = 100,
-  height = 100,
-  scrollX = 0,
-  scrollY = 10,
-  userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36"
-}) => ({
-  title,
-  referrer,
-  url,
-  width,
-  height,
-  scrollX,
-  scrollY,
-  navigator: {
-    userAgent
-  }
-});
-
-const proposition = {
-  id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
-  items: [
-    {
-      schema: "https://ns.adobe.com/personalization/mock-action",
-      data: {
-        hello: "kitty"
-      },
-      id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
-    }
-  ],
-  scope: "web://mywebsite.com"
-};
-
-const payloadWithCondition = condition => {
-  return {
-    id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
-    items: [
-      {
-        id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
-        schema: "https://ns.adobe.com/personalization/json-ruleset-item",
-        data: {
-          content: JSON.stringify({
-            version: 1,
-            rules: [
-              {
-                condition: {
-                  definition: {
-                    conditions: [condition],
-                    logic: "and"
-                  },
-                  type: "group"
-                },
-                consequences: [
-                  {
-                    type: "item",
-                    detail: {
-                      schema:
-                        "https://ns.adobe.com/personalization/mock-action",
-                      data: {
-                        hello: "kitty"
-                      },
-                      id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
-                    },
-                    id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
-                  }
-                ]
-              }
-            ]
-          })
-        }
-      }
-    ],
-    scope: "web://mywebsite.com"
-  };
-};
-
-const mockRulesetResponseWithCondition = condition => {
-  return {
-    getPayloadsByType: () => [
-      payloadWithCondition({
-        definition: {
-          conditions: [condition],
-          logic: "and"
-        },
-        type: "group"
-      })
-    ]
-  };
-};
+import {
+  mockWindow,
+  setupResponseHandler,
+  proposition
+} from "./contextTestUtils";
 
 describe("DecisioningEngine:globalContext:referringPage", () => {
-  let storage;
-  let eventRegistry;
-  let decisionProvider;
-  let onResponseHandler;
   let applyResponse;
-
-  const mockEvent = { getContent: () => ({}), getViewName: () => undefined };
-
-  const setupResponseHandler = (window, condition) => {
-    const contextProvider = createContextProvider({
-      eventRegistry,
-      window
-    });
-
-    onResponseHandler = createOnResponseHandler({
-      decisionProvider,
-      applyResponse,
-      event: mockEvent,
-      decisionContext: contextProvider.getContext()
-    });
-
-    onResponseHandler({
-      response: mockRulesetResponseWithCondition(condition)
-    });
-  };
-
   beforeEach(() => {
-    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
-    eventRegistry = createEventRegistry({ storage });
-    decisionProvider = createDecisionProvider();
     applyResponse = jasmine.createSpy();
   });
 
   it("satisfies rule based on matched domain", () => {
-    setupResponseHandler(mockWindow({}), {
-      definition: {
-        key: "referringPage.domain",
-        matcher: "eq",
-        values: ["business.adobe.com"]
-      },
-      type: "matcher"
-    });
+    setupResponseHandler(
+      applyResponse,
+      mockWindow({
+        referrer:
+          "https://business.adobe.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer#home"
+      }),
+      {
+        definition: {
+          key: "referringPage.domain",
+          matcher: "eq",
+          values: ["business.adobe.com"]
+        },
+        type: "matcher"
+      }
+    );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
@@ -149,6 +36,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
 
   it("does not satisfy rule due to unmatched domain", () => {
     setupResponseHandler(
+      applyResponse,
       mockWindow({
         referrer:
           "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home"
@@ -171,14 +59,21 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
   });
 
   it("satisfies rule based on matched referringPage subdomain", () => {
-    setupResponseHandler(mockWindow({}), {
-      definition: {
-        key: "referringPage.subdomain",
-        matcher: "co",
-        values: ["business"]
-      },
-      type: "matcher"
-    });
+    setupResponseHandler(
+      applyResponse,
+      mockWindow({
+        referrer:
+          "https://business.adobe.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer#home"
+      }),
+      {
+        definition: {
+          key: "referringPage.subdomain",
+          matcher: "co",
+          values: ["business"]
+        },
+        type: "matcher"
+      }
+    );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
@@ -189,6 +84,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
 
   it("does not satisfy rule due to unmatched subdomain", () => {
     setupResponseHandler(
+      applyResponse,
       mockWindow({
         referrer:
           "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home"
@@ -211,7 +107,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
   });
 
   it("satisfies rule based on matched referringPage topLevelDomain", () => {
-    setupResponseHandler(mockWindow({}), {
+    setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
         key: "referringPage.topLevelDomain",
         matcher: "eq",
@@ -229,6 +125,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
 
   it("does not satisfy rule due to unmatched topLevelDomain", () => {
     setupResponseHandler(
+      applyResponse,
       mockWindow({
         referrer:
           "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home"
@@ -251,7 +148,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
   });
 
   it("satisfies rule based on matched referringPage path", () => {
-    setupResponseHandler(mockWindow({}), {
+    setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
         key: "referringPage.path",
         matcher: "co",
@@ -269,6 +166,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
 
   it("does not satisfy rule due to unmatched referringPage path", () => {
     setupResponseHandler(
+      applyResponse,
       mockWindow({
         referrer:
           "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home"
@@ -291,7 +189,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
   });
 
   it("satisfies rule based on matched referringPage query", () => {
-    setupResponseHandler(mockWindow({}), {
+    setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
         key: "referringPage.query",
         matcher: "co",
@@ -309,6 +207,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
 
   it("does not satisfy rule due to unmatched referringPage query", () => {
     setupResponseHandler(
+      applyResponse,
       mockWindow({
         referrer:
           "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home"
@@ -331,14 +230,21 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
   });
 
   it("satisfies rule based on matched referringPage fragment", () => {
-    setupResponseHandler(mockWindow({}), {
-      definition: {
-        key: "referringPage.fragment",
-        matcher: "co",
-        values: ["home"]
-      },
-      type: "matcher"
-    });
+    setupResponseHandler(
+      applyResponse,
+      mockWindow({
+        referrer:
+          "https://business.adobe.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer#home"
+      }),
+      {
+        definition: {
+          key: "referringPage.fragment",
+          matcher: "co",
+          values: ["home"]
+        },
+        type: "matcher"
+      }
+    );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
@@ -349,6 +255,7 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
 
   it("does not satisfy rule based on unmatched referringPage fragment", () => {
     setupResponseHandler(
+      applyResponse,
       mockWindow({
         referrer: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#about"
       }),
