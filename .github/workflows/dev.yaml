@@ -113,10 +113,10 @@ jobs:
           npm install -g saucectl
           saucectl --version
 
-      - name: Install TestCafe
-        run: |
-          npm install -g testcafe
-          testcafe --version
+#      - name: Install TestCafe
+#        run: |
+#          npm install -g testcafe
+#          testcafe --version
 
       - name: Run functional tests
         run: saucectl run --config ./.sauce/dev.yml
