@@ -40,7 +40,7 @@ test("C12412 Response should return Cookie destinations if turned on in Blackbir
   await alloy.configure(compose(orgMainConfigMain, debugEnabled));
   await alloy.sendEvent();
 
-  await t.expect(getDocumentCookie()).contains("C12412=test=C12412");
+  await t.expect(getDocumentCookie()).contains("C12412=test%3DC12412");
 
   const logs = await logger.info.getMessagesSinceReset();
   const setCookieAttributes = logs
