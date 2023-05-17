@@ -23,7 +23,7 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
     `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`
   );
   const eventRegistry = createEventRegistry({ storage: storage.persistent });
-  let applyResponse = createApplyResponse();
+  let applyResponse;
   const decisionProvider = createDecisionProvider();
   const contextProvider = createContextProvider({ eventRegistry, window });
 
@@ -58,7 +58,7 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
         run: decisionContext =>
           applyResponse({
             propositions: decisionProvider.evaluate(
-              contextProvider.getContext(flattenObject(decisionContext))
+              flattenObject(contextProvider.getContext(decisionContext))
             )
           })
       }
