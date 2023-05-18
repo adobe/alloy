@@ -22,6 +22,8 @@ describe("createDecisioningEngine:commands:renderDecisions", () => {
   let decisioningEngine;
   beforeEach(() => {
     const config = { orgId: "exampleOrgId" };
+    window.referrer =
+      "https://www.google.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer";
     const createNamespacedStorage = injectStorage(window);
     decisioningEngine = createDecisioningEngine({
       config,
@@ -32,9 +34,9 @@ describe("createDecisioningEngine:commands:renderDecisions", () => {
       onResponse({
         response: mockRulesetResponseWithCondition({
           definition: {
-            key: "browser.name",
-            matcher: "nc",
-            values: ["sampleBrowser"]
+            key: "referringPage.path",
+            matcher: "eq",
+            values: ["/search"]
           },
           type: "matcher"
         })
@@ -43,7 +45,7 @@ describe("createDecisioningEngine:commands:renderDecisions", () => {
     decisioningEngine.lifecycle.onComponentsRegistered(() => {});
   });
 
-  it("should run the renderDecisions command and returns evaluated propositions", () => {
+  it("should run the renderDecisions command and satisfy the rule based on global context", () => {
     decisioningEngine.lifecycle.onBeforeEvent({
       event: mockEvent,
       renderDecisions: true,
