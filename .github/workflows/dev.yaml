@@ -60,7 +60,7 @@ jobs:
 
   alloy-int-e2e:
     name: "Dev Integration e2e"
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     needs: store-sauce-configs
     timeout-minutes: 60
     steps:
