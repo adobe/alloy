@@ -60,7 +60,7 @@ jobs:
 
   alloy-int-e2e:
     name: "Dev Integration e2e"
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     needs: store-sauce-configs
     timeout-minutes: 60
     steps:
@@ -105,17 +105,14 @@ jobs:
           name: sauce-ignore
           path: .sauceignore
 
-      - uses: saucelabs/saucectl-run-action@v3
+      - uses: saucelabs/saucectl-run-action@v3.0.1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          # Sauce Labs Credentials.
           sauce-username: ${{ secrets.SAUCE_USERNAME }}
           sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-
           env: |
-            ALLOY_PROD_VERSION= ${{ env.PACKAGE_VERSION }}
-            NPM_PACKAGE_VERSION= ${{ env.PACKAGE_VERSION }}
-            ALLOY_ENV= int
-
+            ALLOY_PROD_VERSION=${{ env.PACKAGE_VERSION }}
+            NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
+            ALLOY_ENV=int
           config-file: ./.sauce/dev.yml

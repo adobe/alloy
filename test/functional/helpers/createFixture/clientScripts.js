@@ -244,12 +244,8 @@ const injectAlloyDuringTestByEnvironment = {
  * Retrieves a clientScripts array that can be provided to a TestCafe fixture,
  * which will inject script tags into the <head> of the test page.
  */
-// export const getFixtureClientScripts =
-//   getFixtureClientScriptsByEnvironment[alloyEnv];
-
-export const getFixtureClientScripts = options => {
-  return getFixtureClientScriptsByEnvironment[alloyEnv](options);
-};
+export const getFixtureClientScripts =
+  getFixtureClientScriptsByEnvironment[alloyEnv];
 
 /**
  * Injects the Alloy library while a test is running. This is useful if you
