@@ -19,13 +19,15 @@ env:
   ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
-  version: 1.19.0
+  version: 2.3.1
 speed: 0.05
 pageLoadTimeout: 3000
 disablePageCaching: true
 timeZone: New_York
 npm:
   dependencies:
+    - parse-uri
+    - js-cookie
     - read-cache
     - uuid
     - css.escape
