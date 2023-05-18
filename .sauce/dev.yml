@@ -24,6 +24,7 @@ disablePageCaching: true
 timeZone: New_York
 npm:
   dependencies:
+    - js-cookie
     - read-cache
     - uuid
     - css.escape
@@ -58,7 +59,6 @@ suites:
       - "test/functional/specs/**/*.js"
     excludedTestFiles:
       [
-        "test/functional/specs/Audiences/C12412.js",
         "test/functional/specs/Privacy/C1576777.js",
         "test/functional/specs/Personalization/C7638574.js",
         "test/functional/specs/Personalization/C9932846.js",
@@ -75,7 +75,6 @@ suites:
       - "test/functional/specs/**/*.js"
     excludedTestFiles:
       [
-        "test/functional/specs/Audiences/C12412.js",
         "test/functional/specs/Privacy/C1576777.js",
         "test/functional/specs/Personalization/C7638574.js",
         "test/functional/specs/Personalization/C9932846.js",
@@ -96,7 +95,6 @@ suites:
       - "test/functional/specs/**/*.js"
     excludedTestFiles:
       [
-        "test/functional/specs/Audiences/C12412.js",
         "test/functional/specs/LibraryInfo/C2589.js",
         "test/functional/specs/Privacy/C1576777.js",
         "test/functional/specs/Personalization/C7638574.js",
