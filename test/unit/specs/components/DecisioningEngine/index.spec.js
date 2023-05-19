@@ -30,6 +30,10 @@ describe("createDecisioningEngine:commands:renderDecisions", () => {
       createNamespacedStorage
     });
     mockEvent = { getContent: () => ({}), getViewName: () => undefined };
+    decisioningEngine.lifecycle.onComponentsRegistered(() => {});
+  });
+
+  it("should run the renderDecisions command and satisfy the rule based on global context", () => {
     onResponseHandler = onResponse => {
       onResponse({
         response: mockRulesetResponseWithCondition({
@@ -42,10 +46,6 @@ describe("createDecisioningEngine:commands:renderDecisions", () => {
         })
       });
     };
-    decisioningEngine.lifecycle.onComponentsRegistered(() => {});
-  });
-
-  it("should run the renderDecisions command and satisfy the rule based on global context", () => {
     decisioningEngine.lifecycle.onBeforeEvent({
       event: mockEvent,
       renderDecisions: true,
@@ -55,6 +55,31 @@ describe("createDecisioningEngine:commands:renderDecisions", () => {
     const result = decisioningEngine.commands.renderDecisions.run({});
     expect(result).toEqual({
       propositions: [proposition]
+    });
+  });
+
+  it("should run the renderDecisions command and does not satisfy rule due to unmatched global context", () => {
+    onResponseHandler = onResponse => {
+      onResponse({
+        response: mockRulesetResponseWithCondition({
+          definition: {
+            key: "referringPage.path",
+            matcher: "eq",
+            values: ["/about"]
+          },
+          type: "matcher"
+        })
+      });
+    };
+    decisioningEngine.lifecycle.onBeforeEvent({
+      event: mockEvent,
+      renderDecisions: true,
+      decisionContext: {},
+      onResponse: onResponseHandler
+    });
+    const result = decisioningEngine.commands.renderDecisions.run({});
+    expect(result).toEqual({
+      propositions: []
     });
   });
 
