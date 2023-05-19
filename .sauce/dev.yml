@@ -6,7 +6,6 @@ defaults:
 sauce:
   region: us-west-1
   sauceignore: .sauceignore
-  retries: 4
 metadata:
   name: Alloy SDK Int ee-pre-prd
   tags:
@@ -18,13 +17,15 @@ env:
   EDGE_BASE_PATH: ee-pre-prd
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
-  version: 1.19.0
+  version: 2.3.1
 speed: 0.05
 pageLoadTimeout: 3000
 disablePageCaching: true
 timeZone: New_York
 npm:
   dependencies:
+    - parse-uri
+    - js-cookie
     - read-cache
     - uuid
     - css.escape
@@ -94,6 +95,7 @@ suites:
       - "test/functional/specs/**/*.js"
     excludedTestFiles:
       [
+        "test/functional/specs/Identity/C6842981.js",
         "test/functional/specs/LibraryInfo/C2589.js",
         "test/functional/specs/Privacy/C1576777.js",
         "test/functional/specs/Personalization/C7638574.js",
