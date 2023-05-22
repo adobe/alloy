@@ -29,6 +29,19 @@ export default () => {
   };
 
   const event = {
+    getContent() {
+      const currentContent = JSON.parse(JSON.stringify(content));
+
+      if (userXdm) {
+        deepAssign(currentContent, { xdm: userXdm });
+      }
+
+      if (userData) {
+        deepAssign(currentContent, { data: userData });
+      }
+
+      return currentContent;
+    },
     setUserXdm(value) {
       throwIfEventFinalized("setUserXdm");
       userXdm = value;

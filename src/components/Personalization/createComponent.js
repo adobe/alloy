@@ -19,6 +19,7 @@ export default ({
   getPageLocation,
   logger,
   fetchDataHandler,
+  autoRenderingHandler,
   viewChangeHandler,
   onClickHandler,
   isAuthoringModeEnabled,
@@ -30,6 +31,13 @@ export default ({
 }) => {
   return {
     lifecycle: {
+      onDecision({ viewName, propositions }) {
+        autoRenderingHandler({
+          viewName,
+          pageWideScopeDecisions: propositions,
+          nonAutoRenderableDecisions: []
+        });
+      },
       onBeforeRequest({ request }) {
         setTargetMigration(request);
         return Promise.resolve();

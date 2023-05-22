@@ -107,6 +107,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     getPageLocation,
     logger,
     fetchDataHandler,
+    autoRenderingHandler,
     viewChangeHandler,
     onClickHandler,
     isAuthoringModeEnabled,
