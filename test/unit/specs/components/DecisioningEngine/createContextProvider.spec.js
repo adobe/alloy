@@ -15,20 +15,125 @@ import createEventRegistry from "../../../../../src/components/DecisioningEngine
 describe("DecisioningEngine:createContextProvider", () => {
   let contextProvider;
   let eventRegistry;
-
   let storage;
+  let window;
+  let mockedTimestamp;
 
   beforeEach(() => {
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
+    window = {
+      title: "My awesome website",
+      referrer: "https://stage.applookout.net/",
+      url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
+      width: 100,
+      height: 100,
+      scrollX: 10,
+      scrollY: 10,
+      navigator: {
+        userAgent:
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36"
+      }
+    };
+    mockedTimestamp = new Date(Date.UTC(2023, 4, 11, 12, 34, 56));
+    jasmine.clock().install();
+    jasmine.clock().mockDate(mockedTimestamp);
   });
 
+  afterEach(() => {
+    jasmine.clock().uninstall();
+  });
+  it("returns page context", () => {
+    eventRegistry = createEventRegistry({ storage });
+    contextProvider = createContextProvider({ eventRegistry, window });
+
+    expect(contextProvider.getContext().page).toEqual({
+      title: "My awesome website",
+      url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
+      path: "/about",
+      query: "m=1&t=5&name=jimmy",
+      fragment: "home",
+      domain: "my.web-site.net",
+      subdomain: "my",
+      topLevelDomain: "net"
+    });
+  });
+  it("returns referring page context", () => {
+    eventRegistry = createEventRegistry({ storage });
+    contextProvider = createContextProvider({ eventRegistry, window });
+
+    expect(contextProvider.getContext().referringPage).toEqual({
+      url: "https://stage.applookout.net/",
+      path: "/",
+      query: "",
+      fragment: "",
+      domain: "stage.applookout.net",
+      subdomain: "stage",
+      topLevelDomain: "net"
+    });
+  });
+  it("returns browser context", () => {
+    eventRegistry = createEventRegistry({ storage });
+    contextProvider = createContextProvider({ eventRegistry, window });
+
+    expect(contextProvider.getContext().browser).toEqual({
+      name: "Chrome"
+    });
+  });
+  it("returns windows context", () => {
+    eventRegistry = createEventRegistry({ storage });
+    contextProvider = createContextProvider({ eventRegistry, window });
+
+    expect(contextProvider.getContext().window).toEqual({
+      height: 100,
+      width: 100,
+      scrollY: 10,
+      scrollX: 10
+    });
+  });
   it("includes provided context passed in", () => {
     eventRegistry = createEventRegistry({ storage });
-    contextProvider = createContextProvider({ eventRegistry });
+    contextProvider = createContextProvider({ eventRegistry, window });
 
     expect(contextProvider.getContext({ cool: "beans" })).toEqual({
       cool: "beans",
-      events: {}
+      events: {},
+      currentTimestamp: mockedTimestamp.getTime(),
+      currentHour: mockedTimestamp.getHours(),
+      currentMinute: mockedTimestamp.getMinutes(),
+      currentYear: mockedTimestamp.getFullYear(),
+      currentMonth: mockedTimestamp.getMonth(),
+      currentDate: mockedTimestamp.getDate(),
+      currentDay: mockedTimestamp.getDay(),
+      pageLoadTimestamp: mockedTimestamp.getTime(),
+      pageVisitDuration: 0,
+      browser: {
+        name: "Chrome"
+      },
+      window: {
+        height: 100,
+        width: 100,
+        scrollY: 10,
+        scrollX: 10
+      },
+      page: {
+        title: "My awesome website",
+        url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
+        path: "/about",
+        query: "m=1&t=5&name=jimmy",
+        fragment: "home",
+        domain: "my.web-site.net",
+        subdomain: "my",
+        topLevelDomain: "net"
+      },
+      referringPage: {
+        url: "https://stage.applookout.net/",
+        path: "/",
+        query: "",
+        fragment: "",
+        domain: "stage.applookout.net",
+        subdomain: "stage",
+        topLevelDomain: "net"
+      }
     });
   });
 
@@ -40,15 +145,51 @@ describe("DecisioningEngine:createContextProvider", () => {
         count: 1
       }
     };
-
     eventRegistry = {
       toJSON: () => events
     };
-    contextProvider = createContextProvider({ eventRegistry });
+    contextProvider = createContextProvider({ eventRegistry, window });
 
     expect(contextProvider.getContext({ cool: "beans" })).toEqual({
       cool: "beans",
-      events
+      events,
+      currentTimestamp: mockedTimestamp.getTime(),
+      currentHour: mockedTimestamp.getHours(),
+      currentMinute: mockedTimestamp.getMinutes(),
+      currentYear: mockedTimestamp.getFullYear(),
+      currentMonth: mockedTimestamp.getMonth(),
+      currentDate: mockedTimestamp.getDate(),
+      currentDay: mockedTimestamp.getDay(),
+      pageLoadTimestamp: mockedTimestamp.getTime(),
+      pageVisitDuration: 0,
+      browser: {
+        name: "Chrome"
+      },
+      window: {
+        height: 100,
+        width: 100,
+        scrollY: 10,
+        scrollX: 10
+      },
+      page: {
+        title: "My awesome website",
+        url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
+        path: "/about",
+        query: "m=1&t=5&name=jimmy",
+        fragment: "home",
+        domain: "my.web-site.net",
+        subdomain: "my",
+        topLevelDomain: "net"
+      },
+      referringPage: {
+        url: "https://stage.applookout.net/",
+        path: "/",
+        query: "",
+        fragment: "",
+        domain: "stage.applookout.net",
+        subdomain: "stage",
+        topLevelDomain: "net"
+      }
     });
   });
 });

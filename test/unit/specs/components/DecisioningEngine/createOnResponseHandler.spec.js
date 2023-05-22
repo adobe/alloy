@@ -54,6 +54,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
     };
 
     const responseHandler = createOnResponseHandler({
+      renderDecisions: true,
       decisionProvider,
       applyResponse,
       event,
@@ -233,6 +234,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
     const decisionContext = {};
 
     const responseHandler = createOnResponseHandler({
+      renderDecisions: true,
       decisionProvider,
       applyResponse,
       event,

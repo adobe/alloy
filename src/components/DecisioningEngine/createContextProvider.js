@@ -9,16 +9,81 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-export default ({ eventRegistry }) => {
-  const globalContext = {}; // holder of global context like current time/date, browser name/version, day of week, scroll position, time on page, etc
+import getBrowser from "../../utils/getBrowser";
+import parseUrl from "../../utils/parseUrl";
+
+export default ({ eventRegistry, window }) => {
+  const pageLoadTimestamp = new Date().getTime();
+  const getBrowserContext = () => {
+    return {
+      name: getBrowser(window)
+    };
+  };
+  const getPageContext = () => {
+    return {
+      title: window.title,
+      url: window.url,
+      ...parseUrl(window.url)
+    };
+  };
+
+  const getReferrerContext = () => {
+    return {
+      url: window.referrer,
+      ...parseUrl(window.referrer)
+    };
+  };
+  const getTimeContext = () => {
+    const now = new Date();
+    const currentTimestamp = now.getTime();
+
+    return {
+      pageLoadTimestamp,
+      currentTimestamp,
+      currentDate: now.getDate(),
+      currentDay: now.getDay(),
+      currentHour: now.getHours(),
+      currentMinute: now.getMinutes(),
+      currentMonth: now.getMonth(),
+      currentYear: now.getFullYear(),
+      pageVisitDuration: currentTimestamp - pageLoadTimestamp
+    };
+  };
+
+  const getWindowContext = () => {
+    const height = window.height;
+    const width = window.width;
+    const scrollY = window.scrollY;
+    const scrollX = window.scrollX;
+    return {
+      height,
+      width,
+      scrollY,
+      scrollX
+    };
+  };
+
+  const coreGlobalContext = {
+    browser: getBrowserContext(),
+    page: getPageContext(),
+    referringPage: getReferrerContext()
+  };
+
+  const getGlobalContext = () => {
+    return {
+      ...coreGlobalContext,
+      ...getTimeContext(),
+      window: getWindowContext()
+    };
+  };
+
   const getContext = addedContext => {
     return {
-      ...globalContext,
+      ...getGlobalContext(),
       ...addedContext,
       events: eventRegistry.toJSON()
     };
   };
-
   return {
     getContext
   };

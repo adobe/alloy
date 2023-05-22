@@ -15,17 +15,17 @@ import createDecisionProvider from "./createDecisionProvider";
 import createApplyResponse from "./createApplyResponse";
 import createEventRegistry from "./createEventRegistry";
 import createContextProvider from "./createContextProvider";
+import flattenObject from "../../utils/flattenObject";
 
 const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
   const { orgId } = config;
   const storage = createNamespacedStorage(
     `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`
   );
-
   const eventRegistry = createEventRegistry({ storage: storage.persistent });
   let applyResponse;
   const decisionProvider = createDecisionProvider();
-  const contextProvider = createContextProvider({ eventRegistry });
+  const contextProvider = createContextProvider({ eventRegistry, window });
 
   return {
     lifecycle: {
@@ -38,17 +38,15 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
         decisionContext = {},
         onResponse = noop
       }) {
-        if (renderDecisions) {
-          onResponse(
-            createOnResponseHandler({
-              decisionProvider,
-              applyResponse,
-              event,
-              decisionContext: contextProvider.getContext(decisionContext)
-            })
-          );
-          return;
-        }
+        onResponse(
+          createOnResponseHandler({
+            renderDecisions,
+            decisionProvider,
+            applyResponse,
+            event,
+            decisionContext: contextProvider.getContext(decisionContext)
+          })
+        );
 
         eventRegistry.addExperienceEdgeEvent(event);
       }
@@ -58,7 +56,7 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
         run: decisionContext =>
           applyResponse({
             propositions: decisionProvider.evaluate(
-              contextProvider.getContext(decisionContext)
+              flattenObject(contextProvider.getContext(decisionContext))
             )
           })
       }
