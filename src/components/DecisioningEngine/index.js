@@ -21,13 +21,10 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
   const storage = createNamespacedStorage(
     `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`
   );
-
   const eventRegistry = createEventRegistry({ storage: storage.persistent });
-  let applyResponse = createApplyResponse();
-  const decisionProvider = createDecisionProvider({
-    eventRegistry
-  });
-  const contextProvider = createContextProvider({ eventRegistry });
+  let applyResponse;
+  const decisionProvider = createDecisionProvider({ eventRegistry });
+  const contextProvider = createContextProvider({ eventRegistry, window });
 
   return {
     lifecycle: {
@@ -40,17 +37,15 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
         decisionContext = {},
         onResponse = noop
       }) {
-        if (renderDecisions) {
-          onResponse(
-            createOnResponseHandler({
-              decisionProvider,
-              applyResponse,
-              event,
-              decisionContext: contextProvider.getContext(decisionContext)
-            })
-          );
-          return;
-        }
+        onResponse(
+          createOnResponseHandler({
+            renderDecisions,
+            decisionProvider,
+            applyResponse,
+            event,
+            decisionContext: contextProvider.getContext(decisionContext)
+          })
+        );
 
         eventRegistry.addExperienceEdgeEvent(event);
       }

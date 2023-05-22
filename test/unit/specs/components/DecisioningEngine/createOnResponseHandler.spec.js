@@ -15,22 +15,25 @@ import createApplyResponse from "../../../../../src/components/DecisioningEngine
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
 
 describe("DecisioningEngine:createOnResponseHandler", () => {
-  let eventRegistry;
+  let lifecycle;
   let storage;
+  let eventRegistry;
+  let decisionProvider;
+  let applyResponse;
 
   beforeEach(() => {
-    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
-    eventRegistry = createEventRegistry({ storage });
-  });
-
-  it("calls lifecycle.onDecision with propositions based on decisionContext", () => {
-    const lifecycle = jasmine.createSpyObj("lifecycle", {
+    lifecycle = jasmine.createSpyObj("lifecycle", {
       onDecision: Promise.resolve()
     });
 
-    const decisionProvider = createDecisionProvider({ eventRegistry });
-    const applyResponse = createApplyResponse(lifecycle);
+    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
+    eventRegistry = createEventRegistry({ storage });
 
+    decisionProvider = createDecisionProvider({ eventRegistry });
+    applyResponse = createApplyResponse(lifecycle);
+  });
+
+  it("calls lifecycle.onDecision with propositions based on decisionContext", () => {
     const event = {
       getViewName: () => undefined,
       getContent: () => ({
@@ -63,6 +66,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
     };
 
     const responseHandler = createOnResponseHandler({
+      renderDecisions: true,
       decisionProvider,
       applyResponse,
       event,
@@ -210,13 +214,6 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
   });
 
   it("calls lifecycle.onDecision with propositions based on xdm and event data", () => {
-    const lifecycle = jasmine.createSpyObj("lifecycle", {
-      onDecision: Promise.resolve()
-    });
-
-    const decisionProvider = createDecisionProvider({ eventRegistry });
-    const applyResponse = createApplyResponse(lifecycle);
-
     const event = {
       getViewName: () => "home",
       getContent: () => ({
@@ -246,6 +243,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
     const decisionContext = {};
 
     const responseHandler = createOnResponseHandler({
+      renderDecisions: true,
       decisionProvider,
       applyResponse,
       event,
