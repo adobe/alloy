@@ -38,17 +38,15 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
         decisionContext = {},
         onResponse = noop
       }) {
-        if (renderDecisions) {
-          onResponse(
-            createOnResponseHandler({
-              decisionProvider,
-              applyResponse,
-              event,
-              decisionContext: contextProvider.getContext(decisionContext)
-            })
-          );
-          return;
-        }
+        onResponse(
+          createOnResponseHandler({
+            renderDecisions,
+            decisionProvider,
+            applyResponse,
+            event,
+            decisionContext: contextProvider.getContext(decisionContext)
+          })
+        );
 
         eventRegistry.addExperienceEdgeEvent(event);
       }

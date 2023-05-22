@@ -123,6 +123,7 @@ export const setupResponseHandler = (applyResponse, window, condition) => {
   });
 
   const onResponseHandler = createOnResponseHandler({
+    renderDecisions: true,
     decisionProvider,
     applyResponse,
     event: mockEvent,

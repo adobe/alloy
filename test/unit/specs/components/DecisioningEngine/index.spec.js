@@ -83,7 +83,44 @@ describe("createDecisioningEngine:commands:renderDecisions", () => {
     });
   });
 
-  it("should run the renderDecisions command and doesn't return propositions", () => {
+  it("should run the renderDecisions command and return propositions with renderDecisions true", () => {
+    onResponseHandler = onResponse => {
+      onResponse({
+        response: mockRulesetResponseWithCondition({
+          definition: {
+            key: "referringPage.path",
+            matcher: "eq",
+            values: ["/search"]
+          },
+          type: "matcher"
+        })
+      });
+    };
+    decisioningEngine.lifecycle.onBeforeEvent({
+      event: mockEvent,
+      renderDecisions: true,
+      decisionContext: {},
+      onResponse: onResponseHandler
+    });
+    const result = decisioningEngine.commands.renderDecisions.run({});
+    expect(result).toEqual({
+      propositions: [proposition]
+    });
+  });
+
+  it("should run the renderDecisions command returns propositions with renderDecisions false", () => {
+    onResponseHandler = onResponse => {
+      onResponse({
+        response: mockRulesetResponseWithCondition({
+          definition: {
+            key: "referringPage.path",
+            matcher: "eq",
+            values: ["/search"]
+          },
+          type: "matcher"
+        })
+      });
+    };
     decisioningEngine.lifecycle.onBeforeEvent({
       event: mockEvent,
       renderDecisions: false,
@@ -92,7 +129,7 @@ describe("createDecisioningEngine:commands:renderDecisions", () => {
     });
     const result = decisioningEngine.commands.renderDecisions.run({});
     expect(result).toEqual({
-      propositions: []
+      propositions: [proposition]
     });
   });
 });
