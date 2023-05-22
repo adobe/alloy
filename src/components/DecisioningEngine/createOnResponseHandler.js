@@ -19,10 +19,10 @@ export default ({
   event,
   decisionContext
 }) => {
-  const context = flattenObject({
-    ...event.getContent(),
+  const context = {
+    ...flattenObject(event.getContent()),
     ...decisionContext
-  });
+  };
   const viewName = event.getViewName();
 
   return ({ response }) => {

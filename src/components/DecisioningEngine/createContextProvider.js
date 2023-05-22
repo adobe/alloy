@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 import getBrowser from "../../utils/getBrowser";
 import parseUrl from "../../utils/parseUrl";
+import flattenObject from "../../utils/flattenObject";
 
 export default ({ eventRegistry, window }) => {
   const pageLoadTimestamp = new Date().getTime();
@@ -77,12 +78,13 @@ export default ({ eventRegistry, window }) => {
     };
   };
 
-  const getContext = addedContext => {
-    return {
+  const getContext = (addedContext = {}) => {
+    const context = {
       ...getGlobalContext(),
-      ...addedContext,
-      events: eventRegistry.toJSON()
+      ...addedContext
     };
+
+    return { ...flattenObject(context), events: eventRegistry.toJSON() };
   };
   return {
     getContext

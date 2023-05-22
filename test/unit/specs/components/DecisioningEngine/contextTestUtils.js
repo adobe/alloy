@@ -117,10 +117,7 @@ export const setupResponseHandler = (applyResponse, window, condition) => {
   const eventRegistry = createEventRegistry({ storage });
   const decisionProvider = createDecisionProvider();
 
-  const contextProvider = createContextProvider({
-    eventRegistry,
-    window
-  });
+  const contextProvider = createContextProvider({ eventRegistry, window });
 
   const onResponseHandler = createOnResponseHandler({
     renderDecisions: true,

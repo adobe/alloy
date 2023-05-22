@@ -15,7 +15,6 @@ import createDecisionProvider from "./createDecisionProvider";
 import createApplyResponse from "./createApplyResponse";
 import createEventRegistry from "./createEventRegistry";
 import createContextProvider from "./createContextProvider";
-import flattenObject from "../../utils/flattenObject";
 
 const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
   const { orgId } = config;
@@ -56,7 +55,7 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
         run: decisionContext =>
           applyResponse({
             propositions: decisionProvider.evaluate(
-              flattenObject(contextProvider.getContext(decisionContext))
+              contextProvider.getContext(decisionContext)
             )
           })
       }

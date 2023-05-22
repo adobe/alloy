@@ -14,14 +14,20 @@ import createDecisionProvider from "../../../../../src/components/DecisioningEng
 import createApplyResponse from "../../../../../src/components/DecisioningEngine/createApplyResponse";
 
 describe("DecisioningEngine:createOnResponseHandler", () => {
-  it("calls lifecycle.onDecision with propositions based on decisionContext", () => {
-    const lifecycle = jasmine.createSpyObj("lifecycle", {
+  let lifecycle;
+  let decisionProvider;
+  let applyResponse;
+
+  beforeEach(() => {
+    lifecycle = jasmine.createSpyObj("lifecycle", {
       onDecision: Promise.resolve()
     });
 
-    const decisionProvider = createDecisionProvider();
-    const applyResponse = createApplyResponse(lifecycle);
+    decisionProvider = createDecisionProvider();
+    applyResponse = createApplyResponse(lifecycle);
+  });
 
+  it("calls lifecycle.onDecision with propositions based on decisionContext", () => {
     const event = {
       getViewName: () => undefined,
       getContent: () => ({
@@ -198,13 +204,6 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
   });
 
   it("calls lifecycle.onDecision with propositions based on xdm and event data", () => {
-    const lifecycle = jasmine.createSpyObj("lifecycle", {
-      onDecision: Promise.resolve()
-    });
-
-    const decisionProvider = createDecisionProvider();
-    const applyResponse = createApplyResponse(lifecycle);
-
     const event = {
       getViewName: () => "home",
       getContent: () => ({

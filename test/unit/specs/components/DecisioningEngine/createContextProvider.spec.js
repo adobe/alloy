@@ -46,95 +46,68 @@ describe("DecisioningEngine:createContextProvider", () => {
     eventRegistry = createEventRegistry({ storage });
     contextProvider = createContextProvider({ eventRegistry, window });
 
-    expect(contextProvider.getContext().page).toEqual({
-      title: "My awesome website",
-      url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
-      path: "/about",
-      query: "m=1&t=5&name=jimmy",
-      fragment: "home",
-      domain: "my.web-site.net",
-      subdomain: "my",
-      topLevelDomain: "net"
-    });
+    expect(contextProvider.getContext()).toEqual(
+      jasmine.objectContaining({
+        "page.title": "My awesome website",
+        "page.url":
+          "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
+        "page.path": "/about",
+        "page.query": "m=1&t=5&name=jimmy",
+        "page.fragment": "home",
+        "page.domain": "my.web-site.net",
+        "page.subdomain": "my",
+        "page.topLevelDomain": "net"
+      })
+    );
   });
   it("returns referring page context", () => {
     eventRegistry = createEventRegistry({ storage });
     contextProvider = createContextProvider({ eventRegistry, window });
 
-    expect(contextProvider.getContext().referringPage).toEqual({
-      url: "https://stage.applookout.net/",
-      path: "/",
-      query: "",
-      fragment: "",
-      domain: "stage.applookout.net",
-      subdomain: "stage",
-      topLevelDomain: "net"
-    });
+    expect(contextProvider.getContext()).toEqual(
+      jasmine.objectContaining({
+        "referringPage.url": "https://stage.applookout.net/",
+        "referringPage.path": "/",
+        "referringPage.query": "",
+        "referringPage.fragment": "",
+        "referringPage.domain": "stage.applookout.net",
+        "referringPage.subdomain": "stage",
+        "referringPage.topLevelDomain": "net"
+      })
+    );
   });
   it("returns browser context", () => {
     eventRegistry = createEventRegistry({ storage });
     contextProvider = createContextProvider({ eventRegistry, window });
 
-    expect(contextProvider.getContext().browser).toEqual({
-      name: "Chrome"
-    });
+    expect(contextProvider.getContext()).toEqual(
+      jasmine.objectContaining({
+        "browser.name": "Chrome"
+      })
+    );
   });
   it("returns windows context", () => {
     eventRegistry = createEventRegistry({ storage });
     contextProvider = createContextProvider({ eventRegistry, window });
 
-    expect(contextProvider.getContext().window).toEqual({
-      height: 100,
-      width: 100,
-      scrollY: 10,
-      scrollX: 10
-    });
+    expect(contextProvider.getContext()).toEqual(
+      jasmine.objectContaining({
+        "window.height": 100,
+        "window.width": 100,
+        "window.scrollY": 10,
+        "window.scrollX": 10
+      })
+    );
   });
   it("includes provided context passed in", () => {
     eventRegistry = createEventRegistry({ storage });
     contextProvider = createContextProvider({ eventRegistry, window });
 
-    expect(contextProvider.getContext({ cool: "beans" })).toEqual({
-      cool: "beans",
-      events: {},
-      currentTimestamp: mockedTimestamp.getTime(),
-      currentHour: mockedTimestamp.getHours(),
-      currentMinute: mockedTimestamp.getMinutes(),
-      currentYear: mockedTimestamp.getFullYear(),
-      currentMonth: mockedTimestamp.getMonth(),
-      currentDate: mockedTimestamp.getDate(),
-      currentDay: mockedTimestamp.getDay(),
-      pageLoadTimestamp: mockedTimestamp.getTime(),
-      pageVisitDuration: 0,
-      browser: {
-        name: "Chrome"
-      },
-      window: {
-        height: 100,
-        width: 100,
-        scrollY: 10,
-        scrollX: 10
-      },
-      page: {
-        title: "My awesome website",
-        url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
-        path: "/about",
-        query: "m=1&t=5&name=jimmy",
-        fragment: "home",
-        domain: "my.web-site.net",
-        subdomain: "my",
-        topLevelDomain: "net"
-      },
-      referringPage: {
-        url: "https://stage.applookout.net/",
-        path: "/",
-        query: "",
-        fragment: "",
-        domain: "stage.applookout.net",
-        subdomain: "stage",
-        topLevelDomain: "net"
-      }
-    });
+    expect(contextProvider.getContext({ cool: "beans" })).toEqual(
+      jasmine.objectContaining({
+        cool: "beans"
+      })
+    );
   });
 
   it("includes events context", () => {
@@ -150,46 +123,8 @@ describe("DecisioningEngine:createContextProvider", () => {
     };
     contextProvider = createContextProvider({ eventRegistry, window });
 
-    expect(contextProvider.getContext({ cool: "beans" })).toEqual({
-      cool: "beans",
-      events,
-      currentTimestamp: mockedTimestamp.getTime(),
-      currentHour: mockedTimestamp.getHours(),
-      currentMinute: mockedTimestamp.getMinutes(),
-      currentYear: mockedTimestamp.getFullYear(),
-      currentMonth: mockedTimestamp.getMonth(),
-      currentDate: mockedTimestamp.getDate(),
-      currentDay: mockedTimestamp.getDay(),
-      pageLoadTimestamp: mockedTimestamp.getTime(),
-      pageVisitDuration: 0,
-      browser: {
-        name: "Chrome"
-      },
-      window: {
-        height: 100,
-        width: 100,
-        scrollY: 10,
-        scrollX: 10
-      },
-      page: {
-        title: "My awesome website",
-        url: "https://my.web-site.net:8080/about?m=1&t=5&name=jimmy#home",
-        path: "/about",
-        query: "m=1&t=5&name=jimmy",
-        fragment: "home",
-        domain: "my.web-site.net",
-        subdomain: "my",
-        topLevelDomain: "net"
-      },
-      referringPage: {
-        url: "https://stage.applookout.net/",
-        path: "/",
-        query: "",
-        fragment: "",
-        domain: "stage.applookout.net",
-        subdomain: "stage",
-        topLevelDomain: "net"
-      }
-    });
+    expect(contextProvider.getContext({ cool: "beans" }).events).toEqual(
+      events
+    );
   });
 });
