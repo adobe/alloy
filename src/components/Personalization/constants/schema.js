@@ -22,5 +22,7 @@ export const JSON_RULESET_ITEM =
 
 export const REDIRECT_ITEM =
   "https://ns.adobe.com/personalization/redirect-item";
+export const IN_APP_MESSAGE =
+  "https://ns.adobe.com/personalization/in-app-message";
 export const MEASUREMENT_SCHEMA =
   "https://ns.adobe.com/personalization/measurement";
