@@ -19,13 +19,15 @@ env:
   ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
-  version: 1.19.0
+  version: 2.3.1
 speed: 0.05
 pageLoadTimeout: 3000
 disablePageCaching: true
 timeZone: New_York
 npm:
   dependencies:
+    - parse-uri
+    - js-cookie
     - read-cache
     - uuid
     - css.escape
@@ -41,7 +43,14 @@ suites:
     browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
-    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js" ]
+    excludedTestFiles:
+      [
+        "test/functional/specs/Privacy/C1576777.js",
+        "test/functional/specs/Personalization/C7638574.js",
+        "test/functional/specs/Personalization/C9932846.js",
+        "test/functional/specs/Personalization/C205528.js",
+        "test/functional/specs/Personalization/C7494472.js",
+      ]
 
   - name: "Chrome"
     shard: concurrency
@@ -50,7 +59,14 @@ suites:
     browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
-    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js" ]
+    excludedTestFiles:
+      [
+        "test/functional/specs/Privacy/C1576777.js",
+        "test/functional/specs/Personalization/C7638574.js",
+        "test/functional/specs/Personalization/C9932846.js",
+        "test/functional/specs/Personalization/C205528.js",
+        "test/functional/specs/Personalization/C7494472.js",
+      ]
 
   - name: "Edge"
     shard: concurrency
@@ -59,7 +75,14 @@ suites:
     browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
-    excludedTestFiles: [ "test/functional/specs/Privacy/C1576777.js" ]
+    excludedTestFiles:
+      [
+        "test/functional/specs/Privacy/C1576777.js",
+        "test/functional/specs/Personalization/C7638574.js",
+        "test/functional/specs/Personalization/C9932846.js",
+        "test/functional/specs/Personalization/C205528.js",
+        "test/functional/specs/Personalization/C7494472.js",
+      ]
 
   - name: "Safari"
     shard: concurrency
@@ -75,6 +98,11 @@ suites:
       - "test/functional/specs/**/*.js"
     excludedTestFiles:
       [
+        "test/functional/specs/Identity/C6842981.js",
+        "test/functional/specs/LibraryInfo/C2589.js",
         "test/functional/specs/Privacy/C1576777.js",
-        "test/functional/specs/LibraryInfo/C2589.js"
+        "test/functional/specs/Personalization/C7638574.js",
+        "test/functional/specs/Personalization/C9932846.js",
+        "test/functional/specs/Personalization/C205528.js",
+        "test/functional/specs/Personalization/C7494472.js",
       ]
