@@ -10,8 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import isNonEmptyArray from "../../utils/isNonEmptyArray";
-
-const DECISIONS_HANDLE = "personalization:decisions";
+import { PERSONALIZATION_DECISIONS_HANDLE } from "./constants/handle";
 
 export default ({
   autoRenderingHandler,
@@ -21,7 +20,9 @@ export default ({
   showContainers
 }) => {
   return ({ decisionsDeferred, personalizationDetails, response }) => {
-    const unprocessedDecisions = response.getPayloadsByType(DECISIONS_HANDLE);
+    const unprocessedDecisions = response.getPayloadsByType(
+      PERSONALIZATION_DECISIONS_HANDLE
+    );
     const viewName = personalizationDetails.getViewName();
 
     // if personalization payload is empty return empty decisions array

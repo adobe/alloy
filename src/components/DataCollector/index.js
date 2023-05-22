@@ -30,6 +30,7 @@ const createDataCollector = ({ eventManager, logger }) => {
             type,
             mergeId,
             renderDecisions = false,
+            decisionContext = {},
             decisionScopes = [], // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
             personalization = {},
             datasetId,
@@ -58,6 +59,7 @@ const createDataCollector = ({ eventManager, logger }) => {
 
           const sendEventOptions = {
             renderDecisions,
+            decisionContext,
             decisionScopes,
             personalization
           };
@@ -88,6 +90,7 @@ const createDataCollector = ({ eventManager, logger }) => {
         run: options => {
           const {
             renderDecisions = false,
+            decisionContext = {},
             responseHeaders = {},
             responseBody = { handle: [] }
           } = options;
@@ -96,6 +99,7 @@ const createDataCollector = ({ eventManager, logger }) => {
 
           return eventManager.applyResponse(event, {
             renderDecisions,
+            decisionContext,
             responseHeaders,
             responseBody
           });

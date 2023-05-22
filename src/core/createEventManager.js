@@ -54,6 +54,7 @@ export default ({
       const {
         renderDecisions = false,
         decisionScopes,
+        decisionContext,
         edgeConfigOverrides: localConfigOverrides,
         personalization
       } = options;
@@ -68,6 +69,7 @@ export default ({
         .onBeforeEvent({
           event,
           renderDecisions,
+          decisionContext,
           decisionScopes,
           personalization,
           onResponse: onResponseCallbackAggregator.add,
@@ -115,6 +117,7 @@ export default ({
     applyResponse(event, options = {}) {
       const {
         renderDecisions = false,
+        decisionContext = {},
         responseHeaders = {},
         responseBody = { handle: [] }
       } = options;
@@ -127,6 +130,7 @@ export default ({
         .onBeforeEvent({
           event,
           renderDecisions,
+          decisionContext,
           decisionScopes: [PAGE_WIDE_SCOPE],
           personalization: {},
           onResponse: onResponseCallbackAggregator.add,

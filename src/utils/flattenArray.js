@@ -9,21 +9,22 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-export default {
-  com_adobe_experience_platform: {
-    datasets: {
-      event: {
-        datasetId: "6335faf30f5a161c0b4b1444"
-      }
-    }
-  },
-  com_adobe_analytics: {
-    reportSuites: ["unifiedjsqeonly2"]
-  },
-  com_adobe_identity: {
-    idSyncContainerId: 30793
-  },
-  com_adobe_target: {
-    propertyToken: "a15d008c-5ec0-cabd-7fc7-ab54d56f01e8"
+const flattenArray = (items = []) => {
+  const flat = [];
+
+  if (!Array.isArray(items)) {
+    return items;
   }
+
+  items.forEach(item => {
+    if (Array.isArray(item)) {
+      flat.push(...flattenArray(item));
+    } else {
+      flat.push(item);
+    }
+  });
+
+  return flat;
 };
+
+export default flattenArray;

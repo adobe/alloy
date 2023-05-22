@@ -15,9 +15,14 @@ import { isNonEmptyArray } from "../../utils";
 
 export default ({ eventManager, mergeDecisionsMeta }) => {
   // Called when a decision is auto-rendered for the __view__ scope or a SPA view(display and empty display notification)
-  return ({ decisionsMeta = [], documentMayUnload = false, viewName }) => {
+  return ({
+    decisionsMeta = [],
+    documentMayUnload = false,
+    eventType = DISPLAY,
+    viewName
+  }) => {
     const event = eventManager.createEvent();
-    const data = { eventType: DISPLAY };
+    const data = { eventType };
 
     if (viewName) {
       data.web = {
@@ -25,7 +30,13 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
       };
     }
     if (isNonEmptyArray(decisionsMeta)) {
-      mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.DISPLAY);
+      mergeDecisionsMeta(
+        event,
+        decisionsMeta,
+        eventType === DISPLAY
+          ? PropositionEventType.DISPLAY
+          : PropositionEventType.INTERACT
+      );
     }
 
     event.mergeXdm(data);
