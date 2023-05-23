@@ -59,7 +59,9 @@ export default ({
         const edgeBasePathWithLocationHint = locationHint
           ? `${edgeBasePath}/${locationHint}`
           : edgeBasePath;
-        const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${edgeConfigId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
+        const finalEdgeConfigId =
+          request.getEdgeConfigIdOverride() || edgeConfigId;
+        const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${finalEdgeConfigId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
         cookieTransfer.cookiesToPayload(request.getPayload(), endpointDomain);
         return sendNetworkRequest({
           requestId: request.getId(),

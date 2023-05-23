@@ -14,7 +14,12 @@ import { uuid } from "..";
 
 // This provides the base functionality that all types of requests share.
 export default options => {
-  const { payload, getAction, getUseSendBeacon } = options;
+  const {
+    payload,
+    getAction,
+    getUseSendBeacon,
+    edgeConfigIdOverride
+  } = options;
   const id = uuid();
   let shouldUseThirdPartyDomain = false;
   let isIdentityEstablished = false;
@@ -28,6 +33,9 @@ export default options => {
     },
     getAction() {
       return getAction({ isIdentityEstablished });
+    },
+    getEdgeConfigIdOverride() {
+      return edgeConfigIdOverride;
     },
     getUseSendBeacon() {
       return getUseSendBeacon({ isIdentityEstablished });

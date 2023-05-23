@@ -48,6 +48,9 @@ export default ({
      * @param {Object} [options.serverState]
      * This will be passed to components
      * so they can take appropriate action.
+     * @param {Object} [options.edgeConfigOverrides] Settings that take
+     * precedence over the global datastream configuration, including which
+     * datastream to use.
      * @returns {*}
      */
     sendEvent(event, options = {}) {
@@ -58,7 +61,14 @@ export default ({
         personalization
       } = options;
       const payload = createDataCollectionRequestPayload();
-      const request = createDataCollectionRequest(payload);
+      const { edgeConfigId } = localConfigOverrides || {};
+      if (edgeConfigId) {
+        delete localConfigOverrides.edgeConfigId;
+      }
+      const request = createDataCollectionRequest({
+        payload,
+        edgeConfigIdOverride: edgeConfigId
+      });
       const onResponseCallbackAggregator = createCallbackAggregator();
       const onRequestFailureCallbackAggregator = createCallbackAggregator();
       payload.mergeConfigOverride(globalConfigOverrides);
@@ -120,7 +130,7 @@ export default ({
       } = options;
 
       const payload = createDataCollectionRequestPayload();
-      const request = createDataCollectionRequest(payload);
+      const request = createDataCollectionRequest({ payload });
       const onResponseCallbackAggregator = createCallbackAggregator();
 
       return lifecycle

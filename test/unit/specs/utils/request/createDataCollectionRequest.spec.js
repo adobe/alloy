@@ -14,7 +14,7 @@ import { createDataCollectionRequest } from "../../../../../src/utils/request";
 import describeRequest from "../../../helpers/describeRequest";
 
 describe("createDataCollectionRequest", () => {
-  describeRequest(createDataCollectionRequest);
+  describeRequest(payload => createDataCollectionRequest({ payload }));
 
   it("uses collect with sendBeacon if document may unload and identity is established", () => {
     const payload = {
@@ -22,7 +22,7 @@ describe("createDataCollectionRequest", () => {
         return true;
       }
     };
-    const request = createDataCollectionRequest(payload);
+    const request = createDataCollectionRequest({ payload });
     request.setIsIdentityEstablished();
     expect(request.getAction()).toBe("collect");
     expect(request.getUseSendBeacon()).toBeTrue();
@@ -34,7 +34,7 @@ describe("createDataCollectionRequest", () => {
         return true;
       }
     };
-    const request = createDataCollectionRequest(payload);
+    const request = createDataCollectionRequest({ payload });
     expect(request.getAction()).toBe("interact");
     expect(request.getUseSendBeacon()).toBeFalse();
   });
@@ -45,7 +45,7 @@ describe("createDataCollectionRequest", () => {
         return false;
       }
     };
-    const request = createDataCollectionRequest(payload);
+    const request = createDataCollectionRequest({ payload });
     request.setIsIdentityEstablished();
     expect(request.getAction()).toBe("interact");
     expect(request.getUseSendBeacon()).toBeFalse();
@@ -57,8 +57,18 @@ describe("createDataCollectionRequest", () => {
         return false;
       }
     };
-    const request = createDataCollectionRequest(payload);
+    const request = createDataCollectionRequest({ payload });
     expect(request.getAction()).toBe("interact");
     expect(request.getUseSendBeacon()).toBeFalse();
+  });
+
+  it("passes the edgeConfigIdOverride to the request", () => {
+    const payload = {};
+    const edgeConfigIdOverride = "my-edge-config-id-override";
+    const request = createDataCollectionRequest({
+      payload,
+      edgeConfigIdOverride
+    });
+    expect(request.getEdgeConfigIdOverride()).toBe(edgeConfigIdOverride);
   });
 });
