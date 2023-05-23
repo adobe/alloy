@@ -14,17 +14,17 @@ import describeRequest from "../../../helpers/describeRequest";
 import createConsentRequest from "../../../../../src/components/Privacy/createConsentRequest";
 
 describe("createConsentRequest", () => {
-  describeRequest(createConsentRequest);
+  describeRequest(payload => createConsentRequest({ payload }));
 
   it("provides the appropriate action", () => {
     const payload = {};
-    const request = createConsentRequest(payload);
+    const request = createConsentRequest({ payload });
     expect(request.getAction()).toBe("privacy/set-consent");
   });
 
   it("never uses sendBeacon", () => {
     const payload = {};
-    const request = createConsentRequest(payload);
+    const request = createConsentRequest({ payload });
     expect(request.getUseSendBeacon()).toBeFalse();
   });
 });

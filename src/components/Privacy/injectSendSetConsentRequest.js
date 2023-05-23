@@ -24,6 +24,10 @@ export default ({
 }) => {
   const payload = createConsentRequestPayload();
   payload.setConsent(consentOptions);
+  const { edgeConfigId: edgeConfigIdOverride } = localConfigOverrides || {};
+  if (edgeConfigIdOverride) {
+    delete localConfigOverrides.edgeConfigId;
+  }
   payload.mergeConfigOverride(globalConfigOverrides);
   payload.mergeConfigOverride(localConfigOverrides);
   if (isObject(identityMap)) {
@@ -33,7 +37,10 @@ export default ({
       });
     });
   }
-  const request = createConsentRequest(payload);
+  const request = createConsentRequest({
+    payload,
+    edgeConfigIdOverride
+  });
   return sendEdgeNetworkRequest({
     request
   }).then(() => {

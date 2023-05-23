@@ -12,9 +12,10 @@ governing permissions and limitations under the License.
 
 import { createRequest } from "../../utils/request";
 
-export default consentRequestPayload => {
+export default ({ payload, edgeConfigIdOverride }) => {
   return createRequest({
-    payload: consentRequestPayload,
+    payload,
+    edgeConfigIdOverride,
     getAction() {
       return "privacy/set-consent";
     },
