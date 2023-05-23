@@ -16,7 +16,7 @@ import {
   proposition
 } from "./contextTestUtils";
 
-describe("createDecisioningEngine:commands:renderDecisions", () => {
+describe("createDecisioningEngine:commands:evaluateRulesets", () => {
   let mockEvent;
   let onResponseHandler;
   let decisioningEngine;
@@ -33,7 +33,7 @@ describe("createDecisioningEngine:commands:renderDecisions", () => {
     decisioningEngine.lifecycle.onComponentsRegistered(() => {});
   });
 
-  it("should run the executeRuleSets command and satisfy the rule based on global context", () => {
+  it("should run the evaluateRulesets command and satisfy the rule based on global context", () => {
     onResponseHandler = onResponse => {
       onResponse({
         response: mockRulesetResponseWithCondition({
@@ -52,13 +52,13 @@ describe("createDecisioningEngine:commands:renderDecisions", () => {
       decisionContext: {},
       onResponse: onResponseHandler
     });
-    const result = decisioningEngine.commands.executeRuleSets.run({});
+    const result = decisioningEngine.commands.evaluateRulesets.run({});
     expect(result).toEqual({
       propositions: [proposition]
     });
   });
 
-  it("should run the executeRuleSets command and does not satisfy rule due to unmatched global context", () => {
+  it("should run the evaluateRulesets command and does not satisfy rule due to unmatched global context", () => {
     onResponseHandler = onResponse => {
       onResponse({
         response: mockRulesetResponseWithCondition({
@@ -77,13 +77,13 @@ describe("createDecisioningEngine:commands:renderDecisions", () => {
       decisionContext: {},
       onResponse: onResponseHandler
     });
-    const result = decisioningEngine.commands.executeRuleSets.run({});
+    const result = decisioningEngine.commands.evaluateRulesets.run({});
     expect(result).toEqual({
       propositions: []
     });
   });
 
-  it("should run the executeRuleSets command and return propositions with renderDecisions true", () => {
+  it("should run the evaluateRulesets command and return propositions with renderDecisions true", () => {
     onResponseHandler = onResponse => {
       onResponse({
         response: mockRulesetResponseWithCondition({
@@ -102,13 +102,13 @@ describe("createDecisioningEngine:commands:renderDecisions", () => {
       decisionContext: {},
       onResponse: onResponseHandler
     });
-    const result = decisioningEngine.commands.executeRuleSets.run({});
+    const result = decisioningEngine.commands.evaluateRulesets.run({});
     expect(result).toEqual({
       propositions: [proposition]
     });
   });
 
-  it("should run the executeRuleSets command returns propositions with renderDecisions false", () => {
+  it("should run the evaluateRulesets command returns propositions with renderDecisions false", () => {
     onResponseHandler = onResponse => {
       onResponse({
         response: mockRulesetResponseWithCondition({
@@ -127,7 +127,7 @@ describe("createDecisioningEngine:commands:renderDecisions", () => {
       decisionContext: {},
       onResponse: onResponseHandler
     });
-    const result = decisioningEngine.commands.executeRuleSets.run({});
+    const result = decisioningEngine.commands.evaluateRulesets.run({});
     expect(result).toEqual({
       propositions: [proposition]
     });
