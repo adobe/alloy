@@ -52,7 +52,7 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
       }
     },
     commands: {
-      renderDecisions: {
+      executeRuleSets: {
         run: decisionContext =>
           applyResponse({
             propositions: decisionProvider.evaluate(
@@ -64,5 +64,5 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
   };
 };
 
-createDecisioningEngine.namespace = "DecisioningEngine";
+createDecisioningEngine.namespace = "DecisioningEngineDemo";
 export default createDecisioningEngine;
