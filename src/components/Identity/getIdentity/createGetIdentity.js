@@ -17,8 +17,15 @@ export default ({
   globalConfigOverrides
 }) => {
   return ({ namespaces, edgeConfigOverrides: localConfigOverrides } = {}) => {
+    const { edgeConfigId } = localConfigOverrides || {};
+    if (edgeConfigId) {
+      delete localConfigOverrides.edgeConfigId;
+    }
     const payload = createIdentityRequestPayload(namespaces);
-    const request = createIdentityRequest(payload);
+    const request = createIdentityRequest({
+      payload,
+      edgeConfigIdOverride: edgeConfigId
+    });
     // merge the configurations, but give preference to the command-local configs
     payload.mergeConfigOverride(globalConfigOverrides);
     payload.mergeConfigOverride(localConfigOverrides);

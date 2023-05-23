@@ -14,17 +14,17 @@ import describeRequest from "../../../../helpers/describeRequest";
 import createIdentityRequest from "../../../../../../src/components/Identity/getIdentity/createIdentityRequest";
 
 describe("createIdentityRequest", () => {
-  describeRequest(createIdentityRequest);
+  describeRequest(payload => createIdentityRequest({ payload }));
 
   it("provides the appropriate action", () => {
     const payload = {};
-    const request = createIdentityRequest(payload);
+    const request = createIdentityRequest({ payload });
     expect(request.getAction()).toBe("identity/acquire");
   });
 
   it("never uses sendBeacon", () => {
     const payload = {};
-    const request = createIdentityRequest(payload);
+    const request = createIdentityRequest({ payload });
     expect(request.getUseSendBeacon()).toBeFalse();
   });
 });

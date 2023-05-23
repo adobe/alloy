@@ -81,12 +81,18 @@ describe("Identity::createGetIdentity", () => {
       "namespace1",
       "namespace2"
     ]);
-    expect(createIdentityRequest).toHaveBeenCalledWith(payload1);
+    expect(createIdentityRequest).toHaveBeenCalledWith({
+      payload: payload1,
+      edgeConfigIdOverride: undefined
+    });
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
       request: request1
     });
     getIdentity();
-    expect(createIdentityRequest).toHaveBeenCalledWith(payload2);
+    expect(createIdentityRequest).toHaveBeenCalledWith({
+      payload: payload2,
+      edgeConfigIdOverride: undefined
+    });
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
       request: request2
     });
@@ -111,7 +117,10 @@ describe("Identity::createGetIdentity", () => {
       edgeConfigOverrides: configuration
     });
     expect(createIdentityRequestPayload).toHaveBeenCalledWith(["namespace1"]);
-    expect(createIdentityRequest).toHaveBeenCalledWith(requestPayload);
+    expect(createIdentityRequest).toHaveBeenCalledWith({
+      payload: requestPayload,
+      edgeConfigIdOverride: undefined
+    });
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
       request: request1
     });
@@ -141,7 +150,10 @@ describe("Identity::createGetIdentity", () => {
       namespaces: ["namespace1"]
     });
     expect(createIdentityRequestPayload).toHaveBeenCalledWith(["namespace1"]);
-    expect(createIdentityRequest).toHaveBeenCalledWith(requestPayload);
+    expect(createIdentityRequest).toHaveBeenCalledWith({
+      payload: requestPayload,
+      edgeConfigIdOverride: undefined
+    });
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
       request: request1
     });

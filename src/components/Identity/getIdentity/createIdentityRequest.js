@@ -12,9 +12,10 @@ governing permissions and limitations under the License.
 
 import { createRequest } from "../../../utils/request";
 
-export default identityRequestPayload => {
+export default ({ payload, edgeConfigIdOverride }) => {
   return createRequest({
-    payload: identityRequestPayload,
+    payload,
+    edgeConfigIdOverride,
     getAction() {
       return "identity/acquire";
     },
