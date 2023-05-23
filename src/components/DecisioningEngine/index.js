@@ -64,5 +64,5 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
   };
 };
 
-createDecisioningEngine.namespace = "DecisioningEngineDemo";
+createDecisioningEngine.namespace = "DecisioningEngine";
 export default createDecisioningEngine;
