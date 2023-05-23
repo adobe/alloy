@@ -110,4 +110,24 @@ describe("Privacy:injectSendSetConsentRequest", () => {
       });
     });
   });
+
+  it("sets the override for the edgeConfigId, if provided", () => {
+    sendEdgeNetworkRequest.and.returnValue(Promise.resolve());
+    return sendSetConsentRequest({
+      consentOptions: "anything",
+      identityMap: {
+        a: [{ id: "1" }, { id: "2" }],
+        b: [{ id: "3" }]
+      },
+      edgeConfigOverrides: {
+        edgeConfigId: "123"
+      }
+    }).then(() => {
+      expect(requestPayload.setConsent).toHaveBeenCalledWith("anything");
+      expect(createConsentRequest).toHaveBeenCalledWith({
+        payload: jasmine.any(Object),
+        edgeConfigIdOverride: "123"
+      });
+    });
+  });
 });

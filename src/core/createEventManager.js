@@ -60,19 +60,19 @@ export default ({
         edgeConfigOverrides: localConfigOverrides,
         personalization
       } = options;
-      const payload = createDataCollectionRequestPayload();
+      const requestParams = {
+        payload: createDataCollectionRequestPayload()
+      };
       const { edgeConfigId } = localConfigOverrides || {};
       if (edgeConfigId) {
         delete localConfigOverrides.edgeConfigId;
+        requestParams.edgeConfigIdOverride = edgeConfigId;
       }
-      const request = createDataCollectionRequest({
-        payload,
-        edgeConfigIdOverride: edgeConfigId
-      });
+      requestParams.payload.mergeConfigOverride(globalConfigOverrides);
+      requestParams.payload.mergeConfigOverride(localConfigOverrides);
+      const request = createDataCollectionRequest(requestParams);
       const onResponseCallbackAggregator = createCallbackAggregator();
       const onRequestFailureCallbackAggregator = createCallbackAggregator();
-      payload.mergeConfigOverride(globalConfigOverrides);
-      payload.mergeConfigOverride(localConfigOverrides);
 
       return lifecycle
         .onBeforeEvent({
@@ -84,7 +84,7 @@ export default ({
           onRequestFailure: onRequestFailureCallbackAggregator.add
         })
         .then(() => {
-          payload.addEvent(event);
+          requestParams.payload.addEvent(event);
           return consent.awaitConsent();
         })
         .then(() => {

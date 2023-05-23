@@ -22,25 +22,24 @@ export default ({
   identityMap,
   edgeConfigOverrides: localConfigOverrides
 }) => {
-  const payload = createConsentRequestPayload();
-  payload.setConsent(consentOptions);
+  const requestParams = {
+    payload: createConsentRequestPayload()
+  };
+  requestParams.payload.setConsent(consentOptions);
   const { edgeConfigId: edgeConfigIdOverride } = localConfigOverrides || {};
   if (edgeConfigIdOverride) {
-    delete localConfigOverrides.edgeConfigId;
+    requestParams.edgeConfigIdOverride = edgeConfigIdOverride;
   }
-  payload.mergeConfigOverride(globalConfigOverrides);
-  payload.mergeConfigOverride(localConfigOverrides);
+  requestParams.payload.mergeConfigOverride(globalConfigOverrides);
+  requestParams.payload.mergeConfigOverride(localConfigOverrides);
   if (isObject(identityMap)) {
     Object.keys(identityMap).forEach(key => {
       identityMap[key].forEach(identity => {
-        payload.addIdentity(key, identity);
+        requestParams.payload.addIdentity(key, identity);
       });
     });
   }
-  const request = createConsentRequest({
-    payload,
-    edgeConfigIdOverride
-  });
+  const request = createConsentRequest(requestParams);
   return sendEdgeNetworkRequest({
     request
   }).then(() => {

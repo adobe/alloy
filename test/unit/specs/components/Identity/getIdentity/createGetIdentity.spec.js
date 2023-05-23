@@ -82,16 +82,14 @@ describe("Identity::createGetIdentity", () => {
       "namespace2"
     ]);
     expect(createIdentityRequest).toHaveBeenCalledWith({
-      payload: payload1,
-      edgeConfigIdOverride: undefined
+      payload: payload1
     });
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
       request: request1
     });
     getIdentity();
     expect(createIdentityRequest).toHaveBeenCalledWith({
-      payload: payload2,
-      edgeConfigIdOverride: undefined
+      payload: payload2
     });
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
       request: request2
@@ -118,8 +116,7 @@ describe("Identity::createGetIdentity", () => {
     });
     expect(createIdentityRequestPayload).toHaveBeenCalledWith(["namespace1"]);
     expect(createIdentityRequest).toHaveBeenCalledWith({
-      payload: requestPayload,
-      edgeConfigIdOverride: undefined
+      payload: requestPayload
     });
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
       request: request1
@@ -151,8 +148,7 @@ describe("Identity::createGetIdentity", () => {
     });
     expect(createIdentityRequestPayload).toHaveBeenCalledWith(["namespace1"]);
     expect(createIdentityRequest).toHaveBeenCalledWith({
-      payload: requestPayload,
-      edgeConfigIdOverride: undefined
+      payload: requestPayload
     });
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
       request: request1
@@ -161,6 +157,31 @@ describe("Identity::createGetIdentity", () => {
       com_adobe_identity: {
         idSyncContainerId: configuration.com_adobe_identity.idSyncContainerId
       }
+    });
+  });
+
+  it("send edge config id override, when provided", () => {
+    const request1 = { type: "request1" };
+    createIdentityRequestPayload.and.returnValues(requestPayload);
+    createIdentityRequest.and.returnValues(request1);
+    const getIdentity = createGetIdentity({
+      sendEdgeNetworkRequest,
+      createIdentityRequestPayload,
+      createIdentityRequest
+    });
+    getIdentity({
+      namespaces: ["namespace1"],
+      edgeConfigOverrides: {
+        edgeConfigId: "123"
+      }
+    });
+    expect(createIdentityRequestPayload).toHaveBeenCalledWith(["namespace1"]);
+    expect(createIdentityRequest).toHaveBeenCalledWith({
+      payload: requestPayload,
+      edgeConfigIdOverride: "123"
+    });
+    expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
+      request: request1
     });
   });
 });
