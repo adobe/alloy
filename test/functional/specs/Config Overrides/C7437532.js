@@ -175,13 +175,14 @@ test("Test C7437532: `appendIdentityToUrl` can override the edgeConfigId", async
   const { edgeConfigId: originalEdgeConfigId } = config;
   const alternateEdgeConfigId = `${originalEdgeConfigId}:dev`;
   await alloy.appendIdentityToUrl({
+    url: "https://example.com",
     edgeConfigOverrides: {
       edgeConfigId: alternateEdgeConfigId
     }
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
-  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
-  const [request] = networkLogger.edgeEndpointLogs.requests;
+  await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
+  await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
+  const [request] = networkLogger.acquireEndpointLogs.requests;
   await t.expect(request.request.url).contains(alternateEdgeConfigId);
 });
