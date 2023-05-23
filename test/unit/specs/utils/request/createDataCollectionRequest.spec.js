@@ -14,7 +14,7 @@ import { createDataCollectionRequest } from "../../../../../src/utils/request";
 import describeRequest from "../../../helpers/describeRequest";
 
 describe("createDataCollectionRequest", () => {
-  describeRequest(payload => createDataCollectionRequest({ payload }));
+  describeRequest(createDataCollectionRequest);
 
   it("uses collect with sendBeacon if document may unload and identity is established", () => {
     const payload = {

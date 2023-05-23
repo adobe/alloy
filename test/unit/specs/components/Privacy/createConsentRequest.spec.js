@@ -14,7 +14,7 @@ import describeRequest from "../../../helpers/describeRequest";
 import createConsentRequest from "../../../../../src/components/Privacy/createConsentRequest";
 
 describe("createConsentRequest", () => {
-  describeRequest(payload => createConsentRequest({ payload }));
+  describeRequest(createConsentRequest);
 
   it("provides the appropriate action", () => {
     const payload = {};
@@ -26,5 +26,15 @@ describe("createConsentRequest", () => {
     const payload = {};
     const request = createConsentRequest({ payload });
     expect(request.getUseSendBeacon()).toBeFalse();
+  });
+
+  it("passes the edgeConfigIdOverride to the request", () => {
+    const payload = {};
+    const edgeConfigIdOverride = "my-edge-config-id-override";
+    const request = createConsentRequest({
+      payload,
+      edgeConfigIdOverride
+    });
+    expect(request.getEdgeConfigIdOverride()).toBe(edgeConfigIdOverride);
   });
 });

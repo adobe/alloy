@@ -14,7 +14,7 @@ import describeRequest from "../../../../helpers/describeRequest";
 import createIdentityRequest from "../../../../../../src/components/Identity/getIdentity/createIdentityRequest";
 
 describe("createIdentityRequest", () => {
-  describeRequest(payload => createIdentityRequest({ payload }));
+  describeRequest(createIdentityRequest);
 
   it("provides the appropriate action", () => {
     const payload = {};
@@ -26,5 +26,15 @@ describe("createIdentityRequest", () => {
     const payload = {};
     const request = createIdentityRequest({ payload });
     expect(request.getUseSendBeacon()).toBeFalse();
+  });
+
+  it("passes the edgeConfigIdOverride to the request", () => {
+    const payload = {};
+    const edgeConfigIdOverride = "my-edge-config-id-override";
+    const request = createIdentityRequest({
+      payload,
+      edgeConfigIdOverride
+    });
+    expect(request.getEdgeConfigIdOverride()).toBe(edgeConfigIdOverride);
   });
 });
