@@ -10,7 +10,8 @@ governing permissions and limitations under the License.
 */
 import {
   createRestoreStorage,
-  createSaveStorage
+  createSaveStorage,
+  getExpirationDate
 } from "../../../../../src/components/DecisioningEngine/utils";
 
 describe("DecisioningEngine:utils", () => {
@@ -64,5 +65,13 @@ describe("DecisioningEngine:utils", () => {
 
       done();
     }, 20);
+  });
+  it("should return the date of expiration", () => {
+    const retentionPeriod = 10;
+    const today = new Date();
+    const expectedDate = new Date(today);
+    expectedDate.setDate(expectedDate.getDate() - retentionPeriod);
+    const result = getExpirationDate(retentionPeriod);
+    expect(result).toEqual(expectedDate);
   });
 });

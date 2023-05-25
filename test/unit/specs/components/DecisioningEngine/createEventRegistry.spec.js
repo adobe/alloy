@@ -15,9 +15,16 @@ import createEventRegistry, {
 
 describe("DecisioningEngine:createEventRegistry", () => {
   let storage;
-
+  let mockedTimestamp;
   beforeEach(() => {
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
+    mockedTimestamp = new Date("2023-05-24T08:00:00Z");
+    jasmine.clock().install();
+    jasmine.clock().mockDate(mockedTimestamp);
+  });
+
+  afterEach(() => {
+    jasmine.clock().uninstall();
   });
 
   it("registers events", () => {
@@ -144,11 +151,12 @@ describe("DecisioningEngine:createEventRegistry", () => {
       ).toBeGreaterThan(lastEventTime);
       done();
     }, 50);
+
+    jasmine.clock().tick(60);
   });
 
   it("limits events to 1000 events", () => {
     const prune = createEventPruner();
-
     const events = {};
     events["decisioning.propositionDisplay"] = {};
     events["decisioning.propositionInteract"] = {};
@@ -159,8 +167,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
           id: i,
           type: "decisioning.propositionDisplay"
         },
-        firstTimestamp: 1,
-        timestamp: 1,
+        firstTimestamp: "2023-05-23T08:00:00Z",
+        timestamp: mockedTimestamp,
         count: 1
       };
 
@@ -169,13 +177,12 @@ describe("DecisioningEngine:createEventRegistry", () => {
           id: i,
           type: "decisioning.propositionInteract"
         },
-        firstTimestamp: 1,
-        timestamp: 1,
+        firstTimestamp: "2023-05-23T08:00:00Z",
+        timestamp: mockedTimestamp,
         count: 1
       };
 
       const pruned = prune(events);
-
       const interactEvents = Object.values(
         pruned["decisioning.propositionInteract"]
       );
@@ -183,7 +190,6 @@ describe("DecisioningEngine:createEventRegistry", () => {
       const displayEvents = Object.values(
         pruned["decisioning.propositionDisplay"]
       );
-
       expect(interactEvents.length).not.toBeGreaterThan(1000);
       expect(displayEvents.length).not.toBeGreaterThan(1000);
 
@@ -230,5 +236,86 @@ describe("DecisioningEngine:createEventRegistry", () => {
 
       expect(displayEvents.length).not.toBeGreaterThan(10);
     }
+  });
+
+  it("should filter events based on expiration date", () => {
+    const pruner = createEventPruner(4, 2);
+
+    const events = {};
+    events["decisioning.propositionDisplay"] = {
+      1: {
+        event: {
+          id: 1,
+          type: "decisioning.propositionInteract"
+        },
+        firstTimestamp: "2023-05-20T10:00:00Z",
+        timestamp: mockedTimestamp,
+        count: 1
+      },
+      2: {
+        event: {
+          id: 2,
+          type: "decisioning.propositionInteract"
+        },
+        firstTimestamp: "2023-05-24T15:00:00Z",
+        timestamp: mockedTimestamp,
+        count: 1
+      }
+    };
+    events["decisioning.propositionInteract"] = {
+      3: {
+        event: {
+          id: 3,
+          type: "decisioning.propositionInteract"
+        },
+        firstTimestamp: "2023-05-23T08:00:00Z",
+        timestamp: mockedTimestamp,
+        count: 1
+      },
+      4: {
+        event: {
+          id: 4,
+          type: "decisioning.propositionInteract"
+        },
+        firstTimestamp: "2023-05-23T08:00:00Z",
+        timestamp: mockedTimestamp,
+        count: 1
+      }
+    };
+
+    const prunedEvents = pruner(events);
+    expect(prunedEvents).toEqual({
+      "decisioning.propositionDisplay": {
+        2: {
+          event: {
+            id: 2,
+            type: "decisioning.propositionInteract"
+          },
+          firstTimestamp: "2023-05-24T15:00:00Z",
+          timestamp: mockedTimestamp,
+          count: 1
+        }
+      },
+      "decisioning.propositionInteract": {
+        3: {
+          event: {
+            id: 3,
+            type: "decisioning.propositionInteract"
+          },
+          firstTimestamp: "2023-05-23T08:00:00Z",
+          timestamp: mockedTimestamp,
+          count: 1
+        },
+        4: {
+          event: {
+            id: 4,
+            type: "decisioning.propositionInteract"
+          },
+          firstTimestamp: "2023-05-23T08:00:00Z",
+          timestamp: mockedTimestamp,
+          count: 1
+        }
+      }
+    });
   });
 });
