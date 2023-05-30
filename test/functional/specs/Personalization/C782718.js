@@ -98,8 +98,6 @@ const simulatePageLoad = async alloy => {
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
 
-  console.log("SPA response", JSON.stringify(response, null, 2));
-
   const personalizationPayload = createResponse({
     content: response
   }).getPayloadsByType("personalization:decisions");
