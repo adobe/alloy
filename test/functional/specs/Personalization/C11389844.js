@@ -87,14 +87,7 @@ const simulatePageLoad = async alloy => {
 
   await alloy.sendEvent({
     renderDecisions: true,
-    personalization,
-    xdm: {
-      web: {
-        webPageDetails: {
-          viewName: "products"
-        }
-      }
-    }
+    personalization
   });
 
   // asserts the request fired to Experience Edge has the expected event query
@@ -146,43 +139,43 @@ const simulateViewChange = async (alloy, personalizationPayload) => {
     }
   });
 
-  const requests = networkLogger.edgeEndpointLogs.requests;
-  const viewChangeRequest = requests[0];
+  const viewChangeRequest = networkLogger.edgeEndpointLogs.requests[1];
   const viewChangeRequestBody = JSON.parse(viewChangeRequest.request.body);
+  const event = viewChangeRequestBody.events[0];
+  const query = event.query;
+  const web = event.xdm.web;
+  // eslint-disable-next-line no-underscore-dangle
+  const experience = event.xdm._experience;
 
   // assert that no personalization query was attached to the request
-  await t.expect(viewChangeRequestBody.events[0].query).eql(undefined);
+  await t.expect(query).eql(undefined);
+  // assert that no personalization query was attached to the request
+  await t.expect(web.webPageDetails.viewName).eql("products");
+
   await t
-    .expect(getDecisionContent("products"))
+    .expect(getDecisionContent("personalization-products-container-ajo"))
     .eql("Welcome to AJO SPA products!");
 
   // Let promises resolve so that the notification is sent.
   await flushPromiseChains();
 
-  // check that the view change request payload contains the decisions that were rendered
+  // check that the view change request payload contains
+  // the decisions that were rendered
   const productsViewDecisionsMeta = getDecisionsMetaByScope(
     personalizationPayload,
     "products"
   );
 
   await t
-    .expect(
-      // eslint-disable-next-line no-underscore-dangle
-      viewChangeRequestBody.events[0].xdm._experience.decisioning.propositions
-    )
+    .expect(experience.decisioning.propositions)
     .eql(productsViewDecisionsMeta);
-  await t
-    .expect(
-      // eslint-disable-next-line no-underscore-dangle
-      viewChangeRequestBody.events[0].xdm._experience.decisioning
-        .propositionEventType.display
-    )
-    .eql(1);
+  await t.expect(experience.decisioning.propositionEventType.display).eql(1);
 
   // assert we return the renderAttempted flag set to true
   const allPropositionsWereRendered = resultingObject.propositions.every(
     proposition => proposition.renderAttempted
   );
+
   await t.expect(allPropositionsWereRendered).eql(true);
 };
 
