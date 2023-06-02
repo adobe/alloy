@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { createRequestParams } from "../../../utils/request";
+
 export default ({
   sendEdgeNetworkRequest,
   createIdentityRequestPayload,
@@ -17,17 +19,12 @@ export default ({
   globalConfigOverrides
 }) => {
   return ({ namespaces, edgeConfigOverrides: localConfigOverrides } = {}) => {
-    const requestParams = {};
-    const { edgeConfigId } = localConfigOverrides || {};
-    if (edgeConfigId) {
-      delete localConfigOverrides.edgeConfigId;
-      requestParams.edgeConfigIdOverride = edgeConfigId;
-    }
-    requestParams.payload = createIdentityRequestPayload(namespaces);
+    const requestParams = createRequestParams({
+      payload: createIdentityRequestPayload(namespaces),
+      globalConfigOverrides,
+      localConfigOverrides
+    });
     const request = createIdentityRequest(requestParams);
-    // merge the configurations, but give preference to the command-local configs
-    requestParams.payload.mergeConfigOverride(globalConfigOverrides);
-    requestParams.payload.mergeConfigOverride(localConfigOverrides);
     return sendEdgeNetworkRequest({
       request
     });

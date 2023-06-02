@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import PAGE_WIDE_SCOPE from "../constants/pageWideScope";
 import { createCallbackAggregator, noop } from "../utils";
+import { createRequestParams } from "../utils/request";
 
 const EVENT_CANCELLATION_MESSAGE =
   "Event was canceled because the onBeforeEventSend callback returned false.";
@@ -60,16 +61,11 @@ export default ({
         edgeConfigOverrides: localConfigOverrides,
         personalization
       } = options;
-      const requestParams = {
-        payload: createDataCollectionRequestPayload()
-      };
-      const { edgeConfigId } = localConfigOverrides || {};
-      if (edgeConfigId) {
-        delete localConfigOverrides.edgeConfigId;
-        requestParams.edgeConfigIdOverride = edgeConfigId;
-      }
-      requestParams.payload.mergeConfigOverride(globalConfigOverrides);
-      requestParams.payload.mergeConfigOverride(localConfigOverrides);
+      const requestParams = createRequestParams({
+        payload: createDataCollectionRequestPayload(),
+        localConfigOverrides,
+        globalConfigOverrides
+      });
       const request = createDataCollectionRequest(requestParams);
       const onResponseCallbackAggregator = createCallbackAggregator();
       const onRequestFailureCallbackAggregator = createCallbackAggregator();
