@@ -54,14 +54,23 @@ import assign from "../assign";
  * The base validator also contains the two methods `required` and `default`, so these can be used anywhere
  * after any of the exposed validator functions are called.
  */
-export default (leftValidator, rightValidator, additionalMethods = {}) => {
+export default function chain(
+  leftValidator,
+  rightValidator,
+  additionalMethods = {}
+) {
   // combine the two validators, calling left first and then right.
   // pass the return value from left into right.
-  const combinedValidator = (value, path) => {
-    return rightValidator(leftValidator(value, path), path);
+  const combinedValidator = function combinedValidator(value, path, parent) {
+    return rightValidator.call(
+      this,
+      leftValidator.call(this, value, path, parent),
+      path,
+      parent
+    );
   };
   // add the methods already defined on the left validator, and the additionalMethods
   // to the new combined validator function.
   assign(combinedValidator, leftValidator, additionalMethods);
   return combinedValidator;
-};
+}

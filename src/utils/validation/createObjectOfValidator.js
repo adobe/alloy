@@ -13,34 +13,59 @@ governing permissions and limitations under the License.
 import isObject from "../isObject";
 import assertValid from "./assertValid";
 
-export default schema => (value, path) => {
-  assertValid(isObject(value), value, path, "an object");
+export default schema =>
+  function objectOf(value, path) {
+    assertValid(isObject(value), value, path, "an object");
 
-  const errors = [];
-  const validatedObject = {};
-  Object.keys(schema).forEach(subKey => {
-    const subValue = value[subKey];
-    const subSchema = schema[subKey];
-    const subPath = path ? `${path}.${subKey}` : subKey;
-    try {
-      const validatedValue = subSchema(subValue, subPath);
-      if (validatedValue !== undefined) {
-        validatedObject[subKey] = validatedValue;
+    // copy over unknown properties first
+    const validatedObject = { ...value };
+    const errors = {};
+    const redoFields = {};
+    const parent = new Proxy(value, {
+      set(target, key, subValue) {
+        redoFields[key] = true;
+        return Reflect.set(target, key, subValue);
       }
-    } catch (e) {
-      errors.push(e.message);
-    }
-  });
+    });
+    const validateFields = keys => {
+      keys.forEach(subKey => {
+        if (redoFields[subKey]) {
+          delete redoFields[subKey];
+        }
+        const subValue = value[subKey];
+        const subSchema = schema[subKey];
+        const subPath = path ? `${path}.${subKey}` : subKey;
+        try {
+          validatedObject[subKey] = subSchema.call(
+            this,
+            subValue,
+            subPath,
+            parent
+          );
+          if (validatedObject[subKey] === undefined) {
+            delete validatedObject[subKey];
+          }
+          if (errors[subKey]) {
+            delete errors[subKey];
+          }
+        } catch (e) {
+          errors[subKey] = e.message;
+        }
+      });
+    };
 
-  // copy over unknown properties
-  Object.keys(value).forEach(subKey => {
-    if (!Object.prototype.hasOwnProperty.call(validatedObject, subKey)) {
-      validatedObject[subKey] = value[subKey];
+    validateFields(Object.keys(schema));
+    // if one field changes another, we need to revalidate it
+    while (Object.keys(redoFields).length) {
+      validateFields(Object.keys(redoFields));
     }
-  });
 
-  if (errors.length) {
-    throw new Error(errors.join("\n"));
-  }
-  return validatedObject;
-};
+    if (Object.keys(errors).length) {
+      throw new Error(
+        Object.keys(errors)
+          .map(key => errors[key])
+          .join("\n")
+      );
+    }
+    return validatedObject;
+  };

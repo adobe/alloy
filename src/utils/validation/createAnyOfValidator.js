@@ -12,15 +12,16 @@ governing permissions and limitations under the License.
 import assertValid from "./assertValid";
 import find from "../find";
 
-export default (validators, message) => (value, path) => {
-  const valid = find(validators, validator => {
-    try {
-      validator(value, path);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  });
-  assertValid(valid, value, path, message);
-  return value;
-};
+export default (validators, message) =>
+  function anyOf(value, path) {
+    const valid = find(validators, validator => {
+      try {
+        validator.call(this, value, path);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    });
+    assertValid(valid, value, path, message);
+    return value;
+  };

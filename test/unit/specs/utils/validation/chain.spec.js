@@ -14,6 +14,7 @@ import chain from "../../../../../src/utils/validation/chain";
 
 describe("validation::chain", () => {
   it("calls the validators with the correct params", () => {
+    const myThis = { my: "context" };
     const validator1 = jasmine.createSpy();
     const validator2 = jasmine.createSpy();
     const validator3 = jasmine.createSpy();
@@ -21,13 +22,30 @@ describe("validation::chain", () => {
     validator2.and.returnValue("validator2return");
     validator3.and.returnValue("validator3return");
     const subject = chain(chain(validator1, validator2), validator3);
-    expect(subject("myCurrentValue", "myKey")).toEqual("validator3return");
+    expect(subject.call(myThis, "myCurrentValue", "myKey", "myParent")).toEqual(
+      "validator3return"
+    );
     expect(validator1).toHaveBeenCalledTimes(1);
-    expect(validator1).toHaveBeenCalledWith("myCurrentValue", "myKey");
+    expect(validator1).toHaveBeenCalledWith(
+      "myCurrentValue",
+      "myKey",
+      "myParent"
+    );
+    expect(validator1.calls.thisFor(0)).toBe(myThis);
     expect(validator2).toHaveBeenCalledTimes(1);
-    expect(validator2).toHaveBeenCalledWith("validator1return", "myKey");
+    expect(validator2).toHaveBeenCalledWith(
+      "validator1return",
+      "myKey",
+      "myParent"
+    );
+    expect(validator2.calls.thisFor(0)).toBe(myThis);
     expect(validator3).toHaveBeenCalledTimes(1);
-    expect(validator3).toHaveBeenCalledWith("validator2return", "myKey");
+    expect(validator3).toHaveBeenCalledWith(
+      "validator2return",
+      "myKey",
+      "myParent"
+    );
+    expect(validator3.calls.thisFor(0)).toBe(myThis);
   });
 
   it("short circuits evaluation", () => {
@@ -38,7 +56,7 @@ describe("validation::chain", () => {
     validator2.and.throwError("My Error!");
     validator3.and.returnValue("validator3return");
     const subject = chain(chain(validator1, validator2), validator3);
-    expect(() => subject("myCurrentValue", "myKey")).toThrow(
+    expect(() => subject("myCurrentValue", "myKey", "myParent")).toThrow(
       Error("My Error!")
     );
     expect(validator3).not.toHaveBeenCalled();

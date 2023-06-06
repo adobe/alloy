@@ -33,17 +33,22 @@ import numberValidator from "./numberValidator";
 import regexpValidator from "./regexpValidator";
 import requiredValidator from "./requiredValidator";
 import stringValidator from "./stringValidator";
+import createDeprecatedValidator from "./createDeprecatedValidator";
 
 // The base validator does no validation and just returns the value unchanged
 const base = value => value;
 
-// The 'default' and 'required' methods are available after any data-type method
-// Don't use the nullSafeChain because they need to handle the null or undefined case
+// The 'default', 'required', and 'deprecated' methods are available after any
+// data-type method. Don't use the nullSafeChain on 'default' or 'required'
+// because they need to handle the null or undefined case
 base.default = function _default(defaultValue) {
   return chain(this, createDefaultValidator(defaultValue));
 };
 base.required = function required() {
   return chain(this, requiredValidator);
+};
+base.deprecated = function deprecated(newField) {
+  return nullSafeChain(this, createDeprecatedValidator(newField));
 };
 
 // helper validators
@@ -74,7 +79,6 @@ const regexp = function regexp() {
 const unique = function createUnique() {
   return nullSafeChain(this, createUniqueValidator());
 };
-
 const uniqueItems = function createUniqueItems() {
   return nullSafeChain(this, createUniqueItemsValidator());
 };

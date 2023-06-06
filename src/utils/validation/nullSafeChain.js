@@ -26,8 +26,19 @@ import chain from "./chain";
  * So to keep from having to have a null check in front of most validators, this
  * function allows you to chain a rightValidator that needs to have a null check.
  */
-export default (leftValidator, rightValidator, additionalMethods) => {
-  const rightValidatorWithNullCheck = (value, path) =>
-    value == null ? value : rightValidator(value, path);
+export default function nullSafeChain(
+  leftValidator,
+  rightValidator,
+  additionalMethods
+) {
+  const rightValidatorWithNullCheck = function rightValidatorWithNullCheck(
+    value,
+    path,
+    parent
+  ) {
+    return value == null
+      ? value
+      : rightValidator.call(this, value, path, parent);
+  };
   return chain(leftValidator, rightValidatorWithNullCheck, additionalMethods);
-};
+}

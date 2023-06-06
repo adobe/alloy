@@ -22,9 +22,9 @@ describe("validation::nullSafeChain", () => {
       nullSafeChain(validator1, validator2),
       validator3
     );
-    expect(subject(null, "myKey")).toEqual(null);
+    expect(subject(null, "myKey", { foo: "bar" })).toEqual(null);
     expect(validator1).toHaveBeenCalledTimes(1);
-    expect(validator1).toHaveBeenCalledWith(null, "myKey");
+    expect(validator1).toHaveBeenCalledWith(null, "myKey", { foo: "bar" });
     expect(validator2).toHaveBeenCalledTimes(0);
     expect(validator3).toHaveBeenCalledTimes(0);
   });
