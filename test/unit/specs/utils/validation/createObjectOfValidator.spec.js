@@ -45,4 +45,30 @@ describe("validation::objectOf", () => {
       { value: { a: { aa: "11" } } }
     ]
   );
+
+  describeValidation(
+    "concat",
+    objectOf({
+      a: string().required()
+    })
+      .concat(
+        objectOf({
+          b: string().default("b default")
+        })
+      )
+      .concat(
+        objectOf({
+          c: string()
+        })
+      ),
+    [
+      { value: {}, error: true },
+      { value: { a: "1" }, expected: { a: "1", b: "b default" } },
+      { value: { a: "1", b: "2", c: "3" } },
+      { value: undefined },
+      { value: null },
+      { value: { a: 123 }, error: true },
+      { value: 123, error: true }
+    ]
+  );
 });

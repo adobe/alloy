@@ -11,61 +11,37 @@ governing permissions and limitations under the License.
 */
 
 import isObject from "../isObject";
-import assertValid from "./assertValid";
+import { assertValid } from "./utils";
 
 export default schema =>
   function objectOf(value, path) {
     assertValid(isObject(value), value, path, "an object");
 
-    // copy over unknown properties first
-    const validatedObject = { ...value };
-    const errors = {};
-    const redoFields = {};
-    const parent = new Proxy(value, {
-      set(target, key, subValue) {
-        redoFields[key] = true;
-        return Reflect.set(target, key, subValue);
+    const errors = [];
+    const validatedObject = {};
+    Object.keys(schema).forEach(subKey => {
+      const subValue = value[subKey];
+      const subSchema = schema[subKey];
+      const subPath = path ? `${path}.${subKey}` : subKey;
+      try {
+        const validatedValue = subSchema.call(this, subValue, subPath);
+        if (validatedValue !== undefined) {
+          validatedObject[subKey] = validatedValue;
+        }
+      } catch (e) {
+        errors.push(e.message);
       }
     });
-    const validateFields = keys => {
-      keys.forEach(subKey => {
-        if (redoFields[subKey]) {
-          delete redoFields[subKey];
-        }
-        const subValue = value[subKey];
-        const subSchema = schema[subKey];
-        const subPath = path ? `${path}.${subKey}` : subKey;
-        try {
-          validatedObject[subKey] = subSchema.call(
-            this,
-            subValue,
-            subPath,
-            parent
-          );
-          if (validatedObject[subKey] === undefined) {
-            delete validatedObject[subKey];
-          }
-          if (errors[subKey]) {
-            delete errors[subKey];
-          }
-        } catch (e) {
-          errors[subKey] = e.message;
-        }
-      });
-    };
 
-    validateFields(Object.keys(schema));
-    // if one field changes another, we need to revalidate it
-    while (Object.keys(redoFields).length) {
-      validateFields(Object.keys(redoFields));
-    }
+    // copy over unknown properties
+    Object.keys(value).forEach(subKey => {
+      if (!Object.prototype.hasOwnProperty.call(validatedObject, subKey)) {
+        validatedObject[subKey] = value[subKey];
+      }
+    });
 
-    if (Object.keys(errors).length) {
-      throw new Error(
-        Object.keys(errors)
-          .map(key => errors[key])
-          .join("\n")
-      );
+    if (errors.length) {
+      throw new Error(errors.join("\n"));
     }
     return validatedObject;
   };

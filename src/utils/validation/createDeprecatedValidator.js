@@ -9,31 +9,33 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import assertValid from "./assertValid";
+import isObject from "../isObject";
+import { assertValid } from "./utils";
 
-const getNewFieldPath = (path, newField) => {
-  const pathParts = path.split(".");
-  pathParts[pathParts.length - 1] = newField;
-  return pathParts.join(".");
-};
+export default (oldField, oldSchema, newField) =>
+  function deprecated(value, path) {
+    assertValid(isObject(value), value, path, "an object");
 
-export default newField =>
-  function deprecated(value, path, context) {
-    const newFieldPath = getNewFieldPath(path, newField);
-    assertValid(
-      !context[newField] || value === context[newField],
-      value,
-      path,
-      `either '${path}' or '${newFieldPath}' to be set`
-    );
+    const {
+      [oldField]: oldValue,
+      [newField]: newValue,
+      ...otherValues
+    } = value;
+    const validatedOldValue = oldSchema(oldValue, path);
 
-    if (value) {
-      if (this && this.logger) {
+    if (validatedOldValue !== undefined) {
+      if (newValue !== undefined && newValue !== validatedOldValue) {
+        throw new Error(
+          `'${path}': The field '${oldField}' is deprecated. Use '${newField}' instead.`
+        );
+      } else if (this && this.logger) {
         this.logger.warn(
-          `The field "${path}" is deprecated. Use "${newFieldPath}" instead.`
+          `'${path}': The field '${oldField}' is deprecated. Use '${newField}' instead.`
         );
       }
     }
-    context[newField] = value;
-    return undefined;
+    return {
+      [newField]: newValue || validatedOldValue,
+      ...otherValues
+    };
   };

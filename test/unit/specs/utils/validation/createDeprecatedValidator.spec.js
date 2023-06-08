@@ -18,24 +18,34 @@ describe("validation::deprecated", () => {
     { value: { old: "a", new: "a" }, expected: { new: "a" }, warning: true },
     { value: { old: "a" }, expected: { new: "a" }, warning: true },
     { value: { new: "a" } },
-    { value: { old: "a", new: "b" }, error: true }
+    { value: { old: "a", new: "b" }, error: true },
+    { value: "foo", error: true },
+    { value: 1, error: true },
+    { value: undefined }
   ];
 
   describeValidation(
-    "deprecated first",
+    "works for a single deprecated field",
     objectOf({
-      old: string().deprecated("new"),
       new: string().required()
-    }),
+    }).deprecated("old", string(), "new"),
     testCases
   );
 
   describeValidation(
-    "deprecated last",
+    "works for multiple deprecated fields",
     objectOf({
-      new: string().required(),
-      old: string().deprecated("new")
-    }),
-    testCases
+      new1: string().required(),
+      new2: string().required()
+    })
+      .deprecated("old1", string(), "new1")
+      .deprecated("old2", string(), "new2"),
+    [
+      {
+        value: { old1: "a", old2: "b" },
+        expected: { new1: "a", new2: "b" },
+        warning: true
+      }
+    ]
   );
 });

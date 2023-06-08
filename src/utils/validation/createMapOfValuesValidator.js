@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import isObject from "../isObject";
-import assertValid from "./assertValid";
+import { assertValid } from "./utils";
 
 export default valueValidator =>
   function mapOfValues(value, path) {
