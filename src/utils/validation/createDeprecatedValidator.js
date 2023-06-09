@@ -24,14 +24,14 @@ export default (oldField, oldSchema, newField) =>
     const validatedOldValue = oldSchema(oldValue, path);
 
     if (validatedOldValue !== undefined) {
+      let message = `The field '${oldField}' is deprecated. Use '${newField}' instead.`;
+      if (path) {
+        message = `'${path}': ${message}`;
+      }
       if (newValue !== undefined && newValue !== validatedOldValue) {
-        throw new Error(
-          `'${path}': The field '${oldField}' is deprecated. Use '${newField}' instead.`
-        );
+        throw new Error(message);
       } else if (this && this.logger) {
-        this.logger.warn(
-          `'${path}': The field '${oldField}' is deprecated. Use '${newField}' instead.`
-        );
+        this.logger.warn(message);
       }
     }
     return {
