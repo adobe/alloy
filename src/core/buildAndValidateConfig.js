@@ -13,10 +13,10 @@ import { assign } from "../utils";
 
 const CONFIG_DOC_URI = "https://adobe.ly/3sHh553";
 
-const transformOptions = (combinedConfigValidator, options) => {
+const transformOptions = ({ combinedConfigValidator, options, logger }) => {
   try {
     const validator = combinedConfigValidator.noUnknownFields().required();
-    return validator(options);
+    return validator.call({ logger }, options);
   } catch (e) {
     throw new Error(
       `Resolve these configuration problems:\n\t - ${e.message
@@ -60,7 +60,7 @@ export default ({
       coreConfigValidators
     );
   const config = createConfig(
-    transformOptions(combinedConfigValidator, options)
+    transformOptions({ combinedConfigValidator, options, logger })
   );
   setDebugEnabled(config.debugEnabled, { fromConfig: true });
   // eslint-disable-next-line no-underscore-dangle

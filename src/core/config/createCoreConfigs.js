@@ -26,7 +26,7 @@ export default () =>
   objectOf({
     debugEnabled: boolean().default(false),
     defaultConsent: enumOf(IN, OUT, PENDING).default(IN),
-    edgeConfigId: string()
+    datastreamId: string()
       .unique()
       .required(),
     edgeDomain: string()
@@ -40,4 +40,4 @@ export default () =>
       .required(),
     onBeforeEventSend: callback().default(noop),
     edgeConfigOverrides: validateConfigOverride
-  });
+  }).deprecated("edgeConfigId", string().unique(), "datastreamId");

@@ -92,8 +92,13 @@ describe("createCoreConfigs", () => {
 
   [
     { edgeConfigId: "", orgId: "" },
+    { datastreamId: "asdfasdf", orgId: "" },
     {
       edgeConfigId: "myproperty1",
+      orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
+    },
+    {
+      datastreamId: "myproperty1",
       orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
     },
     {
