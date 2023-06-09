@@ -20,7 +20,10 @@ describe("componentCreators", () => {
       expect(componentCreator.namespace).toEqual(jasmine.any(String));
 
       if (componentCreator.configValidators) {
-        expect(componentCreator.configValidators).toEqual(jasmine.any(Object));
+        // should export a validator function
+        expect(componentCreator.configValidators).toEqual(
+          jasmine.any(Function)
+        );
       }
     });
   });

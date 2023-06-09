@@ -10,25 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { assign } from "../utils";
-import { objectOf } from "../utils/validation";
 
 const CONFIG_DOC_URI = "https://adobe.ly/3sHh553";
 
-const buildSchema = (coreConfigValidators, componentCreators) => {
-  const schema = {};
-  assign(schema, coreConfigValidators);
-  componentCreators.forEach(createComponent => {
-    const { configValidators } = createComponent;
-    assign(schema, configValidators);
-  });
-  return schema;
-};
-
-const transformOptions = (schema, options) => {
+const transformOptions = (combinedConfigValidator, options) => {
   try {
-    const validator = objectOf(schema)
-      .noUnknownFields()
-      .required();
+    const validator = combinedConfigValidator.noUnknownFields().required();
     return validator(options);
   } catch (e) {
     throw new Error(
@@ -65,8 +52,16 @@ export default ({
   logger,
   setDebugEnabled
 }) => {
-  const schema = buildSchema(coreConfigValidators, componentCreators);
-  const config = createConfig(transformOptions(schema, options));
+  const combinedConfigValidator = componentCreators
+    .map(({ configValidators }) => configValidators)
+    .filter(configValidators => configValidators)
+    .reduce(
+      (validator, configValidators) => validator.concat(configValidators),
+      coreConfigValidators
+    );
+  const config = createConfig(
+    transformOptions(combinedConfigValidator, options)
+  );
   setDebugEnabled(config.debugEnabled, { fromConfig: true });
   // eslint-disable-next-line no-underscore-dangle
   const extraParams = buildAllOnInstanceConfiguredExtraParams(

@@ -11,27 +11,31 @@ governing permissions and limitations under the License.
 */
 
 import createCoreConfigs from "../../../../../src/core/config/createCoreConfigs";
-import { objectOf } from "../../../../../src/utils/validation";
 import { IN, OUT, PENDING } from "../../../../../src/constants/consentStatus";
 
 describe("createCoreConfigs", () => {
+  let validator;
   const baseConfig = { edgeConfigId: "1234", orgId: "org1" };
+
+  beforeEach(() => {
+    validator = createCoreConfigs();
+  });
 
   describe("debugEnabled", () => {
     it("validates debugEnabled=undefined", () => {
-      const config = objectOf(createCoreConfigs())(baseConfig);
+      const config = validator(baseConfig);
       expect(config.debugEnabled).toBe(false);
     });
 
     it("validates debugEnabled=true", () => {
-      const config = objectOf(createCoreConfigs())({
+      const config = validator({
         debugEnabled: true,
         ...baseConfig
       });
       expect(config.debugEnabled).toBe(true);
     });
     it("validates debugEnabled=false", () => {
-      const config = objectOf(createCoreConfigs())({
+      const config = validator({
         debugEnabled: false,
         ...baseConfig
       });
@@ -40,33 +44,33 @@ describe("createCoreConfigs", () => {
 
     it("validates debugEnabled=123", () => {
       expect(() => {
-        objectOf(createCoreConfigs())({ debugEnabled: 123, ...baseConfig });
+        validator({ debugEnabled: 123, ...baseConfig });
       }).toThrowError();
     });
   });
 
   describe("defaultConsent", () => {
     it("validates defaultConsent=undefined", () => {
-      const config = objectOf(createCoreConfigs())(baseConfig);
+      const config = validator(baseConfig);
       expect(config.defaultConsent).toEqual(IN);
     });
     it("validates defaultConsent={}", () => {
       expect(() => {
-        objectOf(createCoreConfigs())({
+        validator({
           defaultConsent: {},
           ...baseConfig
         });
       }).toThrowError();
     });
     it("validates defaultConsent='in'", () => {
-      const config = objectOf(createCoreConfigs())({
+      const config = validator({
         defaultConsent: IN,
         ...baseConfig
       });
       expect(config.defaultConsent).toEqual(IN);
     });
     it("validates defaultConsent='pending'", () => {
-      const config = objectOf(createCoreConfigs())({
+      const config = validator({
         defaultConsent: PENDING,
         ...baseConfig
       });
@@ -74,11 +78,11 @@ describe("createCoreConfigs", () => {
     });
     it("validates defaultConsent=123", () => {
       expect(() => {
-        objectOf(createCoreConfigs())({ defaultConsent: 123, ...baseConfig });
+        validator({ defaultConsent: 123, ...baseConfig });
       }).toThrowError();
     });
     it("validates defaultConsent='out'", () => {
-      const config = objectOf(createCoreConfigs())({
+      const config = validator({
         defaultConsent: OUT,
         ...baseConfig
       });
@@ -122,7 +126,7 @@ describe("createCoreConfigs", () => {
     }
   ].forEach((cfg, i) => {
     it(`validates configuration (${i})`, () => {
-      objectOf(createCoreConfigs())(cfg);
+      validator(cfg);
     });
   });
 
@@ -141,12 +145,11 @@ describe("createCoreConfigs", () => {
     }
   ].forEach((cfg, i) => {
     it(`invalidates configuration (${i})`, () => {
-      expect(() => objectOf(createCoreConfigs())(cfg)).toThrowError();
+      expect(() => validator(cfg)).toThrowError();
     });
   });
 
   it("invalidates duplicate configIds", () => {
-    const validator = objectOf(createCoreConfigs());
     const config1 = { edgeConfigId: "property1", orgId: "ims1" };
     const config2 = { edgeConfigId: "property2", orgId: "ims2" };
     const config3 = { edgeConfigId: "property1", orgId: "ims3" };
@@ -157,7 +160,6 @@ describe("createCoreConfigs", () => {
   });
 
   it("invalidates duplicate orgIds", () => {
-    const validator = objectOf(createCoreConfigs());
     const config1 = { edgeConfigId: "a", orgId: "a" };
     const config2 = { edgeConfigId: "b", orgId: "b" };
     const config3 = { edgeConfigId: "c", orgId: "a" };
