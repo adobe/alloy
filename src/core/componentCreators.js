@@ -22,6 +22,7 @@ import createPrivacy from "../components/Privacy";
 import createEventMerge from "../components/EventMerge";
 import createLibraryInfo from "../components/LibraryInfo";
 import createMachineLearning from "../components/MachineLearning";
+import createMediaAnalytics from "../components/MediaAnalytics";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
 // TODO: Figure out how sub-components will be made available/registered
@@ -35,5 +36,6 @@ export default [
   createPrivacy,
   createEventMerge,
   createLibraryInfo,
-  createMachineLearning
+  createMachineLearning,
+  createMediaAnalytics
 ];
