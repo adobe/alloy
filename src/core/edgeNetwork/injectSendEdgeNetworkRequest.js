@@ -26,7 +26,7 @@ export default ({
   getLocationHint,
   getAssuranceValidationTokenParams
 }) => {
-  const { edgeDomain, edgeBasePath, edgeConfigId } = config;
+  const { edgeDomain, edgeBasePath, edgeConfigId, datastreamId } = config;
 
   /**
    * Sends a network request that is aware of payload interfaces,
@@ -59,7 +59,8 @@ export default ({
         const edgeBasePathWithLocationHint = locationHint
           ? `${edgeBasePath}/${locationHint}`
           : edgeBasePath;
-        const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${edgeConfigId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
+        const configId = datastreamId;
+        const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${configId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
         cookieTransfer.cookiesToPayload(request.getPayload(), endpointDomain);
         return sendNetworkRequest({
           requestId: request.getId(),
