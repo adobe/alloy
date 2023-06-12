@@ -15,7 +15,7 @@ import { IN, OUT, PENDING } from "../../../../../src/constants/consentStatus";
 
 describe("createCoreConfigs", () => {
   let validator;
-  const baseConfig = { edgeConfigId: "1234", orgId: "org1" };
+  const baseConfig = { datastreamId: "1234", orgId: "org1" };
 
   beforeEach(() => {
     validator = createCoreConfigs();
@@ -91,10 +91,10 @@ describe("createCoreConfigs", () => {
   });
 
   [
-    { edgeConfigId: "", orgId: "" },
     { datastreamId: "asdfasdf", orgId: "" },
+    { edgeConfigId: "asdfasdf", orgId: "" },
     {
-      edgeConfigId: "myproperty1",
+      datastreamId: "myproperty1",
       orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
     },
     {
@@ -102,22 +102,22 @@ describe("createCoreConfigs", () => {
       orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
     },
     {
-      edgeConfigId: "myproperty1",
+      datastreamId: "myproperty1",
       edgeDomain: "stats.firstparty.com",
       orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
     },
     {
-      edgeConfigId: "myproperty1",
+      datastreamId: "myproperty1",
       edgeDomain: "STATS.FIRSTPARTY.COM",
       orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
     },
     {
-      edgeConfigId: "myproperty1",
+      datastreamId: "myproperty1",
       edgeDomain: "STATS.FIRSTPARTY.COM",
       orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg"
     },
     {
-      edgeConfigId: "myproperty1",
+      datastreamId: "myproperty1",
       edgeDomain: "STATS.FIRSTPARTY.COM",
       orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
       configurationOverrides: {
@@ -137,15 +137,15 @@ describe("createCoreConfigs", () => {
 
   [
     {},
-    { edgeConfigId: "myproperty1", edgeDomain: "" },
-    { edgeConfigId: "myproperty1", edgeDomain: "stats firstparty.com" },
+    { datastreamId: "myproperty1", edgeDomain: "" },
+    { datastreamId: "myproperty1", edgeDomain: "stats firstparty.com" },
     {
-      edgeConfigId: "myproperty1",
+      datastreamId: "myproperty1",
       edgeDomain: "stats firstparty.com",
       prehidingStyle: ""
     },
     {
-      edgeConfigId: "myproperty1",
+      datastreamId: "myproperty1",
       edgeBasePath: 123
     }
   ].forEach((cfg, i) => {
@@ -155,9 +155,9 @@ describe("createCoreConfigs", () => {
   });
 
   it("invalidates duplicate configIds", () => {
-    const config1 = { edgeConfigId: "property1", orgId: "ims1" };
-    const config2 = { edgeConfigId: "property2", orgId: "ims2" };
-    const config3 = { edgeConfigId: "property1", orgId: "ims3" };
+    const config1 = { datastreamId: "property1", orgId: "ims1" };
+    const config2 = { datastreamId: "property2", orgId: "ims2" };
+    const config3 = { datastreamId: "property1", orgId: "ims3" };
 
     validator(config1);
     validator(config2);
@@ -165,9 +165,9 @@ describe("createCoreConfigs", () => {
   });
 
   it("invalidates duplicate orgIds", () => {
-    const config1 = { edgeConfigId: "a", orgId: "a" };
-    const config2 = { edgeConfigId: "b", orgId: "b" };
-    const config3 = { edgeConfigId: "c", orgId: "a" };
+    const config1 = { datastreamId: "a", orgId: "a" };
+    const config2 = { datastreamId: "b", orgId: "b" };
+    const config3 = { datastreamId: "c", orgId: "a" };
 
     validator(config1);
     validator(config2);
