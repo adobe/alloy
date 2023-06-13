@@ -44,6 +44,23 @@ const buildAllOnInstanceConfiguredExtraParams = (
   );
 };
 
+const wrapLoggerInQueue = logger => {
+  const queue = [];
+  const queuedLogger = {
+    flush() {
+      queue.forEach(({ method, args }) => logger[method](...args));
+    }
+  };
+  Object.keys(logger)
+    .filter(key => typeof logger[key] === "function")
+    .forEach(method => {
+      queuedLogger[method] = (...args) => {
+        queue.push({ method, args });
+      };
+    });
+  return queuedLogger;
+};
+
 export default ({
   options,
   componentCreators,
@@ -52,6 +69,9 @@ export default ({
   logger,
   setDebugEnabled
 }) => {
+  // We wrap the logger in a queue in case debugEnabled is set in the config
+  // but we need to log something before the config is created.
+  const queuedLogger = wrapLoggerInQueue(logger);
   const combinedConfigValidator = componentCreators
     .map(({ configValidators }) => configValidators)
     .filter(configValidators => configValidators)
@@ -60,9 +80,10 @@ export default ({
       coreConfigValidators
     );
   const config = createConfig(
-    transformOptions({ combinedConfigValidator, options, logger })
+    transformOptions({ combinedConfigValidator, options, logger: queuedLogger })
   );
   setDebugEnabled(config.debugEnabled, { fromConfig: true });
+  queuedLogger.flush();
   // eslint-disable-next-line no-underscore-dangle
   const extraParams = buildAllOnInstanceConfiguredExtraParams(
     config,

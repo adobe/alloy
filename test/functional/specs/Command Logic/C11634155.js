@@ -18,6 +18,7 @@ import createFixture from "../../helpers/createFixture";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions";
+import createConsoleLogger from "../../helpers/consoleLogger";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled, {
@@ -36,15 +37,18 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C11634155: Deprecates options like edgeConfigId and warns with use", async t => {
-  const alloy = createAlloyProxy();
-  await t.debug();
-  const warning = await alloy.configureErrorMessage(config);
+test("Test C11634155: Deprecates options like edgeConfigId and warns with use", async () => {
+  const logger = await createConsoleLogger();
 
-  await t.expect(warning).match(/The field 'edgeConfigId' is deprecated./);
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+
+  await logger.warn.expectMessageMatching(
+    /The field 'edgeConfigId' is deprecated./
+  );
 });
 
-test.skip("Test C11634155: When specifying a deprecated option like edgeConfigId, it uses the specified alternative, datastreamId", async t => {
+test("Test C11634155: When specifying a deprecated option like edgeConfigId, it uses the specified alternative, datastreamId", async t => {
   const alloy = createAlloyProxy();
   await alloy.configureAsync(config);
 
