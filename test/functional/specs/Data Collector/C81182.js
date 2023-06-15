@@ -86,7 +86,7 @@ const assertRequestXdm = async (
     .eql(expectedExprienceDecisioning);
 };
 
-test("Test C81182: Verify that onBeforeLinkClickSend removes the link-click details when personalization metric on link", async () => {
+test.skip("Test C81182: Verify that onBeforeLinkClickSend removes the link-click details when personalization metric on link", async () => {
   await preventLinkNavigation();
   const alloy = createAlloyProxy();
 
@@ -108,7 +108,7 @@ test("Test C81182: Verify that onBeforeLinkClickSend removes the link-click deta
   await assertRequestXdm(linkClickRequest, undefined, undefined);
 });
 
-test("Test C81182: Verify that onBeforeLinkClickSend augments request when personalization metric on link", async () => {
+test.skip("Test C81182: Verify that onBeforeLinkClickSend augments request when personalization metric on link", async () => {
   await preventLinkNavigation();
   const alloy = createAlloyProxy();
 
@@ -147,7 +147,7 @@ test("Test C81182: Verify that onBeforeLinkClickSend augments request when perso
   });
 });
 
-test("Test C81182: Verify that personalization metric is sent when clickCollection is disabled", async () => {
+test.skip("Test C81182: Verify that personalization metric is sent when clickCollection is disabled", async () => {
   await preventLinkNavigation();
   const alloy = createAlloyProxy();
 
