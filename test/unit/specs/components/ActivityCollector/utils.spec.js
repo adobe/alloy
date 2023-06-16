@@ -14,7 +14,8 @@ import {
   getAbsoluteUrlFromAnchorElement,
   isSupportedAnchorElement,
   isDownloadLink,
-  isExitLink
+  isExitLink,
+  trimQueryFromUrl
 } from "../../../../../src/components/ActivityCollector/utils";
 
 import configValidators from "../../../../../src/components/ActivityCollector/configValidators";
@@ -190,6 +191,23 @@ describe("ActivityCollector::utils", () => {
       const clickedLinks = ["https://adobe.com", "http://adobe.com/index.html"];
       clickedLinks.forEach(clickedLink => {
         expect(isExitLink(mockWindow, clickedLink)).toBe(false);
+      });
+    });
+  });
+  describe("trimQueryFromUrl", () => {
+    it("Removes query portion from URL", () => {
+      const urls = [
+        ["http://example.com", "http://example.com"],
+        [
+          "https://example.com:123/example?example=123",
+          "https://example.com:123/example"
+        ],
+        ["file://example.txt", "file://example.txt"],
+        ["http://example.com/?example=123", "http://example.com/"],
+        ["http://example.com/#example", "http://example.com/"]
+      ];
+      urls.forEach(url => {
+        expect(trimQueryFromUrl(url[0])).toBe(url[1]);
       });
     });
   });
