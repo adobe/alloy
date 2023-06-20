@@ -47,6 +47,9 @@ const buildAllOnInstanceConfiguredExtraParams = (
 const wrapLoggerInQueue = logger => {
   const queue = [];
   const queuedLogger = {
+    get enabled() {
+      return logger.enabled;
+    },
     flush() {
       queue.forEach(({ method, args }) => logger[method](...args));
     }
