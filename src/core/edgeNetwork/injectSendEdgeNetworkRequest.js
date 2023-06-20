@@ -26,7 +26,7 @@ export default ({
   getLocationHint,
   getAssuranceValidationTokenParams
 }) => {
-  const { edgeDomain, edgeBasePath, edgeConfigId, datastreamId } = config;
+  const { edgeDomain, edgeBasePath, datastreamId } = config;
 
   /**
    * Sends a network request that is aware of payload interfaces,
