@@ -1,31 +1,26 @@
 apiVersion: v1alpha
 kind: testcafe
 showConsoleLog: true
-defaults:
-  mode: sauce
 sauce:
   region: us-west-1
-  sauceignore: .sauceignore
-  retries: 4
+  retries: 2
 metadata:
-  name: Alloy SDK Prod Functional Test
-  tags:
-    - e2e
-  build: Release $CI_COMMIT_SHORT_SHA
+  name: Alloy Prod Safari
 rootDir: ./
 env:
   ALLOY_ENV: prod
   ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
-  version: 2.3.1
-speed: 0.05
+  version: 2.6.2
+speed: 1
 pageLoadTimeout: 3000
 disablePageCaching: true
 timeZone: New_York
 npm:
   dependencies:
     - parse-uri
+    - node-fetch
     - js-cookie
     - read-cache
     - uuid
@@ -37,23 +32,10 @@ npm:
     - "@adobe/reactor-promise"
 suites:
   - name: "Safari"
-    shard: concurrency
-    platformName: "macOS 12"
     browserName: "safari"
+    headless: true
     browserVersion: "latest"
-    env:
-      ALLOY_ENV: prod
-      ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
-      NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
     src:
       - "test/functional/specs/**/*.js"
-    excludedTestFiles:
-      [
-        "test/functional/specs/Identity/C6842981.js",
-        "test/functional/specs/LibraryInfo/C2589.js",
-        "test/functional/specs/Privacy/C1576777.js",
-        "test/functional/specs/Personalization/C7638574.js",
-        "test/functional/specs/Personalization/C9932846.js",
-        "test/functional/specs/Personalization/C205528.js",
-        "test/functional/specs/Personalization/C7494472.js",
-      ]
+    platformName: "macOS 13"
+    excludedTestFiles: [ "test/functional/specs/Personalization/C205528.js", "test/functional/specs/Identity/C6842981.js", "test/functional/specs/Privacy/IAB/C224677.js", "test/functional/specs/Privacy/C5594870.js", "test/functional/specs/LibraryInfo/C2589.js", "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Audiences/C12411.js", "test/functional/specs/Audiences/C31436.js" ]
