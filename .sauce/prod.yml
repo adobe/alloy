@@ -1,0 +1,68 @@
+apiVersion: v1alpha
+kind: testcafe
+showConsoleLog: true
+sauce:
+  region: us-west-1
+  retries: 2
+metadata:
+  name: Alloy Prod
+rootDir: ./
+env:
+  ALLOY_ENV: prod
+  ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
+  NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
+testcafe:
+  version: 2.6.2
+speed: 1
+pageLoadTimeout: 3000
+disablePageCaching: true
+timeZone: New_York
+npm:
+  dependencies:
+    - parse-uri
+    - node-fetch
+    - js-cookie
+    - read-cache
+    - uuid
+    - css.escape
+    - "@adobe/reactor-object-assign"
+    - "@adobe/reactor-load-script"
+    - "@adobe/reactor-cookie"
+    - "@adobe/reactor-query-string"
+    - "@adobe/reactor-promise"
+suites:
+  - name: "Chrome"
+    browserName: "chrome"
+    headless: true
+    browserVersion: "latest"
+    src:
+      - "test/functional/specs/**/*.js"
+    platformName: "Windows 11"
+    excludedTestFiles: [ "test/functional/specs/Data Collector/C81182.js", "test/functional/specs/Privacy/C5594870.js", "test/functional/specs/Personalization/C7494472.js", "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Audiences/C12411.js", "test/functional/specs/Audiences/C31436.js" ]
+
+  - name: "Edge"
+    browserName: "microsoftedge"
+    headless: true
+    browserVersion: "latest"
+    src:
+      - "test/functional/specs/**/*.js"
+    platformName: "Windows 11"
+    excludedTestFiles: [ "test/functional/specs/Data Collector/C81182.js", "test/functional/specs/Personalization/C782718.js", "test/functional/specs/Privacy/C5594870.js", "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Audiences/C12411.js", "test/functional/specs/Audiences/C31436.js"]
+
+  - name: "Firefox"
+    browserName: "firefox"
+    headless: true
+    browserVersion: "latest"
+    src:
+      - "test/functional/specs/**/*.js"
+    platformName: "Windows 11"
+    excludedTestFiles: [ "test/functional/specs/Data Collector/C81182.js", "test/functional/specs/Privacy/C2593.js", "test/functional/specs/Privacy/C5594870.js", "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Audiences/C12411.js", "test/functional/specs/Audiences/C31436.js" ]
+
+  - name: "Safari"
+    browserName: "safari"
+    headless: true
+    browserVersion: "latest"
+    src:
+      - "test/functional/specs/**/*.js"
+    platformName: "macOS 13"
+    excludedTestFiles: [ "test/functional/specs/Personalization/C205528.js", "test/functional/specs/Identity/C6842981.js", "test/functional/specs/Privacy/IAB/C224677.js", "test/functional/specs/Privacy/C5594870.js", "test/functional/specs/LibraryInfo/C2589.js", "test/functional/specs/Privacy/C1576777.js", "test/functional/specs/Audiences/C12411.js", "test/functional/specs/Audiences/C31436.js" ]
