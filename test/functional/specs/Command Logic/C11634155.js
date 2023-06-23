@@ -48,6 +48,18 @@ test("Test C11634155: Deprecates options like edgeConfigId and warns with use", 
   );
 });
 
+test("Test C11634155: Deprecates options like edgeConfigId and warns when both are used", async () => {
+  const logger = await createConsoleLogger();
+  const configWithBoth = { ...config, datastreamId: config.edgeConfigId };
+
+  const alloy = createAlloyProxy();
+  await alloy.configure(configWithBoth);
+
+  await logger.warn.expectMessageMatching(
+    /The field 'edgeConfigId' is deprecated./
+  );
+});
+
 test("Test C11634155: When specifying a deprecated option like edgeConfigId, it uses the specified alternative, datastreamId", async t => {
   const alloy = createAlloyProxy();
   await alloy.configureAsync(config);
