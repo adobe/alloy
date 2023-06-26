@@ -44,6 +44,5 @@ const createAudiences = ({ logger, fireReferrerHideableImage }) => {
 };
 
 createAudiences.namespace = "Audiences";
-createAudiences.configValidators = {};
 
 export default createAudiences;

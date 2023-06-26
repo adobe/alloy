@@ -22,6 +22,5 @@ const createMachineLearning = () => {
 };
 
 createMachineLearning.namespace = "MachineLearning";
-createMachineLearning.configValidators = {};
 
 export default createMachineLearning;

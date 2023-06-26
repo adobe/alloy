@@ -20,7 +20,7 @@ describe("injectSendEdgeNetworkRequest", () => {
   const config = createConfig({
     edgeDomain: "edge.example.com",
     edgeBasePath: "ee",
-    edgeConfigId: "myconfigId"
+    datastreamId: "myconfigId"
   });
   let logger;
   let lifecycle;

@@ -18,6 +18,5 @@ const createEventMerge = () => {
 };
 
 createEventMerge.namespace = "EventMerge";
-createEventMerge.configValidators = {};
 
 export default createEventMerge;

@@ -12,15 +12,15 @@ governing permissions and limitations under the License.
 
 import createLinkClick from "../../../../../src/components/ActivityCollector/createLinkClick";
 import createEvent from "../../../../../src/core/createEvent";
-import configValidators from "../../../../../src/components/ActivityCollector/configValidators";
+import { downloadLinkQualifier as dlwValidator } from "../../../../../src/components/ActivityCollector/configValidators";
 
 describe("ActivityCollector::createLinkClick", () => {
   const getLinkDetails = jasmine.createSpy("getLinkDetails");
+  const downloadLinkQualifier = dlwValidator();
 
   it("Extends event XDM data with link information for supported anchor elements when clickCollectionEnabled", () => {
     const config = {
-      downloadLinkQualifier:
-        configValidators.downloadLinkQualifier.defaultValue,
+      downloadLinkQualifier,
       clickCollectionEnabled: true
     };
     const linkClick = createLinkClick({ getLinkDetails, config });
@@ -42,8 +42,7 @@ describe("ActivityCollector::createLinkClick", () => {
   it("does not extend event XDM data when clickCollectionEnabled is false", () => {
     const event = createEvent();
     const config = {
-      downloadLinkQualifier:
-        configValidators.downloadLinkQualifier.defaultValue,
+      downloadLinkQualifier,
       clickCollectionEnabled: false
     };
 
@@ -65,8 +64,7 @@ describe("ActivityCollector::createLinkClick", () => {
   it("Does not extend event XDM data with link information for unsupported anchor elements", () => {
     const event = createEvent();
     const config = {
-      downloadLinkQualifier:
-        configValidators.downloadLinkQualifier.defaultValue,
+      downloadLinkQualifier,
       clickCollectionEnabled: true
     };
 
