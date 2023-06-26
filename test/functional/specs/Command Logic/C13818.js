@@ -23,13 +23,13 @@ const networkLoggerConfig = {
 };
 const networkLogger1 = RequestLogger(
   new RegExp(
-    `v1\\/(interact|collect)\\?configId=${orgMainConfigMain.edgeConfigId}`
+    `v1\\/(interact|collect)\\?configId=${orgMainConfigMain.datastreamId}`
   ),
   networkLoggerConfig
 );
 const networkLogger2 = RequestLogger(
   new RegExp(
-    `v1\\/(interact|collect)\\?configId=${orgAltConfigAlt.edgeConfigId}`
+    `v1\\/(interact|collect)\\?configId=${orgAltConfigAlt.datastreamId}`
   ),
   networkLoggerConfig
 );

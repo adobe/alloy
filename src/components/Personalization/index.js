@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, boolean } from "../../utils/validation";
+import { string, boolean, objectOf } from "../../utils/validation";
 import createComponent from "./createComponent";
 import { initDomActionsModules, executeActions } from "./dom-actions";
 import createCollect from "./createCollect";
@@ -111,9 +111,9 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
 createPersonalization.namespace = "Personalization";
 
-createPersonalization.configValidators = {
+createPersonalization.configValidators = objectOf({
   prehidingStyle: string().nonEmpty(),
   targetMigrationEnabled: boolean().default(false)
-};
+});
 
 export default createPersonalization;
