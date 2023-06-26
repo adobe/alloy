@@ -21,7 +21,7 @@ export default function OrgTwo() {
         <code>
           {`
                 organizationTwo("configure", {
-                  edgeConfigId: 8888888,
+                  datastreamId: 8888888,
                     log: true
                 });
             `}
