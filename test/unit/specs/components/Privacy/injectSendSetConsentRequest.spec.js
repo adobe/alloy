@@ -111,7 +111,7 @@ describe("Privacy:injectSendSetConsentRequest", () => {
     });
   });
 
-  it("sets the override for the edgeConfigId, if provided", () => {
+  it("sets the override for the datastreamId, if provided", () => {
     sendEdgeNetworkRequest.and.returnValue(Promise.resolve());
     return sendSetConsentRequest({
       consentOptions: "anything",
@@ -120,13 +120,13 @@ describe("Privacy:injectSendSetConsentRequest", () => {
         b: [{ id: "3" }]
       },
       edgeConfigOverrides: {
-        edgeConfigId: "123"
+        datastreamId: "123"
       }
     }).then(() => {
       expect(requestPayload.setConsent).toHaveBeenCalledWith("anything");
       expect(createConsentRequest).toHaveBeenCalledWith({
         payload: jasmine.any(Object),
-        edgeConfigIdOverride: "123"
+        datastreamIdOverride: "123"
       });
     });
   });

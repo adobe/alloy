@@ -197,19 +197,19 @@ test("Test C7437530: empty configuration overrides should not be sent to the Edg
   await t.expect(request.meta.state.domain).ok();
 });
 
-test("Test C7437530: `sendEvent` can override the edgeConfigId", async () => {
+test("Test C7437530: `sendEvent` can override the datastreamId", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  const { edgeConfigId: originalEdgeConfigId } = config;
-  const alternateEdgeConfigId = `${originalEdgeConfigId}:dev`;
+  const { datastreamId: originalDatastreamId } = config;
+  const alternateDatastreamId = `${originalDatastreamId}:dev`;
   await alloy.sendEvent({
     edgeConfigOverrides: {
-      edgeConfigId: alternateEdgeConfigId
+      datastreamId: alternateDatastreamId
     }
   });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
   const [request] = networkLogger.edgeEndpointLogs.requests;
-  await t.expect(request.request.url).contains(alternateEdgeConfigId);
+  await t.expect(request.request.url).contains(alternateDatastreamId);
 });

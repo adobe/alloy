@@ -10,23 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 /**
- * @typedef {{ edgeConfigId: string, [k: string]: Object }} Override
+ * @typedef {{ datastreamId: string, [k: string]: Object }} Override
  * @typedef {Object} RequestPayload
  * @property {function(Override): void} mergeConfigOverride
  * @param {Object} params
  * @param {Override} params.localConfigOverrides
  * @param {Override} params.globalConfigOverrides
  * @param {RequestPayload} params.payload
- * @returns {{ payload: RequestPayload, edgeConfigIdOverride: string }}
+ * @returns {{ payload: RequestPayload, datastreamIdOverride: string }}
  */
 export default ({ localConfigOverrides, globalConfigOverrides, payload }) => {
   const requestParams = { payload };
-  const { edgeConfigId, ...localConfigOverridesWithoutEdgeConfigId } =
+  const { datastreamId, ...localConfigOverridesWithoutDatastreamId } =
     localConfigOverrides || {};
-  if (edgeConfigId) {
-    requestParams.edgeConfigIdOverride = edgeConfigId;
+  if (datastreamId) {
+    requestParams.datastreamIdOverride = datastreamId;
   }
   payload.mergeConfigOverride(globalConfigOverrides);
-  payload.mergeConfigOverride(localConfigOverridesWithoutEdgeConfigId);
+  payload.mergeConfigOverride(localConfigOverridesWithoutDatastreamId);
   return requestParams;
 };

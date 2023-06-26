@@ -18,7 +18,7 @@ export default options => {
     payload,
     getAction,
     getUseSendBeacon,
-    edgeConfigIdOverride
+    datastreamIdOverride
   } = options;
   const id = uuid();
   let shouldUseThirdPartyDomain = false;
@@ -34,8 +34,8 @@ export default options => {
     getAction() {
       return getAction({ isIdentityEstablished });
     },
-    getEdgeConfigIdOverride() {
-      return edgeConfigIdOverride;
+    getDatastreamIdOverride() {
+      return datastreamIdOverride;
     },
     getUseSendBeacon() {
       return getUseSendBeacon({ isIdentityEstablished });

@@ -172,13 +172,13 @@ describe("Identity::createGetIdentity", () => {
     getIdentity({
       namespaces: ["namespace1"],
       edgeConfigOverrides: {
-        edgeConfigId: "123"
+        datastreamId: "123"
       }
     });
     expect(createIdentityRequestPayload).toHaveBeenCalledWith(["namespace1"]);
     expect(createIdentityRequest).toHaveBeenCalledWith({
       payload: requestPayload,
-      edgeConfigIdOverride: "123"
+      datastreamIdOverride: "123"
     });
     expect(sendEdgeNetworkRequest).toHaveBeenCalledWith({
       request: request1

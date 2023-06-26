@@ -160,15 +160,15 @@ test("Test C7437533: empty configuration overrides should not be sent to the Edg
   await t.expect(request.meta.configOverrides.com_adobe_target).eql(undefined);
 });
 
-test("Test C7437533: `setConsent` can override the edgeConfigId", async () => {
+test("Test C7437533: `setConsent` can override the datastreamId", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  const { edgeConfigId: originalEdgeConfigId } = config;
-  const alternateEdgeConfigId = `${originalEdgeConfigId}:dev`;
+  const { datastreamId: originalDatastreamId } = config;
+  const alternateDatastreamId = `${originalDatastreamId}:dev`;
   await alloy.setConsent(
     compose(IAB_CONSENT_IN, {
       edgeConfigOverrides: {
-        edgeConfigId: alternateEdgeConfigId
+        datastreamId: alternateDatastreamId
       }
     })
   );
@@ -176,5 +176,5 @@ test("Test C7437533: `setConsent` can override the edgeConfigId", async () => {
   await responseStatus(networkLogger.setConsentEndpointLogs.requests, 200);
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
   const [request] = networkLogger.setConsentEndpointLogs.requests;
-  await t.expect(request.request.url).contains(alternateEdgeConfigId);
+  await t.expect(request.request.url).contains(alternateDatastreamId);
 });

@@ -19,16 +19,16 @@ describe("createRequestParams", () => {
     payload = jasmine.createSpyObj("payload", ["mergeConfigOverride"]);
   });
 
-  it("returns the payload and edgeConfigIdOverride", () => {
+  it("returns the payload and datastreamIdOverride", () => {
     const result = createRequestParams({
       payload,
       localConfigOverrides: {
-        edgeConfigId: "123"
+        datastreamId: "123"
       }
     });
     expect(result).toEqual({
       payload,
-      edgeConfigIdOverride: "123"
+      datastreamIdOverride: "123"
     });
   });
 

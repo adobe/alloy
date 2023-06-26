@@ -14,7 +14,7 @@ import createRequest from "./createRequest";
 
 export default ({
   payload: dataCollectionRequestPayload,
-  edgeConfigIdOverride
+  datastreamIdOverride
 }) => {
   const getUseSendBeacon = ({ isIdentityEstablished }) => {
     // When the document may be unloading, we still hit the interact endpoint
@@ -65,6 +65,6 @@ export default ({
         : "interact";
     },
     getUseSendBeacon,
-    edgeConfigIdOverride
+    datastreamIdOverride
   });
 };

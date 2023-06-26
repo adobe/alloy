@@ -376,17 +376,17 @@ describe("createEventManager", () => {
           done();
         });
     });
-    it("includes the edgeConfigId override, if provided", done => {
+    it("includes the datastreamId override, if provided", done => {
       eventManager
         .sendEvent(event, {
           edgeConfigOverrides: {
-            edgeConfigId: "456"
+            datastreamId: "456"
           }
         })
         .then(() => {
           expect(createDataCollectionRequest).toHaveBeenCalledWith({
             payload: jasmine.any(Object),
-            edgeConfigIdOverride: "456"
+            datastreamIdOverride: "456"
           });
           done();
         });

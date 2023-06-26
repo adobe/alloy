@@ -28,13 +28,13 @@ describe("createConsentRequest", () => {
     expect(request.getUseSendBeacon()).toBeFalse();
   });
 
-  it("passes the edgeConfigIdOverride to the request", () => {
+  it("passes the datastreamIdOverride to the request", () => {
     const payload = {};
-    const edgeConfigIdOverride = "my-edge-config-id-override";
+    const datastreamIdOverride = "my-edge-config-id-override";
     const request = createConsentRequest({
       payload,
-      edgeConfigIdOverride
+      datastreamIdOverride
     });
-    expect(request.getEdgeConfigIdOverride()).toBe(edgeConfigIdOverride);
+    expect(request.getDatastreamIdOverride()).toBe(datastreamIdOverride);
   });
 });
