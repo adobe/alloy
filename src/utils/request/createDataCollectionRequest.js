@@ -12,7 +12,10 @@ governing permissions and limitations under the License.
 
 import createRequest from "./createRequest";
 
-export default dataCollectionRequestPayload => {
+export default ({
+  payload: dataCollectionRequestPayload,
+  datastreamIdOverride
+}) => {
   const getUseSendBeacon = ({ isIdentityEstablished }) => {
     // When the document may be unloading, we still hit the interact endpoint
     // using fetch if an identity has not been established. If we were instead
@@ -61,6 +64,7 @@ export default dataCollectionRequestPayload => {
         ? "collect"
         : "interact";
     },
-    getUseSendBeacon
+    getUseSendBeacon,
+    datastreamIdOverride
   });
 };

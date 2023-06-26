@@ -25,6 +25,7 @@ describe("createEventManager", () => {
   let event;
   let requestPayload;
   let request;
+  let createDataCollectionRequest;
   let sendEdgeNetworkRequest;
   let applyResponse;
   let onRequestFailureForOnBeforeEvent;
@@ -72,9 +73,9 @@ describe("createEventManager", () => {
         return requestPayload;
       }
     };
-    const createDataCollectionRequest = () => {
-      return request;
-    };
+    createDataCollectionRequest = jasmine
+      .createSpy("createDataCollectionRequest")
+      .and.returnValue(request);
     sendEdgeNetworkRequest = jasmine
       .createSpy("sendEdgeNetworkRequest")
       .and.returnValue(Promise.resolve());
@@ -371,6 +372,21 @@ describe("createEventManager", () => {
             com_adobe_identity: {
               idSyncContainerId: "123"
             }
+          });
+          done();
+        });
+    });
+    it("includes the datastreamId override, if provided", done => {
+      eventManager
+        .sendEvent(event, {
+          edgeConfigOverrides: {
+            datastreamId: "456"
+          }
+        })
+        .then(() => {
+          expect(createDataCollectionRequest).toHaveBeenCalledWith({
+            payload: jasmine.any(Object),
+            datastreamIdOverride: "456"
           });
           done();
         });

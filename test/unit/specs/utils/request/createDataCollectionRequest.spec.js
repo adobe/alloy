@@ -22,7 +22,7 @@ describe("createDataCollectionRequest", () => {
         return true;
       }
     };
-    const request = createDataCollectionRequest(payload);
+    const request = createDataCollectionRequest({ payload });
     request.setIsIdentityEstablished();
     expect(request.getAction()).toBe("collect");
     expect(request.getUseSendBeacon()).toBeTrue();
@@ -34,7 +34,7 @@ describe("createDataCollectionRequest", () => {
         return true;
       }
     };
-    const request = createDataCollectionRequest(payload);
+    const request = createDataCollectionRequest({ payload });
     expect(request.getAction()).toBe("interact");
     expect(request.getUseSendBeacon()).toBeFalse();
   });
@@ -45,7 +45,7 @@ describe("createDataCollectionRequest", () => {
         return false;
       }
     };
-    const request = createDataCollectionRequest(payload);
+    const request = createDataCollectionRequest({ payload });
     request.setIsIdentityEstablished();
     expect(request.getAction()).toBe("interact");
     expect(request.getUseSendBeacon()).toBeFalse();
@@ -57,8 +57,18 @@ describe("createDataCollectionRequest", () => {
         return false;
       }
     };
-    const request = createDataCollectionRequest(payload);
+    const request = createDataCollectionRequest({ payload });
     expect(request.getAction()).toBe("interact");
     expect(request.getUseSendBeacon()).toBeFalse();
+  });
+
+  it("passes the datastreamIdOverride to the request", () => {
+    const payload = {};
+    const datastreamIdOverride = "my-edge-config-id-override";
+    const request = createDataCollectionRequest({
+      payload,
+      datastreamIdOverride
+    });
+    expect(request.getDatastreamIdOverride()).toBe(datastreamIdOverride);
   });
 });

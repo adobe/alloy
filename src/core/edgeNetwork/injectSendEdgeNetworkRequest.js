@@ -59,7 +59,7 @@ export default ({
         const edgeBasePathWithLocationHint = locationHint
           ? `${edgeBasePath}/${locationHint}`
           : edgeBasePath;
-        const configId = datastreamId;
+        const configId = request.getDatastreamIdOverride() || datastreamId;
         const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${configId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
         cookieTransfer.cookiesToPayload(request.getPayload(), endpointDomain);
         return sendNetworkRequest({

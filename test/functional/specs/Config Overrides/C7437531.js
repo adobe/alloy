@@ -1,3 +1,14 @@
+/*
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
 import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
@@ -148,4 +159,21 @@ test("Test C7437531: empty configuration overrides should not be sent to the Edg
     .expect(request.meta.configOverrides.com_adobe_identity.idSyncContainerId)
     .eql(overrides.com_adobe_identity.idSyncContainerId);
   await t.expect(request.meta.configOverrides.com_adobe_target).eql(undefined);
+});
+
+test("Test C7437531: `getIdentity` can override the datastreamId", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  const { datastreamId: originalDatastreamId } = config;
+  const alternateDatastreamId = `${originalDatastreamId}:dev`;
+  await alloy.getIdentity({
+    edgeConfigOverrides: {
+      datastreamId: alternateDatastreamId
+    }
+  });
+
+  await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
+  await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
+  const [request] = networkLogger.acquireEndpointLogs.requests;
+  await t.expect(request.request.url).contains(alternateDatastreamId);
 });

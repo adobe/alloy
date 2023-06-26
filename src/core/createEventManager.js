@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import PAGE_WIDE_SCOPE from "../constants/pageWideScope";
 import { createCallbackAggregator, noop } from "../utils";
+import { createRequestParams } from "../utils/request";
 
 const EVENT_CANCELLATION_MESSAGE =
   "Event was canceled because the onBeforeEventSend callback returned false.";
@@ -48,6 +49,9 @@ export default ({
      * @param {Object} [options.serverState]
      * This will be passed to components
      * so they can take appropriate action.
+     * @param {Object} [options.edgeConfigOverrides] Settings that take
+     * precedence over the global datastream configuration, including which
+     * datastream to use.
      * @returns {*}
      */
     sendEvent(event, options = {}) {
@@ -57,12 +61,14 @@ export default ({
         edgeConfigOverrides: localConfigOverrides,
         personalization
       } = options;
-      const payload = createDataCollectionRequestPayload();
-      const request = createDataCollectionRequest(payload);
+      const requestParams = createRequestParams({
+        payload: createDataCollectionRequestPayload(),
+        localConfigOverrides,
+        globalConfigOverrides
+      });
+      const request = createDataCollectionRequest(requestParams);
       const onResponseCallbackAggregator = createCallbackAggregator();
       const onRequestFailureCallbackAggregator = createCallbackAggregator();
-      payload.mergeConfigOverride(globalConfigOverrides);
-      payload.mergeConfigOverride(localConfigOverrides);
 
       return lifecycle
         .onBeforeEvent({
@@ -74,7 +80,7 @@ export default ({
           onRequestFailure: onRequestFailureCallbackAggregator.add
         })
         .then(() => {
-          payload.addEvent(event);
+          requestParams.payload.addEvent(event);
           return consent.awaitConsent();
         })
         .then(() => {
@@ -120,7 +126,7 @@ export default ({
       } = options;
 
       const payload = createDataCollectionRequestPayload();
-      const request = createDataCollectionRequest(payload);
+      const request = createDataCollectionRequest({ payload });
       const onResponseCallbackAggregator = createCallbackAggregator();
 
       return lifecycle
