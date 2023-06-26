@@ -12,20 +12,38 @@ governing permissions and limitations under the License.
 
 export default (description, validator, specObjects) => {
   describe(description, () => {
-    specObjects.forEach(({ value, expected = value, error }) => {
-      if (error) {
-        it(`rejects ${JSON.stringify(value)}`, () => {
-          expect(() => validator(value, "mykey")).toThrowMatching(e => {
-            return /'mykey[^']*'(:| is)/.test(e.message);
+    specObjects.forEach(
+      ({ value, expected = value, error = false, warning = false }) => {
+        if (error) {
+          it(`rejects ${JSON.stringify(value)}`, () => {
+            const logger = jasmine.createSpyObj("logger", ["warn"]);
+            expect(() =>
+              validator.call({ logger }, value, "mykey")
+            ).toThrowMatching(e => {
+              return /'mykey[^']*'(:| is)/.test(e.message);
+            });
+            if (warning) {
+              expect(logger.warn).toHaveBeenCalled();
+            } else {
+              expect(logger.warn).not.toHaveBeenCalled();
+            }
           });
-        });
-      } else {
-        it(`transforms \`${JSON.stringify(value)}\` to \`${JSON.stringify(
-          expected
-        )}\``, () => {
-          expect(validator(value, "mykey")).toEqual(expected);
-        });
+        } else {
+          it(`transforms \`${JSON.stringify(value)}\` to \`${JSON.stringify(
+            expected
+          )}\``, () => {
+            const logger = jasmine.createSpyObj("logger", ["warn"]);
+            expect(validator.call({ logger }, value, "mykey")).toEqual(
+              expected
+            );
+            if (warning) {
+              expect(logger.warn).toHaveBeenCalled();
+            } else {
+              expect(logger.warn).not.toHaveBeenCalled();
+            }
+          });
+        }
       }
-    });
+    );
   });
 };
