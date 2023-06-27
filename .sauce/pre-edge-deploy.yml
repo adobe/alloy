@@ -1,17 +1,11 @@
 apiVersion: v1alpha
 kind: testcafe
 showConsoleLog: true
-defaults:
-  mode: sauce
 sauce:
   region: us-west-1
-  sauceignore: .sauceignore
-  retries: 4
+  retries: 2
 metadata:
   name: Alloy SDK Prod ee-pre-prd
-  tags:
-    - e2e
-  build: Release $CI_COMMIT_SHORT_SHA
 rootDir: ./
 env:
   ALLOY_ENV: prod
@@ -19,14 +13,15 @@ env:
   ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
   NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
 testcafe:
-  version: 2.3.1
-speed: 0.05
+  version: 2.6.2
+speed: 1
 pageLoadTimeout: 3000
 disablePageCaching: true
 timeZone: New_York
 npm:
   dependencies:
     - parse-uri
+    - node-fetch
     - js-cookie
     - read-cache
     - uuid
@@ -37,72 +32,35 @@ npm:
     - "@adobe/reactor-query-string"
     - "@adobe/reactor-promise"
 suites:
-  - name: "Firefox"
-    platformName: "Windows 11"
-    browserName: "firefox"
-    browserVersion: "latest"
-    src:
-      - "test/functional/specs/**/*.js"
-    excludedTestFiles:
-      [
-        "test/functional/specs/Privacy/C1576777.js",
-        "test/functional/specs/Personalization/C7638574.js",
-        "test/functional/specs/Personalization/C9932846.js",
-        "test/functional/specs/Personalization/C205528.js",
-        "test/functional/specs/Personalization/C7494472.js",
-      ]
-
-  - name: "Chrome"
-    shard: concurrency
-    platformName: "Windows 11"
-    browserName: "chrome"
-    browserVersion: "latest"
-    src:
-      - "test/functional/specs/**/*.js"
-    excludedTestFiles:
-      [
-        "test/functional/specs/Privacy/C1576777.js",
-        "test/functional/specs/Personalization/C7638574.js",
-        "test/functional/specs/Personalization/C9932846.js",
-        "test/functional/specs/Personalization/C205528.js",
-        "test/functional/specs/Personalization/C7494472.js",
-      ]
-
   - name: "Edge"
-    shard: concurrency
-    platformName: "Windows 11"
     browserName: "microsoftedge"
+    headless: true
     browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
-    excludedTestFiles:
-      [
-        "test/functional/specs/Privacy/C1576777.js",
-        "test/functional/specs/Personalization/C7638574.js",
-        "test/functional/specs/Personalization/C9932846.js",
-        "test/functional/specs/Personalization/C205528.js",
-        "test/functional/specs/Personalization/C7494472.js",
-      ]
-
+    platformName: "Windows 11"
+    excludedTestFiles: [ "test/functional/specs/Personalization/C782718.js", "test/functional/specs/Privacy/C5594870.js"]
   - name: "Safari"
-    shard: concurrency
-    platformName: "macOS 12"
     browserName: "safari"
+    headless: true
     browserVersion: "latest"
-    env:
-      ALLOY_ENV: prod
-      EDGE_BASE_PATH: ee-pre-prd
-      ALLOY_PROD_VERSION: $ALLOY_PROD_VERSION
-      NPM_PACKAGE_VERSION: $NPM_PACKAGE_VERSION
     src:
       - "test/functional/specs/**/*.js"
-    excludedTestFiles:
-      [
-        "test/functional/specs/Identity/C6842981.js",
-        "test/functional/specs/LibraryInfo/C2589.js",
-        "test/functional/specs/Privacy/C1576777.js",
-        "test/functional/specs/Personalization/C7638574.js",
-        "test/functional/specs/Personalization/C9932846.js",
-        "test/functional/specs/Personalization/C205528.js",
-        "test/functional/specs/Personalization/C7494472.js",
-      ]
+    platformName: "macOS 13"
+    excludedTestFiles: [ "test/functional/specs/Personalization/C205528.js", "test/functional/specs/Identity/C6842981.js", "test/functional/specs/Privacy/IAB/C224677.js", "test/functional/specs/Privacy/C5594870.js", "test/functional/specs/LibraryInfo/C2589.js" ]
+  - name: "Firefox"
+    browserName: "firefox"
+    headless: true
+    browserVersion: "latest"
+    src:
+      - "test/functional/specs/**/*.js"
+    platformName: "Windows 11"
+    excludedTestFiles: [ "test/functional/specs/Privacy/C5594870.js" ]
+  - name: "Chrome"
+    browserName: "chrome"
+    headless: true
+    browserVersion: "latest"
+    src:
+      - "test/functional/specs/**/*.js"
+    platformName: "Windows 11"
+    excludedTestFiles: [ "test/functional/specs/Privacy/C5594870.js", "test/functional/specs/Personalization/C7494472.js" ]
