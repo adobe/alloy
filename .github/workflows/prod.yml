@@ -107,7 +107,8 @@ jobs:
         env:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
 
-      - uses: saucelabs/saucectl-run-action@v3.0.1
+      - name: Chrome Functional Test
+        uses: saucelabs/saucectl-run-action@v3.0.1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -119,10 +120,11 @@ jobs:
             ALLOY_PROD_VERSION=${{ env.PACKAGE_VERSION }}
             NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
             ALLOY_ENV=prod
-          config-file: ./.sauce/prod-safari.yml
+          config-file: ./.sauce/prod.yml
           select-suite: "Chrome"
 
-      - uses: saucelabs/saucectl-run-action@v3.0.1
+      - name: Edge Functional Test
+        uses: saucelabs/saucectl-run-action@v3.0.1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -134,10 +136,11 @@ jobs:
             ALLOY_PROD_VERSION=${{ env.PACKAGE_VERSION }}
             NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
             ALLOY_ENV=prod
-          config-file: ./.sauce/prod-safari.yml
+          config-file: ./.sauce/prod.yml
           select-suite: "Edge"
 
-      - uses: saucelabs/saucectl-run-action@v3.0.1
+      - name: Firefox Functional Test
+        uses: saucelabs/saucectl-run-action@v3.0.1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -149,10 +152,11 @@ jobs:
             ALLOY_PROD_VERSION=${{ env.PACKAGE_VERSION }}
             NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
             ALLOY_ENV=prod
-          config-file: ./.sauce/prod-safari.yml
+          config-file: ./.sauce/prod.yml
           select-suite: "Firefox"
 
-      - uses: saucelabs/saucectl-run-action@v3.0.1
+      - name: Safari Functional Test
+        uses: saucelabs/saucectl-run-action@v3.0.1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -164,11 +168,11 @@ jobs:
             ALLOY_PROD_VERSION=${{ env.PACKAGE_VERSION }}
             NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
             ALLOY_ENV=prod
-          config-file: ./.sauce/prod-safari.yml
+          config-file: ./.sauce/prod.yml
           select-suite: "Safari"
 
-#      - uses: craftech-io/slack-action@v1
-#        with:
-#          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-#          status: failure
-#        if: failure()
+      - uses: craftech-io/slack-action@v1
+        with:
+          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          status: failure
+        if: failure()
