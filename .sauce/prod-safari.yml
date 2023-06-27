@@ -60,7 +60,6 @@ suites:
 
   - name: "Safari"
     browserName: "safari"
-    headless: true
     browserVersion: "latest"
     src:
       - "test/functional/specs/**/*.js"
