@@ -68,7 +68,7 @@ const createDataCollector = ({ eventManager, logger }) => {
 
           if (datasetId) {
             logger.warn(
-              "The 'datasetId' option has been deprecated. Please use 'edgeConfigOverrides.experience_platform.datasets.event' instead."
+              "The 'datasetId' option has been deprecated. Please use 'edgeConfigOverrides.com_adobe_experience_platform.datasets.event.datasetId' instead."
             );
             sendEventOptions.edgeConfigOverrides = edgeConfigOverrides || {};
             deepAssign(sendEventOptions.edgeConfigOverrides, {
