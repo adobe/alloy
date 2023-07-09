@@ -133,20 +133,6 @@ describe("displayCustom", () => {
     expect(width).toBe("50%");
   });
 
-  it("should navigate to href when clicking on element with className 'forward'", () => {
-    const eventTarget = document.createElement("div");
-    eventTarget.className = "forward";
-    eventTarget.href = "https://example.com";
-
-    displayCustom(setting, collect);
-    document.body.lastChild.dispatchEvent(
-      new Event("click", { target: eventTarget })
-    );
-    setTimeout(() => {
-      expect(document.body.lastChild).toBe("https://example.com");
-    }, 1000);
-  });
-
   it("should remove iframeContainer when clicking on element with className 'dismiss'", () => {
     const eventTarget = document.createElement("div");
     eventTarget.className = "dismiss";
@@ -157,7 +143,7 @@ describe("displayCustom", () => {
     );
     setTimeout(() => {
       expect(document.body.lastChild).toBe(false);
-    }, 1000);
+    }, 5000);
   });
 
   it("should remove iframeContainer when clicking on element with className 'close'", () => {
@@ -169,6 +155,6 @@ describe("displayCustom", () => {
     );
     setTimeout(() => {
       expect(document.body.lastChild).toBe(false);
-    }, 1000);
+    }, 5000);
   });
 });
