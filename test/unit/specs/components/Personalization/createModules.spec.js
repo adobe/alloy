@@ -49,9 +49,10 @@ describe("createModules", () => {
 
     expect(modules[IN_APP_MESSAGE]).toEqual({
       modal: jasmine.any(Function),
-      banner: jasmine.any(Function)
+      banner: jasmine.any(Function),
+      cjmiam: jasmine.any(Function)
     });
 
-    expect(Object.keys(modules[IN_APP_MESSAGE]).length).toEqual(2);
+    expect(Object.keys(modules[IN_APP_MESSAGE]).length).toEqual(3);
   });
 });
