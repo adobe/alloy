@@ -30,3 +30,34 @@ export const removeElements = cssClassName => {
     element.remove();
   });
 };
+
+export const applyStyleSetting = settings => {
+  const {
+    verticalAlign,
+    width,
+    horizontalAlign,
+    backdropColor,
+    height,
+    cornerRadius,
+    horizontalInset,
+    verticalInset,
+    uiTakeOver
+  } = settings;
+  return {
+    verticalAlign: verticalAlign === "center" ? "middle" : verticalAlign,
+    top: verticalAlign === "top" ? "0px" : "auto",
+    width: width ? `${width}%` : "100%",
+    horizontalAlign: horizontalAlign === "center" ? "middle" : horizontalAlign,
+    backgroundColor: backdropColor || "rgba(0, 0, 0, 0.5)",
+    height: height ? `${height}vh` : "100%",
+    borderRadius: cornerRadius ? `${cornerRadius}px` : "0px",
+    border: "none",
+    marginLeft: horizontalInset ? `${horizontalInset}px` : "0px",
+    marginRight: horizontalInset ? `${horizontalInset}px` : "0px",
+    marginTop: verticalInset ? `${verticalInset}px` : "0px",
+    marginBottom: verticalInset ? `${verticalInset}px` : "0px",
+    zIndex: uiTakeOver ? "9999" : "0",
+    position: uiTakeOver ? "fixed" : "relative",
+    overflow: "hidden"
+  };
+};
