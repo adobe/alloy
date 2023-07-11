@@ -44,5 +44,12 @@ export default ({
         setPropositions(propositions);
       }
     });
-  }, [data, decisionScopes, instanceName, setPropositions, viewName, xdm]);
+  }, [
+    JSON.stringify(data),
+    decisionScopes,
+    instanceName,
+    setPropositions,
+    viewName,
+    JSON.stringify(xdm)
+  ]);
 };
