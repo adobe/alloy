@@ -39,7 +39,6 @@ export default ({
       xdm,
       data
     }).then(res => {
-      console.log(res);
       const { propositions } = res;
       if (setPropositions && isNonEmptyArray(propositions)) {
         setPropositions(propositions);
