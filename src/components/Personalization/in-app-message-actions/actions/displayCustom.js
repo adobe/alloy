@@ -61,12 +61,11 @@ const displayCustom = (setting, collect) => {
   }
 
   /* Thoughts: We could have used the postMessage API to communicate between the iframe and the parent window.
-  but it is not working as the iframe is not from the same origin.
-  when I tried using postMessage, script passed in the custom html did not work
+  when I tried using postMessage, script passed in the custom html did not work.By default, inline scripts are not allowed to execute for security reasons.
   I got  error message as below:
    Refused to execute inline event handler because it violates the following Content Security Policy directive:
    "script-src 'self' 'unsafe-inline' 'nonce-321' cdn.jsdelivr.net assets.adobedtm.com cdn.tt.omtrdc.net". Note that 'unsafe-inline' is ignored if either a hash or nonce value is present in the source list.
-  Even if I changed the security policy, script didn't execute
+  It is generally not recommended to use `'unsafe-inline'` as it can weaken the security provided by CSP.
   For MVP, I have added a workaround for now. Use className="close" or className="dismiss" to close the iframe and className="forward" to navigate to the href */
   const handleMessageFromIframe = data => {
     const actionName = data.className;
