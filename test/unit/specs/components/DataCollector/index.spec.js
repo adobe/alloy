@@ -51,7 +51,7 @@ describe("Event Command", () => {
     const xdm = { a: "b" };
     const data = { c: "d" };
     const options = {
-      renderDecisions: true,
+      otherSetting: "foo",
       type: "test",
       xdm,
       data,
@@ -63,9 +63,7 @@ describe("Event Command", () => {
       expect(event.setUserXdm).toHaveBeenCalledWith(xdm);
       expect(event.setUserData).toHaveBeenCalledWith(data);
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
-        renderDecisions: true,
-        decisionScopes: [],
-        personalization: {}
+        otherSetting: "foo"
       });
       expect(result).toEqual("sendEventResult");
     });
@@ -103,7 +101,6 @@ describe("Event Command", () => {
     return sendEventCommand.run(options).then(result => {
       expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
         renderDecisions: true,
-        decisionScopes: [],
         personalization: {
           surfaces: ["Foo1", "Foo2"]
         }
@@ -115,16 +112,6 @@ describe("Event Command", () => {
   it("does not call documentMayUnload if documentUnloading is not defined", () => {
     return sendEventCommand.run({}).then(() => {
       expect(event.documentMayUnload).not.toHaveBeenCalled();
-    });
-  });
-
-  it("sets renderDecisions to false if renderDecisions is not defined", () => {
-    return sendEventCommand.run({}).then(() => {
-      expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
-        renderDecisions: false,
-        decisionScopes: [],
-        personalization: {}
-      });
     });
   });
 
@@ -162,9 +149,6 @@ describe("Event Command", () => {
         expect(eventManager.sendEvent).toHaveBeenCalledWith(
           jasmine.any(Object),
           {
-            renderDecisions: false,
-            decisionScopes: [],
-            personalization: {},
             edgeConfigOverrides: {
               com_adobe_experience_platform: {
                 datasets: {
@@ -193,8 +177,6 @@ describe("Event Command", () => {
           jasmine.any(Object),
           {
             renderDecisions: true,
-            decisionScopes: [],
-            personalization: {},
             edgeConfigOverrides: {
               target: {
                 propertyToken: "hello"

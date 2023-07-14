@@ -39,6 +39,7 @@ export default ({
         renderDecisions,
         decisionScopes = [],
         personalization = {},
+        initializePersonalization = null,
         onResponse = noop,
         onRequestFailure = noop
       }) {
@@ -61,7 +62,8 @@ export default ({
           personalization,
           event,
           viewCache,
-          logger
+          logger,
+          initializePersonalization
         });
 
         if (personalizationDetails.shouldFetchData()) {

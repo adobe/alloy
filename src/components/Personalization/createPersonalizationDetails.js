@@ -44,7 +44,8 @@ export default ({
   personalization,
   event,
   viewCache,
-  logger
+  logger,
+  initializePersonalization
 }) => {
   const viewName = event.getViewName();
   return {
@@ -77,7 +78,7 @@ export default ({
         logger
       );
 
-      if (!this.isCacheInitialized()) {
+      if (!this.isCacheInitialized() || initializePersonalization) {
         addPageWideScope(scopes);
         addPageSurface(eventSurfaces, getPageLocation);
       }
@@ -104,7 +105,10 @@ export default ({
     },
     shouldFetchData() {
       return (
-        this.hasScopes() || this.hasSurfaces() || !this.isCacheInitialized()
+        this.hasScopes() ||
+        this.hasSurfaces() ||
+        initializePersonalization ||
+        (!this.isCacheInitialized() && initializePersonalization !== false)
       );
     },
     shouldUseCachedData() {

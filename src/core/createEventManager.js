@@ -36,19 +36,13 @@ export default ({
   return {
     createEvent,
     /**
-     * Sends an event. This includes running the event and payload through
-     * the appropriate lifecycle hooks, sending the request to the server,
-     * and handling the response.
-     * @param {Object} event This will be JSON stringified and used inside
-     * the request payload.
-     * @param {Object} [options]
-     * @param {boolean} [options.renderDecisions=false]
-     * @param {Array} [options.decisionScopes] Note: this option will soon
-     * be deprecated, please use *personalization.decisionScopes* instead
-     * @param {Object} [options.personalization]
-     * @param {Object} [options.serverState]
-     * This will be passed to components
-     * so they can take appropriate action.
+     * Sends an event. This includes running the event and payload through the
+     * appropriate lifecycle hooks, sending the request to the server, and
+     * handling the response.
+     * @param {Object} event This will be JSON stringified and used inside the
+     * request payload.
+     * @param {Object} [options] Options to pass on to the onBeforeEvent
+     * lifecycle method
      * @param {Object} [options.edgeConfigOverrides] Settings that take
      * precedence over the global datastream configuration, including which
      * datastream to use.
@@ -56,10 +50,8 @@ export default ({
      */
     sendEvent(event, options = {}) {
       const {
-        renderDecisions = false,
-        decisionScopes,
         edgeConfigOverrides: localConfigOverrides,
-        personalization
+        ...otherOptions
       } = options;
       const requestParams = createRequestParams({
         payload: createDataCollectionRequestPayload(),
@@ -72,10 +64,8 @@ export default ({
 
       return lifecycle
         .onBeforeEvent({
+          ...otherOptions,
           event,
-          renderDecisions,
-          decisionScopes,
-          personalization,
           onResponse: onResponseCallbackAggregator.add,
           onRequestFailure: onRequestFailureCallbackAggregator.add
         })

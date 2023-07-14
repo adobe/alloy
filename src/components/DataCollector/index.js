@@ -26,14 +26,12 @@ const createDataCollector = ({ eventManager, logger }) => {
           const {
             xdm,
             data,
-            documentUnloading = false,
+            documentUnloading,
             type,
             mergeId,
-            renderDecisions = false,
-            decisionScopes = [], // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
-            personalization = {},
             datasetId,
-            edgeConfigOverrides
+            edgeConfigOverrides,
+            ...eventManagerOptions
           } = options;
           const event = eventManager.createEvent();
 
@@ -56,28 +54,22 @@ const createDataCollector = ({ eventManager, logger }) => {
             });
           }
 
-          const sendEventOptions = {
-            renderDecisions,
-            decisionScopes,
-            personalization
-          };
-
           if (edgeConfigOverrides) {
-            sendEventOptions.edgeConfigOverrides = edgeConfigOverrides;
+            eventManagerOptions.edgeConfigOverrides = edgeConfigOverrides;
           }
 
           if (datasetId) {
             logger.warn(
               "The 'datasetId' option has been deprecated. Please use 'edgeConfigOverrides.com_adobe_experience_platform.datasets.event.datasetId' instead."
             );
-            sendEventOptions.edgeConfigOverrides = edgeConfigOverrides || {};
-            deepAssign(sendEventOptions.edgeConfigOverrides, {
+            eventManagerOptions.edgeConfigOverrides = edgeConfigOverrides || {};
+            deepAssign(eventManagerOptions.edgeConfigOverrides, {
               com_adobe_experience_platform: {
                 datasets: { event: { datasetId } }
               }
             });
           }
-          return eventManager.sendEvent(event, sendEventOptions);
+          return eventManager.sendEvent(event, eventManagerOptions);
         }
       },
       applyResponse: {

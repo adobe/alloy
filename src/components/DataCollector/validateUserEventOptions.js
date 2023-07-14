@@ -34,7 +34,8 @@ export default ({ options }) => {
     }),
     datasetId: string(),
     mergeId: string(),
-    edgeConfigOverrides: validateConfigOverride
+    edgeConfigOverrides: validateConfigOverride,
+    initializePersonalization: boolean()
   })
     .required()
     .noUnknownFields();

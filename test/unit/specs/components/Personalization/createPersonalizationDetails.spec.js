@@ -40,6 +40,48 @@ describe("Personalization::createPersonalizationDetails", () => {
     logger = jasmine.createSpyObj("logger", ["info", "warn", "error"]);
   });
 
+  // s - has scopes or surfaces
+  // i - cache is initialized
+  // ip - initializePersonalization flag
+  // fetch - should fetch data
+  [
+    { s: false, i: false, ip: false, fetch: false },
+    { s: true, i: false, ip: false, fetch: true },
+    { s: false, i: true, ip: false, fetch: false },
+    { s: true, i: true, ip: false, fetch: true },
+
+    { s: false, i: false, ip: true, fetch: true },
+    { s: true, i: false, ip: true, fetch: true },
+    { s: false, i: true, ip: true, fetch: true },
+    { s: true, i: true, ip: true, fetch: true },
+
+    { s: false, i: false, fetch: true },
+    { s: true, i: false, fetch: true },
+    { s: false, i: true, fetch: false },
+    { s: true, i: true, fetch: true }
+  ].forEach(({ s, i, ip, fetch }) => {
+    it(`should ${fetch ? "" : "not "}fetch data when ${
+      s ? "" : "no "
+    }scopes, the cache is ${
+      i ? "" : "not "
+    }initialized, and initializePersonalization is '${ip}'`, () => {
+      viewCache.isInitialized.and.returnValue(i);
+      const personalizationDetails = createPersonalizationDetails({
+        getPageLocation,
+        renderDecisions: true,
+        decisionScopes: [],
+        personalization: {
+          decisionScopes: s ? ["test"] : undefined
+        },
+        event,
+        viewCache,
+        logger,
+        initializePersonalization: ip
+      });
+      expect(personalizationDetails.shouldFetchData()).toEqual(fetch);
+    });
+  });
+
   it("should fetch data when no cache, renderDecisions is true, no viewName and decisionScopes/surfaces (in non SPA world)", () => {
     const decisionScopes = [];
     const personalization = {};
