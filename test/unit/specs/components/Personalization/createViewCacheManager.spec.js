@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import createViewCacheManager from "../../../../../src/components/Personalization/createViewCacheManager";
 import { defer } from "../../../../../src/utils";
+import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("Personalization::createCacheManager", () => {
   const cartView = "cart";
@@ -80,5 +81,100 @@ describe("Personalization::createCacheManager", () => {
       .then(() => {
         expect(viewCacheManager.isInitialized()).toBeTrue();
       });
+  });
+
+  it("allows you to store the views multiple times", async () => {
+    const viewCacheManager = createViewCacheManager();
+
+    const decisionsDeferred1 = defer();
+    viewCacheManager.storeViews(decisionsDeferred1.promise);
+    decisionsDeferred1.resolve(viewDecisions);
+
+    await expectAsync(viewCacheManager.getView(cartView)).toBeResolvedTo(
+      viewDecisions[cartView]
+    );
+
+    const decisionsDeferred2 = defer();
+    viewCacheManager.storeViews(decisionsDeferred2.promise);
+    const cartViewPromise = viewCacheManager.getView(cartView);
+    await flushPromiseChains();
+    await expectAsync(cartViewPromise).toBePending();
+    decisionsDeferred2.resolve({
+      about: [
+        {
+          id: "foo4",
+          items: [],
+          scope: "about"
+        }
+      ]
+    });
+
+    await expectAsync(viewCacheManager.getView(cartView)).toBeResolvedTo(
+      viewDecisions[cartView]
+    );
+    await expectAsync(viewCacheManager.getView("about")).toBeResolvedTo([
+      {
+        id: "foo4",
+        items: [],
+        scope: "about"
+      }
+    ]);
+  });
+
+  it("is initialized after the first storeViews call", () => {
+    const viewCacheManager = createViewCacheManager();
+
+    const decisionsDeferred1 = defer();
+    viewCacheManager.storeViews(decisionsDeferred1.promise);
+
+    expect(viewCacheManager.isInitialized()).toBeTrue();
+  });
+
+  it("is initialized even after a failure", async () => {
+    const viewCacheManager = createViewCacheManager();
+    const decisionsDeferred1 = defer();
+    viewCacheManager.storeViews(decisionsDeferred1.promise);
+    decisionsDeferred1.reject();
+    await flushPromiseChains();
+
+    expect(viewCacheManager.isInitialized()).toBeTrue();
+  });
+
+  it("applies the decisions in the order they were requested", async () => {
+    const viewCacheManager = createViewCacheManager();
+
+    const decisionsDeferred1 = defer();
+    const decisionsDeferred2 = defer();
+    viewCacheManager.storeViews(decisionsDeferred1.promise);
+    const viewPromise1 = viewCacheManager.getView(cartView);
+    viewCacheManager.storeViews(decisionsDeferred2.promise);
+    const viewPromise2 = viewCacheManager.getView(cartView);
+
+    decisionsDeferred2.resolve({
+      cart: [
+        {
+          id: "foo4",
+          items: [],
+          scope: "cart"
+        }
+      ]
+    });
+    decisionsDeferred1.resolve(viewDecisions);
+
+    await expectAsync(viewPromise2).toBeResolvedTo([
+      {
+        id: "foo4",
+        items: [],
+        scope: "cart"
+      }
+    ]);
+    await expectAsync(viewPromise1).toBeResolvedTo(viewDecisions[cartView]);
+    await expectAsync(viewCacheManager.getView(cartView)).toBeResolvedTo([
+      {
+        id: "foo4",
+        items: [],
+        scope: "cart"
+      }
+    ]);
   });
 });

@@ -11,35 +11,28 @@ governing permissions and limitations under the License.
 */
 
 import { assign } from "../../utils";
-import defer from "../../utils/defer";
 
 export default () => {
-  let viewStorage;
-  const viewStorageDeferred = defer();
+  const viewStorage = {};
+  let storeViewsCalledAtLeastOnce = false;
+  let previousStoreViewsComplete = Promise.resolve();
 
   const storeViews = decisionsPromise => {
-    decisionsPromise
+    storeViewsCalledAtLeastOnce = true;
+    previousStoreViewsComplete = previousStoreViewsComplete
+      .then(() => decisionsPromise)
       .then(decisions => {
-        if (viewStorage === undefined) {
-          viewStorage = {};
-        }
         assign(viewStorage, decisions);
-        viewStorageDeferred.resolve();
       })
-      .catch(() => {
-        if (viewStorage === undefined) {
-          viewStorage = {};
-        }
-        viewStorageDeferred.resolve();
-      });
+      .catch(() => {});
   };
 
   const getView = viewName => {
-    return viewStorageDeferred.promise.then(() => viewStorage[viewName] || []);
+    return previousStoreViewsComplete.then(() => viewStorage[viewName] || []);
   };
 
   const isInitialized = () => {
-    return !(viewStorage === undefined);
+    return storeViewsCalledAtLeastOnce;
   };
   return {
     storeViews,
