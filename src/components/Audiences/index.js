@@ -15,7 +15,16 @@ import injectProcessDestinations from "./injectProcessDestinations";
 import injectProcessResponse from "./injectProcessResponse";
 
 const createAudiences = ({ logger, fireReferrerHideableImage }) => {
-  const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
+  // we override the js-cookie converter to encode the cookie value similar on how it is in DIL (PDCL-10238)
+  const cookieJarWithEncoding = cookieJar.withConverter({
+    write: value => {
+      return encodeURIComponent(value);
+    }
+  });
+  const loggingCookieJar = createLoggingCookieJar({
+    logger,
+    cookieJar: cookieJarWithEncoding
+  });
 
   const processDestinations = injectProcessDestinations({
     fireReferrerHideableImage,
@@ -35,6 +44,5 @@ const createAudiences = ({ logger, fireReferrerHideableImage }) => {
 };
 
 createAudiences.namespace = "Audiences";
-createAudiences.configValidators = {};
 
 export default createAudiences;

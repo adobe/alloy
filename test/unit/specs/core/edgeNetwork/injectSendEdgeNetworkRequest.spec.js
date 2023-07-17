@@ -20,7 +20,7 @@ describe("injectSendEdgeNetworkRequest", () => {
   const config = createConfig({
     edgeDomain: "edge.example.com",
     edgeBasePath: "ee",
-    edgeConfigId: "myconfigId"
+    datastreamId: "myconfigId"
   });
   let logger;
   let lifecycle;
@@ -112,7 +112,8 @@ describe("injectSendEdgeNetworkRequest", () => {
         type: "payload"
       },
       getUseIdThirdPartyDomain: false,
-      getUseSendBeacon: false
+      getUseSendBeacon: false,
+      getDatastreamIdOverride: ""
     });
     logger = jasmine.createSpyObj("logger", ["info"]);
     lifecycle = jasmine.createSpyObj("lifecycle", {
@@ -480,6 +481,19 @@ describe("injectSendEdgeNetworkRequest", () => {
         payload: {
           type: "payload"
         },
+        useSendBeacon: false
+      });
+    });
+  });
+
+  it("respects the datastreamIdOverride", () => {
+    request.getDatastreamIdOverride.and.returnValue("myconfigIdOverride");
+    return sendEdgeNetworkRequest({ request }).then(() => {
+      expect(sendNetworkRequest).toHaveBeenCalledWith({
+        payload: request.getPayload(),
+        url:
+          "https://edge.example.com/ee/v1/test-action?configId=myconfigIdOverride&requestId=RID123",
+        requestId: "RID123",
         useSendBeacon: false
       });
     });

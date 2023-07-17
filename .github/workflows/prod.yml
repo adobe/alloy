@@ -1,7 +1,7 @@
-name: Prod Safari
+name: Alloy Prod
 on:
   schedule:
-    - cron: "0 20 * * 1-6"
+    - cron: "45 20 * * 1-6"
   workflow_dispatch:
 permissions:
   contents: read
@@ -21,6 +21,9 @@ jobs:
     outputs:
       matrixInput: ${{ steps.list-tags.outputs.matrixInput }}
     steps:
+      - uses: actions/labeler@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -35,6 +38,7 @@ jobs:
         with:
           name: sauce-ignore
           path: .sauceignore
+
       - name: Retrieve tags
         id: list-tags
         uses: actions/github-script@v6
@@ -48,10 +52,10 @@ jobs:
             core.setOutput("matrixInput", JSON.stringify(matrixInput));
             console.log("matrixInput: ", matrixInput);
 
-  functional_test:
+  alloy-prod-e2e:
     name: Alloy Functional Test
     strategy:
-      max-parallel: 4
+      max-parallel: 14
       matrix: ${{ fromJSON(needs.get-testing-tags.outputs.matrixInput) }}
     needs: get-testing-tags
     runs-on: ubuntu-latest
@@ -64,10 +68,6 @@ jobs:
           ref: refs/heads/${{ matrix.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: "18"
 
       - name: Clear cache
         uses: actions/cache@v3
@@ -93,7 +93,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: sauce-ignore
-          path: .sauceignore
+          path: .
 
       - name: NPM Install
         run: npm install
@@ -107,24 +107,69 @@ jobs:
         env:
           ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
 
-      - name: Install sauceCtl
-        run: |
-            npm install -g saucectl
-            saucectl --version
-
-      - name: Install TestCafe
-        run: |
-          npm install -g testcafe
-          testcafe --version
-
-      - name: Run functional tests
-        run: saucectl run --config ./.sauce/prod-safari.yml
+      - name: Chrome Functional Test
+        uses: saucelabs/saucectl-run-action@v3.0.1
         env:
-          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-          ALLOY_PROD_VERSION: ${{ env.PACKAGE_VERSION }}
-          NPM_PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
-          ALLOY_ENV: prod
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          sauce-username: ${{ secrets.SAUCE_USERNAME }}
+          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+          env: |
+            SAUCE_USERNAME=${{ secrets.SAUCE_USERNAME }}
+            SAUCE_ACCESS_KEY=${{ secrets.SAUCE_ACCESS_KEY }}
+            ALLOY_PROD_VERSION=${{ env.PACKAGE_VERSION }}
+            NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
+            ALLOY_ENV=prod
+          config-file: ./.sauce/prod.yml
+          select-suite: "Chrome"
+
+      - name: Edge Functional Test
+        uses: saucelabs/saucectl-run-action@v3.0.1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          sauce-username: ${{ secrets.SAUCE_USERNAME }}
+          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+          env: |
+            SAUCE_USERNAME=${{ secrets.SAUCE_USERNAME }}
+            SAUCE_ACCESS_KEY=${{ secrets.SAUCE_ACCESS_KEY }}
+            ALLOY_PROD_VERSION=${{ env.PACKAGE_VERSION }}
+            NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
+            ALLOY_ENV=prod
+          config-file: ./.sauce/prod.yml
+          select-suite: "Edge"
+
+      - name: Firefox Functional Test
+        uses: saucelabs/saucectl-run-action@v3.0.1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          sauce-username: ${{ secrets.SAUCE_USERNAME }}
+          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+          env: |
+            SAUCE_USERNAME=${{ secrets.SAUCE_USERNAME }}
+            SAUCE_ACCESS_KEY=${{ secrets.SAUCE_ACCESS_KEY }}
+            ALLOY_PROD_VERSION=${{ env.PACKAGE_VERSION }}
+            NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
+            ALLOY_ENV=prod
+          config-file: ./.sauce/prod.yml
+          select-suite: "Firefox"
+
+      - name: Safari Functional Test
+        uses: saucelabs/saucectl-run-action@v3.0.1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          sauce-username: ${{ secrets.SAUCE_USERNAME }}
+          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+          env: |
+            SAUCE_USERNAME=${{ secrets.SAUCE_USERNAME }}
+            SAUCE_ACCESS_KEY=${{ secrets.SAUCE_ACCESS_KEY }}
+            ALLOY_PROD_VERSION=${{ env.PACKAGE_VERSION }}
+            NPM_PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
+            ALLOY_ENV=prod
+          config-file: ./.sauce/prod.yml
+          select-suite: "Safari"
 
       - uses: craftech-io/slack-action@v1
         with:

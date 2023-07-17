@@ -18,13 +18,23 @@ describe("createIdentityRequest", () => {
 
   it("provides the appropriate action", () => {
     const payload = {};
-    const request = createIdentityRequest(payload);
+    const request = createIdentityRequest({ payload });
     expect(request.getAction()).toBe("identity/acquire");
   });
 
   it("never uses sendBeacon", () => {
     const payload = {};
-    const request = createIdentityRequest(payload);
+    const request = createIdentityRequest({ payload });
     expect(request.getUseSendBeacon()).toBeFalse();
+  });
+
+  it("passes the datastreamIdOverride to the request", () => {
+    const payload = {};
+    const datastreamIdOverride = "my-edge-config-id-override";
+    const request = createIdentityRequest({
+      payload,
+      datastreamIdOverride
+    });
+    expect(request.getDatastreamIdOverride()).toBe(datastreamIdOverride);
   });
 });

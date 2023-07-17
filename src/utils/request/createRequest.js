@@ -14,7 +14,12 @@ import { uuid } from "..";
 
 // This provides the base functionality that all types of requests share.
 export default options => {
-  const { payload, getAction, getUseSendBeacon } = options;
+  const {
+    payload,
+    getAction,
+    getUseSendBeacon,
+    datastreamIdOverride
+  } = options;
   const id = uuid();
   let shouldUseThirdPartyDomain = false;
   let isIdentityEstablished = false;
@@ -28,6 +33,9 @@ export default options => {
     },
     getAction() {
       return getAction({ isIdentityEstablished });
+    },
+    getDatastreamIdOverride() {
+      return datastreamIdOverride;
     },
     getUseSendBeacon() {
       return getUseSendBeacon({ isIdentityEstablished });

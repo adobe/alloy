@@ -10,26 +10,34 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, string, callback, enumOf } from "../../utils/validation";
-import { noop } from "../../utils";
+import {
+  boolean,
+  string,
+  callback,
+  enumOf,
+  objectOf
+} from "../../utils/validation";
+import { noop, validateConfigOverride } from "../../utils";
 import { EDGE as EDGE_DOMAIN } from "../../constants/domain";
 import EDGE_BASE_PATH from "../../constants/edgeBasePath";
 import { IN, OUT, PENDING } from "../../constants/consentStatus";
 
-export default () => ({
-  debugEnabled: boolean().default(false),
-  defaultConsent: enumOf(IN, OUT, PENDING).default(IN),
-  edgeConfigId: string()
-    .unique()
-    .required(),
-  edgeDomain: string()
-    .domain()
-    .default(EDGE_DOMAIN),
-  edgeBasePath: string()
-    .nonEmpty()
-    .default(EDGE_BASE_PATH),
-  orgId: string()
-    .unique()
-    .required(),
-  onBeforeEventSend: callback().default(noop)
-});
+export default () =>
+  objectOf({
+    debugEnabled: boolean().default(false),
+    defaultConsent: enumOf(IN, OUT, PENDING).default(IN),
+    datastreamId: string()
+      .unique()
+      .required(),
+    edgeDomain: string()
+      .domain()
+      .default(EDGE_DOMAIN),
+    edgeBasePath: string()
+      .nonEmpty()
+      .default(EDGE_BASE_PATH),
+    orgId: string()
+      .unique()
+      .required(),
+    onBeforeEventSend: callback().default(noop),
+    edgeConfigOverrides: validateConfigOverride
+  }).deprecated("edgeConfigId", string().unique(), "datastreamId");

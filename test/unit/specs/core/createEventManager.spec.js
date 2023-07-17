@@ -25,6 +25,7 @@ describe("createEventManager", () => {
   let event;
   let requestPayload;
   let request;
+  let createDataCollectionRequest;
   let sendEdgeNetworkRequest;
   let applyResponse;
   let onRequestFailureForOnBeforeEvent;
@@ -34,7 +35,8 @@ describe("createEventManager", () => {
     config = createConfig({
       orgId: "ABC123",
       onBeforeEventSend: jasmine.createSpy(),
-      debugEnabled: true
+      debugEnabled: true,
+      edgeConfigOverrides: {}
     });
     logger = jasmine.createSpyObj("logger", ["info"]);
     lifecycle = jasmine.createSpyObj("lifecycle", {
@@ -59,7 +61,10 @@ describe("createEventManager", () => {
     const createEvent = () => {
       return event;
     };
-    requestPayload = jasmine.createSpyObj("requestPayload", ["addEvent"]);
+    requestPayload = jasmine.createSpyObj("requestPayload", [
+      "addEvent",
+      "mergeConfigOverride"
+    ]);
     const createDataCollectionRequestPayload = () => {
       return requestPayload;
     };
@@ -68,9 +73,9 @@ describe("createEventManager", () => {
         return requestPayload;
       }
     };
-    const createDataCollectionRequest = () => {
-      return request;
-    };
+    createDataCollectionRequest = jasmine
+      .createSpy("createDataCollectionRequest")
+      .and.returnValue(request);
     sendEdgeNetworkRequest = jasmine
       .createSpy("sendEdgeNetworkRequest")
       .and.returnValue(Promise.resolve());
@@ -322,6 +327,69 @@ describe("createEventManager", () => {
         });
         expect(result).toEqual(mockResult);
       });
+    });
+
+    it("includes override configuration, if provided", done => {
+      eventManager
+        .sendEvent(event, {
+          edgeConfigOverrides: {
+            com_adobe_experience_platform: {
+              event: {
+                datasetId: "456"
+              }
+            },
+            com_adobe_identity: {
+              idSyncContainerId: "123"
+            }
+          }
+        })
+        .then(() => {
+          expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
+            com_adobe_identity: {
+              idSyncContainerId: "123"
+            },
+            com_adobe_experience_platform: {
+              event: {
+                datasetId: "456"
+              }
+            }
+          });
+          done();
+        });
+    });
+
+    it("includes global override configuration, if provided", done => {
+      config.edgeConfigOverrides.com_adobe_identity = {
+        idSyncContainerId: "123"
+      };
+
+      eventManager
+        .sendEvent(event, {
+          edgeConfigOverrides: {}
+        })
+        .then(() => {
+          expect(requestPayload.mergeConfigOverride).toHaveBeenCalledWith({
+            com_adobe_identity: {
+              idSyncContainerId: "123"
+            }
+          });
+          done();
+        });
+    });
+    it("includes the datastreamId override, if provided", done => {
+      eventManager
+        .sendEvent(event, {
+          edgeConfigOverrides: {
+            datastreamId: "456"
+          }
+        })
+        .then(() => {
+          expect(createDataCollectionRequest).toHaveBeenCalledWith({
+            payload: jasmine.any(Object),
+            datastreamIdOverride: "456"
+          });
+          done();
+        });
     });
   });
 });

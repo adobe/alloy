@@ -1,9 +1,21 @@
+/*
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
 import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
 import {
   compose,
+  configOverridesMain,
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
@@ -27,7 +39,8 @@ test("Test C2592: Event command sends a request.", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({
-    datasetId: "5eb9aaa6a3b16e18a818e06f"
+    datasetId:
+      configOverridesMain.com_adobe_experience_platform.datasets.event.datasetId
   });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
@@ -42,8 +55,8 @@ test("Test C2592: Event command sends a request.", async () => {
     .expect(request.events[0].xdm.implementationDetails.name)
     .eql("https://ns.adobe.com/experience/alloy");
   await t
-    .expect(request.events[0].meta.collect.datasetId)
-    .eql("5eb9aaa6a3b16e18a818e06f");
+    .expect(request.meta.configOverrides.com_adobe_experience_platform.event)
+    .eql(configOverridesMain.com_adobe_experience_platform.event);
   await t.expect(request.meta.state.cookiesEnabled).eql(true);
   await t.expect(request.meta.state.domain).ok();
 });

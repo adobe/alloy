@@ -11,29 +11,30 @@ governing permissions and limitations under the License.
 */
 
 import isObject from "../isObject";
-import assertValid from "./assertValid";
+import { assertValid } from "./utils";
 
-export default valueValidator => (value, path) => {
-  assertValid(isObject(value), value, path, "an object");
+export default valueValidator =>
+  function mapOfValues(value, path) {
+    assertValid(isObject(value), value, path, "an object");
 
-  const errors = [];
-  const validatedObject = {};
-  Object.keys(value).forEach(subKey => {
-    const subValue = value[subKey];
-    const subPath = path ? `${path}.${subKey}` : subKey;
-    try {
-      const validatedValue = valueValidator(subValue, subPath);
-      if (validatedValue !== undefined) {
-        validatedObject[subKey] = validatedValue;
+    const errors = [];
+    const validatedObject = {};
+    Object.keys(value).forEach(subKey => {
+      const subValue = value[subKey];
+      const subPath = path ? `${path}.${subKey}` : subKey;
+      try {
+        const validatedValue = valueValidator.call(this, subValue, subPath);
+        if (validatedValue !== undefined) {
+          validatedObject[subKey] = validatedValue;
+        }
+      } catch (e) {
+        errors.push(e.message);
       }
-    } catch (e) {
-      errors.push(e.message);
+    });
+
+    if (errors.length) {
+      throw new Error(errors.join("\n"));
     }
-  });
 
-  if (errors.length) {
-    throw new Error(errors.join("\n"));
-  }
-
-  return validatedObject;
-};
+    return validatedObject;
+  };
