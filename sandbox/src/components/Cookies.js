@@ -33,7 +33,9 @@ const originalHasIdentityCookie = getHasIdentityCookie();
 const originalHasLegacyIdentityCookie = getHasLegacyIdentityCookie();
 
 const monitor = {};
+// eslint-disable-next-line no-underscore-dangle
 window.__alloyMonitors = window.__alloyMonitors || [];
+// eslint-disable-next-line no-underscore-dangle
 window.__alloyMonitors.push(monitor);
 
 export default () => {
