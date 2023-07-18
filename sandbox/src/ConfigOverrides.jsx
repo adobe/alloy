@@ -80,7 +80,7 @@ export default function ConfigOverrides() {
     } catch (err) {
       console.error(err);
       setError(
-        "The text you just entered is not valid JSON. Try again.\n" + err
+        `The text you just entered is not valid JSON. Try again.\n${err}`
       );
     }
   };
@@ -91,7 +91,8 @@ export default function ConfigOverrides() {
       com_adobe_analytics: {
         ...overrides.com_adobe_analytics,
         analyticsReportSuites: [
-          ...((overrides.com_adobe_analytics || {}).analyticsReportSuites || []),
+          ...((overrides.com_adobe_analytics || {}).analyticsReportSuites ||
+            []),
           ""
         ]
       }
@@ -103,7 +104,7 @@ export default function ConfigOverrides() {
   const callWithOverrides = callback => () =>
     callback(overrides).catch(err => {
       console.error(err);
-      setError("The request failed.\n" + err.toString());
+      setError(`The request failed.\n${err.toString()}`);
     });
   return (
     <div>
