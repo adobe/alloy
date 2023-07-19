@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import React, { useRef, useEffect } from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
