@@ -32,29 +32,14 @@ jobs:
           npm run sandbox:build
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v2
+        uses: Azure/static-web-apps-deploy@v1
         with:
-          name: node-app
-          path: sandbox/public  # Update the path to the public directory inside the sandbox directory
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v2
-        with:
-          name: node-app
-
-      - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'alloyio'
-          slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_215B80533CBB4930B99F84DBB4B3C225 }}
-          package: .
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AGREEABLE_RIVER_0EC96991E }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
+          action: "upload"
+          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
+          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
+          app_location: "/sandbox/build" # App source code path
+          api_location: "" # Api source code path - optional
+          output_location: "/sandbox/build" # Built app content directory - optional
+          ###### End of Repository/Build Configurations ######
