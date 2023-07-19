@@ -26,19 +26,18 @@ jobs:
           cd sandbox
           npm install
 
-
       - name: npm install and build
         run: |
           cd ..
           npm install
-          npm sandbox:build
+          npm run sandbox:build
           cd sandbox
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: .
+          path: sandbox/public  # Update the path to the public directory inside the sandbox directory
 
   deploy:
     runs-on: ubuntu-latest
