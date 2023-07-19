@@ -28,16 +28,14 @@ jobs:
 
       - name: Change directory to root and install npm packages
         run: |
-          cd ..
           npm install
           npm run sandbox:build
-          cd sandbox
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: sandbox/public
+          path: sandbox/public  # Update the path to the public directory inside the sandbox directory
 
   deploy:
     runs-on: ubuntu-latest
