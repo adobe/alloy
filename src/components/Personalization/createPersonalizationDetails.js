@@ -103,9 +103,7 @@ export default ({
       return viewCache.isInitialized();
     },
     shouldFetchData() {
-      return (
-        this.hasScopes() || this.hasSurfaces() || !this.isCacheInitialized()
-      );
+      return this.hasScopes() || this.hasSurfaces();
     },
     shouldUseCachedData() {
       return this.hasViewName() && this.isCacheInitialized();
