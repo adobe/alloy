@@ -60,12 +60,16 @@ export default ({
           ? `${edgeBasePath}/${locationHint}`
           : edgeBasePath;
         const configId = request.getDatastreamIdOverride() || datastreamId;
+        const payload = request.getPayload();
+        if (configId !== datastreamId) {
+          payload.mergeMeta(datastreamId, "sdkConfig.datastream.original");
+        }
         const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${configId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
-        cookieTransfer.cookiesToPayload(request.getPayload(), endpointDomain);
+        cookieTransfer.cookiesToPayload(payload, endpointDomain);
         return sendNetworkRequest({
           requestId: request.getId(),
           url,
-          payload: request.getPayload(),
+          payload,
           useSendBeacon: request.getUseSendBeacon()
         });
       })
