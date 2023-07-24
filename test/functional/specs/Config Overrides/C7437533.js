@@ -177,4 +177,9 @@ test("Test C7437533: `setConsent` can override the datastreamId", async () => {
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
   const [request] = networkLogger.setConsentEndpointLogs.requests;
   await t.expect(request.request.url).contains(alternateDatastreamId);
+
+  const body = JSON.parse(request.request.body);
+  await t
+    .expect(body.meta.sdkConfig.datastream.original)
+    .eql(originalDatastreamId);
 });
