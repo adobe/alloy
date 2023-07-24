@@ -482,10 +482,9 @@ describe("injectSendEdgeNetworkRequest", () => {
   it("respects the datastreamIdOverride", () => {
     request.getDatastreamIdOverride.and.returnValue("myconfigIdOverride");
     return sendEdgeNetworkRequest({ request }).then(() => {
-      expect(payload.mergeMeta).toHaveBeenCalledWith(
-        "myconfigId",
-        "sdkConfig.datastream.original"
-      );
+      expect(payload.mergeMeta).toHaveBeenCalledWith({
+        sdkConfig: { datastream: { original: "myconfigId" } }
+      });
       expect(sendNetworkRequest).toHaveBeenCalledWith({
         payload,
         url:

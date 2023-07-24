@@ -62,7 +62,13 @@ export default ({
         const configId = request.getDatastreamIdOverride() || datastreamId;
         const payload = request.getPayload();
         if (configId !== datastreamId) {
-          payload.mergeMeta(datastreamId, "sdkConfig.datastream.original");
+          payload.mergeMeta({
+            sdkConfig: {
+              datastream: {
+                original: datastreamId
+              }
+            }
+          });
         }
         const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${configId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
         cookieTransfer.cookiesToPayload(payload, endpointDomain);
