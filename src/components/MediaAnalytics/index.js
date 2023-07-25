@@ -17,6 +17,7 @@ import validateMediaEventOptions from "./validateMediaEventOptions";
 import validateSessionOptions from "./validateMediaSessionOptions";
 import createGetMediaSession from "./createGetMediaSession";
 import createHeartbeatTicker from "./createHeartbeatTicker";
+import automaticMediaSessionHandler from "./automaticMediaSessionHandler";
 
 const createMediaAnalytics = ({
   config,
@@ -25,6 +26,7 @@ const createMediaAnalytics = ({
   sendEdgeNetworkRequest
 }) => {
   const playerCache = createPlayerCacheManager();
+
   const trackMediaEvent = createTrackMediaEvent({
     playerCache,
     sendEdgeNetworkRequest,
@@ -36,12 +38,18 @@ const createMediaAnalytics = ({
     trackMediaEvent,
     playerCache
   });
+  const automaticSessionHandler = automaticMediaSessionHandler({
+    eventManager,
+    heartbeatTicker,
+    playerCache
+  });
   const getMediaSession = createGetMediaSession({
     config,
     logger,
     eventManager,
     playerCache,
-    heartbeatTicker
+    heartbeatTicker,
+    automaticSessionHandler
   });
   return {
     lifecycle: {

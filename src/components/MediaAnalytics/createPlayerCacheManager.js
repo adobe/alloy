@@ -24,7 +24,7 @@ export default () => {
     delete cache[playerId];
   };
 
-  const startTicker = (playerId, sessionId, heartbeatTicker) => {
+  const startTicker = ({ playerId, sessionId, heartbeatTicker }) => {
     const player = cache[playerId];
     if (!player) {
       return;
@@ -32,7 +32,7 @@ export default () => {
 
     player.ticker = setInterval(() => {
       heartbeatTicker({ sessionId, playerId });
-    }, 3000);
+    }, 1000);
 
     player.latestTriggeredEvent = Date.now();
   };

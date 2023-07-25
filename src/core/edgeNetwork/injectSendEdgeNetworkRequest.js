@@ -57,8 +57,8 @@ export default ({
           : edgeDomain;
         const locationHint = getLocationHint();
         const edgeBasePathWithLocationHint = locationHint
-          ? `${edgeBasePath}/${locationHint}`
-          : edgeBasePath;
+          ? `${edgeBasePath}/${locationHint}${request.getEdgeSubPath()}`
+          : `${edgeBasePath}${request.getEdgeSubPath()}`;
         const configId = request.getDatastreamIdOverride() || datastreamId;
         const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${configId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
         cookieTransfer.cookiesToPayload(request.getPayload(), endpointDomain);

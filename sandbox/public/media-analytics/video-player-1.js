@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", async function(event) {
       xdm: {
         eventType: "media.play",
         mediaCollection: {
-        //  playhead: 0
+          //  playhead: 0
           // sessionID: result.sessionId
         }
       }
