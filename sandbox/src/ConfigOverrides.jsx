@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 
 const defaultOverrides = {
+  datastreamId: "",
   com_adobe_experience_platform: {
     datasets: {
       event: {
