@@ -82,19 +82,19 @@ const BasicExample = () => {
             </li>
             <li>
               {/* Anchor tag to ensure app is reloaded with unsafe CSP */}
-              <a href="/dualTag">Dual Tag</a>
+              <Link to="/dualTag">Dual Tag</Link>
             </li>
             <li>
               <a href="/legacy.html">Legacy Visitor ID</a>
             </li>
             <li>
-              <a href="/redirectOffers">Redirect Offers</a>
+              <Link to="/redirectOffers">Redirect Offers</Link>
             </li>
             <li>
-              <a href="/identity">Identity</a>
+              <Link to="/identity">Identity</Link>
             </li>
             <li>
-              <a href="/configOverrides">Config Overrides</a>
+              <Link to="/configOverrides">Config Overrides</Link>
             </li>
           </ul>
           <hr />
