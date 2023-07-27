@@ -14,7 +14,7 @@ import { DIV } from "../../../../../../../src/constants/tagName";
 import displayModal from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayModal";
 
 describe("Personalization::IAM:modal", () => {
-  it("inserts banner into dom", async () => {
+  it("inserts modal into dom", async () => {
     const something = createNode(
       DIV,
       { className: "something" },
@@ -27,45 +27,47 @@ describe("Personalization::IAM:modal", () => {
     document.body.append(something);
 
     await displayModal({
-      type: "modal",
-      horizontalAlign: "center",
-      verticalAlign: "center",
-      closeButton: true,
-      dimBackground: true,
-      content:
-        "<p>Special offer, don't delay!</p><img src='https://media3.giphy.com/media/3rXv6MUPvkX2jLgeUL/200.gif'>",
-      buttons: [
-        {
-          title: "Yes please!"
-        },
-        {
-          title: "No, thanks"
-        }
-      ]
+      mobileParameters: {
+        verticalAlign: "center",
+        dismissAnimation: "top",
+        verticalInset: 0,
+        backdropOpacity: 0.2,
+        cornerRadius: 15,
+        horizontalInset: 0,
+        uiTakeover: true,
+        horizontalAlign: "center",
+        width: 80,
+        displayAnimation: "top",
+        backdropColor: "#000000",
+        height: 60
+      },
+      content: `<!doctype html><html lang=""><head></head><body><div>modal</div>Alf Says</body></html>`,
+      contentType: "text/html"
     });
 
-    const modal = document.querySelector("div#alloy-messaging-modal");
-    const modalStyle = document.querySelector(
-      "style#alloy-messaging-modal-styles"
+    const container = document.querySelector("div#alloy-messaging-container");
+
+    expect(container).not.toBeNull();
+
+    expect(container.parentNode).toEqual(document.body);
+
+    expect(container.previousElementSibling).toEqual(something);
+    expect(container.nextElementSibling).toBeNull();
+
+    const iframe = document.querySelector(
+      ".alloy-messaging-container > iframe"
     );
 
-    expect(modal).not.toBeNull();
-    expect(modalStyle).not.toBeNull();
+    expect(iframe).not.toBeNull();
 
-    expect(modal.parentNode).toEqual(document.body);
-    expect(modalStyle.parentNode).toEqual(document.head);
-
-    expect(modal.previousElementSibling).toEqual(something);
-    expect(modal.nextElementSibling).toBeNull();
+    await new Promise(resolve => {
+      iframe.addEventListener("load", () => {
+        resolve();
+      });
+    });
 
     expect(
-      modal.querySelector(".alloy-modal-content").innerText.trim()
-    ).toEqual("Special offer, don't delay!");
-
-    const buttons = modal.querySelector(".alloy-modal-buttons");
-
-    expect(buttons.childElementCount).toEqual(2);
-    expect(buttons.children[0].innerText).toEqual("Yes please!");
-    expect(buttons.children[1].innerText).toEqual("No, thanks");
+      (iframe.contentDocument || iframe.contentWindow.document).body.outerHTML
+    ).toContain("Alf Says");
   });
 });

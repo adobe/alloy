@@ -9,9 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import displayBanner from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayBanner";
 import { createNode } from "../../../../../../../src/utils/dom";
 import { DIV } from "../../../../../../../src/constants/tagName";
+import displayBanner from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayBanner";
 
 describe("Personalization::IAM:banner", () => {
   it("inserts banner into dom", async () => {
@@ -24,29 +24,50 @@ describe("Personalization::IAM:banner", () => {
       }
     );
 
-    document.body.prepend(something);
+    document.body.append(something);
 
     await displayBanner({
-      type: "banner",
-      position: "top",
-      closeButton: false,
-      background: "#00a0fe",
-      content:
-        "<span style='color: white;'>FLASH SALE!! 50% off everything, 24 hours only!</span>"
+      mobileParameters: {
+        verticalAlign: "center",
+        dismissAnimation: "top",
+        verticalInset: 0,
+        backdropOpacity: 0.2,
+        cornerRadius: 15,
+        horizontalInset: 0,
+        uiTakeover: true,
+        horizontalAlign: "center",
+        width: 80,
+        displayAnimation: "top",
+        backdropColor: "#000000",
+        height: 60
+      },
+      content: `<!doctype html><html lang=""><head></head><body><div>banner</div>Alf Says</body></html>`,
+      contentType: "text/html"
     });
 
-    const banner = document.querySelector("div#alloy-messaging-banner");
-    const bannerStyle = document.querySelector(
-      "style#alloy-messaging-banner-styles"
+    const container = document.querySelector("div#alloy-messaging-container");
+
+    expect(container).not.toBeNull();
+
+    expect(container.parentNode).toEqual(document.body);
+
+    expect(container.previousElementSibling).toEqual(something);
+    expect(container.nextElementSibling).toBeNull();
+
+    const iframe = document.querySelector(
+      ".alloy-messaging-container > iframe"
     );
 
-    expect(banner).not.toBeNull();
-    expect(bannerStyle).not.toBeNull();
+    expect(iframe).not.toBeNull();
 
-    expect(banner.parentNode).toEqual(document.body);
-    expect(bannerStyle.parentNode).toEqual(document.head);
+    await new Promise(resolve => {
+      iframe.addEventListener("load", () => {
+        resolve();
+      });
+    });
 
-    expect(banner.previousElementSibling).toBeNull();
-    expect(banner.nextElementSibling).toEqual(something);
+    expect(
+      (iframe.contentDocument || iframe.contentWindow.document).body.outerHTML
+    ).toContain("Alf Says");
   });
 });
