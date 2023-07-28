@@ -67,6 +67,7 @@
   },
   "devDependencies": {
     "@adobe/alloy": "^2.17.0",
+    "@adobe/jwt-auth": "^2.0.0",
     "@babel/cli": "^7.12.8",
     "@babel/core": "^7.2.2",
     "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
@@ -129,6 +130,7 @@
     "testcafe-reporter-saucelabs": "^1.0.1",
     "url-exists-nodejs": "^0.1.0",
     "url-parse": "^1.4.7",
+    "whoami": "^0.0.3",
     "yargs": "^16.2.0"
   }
 }

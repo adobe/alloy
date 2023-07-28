@@ -1,4 +1,15 @@
-import { t, ClientFunction } from "testcafe";
+/*
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
@@ -7,15 +18,15 @@ import {
   orgMainConfigMain,
   debugEnabled
 } from "../../helpers/constants/configParts";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../helpers/createResponse";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
+import { createAssuranceRequestHook } from "../../helpers/assurance";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
-const PAGE_WIDE_SCOPE = "__view__";
+
 createFixture({
-  title: "C???? hide and show containers work"
+  title: "C???? assurance example",
+  requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({
@@ -24,44 +35,31 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C???? hide and show containers work with prehiding style", async () => {
+test("Test C???? assurance example", async () => {
+  const assuranceRequests = await createAssuranceRequestHook();
+  await t.addRequestHooks(assuranceRequests);
+
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  const eventResult = await alloy.sendEvent({ renderDecisions: true });
+  await alloy.sendEvent({
+    renderDecisions: true,
+    decisionScopes: ["alloy-test-scope-1"]
+  });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
-  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
-
-  const sendEventRequest = networkLogger.edgeEndpointLogs.requests[0];
-  const requestBody = JSON.parse(sendEventRequest.request.body);
+  const mappingLog = await assuranceRequests.requests[0].find(log => {
+    const { vendor, payload: { name } = {} } = log;
+    return vendor === "com.adobe.analytics" && name === "analytics.mapping";
+  });
   await t
-    .expect(requestBody.events[0].query.personalization.decisionScopes)
-    .eql([PAGE_WIDE_SCOPE]);
+    .expect(
+      mappingLog.payload.context.mappedQueryParams.unifiedjsqeonlylatest.g
+    )
+    .eql("https://alloyio.com/functional-test/testPage.html");
 
-  const personalizationSchemas =
-    requestBody.events[0].query.personalization.schemas;
-
-  const result = [
-    "https://ns.adobe.com/personalization/default-content-item",
-    "https://ns.adobe.com/personalization/dom-action",
-    "https://ns.adobe.com/personalization/html-content-item",
-    "https://ns.adobe.com/personalization/json-content-item",
-    "https://ns.adobe.com/personalization/redirect-item"
-  ].every(schema => personalizationSchemas.includes(schema));
-
-  await t.expect(result).eql(true);
-
-  const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
-  );
-  const personalizationPayload = createResponse({
-    content: response
-  }).getPayloadsByType("personalization:decisions");
-
-  await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
-  await t.expect(getDecisionContent()).eql("Here is an awesome target offer!");
-
-  await t.expect(eventResult.decisions).eql([]);
-  await t.expect(eventResult.propositions[0].renderAttempted).eql(true);
+  // you can run this to see all the logs instead of the find above
+  // await new Promise(resolve => setTimeout(resolve, 5000));
+  // await assuranceRequests.fetchMore();
+  // assuranceRequests.requests[0].debug();
 });
