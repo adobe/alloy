@@ -39,11 +39,17 @@ export default ({
       xdm,
       data
     }).then(res => {
-      console.log(res);
       const { propositions } = res;
       if (setPropositions && isNonEmptyArray(propositions)) {
         setPropositions(propositions);
       }
     });
-  }, [data, decisionScopes, instanceName, setPropositions, viewName, xdm]);
+  }, [
+    JSON.stringify(data),
+    decisionScopes,
+    instanceName,
+    setPropositions,
+    viewName,
+    JSON.stringify(xdm)
+  ]);
 };

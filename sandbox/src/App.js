@@ -32,7 +32,7 @@ import Identity from "./Identity";
 import AlloyVersion from "./components/AlloyVersion";
 import ConfigOverrides from "./ConfigOverrides.jsx";
 
-function BasicExample() {
+const BasicExample = () => {
   return (
     <>
       <Router>
@@ -130,6 +130,6 @@ function BasicExample() {
       <AlloyVersion />
     </>
   );
-}
+};
 
 export default BasicExample;

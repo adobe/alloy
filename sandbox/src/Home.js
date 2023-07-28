@@ -1,3 +1,5 @@
+/* eslint-disable no-console, func-names */
+
 import React from "react";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";

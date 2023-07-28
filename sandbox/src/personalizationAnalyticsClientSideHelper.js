@@ -20,6 +20,41 @@ const extractViewName = () => {
   return viewName[1];
 };
 
+const sendEvent = ({
+  eventType,
+  viewName,
+  decisionScopes,
+  renderDecisions,
+  executedPropositions
+}) => {
+  const xdm = {
+    eventType
+  };
+
+  if (viewName) {
+    xdm.web = {
+      webPageDetails: {
+        viewName
+      }
+    };
+  }
+
+  if (executedPropositions) {
+    // eslint-disable-next-line no-underscore-dangle
+    xdm._experience = {
+      decisioning: {
+        propositions: executedPropositions
+      }
+    };
+  }
+
+  return window[instanceName]("sendEvent", {
+    renderDecisions,
+    decisionScopes, // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
+    xdm
+  });
+};
+
 export const personalizationEvent = ({ renderDecisions }) => {
   const viewName = extractViewName();
   const eventType = viewName ? "view-change" : "page-view";
@@ -32,39 +67,6 @@ export const personalizationEvent = ({ renderDecisions }) => {
     getECID(instanceName).then(visitorID => {
       sendAnalyticsPayload({ analyticsPayload, visitorID });
     });
-  });
-};
-const sendEvent = ({
-  eventType,
-  viewName,
-  decisionScopes,
-  renderDecisions,
-  executedPropositions
-}) => {
-  const xdm = {
-    eventType: eventType
-  };
-
-  if (viewName) {
-    xdm.web = {
-      webPageDetails: {
-        viewName
-      }
-    };
-  }
-
-  if (executedPropositions) {
-    xdm._experience = {
-      decisioning: {
-        propositions: executedPropositions
-      }
-    };
-  }
-
-  return window[instanceName]("sendEvent", {
-    renderDecisions,
-    decisionScopes, // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
-    xdm
   });
 };
 
@@ -86,7 +88,7 @@ export const getFormBasedOffer = () => {
           document.getElementById("form-based-offer-container").innerHTML =
             item.data.content;
 
-          //collect the executed proposition to send the display notification event
+          // collect the executed proposition to send the display notification event
           executedPropositions.push({
             id: proposition.id,
             scope: proposition.scope,
@@ -100,7 +102,7 @@ export const getFormBasedOffer = () => {
           // add metric to the DOM element
           const button = document.getElementById("form-based-click-metric");
 
-          button.addEventListener("click", event => {
+          button.addEventListener("click", () => {
             sendEvent({
               eventType: "decisioning.propositionInteract",
               executedPropositions: [
