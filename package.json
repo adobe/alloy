@@ -130,7 +130,6 @@
     "testcafe-reporter-saucelabs": "^1.0.1",
     "url-exists-nodejs": "^0.1.0",
     "url-parse": "^1.4.7",
-    "whoami": "^0.0.3",
     "yargs": "^16.2.0"
   }
 }
