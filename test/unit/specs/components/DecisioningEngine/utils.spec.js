@@ -67,11 +67,14 @@ describe("DecisioningEngine:utils", () => {
     }, 20);
   });
   it("should return the date of expiration", () => {
+    const mockedTimestamp = new Date(Date.UTC(2023, 8, 2, 13, 34, 56));
+    jasmine.clock().install();
+    jasmine.clock().mockDate(mockedTimestamp);
     const retentionPeriod = 10;
-    const today = new Date();
-    const expectedDate = new Date(today);
+    const expectedDate = new Date(mockedTimestamp);
     expectedDate.setDate(expectedDate.getDate() - retentionPeriod);
     const result = getExpirationDate(retentionPeriod);
     expect(result).toEqual(expectedDate);
+    jasmine.clock().uninstall();
   });
 });
