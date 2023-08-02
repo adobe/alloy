@@ -72,11 +72,11 @@
     </script>
     <script nonce="%REACT_APP_NONCE%">
       alloy("configure", {
-        mediaAnalytics: {
+        mediaAnalytics: { // adobeStreamingMedia
           // need to move these at session creation command
           channel: "video channel",
           playerName: "nina's player",
-          version: "alloy 2.16.0"
+          version: "alloy 2.16.0" // not required
         },
         defaultConsent: getUrlParameter("defaultConsent") || "in",
         edgeDomain:
@@ -138,6 +138,9 @@
       });
     </script>
     <script src="video-player-1.js"></script>
+<!--
+    <script src="video-player-2.js"></script>
+-->
   </head>
   <body>
     <div>

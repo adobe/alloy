@@ -36,11 +36,22 @@ export default () => {
 
     player.latestTriggeredEvent = Date.now();
   };
+
+  const stopTicker = ({ playerId }) => {
+    const player = cache[playerId];
+    if (!player) {
+      return;
+    }
+    console.log("ticker", player.ticker);
+    clearInterval(player.ticker);
+  };
+
   return {
     put,
     update,
     get,
     remove,
-    startTicker
+    startTicker,
+    stopTicker
   };
 };

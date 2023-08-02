@@ -1,7 +1,7 @@
 import {
   anyOf,
   anything,
-  callback,
+  callback, number,
   objectOf,
   string
 } from "../../utils/validation";
@@ -23,8 +23,7 @@ export default ({ options }) => {
         xdm: objectOf({
           eventType: string().required(),
           mediaCollection: objectOf({
-            sessionID: string().required(),
-            playhead: string().required(),
+            playhead: number().required(),
             sessionDetails: objectOf(anything()).required()
           })
         })

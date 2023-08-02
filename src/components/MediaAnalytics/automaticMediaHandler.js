@@ -1,29 +1,36 @@
-import MediaEvents from "./MediaConstants/MediaEvents";
 import { deepAssign } from "../../utils";
 import toInteger from "../../utils/toInteger";
 import injectTimestamp from "../Context/injectTimestamp";
 
-export default ({ playerCache, sendEdgeNetworkRequest }) => {
+export default ({
+  playerCache,
+  sendEdgeNetworkRequest,
+  postProcessMediaEvent
+}) => {
   return ({ xdm, playerId, mediaRequestPayload, request }) => {
     const player = playerCache.get(playerId);
+    if (!player) {
+      return Promise.reject(new Error("No Player was found."));
+    }
+
     const { sessionId: sessionIdPromise, onBeforeMediaEvent } = player;
 
-    if (xdm.eventType === MediaEvents.SESSION_COMPLETE) {
-      clearInterval(player.ticker);
-    }
     return sessionIdPromise.then(sessionID => {
-      const event = { xdm };
+      const event = {};
+      deepAssign(event, { xdm });
 
       if (onBeforeMediaEvent) {
         const { playhead, qoeDetails } = onBeforeMediaEvent({ playerId });
 
-        deepAssign(event.xdm.mediaCollection, {
-          playhead: toInteger(playhead)
+        deepAssign(event.xdm, {
+          mediaCollection: {
+            playhead: toInteger(playhead),
+            qoeDetails
+          }
         });
-        deepAssign(event.xdm.mediaCollection, { qoeDetails });
       }
 
-      deepAssign(event.xdm.mediaCollection, { sessionID });
+      deepAssign(event.xdm, { mediaCollection: { sessionID } });
 
       const timestamp = injectTimestamp(() => new Date());
 
@@ -31,6 +38,7 @@ export default ({ playerCache, sendEdgeNetworkRequest }) => {
 
       mediaRequestPayload.addEvent(event);
       const currentTime = Date.now();
+      postProcessMediaEvent({ playerId, xdm });
       return sendEdgeNetworkRequest({ request }).then(() => {
         player.latestTriggeredEvent = currentTime;
         return {};

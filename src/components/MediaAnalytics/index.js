@@ -18,6 +18,8 @@ import validateSessionOptions from "./validateMediaSessionOptions";
 import createGetMediaSession from "./createGetMediaSession";
 import createHeartbeatTicker from "./createHeartbeatTicker";
 import automaticMediaSessionHandler from "./automaticMediaSessionHandler";
+import createMediaEventProcesor from "./createMediaEventProcesor";
+import automaticMediaHandler from "./automaticMediaHandler";
 
 const createMediaAnalytics = ({
   config,
@@ -26,12 +28,20 @@ const createMediaAnalytics = ({
   sendEdgeNetworkRequest
 }) => {
   const playerCache = createPlayerCacheManager();
-
-  const trackMediaEvent = createTrackMediaEvent({
+  const postProcessMediaEvent = createMediaEventProcesor({
+    playerCache,
+    config
+  });
+  const handleMediaEventAutomatically = automaticMediaHandler({
     playerCache,
     sendEdgeNetworkRequest,
+    postProcessMediaEvent
+  });
+  const trackMediaEvent = createTrackMediaEvent({
+    sendEdgeNetworkRequest,
     config,
-    logger
+    logger,
+    handleMediaEventAutomatically
   });
   const heartbeatTicker = createHeartbeatTicker({
     config,
@@ -89,13 +99,11 @@ createMediaAnalytics.configValidators = objectOf({
     playerName: string()
       .nonEmpty()
       .required(),
-    version: string()
-      .nonEmpty()
-      .required(),
-    mainPingInterval: number()
+    version: string().nonEmpty(),
+    mainPingInterval: number() // maxim 60 sec
       .minimum(10)
       .default(10),
-    adPingInterval: number()
+    adPingInterval: number() // 10 default - mobile maxim - 60 sec
       .minimum(1)
       .default(1)
   })

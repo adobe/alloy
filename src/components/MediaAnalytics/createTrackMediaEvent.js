@@ -1,13 +1,17 @@
 import createMediaRequestPayload from "../LegacyMediaAnalytics/createMediaRequestPayload";
 import createMediaRequest from "./createMediaRequest";
-import automaticMediaHandler from "./automaticMediaHandler";
 import injectTimestamp from "../Context/injectTimestamp";
 
 const getActionFromEventType = eventType => {
   return eventType.split(".")[1];
 };
 
-export default ({ sendEdgeNetworkRequest, playerCache, config, logger }) => {
+export default ({
+  sendEdgeNetworkRequest,
+  handleMediaEventAutomatically,
+  config,
+  logger
+}) => {
   return options => {
     if (!config.mediaAnalytics) {
       logger.info("Media Analytics was not configured.");
@@ -22,11 +26,12 @@ export default ({ sendEdgeNetworkRequest, playerCache, config, logger }) => {
     });
 
     if (playerId) {
-      const handler = automaticMediaHandler({
-        playerCache,
-        sendEdgeNetworkRequest
+      return handleMediaEventAutomatically({
+        xdm,
+        playerId,
+        request,
+        mediaRequestPayload
       });
-      return handler({ xdm, playerId, request, mediaRequestPayload });
     }
 
     const event = { xdm };
