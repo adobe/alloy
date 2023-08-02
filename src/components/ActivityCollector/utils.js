@@ -50,17 +50,71 @@ const isSupportedAnchorElement = element => {
   return false;
 };
 
+const trimQueryFromUrl = url => {
+  const questionMarkIndex = url.indexOf("?");
+  const hashIndex = url.indexOf("#");
+
+  if (
+    questionMarkIndex >= 0 &&
+    (questionMarkIndex < hashIndex || hashIndex < 0)
+  ) {
+    return url.substring(0, questionMarkIndex);
+  }
+  if (hashIndex >= 0) {
+    return url.substring(0, hashIndex);
+  }
+
+  return url;
+};
+
 const isDownloadLink = (downloadLinkQualifier, linkUrl, clickedObj) => {
   const re = new RegExp(downloadLinkQualifier);
-  return clickedObj.download ? true : re.test(linkUrl.toLowerCase());
+  const trimmedLinkUrl = trimQueryFromUrl(linkUrl).toLowerCase();
+  return clickedObj.download ? true : re.test(trimmedLinkUrl);
 };
 
 const isExitLink = (window, linkUrl) => {
   const currentHostname = window.location.hostname.toLowerCase();
-  if (linkUrl.toLowerCase().indexOf(currentHostname) >= 0) {
+  const trimmedLinkUrl = trimQueryFromUrl(linkUrl).toLowerCase();
+  if (trimmedLinkUrl.indexOf(currentHostname) >= 0) {
     return false;
   }
   return true;
+};
+
+/**
+ * Reduces repeated whitespace within a string. Whitespace surrounding the string
+ * is trimmed and any occurrence of whitespace within the string is replaced with
+ * a single space.
+ * @param {string} str String to be formatted.
+ * @returns {string} Formatted string.
+ */
+const truncateWhiteSpace = str => {
+  return str && str.replace(/\s+/g, " ").trim();
+};
+
+const isEmptyString = str => {
+  return !str || str.length === 0;
+};
+const determineLinkType = (window, config, linkUrl, clickedObj) => {
+  let linkType = "other";
+  if (isDownloadLink(config.downloadLinkQualifier, linkUrl, clickedObj)) {
+    linkType = "download";
+  } else if (isExitLink(window, linkUrl)) {
+    linkType = "exit";
+  }
+  return linkType;
+};
+
+const findSupportedAnchorElement = targetElement => {
+  let node = targetElement;
+  while (node) {
+    if (isSupportedAnchorElement(node)) {
+      return node;
+    }
+    node = node.parentNode;
+  }
+  return null;
 };
 
 export {
@@ -68,5 +122,10 @@ export {
   getAbsoluteUrlFromAnchorElement,
   isSupportedAnchorElement,
   isDownloadLink,
-  isExitLink
+  isEmptyString,
+  isExitLink,
+  trimQueryFromUrl,
+  truncateWhiteSpace,
+  findSupportedAnchorElement,
+  determineLinkType
 };

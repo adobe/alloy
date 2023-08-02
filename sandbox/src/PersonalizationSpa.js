@@ -3,6 +3,18 @@ import { Switch, Route, useRouteMatch, Link } from "react-router-dom";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
+const usePropositions = ({ viewName }) => {
+  const [propositions, setPropositions] = useState(undefined);
+  useSendPageViewEvent({ viewName, setPropositions });
+  useEffect(() => {
+    if (propositions) {
+      window.alloy("applyPropositions", {
+        propositions
+      });
+    }
+  }, [propositions]);
+};
+
 const Products = () => {
   usePropositions({ viewName: "products" });
   return (
@@ -51,18 +63,6 @@ const Promotion = () => {
       </div>
     </div>
   );
-};
-
-const usePropositions = ({ viewName }) => {
-  const [propositions, setPropositions] = useState(undefined);
-  useSendPageViewEvent({ viewName, setPropositions });
-  useEffect(() => {
-    if (propositions) {
-      window.alloy("applyPropositions", {
-        propositions
-      });
-    }
-  });
 };
 
 export default function Personalization() {

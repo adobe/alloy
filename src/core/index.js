@@ -85,7 +85,6 @@ export const createExecuteCommand = ({
   };
 
   const loggingCookieJar = createLoggingCookieJar({ logger, cookieJar });
-
   const configureCommand = options => {
     const config = buildAndValidateConfig({
       options,

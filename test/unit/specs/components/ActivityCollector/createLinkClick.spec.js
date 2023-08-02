@@ -12,56 +12,66 @@ governing permissions and limitations under the License.
 
 import createLinkClick from "../../../../../src/components/ActivityCollector/createLinkClick";
 import createEvent from "../../../../../src/core/createEvent";
-import configValidators from "../../../../../src/components/ActivityCollector/configValidators";
+import { downloadLinkQualifier as dlwValidator } from "../../../../../src/components/ActivityCollector/configValidators";
 
 describe("ActivityCollector::createLinkClick", () => {
-  const config = {
-    clickCollectionEnabled: true,
-    downloadLinkQualifier: configValidators.downloadLinkQualifier.defaultValue
-  };
-  const mockWindow = {
-    location: {
-      protocol: "https:",
-      host: "example.com",
-      hostname: "example.com",
-      pathname: "/"
-    }
-  };
-  const supportedLinkElement = {
-    tagName: "A",
-    href: "index.html",
-    nodeType: 1
-  };
-  const unsupportedLinkElement = {
-    tagName: "LINK",
-    href: "index.html",
-    nodeType: 1
-  };
+  const getLinkDetails = jasmine.createSpy("getLinkDetails");
+  const downloadLinkQualifier = dlwValidator();
 
-  it("Extends event XDM data with link information for supported anchor elements", () => {
-    const linkClick = createLinkClick(mockWindow, config);
+  it("Extends event XDM data with link information for supported anchor elements when clickCollectionEnabled", () => {
+    const config = {
+      downloadLinkQualifier,
+      clickCollectionEnabled: true
+    };
+    const linkClick = createLinkClick({ getLinkDetails, config });
+
     const event = createEvent();
-    linkClick(event, supportedLinkElement);
+    getLinkDetails.and.returnValue({
+      xdm: {
+        web: {
+          webInteraction: {
+            name: "test1"
+          }
+        }
+      },
+      data: {}
+    });
+    linkClick({ targetElement: {}, event });
     expect(event.isEmpty()).toBe(false);
   });
-  it("Does not extend event XDM data with link information for unsupported anchor elements", () => {
-    const linkClick = createLinkClick(mockWindow, config);
+  it("does not extend event XDM data when clickCollectionEnabled is false", () => {
     const event = createEvent();
-    linkClick(event, unsupportedLinkElement);
+    const config = {
+      downloadLinkQualifier,
+      clickCollectionEnabled: false
+    };
+
+    const linkClick = createLinkClick({ getLinkDetails, config });
+
+    getLinkDetails.and.returnValue({
+      xdm: {
+        web: {
+          webInteraction: {
+            name: "test1"
+          }
+        }
+      },
+      data: {}
+    });
+    linkClick({ targetElement: {}, event });
     expect(event.isEmpty()).toBe(true);
   });
-
-  it("Does not extend event XDM data with link information when clickCollectionEnabled disabled", () => {
-    const clickCollectionDisabledConfig = {
-      clickCollectionEnabled: false,
-      downloadLinkQualifier: configValidators.downloadLinkQualifier.defaultValue
-    };
-    const linkClick = createLinkClick(
-      mockWindow,
-      clickCollectionDisabledConfig
-    );
+  it("Does not extend event XDM data with link information for unsupported anchor elements", () => {
     const event = createEvent();
-    linkClick(event, supportedLinkElement);
+    const config = {
+      downloadLinkQualifier,
+      clickCollectionEnabled: true
+    };
+
+    const linkClick = createLinkClick({ getLinkDetails, config });
+
+    getLinkDetails.and.returnValue(undefined);
+    linkClick({ targetElement: {}, event });
     expect(event.isEmpty()).toBe(true);
   });
 });

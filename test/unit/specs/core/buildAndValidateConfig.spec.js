@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import buildAndValidateConfig from "../../../../src/core/buildAndValidateConfig";
 import createConfig from "../../../../src/core/config/createConfig";
-import { boolean } from "../../../../src/utils/validation";
+import { boolean, objectOf } from "../../../../src/utils/validation";
 
 describe("buildAndValidateConfig", () => {
   let options;
@@ -24,14 +24,16 @@ describe("buildAndValidateConfig", () => {
   beforeEach(() => {
     options = {};
     const componentCreator = () => {};
-    componentCreator.configValidators = {
+    componentCreator.configValidators = objectOf({
       idSyncEnabled: boolean().default(true)
-    };
+    });
     componentCreators = [componentCreator];
-    coreConfigValidators = {
+    coreConfigValidators = objectOf({
       debugEnabled: boolean().default(false),
       errorsEnabled: boolean()
-    };
+    })
+      .noUnknownFields()
+      .required();
     logger = {
       enabled: false,
       info: jasmine.createSpy(),

@@ -1,3 +1,14 @@
+/*
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
 import { RequestLogger, ClientFunction } from "testcafe";
 import createFixture from "../../helpers/createFixture";
 
@@ -12,13 +23,13 @@ const networkLoggerConfig = {
 };
 const networkLogger1 = RequestLogger(
   new RegExp(
-    `v1\\/(interact|collect)\\?configId=${orgMainConfigMain.edgeConfigId}`
+    `v1\\/(interact|collect)\\?configId=${orgMainConfigMain.datastreamId}`
   ),
   networkLoggerConfig
 );
 const networkLogger2 = RequestLogger(
   new RegExp(
-    `v1\\/(interact|collect)\\?configId=${orgAltConfigAlt.edgeConfigId}`
+    `v1\\/(interact|collect)\\?configId=${orgAltConfigAlt.datastreamId}`
   ),
   networkLoggerConfig
 );

@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createOnClickHandler from "../../../../../src/components/Personalization/createOnClickHandler";
-import { PropositionEventType } from "../../../../../src/components/Personalization/constants/propositionEventType";
+import { mergeDecisionsMeta } from "../../../../../src/components/Personalization/event";
+import createEvent from "../../../../../src/core/createEvent";
 
 describe("Personalization::createOnClickHandler", () => {
-  let mergeDecisionsMeta;
   let collectClicks;
   let getClickSelectors;
   let getClickMetasBySelector;
-  const event = {};
+  let event;
   const decisionsMeta = [
     {
       id: 1,
@@ -25,23 +25,21 @@ describe("Personalization::createOnClickHandler", () => {
     }
   ];
   beforeEach(() => {
-    mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
     collectClicks = jasmine
       .createSpy("collectClicks")
-      .and.returnValue(decisionsMeta);
-    event.mergeXdm = jasmine.createSpy("mergeXdm");
-    event.mergeMeta = jasmine.createSpy("mergeMeta");
-    mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
-    collectClicks = jasmine
-      .createSpy("collectClicks")
-      .and.returnValue(decisionsMeta);
+      .and.returnValue({ decisionsMeta });
+    event = createEvent();
+    spyOn(event, "mergeXdm").and.callThrough();
     getClickSelectors = jasmine.createSpy("getClickSelectors");
     getClickMetasBySelector = jasmine.createSpy("getClickMetasBySelector");
   });
 
   it("collects clicks", () => {
     const selectors = ["foo", "foo2"];
-    collectClicks.and.returnValue(decisionsMeta);
+    collectClicks.and.returnValue({
+      decisionsMeta,
+      eventLabel: ""
+    });
     getClickSelectors.and.returnValue(selectors);
     const handleOnClick = createOnClickHandler({
       mergeDecisionsMeta,
@@ -53,22 +51,88 @@ describe("Personalization::createOnClickHandler", () => {
 
     handleOnClick({ event, clickedElement });
 
-    expect(event.mergeXdm).toHaveBeenCalledWith({
+    const expectedXdm = {
       eventType: "decisioning.propositionInteract",
       web: {
         webPageDetails: { viewName: "foo" }
+      },
+      _experience: {
+        decisioning: {
+          propositions: [
+            {
+              id: 1,
+              scope: "foo"
+            }
+          ],
+          propositionEventType: {
+            interact: 1
+          }
+        }
       }
-    });
-    expect(mergeDecisionsMeta).toHaveBeenCalledWith(
-      event,
-      decisionsMeta,
-      PropositionEventType.INTERACT
-    );
+    };
+
+    expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectClicks).toHaveBeenCalledWith(
       clickedElement,
       selectors,
       getClickMetasBySelector
     );
+    event.finalize();
+    expect(event.toJSON()).toEqual({
+      xdm: expectedXdm
+    });
+  });
+
+  it("collects clicks with label", () => {
+    const selectors = ["foo", "foo2"];
+    collectClicks.and.returnValue({
+      decisionsMeta,
+      eventLabel: "click-label"
+    });
+    getClickSelectors.and.returnValue(selectors);
+    const handleOnClick = createOnClickHandler({
+      mergeDecisionsMeta,
+      collectClicks,
+      getClickSelectors,
+      getClickMetasBySelector
+    });
+    const clickedElement = "foo";
+
+    handleOnClick({ event, clickedElement });
+
+    const expectedXdm = {
+      eventType: "decisioning.propositionInteract",
+      web: {
+        webPageDetails: { viewName: "foo" }
+      },
+      _experience: {
+        decisioning: {
+          propositions: [
+            {
+              id: 1,
+              scope: "foo"
+            }
+          ],
+          propositionEventType: {
+            interact: 1
+          },
+          propositionAction: {
+            label: "click-label"
+          }
+        }
+      }
+    };
+
+    expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
+    expect(collectClicks).toHaveBeenCalledWith(
+      clickedElement,
+      selectors,
+      getClickMetasBySelector
+    );
+    event.finalize();
+    expect(event.toJSON()).toEqual({
+      xdm: expectedXdm
+    });
   });
 
   it("collects clicks shouldn't be called when clickStorage is empty", () => {
@@ -84,7 +148,6 @@ describe("Personalization::createOnClickHandler", () => {
     handleOnClick({ event, clickedElement });
 
     expect(event.mergeXdm).not.toHaveBeenCalled();
-    expect(mergeDecisionsMeta).not.toHaveBeenCalled();
     expect(collectClicks).not.toHaveBeenCalled();
   });
 });

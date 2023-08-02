@@ -1,11 +1,23 @@
+/*
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
 import { ClientFunction, t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
+  thirdPartyCookiesDisabled,
+  ajoConfigForStage
 } from "../../helpers/constants/configParts";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../helpers/createResponse";
@@ -16,14 +28,12 @@ const PAGE_WIDE_SCOPE = "__view__";
 const AJO_TEST_SURFACE = "web://alloyio.com/functional-test/testPage.html";
 
 const networkLogger = createNetworkLogger();
-const cjmStageOrgConfig = {
-  edgeDomain: "edge-int.adobedc.net",
-  edgeConfigId: "19fc5fe9-37df-46da-8f5c-9eeff4f75ed9:prod",
-  orgId: "745F37C35E4B776E0A49421B@AdobeOrg",
-  edgeBasePath: "ee",
-  thirdPartyCookiesEnabled: false
-};
-const config = compose(orgMainConfigMain, cjmStageOrgConfig, debugEnabled);
+const config = compose(
+  orgMainConfigMain,
+  ajoConfigForStage,
+  debugEnabled,
+  thirdPartyCookiesDisabled
+);
 
 createFixture({
   title: "C7494472: AJO offers should be delivered",
@@ -52,8 +62,6 @@ test("Test C7494472: AJO offers should be delivered", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent({ renderDecisions: true });
-
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
 

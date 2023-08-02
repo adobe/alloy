@@ -10,26 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { assign } from "../utils";
-import { objectOf } from "../utils/validation";
 
 const CONFIG_DOC_URI = "https://adobe.ly/3sHh553";
 
-const buildSchema = (coreConfigValidators, componentCreators) => {
-  const schema = {};
-  assign(schema, coreConfigValidators);
-  componentCreators.forEach(createComponent => {
-    const { configValidators } = createComponent;
-    assign(schema, configValidators);
-  });
-  return schema;
-};
-
-const transformOptions = (schema, options) => {
+const transformOptions = ({ combinedConfigValidator, options, logger }) => {
   try {
-    const validator = objectOf(schema)
-      .noUnknownFields()
-      .required();
-    return validator(options);
+    const validator = combinedConfigValidator.noUnknownFields().required();
+    return validator.call({ logger }, options);
   } catch (e) {
     throw new Error(
       `Resolve these configuration problems:\n\t - ${e.message
@@ -41,6 +28,42 @@ const transformOptions = (schema, options) => {
   }
 };
 
+const buildAllOnInstanceConfiguredExtraParams = (
+  config,
+  logger,
+  componentCreators
+) => {
+  return componentCreators.reduce(
+    (memo, { buildOnInstanceConfiguredExtraParams }) => {
+      if (buildOnInstanceConfiguredExtraParams) {
+        assign(memo, buildOnInstanceConfiguredExtraParams({ config, logger }));
+      }
+      return memo;
+    },
+    {}
+  );
+};
+
+const wrapLoggerInQueue = logger => {
+  const queue = [];
+  const queuedLogger = {
+    get enabled() {
+      return logger.enabled;
+    },
+    flush() {
+      queue.forEach(({ method, args }) => logger[method](...args));
+    }
+  };
+  Object.keys(logger)
+    .filter(key => typeof logger[key] === "function")
+    .forEach(method => {
+      queuedLogger[method] = (...args) => {
+        queue.push({ method, args });
+      };
+    });
+  return queuedLogger;
+};
+
 export default ({
   options,
   componentCreators,
@@ -49,9 +72,27 @@ export default ({
   logger,
   setDebugEnabled
 }) => {
-  const schema = buildSchema(coreConfigValidators, componentCreators);
-  const config = createConfig(transformOptions(schema, options));
+  // We wrap the logger in a queue in case debugEnabled is set in the config
+  // but we need to log something before the config is created.
+  const queuedLogger = wrapLoggerInQueue(logger);
+  const combinedConfigValidator = componentCreators
+    .map(({ configValidators }) => configValidators)
+    .filter(configValidators => configValidators)
+    .reduce(
+      (validator, configValidators) => validator.concat(configValidators),
+      coreConfigValidators
+    );
+  const config = createConfig(
+    transformOptions({ combinedConfigValidator, options, logger: queuedLogger })
+  );
   setDebugEnabled(config.debugEnabled, { fromConfig: true });
-  logger.logOnInstanceConfigured({ config });
+  queuedLogger.flush();
+  // eslint-disable-next-line no-underscore-dangle
+  const extraParams = buildAllOnInstanceConfiguredExtraParams(
+    config,
+    logger,
+    componentCreators
+  );
+  logger.logOnInstanceConfigured({ ...extraParams, config });
   return config;
 };

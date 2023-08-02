@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import assertValid from "./assertValid";
+import { assertValid } from "./utils";
 import isValidRegExp from "../isValidRegExp";
 
 export default (value, path) => {

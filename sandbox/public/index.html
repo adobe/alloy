@@ -12,6 +12,30 @@
     <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
 
     <title>Mock website hosting Alloy</title>
+
+    <script>
+      window.__alloyMonitors = window.__alloyMonitors || [];
+      window.__alloyMonitors.push({
+        onInstanceCreated(data) {
+          console.log("Alloy Instance Created");
+          console.log(data.instanceName);
+          console.log(data.instance);
+        },
+        onInstanceConfigured(data) {
+          console.log("Alloy Instance Configured");
+          console.log(JSON.stringify(data.config, null, 2));
+          const { getLinkDetails } = data;
+
+          const listOfLinks = document.links;
+
+          for (var i = 0; i < listOfLinks.length; i++) {
+            const linkDetails = getLinkDetails(listOfLinks[i]);
+            console.log("link details", linkDetails);
+          }
+        }
+      });
+    </script>
+
     <script src="/onBeforeEventSentHelper.js"></script>
 
     <!-- prettier-ignore -->
@@ -80,7 +104,8 @@
             ? "firstparty.alloyio.com"
             : undefined,
         edgeBasePath: getUrlParameter("edgeBasePath") || "ee",
-        edgeConfigId:
+        datastreamId:
+          getUrlParameter("datastreamId") ||
           getUrlParameter("edgeConfigId") ||
           "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
         orgId: "5BFE274A5F6980A50A495C08@AdobeOrg", // UnifiedJS QE Only
@@ -104,16 +129,43 @@
           const _unifiedjsqeonly = xdm._unifiedjsqeonly || {};
           _unifiedjsqeonly.rawTimestamp = new Date().getTime();
           xdm._unifiedjsqeonly = _unifiedjsqeonly;
+          return true;
+        },
+        onBeforeLinkClickSend: function(options) {
+          console.log("options", options);
+          // options.linkElement
+          // options.xdm
+          // options.data
+
+          const xdm = options.xdm;
+          const data = options.data;
+          const { webInteraction } = xdm.web;
+
+          if (webInteraction.name === "Large Payload") {
+            xdm.web.webInteraction.name = "changed link name";
+            data.custom = "custom field for changed link name";
+
+            return true;
+          }
+
+          if (webInteraction.name === "Personalization") {
+            return false;
+          }
+
+          if (webInteraction.URL === "https://alloyio.com/download.zip") {
+            return false;
+          }
+
+          return true;
         },
         targetMigrationEnabled: true,
-        clickCollectionEnabled:
-          getUrlParameter("clickCollectionEnabled") !== "false"
+        clickCollectionEnabled: true
       });
 
       // For Testing multiple instances.
-      // We use a different orgId and edgeConfigId.
+      // We use a different orgId and datastreamId.
       organizationTwo("configure", {
-        edgeConfigId: "7984963a-6609-4e84-98d5-4e2ff8c0dd5e:prod",
+        datastreamId: "7984963a-6609-4e84-98d5-4e2ff8c0dd5e:prod",
         orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg",
         debugEnabled: true,
         clickCollectionEnabled: false,
@@ -140,9 +192,9 @@
       });
 
       // For AJO testing in Prod.
-      // We use a different orgId and edgeConfigId.
+      // We use a different orgId and datastreamId.
       cjmProd("configure", {
-        edgeConfigId: "3e808bee-74f7-468f-be1d-99b498f36fa8:prod",
+        datastreamId: "3e808bee-74f7-468f-be1d-99b498f36fa8:prod",
         orgId: "4DA0571C5FDC4BF70A495FC2@AdobeOrg",
         thirdPartyCookiesEnabled: false,
         debugEnabled: true,

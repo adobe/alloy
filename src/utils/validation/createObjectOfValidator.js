@@ -11,36 +11,37 @@ governing permissions and limitations under the License.
 */
 
 import isObject from "../isObject";
-import assertValid from "./assertValid";
+import { assertValid } from "./utils";
 
-export default schema => (value, path) => {
-  assertValid(isObject(value), value, path, "an object");
+export default schema =>
+  function objectOf(value, path) {
+    assertValid(isObject(value), value, path, "an object");
 
-  const errors = [];
-  const validatedObject = {};
-  Object.keys(schema).forEach(subKey => {
-    const subValue = value[subKey];
-    const subSchema = schema[subKey];
-    const subPath = path ? `${path}.${subKey}` : subKey;
-    try {
-      const validatedValue = subSchema(subValue, subPath);
-      if (validatedValue !== undefined) {
-        validatedObject[subKey] = validatedValue;
+    const errors = [];
+    const validatedObject = {};
+    Object.keys(schema).forEach(subKey => {
+      const subValue = value[subKey];
+      const subSchema = schema[subKey];
+      const subPath = path ? `${path}.${subKey}` : subKey;
+      try {
+        const validatedValue = subSchema.call(this, subValue, subPath);
+        if (validatedValue !== undefined) {
+          validatedObject[subKey] = validatedValue;
+        }
+      } catch (e) {
+        errors.push(e.message);
       }
-    } catch (e) {
-      errors.push(e.message);
-    }
-  });
+    });
 
-  // copy over unknown properties
-  Object.keys(value).forEach(subKey => {
-    if (!Object.prototype.hasOwnProperty.call(validatedObject, subKey)) {
-      validatedObject[subKey] = value[subKey];
-    }
-  });
+    // copy over unknown properties
+    Object.keys(value).forEach(subKey => {
+      if (!Object.prototype.hasOwnProperty.call(validatedObject, subKey)) {
+        validatedObject[subKey] = value[subKey];
+      }
+    });
 
-  if (errors.length) {
-    throw new Error(errors.join("\n"));
-  }
-  return validatedObject;
-};
+    if (errors.length) {
+      throw new Error(errors.join("\n"));
+    }
+    return validatedObject;
+  };

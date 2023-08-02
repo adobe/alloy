@@ -19,7 +19,7 @@ export default ({
   viewName,
   data = {},
   xdm = {},
-  decisionScopes = ["sandbox-personalization-page"],
+  decisionScopes,
   setPropositions
 } = {}) => {
   useEffect(() => {
@@ -39,11 +39,17 @@ export default ({
       xdm,
       data
     }).then(res => {
-      console.log(res);
       const { propositions } = res;
       if (setPropositions && isNonEmptyArray(propositions)) {
         setPropositions(propositions);
       }
     });
-  }, [instanceName, viewName]);
+  }, [
+    JSON.stringify(data),
+    decisionScopes,
+    instanceName,
+    setPropositions,
+    viewName,
+    JSON.stringify(xdm)
+  ]);
 };
