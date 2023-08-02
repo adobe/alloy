@@ -37,10 +37,9 @@ export default ({
       timestamp(event.xdm);
 
       mediaRequestPayload.addEvent(event);
-      const currentTime = Date.now();
       postProcessMediaEvent({ playerId, xdm });
       return sendEdgeNetworkRequest({ request }).then(() => {
-        player.latestTriggeredEvent = currentTime;
+        playerCache.updateLastTriggeredEventTS({ playerId });
         return {};
       });
     });

@@ -27,21 +27,9 @@ export default ({ eventManager, heartbeatTicker, playerCache }) => {
     });
 
     const player = {
-      sessionId: sessionIdPromise.then(sessionId => {
-        if (!sessionId) {
-          return Promise.reject(new Error("No session ID available."));
-        }
-
-        playerCache.startTicker({
-          heartbeatTicker,
-          playerId,
-          sessionId
-        });
-        return sessionId;
-      }),
+      sessionId: sessionIdPromise,
       onBeforeMediaEvent
     };
-    console.log("player", player);
     playerCache.put(playerId, player);
 
     return sessionIdPromise;

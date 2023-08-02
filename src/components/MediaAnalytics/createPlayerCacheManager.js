@@ -1,6 +1,5 @@
 export default () => {
   const cache = {};
-
   const put = (playerId, value) => {
     cache[playerId] = value;
   };
@@ -42,16 +41,22 @@ export default () => {
     if (!player) {
       return;
     }
-    console.log("ticker", player.ticker);
     clearInterval(player.ticker);
+    player.ticker = null;
   };
-
+  const updateLastTriggeredEventTS = ({ playerId }) => {
+    const player = cache[playerId];
+    if (!player) {
+      return;
+    }
+    const currentTime = Date.now();
+    player.latestTriggeredEvent = currentTime;
+  };
   return {
-    put,
-    update,
     get,
     remove,
     startTicker,
-    stopTicker
+    stopTicker,
+    updateLastTriggeredEventTS
   };
 };
