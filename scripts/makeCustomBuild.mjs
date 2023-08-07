@@ -91,7 +91,6 @@ const generateComponentCreatorsJS = components => {
   return `${importStatements.join("\n")}
 export default [${exportedVariableNames.join(", ")}];`;
 };
-
 const buildConfig = (variant, minify) => {
   const plugins = [
     resolve({
@@ -105,11 +104,15 @@ const buildConfig = (variant, minify) => {
     })
   ];
 
+  if (minify) {
+    plugins.push(terser());
+  }
+
   return {
     input: "src/standalone.js",
     output: [
       {
-        file: `dist/alloy.js`,
+        file: `dist/alloy${minify ? ".min" : ""}.js`,
         format: "iife",
         intro:
           "if (document.documentMode && document.documentMode < 11) {\n" +
@@ -122,7 +125,6 @@ const buildConfig = (variant, minify) => {
     plugins
   };
 };
-
 const build = async () => {
   const selectedComponents = (
     await inquirer.prompt([
@@ -188,17 +190,18 @@ const build = async () => {
   );
   // build alloy
   const prodBuild = buildConfig(NPM_PACKAGE_PROD, false);
+  const minBuild = buildConfig(NPM_PACKAGE_PROD, true);
 
   // Build all configurations with Rollup
-  const bundle = await rollup(prodBuild);
+  const bundleProd = await rollup(prodBuild);
   console.log("✔️ Built alloy.js");
-  await bundle.write(prodBuild.output[0]);
+  await bundleProd.write(prodBuild.output[0]);
   console.log(`✔️ Wrote alloy.js to ${prodBuild.output[0].file}`);
-  // put the old componentCreators.js file back
-  await rename(`${componentCreatorsFilePath}.bak`, componentCreatorsFilePath);
-  console.log(
-    "✔️ Moved old componentCreators.js.bak file back to componentCreators.js"
-  );
+
+  const bundleMin = await rollup(minBuild);
+  console.log("✔️ Built alloy.min.js");
+  await bundleMin.write(minBuild.output[0]);
+  console.log(`✔️ Wrote alloy.min.js to ${minBuild.output[0].file}`);
 };
 
 build().catch(error => {
