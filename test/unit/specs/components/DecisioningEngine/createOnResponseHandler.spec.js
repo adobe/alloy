@@ -114,7 +114,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                       },
                       consequences: [
                         {
-                          type: "item",
+                          type: "schema",
                           detail: {
                             schema:
                               "https://ns.adobe.com/personalization/dom-action",
@@ -133,7 +133,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                           id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
                         },
                         {
-                          type: "item",
+                          type: "schema",
                           detail: {
                             schema:
                               "https://ns.adobe.com/personalization/dom-action",
@@ -295,7 +295,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                       },
                       consequences: [
                         {
-                          type: "item",
+                          type: "schema",
                           detail: {
                             schema:
                               "https://ns.adobe.com/personalization/dom-action",

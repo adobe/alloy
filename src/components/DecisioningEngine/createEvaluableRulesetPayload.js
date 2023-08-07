@@ -10,9 +10,33 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import RulesEngine from "@adobe/aep-rules-engine";
-import { JSON_RULESET_ITEM } from "../Personalization/constants/schema";
+import {
+  JSON_CONTENT_ITEM,
+  JSON_RULESET_ITEM
+} from "../Personalization/constants/schema";
 import flattenArray from "../../utils/flattenArray";
 import createConsequenceAdapter from "./createConsequenceAdapter";
+
+const isJsonRulesetItem = item => {
+  const { schema, data } = item;
+
+  if (schema === JSON_RULESET_ITEM) {
+    return true;
+  }
+
+  if (schema !== JSON_CONTENT_ITEM) {
+    return false;
+  }
+
+  const content =
+    typeof data.content === "string" ? JSON.parse(data.content) : data.content;
+
+  return (
+    content &&
+    Object.prototype.hasOwnProperty.call(content, "version") &&
+    Object.prototype.hasOwnProperty.call(content, "rules")
+  );
+};
 
 export default payload => {
   const consequenceAdapter = createConsequenceAdapter();
@@ -41,9 +65,7 @@ export default payload => {
   };
 
   if (Array.isArray(payload.items)) {
-    payload.items
-      .filter(item => item.schema === JSON_RULESET_ITEM)
-      .forEach(addItem);
+    payload.items.filter(isJsonRulesetItem).forEach(addItem);
   }
 
   return {

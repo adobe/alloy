@@ -79,7 +79,7 @@ describe("DecisioningEngine:createDecisionProvider", () => {
                     },
                     consequences: [
                       {
-                        type: "item",
+                        type: "schema",
                         detail: {
                           schema:
                             "https://ns.adobe.com/personalization/dom-action",
@@ -98,7 +98,7 @@ describe("DecisioningEngine:createDecisionProvider", () => {
                         id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
                       },
                       {
-                        type: "item",
+                        type: "schema",
                         detail: {
                           schema:
                             "https://ns.adobe.com/personalization/dom-action",
@@ -177,7 +177,7 @@ describe("DecisioningEngine:createDecisionProvider", () => {
                     },
                     consequences: [
                       {
-                        type: "item",
+                        type: "schema",
                         detail: {
                           schema:
                             "https://ns.adobe.com/personalization/dom-action",
@@ -192,7 +192,7 @@ describe("DecisioningEngine:createDecisionProvider", () => {
                         id: "8a0d7a45-70fb-4845-a093-2133b5744c8d"
                       },
                       {
-                        type: "item",
+                        type: "schema",
                         detail: {
                           schema:
                             "https://ns.adobe.com/personalization/dom-action",
