@@ -52,7 +52,7 @@ describe("Personalization::IAM:banner", () => {
     expect(container.parentNode).toEqual(document.body);
 
     expect(container.previousElementSibling).toEqual(something);
-    expect(container.nextElementSibling).toBeNull();
+    expect(container.nextElementSibling).not.toBeNull();
 
     const iframe = document.querySelector(
       ".alloy-messaging-container > iframe"

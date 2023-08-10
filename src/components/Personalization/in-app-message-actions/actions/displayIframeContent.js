@@ -11,11 +11,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { removeElements } from "../utils";
+import { getNonce } from "../../dom-actions/dom";
 
 const ELEMENT_TAG_CLASSNAME = "alloy-messaging-container";
 const ELEMENT_TAG_ID = "alloy-messaging-container";
 const ANCHOR_HREF_REGEX = /adbinapp:\/\/(\w+)\?interaction=(\w+)/i;
+const OVERLAY_TAG_ID = "overlay-container";
 
 export const buildStyleFromParameters = (mobileParameters, webParameters) => {
   const {
@@ -27,29 +28,36 @@ export const buildStyleFromParameters = (mobileParameters, webParameters) => {
     cornerRadius,
     horizontalInset,
     verticalInset,
-    uiTakeOver
+    uiTakeover
   } = mobileParameters;
 
   return {
     verticalAlign: verticalAlign === "center" ? "middle" : verticalAlign,
-    top: verticalAlign === "top" ? "0px" : "auto",
+    textAlign: horizontalAlign === "center" ? "center" : horizontalAlign,
     width: width ? `${width}%` : "100%",
-    horizontalAlign: horizontalAlign === "center" ? "middle" : horizontalAlign,
     backgroundColor: backdropColor || "rgba(0, 0, 0, 0.5)",
     height: height ? `${height}vh` : "100%",
     borderRadius: cornerRadius ? `${cornerRadius}px` : "0px",
     border: "none",
-    marginLeft: horizontalInset ? `${horizontalInset}px` : "0px",
-    marginRight: horizontalInset ? `${horizontalInset}px` : "0px",
-    marginTop: verticalInset ? `${verticalInset}px` : "0px",
-    marginBottom: verticalInset ? `${verticalInset}px` : "0px",
-    zIndex: uiTakeOver ? "9999" : "0",
-    position: uiTakeOver ? "fixed" : "relative",
-    overflow: "hidden"
+    zIndex: uiTakeover ? "9999" : "0",
+    position: uiTakeover ? "fixed" : "relative",
+    overflow: "hidden",
+    ...(verticalAlign === "top" || verticalAlign === "bottom"
+      ? {
+          marginTop: verticalInset ? `${verticalInset}px` : "0px",
+          marginBottom: verticalInset ? `${verticalInset}px` : "0px"
+        }
+      : {}),
+    ...(horizontalAlign === "left" || horizontalAlign === "right"
+      ? {
+          marginLeft: horizontalInset ? `${horizontalInset}px` : "0px",
+          marginRight: horizontalInset ? `${horizontalInset}px` : "0px"
+        }
+      : {})
   };
 };
 
-const createIframeClickHandler = (container, collect) => {
+const createIframeClickHandler = (container, collect, mobileParameters) => {
   return event => {
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -78,6 +86,10 @@ const createIframeClickHandler = (container, collect) => {
 
         if (action === "dismiss") {
           container.remove();
+          if (mobileParameters.uiTakeover) {
+            const overlayElement = document.getElementById(OVERLAY_TAG_ID);
+            overlayElement.remove();
+          }
         }
       } else {
         window.location.href = anchor.href;
@@ -89,7 +101,11 @@ const createIframeClickHandler = (container, collect) => {
 const createIframe = (htmlContent, clickHandler) => {
   const parser = new DOMParser();
   const htmlDocument = parser.parseFromString(htmlContent, "text/html");
+  const scriptTag = htmlDocument.querySelector("script");
 
+  if (scriptTag) {
+    scriptTag.setAttribute("nonce", getNonce());
+  }
   const element = document.createElement("iframe");
   element.src = URL.createObjectURL(
     new Blob([htmlDocument.documentElement.outerHTML], { type: "text/html" })
@@ -113,22 +129,9 @@ const createIframe = (htmlContent, clickHandler) => {
 
 const createContainerElement = settings => {
   const { mobileParameters = {}, webParameters = {} } = settings;
-
   const element = document.createElement("div");
   element.id = ELEMENT_TAG_ID;
   element.className = `${ELEMENT_TAG_CLASSNAME}`;
-
-  Object.assign(element.style, {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    "background-color": "white",
-    padding: "0px",
-    border: "1px solid black",
-    "box-shadow": "10px 10px 5px #888888"
-  });
-
   Object.assign(
     element.style,
     buildStyleFromParameters(mobileParameters, webParameters)
@@ -137,10 +140,29 @@ const createContainerElement = settings => {
   return element;
 };
 
-const displayHTMLContentInIframe = (settings, collect) => {
-  removeElements(ELEMENT_TAG_CLASSNAME);
+const createOverlayElement = parameter => {
+  const element = document.createElement("div");
+  const backdropOpacity = parameter.backdropOpacity || 0.5;
+  const backdropColor = parameter.backdropColor || "#FFFFFF";
+  element.id = OVERLAY_TAG_ID;
 
-  const { content, contentType } = settings;
+  Object.assign(element.style, {
+    position: "fixed",
+    top: "0",
+    left: "0",
+    width: "100%",
+    height: "100%",
+    zIndex: "1",
+    background: "transparent",
+    opacity: backdropOpacity,
+    backgroundColor: backdropColor
+  });
+
+  return element;
+};
+
+const displayHTMLContentInIframe = (settings, collect) => {
+  const { content, contentType, mobileParameters } = settings;
 
   if (contentType !== "text/html") {
     // TODO: whoops, no can do.
@@ -150,12 +172,18 @@ const displayHTMLContentInIframe = (settings, collect) => {
 
   const iframe = createIframe(
     content,
-    createIframeClickHandler(container, collect)
+    createIframeClickHandler(container, collect, mobileParameters)
   );
 
   container.appendChild(iframe);
 
   document.body.append(container);
+
+  if (mobileParameters.uiTakeover) {
+    const overlay = createOverlayElement(mobileParameters);
+    document.body.appendChild(overlay);
+    document.body.style.overflow = "hidden";
+  }
 };
 
 export default (settings, collect) => {
