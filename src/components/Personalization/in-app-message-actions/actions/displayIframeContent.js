@@ -31,30 +31,43 @@ export const buildStyleFromParameters = (mobileParameters, webParameters) => {
     uiTakeover
   } = mobileParameters;
 
-  return {
-    verticalAlign: verticalAlign === "center" ? "middle" : verticalAlign,
-    textAlign: horizontalAlign === "center" ? "center" : horizontalAlign,
+  const style = {
     width: width ? `${width}%` : "100%",
     backgroundColor: backdropColor || "rgba(0, 0, 0, 0.5)",
-    height: height ? `${height}vh` : "100%",
     borderRadius: cornerRadius ? `${cornerRadius}px` : "0px",
     border: "none",
     zIndex: uiTakeover ? "9999" : "0",
     position: uiTakeover ? "fixed" : "relative",
-    overflow: "hidden",
-    ...(verticalAlign === "top" || verticalAlign === "bottom"
-      ? {
-          marginTop: verticalInset ? `${verticalInset}px` : "0px",
-          marginBottom: verticalInset ? `${verticalInset}px` : "0px"
-        }
-      : {}),
-    ...(horizontalAlign === "left" || horizontalAlign === "right"
-      ? {
-          marginLeft: horizontalInset ? `${horizontalInset}px` : "0px",
-          marginRight: horizontalInset ? `${horizontalInset}px` : "0px"
-        }
-      : {})
+    overflow: "hidden"
   };
+  if (horizontalAlign === "left") {
+    style.left = horizontalInset ? `${horizontalInset}%` : "0";
+  } else if (horizontalAlign === "right") {
+    style.right = horizontalInset ? `${horizontalInset}%` : "0";
+  } else if (horizontalAlign === "center") {
+    style.left = "50%";
+    style.transform = "translateX(-50%)";
+  }
+
+  if (verticalAlign === "top") {
+    style.top = verticalInset ? `${verticalInset}%` : "0";
+  } else if (verticalAlign === "bottom") {
+    style.bottom = verticalInset ? `${verticalInset}%` : "0";
+  } else if (verticalAlign === "center" || verticalAlign === "middle") {
+    style.top = "50%";
+    style.transform = "translateY(-50%)";
+    style.display = "flex";
+    style.alignItems = "center";
+    style.justifyContent = "center";
+  }
+
+  if (height) {
+    style.height = `${height}vh`;
+  } else {
+    style.height = "100%";
+  }
+
+  return style;
 };
 
 const createIframeClickHandler = (container, collect, mobileParameters) => {
@@ -129,6 +142,7 @@ const createIframe = (htmlContent, clickHandler) => {
 
 const createContainerElement = settings => {
   const { mobileParameters = {}, webParameters = {} } = settings;
+  console.log("mobileParameters for styling ---------->", mobileParameters);
   const element = document.createElement("div");
   element.id = ELEMENT_TAG_ID;
   element.className = `${ELEMENT_TAG_CLASSNAME}`;
