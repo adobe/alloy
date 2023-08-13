@@ -37,6 +37,7 @@ export const buildStyleFromParameters = (mobileParameters, webParameters) => {
     borderRadius: cornerRadius ? `${cornerRadius}px` : "0px",
     border: "none",
     zIndex: uiTakeover ? "9999" : "0",
+    // TODO: check if this is the right way to handle this
     position: uiTakeover ? "fixed" : "relative",
     overflow: "hidden"
   };
@@ -52,10 +53,13 @@ export const buildStyleFromParameters = (mobileParameters, webParameters) => {
   if (verticalAlign === "top") {
     style.top = verticalInset ? `${verticalInset}%` : "0";
   } else if (verticalAlign === "bottom") {
+    style.position = "fixed";
     style.bottom = verticalInset ? `${verticalInset}%` : "0";
-  } else if (verticalAlign === "center" || verticalAlign === "middle") {
+  } else if (verticalAlign === "center") {
     style.top = "50%";
-    style.transform = "translateY(-50%)";
+    style.transform = `${
+      horizontalAlign === "center" ? `${style.transform} ` : ""
+    }translateY(-50%)`;
     style.display = "flex";
     style.alignItems = "center";
     style.justifyContent = "center";
