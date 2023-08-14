@@ -31,6 +31,7 @@ import PersonalizationFormBased from "./PersonalizationFormBased";
 import Identity from "./Identity";
 import AlloyVersion from "./components/AlloyVersion";
 import ConfigOverrides from "./ConfigOverrides.jsx";
+import DecisioningEngine from "./components/DecisioningEngineDemo/DecisioningEngine";
 
 function BasicExample() {
   return (
@@ -96,6 +97,9 @@ function BasicExample() {
             <li>
               <a href="/configOverrides">Config Overrides</a>
             </li>
+            <li>
+              <Link to="/decisioningEngine">Decisioning Engine</Link>
+            </li>
           </ul>
           <hr />
 
@@ -125,6 +129,7 @@ function BasicExample() {
           <Route path="/redirectedNewPage" component={RedirectedNewPage} />
           <Route path="/identity" component={Identity} />
           <Route path="/configOverrides" component={ConfigOverrides} />
+          <Route path="/decisioningEngine" component={DecisioningEngine} />
         </div>
       </Router>
       <AlloyVersion />
