@@ -17,13 +17,40 @@ import { PropositionEventType } from "./constants/propositionEventType";
 export default ({
   mergeDecisionsMeta,
   collect,
-  executeDecisions,
+  renderHandler,
+  nonRenderHandler,
+  propositionHandler,
   viewCache
 }) => {
-  return ({ personalizationDetails, event, onResponse }) => {
+  return async ({ personalizationDetails, event, onResponse }) => {
     const viewName = personalizationDetails.getViewName();
 
-    return viewCache.getView(viewName).then(viewDecisions => {
+    const viewDecisions = await viewCache.getView(viewName);
+
+    const handler = personalizationDetails.isRenderDecisions() ? renderHandler : nonRenderHandler;
+    const sendDisplayNotification = decisionsMeta => {
+      mergeDecisionsMeta(
+        event,
+        decisionsMeta,
+        PropositionEventType.DISPLAY
+      );
+      return new Promise(resolve => {
+        onResponse(resolve);
+      });
+    };
+
+    const result = await propositionHandler({
+      handles: viewDecisions,
+      handler,
+      viewName,
+      resolveDisplayNotification: sendDisplayNotification,
+      resolveRedirectNotification: sendDisplayNotification
+    });
+
+    onResponse(() => {
+      return result;
+    });
+/*
       if (personalizationDetails.isRenderDecisions()) {
         return executeDecisions(viewDecisions).then(decisionsMeta => {
           // if there are decisions to be rendered we render them and attach the result in experience.decisions.propositions
@@ -51,5 +78,6 @@ export default ({
       });
       return {};
     });
+*/
   };
 };

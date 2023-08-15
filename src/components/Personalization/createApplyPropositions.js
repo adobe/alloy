@@ -18,7 +18,7 @@ import { EMPTY_PROPOSITIONS } from "./validateApplyPropositionsOptions";
 
 export const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
 
-export default ({ executeDecisions }) => {
+export default ({ propositionHandler, renderHandler }) => {
   const filterItemsPredicate = item =>
     SUPPORTED_SCHEMAS.indexOf(item.schema) > -1;
 
@@ -71,14 +71,21 @@ export default ({ executeDecisions }) => {
       .filter(proposition => isNonEmptyArray(proposition.items));
   };
 
-  const applyPropositions = ({ propositions, metadata }) => {
+  const applyPropositions = async ({ propositions, metadata }) => {
     const propositionsToExecute = preparePropositions({
       propositions,
       metadata
     });
-    return executeDecisions(propositionsToExecute).then(() => {
-      return composePersonalizationResultingObject(propositionsToExecute, true);
+
+    const result = await propositionHandler({
+      handles: propositionsToExecute,
+      handler: renderHandler,
+      viewName: undefined,
+      resolveDisplayNotification: () => undefined,
+      resolveRedirectNotification: () => undefined
     });
+    delete result.decisions;
+    return result;
   };
 
   return ({ propositions, metadata = {} }) => {

@@ -51,6 +51,9 @@ export default ({
     isRenderDecisions() {
       return renderDecisions;
     },
+    isSendDisplayNotifications() {
+      return !!personalization.sendDisplayNotifications;
+    },
     getViewName() {
       return viewName;
     },

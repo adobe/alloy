@@ -3,7 +3,7 @@ import { find } from "../../../utils";
 
 export default ({ next }) => args => {
   const { proposition } = args;
-  const { items } = proposition.getHandle();
+  const { items = [] } = proposition.getHandle() || {};
 
   const redirectItem = find(items, ({ schema }) => schema === REDIRECT_ITEM);
   if (redirectItem) {

@@ -2,7 +2,7 @@ import createRedirectHandler from "../../../../../../src/components/Personalizat
 import createProposition from "../../../../../../src/components/Personalization/handlers/createProposition";
 
 
-fdescribe("redirectHandler", () => {
+describe("redirectHandler", () => {
 
   let next;
   let redirectHandler;

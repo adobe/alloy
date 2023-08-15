@@ -40,6 +40,7 @@ const buildActions = decision => {
 
 const processMetas = (logger, actionResults) => {
   const results = flatMap(actionResults, identity);
+  console.log("ProcessMetas", JSON.stringify(results, null, 2));
   const finalMetas = [];
   const set = new Set();
 
@@ -73,9 +74,14 @@ export default ({ modules, logger, executeActions }) => {
 
       return executeActions(actions, modules, logger);
     });
+
     return Promise.all(actionResultsPromises)
-      .then(results => processMetas(logger, results))
+      .then(results => {
+        console.log("Results:", JSON.stringify(results, null, 2));
+        return processMetas(logger, results);
+      })
       .catch(error => {
+        console.log("Error:", error);
         logger.error(error);
       });
   };

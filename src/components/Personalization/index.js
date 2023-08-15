@@ -27,7 +27,7 @@ import createClickStorage from "./createClickStorage";
 import createApplyPropositions from "./createApplyPropositions";
 import createGetPageLocation from "./createGetPageLocation";
 import createSetTargetMigration from "./createSetTargetMigration";
-import propositionHandler from "./handlers/propositionHandler";
+import propositionHandler from "./handlers/createPropositionHandler";
 import createRedirectHandler from "./handlers/createRedirectHandler";
 import createCachingHandler from "./handlers/createCachingHandler";
 import createDomActionHandler from "./handlers/createDomActionHandler";

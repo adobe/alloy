@@ -13,17 +13,34 @@ governing permissions and limitations under the License.
 import { assign } from "../../utils";
 import defer from "../../utils/defer";
 
+const createEmptyViewPropositions = viewName => {
+  return [{
+    scope: viewName,
+    scopeDetails: {
+      characteristics: {
+        scopeType: "view"
+      }
+    }
+  }];
+};
+
 export default () => {
   let viewStorage;
   const viewStorageDeferred = defer();
 
-  const storeViews = decisionsPromise => {
-    decisionsPromise
-      .then(decisions => {
+  const storeViews = viewTypeHandlesPromise => {
+    viewTypeHandlesPromise
+      .then(viewTypeHandles => {
         if (viewStorage === undefined) {
           viewStorage = {};
         }
-        assign(viewStorage, decisions);
+        const newViewStorage = viewTypeHandles.reduce((acc, handle) => {
+          const { scope } = handle;
+          acc[scope] = acc[scope] || [];
+          acc[scope].push(handle);
+          return acc;
+        }, {});
+        assign(viewStorage, newViewStorage);
         viewStorageDeferred.resolve();
       })
       .catch(() => {
@@ -35,7 +52,10 @@ export default () => {
   };
 
   const getView = viewName => {
-    return viewStorageDeferred.promise.then(() => viewStorage[viewName] || []);
+    return viewStorageDeferred.promise.then(() =>
+      viewStorage[viewName] ||
+      createEmptyViewPropositions(viewName)
+    );
   };
 
   const isInitialized = () => {
