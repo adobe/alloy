@@ -74,7 +74,11 @@ export const buildStyleFromParameters = (mobileParameters, webParameters) => {
   return style;
 };
 
-const createIframeClickHandler = (container, collect, mobileParameters) => {
+export const createIframeClickHandler = (
+  container,
+  collect,
+  mobileParameters
+) => {
   return event => {
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -158,7 +162,7 @@ const createContainerElement = settings => {
   return element;
 };
 
-const createOverlayElement = parameter => {
+export const createOverlayElement = parameter => {
   const element = document.createElement("div");
   const backdropOpacity = parameter.backdropOpacity || 0.5;
   const backdropColor = parameter.backdropColor || "#FFFFFF";
