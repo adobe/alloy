@@ -119,7 +119,7 @@ export const createIframeClickHandler = (
   };
 };
 
-const createIframe = (htmlContent, clickHandler) => {
+export const createIframe = (htmlContent, clickHandler) => {
   const parser = new DOMParser();
   const htmlDocument = parser.parseFromString(htmlContent, "text/html");
   const scriptTag = htmlDocument.querySelector("script");
@@ -150,7 +150,6 @@ const createIframe = (htmlContent, clickHandler) => {
 
 const createContainerElement = settings => {
   const { mobileParameters = {}, webParameters = {} } = settings;
-  console.log("mobileParameters for styling ---------->", mobileParameters);
   const element = document.createElement("div");
   element.id = ELEMENT_TAG_ID;
   element.className = `${ELEMENT_TAG_CLASSNAME}`;
