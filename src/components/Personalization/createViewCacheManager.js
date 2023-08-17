@@ -12,57 +12,82 @@ governing permissions and limitations under the License.
 
 import { assign } from "../../utils";
 import defer from "../../utils/defer";
+import { VIEW_SCOPE_TYPE } from "./constants/scopeType";
 
 const createEmptyViewPropositions = viewName => {
-  return [{
-    scope: viewName,
-    scopeDetails: {
-      characteristics: {
-        scopeType: "view"
+  return [
+    {
+      scope: viewName,
+      scopeDetails: {
+        characteristics: {
+          scopeType: "view"
+        }
       }
     }
-  }];
+  ];
 };
 
 export default () => {
-  let viewStorage;
-  const viewStorageDeferred = defer();
+  const viewStorage = {};
+  let cacheUpdateCreatedAtLeastOnce = false;
+  let previousUpdateCacheComplete = Promise.resolve();
 
-  const storeViews = viewTypeHandlesPromise => {
-    viewTypeHandlesPromise
-      .then(viewTypeHandles => {
-        if (viewStorage === undefined) {
-          viewStorage = {};
-        }
-        const newViewStorage = viewTypeHandles.reduce((acc, handle) => {
-          const { scope } = handle;
-          acc[scope] = acc[scope] || [];
-          acc[scope].push(handle);
-          return acc;
-        }, {});
+  // This should be called before making the request to experience edge.
+  const createCacheUpdate = viewName => {
+    const updateCacheDeferred = defer();
+
+    cacheUpdateCreatedAtLeastOnce = true;
+    previousUpdateCacheComplete = previousUpdateCacheComplete
+      .then(() => updateCacheDeferred.promise)
+      .then(newViewStorage => {
         assign(viewStorage, newViewStorage);
-        viewStorageDeferred.resolve();
       })
-      .catch(() => {
-        if (viewStorage === undefined) {
-          viewStorage = {};
+      .catch(() => {});
+
+    return {
+      update(personalizationHandles) {
+        const newViewStorage = {};
+        const otherHandles = [];
+        personalizationHandles.forEach(handle => {
+          const {
+            scope,
+            scopeDetails: { characteristics: { scopeType } = {} } = {}
+          } = handle;
+          if (scopeType === VIEW_SCOPE_TYPE) {
+            newViewStorage[scope] = newViewStorage[scope] || [];
+            newViewStorage[scope].push(handle);
+          } else {
+            otherHandles.push(handle);
+          }
+        });
+        updateCacheDeferred.resolve(newViewStorage);
+        if (viewName) {
+          return [
+            ...(newViewStorage[viewName] ||
+              createEmptyViewPropositions(viewName)),
+            otherHandles
+          ];
         }
-        viewStorageDeferred.resolve();
-      });
+        return otherHandles;
+      },
+      error() {
+        updateCacheDeferred.reject();
+      }
+    };
   };
 
   const getView = viewName => {
-    return viewStorageDeferred.promise.then(() =>
-      viewStorage[viewName] ||
-      createEmptyViewPropositions(viewName)
+    return previousUpdateCacheComplete.then(
+      () => viewStorage[viewName] || createEmptyViewPropositions(viewName)
     );
   };
 
   const isInitialized = () => {
-    return !(viewStorage === undefined);
+    return cacheUpdateCreatedAtLeastOnce;
   };
+
   return {
-    storeViews,
+    createCacheUpdate,
     getView,
     isInitialized
   };

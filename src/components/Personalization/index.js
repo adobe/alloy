@@ -12,9 +12,8 @@ governing permissions and limitations under the License.
 
 import { string, boolean, objectOf } from "../../utils/validation";
 import createComponent from "./createComponent";
-import { initDomActionsModules, executeActions } from "./dom-actions";
+import { initDomActionsModules } from "./dom-actions";
 import createCollect from "./createCollect";
-import createExecuteDecisions from "./createExecuteDecisions";
 import { hideContainers, showContainers } from "./flicker";
 import createFetchDataHandler from "./createFetchDataHandler";
 import collectClicks from "./dom-actions/clicks/collectClicks";
@@ -27,11 +26,11 @@ import createClickStorage from "./createClickStorage";
 import createApplyPropositions from "./createApplyPropositions";
 import createGetPageLocation from "./createGetPageLocation";
 import createSetTargetMigration from "./createSetTargetMigration";
-import propositionHandler from "./handlers/createPropositionHandler";
 import createRedirectHandler from "./handlers/createRedirectHandler";
-import createCachingHandler from "./handlers/createCachingHandler";
+import createHtmlContentHandler from "./handlers/createHtmlContentHandler";
 import createDomActionHandler from "./handlers/createDomActionHandler";
 import createMeasurementSchemaHandler from "./handlers/createMeasurementSchemaHandler";
+import createRender from "./handlers/createRender";
 import { isPageWideSurface } from "./utils/surfaceUtils";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
@@ -45,31 +44,38 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   } = createClickStorage();
   const getPageLocation = createGetPageLocation({ window });
   const viewCache = createViewCacheManager();
-  const modules = initDomActionsModules(storeClickMetrics);
-  const executeDecisions = createExecuteDecisions({
-    modules,
-    logger,
-    executeActions
-  });
-
-  const applyPropositions = createApplyPropositions({
-    executeDecisions
-  });
+  const modules = initDomActionsModules();
 
   const noOpHandler = () => undefined;
-  const cachingHandler = createCachingHandler({ next: noOpHandler });
-  const domActionHandler = createDomActionHandler({ next: cachingHandler, executeDecisions, isPageWideSurface });
-  const measurementSchemaHandler = createMeasurementSchemaHandler({ next: domActionHandler });
-  const redirectHandler = createRedirectHandler({ next: measurementSchemaHandler });
+  const domActionHandler = createDomActionHandler({
+    next: noOpHandler,
+    isPageWideSurface,
+    modules,
+    storeClickMetrics
+  });
+  const measurementSchemaHandler = createMeasurementSchemaHandler({
+    next: domActionHandler
+  });
+  const redirectHandler = createRedirectHandler({
+    next: measurementSchemaHandler
+  });
+  const htmlContentHandler = createHtmlContentHandler({
+    next: redirectHandler,
+    modules
+  });
 
+  const render = createRender({
+    handleChain: htmlContentHandler,
+    collect,
+    executeRedirect: url => window.location.replace(url),
+    logger
+  });
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
-    propositionHandler,
     hideContainers,
     mergeQuery,
-    renderHandler: redirectHandler,
-    nonRenderHandler: cachingHandler,
-    collect
+    collect,
+    render
   });
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
@@ -79,9 +85,11 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
   const viewChangeHandler = createViewChangeHandler({
     mergeDecisionsMeta,
-    collect,
-    executeDecisions,
+    render,
     viewCache
+  });
+  const applyPropositions = createApplyPropositions({
+    render
   });
   const setTargetMigration = createSetTargetMigration({
     targetMigrationEnabled

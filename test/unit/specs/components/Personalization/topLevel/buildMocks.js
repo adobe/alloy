@@ -1,3 +1,14 @@
+/*
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
 import createEvent from "../../../../../../src/core/createEvent";
 import createResponse from "../../../../../functional/helpers/createResponse";
 
@@ -27,21 +38,14 @@ export default decisions => {
     "insertHtmlBefore"
   ]);
 
-  const executeActions = (actions, modules) => {
-    return Promise.resolve(actions.map(action => {
-      const { type, meta } = action;
-      console.log("executeActions mock", JSON.stringify(action, null, 2));
-      modules[type](action);
-      //console.log("executeActions mock", JSON.stringify(meta, null, 2));
-      return { meta };
-    }));
-  };
-
   const config = {
     targetMigrationEnabled: true,
     prehidingStyle: "myprehidingstyle"
   };
-  const logger = jasmine.createSpyObj("logger", ["warn", "error"]);
+  const logger = {
+    warn: spyOn(console, "warn").and.callThrough(),
+    error: spyOn(console, "error").and.callThrough()
+  };
   const sendEvent = jasmine.createSpy("sendEvent");
   const eventManager = {
     createEvent,
@@ -68,8 +72,6 @@ export default decisions => {
     window,
     hideContainers,
     showContainers,
-    response,
-    executeActions
+    response
   };
-}
-
+};

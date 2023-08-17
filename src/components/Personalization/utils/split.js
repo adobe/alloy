@@ -9,14 +9,21 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { MEASUREMENT_SCHEMA } from "../constants/schema";
 
-export default ({ next }) => proposition => {
-  const { items = [] } = proposition.getHandle();
+export default (array, ...predicates) => {
+  const results = predicates.map(() => []);
+  results.push([]);
 
-  // If there is a measurement schema in the item list,
-  // just return the whole proposition unrendered. (i.e. do not call next)
-  if (!items.some(item => item.schema === MEASUREMENT_SCHEMA)) {
-    next(proposition);
-  }
+  array.forEach(item => {
+    for (let i = 0; i < predicates.length; i += 1) {
+      if (predicates[i](item)) {
+        results[i].push(item);
+        return;
+      }
+    }
+    // else
+    results[predicates.length].push(item);
+  });
+
+  return results;
 };

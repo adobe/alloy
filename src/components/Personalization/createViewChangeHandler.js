@@ -10,47 +10,31 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import composePersonalizationResultingObject from "./utils/composePersonalizationResultingObject";
-import { isNonEmptyArray } from "../../utils";
 import { PropositionEventType } from "./constants/propositionEventType";
+import {
+  buildReturnedPropositions,
+  buildReturnedDecisions,
+  createProposition
+} from "./handlers/proposition";
 
-export default ({
-  mergeDecisionsMeta,
-  collect,
-  renderHandler,
-  nonRenderHandler,
-  propositionHandler,
-  viewCache
-}) => {
+export default ({ mergeDecisionsMeta, render, viewCache }) => {
   return async ({ personalizationDetails, event, onResponse }) => {
     const viewName = personalizationDetails.getViewName();
 
-    const viewDecisions = await viewCache.getView(viewName);
+    const viewHandles = await viewCache.getView(viewName);
+    const propositions = viewHandles.map(createProposition);
 
-    const handler = personalizationDetails.isRenderDecisions() ? renderHandler : nonRenderHandler;
-    const sendDisplayNotification = decisionsMeta => {
-      mergeDecisionsMeta(
-        event,
-        decisionsMeta,
-        PropositionEventType.DISPLAY
-      );
-      return new Promise(resolve => {
-        onResponse(resolve);
-      });
-    };
-
-    const result = await propositionHandler({
-      handles: viewDecisions,
-      handler,
-      viewName,
-      resolveDisplayNotification: sendDisplayNotification,
-      resolveRedirectNotification: sendDisplayNotification
-    });
-
+    if (personalizationDetails.isRenderDecisions()) {
+      const decisionsMeta = await render(propositions);
+      mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.DISPLAY);
+    }
     onResponse(() => {
-      return result;
+      return {
+        propositions: buildReturnedPropositions(propositions),
+        decisions: buildReturnedDecisions(propositions)
+      };
     });
-/*
+    /*
       if (personalizationDetails.isRenderDecisions()) {
         return executeDecisions(viewDecisions).then(decisionsMeta => {
           // if there are decisions to be rendered we render them and attach the result in experience.decisions.propositions

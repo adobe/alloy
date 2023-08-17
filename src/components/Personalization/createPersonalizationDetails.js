@@ -43,7 +43,7 @@ export default ({
   decisionScopes,
   personalization,
   event,
-  viewCache,
+  isCacheInitialized,
   logger
 }) => {
   const viewName = event.getViewName();
@@ -103,7 +103,7 @@ export default ({
       };
     },
     isCacheInitialized() {
-      return viewCache.isInitialized();
+      return isCacheInitialized;
     },
     shouldFetchData() {
       return (

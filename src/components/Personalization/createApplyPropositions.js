@@ -10,15 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import composePersonalizationResultingObject from "./utils/composePersonalizationResultingObject";
 import { isNonEmptyArray, isObject } from "../../utils";
 import { DOM_ACTION, HTML_CONTENT_ITEM } from "./constants/schema";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
 import { EMPTY_PROPOSITIONS } from "./validateApplyPropositionsOptions";
+import {
+  buildReturnedPropositions,
+  createProposition
+} from "./handlers/proposition";
 
 export const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
 
-export default ({ propositionHandler, renderHandler }) => {
+export default ({ render }) => {
   const filterItemsPredicate = item =>
     SUPPORTED_SCHEMAS.indexOf(item.schema) > -1;
 
@@ -75,17 +78,12 @@ export default ({ propositionHandler, renderHandler }) => {
     const propositionsToExecute = preparePropositions({
       propositions,
       metadata
-    });
+    }).map(proposition => createProposition(proposition, true));
 
-    const result = await propositionHandler({
-      handles: propositionsToExecute,
-      handler: renderHandler,
-      viewName: undefined,
-      resolveDisplayNotification: () => undefined,
-      resolveRedirectNotification: () => undefined
-    });
-    delete result.decisions;
-    return result;
+    render(propositionsToExecute);
+    return {
+      propositions: buildReturnedPropositions(propositionsToExecute)
+    };
   };
 
   return ({ propositions, metadata = {} }) => {

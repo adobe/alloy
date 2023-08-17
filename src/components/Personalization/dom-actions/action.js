@@ -35,7 +35,7 @@ const renderContent = (elements, content, renderFunc) => {
 
 export const createAction = renderFunc => {
   return settings => {
-    const { selector, prehidingSelector, content, meta } = settings;
+    const { selector, prehidingSelector, content } = settings;
 
     hideElements(prehidingSelector);
 
@@ -45,13 +45,12 @@ export const createAction = renderFunc => {
         () => {
           // if everything is OK, show elements
           showElements(prehidingSelector);
-          return { meta };
         },
         error => {
           // in case of awaiting timing or error, we need to remove the style tag
           // hence showing the pre-hidden elements
           showElements(prehidingSelector);
-          return { meta, error };
+          throw error;
         }
       );
   };

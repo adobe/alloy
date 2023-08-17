@@ -1,12 +1,25 @@
+/*
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
 import createEvent from "../../../../../../src/core/createEvent";
 import flushPromiseChains from "../../../../helpers/flushPromiseChains";
 import createComponent from "../../../../../../src/components/Personalization/createComponent";
 import createCollect from "../../../../../../src/components/Personalization/createCollect";
-import createExecuteDecisions from "../../../../../../src/components/Personalization/createExecuteDecisions";
 import createFetchDataHandler from "../../../../../../src/components/Personalization/createFetchDataHandler";
 import collectClicks from "../../../../../../src/components/Personalization/dom-actions/clicks/collectClicks";
 import isAuthoringModeEnabled from "../../../../../../src/components/Personalization/utils/isAuthoringModeEnabled";
-import { mergeDecisionsMeta, mergeQuery } from "../../../../../../src/components/Personalization/event";
+import {
+  mergeDecisionsMeta,
+  mergeQuery
+} from "../../../../../../src/components/Personalization/event";
 import createOnClickHandler from "../../../../../../src/components/Personalization/createOnClickHandler";
 import createViewCacheManager from "../../../../../../src/components/Personalization/createViewCacheManager";
 import createViewChangeHandler from "../../../../../../src/components/Personalization/createViewChangeHandler";
@@ -14,26 +27,20 @@ import createClickStorage from "../../../../../../src/components/Personalization
 import createApplyPropositions from "../../../../../../src/components/Personalization/createApplyPropositions";
 import createSetTargetMigration from "../../../../../../src/components/Personalization/createSetTargetMigration";
 import { createCallbackAggregator, assign } from "../../../../../../src/utils";
-import createPropositionHandler from "../../../../../../src/components/Personalization/handlers/createPropositionHandler";
+import createRender from "../../../../../../src/components/Personalization/handlers/createRender";
 import createDomActionHandler from "../../../../../../src/components/Personalization/handlers/createDomActionHandler";
 import createMeasurementSchemaHandler from "../../../../../../src/components/Personalization/handlers/createMeasurementSchemaHandler";
 import createRedirectHandler from "../../../../../../src/components/Personalization/handlers/createRedirectHandler";
+import createHtmlContentHandler from "../../../../../../src/components/Personalization/handlers/createHtmlContentHandler";
 import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceUtils";
 
-const createAction = renderFunc => ({ selector, prehidingSelector, content, meta }) => {
+const createAction = renderFunc => ({ selector, content }) => {
   renderFunc(selector, content);
   if (selector === "#error") {
-    return Promise.resolve({ meta, error: `Error while rendering ${content}` });
+    return Promise.reject(new Error(`Error while rendering ${content}`));
   }
-  return Promise.resolve({ meta });
-};
-
-const createClick = store => ({ selector }, meta) => {
-  store({ selector, meta });
   return Promise.resolve();
 };
-
-const noop = ({ meta }) => Promise.resolve({ meta });
 
 const buildComponent = ({
   actions,
@@ -43,11 +50,9 @@ const buildComponent = ({
   getPageLocation,
   window,
   hideContainers,
-  showContainers,
-  executeActions
+  showContainers
 }) => {
-
-  const initDomActionsModulesMocks = store => {
+  const initDomActionsModulesMocks = () => {
     return {
       setHtml: createAction(actions.setHtml),
       customCode: createAction(actions.prependHtml),
@@ -77,29 +82,38 @@ const buildComponent = ({
   } = createClickStorage();
 
   const viewCache = createViewCacheManager();
-  const modules = initDomActionsModulesMocks(storeClickMetrics);
-  const executeDecisions = createExecuteDecisions({
-    modules,
-    logger,
-    executeActions
-  });
-
+  const modules = initDomActionsModulesMocks();
 
   const noOpHandler = () => undefined;
-  const domActionHandler = createDomActionHandler({ next: noOpHandler, isPageWideSurface, modules, storeClickMetrics});
-  const measurementSchemaHandler = createMeasurementSchemaHandler({ next: domActionHandler });
-  const redirectHandler = createRedirectHandler({ next: measurementSchemaHandler });
+  const domActionHandler = createDomActionHandler({
+    next: noOpHandler,
+    isPageWideSurface,
+    modules,
+    storeClickMetrics
+  });
+  const measurementSchemaHandler = createMeasurementSchemaHandler({
+    next: domActionHandler
+  });
+  const redirectHandler = createRedirectHandler({
+    next: measurementSchemaHandler
+  });
+  const fetchHandler = createHtmlContentHandler({
+    next: redirectHandler,
+    modules
+  });
 
-  const propositionHandler = createPropositionHandler({ window });
+  const render = createRender({
+    handleChain: fetchHandler,
+    collect,
+    executeRedirect: url => window.location.replace(url),
+    logger
+  });
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
-    propositionHandler,
     hideContainers,
     mergeQuery,
-    renderHandler: redirectHandler,
-    nonRenderHandler: noOpHandler,
     collect,
-    getView: viewCache.getView
+    render
   });
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
@@ -109,17 +123,13 @@ const buildComponent = ({
   });
   const viewChangeHandler = createViewChangeHandler({
     mergeDecisionsMeta,
-    collect,
-    renderHandler: redirectHandler,
-    nonRenderHandler: noOpHandler,
-    propositionHandler,
+    render,
     viewCache
   });
   const applyPropositions = createApplyPropositions({
-    propositionHandler,
-    renderHandler: redirectHandler
+    render
   });
-const setTargetMigration = createSetTargetMigration({
+  const setTargetMigration = createSetTargetMigration({
     targetMigrationEnabled
   });
   return createComponent({
@@ -137,11 +147,17 @@ const setTargetMigration = createSetTargetMigration({
   });
 };
 
-export default (mocks) => {
+export default mocks => {
   const component = buildComponent(mocks);
   const { response } = mocks;
   return {
-    async sendEvent({ xdm, data, renderDecisions, decisionScopes, personalization }) {
+    async sendEvent({
+      xdm,
+      data,
+      renderDecisions,
+      decisionScopes,
+      personalization
+    }) {
       const event = createEvent();
       event.setUserXdm(xdm);
       event.setUserData(data);
@@ -159,8 +175,8 @@ export default (mocks) => {
       event.finalize();
       return { event, result };
     },
-    async applyPropositions(args) {
-      return await component.commands.applyPropositions.run(args);
+    applyPropositions(args) {
+      return component.commands.applyPropositions.run(args);
     }
   };
-}
+};
