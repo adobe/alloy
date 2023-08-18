@@ -9,18 +9,30 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { createRestoreStorage, createSaveStorage } from "./utils";
+import {
+  createRestoreStorage,
+  createSaveStorage,
+  getExpirationDate
+} from "./utils";
 
 const STORAGE_KEY = "events";
 const MAX_EVENT_RECORDS = 1000;
 const DEFAULT_SAVE_DELAY = 500;
+const RETENTION_PERIOD = 30;
 
-export const createEventPruner = (limit = MAX_EVENT_RECORDS) => {
+export const createEventPruner = (
+  limit = MAX_EVENT_RECORDS,
+  retentionPeriod = RETENTION_PERIOD
+) => {
   return events => {
     const pruned = {};
     Object.keys(events).forEach(eventType => {
       pruned[eventType] = {};
       Object.values(events[eventType])
+        .filter(
+          entry =>
+            new Date(entry.firstTimestamp) >= getExpirationDate(retentionPeriod)
+        )
         .sort((a, b) => a.firstTimestamp - b.firstTimestamp)
         .slice(-1 * limit)
         .forEach(entry => {
@@ -37,7 +49,7 @@ export default ({ storage, saveDelay = DEFAULT_SAVE_DELAY }) => {
     storage,
     STORAGE_KEY,
     saveDelay,
-    createEventPruner(MAX_EVENT_RECORDS)
+    createEventPruner(MAX_EVENT_RECORDS, RETENTION_PERIOD)
   );
 
   const events = restore({});

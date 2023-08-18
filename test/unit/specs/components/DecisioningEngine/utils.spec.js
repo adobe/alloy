@@ -11,7 +11,8 @@ governing permissions and limitations under the License.
 */
 import {
   createRestoreStorage,
-  createSaveStorage
+  createSaveStorage,
+  getExpirationDate
 } from "../../../../../src/components/DecisioningEngine/utils";
 
 describe("DecisioningEngine:utils", () => {
@@ -65,5 +66,16 @@ describe("DecisioningEngine:utils", () => {
 
       done();
     }, 20);
+  });
+  it("should return the date of expiration", () => {
+    const mockedTimestamp = new Date(Date.UTC(2023, 8, 2, 13, 34, 56));
+    jasmine.clock().install();
+    jasmine.clock().mockDate(mockedTimestamp);
+    const retentionPeriod = 10;
+    const expectedDate = new Date(mockedTimestamp);
+    expectedDate.setDate(expectedDate.getDate() - retentionPeriod);
+    const result = getExpirationDate(retentionPeriod);
+    expect(result).toEqual(expectedDate);
+    jasmine.clock().uninstall();
   });
 });
