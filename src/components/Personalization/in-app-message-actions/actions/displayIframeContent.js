@@ -187,8 +187,7 @@ export const createOverlayElement = parameter => {
 };
 
 const displayHTMLContentInIframe = (settings, collect) => {
-  removeElements(ELEMENT_TAG_CLASSNAME);
-  removeElements(OVERLAY_TAG_CLASSNAME);
+  [OVERLAY_TAG_CLASSNAME, ELEMENT_TAG_CLASSNAME].forEach(removeElements);
 
   const { content, contentType, mobileParameters } = settings;
 

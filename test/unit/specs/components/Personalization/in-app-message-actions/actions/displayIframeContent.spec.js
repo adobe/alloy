@@ -55,7 +55,7 @@ describe("DOM Actions", () => {
 
       const overlayElement = createOverlayElement(parameter);
 
-      expect(overlayElement.id).toBe("overlay-container");
+      expect(overlayElement.id).toBe("alloy-overlay-container");
       expect(overlayElement.style.position).toBe("fixed");
       expect(overlayElement.style.top).toBe("0px");
       expect(overlayElement.style.left).toBe("0px");
