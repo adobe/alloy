@@ -68,7 +68,7 @@ export default ({
           const cacheUpdate = viewCache.createCacheUpdate(
             personalizationDetails.getViewName()
           );
-          onRequestFailure(() => cacheUpdate.reject());
+          onRequestFailure(() => cacheUpdate.cancel());
 
           fetchDataHandler({
             cacheUpdate,

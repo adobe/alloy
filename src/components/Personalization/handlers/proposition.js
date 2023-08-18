@@ -39,7 +39,10 @@ export const createProposition = (handle, isApplyPropositions = false) => {
   let redirectUrl;
   let includeInDisplayNotification = false;
   let includeInReturnedPropositions = true;
-  const itemsRenderAttempted = new Array(items.length).map(() => false);
+  const itemsRenderAttempted = new Array(items.length);
+  for (let i = 0; i < items.length; i += 1) {
+    itemsRenderAttempted[i] = false;
+  }
 
   return {
     getHandle() {
@@ -50,6 +53,9 @@ export const createProposition = (handle, isApplyPropositions = false) => {
     },
     redirect(url) {
       includeInDisplayNotification = true;
+      itemsRenderAttempted.forEach((_, index) => {
+        itemsRenderAttempted[index] = true;
+      });
       redirectUrl = url;
     },
     getRedirectUrl() {
@@ -86,7 +92,7 @@ export const createProposition = (handle, isApplyPropositions = false) => {
     addToReturnedPropositions(propositions) {
       if (includeInReturnedPropositions) {
         const renderedItems = items.filter(
-          (item, index) => itemsRenderAttempted[index]
+          (_, index) => itemsRenderAttempted[index]
         );
         if (renderedItems.length > 0) {
           propositions.push({
@@ -96,7 +102,7 @@ export const createProposition = (handle, isApplyPropositions = false) => {
           });
         }
         const nonrenderedItems = items.filter(
-          (item, index) => !itemsRenderAttempted[index]
+          (_, index) => !itemsRenderAttempted[index]
         );
         if (nonrenderedItems.length > 0) {
           propositions.push({

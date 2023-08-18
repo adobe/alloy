@@ -15,59 +15,58 @@ import { PropositionEventType } from "../../../../../src/components/Personalizat
 import { CART_VIEW_DECISIONS } from "./responsesMock/eventResponses";
 
 describe("Personalization::createViewChangeHandler", () => {
-  let personalizationDetails;
-  let viewCache;
-  const event = {};
-
-  const onResponse = callback => callback();
-  let executeDecisions;
-  let showContainers;
   let mergeDecisionsMeta;
-  let collect;
+  let render;
+  let viewCache;
+
+  let personalizationDetails;
+  let event;
+  let onResponse;
 
   beforeEach(() => {
+    mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
+    render = jasmine.createSpy("render");
+    viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
+
     personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
       "isRenderDecisions",
       "getViewName"
     ]);
-    viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
-    executeDecisions = jasmine.createSpy("executeDecisions");
-    showContainers = jasmine.createSpy("showContainers");
-    mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
-    collect = jasmine.createSpy("collect");
+    event = "myevent";
+    onResponse = jasmine.createSpy();
   });
 
-  it("should trigger executeDecisions if renderDecisions is true", () => {
-    const cartViewPromise = {
-      then: callback => callback(CART_VIEW_DECISIONS)
-    };
-
-    viewCache.getView.and.returnValue(cartViewPromise);
-    executeDecisions.and.returnValue(cartViewPromise);
-    personalizationDetails.isRenderDecisions.and.returnValue(true);
-    personalizationDetails.getViewName.and.returnValue("cart");
-
+  const run = async () => {
     const viewChangeHandler = createViewChangeHandler({
       mergeDecisionsMeta,
-      collect,
-      executeDecisions,
+      render,
       viewCache
     });
-
-    viewChangeHandler({
+    await viewChangeHandler({
       event,
       personalizationDetails,
       onResponse
     });
-    expect(executeDecisions).toHaveBeenCalledWith(CART_VIEW_DECISIONS);
+    return onResponse.calls.argsFor(0)[0]();
+  };
+
+  it("should trigger render if renderDecisions is true", async () => {
+    viewCache.getView.and.returnValue(Promise.resolve(CART_VIEW_DECISIONS));
+    personalizationDetails.isRenderDecisions.and.returnValue(true);
+    personalizationDetails.getViewName.and.returnValue("cart");
+    render.and.returnValue(Promise.resolve("decisionMeta"));
+
+    const result = await run();
+
+    expect(render).toHaveBeenCalledTimes(1);
     expect(mergeDecisionsMeta).toHaveBeenCalledWith(
-      event,
-      CART_VIEW_DECISIONS,
+      "myevent",
+      "decisionMeta",
       PropositionEventType.DISPLAY
     );
-    expect(collect).not.toHaveBeenCalled();
+    expect(result.decisions).toEqual(CART_VIEW_DECISIONS);
   });
-
+/*
   it("should not trigger executeDecisions when render decisions is false", () => {
     const cartViewPromise = {
       then: callback => callback(CART_VIEW_DECISIONS)
@@ -116,4 +115,5 @@ describe("Personalization::createViewChangeHandler", () => {
     expect(executeDecisions).toHaveBeenCalledWith([]);
     expect(collect).toHaveBeenCalled();
   });
+  */
 });

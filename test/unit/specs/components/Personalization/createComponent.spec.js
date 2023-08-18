@@ -56,7 +56,7 @@ describe("Personalization", () => {
     mergeQuery = jasmine.createSpy("mergeQuery");
     viewCache = jasmine.createSpyObj("viewCache", [
       "isInitialized",
-      "storeViews"
+      "createCacheUpdate"
     ]);
     setTargetMigration = jasmine.createSpy("setTargetMigration");
 

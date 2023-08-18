@@ -65,12 +65,12 @@ export default () => {
           return [
             ...(newViewStorage[viewName] ||
               createEmptyViewPropositions(viewName)),
-            otherHandles
+            ...otherHandles
           ];
         }
         return otherHandles;
       },
-      error() {
+      cancel() {
         updateCacheDeferred.reject();
       }
     };

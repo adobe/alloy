@@ -85,11 +85,13 @@ const buildComponent = ({
   const modules = initDomActionsModulesMocks();
 
   const noOpHandler = () => undefined;
+  const preprocess = action => action;
   const domActionHandler = createDomActionHandler({
     next: noOpHandler,
     isPageWideSurface,
     modules,
-    storeClickMetrics
+    storeClickMetrics,
+    preprocess
   });
   const measurementSchemaHandler = createMeasurementSchemaHandler({
     next: domActionHandler
@@ -97,13 +99,14 @@ const buildComponent = ({
   const redirectHandler = createRedirectHandler({
     next: measurementSchemaHandler
   });
-  const fetchHandler = createHtmlContentHandler({
+  const htmlContentHandler = createHtmlContentHandler({
     next: redirectHandler,
-    modules
+    modules,
+    preprocess
   });
 
   const render = createRender({
-    handleChain: fetchHandler,
+    handleChain: htmlContentHandler,
     collect,
     executeRedirect: url => window.location.replace(url),
     logger

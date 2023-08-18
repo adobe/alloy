@@ -34,34 +34,5 @@ export default ({ mergeDecisionsMeta, render, viewCache }) => {
         decisions: buildReturnedDecisions(propositions)
       };
     });
-    /*
-      if (personalizationDetails.isRenderDecisions()) {
-        return executeDecisions(viewDecisions).then(decisionsMeta => {
-          // if there are decisions to be rendered we render them and attach the result in experience.decisions.propositions
-          if (isNonEmptyArray(decisionsMeta)) {
-            mergeDecisionsMeta(
-              event,
-              decisionsMeta,
-              PropositionEventType.DISPLAY
-            );
-            onResponse(() => {
-              return composePersonalizationResultingObject(viewDecisions, true);
-            });
-            return;
-          }
-          // if there are no decisions in cache for this view, we will send a empty notification
-          onResponse(() => {
-            collect({ decisionsMeta: [], viewName });
-            return composePersonalizationResultingObject(viewDecisions, true);
-          });
-        });
-      }
-
-      onResponse(() => {
-        return composePersonalizationResultingObject(viewDecisions, false);
-      });
-      return {};
-    });
-*/
   };
 };

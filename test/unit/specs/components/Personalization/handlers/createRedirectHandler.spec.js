@@ -54,7 +54,7 @@ describe("redirectHandler", () => {
       ]
     };
     const proposition = createProposition(handle);
-    redirectHandler({ proposition, viewName: "myview" });
+    redirectHandler(proposition);
     expect(next).not.toHaveBeenCalled();
     expect(proposition.getRedirectUrl()).toEqual(
       "https://alloyio.com/functional-test/alloyTestPage.html?redirectedTest=true&test=C205528"

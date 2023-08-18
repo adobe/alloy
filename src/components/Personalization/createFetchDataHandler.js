@@ -30,7 +30,7 @@ export default ({
     }
     mergeQuery(event, personalizationDetails.createQueryDetails());
 
-    onResponse(async ({ response }) => {
+    onResponse(({ response }) => {
       const handles = response.getPayloadsByType(DECISIONS_HANDLE);
       const handlesToRender = cacheUpdate.update(handles);
       const propositions = handlesToRender.map(createProposition);

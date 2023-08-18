@@ -11,74 +11,104 @@ governing permissions and limitations under the License.
 */
 
 import createViewCacheManager from "../../../../../src/components/Personalization/createViewCacheManager";
-import { defer } from "../../../../../src/utils";
 
 describe("Personalization::createCacheManager", () => {
-  const cartView = "cart";
-  const homeView = "home";
-  const productsView = "products";
-  const viewDecisions = {
-    home: [
-      {
-        id: "foo1",
-        items: [],
-        scope: "home"
-      },
-      {
-        id: "foo2",
-        items: [],
-        scope: "home"
-      }
-    ],
-    cart: [
-      {
-        id: "foo3",
-        items: [],
-        scope: "cart"
-      }
-    ]
-  };
 
-  it("stores and gets the decisions based on a viewName", () => {
+  const viewHandles = [
+    {
+      id: "foo1",
+      scope: "home",
+      scopeDetails: {
+        characteristics: {
+          scopeType: "view"
+        }
+      }
+    },
+    {
+      id: "foo2",
+      scope: "home",
+      scopeDetails: {
+        characteristics: {
+          scopeType: "view"
+        }
+      }
+    },
+    {
+      id: "foo3",
+      scope: "cart",
+      scopeDetails: {
+        characteristics: {
+          scopeType: "view"
+        }
+      }
+    },
+    {
+      id: "foo4",
+      scope: "other"
+    }
+  ];
+
+  it("stores and gets the decisions based on a viewName", async () => {
     const viewCacheManager = createViewCacheManager();
-    const decisionsDeferred = defer();
 
-    viewCacheManager.storeViews(decisionsDeferred.promise);
-    decisionsDeferred.resolve(viewDecisions);
+    const cacheUpdate = viewCacheManager.createCacheUpdate("home");
+    const resultingHandles = cacheUpdate.update(viewHandles);
+    expect(resultingHandles).toEqual([
+      viewHandles[0],
+      viewHandles[1],
+      viewHandles[3]
+    ]);
 
-    return Promise.all([
-      expectAsync(viewCacheManager.getView(cartView)).toBeResolvedTo(
-        viewDecisions[cartView]
-      ),
-      expectAsync(viewCacheManager.getView(homeView)).toBeResolvedTo(
-        viewDecisions[homeView]
-      )
+    const homeViews = await viewCacheManager.getView("home");
+    expect(homeViews).toEqual([
+      viewHandles[0],
+      viewHandles[1]
+    ]);
+
+    const cartViews = await viewCacheManager.getView("cart");
+    expect(cartViews).toEqual([
+      viewHandles[2]
+    ]);
+
+    const otherViews = await viewCacheManager.getView("other");
+    expect(otherViews).toEqual([
+      {
+        scope: "other",
+        scopeDetails: {
+          characteristics: {
+            scopeType: "view"
+          }
+        }
+      }
     ]);
   });
 
-  it("gets an empty array if there is no decisions for a specific view", () => {
+  it("should be no views when decisions deferred is rejected", async () => {
     const viewCacheManager = createViewCacheManager();
-    const decisionsDeferred = defer();
+    const cacheUpdate = viewCacheManager.createCacheUpdate("home");
+    cacheUpdate.cancel();
 
-    viewCacheManager.storeViews(decisionsDeferred.promise);
-    decisionsDeferred.resolve(viewDecisions);
-
-    return Promise.all([
-      expectAsync(viewCacheManager.getView(productsView)).toBeResolvedTo([])
+    const homeViews = await viewCacheManager.getView("home");
+    expect(homeViews).toEqual([
+      {
+        scope: "home",
+        scopeDetails: {
+          characteristics: {
+            scopeType: "view"
+          }
+        }
+      }
     ]);
   });
 
-  it("should be no views when decisions deferred is rejected", () => {
+  it("should not be initialized when first created", () => {
     const viewCacheManager = createViewCacheManager();
-    const decisionsDeferred = defer();
+    expect(viewCacheManager.isInitialized()).toBe(false);
+  });
 
-    viewCacheManager.storeViews(decisionsDeferred.promise);
-    decisionsDeferred.reject();
-
-    return expectAsync(viewCacheManager.getView("cart"))
-      .toBeResolvedTo([])
-      .then(() => {
-        expect(viewCacheManager.isInitialized()).toBeTrue();
-      });
+  it("should be initialized when first cache update is created", () => {
+    const viewCacheManager = createViewCacheManager();
+    viewCacheManager.createCacheUpdate("home");
+    expect(viewCacheManager.isInitialized()).toBe(true);
   });
 });
