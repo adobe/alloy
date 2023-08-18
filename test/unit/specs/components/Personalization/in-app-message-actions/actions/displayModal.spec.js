@@ -45,14 +45,20 @@ describe("Personalization::IAM:modal", () => {
       contentType: "text/html"
     });
 
-    const container = document.querySelector("div#alloy-messaging-container");
+    const overlayContainer = document.querySelector(
+      "div#alloy-overlay-container"
+    );
+    const messagingContainer = document.querySelector(
+      "div#alloy-messaging-container"
+    );
 
-    expect(container).not.toBeNull();
+    expect(messagingContainer).not.toBeNull();
 
-    expect(container.parentNode).toEqual(document.body);
+    expect(messagingContainer.parentNode).toEqual(document.body);
 
-    expect(container.previousElementSibling).toEqual(something);
-    expect(container.nextElementSibling).not.toBeNull();
+    expect(overlayContainer.previousElementSibling).toEqual(something);
+    expect(messagingContainer.previousElementSibling).toEqual(overlayContainer);
+    expect(messagingContainer.nextElementSibling).toBeNull();
 
     const iframe = document.querySelector(
       ".alloy-messaging-container > iframe"

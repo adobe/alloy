@@ -12,11 +12,14 @@ governing permissions and limitations under the License.
 */
 
 import { getNonce } from "../../dom-actions/dom";
+import { removeElements } from "../utils";
 
 const ELEMENT_TAG_CLASSNAME = "alloy-messaging-container";
 const ELEMENT_TAG_ID = "alloy-messaging-container";
 const ANCHOR_HREF_REGEX = /adbinapp:\/\/(\w+)\?interaction=(\w+)/i;
-const OVERLAY_TAG_ID = "overlay-container";
+
+const OVERLAY_TAG_CLASSNAME = "alloy-overlay-container";
+const OVERLAY_TAG_ID = "alloy-overlay-container";
 
 export const buildStyleFromParameters = (mobileParameters, webParameters) => {
   const {
@@ -166,6 +169,7 @@ export const createOverlayElement = parameter => {
   const backdropOpacity = parameter.backdropOpacity || 0.5;
   const backdropColor = parameter.backdropColor || "#FFFFFF";
   element.id = OVERLAY_TAG_ID;
+  element.className = `${OVERLAY_TAG_CLASSNAME}`;
 
   Object.assign(element.style, {
     position: "fixed",
@@ -183,6 +187,9 @@ export const createOverlayElement = parameter => {
 };
 
 const displayHTMLContentInIframe = (settings, collect) => {
+  removeElements(ELEMENT_TAG_CLASSNAME);
+  removeElements(OVERLAY_TAG_CLASSNAME);
+
   const { content, contentType, mobileParameters } = settings;
 
   if (contentType !== "text/html") {
@@ -198,13 +205,13 @@ const displayHTMLContentInIframe = (settings, collect) => {
 
   container.appendChild(iframe);
 
-  document.body.append(container);
-
   if (mobileParameters.uiTakeover) {
     const overlay = createOverlayElement(mobileParameters);
     document.body.appendChild(overlay);
     document.body.style.overflow = "hidden";
   }
+
+  document.body.append(container);
 };
 
 export default (settings, collect) => {
