@@ -13,7 +13,7 @@ import { HTML_CONTENT_ITEM } from "../constants/schema";
 import { VIEW_SCOPE_TYPE } from "../constants/scopeType";
 import isPageWideScope from "../utils/isPageWideScope";
 
-export default ({ next, modules }) => proposition => {
+export default ({ next, modules, preprocess }) => proposition => {
   const {
     scope,
     scopeDetails: { characteristics: { scopeType } = {} } = {},
@@ -25,8 +25,9 @@ export default ({ next, modules }) => proposition => {
     const { type, selector } = data || {};
     if (schema === HTML_CONTENT_ITEM && type && selector && modules[type]) {
       proposition.includeInDisplayNotification();
+      const preprocessedData = preprocess(data);
       proposition.addRenderer(index, () => {
-        return modules[type](data);
+        return modules[type](preprocessedData);
       });
     }
   });

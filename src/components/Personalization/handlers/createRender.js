@@ -1,3 +1,5 @@
+import { REDIRECT_EXECUTION_ERROR } from "../constants/loggerMessage";
+
 /*
 Copyright 2023 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -13,7 +15,8 @@ export default ({
   handleChain,
   collect,
   executeRedirect,
-  logger
+  logger,
+  showContainers
 }) => propositions => {
   for (let i = 0; i < propositions.length; i += 1) {
     const proposition = propositions[i];
@@ -24,14 +27,17 @@ export default ({
       proposition.addToNotifications(displayNotificationPropositions);
       // no return value because we are redirecting. i.e. the sendEvent promise will
       // never resolve anyways so no need to generate the return value.
-      return collect({ decisionsMeta: displayNotificationPropositions }).then(
-        () => {
+      return collect({ decisionsMeta: displayNotificationPropositions })
+        .then(() => {
           executeRedirect(redirectUrl);
           // This code should never be reached because we are redirecting, but in case
           // it does we return an empty array of notifications to match the return type.
           return [];
-        }
-      );
+        })
+        .catch(() => {
+          showContainers();
+          logger.warn(REDIRECT_EXECUTION_ERROR);
+        });
     }
   }
 

@@ -10,5 +10,7 @@ const findIndex = (array, item, isEqual) => {
 };
 
 export default (array, isEqual = REFERENCE_EQUALITY) => {
-  return array.filter((item, index) => findIndex(array, item, isEqual) === index);
-}
+  return array.filter(
+    (item, index) => findIndex(array, item, isEqual) === index
+  );
+};

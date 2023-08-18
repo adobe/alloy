@@ -19,7 +19,7 @@ import {
   createProposition
 } from "./handlers/proposition";
 
-export const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
+const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
 
 export default ({ render }) => {
   const filterItemsPredicate = item =>

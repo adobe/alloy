@@ -9,6 +9,29 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+const renderWithLogging = async (renderer, logger) => {
+  try {
+    await renderer();
+    if (logger.enabled) {
+      const details = JSON.stringify(processedAction);
+      logger.info(`Action ${details} executed.`);
+    }
+    return true;
+  } catch (e) {
+    if (logger.enabled) {
+      const details = JSON.stringify(processedAction);
+      const { message, stack } = error;
+      const errorMessage = `Failed to execute action ${details}. ${message} ${
+        stack ? `\n ${stack}` : ""
+      }`;
+      logger.error(errorMessage);
+    }
+    return false;
+  }
+}
+
+
 export const createProposition = (handle, isApplyPropositions = false) => {
   const { id, scope, scopeDetails, items = [] } = handle;
 
@@ -44,15 +67,7 @@ export const createProposition = (handle, isApplyPropositions = false) => {
     },
     render(logger) {
       return Promise.all(
-        renderers.map(renderer => {
-          try {
-            renderer();
-            return true;
-          } catch (e) {
-            logger.error(e);
-            return false;
-          }
-        })
+        renderers.map(renderer => renderWithLogging(renderer, logger))
       ).then(successes => {
         const notifications = [];
         // as long as at least one renderer succeeds, we want to add the notification

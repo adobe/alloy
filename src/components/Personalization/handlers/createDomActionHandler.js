@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 import { DEFAULT_CONTENT_ITEM, DOM_ACTION } from "../constants/schema";
 
-export default ({ next, modules, storeClickMetrics }) => proposition => {
+export default ({ next, modules, storeClickMetrics, preprocess }) => proposition => {
   const { items = [] } = proposition.getHandle();
 
   items.forEach((item, index) => {
@@ -30,8 +30,9 @@ export default ({ next, modules, storeClickMetrics }) => proposition => {
         });
       } else if (modules[type]) {
         proposition.includeInDisplayNotification();
+        const processedData = preprocess(data);
         proposition.addRenderer(index, () => {
-          return modules[type](data);
+          return modules[type](processedData);
         });
       }
     }
