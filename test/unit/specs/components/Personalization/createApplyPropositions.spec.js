@@ -26,34 +26,34 @@ const METADATA = {
 };
 
 describe("Personalization::createApplyPropositions", () => {
-  let executeDecisions;
+  let render;
 
   beforeEach(() => {
-    executeDecisions = jasmine.createSpy("executeDecisions");
+    render = jasmine.createSpy("render");
+    render.and.callFake(propositions => {
+      propositions.forEach(proposition => {
+        const { items = [] } = proposition.getHandle();
+        items.forEach((_, i) => {
+          proposition.addRenderer(i, () => undefined);
+        });
+      });
+    });
   });
 
   it("it should return an empty propositions promise if propositions is empty array", () => {
-    executeDecisions.and.returnValue(
-      Promise.resolve(PAGE_WIDE_SCOPE_DECISIONS)
-    );
-
     const applyPropositions = createApplyPropositions({
-      executeDecisions
+      render
     });
 
     return applyPropositions({
       propositions: []
     }).then(result => {
       expect(result).toEqual({ propositions: [] });
-      expect(executeDecisions).toHaveBeenCalledTimes(0);
+      expect(render).toHaveBeenCalledOnceWith([]);
     });
   });
 
   it("it should apply user-provided dom-action schema propositions", () => {
-    executeDecisions.and.returnValue(
-      Promise.resolve(PAGE_WIDE_SCOPE_DECISIONS)
-    );
-
     const expectedExecuteDecisionsPropositions = clone(
       PAGE_WIDE_SCOPE_DECISIONS
     ).map(proposition => {
@@ -62,16 +62,13 @@ describe("Personalization::createApplyPropositions", () => {
     });
 
     const applyPropositions = createApplyPropositions({
-      executeDecisions
+      render
     });
 
     return applyPropositions({
       propositions: PAGE_WIDE_SCOPE_DECISIONS
     }).then(result => {
-      expect(executeDecisions).toHaveBeenCalledTimes(1);
-      expect(executeDecisions.calls.first().args[0]).toEqual(
-        expectedExecuteDecisionsPropositions
-      );
+      expect(render).toHaveBeenCalledTimes(1);
 
       const expectedScopes = expectedExecuteDecisionsPropositions.map(
         proposition => proposition.scope
@@ -86,22 +83,18 @@ describe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should merge metadata with propositions that have html-content-item schema", () => {
-    executeDecisions.and.returnValue(Promise.resolve(MIXED_PROPOSITIONS));
-
     const applyPropositions = createApplyPropositions({
-      executeDecisions
+      render
     });
 
     return applyPropositions({
       propositions: MIXED_PROPOSITIONS,
       metadata: METADATA
-    }).then(() => {
-      const executedPropositions = executeDecisions.calls.first().args[0];
-      expect(executedPropositions.length).toEqual(3);
-      executedPropositions.forEach(proposition => {
+    }).then(({ propositions }) => {
+      expect(propositions.length).toEqual(4);
+      propositions.forEach(proposition => {
         expect(proposition.items.length).toEqual(1);
         if (proposition.items[0].id === "442358") {
-          expect(proposition.scope).toEqual("home");
           expect(proposition.items[0].data.selector).toEqual("#root");
           expect(proposition.items[0].data.type).toEqual("click");
         } else if (proposition.items[0].id === "442359") {
@@ -110,7 +103,7 @@ describe("Personalization::createApplyPropositions", () => {
           expect(proposition.items[0].data.type).toEqual("setHtml");
         }
       });
-      expect(executeDecisions).toHaveBeenCalledTimes(1);
+      expect(render).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -142,11 +135,7 @@ describe("Personalization::createApplyPropositions", () => {
       }
     ];
 
-    executeDecisions.and.returnValue(Promise.resolve(MIXED_PROPOSITIONS));
-
-    const applyPropositions = createApplyPropositions({
-      executeDecisions
-    });
+    const applyPropositions = createApplyPropositions({ render });
 
     return applyPropositions({
       propositions
@@ -159,16 +148,12 @@ describe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should return renderAttempted = true on resulting propositions", () => {
-    executeDecisions.and.returnValue(Promise.resolve(MIXED_PROPOSITIONS));
-
-    const applyPropositions = createApplyPropositions({
-      executeDecisions
-    });
+    const applyPropositions = createApplyPropositions({ render });
 
     return applyPropositions({
       propositions: MIXED_PROPOSITIONS
     }).then(result => {
-      expect(result.propositions.length).toEqual(2);
+      expect(result.propositions.length).toEqual(3);
       result.propositions.forEach(proposition => {
         expect(proposition.renderAttempted).toBeTrue();
       });
@@ -176,14 +161,12 @@ describe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should ignore propositions with __view__ scope that have already been rendered", () => {
-    executeDecisions.and.returnValue(Promise.resolve(MIXED_PROPOSITIONS));
-
-    const applyPropositions = createApplyPropositions({
-      executeDecisions
-    });
+    const applyPropositions = createApplyPropositions({ render });
+    const propositions = JSON.parse(JSON.stringify(MIXED_PROPOSITIONS));
+    propositions[4].renderAttempted = true;
 
     return applyPropositions({
-      propositions: MIXED_PROPOSITIONS
+      propositions
     }).then(result => {
       expect(result.propositions.length).toEqual(2);
       result.propositions.forEach(proposition => {
@@ -198,20 +181,15 @@ describe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should ignore items with unsupported schemas", () => {
-    executeDecisions.and.returnValue(Promise.resolve(MIXED_PROPOSITIONS));
-
     const expectedItemIds = ["442358", "442359"];
 
-    const applyPropositions = createApplyPropositions({
-      executeDecisions
-    });
+    const applyPropositions = createApplyPropositions({ render });
 
     return applyPropositions({
       propositions: MIXED_PROPOSITIONS
-    }).then(() => {
-      const executedPropositions = executeDecisions.calls.first().args[0];
-      expect(executedPropositions.length).toEqual(2);
-      executedPropositions.forEach(proposition => {
+    }).then(({ propositions }) => {
+      expect(propositions.length).toEqual(3);
+      propositions.forEach(proposition => {
         expect(proposition.items.length).toEqual(1);
         proposition.items.forEach(item => {
           expect(expectedItemIds.indexOf(item.id) > -1);
@@ -221,11 +199,7 @@ describe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should not mutate original propositions", () => {
-    executeDecisions.and.returnValue(Promise.resolve(MIXED_PROPOSITIONS));
-
-    const applyPropositions = createApplyPropositions({
-      executeDecisions
-    });
+    const applyPropositions = createApplyPropositions({ render });
 
     const originalPropositions = clone(MIXED_PROPOSITIONS);
     return applyPropositions({
@@ -243,7 +217,7 @@ describe("Personalization::createApplyPropositions", () => {
           expect(proposition).not.toBe(original);
         }
       });
-      expect(numReturnedPropositions).toEqual(3);
+      expect(numReturnedPropositions).toEqual(4);
     });
   });
 });

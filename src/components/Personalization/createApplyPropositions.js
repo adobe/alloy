@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 import { isNonEmptyArray, isObject } from "../../utils";
 import { DOM_ACTION, HTML_CONTENT_ITEM } from "./constants/schema";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
-import { EMPTY_PROPOSITIONS } from "./validateApplyPropositionsOptions";
 import {
   buildReturnedPropositions,
   createProposition
@@ -74,7 +73,7 @@ export default ({ render }) => {
       .filter(proposition => isNonEmptyArray(proposition.items));
   };
 
-  const applyPropositions = async ({ propositions, metadata }) => {
+  return async ({ propositions, metadata = {} }) => {
     const propositionsToExecute = preparePropositions({
       propositions,
       metadata
@@ -84,12 +83,5 @@ export default ({ render }) => {
     return {
       propositions: buildReturnedPropositions(propositionsToExecute)
     };
-  };
-
-  return ({ propositions, metadata = {} }) => {
-    if (isNonEmptyArray(propositions)) {
-      return applyPropositions({ propositions, metadata });
-    }
-    return Promise.resolve(EMPTY_PROPOSITIONS);
   };
 };
