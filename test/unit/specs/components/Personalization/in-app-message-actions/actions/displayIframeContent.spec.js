@@ -12,10 +12,28 @@ governing permissions and limitations under the License.
 import {
   buildStyleFromParameters,
   createOverlayElement,
-  createIframe
+  createIframe,
+  createIframeClickHandler
 } from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayIframeContent";
 
-describe("DOM Actions", () => {
+describe("DOM Actions on Iframe", () => {
+  // Clean up the DOM after each test
+  afterEach(() => {
+    const containerElement = document.getElementById(
+      "alloy-messaging-container"
+    );
+    if (containerElement) {
+      containerElement.remove();
+    }
+
+    const overlayContainerElement = document.getElementById(
+      "alloy-overlay-container"
+    );
+    if (overlayContainerElement) {
+      overlayContainerElement.remove();
+    }
+  });
+
   describe("buildStyleFromParameters", () => {
     it("should build the style object correctly", () => {
       const mobileParameters = {
@@ -81,6 +99,90 @@ describe("DOM Actions", () => {
       expect(iframe.style.border).toBe("none");
       expect(iframe.style.width).toBe("100%");
       expect(iframe.style.height).toBe("100%");
+    });
+  });
+
+  describe("createIframeClickHandler", () => {
+    let container;
+    let mockedCollect;
+    let mobileParameters;
+
+    beforeEach(() => {
+      container = document.createElement("div");
+      container.setAttribute("id", "alloy-messaging-container");
+      document.body.appendChild(container);
+
+      mockedCollect = jasmine.createSpy("collect");
+
+      mobileParameters = {
+        verticalAlign: "center",
+        width: 80,
+        horizontalAlign: "left",
+        backdropColor: "rgba(0, 0, 0, 0.7)",
+        height: 60,
+        cornerRadius: 10,
+        horizontalInset: 5,
+        verticalInset: 10
+      };
+    });
+
+    it("should remove dislay message when dismiss is clicked and UI takeover is false", () => {
+      Object.assign(mobileParameters, {
+        uiTakeover: false
+      });
+
+      const anchor = document.createElement("a");
+      Object.assign(anchor, {
+        "data-uuid": "12345",
+        href: "adbinapp://dismiss?interaction=cancel"
+      });
+
+      const mockEvent = {
+        target: anchor,
+        preventDefault: () => {},
+        stopImmediatePropagation: () => {}
+      };
+      const iframeClickHandler = createIframeClickHandler(
+        container,
+        mockedCollect,
+        mobileParameters
+      );
+      iframeClickHandler(mockEvent);
+      const alloyMessagingContainer = document.getElementById(
+        "alloy-messaging-container"
+      );
+      expect(alloyMessagingContainer).toBeNull();
+    });
+
+    it("should remove dislay message when dismiss is clicked and Ui takeover is true", () => {
+      Object.assign(mobileParameters, {
+        uiTakeover: true
+      });
+
+      const overlayContainer = document.createElement("div");
+      overlayContainer.setAttribute("id", "alloy-overlay-container");
+      document.body.appendChild(overlayContainer);
+
+      const anchor = document.createElement("a");
+      Object.assign(anchor, {
+        "data-uuid": "12345",
+        href: "adbinapp://dismiss?interaction=cancel"
+      });
+      const mockEvent = {
+        target: anchor,
+        preventDefault: () => {},
+        stopImmediatePropagation: () => {}
+      };
+      const iframeClickHandler = createIframeClickHandler(
+        container,
+        mockedCollect,
+        mobileParameters
+      );
+      iframeClickHandler(mockEvent);
+      const overlayContainerAfterDismissal = document.getElementById(
+        "alloy-overlay-container"
+      );
+      expect(overlayContainerAfterDismissal).toBeNull();
     });
   });
 });

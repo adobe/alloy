@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 */
 
 import { getNonce } from "../../dom-actions/dom";
-import { removeElements } from "../utils";
+import { INTERACT } from "../../constants/eventType";
 
 const ELEMENT_TAG_CLASSNAME = "alloy-messaging-container";
 const ELEMENT_TAG_ID = "alloy-messaging-container";
@@ -76,6 +76,9 @@ export const buildStyleFromParameters = (mobileParameters, webParameters) => {
 
   return style;
 };
+export const setWindowLocationHref = link => {
+  window.location.assign(link);
+};
 
 export const createIframeClickHandler = (
   container,
@@ -92,31 +95,43 @@ export const createIframeClickHandler = (
       target.tagName.toLowerCase() === "a" ? target : target.closest("a");
 
     if (anchor) {
-      if (ANCHOR_HREF_REGEX.test(anchor.href)) {
-        const matches = ANCHOR_HREF_REGEX.exec(anchor.href);
-
-        const action = matches.length >= 2 ? matches[1] : "";
-        const interaction = matches.length >= 3 ? matches[2] : "";
-
-        if (interaction === "clicked") {
-          const uuid = anchor.getAttribute("data-uuid");
-          // eslint-disable-next-line no-console
-          console.log(`clicked ${uuid}`);
-          // TODO: collect analytics
-          // collect({
-          //   eventType: INTERACT
-          // });
-        }
-
-        if (action === "dismiss") {
-          container.remove();
+      const parts = anchor.href.split("?");
+      const actionPart = parts[0].split("://")[1];
+      let action = "";
+      let interaction = "";
+      let link = "";
+      if (parts.length > 1) {
+        const queryParams = new URLSearchParams(parts[1]);
+        action = actionPart;
+        interaction = queryParams.get("interaction") || "";
+        link = queryParams.get("link") || "";
+        const uuid = anchor.getAttribute("data-uuid") || "";
+        // eslint-disable-next-line no-console
+        console.log(`clicked ${uuid}`);
+        // TODO: collect analytics
+        // collect({
+        //   eventType: INTERACT,
+        //   eventSource: "inAppMessage",
+        //   eventData: {
+        //     action,
+        //     interaction
+        //   }
+        // });
+        if (link && interaction === "clicked") {
+          link = decodeURIComponent(link);
+          setWindowLocationHref(link);
+        } else if (action === "dismiss") {
+          const containerElement = document.getElementById(ELEMENT_TAG_ID);
+          if (containerElement) {
+            containerElement.remove();
+          }
           if (mobileParameters.uiTakeover) {
             const overlayElement = document.getElementById(OVERLAY_TAG_ID);
-            overlayElement.remove();
+            if (overlayElement) {
+              overlayElement.remove();
+            }
           }
         }
-      } else {
-        window.location.href = anchor.href;
       }
     }
   };
@@ -134,7 +149,6 @@ export const createIframe = (htmlContent, clickHandler) => {
   element.src = URL.createObjectURL(
     new Blob([htmlDocument.documentElement.outerHTML], { type: "text/html" })
   );
-  // element.sandbox = "allow-same-origin allow-scripts";
 
   Object.assign(element.style, {
     border: "none",
@@ -187,8 +201,6 @@ export const createOverlayElement = parameter => {
 };
 
 const displayHTMLContentInIframe = (settings, collect) => {
-  [OVERLAY_TAG_CLASSNAME, ELEMENT_TAG_CLASSNAME].forEach(removeElements);
-
   const { content, contentType, mobileParameters } = settings;
 
   if (contentType !== "text/html") {
@@ -204,13 +216,13 @@ const displayHTMLContentInIframe = (settings, collect) => {
 
   container.appendChild(iframe);
 
+  document.body.append(container);
+
   if (mobileParameters.uiTakeover) {
     const overlay = createOverlayElement(mobileParameters);
     document.body.appendChild(overlay);
     document.body.style.overflow = "hidden";
   }
-
-  document.body.append(container);
 };
 
 export default (settings, collect) => {
