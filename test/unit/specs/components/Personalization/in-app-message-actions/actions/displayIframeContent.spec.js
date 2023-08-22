@@ -17,8 +17,8 @@ import {
 } from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayIframeContent";
 
 describe("DOM Actions on Iframe", () => {
-  // Clean up the DOM after each test
-  afterEach(() => {
+  // Clean up the DOM
+  beforeEach(() => {
     const containerElement = document.getElementById(
       "alloy-messaging-container"
     );
