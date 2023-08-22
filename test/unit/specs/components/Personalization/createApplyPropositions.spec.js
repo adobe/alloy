@@ -45,12 +45,11 @@ describe("Personalization::createApplyPropositions", () => {
       render
     });
 
-    return applyPropositions({
+    const result = applyPropositions({
       propositions: []
-    }).then(result => {
-      expect(result).toEqual({ propositions: [] });
-      expect(render).toHaveBeenCalledOnceWith([]);
     });
+    expect(result).toEqual({ propositions: [] });
+    expect(render).toHaveBeenCalledOnceWith([]);
   });
 
   it("it should apply user-provided dom-action schema propositions", () => {
@@ -65,20 +64,20 @@ describe("Personalization::createApplyPropositions", () => {
       render
     });
 
-    return applyPropositions({
+    const result = applyPropositions({
       propositions: PAGE_WIDE_SCOPE_DECISIONS
-    }).then(result => {
-      expect(render).toHaveBeenCalledTimes(1);
+    });
 
-      const expectedScopes = expectedExecuteDecisionsPropositions.map(
-        proposition => proposition.scope
-      );
-      result.propositions.forEach(proposition => {
-        expect(proposition.renderAttempted).toBeTrue();
-        expect(expectedScopes).toContain(proposition.scope);
-        expect(proposition.items).toBeArrayOfObjects();
-        expect(proposition.items.length).toEqual(2);
-      });
+    expect(render).toHaveBeenCalledTimes(1);
+
+    const expectedScopes = expectedExecuteDecisionsPropositions.map(
+      proposition => proposition.scope
+    );
+    result.propositions.forEach(proposition => {
+      expect(proposition.renderAttempted).toBeTrue();
+      expect(expectedScopes).toContain(proposition.scope);
+      expect(proposition.items).toBeArrayOfObjects();
+      expect(proposition.items.length).toEqual(2);
     });
   });
 
@@ -87,24 +86,24 @@ describe("Personalization::createApplyPropositions", () => {
       render
     });
 
-    return applyPropositions({
+    const { propositions } = applyPropositions({
       propositions: MIXED_PROPOSITIONS,
       metadata: METADATA
-    }).then(({ propositions }) => {
-      expect(propositions.length).toEqual(4);
-      propositions.forEach(proposition => {
-        expect(proposition.items.length).toEqual(1);
-        if (proposition.items[0].id === "442358") {
-          expect(proposition.items[0].data.selector).toEqual("#root");
-          expect(proposition.items[0].data.type).toEqual("click");
-        } else if (proposition.items[0].id === "442359") {
-          expect(proposition.scope).toEqual("home");
-          expect(proposition.items[0].data.selector).toEqual("#home-item1");
-          expect(proposition.items[0].data.type).toEqual("setHtml");
-        }
-      });
-      expect(render).toHaveBeenCalledTimes(1);
     });
+
+    expect(propositions.length).toEqual(4);
+    propositions.forEach(proposition => {
+      expect(proposition.items.length).toEqual(1);
+      if (proposition.items[0].id === "442358") {
+        expect(proposition.items[0].data.selector).toEqual("#root");
+        expect(proposition.items[0].data.type).toEqual("click");
+      } else if (proposition.items[0].id === "442359") {
+        expect(proposition.scope).toEqual("home");
+        expect(proposition.items[0].data.selector).toEqual("#home-item1");
+        expect(proposition.items[0].data.type).toEqual("setHtml");
+      }
+    });
+    expect(render).toHaveBeenCalledTimes(1);
   });
 
   it("it should drop items with html-content-item schema when there is no metadata", () => {
@@ -137,26 +136,25 @@ describe("Personalization::createApplyPropositions", () => {
 
     const applyPropositions = createApplyPropositions({ render });
 
-    return applyPropositions({
+    const result = applyPropositions({
       propositions
-    }).then(result => {
-      expect(result.propositions.length).toEqual(1);
-      expect(result.propositions[0].items.length).toEqual(1);
-      expect(result.propositions[0].items[0].id).toEqual("442358");
-      expect(result.propositions[0].renderAttempted).toBeTrue();
     });
+
+    expect(result.propositions.length).toEqual(1);
+    expect(result.propositions[0].items.length).toEqual(1);
+    expect(result.propositions[0].items[0].id).toEqual("442358");
+    expect(result.propositions[0].renderAttempted).toBeTrue();
   });
 
   it("it should return renderAttempted = true on resulting propositions", () => {
     const applyPropositions = createApplyPropositions({ render });
 
-    return applyPropositions({
+    const result = applyPropositions({
       propositions: MIXED_PROPOSITIONS
-    }).then(result => {
-      expect(result.propositions.length).toEqual(3);
-      result.propositions.forEach(proposition => {
-        expect(proposition.renderAttempted).toBeTrue();
-      });
+    });
+    expect(result.propositions.length).toEqual(3);
+    result.propositions.forEach(proposition => {
+      expect(proposition.renderAttempted).toBeTrue();
     });
   });
 
@@ -165,18 +163,17 @@ describe("Personalization::createApplyPropositions", () => {
     const propositions = JSON.parse(JSON.stringify(MIXED_PROPOSITIONS));
     propositions[4].renderAttempted = true;
 
-    return applyPropositions({
+    const result = applyPropositions({
       propositions
-    }).then(result => {
-      expect(result.propositions.length).toEqual(2);
-      result.propositions.forEach(proposition => {
-        expect(proposition.renderAttempted).toBeTrue();
-        if (proposition.scope === "__view__") {
-          expect(proposition.items[0].id).not.toEqual("442358");
-        } else {
-          expect(proposition.scope).toEqual("home");
-        }
-      });
+    });
+    expect(result.propositions.length).toEqual(2);
+    result.propositions.forEach(proposition => {
+      expect(proposition.renderAttempted).toBeTrue();
+      if (proposition.scope === "__view__") {
+        expect(proposition.items[0].id).not.toEqual("442358");
+      } else {
+        expect(proposition.scope).toEqual("home");
+      }
     });
   });
 
@@ -185,15 +182,14 @@ describe("Personalization::createApplyPropositions", () => {
 
     const applyPropositions = createApplyPropositions({ render });
 
-    return applyPropositions({
+    const { propositions } = applyPropositions({
       propositions: MIXED_PROPOSITIONS
-    }).then(({ propositions }) => {
-      expect(propositions.length).toEqual(3);
-      propositions.forEach(proposition => {
-        expect(proposition.items.length).toEqual(1);
-        proposition.items.forEach(item => {
-          expect(expectedItemIds.indexOf(item.id) > -1);
-        });
+    });
+    expect(propositions.length).toEqual(3);
+    propositions.forEach(proposition => {
+      expect(proposition.items.length).toEqual(1);
+      proposition.items.forEach(item => {
+        expect(expectedItemIds.indexOf(item.id) > -1);
       });
     });
   });
@@ -202,22 +198,22 @@ describe("Personalization::createApplyPropositions", () => {
     const applyPropositions = createApplyPropositions({ render });
 
     const originalPropositions = clone(MIXED_PROPOSITIONS);
-    return applyPropositions({
+    const result = applyPropositions({
       propositions: originalPropositions,
       metadata: METADATA
-    }).then(result => {
-      let numReturnedPropositions = 0;
-      expect(originalPropositions).toEqual(MIXED_PROPOSITIONS);
-      result.propositions.forEach(proposition => {
-        const [original] = originalPropositions.filter(
-          originalProposition => originalProposition.id === proposition.id
-        );
-        if (original) {
-          numReturnedPropositions += 1;
-          expect(proposition).not.toBe(original);
-        }
-      });
-      expect(numReturnedPropositions).toEqual(4);
     });
+
+    let numReturnedPropositions = 0;
+    expect(originalPropositions).toEqual(MIXED_PROPOSITIONS);
+    result.propositions.forEach(proposition => {
+      const [original] = originalPropositions.filter(
+        originalProposition => originalProposition.id === proposition.id
+      );
+      if (original) {
+        numReturnedPropositions += 1;
+        expect(proposition).not.toBe(original);
+      }
+    });
+    expect(numReturnedPropositions).toEqual(4);
   });
 });

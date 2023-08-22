@@ -73,13 +73,14 @@ export default ({ render }) => {
       .filter(proposition => isNonEmptyArray(proposition.items));
   };
 
-  return async ({ propositions, metadata = {} }) => {
+  return ({ propositions, metadata = {} }) => {
     const propositionsToExecute = preparePropositions({
       propositions,
       metadata
     }).map(proposition => createProposition(proposition, true));
 
     render(propositionsToExecute);
+
     return {
       propositions: buildReturnedPropositions(propositionsToExecute)
     };

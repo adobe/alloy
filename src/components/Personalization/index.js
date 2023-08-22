@@ -31,7 +31,10 @@ import createHtmlContentHandler from "./handlers/createHtmlContentHandler";
 import createDomActionHandler from "./handlers/createDomActionHandler";
 import createMeasurementSchemaHandler from "./handlers/createMeasurementSchemaHandler";
 import createRender from "./handlers/createRender";
-import { isPageWideSurface } from "./utils/surfaceUtils";
+import remapCustomCodeOffers from "./dom-actions/remapCustomCodeOffers";
+import remapHeadOffers from "./dom-actions/remapHeadOffers";
+import createPreprocess from "./dom-actions/createPreprocess";
+import { createProposition } from "./handlers/proposition";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -43,15 +46,17 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     storeClickMetrics
   } = createClickStorage();
   const getPageLocation = createGetPageLocation({ window });
-  const viewCache = createViewCacheManager();
+  const viewCache = createViewCacheManager({ createProposition });
   const modules = initDomActionsModules();
+
+  const preprocess = createPreprocess([remapHeadOffers, remapCustomCodeOffers]);
 
   const noOpHandler = () => undefined;
   const domActionHandler = createDomActionHandler({
     next: noOpHandler,
-    isPageWideSurface,
     modules,
-    storeClickMetrics
+    storeClickMetrics,
+    preprocess
   });
   const measurementSchemaHandler = createMeasurementSchemaHandler({
     next: domActionHandler
@@ -61,7 +66,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
   const htmlContentHandler = createHtmlContentHandler({
     next: redirectHandler,
-    modules
+    modules,
+    preprocess
   });
 
   const render = createRender({

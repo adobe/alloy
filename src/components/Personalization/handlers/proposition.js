@@ -10,27 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const renderWithLogging = async (renderer, logger) => {
-  try {
-    await renderer();
-    if (logger.enabled) {
-      const details = JSON.stringify(processedAction);
-      logger.info(`Action ${details} executed.`);
-    }
-    return true;
-  } catch (e) {
-    if (logger.enabled) {
-      const details = JSON.stringify(processedAction);
-      const { message, stack } = error;
-      const errorMessage = `Failed to execute action ${details}. ${message} ${
-        stack ? `\n ${stack}` : ""
-      }`;
-      logger.error(errorMessage);
-    }
-    return false;
-  }
-}
-
+const renderWithLogging = (renderer, item, logger) => {
+  return Promise.resolve()
+    .then(renderer)
+    .then(() => {
+      if (logger.enabled) {
+        const details = JSON.stringify(item);
+        logger.info(`Action ${details} executed.`);
+      }
+      return true;
+    })
+    .catch(error => {
+      if (logger.enabled) {
+        const details = JSON.stringify(item);
+        const { message, stack } = error;
+        const errorMessage = `Failed to execute action ${details}. ${message} ${
+          stack ? `\n ${stack}` : ""
+        }`;
+        logger.error(errorMessage);
+      }
+      return false;
+    });
+};
 
 export const createProposition = (handle, isApplyPropositions = false) => {
   const { id, scope, scopeDetails, items = [] } = handle;
@@ -48,8 +49,14 @@ export const createProposition = (handle, isApplyPropositions = false) => {
     getHandle() {
       return handle;
     },
-    getMeta() {
-      return { id, scope, scopeDetails };
+    getItemMeta(i) {
+      const item = items[i];
+      const meta = { id, scope, scopeDetails };
+      if (item.characteristics && item.characteristics.trackingLabel) {
+        meta.trackingLabel = item.characteristics.trackingLabel;
+      }
+
+      return meta;
     },
     redirect(url) {
       includeInDisplayNotification = true;
@@ -63,7 +70,7 @@ export const createProposition = (handle, isApplyPropositions = false) => {
     },
     addRenderer(itemIndex, renderer) {
       itemsRenderAttempted[itemIndex] = true;
-      renderers.push(renderer);
+      renderers.push([itemIndex, renderer]);
     },
     includeInDisplayNotification() {
       includeInDisplayNotification = true;
@@ -73,7 +80,9 @@ export const createProposition = (handle, isApplyPropositions = false) => {
     },
     render(logger) {
       return Promise.all(
-        renderers.map(renderer => renderWithLogging(renderer, logger))
+        renderers.map(([itemIndex, renderer]) =>
+          renderWithLogging(renderer, items[itemIndex], logger)
+        )
       ).then(successes => {
         const notifications = [];
         // as long as at least one renderer succeeds, we want to add the notification

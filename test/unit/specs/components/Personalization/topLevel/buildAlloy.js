@@ -33,6 +33,7 @@ import createMeasurementSchemaHandler from "../../../../../../src/components/Per
 import createRedirectHandler from "../../../../../../src/components/Personalization/handlers/createRedirectHandler";
 import createHtmlContentHandler from "../../../../../../src/components/Personalization/handlers/createHtmlContentHandler";
 import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceUtils";
+import { createProposition } from "../../../../../../src/components/Personalization/handlers/proposition";
 
 const createAction = renderFunc => ({ selector, content }) => {
   renderFunc(selector, content);
@@ -81,7 +82,7 @@ const buildComponent = ({
     storeClickMetrics
   } = createClickStorage();
 
-  const viewCache = createViewCacheManager();
+  const viewCache = createViewCacheManager({ createProposition });
   const modules = initDomActionsModulesMocks();
 
   const noOpHandler = () => undefined;

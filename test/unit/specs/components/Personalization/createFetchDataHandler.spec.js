@@ -10,12 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { de } from "date-fns/locale";
 import createFetchDataHandler from "../../../../../src/components/Personalization/createFetchDataHandler";
+import { createProposition } from "../../../../../src/components/Personalization/handlers/proposition";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("Personalization::createFetchDataHandler", () => {
-
   let prehidingStyle;
   let hideContainers;
   let mergeQuery;
@@ -67,7 +66,7 @@ describe("Personalization::createFetchDataHandler", () => {
     expect(onResponse).toHaveBeenCalledTimes(1);
     const callback = onResponse.calls.argsFor(0)[0];
     return callback({ response });
-  }
+  };
 
   it("should hide containers if renderDecisions is true", () => {
     personalizationDetails.isRenderDecisions.and.returnValue(true);
@@ -104,16 +103,25 @@ describe("Personalization::createFetchDataHandler", () => {
       return Promise.resolve(decisionsMeta);
     };
     run();
-    response.getPayloadsByType.and.returnValue([{ id: "handle1" }, { id: "handle2" }]);
-    cacheUpdate.update.and.returnValue([{ id: "handle1", items: ["item1"] }]);
+    response.getPayloadsByType.and.returnValue([
+      { id: "handle1" },
+      { id: "handle2" }
+    ]);
+    cacheUpdate.update.and.returnValue([
+      createProposition({ id: "handle1", items: ["item1"] })
+    ]);
     const result = returnResponse();
     expect(result).toEqual({
-      propositions: [{ id: "handle1", items: ["item1"], renderAttempted: true }],
+      propositions: [
+        { id: "handle1", items: ["item1"], renderAttempted: true }
+      ],
       decisions: []
     });
     await flushPromiseChains();
     expect(collect).toHaveBeenCalledOnceWith({
-      decisionsMeta: [{ id: "handle1", scope: undefined, scopeDetails: undefined }],
+      decisionsMeta: [
+        { id: "handle1", scope: undefined, scopeDetails: undefined }
+      ],
       viewName: "myviewname"
     });
   });

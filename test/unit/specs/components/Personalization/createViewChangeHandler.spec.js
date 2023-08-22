@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import createViewChangeHandler from "../../../../../src/components/Personalization/createViewChangeHandler";
 import { PropositionEventType } from "../../../../../src/components/Personalization/constants/propositionEventType";
 import { CART_VIEW_DECISIONS } from "./responsesMock/eventResponses";
+import { createProposition } from "../../../../../src/components/Personalization/handlers/proposition";
 
 describe("Personalization::createViewChangeHandler", () => {
   let mergeDecisionsMeta;
@@ -51,7 +52,9 @@ describe("Personalization::createViewChangeHandler", () => {
   };
 
   it("should trigger render if renderDecisions is true", async () => {
-    viewCache.getView.and.returnValue(Promise.resolve(CART_VIEW_DECISIONS));
+    viewCache.getView.and.returnValue(
+      Promise.resolve(CART_VIEW_DECISIONS.map(createProposition))
+    );
     personalizationDetails.isRenderDecisions.and.returnValue(true);
     personalizationDetails.getViewName.and.returnValue("cart");
     render.and.returnValue(Promise.resolve("decisionMeta"));
@@ -66,7 +69,7 @@ describe("Personalization::createViewChangeHandler", () => {
     );
     expect(result.decisions).toEqual(CART_VIEW_DECISIONS);
   });
-/*
+  /*
   it("should not trigger executeDecisions when render decisions is false", () => {
     const cartViewPromise = {
       then: callback => callback(CART_VIEW_DECISIONS)

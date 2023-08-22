@@ -14,23 +14,29 @@ import { assign } from "../../utils";
 import defer from "../../utils/defer";
 import { VIEW_SCOPE_TYPE } from "./constants/scopeType";
 
-const createEmptyViewPropositions = viewName => {
-  return [
-    {
+export default ({ createProposition }) => {
+  const viewStorage = {};
+  let cacheUpdateCreatedAtLeastOnce = false;
+  let previousUpdateCacheComplete = Promise.resolve();
+
+  const getViewPropositions = (currentViewStorage, viewName) => {
+    const viewPropositions = currentViewStorage[viewName];
+    if (viewPropositions && viewPropositions.length > 0) {
+      return viewPropositions.map(createProposition);
+    }
+
+    const emptyViewProposition = createProposition({
       scope: viewName,
       scopeDetails: {
         characteristics: {
           scopeType: "view"
         }
       }
-    }
-  ];
-};
-
-export default () => {
-  const viewStorage = {};
-  let cacheUpdateCreatedAtLeastOnce = false;
-  let previousUpdateCacheComplete = Promise.resolve();
+    });
+    emptyViewProposition.includeInDisplayNotification();
+    emptyViewProposition.excludeInReturnedPropositions();
+    return [emptyViewProposition];
+  };
 
   // This should be called before making the request to experience edge.
   const createCacheUpdate = viewName => {
@@ -47,7 +53,7 @@ export default () => {
     return {
       update(personalizationHandles) {
         const newViewStorage = {};
-        const otherHandles = [];
+        const otherPropositions = [];
         personalizationHandles.forEach(handle => {
           const {
             scope,
@@ -57,18 +63,17 @@ export default () => {
             newViewStorage[scope] = newViewStorage[scope] || [];
             newViewStorage[scope].push(handle);
           } else {
-            otherHandles.push(handle);
+            otherPropositions.push(createProposition(handle));
           }
         });
         updateCacheDeferred.resolve(newViewStorage);
         if (viewName) {
           return [
-            ...(newViewStorage[viewName] ||
-              createEmptyViewPropositions(viewName)),
-            ...otherHandles
+            ...getViewPropositions(newViewStorage, viewName),
+            ...otherPropositions
           ];
         }
-        return otherHandles;
+        return otherPropositions;
       },
       cancel() {
         updateCacheDeferred.reject();
@@ -77,8 +82,8 @@ export default () => {
   };
 
   const getView = viewName => {
-    return previousUpdateCacheComplete.then(
-      () => viewStorage[viewName] || createEmptyViewPropositions(viewName)
+    return previousUpdateCacheComplete.then(() =>
+      getViewPropositions(viewStorage, viewName)
     );
   };
 

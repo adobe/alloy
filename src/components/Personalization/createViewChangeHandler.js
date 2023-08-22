@@ -13,26 +13,30 @@ governing permissions and limitations under the License.
 import { PropositionEventType } from "./constants/propositionEventType";
 import {
   buildReturnedPropositions,
-  buildReturnedDecisions,
-  createProposition
+  buildReturnedDecisions
 } from "./handlers/proposition";
 
 export default ({ mergeDecisionsMeta, render, viewCache }) => {
-  return async ({ personalizationDetails, event, onResponse }) => {
+  return ({ personalizationDetails, event, onResponse }) => {
     const viewName = personalizationDetails.getViewName();
 
-    const viewHandles = await viewCache.getView(viewName);
-    const propositions = viewHandles.map(createProposition);
+    return viewCache
+      .getView(viewName)
+      .then(propositions => {
+        onResponse(() => {
+          return {
+            propositions: buildReturnedPropositions(propositions),
+            decisions: buildReturnedDecisions(propositions)
+          };
+        });
 
-    if (personalizationDetails.isRenderDecisions()) {
-      const decisionsMeta = await render(propositions);
-      mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.DISPLAY);
-    }
-    onResponse(() => {
-      return {
-        propositions: buildReturnedPropositions(propositions),
-        decisions: buildReturnedDecisions(propositions)
-      };
-    });
+        if (personalizationDetails.isRenderDecisions()) {
+          return render(propositions);
+        }
+        return Promise.resolve([]);
+      })
+      .then(decisionsMeta => {
+        mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.DISPLAY);
+      });
   };
 };

@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import {
-  createProposition,
   buildReturnedPropositions,
   buildReturnedDecisions
 } from "./handlers/proposition";
@@ -32,8 +31,7 @@ export default ({
 
     onResponse(({ response }) => {
       const handles = response.getPayloadsByType(DECISIONS_HANDLE);
-      const handlesToRender = cacheUpdate.update(handles);
-      const propositions = handlesToRender.map(createProposition);
+      const propositions = cacheUpdate.update(handles);
       if (personalizationDetails.isRenderDecisions()) {
         render(propositions).then(decisionsMeta => {
           if (decisionsMeta.length > 0) {

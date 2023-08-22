@@ -11,7 +11,12 @@ governing permissions and limitations under the License.
 */
 import { DEFAULT_CONTENT_ITEM, DOM_ACTION } from "../constants/schema";
 
-export default ({ next, modules, storeClickMetrics, preprocess }) => proposition => {
+export default ({
+  next,
+  modules,
+  storeClickMetrics,
+  preprocess
+}) => proposition => {
   const { items = [] } = proposition.getHandle();
 
   items.forEach((item, index) => {
@@ -25,9 +30,8 @@ export default ({ next, modules, storeClickMetrics, preprocess }) => proposition
       if (type === "click") {
         // Do not record the click proposition in display notification.
         // Store it for later.
-        proposition.addRenderer(index, () => {
-          storeClickMetrics({ selector, meta: proposition.getMeta() });
-        });
+        storeClickMetrics({ selector, meta: proposition.getItemMeta(index) });
+        proposition.addRenderer(index, () => undefined);
       } else if (modules[type]) {
         proposition.includeInDisplayNotification();
         const processedData = preprocess(data);

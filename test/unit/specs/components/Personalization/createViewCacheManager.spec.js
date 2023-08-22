@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 import createViewCacheManager from "../../../../../src/components/Personalization/createViewCacheManager";
 
 describe("Personalization::createCacheManager", () => {
-
   const viewHandles = [
     {
       id: "foo1",
@@ -48,30 +47,42 @@ describe("Personalization::createCacheManager", () => {
     }
   ];
 
+  let createProposition;
+
+  beforeEach(() => {
+    createProposition = viewHandle => {
+      const proposition = jasmine.createSpyObj("proposition", [
+        "includeInDisplayNotification",
+        "excludeInReturnedPropositions",
+        "getHandle"
+      ]);
+      proposition.getHandle.and.returnValue(viewHandle);
+      return proposition;
+    };
+  });
+
   it("stores and gets the decisions based on a viewName", async () => {
-    const viewCacheManager = createViewCacheManager();
+    const viewCacheManager = createViewCacheManager({ createProposition });
 
     const cacheUpdate = viewCacheManager.createCacheUpdate("home");
     const resultingHandles = cacheUpdate.update(viewHandles);
-    expect(resultingHandles).toEqual([
+    expect(resultingHandles.map(h => h.getHandle())).toEqual([
       viewHandles[0],
       viewHandles[1],
       viewHandles[3]
     ]);
 
     const homeViews = await viewCacheManager.getView("home");
-    expect(homeViews).toEqual([
+    expect(homeViews.map(h => h.getHandle())).toEqual([
       viewHandles[0],
       viewHandles[1]
     ]);
 
     const cartViews = await viewCacheManager.getView("cart");
-    expect(cartViews).toEqual([
-      viewHandles[2]
-    ]);
+    expect(cartViews.map(h => h.getHandle())).toEqual([viewHandles[2]]);
 
     const otherViews = await viewCacheManager.getView("other");
-    expect(otherViews).toEqual([
+    expect(otherViews.map(h => h.getHandle())).toEqual([
       {
         scope: "other",
         scopeDetails: {
@@ -84,12 +95,12 @@ describe("Personalization::createCacheManager", () => {
   });
 
   it("should be no views when decisions deferred is rejected", async () => {
-    const viewCacheManager = createViewCacheManager();
+    const viewCacheManager = createViewCacheManager({ createProposition });
     const cacheUpdate = viewCacheManager.createCacheUpdate("home");
     cacheUpdate.cancel();
 
     const homeViews = await viewCacheManager.getView("home");
-    expect(homeViews).toEqual([
+    expect(homeViews.map(h => h.getHandle())).toEqual([
       {
         scope: "home",
         scopeDetails: {
@@ -102,12 +113,12 @@ describe("Personalization::createCacheManager", () => {
   });
 
   it("should not be initialized when first created", () => {
-    const viewCacheManager = createViewCacheManager();
+    const viewCacheManager = createViewCacheManager({ createProposition });
     expect(viewCacheManager.isInitialized()).toBe(false);
   });
 
   it("should be initialized when first cache update is created", () => {
-    const viewCacheManager = createViewCacheManager();
+    const viewCacheManager = createViewCacheManager({ createProposition });
     viewCacheManager.createCacheUpdate("home");
     expect(viewCacheManager.isInitialized()).toBe(true);
   });
