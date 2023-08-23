@@ -166,7 +166,7 @@ export const createIframe = (htmlContent, clickHandler) => {
   return element;
 };
 
-const createContainerElement = settings => {
+export const createContainerElement = settings => {
   const { mobileParameters = {}, webParameters = {} } = settings;
   const element = document.createElement("div");
   element.id = ELEMENT_TAG_ID;
@@ -201,7 +201,7 @@ export const createOverlayElement = parameter => {
   return element;
 };
 
-const displayHTMLContentInIframe = (settings, collect) => {
+export const displayHTMLContentInIframe = (settings, collect) => {
   const { content, contentType, mobileParameters } = settings;
 
   if (contentType !== "text/html") {
@@ -217,7 +217,7 @@ const displayHTMLContentInIframe = (settings, collect) => {
 
   container.appendChild(iframe);
 
-  document.body.append(container);
+  document.body.appendChild(container);
 
   if (mobileParameters.uiTakeover) {
     const overlay = createOverlayElement(mobileParameters);
