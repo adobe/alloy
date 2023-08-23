@@ -71,7 +71,7 @@ export const payloadWithCondition = condition => {
                 },
                 consequences: [
                   {
-                    type: "item",
+                    type: "schema",
                     detail: {
                       schema:
                         "https://ns.adobe.com/personalization/mock-action",
