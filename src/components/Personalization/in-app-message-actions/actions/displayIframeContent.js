@@ -20,6 +20,7 @@ const ANCHOR_HREF_REGEX = /adbinapp:\/\/(\w+)\?interaction=(\w+)/i;
 
 const OVERLAY_TAG_CLASSNAME = "alloy-overlay-container";
 const OVERLAY_TAG_ID = "alloy-overlay-container";
+const ALLOY_IFRAME_ID = "alloy-iframe-id";
 
 export const buildStyleFromParameters = (mobileParameters, webParameters) => {
   const {
@@ -73,7 +74,6 @@ export const buildStyleFromParameters = (mobileParameters, webParameters) => {
   } else {
     style.height = "100%";
   }
-
   return style;
 };
 export const setWindowLocationHref = link => {
@@ -149,6 +149,7 @@ export const createIframe = (htmlContent, clickHandler) => {
   element.src = URL.createObjectURL(
     new Blob([htmlDocument.documentElement.outerHTML], { type: "text/html" })
   );
+  element.id = ALLOY_IFRAME_ID;
 
   Object.assign(element.style, {
     border: "none",

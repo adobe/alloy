@@ -15,23 +15,19 @@ import {
   createIframe,
   createIframeClickHandler
 } from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayIframeContent";
+import cleanUpDomChanges from "../../../../../helpers/cleanUpDomChanges";
 
 describe("DOM Actions on Iframe", () => {
-  // Clean up the DOM
   beforeEach(() => {
-    const containerElement = document.getElementById(
-      "alloy-messaging-container"
-    );
-    if (containerElement) {
-      containerElement.remove();
-    }
+    cleanUpDomChanges("alloy-messaging-container");
+    cleanUpDomChanges("alloy-overlay-container");
+    cleanUpDomChanges("alloy-iframe-id");
+  });
 
-    const overlayContainerElement = document.getElementById(
-      "alloy-overlay-container"
-    );
-    if (overlayContainerElement) {
-      overlayContainerElement.remove();
-    }
+  afterEach(() => {
+    cleanUpDomChanges("alloy-messaging-container");
+    cleanUpDomChanges("alloy-overlay-container");
+    cleanUpDomChanges("alloy-iframe-id");
   });
 
   describe("buildStyleFromParameters", () => {
@@ -126,7 +122,7 @@ describe("DOM Actions on Iframe", () => {
       };
     });
 
-    it("should remove dislay message when dismiss is clicked and UI takeover is false", () => {
+    it("should remove display message when dismiss is clicked and UI takeover is false", () => {
       Object.assign(mobileParameters, {
         uiTakeover: false
       });
@@ -154,7 +150,7 @@ describe("DOM Actions on Iframe", () => {
       expect(alloyMessagingContainer).toBeNull();
     });
 
-    it("should remove dislay message when dismiss is clicked and Ui takeover is true", () => {
+    it("should remove display message when dismiss is clicked and Ui takeover is true", () => {
       Object.assign(mobileParameters, {
         uiTakeover: true
       });
