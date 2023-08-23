@@ -22,7 +22,6 @@ export { default as createLoggingCookieJar } from "./createLoggingCookieJar";
 export { default as createTaskQueue } from "./createTaskQueue";
 export { default as crc32 } from "./crc32";
 export { default as defer } from "./defer";
-export { default as deduplicateArray } from "./deduplicateArray";
 export { default as deepAssign } from "./deepAssign";
 export { default as endsWith } from "./endsWith";
 export { default as find } from "./find";

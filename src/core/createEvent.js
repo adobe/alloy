@@ -10,12 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import {
-  isEmptyObject,
-  deepAssign,
-  isNonEmptyArray,
-  deduplicateArray
-} from "../utils";
+import { isEmptyObject, deepAssign } from "../utils";
 
 export default () => {
   const content = {};
@@ -69,28 +64,7 @@ export default () => {
       }
 
       if (userXdm) {
-        // Merge the userXDM propositions with the ones included via the display
-        // notification cache.
-        if (
-          userXdm._experience &&
-          userXdm._experience.decisioning &&
-          isNonEmptyArray(userXdm._experience.decisioning.propositions) &&
-          content.xdm._experience &&
-          content.xdm._experience.decisioning &&
-          isNonEmptyArray(content.xdm._experience.decisioning.propositions)
-        ) {
-          const newPropositions = deduplicateArray(
-            [
-              ...userXdm._experience.decisioning.propositions,
-              ...content.xdm._experience.decisioning.propositions
-            ],
-            (a, b) => a === b || (a.id && b.id && a.id === b.id)
-          );
-          event.mergeXdm(userXdm);
-          content.xdm._experience.decisioning.propositions = newPropositions;
-        } else {
-          event.mergeXdm(userXdm);
-        }
+        event.mergeXdm(userXdm);
       }
 
       if (userData) {

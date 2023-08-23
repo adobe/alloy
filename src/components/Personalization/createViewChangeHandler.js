@@ -20,23 +20,24 @@ export default ({ mergeDecisionsMeta, render, viewCache }) => {
   return ({ personalizationDetails, event, onResponse }) => {
     const viewName = personalizationDetails.getViewName();
 
-    return viewCache
-      .getView(viewName)
-      .then(propositions => {
-        onResponse(() => {
-          return {
-            propositions: buildReturnedPropositions(propositions),
-            decisions: buildReturnedDecisions(propositions)
-          };
-        });
-
-        if (personalizationDetails.isRenderDecisions()) {
-          return render(propositions);
-        }
-        return Promise.resolve([]);
-      })
-      .then(decisionsMeta => {
-        mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.DISPLAY);
+    return viewCache.getView(viewName).then(propositions => {
+      onResponse(() => {
+        return {
+          propositions: buildReturnedPropositions(propositions),
+          decisions: buildReturnedDecisions(propositions)
+        };
       });
+
+      if (personalizationDetails.isRenderDecisions()) {
+        return render(propositions).then(decisionsMeta => {
+          mergeDecisionsMeta(
+            event,
+            decisionsMeta,
+            PropositionEventType.DISPLAY
+          );
+        });
+      }
+      return Promise.resolve();
+    });
   };
 };
