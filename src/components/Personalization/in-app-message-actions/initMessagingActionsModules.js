@@ -8,6 +8,6 @@ export default collect => {
   return {
     modal: settings => displayModal(settings, collect),
     banner: settings => displayBanner(settings, collect),
-    feed: () => Promise.resolve() // TODO: consider not using in-app-message type here, or leveraging this for some purpose
+    defaultContent: () => Promise.resolve()
   };
 };

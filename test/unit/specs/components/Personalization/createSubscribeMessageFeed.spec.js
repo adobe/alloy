@@ -1,4 +1,5 @@
 import createSubscribeMessageFeed from "../../../../../src/components/Personalization/createSubscribeMessageFeed";
+import { MESSAGE_FEED_ITEM } from "../../../../../src/components/Personalization/constants/schema";
 
 describe("Personalization:subscribeMessageFeed", () => {
   let collect;
@@ -43,10 +44,10 @@ describe("Personalization:subscribeMessageFeed", () => {
       id: "1a3d874f-39ee-4310-bfa9-6559a10041a4",
       items: [
         {
-          schema: "https://ns.adobe.com/personalization/in-app-message",
+          schema: MESSAGE_FEED_ITEM,
           data: {
             expiryDate: 1712190456,
-            type: "feed",
+            publishedDate: 1677752640000,
             meta: {
               feedName: "Winter Promo",
               surface: "web://mywebsite.com/feed"
@@ -56,7 +57,6 @@ describe("Personalization:subscribeMessageFeed", () => {
               imageUrl: "img/lumon.png",
               actionTitle: "Shop the sale!",
               actionUrl: "https://luma.com/sale",
-              publishedDate: 1677752640000,
               body: "a handshake is available upon request.",
               title: "Welcome to Lumon!"
             },
@@ -67,10 +67,11 @@ describe("Personalization:subscribeMessageFeed", () => {
           displayedDate: 1683042628070
         },
         {
-          schema: "https://ns.adobe.com/personalization/in-app-message",
+          schema: MESSAGE_FEED_ITEM,
           data: {
             expiryDate: 1712190456,
-            type: "feed",
+            publishedDate: 1677839040000,
+
             meta: {
               feedName: "Winter Promo",
               surface: "web://mywebsite.com/feed"
@@ -80,7 +81,6 @@ describe("Personalization:subscribeMessageFeed", () => {
               imageUrl: "img/achievement.png",
               actionTitle: "Shop the sale!",
               actionUrl: "https://luma.com/sale",
-              publishedDate: 1677839040000,
               body: "Great job, you completed your profile.",
               title: "Achievement Unlocked!"
             },
@@ -97,10 +97,10 @@ describe("Personalization:subscribeMessageFeed", () => {
       id: "1ae11bc5-96dc-41c7-8f71-157c57a5290e",
       items: [
         {
-          schema: "https://ns.adobe.com/personalization/in-app-message",
+          schema: MESSAGE_FEED_ITEM,
           data: {
             expiryDate: 1712190456,
-            type: "feed",
+            publishedDate: 1678098240000,
             meta: {
               feedName: "Winter Promo",
               surface: "web://mywebsite.com/feed"
@@ -110,7 +110,6 @@ describe("Personalization:subscribeMessageFeed", () => {
               imageUrl: "img/twitter.png",
               actionTitle: "Shop the sale!",
               actionUrl: "https://luma.com/sale",
-              publishedDate: 1678098240000,
               body: "Posting on social media helps us spread the word.",
               title: "Thanks for sharing!"
             },
@@ -149,10 +148,10 @@ describe("Personalization:subscribeMessageFeed", () => {
       id: "d1f7d411-a549-47bc-a4d8-c8e638b0a46b",
       items: [
         {
-          schema: "https://ns.adobe.com/personalization/in-app-message",
+          schema: MESSAGE_FEED_ITEM,
           data: {
             expiryDate: 1712190456,
-            type: "feed",
+            publishedDate: 1678184640000,
             meta: {
               feedName: "Winter Promo",
               surface: "web://mywebsite.com/feed"
@@ -162,7 +161,6 @@ describe("Personalization:subscribeMessageFeed", () => {
               imageUrl: "img/gold-coin.jpg",
               actionTitle: "Shop the sale!",
               actionUrl: "https://luma.com/sale",
-              publishedDate: 1678184640000,
               body: "Now you're ready to earn!",
               title: "Funds deposited!"
             },

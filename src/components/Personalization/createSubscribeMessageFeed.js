@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { callback, objectOf, string } from "../../utils/validation";
-import { IN_APP_MESSAGE } from "./constants/schema";
+import { MESSAGE_FEED_ITEM, MESSAGE_IN_APP } from "./constants/schema";
 import { DISPLAY, INTERACT } from "./constants/eventType";
 
 const validateSubscribeMessageFeedOptions = ({ options }) => {
@@ -27,12 +27,13 @@ export default ({ collect }) => {
     const { id, scope, scopeDetails } = payload;
 
     const { data = {}, qualifiedDate, displayedDate } = item;
-    const { content = {} } = data;
+    const { content = {}, publishedDate } = data;
 
     return {
       ...content,
       qualifiedDate,
       displayedDate,
+      publishedDate,
       getSurface: () => data.meta.surface,
       getAnalyticsDetail: () => {
         return { id, scope, scopeDetails };
@@ -88,10 +89,7 @@ export default ({ collect }) => {
         return [
           ...allItems,
           ...items
-            .filter(
-              item =>
-                item.schema === IN_APP_MESSAGE && item.data.type === "feed"
-            )
+            .filter(item => item.schema === MESSAGE_FEED_ITEM)
             .map(item => createFeedItem(payload, item))
         ];
       }, [])
