@@ -102,9 +102,11 @@ createMediaAnalytics.configValidators = objectOf({
     version: string().nonEmpty(),
     mainPingInterval: number() // maxim 60 sec
       .minimum(10)
+      .maximum(60)
       .default(10),
     adPingInterval: number() // 10 default - mobile maxim - 60 sec
       .minimum(1)
+      .maximum(60)
       .default(1)
   })
 });

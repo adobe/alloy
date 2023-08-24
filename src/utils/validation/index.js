@@ -78,6 +78,7 @@ import createDeprecatedValidator from "./createDeprecatedValidator";
 import createLiteralValidator from "./createLiteralValidator";
 import createMapOfValuesValidator from "./createMapOfValuesValidator";
 import createMinimumValidator from "./createMinimumValidator";
+import createMaximumValidator from "./createMaximumValidator";
 import createNoUnknownFieldsValidator from "./createNoUnknownFieldsValidator";
 import createNonEmptyValidator from "./createNonEmptyValidator";
 import createObjectOfValidator from "./createObjectOfValidator";
@@ -113,6 +114,9 @@ const minimumInteger = function minimumInteger(minValue) {
 };
 const minimumNumber = function minimumNumber(minValue) {
   return nullSafeChain(this, createMinimumValidator("a number", minValue));
+};
+const maximumNumber = function maximumNumber(maxValue) {
+  return nullSafeChain(this, createMaximumValidator("a number", maxValue));
 };
 const integer = function integer() {
   return nullSafeChain(this, integerValidator, { minimum: minimumInteger });
@@ -163,6 +167,7 @@ const literal = function literal(literalValue) {
 const number = function number() {
   return nullSafeChain(this, numberValidator, {
     minimum: minimumNumber,
+    maximum: maximumNumber,
     integer,
     unique
   });

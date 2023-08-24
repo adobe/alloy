@@ -26,11 +26,10 @@ export default ({ eventManager, heartbeatTicker, playerCache }) => {
       return result.sessionId;
     });
 
-    const player = {
+    playerCache.put(playerId, {
       sessionId: sessionIdPromise,
       onBeforeMediaEvent
-    };
-    playerCache.put(playerId, player);
+    });
 
     return sessionIdPromise;
   };

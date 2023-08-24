@@ -4,17 +4,6 @@ export default () => {
     cache[playerId] = value;
   };
 
-  const update = (playerId, data) => {
-    if (!cache[playerId]) {
-      return;
-    }
-
-    const key = data.key;
-    const value = data.value;
-
-    cache[playerId][key] = value;
-  };
-
   const get = playerId => {
     return cache[playerId];
   };
@@ -49,11 +38,11 @@ export default () => {
     if (!player) {
       return;
     }
-    const currentTime = Date.now();
-    player.latestTriggeredEvent = currentTime;
+    player.latestTriggeredEvent = Date.now();
   };
   return {
     get,
+    put,
     remove,
     startTicker,
     stopTicker,

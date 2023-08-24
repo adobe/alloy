@@ -1,7 +1,8 @@
 import {
   anyOf,
   anything,
-  callback, number,
+  callback,
+  number,
   objectOf,
   string
 } from "../../utils/validation";
