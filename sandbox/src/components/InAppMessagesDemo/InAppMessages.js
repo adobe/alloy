@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
-import "./DecisionEngineStyle.css";
+import "./InAppMessagesStyle.css";
 
 export default function DecisionEngine() {
   const [realResponse, setRealResponse] = useState(null);

@@ -31,7 +31,7 @@ import PersonalizationFormBased from "./PersonalizationFormBased";
 import Identity from "./Identity";
 import AlloyVersion from "./components/AlloyVersion";
 import ConfigOverrides from "./ConfigOverrides.jsx";
-import DecisioningEngine from "./components/DecisioningEngineDemo/DecisioningEngine";
+import InAppMessages from "./components/InAppMessagesDemo/InAppMessages";
 
 function BasicExample() {
   return (
@@ -98,7 +98,7 @@ function BasicExample() {
               <a href="/configOverrides">Config Overrides</a>
             </li>
             <li>
-              <Link to="/decisioningEngine">Decisioning Engine</Link>
+              <Link to="/inAppMessages">In-app Messages</Link>
             </li>
           </ul>
           <hr />
@@ -129,7 +129,7 @@ function BasicExample() {
           <Route path="/redirectedNewPage" component={RedirectedNewPage} />
           <Route path="/identity" component={Identity} />
           <Route path="/configOverrides" component={ConfigOverrides} />
-          <Route path="/decisioningEngine" component={DecisioningEngine} />
+          <Route path="/inAppMessages" component={InAppMessages} />
         </div>
       </Router>
       <AlloyVersion />
