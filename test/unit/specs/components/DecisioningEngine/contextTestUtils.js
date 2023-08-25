@@ -56,36 +56,33 @@ export const payloadWithCondition = condition => {
     items: [
       {
         id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
-        schema: "https://ns.adobe.com/personalization/json-ruleset-item",
+        schema: "https://ns.adobe.com/personalization/ruleset-item",
         data: {
-          content: JSON.stringify({
-            version: 1,
-            rules: [
-              {
-                condition: {
-                  definition: {
-                    conditions: [condition],
-                    logic: "and"
-                  },
-                  type: "group"
+          version: 1,
+          rules: [
+            {
+              condition: {
+                definition: {
+                  conditions: [condition],
+                  logic: "and"
                 },
-                consequences: [
-                  {
-                    type: "schema",
-                    detail: {
-                      schema:
-                        "https://ns.adobe.com/personalization/mock-action",
-                      data: {
-                        hello: "kitty"
-                      },
-                      id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
+                type: "group"
+              },
+              consequences: [
+                {
+                  type: "schema",
+                  detail: {
+                    schema: "https://ns.adobe.com/personalization/mock-action",
+                    data: {
+                      hello: "kitty"
                     },
                     id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
-                  }
-                ]
-              }
-            ]
-          })
+                  },
+                  id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
+                }
+              ]
+            }
+          ]
         }
       }
     ],

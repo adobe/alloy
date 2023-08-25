@@ -17,8 +17,7 @@ export const HTML_CONTENT_ITEM =
   "https://ns.adobe.com/personalization/html-content-item";
 export const JSON_CONTENT_ITEM =
   "https://ns.adobe.com/personalization/json-content-item";
-export const JSON_RULESET_ITEM =
-  "https://ns.adobe.com/personalization/json-ruleset-item";
+export const RULESET_ITEM = "https://ns.adobe.com/personalization/ruleset-item";
 export const REDIRECT_ITEM =
   "https://ns.adobe.com/personalization/redirect-item";
 

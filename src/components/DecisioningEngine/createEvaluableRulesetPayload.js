@@ -12,15 +12,15 @@ governing permissions and limitations under the License.
 import RulesEngine from "@adobe/aep-rules-engine";
 import {
   JSON_CONTENT_ITEM,
-  JSON_RULESET_ITEM
+  RULESET_ITEM
 } from "../Personalization/constants/schema";
 import flattenArray from "../../utils/flattenArray";
 import createConsequenceAdapter from "./createConsequenceAdapter";
 
-const isJsonRulesetItem = item => {
+const isRulesetItem = item => {
   const { schema, data } = item;
 
-  if (schema === JSON_RULESET_ITEM) {
+  if (schema === RULESET_ITEM) {
     return true;
   }
 
@@ -43,8 +43,9 @@ export default payload => {
   const items = [];
 
   const addItem = item => {
-    const { data = {} } = item;
-    const { content } = data;
+    const { data = {}, schema } = item;
+
+    const content = schema === RULESET_ITEM ? data : data.content;
 
     if (!content) {
       return;
@@ -65,7 +66,7 @@ export default payload => {
   };
 
   if (Array.isArray(payload.items)) {
-    payload.items.filter(isJsonRulesetItem).forEach(addItem);
+    payload.items.filter(isRulesetItem).forEach(addItem);
   }
 
   return {
