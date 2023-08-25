@@ -12,9 +12,10 @@ governing permissions and limitations under the License.
 
 import { createRequest } from "../../../utils/request";
 
-export default identityRequestPayload => {
+export default ({ payload, datastreamIdOverride }) => {
   return createRequest({
-    payload: identityRequestPayload,
+    payload,
+    datastreamIdOverride,
     getAction() {
       return "identity/acquire";
     },

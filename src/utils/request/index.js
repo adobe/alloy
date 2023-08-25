@@ -15,5 +15,6 @@ export { default as createDataCollectionRequest } from "./createDataCollectionRe
 export { default as createDataCollectionRequestPayload } from "./createDataCollectionRequestPayload";
 export { default as createHasIdentity } from "./createHasIdentity";
 export { default as createRequest } from "./createRequest";
+export { default as createRequestParams } from "./createRequestParams";
 export { default as createRequestPayload } from "./createRequestPayload";
 export { default as createGetAssuranceValidationTokenParams } from "./createGetAssuranceValidationTokenParams";

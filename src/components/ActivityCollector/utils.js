@@ -50,14 +50,33 @@ const isSupportedAnchorElement = element => {
   return false;
 };
 
+const trimQueryFromUrl = url => {
+  const questionMarkIndex = url.indexOf("?");
+  const hashIndex = url.indexOf("#");
+
+  if (
+    questionMarkIndex >= 0 &&
+    (questionMarkIndex < hashIndex || hashIndex < 0)
+  ) {
+    return url.substring(0, questionMarkIndex);
+  }
+  if (hashIndex >= 0) {
+    return url.substring(0, hashIndex);
+  }
+
+  return url;
+};
+
 const isDownloadLink = (downloadLinkQualifier, linkUrl, clickedObj) => {
   const re = new RegExp(downloadLinkQualifier);
-  return clickedObj.download ? true : re.test(linkUrl.toLowerCase());
+  const trimmedLinkUrl = trimQueryFromUrl(linkUrl).toLowerCase();
+  return clickedObj.download ? true : re.test(trimmedLinkUrl);
 };
 
 const isExitLink = (window, linkUrl) => {
   const currentHostname = window.location.hostname.toLowerCase();
-  if (linkUrl.toLowerCase().indexOf(currentHostname) >= 0) {
+  const trimmedLinkUrl = trimQueryFromUrl(linkUrl).toLowerCase();
+  if (trimmedLinkUrl.indexOf(currentHostname) >= 0) {
     return false;
   }
   return true;
@@ -105,6 +124,7 @@ export {
   isDownloadLink,
   isEmptyString,
   isExitLink,
+  trimQueryFromUrl,
   truncateWhiteSpace,
   findSupportedAnchorElement,
   determineLinkType

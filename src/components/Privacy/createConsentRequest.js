@@ -12,9 +12,10 @@ governing permissions and limitations under the License.
 
 import { createRequest } from "../../utils/request";
 
-export default consentRequestPayload => {
+export default ({ payload, datastreamIdOverride }) => {
   return createRequest({
-    payload: consentRequestPayload,
+    payload,
+    datastreamIdOverride,
     getAction() {
       return "privacy/set-consent";
     },

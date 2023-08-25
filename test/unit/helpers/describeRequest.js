@@ -22,7 +22,7 @@ export default createRequest => {
 
     beforeEach(() => {
       payload = {};
-      request = createRequest(payload);
+      request = createRequest({ payload });
     });
 
     // getAction and getUseSendBeacon will be covered in the tests

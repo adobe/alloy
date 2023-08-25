@@ -18,7 +18,7 @@ import {
   debugEnabled,
   migrationDisabled
 } from "../../helpers/constants/configParts";
-import EDGE_CONFIG_ID from "../../helpers/constants/edgeConfigId";
+import DATASTREAM_ID from "../../helpers/constants/datastreamId";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 
 const mainConfig = compose(orgMainConfigMain, debugEnabled, migrationDisabled);
@@ -34,7 +34,7 @@ const networkLogger1 = RequestLogger(
 );
 
 const networkLogger2 = RequestLogger(
-  new RegExp(`v1\\/(interact|collect)\\?configId=${EDGE_CONFIG_ID}`),
+  new RegExp(`v1\\/(interact|collect)\\?configId=${DATASTREAM_ID}`),
   networkLoggerConfig
 );
 

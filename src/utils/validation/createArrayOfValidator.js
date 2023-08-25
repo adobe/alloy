@@ -9,21 +9,22 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import assertValid from "./assertValid";
+import { assertValid } from "./utils";
 
-export default elementValidator => (value, path) => {
-  assertValid(Array.isArray(value), value, path, "an array");
-  const errors = [];
-  const validatedArray = value.map((subValue, i) => {
-    try {
-      return elementValidator(subValue, `${path}[${i}]`);
-    } catch (e) {
-      errors.push(e.message);
-      return undefined;
+export default elementValidator =>
+  function arrayOf(value, path) {
+    assertValid(Array.isArray(value), value, path, "an array");
+    const errors = [];
+    const validatedArray = value.map((subValue, i) => {
+      try {
+        return elementValidator.call(this, subValue, `${path}[${i}]`, value);
+      } catch (e) {
+        errors.push(e.message);
+        return undefined;
+      }
+    });
+    if (errors.length) {
+      throw new Error(errors.join("\n"));
     }
-  });
-  if (errors.length) {
-    throw new Error(errors.join("\n"));
-  }
-  return validatedArray;
-};
+    return validatedArray;
+  };
