@@ -12,12 +12,12 @@ governing permissions and limitations under the License.
 
 import initMessagingActionsModules from "../../../../../../src/components/Personalization/in-app-message-actions/initMessagingActionsModules";
 import createModules from "../../../../../../src/components/Personalization/createModules";
-import { IN_APP_MESSAGE } from "../../../../../../src/components/Personalization/constants/schema";
+import { MESSAGE_IN_APP } from "../../../../../../src/components/Personalization/constants/schema";
 
 describe("Personalization::turbine::initMessagingActionsModules", () => {
   const noop = () => undefined;
   const modules = createModules({ storeClickMetrics: noop, collect: noop });
-  const expectedModules = modules[IN_APP_MESSAGE];
+  const expectedModules = modules[MESSAGE_IN_APP];
 
   it("should have all the required modules", () => {
     const messagingActionsModules = initMessagingActionsModules(() => {});

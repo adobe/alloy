@@ -9,13 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { DOM_ACTION, IN_APP_MESSAGE } from "./constants/schema";
+import { DOM_ACTION, MESSAGE_IN_APP } from "./constants/schema";
 import { initDomActionsModules } from "./dom-actions";
 import initMessagingActionsModules from "./in-app-message-actions/initMessagingActionsModules";
 
 export default ({ storeClickMetrics, collect }) => {
   return {
     [DOM_ACTION]: initDomActionsModules(storeClickMetrics),
-    [IN_APP_MESSAGE]: initMessagingActionsModules(collect)
+    [MESSAGE_IN_APP]: initMessagingActionsModules(collect)
   };
 };

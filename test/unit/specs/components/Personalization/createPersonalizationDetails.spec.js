@@ -16,7 +16,7 @@ import {
   DEFAULT_CONTENT_ITEM,
   DOM_ACTION,
   HTML_CONTENT_ITEM,
-  IN_APP_MESSAGE,
+  MESSAGE_IN_APP,
   JSON_CONTENT_ITEM,
   REDIRECT_ITEM
 } from "../../../../../src/components/Personalization/constants/schema";
@@ -63,7 +63,7 @@ describe("Personalization::createPersonalizationDetails", () => {
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
-        IN_APP_MESSAGE,
+        MESSAGE_IN_APP,
         DOM_ACTION
       ],
       decisionScopes: expectedDecisionScopes,
@@ -102,7 +102,7 @@ describe("Personalization::createPersonalizationDetails", () => {
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
-        IN_APP_MESSAGE,
+        MESSAGE_IN_APP,
         DOM_ACTION
       ],
       decisionScopes: expectedDecisionScopes,
@@ -141,7 +141,7 @@ describe("Personalization::createPersonalizationDetails", () => {
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
-        IN_APP_MESSAGE,
+        MESSAGE_IN_APP,
         DOM_ACTION
       ],
       decisionScopes: expectedDecisionScopes,
@@ -180,7 +180,7 @@ describe("Personalization::createPersonalizationDetails", () => {
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
-        IN_APP_MESSAGE
+        MESSAGE_IN_APP
       ],
       decisionScopes: expectedDecisionScopes,
       surfaces: []
@@ -220,7 +220,7 @@ describe("Personalization::createPersonalizationDetails", () => {
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
-        IN_APP_MESSAGE
+        MESSAGE_IN_APP
       ],
       decisionScopes: expectedDecisionScopes,
       surfaces: ["web://test1.com/"]
@@ -262,7 +262,7 @@ describe("Personalization::createPersonalizationDetails", () => {
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
-        IN_APP_MESSAGE
+        MESSAGE_IN_APP
       ],
       decisionScopes: expectedDecisionScopes,
       surfaces: ["web://test1.com/"]
@@ -398,7 +398,7 @@ describe("Personalization::createPersonalizationDetails", () => {
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
-        IN_APP_MESSAGE,
+        MESSAGE_IN_APP,
         DOM_ACTION
       ],
       decisionScopes: expectedDecisionScopes,

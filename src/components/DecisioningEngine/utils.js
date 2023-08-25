@@ -35,3 +35,9 @@ export const createSaveStorage = (
     storage.setItem(storageKey, JSON.stringify(prepareFn(value)));
   }, debounceDelay);
 };
+
+export const getExpirationDate = retentionPeriod => {
+  const expirationDate = new Date();
+  expirationDate.setDate(expirationDate.getDate() - retentionPeriod);
+  return expirationDate;
+};

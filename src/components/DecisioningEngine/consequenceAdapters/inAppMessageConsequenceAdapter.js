@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { IN_APP_MESSAGE } from "../../Personalization/constants/schema";
+import { MESSAGE_IN_APP } from "../../Personalization/constants/schema";
 import {
   IAM_ACTION_TYPE_BANNER,
   IAM_ACTION_TYPE_CUSTOM,
@@ -39,7 +39,7 @@ export default (id, type, detail) => {
   const webParameters = { info: "this is a placeholder" };
 
   return {
-    schema: IN_APP_MESSAGE,
+    schema: MESSAGE_IN_APP,
     data: {
       type: deduceType(html, mobileParameters),
       mobileParameters,

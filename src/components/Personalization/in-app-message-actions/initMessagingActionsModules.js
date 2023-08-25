@@ -17,6 +17,7 @@ export default collect => {
     [IAM_ACTION_TYPE_BANNER]: settings => displayBanner(settings, collect),
     [IAM_ACTION_TYPE_FULLSCREEN]: settings =>
       displayFullScreen(settings, collect),
-    [IAM_ACTION_TYPE_CUSTOM]: settings => displayCustom(settings, collect)
+    [IAM_ACTION_TYPE_CUSTOM]: settings => displayCustom(settings, collect),
+    defaultContent: () => Promise.resolve()
   };
 };
