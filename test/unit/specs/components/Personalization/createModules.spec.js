@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import createModules from "../../../../../src/components/Personalization/createModules";
 import {
   DOM_ACTION,
-  IN_APP_MESSAGE
+  MESSAGE_IN_APP
 } from "../../../../../src/components/Personalization/constants/schema";
 
 describe("createModules", () => {
@@ -47,11 +47,12 @@ describe("createModules", () => {
   it("has in-app-message modules", () => {
     const modules = createModules({ storeClickMetrics: noop, collect: noop });
 
-    expect(modules[IN_APP_MESSAGE]).toEqual({
+    expect(modules[MESSAGE_IN_APP]).toEqual({
       modal: jasmine.any(Function),
-      banner: jasmine.any(Function)
+      banner: jasmine.any(Function),
+      defaultContent: jasmine.any(Function)
     });
 
-    expect(Object.keys(modules[IN_APP_MESSAGE]).length).toEqual(2);
+    expect(Object.keys(modules[MESSAGE_IN_APP]).length).toEqual(3);
   });
 });

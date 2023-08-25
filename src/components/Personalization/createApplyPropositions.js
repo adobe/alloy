@@ -15,7 +15,7 @@ import { isNonEmptyArray, isObject } from "../../utils";
 import {
   DOM_ACTION,
   HTML_CONTENT_ITEM,
-  IN_APP_MESSAGE
+  MESSAGE_IN_APP
 } from "./constants/schema";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
 import { EMPTY_PROPOSITIONS } from "./validateApplyPropositionsOptions";
@@ -23,7 +23,7 @@ import { EMPTY_PROPOSITIONS } from "./validateApplyPropositionsOptions";
 export const SUPPORTED_SCHEMAS = [
   DOM_ACTION,
   HTML_CONTENT_ITEM,
-  IN_APP_MESSAGE
+  MESSAGE_IN_APP
 ];
 
 export default ({ executeDecisions }) => {

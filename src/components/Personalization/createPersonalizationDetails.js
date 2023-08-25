@@ -17,7 +17,7 @@ import {
   DEFAULT_CONTENT_ITEM,
   DOM_ACTION,
   HTML_CONTENT_ITEM,
-  IN_APP_MESSAGE,
+  MESSAGE_IN_APP,
   JSON_CONTENT_ITEM,
   REDIRECT_ITEM
 } from "./constants/schema";
@@ -88,7 +88,7 @@ export default ({
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
-        IN_APP_MESSAGE
+        MESSAGE_IN_APP
       ];
 
       if (includes(scopes, PAGE_WIDE_SCOPE)) {
