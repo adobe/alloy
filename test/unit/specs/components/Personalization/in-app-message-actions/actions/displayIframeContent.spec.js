@@ -52,7 +52,6 @@ describe("DOM Actions on Iframe", () => {
       expect(style.backgroundColor).toBe("rgba(0, 0, 0, 0.7)");
       expect(style.borderRadius).toBe("10px");
       expect(style.border).toBe("none");
-      expect(style.zIndex).toBe("9999");
       expect(style.position).toBe("fixed");
       expect(style.overflow).toBe("hidden");
       expect(style.left).toBe("5%");
@@ -75,7 +74,6 @@ describe("DOM Actions on Iframe", () => {
       expect(overlayElement.style.left).toBe("0px");
       expect(overlayElement.style.width).toBe("100%");
       expect(overlayElement.style.height).toBe("100%");
-      expect(overlayElement.style.zIndex).toBe("1");
       expect(overlayElement.style.background).toBe("rgb(0, 0, 0)");
       expect(overlayElement.style.opacity).toBe("0.8");
       expect(overlayElement.style.backgroundColor).toBe("rgb(0, 0, 0)");
@@ -157,6 +155,7 @@ describe("DOM Actions on Iframe", () => {
 
       const overlayContainer = document.createElement("div");
       overlayContainer.setAttribute("id", "alloy-overlay-container");
+
       document.body.appendChild(overlayContainer);
 
       const anchor = document.createElement("a");

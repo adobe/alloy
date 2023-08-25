@@ -52,7 +52,7 @@ describe("Personalization::IAM:modal", () => {
     expect(messagingContainer).not.toBeNull();
 
     expect(messagingContainer.parentNode).toEqual(document.body);
-    expect(messagingContainer.nextElementSibling).not.toBeNull();
+    expect(messagingContainer.nextElementSibling).toBeNull();
 
     const iframe = document.querySelector(
       ".alloy-messaging-container > iframe"

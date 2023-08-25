@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 
 import { getNonce } from "../../dom-actions/dom";
 import { INTERACT } from "../../constants/eventType";
+import { removeElementById } from "../utils";
 
 const ELEMENT_TAG_CLASSNAME = "alloy-messaging-container";
 const ELEMENT_TAG_ID = "alloy-messaging-container";
@@ -21,6 +22,9 @@ const ANCHOR_HREF_REGEX = /adbinapp:\/\/(\w+)\?interaction=(\w+)/i;
 const OVERLAY_TAG_CLASSNAME = "alloy-overlay-container";
 const OVERLAY_TAG_ID = "alloy-overlay-container";
 const ALLOY_IFRAME_ID = "alloy-iframe-id";
+
+const dismissMessage = () =>
+  [ELEMENT_TAG_ID, OVERLAY_TAG_ID].forEach(removeElementById);
 
 export const buildStyleFromParameters = (mobileParameters, webParameters) => {
   const {
@@ -40,8 +44,6 @@ export const buildStyleFromParameters = (mobileParameters, webParameters) => {
     backgroundColor: backdropColor || "rgba(0, 0, 0, 0.5)",
     borderRadius: cornerRadius ? `${cornerRadius}px` : "0px",
     border: "none",
-    zIndex: uiTakeover ? "9999" : "0",
-    // TODO: check if this is the right way to handle this
     position: uiTakeover ? "fixed" : "relative",
     overflow: "hidden"
   };
@@ -121,16 +123,7 @@ export const createIframeClickHandler = (
           link = decodeURIComponent(link);
           setWindowLocationHref(link);
         } else if (action === "dismiss") {
-          const containerElement = document.getElementById(ELEMENT_TAG_ID);
-          if (containerElement) {
-            containerElement.remove();
-          }
-          if (mobileParameters.uiTakeover) {
-            const overlayElement = document.getElementById(OVERLAY_TAG_ID);
-            if (overlayElement) {
-              overlayElement.remove();
-            }
-          }
+          dismissMessage();
         }
       }
     }
@@ -192,7 +185,6 @@ export const createOverlayElement = parameter => {
     left: "0",
     width: "100%",
     height: "100%",
-    zIndex: "1",
     background: "transparent",
     opacity: backdropOpacity,
     backgroundColor: backdropColor
@@ -202,6 +194,7 @@ export const createOverlayElement = parameter => {
 };
 
 export const displayHTMLContentInIframe = (settings, collect) => {
+  dismissMessage();
   const { content, contentType, mobileParameters } = settings;
 
   if (contentType !== "text/html") {
@@ -217,13 +210,12 @@ export const displayHTMLContentInIframe = (settings, collect) => {
 
   container.appendChild(iframe);
 
-  document.body.appendChild(container);
-
   if (mobileParameters.uiTakeover) {
     const overlay = createOverlayElement(mobileParameters);
     document.body.appendChild(overlay);
     document.body.style.overflow = "hidden";
   }
+  document.body.appendChild(container);
 };
 
 export default (settings, collect) => {
