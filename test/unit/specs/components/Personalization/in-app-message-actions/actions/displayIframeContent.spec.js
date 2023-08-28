@@ -17,6 +17,7 @@ import {
   displayHTMLContentInIframe
 } from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayIframeContent";
 import cleanUpDomChanges from "../../../../../helpers/cleanUpDomChanges";
+import { getNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom";
 
 describe("DOM Actions on Iframe", () => {
   beforeEach(() => {
@@ -93,6 +94,60 @@ describe("DOM Actions on Iframe", () => {
       expect(iframe.style.border).toBe("none");
       expect(iframe.style.width).toBe("100%");
       expect(iframe.style.height).toBe("100%");
+    });
+
+    it("should set 'nonce' attribute on script tag if it exists", async () => {
+      const mockHtmlContentWithScript =
+        "<!DOCTYPE html>\n" +
+        "<html>\n" +
+        "<head>\n" +
+        "  <title>Bumper Sale!</title>\n" +
+        "  <style>\n" +
+        "  </style>\n" +
+        "</head>\n" +
+        "<body>\n" +
+        '<div id="announcement">\n' +
+        '  <a id ="cross" href="adbinapp://dismiss?interaction=cancel">&#10005;</a>\n' +
+        "  <h2>Black Friday Sale!</h2>\n" +
+        '   <img src="https://media3.giphy.com/media/kLhcBWs9Nza4hCW5IS/200.gif" alt="Technology Image">\n' +
+        "  <p>Don't miss out on our incredible discounts and deals at our gadgets!</p>\n" +
+        '  <div id="buttons">\n' +
+        '    <a href="adbinapp://dismiss?interaction=https%3A%2F%2Fwww.nike.com%2Fw%2Fmens-jordan-clothing-37eefz6ymx6znik1">Shop</a>\n' +
+        '    <a href="adbinapp://dismiss?interaction=cancel">Dismiss</a>\n' +
+        "  </div>\n" +
+        "</div>\n" +
+        "<script>\n" +
+        "  // Listen for a click on the button inside the iframe\n" +
+        '  document.getElementById("buttons").addEventListener("click", handleButtonClick);\n' +
+        '  document.getElementById("cross").addEventListener("click", handleButtonClick);\n' +
+        "  function handleButtonClick(event) {\n" +
+        '    console.log("A button was clicked with text ", event.target);\n' +
+        '    const href = event.target.getAttribute("href");\n' +
+        "    // Send a message to the parent page\n" +
+        '    console.log("I am sending a message to the parent ", href);\n' +
+        '    parent.postMessage({ "Element was clicked": href }, "*");\n' +
+        "  }\n" +
+        "</script>\n" +
+        "</body>\n" +
+        "</html>\n";
+
+      const childElement = document.createElement("div");
+      childElement.setAttribute("nonce", "1234");
+      const parentElement = document.createElement("div");
+      parentElement.appendChild(childElement);
+      const originalGetNonce = getNonce(parentElement);
+
+      const mockClickHandler = jasmine.createSpy("clickHandler");
+      const iframe = createIframe(mockHtmlContentWithScript, mockClickHandler);
+
+      const blob = await fetch(iframe.src).then(r => r.blob());
+      const text = await blob.text();
+      const parser = new DOMParser();
+      const iframeDocument = parser.parseFromString(text, "text/html");
+
+      const scriptTag = iframeDocument.querySelector("script");
+      expect(scriptTag).toBeDefined();
+      expect(scriptTag.getAttribute("nonce")).toBe(originalGetNonce);
     });
   });
 
