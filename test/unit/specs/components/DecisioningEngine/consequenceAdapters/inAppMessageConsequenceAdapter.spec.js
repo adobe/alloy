@@ -25,7 +25,7 @@ describe("DecisioningEngine:inAppMessageConsequenceAdapter", () => {
         }
       )
     ).toEqual({
-      schema: "https://ns.adobe.com/personalization/in-app-message",
+      schema: "https://ns.adobe.com/personalization/message/in-app",
       data: {
         type: "modal",
         mobileParameters: {

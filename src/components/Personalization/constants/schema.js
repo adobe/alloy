@@ -22,7 +22,7 @@ export const REDIRECT_ITEM =
   "https://ns.adobe.com/personalization/redirect-item";
 
 export const MESSAGE_IN_APP =
-  "https://ns.adobe.com/personalization/in-app-message";
+  "https://ns.adobe.com/personalization/message/in-app";
 export const MESSAGE_FEED_ITEM =
   "https://ns.adobe.com/personalization/message/feed-item";
 export const MESSAGE_NATIVE_ALERT =
