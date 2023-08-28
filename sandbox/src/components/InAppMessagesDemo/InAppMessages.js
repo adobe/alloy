@@ -4,42 +4,6 @@ import "./InAppMessagesStyle.css";
 
 export default function DecisionEngine() {
   const [realResponse, setRealResponse] = useState(null);
-
-  async function transformPayload(json) {
-    const { handle = [] } = json;
-    return {
-      ...json,
-      handle: handle.map(aHandle => {
-        if (aHandle.type === "personalization:decisions") {
-          const { payload = [] } = aHandle;
-          return {
-            ...aHandle,
-            payload: payload.map(aPayload => {
-              const { items = [] } = aPayload;
-              return {
-                ...aPayload,
-                items: items.map(item => {
-                  if (
-                    item.schema ===
-                    "https://ns.adobe.com/personalization/json-content-item"
-                  ) {
-                    const content = JSON.parse(item.data.content);
-                    if (content.version && content.rules) {
-                      item.schema =
-                        "https://ns.adobe.com/personalization/json-ruleset-item";
-                      item.data.content = content;
-                    }
-                  }
-                  return item;
-                })
-              };
-            })
-          };
-        }
-        return aHandle;
-      })
-    };
-  }
   async function getInAppPayload(payload) {
     const res = await fetch(
       `https://edge.adobedc.net/ee/or2/v1/interact?configId=7a19c434-6648-48d3-948f-ba0258505d98&requestId=520353b2-dc0d-428c-9e0d-138fc6cbec4e`,
@@ -48,8 +12,7 @@ export default function DecisionEngine() {
         body: JSON.stringify(payload)
       }
     );
-    const json = await res.json();
-    return transformPayload(json);
+    return await res.json();
   }
 
   useEffect(() => {
