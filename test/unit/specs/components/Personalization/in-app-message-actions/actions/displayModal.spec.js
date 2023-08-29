@@ -44,15 +44,15 @@ describe("Personalization::IAM:modal", () => {
       content: `<!doctype html><html lang=""><head></head><body><div>modal</div>Alf Says</body></html>`,
       contentType: "text/html"
     });
+    document.querySelector("div#alloy-overlay-container");
+    const messagingContainer = document.querySelector(
+      "div#alloy-messaging-container"
+    );
 
-    const container = document.querySelector("div#alloy-messaging-container");
+    expect(messagingContainer).not.toBeNull();
 
-    expect(container).not.toBeNull();
-
-    expect(container.parentNode).toEqual(document.body);
-
-    expect(container.previousElementSibling).toEqual(something);
-    expect(container.nextElementSibling).toBeNull();
+    expect(messagingContainer.parentNode).toEqual(document.body);
+    expect(messagingContainer.nextElementSibling).toBeNull();
 
     const iframe = document.querySelector(
       ".alloy-messaging-container > iframe"

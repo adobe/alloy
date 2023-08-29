@@ -34,7 +34,7 @@ describe("Personalization::IAM:banner", () => {
         backdropOpacity: 0.2,
         cornerRadius: 15,
         horizontalInset: 0,
-        uiTakeover: true,
+        uiTakeover: false,
         horizontalAlign: "center",
         width: 80,
         displayAnimation: "top",
@@ -45,14 +45,18 @@ describe("Personalization::IAM:banner", () => {
       contentType: "text/html"
     });
 
-    const container = document.querySelector("div#alloy-messaging-container");
+    const overlayContainer = document.querySelector(
+      "div#alloy-overlay-container"
+    );
+    const messagingContainer = document.querySelector(
+      "div#alloy-messaging-container"
+    );
 
-    expect(container).not.toBeNull();
+    expect(overlayContainer).toBeNull();
+    expect(messagingContainer).not.toBeNull();
 
-    expect(container.parentNode).toEqual(document.body);
-
-    expect(container.previousElementSibling).toEqual(something);
-    expect(container.nextElementSibling).toBeNull();
+    expect(messagingContainer.parentNode).toEqual(document.body);
+    expect(messagingContainer.nextElementSibling).toBeNull();
 
     const iframe = document.querySelector(
       ".alloy-messaging-container > iframe"

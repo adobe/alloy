@@ -11,11 +11,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { removeElements } from "../utils";
+import { getNonce } from "../../dom-actions/dom";
+import { INTERACT } from "../../constants/eventType";
+import { removeElementById } from "../utils";
 
 const ELEMENT_TAG_CLASSNAME = "alloy-messaging-container";
 const ELEMENT_TAG_ID = "alloy-messaging-container";
 const ANCHOR_HREF_REGEX = /adbinapp:\/\/(\w+)\?interaction=(\w+)/i;
+
+const OVERLAY_TAG_CLASSNAME = "alloy-overlay-container";
+const OVERLAY_TAG_ID = "alloy-overlay-container";
+const ALLOY_IFRAME_ID = "alloy-iframe-id";
+
+const dismissMessage = () =>
+  [ELEMENT_TAG_ID, OVERLAY_TAG_ID].forEach(removeElementById);
 
 export const buildStyleFromParameters = (mobileParameters, webParameters) => {
   const {
@@ -27,29 +36,57 @@ export const buildStyleFromParameters = (mobileParameters, webParameters) => {
     cornerRadius,
     horizontalInset,
     verticalInset,
-    uiTakeOver
+    uiTakeover
   } = mobileParameters;
 
-  return {
-    verticalAlign: verticalAlign === "center" ? "middle" : verticalAlign,
-    top: verticalAlign === "top" ? "0px" : "auto",
+  const style = {
     width: width ? `${width}%` : "100%",
-    horizontalAlign: horizontalAlign === "center" ? "middle" : horizontalAlign,
     backgroundColor: backdropColor || "rgba(0, 0, 0, 0.5)",
-    height: height ? `${height}vh` : "100%",
     borderRadius: cornerRadius ? `${cornerRadius}px` : "0px",
     border: "none",
-    marginLeft: horizontalInset ? `${horizontalInset}px` : "0px",
-    marginRight: horizontalInset ? `${horizontalInset}px` : "0px",
-    marginTop: verticalInset ? `${verticalInset}px` : "0px",
-    marginBottom: verticalInset ? `${verticalInset}px` : "0px",
-    zIndex: uiTakeOver ? "9999" : "0",
-    position: uiTakeOver ? "fixed" : "relative",
+    position: uiTakeover ? "fixed" : "relative",
     overflow: "hidden"
   };
+  if (horizontalAlign === "left") {
+    style.left = horizontalInset ? `${horizontalInset}%` : "0";
+  } else if (horizontalAlign === "right") {
+    style.right = horizontalInset ? `${horizontalInset}%` : "0";
+  } else if (horizontalAlign === "center") {
+    style.left = "50%";
+    style.transform = "translateX(-50%)";
+  }
+
+  if (verticalAlign === "top") {
+    style.top = verticalInset ? `${verticalInset}%` : "0";
+  } else if (verticalAlign === "bottom") {
+    style.position = "fixed";
+    style.bottom = verticalInset ? `${verticalInset}%` : "0";
+  } else if (verticalAlign === "center") {
+    style.top = "50%";
+    style.transform = `${
+      horizontalAlign === "center" ? `${style.transform} ` : ""
+    }translateY(-50%)`;
+    style.display = "flex";
+    style.alignItems = "center";
+    style.justifyContent = "center";
+  }
+
+  if (height) {
+    style.height = `${height}vh`;
+  } else {
+    style.height = "100%";
+  }
+  return style;
+};
+export const setWindowLocationHref = link => {
+  window.location.assign(link);
 };
 
-const createIframeClickHandler = (container, collect) => {
+export const createIframeClickHandler = (
+  container,
+  collect,
+  mobileParameters
+) => {
   return event => {
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -60,41 +97,52 @@ const createIframeClickHandler = (container, collect) => {
       target.tagName.toLowerCase() === "a" ? target : target.closest("a");
 
     if (anchor) {
-      if (ANCHOR_HREF_REGEX.test(anchor.href)) {
-        const matches = ANCHOR_HREF_REGEX.exec(anchor.href);
-
-        const action = matches.length >= 2 ? matches[1] : "";
-        const interaction = matches.length >= 3 ? matches[2] : "";
-
-        if (interaction === "clicked") {
-          const uuid = anchor.getAttribute("data-uuid");
-          // eslint-disable-next-line no-console
-          console.log(`clicked ${uuid}`);
-          // TODO: collect analytics
-          // collect({
-          //   eventType: INTERACT
-          // });
+      const parts = anchor.href.split("?");
+      const actionPart = parts[0].split("://")[1];
+      let action = "";
+      let interaction = "";
+      let link = "";
+      if (parts.length > 1) {
+        const queryParams = new URLSearchParams(parts[1]);
+        action = actionPart;
+        interaction = queryParams.get("interaction") || "";
+        link = queryParams.get("link") || "";
+        const uuid = anchor.getAttribute("data-uuid") || "";
+        // eslint-disable-next-line no-console
+        console.log(`clicked ${uuid}`);
+        // TODO: collect analytics
+        // collect({
+        //   eventType: INTERACT,
+        //   eventSource: "inAppMessage",
+        //   eventData: {
+        //     action,
+        //     interaction
+        //   }
+        // });
+        if (link && interaction === "clicked") {
+          link = decodeURIComponent(link);
+          setWindowLocationHref(link);
+        } else if (action === "dismiss") {
+          dismissMessage();
         }
-
-        if (action === "dismiss") {
-          container.remove();
-        }
-      } else {
-        window.location.href = anchor.href;
       }
     }
   };
 };
 
-const createIframe = (htmlContent, clickHandler) => {
+export const createIframe = (htmlContent, clickHandler) => {
   const parser = new DOMParser();
   const htmlDocument = parser.parseFromString(htmlContent, "text/html");
+  const scriptTag = htmlDocument.querySelector("script");
 
+  if (scriptTag) {
+    scriptTag.setAttribute("nonce", getNonce());
+  }
   const element = document.createElement("iframe");
   element.src = URL.createObjectURL(
     new Blob([htmlDocument.documentElement.outerHTML], { type: "text/html" })
   );
-  // element.sandbox = "allow-same-origin allow-scripts";
+  element.id = ALLOY_IFRAME_ID;
 
   Object.assign(element.style, {
     border: "none",
@@ -111,24 +159,11 @@ const createIframe = (htmlContent, clickHandler) => {
   return element;
 };
 
-const createContainerElement = settings => {
+export const createContainerElement = settings => {
   const { mobileParameters = {}, webParameters = {} } = settings;
-
   const element = document.createElement("div");
   element.id = ELEMENT_TAG_ID;
   element.className = `${ELEMENT_TAG_CLASSNAME}`;
-
-  Object.assign(element.style, {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    "background-color": "white",
-    padding: "0px",
-    border: "1px solid black",
-    "box-shadow": "10px 10px 5px #888888"
-  });
-
   Object.assign(
     element.style,
     buildStyleFromParameters(mobileParameters, webParameters)
@@ -137,10 +172,30 @@ const createContainerElement = settings => {
   return element;
 };
 
-const displayHTMLContentInIframe = (settings, collect) => {
-  removeElements(ELEMENT_TAG_CLASSNAME);
+export const createOverlayElement = parameter => {
+  const element = document.createElement("div");
+  const backdropOpacity = parameter.backdropOpacity || 0.5;
+  const backdropColor = parameter.backdropColor || "#FFFFFF";
+  element.id = OVERLAY_TAG_ID;
+  element.className = `${OVERLAY_TAG_CLASSNAME}`;
 
-  const { content, contentType } = settings;
+  Object.assign(element.style, {
+    position: "fixed",
+    top: "0",
+    left: "0",
+    width: "100%",
+    height: "100%",
+    background: "transparent",
+    opacity: backdropOpacity,
+    backgroundColor: backdropColor
+  });
+
+  return element;
+};
+
+export const displayHTMLContentInIframe = (settings, collect) => {
+  dismissMessage();
+  const { content, contentType, mobileParameters } = settings;
 
   if (contentType !== "text/html") {
     // TODO: whoops, no can do.
@@ -150,12 +205,17 @@ const displayHTMLContentInIframe = (settings, collect) => {
 
   const iframe = createIframe(
     content,
-    createIframeClickHandler(container, collect)
+    createIframeClickHandler(container, collect, mobileParameters)
   );
 
   container.appendChild(iframe);
 
-  document.body.append(container);
+  if (mobileParameters.uiTakeover) {
+    const overlay = createOverlayElement(mobileParameters);
+    document.body.appendChild(overlay);
+    document.body.style.overflow = "hidden";
+  }
+  document.body.appendChild(container);
 };
 
 export default (settings, collect) => {
