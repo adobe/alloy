@@ -26,8 +26,8 @@ export default ({ collect }) => {
   const createFeedItem = (payload, item) => {
     const { id, scope, scopeDetails } = payload;
 
-    const { data = {}, qualifiedDate, displayedDate } = item;
-    const { content = {}, publishedDate } = data;
+    const { data = {} } = item;
+    const { content = {}, publishedDate, qualifiedDate, displayedDate } = data;
 
     return {
       ...content,

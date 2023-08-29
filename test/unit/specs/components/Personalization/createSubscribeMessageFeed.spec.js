@@ -18,11 +18,11 @@ describe("Personalization:subscribeMessageFeed", () => {
               src: "img/demo-marketing-offer1-exp-A.png"
             },
             prehidingSelector:
-              "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)"
+              "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
+            qualifiedDate: 1683042673387,
+            displayedDate: 1683042673395
           },
-          id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
-          qualifiedDate: 1683042673387,
-          displayedDate: 1683042673395
+          id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
         },
         {
           schema: "https://ns.adobe.com/personalization/dom-action",
@@ -31,11 +31,11 @@ describe("Personalization:subscribeMessageFeed", () => {
             type: "setHtml",
             content: "Hello Treatment A!",
             prehidingSelector:
-              "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
+              "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+            qualifiedDate: 1683042673387,
+            displayedDate: 1683042673395
           },
-          id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f",
-          qualifiedDate: 1683042673387,
-          displayedDate: 1683042673395
+          id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
         }
       ],
       scope: "web://mywebsite.com/feed"
@@ -60,11 +60,11 @@ describe("Personalization:subscribeMessageFeed", () => {
               body: "a handshake is available upon request.",
               title: "Welcome to Lumon!"
             },
-            contentType: "application/json"
+            contentType: "application/json",
+            qualifiedDate: 1683042628064,
+            displayedDate: 1683042628070
           },
-          id: "a48ca420-faea-467e-989a-5d179d9f562d",
-          qualifiedDate: 1683042628064,
-          displayedDate: 1683042628070
+          id: "a48ca420-faea-467e-989a-5d179d9f562d"
         },
         {
           schema: MESSAGE_FEED_ITEM,
@@ -84,11 +84,11 @@ describe("Personalization:subscribeMessageFeed", () => {
               body: "Great job, you completed your profile.",
               title: "Achievement Unlocked!"
             },
-            contentType: "application/json"
+            contentType: "application/json",
+            qualifiedDate: 1683042628064,
+            displayedDate: 1683042628070
           },
-          id: "b7173290-588f-40c6-a05c-43ed5ec08b28",
-          qualifiedDate: 1683042628064,
-          displayedDate: 1683042628070
+          id: "b7173290-588f-40c6-a05c-43ed5ec08b28"
         }
       ],
       scope: "web://mywebsite.com/feed"
@@ -113,11 +113,11 @@ describe("Personalization:subscribeMessageFeed", () => {
               body: "Posting on social media helps us spread the word.",
               title: "Thanks for sharing!"
             },
-            contentType: "application/json"
+            contentType: "application/json",
+            qualifiedDate: 1683042658312,
+            displayedDate: 1683042658316
           },
-          id: "cfcb1af7-7bc2-45b2-a86a-0aa93fe69ce7",
-          qualifiedDate: 1683042658312,
-          displayedDate: 1683042658316
+          id: "cfcb1af7-7bc2-45b2-a86a-0aa93fe69ce7"
         }
       ],
       scope: "web://mywebsite.com/feed",
@@ -164,11 +164,11 @@ describe("Personalization:subscribeMessageFeed", () => {
               body: "Now you're ready to earn!",
               title: "Funds deposited!"
             },
-            contentType: "application/json"
+            contentType: "application/json",
+            qualifiedDate: 1683042653905,
+            displayedDate: 1683042653909
           },
-          id: "0263e171-fa32-4c7a-9611-36b28137a81d",
-          qualifiedDate: 1683042653905,
-          displayedDate: 1683042653909
+          id: "0263e171-fa32-4c7a-9611-36b28137a81d"
         }
       ],
       scope: "web://mywebsite.com/feed"
