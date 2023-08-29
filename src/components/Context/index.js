@@ -18,7 +18,7 @@ import injectTimestamp from "./injectTimestamp";
 import implementationDetails from "./implementationDetails";
 import createComponent from "./createComponent";
 import injectHighEntropyUserAgentHints from "./injectHighEntropyUserAgentHints";
-import { arrayOf, string } from "../../utils/validation";
+import { arrayOf, objectOf, string } from "../../utils/validation";
 
 const web = injectWeb(window);
 const device = injectDevice(window);
@@ -46,8 +46,8 @@ const createContext = ({ config, logger }) => {
   return createComponent(config, logger, optionalContexts, requiredContexts);
 };
 createContext.namespace = "Context";
-createContext.configValidators = {
+createContext.configValidators = objectOf({
   context: arrayOf(string()).default(Object.keys(defaultEnabledContexts))
-};
+});
 
 export default createContext;

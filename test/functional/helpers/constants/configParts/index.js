@@ -26,6 +26,7 @@ import consentIn from "./consentIn";
 import consentPending from "./consentPending";
 import thirdPartyCookiesEnabled from "./thirdPartyCookiesEnabled";
 import thirdPartyCookiesDisabled from "./thirdPartyCookiesDisabled";
+import ajoConfigForStage from "./ajoConfigForStage";
 
 const compose = (...objects) => Object.assign({}, ...objects);
 
@@ -47,5 +48,6 @@ export {
   consentPending,
   thirdPartyCookiesEnabled,
   thirdPartyCookiesDisabled,
-  targetMigrationEnabled
+  targetMigrationEnabled,
+  ajoConfigForStage
 };

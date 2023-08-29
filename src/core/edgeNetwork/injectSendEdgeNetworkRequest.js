@@ -26,7 +26,7 @@ export default ({
   getLocationHint,
   getAssuranceValidationTokenParams
 }) => {
-  const { edgeDomain, edgeBasePath, edgeConfigId } = config;
+  const { edgeDomain, edgeBasePath, datastreamId } = config;
 
   /**
    * Sends a network request that is aware of payload interfaces,
@@ -59,12 +59,23 @@ export default ({
         const edgeBasePathWithLocationHint = locationHint
           ? `${edgeBasePath}/${locationHint}`
           : edgeBasePath;
-        const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${edgeConfigId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
-        cookieTransfer.cookiesToPayload(request.getPayload(), endpointDomain);
+        const configId = request.getDatastreamIdOverride() || datastreamId;
+        const payload = request.getPayload();
+        if (configId !== datastreamId) {
+          payload.mergeMeta({
+            sdkConfig: {
+              datastream: {
+                original: datastreamId
+              }
+            }
+          });
+        }
+        const url = `https://${endpointDomain}/${edgeBasePathWithLocationHint}/${apiVersion}/${request.getAction()}?configId=${configId}&requestId=${request.getId()}${getAssuranceValidationTokenParams()}`;
+        cookieTransfer.cookiesToPayload(payload, endpointDomain);
         return sendNetworkRequest({
           requestId: request.getId(),
           url,
-          payload: request.getPayload(),
+          payload,
           useSendBeacon: request.getUseSendBeacon()
         });
       })

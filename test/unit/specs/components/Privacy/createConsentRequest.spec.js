@@ -18,13 +18,23 @@ describe("createConsentRequest", () => {
 
   it("provides the appropriate action", () => {
     const payload = {};
-    const request = createConsentRequest(payload);
+    const request = createConsentRequest({ payload });
     expect(request.getAction()).toBe("privacy/set-consent");
   });
 
   it("never uses sendBeacon", () => {
     const payload = {};
-    const request = createConsentRequest(payload);
+    const request = createConsentRequest({ payload });
     expect(request.getUseSendBeacon()).toBeFalse();
+  });
+
+  it("passes the datastreamIdOverride to the request", () => {
+    const payload = {};
+    const datastreamIdOverride = "my-edge-config-id-override";
+    const request = createConsentRequest({
+      payload,
+      datastreamIdOverride
+    });
+    expect(request.getDatastreamIdOverride()).toBe(datastreamIdOverride);
   });
 });

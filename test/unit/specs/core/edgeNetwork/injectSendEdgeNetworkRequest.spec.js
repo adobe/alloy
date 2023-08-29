@@ -17,11 +17,7 @@ import flushPromiseChains from "../../../helpers/flushPromiseChains";
 import assertFunctionCallOrder from "../../../helpers/assertFunctionCallOrder";
 
 describe("injectSendEdgeNetworkRequest", () => {
-  const config = createConfig({
-    edgeDomain: "edge.example.com",
-    edgeBasePath: "ee",
-    edgeConfigId: "myconfigId"
-  });
+  let config;
   let logger;
   let lifecycle;
   let cookieTransfer;
@@ -33,6 +29,7 @@ describe("injectSendEdgeNetworkRequest", () => {
   let getLocationHint;
   let getAssuranceValidationTokenParams;
   let sendEdgeNetworkRequest;
+  let payload;
   let request;
 
   // Helper for testing handling of network request failures, particularly
@@ -105,14 +102,21 @@ describe("injectSendEdgeNetworkRequest", () => {
   };
 
   beforeEach(() => {
+    config = createConfig({
+      edgeDomain: "edge.example.com",
+      edgeBasePath: "ee",
+      datastreamId: "myconfigId"
+    });
+    payload = jasmine.createSpyObj("payload", ["mergeMeta"], {
+      type: "payload"
+    });
     request = jasmine.createSpyObj("request", {
       getId: "RID123",
       getAction: "test-action",
-      getPayload: {
-        type: "payload"
-      },
+      getPayload: payload,
       getUseIdThirdPartyDomain: false,
-      getUseSendBeacon: false
+      getUseSendBeacon: false,
+      getDatastreamIdOverride: ""
     });
     logger = jasmine.createSpyObj("logger", ["info"]);
     lifecycle = jasmine.createSpyObj("lifecycle", {
@@ -156,7 +160,7 @@ describe("injectSendEdgeNetworkRequest", () => {
   it("transfers cookies to payload when sending to first-party domain", () => {
     return sendEdgeNetworkRequest({ request }).then(() => {
       expect(cookieTransfer.cookiesToPayload).toHaveBeenCalledWith(
-        request.getPayload(),
+        payload,
         "edge.example.com"
       );
     });
@@ -171,7 +175,7 @@ describe("injectSendEdgeNetworkRequest", () => {
     });
     return sendEdgeNetworkRequest({ request }).then(() => {
       expect(cookieTransfer.cookiesToPayload).toHaveBeenCalledWith(
-        request.getPayload(),
+        payload,
         "adobedc.demdex.net"
       );
     });
@@ -183,9 +187,7 @@ describe("injectSendEdgeNetworkRequest", () => {
         requestId: "RID123",
         url:
           "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123",
-        payload: {
-          type: "payload"
-        },
+        payload,
         useSendBeacon: false
       });
     });
@@ -203,9 +205,7 @@ describe("injectSendEdgeNetworkRequest", () => {
         requestId: "RID123",
         url:
           "https://adobedc.demdex.net/ee/v1/test-action?configId=myconfigId&requestId=RID123",
-        payload: {
-          type: "payload"
-        },
+        payload,
         useSendBeacon: false
       });
     });
@@ -223,9 +223,7 @@ describe("injectSendEdgeNetworkRequest", () => {
         requestId: "RID123",
         url:
           "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123",
-        payload: {
-          type: "payload"
-        },
+        payload,
         useSendBeacon: true
       });
     });
@@ -460,9 +458,7 @@ describe("injectSendEdgeNetworkRequest", () => {
         requestId: "RID123",
         url:
           "https://edge.example.com/ee/va6/v1/test-action?configId=myconfigId&requestId=RID123",
-        payload: {
-          type: "payload"
-        },
+        payload,
         useSendBeacon: false
       });
     });
@@ -477,9 +473,23 @@ describe("injectSendEdgeNetworkRequest", () => {
         requestId: "RID123",
         url:
           "https://edge.example.com/ee/v1/test-action?configId=myconfigId&requestId=RID123&adobeAepValidationToken=abc-123",
-        payload: {
-          type: "payload"
-        },
+        payload,
+        useSendBeacon: false
+      });
+    });
+  });
+
+  it("respects the datastreamIdOverride", () => {
+    request.getDatastreamIdOverride.and.returnValue("myconfigIdOverride");
+    return sendEdgeNetworkRequest({ request }).then(() => {
+      expect(payload.mergeMeta).toHaveBeenCalledWith({
+        sdkConfig: { datastream: { original: "myconfigId" } }
+      });
+      expect(sendNetworkRequest).toHaveBeenCalledWith({
+        payload,
+        url:
+          "https://edge.example.com/ee/v1/test-action?configId=myconfigIdOverride&requestId=RID123",
+        requestId: "RID123",
         useSendBeacon: false
       });
     });

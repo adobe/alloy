@@ -9,8 +9,6 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { objectOf } from "../../../src/utils/validation";
-
 export default ({
   configValidators,
   validConfigurations,
@@ -19,20 +17,20 @@ export default ({
 }) => {
   validConfigurations.forEach((cfg, i) => {
     it(`validates configuration (${i})`, () => {
-      objectOf(configValidators)(cfg);
+      configValidators(cfg);
     });
   });
 
   invalidConfigurations.forEach((cfg, i) => {
     it(`invalidates configuration (${i})`, () => {
       expect(() => {
-        objectOf(configValidators)(cfg);
+        configValidators(cfg);
       }).toThrowError();
     });
   });
 
   it("provides default values", () => {
-    const config = objectOf(configValidators)({});
+    const config = configValidators({});
     Object.keys(defaultValues).forEach(key => {
       expect(config[key]).toBe(defaultValues[key]);
     });
