@@ -18,6 +18,7 @@ import {
 } from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayIframeContent";
 import cleanUpDomChanges from "../../../../../helpers/cleanUpDomChanges";
 import { getNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom";
+import { testResetCachedNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom/getNonce";
 
 describe("DOM Actions on Iframe", () => {
   beforeEach(() => {
@@ -131,8 +132,10 @@ describe("DOM Actions on Iframe", () => {
         "</body>\n" +
         "</html>\n";
 
+      testResetCachedNonce();
+
       const childElement = document.createElement("div");
-      childElement.setAttribute("nonce", "1234");
+      childElement.setAttribute("nonce", "12345");
       const parentElement = document.createElement("div");
       parentElement.appendChild(childElement);
       const originalGetNonce = getNonce(parentElement);
@@ -147,7 +150,7 @@ describe("DOM Actions on Iframe", () => {
 
       const scriptTag = iframeDocument.querySelector("script");
       expect(scriptTag).toBeDefined();
-      expect(scriptTag.getAttribute("nonce")).toBe(originalGetNonce);
+      expect(scriptTag.getAttribute("nonce")).toEqual(originalGetNonce);
     });
   });
 
