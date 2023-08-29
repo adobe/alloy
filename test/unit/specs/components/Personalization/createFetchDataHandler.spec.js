@@ -20,6 +20,7 @@ describe("Personalization::createFetchDataHandler", () => {
   let mergeQuery;
   let collect;
   let render;
+  let pendingDisplayNotifications;
 
   let cacheUpdate;
   let personalizationDetails;
@@ -34,13 +35,20 @@ describe("Personalization::createFetchDataHandler", () => {
     mergeQuery = jasmine.createSpy("mergeQuery");
     collect = jasmine.createSpy("collect");
     render = jasmine.createSpy("render");
+    pendingDisplayNotifications = jasmine.createSpyObj(
+      "pendingDisplayNotifications",
+      ["concat"]
+    );
+
     cacheUpdate = jasmine.createSpyObj("cacheUpdate", ["update"]);
     personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
       "isRenderDecisions",
       "createQueryDetails",
-      "getViewName"
+      "getViewName",
+      "isSendDisplayNotifications"
     ]);
     personalizationDetails.createQueryDetails.and.returnValue("myquerydetails");
+    personalizationDetails.isSendDisplayNotifications.and.returnValue(true);
     event = "myevent";
     onResponse = jasmine.createSpy();
     response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
@@ -52,7 +60,8 @@ describe("Personalization::createFetchDataHandler", () => {
       hideContainers,
       mergeQuery,
       collect,
-      render
+      render,
+      pendingDisplayNotifications
     });
     fetchDataHandler({
       cacheUpdate,

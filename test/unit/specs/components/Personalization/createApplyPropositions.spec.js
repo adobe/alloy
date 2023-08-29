@@ -27,6 +27,7 @@ const METADATA = {
 
 describe("Personalization::createApplyPropositions", () => {
   let render;
+  let pendingDisplayNotifications;
 
   beforeEach(() => {
     render = jasmine.createSpy("render");
@@ -38,11 +39,16 @@ describe("Personalization::createApplyPropositions", () => {
         });
       });
     });
+    pendingDisplayNotifications = jasmine.createSpyObj(
+      "pendingDisplayNotifications",
+      ["concat"]
+    );
   });
 
   it("it should return an empty propositions promise if propositions is empty array", () => {
     const applyPropositions = createApplyPropositions({
-      render
+      render,
+      pendingDisplayNotifications
     });
 
     const result = applyPropositions({
@@ -61,7 +67,8 @@ describe("Personalization::createApplyPropositions", () => {
     });
 
     const applyPropositions = createApplyPropositions({
-      render
+      render,
+      pendingDisplayNotifications
     });
 
     const result = applyPropositions({
@@ -83,7 +90,8 @@ describe("Personalization::createApplyPropositions", () => {
 
   it("it should merge metadata with propositions that have html-content-item schema", () => {
     const applyPropositions = createApplyPropositions({
-      render
+      render,
+      pendingDisplayNotifications
     });
 
     const { propositions } = applyPropositions({
@@ -134,7 +142,10 @@ describe("Personalization::createApplyPropositions", () => {
       }
     ];
 
-    const applyPropositions = createApplyPropositions({ render });
+    const applyPropositions = createApplyPropositions({
+      render,
+      pendingDisplayNotifications
+    });
 
     const result = applyPropositions({
       propositions
@@ -147,7 +158,10 @@ describe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should return renderAttempted = true on resulting propositions", () => {
-    const applyPropositions = createApplyPropositions({ render });
+    const applyPropositions = createApplyPropositions({
+      render,
+      pendingDisplayNotifications
+    });
 
     const result = applyPropositions({
       propositions: MIXED_PROPOSITIONS
@@ -159,7 +173,10 @@ describe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should ignore propositions with __view__ scope that have already been rendered", () => {
-    const applyPropositions = createApplyPropositions({ render });
+    const applyPropositions = createApplyPropositions({
+      render,
+      pendingDisplayNotifications
+    });
     const propositions = JSON.parse(JSON.stringify(MIXED_PROPOSITIONS));
     propositions[4].renderAttempted = true;
 
@@ -180,7 +197,10 @@ describe("Personalization::createApplyPropositions", () => {
   it("it should ignore items with unsupported schemas", () => {
     const expectedItemIds = ["442358", "442359"];
 
-    const applyPropositions = createApplyPropositions({ render });
+    const applyPropositions = createApplyPropositions({
+      render,
+      pendingDisplayNotifications
+    });
 
     const { propositions } = applyPropositions({
       propositions: MIXED_PROPOSITIONS
@@ -195,7 +215,10 @@ describe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should not mutate original propositions", () => {
-    const applyPropositions = createApplyPropositions({ render });
+    const applyPropositions = createApplyPropositions({
+      render,
+      pendingDisplayNotifications
+    });
 
     const originalPropositions = clone(MIXED_PROPOSITIONS);
     const result = applyPropositions({

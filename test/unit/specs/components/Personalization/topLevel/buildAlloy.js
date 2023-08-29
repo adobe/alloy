@@ -34,6 +34,8 @@ import createRedirectHandler from "../../../../../../src/components/Personalizat
 import createHtmlContentHandler from "../../../../../../src/components/Personalization/handlers/createHtmlContentHandler";
 import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceUtils";
 import { createProposition } from "../../../../../../src/components/Personalization/handlers/proposition";
+import createAsyncArray from "../../../../../../src/components/Personalization/utils/createAsyncArray";
+import createPendingNotificationsHandler from "../../../../../../src/components/Personalization/createPendingNotificationsHandler";
 
 const createAction = renderFunc => ({ selector, content }) => {
   renderFunc(selector, content);
@@ -112,12 +114,18 @@ const buildComponent = ({
     executeRedirect: url => window.location.replace(url),
     logger
   });
+  const pendingDisplayNotifications = createAsyncArray();
+  const pendingNotificationsHandler = createPendingNotificationsHandler({
+    pendingDisplayNotifications,
+    mergeDecisionsMeta
+  });
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
     hideContainers,
     mergeQuery,
     collect,
-    render
+    render,
+    pendingDisplayNotifications
   });
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
@@ -131,7 +139,8 @@ const buildComponent = ({
     viewCache
   });
   const applyPropositions = createApplyPropositions({
-    render
+    render,
+    pendingDisplayNotifications
   });
   const setTargetMigration = createSetTargetMigration({
     targetMigrationEnabled
@@ -147,7 +156,8 @@ const buildComponent = ({
     viewCache,
     showContainers,
     applyPropositions,
-    setTargetMigration
+    setTargetMigration,
+    pendingNotificationsHandler
   });
 };
 
@@ -170,7 +180,7 @@ export default mocks => {
         event,
         renderDecisions,
         decisionScopes,
-        personalization,
+        personalization: personalization || { sendDisplayNotifications: true },
         onResponse: callbacks.add
       });
       const results = await callbacks.call({ response });

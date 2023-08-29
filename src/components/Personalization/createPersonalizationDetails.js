@@ -54,6 +54,9 @@ export default ({
     isSendDisplayNotifications() {
       return !!personalization.sendDisplayNotifications;
     },
+    shouldAddPendingDisplayNotifications() {
+      return !!personalization.includePendingDisplayNotifications;
+    },
     getViewName() {
       return viewName;
     },

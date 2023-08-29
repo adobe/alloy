@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { defer } from "../../utils";
 import {
   buildReturnedPropositions,
   buildReturnedDecisions
@@ -21,7 +22,8 @@ export default ({
   hideContainers,
   mergeQuery,
   collect,
-  render
+  render,
+  pendingDisplayNotifications
 }) => {
   return ({ cacheUpdate, personalizationDetails, event, onResponse }) => {
     if (personalizationDetails.isRenderDecisions()) {
@@ -29,18 +31,27 @@ export default ({
     }
     mergeQuery(event, personalizationDetails.createQueryDetails());
 
+    let handleNotifications;
+    if (personalizationDetails.isSendDisplayNotifications()) {
+      handleNotifications = decisionsMeta => {
+        if (decisionsMeta.length > 0) {
+          collect({
+            decisionsMeta,
+            viewName: personalizationDetails.getViewName()
+          });
+        }
+      };
+    } else {
+      const displayNotificationsDeferred = defer();
+      pendingDisplayNotifications.concat(displayNotificationsDeferred.promise);
+      handleNotifications = displayNotificationsDeferred.resolve;
+    }
+
     onResponse(({ response }) => {
       const handles = response.getPayloadsByType(DECISIONS_HANDLE);
       const propositions = cacheUpdate.update(handles);
       if (personalizationDetails.isRenderDecisions()) {
-        render(propositions).then(decisionsMeta => {
-          if (decisionsMeta.length > 0) {
-            collect({
-              decisionsMeta,
-              viewName: personalizationDetails.getViewName()
-            });
-          }
-        });
+        render(propositions).then(handleNotifications);
       }
 
       return {

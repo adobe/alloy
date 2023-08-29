@@ -20,7 +20,7 @@ import {
 
 const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
 
-export default ({ render }) => {
+export default ({ render, pendingDisplayNotifications }) => {
   const filterItemsPredicate = item =>
     SUPPORTED_SCHEMAS.indexOf(item.schema) > -1;
 
@@ -79,7 +79,7 @@ export default ({ render }) => {
       metadata
     }).map(proposition => createProposition(proposition, true));
 
-    render(propositionsToExecute);
+    pendingDisplayNotifications.concat(render(propositionsToExecute));
 
     return {
       propositions: buildReturnedPropositions(propositionsToExecute)

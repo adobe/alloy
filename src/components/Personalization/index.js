@@ -35,6 +35,8 @@ import remapCustomCodeOffers from "./dom-actions/remapCustomCodeOffers";
 import remapHeadOffers from "./dom-actions/remapHeadOffers";
 import createPreprocess from "./dom-actions/createPreprocess";
 import { createProposition } from "./handlers/proposition";
+import createAsyncArray from "./utils/createAsyncArray";
+import createPendingNotificationsHandler from "./createPendingNotificationsHandler";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -76,12 +78,18 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     executeRedirect: url => window.location.replace(url),
     logger
   });
+  const pendingDisplayNotifications = createAsyncArray();
+  const pendingNotificationsHandler = createPendingNotificationsHandler({
+    pendingDisplayNotifications,
+    mergeDecisionsMeta
+  });
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
     hideContainers,
     mergeQuery,
     collect,
-    render
+    render,
+    pendingDisplayNotifications
   });
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
@@ -111,7 +119,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     viewCache,
     showContainers,
     applyPropositions,
-    setTargetMigration
+    setTargetMigration,
+    pendingNotificationsHandler
   });
 };
 

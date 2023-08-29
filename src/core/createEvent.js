@@ -17,6 +17,19 @@ import {
   deduplicateArray
 } from "../utils";
 
+const getXdmPropositions = xdm => {
+  return xdm &&
+    // eslint-disable-next-line no-underscore-dangle
+    xdm._experience &&
+    // eslint-disable-next-line no-underscore-dangle
+    xdm._experience.decisioning &&
+    // eslint-disable-next-line no-underscore-dangle
+    isNonEmptyArray(xdm._experience.decisioning.propositions)
+    ? // eslint-disable-next-line no-underscore-dangle
+      xdm._experience.decisioning.propositions
+    : [];
+};
+
 export default () => {
   const content = {};
   let userXdm;
@@ -68,29 +81,16 @@ export default () => {
         return;
       }
 
+      const newPropositions = deduplicateArray(
+        [...getXdmPropositions(userXdm), ...getXdmPropositions(content.xdm)],
+        (a, b) => a === b || (a.id && b.id && a.id === b.id)
+      );
       if (userXdm) {
-        // Merge the userXDM propositions with the ones included via the display
-        // notification cache.
-        if (
-          userXdm._experience &&
-          userXdm._experience.decisioning &&
-          isNonEmptyArray(userXdm._experience.decisioning.propositions) &&
-          content.xdm._experience &&
-          content.xdm._experience.decisioning &&
-          isNonEmptyArray(content.xdm._experience.decisioning.propositions)
-        ) {
-          const newPropositions = deduplicateArray(
-            [
-              ...userXdm._experience.decisioning.propositions,
-              ...content.xdm._experience.decisioning.propositions
-            ],
-            (a, b) => a === b || (a.id && b.id && a.id === b.id)
-          );
-          event.mergeXdm(userXdm);
-          content.xdm._experience.decisioning.propositions = newPropositions;
-        } else {
-          event.mergeXdm(userXdm);
-        }
+        event.mergeXdm(userXdm);
+      }
+      if (newPropositions.length > 0) {
+        // eslint-disable-next-line no-underscore-dangle
+        content.xdm._experience.decisioning.propositions = newPropositions;
       }
 
       if (userData) {
