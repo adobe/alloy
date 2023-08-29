@@ -20,10 +20,10 @@ export const proposition = {
     {
       schema: "https://ns.adobe.com/personalization/mock-action",
       data: {
-        hello: "kitty"
+        hello: "kitty",
+        qualifiedDate: jasmine.any(Number),
+        displayedDate: undefined
       },
-      qualifiedDate: jasmine.any(Number),
-      displayedDate: undefined,
       id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
     }
   ],

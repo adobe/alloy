@@ -73,7 +73,11 @@ export default (payload, eventRegistry, decisionHistory) => {
         const {
           firstTimestamp: qualifiedDate
         } = decisionHistory.recordQualified(item);
-        return { ...item, qualifiedDate, displayedDate };
+
+        return {
+          ...item,
+          data: { ...item.data, qualifiedDate, displayedDate }
+        };
       });
 
     return {

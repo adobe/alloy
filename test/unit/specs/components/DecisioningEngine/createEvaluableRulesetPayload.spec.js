@@ -165,10 +165,10 @@ describe("DecisioningEngine:createEvaluableRulesetPayload", () => {
               src: "img/demo-marketing-offer1-exp-A.png"
             },
             prehidingSelector:
-              "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)"
+              "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
+            qualifiedDate: jasmine.any(Number),
+            displayedDate: undefined
           },
-          qualifiedDate: jasmine.any(Number),
-          displayedDate: undefined,
           id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
         },
         {
@@ -178,10 +178,10 @@ describe("DecisioningEngine:createEvaluableRulesetPayload", () => {
             type: "setHtml",
             content: "Hello Treatment A!",
             prehidingSelector:
-              "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
+              "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+            qualifiedDate: jasmine.any(Number),
+            displayedDate: undefined
           },
-          qualifiedDate: jasmine.any(Number),
-          displayedDate: undefined,
           id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
         }
       ],
@@ -332,10 +332,10 @@ describe("DecisioningEngine:createEvaluableRulesetPayload", () => {
               src: "img/demo-marketing-offer1-exp-A.png"
             },
             prehidingSelector:
-              "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)"
+              "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
+            qualifiedDate: jasmine.any(Number),
+            displayedDate: undefined
           },
-          qualifiedDate: jasmine.any(Number),
-          displayedDate: undefined,
           id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
         },
         {
@@ -345,10 +345,10 @@ describe("DecisioningEngine:createEvaluableRulesetPayload", () => {
             type: "setHtml",
             content: "Hello Treatment A!",
             prehidingSelector:
-              "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
+              "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+            qualifiedDate: jasmine.any(Number),
+            displayedDate: undefined
           },
-          qualifiedDate: jasmine.any(Number),
-          displayedDate: undefined,
           id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
         }
       ],

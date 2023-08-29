@@ -252,11 +252,11 @@ describe("DecisioningEngine:createDecisionProvider", () => {
                 src: "img/demo-marketing-offer1-exp-A.png"
               },
               prehidingSelector:
-                "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)"
+                "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             },
-            id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
-            qualifiedDate: jasmine.any(Number),
-            displayedDate: undefined
+            id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
           },
           {
             schema: "https://ns.adobe.com/personalization/dom-action",
@@ -265,11 +265,11 @@ describe("DecisioningEngine:createDecisionProvider", () => {
               type: "setHtml",
               content: "Hello Treatment A!",
               prehidingSelector:
-                "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
+                "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             },
-            id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f",
-            qualifiedDate: jasmine.any(Number),
-            displayedDate: undefined
+            id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
           }
         ],
         scope: "web://mywebsite.com"
@@ -306,11 +306,11 @@ describe("DecisioningEngine:createDecisionProvider", () => {
               selector: "div#spa #spa-content h3",
               type: "setHtml",
               content: "i can haz?",
-              prehidingSelector: "div#spa #spa-content h3"
+              prehidingSelector: "div#spa #spa-content h3",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             },
-            id: "8a0d7a45-70fb-4845-a093-2133b5744c8d",
-            qualifiedDate: jasmine.any(Number),
-            displayedDate: undefined
+            id: "8a0d7a45-70fb-4845-a093-2133b5744c8d"
           },
           {
             schema: "https://ns.adobe.com/personalization/dom-action",
@@ -318,11 +318,11 @@ describe("DecisioningEngine:createDecisionProvider", () => {
               selector: "div#spa #spa-content p",
               type: "setHtml",
               content: "ALL YOUR BASE ARE BELONG TO US",
-              prehidingSelector: "div#spa #spa-content p"
+              prehidingSelector: "div#spa #spa-content p",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             },
-            id: "a44af51a-e073-4e8c-92e1-84ac28210043",
-            qualifiedDate: jasmine.any(Number),
-            displayedDate: undefined
+            id: "a44af51a-e073-4e8c-92e1-84ac28210043"
           }
         ],
         scope: "web://mywebsite.com"
@@ -366,11 +366,11 @@ describe("DecisioningEngine:createDecisionProvider", () => {
                 src: "img/demo-marketing-offer1-exp-A.png"
               },
               prehidingSelector:
-                "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)"
+                "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             },
-            id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
-            qualifiedDate: jasmine.any(Number),
-            displayedDate: undefined
+            id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
           },
           {
             schema: "https://ns.adobe.com/personalization/dom-action",
@@ -379,11 +379,11 @@ describe("DecisioningEngine:createDecisionProvider", () => {
               type: "setHtml",
               content: "Hello Treatment A!",
               prehidingSelector:
-                "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
+                "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             },
-            id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f",
-            qualifiedDate: jasmine.any(Number),
-            displayedDate: undefined
+            id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
           }
         ],
         scope: "web://mywebsite.com"
@@ -414,11 +414,11 @@ describe("DecisioningEngine:createDecisionProvider", () => {
               selector: "div#spa #spa-content h3",
               type: "setHtml",
               content: "i can haz?",
-              prehidingSelector: "div#spa #spa-content h3"
+              prehidingSelector: "div#spa #spa-content h3",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             },
-            id: "8a0d7a45-70fb-4845-a093-2133b5744c8d",
-            qualifiedDate: jasmine.any(Number),
-            displayedDate: undefined
+            id: "8a0d7a45-70fb-4845-a093-2133b5744c8d"
           },
           {
             schema: "https://ns.adobe.com/personalization/dom-action",
@@ -426,11 +426,11 @@ describe("DecisioningEngine:createDecisionProvider", () => {
               selector: "div#spa #spa-content p",
               type: "setHtml",
               content: "ALL YOUR BASE ARE BELONG TO US",
-              prehidingSelector: "div#spa #spa-content p"
+              prehidingSelector: "div#spa #spa-content p",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             },
-            id: "a44af51a-e073-4e8c-92e1-84ac28210043",
-            qualifiedDate: jasmine.any(Number),
-            displayedDate: undefined
+            id: "a44af51a-e073-4e8c-92e1-84ac28210043"
           }
         ],
         scope: "web://mywebsite.com"

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const QUALIFIED_EVENT_TYPE = "decisioning.qualifiedItem";
+const QUALIFIED_EVENT_TYPE = "decisioning.propositionQualified";
 
 export default ({ eventRegistry }) => {
   const recordQualified = item => {
