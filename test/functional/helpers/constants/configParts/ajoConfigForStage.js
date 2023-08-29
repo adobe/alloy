@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Adobe. All rights reserved.
+Copyright 2023 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,11 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-export default (isValid, value, path, message) => {
-  if (!isValid) {
-    throw new Error(
-      `'${path}': Expected ${message}, but got ${JSON.stringify(value)}.`
-    );
-  }
+export default {
+  edgeDomain: "edge-int.adobedc.net",
+  datastreamId: "19fc5fe9-37df-46da-8f5c-9eeff4f75ed9",
+  orgId: "745F37C35E4B776E0A49421B@AdobeOrg",
+  edgeBasePath: "ee"
 };

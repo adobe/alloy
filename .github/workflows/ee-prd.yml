@@ -1,4 +1,4 @@
-name: ee
+name: Alloy Prod Upstreams
 on:
   workflow_dispatch:
     inputs:
@@ -76,7 +76,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: sauce-ignore
-          path: .sauceignore
+          path: .
 
       - name: Store Alloy version into env
         uses: nyaa8/package-version@v1

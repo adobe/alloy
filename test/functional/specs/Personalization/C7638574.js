@@ -15,7 +15,9 @@ import createFixture from "../../helpers/createFixture";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
+  thirdPartyCookiesDisabled,
+  ajoConfigForStage
 } from "../../helpers/constants/configParts";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../helpers/createResponse";
@@ -26,14 +28,12 @@ const PAGE_WIDE_SCOPE = "__view__";
 const AJO_TEST_SURFACE = "web://alloyio.com/personalizationAjo";
 
 const networkLogger = createNetworkLogger();
-const cjmStageOrgConfig = {
-  edgeDomain: "edge-int.adobedc.net",
-  edgeConfigId: "19fc5fe9-37df-46da-8f5c-9eeff4f75ed9",
-  orgId: "745F37C35E4B776E0A49421B@AdobeOrg",
-  edgeBasePath: "ee",
-  thirdPartyCookiesEnabled: false
-};
-const config = compose(orgMainConfigMain, cjmStageOrgConfig, debugEnabled);
+const config = compose(
+  orgMainConfigMain,
+  ajoConfigForStage,
+  debugEnabled,
+  thirdPartyCookiesDisabled
+);
 
 createFixture({
   title: "C7638574: AJO offers for custom surface are delivered",

@@ -160,3 +160,25 @@ test("Test C7437531: empty configuration overrides should not be sent to the Edg
     .eql(overrides.com_adobe_identity.idSyncContainerId);
   await t.expect(request.meta.configOverrides.com_adobe_target).eql(undefined);
 });
+
+test("Test C7437531: `getIdentity` can override the datastreamId", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  const { datastreamId: originalDatastreamId } = config;
+  const alternateDatastreamId = `${originalDatastreamId}:dev`;
+  await alloy.getIdentity({
+    edgeConfigOverrides: {
+      datastreamId: alternateDatastreamId
+    }
+  });
+
+  await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
+  await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
+  const [request] = networkLogger.acquireEndpointLogs.requests;
+  await t.expect(request.request.url).contains(alternateDatastreamId);
+
+  const body = JSON.parse(request.request.body);
+  await t
+    .expect(body.meta.sdkConfig.datastream.original)
+    .eql(originalDatastreamId);
+});

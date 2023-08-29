@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { isObject } from "../../utils";
+import { createRequestParams } from "../../utils/request";
 
 export default ({
   createConsentRequestPayload,
@@ -22,18 +23,20 @@ export default ({
   identityMap,
   edgeConfigOverrides: localConfigOverrides
 }) => {
-  const payload = createConsentRequestPayload();
-  payload.setConsent(consentOptions);
-  payload.mergeConfigOverride(globalConfigOverrides);
-  payload.mergeConfigOverride(localConfigOverrides);
+  const requestParams = createRequestParams({
+    payload: createConsentRequestPayload(),
+    globalConfigOverrides,
+    localConfigOverrides
+  });
+  requestParams.payload.setConsent(consentOptions);
   if (isObject(identityMap)) {
     Object.keys(identityMap).forEach(key => {
       identityMap[key].forEach(identity => {
-        payload.addIdentity(key, identity);
+        requestParams.payload.addIdentity(key, identity);
       });
     });
   }
-  const request = createConsentRequest(payload);
+  const request = createConsentRequest(requestParams);
   return sendEdgeNetworkRequest({
     request
   }).then(() => {

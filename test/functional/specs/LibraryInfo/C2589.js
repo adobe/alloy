@@ -54,7 +54,7 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
     defaultConsent: "in",
     downloadLinkQualifier:
       "\\.(exe|zip|wav|mp3|mov|mpg|avi|wmv|pdf|doc|docx|xls|xlsx|ppt|pptx)$",
-    edgeConfigId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
+    datastreamId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
     edgeDomain: "edge.adobedc.net",
     idMigrationEnabled: true,
     onBeforeEventSend: "function func() {}",

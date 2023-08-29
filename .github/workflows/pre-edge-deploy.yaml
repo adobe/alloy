@@ -1,4 +1,4 @@
-name: Pre-Edge-Deploy
+name: Alloy Prod Pre-Edge
 on:
   workflow_dispatch:
     inputs:
@@ -65,7 +65,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: sauce-ignore
-          path: .sauceignore
+          path: .
 
       - name: Store Alloy version into env
         uses: nyaa8/package-version@v1

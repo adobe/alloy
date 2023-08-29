@@ -31,7 +31,7 @@ test.meta({
 });
 
 const config = {
-  edgeConfigId: "9999999",
+  datastreamId: "9999999",
   orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
   defaultConsent: "pending",
   idMigrationEnabled: false,
