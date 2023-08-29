@@ -27,11 +27,13 @@ export default ({
   viewCache,
   showContainers,
   applyPropositions,
-  setTargetMigration
+  setTargetMigration,
+  subscribeMessageFeed
 }) => {
   return {
     lifecycle: {
       onDecision({ viewName, propositions }) {
+        subscribeMessageFeed.refresh(propositions);
         autoRenderingHandler({
           viewName,
           pageWideScopeDecisions: propositions,
@@ -105,7 +107,8 @@ export default ({
         optionsValidator: options =>
           validateApplyPropositionsOptions({ logger, options }),
         run: applyPropositions
-      }
+      },
+      subscribeMessageFeed: subscribeMessageFeed.command
     }
   };
 };

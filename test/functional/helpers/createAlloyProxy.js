@@ -90,7 +90,9 @@ const commands = [
   "setDebug",
   "getLibraryInfo",
   "appendIdentityToUrl",
-  "applyPropositions"
+  "applyPropositions",
+  "subscribeRulesetItems",
+  "subscribeMessageFeed"
 ];
 
 export default (instanceName = "alloy") => {

@@ -9,20 +9,17 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import {
-  DOM_ACTION,
-  MESSAGE_FEED_ITEM,
-  MESSAGE_IN_APP
-} from "./constants/schema";
-import { initDomActionsModules } from "./dom-actions";
-import initMessagingActionsModules from "./in-app-message-actions/initMessagingActionsModules";
 
-export default ({ storeClickMetrics, collect }) => {
-  const messagingActionsModules = initMessagingActionsModules(collect);
+const QUALIFIED_EVENT_TYPE = "decisioning.propositionQualified";
 
-  return {
-    [DOM_ACTION]: initDomActionsModules(storeClickMetrics),
-    [MESSAGE_IN_APP]: messagingActionsModules,
-    [MESSAGE_FEED_ITEM]: messagingActionsModules
+export default ({ eventRegistry }) => {
+  const recordQualified = item => {
+    const { id } = item;
+    if (!id) {
+      return undefined;
+    }
+    return eventRegistry.addEvent(item, QUALIFIED_EVENT_TYPE, id);
   };
+
+  return { recordQualified };
 };

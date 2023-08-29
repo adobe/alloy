@@ -14,6 +14,8 @@ import {
   JSON_CONTENT_ITEM,
   RULESET_ITEM
 } from "../Personalization/constants/schema";
+import { DISPLAY } from "../Personalization/constants/eventType";
+
 import flattenArray from "../../utils/flattenArray";
 import createConsequenceAdapter from "./createConsequenceAdapter";
 
@@ -38,7 +40,7 @@ const isRulesetItem = item => {
   );
 };
 
-export default payload => {
+export default (payload, eventRegistry, decisionHistory) => {
   const consequenceAdapter = createConsequenceAdapter();
   const items = [];
 
@@ -57,11 +59,30 @@ export default payload => {
   };
 
   const evaluate = context => {
+    const displayEvent = eventRegistry.getEvent(DISPLAY, payload.id);
+
+    const displayedDate = displayEvent
+      ? displayEvent.firstTimestamp
+      : undefined;
+
+    const qualifyingItems = flattenArray(
+      items.map(item => item.execute(context))
+    )
+      .map(consequenceAdapter)
+      .map(item => {
+        const {
+          firstTimestamp: qualifiedDate
+        } = decisionHistory.recordQualified(item);
+
+        return {
+          ...item,
+          data: { ...item.data, qualifiedDate, displayedDate }
+        };
+      });
+
     return {
       ...payload,
-      items: flattenArray(items.map(item => item.execute(context))).map(
-        consequenceAdapter
-      )
+      items: qualifyingItems
     };
   };
 

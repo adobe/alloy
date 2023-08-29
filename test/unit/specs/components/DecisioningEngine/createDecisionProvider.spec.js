@@ -10,12 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider";
+import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
 
 describe("DecisioningEngine:createDecisionProvider", () => {
   let decisionProvider;
+  let storage;
+  let eventRegistry;
 
   beforeEach(() => {
-    decisionProvider = createDecisionProvider();
+    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
+    eventRegistry = createEventRegistry({ storage });
+
+    decisionProvider = createDecisionProvider({ eventRegistry });
     decisionProvider.addPayloads([
       {
         scopeDetails: {
@@ -246,7 +252,9 @@ describe("DecisioningEngine:createDecisionProvider", () => {
                 src: "img/demo-marketing-offer1-exp-A.png"
               },
               prehidingSelector:
-                "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)"
+                "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             },
             id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
           },
@@ -257,7 +265,9 @@ describe("DecisioningEngine:createDecisionProvider", () => {
               type: "setHtml",
               content: "Hello Treatment A!",
               prehidingSelector:
-                "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
+                "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             },
             id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
           }
@@ -296,7 +306,9 @@ describe("DecisioningEngine:createDecisionProvider", () => {
               selector: "div#spa #spa-content h3",
               type: "setHtml",
               content: "i can haz?",
-              prehidingSelector: "div#spa #spa-content h3"
+              prehidingSelector: "div#spa #spa-content h3",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             },
             id: "8a0d7a45-70fb-4845-a093-2133b5744c8d"
           },
@@ -306,7 +318,9 @@ describe("DecisioningEngine:createDecisionProvider", () => {
               selector: "div#spa #spa-content p",
               type: "setHtml",
               content: "ALL YOUR BASE ARE BELONG TO US",
-              prehidingSelector: "div#spa #spa-content p"
+              prehidingSelector: "div#spa #spa-content p",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             },
             id: "a44af51a-e073-4e8c-92e1-84ac28210043"
           }
@@ -352,7 +366,9 @@ describe("DecisioningEngine:createDecisionProvider", () => {
                 src: "img/demo-marketing-offer1-exp-A.png"
               },
               prehidingSelector:
-                "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)"
+                "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             },
             id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
           },
@@ -363,7 +379,9 @@ describe("DecisioningEngine:createDecisionProvider", () => {
               type: "setHtml",
               content: "Hello Treatment A!",
               prehidingSelector:
-                "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
+                "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             },
             id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
           }
@@ -396,7 +414,9 @@ describe("DecisioningEngine:createDecisionProvider", () => {
               selector: "div#spa #spa-content h3",
               type: "setHtml",
               content: "i can haz?",
-              prehidingSelector: "div#spa #spa-content h3"
+              prehidingSelector: "div#spa #spa-content h3",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             },
             id: "8a0d7a45-70fb-4845-a093-2133b5744c8d"
           },
@@ -406,7 +426,9 @@ describe("DecisioningEngine:createDecisionProvider", () => {
               selector: "div#spa #spa-content p",
               type: "setHtml",
               content: "ALL YOUR BASE ARE BELONG TO US",
-              prehidingSelector: "div#spa #spa-content p"
+              prehidingSelector: "div#spa #spa-content p",
+              qualifiedDate: jasmine.any(Number),
+              displayedDate: undefined
             },
             id: "a44af51a-e073-4e8c-92e1-84ac28210043"
           }

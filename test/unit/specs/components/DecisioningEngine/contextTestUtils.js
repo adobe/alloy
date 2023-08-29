@@ -20,7 +20,9 @@ export const proposition = {
     {
       schema: "https://ns.adobe.com/personalization/mock-action",
       data: {
-        hello: "kitty"
+        hello: "kitty",
+        qualifiedDate: jasmine.any(Number),
+        displayedDate: undefined
       },
       id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
     }
@@ -112,7 +114,7 @@ export const setupResponseHandler = (applyResponse, window, condition) => {
     "clear"
   ]);
   const eventRegistry = createEventRegistry({ storage });
-  const decisionProvider = createDecisionProvider();
+  const decisionProvider = createDecisionProvider({ eventRegistry });
 
   const contextProvider = createContextProvider({ eventRegistry, window });
 

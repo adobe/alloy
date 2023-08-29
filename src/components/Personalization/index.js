@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, boolean, objectOf } from "../../utils/validation";
+import { boolean, objectOf, string } from "../../utils/validation";
 import createComponent from "./createComponent";
 import createCollect from "./createCollect";
 import createExecuteDecisions from "./createExecuteDecisions";
@@ -35,6 +35,7 @@ import createActionsProvider from "./createActionsProvider";
 import executeActions from "./executeActions";
 import createModules from "./createModules";
 import createPreprocessors from "./createPreprocessors";
+import createSubscribeMessageFeed from "./createSubscribeMessageFeed";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -89,6 +90,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     mergeQuery
   });
   const onClickHandler = createOnClickHandler({
+    eventManager,
     mergeDecisionsMeta,
     collectClicks,
     getClickSelectors,
@@ -103,6 +105,11 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const setTargetMigration = createSetTargetMigration({
     targetMigrationEnabled
   });
+
+  const subscribeMessageFeed = createSubscribeMessageFeed({
+    collect
+  });
+
   return createComponent({
     getPageLocation,
     logger,
@@ -115,7 +122,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     viewCache,
     showContainers,
     applyPropositions,
-    setTargetMigration
+    setTargetMigration,
+    subscribeMessageFeed
   });
 };
 

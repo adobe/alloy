@@ -14,6 +14,7 @@
     "format": "prettier --write \"*.{html,js}\" \"{sandbox,src,test,scripts}/**/*.{html,js}\"",
     "test": "npm run test:unit && npm run test:scripts && npm run test:functional",
     "test:unit": "karma start --single-run",
+    "testdebug": "karma start --browsers=Chrome --single-run=false --debug",
     "test:unit:watch": "karma start",
     "test:unit:saucelabs:local": "karma start karma.saucelabs.conf.js --single-run",
     "test:unit:coverage": "karma start --single-run --reporters spec,coverage",

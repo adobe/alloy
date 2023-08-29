@@ -24,6 +24,7 @@ describe("Personalization", () => {
   let event;
   let personalizationComponent;
   let setTargetMigration;
+  let subscribeMessageFeed;
 
   const build = () => {
     personalizationComponent = createComponent({
@@ -35,7 +36,8 @@ describe("Personalization", () => {
       mergeQuery,
       viewCache,
       showContainers,
-      setTargetMigration
+      setTargetMigration,
+      subscribeMessageFeed
     });
   };
 
@@ -59,6 +61,7 @@ describe("Personalization", () => {
       "storeViews"
     ]);
     setTargetMigration = jasmine.createSpy("setTargetMigration");
+    subscribeMessageFeed = jasmine.createSpy("subscribeMessageFeed");
 
     build();
   });

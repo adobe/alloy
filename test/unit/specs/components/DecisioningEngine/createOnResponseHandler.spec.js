@@ -12,9 +12,12 @@ governing permissions and limitations under the License.
 import createOnResponseHandler from "../../../../../src/components/DecisioningEngine/createOnResponseHandler";
 import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider";
 import createApplyResponse from "../../../../../src/components/DecisioningEngine/createApplyResponse";
+import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
 
 describe("DecisioningEngine:createOnResponseHandler", () => {
   let lifecycle;
+  let storage;
+  let eventRegistry;
   let decisionProvider;
   let applyResponse;
 
@@ -23,7 +26,10 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
       onDecision: Promise.resolve()
     });
 
-    decisionProvider = createDecisionProvider();
+    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
+    eventRegistry = createEventRegistry({ storage });
+
+    decisionProvider = createDecisionProvider({ eventRegistry });
     applyResponse = createApplyResponse(lifecycle);
   });
 
@@ -178,7 +184,9 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                   src: "img/demo-marketing-offer1-exp-A.png"
                 },
                 prehidingSelector:
-                  "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)"
+                  "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
+                qualifiedDate: jasmine.any(Number),
+                displayedDate: undefined
               },
               id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
             },
@@ -190,7 +198,9 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                 type: "setHtml",
                 content: "Hello Treatment A!",
                 prehidingSelector:
-                  "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
+                  "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                qualifiedDate: jasmine.any(Number),
+                displayedDate: undefined
               },
               id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
             }
@@ -337,7 +347,9 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                 type: "setHtml",
                 content: "Hello Treatment A!",
                 prehidingSelector:
-                  "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
+                  "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                qualifiedDate: jasmine.any(Number),
+                displayedDate: undefined
               },
               id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
             }
