@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, boolean, objectOf } from "../../utils/validation";
+import { boolean, objectOf, string } from "../../utils/validation";
 import createComponent from "./createComponent";
 import createCollect from "./createCollect";
 import createExecuteDecisions from "./createExecuteDecisions";

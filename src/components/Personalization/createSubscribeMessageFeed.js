@@ -1,12 +1,15 @@
-/* eslint-disable */
-import { callback, objectOf, string } from "../../utils/validation";
-import { MESSAGE_FEED_ITEM, MESSAGE_IN_APP } from "./constants/schema";
+import {
+  callback as callbackType,
+  objectOf,
+  string
+} from "../../utils/validation";
+import { MESSAGE_FEED_ITEM } from "./constants/schema";
 import { DISPLAY, INTERACT } from "./constants/eventType";
 
-const validateSubscribeMessageFeedOptions = ({ options }) => {
+const validateOptions = ({ options }) => {
   const validator = objectOf({
     surface: string().required(),
-    callback: callback().required()
+    callback: callbackType().required()
   }).noUnknownFields();
 
   return validator(options);
@@ -20,8 +23,7 @@ export default ({ collect }) => {
     surfaceIdentifier = surface;
   };
 
-  const optionsValidator = options =>
-    validateSubscribeMessageFeedOptions({ options });
+  const optionsValidator = options => validateOptions({ options });
 
   const createFeedItem = (payload, item) => {
     const { id, scope, scopeDetails } = payload;

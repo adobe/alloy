@@ -15,6 +15,7 @@ import createDecisionProvider from "./createDecisionProvider";
 import createApplyResponse from "./createApplyResponse";
 import createEventRegistry from "./createEventRegistry";
 import createContextProvider from "./createContextProvider";
+import createSubscribeRulesetItems from "./createSubscribeRulesetItems";
 
 const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
   const { orgId } = config;
@@ -26,8 +27,13 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
   const decisionProvider = createDecisionProvider({ eventRegistry });
   const contextProvider = createContextProvider({ eventRegistry, window });
 
+  const subscribeRulesetItems = createSubscribeRulesetItems();
+
   return {
     lifecycle: {
+      onDecision({ propositions }) {
+        subscribeRulesetItems.refresh(propositions);
+      },
       onComponentsRegistered(tools) {
         applyResponse = createApplyResponse(tools.lifecycle);
       },
@@ -58,7 +64,8 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
               contextProvider.getContext(decisionContext)
             )
           })
-      }
+      },
+      subscribeRulesetItems: subscribeRulesetItems.command
     }
   };
 };

@@ -52,7 +52,6 @@ describe("Personalization:subscribeMessageFeed", () => {
               feedName: "Winter Promo",
               surface: "web://mywebsite.com/feed"
             },
-            parameters: {},
             content: {
               imageUrl: "img/lumon.png",
               actionTitle: "Shop the sale!",
@@ -76,7 +75,6 @@ describe("Personalization:subscribeMessageFeed", () => {
               feedName: "Winter Promo",
               surface: "web://mywebsite.com/feed"
             },
-            parameters: {},
             content: {
               imageUrl: "img/achievement.png",
               actionTitle: "Shop the sale!",
@@ -105,7 +103,6 @@ describe("Personalization:subscribeMessageFeed", () => {
               feedName: "Winter Promo",
               surface: "web://mywebsite.com/feed"
             },
-            parameters: {},
             content: {
               imageUrl: "img/twitter.png",
               actionTitle: "Shop the sale!",
@@ -156,7 +153,6 @@ describe("Personalization:subscribeMessageFeed", () => {
               feedName: "Winter Promo",
               surface: "web://mywebsite.com/feed"
             },
-            parameters: {},
             content: {
               imageUrl: "img/gold-coin.jpg",
               actionTitle: "Shop the sale!",
