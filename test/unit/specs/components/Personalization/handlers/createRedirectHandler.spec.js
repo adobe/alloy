@@ -75,4 +75,52 @@ describe("redirectHandler", () => {
       "AT:eyJhY3Rpdml0eUlkIjoiMTI3ODE5IiwiZXhwZXJpZW5jZUlkIjoiMCJ9"
     );
   });
+
+  it("passes through non-redirect propositions", () => {
+    const handle = {
+      id: "AT:eyJhY3Rpdml0eUlkIjoiMTI3ODE5IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
+      scope: "__view__",
+      scopeDetails: {
+        decisionProvider: "TGT",
+        activity: {
+          id: "127819"
+        },
+        experience: {
+          id: "0"
+        },
+        strategies: [
+          {
+            algorithmID: "0",
+            trafficType: "0"
+          }
+        ],
+        characteristics: {
+          eventToken:
+            "8CwxglIqrTLmqP2m1r52VWqipfsIHvVzTQxHolz2IpTMromRrB5ztP5VMxjHbs7c6qPG9UF4rvQTJZniWgqbOw=="
+        }
+      },
+      items: [
+        {
+          id: "0",
+          schema: "https://ns.adobe.com/personalization/html-content-item",
+          meta: {
+            "experience.id": "0",
+            "activity.id": "127819",
+            "offer.name": "Default Content",
+            "activity.name": "Functional:C205528",
+            "offer.id": "0"
+          },
+          data: {
+            type: "html",
+            format: "text/html",
+            content: "<p>Some custom content for the home page</p>"
+          }
+        }
+      ]
+    };
+    const proposition = createProposition(handle);
+    redirectHandler(proposition);
+    expect(next).toHaveBeenCalledOnceWith(proposition);
+    expect(proposition.getRedirectUrl()).toBeUndefined();
+  });
 });
