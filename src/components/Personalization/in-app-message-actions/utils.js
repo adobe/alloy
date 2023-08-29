@@ -30,3 +30,10 @@ export const removeElements = cssClassName => {
     element.remove();
   });
 };
+
+export const removeElementById = id => {
+  const element = document.getElementById(id);
+  if (element) {
+    element.remove();
+  }
+};

@@ -12,8 +12,8 @@ governing permissions and limitations under the License.
 import createModules from "../../../../../src/components/Personalization/createModules";
 import {
   DOM_ACTION,
-  MESSAGE_FEED_ITEM,
-  MESSAGE_IN_APP
+  MESSAGE_IN_APP,
+  MESSAGE_FEED_ITEM
 } from "../../../../../src/components/Personalization/constants/schema";
 
 describe("createModules", () => {
@@ -51,12 +51,14 @@ describe("createModules", () => {
     const messageModules = {
       modal: jasmine.any(Function),
       banner: jasmine.any(Function),
+      fullscreen: jasmine.any(Function),
+      custom: jasmine.any(Function),
       defaultContent: jasmine.any(Function)
     };
 
     expect(modules[MESSAGE_IN_APP]).toEqual(messageModules);
     expect(modules[MESSAGE_FEED_ITEM]).toEqual(messageModules);
 
-    expect(Object.keys(modules[MESSAGE_IN_APP]).length).toEqual(3);
+    expect(Object.keys(modules[MESSAGE_IN_APP]).length).toEqual(5);
   });
 });

@@ -10,22 +10,52 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import RulesEngine from "@adobe/aep-rules-engine";
-import { JSON_RULESET_ITEM } from "../Personalization/constants/schema";
-import flattenArray from "../../utils/flattenArray";
+import {
+  JSON_CONTENT_ITEM,
+  RULESET_ITEM
+} from "../Personalization/constants/schema";
 import { DISPLAY } from "../Personalization/constants/eventType";
 
+import flattenArray from "../../utils/flattenArray";
+import createConsequenceAdapter from "./createConsequenceAdapter";
+
+const isRulesetItem = item => {
+  const { schema, data } = item;
+
+  if (schema === RULESET_ITEM) {
+    return true;
+  }
+
+  if (schema !== JSON_CONTENT_ITEM) {
+    return false;
+  }
+
+  const content =
+    typeof data.content === "string" ? JSON.parse(data.content) : data.content;
+
+  return (
+    content &&
+    Object.prototype.hasOwnProperty.call(content, "version") &&
+    Object.prototype.hasOwnProperty.call(content, "rules")
+  );
+};
+
 export default (payload, eventRegistry, decisionHistory) => {
+  const consequenceAdapter = createConsequenceAdapter();
   const items = [];
 
   const addItem = item => {
-    const { data = {} } = item;
-    const { content } = data;
+    const { data = {}, schema } = item;
+
+    const content = schema === RULESET_ITEM ? data : data.content;
 
     if (!content) {
       return;
     }
 
-    items.push(RulesEngine(JSON.parse(content)));
+    items.push(
+      RulesEngine(typeof content === "string" ? JSON.parse(content) : content)
+    );
   };
 
   const evaluate = context => {
@@ -37,12 +67,14 @@ export default (payload, eventRegistry, decisionHistory) => {
 
     const qualifyingItems = flattenArray(
       items.map(item => item.execute(context))
-    ).map(item => {
-      const { firstTimestamp: qualifiedDate } = decisionHistory.recordQualified(
-        item
-      );
-      return { ...item.detail, qualifiedDate, displayedDate };
-    });
+    )
+      .map(consequenceAdapter)
+      .map(item => {
+        const {
+          firstTimestamp: qualifiedDate
+        } = decisionHistory.recordQualified(item);
+        return { ...item, qualifiedDate, displayedDate };
+      });
 
     return {
       ...payload,
@@ -51,9 +83,7 @@ export default (payload, eventRegistry, decisionHistory) => {
   };
 
   if (Array.isArray(payload.items)) {
-    payload.items
-      .filter(item => item.schema === JSON_RULESET_ITEM)
-      .forEach(addItem);
+    payload.items.filter(isRulesetItem).forEach(addItem);
   }
 
   return {

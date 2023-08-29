@@ -9,8 +9,20 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import displayIframeContent from "./displayIframeContent";
+import inAppMessageConsequenceAdapter from "./consequenceAdapters/inAppMessageConsequenceAdapter";
 
-export default (settings, collect) => {
-  return displayIframeContent(settings, collect);
+const CJM_IN_APP_MESSAGE_TYPE = "cjmiam";
+
+const adapters = {
+  [CJM_IN_APP_MESSAGE_TYPE]: inAppMessageConsequenceAdapter
+};
+
+export default () => {
+  return consequence => {
+    const { id, type, detail } = consequence;
+
+    return typeof adapters[type] === "function"
+      ? adapters[type](id, type, detail)
+      : detail;
+  };
 };

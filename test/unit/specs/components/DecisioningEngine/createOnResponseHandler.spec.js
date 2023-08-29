@@ -80,85 +80,83 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
           items: [
             {
               id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
-              schema: "https://ns.adobe.com/personalization/json-ruleset-item",
+              schema: "https://ns.adobe.com/personalization/ruleset-item",
               data: {
-                content: JSON.stringify({
-                  version: 1,
-                  rules: [
-                    {
-                      condition: {
-                        definition: {
-                          conditions: [
-                            {
-                              definition: {
-                                conditions: [
-                                  {
-                                    definition: {
-                                      key: "color",
-                                      matcher: "eq",
-                                      values: ["orange", "blue"]
-                                    },
-                                    type: "matcher"
+                version: 1,
+                rules: [
+                  {
+                    condition: {
+                      definition: {
+                        conditions: [
+                          {
+                            definition: {
+                              conditions: [
+                                {
+                                  definition: {
+                                    key: "color",
+                                    matcher: "eq",
+                                    values: ["orange", "blue"]
                                   },
-                                  {
-                                    definition: {
-                                      key: "action",
-                                      matcher: "eq",
-                                      values: ["lipstick"]
-                                    },
-                                    type: "matcher"
-                                  }
-                                ],
-                                logic: "and"
-                              },
-                              type: "group"
-                            }
-                          ],
-                          logic: "and"
-                        },
-                        type: "group"
-                      },
-                      consequences: [
-                        {
-                          type: "item",
-                          detail: {
-                            schema:
-                              "https://ns.adobe.com/personalization/dom-action",
-                            data: {
-                              selector:
-                                "HTML > BODY > DIV.offer:eq(0) > IMG:nth-of-type(1)",
-                              type: "setAttribute",
-                              content: {
-                                src: "img/demo-marketing-offer1-exp-A.png"
-                              },
-                              prehidingSelector:
-                                "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)"
+                                  type: "matcher"
+                                },
+                                {
+                                  definition: {
+                                    key: "action",
+                                    matcher: "eq",
+                                    values: ["lipstick"]
+                                  },
+                                  type: "matcher"
+                                }
+                              ],
+                              logic: "and"
                             },
-                            id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
+                            type: "group"
+                          }
+                        ],
+                        logic: "and"
+                      },
+                      type: "group"
+                    },
+                    consequences: [
+                      {
+                        type: "schema",
+                        detail: {
+                          schema:
+                            "https://ns.adobe.com/personalization/dom-action",
+                          data: {
+                            selector:
+                              "HTML > BODY > DIV.offer:eq(0) > IMG:nth-of-type(1)",
+                            type: "setAttribute",
+                            content: {
+                              src: "img/demo-marketing-offer1-exp-A.png"
+                            },
+                            prehidingSelector:
+                              "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)"
                           },
                           id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
                         },
-                        {
-                          type: "item",
-                          detail: {
-                            schema:
-                              "https://ns.adobe.com/personalization/dom-action",
-                            data: {
-                              selector:
-                                "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
-                              type: "setHtml",
-                              content: "Hello Treatment A!",
-                              prehidingSelector:
-                                "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
-                            },
-                            id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
+                        id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
+                      },
+                      {
+                        type: "schema",
+                        detail: {
+                          schema:
+                            "https://ns.adobe.com/personalization/dom-action",
+                          data: {
+                            selector:
+                              "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                            type: "setHtml",
+                            content: "Hello Treatment A!",
+                            prehidingSelector:
+                              "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
                           },
                           id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
-                        }
-                      ]
-                    }
-                  ]
-                })
+                        },
+                        id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
+                      }
+                    ]
+                  }
+                ]
               }
             }
           ],
@@ -257,74 +255,72 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
           items: [
             {
               id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
-              schema: "https://ns.adobe.com/personalization/json-ruleset-item",
+              schema: "https://ns.adobe.com/personalization/ruleset-item",
               data: {
-                content: JSON.stringify({
-                  version: 1,
-                  rules: [
-                    {
-                      condition: {
-                        definition: {
-                          conditions: [
-                            {
-                              definition: {
-                                conditions: [
-                                  {
-                                    definition: {
-                                      key: "xdm.web.webPageDetails.viewName",
-                                      matcher: "eq",
-                                      values: ["contact"]
-                                    },
-                                    type: "matcher"
+                version: 1,
+                rules: [
+                  {
+                    condition: {
+                      definition: {
+                        conditions: [
+                          {
+                            definition: {
+                              conditions: [
+                                {
+                                  definition: {
+                                    key: "xdm.web.webPageDetails.viewName",
+                                    matcher: "eq",
+                                    values: ["contact"]
                                   },
-                                  {
-                                    definition: {
-                                      key: "xdm.implementationDetails.version",
-                                      matcher: "eq",
-                                      values: ["12345"]
-                                    },
-                                    type: "matcher"
+                                  type: "matcher"
+                                },
+                                {
+                                  definition: {
+                                    key: "xdm.implementationDetails.version",
+                                    matcher: "eq",
+                                    values: ["12345"]
                                   },
-                                  {
-                                    definition: {
-                                      key: "data.moo",
-                                      matcher: "eq",
-                                      values: ["woof"]
-                                    },
-                                    type: "matcher"
-                                  }
-                                ],
-                                logic: "and"
-                              },
-                              type: "group"
-                            }
-                          ],
-                          logic: "and"
-                        },
-                        type: "group"
-                      },
-                      consequences: [
-                        {
-                          type: "item",
-                          detail: {
-                            schema:
-                              "https://ns.adobe.com/personalization/dom-action",
-                            data: {
-                              selector:
-                                "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
-                              type: "setHtml",
-                              content: "Hello Treatment A!",
-                              prehidingSelector:
-                                "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
+                                  type: "matcher"
+                                },
+                                {
+                                  definition: {
+                                    key: "data.moo",
+                                    matcher: "eq",
+                                    values: ["woof"]
+                                  },
+                                  type: "matcher"
+                                }
+                              ],
+                              logic: "and"
                             },
-                            id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
+                            type: "group"
+                          }
+                        ],
+                        logic: "and"
+                      },
+                      type: "group"
+                    },
+                    consequences: [
+                      {
+                        type: "schema",
+                        detail: {
+                          schema:
+                            "https://ns.adobe.com/personalization/dom-action",
+                          data: {
+                            selector:
+                              "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                            type: "setHtml",
+                            content: "Hello Treatment A!",
+                            prehidingSelector:
+                              "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
                           },
                           id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
-                        }
-                      ]
-                    }
-                  ]
-                })
+                        },
+                        id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
+                      }
+                    ]
+                  }
+                ]
               }
             }
           ],
