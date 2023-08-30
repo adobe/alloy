@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 import { createNode } from "../../../../../../../src/utils/dom";
 import { DIV } from "../../../../../../../src/constants/tagName";
-import displayModal from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayModal";
+import displayIframeContent from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayIframeContent";
 
 describe("Personalization::IAM:modal", () => {
   it("inserts modal into dom", async () => {
@@ -26,7 +26,7 @@ describe("Personalization::IAM:modal", () => {
 
     document.body.append(something);
 
-    await displayModal({
+    await displayIframeContent({
       mobileParameters: {
         verticalAlign: "center",
         dismissAnimation: "top",

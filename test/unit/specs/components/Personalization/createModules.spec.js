@@ -48,17 +48,22 @@ describe("createModules", () => {
   it("has in-app-message modules", () => {
     const modules = createModules({ storeClickMetrics: noop, collect: noop });
 
-    const messageModules = {
-      modal: jasmine.any(Function),
-      banner: jasmine.any(Function),
-      fullscreen: jasmine.any(Function),
-      custom: jasmine.any(Function),
+    const inAppMessageModules = {
       defaultContent: jasmine.any(Function)
     };
 
-    expect(modules[MESSAGE_IN_APP]).toEqual(messageModules);
-    expect(modules[MESSAGE_FEED_ITEM]).toEqual(messageModules);
+    expect(modules[MESSAGE_IN_APP]).toEqual(inAppMessageModules);
+    expect(Object.keys(modules[MESSAGE_IN_APP]).length).toEqual(1);
+  });
 
-    expect(Object.keys(modules[MESSAGE_IN_APP]).length).toEqual(5);
+  it("has message feed modules", () => {
+    const modules = createModules({ storeClickMetrics: noop, collect: noop });
+
+    const messageFeedModules = {
+      defaultContent: jasmine.any(Function)
+    };
+
+    expect(modules[MESSAGE_FEED_ITEM]).toEqual(messageFeedModules);
+    expect(Object.keys(modules[MESSAGE_FEED_ITEM]).length).toEqual(1);
   });
 });

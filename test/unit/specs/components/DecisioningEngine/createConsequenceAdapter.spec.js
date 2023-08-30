@@ -42,7 +42,6 @@ describe("DecisioningEngine:createConsequenceAdapter", () => {
     expect(adaptedConsequence).toEqual({
       schema: "https://ns.adobe.com/personalization/message/in-app",
       data: {
-        type: "modal",
         mobileParameters: {
           verticalAlign: "center",
           dismissAnimation: "top",

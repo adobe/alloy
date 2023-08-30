@@ -32,13 +32,12 @@ describe("DecisioningEngine:inAppMessageConsequenceAdapter", () => {
             backdropColor: "#000000",
             height: 60
           },
-          html: "<!doctype html><div>modal</div></html>"
+          html: "<!doctype html></html>"
         }
       )
     ).toEqual({
       schema: "https://ns.adobe.com/personalization/message/in-app",
       data: {
-        type: "modal",
         mobileParameters: {
           verticalAlign: "center",
           dismissAnimation: "top",
@@ -54,7 +53,7 @@ describe("DecisioningEngine:inAppMessageConsequenceAdapter", () => {
           height: 60
         },
         webParameters: jasmine.any(Object),
-        content: "<!doctype html><div>modal</div></html>",
+        content: "<!doctype html></html>",
         contentType: "text/html"
       },
       id: "72042c7c-4e34-44f6-af95-1072ae117424"

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 import { createNode } from "../../../../../../../src/utils/dom";
 import { DIV } from "../../../../../../../src/constants/tagName";
-import displayBanner from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayBanner";
+import displayIframeContent from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayIframeContent";
 
 describe("Personalization::IAM:banner", () => {
   it("inserts banner into dom", async () => {
@@ -26,7 +26,7 @@ describe("Personalization::IAM:banner", () => {
 
     document.body.append(something);
 
-    await displayBanner({
+    await displayIframeContent({
       mobileParameters: {
         verticalAlign: "center",
         dismissAnimation: "top",

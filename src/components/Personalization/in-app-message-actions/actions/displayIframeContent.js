@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /*
 Copyright 2023 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -12,12 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { getNonce } from "../../dom-actions/dom";
-import { INTERACT } from "../../constants/eventType";
 import { removeElementById } from "../utils";
 
 const ELEMENT_TAG_CLASSNAME = "alloy-messaging-container";
 const ELEMENT_TAG_ID = "alloy-messaging-container";
-const ANCHOR_HREF_REGEX = /adbinapp:\/\/(\w+)\?interaction=(\w+)/i;
 
 const OVERLAY_TAG_CLASSNAME = "alloy-overlay-container";
 const OVERLAY_TAG_ID = "alloy-overlay-container";
@@ -26,6 +23,7 @@ const ALLOY_IFRAME_ID = "alloy-iframe-id";
 const dismissMessage = () =>
   [ELEMENT_TAG_ID, OVERLAY_TAG_ID].forEach(removeElementById);
 
+// eslint-disable-next-line no-unused-vars
 export const buildStyleFromParameters = (mobileParameters, webParameters) => {
   const {
     verticalAlign,
@@ -36,7 +34,7 @@ export const buildStyleFromParameters = (mobileParameters, webParameters) => {
     cornerRadius,
     horizontalInset,
     verticalInset,
-    uiTakeover
+    uiTakeover = false
   } = mobileParameters;
 
   const style = {
@@ -82,11 +80,8 @@ export const setWindowLocationHref = link => {
   window.location.assign(link);
 };
 
-export const createIframeClickHandler = (
-  container,
-  collect,
-  mobileParameters
-) => {
+// eslint-disable-next-line no-unused-vars
+export const createIframeClickHandler = collect => {
   return event => {
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -203,10 +198,7 @@ export const displayHTMLContentInIframe = (settings, collect) => {
 
   const container = createContainerElement(settings);
 
-  const iframe = createIframe(
-    content,
-    createIframeClickHandler(container, collect, mobileParameters)
-  );
+  const iframe = createIframe(content, createIframeClickHandler(collect));
 
   container.appendChild(iframe);
 

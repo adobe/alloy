@@ -15,14 +15,13 @@ import {
   MESSAGE_IN_APP
 } from "./constants/schema";
 import { initDomActionsModules } from "./dom-actions";
-import initMessagingActionsModules from "./in-app-message-actions/initMessagingActionsModules";
+import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules";
+import initMessageFeedActionsModules from "./message-feed-actions/initMessageFeedActionsModules";
 
 export default ({ storeClickMetrics, collect }) => {
-  const messagingActionsModules = initMessagingActionsModules(collect);
-
   return {
     [DOM_ACTION]: initDomActionsModules(storeClickMetrics),
-    [MESSAGE_IN_APP]: messagingActionsModules,
-    [MESSAGE_FEED_ITEM]: messagingActionsModules
+    [MESSAGE_IN_APP]: initInAppMessageActionsModules(collect),
+    [MESSAGE_FEED_ITEM]: initMessageFeedActionsModules()
   };
 };
