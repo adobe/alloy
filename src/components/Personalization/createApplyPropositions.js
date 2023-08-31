@@ -20,7 +20,7 @@ import {
 
 const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
 
-export default ({ render, pendingDisplayNotifications }) => {
+export default ({ render, pendingDisplayNotifications, viewCache }) => {
   const filterItemsPredicate = item =>
     SUPPORTED_SCHEMAS.indexOf(item.schema) > -1;
 
@@ -73,16 +73,28 @@ export default ({ render, pendingDisplayNotifications }) => {
       .filter(proposition => isNonEmptyArray(proposition.items));
   };
 
-  return ({ propositions, metadata = {} }) => {
-    const propositionsToExecute = preparePropositions({
+  return ({ propositions = [], metadata = {}, viewName }) => {
+    let propositionsToExecute = preparePropositions({
       propositions,
       metadata
     }).map(proposition => createProposition(proposition, true));
 
-    pendingDisplayNotifications.concat(render(propositionsToExecute));
+    return Promise.resolve()
+      .then(() => {
+        if (viewName) {
+          return viewCache.getView(viewName);
+        }
+        return [];
+      })
+      .then(additionalPropositions => {
+        propositionsToExecute = propositionsToExecute.concat(
+          additionalPropositions
+        );
+        pendingDisplayNotifications.concat(render(propositionsToExecute));
 
-    return {
-      propositions: buildReturnedPropositions(propositionsToExecute)
-    };
+        return {
+          propositions: buildReturnedPropositions(propositionsToExecute)
+        };
+      });
   };
 };

@@ -140,7 +140,8 @@ const buildComponent = ({
   });
   const applyPropositions = createApplyPropositions({
     render,
-    pendingDisplayNotifications
+    pendingDisplayNotifications,
+    viewCache
   });
   const setTargetMigration = createSetTargetMigration({
     targetMigrationEnabled

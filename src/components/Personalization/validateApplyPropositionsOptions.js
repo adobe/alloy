@@ -9,14 +9,15 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { anything, objectOf, arrayOf } from "../../utils/validation";
+import { anything, objectOf, arrayOf, string } from "../../utils/validation";
 
 export const EMPTY_PROPOSITIONS = { propositions: [] };
 
 export default ({ logger, options }) => {
   const applyPropositionsOptionsValidator = objectOf({
-    propositions: arrayOf(objectOf(anything())).nonEmpty(),
-    metadata: objectOf(anything())
+    propositions: arrayOf(objectOf(anything())),
+    metadata: objectOf(anything()),
+    viewName: string()
   }).required();
 
   try {

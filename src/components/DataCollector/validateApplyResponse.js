@@ -29,7 +29,10 @@ export default ({ options }) => {
           payload: anything().required()
         })
       ).required()
-    }).required()
+    }).required(),
+    personalization: objectOf({
+      sendDisplayNotifications: boolean().default(true)
+    }).default({ sendDisplayNotifications: true })
   }).noUnknownFields();
 
   return validator(options);

@@ -17,6 +17,7 @@ import {
 } from "./responsesMock/eventResponses";
 import createApplyPropositions from "../../../../../src/components/Personalization/createApplyPropositions";
 import clone from "../../../../../src/utils/clone";
+import { createProposition } from "../../../../../src/components/Personalization/handlers/proposition";
 
 const METADATA = {
   home: {
@@ -28,6 +29,7 @@ const METADATA = {
 describe("Personalization::createApplyPropositions", () => {
   let render;
   let pendingDisplayNotifications;
+  let viewCache;
 
   beforeEach(() => {
     render = jasmine.createSpy("render");
@@ -43,22 +45,24 @@ describe("Personalization::createApplyPropositions", () => {
       "pendingDisplayNotifications",
       ["concat"]
     );
+    viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
+    viewCache.getView.and.returnValue(Promise.resolve([]));
   });
 
-  it("it should return an empty propositions promise if propositions is empty array", () => {
+  it("it should return an empty propositions promise if propositions is empty array", async () => {
     const applyPropositions = createApplyPropositions({
       render,
       pendingDisplayNotifications
     });
 
-    const result = applyPropositions({
+    const result = await applyPropositions({
       propositions: []
     });
     expect(result).toEqual({ propositions: [] });
     expect(render).toHaveBeenCalledOnceWith([]);
   });
 
-  it("it should apply user-provided dom-action schema propositions", () => {
+  it("it should apply user-provided dom-action schema propositions", async () => {
     const expectedExecuteDecisionsPropositions = clone(
       PAGE_WIDE_SCOPE_DECISIONS
     ).map(proposition => {
@@ -71,7 +75,7 @@ describe("Personalization::createApplyPropositions", () => {
       pendingDisplayNotifications
     });
 
-    const result = applyPropositions({
+    const result = await applyPropositions({
       propositions: PAGE_WIDE_SCOPE_DECISIONS
     });
 
@@ -88,13 +92,13 @@ describe("Personalization::createApplyPropositions", () => {
     });
   });
 
-  it("it should merge metadata with propositions that have html-content-item schema", () => {
+  it("it should merge metadata with propositions that have html-content-item schema", async () => {
     const applyPropositions = createApplyPropositions({
       render,
       pendingDisplayNotifications
     });
 
-    const { propositions } = applyPropositions({
+    const { propositions } = await applyPropositions({
       propositions: MIXED_PROPOSITIONS,
       metadata: METADATA
     });
@@ -114,7 +118,7 @@ describe("Personalization::createApplyPropositions", () => {
     expect(render).toHaveBeenCalledTimes(1);
   });
 
-  it("it should drop items with html-content-item schema when there is no metadata", () => {
+  it("it should drop items with html-content-item schema when there is no metadata", async () => {
     const propositions = [
       {
         id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
@@ -147,7 +151,7 @@ describe("Personalization::createApplyPropositions", () => {
       pendingDisplayNotifications
     });
 
-    const result = applyPropositions({
+    const result = await applyPropositions({
       propositions
     });
 
@@ -157,13 +161,13 @@ describe("Personalization::createApplyPropositions", () => {
     expect(result.propositions[0].renderAttempted).toBeTrue();
   });
 
-  it("it should return renderAttempted = true on resulting propositions", () => {
+  it("it should return renderAttempted = true on resulting propositions", async () => {
     const applyPropositions = createApplyPropositions({
       render,
       pendingDisplayNotifications
     });
 
-    const result = applyPropositions({
+    const result = await applyPropositions({
       propositions: MIXED_PROPOSITIONS
     });
     expect(result.propositions.length).toEqual(3);
@@ -172,7 +176,7 @@ describe("Personalization::createApplyPropositions", () => {
     });
   });
 
-  it("it should ignore propositions with __view__ scope that have already been rendered", () => {
+  it("it should ignore propositions with __view__ scope that have already been rendered", async () => {
     const applyPropositions = createApplyPropositions({
       render,
       pendingDisplayNotifications
@@ -180,7 +184,7 @@ describe("Personalization::createApplyPropositions", () => {
     const propositions = JSON.parse(JSON.stringify(MIXED_PROPOSITIONS));
     propositions[4].renderAttempted = true;
 
-    const result = applyPropositions({
+    const result = await applyPropositions({
       propositions
     });
     expect(result.propositions.length).toEqual(2);
@@ -194,7 +198,7 @@ describe("Personalization::createApplyPropositions", () => {
     });
   });
 
-  it("it should ignore items with unsupported schemas", () => {
+  it("it should ignore items with unsupported schemas", async () => {
     const expectedItemIds = ["442358", "442359"];
 
     const applyPropositions = createApplyPropositions({
@@ -202,7 +206,7 @@ describe("Personalization::createApplyPropositions", () => {
       pendingDisplayNotifications
     });
 
-    const { propositions } = applyPropositions({
+    const { propositions } = await applyPropositions({
       propositions: MIXED_PROPOSITIONS
     });
     expect(propositions.length).toEqual(3);
@@ -214,14 +218,14 @@ describe("Personalization::createApplyPropositions", () => {
     });
   });
 
-  it("it should not mutate original propositions", () => {
+  it("it should not mutate original propositions", async () => {
     const applyPropositions = createApplyPropositions({
       render,
       pendingDisplayNotifications
     });
 
     const originalPropositions = clone(MIXED_PROPOSITIONS);
-    const result = applyPropositions({
+    const result = await applyPropositions({
       propositions: originalPropositions,
       metadata: METADATA
     });
@@ -238,5 +242,30 @@ describe("Personalization::createApplyPropositions", () => {
       }
     });
     expect(numReturnedPropositions).toEqual(4);
+  });
+
+  it("concats viewName propositions", async () => {
+    viewCache.getView.and.returnValue(
+      Promise.resolve([
+        createProposition({ id: "myViewNameProp1", items: [{}] })
+      ])
+    );
+    const applyPropositions = createApplyPropositions({
+      render,
+      pendingDisplayNotifications,
+      viewCache
+    });
+    const result = await applyPropositions({
+      viewName: "myViewName"
+    });
+    expect(result).toEqual({
+      propositions: [
+        {
+          id: "myViewNameProp1",
+          items: [{}],
+          renderAttempted: true
+        }
+      ]
+    });
   });
 });
