@@ -83,10 +83,17 @@ export default () => {
 
       const newPropositions = deduplicateArray(
         [...getXdmPropositions(userXdm), ...getXdmPropositions(content.xdm)],
-        (a, b) => a === b || (a.id && b.id && a.id === b.id)
+        (a, b) =>
+          a === b ||
+          (a.id &&
+            b.id &&
+            a.id === b.id &&
+            a.scope &&
+            b.scope &&
+            a.scope === b.scope)
       );
       if (userXdm) {
-        event.mergeXdm(userXdm);
+        this.mergeXdm(userXdm);
       }
       if (newPropositions.length > 0) {
         // eslint-disable-next-line no-underscore-dangle

@@ -360,4 +360,43 @@ describe("createEvent", () => {
       });
     });
   });
+
+  it("deduplicates propositions by id", () => {
+    const subject = createEvent();
+    subject.mergeXdm({
+      _experience: {
+        decisioning: {
+          propositions: [
+            { id: "1", scope: "a" },
+            { id: "2", scope: "a" }
+          ]
+        }
+      }
+    });
+    subject.setUserXdm({
+      _experience: {
+        decisioning: {
+          propositions: [
+            { id: "2", scope: "a" },
+            { id: "3", scope: "a" },
+            { id: "3", scope: "a" }
+          ]
+        }
+      }
+    });
+    subject.finalize();
+    expect(subject.toJSON()).toEqual({
+      xdm: {
+        _experience: {
+          decisioning: {
+            propositions: [
+              { id: "2", scope: "a" },
+              { id: "3", scope: "a" },
+              { id: "1", scope: "a" }
+            ]
+          }
+        }
+      }
+    });
+  });
 });

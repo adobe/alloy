@@ -33,7 +33,7 @@ export default ({ options }) => {
       surfaces: arrayOf(string()).uniqueItems(),
       sendDisplayNotifications: boolean().default(true),
       includePendingDisplayNotifications: boolean().default(false)
-    }),
+    }).default({ sendDisplayNotifications: true }),
     datasetId: string(),
     mergeId: string(),
     edgeConfigOverrides: validateConfigOverride

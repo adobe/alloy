@@ -103,7 +103,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     viewCache
   });
   const applyPropositions = createApplyPropositions({
-    render
+    render,
+    pendingDisplayNotifications
   });
   const setTargetMigration = createSetTargetMigration({
     targetMigrationEnabled

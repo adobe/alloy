@@ -123,6 +123,7 @@ const simulatePageLoad = async alloy => {
     personalizationPayload,
     PAGE_WIDE_SCOPE
   );
+
   await t
     .expect(
       // eslint-disable-next-line no-underscore-dangle
