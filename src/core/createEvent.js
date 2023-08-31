@@ -56,6 +56,12 @@ export default () => {
         deepAssign(content, { xdm });
       }
     },
+    mergeData(data) {
+      throwIfEventFinalized("mergeData");
+      if (data) {
+        deepAssign(content, { data });
+      }
+    },
     mergeMeta(meta) {
       throwIfEventFinalized("mergeMeta");
       if (meta) {
@@ -81,7 +87,7 @@ export default () => {
       }
 
       if (userData) {
-        content.data = userData;
+        event.mergeData(userData);
       }
 
       // the event should already be considered finalized in case onBeforeEventSend throws an error

@@ -17,10 +17,12 @@ import {
 } from "./contextTestUtils";
 
 describe("createDecisioningEngine:commands:evaluateRulesets", () => {
+  let mergeData;
   let mockEvent;
   let onResponseHandler;
   let decisioningEngine;
   beforeEach(() => {
+    mergeData = jasmine.createSpy();
     const config = { orgId: "exampleOrgId" };
     window.referrer =
       "https://www.google.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer";
@@ -29,7 +31,11 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
       config,
       createNamespacedStorage
     });
-    mockEvent = { getContent: () => ({}), getViewName: () => undefined };
+    mockEvent = {
+      getContent: () => ({}),
+      getViewName: () => undefined,
+      mergeData
+    };
     decisioningEngine.lifecycle.onComponentsRegistered(() => {});
   });
 
@@ -130,6 +136,36 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
     const result = decisioningEngine.commands.evaluateRulesets.run({});
     expect(result).toEqual({
       propositions: [proposition]
+    });
+  });
+
+  it("ensures schema-based ruleset consequences", () => {
+    onResponseHandler = onResponse => {
+      onResponse({
+        response: mockRulesetResponseWithCondition({
+          definition: {
+            key: "referringPage.path",
+            matcher: "eq",
+            values: ["/search"]
+          },
+          type: "matcher"
+        })
+      });
+    };
+
+    decisioningEngine.lifecycle.onBeforeEvent({
+      event: mockEvent,
+      renderDecisions: false,
+      decisionContext: {},
+      onResponse: onResponseHandler
+    });
+
+    expect(mergeData).toHaveBeenCalledOnceWith({
+      __adobe: {
+        ajo: {
+          "in-app-response-format": 2
+        }
+      }
     });
   });
 });

@@ -16,6 +16,7 @@ import createApplyResponse from "./createApplyResponse";
 import createEventRegistry from "./createEventRegistry";
 import createContextProvider from "./createContextProvider";
 import createSubscribeRulesetItems from "./createSubscribeRulesetItems";
+import { ensureSchemaBasedRulesetConsequences } from "./utils";
 
 const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
   const { orgId } = config;
@@ -43,6 +44,8 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
         decisionContext = {},
         onResponse = noop
       }) {
+        ensureSchemaBasedRulesetConsequences(event);
+
         onResponse(
           createOnResponseHandler({
             renderDecisions,
