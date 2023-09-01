@@ -18,6 +18,7 @@ const DECISIONS_HANDLE = "personalization:decisions";
 
 export default ({
   prehidingStyle,
+  showContainers,
   hideContainers,
   mergeQuery,
   collect,
@@ -34,6 +35,7 @@ export default ({
       const propositions = cacheUpdate.update(handles);
       if (personalizationDetails.isRenderDecisions()) {
         render(propositions).then(decisionsMeta => {
+          showContainers();
           if (decisionsMeta.length > 0) {
             collect({
               decisionsMeta,

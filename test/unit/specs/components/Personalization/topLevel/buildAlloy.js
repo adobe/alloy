@@ -114,6 +114,7 @@ const buildComponent = ({
   });
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
+    showContainers,
     hideContainers,
     mergeQuery,
     collect,
