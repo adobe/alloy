@@ -25,7 +25,7 @@ export default ({
       action
     });
 
-    if (playerId) {
+    if (playerId && handleMediaEventAutomatically) {
       return handleMediaEventAutomatically({
         xdm,
         playerId,

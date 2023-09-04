@@ -1,4 +1,4 @@
-const createSecondsecondVideoPlayer = secondVideoPlayerId => {
+const createSecondVideoPlayer = secondVideoPlayerId => {
   const secondVideoPlayer = document.getElementById(secondVideoPlayerId);
 
   const secondPlayerSettings = {
@@ -177,10 +177,9 @@ const createSecondSampleEventsBasedOnPlayhead = ({
   };
 };
 document.addEventListener("DOMContentLoaded", async function(event) {
-  const {
-    secondPlayerSettings,
-    secondVideoPlayer
-  } = createSecondsecondVideoPlayer("media-second-movie");
+  const { secondPlayerSettings, secondVideoPlayer } = createSecondVideoPlayer(
+    "media-second-movie"
+  );
 
   let sessionPromise;
   secondVideoPlayer.addEventListener("playing", function() {

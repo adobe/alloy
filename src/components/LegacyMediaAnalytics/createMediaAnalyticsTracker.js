@@ -1,5 +1,4 @@
 import defer from "../../utils/defer";
-import createTrackEvent from "./createTrackEvent";
 import {
   AudioMetadataKeys,
   MediaObjectKey,
@@ -34,7 +33,12 @@ const createSessionDetails = (mediaObject, contextData, config) => {
 
   return { sessionDetails, customMetadata };
 };
-const createHeartbeat = ({ frequency, playerState, trackEvent }) => {
+const createHeartbeat = ({
+  frequency,
+  playerState,
+  trackMediaEvent,
+  deferSession
+}) => {
   // eslint-disable-next-line consistent-return
   return () => {
     const currentTime = Date.now();
@@ -43,9 +47,19 @@ const createHeartbeat = ({ frequency, playerState, trackEvent }) => {
       Math.abs(currentTime - playerState.latestTriggeredEvent) / 1000 >
       frequency
     ) {
-      return trackEvent({
-        type: "ping",
-        playhead: playerState.lastPlayhead
+      return deferSession.then(result => {
+        const { sessionID } = result;
+
+        return trackMediaEvent({
+          xdm: {
+            eventType: "ping",
+            mediaCollection: {
+              sessionID,
+              playhead: playerState.playhead
+            }
+          }
+        });
+        console.log("result", result);
       });
     }
   };
@@ -55,8 +69,8 @@ const createMediaDetailsObject = () => {};
 const createGetInstance = ({
   config,
   logger,
-  sendEdgeNetworkRequest,
-  eventManager
+  getMediaSession,
+  trackMediaEvent
 }) => {
   const { mediaAnalytics } = config;
   const frequency = mediaAnalytics.heartbeatFrequency;
@@ -69,24 +83,29 @@ const createGetInstance = ({
   let ticker;
 
   let deferSession = defer();
+  /*
   const trackEvent = createTrackEvent({
     deferSession,
-    sendEdgeNetworkRequest,
+    getMediaSession,
     trackerState
   });
-
+*/
+  const trackEvent = () => {};
   const heartbeatEngine = createHeartbeat({
     frequency,
+    deferSession,
     playerState: trackerState,
-    trackEvent
+    trackMediaEvent
   });
 
   return {
     trackSessionStart: (mediaObject, contextData = {}) => {
-      const heartbeat = mediaAnalytics.heartbeatFrequency;
+      const {
+        mainPingInterval,
+        adPingInterval
+      } = mediaAnalytics.mainPingInterval;
       trackerState.latestTriggeredEvent = Date.now();
 
-      const event = eventManager.createEvent();
       const { sessionDetails, customMetadata } = createSessionDetails(
         mediaObject,
         contextData,
@@ -97,8 +116,13 @@ const createGetInstance = ({
         sessionDetails,
         customMetadata
       };
-      event.mergeXdm({ eventType: "media.sessionStart", mediaCollection });
-      return eventManager.sendEvent(event).then(result => {
+      return getMediaSession({
+        xdm: {
+          eventType: "media.sessionStart",
+          mediaCollection
+        }
+      }).then(result => {
+        console.log("result", result);
         deferSession.resolve(result.sessionId);
 
         ticker = setInterval(() => {
@@ -173,8 +197,8 @@ const createGetInstance = ({
 export const createMediaAnalyticsTracker = ({
   config,
   logger,
-  sendEdgeNetworkRequest,
-  eventManager
+  getMediaSession,
+  trackMediaEvent
 }) => {
   logger.info("Media Analytics Component was configured");
 
@@ -183,8 +207,8 @@ export const createMediaAnalyticsTracker = ({
       return createGetInstance({
         config,
         logger,
-        sendEdgeNetworkRequest,
-        eventManager
+        getMediaSession,
+        trackMediaEvent
       });
     },
     createMediaHelper

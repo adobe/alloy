@@ -75,7 +75,7 @@
         mediaAnalytics: { // adobeStreamingMedia
           // need to move these at session creation command
           channel: "video channel",
-          playerName: "nina's player",
+          playerName: "ninas player",
           version: "alloy 2.16.0" // not required
         },
         defaultConsent: getUrlParameter("defaultConsent") || "in",
@@ -140,6 +140,7 @@
     <script src="video-player-1.js"></script>
 
     <script src="video-player-2.js"></script>
+    <script src="video-player-3.js"></script>
 
   </head>
   <body>
@@ -150,10 +151,18 @@
           type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
         />
       </video>
+      </br>
       <video id="media-second-movie" width="600" preload controls muted>
         <source
           src="clickbaby.mp4"
           type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
+        />
+      </video>
+      </br>
+      <video id="media-third-movie" width="600" preload controls muted>
+        <source
+                src="clickbaby.mp4"
+                type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
         />
       </video>
     </div>

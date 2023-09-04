@@ -39,9 +39,9 @@ const createMediaAnalytics = ({
   });
   const trackMediaEvent = createTrackMediaEvent({
     sendEdgeNetworkRequest,
+    handleMediaEventAutomatically,
     config,
-    logger,
-    handleMediaEventAutomatically
+    logger
   });
   const heartbeatTicker = createHeartbeatTicker({
     config,
@@ -55,11 +55,9 @@ const createMediaAnalytics = ({
   });
   const getMediaSession = createGetMediaSession({
     config,
-    logger,
     eventManager,
-    playerCache,
-    heartbeatTicker,
-    automaticSessionHandler
+    automaticSessionHandler,
+    logger
   });
   return {
     lifecycle: {
@@ -105,9 +103,9 @@ createMediaAnalytics.configValidators = objectOf({
       .maximum(60)
       .default(10),
     adPingInterval: number() // 10 default - mobile maxim - 60 sec
-      .minimum(1)
+      .minimum(10)
       .maximum(60)
-      .default(1)
+      .default(10)
   })
 });
 export default createMediaAnalytics;

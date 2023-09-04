@@ -22,7 +22,7 @@ export default ({ config, eventManager, automaticSessionHandler, logger }) => {
       }
     });
 
-    if (options.playerId) {
+    if (options.playerId && automaticSessionHandler) {
       return automaticSessionHandler({ options, event });
     }
 
