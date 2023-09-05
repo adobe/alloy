@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray } from "../../utils";
+import { isNonEmptyArray, isNonEmptyString } from "../../utils";
 import { INTERACT } from "./constants/eventType";
 import { PropositionEventType } from "./constants/propositionEventType";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
@@ -35,10 +35,10 @@ export default ({
         const xdm = { eventType: INTERACT };
         const scope = decisionsMeta[0].scope;
 
-        if (scope !== PAGE_WIDE_SCOPE) {
+        if (isNonEmptyString(scope) && scope !== PAGE_WIDE_SCOPE) {
           xdm.web = {
             webPageDetails: {
-              viewName: scope
+              viewName: scope.toLowerCase()
             }
           };
         }
