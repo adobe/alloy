@@ -4,7 +4,7 @@ import "./InAppMessagesStyle.css";
 
 export default function DecisionEngine() {
   const [realResponse, setRealResponse] = useState(null);
-  async function getInAppPayload(payload) {
+  const getInAppPayload = async payload => {
     const res = await fetch(
       `https://edge.adobedc.net/ee/or2/v1/interact?configId=7a19c434-6648-48d3-948f-ba0258505d98&requestId=520353b2-dc0d-428c-9e0d-138fc6cbec4e`,
       {
@@ -12,12 +12,11 @@ export default function DecisionEngine() {
         body: JSON.stringify(payload)
       }
     );
-    return await res.json();
-  }
+    return res.json();
+  };
 
   useEffect(() => {
-    async function fetchInAppPayload() {
-      console.log("fetching in app payload");
+    const fetchInAppPayload = async () => {
       const response = await getInAppPayload({
         events: [
           {
@@ -38,7 +37,7 @@ export default function DecisionEngine() {
         ]
       });
       setRealResponse(response);
-    }
+    };
     fetchInAppPayload();
   }, []);
 
