@@ -17,6 +17,11 @@ import createEventRegistry from "./createEventRegistry";
 import createContextProvider from "./createContextProvider";
 import createSubscribeRulesetItems from "./createSubscribeRulesetItems";
 import { ensureSchemaBasedRulesetConsequences } from "./utils";
+import {
+  CONTEXT_KEY,
+  MOBILE_EVENT_SOURCE,
+  MOBILE_EVENT_TYPE
+} from "./constants";
 
 const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
   const { orgId } = config;
@@ -52,7 +57,11 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
             decisionProvider,
             applyResponse,
             event,
-            decisionContext: contextProvider.getContext(decisionContext)
+            decisionContext: contextProvider.getContext({
+              [CONTEXT_KEY.TYPE]: MOBILE_EVENT_TYPE.EDGE,
+              [CONTEXT_KEY.SOURCE]: MOBILE_EVENT_SOURCE.REQUEST,
+              ...decisionContext
+            })
           })
         );
 
