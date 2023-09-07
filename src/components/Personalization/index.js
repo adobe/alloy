@@ -85,6 +85,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
+    showContainers,
     hideContainers,
     mergeQuery,
     collect,

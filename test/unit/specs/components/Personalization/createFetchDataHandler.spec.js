@@ -16,6 +16,7 @@ import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("Personalization::createFetchDataHandler", () => {
   let prehidingStyle;
+  let showContainers;
   let hideContainers;
   let mergeQuery;
   let collect;
@@ -31,6 +32,7 @@ describe("Personalization::createFetchDataHandler", () => {
 
   beforeEach(() => {
     prehidingStyle = "myprehidingstyle";
+    showContainers = jasmine.createSpy("showContainers");
     hideContainers = jasmine.createSpy("hideContainers");
     mergeQuery = jasmine.createSpy("mergeQuery");
     collect = jasmine.createSpy("collect");
@@ -57,6 +59,7 @@ describe("Personalization::createFetchDataHandler", () => {
   const run = () => {
     const fetchDataHandler = createFetchDataHandler({
       prehidingStyle,
+      showContainers,
       hideContainers,
       mergeQuery,
       collect,
@@ -127,6 +130,7 @@ describe("Personalization::createFetchDataHandler", () => {
       decisions: []
     });
     await flushPromiseChains();
+    expect(showContainers).toHaveBeenCalled();
     expect(collect).toHaveBeenCalledOnceWith({
       decisionsMeta: [
         { id: "handle1", scope: undefined, scopeDetails: undefined }

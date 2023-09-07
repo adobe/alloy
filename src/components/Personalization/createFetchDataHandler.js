@@ -19,6 +19,7 @@ const DECISIONS_HANDLE = "personalization:decisions";
 
 export default ({
   prehidingStyle,
+  showContainers,
   hideContainers,
   mergeQuery,
   collect,
@@ -51,7 +52,10 @@ export default ({
       const handles = response.getPayloadsByType(DECISIONS_HANDLE);
       const propositions = cacheUpdate.update(handles);
       if (personalizationDetails.isRenderDecisions()) {
-        render(propositions).then(handleNotifications);
+        render(propositions).then(decisionsMeta => {
+          showContainers();
+          handleNotifications(decisionsMeta);
+        });
       }
 
       return {
