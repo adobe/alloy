@@ -11,7 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import { getNonce } from "../../dom-actions/dom";
-import { removeElementById } from "../utils";
+import { parseAnchor, removeElementById } from "../utils";
+import { TEXT_HTML } from "../../constants/contentType";
+import { INTERACT } from "../../constants/eventType";
 
 const ELEMENT_TAG_CLASSNAME = "alloy-messaging-container";
 const ELEMENT_TAG_ID = "alloy-messaging-container";
@@ -76,12 +78,15 @@ export const buildStyleFromParameters = (mobileParameters, webParameters) => {
   }
   return style;
 };
-export const setWindowLocationHref = link => {
+
+const setWindowLocationHref = link => {
   window.location.assign(link);
 };
 
-// eslint-disable-next-line no-unused-vars
-export const createIframeClickHandler = collect => {
+export const createIframeClickHandler = (
+  interact,
+  navigateToUrl = setWindowLocationHref
+) => {
   return event => {
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -91,43 +96,32 @@ export const createIframeClickHandler = collect => {
     const anchor =
       target.tagName.toLowerCase() === "a" ? target : target.closest("a");
 
-    if (anchor) {
-      const parts = anchor.href.split("?");
-      const actionPart = parts[0].split("://")[1];
-      let action = "";
-      let interaction = "";
-      let link = "";
-      if (parts.length > 1) {
-        const queryParams = new URLSearchParams(parts[1]);
-        action = actionPart;
-        interaction = queryParams.get("interaction") || "";
-        link = queryParams.get("link") || "";
-        const uuid = anchor.getAttribute("data-uuid") || "";
-        // eslint-disable-next-line no-console
-        console.log(`clicked ${uuid}`);
-        // TODO: collect analytics
-        // collect({
-        //   eventType: INTERACT,
-        //   eventSource: "inAppMessage",
-        //   eventData: {
-        //     action,
-        //     interaction
-        //   }
-        // });
-        if (link && interaction === "clicked") {
-          link = decodeURIComponent(link);
-          setWindowLocationHref(link);
-        } else if (action === "dismiss") {
-          dismissMessage();
-        }
-      }
+    if (!anchor) {
+      return;
+    }
+
+    const { action, interaction, link, label, uuid } = parseAnchor(anchor);
+
+    interact({
+      label,
+      id: interaction,
+      uuid,
+      link
+    });
+
+    if (action === "dismiss") {
+      dismissMessage();
+    }
+
+    if (typeof link === "string" && link.length > 0) {
+      navigateToUrl(link);
     }
   };
 };
 
 export const createIframe = (htmlContent, clickHandler) => {
   const parser = new DOMParser();
-  const htmlDocument = parser.parseFromString(htmlContent, "text/html");
+  const htmlDocument = parser.parseFromString(htmlContent, TEXT_HTML);
   const scriptTag = htmlDocument.querySelector("script");
 
   if (scriptTag) {
@@ -135,7 +129,7 @@ export const createIframe = (htmlContent, clickHandler) => {
   }
   const element = document.createElement("iframe");
   element.src = URL.createObjectURL(
-    new Blob([htmlDocument.documentElement.outerHTML], { type: "text/html" })
+    new Blob([htmlDocument.documentElement.outerHTML], { type: TEXT_HTML })
   );
   element.id = ALLOY_IFRAME_ID;
 
@@ -188,17 +182,17 @@ export const createOverlayElement = parameter => {
   return element;
 };
 
-export const displayHTMLContentInIframe = (settings, collect) => {
+export const displayHTMLContentInIframe = (settings, interact) => {
   dismissMessage();
   const { content, contentType, mobileParameters } = settings;
 
-  if (contentType !== "text/html") {
-    // TODO: whoops, no can do.
+  if (contentType !== TEXT_HTML) {
+    return;
   }
 
   const container = createContainerElement(settings);
 
-  const iframe = createIframe(content, createIframeClickHandler(collect));
+  const iframe = createIframe(content, createIframeClickHandler(interact));
 
   container.appendChild(iframe);
 
@@ -214,7 +208,13 @@ export default (settings, collect) => {
   return new Promise(resolve => {
     const { meta } = settings;
 
-    displayHTMLContentInIframe(settings, collect);
+    displayHTMLContentInIframe(settings, propositionAction => {
+      collect({
+        decisionsMeta: [meta],
+        propositionAction,
+        eventType: INTERACT
+      });
+    });
 
     resolve({ meta });
   });

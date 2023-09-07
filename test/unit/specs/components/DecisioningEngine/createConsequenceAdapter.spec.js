@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createConsequenceAdapter from "../../../../../src/components/DecisioningEngine/createConsequenceAdapter";
+import { TEXT_HTML } from "../../../../../src/components/Personalization/constants/contentType";
 
 describe("DecisioningEngine:createConsequenceAdapter", () => {
   it("works", () => {
@@ -58,7 +59,7 @@ describe("DecisioningEngine:createConsequenceAdapter", () => {
         },
         webParameters: jasmine.any(Object),
         content: "<!doctype html><div>modal</div></html>",
-        contentType: "text/html"
+        contentType: TEXT_HTML
       },
       id: "72042c7c-4e34-44f6-af95-1072ae117424"
     });
