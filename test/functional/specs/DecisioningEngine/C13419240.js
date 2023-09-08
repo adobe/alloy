@@ -202,7 +202,7 @@ const getIframeContainer = ClientFunction(() => {
 test("Test C13419240: Verify DOM action using the sendEvent command for a viewName", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  await alloy.sendEvent({});
+  await alloy.sendEvent({}); // establish an identity
 
   await alloy.applyResponse({
     renderDecisions: false,
