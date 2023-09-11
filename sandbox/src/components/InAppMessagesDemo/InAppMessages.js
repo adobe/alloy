@@ -1,5 +1,5 @@
 /* eslint-disable no-bitwise */
-import React, { useState, useEffect } from "react";
+import React from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./InAppMessagesStyle.css";
 
@@ -40,62 +40,64 @@ const uuidv4 = () => {
   );
 };
 
-export default function DecisionEngine() {
-  const [realResponse, setRealResponse] = useState(null);
+const getInAppPayload = async payload => {
+  const res = await fetch(
+    `https://edge.adobedc.net/ee/or2/v1/interact?configId=${datastreamId}&requestId=${uuidv4()}`,
+    {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }
+  );
+  return res.json();
+};
 
-  const getInAppPayload = async payload => {
-    const res = await fetch(
-      `https://edge.adobedc.net/ee/or2/v1/interact?configId=${datastreamId}&requestId=${uuidv4()}`,
+const fetchMobilePayload = () =>
+  getInAppPayload({
+    events: [
       {
-        method: "POST",
-        body: JSON.stringify(payload)
-      }
-    );
-    return res.json();
-  };
-
-  useEffect(() => {
-    const fetchInAppPayload = async () => {
-      const response = await getInAppPayload({
-        events: [
-          {
-            query: {
-              personalization: {
-                surfaces: [surface]
-              }
-            },
-            xdm: {
-              timestamp: new Date().toISOString(),
-              implementationDetails: {
-                name: "https://ns.adobe.com/experience/mobilesdk/ios",
-                version: "3.7.4+1.5.0",
-                environment: "app"
-              }
-            }
+        query: {
+          personalization: {
+            surfaces: [surface]
           }
-        ]
+        },
+        xdm: {
+          timestamp: new Date().toISOString(),
+          implementationDetails: {
+            name: "https://ns.adobe.com/experience/mobilesdk/ios",
+            version: "3.7.4+1.5.0",
+            environment: "app"
+          }
+        }
+      }
+    ]
+  });
+
+export default function InAppMessages() {
+  const renderDecisions = () => {
+    window
+      .alloy("subscribeRulesetItems", {
+        surface,
+        callback: result => {
+          console.log("subscribeRulesetItems", result);
+        }
+      })
+      .then(fetchMobilePayload)
+      .then(response => {
+        window.alloy("applyResponse", {
+          renderDecisions: true,
+          decisionContext,
+          responseBody: response
+        });
       });
-      setRealResponse(response);
-    };
-    fetchInAppPayload();
-  }, []);
-
-  const renderDecisions = e => {
-    e.stopPropagation();
-    e.preventDefault();
-
-    window.alloy("applyResponse", {
-      renderDecisions: true,
-      decisionContext,
-      responseBody: realResponse
-    });
   };
 
   return (
     <div>
       <ContentSecurityPolicy />
       <h1>In App Messages For Web</h1>
-      <button onClick={renderDecisions}>Execute Decisions and Render</button>
+      <button onClick={() => renderDecisions()}>
+        Execute Decisions and Render
+      </button>
     </div>
   );
 }

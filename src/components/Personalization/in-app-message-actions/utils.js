@@ -48,7 +48,7 @@ export const parseAnchor = anchor => {
   }
 
   const { href } = anchor;
-  if (!startsWith(href, "adbinapp://")) {
+  if (!href || !startsWith(href, "adbinapp://")) {
     return nothing;
   }
 

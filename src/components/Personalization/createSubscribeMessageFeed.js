@@ -57,6 +57,10 @@ export default ({ collect }) => {
   const renderedSet = new Set();
 
   const clicked = (items = []) => {
+    if (!(items instanceof Array)) {
+      return;
+    }
+
     const decisionsMeta = [];
     const clickedSet = new Set();
 
