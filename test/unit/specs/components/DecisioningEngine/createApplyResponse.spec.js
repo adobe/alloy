@@ -29,6 +29,7 @@ describe("DecisioningEngine:createApplyResponse", () => {
 
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
       viewName: undefined,
+      renderDecisions: false,
       propositions: [proposition]
     });
   });
@@ -40,10 +41,15 @@ describe("DecisioningEngine:createApplyResponse", () => {
 
     const applyResponse = createApplyResponse(lifecycle);
 
-    applyResponse({ viewName: "oh hai", propositions: [proposition] });
+    applyResponse({
+      viewName: "oh hai",
+      renderDecisions: true,
+      propositions: [proposition]
+    });
 
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
       viewName: "oh hai",
+      renderDecisions: true,
       propositions: [proposition]
     });
   });

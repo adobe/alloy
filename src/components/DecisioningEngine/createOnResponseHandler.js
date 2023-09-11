@@ -29,9 +29,9 @@ export default ({
     decisionProvider.addPayloads(
       response.getPayloadsByType(PERSONALIZATION_DECISIONS_HANDLE)
     );
-    if (renderDecisions) {
-      const propositions = decisionProvider.evaluate(context);
-      applyResponse({ viewName, propositions });
-    }
+
+    const propositions = decisionProvider.evaluate(context);
+
+    applyResponse({ viewName, renderDecisions, propositions });
   };
 };

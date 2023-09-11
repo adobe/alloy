@@ -76,7 +76,7 @@ export default function InAppMessages() {
   const renderDecisions = () => {
     window
       .alloy("subscribeRulesetItems", {
-        surface,
+        surfaces: [surface],
         callback: result => {
           console.log("subscribeRulesetItems", result);
         }

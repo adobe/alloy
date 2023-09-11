@@ -22,6 +22,7 @@ import {
   MOBILE_EVENT_SOURCE,
   MOBILE_EVENT_TYPE
 } from "./constants";
+import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand";
 
 const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
   const { orgId } = config;
@@ -30,8 +31,14 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
   );
   const eventRegistry = createEventRegistry({ storage: storage.persistent });
   let applyResponse;
+
   const decisionProvider = createDecisionProvider({ eventRegistry });
   const contextProvider = createContextProvider({ eventRegistry, window });
+
+  const evaluateRulesetsCommand = createEvaluateRulesetsCommand({
+    contextProvider,
+    decisionProvider
+  });
 
   const subscribeRulesetItems = createSubscribeRulesetItems();
 
@@ -70,12 +77,13 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
     },
     commands: {
       evaluateRulesets: {
-        run: decisionContext =>
-          applyResponse({
-            propositions: decisionProvider.evaluate(
-              contextProvider.getContext(decisionContext)
-            )
-          })
+        run: ({ renderDecisions, decisionContext }) =>
+          evaluateRulesetsCommand.run({
+            renderDecisions,
+            decisionContext,
+            applyResponse
+          }),
+        optionsValidator: evaluateRulesetsCommand.optionsValidator
       },
       subscribeRulesetItems: subscribeRulesetItems.command
     }

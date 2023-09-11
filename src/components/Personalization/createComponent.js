@@ -32,8 +32,13 @@ export default ({
 }) => {
   return {
     lifecycle: {
-      onDecision({ viewName, propositions }) {
+      onDecision({ viewName, renderDecisions, propositions }) {
         subscribeMessageFeed.refresh(propositions);
+
+        if (!renderDecisions) {
+          return;
+        }
+
         autoRenderingHandler({
           viewName,
           pageWideScopeDecisions: propositions,

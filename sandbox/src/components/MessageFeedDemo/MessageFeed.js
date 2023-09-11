@@ -414,7 +414,7 @@ export default function MessageFeed() {
   useEffect(() => {
     Promise.all([
       window.alloy("subscribeRulesetItems", {
-        surface: "web://target.jasonwaters.dev/aep.html",
+        surfaces: ["web://target.jasonwaters.dev/aep.html"],
         callback: result => {
           console.log("subscribeRulesetItems", result);
         }
@@ -422,7 +422,6 @@ export default function MessageFeed() {
       window.alloy("subscribeMessageFeed", {
         surface: "web://target.jasonwaters.dev/aep.html",
         callback: ({ items = [], rendered, clicked }) => {
-          console.log("setMessageFeedItems", items, clicked);
           setClickHandler(() => clicked);
 
           setMessageFeedItems(items);
@@ -438,13 +437,19 @@ export default function MessageFeed() {
 
   const shareSocialMedia = () => {
     window.alloy("evaluateRulesets", {
-      action: "share-social-media"
+      renderDecisions: true,
+      decisionContext: {
+        action: "share-social-media"
+      }
     });
   };
 
   const depositFunds = () => {
     window.alloy("evaluateRulesets", {
-      action: "deposit-funds"
+      renderDecisions: true,
+      decisionContext: {
+        action: "deposit-funds"
+      }
     });
   };
 
