@@ -17,6 +17,7 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
   // Called when a decision is auto-rendered for the __view__ scope or a SPA view(display and empty display notification)
   return ({
     decisionsMeta = [],
+    propositionAction,
     documentMayUnload = false,
     eventType = DISPLAY,
     viewName
@@ -35,7 +36,8 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
         decisionsMeta,
         eventType === DISPLAY
           ? PropositionEventType.DISPLAY
-          : PropositionEventType.INTERACT
+          : PropositionEventType.INTERACT,
+        propositionAction
       );
     }
 

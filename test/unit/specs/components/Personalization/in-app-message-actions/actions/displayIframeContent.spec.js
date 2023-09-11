@@ -19,6 +19,7 @@ import {
 import cleanUpDomChanges from "../../../../../helpers/cleanUpDomChanges";
 import { getNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom";
 import { testResetCachedNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom/getNonce";
+import { TEXT_HTML } from "../../../../../../../src/components/Personalization/constants/contentType";
 
 describe("DOM Actions on Iframe", () => {
   beforeEach(() => {
@@ -146,7 +147,7 @@ describe("DOM Actions on Iframe", () => {
       const blob = await fetch(iframe.src).then(r => r.blob());
       const text = await blob.text();
       const parser = new DOMParser();
-      const iframeDocument = parser.parseFromString(text, "text/html");
+      const iframeDocument = parser.parseFromString(text, TEXT_HTML);
 
       const scriptTag = iframeDocument.querySelector("script");
       expect(scriptTag).toBeDefined();
@@ -156,7 +157,7 @@ describe("DOM Actions on Iframe", () => {
 
   describe("createIframeClickHandler", () => {
     let container;
-    let mockedCollect;
+    let mockedInteract;
     let mobileParameters;
 
     beforeEach(() => {
@@ -164,7 +165,7 @@ describe("DOM Actions on Iframe", () => {
       container.setAttribute("id", "alloy-messaging-container");
       document.body.appendChild(container);
 
-      mockedCollect = jasmine.createSpy("collect");
+      mockedInteract = jasmine.createSpy("interact");
 
       mobileParameters = {
         verticalAlign: "center",
@@ -184,25 +185,26 @@ describe("DOM Actions on Iframe", () => {
       });
 
       const anchor = document.createElement("a");
-      Object.assign(anchor, {
-        "data-uuid": "12345",
-        href: "adbinapp://dismiss?interaction=cancel"
-      });
+      anchor.setAttribute("data-uuid", "12345");
+      anchor.href = "adbinapp://dismiss?interaction=cancel";
+      anchor.innerText = "Cancel";
 
       const mockEvent = {
         target: anchor,
         preventDefault: () => {},
         stopImmediatePropagation: () => {}
       };
-      const iframeClickHandler = createIframeClickHandler(
-        container,
-        mockedCollect,
-        mobileParameters
-      );
+      const iframeClickHandler = createIframeClickHandler(mockedInteract);
       iframeClickHandler(mockEvent);
       const alloyMessagingContainer = document.getElementById(
         "alloy-messaging-container"
       );
+      expect(mockedInteract).toHaveBeenCalledOnceWith({
+        label: "Cancel",
+        id: "cancel",
+        uuid: "12345",
+        link: ""
+      });
       expect(alloyMessagingContainer).toBeNull();
     });
 
@@ -217,27 +219,68 @@ describe("DOM Actions on Iframe", () => {
       document.body.appendChild(overlayContainer);
 
       const anchor = document.createElement("a");
-      Object.assign(anchor, {
-        "data-uuid": "12345",
-        href: "adbinapp://dismiss?interaction=cancel"
+      anchor.setAttribute("data-uuid", "54321");
+      anchor.href = "adbinapp://dismiss?interaction=cancel";
+      anchor.innerText = "Aloha";
+
+      const mockEvent = {
+        target: anchor,
+        preventDefault: () => {},
+        stopImmediatePropagation: () => {}
+      };
+      const iframeClickHandler = createIframeClickHandler(mockedInteract);
+      iframeClickHandler(mockEvent);
+      const overlayContainerAfterDismissal = document.getElementById(
+        "alloy-overlay-container"
+      );
+      expect(mockedInteract).toHaveBeenCalledOnceWith({
+        label: "Aloha",
+        id: "cancel",
+        uuid: "54321",
+        link: ""
       });
+
+      expect(overlayContainerAfterDismissal).toBeNull();
+    });
+
+    it("extracts propositionAction details from anchor tag and sends to interact()", () => {
+      const mockNavigateToUrl = jasmine.createSpy("mockNavigateToUrl");
+      Object.assign(mobileParameters, {
+        uiTakeover: true
+      });
+
+      const anchor = document.createElement("a");
+      anchor.setAttribute("data-uuid", "blippi");
+      anchor.href =
+        "adbinapp://dismiss?interaction=accept&link=https%3A%2F%2Fwww.google.com";
+      anchor.innerText = "Woof";
+
       const mockEvent = {
         target: anchor,
         preventDefault: () => {},
         stopImmediatePropagation: () => {}
       };
       const iframeClickHandler = createIframeClickHandler(
-        container,
-        mockedCollect,
-        mobileParameters
+        mockedInteract,
+        mockNavigateToUrl
       );
       iframeClickHandler(mockEvent);
       const overlayContainerAfterDismissal = document.getElementById(
         "alloy-overlay-container"
       );
+      expect(mockedInteract).toHaveBeenCalledOnceWith({
+        label: "Woof",
+        id: "accept",
+        uuid: "blippi",
+        link: "https://www.google.com"
+      });
+      expect(mockNavigateToUrl).toHaveBeenCalledOnceWith(
+        "https://www.google.com"
+      );
       expect(overlayContainerAfterDismissal).toBeNull();
     });
   });
+
   describe("displayHTMLContentInIframe", () => {
     let originalAppendChild;
     let originalBodyStyle;
@@ -313,7 +356,7 @@ describe("DOM Actions on Iframe", () => {
         },
         content:
           '<!doctype html>\n<html>\n<head>\n  <title>Bumper Sale!</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      font-family: Arial, sans-serif;\n    }\n\n    #announcement {\n      position: fixed;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 100%;\n      background-color: rgba(0, 0, 0, 0.8);\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: center;\n      color: #fff;\n    }\n\n    #announcement img {\n      max-width: 80%;\n      height: auto;\n      margin-bottom: 20px;\n    }\n\n    #cross {\n      position: absolute;\n      top: 10px;\n      right: 10px;\n      cursor: pointer;\n      font-size: 24px;\n      color: #fff;\n      text-decoration: none;\n    }\n\n    #buttons {\n      display: flex;\n      justify-content: center;\n      margin-top: 20px;\n    }\n\n    #buttons a {\n      margin: 0 10px;\n      padding: 10px 20px;\n      background-color: #ff5500;\n      color: #fff;\n      text-decoration: none;\n      border-radius: 4px;\n      font-weight: bold;\n      transition: background-color 0.3s ease;\n    }\n\n    #buttons a:hover {\n      background-color: #ff3300;\n    }\n  </style>\n</head>\n<body>\n<div id="announcement">\n  <a id="cross" href="adbinapp://dismiss?interaction=cancel">✕</a>\n  <h2>Black Friday Sale!</h2>\n   <img src="https://media3.giphy.com/media/kLhcBWs9Nza4hCW5IS/200.gif" alt="Technology Image">\n  <p>Don\'t miss out on our incredible discounts and deals at our gadgets!</p>\n  <div id="buttons">\n    <a href="adbinapp://dismiss?interaction=clicked&amp;link=https%3A%2F%2Fwww.nike.com%2Fw%2Fmens-jordan-clothing-37eefz6ymx6znik1">Shop</a>\n    <a href="adbinapp://dismiss?interaction=cancel">Dismiss</a>\n  </div>\n</div>\n<script>\n  // Listen for a click on the button inside the iframe\n  document.getElementById("buttons").addEventListener("click", handleButtonClick);\n  document.getElementById("cross").addEventListener("click", handleButtonClick);\n  function handleButtonClick(event) {\n    console.log("A button was clicked with text ", event.target);\n    const href = event.target.getAttribute("href");\n    // Send a message to the parent page\n    console.log("I am sending a message to the parent ", href);\n    parent.postMessage({ "Element was clicked": href }, "*");\n  }\n</script>\n\n</body></html>\n',
-        contentType: "text/html",
+        contentType: TEXT_HTML,
         schema: "https://ns.adobe.com/personalization/message/in-app",
         meta: {
           id: "9441e3c4-d673-4c1b-8fb9-d1c0f7826dcc",
