@@ -171,6 +171,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
 
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
       viewName: undefined,
+      renderDecisions: true,
       propositions: [
         {
           id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
@@ -335,6 +336,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
 
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
       viewName: "home",
+      renderDecisions: true,
       propositions: [
         {
           id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",

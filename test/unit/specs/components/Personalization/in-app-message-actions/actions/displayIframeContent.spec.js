@@ -25,13 +25,13 @@ describe("DOM Actions on Iframe", () => {
   beforeEach(() => {
     cleanUpDomChanges("alloy-messaging-container");
     cleanUpDomChanges("alloy-overlay-container");
-    cleanUpDomChanges("alloy-iframe-id");
+    cleanUpDomChanges("alloy-content-iframe");
   });
 
   afterEach(() => {
     cleanUpDomChanges("alloy-messaging-container");
     cleanUpDomChanges("alloy-overlay-container");
-    cleanUpDomChanges("alloy-iframe-id");
+    cleanUpDomChanges("alloy-content-iframe");
   });
   describe("buildStyleFromParameters", () => {
     it("should build the style object correctly", () => {
@@ -310,7 +310,7 @@ describe("DOM Actions on Iframe", () => {
         .createSpy("createIframe")
         .and.callFake(() => {
           const element = document.createElement("iframe");
-          element.id = "alloy-iframe-id";
+          element.id = "alloy-content-iframe";
           return element;
         });
 

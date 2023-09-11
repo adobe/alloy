@@ -20,7 +20,7 @@ const ELEMENT_TAG_ID = "alloy-messaging-container";
 
 const OVERLAY_TAG_CLASSNAME = "alloy-overlay-container";
 const OVERLAY_TAG_ID = "alloy-overlay-container";
-const ALLOY_IFRAME_ID = "alloy-iframe-id";
+const ALLOY_IFRAME_ID = "alloy-content-iframe";
 
 const dismissMessage = () =>
   [ELEMENT_TAG_ID, OVERLAY_TAG_ID].forEach(removeElementById);
