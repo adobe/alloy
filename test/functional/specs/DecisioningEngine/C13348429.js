@@ -214,5 +214,5 @@ test("Test C13348429: Verify that message is displayed when renderDecision is tr
     responseBody: mockResponse
   });
   const containerElement = await getIframeContainer();
-  await t.expect(containerElement).contains("alloy-iframe-id");
+  await t.expect(containerElement).contains("alloy-content-iframe");
 });

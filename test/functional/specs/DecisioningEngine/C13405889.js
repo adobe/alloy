@@ -209,10 +209,13 @@ test("Test C13405889: Verify DOM action using the evaluateRulesets command when 
     responseBody: mockResponse
   });
   await alloy.evaluateRulesets({
-    "~type": "com.adobe.eventType.generic.track",
-    "~source": "com.adobe.eventSource.requestContent",
-    "~state.com.adobe.module.lifecycle/lifecyclecontextdata.dayofweek": 2
+    renderDecisions: true,
+    decisionContext: {
+      "~type": "com.adobe.eventType.generic.track",
+      "~source": "com.adobe.eventSource.requestContent",
+      "~state.com.adobe.module.lifecycle/lifecyclecontextdata.dayofweek": 2
+    }
   });
   const containerElement = await getIframeContainer();
-  await t.expect(containerElement).contains("alloy-iframe-id");
+  await t.expect(containerElement).contains("alloy-content-iframe");
 });

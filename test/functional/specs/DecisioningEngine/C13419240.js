@@ -219,5 +219,5 @@ test("Test C13419240: Verify DOM action using the sendEvent command for a viewNa
   });
 
   const containerElement = await getIframeContainer();
-  await t.expect(containerElement).contains("alloy-iframe-id");
+  await t.expect(containerElement).contains("alloy-content-iframe");
 });
