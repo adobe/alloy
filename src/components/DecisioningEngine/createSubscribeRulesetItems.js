@@ -18,7 +18,7 @@ import {
 
 const validateOptions = ({ options }) => {
   const validator = objectOf({
-    surface: string().required(),
+    surfaces: arrayOf(string()).uniqueItems(),
     schemas: arrayOf(string()).uniqueItems(),
     callback: callbackType().required()
   }).noUnknownFields();
@@ -28,41 +28,44 @@ const validateOptions = ({ options }) => {
 
 export default () => {
   let subscriptionHandler;
-  let surfaceIdentifier;
+  let surfacesFilter;
   let schemasFilter;
 
-  const run = ({ surface, schemas, callback }) => {
+  const run = ({ surfaces, schemas, callback }) => {
     subscriptionHandler = callback;
-    surfaceIdentifier = surface;
+    surfacesFilter = surfaces instanceof Array ? surfaces : undefined;
     schemasFilter = schemas instanceof Array ? schemas : undefined;
   };
 
   const optionsValidator = options => validateOptions({ options });
 
   const refresh = propositions => {
-    if (!subscriptionHandler || !surfaceIdentifier) {
+    if (!subscriptionHandler) {
       return;
     }
 
-    const result = propositions
-      .filter(payload => payload.scope === surfaceIdentifier)
-      .reduce((allItems, payload) => {
-        const { items = [] } = payload;
+    const result = {
+      propositions: propositions
+        .filter(payload =>
+          surfacesFilter ? surfacesFilter.includes(payload.scope) : true
+        )
+        .map(payload => {
+          const { items = [] } = payload;
+          return {
+            ...payload,
+            items: items.filter(item =>
+              schemasFilter ? schemasFilter.includes(item.schema) : true
+            )
+          };
+        })
+        .filter(payload => payload.items.length > 0)
+    };
 
-        return [
-          ...allItems,
-          ...items.filter(item =>
-            schemasFilter ? schemasFilter.includes(item.schema) : true
-          )
-        ];
-      }, [])
-      .sort((a, b) => b.data.qualifiedDate - a.data.qualifiedDate);
-
-    if (result.length === 0) {
+    if (result.propositions.length === 0) {
       return;
     }
 
-    subscriptionHandler.call(null, { items: result });
+    subscriptionHandler.call(null, result);
   };
 
   return {
