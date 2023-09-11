@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 import { createNode } from "../../../../../../../src/utils/dom";
 import { DIV } from "../../../../../../../src/constants/tagName";
 import displayIframeContent from "../../../../../../../src/components/Personalization/in-app-message-actions/actions/displayIframeContent";
+import { TEXT_HTML } from "../../../../../../../src/components/Personalization/constants/contentType";
 
 describe("Personalization::IAM:modal", () => {
   it("inserts modal into dom", async () => {
@@ -42,7 +43,7 @@ describe("Personalization::IAM:modal", () => {
         height: 60
       },
       content: `<!doctype html><html lang=""><head></head><body><div>modal</div>Alf Says</body></html>`,
-      contentType: "text/html"
+      contentType: TEXT_HTML
     });
     document.querySelector("div#alloy-overlay-container");
     const messagingContainer = document.querySelector(

@@ -17,7 +17,7 @@ export const mergeDecisionsMeta = (
   event,
   decisionsMeta,
   eventType,
-  eventLabel = ""
+  propositionAction
 ) => {
   const xdm = {
     _experience: {
@@ -29,10 +29,9 @@ export const mergeDecisionsMeta = (
       }
     }
   };
-  if (eventLabel) {
-    xdm._experience.decisioning.propositionAction = {
-      label: eventLabel
-    };
+
+  if (propositionAction) {
+    xdm._experience.decisioning.propositionAction = propositionAction;
   }
   event.mergeXdm(xdm);
 };

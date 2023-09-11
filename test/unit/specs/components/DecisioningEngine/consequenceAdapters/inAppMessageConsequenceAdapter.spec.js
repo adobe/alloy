@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import inAppMessageConsequenceAdapter from "../../../../../../src/components/DecisioningEngine/consequenceAdapters/inAppMessageConsequenceAdapter";
+import { TEXT_HTML } from "../../../../../../src/components/Personalization/constants/contentType";
 
 describe("DecisioningEngine:inAppMessageConsequenceAdapter", () => {
   it("works", () => {
@@ -54,7 +55,7 @@ describe("DecisioningEngine:inAppMessageConsequenceAdapter", () => {
         },
         webParameters: jasmine.any(Object),
         content: "<!doctype html></html>",
-        contentType: "text/html"
+        contentType: TEXT_HTML
       },
       id: "72042c7c-4e34-44f6-af95-1072ae117424"
     });

@@ -9,6 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { startsWith } from "../../../utils";
+
 export const addStyle = (styleTagId, cssText) => {
   const existingStyle = document.getElementById(styleTagId);
   if (existingStyle) {
@@ -36,4 +38,39 @@ export const removeElementById = id => {
   if (element) {
     element.remove();
   }
+};
+
+export const parseAnchor = anchor => {
+  const nothing = {};
+
+  if (!anchor || anchor.tagName.toLowerCase() !== "a") {
+    return nothing;
+  }
+
+  const { href } = anchor;
+  if (!href || !startsWith(href, "adbinapp://")) {
+    return nothing;
+  }
+
+  const hrefParts = href.split("?");
+
+  const action = hrefParts[0].split("://")[1];
+  const label = anchor.innerText;
+  const uuid = anchor.getAttribute("data-uuid") || "";
+
+  let interaction;
+  let link;
+
+  if (hrefParts.length > 1) {
+    const queryParams = new URLSearchParams(hrefParts[1]);
+    interaction = queryParams.get("interaction") || "";
+    link = decodeURIComponent(queryParams.get("link") || "");
+  }
+  return {
+    action,
+    interaction,
+    link,
+    label,
+    uuid
+  };
 };

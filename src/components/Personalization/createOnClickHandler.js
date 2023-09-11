@@ -48,7 +48,7 @@ export default ({
           event,
           decisionsMeta,
           PropositionEventType.INTERACT,
-          eventLabel
+          eventLabel ? { label: eventLabel } : undefined
         );
       }
     }
