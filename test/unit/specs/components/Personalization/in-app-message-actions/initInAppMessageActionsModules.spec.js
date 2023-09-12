@@ -10,24 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createModules from "../../../../../../src/components/Personalization/createModules";
-import { MESSAGE_IN_APP } from "../../../../../../src/components/Personalization/constants/schema";
 import initInAppMessageActionsModules from "../../../../../../src/components/Personalization/in-app-message-actions/initInAppMessageActionsModules";
 
 describe("Personalization::turbine::initInAppMessageActionsModules", () => {
   const noop = () => undefined;
-  const modules = createModules({ storeClickMetrics: noop, collect: noop });
-  const expectedModules = modules[MESSAGE_IN_APP];
 
   it("should have all the required modules", () => {
-    const messagingActionsModules = initInAppMessageActionsModules(() => {});
+    const messagingActionsModules = initInAppMessageActionsModules(noop);
 
-    expect(Object.keys(messagingActionsModules).length).toEqual(
-      Object.keys(expectedModules).length
+    expect(Object.keys(messagingActionsModules).length).toEqual(1);
+
+    expect(messagingActionsModules.defaultContent).toEqual(
+      jasmine.any(Function)
     );
-
-    Object.keys(expectedModules).forEach(key => {
-      expect(messagingActionsModules[key]).toEqual(jasmine.any(Function));
-    });
   });
 });

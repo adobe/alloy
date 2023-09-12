@@ -11,74 +11,115 @@ governing permissions and limitations under the License.
 */
 
 import createViewCacheManager from "../../../../../src/components/Personalization/createViewCacheManager";
-import { defer } from "../../../../../src/utils";
 
 describe("Personalization::createCacheManager", () => {
-  const cartView = "cart";
-  const homeView = "home";
-  const productsView = "products";
-  const viewDecisions = {
-    home: [
-      {
-        id: "foo1",
-        items: [],
-        scope: "home"
-      },
-      {
-        id: "foo2",
-        items: [],
-        scope: "home"
+  const viewHandles = [
+    {
+      id: "foo1",
+      scope: "home",
+      scopeDetails: {
+        characteristics: {
+          scopeType: "view"
+        }
       }
-    ],
-    cart: [
-      {
-        id: "foo3",
-        items: [],
-        scope: "cart"
+    },
+    {
+      id: "foo2",
+      scope: "home",
+      scopeDetails: {
+        characteristics: {
+          scopeType: "view"
+        }
       }
-    ]
-  };
+    },
+    {
+      id: "foo3",
+      scope: "cart",
+      scopeDetails: {
+        characteristics: {
+          scopeType: "view"
+        }
+      }
+    },
+    {
+      id: "foo4",
+      scope: "other"
+    }
+  ];
 
-  it("stores and gets the decisions based on a viewName", () => {
-    const viewCacheManager = createViewCacheManager();
-    const decisionsDeferred = defer();
+  let createProposition;
 
-    viewCacheManager.storeViews(decisionsDeferred.promise);
-    decisionsDeferred.resolve(viewDecisions);
+  beforeEach(() => {
+    createProposition = viewHandle => {
+      const proposition = jasmine.createSpyObj("proposition", [
+        "includeInDisplayNotification",
+        "excludeInReturnedPropositions",
+        "getHandle"
+      ]);
+      proposition.getHandle.and.returnValue(viewHandle);
+      return proposition;
+    };
+  });
 
-    return Promise.all([
-      expectAsync(viewCacheManager.getView(cartView)).toBeResolvedTo(
-        viewDecisions[cartView]
-      ),
-      expectAsync(viewCacheManager.getView(homeView)).toBeResolvedTo(
-        viewDecisions[homeView]
-      )
+  it("stores and gets the decisions based on a viewName", async () => {
+    const viewCacheManager = createViewCacheManager({ createProposition });
+
+    const cacheUpdate = viewCacheManager.createCacheUpdate("home");
+    const resultingHandles = cacheUpdate.update(viewHandles);
+    expect(resultingHandles.map(h => h.getHandle())).toEqual([
+      viewHandles[0],
+      viewHandles[1],
+      viewHandles[3]
+    ]);
+
+    const homeViews = await viewCacheManager.getView("home");
+    expect(homeViews.map(h => h.getHandle())).toEqual([
+      viewHandles[0],
+      viewHandles[1]
+    ]);
+
+    const cartViews = await viewCacheManager.getView("cart");
+    expect(cartViews.map(h => h.getHandle())).toEqual([viewHandles[2]]);
+
+    const otherViews = await viewCacheManager.getView("other");
+    expect(otherViews.map(h => h.getHandle())).toEqual([
+      {
+        scope: "other",
+        scopeDetails: {
+          characteristics: {
+            scopeType: "view"
+          }
+        }
+      }
     ]);
   });
 
-  it("gets an empty array if there is no decisions for a specific view", () => {
-    const viewCacheManager = createViewCacheManager();
-    const decisionsDeferred = defer();
+  it("should be no views when decisions deferred is rejected", async () => {
+    const viewCacheManager = createViewCacheManager({ createProposition });
+    const cacheUpdate = viewCacheManager.createCacheUpdate("home");
+    cacheUpdate.cancel();
 
-    viewCacheManager.storeViews(decisionsDeferred.promise);
-    decisionsDeferred.resolve(viewDecisions);
-
-    return Promise.all([
-      expectAsync(viewCacheManager.getView(productsView)).toBeResolvedTo([])
+    const homeViews = await viewCacheManager.getView("home");
+    expect(homeViews.map(h => h.getHandle())).toEqual([
+      {
+        scope: "home",
+        scopeDetails: {
+          characteristics: {
+            scopeType: "view"
+          }
+        }
+      }
     ]);
   });
 
-  it("should be no views when decisions deferred is rejected", () => {
-    const viewCacheManager = createViewCacheManager();
-    const decisionsDeferred = defer();
+  it("should not be initialized when first created", () => {
+    const viewCacheManager = createViewCacheManager({ createProposition });
+    expect(viewCacheManager.isInitialized()).toBe(false);
+  });
 
-    viewCacheManager.storeViews(decisionsDeferred.promise);
-    decisionsDeferred.reject();
-
-    return expectAsync(viewCacheManager.getView("cart"))
-      .toBeResolvedTo([])
-      .then(() => {
-        expect(viewCacheManager.isInitialized()).toBeTrue();
-      });
+  it("should be initialized when first cache update is created", () => {
+    const viewCacheManager = createViewCacheManager({ createProposition });
+    viewCacheManager.createCacheUpdate("home");
+    expect(viewCacheManager.isInitialized()).toBe(true);
   });
 });

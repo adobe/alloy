@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 import { boolean, objectOf, string } from "../../utils/validation";
 import createComponent from "./createComponent";
 import createCollect from "./createCollect";
-import createExecuteDecisions from "./createExecuteDecisions";
 import { hideContainers, showContainers } from "./flicker";
 import createFetchDataHandler from "./createFetchDataHandler";
 import collectClicks from "./dom-actions/clicks/collectClicks";
@@ -22,20 +21,24 @@ import { mergeDecisionsMeta, mergeQuery } from "./event";
 import createOnClickHandler from "./createOnClickHandler";
 import createViewCacheManager from "./createViewCacheManager";
 import createViewChangeHandler from "./createViewChangeHandler";
-import groupDecisions from "./groupDecisions";
-import createOnResponseHandler from "./createOnResponseHandler";
 import createClickStorage from "./createClickStorage";
-import createRedirectHandler from "./createRedirectHandler";
-import createAutorenderingHandler from "./createAutoRenderingHandler";
-import createNonRenderingHandler from "./createNonRenderingHandler";
 import createApplyPropositions from "./createApplyPropositions";
 import createGetPageLocation from "./createGetPageLocation";
 import createSetTargetMigration from "./createSetTargetMigration";
-import createActionsProvider from "./createActionsProvider";
-import executeActions from "./executeActions";
-import createModules from "./createModules";
-import createPreprocessors from "./createPreprocessors";
+import createRedirectHandler from "./handlers/createRedirectHandler";
+import createHtmlContentHandler from "./handlers/createHtmlContentHandler";
+import createDomActionHandler from "./handlers/createDomActionHandler";
+import createMeasurementSchemaHandler from "./handlers/createMeasurementSchemaHandler";
+import createRender from "./handlers/createRender";
+import { createProposition } from "./handlers/proposition";
 import createSubscribeMessageFeed from "./createSubscribeMessageFeed";
+import { initDomActionsModules } from "./dom-actions";
+import createPreprocess from "./dom-actions/createPreprocess";
+import remapHeadOffers from "./dom-actions/remapHeadOffers";
+import remapCustomCodeOffers from "./dom-actions/remapCustomCodeOffers";
+import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules";
+import createInAppMessageHandler from "./handlers/createInAppMessageHandler";
+import createOnDecisionHandler from "./createOnDecisionHandler";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -47,47 +50,48 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     storeClickMetrics
   } = createClickStorage();
   const getPageLocation = createGetPageLocation({ window });
-  const viewCache = createViewCacheManager();
+  const viewCache = createViewCacheManager({ createProposition });
+  const domActionsModules = initDomActionsModules();
+  const preprocess = createPreprocess([remapHeadOffers, remapCustomCodeOffers]);
 
-  const actionsProvider = createActionsProvider({
-    modules: createModules({ storeClickMetrics, collect }),
-    preprocessors: createPreprocessors(),
-    logger
+  const noOpHandler = () => undefined;
+
+  const inAppMessageHandler = createInAppMessageHandler({
+    next: noOpHandler,
+    modules: initInAppMessageActionsModules(collect)
   });
 
-  const executeDecisions = createExecuteDecisions({
-    actionsProvider,
-    logger,
-    executeActions
+  const domActionHandler = createDomActionHandler({
+    next: inAppMessageHandler,
+    modules: domActionsModules,
+    storeClickMetrics,
+    preprocess
   });
-  const handleRedirectDecisions = createRedirectHandler({
+  const measurementSchemaHandler = createMeasurementSchemaHandler({
+    next: domActionHandler
+  });
+  const redirectHandler = createRedirectHandler({
+    next: measurementSchemaHandler
+  });
+  const htmlContentHandler = createHtmlContentHandler({
+    next: redirectHandler,
+    modules: domActionsModules,
+    preprocess
+  });
+
+  const render = createRender({
+    handleChain: htmlContentHandler,
     collect,
-    window,
-    logger,
-    showContainers
-  });
-  const autoRenderingHandler = createAutorenderingHandler({
-    viewCache,
-    executeDecisions,
-    showContainers,
-    collect
-  });
-  const applyPropositions = createApplyPropositions({
-    executeDecisions
-  });
-  const nonRenderingHandler = createNonRenderingHandler({ viewCache });
-  const responseHandler = createOnResponseHandler({
-    autoRenderingHandler,
-    nonRenderingHandler,
-    groupDecisions,
-    handleRedirectDecisions,
-    showContainers
+    executeRedirect: url => window.location.replace(url),
+    logger
   });
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
-    responseHandler,
+    showContainers,
     hideContainers,
-    mergeQuery
+    mergeQuery,
+    collect,
+    render
   });
   const onClickHandler = createOnClickHandler({
     eventManager,
@@ -98,9 +102,11 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
   const viewChangeHandler = createViewChangeHandler({
     mergeDecisionsMeta,
-    collect,
-    executeDecisions,
+    render,
     viewCache
+  });
+  const applyPropositions = createApplyPropositions({
+    render
   });
   const setTargetMigration = createSetTargetMigration({
     targetMigrationEnabled
@@ -110,11 +116,16 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     collect
   });
 
+  const onDecisionHandler = createOnDecisionHandler({
+    render,
+    collect,
+    subscribeMessageFeed
+  });
+
   return createComponent({
     getPageLocation,
     logger,
     fetchDataHandler,
-    autoRenderingHandler,
     viewChangeHandler,
     onClickHandler,
     isAuthoringModeEnabled,
@@ -123,6 +134,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     showContainers,
     applyPropositions,
     setTargetMigration,
+    onDecisionHandler,
     subscribeMessageFeed
   });
 };

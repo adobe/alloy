@@ -46,13 +46,16 @@ export default ({
   decisionScopes,
   personalization,
   event,
-  viewCache,
+  isCacheInitialized,
   logger
 }) => {
   const viewName = event.getViewName();
   return {
     isRenderDecisions() {
       return renderDecisions;
+    },
+    isSendDisplayNotifications() {
+      return !!personalization.sendDisplayNotifications;
     },
     getViewName() {
       return viewName;
@@ -106,7 +109,7 @@ export default ({
       };
     },
     isCacheInitialized() {
-      return viewCache.isInitialized();
+      return isCacheInitialized;
     },
     shouldFetchData() {
       return (

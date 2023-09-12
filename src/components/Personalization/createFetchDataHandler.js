@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Adobe. All rights reserved.
+Copyright 2023 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,21 +9,46 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import {
+  buildReturnedPropositions,
+  buildReturnedDecisions
+} from "./handlers/proposition";
+
+const DECISIONS_HANDLE = "personalization:decisions";
 
 export default ({
   prehidingStyle,
-  responseHandler,
+  showContainers,
   hideContainers,
-  mergeQuery
+  mergeQuery,
+  collect,
+  render
 }) => {
-  return ({ decisionsDeferred, personalizationDetails, event, onResponse }) => {
+  return ({ cacheUpdate, personalizationDetails, event, onResponse }) => {
     if (personalizationDetails.isRenderDecisions()) {
       hideContainers(prehidingStyle);
     }
     mergeQuery(event, personalizationDetails.createQueryDetails());
 
-    onResponse(({ response }) =>
-      responseHandler({ decisionsDeferred, personalizationDetails, response })
-    );
+    onResponse(({ response }) => {
+      const handles = response.getPayloadsByType(DECISIONS_HANDLE);
+      const propositions = cacheUpdate.update(handles);
+      if (personalizationDetails.isRenderDecisions()) {
+        render(propositions).then(decisionsMeta => {
+          showContainers();
+          if (decisionsMeta.length > 0) {
+            collect({
+              decisionsMeta,
+              viewName: personalizationDetails.getViewName()
+            });
+          }
+        });
+      }
+
+      return {
+        propositions: buildReturnedPropositions(propositions),
+        decisions: buildReturnedDecisions(propositions)
+      };
+    });
   };
 };

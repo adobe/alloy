@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import composePersonalizationResultingObject from "./utils/composePersonalizationResultingObject";
 import { isNonEmptyArray, isObject } from "../../utils";
 import {
   DOM_ACTION,
@@ -18,15 +17,14 @@ import {
   MESSAGE_IN_APP
 } from "./constants/schema";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
-import { EMPTY_PROPOSITIONS } from "./validateApplyPropositionsOptions";
+import {
+  buildReturnedPropositions,
+  createProposition
+} from "./handlers/proposition";
 
-export const SUPPORTED_SCHEMAS = [
-  DOM_ACTION,
-  HTML_CONTENT_ITEM,
-  MESSAGE_IN_APP
-];
+const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM, MESSAGE_IN_APP];
 
-export default ({ executeDecisions }) => {
+export default ({ render }) => {
   const filterItemsPredicate = item =>
     SUPPORTED_SCHEMAS.indexOf(item.schema) > -1;
 
@@ -79,20 +77,16 @@ export default ({ executeDecisions }) => {
       .filter(proposition => isNonEmptyArray(proposition.items));
   };
 
-  const applyPropositions = ({ propositions, metadata }) => {
+  return ({ propositions, metadata = {} }) => {
     const propositionsToExecute = preparePropositions({
       propositions,
       metadata
-    });
-    return executeDecisions(propositionsToExecute).then(() => {
-      return composePersonalizationResultingObject(propositionsToExecute, true);
-    });
-  };
+    }).map(proposition => createProposition(proposition, true));
 
-  return ({ propositions, metadata = {} }) => {
-    if (isNonEmptyArray(propositions)) {
-      return applyPropositions({ propositions, metadata });
-    }
-    return Promise.resolve(EMPTY_PROPOSITIONS);
+    render(propositionsToExecute);
+
+    return {
+      propositions: buildReturnedPropositions(propositionsToExecute)
+    };
   };
 };

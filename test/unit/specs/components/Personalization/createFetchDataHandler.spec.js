@@ -11,86 +11,124 @@ governing permissions and limitations under the License.
 */
 
 import createFetchDataHandler from "../../../../../src/components/Personalization/createFetchDataHandler";
+import { createProposition } from "../../../../../src/components/Personalization/handlers/proposition";
+import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("Personalization::createFetchDataHandler", () => {
-  let responseHandler;
+  let prehidingStyle;
+  let showContainers;
   let hideContainers;
   let mergeQuery;
+  let collect;
+  let render;
+
+  let cacheUpdate;
   let personalizationDetails;
-  let decisionsDeferred;
-  const config = {
-    prehidingStyle: "body {opacity:0;}"
-  };
-  let onResponse = jasmine.createSpy();
-  const event = {};
+  let event;
+  let onResponse;
+
   let response;
 
   beforeEach(() => {
-    response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
-    responseHandler = jasmine.createSpy();
-    mergeQuery = jasmine.createSpy();
+    prehidingStyle = "myprehidingstyle";
+    showContainers = jasmine.createSpy("showContainers");
+    hideContainers = jasmine.createSpy("hideContainers");
+    mergeQuery = jasmine.createSpy("mergeQuery");
+    collect = jasmine.createSpy("collect");
+    render = jasmine.createSpy("render");
+    cacheUpdate = jasmine.createSpyObj("cacheUpdate", ["update"]);
     personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
       "isRenderDecisions",
-      "createQueryDetails"
+      "createQueryDetails",
+      "getViewName"
     ]);
-    hideContainers = jasmine.createSpy("hideContainers");
-    decisionsDeferred = jasmine.createSpyObj("decisionsDeferred", ["reject"]);
+    personalizationDetails.createQueryDetails.and.returnValue("myquerydetails");
+    event = "myevent";
+    onResponse = jasmine.createSpy();
+    response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
   });
+
+  const run = () => {
+    const fetchDataHandler = createFetchDataHandler({
+      prehidingStyle,
+      showContainers,
+      hideContainers,
+      mergeQuery,
+      collect,
+      render
+    });
+    fetchDataHandler({
+      cacheUpdate,
+      personalizationDetails,
+      event,
+      onResponse
+    });
+  };
+
+  const returnResponse = () => {
+    expect(onResponse).toHaveBeenCalledTimes(1);
+    const callback = onResponse.calls.argsFor(0)[0];
+    return callback({ response });
+  };
 
   it("should hide containers if renderDecisions is true", () => {
-    const fetchDataHandler = createFetchDataHandler({
-      config,
-      responseHandler,
-      hideContainers,
-      mergeQuery
-    });
     personalizationDetails.isRenderDecisions.and.returnValue(true);
-
-    fetchDataHandler({
-      decisionsDeferred,
-      personalizationDetails,
-      event,
-      onResponse
-    });
+    run();
     expect(hideContainers).toHaveBeenCalled();
   });
-  it("shouldn't hide containers if renderDecisions is false", () => {
-    const fetchDataHandler = createFetchDataHandler({
-      config,
-      responseHandler,
-      hideContainers,
-      mergeQuery
-    });
-    personalizationDetails.isRenderDecisions.and.returnValue(false);
-    fetchDataHandler({
-      decisionsDeferred,
-      personalizationDetails,
-      event,
-      onResponse
-    });
 
+  it("shouldn't hide containers if renderDecisions is false", () => {
+    personalizationDetails.isRenderDecisions.and.returnValue(false);
+    run();
     expect(hideContainers).not.toHaveBeenCalled();
   });
 
   it("should trigger responseHandler at onResponse", () => {
-    const fetchDataHandler = createFetchDataHandler({
-      config,
-      responseHandler,
-      hideContainers,
-      mergeQuery
-    });
     personalizationDetails.isRenderDecisions.and.returnValue(false);
-    onResponse = callback => {
-      callback(response);
-    };
-    fetchDataHandler({
-      decisionsDeferred,
-      personalizationDetails,
-      event,
-      onResponse
+    run();
+    response.getPayloadsByType.and.returnValue([]);
+    cacheUpdate.update.and.returnValue([]);
+    const result = returnResponse();
+    expect(result).toEqual({
+      propositions: [],
+      decisions: []
     });
-
-    expect(hideContainers).not.toHaveBeenCalled();
-    expect(responseHandler).toHaveBeenCalled();
   });
+
+  it("should render decisions", async () => {
+    personalizationDetails.isRenderDecisions.and.returnValue(true);
+    personalizationDetails.getViewName.and.returnValue("myviewname");
+    render = propositions => {
+      propositions[0].addRenderer(0, () => {});
+      propositions[0].includeInDisplayNotification();
+      const decisionsMeta = [];
+      propositions[0].addToNotifications(decisionsMeta);
+      return Promise.resolve(decisionsMeta);
+    };
+    run();
+    response.getPayloadsByType.and.returnValue([
+      { id: "handle1" },
+      { id: "handle2" }
+    ]);
+    cacheUpdate.update.and.returnValue([
+      createProposition({ id: "handle1", items: ["item1"] })
+    ]);
+    const result = returnResponse();
+    expect(result).toEqual({
+      propositions: [
+        { id: "handle1", items: ["item1"], renderAttempted: true }
+      ],
+      decisions: []
+    });
+    await flushPromiseChains();
+    expect(showContainers).toHaveBeenCalled();
+    expect(collect).toHaveBeenCalledOnceWith({
+      decisionsMeta: [
+        { id: "handle1", scope: undefined, scopeDetails: undefined }
+      ],
+      viewName: "myviewname"
+    });
+  });
+
+  // TODO - test the rest of the functionality
 });

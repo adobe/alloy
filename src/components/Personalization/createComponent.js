@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop, defer } from "../../utils";
+import { noop } from "../../utils";
 import createPersonalizationDetails from "./createPersonalizationDetails";
 import { AUTHORING_ENABLED } from "./constants/loggerMessage";
 import validateApplyPropositionsOptions from "./validateApplyPropositionsOptions";
@@ -19,7 +19,6 @@ export default ({
   getPageLocation,
   logger,
   fetchDataHandler,
-  autoRenderingHandler,
   viewChangeHandler,
   onClickHandler,
   isAuthoringModeEnabled,
@@ -28,22 +27,13 @@ export default ({
   showContainers,
   applyPropositions,
   setTargetMigration,
+  onDecisionHandler,
   subscribeMessageFeed
 }) => {
   return {
     lifecycle: {
       onDecision({ viewName, renderDecisions, propositions }) {
-        subscribeMessageFeed.refresh(propositions);
-
-        if (!renderDecisions) {
-          return;
-        }
-
-        autoRenderingHandler({
-          viewName,
-          pageWideScopeDecisions: propositions,
-          nonAutoRenderableDecisions: []
-        });
+        return onDecisionHandler({ viewName, renderDecisions, propositions });
       },
       onBeforeRequest({ request }) {
         setTargetMigration(request);
@@ -75,17 +65,18 @@ export default ({
           decisionScopes,
           personalization,
           event,
-          viewCache,
+          isCacheInitialized: viewCache.isInitialized(),
           logger
         });
 
         if (personalizationDetails.shouldFetchData()) {
-          const decisionsDeferred = defer();
+          const cacheUpdate = viewCache.createCacheUpdate(
+            personalizationDetails.getViewName()
+          );
+          onRequestFailure(() => cacheUpdate.cancel());
 
-          viewCache.storeViews(decisionsDeferred.promise);
-          onRequestFailure(() => decisionsDeferred.reject());
           fetchDataHandler({
-            decisionsDeferred,
+            cacheUpdate,
             personalizationDetails,
             event,
             onResponse

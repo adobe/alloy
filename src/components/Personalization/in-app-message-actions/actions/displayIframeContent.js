@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { getNonce } from "../../dom-actions/dom";
 import { parseAnchor, removeElementById } from "../utils";
 import { TEXT_HTML } from "../../constants/contentType";
-import { INTERACT } from "../../constants/eventType";
+import { getEventType } from "../../constants/propositionEventType";
 
 const ELEMENT_TAG_CLASSNAME = "alloy-messaging-container";
 const ELEMENT_TAG_ID = "alloy-messaging-container";
@@ -102,7 +102,7 @@ export const createIframeClickHandler = (
 
     const { action, interaction, link, label, uuid } = parseAnchor(anchor);
 
-    interact({
+    interact(action, {
       label,
       id: interaction,
       uuid,
@@ -207,12 +207,11 @@ export const displayHTMLContentInIframe = (settings, interact) => {
 export default (settings, collect) => {
   return new Promise(resolve => {
     const { meta } = settings;
-
-    displayHTMLContentInIframe(settings, propositionAction => {
+    displayHTMLContentInIframe(settings, (action, propositionAction) => {
       collect({
         decisionsMeta: [meta],
         propositionAction,
-        eventType: INTERACT
+        eventType: getEventType(action)
       });
     });
 

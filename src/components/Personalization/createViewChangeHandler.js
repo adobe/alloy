@@ -10,46 +10,34 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import composePersonalizationResultingObject from "./utils/composePersonalizationResultingObject";
-import { isNonEmptyArray } from "../../utils";
 import { PropositionEventType } from "./constants/propositionEventType";
+import {
+  buildReturnedPropositions,
+  buildReturnedDecisions
+} from "./handlers/proposition";
 
-export default ({
-  mergeDecisionsMeta,
-  collect,
-  executeDecisions,
-  viewCache
-}) => {
+export default ({ mergeDecisionsMeta, render, viewCache }) => {
   return ({ personalizationDetails, event, onResponse }) => {
     const viewName = personalizationDetails.getViewName();
 
-    return viewCache.getView(viewName).then(viewDecisions => {
+    return viewCache.getView(viewName).then(propositions => {
+      onResponse(() => {
+        return {
+          propositions: buildReturnedPropositions(propositions),
+          decisions: buildReturnedDecisions(propositions)
+        };
+      });
+
       if (personalizationDetails.isRenderDecisions()) {
-        return executeDecisions(viewDecisions).then(decisionsMeta => {
-          // if there are decisions to be rendered we render them and attach the result in experience.decisions.propositions
-          if (isNonEmptyArray(decisionsMeta)) {
-            mergeDecisionsMeta(
-              event,
-              decisionsMeta,
-              PropositionEventType.DISPLAY
-            );
-            onResponse(() => {
-              return composePersonalizationResultingObject(viewDecisions, true);
-            });
-            return;
-          }
-          // if there are no decisions in cache for this view, we will send a empty notification
-          onResponse(() => {
-            collect({ decisionsMeta: [], viewName });
-            return composePersonalizationResultingObject(viewDecisions, true);
-          });
+        return render(propositions).then(decisionsMeta => {
+          mergeDecisionsMeta(
+            event,
+            decisionsMeta,
+            PropositionEventType.DISPLAY
+          );
         });
       }
-
-      onResponse(() => {
-        return composePersonalizationResultingObject(viewDecisions, false);
-      });
-      return {};
+      return Promise.resolve();
     });
   };
 };
