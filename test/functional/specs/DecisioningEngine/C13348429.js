@@ -182,8 +182,7 @@ const mockResponse = {
 };
 
 createFixture({
-  title:
-    "Test C13348429: Verify that message is displayed when renderDecision is true & decisionContext satisfies the ruleset.",
+  title: "Test C13348429: Verify DOM action using the applyResponse command.",
   requestHooks: [networkLogger.edgeEndpointLogs],
   url: `${TEST_PAGE_URL}?test=C13348429`
 });
@@ -199,7 +198,7 @@ const getIframeContainer = ClientFunction(() => {
   return element ? element.innerHTML : "";
 });
 
-test("Test C13348429: Verify that message is displayed when renderDecision is true & decisionContext satisfies the ruleset.", async () => {
+test("Test C13348429: Verify DOM action using the applyResponse command.", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({});

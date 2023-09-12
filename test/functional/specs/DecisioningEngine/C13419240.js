@@ -182,8 +182,7 @@ const mockResponse = {
 };
 
 createFixture({
-  title:
-    "Test C13419240: Verify DOM action using the sendEvent command for a viewName",
+  title: "Test C13419240: Verify DOM action using the sendEvent command",
   requestHooks: [networkLogger.edgeEndpointLogs],
   url: `${TEST_PAGE_URL}?test=C13348429`
 });
@@ -199,7 +198,7 @@ const getIframeContainer = ClientFunction(() => {
   return element ? element.innerHTML : "";
 });
 
-test("Test C13419240: Verify DOM action using the sendEvent command for a viewName", async () => {
+test("Test C13419240: Verify DOM action using the sendEvent command", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({}); // establish an identity

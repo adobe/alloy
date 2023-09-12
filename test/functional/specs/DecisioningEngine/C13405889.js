@@ -182,8 +182,7 @@ const mockResponse = {
 };
 
 createFixture({
-  title:
-    "Test C13405889: Verify DOM action using the evaluateRulesets command when renderDecisions is set to false",
+  title: "Test C13405889: Verify DOM action using the evaluateRulesets command",
   requestHooks: [networkLogger.edgeEndpointLogs],
   url: `${TEST_PAGE_URL}?test=C13348429`
 });
@@ -199,7 +198,7 @@ const getIframeContainer = ClientFunction(() => {
   return element ? element.innerHTML : "";
 });
 
-test("Test C13405889: Verify DOM action using the evaluateRulesets command when renderDecisions is set to false", async () => {
+test("Test C13405889: Verify DOM action using the evaluateRulesets command", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({});
