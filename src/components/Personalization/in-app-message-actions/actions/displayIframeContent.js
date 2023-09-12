@@ -15,18 +15,22 @@ import { parseAnchor, removeElementById } from "../utils";
 import { TEXT_HTML } from "../../constants/contentType";
 import { INTERACT } from "../../constants/eventType";
 
-const ELEMENT_TAG_CLASSNAME = "alloy-messaging-container";
-const ELEMENT_TAG_ID = "alloy-messaging-container";
-
-const OVERLAY_TAG_CLASSNAME = "alloy-overlay-container";
-const OVERLAY_TAG_ID = "alloy-overlay-container";
+const ALLOY_MESSAGING_CONTAINER_ID = "alloy-messaging-container";
+const ALLOY_OVERLAY_CONTAINER_ID = "alloy-overlay-container";
 const ALLOY_IFRAME_ID = "alloy-content-iframe";
 
 const dismissMessage = () =>
-  [ELEMENT_TAG_ID, OVERLAY_TAG_ID].forEach(removeElementById);
+  [ALLOY_MESSAGING_CONTAINER_ID, ALLOY_OVERLAY_CONTAINER_ID].forEach(
+    removeElementById
+  );
 
-// eslint-disable-next-line no-unused-vars
-export const buildStyleFromParameters = (mobileParameters, webParameters) => {
+export const createElement = elementTagId => {
+  const element = document.createElement("div");
+  element.id = elementTagId;
+  return element;
+};
+
+export const buildStyleFromMobileParameters = mobileParameters => {
   const {
     verticalAlign,
     width,
@@ -132,13 +136,6 @@ export const createIframe = (htmlContent, clickHandler) => {
     new Blob([htmlDocument.documentElement.outerHTML], { type: TEXT_HTML })
   );
   element.id = ALLOY_IFRAME_ID;
-
-  Object.assign(element.style, {
-    border: "none",
-    width: "100%",
-    height: "100%"
-  });
-
   element.addEventListener("load", () => {
     const { addEventListener } =
       element.contentDocument || element.contentWindow.document;
@@ -148,60 +145,75 @@ export const createIframe = (htmlContent, clickHandler) => {
   return element;
 };
 
-export const createContainerElement = settings => {
-  const { mobileParameters = {}, webParameters = {} } = settings;
-  const element = document.createElement("div");
-  element.id = ELEMENT_TAG_ID;
-  element.className = `${ELEMENT_TAG_CLASSNAME}`;
-  Object.assign(
-    element.style,
-    buildStyleFromParameters(mobileParameters, webParameters)
-  );
-
-  return element;
-};
-
-export const createOverlayElement = parameter => {
-  const element = document.createElement("div");
-  const backdropOpacity = parameter.backdropOpacity || 0.5;
-  const backdropColor = parameter.backdropColor || "#FFFFFF";
-  element.id = OVERLAY_TAG_ID;
-  element.className = `${OVERLAY_TAG_CLASSNAME}`;
-
-  Object.assign(element.style, {
-    position: "fixed",
-    top: "0",
-    left: "0",
-    width: "100%",
-    height: "100%",
-    background: "transparent",
-    opacity: backdropOpacity,
-    backgroundColor: backdropColor
-  });
-
-  return element;
-};
-
 export const displayHTMLContentInIframe = (settings, interact) => {
   dismissMessage();
-  const { content, contentType, mobileParameters } = settings;
+  const { content, contentType, mobileParameters, webParameters } = settings;
 
   if (contentType !== TEXT_HTML) {
     return;
   }
 
-  const container = createContainerElement(settings);
+  const container = createElement(ALLOY_MESSAGING_CONTAINER_ID);
 
   const iframe = createIframe(content, createIframeClickHandler(interact));
 
-  container.appendChild(iframe);
+  const overlay = createElement(ALLOY_OVERLAY_CONTAINER_ID);
 
-  if (mobileParameters.uiTakeover) {
-    const overlay = createOverlayElement(mobileParameters);
-    document.body.appendChild(overlay);
-    document.body.style.overflow = "hidden";
+  container.appendChild(iframe);
+  if (webParameters && webParameters.info !== "this is a placeholder") {
+    Object.assign(iframe.style, webParameters[ALLOY_IFRAME_ID].style);
+    Object.assign(
+      container.style,
+      webParameters[ALLOY_MESSAGING_CONTAINER_ID].style
+    );
+    if (webParameters[ALLOY_OVERLAY_CONTAINER_ID].params.enabled) {
+      Object.assign(
+        overlay.style,
+        webParameters[ALLOY_OVERLAY_CONTAINER_ID].style
+      );
+      document.body.appendChild(overlay);
+      document.body.style.overflow = "hidden";
+    }
+    const parentElementSelector =
+      webParameters[ALLOY_MESSAGING_CONTAINER_ID].params.parentElement;
+    if (parentElementSelector) {
+      const parentElement = document.querySelector(parentElementSelector);
+      if (parentElement) {
+        parentElement[
+          webParameters[ALLOY_MESSAGING_CONTAINER_ID].params.insertionMethod
+        ](container);
+      } else {
+        document.body.appendChild(container);
+      }
+    }
+  } else {
+    Object.assign(iframe.style, {
+      border: "none",
+      width: "100%",
+      height: "100%"
+    });
+    Object.assign(
+      container.style,
+      buildStyleFromMobileParameters(mobileParameters)
+    );
+    if (mobileParameters.uiTakeover) {
+      const backdropOpacity = mobileParameters.backdropOpacity || 0.5;
+      const backdropColor = mobileParameters.backdropColor || "#FFFFFF";
+      Object.assign(overlay.style, {
+        position: "fixed",
+        top: "0",
+        left: "0",
+        width: "100%",
+        height: "100%",
+        background: "transparent",
+        opacity: backdropOpacity,
+        backgroundColor: backdropColor
+      });
+      document.body.appendChild(overlay);
+      document.body.style.overflow = "hidden";
+    }
+    document.body.appendChild(container);
   }
-  document.body.appendChild(container);
 };
 
 export default (settings, collect) => {
