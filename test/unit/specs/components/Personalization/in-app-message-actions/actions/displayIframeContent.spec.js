@@ -93,7 +93,6 @@ describe("DOM Actions on Iframe", () => {
       expect(iframe).toBeDefined();
       expect(iframe instanceof HTMLIFrameElement).toBe(true);
       expect(iframe.src).toContain("blob:");
-      console.log("iframe.style.border:", iframe.style.border);
       expect(iframe.style.border).toBe("none");
       expect(iframe.style.width).toBe("100%");
       expect(iframe.style.height).toBe("100%");
