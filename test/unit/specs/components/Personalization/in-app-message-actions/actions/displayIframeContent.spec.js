@@ -265,6 +265,7 @@ describe("DOM Actions on Iframe", () => {
       originalBodyStyle = document.body.style;
       document.body.style = {};
       originalCreateIframe = window.createIframe;
+
       window.createIframe = jasmine
         .createSpy("createIframe")
         .and.callFake(() => {
@@ -281,7 +282,7 @@ describe("DOM Actions on Iframe", () => {
       window.createIframe = originalCreateIframe;
     });
 
-    it("should display HTML content in iframe with overlay", () => {
+    it("should display HTML content in iframe with overlay using mobile parameters", () => {
       const settings = {
         type: "custom",
         mobileParameters: {
@@ -325,6 +326,120 @@ describe("DOM Actions on Iframe", () => {
 
       expect(document.body.appendChild).toHaveBeenCalledTimes(2);
       expect(document.body.style.overflow).toBe("hidden");
+    });
+
+    it("should display HTML content in iframe with overlay using web parameters", () => {
+      const settings = {
+        type: "custom",
+        webParameters: {
+          "alloy-overlay-container": {
+            style: {
+              position: "fixed",
+              top: "0",
+              left: "0",
+              width: "100%",
+              height: "100%",
+              background: "transparent",
+              opacity: 0.5,
+              backgroundColor: "#FFFFFF"
+            },
+            params: {
+              enabled: true
+            }
+          },
+          "alloy-messaging-container": {
+            style: {
+              width: "72%",
+              backgroundColor: "orange",
+              borderRadius: "20px",
+              border: "none",
+              position: "fixed",
+              overflow: "hidden",
+              left: "50%",
+              transform: "translateX(-50%) translateY(-50%)",
+              top: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "63vh"
+            },
+            params: {
+              parentElement: "body",
+              insertionMethod: "appendChild"
+            }
+          },
+          "alloy-content-iframe": {
+            style: {
+              width: "100%",
+              height: "100%"
+            }
+          }
+        },
+        content:
+          '<!doctype html>\n<html>\n<head>\n  <title>Bumper Sale!</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      font-family: Arial, sans-serif;\n    }\n\n    #announcement {\n      position: fixed;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 100%;\n      background-color: rgba(0, 0, 0, 0.8);\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: center;\n      color: #fff;\n    }\n\n    #announcement img {\n      max-width: 80%;\n      height: auto;\n      margin-bottom: 20px;\n    }\n\n    #cross {\n      position: absolute;\n      top: 10px;\n      right: 10px;\n      cursor: pointer;\n      font-size: 24px;\n      color: #fff;\n      text-decoration: none;\n    }\n\n    #buttons {\n      display: flex;\n      justify-content: center;\n      margin-top: 20px;\n    }\n\n    #buttons a {\n      margin: 0 10px;\n      padding: 10px 20px;\n      background-color: #ff5500;\n      color: #fff;\n      text-decoration: none;\n      border-radius: 4px;\n      font-weight: bold;\n      transition: background-color 0.3s ease;\n    }\n\n    #buttons a:hover {\n      background-color: #ff3300;\n    }\n  </style>\n</head>\n<body>\n<div id="announcement">\n  <a id="cross" href="adbinapp://dismiss?interaction=cancel">✕</a>\n  <h2>Black Friday Sale!</h2>\n   <img src="https://media3.giphy.com/media/kLhcBWs9Nza4hCW5IS/200.gif" alt="Technology Image">\n  <p>Don\'t miss out on our incredible discounts and deals at our gadgets!</p>\n  <div id="buttons">\n    <a href="adbinapp://dismiss?interaction=clicked&amp;link=https%3A%2F%2Fwww.nike.com%2Fw%2Fmens-jordan-clothing-37eefz6ymx6znik1">Shop</a>\n    <a href="adbinapp://dismiss?interaction=cancel">Dismiss</a>\n  </div>\n</div>\n<script>\n  // Listen for a click on the button inside the iframe\n  document.getElementById("buttons").addEventListener("click", handleButtonClick);\n  document.getElementById("cross").addEventListener("click", handleButtonClick);\n  function handleButtonClick(event) {\n    console.log("A button was clicked with text ", event.target);\n    const href = event.target.getAttribute("href");\n    // Send a message to the parent page\n    console.log("I am sending a message to the parent ", href);\n    parent.postMessage({ "Element was clicked": href }, "*");\n  }\n</script>\n\n</body></html>\n',
+        contentType: TEXT_HTML,
+        schema: "https://ns.adobe.com/personalization/message/in-app"
+      };
+
+      displayHTMLContentInIframe(settings, mockCollect);
+      expect(document.body.appendChild).toHaveBeenCalledTimes(2);
+      expect(document.body.style.overflow).toBe("hidden");
+    });
+    it("should display HTML content in iframe with no overlay using web parameters", () => {
+      const settings = {
+        type: "custom",
+        webParameters: {
+          "alloy-overlay-container": {
+            style: {
+              position: "fixed",
+              top: "0",
+              left: "0",
+              width: "100%",
+              height: "100%",
+              background: "transparent",
+              opacity: 0.5,
+              backgroundColor: "#FFFFFF"
+            },
+            params: {
+              enabled: false
+            }
+          },
+          "alloy-messaging-container": {
+            style: {
+              width: "72%",
+              backgroundColor: "orange",
+              borderRadius: "20px",
+              border: "none",
+              position: "fixed",
+              overflow: "hidden",
+              left: "50%",
+              transform: "translateX(-50%) translateY(-50%)",
+              top: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "63vh"
+            },
+            params: {
+              parentElement: "body",
+              insertionMethod: "appendChild"
+            }
+          },
+          "alloy-content-iframe": {
+            style: {
+              width: "100%",
+              height: "100%"
+            }
+          }
+        },
+        content:
+          '<!doctype html>\n<html>\n<head>\n  <title>Bumper Sale!</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      font-family: Arial, sans-serif;\n    }\n\n    #announcement {\n      position: fixed;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 100%;\n      background-color: rgba(0, 0, 0, 0.8);\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: center;\n      color: #fff;\n    }\n\n    #announcement img {\n      max-width: 80%;\n      height: auto;\n      margin-bottom: 20px;\n    }\n\n    #cross {\n      position: absolute;\n      top: 10px;\n      right: 10px;\n      cursor: pointer;\n      font-size: 24px;\n      color: #fff;\n      text-decoration: none;\n    }\n\n    #buttons {\n      display: flex;\n      justify-content: center;\n      margin-top: 20px;\n    }\n\n    #buttons a {\n      margin: 0 10px;\n      padding: 10px 20px;\n      background-color: #ff5500;\n      color: #fff;\n      text-decoration: none;\n      border-radius: 4px;\n      font-weight: bold;\n      transition: background-color 0.3s ease;\n    }\n\n    #buttons a:hover {\n      background-color: #ff3300;\n    }\n  </style>\n</head>\n<body>\n<div id="announcement">\n  <a id="cross" href="adbinapp://dismiss?interaction=cancel">✕</a>\n  <h2>Black Friday Sale!</h2>\n   <img src="https://media3.giphy.com/media/kLhcBWs9Nza4hCW5IS/200.gif" alt="Technology Image">\n  <p>Don\'t miss out on our incredible discounts and deals at our gadgets!</p>\n  <div id="buttons">\n    <a href="adbinapp://dismiss?interaction=clicked&amp;link=https%3A%2F%2Fwww.nike.com%2Fw%2Fmens-jordan-clothing-37eefz6ymx6znik1">Shop</a>\n    <a href="adbinapp://dismiss?interaction=cancel">Dismiss</a>\n  </div>\n</div>\n<script>\n  // Listen for a click on the button inside the iframe\n  document.getElementById("buttons").addEventListener("click", handleButtonClick);\n  document.getElementById("cross").addEventListener("click", handleButtonClick);\n  function handleButtonClick(event) {\n    console.log("A button was clicked with text ", event.target);\n    const href = event.target.getAttribute("href");\n    // Send a message to the parent page\n    console.log("I am sending a message to the parent ", href);\n    parent.postMessage({ "Element was clicked": href }, "*");\n  }\n</script>\n\n</body></html>\n',
+        contentType: TEXT_HTML,
+        schema: "https://ns.adobe.com/personalization/message/in-app"
+      };
+
+      displayHTMLContentInIframe(settings, mockCollect);
+      expect(document.body.appendChild).toHaveBeenCalledTimes(1);
     });
   });
 });
