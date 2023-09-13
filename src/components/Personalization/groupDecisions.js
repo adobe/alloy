@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray, includes } from "../../utils";
+import { isNonEmptyArray, includes, assign } from "../../utils";
 import isPageWideScope from "./utils/isPageWideScope";
 import {
   DOM_ACTION,
@@ -74,11 +74,16 @@ const splitDecisions = (decisions, ...schemas) => {
   return { matchedDecisions, unmatchedDecisions };
 };
 
-const appendScopeDecision = (scopeDecisions, decision) => {
-  if (!scopeDecisions[decision.scope]) {
-    scopeDecisions[decision.scope] = [];
+const appendViewScopeDecision = (scopeDecisions, decision) => {
+  if (!decision.scope) {
+    return;
   }
-  scopeDecisions[decision.scope].push(decision);
+  // Override view scope to lowercase to fix any casing issues
+  const viewDecision = assign({}, decision, { scope: decision.scope.toLowerCase() });
+  if (!scopeDecisions[viewDecision.scope]) {
+    scopeDecisions[viewDecision.scope] = [];
+  }
+  scopeDecisions[viewDecision.scope].push(viewDecision);
 };
 
 const isViewScope = scopeDetails =>
@@ -96,7 +101,7 @@ const extractDecisionsByScope = decisions => {
       if (isPageWideScope(decision.scope)) {
         pageWideScopeDecisions.push(decision);
       } else if (isViewScope(decision.scopeDetails)) {
-        appendScopeDecision(viewScopeDecisions, decision);
+        appendViewScopeDecision(viewScopeDecisions, decision);
       } else {
         nonPageWideScopeDecisions.push(decision);
       }
