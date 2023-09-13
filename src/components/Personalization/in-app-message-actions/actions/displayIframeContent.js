@@ -11,9 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { getNonce } from "../../dom-actions/dom";
-import { parseAnchor, removeElementById } from "../utils";
+import { createElement, parseAnchor, removeElementById } from "../utils";
 import { TEXT_HTML } from "../../constants/contentType";
 import { INTERACT } from "../../constants/eventType";
+import { assign } from "../../../../utils";
 
 const ALLOY_MESSAGING_CONTAINER_ID = "alloy-messaging-container";
 const ALLOY_OVERLAY_CONTAINER_ID = "alloy-overlay-container";
@@ -23,65 +24,6 @@ const dismissMessage = () =>
   [ALLOY_MESSAGING_CONTAINER_ID, ALLOY_OVERLAY_CONTAINER_ID].forEach(
     removeElementById
   );
-
-export const createElement = elementTagId => {
-  const element = document.createElement("div");
-  element.id = elementTagId;
-  return element;
-};
-
-export const buildStyleFromMobileParameters = mobileParameters => {
-  const {
-    verticalAlign,
-    width,
-    horizontalAlign,
-    backdropColor,
-    height,
-    cornerRadius,
-    horizontalInset,
-    verticalInset,
-    uiTakeover = false
-  } = mobileParameters;
-
-  const style = {
-    width: width ? `${width}%` : "100%",
-    backgroundColor: backdropColor || "rgba(0, 0, 0, 0.5)",
-    borderRadius: cornerRadius ? `${cornerRadius}px` : "0px",
-    border: "none",
-    position: uiTakeover ? "fixed" : "relative",
-    overflow: "hidden"
-  };
-  if (horizontalAlign === "left") {
-    style.left = horizontalInset ? `${horizontalInset}%` : "0";
-  } else if (horizontalAlign === "right") {
-    style.right = horizontalInset ? `${horizontalInset}%` : "0";
-  } else if (horizontalAlign === "center") {
-    style.left = "50%";
-    style.transform = "translateX(-50%)";
-  }
-
-  if (verticalAlign === "top") {
-    style.top = verticalInset ? `${verticalInset}%` : "0";
-  } else if (verticalAlign === "bottom") {
-    style.position = "fixed";
-    style.bottom = verticalInset ? `${verticalInset}%` : "0";
-  } else if (verticalAlign === "center") {
-    style.top = "50%";
-    style.transform = `${
-      horizontalAlign === "center" ? `${style.transform} ` : ""
-    }translateY(-50%)`;
-    style.display = "flex";
-    style.alignItems = "center";
-    style.justifyContent = "center";
-  }
-
-  if (height) {
-    style.height = `${height}vh`;
-  } else {
-    style.height = "100%";
-  }
-  return style;
-};
 
 const setWindowLocationHref = link => {
   window.location.assign(link);
@@ -145,6 +87,125 @@ export const createIframe = (htmlContent, clickHandler) => {
   return element;
 };
 
+const displayBasedOnWebParams = (iframe, webParameters, container, overlay) => {
+  const { style: iframeStyle = {} } = webParameters[ALLOY_IFRAME_ID];
+  const {
+    style: messagingStyle = {},
+    params: messagingParams = {}
+  } = webParameters[ALLOY_MESSAGING_CONTAINER_ID];
+
+  const {
+    style: overlayStyle = {},
+    params: overlayParams = {}
+  } = webParameters[ALLOY_OVERLAY_CONTAINER_ID];
+
+  assign(iframe.style, iframeStyle);
+  assign(container.style, messagingStyle);
+
+  if (overlayParams.enabled) {
+    assign(overlay.style, overlayStyle);
+    document.body.appendChild(overlay);
+    document.body.style.overflow = "hidden";
+  }
+
+  const {
+    paramElement = "body",
+    insertionMethod = "appendChild"
+  } = messagingParams;
+
+  const element = document.querySelector(paramElement);
+  element[insertionMethod](container);
+};
+
+export const buildStyleFromMobileParameters = mobileParameters => {
+  const {
+    verticalAlign,
+    width,
+    horizontalAlign,
+    backdropColor,
+    height,
+    cornerRadius,
+    horizontalInset,
+    verticalInset,
+    uiTakeover = false
+  } = mobileParameters;
+
+  const style = {
+    width: width ? `${width}%` : "100%",
+    backgroundColor: backdropColor || "rgba(0, 0, 0, 0.5)",
+    borderRadius: cornerRadius ? `${cornerRadius}px` : "0px",
+    border: "none",
+    position: uiTakeover ? "fixed" : "relative",
+    overflow: "hidden"
+  };
+  if (horizontalAlign === "left") {
+    style.left = horizontalInset ? `${horizontalInset}%` : "0";
+  } else if (horizontalAlign === "right") {
+    style.right = horizontalInset ? `${horizontalInset}%` : "0";
+  } else if (horizontalAlign === "center") {
+    style.left = "50%";
+    style.transform = "translateX(-50%)";
+  }
+
+  if (verticalAlign === "top") {
+    style.top = verticalInset ? `${verticalInset}%` : "0";
+  } else if (verticalAlign === "bottom") {
+    style.position = "fixed";
+    style.bottom = verticalInset ? `${verticalInset}%` : "0";
+  } else if (verticalAlign === "center") {
+    style.top = "50%";
+    style.transform = `${
+      horizontalAlign === "center" ? `${style.transform} ` : ""
+    }translateY(-50%)`;
+    style.display = "flex";
+    style.alignItems = "center";
+    style.justifyContent = "center";
+  }
+
+  if (height) {
+    style.height = `${height}vh`;
+  } else {
+    style.height = "100%";
+  }
+  return style;
+};
+
+export const mobileOverlay = (overlay, mobileParameters) => {
+  const { backdropOpacity, backdropColor } = mobileParameters;
+  const opacity = backdropOpacity || 0.5;
+  const color = backdropColor || "#FFFFFF";
+  assign(overlay.style, {
+    position: "fixed",
+    top: "0",
+    left: "0",
+    width: "100%",
+    height: "100%",
+    background: "transparent",
+    opacity,
+    backgroundColor: color
+  });
+  document.body.appendChild(overlay);
+  document.body.style.overflow = "hidden";
+};
+
+const displayBasedOnMobileParams = (
+  iframe,
+  container,
+  mobileParameters,
+  overlay
+) => {
+  assign(iframe.style, {
+    border: "none",
+    width: "100%",
+    height: "100%"
+  });
+  assign(container.style, buildStyleFromMobileParameters(mobileParameters));
+  if (mobileParameters.uiTakeover) {
+    mobileOverlay(overlay, mobileParameters);
+  }
+  document.body.appendChild(container);
+};
+
 export const displayHTMLContentInIframe = (settings, interact) => {
   dismissMessage();
   const { content, contentType, mobileParameters, webParameters } = settings;
@@ -161,58 +222,9 @@ export const displayHTMLContentInIframe = (settings, interact) => {
 
   container.appendChild(iframe);
   if (webParameters && webParameters.info !== "this is a placeholder") {
-    Object.assign(iframe.style, webParameters[ALLOY_IFRAME_ID].style);
-    Object.assign(
-      container.style,
-      webParameters[ALLOY_MESSAGING_CONTAINER_ID].style
-    );
-    if (webParameters[ALLOY_OVERLAY_CONTAINER_ID].params.enabled) {
-      Object.assign(
-        overlay.style,
-        webParameters[ALLOY_OVERLAY_CONTAINER_ID].style
-      );
-      document.body.appendChild(overlay);
-      document.body.style.overflow = "hidden";
-    }
-    const parentElementSelector =
-      webParameters[ALLOY_MESSAGING_CONTAINER_ID].params.parentElement;
-    if (parentElementSelector) {
-      const parentElement = document.querySelector(parentElementSelector);
-      if (parentElement) {
-        parentElement[
-          webParameters[ALLOY_MESSAGING_CONTAINER_ID].params.insertionMethod
-        ](container);
-      } else {
-        document.body.appendChild(container);
-      }
-    }
+    displayBasedOnWebParams(iframe, webParameters, container, overlay);
   } else {
-    Object.assign(iframe.style, {
-      border: "none",
-      width: "100%",
-      height: "100%"
-    });
-    Object.assign(
-      container.style,
-      buildStyleFromMobileParameters(mobileParameters)
-    );
-    if (mobileParameters.uiTakeover) {
-      const backdropOpacity = mobileParameters.backdropOpacity || 0.5;
-      const backdropColor = mobileParameters.backdropColor || "#FFFFFF";
-      Object.assign(overlay.style, {
-        position: "fixed",
-        top: "0",
-        left: "0",
-        width: "100%",
-        height: "100%",
-        background: "transparent",
-        opacity: backdropOpacity,
-        backgroundColor: backdropColor
-      });
-      document.body.appendChild(overlay);
-      document.body.style.overflow = "hidden";
-    }
-    document.body.appendChild(container);
+    displayBasedOnMobileParams(iframe, container, mobileParameters, overlay);
   }
 };
 

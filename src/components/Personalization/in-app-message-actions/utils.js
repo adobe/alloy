@@ -74,3 +74,8 @@ export const parseAnchor = anchor => {
     uuid
   };
 };
+export const createElement = elementTagId => {
+  const element = document.createElement("div");
+  element.id = elementTagId;
+  return element;
+};
