@@ -10,8 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, objectOf, string } from "../../utils/validation";
+import { string, boolean, objectOf } from "../../utils/validation";
 import createComponent from "./createComponent";
+import { initDomActionsModules } from "./dom-actions";
 import createCollect from "./createCollect";
 import { hideContainers, showContainers } from "./flicker";
 import createFetchDataHandler from "./createFetchDataHandler";
@@ -25,20 +26,23 @@ import createClickStorage from "./createClickStorage";
 import createApplyPropositions from "./createApplyPropositions";
 import createGetPageLocation from "./createGetPageLocation";
 import createSetTargetMigration from "./createSetTargetMigration";
-import createRedirectHandler from "./handlers/createRedirectHandler";
-import createHtmlContentHandler from "./handlers/createHtmlContentHandler";
-import createDomActionHandler from "./handlers/createDomActionHandler";
-import createMeasurementSchemaHandler from "./handlers/createMeasurementSchemaHandler";
-import createRender from "./handlers/createRender";
-import { createProposition } from "./handlers/proposition";
-import createSubscribeMessageFeed from "./createSubscribeMessageFeed";
-import { initDomActionsModules } from "./dom-actions";
-import createPreprocess from "./dom-actions/createPreprocess";
-import remapHeadOffers from "./dom-actions/remapHeadOffers";
 import remapCustomCodeOffers from "./dom-actions/remapCustomCodeOffers";
-import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules";
-import createInAppMessageHandler from "./handlers/createInAppMessageHandler";
+import remapHeadOffers from "./dom-actions/remapHeadOffers";
+import createPreprocess from "./dom-actions/createPreprocess";
+import injectCreateProposition from "./handlers/injectCreateProposition";
+import createAsyncArray from "./utils/createAsyncArray";
+import createPendingNotificationsHandler from "./createPendingNotificationsHandler";
+import * as schema from "./constants/schema";
+import processDefaultContent from "./handlers/processDefaultContent";
+import { isPageWideSurface } from "./utils/surfaceUtils";
+import createProcessDomAction from "./handlers/createProcessDomAction";
+import createProcessHtmlContent from "./handlers/createProcessHtmlContent";
+import createProcessRedirect from "./handlers/createProcessRedirect";
+import createProcessPropositions from "./handlers/createProcessPropositions";
+import createSubscribeMessageFeed from "./createSubscribeMessageFeed";
 import createOnDecisionHandler from "./createOnDecisionHandler";
+import createProcessInAppMessage from "./handlers/createProcessInAppMessage";
+import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -50,40 +54,46 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     storeClickMetrics
   } = createClickStorage();
   const getPageLocation = createGetPageLocation({ window });
-  const viewCache = createViewCacheManager({ createProposition });
   const domActionsModules = initDomActionsModules();
+
   const preprocess = createPreprocess([remapHeadOffers, remapCustomCodeOffers]);
+  const createProposition = injectCreateProposition({
+    preprocess,
+    isPageWideSurface
+  });
+  const viewCache = createViewCacheManager({ createProposition });
 
-  const noOpHandler = () => undefined;
+  const schemaProcessors = {
+    [schema.DEFAULT_CONTENT_ITEM]: processDefaultContent,
+    [schema.DOM_ACTION]: createProcessDomAction({
+      modules: domActionsModules,
+      logger,
+      storeClickMetrics
+    }),
+    [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({
+      modules: domActionsModules,
+      logger
+    }),
+    [schema.REDIRECT_ITEM]: createProcessRedirect({
+      logger,
+      executeRedirect: url => window.location.replace(url),
+      collect
+    }),
+    [schema.MESSAGE_IN_APP]: createProcessInAppMessage({
+      modules: initInAppMessageActionsModules(collect),
+      logger
+    })
+  };
 
-  const inAppMessageHandler = createInAppMessageHandler({
-    next: noOpHandler,
-    modules: initInAppMessageActionsModules(collect)
-  });
-
-  const domActionHandler = createDomActionHandler({
-    next: inAppMessageHandler,
-    modules: domActionsModules,
-    storeClickMetrics,
-    preprocess
-  });
-  const measurementSchemaHandler = createMeasurementSchemaHandler({
-    next: domActionHandler
-  });
-  const redirectHandler = createRedirectHandler({
-    next: measurementSchemaHandler
-  });
-  const htmlContentHandler = createHtmlContentHandler({
-    next: redirectHandler,
-    modules: domActionsModules,
-    preprocess
-  });
-
-  const render = createRender({
-    handleChain: htmlContentHandler,
-    collect,
-    executeRedirect: url => window.location.replace(url),
+  const processPropositions = createProcessPropositions({
+    schemaProcessors,
     logger
+  });
+
+  const pendingDisplayNotifications = createAsyncArray();
+  const pendingNotificationsHandler = createPendingNotificationsHandler({
+    pendingDisplayNotifications,
+    mergeDecisionsMeta
   });
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
@@ -91,10 +101,11 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     hideContainers,
     mergeQuery,
     collect,
-    render
+    processPropositions,
+    createProposition,
+    pendingDisplayNotifications
   });
   const onClickHandler = createOnClickHandler({
-    eventManager,
     mergeDecisionsMeta,
     collectClicks,
     getClickSelectors,
@@ -102,11 +113,14 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
   const viewChangeHandler = createViewChangeHandler({
     mergeDecisionsMeta,
-    render,
+    processPropositions,
     viewCache
   });
   const applyPropositions = createApplyPropositions({
-    render
+    processPropositions,
+    createProposition,
+    pendingDisplayNotifications,
+    viewCache
   });
   const setTargetMigration = createSetTargetMigration({
     targetMigrationEnabled
@@ -117,7 +131,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
 
   const onDecisionHandler = createOnDecisionHandler({
-    render,
+    processPropositions,
+    createProposition,
     collect,
     subscribeMessageFeed
   });
@@ -134,6 +149,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     showContainers,
     applyPropositions,
     setTargetMigration,
+    pendingNotificationsHandler,
     onDecisionHandler,
     subscribeMessageFeed
   });

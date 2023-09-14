@@ -9,29 +9,19 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+const REFERENCE_EQUALITY = (a, b) => a === b;
 
-import { MESSAGE_IN_APP } from "../constants/schema";
-
-const DEFAULT_CONTENT = "defaultContent";
-
-export default ({ next, modules }) => proposition => {
-  const { items = [] } = proposition.getHandle();
-
-  items.forEach((item, index) => {
-    const { schema, data } = item;
-    if (schema !== MESSAGE_IN_APP) {
-      return;
+const findIndex = (array, item, isEqual) => {
+  for (let i = 0; i < array.length; i += 1) {
+    if (isEqual(array[i], item)) {
+      return i;
     }
+  }
+  return -1;
+};
 
-    proposition.includeInDisplayNotification();
-
-    proposition.addRenderer(index, () =>
-      modules[DEFAULT_CONTENT]({
-        ...data,
-        meta: proposition.getItemMeta(index)
-      })
-    );
-  });
-
-  next(proposition);
+export default (array, isEqual = REFERENCE_EQUALITY) => {
+  return array.filter(
+    (item, index) => findIndex(array, item, isEqual) === index
+  );
 };

@@ -9,20 +9,23 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { REDIRECT_ITEM } from "../constants/schema";
-import { find } from "../../../utils";
+export default ({ modules, logger }) => item => {
+  const { type, selector } = item.getData() || {};
 
-export default ({ next }) => proposition => {
-  const { items = [] } = proposition.getHandle() || {};
-
-  const redirectItem = find(items, ({ schema }) => schema === REDIRECT_ITEM);
-  if (redirectItem) {
-    const {
-      data: { content }
-    } = redirectItem;
-    proposition.redirect(content);
-    // On a redirect, nothing else needs to handle this.
-  } else {
-    next(proposition);
+  if (!selector || !type) {
+    return {};
   }
+
+  if (!modules[type]) {
+    logger.warn("Invalid HTML content data", item.getData());
+    return {};
+  }
+
+  return {
+    render: () => {
+      modules[type](item.getData());
+    },
+    setRenderAttempted: true,
+    includeInNotification: true
+  };
 };

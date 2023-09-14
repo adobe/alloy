@@ -9,9 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { createProposition } from "./handlers/proposition";
 
-export default ({ render, collect, subscribeMessageFeed }) => {
+export default ({
+  processPropositions,
+  createProposition,
+  collect,
+  subscribeMessageFeed
+}) => {
   return ({ viewName, renderDecisions, propositions }) => {
     subscribeMessageFeed.refresh(propositions);
 
@@ -23,7 +27,11 @@ export default ({ render, collect, subscribeMessageFeed }) => {
       createProposition(proposition, true)
     );
 
-    return render(propositionsToExecute).then(decisionsMeta => {
+    const { render, returnedPropositions } = processPropositions(
+      propositionsToExecute
+    );
+
+    render().then(decisionsMeta => {
       if (decisionsMeta.length > 0) {
         collect({
           decisionsMeta,
@@ -31,5 +39,8 @@ export default ({ render, collect, subscribeMessageFeed }) => {
         });
       }
     });
+    return {
+      propositions: returnedPropositions
+    };
   };
 };

@@ -42,6 +42,7 @@ describe("PersonalizationComponent", () => {
         }
       }
     });
+
     expect(result).toEqual({
       propositions: [
         {

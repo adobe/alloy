@@ -125,7 +125,8 @@ export default ({
         renderDecisions = false,
         decisionContext = {},
         responseHeaders = {},
-        responseBody = { handle: [] }
+        responseBody = { handle: [] },
+        personalization
       } = options;
 
       const payload = createDataCollectionRequestPayload();
@@ -138,7 +139,7 @@ export default ({
           renderDecisions,
           decisionContext,
           decisionScopes: [PAGE_WIDE_SCOPE],
-          personalization: {},
+          personalization,
           onResponse: onResponseCallbackAggregator.add,
           onRequestFailure: noop
         })

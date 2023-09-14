@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createFetchDataHandler from "../../../../../src/components/Personalization/createFetchDataHandler";
-import { createProposition } from "../../../../../src/components/Personalization/handlers/proposition";
+import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("Personalization::createFetchDataHandler", () => {
@@ -20,7 +20,9 @@ describe("Personalization::createFetchDataHandler", () => {
   let hideContainers;
   let mergeQuery;
   let collect;
-  let render;
+  let processPropositions;
+  let createProposition;
+  let pendingDisplayNotifications;
 
   let cacheUpdate;
   let personalizationDetails;
@@ -35,14 +37,25 @@ describe("Personalization::createFetchDataHandler", () => {
     hideContainers = jasmine.createSpy("hideContainers");
     mergeQuery = jasmine.createSpy("mergeQuery");
     collect = jasmine.createSpy("collect");
-    render = jasmine.createSpy("render");
+    processPropositions = jasmine.createSpy("processPropositions");
+    createProposition = injectCreateProposition({
+      preprocess: data => data,
+      isPageWideSurface: () => false
+    });
+    pendingDisplayNotifications = jasmine.createSpyObj(
+      "pendingDisplayNotifications",
+      ["concat"]
+    );
+
     cacheUpdate = jasmine.createSpyObj("cacheUpdate", ["update"]);
     personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
       "isRenderDecisions",
       "createQueryDetails",
-      "getViewName"
+      "getViewName",
+      "isSendDisplayNotifications"
     ]);
     personalizationDetails.createQueryDetails.and.returnValue("myquerydetails");
+    personalizationDetails.isSendDisplayNotifications.and.returnValue(true);
     event = "myevent";
     onResponse = jasmine.createSpy();
     response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
@@ -55,7 +68,9 @@ describe("Personalization::createFetchDataHandler", () => {
       hideContainers,
       mergeQuery,
       collect,
-      render
+      processPropositions,
+      createProposition,
+      pendingDisplayNotifications
     });
     fetchDataHandler({
       cacheUpdate,
@@ -88,6 +103,10 @@ describe("Personalization::createFetchDataHandler", () => {
     run();
     response.getPayloadsByType.and.returnValue([]);
     cacheUpdate.update.and.returnValue([]);
+    processPropositions.and.returnValue({
+      returnedPropositions: [],
+      returnedDecisions: []
+    });
     const result = returnResponse();
     expect(result).toEqual({
       propositions: [],
@@ -98,21 +117,24 @@ describe("Personalization::createFetchDataHandler", () => {
   it("should render decisions", async () => {
     personalizationDetails.isRenderDecisions.and.returnValue(true);
     personalizationDetails.getViewName.and.returnValue("myviewname");
-    render = propositions => {
-      propositions[0].addRenderer(0, () => {});
-      propositions[0].includeInDisplayNotification();
-      const decisionsMeta = [];
-      propositions[0].addToNotifications(decisionsMeta);
-      return Promise.resolve(decisionsMeta);
+    processPropositions = () => {
+      return {
+        render: () => Promise.resolve([{ id: "handle1" }]),
+        returnedPropositions: [
+          { id: "handle1", items: ["item1"], renderAttempted: true }
+        ],
+        returnedDecisions: []
+      };
     };
     run();
     response.getPayloadsByType.and.returnValue([
-      { id: "handle1" },
+      {
+        id: "handle1",
+        scopeDetails: { characteristics: { scopeType: "view" } }
+      },
       { id: "handle2" }
     ]);
-    cacheUpdate.update.and.returnValue([
-      createProposition({ id: "handle1", items: ["item1"] })
-    ]);
+    cacheUpdate.update.and.returnValue([createProposition({ id: "handle1" })]);
     const result = returnResponse();
     expect(result).toEqual({
       propositions: [
@@ -123,12 +145,8 @@ describe("Personalization::createFetchDataHandler", () => {
     await flushPromiseChains();
     expect(showContainers).toHaveBeenCalled();
     expect(collect).toHaveBeenCalledOnceWith({
-      decisionsMeta: [
-        { id: "handle1", scope: undefined, scopeDetails: undefined }
-      ],
+      decisionsMeta: [{ id: "handle1" }],
       viewName: "myviewname"
     });
   });
-
-  // TODO - test the rest of the functionality
 });

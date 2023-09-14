@@ -27,6 +27,7 @@ export default ({
   showContainers,
   applyPropositions,
   setTargetMigration,
+  pendingNotificationsHandler,
   onDecisionHandler,
   subscribeMessageFeed
 }) => {
@@ -56,7 +57,7 @@ export default ({
 
           // If we are in authoring mode we disable personalization
           mergeQuery(event, { enabled: false });
-          return;
+          return Promise.resolve();
         }
 
         const personalizationDetails = createPersonalizationDetails({
@@ -68,6 +69,11 @@ export default ({
           isCacheInitialized: viewCache.isInitialized(),
           logger
         });
+
+        const handlerPromises = [];
+        if (personalizationDetails.shouldAddPendingDisplayNotifications()) {
+          handlerPromises.push(pendingNotificationsHandler({ event }));
+        }
 
         if (personalizationDetails.shouldFetchData()) {
           const cacheUpdate = viewCache.createCacheUpdate(
@@ -81,18 +87,20 @@ export default ({
             event,
             onResponse
           });
-          return;
-        }
-
-        if (personalizationDetails.shouldUseCachedData()) {
+        } else if (personalizationDetails.shouldUseCachedData()) {
           // eslint-disable-next-line consistent-return
-          return viewChangeHandler({
-            personalizationDetails,
-            event,
-            onResponse,
-            onRequestFailure
-          });
+          handlerPromises.push(
+            viewChangeHandler({
+              personalizationDetails,
+              event,
+              onResponse,
+              onRequestFailure
+            })
+          );
         }
+        // We can wait for personalization to be applied and for
+        // the fetch data request to complete in parallel.
+        return Promise.all(handlerPromises);
       },
       onClick({ event, clickedElement }) {
         onClickHandler({ event, clickedElement });

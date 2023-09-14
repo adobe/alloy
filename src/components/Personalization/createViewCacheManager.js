@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign } from "../../utils";
+import { assign, groupBy } from "../../utils";
 import defer from "../../utils/defer";
-import { VIEW_SCOPE_TYPE } from "./constants/scopeType";
+import { DEFAULT_CONTENT_ITEM } from "./constants/schema";
 
 export default ({ createProposition }) => {
   const viewStorage = {};
@@ -22,19 +22,25 @@ export default ({ createProposition }) => {
   const getViewPropositions = (currentViewStorage, viewName) => {
     const viewPropositions = currentViewStorage[viewName];
     if (viewPropositions && viewPropositions.length > 0) {
-      return viewPropositions.map(createProposition);
+      return viewPropositions;
     }
 
-    const emptyViewProposition = createProposition({
-      scope: viewName,
-      scopeDetails: {
-        characteristics: {
-          scopeType: "view"
-        }
-      }
-    });
-    emptyViewProposition.includeInDisplayNotification();
-    emptyViewProposition.excludeInReturnedPropositions();
+    const emptyViewProposition = createProposition(
+      {
+        scope: viewName,
+        scopeDetails: {
+          characteristics: {
+            scopeType: "view"
+          }
+        },
+        items: [
+          {
+            schema: DEFAULT_CONTENT_ITEM
+          }
+        ]
+      },
+      false
+    );
     return [emptyViewProposition];
   };
 
@@ -51,29 +57,15 @@ export default ({ createProposition }) => {
       .catch(() => {});
 
     return {
-      update(personalizationHandles) {
-        const newViewStorage = {};
-        const otherPropositions = [];
-        personalizationHandles.forEach(handle => {
-          const {
-            scope,
-            scopeDetails: { characteristics: { scopeType } = {} } = {}
-          } = handle;
-          if (scopeType === VIEW_SCOPE_TYPE) {
-            newViewStorage[scope] = newViewStorage[scope] || [];
-            newViewStorage[scope].push(handle);
-          } else {
-            otherPropositions.push(createProposition(handle));
-          }
-        });
+      update(viewPropositions) {
+        const newViewStorage = groupBy(viewPropositions, proposition =>
+          proposition.getScope()
+        );
         updateCacheDeferred.resolve(newViewStorage);
         if (viewName) {
-          return [
-            ...getViewPropositions(newViewStorage, viewName),
-            ...otherPropositions
-          ];
+          return getViewPropositions(newViewStorage, viewName);
         }
-        return otherPropositions;
+        return [];
       },
       cancel() {
         updateCacheDeferred.reject();

@@ -17,14 +17,15 @@ import {
   MESSAGE_IN_APP
 } from "./constants/schema";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
-import {
-  buildReturnedPropositions,
-  createProposition
-} from "./handlers/proposition";
 
 const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM, MESSAGE_IN_APP];
 
-export default ({ render }) => {
+export default ({
+  processPropositions,
+  createProposition,
+  pendingDisplayNotifications,
+  viewCache
+}) => {
   const filterItemsPredicate = item =>
     SUPPORTED_SCHEMAS.indexOf(item.schema) > -1;
 
@@ -77,16 +78,30 @@ export default ({ render }) => {
       .filter(proposition => isNonEmptyArray(proposition.items));
   };
 
-  return ({ propositions, metadata = {} }) => {
+  return ({ propositions = [], metadata = {}, viewName }) => {
     const propositionsToExecute = preparePropositions({
       propositions,
       metadata
-    }).map(proposition => createProposition(proposition, true));
+    }).map(proposition => createProposition(proposition));
 
-    render(propositionsToExecute);
+    return Promise.resolve()
+      .then(() => {
+        if (viewName) {
+          return viewCache.getView(viewName);
+        }
+        return [];
+      })
+      .then(additionalPropositions => {
+        const { render, returnedPropositions } = processPropositions([
+          ...propositionsToExecute,
+          ...additionalPropositions
+        ]);
 
-    return {
-      propositions: buildReturnedPropositions(propositionsToExecute)
-    };
+        pendingDisplayNotifications.concat(render());
+
+        return {
+          propositions: returnedPropositions
+        };
+      });
   };
 };

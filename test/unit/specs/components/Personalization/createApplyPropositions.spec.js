@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import "jasmine-expect";
 import {
   MIXED_PROPOSITIONS,
   PAGE_WIDE_SCOPE_DECISIONS
 } from "./responsesMock/eventResponses";
 import createApplyPropositions from "../../../../../src/components/Personalization/createApplyPropositions";
 import clone from "../../../../../src/utils/clone";
+import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
 
 const METADATA = {
   home: {
@@ -26,33 +26,52 @@ const METADATA = {
 };
 
 describe("Personalization::createApplyPropositions", () => {
+  let processPropositions;
+  let createProposition;
+  let pendingDisplayNotifications;
+  let viewCache;
+  let applyPropositions;
   let render;
 
   beforeEach(() => {
+    processPropositions = jasmine.createSpy("processPropositions");
+    processPropositions.and.callFake(propositions => {
+      const returnedPropositions = propositions.map(proposition => ({
+        ...proposition.toJSON(),
+        renderAttempted: true
+      }));
+      return { returnedPropositions, render };
+    });
     render = jasmine.createSpy("render");
-    render.and.callFake(propositions => {
-      propositions.forEach(proposition => {
-        const { items = [] } = proposition.getHandle();
-        items.forEach((_, i) => {
-          proposition.addRenderer(i, () => undefined);
-        });
-      });
+    render.and.callFake(() => Promise.resolve("notifications"));
+    createProposition = injectCreateProposition({
+      preprocess: data => data,
+      isPageWideSurface: () => false
+    });
+
+    pendingDisplayNotifications = jasmine.createSpyObj(
+      "pendingDisplayNotifications",
+      ["concat"]
+    );
+    viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
+    viewCache.getView.and.returnValue(Promise.resolve([]));
+    applyPropositions = createApplyPropositions({
+      processPropositions,
+      createProposition,
+      pendingDisplayNotifications,
+      viewCache
     });
   });
 
-  it("it should return an empty propositions promise if propositions is empty array", () => {
-    const applyPropositions = createApplyPropositions({
-      render
-    });
-
-    const result = applyPropositions({
+  it("it should return an empty propositions promise if propositions is empty array", async () => {
+    const result = await applyPropositions({
       propositions: []
     });
     expect(result).toEqual({ propositions: [] });
-    expect(render).toHaveBeenCalledOnceWith([]);
+    expect(processPropositions).toHaveBeenCalledOnceWith([]);
   });
 
-  it("it should apply user-provided dom-action schema propositions", () => {
+  it("it should apply user-provided dom-action schema propositions", async () => {
     const expectedExecuteDecisionsPropositions = clone(
       PAGE_WIDE_SCOPE_DECISIONS
     ).map(proposition => {
@@ -60,15 +79,11 @@ describe("Personalization::createApplyPropositions", () => {
       return proposition;
     });
 
-    const applyPropositions = createApplyPropositions({
-      render
-    });
-
-    const result = applyPropositions({
+    const result = await applyPropositions({
       propositions: PAGE_WIDE_SCOPE_DECISIONS
     });
 
-    expect(render).toHaveBeenCalledTimes(1);
+    expect(processPropositions).toHaveBeenCalledTimes(1);
 
     const expectedScopes = expectedExecuteDecisionsPropositions.map(
       proposition => proposition.scope
@@ -81,12 +96,8 @@ describe("Personalization::createApplyPropositions", () => {
     });
   });
 
-  it("it should merge metadata with propositions that have html-content-item schema", () => {
-    const applyPropositions = createApplyPropositions({
-      render
-    });
-
-    const { propositions } = applyPropositions({
+  it("it should merge metadata with propositions that have html-content-item schema", async () => {
+    const { propositions } = await applyPropositions({
       propositions: MIXED_PROPOSITIONS,
       metadata: METADATA
     });
@@ -103,10 +114,10 @@ describe("Personalization::createApplyPropositions", () => {
         expect(proposition.items[0].data.type).toEqual("setHtml");
       }
     });
-    expect(render).toHaveBeenCalledTimes(1);
+    expect(processPropositions).toHaveBeenCalledTimes(1);
   });
 
-  it("it should drop items with html-content-item schema when there is no metadata", () => {
+  it("it should drop items with html-content-item schema when there is no metadata", async () => {
     const propositions = [
       {
         id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
@@ -134,9 +145,7 @@ describe("Personalization::createApplyPropositions", () => {
       }
     ];
 
-    const applyPropositions = createApplyPropositions({ render });
-
-    const result = applyPropositions({
+    const result = await applyPropositions({
       propositions
     });
 
@@ -146,10 +155,8 @@ describe("Personalization::createApplyPropositions", () => {
     expect(result.propositions[0].renderAttempted).toBeTrue();
   });
 
-  it("it should return renderAttempted = true on resulting propositions", () => {
-    const applyPropositions = createApplyPropositions({ render });
-
-    const result = applyPropositions({
+  it("it should return renderAttempted = true on resulting propositions", async () => {
+    const result = await applyPropositions({
       propositions: MIXED_PROPOSITIONS
     });
     expect(result.propositions.length).toEqual(3);
@@ -158,12 +165,11 @@ describe("Personalization::createApplyPropositions", () => {
     });
   });
 
-  it("it should ignore propositions with __view__ scope that have already been rendered", () => {
-    const applyPropositions = createApplyPropositions({ render });
+  it("it should ignore propositions with __view__ scope that have already been rendered", async () => {
     const propositions = JSON.parse(JSON.stringify(MIXED_PROPOSITIONS));
     propositions[4].renderAttempted = true;
 
-    const result = applyPropositions({
+    const result = await applyPropositions({
       propositions
     });
     expect(result.propositions.length).toEqual(2);
@@ -177,12 +183,10 @@ describe("Personalization::createApplyPropositions", () => {
     });
   });
 
-  it("it should ignore items with unsupported schemas", () => {
+  it("it should ignore items with unsupported schemas", async () => {
     const expectedItemIds = ["442358", "442359"];
 
-    const applyPropositions = createApplyPropositions({ render });
-
-    const { propositions } = applyPropositions({
+    const { propositions } = await applyPropositions({
       propositions: MIXED_PROPOSITIONS
     });
     expect(propositions.length).toEqual(3);
@@ -194,11 +198,9 @@ describe("Personalization::createApplyPropositions", () => {
     });
   });
 
-  it("it should not mutate original propositions", () => {
-    const applyPropositions = createApplyPropositions({ render });
-
+  it("it should not mutate original propositions", async () => {
     const originalPropositions = clone(MIXED_PROPOSITIONS);
-    const result = applyPropositions({
+    const result = await applyPropositions({
       propositions: originalPropositions,
       metadata: METADATA
     });
@@ -215,5 +217,25 @@ describe("Personalization::createApplyPropositions", () => {
       }
     });
     expect(numReturnedPropositions).toEqual(4);
+  });
+
+  it("concats viewName propositions", async () => {
+    viewCache.getView.and.returnValue(
+      Promise.resolve([
+        createProposition({ id: "myViewNameProp1", items: [{}] })
+      ])
+    );
+    const result = await applyPropositions({
+      viewName: "myViewName"
+    });
+    expect(result).toEqual({
+      propositions: [
+        {
+          id: "myViewNameProp1",
+          items: [{}],
+          renderAttempted: true
+        }
+      ]
+    });
   });
 });

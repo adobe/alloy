@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 import createOnDecisionHandler from "../../../../../src/components/Personalization/createOnDecisionHandler";
 import { MESSAGE_FEED_ITEM } from "../../../../../src/components/Personalization/constants/schema";
+import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
 
 describe("Personalization::createOnDecisionHandler", () => {
   const PROPOSITIONS = [
@@ -180,6 +181,8 @@ describe("Personalization::createOnDecisionHandler", () => {
   ];
   let render;
   let collect;
+  let processPropositions;
+  let createProposition;
   let subscribeMessageFeed;
   let onDecisionHandler;
 
@@ -188,11 +191,22 @@ describe("Personalization::createOnDecisionHandler", () => {
       .createSpy("render")
       .and.returnValue(Promise.resolve([{ hi: true }]));
     collect = jasmine.createSpy("collect").and.returnValue(Promise.resolve());
+    processPropositions = jasmine
+      .createSpy("processPropositions")
+      .and.returnValue({ render, returnedPropositions: PROPOSITIONS });
+
+    createProposition = injectCreateProposition({
+      preprocess: data => data,
+      isPageWideSurface: () => false
+    });
+
     subscribeMessageFeed = jasmine.createSpyObj("subscribeMessageFeed", [
       "refresh"
     ]);
 
     onDecisionHandler = createOnDecisionHandler({
+      processPropositions,
+      createProposition,
       render,
       collect,
       subscribeMessageFeed
@@ -211,23 +225,16 @@ describe("Personalization::createOnDecisionHandler", () => {
   });
 
   it("calls render if renderDecisions=true", async () => {
-    await onDecisionHandler({
+    const { propositions } = await onDecisionHandler({
       viewName: "blippi",
       renderDecisions: true,
       propositions: PROPOSITIONS
     });
 
+    expect(propositions).toEqual(PROPOSITIONS);
     expect(subscribeMessageFeed.refresh).toHaveBeenCalledOnceWith(PROPOSITIONS);
+
     expect(render).toHaveBeenCalledTimes(1);
-
-    const args = render.calls.first().args[0];
-
-    expect(args.length).toEqual(PROPOSITIONS.length);
-    args.forEach(handle => {
-      // it's a valid proposition object
-      expect(handle.getHandle).toEqual(jasmine.any(Function));
-      expect(handle.render).toEqual(jasmine.any(Function));
-    });
 
     expect(collect).toHaveBeenCalledOnceWith({
       decisionsMeta: [{ hi: true }],

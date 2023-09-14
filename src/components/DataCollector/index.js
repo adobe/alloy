@@ -92,7 +92,8 @@ const createDataCollector = ({ eventManager, logger }) => {
             renderDecisions = false,
             decisionContext = {},
             responseHeaders = {},
-            responseBody = { handle: [] }
+            responseBody = { handle: [] },
+            personalization
           } = options;
 
           const event = eventManager.createEvent();
@@ -101,7 +102,8 @@ const createDataCollector = ({ eventManager, logger }) => {
             renderDecisions,
             decisionContext,
             responseHeaders,
-            responseBody
+            responseBody,
+            personalization
           });
         }
       }

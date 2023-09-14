@@ -9,10 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import {
-  buildReturnedPropositions,
-  buildReturnedDecisions
-} from "./handlers/proposition";
+import { defer, groupBy } from "../../utils";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 
@@ -22,7 +19,9 @@ export default ({
   hideContainers,
   mergeQuery,
   collect,
-  render
+  processPropositions,
+  createProposition,
+  pendingDisplayNotifications
 }) => {
   return ({ cacheUpdate, personalizationDetails, event, onResponse }) => {
     if (personalizationDetails.isRenderDecisions()) {
@@ -30,24 +29,69 @@ export default ({
     }
     mergeQuery(event, personalizationDetails.createQueryDetails());
 
+    let handleNotifications;
+    if (personalizationDetails.isSendDisplayNotifications()) {
+      handleNotifications = decisionsMeta => {
+        if (decisionsMeta.length > 0) {
+          collect({
+            decisionsMeta,
+            viewName: personalizationDetails.getViewName()
+          });
+        }
+      };
+    } else {
+      const displayNotificationsDeferred = defer();
+      pendingDisplayNotifications.concat(displayNotificationsDeferred.promise);
+      handleNotifications = displayNotificationsDeferred.resolve;
+    }
+
     onResponse(({ response }) => {
       const handles = response.getPayloadsByType(DECISIONS_HANDLE);
-      const propositions = cacheUpdate.update(handles);
+      const propositions = handles.map(handle => createProposition(handle));
+      const {
+        page: pagePropositions = [],
+        view: viewPropositions = [],
+        proposition: nonRenderedPropositions = []
+      } = groupBy(propositions, p => p.getScopeType());
+
+      const currentViewPropositions = cacheUpdate.update(viewPropositions);
+
+      let render;
+      let returnedPropositions;
+      let returnedDecisions;
+
       if (personalizationDetails.isRenderDecisions()) {
-        render(propositions).then(decisionsMeta => {
-          showContainers();
-          if (decisionsMeta.length > 0) {
-            collect({
-              decisionsMeta,
-              viewName: personalizationDetails.getViewName()
-            });
-          }
-        });
+        ({
+          render,
+          returnedPropositions,
+          returnedDecisions
+        } = processPropositions(
+          [...pagePropositions, ...currentViewPropositions],
+          nonRenderedPropositions
+        ));
+        render()
+          .then(decisionsMeta => {
+            showContainers();
+            handleNotifications(decisionsMeta);
+          })
+          .catch(e => {
+            showContainers();
+            throw e;
+          });
+      } else {
+        ({ returnedPropositions, returnedDecisions } = processPropositions(
+          [],
+          [
+            ...pagePropositions,
+            ...currentViewPropositions,
+            ...nonRenderedPropositions
+          ]
+        ));
       }
 
       return {
-        propositions: buildReturnedPropositions(propositions),
-        decisions: buildReturnedDecisions(propositions)
+        propositions: returnedPropositions,
+        decisions: returnedDecisions
       };
     });
   };

@@ -9,14 +9,20 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { MEASUREMENT_SCHEMA } from "../constants/schema";
+export default ({ logger, executeRedirect, collect }) => item => {
+  const { content } = item.getData() || {};
 
-export default ({ next }) => proposition => {
-  const { items = [] } = proposition.getHandle();
-
-  // If there is a measurement schema in the item list,
-  // just return the whole proposition unrendered. (i.e. do not call next)
-  if (!items.some(item => item.schema === MEASUREMENT_SCHEMA)) {
-    next(proposition);
+  if (!content) {
+    logger.warn("Invalid Redirect data", item.getData());
+    return {};
   }
+
+  const render = () => {
+    return collect({ decisionsMeta: [item.getMeta()] }).then(() => {
+      executeRedirect(content);
+      // We've already sent the display notification, so don't return anything
+    });
+  };
+
+  return { render, setRenderAttempted: true, onlyRenderThis: true };
 };
