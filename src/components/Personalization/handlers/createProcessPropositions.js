@@ -10,8 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ schemaProcessors, logger}) => {
-
+export default ({ schemaProcessors, logger }) => {
   const wrapRenderWithLogging = (render, item) => () => {
     return Promise.resolve()
       .then(render)
@@ -32,8 +31,7 @@ export default ({ schemaProcessors, logger}) => {
   };
 
   const renderItems = (renderers, meta) =>
-    Promise.all(renderers.map(renderer => renderer()))
-    .then(successes => {
+    Promise.all(renderers.map(renderer => renderer())).then(successes => {
       // as long as at least one renderer succeeds, we want to add the notification
       // to the display notifications
       if (!successes.includes(true)) {
@@ -42,7 +40,7 @@ export default ({ schemaProcessors, logger}) => {
       return meta;
     });
 
-  const processItem = (item) => {
+  const processItem = item => {
     const processor = schemaProcessors[item.getSchema()];
     if (!processor) {
       return {};
@@ -73,7 +71,12 @@ export default ({ schemaProcessors, logger}) => {
 
     while (items.length > i) {
       item = items[i];
-      ({ render, setRenderAttempted, includeInNotification, onlyRenderThis } = processItem(item));
+      ({
+        render,
+        setRenderAttempted,
+        includeInNotification,
+        onlyRenderThis
+      } = processItem(item));
       if (onlyRenderThis) {
         returnedPropositions = [];
         returnedDecisions = [];
@@ -103,19 +106,36 @@ export default ({ schemaProcessors, logger}) => {
       i += 1;
     }
     if (itemRenderers.length > 0) {
-      const meta = atLeastOneWithNotification ? proposition.getNotification() : undefined;
+      const meta = atLeastOneWithNotification
+        ? proposition.getNotification()
+        : undefined;
       renderers.push(() => renderItems(itemRenderers, meta));
     } else if (atLeastOneWithNotification) {
       renderers.push(() => proposition.getNotification());
     }
     if (renderedItems.length > 0) {
-      proposition.addToReturnValues(returnedPropositions, returnedDecisions, renderedItems, true);
+      proposition.addToReturnValues(
+        returnedPropositions,
+        returnedDecisions,
+        renderedItems,
+        true
+      );
     }
     if (nonRenderedItems.length > 0) {
-      proposition.addToReturnValues(returnedPropositions, returnedDecisions, nonRenderedItems, false);
+      proposition.addToReturnValues(
+        returnedPropositions,
+        returnedDecisions,
+        nonRenderedItems,
+        false
+      );
     }
 
-    return { renderers, returnedPropositions, returnedDecisions, onlyRenderThis };
+    return {
+      renderers,
+      returnedPropositions,
+      returnedDecisions,
+      onlyRenderThis
+    };
   };
 
   return (renderPropositions, nonRenderPropositions = []) => {
@@ -124,31 +144,59 @@ export default ({ schemaProcessors, logger}) => {
     let returnedDecisions = [];
     let onlyRenderThis;
     let i = 0;
-    let proposition, items;
+    let proposition;
+    let items;
 
     while (renderPropositions.length > i) {
       proposition = renderPropositions[i];
       items = proposition.getItems();
-      ({ renderers, returnedPropositions, returnedDecisions, onlyRenderThis } =
-        processItems({ renderers, returnedPropositions, returnedDecisions, items, proposition }));
+      ({
+        renderers,
+        returnedPropositions,
+        returnedDecisions,
+        onlyRenderThis
+      } = processItems({
+        renderers,
+        returnedPropositions,
+        returnedDecisions,
+        items,
+        proposition
+      }));
       if (onlyRenderThis) {
-        renderPropositions.forEach((p, index) => {
-          if (index !== i) {
-            p.addToReturnValues(returnedPropositions, returnedDecisions, p.getItems(), false);
-          }
-        });
         break;
       }
       i += 1;
     }
 
+    if (onlyRenderThis) {
+      // if onlyRenderThis is true, that means returnedPropositions and returnedDecisions
+      // only contains the proposition that triggered only rendering this. We need to
+      // add the other propositions to the returnedPropositions and returnedDecisions.
+      renderPropositions.forEach((p, index) => {
+        if (index !== i) {
+          p.addToReturnValues(
+            returnedPropositions,
+            returnedDecisions,
+            p.getItems(),
+            false
+          );
+        }
+      });
+    }
+
     nonRenderPropositions.forEach(p => {
-      p.addToReturnValues(returnedPropositions, returnedDecisions, p.getItems(), false);
+      p.addToReturnValues(
+        returnedPropositions,
+        returnedDecisions,
+        p.getItems(),
+        false
+      );
     });
     const render = () => {
-      return Promise.all(renderers.map(renderer => renderer()))
-        .then(metas => metas.filter(meta => meta));
+      return Promise.all(renderers.map(renderer => renderer())).then(metas =>
+        metas.filter(meta => meta)
+      );
     };
-    return { returnedPropositions, returnedDecisions, render};
+    return { returnedPropositions, returnedDecisions, render };
   };
 };

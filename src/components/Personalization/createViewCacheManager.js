@@ -14,7 +14,6 @@ import { assign, groupBy } from "../../utils";
 import defer from "../../utils/defer";
 
 export default ({ createProposition }) => {
-
   const viewStorage = {};
   let cacheUpdateCreatedAtLeastOnce = false;
   let previousUpdateCacheComplete = Promise.resolve();
@@ -25,14 +24,17 @@ export default ({ createProposition }) => {
       return viewPropositions;
     }
 
-    const emptyViewProposition = createProposition({
-      scope: viewName,
-      scopeDetails: {
-        characteristics: {
-          scopeType: "view"
+    const emptyViewProposition = createProposition(
+      {
+        scope: viewName,
+        scopeDetails: {
+          characteristics: {
+            scopeType: "view"
+          }
         }
-      }
-    }, false);
+      },
+      false
+    );
     return [emptyViewProposition];
   };
 
@@ -50,10 +52,12 @@ export default ({ createProposition }) => {
 
     return {
       update(viewPropositions) {
-        const newViewStorage = groupBy(viewPropositions, proposition => proposition.getScope());
+        const newViewStorage = groupBy(viewPropositions, proposition =>
+          proposition.getScope()
+        );
         updateCacheDeferred.resolve(newViewStorage);
         if (viewName) {
-          return getViewPropositions(newViewStorage, viewName)
+          return getViewPropositions(newViewStorage, viewName);
         }
         return [];
       },

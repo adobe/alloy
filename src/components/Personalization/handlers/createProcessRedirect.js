@@ -18,12 +18,11 @@ export default ({ logger, executeRedirect, collect }) => item => {
   }
 
   const render = () => {
-    return collect({ decisionsMeta: [item.getMeta()] })
-      .then(() => {
-        executeRedirect(content);
-        // We've already sent the display notification, so don't return anything
-      });
-  }
+    return collect({ decisionsMeta: [item.getMeta()] }).then(() => {
+      executeRedirect(content);
+      // We've already sent the display notification, so don't return anything
+    });
+  };
 
   return { render, setRenderAttempted: true, onlyRenderThis: true };
 };

@@ -3,7 +3,10 @@ import injectCreateProposition from "../../../../../../src/components/Personaliz
 describe("injectCreateProposition", () => {
   const preprocess = data => `preprocessed ${data}`;
   const isPageWideSurface = scope => scope === "__surface__";
-  const createProposition = injectCreateProposition({ preprocess, isPageWideSurface });
+  const createProposition = injectCreateProposition({
+    preprocess,
+    isPageWideSurface
+  });
 
   it("creates a proposition from nothing", () => {
     const proposition = createProposition({});
@@ -69,5 +72,4 @@ describe("injectCreateProposition", () => {
     });
     expect(proposition.getScopeType()).toEqual("page");
   });
-
 });

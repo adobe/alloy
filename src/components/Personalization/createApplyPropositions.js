@@ -16,7 +16,12 @@ import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
 
 const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
 
-export default ({ processPropositions, createProposition, pendingDisplayNotifications, viewCache }) => {
+export default ({
+  processPropositions,
+  createProposition,
+  pendingDisplayNotifications,
+  viewCache
+}) => {
   const filterItemsPredicate = item =>
     SUPPORTED_SCHEMAS.indexOf(item.schema) > -1;
 
@@ -70,7 +75,7 @@ export default ({ processPropositions, createProposition, pendingDisplayNotifica
   };
 
   return ({ propositions = [], metadata = {}, viewName }) => {
-    let propositionsToExecute = preparePropositions({
+    const propositionsToExecute = preparePropositions({
       propositions,
       metadata
     }).map(proposition => createProposition(proposition));
@@ -83,8 +88,10 @@ export default ({ processPropositions, createProposition, pendingDisplayNotifica
         return [];
       })
       .then(additionalPropositions => {
-        const { render, returnedPropositions } =
-          processPropositions([ ...propositionsToExecute, ...additionalPropositions]);
+        const { render, returnedPropositions } = processPropositions([
+          ...propositionsToExecute,
+          ...additionalPropositions
+        ]);
 
         pendingDisplayNotifications.concat(render());
 

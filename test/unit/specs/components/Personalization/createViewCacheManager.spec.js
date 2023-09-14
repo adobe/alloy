@@ -12,34 +12,19 @@ governing permissions and limitations under the License.
 
 import createViewCacheManager from "../../../../../src/components/Personalization/createViewCacheManager";
 
-xdescribe("Personalization::createCacheManager", () => {
+describe("Personalization::createCacheManager", () => {
   const viewHandles = [
     {
       id: "foo1",
-      scope: "home",
-      scopeDetails: {
-        characteristics: {
-          scopeType: "view"
-        }
-      }
+      scope: "home"
     },
     {
       id: "foo2",
-      scope: "home",
-      scopeDetails: {
-        characteristics: {
-          scopeType: "view"
-        }
-      }
+      scope: "home"
     },
     {
       id: "foo3",
-      scope: "cart",
-      scopeDetails: {
-        characteristics: {
-          scopeType: "view"
-        }
-      }
+      scope: "cart"
     },
     {
       id: "foo4",
@@ -48,50 +33,38 @@ xdescribe("Personalization::createCacheManager", () => {
   ];
 
   let createProposition;
+  let propositions;
 
   beforeEach(() => {
     createProposition = viewHandle => {
-      const proposition = jasmine.createSpyObj("proposition", [
-        "includeInDisplayNotification",
-        "excludeInReturnedPropositions",
-        "getHandle"
-      ]);
-      proposition.getHandle.and.returnValue(viewHandle);
-      return proposition;
+      const { scope } = viewHandle;
+      return {
+        getScope() {
+          return scope;
+        },
+        toJSON() {
+          return viewHandle;
+        }
+      };
     };
+    propositions = viewHandles.map(createProposition);
   });
 
   it("stores and gets the decisions based on a viewName", async () => {
     const viewCacheManager = createViewCacheManager({ createProposition });
 
     const cacheUpdate = viewCacheManager.createCacheUpdate("home");
-    const resultingHandles = cacheUpdate.update(viewHandles);
-    expect(resultingHandles.map(h => h.getHandle())).toEqual([
-      viewHandles[0],
-      viewHandles[1],
-      viewHandles[3]
-    ]);
+    const resultingHandles = cacheUpdate.update(propositions);
+    expect(resultingHandles).toEqual([propositions[0], propositions[1]]);
 
     const homeViews = await viewCacheManager.getView("home");
-    expect(homeViews.map(h => h.getHandle())).toEqual([
-      viewHandles[0],
-      viewHandles[1]
-    ]);
+    expect(homeViews).toEqual([propositions[0], propositions[1]]);
 
     const cartViews = await viewCacheManager.getView("cart");
-    expect(cartViews.map(h => h.getHandle())).toEqual([viewHandles[2]]);
+    expect(cartViews).toEqual([propositions[2]]);
 
     const otherViews = await viewCacheManager.getView("other");
-    expect(otherViews.map(h => h.getHandle())).toEqual([
-      {
-        scope: "other",
-        scopeDetails: {
-          characteristics: {
-            scopeType: "view"
-          }
-        }
-      }
-    ]);
+    expect(otherViews).toEqual([propositions[3]]);
   });
 
   it("should be no views when decisions deferred is rejected", async () => {
@@ -100,7 +73,7 @@ xdescribe("Personalization::createCacheManager", () => {
     cacheUpdate.cancel();
 
     const homeViews = await viewCacheManager.getView("home");
-    expect(homeViews.map(h => h.getHandle())).toEqual([
+    expect(homeViews.map(h => h.toJSON())).toEqual([
       {
         scope: "home",
         scopeDetails: {

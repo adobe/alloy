@@ -56,21 +56,37 @@ export default ({
 
       const currentViewPropositions = cacheUpdate.update(viewPropositions);
 
-      let render, returnedPropositions, returnedDecisions;
+      let render;
+      let returnedPropositions;
+      let returnedDecisions;
 
       if (personalizationDetails.isRenderDecisions()) {
-        ({ render, returnedPropositions, returnedDecisions } =
-          processPropositions([...pagePropositions, ...currentViewPropositions], nonRenderedPropositions));
-        render().then(decisionsMeta => {
-          showContainers();
-          handleNotifications(decisionsMeta);
-        }).catch(e => {
-          showContainers();
-          throw e;
-        });
+        ({
+          render,
+          returnedPropositions,
+          returnedDecisions
+        } = processPropositions(
+          [...pagePropositions, ...currentViewPropositions],
+          nonRenderedPropositions
+        ));
+        render()
+          .then(decisionsMeta => {
+            showContainers();
+            handleNotifications(decisionsMeta);
+          })
+          .catch(e => {
+            showContainers();
+            throw e;
+          });
       } else {
-        ({ returnedPropositions, returnedDecisions } =
-          processPropositions([], [...pagePropositions, ...currentViewPropositions, ...nonRenderedPropositions]));
+        ({ returnedPropositions, returnedDecisions } = processPropositions(
+          [],
+          [
+            ...pagePropositions,
+            ...currentViewPropositions,
+            ...nonRenderedPropositions
+          ]
+        ));
       }
 
       return {

@@ -10,14 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import "jasmine-expect";
 import {
   MIXED_PROPOSITIONS,
   PAGE_WIDE_SCOPE_DECISIONS
 } from "./responsesMock/eventResponses";
 import createApplyPropositions from "../../../../../src/components/Personalization/createApplyPropositions";
 import clone from "../../../../../src/utils/clone";
-//import { createProposition } from "../../../../../src/components/Personalization/handlers/proposition";
+import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
 
 const METADATA = {
   home: {
@@ -26,40 +25,50 @@ const METADATA = {
   }
 };
 
-xdescribe("Personalization::createApplyPropositions", () => {
-  let render;
+describe("Personalization::createApplyPropositions", () => {
+  let processPropositions;
+  let createProposition;
   let pendingDisplayNotifications;
   let viewCache;
+  let applyPropositions;
+  let render;
 
   beforeEach(() => {
-    render = jasmine.createSpy("render");
-    render.and.callFake(propositions => {
-      propositions.forEach(proposition => {
-        const { items = [] } = proposition.getHandle();
-        items.forEach((_, i) => {
-          proposition.addRenderer(i, () => undefined);
-        });
-      });
+    processPropositions = jasmine.createSpy("processPropositions");
+    processPropositions.and.callFake(propositions => {
+      const returnedPropositions = propositions.map(proposition => ({
+        ...proposition.toJSON(),
+        renderAttempted: true
+      }));
+      return { returnedPropositions, render };
     });
+    render = jasmine.createSpy("render");
+    render.and.callFake(() => Promise.resolve("notifications"));
+    createProposition = injectCreateProposition({
+      preprocess: data => data,
+      isPageWideSurface: () => false
+    });
+
     pendingDisplayNotifications = jasmine.createSpyObj(
       "pendingDisplayNotifications",
       ["concat"]
     );
     viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
     viewCache.getView.and.returnValue(Promise.resolve([]));
+    applyPropositions = createApplyPropositions({
+      processPropositions,
+      createProposition,
+      pendingDisplayNotifications,
+      viewCache
+    });
   });
 
   it("it should return an empty propositions promise if propositions is empty array", async () => {
-    const applyPropositions = createApplyPropositions({
-      render,
-      pendingDisplayNotifications
-    });
-
     const result = await applyPropositions({
       propositions: []
     });
     expect(result).toEqual({ propositions: [] });
-    expect(render).toHaveBeenCalledOnceWith([]);
+    expect(processPropositions).toHaveBeenCalledOnceWith([]);
   });
 
   it("it should apply user-provided dom-action schema propositions", async () => {
@@ -70,16 +79,11 @@ xdescribe("Personalization::createApplyPropositions", () => {
       return proposition;
     });
 
-    const applyPropositions = createApplyPropositions({
-      render,
-      pendingDisplayNotifications
-    });
-
     const result = await applyPropositions({
       propositions: PAGE_WIDE_SCOPE_DECISIONS
     });
 
-    expect(render).toHaveBeenCalledTimes(1);
+    expect(processPropositions).toHaveBeenCalledTimes(1);
 
     const expectedScopes = expectedExecuteDecisionsPropositions.map(
       proposition => proposition.scope
@@ -93,11 +97,6 @@ xdescribe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should merge metadata with propositions that have html-content-item schema", async () => {
-    const applyPropositions = createApplyPropositions({
-      render,
-      pendingDisplayNotifications
-    });
-
     const { propositions } = await applyPropositions({
       propositions: MIXED_PROPOSITIONS,
       metadata: METADATA
@@ -115,7 +114,7 @@ xdescribe("Personalization::createApplyPropositions", () => {
         expect(proposition.items[0].data.type).toEqual("setHtml");
       }
     });
-    expect(render).toHaveBeenCalledTimes(1);
+    expect(processPropositions).toHaveBeenCalledTimes(1);
   });
 
   it("it should drop items with html-content-item schema when there is no metadata", async () => {
@@ -146,11 +145,6 @@ xdescribe("Personalization::createApplyPropositions", () => {
       }
     ];
 
-    const applyPropositions = createApplyPropositions({
-      render,
-      pendingDisplayNotifications
-    });
-
     const result = await applyPropositions({
       propositions
     });
@@ -162,11 +156,6 @@ xdescribe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should return renderAttempted = true on resulting propositions", async () => {
-    const applyPropositions = createApplyPropositions({
-      render,
-      pendingDisplayNotifications
-    });
-
     const result = await applyPropositions({
       propositions: MIXED_PROPOSITIONS
     });
@@ -177,10 +166,6 @@ xdescribe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should ignore propositions with __view__ scope that have already been rendered", async () => {
-    const applyPropositions = createApplyPropositions({
-      render,
-      pendingDisplayNotifications
-    });
     const propositions = JSON.parse(JSON.stringify(MIXED_PROPOSITIONS));
     propositions[4].renderAttempted = true;
 
@@ -201,11 +186,6 @@ xdescribe("Personalization::createApplyPropositions", () => {
   it("it should ignore items with unsupported schemas", async () => {
     const expectedItemIds = ["442358", "442359"];
 
-    const applyPropositions = createApplyPropositions({
-      render,
-      pendingDisplayNotifications
-    });
-
     const { propositions } = await applyPropositions({
       propositions: MIXED_PROPOSITIONS
     });
@@ -219,11 +199,6 @@ xdescribe("Personalization::createApplyPropositions", () => {
   });
 
   it("it should not mutate original propositions", async () => {
-    const applyPropositions = createApplyPropositions({
-      render,
-      pendingDisplayNotifications
-    });
-
     const originalPropositions = clone(MIXED_PROPOSITIONS);
     const result = await applyPropositions({
       propositions: originalPropositions,
@@ -250,11 +225,6 @@ xdescribe("Personalization::createApplyPropositions", () => {
         createProposition({ id: "myViewNameProp1", items: [{}] })
       ])
     );
-    const applyPropositions = createApplyPropositions({
-      render,
-      pendingDisplayNotifications,
-      viewCache
-    });
     const result = await applyPropositions({
       viewName: "myViewName"
     });

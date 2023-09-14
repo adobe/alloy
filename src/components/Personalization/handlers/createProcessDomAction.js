@@ -31,5 +31,9 @@ export default ({ modules, logger, storeClickMetrics }) => item => {
     return {};
   }
 
-  return { render: () => modules[type](item.getData()), setRenderAttempted: true, includeInNotification: true };
+  return {
+    render: () => modules[type](item.getData()),
+    setRenderAttempted: true,
+    includeInNotification: true
+  };
 };

@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 import PAGE_WIDE_SCOPE from "../../../constants/pageWideScope";
 
 export default ({ preprocess, isPageWideSurface }) => {
-
   const createItem = (item, meta) => {
     const { schema, data, characteristics: { trackingLabel } = {} } = item;
 
@@ -71,7 +70,12 @@ export default ({ preprocess, isPageWideSurface }) => {
       toJSON() {
         return payload;
       },
-      addToReturnValues(propositions, decisions, includedItems, renderAttempted) {
+      addToReturnValues(
+        propositions,
+        decisions,
+        includedItems,
+        renderAttempted
+      ) {
         if (visibleInReturnedItems) {
           propositions.push({
             ...payload,

@@ -14,7 +14,8 @@ import { PropositionEventType } from "./constants/propositionEventType";
 
 export default ({ mergeDecisionsMeta, processPropositions, viewCache }) => {
   return ({ personalizationDetails, event, onResponse }) => {
-    let returnedPropositions, returnedDecisions;
+    let returnedPropositions;
+    let returnedDecisions;
     const viewName = personalizationDetails.getViewName();
 
     onResponse(() => {
@@ -29,12 +30,18 @@ export default ({ mergeDecisionsMeta, processPropositions, viewCache }) => {
       .then(propositions => {
         let render;
         if (personalizationDetails.isRenderDecisions()) {
-          ({ render, returnedPropositions, returnedDecisions } = processPropositions(propositions));
+          ({
+            render,
+            returnedPropositions,
+            returnedDecisions
+          } = processPropositions(propositions));
           return render();
-        } else {
-          ({ returnedPropositions, returnedDecisions } = processPropositions([], propositions));
-          return [];
         }
+        ({ returnedPropositions, returnedDecisions } = processPropositions(
+          [],
+          propositions
+        ));
+        return [];
       })
       .then(decisionsMeta => {
         mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.DISPLAY);

@@ -86,26 +86,32 @@ const buildComponent = ({
   } = createClickStorage();
 
   const preprocess = action => action;
-  const createProposition = injectCreateProposition({ preprocess, isPageWideSurface });
+  const createProposition = injectCreateProposition({
+    preprocess,
+    isPageWideSurface
+  });
 
   const viewCache = createViewCacheManager({ createProposition });
   const modules = initDomActionsModulesMocks();
 
-
   const schemaProcessors = {
     [schema.DEFAULT_CONTENT_ITEM]: processDefaultContent,
-    [schema.DOM_ACTION]: createProcessDomAction({ modules, logger, storeClickMetrics }),
+    [schema.DOM_ACTION]: createProcessDomAction({
+      modules,
+      logger,
+      storeClickMetrics
+    }),
     [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({ modules, logger }),
     [schema.REDIRECT_ITEM]: createProcessRedirect({
       logger,
       executeRedirect: url => window.location.replace(url),
       collect
-     })
+    })
   };
 
   const processPropositions = createProcessPropositions({
     schemaProcessors,
-    logger,
+    logger
   });
 
   const pendingDisplayNotifications = createAsyncArray();

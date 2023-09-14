@@ -26,20 +26,19 @@ import createClickStorage from "./createClickStorage";
 import createApplyPropositions from "./createApplyPropositions";
 import createGetPageLocation from "./createGetPageLocation";
 import createSetTargetMigration from "./createSetTargetMigration";
-import createRedirectHandler from "./handlers/createRedirectHandler";
-import createHtmlContentHandler from "./handlers/createHtmlContentHandler";
-import createDomActionHandler from "./handlers/createDomActionHandler";
-import createMeasurementSchemaHandler from "./handlers/createMeasurementSchemaHandler";
-import createRender from "./handlers/createProcessPropositions";
 import remapCustomCodeOffers from "./dom-actions/remapCustomCodeOffers";
 import remapHeadOffers from "./dom-actions/remapHeadOffers";
 import createPreprocess from "./dom-actions/createPreprocess";
-import injectCreateProposition, { createProposition } from "./handlers/injectCreateProposition";
+import injectCreateProposition from "./handlers/injectCreateProposition";
 import createAsyncArray from "./utils/createAsyncArray";
 import createPendingNotificationsHandler from "./createPendingNotificationsHandler";
 import * as schema from "./constants/schema";
 import processDefaultContent from "./handlers/processDefaultContent";
 import { isPageWideSurface } from "./utils/surfaceUtils";
+import createProcessDomAction from "./handlers/createProcessDomAction";
+import createProcessHtmlContent from "./handlers/createProcessHtmlContent";
+import createProcessRedirect from "./handlers/createProcessRedirect";
+import createProcessPropositions from "./handlers/createProcessPropositions";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -51,22 +50,32 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     storeClickMetrics
   } = createClickStorage();
   const getPageLocation = createGetPageLocation({ window });
-  const viewCache = createViewCacheManager({ createProposition });
   const modules = initDomActionsModules();
 
   const preprocess = createPreprocess([remapHeadOffers, remapCustomCodeOffers]);
-  const createProposition = injectCreateProposition({ preprocess, isPageWideSurface });
+  const createProposition = injectCreateProposition({
+    preprocess,
+    isPageWideSurface
+  });
+  const viewCache = createViewCacheManager({ createProposition });
 
   const schemaProcessors = {
     [schema.DEFAULT_CONTENT_ITEM]: processDefaultContent,
-    [schema.DOM_ACTION]: createProcessDomAction({ modules, logger, storeClickMetrics }),
+    [schema.DOM_ACTION]: createProcessDomAction({
+      modules,
+      logger,
+      storeClickMetrics
+    }),
     [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({ modules, logger }),
-    [schema.REDIRECT_ITEM]: createProcessRedirect({ logger, executeRedirect: url => window.location.replace(url) })
+    [schema.REDIRECT_ITEM]: createProcessRedirect({
+      logger,
+      executeRedirect: url => window.location.replace(url)
+    })
   };
 
   const processPropositions = createProcessPropositions({
     schemaProcessors,
-    logger,
+    logger
   });
 
   const pendingDisplayNotifications = createAsyncArray();
@@ -96,7 +105,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     viewCache
   });
   const applyPropositions = createApplyPropositions({
-    processProposition,
+    processPropositions,
     createProposition,
     pendingDisplayNotifications,
     viewCache

@@ -3,7 +3,6 @@ import flushPromiseChains from "../../../../helpers/flushPromiseChains";
 import createProcessRedirect from "../../../../../../src/components/Personalization/handlers/createProcessRedirect";
 
 describe("createProcessRedirect", () => {
-
   let logger;
   let executeRedirect;
   let collect;
@@ -18,32 +17,49 @@ describe("createProcessRedirect", () => {
     logger = jasmine.createSpyObj("logger", ["warn"]);
     executeRedirect = jasmine.createSpy("executeRedirect");
     collectDefer = defer();
-    collect = jasmine.createSpy("collect").and.returnValue(collectDefer.promise);
+    collect = jasmine
+      .createSpy("collect")
+      .and.returnValue(collectDefer.promise);
     item = {
-      getData() { return data; },
-      getMeta() { return meta; }
+      getData() {
+        return data;
+      },
+      getMeta() {
+        return meta;
+      }
     };
 
-    processRedirect = createProcessRedirect({ logger, executeRedirect, collect });
+    processRedirect = createProcessRedirect({
+      logger,
+      executeRedirect,
+      collect
+    });
   });
 
   it("returns an empty object if the item has no data", () => {
     data = undefined;
     expect(processRedirect(item)).toEqual({});
-    expect(logger.warn).toHaveBeenCalledWith("Invalid Redirect data", undefined);
+    expect(logger.warn).toHaveBeenCalledWith(
+      "Invalid Redirect data",
+      undefined
+    );
   });
 
   it("returns an empty object if the item has no content", () => {
-    data = {a: 1};
+    data = { a: 1 };
     expect(processRedirect(item)).toEqual({});
-    expect(logger.warn).toHaveBeenCalledWith("Invalid Redirect data", {a: 1});
+    expect(logger.warn).toHaveBeenCalledWith("Invalid Redirect data", { a: 1 });
   });
 
   it("redirects", async () => {
     data = { content: "mycontent" };
     meta = "mymetavalue";
     const result = processRedirect(item);
-    expect(result).toEqual({ render: jasmine.any(Function), setRenderAttempted: true, onlyRenderThis: true });
+    expect(result).toEqual({
+      render: jasmine.any(Function),
+      setRenderAttempted: true,
+      onlyRenderThis: true
+    });
     expect(collect).not.toHaveBeenCalled();
     expect(executeRedirect).not.toHaveBeenCalled();
     const renderPromise = result.render();
@@ -64,5 +80,4 @@ describe("createProcessRedirect", () => {
     collectDefer.reject("myerror");
     await expectAsync(renderPromise).toBeRejectedWith("myerror");
   });
-
 });
