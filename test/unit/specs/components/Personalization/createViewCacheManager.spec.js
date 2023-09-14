@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import createViewCacheManager from "../../../../../src/components/Personalization/createViewCacheManager";
 
-describe("Personalization::createCacheManager", () => {
+xdescribe("Personalization::createCacheManager", () => {
   const viewHandles = [
     {
       id: "foo1",

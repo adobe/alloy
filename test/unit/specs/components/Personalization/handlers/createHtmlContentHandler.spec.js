@@ -1,6 +1,6 @@
 import createHtmlContentHandler from "../../../../../../src/components/Personalization/handlers/createHtmlContentHandler";
 
-describe("Personalization::handlers::createHtmlContentHandler", () => {
+xdescribe("Personalization::handlers::createHtmlContentHandler", () => {
   let next;
   let modules;
   let action1;

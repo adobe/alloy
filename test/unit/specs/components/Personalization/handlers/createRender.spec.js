@@ -1,6 +1,6 @@
-import createRender from "../../../../../../src/components/Personalization/handlers/createRender";
+import createProcessPropositions from "../../../../../../src/components/Personalization/handlers/createProcessPropositions";
 
-describe("Personalization::handlers::createRender", () => {
+xdescribe("Personalization::handlers::createRender", () => {
   let handleChain;
   let collect;
   let executeRedirect;

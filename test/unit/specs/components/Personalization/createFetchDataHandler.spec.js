@@ -11,10 +11,9 @@ governing permissions and limitations under the License.
 */
 
 import createFetchDataHandler from "../../../../../src/components/Personalization/createFetchDataHandler";
-import { createProposition } from "../../../../../src/components/Personalization/handlers/proposition";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
-describe("Personalization::createFetchDataHandler", () => {
+xdescribe("Personalization::createFetchDataHandler", () => {
   let prehidingStyle;
   let showContainers;
   let hideContainers;

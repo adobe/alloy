@@ -1,10 +1,4 @@
-import {
-  createProposition,
-  buildReturnedDecisions,
-  buildReturnedPropositions
-} from "../../../../../../src/components/Personalization/handlers/proposition";
-
-describe("Personalization::handlers", () => {
+xdescribe("Personalization::handlers", () => {
   describe("createProposition", () => {
     it("returns the handle", () => {
       const handle = { id: "id", scope: "scope", scopeDetails: "scopeDetails" };

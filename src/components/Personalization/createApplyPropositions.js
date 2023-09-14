@@ -13,14 +13,10 @@ governing permissions and limitations under the License.
 import { isNonEmptyArray, isObject } from "../../utils";
 import { DOM_ACTION, HTML_CONTENT_ITEM } from "./constants/schema";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
-import {
-  buildReturnedPropositions,
-  createProposition
-} from "./handlers/proposition";
 
 const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
 
-export default ({ render, pendingDisplayNotifications, viewCache }) => {
+export default ({ processPropositions, createProposition, pendingDisplayNotifications, viewCache }) => {
   const filterItemsPredicate = item =>
     SUPPORTED_SCHEMAS.indexOf(item.schema) > -1;
 
@@ -77,7 +73,7 @@ export default ({ render, pendingDisplayNotifications, viewCache }) => {
     let propositionsToExecute = preparePropositions({
       propositions,
       metadata
-    }).map(proposition => createProposition(proposition, true));
+    }).map(proposition => createProposition(proposition));
 
     return Promise.resolve()
       .then(() => {
@@ -87,13 +83,13 @@ export default ({ render, pendingDisplayNotifications, viewCache }) => {
         return [];
       })
       .then(additionalPropositions => {
-        propositionsToExecute = propositionsToExecute.concat(
-          additionalPropositions
-        );
-        pendingDisplayNotifications.concat(render(propositionsToExecute));
+        const { render, returnedPropositions } =
+          processPropositions([ ...propositionsToExecute, ...additionalPropositions]);
+
+        pendingDisplayNotifications.concat(render());
 
         return {
-          propositions: buildReturnedPropositions(propositionsToExecute)
+          propositions: returnedPropositions
         };
       });
   };

@@ -11,29 +11,30 @@ governing permissions and limitations under the License.
 */
 
 import { PropositionEventType } from "./constants/propositionEventType";
-import {
-  buildReturnedPropositions,
-  buildReturnedDecisions
-} from "./handlers/proposition";
 
-export default ({ mergeDecisionsMeta, render, viewCache }) => {
+export default ({ mergeDecisionsMeta, processPropositions, viewCache }) => {
   return ({ personalizationDetails, event, onResponse }) => {
+    let returnedPropositions, returnedDecisions;
     const viewName = personalizationDetails.getViewName();
+
+    onResponse(() => {
+      return {
+        propositions: returnedPropositions,
+        decisions: returnedDecisions
+      };
+    });
 
     return viewCache
       .getView(viewName)
       .then(propositions => {
-        onResponse(() => {
-          return {
-            propositions: buildReturnedPropositions(propositions),
-            decisions: buildReturnedDecisions(propositions)
-          };
-        });
-
+        let render;
         if (personalizationDetails.isRenderDecisions()) {
-          return render(propositions);
+          ({ render, returnedPropositions, returnedDecisions } = processPropositions(propositions));
+          return render();
+        } else {
+          ({ returnedPropositions, returnedDecisions } = processPropositions([], propositions));
+          return [];
         }
-        return Promise.resolve([]);
       })
       .then(decisionsMeta => {
         mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.DISPLAY);

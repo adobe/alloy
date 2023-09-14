@@ -3,6 +3,7 @@ import { MIXED_PROPOSITIONS } from "../responsesMock/eventResponses";
 import buildMocks from "./buildMocks";
 import buildAlloy from "./buildAlloy";
 import resetMocks from "./resetMocks";
+import flushPromiseChains from "../../../../helpers/flushPromiseChains";
 
 describe("PersonalizationComponent", () => {
   it("MIXED_PROPOSITIONS", async () => {
@@ -260,6 +261,7 @@ describe("PersonalizationComponent", () => {
     ]);
     expect(applyPropositionsResult.decisions).toBeUndefined();
 
+    await flushPromiseChains();
     expect(mocks.sendEvent).not.toHaveBeenCalled();
     expect(mocks.actions.appendHtml).toHaveBeenCalledOnceWith(
       "#myhomeselector",

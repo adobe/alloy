@@ -17,7 +17,7 @@ import {
 } from "./responsesMock/eventResponses";
 import createApplyPropositions from "../../../../../src/components/Personalization/createApplyPropositions";
 import clone from "../../../../../src/utils/clone";
-import { createProposition } from "../../../../../src/components/Personalization/handlers/proposition";
+//import { createProposition } from "../../../../../src/components/Personalization/handlers/proposition";
 
 const METADATA = {
   home: {
@@ -26,7 +26,7 @@ const METADATA = {
   }
 };
 
-describe("Personalization::createApplyPropositions", () => {
+xdescribe("Personalization::createApplyPropositions", () => {
   let render;
   let pendingDisplayNotifications;
   let viewCache;

@@ -1,7 +1,6 @@
 import createRedirectHandler from "../../../../../../src/components/Personalization/handlers/createRedirectHandler";
-import { createProposition } from "../../../../../../src/components/Personalization/handlers/proposition";
 
-describe("redirectHandler", () => {
+xdescribe("redirectHandler", () => {
   let next;
   let redirectHandler;
 

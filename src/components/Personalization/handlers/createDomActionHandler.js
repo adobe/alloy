@@ -44,3 +44,10 @@ export default ({
 
   next(proposition);
 };
+
+
+/*
+1. Anything scope type view we put in the view storage.
+2. Anything page wide scope we try to render.
+3. Anything else we only render if its Dom-action schema
+*/

@@ -27,15 +27,16 @@ import createClickStorage from "../../../../../../src/components/Personalization
 import createApplyPropositions from "../../../../../../src/components/Personalization/createApplyPropositions";
 import createSetTargetMigration from "../../../../../../src/components/Personalization/createSetTargetMigration";
 import { createCallbackAggregator, assign } from "../../../../../../src/utils";
-import createRender from "../../../../../../src/components/Personalization/handlers/createRender";
-import createDomActionHandler from "../../../../../../src/components/Personalization/handlers/createDomActionHandler";
-import createMeasurementSchemaHandler from "../../../../../../src/components/Personalization/handlers/createMeasurementSchemaHandler";
-import createRedirectHandler from "../../../../../../src/components/Personalization/handlers/createRedirectHandler";
-import createHtmlContentHandler from "../../../../../../src/components/Personalization/handlers/createHtmlContentHandler";
-import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceUtils";
-import { createProposition } from "../../../../../../src/components/Personalization/handlers/proposition";
+import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition";
+import createProcessPropositions from "../../../../../../src/components/Personalization/handlers/createProcessPropositions";
 import createAsyncArray from "../../../../../../src/components/Personalization/utils/createAsyncArray";
 import createPendingNotificationsHandler from "../../../../../../src/components/Personalization/createPendingNotificationsHandler";
+import * as schema from "../../../../../../src/components/Personalization/constants/schema";
+import createProcessDomAction from "../../../../../../src/components/Personalization/handlers/createProcessDomAction";
+import createProcessHtmlContent from "../../../../../../src/components/Personalization/handlers/createProcessHtmlContent";
+import createProcessRedirect from "../../../../../../src/components/Personalization/handlers/createProcessRedirect";
+import processDefaultContent from "../../../../../../src/components/Personalization/handlers/processDefaultContent";
+import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceUtils";
 
 const createAction = renderFunc => ({ selector, content }) => {
   renderFunc(selector, content);
@@ -84,36 +85,29 @@ const buildComponent = ({
     storeClickMetrics
   } = createClickStorage();
 
+  const preprocess = action => action;
+  const createProposition = injectCreateProposition({ preprocess, isPageWideSurface });
+
   const viewCache = createViewCacheManager({ createProposition });
   const modules = initDomActionsModulesMocks();
 
-  const noOpHandler = () => undefined;
-  const preprocess = action => action;
-  const domActionHandler = createDomActionHandler({
-    next: noOpHandler,
-    isPageWideSurface,
-    modules,
-    storeClickMetrics,
-    preprocess
-  });
-  const measurementSchemaHandler = createMeasurementSchemaHandler({
-    next: domActionHandler
-  });
-  const redirectHandler = createRedirectHandler({
-    next: measurementSchemaHandler
-  });
-  const htmlContentHandler = createHtmlContentHandler({
-    next: redirectHandler,
-    modules,
-    preprocess
+
+  const schemaProcessors = {
+    [schema.DEFAULT_CONTENT_ITEM]: processDefaultContent,
+    [schema.DOM_ACTION]: createProcessDomAction({ modules, logger, storeClickMetrics }),
+    [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({ modules, logger }),
+    [schema.REDIRECT_ITEM]: createProcessRedirect({
+      logger,
+      executeRedirect: url => window.location.replace(url),
+      collect
+     })
+  };
+
+  const processPropositions = createProcessPropositions({
+    schemaProcessors,
+    logger,
   });
 
-  const render = createRender({
-    handleChain: htmlContentHandler,
-    collect,
-    executeRedirect: url => window.location.replace(url),
-    logger
-  });
   const pendingDisplayNotifications = createAsyncArray();
   const pendingNotificationsHandler = createPendingNotificationsHandler({
     pendingDisplayNotifications,
@@ -125,7 +119,8 @@ const buildComponent = ({
     hideContainers,
     mergeQuery,
     collect,
-    render,
+    processPropositions,
+    createProposition,
     pendingDisplayNotifications
   });
   const onClickHandler = createOnClickHandler({
@@ -136,11 +131,12 @@ const buildComponent = ({
   });
   const viewChangeHandler = createViewChangeHandler({
     mergeDecisionsMeta,
-    render,
+    processPropositions,
     viewCache
   });
   const applyPropositions = createApplyPropositions({
-    render,
+    processPropositions,
+    createProposition,
     pendingDisplayNotifications,
     viewCache
   });
