@@ -129,7 +129,7 @@ const simulatePageLoad = async alloy => {
     .expect(
       // eslint-disable-next-line no-underscore-dangle
       notificationRequestBody.events[0].xdm._experience.decisioning
-        .propositions[1]
+        .propositions[0]
     )
     .eql(pageWideScopeDecisionsMeta[0]);
   const productsViewDecisionsMeta = getDecisionsMetaByScope(
@@ -140,7 +140,7 @@ const simulatePageLoad = async alloy => {
     .expect(
       // eslint-disable-next-line no-underscore-dangle
       notificationRequestBody.events[0].xdm._experience.decisioning
-        .propositions[0]
+        .propositions[1]
     )
     .eql(productsViewDecisionsMeta[0]);
   await t

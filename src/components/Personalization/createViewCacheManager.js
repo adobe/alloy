@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 import { assign, groupBy } from "../../utils";
 import defer from "../../utils/defer";
+import { DEFAULT_CONTENT_ITEM } from "./constants/schema";
 
 export default ({ createProposition }) => {
   const viewStorage = {};
@@ -31,7 +32,12 @@ export default ({ createProposition }) => {
           characteristics: {
             scopeType: "view"
           }
-        }
+        },
+        items: [
+          {
+            schema: DEFAULT_CONTENT_ITEM
+          }
+        ]
       },
       false
     );

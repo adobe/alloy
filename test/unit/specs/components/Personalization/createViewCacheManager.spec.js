@@ -10,9 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { DEFAULT_CONTENT_ITEM } from "../../../../../src/components/Personalization/constants/schema";
 import createViewCacheManager from "../../../../../src/components/Personalization/createViewCacheManager";
 
-describe("Personalization::createCacheManager", () => {
+describe("Personalization::createViewCacheManager", () => {
   const viewHandles = [
     {
       id: "foo1",
@@ -80,7 +81,12 @@ describe("Personalization::createCacheManager", () => {
           characteristics: {
             scopeType: "view"
           }
-        }
+        },
+        items: [
+          {
+            schema: DEFAULT_CONTENT_ITEM
+          }
+        ]
       }
     ]);
   });

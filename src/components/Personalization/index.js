@@ -69,7 +69,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({ modules, logger }),
     [schema.REDIRECT_ITEM]: createProcessRedirect({
       logger,
-      executeRedirect: url => window.location.replace(url)
+      executeRedirect: url => window.location.replace(url),
+      collect
     })
   };
 
