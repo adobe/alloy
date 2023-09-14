@@ -148,11 +148,16 @@ export default () => {
       return shouldSendEvent;
     },
     getViewName() {
-      if (!userXdm || !userXdm.web || !userXdm.web.webPageDetails) {
+      if (
+        !userXdm ||
+        !userXdm.web ||
+        !userXdm.web.webPageDetails ||
+        !userXdm.web.webPageDetails.viewName
+      ) {
         return undefined;
       }
 
-      return userXdm.web.webPageDetails.viewName;
+      return userXdm.web.webPageDetails.viewName.toLowerCase();
     },
     toJSON() {
       if (!isFinalized) {

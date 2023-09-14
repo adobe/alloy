@@ -223,7 +223,7 @@ const simulateViewChangeForNonExistingView = async alloy => {
       eventType: "noviewoffers",
       web: {
         webPageDetails: {
-          viewName: "noView"
+          viewName: "noview"
         }
       }
     }
@@ -260,7 +260,7 @@ const simulateViewChangeForNonExistingView = async alloy => {
     .expect(
       noViewViewChangeRequestBody.events[0].xdm.web.webPageDetails.viewName
     )
-    .eql("noView");
+    .eql("noview");
   await t
     .expect(noViewViewChangeRequestBody.events[0].xdm.eventType)
     .eql("noviewoffers");
