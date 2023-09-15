@@ -9,9 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createEventRegistry, {
-  createEventPruner
-} from "../../../../../src/components/DecisioningEngine/createEventRegistry";
+import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
 
 describe("DecisioningEngine:createEventRegistry", () => {
   let storage;
@@ -32,10 +30,36 @@ describe("DecisioningEngine:createEventRegistry", () => {
 
     const getContent = () => ({
       xdm: {
-        eventType: "display",
+        eventType: "decisioning.propositionDisplay",
         _experience: {
           decisioning: {
-            propositions: [{ id: "abc" }, { id: "def" }, { id: "ghi" }]
+            propositions: [
+              {
+                id: "111",
+                scope: "mobileapp://com.adobe.aguaAppIos",
+                scopeDetails: {
+                  decisionProvider: "AJO",
+                  correlationID: "ccaa539e-ca14-4d42-ac9a-0a17e69a63e4",
+                  activity: {
+                    id: "111#aaa"
+                  }
+                }
+              },
+              {
+                id: "222",
+                scope: "mobileapp://com.adobe.aguaAppIos",
+                scopeDetails: {
+                  decisionProvider: "AJO",
+                  correlationID: "ccaa539e-ca14-4d42-ac9a-0a17e69a63e4",
+                  activity: {
+                    id: "222#bbb"
+                  }
+                }
+              }
+            ],
+            propositionEventType: {
+              display: 1
+            }
           }
         }
       }
@@ -49,20 +73,20 @@ describe("DecisioningEngine:createEventRegistry", () => {
 
     expect(eventRegistry.toJSON()).toEqual({
       display: {
-        abc: {
-          event: jasmine.objectContaining({ id: "abc", type: "display" }),
+        "111#aaa": {
+          event: jasmine.objectContaining({
+            "iam.id": "111#aaa",
+            "iam.eventType": "display"
+          }),
           firstTimestamp: jasmine.any(Number),
           timestamp: jasmine.any(Number),
           count: 1
         },
-        def: {
-          event: jasmine.objectContaining({ id: "def", type: "display" }),
-          firstTimestamp: jasmine.any(Number),
-          timestamp: jasmine.any(Number),
-          count: 1
-        },
-        ghi: {
-          event: jasmine.objectContaining({ id: "ghi", type: "display" }),
+        "222#bbb": {
+          event: jasmine.objectContaining({
+            "iam.id": "222#bbb",
+            "iam.eventType": "display"
+          }),
           firstTimestamp: jasmine.any(Number),
           timestamp: jasmine.any(Number),
           count: 1
@@ -111,10 +135,25 @@ describe("DecisioningEngine:createEventRegistry", () => {
 
     const getContent = () => ({
       xdm: {
-        eventType: "display",
+        eventType: "decisioning.propositionDisplay",
         _experience: {
           decisioning: {
-            propositions: [{ id: "abc" }]
+            propositions: [
+              {
+                id: "111",
+                scope: "mobileapp://com.adobe.aguaAppIos",
+                scopeDetails: {
+                  decisionProvider: "AJO",
+                  correlationID: "ccaa539e-ca14-4d42-ac9a-0a17e69a63e4",
+                  activity: {
+                    id: "111#aaa"
+                  }
+                }
+              }
+            ],
+            propositionEventType: {
+              display: 1
+            }
           }
         }
       }
@@ -126,196 +165,39 @@ describe("DecisioningEngine:createEventRegistry", () => {
     let lastEventTime = 0;
     eventRegistry.addExperienceEdgeEvent(event);
 
-    expect(eventRegistry.getEvent("display", "abc")).toEqual({
-      event: jasmine.objectContaining({ id: "abc", type: "display" }),
+    expect(eventRegistry.getEvent("display", "111#aaa")).toEqual({
+      event: jasmine.objectContaining({
+        "iam.id": "111#aaa",
+        "iam.eventType": "display"
+      }),
       firstTimestamp: jasmine.any(Number),
       timestamp: jasmine.any(Number),
       count: 1
     });
-    expect(eventRegistry.getEvent("display", "abc").timestamp).toBeGreaterThan(
-      lastEventTime
-    );
-    lastEventTime = eventRegistry.getEvent("display", "abc").timestamp;
+    expect(
+      eventRegistry.getEvent("display", "111#aaa").timestamp
+    ).toBeGreaterThan(lastEventTime);
+
+    lastEventTime = eventRegistry.getEvent("display", "111#aaa").timestamp;
 
     setTimeout(() => {
       eventRegistry.addExperienceEdgeEvent(event); // again
 
-      expect(eventRegistry.getEvent("display", "abc")).toEqual({
-        event: jasmine.objectContaining({ id: "abc", type: "display" }),
+      expect(eventRegistry.getEvent("display", "111#aaa")).toEqual({
+        event: jasmine.objectContaining({
+          "iam.id": "111#aaa",
+          "iam.eventType": "display"
+        }),
         firstTimestamp: jasmine.any(Number),
         timestamp: jasmine.any(Number),
         count: 2
       });
       expect(
-        eventRegistry.getEvent("display", "abc").timestamp
+        eventRegistry.getEvent("display", "111#aaa").timestamp
       ).toBeGreaterThan(lastEventTime);
       done();
     }, 50);
 
     jasmine.clock().tick(60);
-  });
-
-  it("limits events to 1000 events", () => {
-    const prune = createEventPruner();
-    const events = {};
-    events["decisioning.propositionDisplay"] = {};
-    events["decisioning.propositionInteract"] = {};
-
-    for (let i = 0; i < 2000; i += 1) {
-      events["decisioning.propositionDisplay"][i] = {
-        event: {
-          id: i,
-          type: "decisioning.propositionDisplay"
-        },
-        firstTimestamp: "2023-05-23T08:00:00Z",
-        timestamp: mockedTimestamp,
-        count: 1
-      };
-
-      events["decisioning.propositionInteract"][i] = {
-        event: {
-          id: i,
-          type: "decisioning.propositionInteract"
-        },
-        firstTimestamp: "2023-05-23T08:00:00Z",
-        timestamp: mockedTimestamp,
-        count: 1
-      };
-
-      const pruned = prune(events);
-      const interactEvents = Object.values(
-        pruned["decisioning.propositionInteract"]
-      );
-
-      const displayEvents = Object.values(
-        pruned["decisioning.propositionDisplay"]
-      );
-      expect(interactEvents.length).not.toBeGreaterThan(1000);
-      expect(displayEvents.length).not.toBeGreaterThan(1000);
-
-      if (i > 1000) {
-        expect(interactEvents[0].event.id).toEqual(i - 999);
-        expect(displayEvents[0].event.id).toEqual(i - 999);
-      }
-
-      if (i > 0) {
-        expect(
-          interactEvents[0].timestamp <
-            interactEvents[interactEvents.length - 1].timestamp
-        );
-        expect(
-          displayEvents[0].timestamp <
-            displayEvents[interactEvents.length - 1].timestamp
-        );
-      }
-    }
-  });
-
-  it("has configurable limits", () => {
-    const prune = createEventPruner(10);
-
-    const events = {};
-    events["decisioning.propositionDisplay"] = {};
-
-    for (let i = 0; i < 20; i += 1) {
-      events["decisioning.propositionDisplay"][i] = {
-        event: {
-          id: i,
-          type: "decisioning.propositionDisplay"
-        },
-        firstTimestamp: 1,
-        timestamp: 1,
-        count: 1
-      };
-
-      const pruned = prune(events);
-
-      const displayEvents = Object.values(
-        pruned["decisioning.propositionDisplay"]
-      );
-
-      expect(displayEvents.length).not.toBeGreaterThan(10);
-    }
-  });
-
-  it("should filter events based on expiration date", () => {
-    const pruner = createEventPruner(4, 2);
-
-    const events = {};
-    events["decisioning.propositionDisplay"] = {
-      1: {
-        event: {
-          id: 1,
-          type: "decisioning.propositionInteract"
-        },
-        firstTimestamp: "2023-05-20T10:00:00Z",
-        timestamp: mockedTimestamp,
-        count: 1
-      },
-      2: {
-        event: {
-          id: 2,
-          type: "decisioning.propositionInteract"
-        },
-        firstTimestamp: "2023-05-24T15:00:00Z",
-        timestamp: mockedTimestamp,
-        count: 1
-      }
-    };
-    events["decisioning.propositionInteract"] = {
-      3: {
-        event: {
-          id: 3,
-          type: "decisioning.propositionInteract"
-        },
-        firstTimestamp: "2023-05-23T08:00:00Z",
-        timestamp: mockedTimestamp,
-        count: 1
-      },
-      4: {
-        event: {
-          id: 4,
-          type: "decisioning.propositionInteract"
-        },
-        firstTimestamp: "2023-05-23T08:00:00Z",
-        timestamp: mockedTimestamp,
-        count: 1
-      }
-    };
-
-    const prunedEvents = pruner(events);
-    expect(prunedEvents).toEqual({
-      "decisioning.propositionDisplay": {
-        2: {
-          event: {
-            id: 2,
-            type: "decisioning.propositionInteract"
-          },
-          firstTimestamp: "2023-05-24T15:00:00Z",
-          timestamp: mockedTimestamp,
-          count: 1
-        }
-      },
-      "decisioning.propositionInteract": {
-        3: {
-          event: {
-            id: 3,
-            type: "decisioning.propositionInteract"
-          },
-          firstTimestamp: "2023-05-23T08:00:00Z",
-          timestamp: mockedTimestamp,
-          count: 1
-        },
-        4: {
-          event: {
-            id: 4,
-            type: "decisioning.propositionInteract"
-          },
-          firstTimestamp: "2023-05-23T08:00:00Z",
-          timestamp: mockedTimestamp,
-          count: 1
-        }
-      }
-    });
   });
 });

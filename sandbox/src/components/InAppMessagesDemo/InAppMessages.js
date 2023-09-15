@@ -3,7 +3,7 @@ import React from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./InAppMessagesStyle.css";
 
-const configKey = "cjmProdNld2";
+const configKey = "aemonacpprodcampaign";
 
 const config = {
   cjmProdNld2: {

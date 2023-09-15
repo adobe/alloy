@@ -9,51 +9,28 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import {
-  createRestoreStorage,
-  createSaveStorage,
-  getExpirationDate
-} from "./utils";
+import { createRestoreStorage, createSaveStorage } from "./utils";
+import { EVENT_TYPE_TRUE } from "../Personalization/event";
 
 const STORAGE_KEY = "events";
-const MAX_EVENT_RECORDS = 1000;
 const DEFAULT_SAVE_DELAY = 500;
-const RETENTION_PERIOD = 30;
 
-export const createEventPruner = (
-  limit = MAX_EVENT_RECORDS,
-  retentionPeriod = RETENTION_PERIOD
-) => {
-  return events => {
-    const pruned = {};
-    Object.keys(events).forEach(eventType => {
-      pruned[eventType] = {};
-      Object.values(events[eventType])
-        .filter(
-          entry =>
-            new Date(entry.firstTimestamp) >= getExpirationDate(retentionPeriod)
-        )
-        .sort((a, b) => a.firstTimestamp - b.firstTimestamp)
-        .slice(-1 * limit)
-        .forEach(entry => {
-          pruned[eventType][entry.event.id] = entry;
-        });
-    });
-    return pruned;
-  };
+const prefixed = key => `iam.${key}`;
+
+const getActivityId = proposition => {
+  const { scopeDetails = {} } = proposition;
+  const { activity = {} } = scopeDetails;
+  const { id } = activity;
+
+  return id;
 };
 
 export default ({ storage, saveDelay = DEFAULT_SAVE_DELAY }) => {
   const restore = createRestoreStorage(storage, STORAGE_KEY);
-  const save = createSaveStorage(
-    storage,
-    STORAGE_KEY,
-    saveDelay,
-    createEventPruner(MAX_EVENT_RECORDS, RETENTION_PERIOD)
-  );
+  const save = createSaveStorage(storage, STORAGE_KEY, saveDelay);
 
   const events = restore({});
-  const addEvent = (event, eventType, eventId) => {
+  const addEvent = (event, eventType, eventId, action) => {
     if (!events[eventType]) {
       events[eventType] = {};
     }
@@ -67,7 +44,12 @@ export default ({ storage, saveDelay = DEFAULT_SAVE_DELAY }) => {
       : timestamp;
 
     events[eventType][eventId] = {
-      event: { ...event, id: eventId, type: eventType },
+      event: {
+        ...event,
+        [prefixed("id")]: eventId,
+        [prefixed("eventType")]: eventType,
+        [prefixed("action")]: action
+      },
       firstTimestamp,
       timestamp,
       count: count + 1
@@ -92,11 +74,33 @@ export default ({ storage, saveDelay = DEFAULT_SAVE_DELAY }) => {
     }
 
     const { decisioning = {} } = _experience;
-    const { propositions = [] } = decisioning;
+    const {
+      propositionEventType: propositionEventTypeObj = {},
+      propositionAction = {},
+      propositions = []
+    } = decisioning;
 
-    propositions.forEach(proposition =>
-      addEvent({ proposition }, eventType, proposition.id)
-    );
+    const propositionEventTypesList = Object.keys(propositionEventTypeObj);
+
+    // https://wiki.corp.adobe.com/pages/viewpage.action?spaceKey=CJM&title=Proposition+Event+Types
+    if (propositionEventTypesList.length === 0) {
+      return;
+    }
+
+    const { id: action } = propositionAction;
+
+    propositionEventTypesList.forEach(propositionEventType => {
+      if (propositionEventTypeObj[propositionEventType] === EVENT_TYPE_TRUE) {
+        propositions.forEach(proposition => {
+          addEvent(
+            {},
+            propositionEventType,
+            getActivityId(proposition),
+            action
+          );
+        });
+      }
+    });
   };
   const getEvent = (eventType, eventId) => {
     if (!events[eventType]) {

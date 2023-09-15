@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const EVENT_TYPE_TRUE = 1;
+export const EVENT_TYPE_TRUE = 1;
 
 /* eslint-disable no-underscore-dangle */
 export const mergeDecisionsMeta = (
