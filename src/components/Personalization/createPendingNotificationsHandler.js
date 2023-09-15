@@ -9,19 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import {
-  DOM_ACTION,
-  MESSAGE_FEED_ITEM,
-  MESSAGE_IN_APP
-} from "./constants/schema";
-import { initDomActionsModules } from "./dom-actions";
-import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules";
-import initMessageFeedActionsModules from "./message-feed-actions/initMessageFeedActionsModules";
+import { PropositionEventType } from "./constants/propositionEventType";
 
-export default ({ storeClickMetrics, collect }) => {
-  return {
-    [DOM_ACTION]: initDomActionsModules(storeClickMetrics),
-    [MESSAGE_IN_APP]: initInAppMessageActionsModules(collect),
-    [MESSAGE_FEED_ITEM]: initMessageFeedActionsModules()
-  };
+export default ({ pendingDisplayNotifications, mergeDecisionsMeta }) => ({
+  event
+}) => {
+  return pendingDisplayNotifications.clear().then(decisionsMeta => {
+    mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.DISPLAY);
+  });
 };

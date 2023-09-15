@@ -12,3 +12,5 @@ governing permissions and limitations under the License.
 
 export const DISPLAY = "decisioning.propositionDisplay";
 export const INTERACT = "decisioning.propositionInteract";
+export const TRIGGER = "decisioning.propositionTrigger";
+export const DISMISS = "decisioning.propositionDismiss";

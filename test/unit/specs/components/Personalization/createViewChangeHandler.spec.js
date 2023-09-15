@@ -13,107 +13,71 @@ governing permissions and limitations under the License.
 import createViewChangeHandler from "../../../../../src/components/Personalization/createViewChangeHandler";
 import { PropositionEventType } from "../../../../../src/components/Personalization/constants/propositionEventType";
 import { CART_VIEW_DECISIONS } from "./responsesMock/eventResponses";
+import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
 
 describe("Personalization::createViewChangeHandler", () => {
-  let personalizationDetails;
-  let viewCache;
-  const event = {};
-
-  const onResponse = callback => callback();
-  let executeDecisions;
-  let showContainers;
   let mergeDecisionsMeta;
-  let collect;
+  let processPropositions;
+  let viewCache;
+
+  let personalizationDetails;
+  let event;
+  let onResponse;
+
+  let createProposition;
 
   beforeEach(() => {
+    mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
+    processPropositions = jasmine.createSpy("processPropositions");
+    viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
+
     personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
       "isRenderDecisions",
       "getViewName"
     ]);
-    viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
-    executeDecisions = jasmine.createSpy("executeDecisions");
-    showContainers = jasmine.createSpy("showContainers");
-    mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
-    collect = jasmine.createSpy("collect");
+    event = "myevent";
+    onResponse = jasmine.createSpy();
+
+    createProposition = injectCreateProposition({
+      preprocess: data => data,
+      isPageWideSurface: () => false
+    });
   });
 
-  it("should trigger executeDecisions if renderDecisions is true", () => {
-    const cartViewPromise = {
-      then: callback => callback(CART_VIEW_DECISIONS)
-    };
-
-    viewCache.getView.and.returnValue(cartViewPromise);
-    executeDecisions.and.returnValue(cartViewPromise);
-    personalizationDetails.isRenderDecisions.and.returnValue(true);
-    personalizationDetails.getViewName.and.returnValue("cart");
-
+  const run = async () => {
     const viewChangeHandler = createViewChangeHandler({
       mergeDecisionsMeta,
-      collect,
-      executeDecisions,
+      processPropositions,
       viewCache
     });
-
-    viewChangeHandler({
+    await viewChangeHandler({
       event,
       personalizationDetails,
       onResponse
     });
-    expect(executeDecisions).toHaveBeenCalledWith(CART_VIEW_DECISIONS);
+    return onResponse.calls.argsFor(0)[0]();
+  };
+
+  it("should trigger render if renderDecisions is true", async () => {
+    viewCache.getView.and.returnValue(
+      Promise.resolve(CART_VIEW_DECISIONS.map(p => createProposition(p)))
+    );
+    personalizationDetails.isRenderDecisions.and.returnValue(true);
+    personalizationDetails.getViewName.and.returnValue("cart");
+    processPropositions.and.returnValue({
+      render: () => Promise.resolve("decisionMeta"),
+      returnedPropositions: [],
+      returnedDecisions: CART_VIEW_DECISIONS
+    });
+
+    const result = await run();
+
+    expect(processPropositions).toHaveBeenCalledTimes(1);
     expect(mergeDecisionsMeta).toHaveBeenCalledWith(
-      event,
-      CART_VIEW_DECISIONS,
+      "myevent",
+      "decisionMeta",
       PropositionEventType.DISPLAY
     );
-    expect(collect).not.toHaveBeenCalled();
-  });
-
-  it("should not trigger executeDecisions when render decisions is false", () => {
-    const cartViewPromise = {
-      then: callback => callback(CART_VIEW_DECISIONS)
-    };
-    viewCache.getView.and.returnValue(cartViewPromise);
-    personalizationDetails.isRenderDecisions.and.returnValue(false);
-    personalizationDetails.getViewName.and.returnValue("cart");
-
-    const viewChangeHandler = createViewChangeHandler({
-      executeDecisions,
-      viewCache,
-      showContainers
-    });
-
-    viewChangeHandler({
-      event,
-      personalizationDetails,
-      onResponse
-    });
-    expect(executeDecisions).not.toHaveBeenCalled();
-    expect(collect).not.toHaveBeenCalled();
-  });
-
-  it("at onResponse it should trigger collect call when no decisions in cache", () => {
-    const cartViewPromise = {
-      then: callback => callback([])
-    };
-
-    viewCache.getView.and.returnValue(cartViewPromise);
-    executeDecisions.and.returnValue(cartViewPromise);
-    personalizationDetails.isRenderDecisions.and.returnValue(true);
-    personalizationDetails.getViewName.and.returnValue("cart");
-
-    const viewChangeHandler = createViewChangeHandler({
-      mergeDecisionsMeta,
-      collect,
-      executeDecisions,
-      viewCache
-    });
-
-    viewChangeHandler({
-      event,
-      personalizationDetails,
-      onResponse
-    });
-    expect(executeDecisions).toHaveBeenCalledWith([]);
-    expect(collect).toHaveBeenCalled();
+    expect(result.decisions).toEqual(CART_VIEW_DECISIONS);
   });
 });

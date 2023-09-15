@@ -375,8 +375,7 @@ export const MIXED_PROPOSITIONS = [
           id: "1202449"
         }
       }
-    ],
-    renderAttempted: false
+    ]
   },
   {
     id: "AT:eyJhY3Rpdml0eUlkIjoiMTQxNjY0IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
@@ -402,7 +401,6 @@ export const MIXED_PROPOSITIONS = [
   {
     id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
     scope: "__view__",
-    renderAttempted: true,
     items: [
       {
         id: "442358",
@@ -418,7 +416,6 @@ export const MIXED_PROPOSITIONS = [
   {
     id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn2=",
     scope: "__view__",
-    renderAttempted: false,
     items: [
       {
         id: "442379",

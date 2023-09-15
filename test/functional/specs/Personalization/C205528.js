@@ -49,6 +49,6 @@ test("Test C205528: A redirect offer should redirect the page to the URL in the 
   } catch (e) {
     // an exception will be thrown because a redirect will be executed within the Alloy Client Function
   } finally {
-    await t.expect(redirectLogger.requests.length).eql(1);
+    await t.expect(redirectLogger.count(() => true)).eql(1);
   }
 });
