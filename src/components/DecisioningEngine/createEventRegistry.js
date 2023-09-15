@@ -72,7 +72,7 @@ export default ({ storage, saveDelay = DEFAULT_SAVE_DELAY }) => {
       timestamp,
       count: count + 1
     };
-
+    // TODO: save to indexedDB
     save(events);
 
     return events[eventType][eventId];
