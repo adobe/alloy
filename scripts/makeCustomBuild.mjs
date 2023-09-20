@@ -112,9 +112,9 @@ const generateComponentCreatorsJS = async (components) => {
   let fileContent = await readFile("./src/core/componentCreators.js", "utf-8");
 
   for (const component in ALLOY_COMPONENTS) {
-    if (!includedComponents.has(ALLOY_COMPONENTS[component])) {
-      const regex = new RegExp(`import create${component} from`, 'g');
-      fileContent = fileContent.replace(regex, `// import create${component} from`);
+    if (includedComponents.has(ALLOY_COMPONENTS[component])) {
+      const importRegex = new RegExp(`^(?!\/\/)import create${component} from`, 'gm');
+      fileContent = fileContent.replace(importRegex, `// import create${component} from`);
       const exportRegex = new RegExp(`create${component}`, 'g');
       fileContent = fileContent.replace(exportRegex, `// create${component}`);
     }
@@ -158,6 +158,7 @@ const buildConfig = (variant, minify) => {
 };
 
 const build = async () => {
+  await uncommentCode();
   const selectedComponents = (
     await inquirer.prompt([
       {
@@ -166,21 +167,8 @@ const build = async () => {
         name: "selectedComponents",
         choices: [
           {
-            name: "Activity Collector",
-            value: ALLOY_COMPONENTS.ActivityCollector
-          },
-          {
             name: "Audiences",
             value: ALLOY_COMPONENTS.Audiences
-          },
-          { name: "Context", value: ALLOY_COMPONENTS.Context },
-          {
-            name: "Data Collector",
-            value: ALLOY_COMPONENTS.DataCollector
-          },
-          {
-            name: "Identity",
-            value: ALLOY_COMPONENTS.Identity
           },
           {
             name: "Event Merge",
@@ -197,8 +185,7 @@ const build = async () => {
           {
             name: "Personalization",
             value: ALLOY_COMPONENTS.Personalization
-          },
-          { name: "Privacy", value: ALLOY_COMPONENTS.Privacy }
+          }
         ].map(({ value }) => value)
       }
     ])
