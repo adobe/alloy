@@ -31,7 +31,7 @@
     "prepublishOnly": "rimraf libEs5 libEs6 && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
     "add-license": "./scripts/add-license.js",
-    "makeCustomBuild": "node ./scripts/makeCustomBuild.mjs"
+    "build:custom": "npm run format && npm run lint && npm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN && echo \"Base Code:\" && cat distTest/baseCode.min.js && node scripts/makeCustomBuild.mjs --"
   },
   "lint-staged": {
     "./*.js": [

@@ -26,71 +26,6 @@ const ALLOY_COMPONENTS = {
  * @param {string[]} components
  * @returns
  */
-// const generateComponentCreatorsJS = components => {
-//   const includedComponents = new Set(components);
-//   const importStatements = [];
-//   const exportedVariableNames = [];
-//
-//   if (includedComponents.has(ALLOY_COMPONENTS.ActivityCollector)) {
-//     importStatements.push(
-//       `import createDataCollector from "../components/DataCollector";`
-//     );
-//     exportedVariableNames.push("createDataCollector");
-//   }
-//   if (includedComponents.has(ALLOY_COMPONENTS.Audiences)) {
-//     importStatements.push(
-//       `import createActivityCollector from "../components/ActivityCollector";`
-//     );
-//     exportedVariableNames.push("createActivityCollector");
-//   }
-//   if (includedComponents.has(ALLOY_COMPONENTS.Context)) {
-//     importStatements.push(
-//       `import createIdentity from "../components/Identity";`
-//     );
-//     exportedVariableNames.push("createIdentity");
-//   }
-//   if (includedComponents.has(ALLOY_COMPONENTS.Audiences)) {
-//     importStatements.push(
-//       `import createAudiences from "../components/Audiences";`
-//     );
-//     exportedVariableNames.push("createAudiences");
-//   }
-//   if (includedComponents.has(ALLOY_COMPONENTS.Personalization)) {
-//     importStatements.push(
-//       `import createPersonalization from "../components/Personalization";`
-//     );
-//     exportedVariableNames.push("createPersonalization");
-//   }
-//   if (includedComponents.has(ALLOY_COMPONENTS.Context)) {
-//     importStatements.push(`import createContext from "../components/Context";`);
-//     exportedVariableNames.push("createContext");
-//   }
-//   if (includedComponents.has(ALLOY_COMPONENTS.LibraryInfo)) {
-//     importStatements.push(`import createPrivacy from "../components/Privacy";`);
-//     exportedVariableNames.push("createPrivacy");
-//   }
-//   if (includedComponents.has(ALLOY_COMPONENTS.MachineLearning)) {
-//     importStatements.push(
-//       `import createEventMerge from "../components/EventMerge";`
-//     );
-//     exportedVariableNames.push("createEventMerge");
-//   }
-//   if (includedComponents.has(ALLOY_COMPONENTS.LibraryInfo)) {
-//     importStatements.push(
-//       `import createLibraryInfo from "../components/LibraryInfo";`
-//     );
-//     exportedVariableNames.push("createLibraryInfo");
-//   }
-//   if (includedComponents.has(ALLOY_COMPONENTS.MachineLearning)) {
-//     importStatements.push(
-//       `import createMachineLearning from "../components/MachineLearning";`
-//     );
-//     exportedVariableNames.push("createMachineLearning");
-//   }
-//
-//   return `${importStatements.join("\n")}
-// export default [${exportedVariableNames.join(", ")}];`;
-// };
 const uncommentCode = async () => {
   let fileContent = await readFile("./src/core/componentCreators.js", "utf-8");
   // Remove comments from the import statements
@@ -108,13 +43,13 @@ uncommentCode().catch(error => {
 });
 
 const generateComponentCreatorsJS = async (components) => {
-  const includedComponents = new Set(components);
+  const excludedComponents = new Set(components);
   let fileContent = await readFile("./src/core/componentCreators.js", "utf-8");
   let importStatements = [];
   let exportedVariableNames = [];
 
   for (const component in ALLOY_COMPONENTS) {
-    if (includedComponents.has(ALLOY_COMPONENTS[component])) {
+    if (!excludedComponents.has(ALLOY_COMPONENTS[component])) {
       importStatements.push(`import create${component} from "../components/${component}";`);
       exportedVariableNames.push(`create${component}`);
     }
@@ -161,39 +96,9 @@ const buildConfig = (variant, minify) => {
   };
 };
 
-const build = async () => {
+const buildWithComponents = async (components) => {
   await uncommentCode();
-  const selectedComponents = (
-    await inquirer.prompt([
-      {
-        type: "checkbox",
-        message: "Select components to build:",
-        name: "selectedComponents",
-        choices: [
-          {
-            name: "Audiences",
-            value: ALLOY_COMPONENTS.Audiences
-          },
-          {
-            name: "Event Merge",
-            value: ALLOY_COMPONENTS.EventMerge
-          },
-          {
-            name: "Library Info",
-            value: ALLOY_COMPONENTS.LibraryInfo
-          },
-          {
-            name: "Machine Learning",
-            value: ALLOY_COMPONENTS.MachineLearning
-          },
-          {
-            name: "Personalization",
-            value: ALLOY_COMPONENTS.Personalization
-          }
-        ].map(({ value }) => value)
-      }
-    ])
-  ).selectedComponents;
+  const selectedComponents = components;
 
   // generate the componentCreators.js file
   const componentCreatorsJS = await generateComponentCreatorsJS(selectedComponents);
@@ -206,7 +111,7 @@ const build = async () => {
   console.log(
     `✔️ Updated componentCreators.js file for ${selectedComponents.length} components`
   );
-  // build alloy
+  // buildWithComponents alloy
   const prodBuild = buildConfig(NPM_PACKAGE_PROD, false);
   const minBuild = buildConfig(NPM_PACKAGE_PROD, true);
 
@@ -222,7 +127,14 @@ const build = async () => {
   console.log(`✔️ Wrote alloy.min.js to ${minBuild.output[0].file}`);
 };
 
-build().catch(error => {
+// Get the components from the command line arguments
+const components = process.argv.slice(2);
+buildWithComponents(components).catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});
+
+buildWithComponents().catch(error => {
   console.error(error);
   process.exitCode = 1;
 });
