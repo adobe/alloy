@@ -175,7 +175,7 @@ const simulateViewChange = async (alloy, personalizationPayload) => {
     xdm: {
       web: {
         webPageDetails: {
-          viewName: "cart"
+          viewName: "Cart"
         }
       }
     }
@@ -223,7 +223,7 @@ const simulateViewChangeForNonExistingView = async alloy => {
       eventType: "noviewoffers",
       web: {
         webPageDetails: {
-          viewName: "noview"
+          viewName: "noView"
         }
       }
     }
@@ -256,11 +256,6 @@ const simulateViewChangeForNonExistingView = async alloy => {
       noViewViewChangeRequestBody.events[0].xdm.web.webPageDetails.viewName
     )
     .eql("noView");
-  await t
-    .expect(
-      noViewViewChangeRequestBody.events[0].xdm.web.webPageDetails.viewName
-    )
-    .eql("noview");
   await t
     .expect(noViewViewChangeRequestBody.events[0].xdm.eventType)
     .eql("noviewoffers");

@@ -157,7 +157,7 @@ export default () => {
         return undefined;
       }
 
-      return userXdm.web.webPageDetails.viewName.toLowerCase();
+      return userXdm.web.webPageDetails.viewName;
     },
     toJSON() {
       if (!isFinalized) {

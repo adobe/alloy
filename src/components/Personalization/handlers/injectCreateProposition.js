@@ -53,7 +53,7 @@ export default ({ preprocess, isPageWideSurface }) => {
         if (!scope) {
           return scope;
         }
-        return scope.toLowerCase();
+        return scope;
       },
       getScopeType() {
         if (scope === PAGE_WIDE_SCOPE || isPageWideSurface(scope)) {
