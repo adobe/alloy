@@ -2,11 +2,9 @@ import { rollup } from "rollup";
 import resolve from "rollup-plugin-node-resolve";
 import commonjs from "rollup-plugin-commonjs";
 import babel from "rollup-plugin-babel";
-import { rename, writeFile } from "fs/promises";
+import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
 import { terser } from "rollup-plugin-terser";
-import inquirer from "inquirer";
-import { readFile } from "fs/promises";
 
 const NPM_PACKAGE_PROD = "NPM_PACKAGE_PROD";
 const ALLOY_COMPONENTS = {
@@ -21,11 +19,6 @@ const ALLOY_COMPONENTS = {
   Personalization: "Personalization",
   Privacy: "Privacy"
 };
-
-/**
- * @param {string[]} components
- * @returns
- */
 const uncommentCode = async () => {
   let fileContent = await readFile("./src/core/componentCreators.js", "utf-8");
   // Remove comments from the import statements
@@ -44,7 +37,7 @@ uncommentCode().catch(error => {
 
 const generateComponentCreatorsJS = async (components) => {
   const excludedComponents = new Set(components);
-  let fileContent = await readFile("./src/core/componentCreators.js", "utf-8");
+  let fileContent;
   let importStatements = [];
   let exportedVariableNames = [];
 
@@ -98,10 +91,8 @@ const buildConfig = (variant, minify) => {
 
 const buildWithComponents = async (components) => {
   await uncommentCode();
-  const selectedComponents = components;
-
   // generate the componentCreators.js file
-  const componentCreatorsJS = await generateComponentCreatorsJS(selectedComponents);
+  const componentCreatorsJS = await generateComponentCreatorsJS(components);
   const componentCreatorsFilePath = join(
     process.env.npm_config_local_prefix,
     "src/core/componentCreators.js"
@@ -109,7 +100,7 @@ const buildWithComponents = async (components) => {
   // write the new componentCreators.js file
   await writeFile(componentCreatorsFilePath, componentCreatorsJS);
   console.log(
-    `✔️ Updated componentCreators.js file for ${selectedComponents.length} components`
+    `✔️ Updated componentCreators.js file for ${components.length} components`
   );
   // buildWithComponents alloy
   const prodBuild = buildConfig(NPM_PACKAGE_PROD, false);
@@ -130,11 +121,6 @@ const buildWithComponents = async (components) => {
 // Get the components from the command line arguments
 const components = process.argv.slice(2);
 buildWithComponents(components).catch(error => {
-  console.error(error);
-  process.exitCode = 1;
-});
-
-buildWithComponents().catch(error => {
   console.error(error);
   process.exitCode = 1;
 });
