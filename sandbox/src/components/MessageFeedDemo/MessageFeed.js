@@ -34,7 +34,7 @@ const mockResponse = {
             ],
             activity: {
               id:
-                "39ae8d4b-b55e-43dc-a143-77f50195b487#b47fde8b-57c1-4bbe-ae22-64d5b782d183"
+                "8e24e51d-5203-4d0b-99c9-2b3c95ff48f2#05885219-ea84-43bc-874e-1ef4a85b6fbb"
             },
             correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503"
           },
@@ -148,7 +148,7 @@ const mockResponse = {
             ],
             activity: {
               id:
-                "39ae8d4b-b55e-43dc-a143-77f50195b487#b47fde8b-57c1-4bbe-ae22-64d5b782d183"
+                "cf087a6e-131d-4147-adc7-bc1ea947f09c#ff64e6e6-e43f-479d-b5c0-f5568c771b3b"
             },
             correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503"
           },
@@ -179,9 +179,9 @@ const mockResponse = {
                                   definition: {
                                     events: [
                                       {
-                                        type: "decisioning.propositionDisplay",
+                                        type: "display",
                                         id:
-                                          "1ae11bc5-96dc-41c7-8f71-157c57a5290e"
+                                          "cf087a6e-131d-4147-adc7-bc1ea947f09c#ff64e6e6-e43f-479d-b5c0-f5568c771b3b"
                                       }
                                     ],
                                     matcher: "ge",
@@ -251,7 +251,7 @@ const mockResponse = {
             ],
             activity: {
               id:
-                "39ae8d4b-b55e-43dc-a143-77f50195b487#b47fde8b-57c1-4bbe-ae22-64d5b782d183"
+                "57712381-1690-4d19-9469-0a35ea5bd4e3#74f8e5cf-d770-41c3-b595-557b3ee00ba3"
             },
             correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503"
           },
@@ -282,9 +282,9 @@ const mockResponse = {
                                   definition: {
                                     events: [
                                       {
-                                        type: "decisioning.propositionDisplay",
+                                        type: "trigger",
                                         id:
-                                          "d1f7d411-a549-47bc-a4d8-c8e638b0a46b"
+                                          "57712381-1690-4d19-9469-0a35ea5bd4e3#74f8e5cf-d770-41c3-b595-557b3ee00ba3"
                                       }
                                     ],
                                     matcher: "ge",

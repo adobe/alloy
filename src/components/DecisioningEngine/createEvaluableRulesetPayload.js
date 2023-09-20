@@ -18,6 +18,7 @@ import { DISPLAY } from "../Personalization/constants/eventType";
 
 import flattenArray from "../../utils/flattenArray";
 import createConsequenceAdapter from "./createConsequenceAdapter";
+import { getActivityId } from "./utils";
 
 const isRulesetItem = item => {
   const { schema, data } = item;
@@ -42,6 +43,7 @@ const isRulesetItem = item => {
 
 export default (payload, eventRegistry, decisionHistory) => {
   const consequenceAdapter = createConsequenceAdapter();
+  const activityId = getActivityId(payload);
   const items = [];
 
   const addItem = item => {
@@ -72,7 +74,7 @@ export default (payload, eventRegistry, decisionHistory) => {
       .map(item => {
         const {
           firstTimestamp: qualifiedDate
-        } = decisionHistory.recordQualified(item);
+        } = decisionHistory.recordQualified(activityId);
 
         return {
           ...item,

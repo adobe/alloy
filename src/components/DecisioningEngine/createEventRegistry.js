@@ -9,21 +9,17 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { createRestoreStorage, createSaveStorage } from "./utils";
+import {
+  createRestoreStorage,
+  createSaveStorage,
+  getActivityId
+} from "./utils";
 import { EVENT_TYPE_TRUE } from "../Personalization/event";
 
 const STORAGE_KEY = "events";
 const DEFAULT_SAVE_DELAY = 500;
 
 const prefixed = key => `iam.${key}`;
-
-const getActivityId = proposition => {
-  const { scopeDetails = {} } = proposition;
-  const { activity = {} } = scopeDetails;
-  const { id } = activity;
-
-  return id;
-};
 
 export default ({ storage, saveDelay = DEFAULT_SAVE_DELAY }) => {
   const restore = createRestoreStorage(storage, STORAGE_KEY);

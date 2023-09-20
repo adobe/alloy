@@ -13,8 +13,7 @@ governing permissions and limitations under the License.
 import { PropositionEventType } from "../Personalization/constants/propositionEventType";
 
 export default ({ eventRegistry }) => {
-  const recordQualified = item => {
-    const { id } = item;
+  const recordQualified = id => {
     if (!id) {
       return undefined;
     }

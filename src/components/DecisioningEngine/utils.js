@@ -52,3 +52,11 @@ export const ensureSchemaBasedRulesetConsequences = event => {
     }
   });
 };
+
+export const getActivityId = proposition => {
+  const { scopeDetails = {} } = proposition;
+  const { activity = {} } = scopeDetails;
+  const { id } = activity;
+
+  return id;
+};
