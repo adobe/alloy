@@ -7,6 +7,7 @@ import { join } from "path";
 import { terser } from "rollup-plugin-terser";
 import inquirer from "inquirer";
 import { readFile } from "fs/promises";
+import { format } from "prettier";
 
 const NPM_PACKAGE_PROD = "NPM_PACKAGE_PROD";
 const ALLOY_COMPONENTS = {
@@ -107,18 +108,27 @@ uncommentCode().catch(error => {
   process.exitCode = 1;
 });
 
+import { format } from "prettier";
+
 const generateComponentCreatorsJS = async (components) => {
   const includedComponents = new Set(components);
   let fileContent = await readFile("./src/core/componentCreators.js", "utf-8");
+  let importStatements = [];
+  let exportedVariableNames = [];
 
   for (const component in ALLOY_COMPONENTS) {
     if (includedComponents.has(ALLOY_COMPONENTS[component])) {
-      const importRegex = new RegExp(`^(?!\/\/)import create${component} from`, 'gm');
-      fileContent = fileContent.replace(importRegex, `// import create${component} from`);
-      const exportRegex = new RegExp(`create${component}`, 'g');
-      fileContent = fileContent.replace(exportRegex, `// create${component}`);
+      importStatements.push(`import create${component} from "../components/${component}";`);
+      exportedVariableNames.push(`create${component}`);
     }
   }
+
+  fileContent = `/* eslint-disable import/no-restricted-paths */
+  ${importStatements.join("\n")}
+  export default [${exportedVariableNames.join(", ")}];`;
+
+  const prettierConfig = await format.resolveConfig('./.prettierrc');
+  fileContent = format(fileContent, { ...prettierConfig, parser: "babel" });
 
   return fileContent;
 };
