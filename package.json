@@ -63,7 +63,6 @@
     "@adobe/reactor-object-assign": "^1.0.0",
     "@adobe/reactor-query-string": "^1.0.0",
     "css.escape": "^1.5.1",
-    "inquirer": "^9.2.11",
     "js-cookie": "2.2.1",
     "uuid": "^3.3.2"
   },
