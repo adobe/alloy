@@ -88,13 +88,11 @@ export const createIframe = (htmlContent, clickHandler) => {
 };
 
 const renderMessage = (iframe, webParameters, container, overlay) => {
-  const domElements = [
+  [
     { id: ALLOY_OVERLAY_CONTAINER_ID, element: overlay },
     { id: ALLOY_MESSAGING_CONTAINER_ID, element: container },
     { id: ALLOY_IFRAME_ID, element: iframe }
-  ];
-
-  domElements.forEach(({ id, element }) => {
+  ].forEach(({ id, element }) => {
     const { style = {}, params = {} } = webParameters[id];
 
     assign(element.style, style);
