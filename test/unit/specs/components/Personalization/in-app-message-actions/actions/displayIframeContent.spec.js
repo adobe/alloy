@@ -285,6 +285,7 @@ describe("DOM Actions on Iframe", () => {
     it("should display HTML content in iframe with overlay using mobile parameters", () => {
       const settings = {
         type: "custom",
+        webParameters: { info: "this is a placeholder" },
         mobileParameters: {
           verticalAlign: "center",
           dismissAnimation: "bottom",

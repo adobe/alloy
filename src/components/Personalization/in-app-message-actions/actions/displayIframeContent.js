@@ -87,7 +87,7 @@ export const createIframe = (htmlContent, clickHandler) => {
   return element;
 };
 
-const displayBasedOnWebParams = (iframe, webParameters, container, overlay) => {
+const renderElement = (iframe, webParameters, container, overlay) => {
   const { style: iframeStyle = {} } = webParameters[ALLOY_IFRAME_ID];
   const {
     style: messagingStyle = {},
@@ -102,7 +102,8 @@ const displayBasedOnWebParams = (iframe, webParameters, container, overlay) => {
   assign(iframe.style, iframeStyle);
   assign(container.style, messagingStyle);
 
-  if (overlayParams.enabled) {
+  const { enabled = true } = overlayParams;
+  if (enabled) {
     assign(overlay.style, overlayStyle);
     document.body.appendChild(overlay);
     document.body.style.overflow = "hidden";
@@ -170,11 +171,11 @@ export const buildStyleFromMobileParameters = mobileParameters => {
   return style;
 };
 
-export const mobileOverlay = (overlay, mobileParameters) => {
+export const mobileOverlay = mobileParameters => {
   const { backdropOpacity, backdropColor } = mobileParameters;
   const opacity = backdropOpacity || 0.5;
   const color = backdropColor || "#FFFFFF";
-  assign(overlay.style, {
+  const style = {
     position: "fixed",
     top: "0",
     left: "0",
@@ -183,27 +184,8 @@ export const mobileOverlay = (overlay, mobileParameters) => {
     background: "transparent",
     opacity,
     backgroundColor: color
-  });
-  document.body.appendChild(overlay);
-  document.body.style.overflow = "hidden";
-};
-
-const displayBasedOnMobileParams = (
-  iframe,
-  container,
-  mobileParameters,
-  overlay
-) => {
-  assign(iframe.style, {
-    border: "none",
-    width: "100%",
-    height: "100%"
-  });
-  assign(container.style, buildStyleFromMobileParameters(mobileParameters));
-  if (mobileParameters.uiTakeover) {
-    mobileOverlay(overlay, mobileParameters);
-  }
-  document.body.appendChild(container);
+  };
+  return style;
 };
 
 export const displayHTMLContentInIframe = (settings, interact) => {
@@ -222,9 +204,24 @@ export const displayHTMLContentInIframe = (settings, interact) => {
 
   container.appendChild(iframe);
   if (webParameters && webParameters.info !== "this is a placeholder") {
-    displayBasedOnWebParams(iframe, webParameters, container, overlay);
+    renderElement(iframe, webParameters, container, overlay);
   } else {
-    displayBasedOnMobileParams(iframe, container, mobileParameters, overlay);
+    assign(webParameters, {
+      "alloy-content-iframe": {
+        style: {
+          border: "none",
+          width: "100%",
+          height: "100%"
+        }
+      },
+      "alloy-messaging-container": {
+        style: buildStyleFromMobileParameters(mobileParameters)
+      },
+      "alloy-overlay-container": {
+        style: mobileOverlay(mobileParameters)
+      }
+    });
+    renderElement(iframe, webParameters, container, overlay);
   }
 };
 
