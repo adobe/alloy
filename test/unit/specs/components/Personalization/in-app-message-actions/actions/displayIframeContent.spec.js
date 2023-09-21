@@ -326,7 +326,6 @@ describe("DOM Actions on Iframe", () => {
       displayHTMLContentInIframe(settings, mockCollect);
 
       expect(document.body.appendChild).toHaveBeenCalledTimes(2);
-      expect(document.body.style.overflow).toBe("hidden");
     });
 
     it("should display HTML content in iframe with overlay using web parameters", () => {
@@ -373,6 +372,11 @@ describe("DOM Actions on Iframe", () => {
             style: {
               width: "100%",
               height: "100%"
+            },
+            params: {
+              enabled: true,
+              parentElement: "#alloy-messaging-container",
+              insertionMethod: "appendChild"
             }
           }
         },
@@ -384,11 +388,9 @@ describe("DOM Actions on Iframe", () => {
 
       displayHTMLContentInIframe(settings, mockCollect);
       expect(document.body.appendChild).toHaveBeenCalledTimes(2);
-      expect(document.body.style.overflow).toBe("hidden");
     });
     it("should display HTML content in iframe with no overlay using web parameters", () => {
       const settings = {
-        type: "custom",
         webParameters: {
           "alloy-overlay-container": {
             style: {
@@ -430,6 +432,11 @@ describe("DOM Actions on Iframe", () => {
             style: {
               width: "100%",
               height: "100%"
+            },
+            params: {
+              enabled: true,
+              parentElement: "#alloy-messaging-container",
+              insertionMethod: "appendChild"
             }
           }
         },

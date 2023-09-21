@@ -87,35 +87,29 @@ export const createIframe = (htmlContent, clickHandler) => {
   return element;
 };
 
-const renderElement = (iframe, webParameters, container, overlay) => {
-  const { style: iframeStyle = {} } = webParameters[ALLOY_IFRAME_ID];
-  const {
-    style: messagingStyle = {},
-    params: messagingParams = {}
-  } = webParameters[ALLOY_MESSAGING_CONTAINER_ID];
+const renderMessage = (iframe, webParameters, container, overlay) => {
+  const domElements = [
+    { id: ALLOY_OVERLAY_CONTAINER_ID, element: overlay },
+    { id: ALLOY_MESSAGING_CONTAINER_ID, element: container },
+    { id: ALLOY_IFRAME_ID, element: iframe }
+  ];
 
-  const {
-    style: overlayStyle = {},
-    params: overlayParams = {}
-  } = webParameters[ALLOY_OVERLAY_CONTAINER_ID];
+  domElements.forEach(({ id, element }) => {
+    const { style = {}, params = {} } = webParameters[id];
 
-  assign(iframe.style, iframeStyle);
-  assign(container.style, messagingStyle);
+    assign(element.style, style);
 
-  const { enabled = true } = overlayParams;
-  if (enabled) {
-    assign(overlay.style, overlayStyle);
-    document.body.appendChild(overlay);
-    document.body.style.overflow = "hidden";
-  }
+    const {
+      parentElement = "body",
+      insertionMethod = "appendChild",
+      enabled = true
+    } = params;
 
-  const {
-    paramElement = "body",
-    insertionMethod = "appendChild"
-  } = messagingParams;
-
-  const element = document.querySelector(paramElement);
-  element[insertionMethod](container);
+    const parent = document.querySelector(parentElement);
+    if (enabled && parent && typeof parent[insertionMethod] === "function") {
+      parent[insertionMethod](element);
+    }
+  });
 };
 
 export const buildStyleFromMobileParameters = mobileParameters => {
@@ -188,41 +182,85 @@ export const mobileOverlay = mobileParameters => {
   return style;
 };
 
+const isValidWebParameters = webParameters => {
+  if (!webParameters) {
+    return false;
+  }
+
+  const ids = Object.keys(webParameters);
+
+  if (!ids.includes(ALLOY_MESSAGING_CONTAINER_ID)) {
+    return false;
+  }
+
+  if (!ids.includes(ALLOY_OVERLAY_CONTAINER_ID)) {
+    return false;
+  }
+
+  const values = Object.values(webParameters);
+
+  for (let i = 0; i < values.length; i += 1) {
+    if (!Object.prototype.hasOwnProperty.call(values[i], "style")) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+const generateWebParameters = mobileParameters => {
+  const { uiTakeover = false } = mobileParameters;
+
+  return {
+    [ALLOY_IFRAME_ID]: {
+      style: {
+        border: "none",
+        width: "100%",
+        height: "100%"
+      },
+      params: {
+        enabled: true,
+        parentElement: "#alloy-messaging-container",
+        insertionMethod: "appendChild"
+      }
+    },
+    [ALLOY_MESSAGING_CONTAINER_ID]: {
+      style: buildStyleFromMobileParameters(mobileParameters),
+      params: {
+        enabled: true,
+        parentElement: "body",
+        insertionMethod: "appendChild"
+      }
+    },
+    [ALLOY_OVERLAY_CONTAINER_ID]: {
+      style: mobileOverlay(mobileParameters),
+      params: {
+        enabled: uiTakeover === true,
+        parentElement: "body",
+        insertionMethod: "appendChild"
+      }
+    }
+  };
+};
+
 export const displayHTMLContentInIframe = (settings, interact) => {
   dismissMessage();
-  const { content, contentType, mobileParameters, webParameters } = settings;
+  const { content, contentType, mobileParameters } = settings;
+  let { webParameters } = settings;
 
   if (contentType !== TEXT_HTML) {
     return;
   }
 
   const container = createElement(ALLOY_MESSAGING_CONTAINER_ID);
-
   const iframe = createIframe(content, createIframeClickHandler(interact));
-
   const overlay = createElement(ALLOY_OVERLAY_CONTAINER_ID);
 
-  container.appendChild(iframe);
-  if (webParameters && webParameters.info !== "this is a placeholder") {
-    renderElement(iframe, webParameters, container, overlay);
-  } else {
-    assign(webParameters, {
-      "alloy-content-iframe": {
-        style: {
-          border: "none",
-          width: "100%",
-          height: "100%"
-        }
-      },
-      "alloy-messaging-container": {
-        style: buildStyleFromMobileParameters(mobileParameters)
-      },
-      "alloy-overlay-container": {
-        style: mobileOverlay(mobileParameters)
-      }
-    });
-    renderElement(iframe, webParameters, container, overlay);
+  if (!isValidWebParameters(webParameters)) {
+    webParameters = generateWebParameters(mobileParameters);
   }
+
+  renderMessage(iframe, webParameters, container, overlay);
 };
 
 export default (settings, collect) => {
