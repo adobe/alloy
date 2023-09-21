@@ -11,86 +11,142 @@ governing permissions and limitations under the License.
 */
 
 import createFetchDataHandler from "../../../../../src/components/Personalization/createFetchDataHandler";
+import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
+import flushPromiseChains from "../../../helpers/flushPromiseChains";
 
 describe("Personalization::createFetchDataHandler", () => {
-  let responseHandler;
+  let prehidingStyle;
+  let showContainers;
   let hideContainers;
   let mergeQuery;
+  let collect;
+  let processPropositions;
+  let createProposition;
+  let pendingDisplayNotifications;
+
+  let cacheUpdate;
   let personalizationDetails;
-  let decisionsDeferred;
-  const config = {
-    prehidingStyle: "body {opacity:0;}"
-  };
-  let onResponse = jasmine.createSpy();
-  const event = {};
+  let event;
+  let onResponse;
+
   let response;
 
   beforeEach(() => {
-    response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
-    responseHandler = jasmine.createSpy();
-    mergeQuery = jasmine.createSpy();
+    prehidingStyle = "myprehidingstyle";
+    showContainers = jasmine.createSpy("showContainers");
+    hideContainers = jasmine.createSpy("hideContainers");
+    mergeQuery = jasmine.createSpy("mergeQuery");
+    collect = jasmine.createSpy("collect");
+    processPropositions = jasmine.createSpy("processPropositions");
+    createProposition = injectCreateProposition({
+      preprocess: data => data,
+      isPageWideSurface: () => false
+    });
+    pendingDisplayNotifications = jasmine.createSpyObj(
+      "pendingDisplayNotifications",
+      ["concat"]
+    );
+
+    cacheUpdate = jasmine.createSpyObj("cacheUpdate", ["update"]);
     personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
       "isRenderDecisions",
-      "createQueryDetails"
+      "createQueryDetails",
+      "getViewName",
+      "isSendDisplayNotifications"
     ]);
-    hideContainers = jasmine.createSpy("hideContainers");
-    decisionsDeferred = jasmine.createSpyObj("decisionsDeferred", ["reject"]);
+    personalizationDetails.createQueryDetails.and.returnValue("myquerydetails");
+    personalizationDetails.isSendDisplayNotifications.and.returnValue(true);
+    event = "myevent";
+    onResponse = jasmine.createSpy();
+    response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
   });
+
+  const run = () => {
+    const fetchDataHandler = createFetchDataHandler({
+      prehidingStyle,
+      showContainers,
+      hideContainers,
+      mergeQuery,
+      collect,
+      processPropositions,
+      createProposition,
+      pendingDisplayNotifications
+    });
+    fetchDataHandler({
+      cacheUpdate,
+      personalizationDetails,
+      event,
+      onResponse
+    });
+  };
+
+  const returnResponse = () => {
+    expect(onResponse).toHaveBeenCalledTimes(1);
+    const callback = onResponse.calls.argsFor(0)[0];
+    return callback({ response });
+  };
 
   it("should hide containers if renderDecisions is true", () => {
-    const fetchDataHandler = createFetchDataHandler({
-      config,
-      responseHandler,
-      hideContainers,
-      mergeQuery
-    });
     personalizationDetails.isRenderDecisions.and.returnValue(true);
-
-    fetchDataHandler({
-      decisionsDeferred,
-      personalizationDetails,
-      event,
-      onResponse
-    });
+    run();
     expect(hideContainers).toHaveBeenCalled();
   });
-  it("shouldn't hide containers if renderDecisions is false", () => {
-    const fetchDataHandler = createFetchDataHandler({
-      config,
-      responseHandler,
-      hideContainers,
-      mergeQuery
-    });
-    personalizationDetails.isRenderDecisions.and.returnValue(false);
-    fetchDataHandler({
-      decisionsDeferred,
-      personalizationDetails,
-      event,
-      onResponse
-    });
 
+  it("shouldn't hide containers if renderDecisions is false", () => {
+    personalizationDetails.isRenderDecisions.and.returnValue(false);
+    run();
     expect(hideContainers).not.toHaveBeenCalled();
   });
 
   it("should trigger responseHandler at onResponse", () => {
-    const fetchDataHandler = createFetchDataHandler({
-      config,
-      responseHandler,
-      hideContainers,
-      mergeQuery
-    });
     personalizationDetails.isRenderDecisions.and.returnValue(false);
-    onResponse = callback => {
-      callback(response);
-    };
-    fetchDataHandler({
-      decisionsDeferred,
-      personalizationDetails,
-      event,
-      onResponse
+    run();
+    response.getPayloadsByType.and.returnValue([]);
+    cacheUpdate.update.and.returnValue([]);
+    processPropositions.and.returnValue({
+      returnedPropositions: [],
+      returnedDecisions: []
     });
+    const result = returnResponse();
+    expect(result).toEqual({
+      propositions: [],
+      decisions: []
+    });
+  });
 
-    expect(hideContainers).not.toHaveBeenCalled();
-    expect(responseHandler).toHaveBeenCalled();
+  it("should render decisions", async () => {
+    personalizationDetails.isRenderDecisions.and.returnValue(true);
+    personalizationDetails.getViewName.and.returnValue("myviewname");
+    processPropositions = () => {
+      return {
+        render: () => Promise.resolve([{ id: "handle1" }]),
+        returnedPropositions: [
+          { id: "handle1", items: ["item1"], renderAttempted: true }
+        ],
+        returnedDecisions: []
+      };
+    };
+    run();
+    response.getPayloadsByType.and.returnValue([
+      {
+        id: "handle1",
+        scopeDetails: { characteristics: { scopeType: "view" } }
+      },
+      { id: "handle2" }
+    ]);
+    cacheUpdate.update.and.returnValue([createProposition({ id: "handle1" })]);
+    const result = returnResponse();
+    expect(result).toEqual({
+      propositions: [
+        { id: "handle1", items: ["item1"], renderAttempted: true }
+      ],
+      decisions: []
+    });
+    await flushPromiseChains();
+    expect(showContainers).toHaveBeenCalled();
+    expect(collect).toHaveBeenCalledOnceWith({
+      decisionsMeta: [{ id: "handle1" }],
+      viewName: "myviewname"
+    });
   });
 });

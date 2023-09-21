@@ -31,12 +31,10 @@ describe("Personalization::createPersonalizationDetails", () => {
   const getPageLocation = createGetPageLocation({ window });
 
   let event;
-  let viewCache;
   let logger;
 
   beforeEach(() => {
     event = jasmine.createSpyObj("event", ["getViewName"]);
-    viewCache = jasmine.createSpyObj("viewCache", ["getView", "isInitialized"]);
     logger = jasmine.createSpyObj("logger", ["info", "warn", "error"]);
   });
 
@@ -51,10 +49,9 @@ describe("Personalization::createPersonalizationDetails", () => {
       decisionScopes,
       personalization,
       event,
-      viewCache,
+      isCacheInitialized: false,
       logger
     });
-    viewCache.isInitialized.and.returnValue(false);
     const expectedDecisionScopes = [PAGE_WIDE_SCOPE];
     const expectedQueryDetails = {
       schemas: [
@@ -89,10 +86,9 @@ describe("Personalization::createPersonalizationDetails", () => {
       decisionScopes,
       personalization,
       event,
-      viewCache,
+      isCacheInitialized: false,
       logger
     });
-    viewCache.isInitialized.and.returnValue(false);
     const expectedDecisionScopes = [PAGE_WIDE_SCOPE];
     const expectedQueryDetails = {
       schemas: [
@@ -127,10 +123,9 @@ describe("Personalization::createPersonalizationDetails", () => {
       decisionScopes,
       personalization,
       event,
-      viewCache,
+      isCacheInitialized: false,
       logger
     });
-    viewCache.isInitialized.and.returnValue(false);
     const expectedDecisionScopes = ["test1", "__view__"];
     const expectedQueryDetails = {
       schemas: [
@@ -165,10 +160,9 @@ describe("Personalization::createPersonalizationDetails", () => {
       personalization,
       decisionScopes,
       event,
-      viewCache,
+      isCacheInitialized: true,
       logger
     });
-    viewCache.isInitialized.and.returnValue(true);
     const expectedDecisionScopes = ["test1"];
     const expectedQueryDetails = {
       schemas: [
@@ -204,10 +198,9 @@ describe("Personalization::createPersonalizationDetails", () => {
       decisionScopes,
       personalization,
       event,
-      viewCache,
+      isCacheInitialized: true,
       logger
     });
-    viewCache.isInitialized.and.returnValue(true);
     const expectedDecisionScopes = [];
     const expectedQueryDetails = {
       schemas: [
@@ -244,10 +237,9 @@ describe("Personalization::createPersonalizationDetails", () => {
       decisionScopes,
       personalization,
       event,
-      viewCache,
+      isCacheInitialized: true,
       logger
     });
-    viewCache.isInitialized.and.returnValue(true);
 
     const expectedDecisionScopes = ["test1", "test2"];
     const expectedQueryDetails = {
@@ -281,10 +273,9 @@ describe("Personalization::createPersonalizationDetails", () => {
       decisionScopes,
       personalization,
       event,
-      viewCache,
+      isCacheInitialized: true,
       logger
     });
-    viewCache.isInitialized.and.returnValue(true);
 
     expect(personalizationDetails.isRenderDecisions()).toEqual(true);
     expect(personalizationDetails.hasScopes()).toEqual(false);
@@ -305,10 +296,9 @@ describe("Personalization::createPersonalizationDetails", () => {
       decisionScopes,
       personalization,
       event,
-      viewCache,
+      isCacheInitialized: true,
       logger
     });
-    viewCache.isInitialized.and.returnValue(true);
 
     expect(personalizationDetails.isRenderDecisions()).toEqual(false);
     expect(personalizationDetails.hasScopes()).toEqual(false);
@@ -329,10 +319,9 @@ describe("Personalization::createPersonalizationDetails", () => {
       personalization,
       decisionScopes,
       event,
-      viewCache,
+      isCacheInitialized: true,
       logger
     });
-    viewCache.isInitialized.and.returnValue(true);
 
     expect(personalizationDetails.isRenderDecisions()).toEqual(true);
     expect(personalizationDetails.hasScopes()).toEqual(false);
@@ -353,10 +342,9 @@ describe("Personalization::createPersonalizationDetails", () => {
       personalization,
       decisionScopes,
       event,
-      viewCache,
+      isCacheInitialized: true,
       logger
     });
-    viewCache.isInitialized.and.returnValue(true);
 
     expect(personalizationDetails.isRenderDecisions()).toEqual(false);
     expect(personalizationDetails.hasScopes()).toEqual(false);
@@ -379,10 +367,9 @@ describe("Personalization::createPersonalizationDetails", () => {
       decisionScopes,
       personalization,
       event,
-      viewCache,
+      isCacheInitialized: true,
       logger
     });
-    viewCache.isInitialized.and.returnValue(true);
 
     const expectedDecisionScopes = ["__view__"];
     const expectedQueryDetails = {
@@ -417,7 +404,7 @@ describe("Personalization::createPersonalizationDetails", () => {
       decisionScopes,
       personalization,
       event,
-      viewCache,
+      isCacheInitialized: false,
       logger
     });
     expect(personalizationDetails.isRenderDecisions()).toEqual(true);

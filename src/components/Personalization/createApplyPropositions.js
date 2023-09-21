@@ -10,15 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import composePersonalizationResultingObject from "./utils/composePersonalizationResultingObject";
 import { isNonEmptyArray, isObject } from "../../utils";
 import { DOM_ACTION, HTML_CONTENT_ITEM } from "./constants/schema";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
-import { EMPTY_PROPOSITIONS } from "./validateApplyPropositionsOptions";
 
-export const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
+const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
 
-export default ({ executeDecisions }) => {
+export default ({
+  processPropositions,
+  createProposition,
+  pendingDisplayNotifications,
+  viewCache
+}) => {
   const filterItemsPredicate = item =>
     SUPPORTED_SCHEMAS.indexOf(item.schema) > -1;
 
@@ -71,20 +74,30 @@ export default ({ executeDecisions }) => {
       .filter(proposition => isNonEmptyArray(proposition.items));
   };
 
-  const applyPropositions = ({ propositions, metadata }) => {
+  return ({ propositions = [], metadata = {}, viewName }) => {
     const propositionsToExecute = preparePropositions({
       propositions,
       metadata
-    });
-    return executeDecisions(propositionsToExecute).then(() => {
-      return composePersonalizationResultingObject(propositionsToExecute, true);
-    });
-  };
+    }).map(proposition => createProposition(proposition));
 
-  return ({ propositions, metadata = {} }) => {
-    if (isNonEmptyArray(propositions)) {
-      return applyPropositions({ propositions, metadata });
-    }
-    return Promise.resolve(EMPTY_PROPOSITIONS);
+    return Promise.resolve()
+      .then(() => {
+        if (viewName) {
+          return viewCache.getView(viewName);
+        }
+        return [];
+      })
+      .then(additionalPropositions => {
+        const { render, returnedPropositions } = processPropositions([
+          ...propositionsToExecute,
+          ...additionalPropositions
+        ]);
+
+        pendingDisplayNotifications.concat(render());
+
+        return {
+          propositions: returnedPropositions
+        };
+      });
   };
 };

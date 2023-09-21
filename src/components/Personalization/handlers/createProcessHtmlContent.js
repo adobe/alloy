@@ -9,19 +9,23 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
+export default ({ modules, logger }) => item => {
+  const { type, selector } = item.getData() || {};
 
-describe("Personalization::actions::click", () => {
-  it("should set click tracking attribute", () => {
-    const store = jasmine.createSpy();
-    const modules = initDomActionsModules(store);
-    const { click } = modules;
-    const selector = "#click";
-    const meta = { a: 1 };
-    const settings = { selector, meta };
+  if (!selector || !type) {
+    return {};
+  }
 
-    click(settings, store);
+  if (!modules[type]) {
+    logger.warn("Invalid HTML content data", item.getData());
+    return {};
+  }
 
-    expect(store).toHaveBeenCalledWith({ selector, meta });
-  });
-});
+  return {
+    render: () => {
+      modules[type](item.getData());
+    },
+    setRenderAttempted: true,
+    includeInNotification: true
+  };
+};

@@ -9,17 +9,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import addRenderAttemptedToDecisions from "./addRenderAttemptedToDecisions";
+import { assign } from "../../../utils";
 
-export default (decisions = [], renderDecisions) => {
-  const resultingObject = {
-    propositions: addRenderAttemptedToDecisions({
-      decisions,
-      renderAttempted: renderDecisions
-    })
-  };
-  if (!renderDecisions) {
-    resultingObject.decisions = decisions;
+export default preprocessors => action => {
+  if (!action) {
+    return action;
   }
-  return resultingObject;
+  return preprocessors.reduce(
+    (processed, fn) => assign(processed, fn(processed)),
+    action
+  );
 };
