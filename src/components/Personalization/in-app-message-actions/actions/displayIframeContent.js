@@ -16,7 +16,6 @@ import { TEXT_HTML } from "../../constants/contentType";
 import { assign } from "../../../../utils";
 import { getEventType } from "../../constants/propositionEventType";
 
-
 const ALLOY_MESSAGING_CONTAINER_ID = "alloy-messaging-container";
 const ALLOY_OVERLAY_CONTAINER_ID = "alloy-overlay-container";
 const ALLOY_IFRAME_ID = "alloy-content-iframe";
@@ -181,6 +180,8 @@ export const mobileOverlay = mobileParameters => {
   return style;
 };
 
+const REQUIRED_PARAMS = ["enabled", "parentElement", "insertionMethod"];
+
 const isValidWebParameters = webParameters => {
   if (!webParameters) {
     return false;
@@ -202,12 +203,31 @@ const isValidWebParameters = webParameters => {
     if (!Object.prototype.hasOwnProperty.call(values[i], "style")) {
       return false;
     }
+
+    if (!Object.prototype.hasOwnProperty.call(values[i], "params")) {
+      return false;
+    }
+
+    for (let j = 0; j < REQUIRED_PARAMS.length; j += 1) {
+      if (
+        !Object.prototype.hasOwnProperty.call(
+          values[i].params,
+          REQUIRED_PARAMS[j]
+        )
+      ) {
+        return false;
+      }
+    }
   }
 
   return true;
 };
 
 const generateWebParameters = mobileParameters => {
+  if (!mobileParameters) {
+    return undefined;
+  }
+
   const { uiTakeover = false } = mobileParameters;
 
   return {
@@ -257,6 +277,10 @@ export const displayHTMLContentInIframe = (settings, interact) => {
 
   if (!isValidWebParameters(webParameters)) {
     webParameters = generateWebParameters(mobileParameters);
+  }
+
+  if (!webParameters) {
+    return;
   }
 
   renderMessage(iframe, webParameters, container, overlay);

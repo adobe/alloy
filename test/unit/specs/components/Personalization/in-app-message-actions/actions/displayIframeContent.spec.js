@@ -330,7 +330,6 @@ describe("DOM Actions on Iframe", () => {
 
     it("should display HTML content in iframe with overlay using web parameters", () => {
       const settings = {
-        type: "custom",
         webParameters: {
           "alloy-overlay-container": {
             style: {
@@ -344,7 +343,9 @@ describe("DOM Actions on Iframe", () => {
               backgroundColor: "#FFFFFF"
             },
             params: {
-              enabled: true
+              enabled: true,
+              parentElement: "body",
+              insertionMethod: "appendChild"
             }
           },
           "alloy-messaging-container": {
@@ -364,6 +365,7 @@ describe("DOM Actions on Iframe", () => {
               height: "63vh"
             },
             params: {
+              enabled: true,
               parentElement: "body",
               insertionMethod: "appendChild"
             }
@@ -404,7 +406,9 @@ describe("DOM Actions on Iframe", () => {
               backgroundColor: "#FFFFFF"
             },
             params: {
-              enabled: false
+              enabled: false,
+              parentElement: "body",
+              insertionMethod: "appendChild"
             }
           },
           "alloy-messaging-container": {
@@ -424,6 +428,7 @@ describe("DOM Actions on Iframe", () => {
               height: "63vh"
             },
             params: {
+              enabled: true,
               parentElement: "body",
               insertionMethod: "appendChild"
             }
