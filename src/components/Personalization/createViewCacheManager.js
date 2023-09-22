@@ -20,7 +20,7 @@ export default ({ createProposition }) => {
   let previousUpdateCacheComplete = Promise.resolve();
 
   const getViewPropositions = (currentViewStorage, viewName) => {
-    const viewPropositions = currentViewStorage[viewName];
+    const viewPropositions = currentViewStorage[viewName.toLowerCase()];
     if (viewPropositions && viewPropositions.length > 0) {
       return viewPropositions;
     }
@@ -58,8 +58,11 @@ export default ({ createProposition }) => {
 
     return {
       update(viewPropositions) {
-        const newViewStorage = groupBy(viewPropositions, proposition =>
+        const viewPropositionsWithScope = viewPropositions.filter(proposition =>
           proposition.getScope()
+        );
+        const newViewStorage = groupBy(viewPropositionsWithScope, proposition =>
+          proposition.getScope().toLowerCase()
         );
         updateCacheDeferred.resolve(newViewStorage);
         if (viewName) {

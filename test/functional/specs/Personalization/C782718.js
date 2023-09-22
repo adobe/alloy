@@ -211,7 +211,7 @@ const simulateViewChangeForNonExistingView = async alloy => {
       eventType: "noviewoffers",
       web: {
         webPageDetails: {
-          viewName: "noview"
+          viewName: "noView"
         }
       }
     }
@@ -232,7 +232,7 @@ const simulateViewChangeForNonExistingView = async alloy => {
     .expect(
       noViewViewChangeRequestBody.events[0].xdm.web.webPageDetails.viewName
     )
-    .eql("noview");
+    .eql("noView");
   await t
     // eslint-disable-next-line no-underscore-dangle
     .expect(noViewViewChangeRequestBody.events[0].xdm._experience.decisioning)
