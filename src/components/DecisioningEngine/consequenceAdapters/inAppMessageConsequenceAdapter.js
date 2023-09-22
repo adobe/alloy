@@ -13,8 +13,10 @@ import { MESSAGE_IN_APP } from "../../Personalization/constants/schema";
 import { TEXT_HTML } from "../../Personalization/constants/contentType";
 
 export default (id, type, detail) => {
+  // TODO: add webParameters when available from the authoring UI in detail
   const { html, mobileParameters } = detail;
 
+  // TODO: Remove it once we have webParameters
   const webParameters = { info: "this is a placeholder" };
 
   return {

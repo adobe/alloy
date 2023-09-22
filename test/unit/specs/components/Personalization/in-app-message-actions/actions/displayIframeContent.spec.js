@@ -10,8 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import {
-  buildStyleFromParameters,
-  createOverlayElement,
+  buildStyleFromMobileParameters,
   createIframe,
   createIframeClickHandler,
   displayHTMLContentInIframe
@@ -46,11 +45,7 @@ describe("DOM Actions on Iframe", () => {
         verticalInset: 10,
         uiTakeover: true
       };
-
-      const webParameters = {};
-
-      const style = buildStyleFromParameters(mobileParameters, webParameters);
-
+      const style = buildStyleFromMobileParameters(mobileParameters);
       expect(style.width).toBe("80%");
       expect(style.backgroundColor).toBe("rgba(0, 0, 0, 0.7)");
       expect(style.borderRadius).toBe("10px");
@@ -62,26 +57,6 @@ describe("DOM Actions on Iframe", () => {
     });
   });
 
-  describe("createOverlayElement", () => {
-    it("should create overlay element with correct styles", () => {
-      const parameter = {
-        backdropOpacity: 0.8,
-        backdropColor: "#000000"
-      };
-
-      const overlayElement = createOverlayElement(parameter);
-
-      expect(overlayElement.id).toBe("alloy-overlay-container");
-      expect(overlayElement.style.position).toBe("fixed");
-      expect(overlayElement.style.top).toBe("0px");
-      expect(overlayElement.style.left).toBe("0px");
-      expect(overlayElement.style.width).toBe("100%");
-      expect(overlayElement.style.height).toBe("100%");
-      expect(overlayElement.style.background).toBe("rgb(0, 0, 0)");
-      expect(overlayElement.style.opacity).toBe("0.8");
-      expect(overlayElement.style.backgroundColor).toBe("rgb(0, 0, 0)");
-    });
-  });
   describe("createIframe function", () => {
     it("should create an iframe element with specified properties", () => {
       const mockHtmlContent =
@@ -89,13 +64,9 @@ describe("DOM Actions on Iframe", () => {
       const mockClickHandler = jasmine.createSpy("clickHandler");
 
       const iframe = createIframe(mockHtmlContent, mockClickHandler);
-
       expect(iframe).toBeDefined();
       expect(iframe instanceof HTMLIFrameElement).toBe(true);
       expect(iframe.src).toContain("blob:");
-      expect(iframe.style.border).toBe("none");
-      expect(iframe.style.width).toBe("100%");
-      expect(iframe.style.height).toBe("100%");
     });
 
     it("should set 'nonce' attribute on script tag if it exists", async () => {
@@ -285,9 +256,7 @@ describe("DOM Actions on Iframe", () => {
     let originalAppendChild;
     let originalBodyStyle;
     let mockCollect;
-    let originalCreateContainerElement;
     let originalCreateIframe;
-    let originalCreateOverlayElement;
 
     beforeEach(() => {
       mockCollect = jasmine.createSpy("collect");
@@ -295,31 +264,13 @@ describe("DOM Actions on Iframe", () => {
       document.body.appendChild = jasmine.createSpy("appendChild");
       originalBodyStyle = document.body.style;
       document.body.style = {};
-
-      originalCreateContainerElement = window.createContainerElement;
-      window.createContainerElement = jasmine
-        .createSpy("createContainerElement")
-        .and.callFake(() => {
-          const element = document.createElement("div");
-          element.id = "alloy-messaging-container";
-          return element;
-        });
-
       originalCreateIframe = window.createIframe;
+
       window.createIframe = jasmine
         .createSpy("createIframe")
         .and.callFake(() => {
           const element = document.createElement("iframe");
           element.id = "alloy-content-iframe";
-          return element;
-        });
-
-      originalCreateOverlayElement = window.createOverlayElement;
-      window.createOverlayElement = jasmine
-        .createSpy("createOverlayElement")
-        .and.callFake(() => {
-          const element = document.createElement("div");
-          element.id = "alloy-overlay-container";
           return element;
         });
     });
@@ -328,14 +279,13 @@ describe("DOM Actions on Iframe", () => {
       document.body.appendChild = originalAppendChild;
       document.body.style = originalBodyStyle;
       document.body.innerHTML = "";
-      window.createContainerElement = originalCreateContainerElement;
-      window.createOverlayElement = originalCreateOverlayElement;
       window.createIframe = originalCreateIframe;
     });
 
-    it("should display HTML content in iframe with overlay", () => {
+    it("should display HTML content in iframe with overlay using mobile parameters", () => {
       const settings = {
         type: "custom",
+        webParameters: { info: "this is a placeholder" },
         mobileParameters: {
           verticalAlign: "center",
           dismissAnimation: "bottom",
@@ -350,9 +300,6 @@ describe("DOM Actions on Iframe", () => {
           displayAnimation: "bottom",
           backdropColor: "#4CA206",
           height: 63
-        },
-        webParameters: {
-          info: "this is a placeholder"
         },
         content:
           '<!doctype html>\n<html>\n<head>\n  <title>Bumper Sale!</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      font-family: Arial, sans-serif;\n    }\n\n    #announcement {\n      position: fixed;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 100%;\n      background-color: rgba(0, 0, 0, 0.8);\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: center;\n      color: #fff;\n    }\n\n    #announcement img {\n      max-width: 80%;\n      height: auto;\n      margin-bottom: 20px;\n    }\n\n    #cross {\n      position: absolute;\n      top: 10px;\n      right: 10px;\n      cursor: pointer;\n      font-size: 24px;\n      color: #fff;\n      text-decoration: none;\n    }\n\n    #buttons {\n      display: flex;\n      justify-content: center;\n      margin-top: 20px;\n    }\n\n    #buttons a {\n      margin: 0 10px;\n      padding: 10px 20px;\n      background-color: #ff5500;\n      color: #fff;\n      text-decoration: none;\n      border-radius: 4px;\n      font-weight: bold;\n      transition: background-color 0.3s ease;\n    }\n\n    #buttons a:hover {\n      background-color: #ff3300;\n    }\n  </style>\n</head>\n<body>\n<div id="announcement">\n  <a id="cross" href="adbinapp://dismiss?interaction=cancel">✕</a>\n  <h2>Black Friday Sale!</h2>\n   <img src="https://media3.giphy.com/media/kLhcBWs9Nza4hCW5IS/200.gif" alt="Technology Image">\n  <p>Don\'t miss out on our incredible discounts and deals at our gadgets!</p>\n  <div id="buttons">\n    <a href="adbinapp://dismiss?interaction=clicked&amp;link=https%3A%2F%2Fwww.nike.com%2Fw%2Fmens-jordan-clothing-37eefz6ymx6znik1">Shop</a>\n    <a href="adbinapp://dismiss?interaction=cancel">Dismiss</a>\n  </div>\n</div>\n<script>\n  // Listen for a click on the button inside the iframe\n  document.getElementById("buttons").addEventListener("click", handleButtonClick);\n  document.getElementById("cross").addEventListener("click", handleButtonClick);\n  function handleButtonClick(event) {\n    console.log("A button was clicked with text ", event.target);\n    const href = event.target.getAttribute("href");\n    // Send a message to the parent page\n    console.log("I am sending a message to the parent ", href);\n    parent.postMessage({ "Element was clicked": href }, "*");\n  }\n</script>\n\n</body></html>\n',
@@ -379,7 +326,133 @@ describe("DOM Actions on Iframe", () => {
       displayHTMLContentInIframe(settings, mockCollect);
 
       expect(document.body.appendChild).toHaveBeenCalledTimes(2);
-      expect(document.body.style.overflow).toBe("hidden");
+    });
+
+    it("should display HTML content in iframe with overlay using web parameters", () => {
+      const settings = {
+        webParameters: {
+          "alloy-overlay-container": {
+            style: {
+              position: "fixed",
+              top: "0",
+              left: "0",
+              width: "100%",
+              height: "100%",
+              background: "transparent",
+              opacity: 0.5,
+              backgroundColor: "#FFFFFF"
+            },
+            params: {
+              enabled: true,
+              parentElement: "body",
+              insertionMethod: "appendChild"
+            }
+          },
+          "alloy-messaging-container": {
+            style: {
+              width: "72%",
+              backgroundColor: "orange",
+              borderRadius: "20px",
+              border: "none",
+              position: "fixed",
+              overflow: "hidden",
+              left: "50%",
+              transform: "translateX(-50%) translateY(-50%)",
+              top: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "63vh"
+            },
+            params: {
+              enabled: true,
+              parentElement: "body",
+              insertionMethod: "appendChild"
+            }
+          },
+          "alloy-content-iframe": {
+            style: {
+              width: "100%",
+              height: "100%"
+            },
+            params: {
+              enabled: true,
+              parentElement: "#alloy-messaging-container",
+              insertionMethod: "appendChild"
+            }
+          }
+        },
+        content:
+          '<!doctype html>\n<html>\n<head>\n  <title>Bumper Sale!</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      font-family: Arial, sans-serif;\n    }\n\n    #announcement {\n      position: fixed;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 100%;\n      background-color: rgba(0, 0, 0, 0.8);\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: center;\n      color: #fff;\n    }\n\n    #announcement img {\n      max-width: 80%;\n      height: auto;\n      margin-bottom: 20px;\n    }\n\n    #cross {\n      position: absolute;\n      top: 10px;\n      right: 10px;\n      cursor: pointer;\n      font-size: 24px;\n      color: #fff;\n      text-decoration: none;\n    }\n\n    #buttons {\n      display: flex;\n      justify-content: center;\n      margin-top: 20px;\n    }\n\n    #buttons a {\n      margin: 0 10px;\n      padding: 10px 20px;\n      background-color: #ff5500;\n      color: #fff;\n      text-decoration: none;\n      border-radius: 4px;\n      font-weight: bold;\n      transition: background-color 0.3s ease;\n    }\n\n    #buttons a:hover {\n      background-color: #ff3300;\n    }\n  </style>\n</head>\n<body>\n<div id="announcement">\n  <a id="cross" href="adbinapp://dismiss?interaction=cancel">✕</a>\n  <h2>Black Friday Sale!</h2>\n   <img src="https://media3.giphy.com/media/kLhcBWs9Nza4hCW5IS/200.gif" alt="Technology Image">\n  <p>Don\'t miss out on our incredible discounts and deals at our gadgets!</p>\n  <div id="buttons">\n    <a href="adbinapp://dismiss?interaction=clicked&amp;link=https%3A%2F%2Fwww.nike.com%2Fw%2Fmens-jordan-clothing-37eefz6ymx6znik1">Shop</a>\n    <a href="adbinapp://dismiss?interaction=cancel">Dismiss</a>\n  </div>\n</div>\n<script>\n  // Listen for a click on the button inside the iframe\n  document.getElementById("buttons").addEventListener("click", handleButtonClick);\n  document.getElementById("cross").addEventListener("click", handleButtonClick);\n  function handleButtonClick(event) {\n    console.log("A button was clicked with text ", event.target);\n    const href = event.target.getAttribute("href");\n    // Send a message to the parent page\n    console.log("I am sending a message to the parent ", href);\n    parent.postMessage({ "Element was clicked": href }, "*");\n  }\n</script>\n\n</body></html>\n',
+        contentType: TEXT_HTML,
+        schema: "https://ns.adobe.com/personalization/message/in-app"
+      };
+
+      displayHTMLContentInIframe(settings, mockCollect);
+      expect(document.body.appendChild).toHaveBeenCalledTimes(2);
+    });
+    it("should display HTML content in iframe with no overlay using web parameters", () => {
+      const settings = {
+        webParameters: {
+          "alloy-overlay-container": {
+            style: {
+              position: "fixed",
+              top: "0",
+              left: "0",
+              width: "100%",
+              height: "100%",
+              background: "transparent",
+              opacity: 0.5,
+              backgroundColor: "#FFFFFF"
+            },
+            params: {
+              enabled: false,
+              parentElement: "body",
+              insertionMethod: "appendChild"
+            }
+          },
+          "alloy-messaging-container": {
+            style: {
+              width: "72%",
+              backgroundColor: "orange",
+              borderRadius: "20px",
+              border: "none",
+              position: "fixed",
+              overflow: "hidden",
+              left: "50%",
+              transform: "translateX(-50%) translateY(-50%)",
+              top: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "63vh"
+            },
+            params: {
+              enabled: true,
+              parentElement: "body",
+              insertionMethod: "appendChild"
+            }
+          },
+          "alloy-content-iframe": {
+            style: {
+              width: "100%",
+              height: "100%"
+            },
+            params: {
+              enabled: true,
+              parentElement: "#alloy-messaging-container",
+              insertionMethod: "appendChild"
+            }
+          }
+        },
+        content:
+          '<!doctype html>\n<html>\n<head>\n  <title>Bumper Sale!</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      font-family: Arial, sans-serif;\n    }\n\n    #announcement {\n      position: fixed;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 100%;\n      background-color: rgba(0, 0, 0, 0.8);\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: center;\n      color: #fff;\n    }\n\n    #announcement img {\n      max-width: 80%;\n      height: auto;\n      margin-bottom: 20px;\n    }\n\n    #cross {\n      position: absolute;\n      top: 10px;\n      right: 10px;\n      cursor: pointer;\n      font-size: 24px;\n      color: #fff;\n      text-decoration: none;\n    }\n\n    #buttons {\n      display: flex;\n      justify-content: center;\n      margin-top: 20px;\n    }\n\n    #buttons a {\n      margin: 0 10px;\n      padding: 10px 20px;\n      background-color: #ff5500;\n      color: #fff;\n      text-decoration: none;\n      border-radius: 4px;\n      font-weight: bold;\n      transition: background-color 0.3s ease;\n    }\n\n    #buttons a:hover {\n      background-color: #ff3300;\n    }\n  </style>\n</head>\n<body>\n<div id="announcement">\n  <a id="cross" href="adbinapp://dismiss?interaction=cancel">✕</a>\n  <h2>Black Friday Sale!</h2>\n   <img src="https://media3.giphy.com/media/kLhcBWs9Nza4hCW5IS/200.gif" alt="Technology Image">\n  <p>Don\'t miss out on our incredible discounts and deals at our gadgets!</p>\n  <div id="buttons">\n    <a href="adbinapp://dismiss?interaction=clicked&amp;link=https%3A%2F%2Fwww.nike.com%2Fw%2Fmens-jordan-clothing-37eefz6ymx6znik1">Shop</a>\n    <a href="adbinapp://dismiss?interaction=cancel">Dismiss</a>\n  </div>\n</div>\n<script>\n  // Listen for a click on the button inside the iframe\n  document.getElementById("buttons").addEventListener("click", handleButtonClick);\n  document.getElementById("cross").addEventListener("click", handleButtonClick);\n  function handleButtonClick(event) {\n    console.log("A button was clicked with text ", event.target);\n    const href = event.target.getAttribute("href");\n    // Send a message to the parent page\n    console.log("I am sending a message to the parent ", href);\n    parent.postMessage({ "Element was clicked": href }, "*");\n  }\n</script>\n\n</body></html>\n',
+        contentType: TEXT_HTML,
+        schema: "https://ns.adobe.com/personalization/message/in-app"
+      };
+
+      displayHTMLContentInIframe(settings, mockCollect);
+      expect(document.body.appendChild).toHaveBeenCalledTimes(1);
     });
   });
 });
