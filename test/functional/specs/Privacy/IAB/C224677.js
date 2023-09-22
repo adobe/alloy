@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
 import createNetworkLogger from "../../../helpers/networkLogger";
-import { responseStatus } from "../../../helpers/assertions/index";
 import createFixture from "../../../helpers/createFixture";
 import createResponse from "../../../helpers/createResponse";
 import getResponseBody from "../../../helpers/networkLogger/getResponseBody";
@@ -82,5 +81,12 @@ test("Test C224677: Call setConsent when purpose 10 is FALSE", async () => {
     .notContains("https://ns.adobe.com/aep/errors/EXEG-0301-200");
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await t
+    .expect(
+      networkLogger.edgeEndpointLogs.count(
+        ({ response: { statusCode } }) =>
+          statusCode === 200 || statusCode === 207
+      )
+    )
+    .eql(1);
 });

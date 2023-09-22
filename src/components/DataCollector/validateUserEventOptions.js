@@ -31,8 +31,10 @@ export default ({ options }) => {
     decisionScopes: arrayOf(string()).uniqueItems(),
     personalization: objectOf({
       decisionScopes: arrayOf(string()).uniqueItems(),
-      surfaces: arrayOf(string()).uniqueItems()
-    }),
+      surfaces: arrayOf(string()).uniqueItems(),
+      sendDisplayNotifications: boolean().default(true),
+      includePendingDisplayNotifications: boolean().default(false)
+    }).default({ sendDisplayNotifications: true }),
     datasetId: string(),
     mergeId: string(),
     edgeConfigOverrides: validateConfigOverride

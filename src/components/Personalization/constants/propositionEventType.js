@@ -10,7 +10,30 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { DISPLAY, INTERACT, TRIGGER, DISMISS } from "./eventType";
+
 export const PropositionEventType = {
   DISPLAY: "display",
-  INTERACT: "interact"
+  INTERACT: "interact",
+  TRIGGER: "trigger",
+  DISMISS: "dismiss"
 };
+
+const eventTypeToPropositionEventTypeMapping = {
+  [DISPLAY]: PropositionEventType.DISPLAY,
+  [INTERACT]: PropositionEventType.INTERACT,
+  [TRIGGER]: PropositionEventType.TRIGGER,
+  [DISMISS]: PropositionEventType.DISMISS
+};
+const propositionEventTypeToEventTypeMapping = {
+  [PropositionEventType.DISPLAY]: DISPLAY,
+  [PropositionEventType.INTERACT]: INTERACT,
+  [PropositionEventType.TRIGGER]: TRIGGER,
+  [PropositionEventType.DISMISS]: DISMISS
+};
+
+export const getPropositionEventType = eventType =>
+  eventTypeToPropositionEventTypeMapping[eventType];
+
+export const getEventType = propositionEventType =>
+  propositionEventTypeToEventTypeMapping[propositionEventType];

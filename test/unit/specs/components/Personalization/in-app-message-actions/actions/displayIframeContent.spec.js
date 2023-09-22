@@ -170,7 +170,7 @@ describe("DOM Actions on Iframe", () => {
       const alloyMessagingContainer = document.getElementById(
         "alloy-messaging-container"
       );
-      expect(mockedInteract).toHaveBeenCalledOnceWith({
+      expect(mockedInteract).toHaveBeenCalledOnceWith("dismiss", {
         label: "Cancel",
         id: "cancel",
         uuid: "12345",
@@ -204,7 +204,7 @@ describe("DOM Actions on Iframe", () => {
       const overlayContainerAfterDismissal = document.getElementById(
         "alloy-overlay-container"
       );
-      expect(mockedInteract).toHaveBeenCalledOnceWith({
+      expect(mockedInteract).toHaveBeenCalledOnceWith("dismiss", {
         label: "Aloha",
         id: "cancel",
         uuid: "54321",
@@ -239,7 +239,7 @@ describe("DOM Actions on Iframe", () => {
       const overlayContainerAfterDismissal = document.getElementById(
         "alloy-overlay-container"
       );
-      expect(mockedInteract).toHaveBeenCalledOnceWith({
+      expect(mockedInteract).toHaveBeenCalledOnceWith("dismiss", {
         label: "Woof",
         id: "accept",
         uuid: "blippi",

@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, objectOf, string } from "../../utils/validation";
+import { string, boolean, objectOf } from "../../utils/validation";
 import createComponent from "./createComponent";
+import { initDomActionsModules } from "./dom-actions";
 import createCollect from "./createCollect";
-import createExecuteDecisions from "./createExecuteDecisions";
 import { hideContainers, showContainers } from "./flicker";
 import createFetchDataHandler from "./createFetchDataHandler";
 import collectClicks from "./dom-actions/clicks/collectClicks";
@@ -22,20 +22,27 @@ import { mergeDecisionsMeta, mergeQuery } from "./event";
 import createOnClickHandler from "./createOnClickHandler";
 import createViewCacheManager from "./createViewCacheManager";
 import createViewChangeHandler from "./createViewChangeHandler";
-import groupDecisions from "./groupDecisions";
-import createOnResponseHandler from "./createOnResponseHandler";
 import createClickStorage from "./createClickStorage";
-import createRedirectHandler from "./createRedirectHandler";
-import createAutorenderingHandler from "./createAutoRenderingHandler";
-import createNonRenderingHandler from "./createNonRenderingHandler";
 import createApplyPropositions from "./createApplyPropositions";
 import createGetPageLocation from "./createGetPageLocation";
 import createSetTargetMigration from "./createSetTargetMigration";
-import createActionsProvider from "./createActionsProvider";
-import executeActions from "./executeActions";
-import createModules from "./createModules";
-import createPreprocessors from "./createPreprocessors";
+import remapCustomCodeOffers from "./dom-actions/remapCustomCodeOffers";
+import remapHeadOffers from "./dom-actions/remapHeadOffers";
+import createPreprocess from "./dom-actions/createPreprocess";
+import injectCreateProposition from "./handlers/injectCreateProposition";
+import createAsyncArray from "./utils/createAsyncArray";
+import createPendingNotificationsHandler from "./createPendingNotificationsHandler";
+import * as schema from "./constants/schema";
+import processDefaultContent from "./handlers/processDefaultContent";
+import { isPageWideSurface } from "./utils/surfaceUtils";
+import createProcessDomAction from "./handlers/createProcessDomAction";
+import createProcessHtmlContent from "./handlers/createProcessHtmlContent";
+import createProcessRedirect from "./handlers/createProcessRedirect";
+import createProcessPropositions from "./handlers/createProcessPropositions";
 import createSubscribeMessageFeed from "./createSubscribeMessageFeed";
+import createOnDecisionHandler from "./createOnDecisionHandler";
+import createProcessInAppMessage from "./handlers/createProcessInAppMessage";
+import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -47,50 +54,58 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     storeClickMetrics
   } = createClickStorage();
   const getPageLocation = createGetPageLocation({ window });
-  const viewCache = createViewCacheManager();
+  const domActionsModules = initDomActionsModules();
 
-  const actionsProvider = createActionsProvider({
-    modules: createModules({ storeClickMetrics, collect }),
-    preprocessors: createPreprocessors(),
+  const preprocess = createPreprocess([remapHeadOffers, remapCustomCodeOffers]);
+  const createProposition = injectCreateProposition({
+    preprocess,
+    isPageWideSurface
+  });
+  const viewCache = createViewCacheManager({ createProposition });
+
+  const schemaProcessors = {
+    [schema.DEFAULT_CONTENT_ITEM]: processDefaultContent,
+    [schema.DOM_ACTION]: createProcessDomAction({
+      modules: domActionsModules,
+      logger,
+      storeClickMetrics
+    }),
+    [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({
+      modules: domActionsModules,
+      logger
+    }),
+    [schema.REDIRECT_ITEM]: createProcessRedirect({
+      logger,
+      executeRedirect: url => window.location.replace(url),
+      collect
+    }),
+    [schema.MESSAGE_IN_APP]: createProcessInAppMessage({
+      modules: initInAppMessageActionsModules(collect),
+      logger
+    })
+  };
+
+  const processPropositions = createProcessPropositions({
+    schemaProcessors,
     logger
   });
 
-  const executeDecisions = createExecuteDecisions({
-    actionsProvider,
-    logger,
-    executeActions
-  });
-  const handleRedirectDecisions = createRedirectHandler({
-    collect,
-    window,
-    logger,
-    showContainers
-  });
-  const autoRenderingHandler = createAutorenderingHandler({
-    viewCache,
-    executeDecisions,
-    showContainers,
-    collect
-  });
-  const applyPropositions = createApplyPropositions({
-    executeDecisions
-  });
-  const nonRenderingHandler = createNonRenderingHandler({ viewCache });
-  const responseHandler = createOnResponseHandler({
-    autoRenderingHandler,
-    nonRenderingHandler,
-    groupDecisions,
-    handleRedirectDecisions,
-    showContainers
+  const pendingDisplayNotifications = createAsyncArray();
+  const pendingNotificationsHandler = createPendingNotificationsHandler({
+    pendingDisplayNotifications,
+    mergeDecisionsMeta
   });
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
-    responseHandler,
+    showContainers,
     hideContainers,
-    mergeQuery
+    mergeQuery,
+    collect,
+    processPropositions,
+    createProposition,
+    pendingDisplayNotifications
   });
   const onClickHandler = createOnClickHandler({
-    eventManager,
     mergeDecisionsMeta,
     collectClicks,
     getClickSelectors,
@@ -98,8 +113,13 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
   const viewChangeHandler = createViewChangeHandler({
     mergeDecisionsMeta,
-    collect,
-    executeDecisions,
+    processPropositions,
+    viewCache
+  });
+  const applyPropositions = createApplyPropositions({
+    processPropositions,
+    createProposition,
+    pendingDisplayNotifications,
     viewCache
   });
   const setTargetMigration = createSetTargetMigration({
@@ -110,11 +130,17 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     collect
   });
 
+  const onDecisionHandler = createOnDecisionHandler({
+    processPropositions,
+    createProposition,
+    collect,
+    subscribeMessageFeed
+  });
+
   return createComponent({
     getPageLocation,
     logger,
     fetchDataHandler,
-    autoRenderingHandler,
     viewChangeHandler,
     onClickHandler,
     isAuthoringModeEnabled,
@@ -123,6 +149,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     showContainers,
     applyPropositions,
     setTargetMigration,
+    pendingNotificationsHandler,
+    onDecisionHandler,
     subscribeMessageFeed
   });
 };

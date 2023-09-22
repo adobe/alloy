@@ -16,7 +16,7 @@ const EVENT_TYPE_TRUE = 1;
 export const mergeDecisionsMeta = (
   event,
   decisionsMeta,
-  eventType,
+  propositionEventType,
   propositionAction
 ) => {
   const xdm = {
@@ -24,7 +24,7 @@ export const mergeDecisionsMeta = (
       decisioning: {
         propositions: decisionsMeta,
         propositionEventType: {
-          [eventType]: EVENT_TYPE_TRUE
+          [propositionEventType]: EVENT_TYPE_TRUE
         }
       }
     }

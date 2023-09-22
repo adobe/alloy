@@ -40,6 +40,10 @@ export default action => {
     return result;
   }
 
+  if (selector == null) {
+    return result;
+  }
+
   const container = selectNodesWithEq(selector);
   if (!is(container[0], HEAD)) {
     return result;
