@@ -69,15 +69,12 @@ export default ({
           [...pagePropositions, ...currentViewPropositions],
           nonRenderedPropositions
         ));
-        render()
-          .then(decisionsMeta => {
-            showContainers();
-            handleNotifications(decisionsMeta);
-          })
-          .catch(e => {
-            showContainers();
-            throw e;
-          });
+        render().then(handleNotifications);
+
+        // Render could take a long time especially if one of the renders
+        // is waiting for html to appear on the page. We show the containers
+        // immediately, and whatever renders quickly will not have flicker.
+        showContainers();
       } else {
         ({ returnedPropositions, returnedDecisions } = processPropositions(
           [],
