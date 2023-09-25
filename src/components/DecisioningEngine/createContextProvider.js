@@ -47,7 +47,9 @@ export default ({ eventRegistry, window }) => {
       currentMinute: now.getMinutes(),
       currentMonth: now.getMonth(),
       currentYear: now.getFullYear(),
-      pageVisitDuration: currentTimestamp - pageLoadTimestamp
+      pageVisitDuration: currentTimestamp - pageLoadTimestamp,
+      "~timestampu": currentTimestamp / 1000,
+      "~timestampz": now.toISOString()
     };
   };
 
