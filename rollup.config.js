@@ -16,6 +16,7 @@ import commonjs from "rollup-plugin-commonjs";
 import babel from "rollup-plugin-babel";
 import { terser } from "rollup-plugin-terser";
 import license from "rollup-plugin-license";
+import json from "@rollup/plugin-json";
 
 // Set these boolean environment options to control which files are built:
 // build the snippet that must be add to the page
@@ -39,6 +40,7 @@ const buildPlugins = (variant, minify) => {
       mainFields: ["module", "main", "browser"]
     }),
     commonjs(),
+    json(),
     babel({
       envName: "rollup",
       configFile: path.resolve(__dirname, "babel.config.js")
