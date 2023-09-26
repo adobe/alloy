@@ -331,4 +331,37 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
       })
     );
   });
+  it("satisfies rule based on matched ~timestampu", () => {
+    setupResponseHandler(applyResponse, mockWindow({}), {
+      definition: {
+        key: "~timestampu",
+        matcher: "eq",
+        values: [mockedTimestamp.getTime() / 1000]
+      },
+      type: "matcher"
+    });
+
+    expect(applyResponse).toHaveBeenCalledOnceWith(
+      jasmine.objectContaining({
+        propositions: [proposition]
+      })
+    );
+  });
+
+  it("satisfies rule based on matched ~timestampz", () => {
+    setupResponseHandler(applyResponse, mockWindow({}), {
+      definition: {
+        key: "~timestampz",
+        matcher: "eq",
+        values: [mockedTimestamp.toISOString()]
+      },
+      type: "matcher"
+    });
+
+    expect(applyResponse).toHaveBeenCalledOnceWith(
+      jasmine.objectContaining({
+        propositions: [proposition]
+      })
+    );
+  });
 });

@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 import getBrowser from "../../utils/getBrowser";
 import parseUrl from "../../utils/parseUrl";
 import flattenObject from "../../utils/flattenObject";
+import libraryVersion from "../../constants/libraryVersion";
 
 export default ({ eventRegistry, window }) => {
   const pageLoadTimestamp = new Date().getTime();
@@ -47,7 +48,9 @@ export default ({ eventRegistry, window }) => {
       currentMinute: now.getMinutes(),
       currentMonth: now.getMonth(),
       currentYear: now.getFullYear(),
-      pageVisitDuration: currentTimestamp - pageLoadTimestamp
+      pageVisitDuration: currentTimestamp - pageLoadTimestamp,
+      "~timestampu": currentTimestamp / 1000,
+      "~timestampz": now.toISOString()
     };
   };
 
@@ -74,7 +77,8 @@ export default ({ eventRegistry, window }) => {
     return {
       ...coreGlobalContext,
       ...getTimeContext(),
-      window: getWindowContext()
+      window: getWindowContext(),
+      "~sdkver": libraryVersion
     };
   };
 
