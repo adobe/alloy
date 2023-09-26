@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import getBrowser from "../../utils/getBrowser";
 import parseUrl from "../../utils/parseUrl";
 import flattenObject from "../../utils/flattenObject";
-import { version } from "../../../package.json";
+import libraryVersion from "../../constants/libraryVersion";
 
 export default ({ eventRegistry, window }) => {
   const pageLoadTimestamp = new Date().getTime();
@@ -78,7 +78,7 @@ export default ({ eventRegistry, window }) => {
       ...coreGlobalContext,
       ...getTimeContext(),
       window: getWindowContext(),
-      "~sdkver": version
+      "~sdkver": libraryVersion
     };
   };
 

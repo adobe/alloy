@@ -9,16 +9,16 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import libraryVersion from "../../../../../src/constants/libraryVersion";
 import {
   mockWindow,
   setupResponseHandler,
   proposition
 } from "./contextTestUtils";
-import { version } from "../../../../../package.json";
 
 describe("DecisioningEngine:globalContext:sdkVersion", () => {
   let applyResponse;
-  const currentVersion = version;
+  const currentVersion = libraryVersion;
   beforeEach(() => {
     applyResponse = jasmine.createSpy();
   });
