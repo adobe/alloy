@@ -9,31 +9,40 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import inAppMessageConsequenceAdapter from "../../../../../../src/components/DecisioningEngine/consequenceAdapters/inAppMessageConsequenceAdapter";
+
+import schemaTypeConsequenceAdapter from "../../../../../../src/components/DecisioningEngine/consequenceAdapters/schemaTypeConsequenceAdapter";
 import { APPLICATION_JSON } from "../../../../../../src/components/Personalization/constants/contentType";
 
-describe("DecisioningEngine:inAppMessageConsequenceAdapter", () => {
-  it("handles cjmiam", () => {
+describe("DecisioningEngine:schemaTypeConsequenceAdapter", () => {
+  it("handles schema", () => {
     expect(
-      inAppMessageConsequenceAdapter(
+      schemaTypeConsequenceAdapter(
         "72042c7c-4e34-44f6-af95-1072ae117424",
-        "cjmiam",
+        "schema",
         {
-          mobileParameters: {
-            verticalAlign: "center",
-            dismissAnimation: "top",
-            verticalInset: 0,
-            backdropOpacity: 0.2,
-            cornerRadius: 15,
-            horizontalInset: 0,
-            uiTakeover: true,
-            horizontalAlign: "center",
-            width: 80,
-            displayAnimation: "top",
-            backdropColor: "#000000",
-            height: 60
+          schema: "https://ns.adobe.com/personalization/message/in-app",
+          data: {
+            content: {
+              mobileParameters: {
+                verticalAlign: "center",
+                dismissAnimation: "top",
+                verticalInset: 0,
+                backdropOpacity: 0.2,
+                cornerRadius: 15,
+                horizontalInset: 0,
+                uiTakeover: true,
+                horizontalAlign: "center",
+                width: 80,
+                displayAnimation: "top",
+                backdropColor: "#000000",
+                height: 60
+              },
+              webParameters: jasmine.any(Object),
+              html: "<!doctype html></html>"
+            },
+            contentType: APPLICATION_JSON
           },
-          html: "<!doctype html></html>"
+          id: "72042c7c-4e34-44f6-af95-1072ae117424"
         }
       )
     ).toEqual({

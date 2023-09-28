@@ -9,24 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { MESSAGE_IN_APP } from "../../Personalization/constants/schema";
-import { APPLICATION_JSON } from "../../Personalization/constants/contentType";
 
 export default (id, type, detail) => {
-  const { html, mobileParameters } = detail;
+  const { schema, data, id: detailId } = detail;
 
-  const webParameters = {};
-
-  return {
-    schema: MESSAGE_IN_APP,
-    data: {
-      content: {
-        mobileParameters,
-        webParameters,
-        html
-      },
-      contentType: APPLICATION_JSON
-    },
-    id
-  };
+  return { schema, data, id: detailId || id };
 };

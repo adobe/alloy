@@ -262,17 +262,13 @@ const generateWebParameters = mobileParameters => {
   };
 };
 
-export const displayHTMLContentInIframe = (settings, interact) => {
+export const displayHTMLContentInIframe = (content, interact) => {
   dismissMessage();
-  const { content, contentType, mobileParameters } = settings;
-  let { webParameters } = settings;
-
-  if (contentType !== TEXT_HTML) {
-    return;
-  }
+  const { html, mobileParameters } = content;
+  let { webParameters } = content;
 
   const container = createElement(ALLOY_MESSAGING_CONTAINER_ID);
-  const iframe = createIframe(content, createIframeClickHandler(interact));
+  const iframe = createIframe(html, createIframeClickHandler(interact));
   const overlay = createElement(ALLOY_OVERLAY_CONTAINER_ID);
 
   if (!isValidWebParameters(webParameters)) {
@@ -288,8 +284,8 @@ export const displayHTMLContentInIframe = (settings, interact) => {
 
 export default (settings, collect) => {
   return new Promise(resolve => {
-    const { meta } = settings;
-    displayHTMLContentInIframe(settings, (action, propositionAction) => {
+    const { meta, content = {} } = settings;
+    displayHTMLContentInIframe(content, (action, propositionAction) => {
       collect({
         decisionsMeta: [meta],
         propositionAction,
