@@ -16,4 +16,4 @@ governing permissions and limitations under the License.
  * @returns {boolean}
  */
 // eslint-disable-next-line no-restricted-globals
-export default value => typeof value === "number" && !isNaN(value);
+export default value => typeof value === "number" && !Number.isNaN(value);
