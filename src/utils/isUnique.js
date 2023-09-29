@@ -15,13 +15,6 @@ governing permissions and limitations under the License.
  * @returns {boolean}
  */
 export default values => {
-  const storedVals = Object.create(null);
-  for (let i = 0; i < values.length; i += 1) {
-    const item = values[i];
-    if (item in storedVals) {
-      return false;
-    }
-    storedVals[item] = true;
-  }
-  return true;
+  const storedVals = new Set(values);
+  return storedVals.size === values.length;
 };
