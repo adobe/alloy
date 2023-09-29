@@ -15,7 +15,9 @@ governing permissions and limitations under the License.
 import createDataCollector from "../components/DataCollector";
 import createActivityCollector from "../components/ActivityCollector";
 import createIdentity from "../components/Identity";
+/* @skipwhen ENV.alloy_audiences === false */
 import createAudiences from "../components/Audiences";
+/* @skipwhen ENV.alloy_personalization === false */
 import createPersonalization from "../components/Personalization";
 import createContext from "../components/Context";
 import createPrivacy from "../components/Privacy";
@@ -36,4 +38,4 @@ export default [
   createEventMerge,
   createLibraryInfo,
   createMachineLearning
-];
+].filter((module) => typeof module !== "undefined");
