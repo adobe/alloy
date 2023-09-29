@@ -3,7 +3,7 @@ import React from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./InAppMessagesStyle.css";
 
-const configKey = "aemonacpprodcampaign";
+const configKey = "cjmProdNld2";
 
 const config = {
   cjmProdNld2: {
@@ -83,6 +83,7 @@ export default function InAppMessages() {
       })
       .then(fetchMobilePayload)
       .then(response => {
+        console.log("getInAppPayload Yes papa yes papa --->>", response);
         window.alloy("applyResponse", {
           renderDecisions: true,
           decisionContext,

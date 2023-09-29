@@ -25,13 +25,12 @@ export default ({
   };
   const viewName = event.getViewName();
 
-  return ({ response }) => {
+  return async ({ response }) => {
     decisionProvider.addPayloads(
       response.getPayloadsByType(PERSONALIZATION_DECISIONS_HANDLE)
     );
 
-    const propositions = decisionProvider.evaluate(context);
-
+    const propositions = await decisionProvider.evaluate(context);
     applyResponse({ viewName, renderDecisions, propositions });
   };
 };

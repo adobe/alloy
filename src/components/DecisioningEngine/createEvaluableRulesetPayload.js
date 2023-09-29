@@ -60,16 +60,17 @@ export default (payload, eventRegistry, decisionHistory) => {
     );
   };
 
-  const evaluate = context => {
+  const evaluate = async context => {
     const displayEvent = eventRegistry.getEvent(DISPLAY, payload.id);
 
     const displayedDate = displayEvent
       ? displayEvent.firstTimestamp
       : undefined;
 
-    const qualifyingItems = flattenArray(
+    const consequences = await Promise.all(
       items.map(item => item.execute(context))
-    )
+    );
+    const qualifyingItems = flattenArray(consequences)
       .map(consequenceAdapter)
       .map(item => {
         const {

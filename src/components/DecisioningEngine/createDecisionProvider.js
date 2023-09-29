@@ -33,10 +33,13 @@ export default ({ eventRegistry }) => {
     }
   };
 
-  const evaluate = (context = {}) =>
-    Object.values(payloads)
-      .map(payload => payload.evaluate(context))
-      .filter(payload => payload.items.length > 0);
+  const evaluate = async (context = {}) => {
+    const consequences = await Promise.all(
+      Object.values(payloads).map(payload => payload.evaluate(context))
+    );
+
+    return consequences.filter(payload => payload.items.length > 0);
+  };
 
   const addPayloads = personalizationPayloads => {
     personalizationPayloads.forEach(addPayload);

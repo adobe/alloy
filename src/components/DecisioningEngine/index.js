@@ -23,6 +23,7 @@ import {
   MOBILE_EVENT_TYPE
 } from "./constants";
 import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand";
+import createHistoricalRegistry from "./createHistoricalRegistry";
 
 const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
   const { orgId } = config;
@@ -32,8 +33,13 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
   const eventRegistry = createEventRegistry({ storage: storage.persistent });
   let applyResponse;
 
+  const historicalEventRegistry = createHistoricalRegistry();
+
   const decisionProvider = createDecisionProvider({ eventRegistry });
-  const contextProvider = createContextProvider({ eventRegistry, window });
+  const contextProvider = createContextProvider({
+    historicalEventRegistry,
+    window
+  });
 
   const evaluateRulesetsCommand = createEvaluateRulesetsCommand({
     contextProvider,

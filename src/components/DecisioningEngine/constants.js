@@ -24,3 +24,5 @@ export const MOBILE_EVENT_SOURCE = {
   LAUNCH: "com.adobe.eventSource.applicationLaunch",
   REQUEST: "com.adobe.eventSource.requestContent"
 };
+
+export const HISTORICAL_DATA_STORE = "historicalDataStore";
