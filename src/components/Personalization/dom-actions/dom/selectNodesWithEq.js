@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import escape from "css.escape";
 import { selectNodes } from "../../../../utils/dom";
 import { isNotEqSelector, splitWithEq } from "./helperForEq";
 
@@ -19,8 +18,7 @@ const CSS_IDENTIFIER_PATTERN = /(#|\.)(-?\w+)/g;
 // Here we use CSS.escape() to make sure we get
 // correct values for ID and CSS class
 // Please check:  https://www.w3.org/TR/css-syntax-3/#escaping
-// CSS.escape() polyfill can be found here: https://github.com/mathiasbynens/CSS.escape
-const replaceIdentifier = (_, $1, $2) => `${$1}${escape($2)}`;
+const replaceIdentifier = (_, $1, $2) => `${$1}${CSS.escape($2)}`;
 
 export const escapeIdentifiersInSelector = selector => {
   return selector.replace(CSS_IDENTIFIER_PATTERN, replaceIdentifier);
