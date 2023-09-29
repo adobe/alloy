@@ -24,7 +24,6 @@ export { default as defer } from "./defer";
 export { default as deduplicateArray } from "./deduplicateArray";
 export { default as deepAssign } from "./deepAssign";
 export { default as endsWith } from "./endsWith";
-export { default as find } from "./find";
 export { default as fireImage } from "./fireImage";
 export { default as injectFireReferrerHideableImage } from "./injectFireReferrerHideableImage";
 export { default as filterObject } from "./filterObject";
