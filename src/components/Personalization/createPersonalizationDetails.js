@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { includes, isNonEmptyString, isNonEmptyArray } from "../../utils";
+import { isNonEmptyString, isNonEmptyArray } from "../../utils";
 import { buildPageSurface, normalizeSurfaces } from "./utils/surfaceUtils";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
 import {
@@ -22,14 +22,14 @@ import {
 } from "./constants/schema";
 
 const addPageWideScope = scopes => {
-  if (!includes(scopes, PAGE_WIDE_SCOPE)) {
+  if (!scopes.includes(PAGE_WIDE_SCOPE)) {
     scopes.push(PAGE_WIDE_SCOPE);
   }
 };
 
 const addPageSurface = (surfaces, getPageLocation) => {
   const pageSurface = buildPageSurface(getPageLocation);
-  if (!includes(surfaces, pageSurface)) {
+  if (!surfaces.includes(pageSurface)) {
     surfaces.push(pageSurface);
   }
 };
@@ -95,7 +95,7 @@ export default ({
         REDIRECT_ITEM
       ];
 
-      if (includes(scopes, PAGE_WIDE_SCOPE)) {
+      if (scopes.includes(PAGE_WIDE_SCOPE)) {
         schemas.push(DOM_ACTION);
       }
 

@@ -32,7 +32,6 @@ export { default as getApexDomain } from "./getApexDomain";
 export { default as getLastArrayItems } from "./getLastArrayItems";
 export { default as getNamespacedCookieName } from "./getNamespacedCookieName";
 export { default as groupBy } from "./groupBy";
-export { default as includes } from "./includes";
 export { default as injectDoesIdentityCookieExist } from "./injectDoesIdentityCookieExist";
 export { default as injectStorage } from "./injectStorage";
 export { default as intersection } from "./intersection";
