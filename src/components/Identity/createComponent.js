@@ -9,7 +9,6 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { assign } from "../../utils";
 import getIdentityOptionsValidator from "./getIdentity/getIdentityOptionsValidator";
 import appendIdentityToUrlOptionsValidator from "./appendIdentityToUrl/appendIdentityToUrlOptionsValidator";
 
@@ -48,7 +47,7 @@ export default ({
         }
         // For sendBeacon requests, getEdge() will return {}, so we are using assign here
         // so that sendBeacon requests don't override the edge info from before.
-        edge = assign(edge, response.getEdge());
+        edge = Object.assign(edge, response.getEdge());
 
         return handleResponseForIdSyncs(response);
       }

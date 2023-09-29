@@ -26,7 +26,7 @@ import createViewChangeHandler from "../../../../../../src/components/Personaliz
 import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage";
 import createApplyPropositions from "../../../../../../src/components/Personalization/createApplyPropositions";
 import createSetTargetMigration from "../../../../../../src/components/Personalization/createSetTargetMigration";
-import { createCallbackAggregator, assign } from "../../../../../../src/utils";
+import { createCallbackAggregator } from "../../../../../../src/utils";
 import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition";
 import createProcessPropositions from "../../../../../../src/components/Personalization/handlers/createProcessPropositions";
 import createAsyncArray from "../../../../../../src/components/Personalization/utils/createAsyncArray";
@@ -188,7 +188,7 @@ export default mocks => {
         onResponse: callbacks.add
       });
       const results = await callbacks.call({ response });
-      const result = assign({}, ...results);
+      const result = Object.assign({}, ...results);
       await flushPromiseChains();
       event.finalize();
       return { event, result };

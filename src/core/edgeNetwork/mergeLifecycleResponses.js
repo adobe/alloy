@@ -9,8 +9,6 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { assign } from "../../utils";
-
 export default returnValues => {
   // Merges all returned objects from all `onResponse` callbacks into
   // a single object that can later be returned to the customer.
@@ -18,7 +16,7 @@ export default returnValues => {
   const consumerOnResponseReturnValues = returnValues.shift() || [];
   const lifecycleOnBeforeRequestReturnValues = returnValues;
 
-  return assign(
+  return Object.assign(
     {},
     ...lifecycleOnResponseReturnValues,
     ...consumerOnResponseReturnValues,

@@ -9,14 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { assign } from "../../../utils";
-
 export default preprocessors => action => {
   if (!action) {
     return action;
   }
   return preprocessors.reduce(
-    (processed, fn) => assign(processed, fn(processed)),
+    (processed, fn) => Object.assign(processed, fn(processed)),
     action
   );
 };
