@@ -179,8 +179,8 @@ const mockResponse = {
                                   definition: {
                                     events: [
                                       {
-                                        type: "display",
-                                        id:
+                                        "iam.eventType": "display",
+                                        "iam.id":
                                           "cf087a6e-131d-4147-adc7-bc1ea947f09c#ff64e6e6-e43f-479d-b5c0-f5568c771b3b"
                                       }
                                     ],
@@ -282,8 +282,8 @@ const mockResponse = {
                                   definition: {
                                     events: [
                                       {
-                                        type: "trigger",
-                                        id:
+                                        "iam.eventType": "trigger",
+                                        "iam.id":
                                           "57712381-1690-4d19-9469-0a35ea5bd4e3#74f8e5cf-d770-41c3-b595-557b3ee00ba3"
                                       }
                                     ],
@@ -424,7 +424,7 @@ export default function MessageFeed() {
         surface: "web://target.jasonwaters.dev/aep.html",
         callback: ({ items = [], rendered, clicked }) => {
           setClickHandler(() => clicked);
-
+          console.log("subscribeMessageFeed hahah", items);
           setMessageFeedItems(items);
           rendered(items);
         }
@@ -453,11 +453,28 @@ export default function MessageFeed() {
       }
     });
   };
-
-  const resetPersistentData = () => {
-    localStorage.clear();
-    window.location.reload();
-  };
+  // let db;
+  // const dbName = "historicalDataStore";
+  // const request = indexedDB.open(dbName);
+  // request.onsuccess = event => {
+  //   db = event.target.result;
+  //   resolve(true);
+  // }
+  // const resetPersistentData = () => {
+  //   return new Promise((resolve, reject) => {
+  //     try {
+  //       const transaction = db.transaction("events", "readwrite");
+  //       const objectStore = transaction.objectStore("events");
+  //       const request = objectStore.delete();
+  //
+  //       request.onsuccess = () => {
+  //         resolve(true);
+  //       };
+  //     } catch (error) {
+  //       reject(error);
+  //     }
+  //   });
+  // };
 
   return (
     <div>

@@ -17,6 +17,8 @@ import createEventRegistry from "./createEventRegistry";
 import createContextProvider from "./createContextProvider";
 import createSubscribeRulesetItems from "./createSubscribeRulesetItems";
 import { ensureSchemaBasedRulesetConsequences } from "./utils";
+import "regenerator-runtime/runtime";
+
 import {
   CONTEXT_KEY,
   MOBILE_EVENT_SOURCE,
@@ -30,14 +32,16 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
   const storage = createNamespacedStorage(
     `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`
   );
-  const eventRegistry = createEventRegistry({ storage: storage.persistent });
+  createEventRegistry({ storage: storage.persistent });
   let applyResponse;
 
   const historicalEventRegistry = createHistoricalRegistry();
 
-  const decisionProvider = createDecisionProvider({ eventRegistry });
+  const decisionProvider = createDecisionProvider({
+    eventRegistry: historicalEventRegistry
+  });
   const contextProvider = createContextProvider({
-    historicalEventRegistry,
+    eventRegistry: historicalEventRegistry,
     window
   });
 
@@ -78,7 +82,7 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
           })
         );
 
-        eventRegistry.addExperienceEdgeEvent(event);
+        historicalEventRegistry.addExperienceEdgeEvent(event);
       }
     },
     commands: {

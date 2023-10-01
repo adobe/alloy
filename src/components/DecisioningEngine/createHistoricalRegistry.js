@@ -10,16 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { HISTORICAL_DATA_STORE } from "./constants";
+import { EVENT_TYPE_TRUE } from "../Personalization/event";
+import { getActivityId } from "./utils";
 
 const dbName = HISTORICAL_DATA_STORE;
+const PREFIX_TO_SUPPORT_INDEX_DB = key => `iam_${key}`;
 
 export default () => {
   let db;
 
-  const replaceDotsWithUnderscores = record => {
+  const replaceUnderscoreWithDot = record => {
     const updatedRecord = {};
     Object.keys(record).forEach(key => {
-      updatedRecord[key.replace(/\./g, "_")] = record[key];
+      updatedRecord[key.replace("/_/g", ".")] = record[key];
     });
     return updatedRecord;
   };
@@ -49,11 +52,6 @@ export default () => {
           ["iam_id", "iam_eventType"],
           { unique: false }
         );
-        objectStore.createIndex(
-          "ajo_id_ajo_eventType_index",
-          ["ajo_id", "ajo_eventType"],
-          { unique: false }
-        );
       };
 
       request.onsuccess = event => {
@@ -63,55 +61,130 @@ export default () => {
     });
   };
 
-  const addEvent = records => {
+  const addEvent = (event, eventType, eventId, action) => {
     return new Promise((resolve, reject) => {
       const transaction = db.transaction("events", "readwrite");
       const objectStore = transaction.objectStore("events");
-
       console.log("CreateHistoricalRegistry.addRecordToIndexedDB start");
-      console.log("Records: ", records);
 
-      records.forEach(record => {
-        const updatedRecord = replaceDotsWithUnderscores(record);
-        objectStore.add(updatedRecord);
-      });
+      const record = {
+        [PREFIX_TO_SUPPORT_INDEX_DB("id")]: eventId,
+        [PREFIX_TO_SUPPORT_INDEX_DB("eventType")]: eventType,
+        [PREFIX_TO_SUPPORT_INDEX_DB("action")]: action,
+        timestamp: new Date().getTime()
+      };
 
-      transaction.onerror = event => {
-        const dbRequest = event.target;
+      objectStore.add(record);
+      // debounce(() => {
+      //   objectStore.add(record);
+      // }, 500);
+      transaction.onerror = txEvent => {
+        const dbRequest = txEvent.target;
         reject(dbRequest.error);
       };
 
       transaction.onsuccess = () => {
-        // const updatedRecord = replaceDotsWithUnderscores(records[0]);
-        // objectStore.add(updatedRecord);
         resolve(true);
       };
     });
+
+    // debounce(async () => {
+    //
+    // }, 500);
   };
 
-  const clearIndexedDB = () => {
+  // const addEvent = (event, eventType, eventId, action) => {
+  //   return new Promise((resolve, reject) => {
+  //     const transaction = db.transaction("events", "readwrite");
+  //     const objectStore = transaction.objectStore("events");
+  //
+  //     console.log("CreateHistoricalRegistry.addRecordToIndexedDB start");
+  //
+  //     const record = {
+  //       [PREFIX_TO_SUPPORT_INDEX_DB("id")]: eventId,
+  //       [PREFIX_TO_SUPPORT_INDEX_DB("eventType")]: eventType,
+  //       [PREFIX_TO_SUPPORT_INDEX_DB("action")]: action,
+  //       timestamp: new Date().getTime()
+  //     };
+  //
+  //     objectStore.add(record);
+  //     transaction.onerror = txEvent => {
+  //       const dbRequest = txEvent.target;
+  //       reject(dbRequest.error);
+  //     };
+  //
+  //     transaction.onsuccess = () => {
+  //       // const updatedRecord = replaceDotsWithUnderscores(records[0]);
+  //       // objectStore.add(updatedRecord);
+  //       resolve(true);
+  //     };
+  //   });
+  // };
+
+  const addExperienceEdgeEvent = event => {
+    const { xdm = {} } = event.getContent();
+    const { eventType = "", _experience } = xdm;
+
+    if (
+      !eventType ||
+      !_experience ||
+      typeof _experience !== "object" ||
+      eventType === ""
+    ) {
+      return;
+    }
+
+    const { decisioning = {} } = _experience;
+    const {
+      propositionEventType: propositionEventTypeObj = {},
+      propositionAction = {},
+      propositions = []
+    } = decisioning;
+
+    const propositionEventTypesList = Object.keys(propositionEventTypeObj);
+
+    // https://wiki.corp.adobe.com/pages/viewpage.action?spaceKey=CJM&title=Proposition+Event+Types
+    if (propositionEventTypesList.length === 0) {
+      return;
+    }
+
+    const { id: action } = propositionAction;
+
+    propositionEventTypesList.forEach(propositionEventType => {
+      if (propositionEventTypeObj[propositionEventType] === EVENT_TYPE_TRUE) {
+        propositions.forEach(proposition => {
+          addEvent(
+            {},
+            propositionEventType,
+            getActivityId(proposition),
+            action
+          );
+        });
+      }
+    });
+  };
+
+  const getEvent = (eventType, eventId) => {
     return new Promise((resolve, reject) => {
       try {
-        const transaction = db.transaction("events", "readwrite");
+        const transaction = db.transaction("events", "readonly");
         const objectStore = transaction.objectStore("events");
-        const request = objectStore.clear();
+        const index = objectStore.index("iam_id_iam_eventType_index");
 
-        request.onsuccess = () => {
-          resolve(true);
+        const request = index.getAll([eventId, eventType]);
+
+        request.onsuccess = eventObjStore => {
+          const dbRequest = eventObjStore.target;
+          const data = dbRequest
+            ? dbRequest.result.map(record => replaceUnderscoreWithDot(record))
+            : [];
+          resolve(data);
         };
       } catch (error) {
         reject(error);
       }
     });
   };
-
-  // const getEvent = (eventType, eventId) => {
-  //   // if (!events[eventType]) {
-  //   //   return undefined;
-  //   // }
-  //   //
-  //   // return events[eventType][eventId];
-  // };
 
   setupIndexedDB()
     .then(() => {
@@ -124,7 +197,8 @@ export default () => {
   return {
     setupIndexedDB,
     addEvent,
-    clearIndexedDB,
+    addExperienceEdgeEvent,
+    getEvent,
     getIndexDB: () => db
   };
 };

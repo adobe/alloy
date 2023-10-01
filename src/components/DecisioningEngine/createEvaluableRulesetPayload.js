@@ -67,6 +67,7 @@ export default (payload, eventRegistry, decisionHistory) => {
       ? displayEvent.firstTimestamp
       : undefined;
 
+    console.log("items are ", items);
     const consequences = await Promise.all(
       items.map(item => item.execute(context))
     );
@@ -82,7 +83,7 @@ export default (payload, eventRegistry, decisionHistory) => {
           data: { ...item.data, qualifiedDate, displayedDate }
         };
       });
-
+    console.log("qualifyingItems are ", qualifyingItems);
     return {
       ...payload,
       items: qualifyingItems

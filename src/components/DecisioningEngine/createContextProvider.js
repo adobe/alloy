@@ -13,7 +13,7 @@ import getBrowser from "../../utils/getBrowser";
 import parseUrl from "../../utils/parseUrl";
 import flattenObject from "../../utils/flattenObject";
 
-export default ({ historicalEventRegistry, window }) => {
+export default ({ eventRegistry, window }) => {
   const pageLoadTimestamp = new Date().getTime();
   const getBrowserContext = () => {
     return {
@@ -86,8 +86,8 @@ export default ({ historicalEventRegistry, window }) => {
 
     return {
       ...flattenObject(context),
-      events: historicalEventRegistry.getIndexDB()
-      // events: historicalEventRegistry.toJSON()
+      events: eventRegistry.getIndexDB()
+      // events: eventRegistry.toJSON()
     };
   };
   return {
