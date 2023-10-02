@@ -106,8 +106,8 @@ const buildConfig = (variant, minify) => {
           file: `${destDirectory}alloy${minifiedExtension}.js`,
           format: "iife",
           intro:
-            "if (document.documentMode && document.documentMode < 11) {\n" +
-            "  console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.');\n" +
+            "if (document.documentMode && document.documentMode <= 11) {\n" +
+            "  console.warn('The Adobe Experience Cloud Web SDK does not support IE.');\n" +
             "  return;\n" +
             "}\n",
           sourcemap: variant === SANDBOX
