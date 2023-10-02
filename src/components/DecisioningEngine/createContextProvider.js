@@ -47,7 +47,8 @@ export default ({ eventRegistry, window }) => {
       currentMinute: now.getMinutes(),
       currentMonth: now.getMonth(),
       currentYear: now.getFullYear(),
-      pageVisitDuration: currentTimestamp - pageLoadTimestamp
+      pageVisitDuration: currentTimestamp - pageLoadTimestamp,
+      "~state.com.adobe.module.lifecycle/lifecyclecontextdata.hourofday": now.getHours()
     };
   };
 
