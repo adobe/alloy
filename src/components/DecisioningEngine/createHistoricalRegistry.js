@@ -70,7 +70,7 @@ export default () => {
       const record = {
         [PREFIX_TO_SUPPORT_INDEX_DB("id")]: eventId,
         [PREFIX_TO_SUPPORT_INDEX_DB("eventType")]: eventType,
-        [PREFIX_TO_SUPPORT_INDEX_DB("action")]: action,
+        action,
         timestamp: new Date().getTime()
       };
 
