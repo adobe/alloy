@@ -33,12 +33,14 @@ export default ({ eventRegistry }) => {
     }
   };
 
-  const evaluate = async (context = {}) => {
-    const consequences = await Promise.all(
-      Object.values(payloads).map(payload => payload.evaluate(context))
-    );
-
-    return consequences.filter(payload => payload.items.length > 0);
+  const evaluate = (context = {}) => {
+    return new Promise(resolve => {
+      Promise.all(
+        Object.values(payloads).map(payload => payload.evaluate(context))
+      ).then(consequences => {
+        resolve(consequences.filter(payload => payload.items.length > 0));
+      });
+    });
   };
 
   const addPayloads = personalizationPayloads => {

@@ -60,38 +60,52 @@ export default (payload, eventRegistry, decisionHistory) => {
     );
   };
 
-  const evaluate = async context => {
-    const displayedDate = await eventRegistry.getEventsFirstTimestamp(
-      PropositionEventType.DISPLAY,
-      activityId
-    );
+  const evaluate = context => {
+    return new Promise(resolve => {
+      let consequencesFlattened = [];
+      Promise.all(items.map(item => item.execute(context)))
+        .then(consequences => {
+          consequencesFlattened = flattenArray(consequences).map(
+            consequenceAdapter
+          );
+          if (!consequencesFlattened || consequencesFlattened.length === 0) {
+            resolve({
+              ...payload,
+              items: []
+            });
+            return;
+          }
 
-    const consequences = await Promise.all(
-      items.map(item => item.execute(context))
-    );
-    const consequencesFlattened = flattenArray(consequences).map(
-      consequenceAdapter
-    );
+          decisionHistory.recordQualified(activityId);
+        })
+        .then(() =>
+          Promise.all([
+            eventRegistry.getEventsFirstTimestamp(
+              PropositionEventType.DISPLAY,
+              activityId
+            ),
+            eventRegistry.getEventsFirstTimestamp(
+              PropositionEventType.TRIGGER,
+              activityId
+            )
+          ])
+        )
+        .then(dates => {
+          const displayedDate = dates[0];
+          const qualifiedDate = dates[1];
+          const qualifyingItems = consequencesFlattened.map(item => {
+            return {
+              ...item,
+              data: { ...item.data, qualifiedDate, displayedDate }
+            };
+          });
 
-    let qualifyingItems = [];
-    if (consequencesFlattened.length > 0) {
-      await decisionHistory.recordQualified(activityId);
-      const qualifiedDate = await eventRegistry.getEventsFirstTimestamp(
-        PropositionEventType.TRIGGER,
-        activityId
-      );
-      qualifyingItems = consequencesFlattened.map(item => {
-        return {
-          ...item,
-          data: { ...item.data, qualifiedDate, displayedDate }
-        };
-      });
-    }
-
-    return {
-      ...payload,
-      items: qualifyingItems
-    };
+          resolve({
+            ...payload,
+            items: qualifyingItems
+          });
+        });
+    });
   };
 
   if (Array.isArray(payload.items)) {

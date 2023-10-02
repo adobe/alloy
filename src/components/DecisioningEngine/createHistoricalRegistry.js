@@ -81,7 +81,7 @@ export default () => {
         reject(dbRequest.error);
       };
 
-      objectStoreRequest.onsuccess = async () => {
+      objectStoreRequest.onsuccess = () => {
         resolve(true);
       };
     });
@@ -153,20 +153,25 @@ export default () => {
     });
   };
 
-  const getEventsFirstTimestamp = async (eventType, eventId) => {
-    const events = await getEvents(eventType, eventId);
+  const getEventsFirstTimestamp = (eventType, eventId) => {
+    return new Promise(resolve => {
+      getEvents(eventType, eventId).then(events => {
+        if (!events || events.length === 0) {
+          resolve(undefined);
+          return;
+        }
 
-    if (!events || events.length === 0) {
-      return undefined;
-    }
-
-    return events.reduce(
-      (earliestTimestamp, currentEvent) =>
-        earliestTimestamp < currentEvent.timestamp
-          ? earliestTimestamp
-          : currentEvent.timestamp,
-      events[0].timestamp
-    );
+        resolve(
+          events.reduce(
+            (earliestTimestamp, currentEvent) =>
+              earliestTimestamp < currentEvent.timestamp
+                ? earliestTimestamp
+                : currentEvent.timestamp,
+            events[0].timestamp
+          )
+        );
+      });
+    });
   };
 
   setupIndexedDB()

@@ -21,12 +21,14 @@ const validateOptions = ({ options }) => {
 };
 
 export default ({ contextProvider, decisionProvider }) => {
-  const run = async ({ renderDecisions, decisionContext, applyResponse }) => {
-    return applyResponse({
-      renderDecisions,
-      propositions: await decisionProvider.evaluate(
-        contextProvider.getContext(decisionContext)
-      )
+  const run = ({ renderDecisions, decisionContext, applyResponse }) => {
+    return new Promise(resolve => {
+      decisionProvider
+        .evaluate(contextProvider.getContext(decisionContext))
+        .then(propositions => {
+          applyResponse({ renderDecisions, propositions });
+          resolve();
+        });
     });
   };
 
