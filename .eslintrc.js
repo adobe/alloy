@@ -75,6 +75,14 @@ module.exports = {
           }
         ]
       }
+    ],
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        js: "never",
+        mjs: "never"
+      }
     ]
   },
   globals: {

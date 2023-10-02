@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 const path = require("path");
-const resolve = require("rollup-plugin-node-resolve");
+import { resolve } from "@rollup/plugin-node-resolve";
 const globImport = require("rollup-plugin-glob-import");
 const commonjs = require("rollup-plugin-commonjs");
-const babel = require("rollup-plugin-babel");
+import { babel } from "@rollup/plugin-babel";
 const istanbul = require("rollup-plugin-istanbul");
 const minimist = require("minimist");
 const ignorePatterns = require("./coverageignore");

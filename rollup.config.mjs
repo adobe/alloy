@@ -10,12 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import path from "path";
-import resolve from "rollup-plugin-node-resolve";
-import commonjs from "rollup-plugin-commonjs";
-import babel from "rollup-plugin-babel";
-import { terser } from "rollup-plugin-terser";
+import { resolve } from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import { babel } from "@rollup/plugin-babel";
+import terser from "@rollup/plugin-terser";
 import license from "rollup-plugin-license";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Set these boolean environment options to control which files are built:
 // build the snippet that must be add to the page
