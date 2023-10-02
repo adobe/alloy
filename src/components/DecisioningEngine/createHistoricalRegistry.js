@@ -74,52 +74,18 @@ export default () => {
         timestamp: new Date().getTime()
       };
 
-      objectStore.add(record);
-      // debounce(() => {
-      //   objectStore.add(record);
-      // }, 500);
-      transaction.onerror = txEvent => {
+      const objectStoreRequest = objectStore.add(record);
+
+      objectStoreRequest.onerror = txEvent => {
         const dbRequest = txEvent.target;
         reject(dbRequest.error);
       };
 
-      transaction.onsuccess = () => {
+      objectStoreRequest.onsuccess = async () => {
         resolve(true);
       };
     });
-
-    // debounce(async () => {
-    //
-    // }, 500);
   };
-
-  // const addEvent = (event, eventType, eventId, action) => {
-  //   return new Promise((resolve, reject) => {
-  //     const transaction = db.transaction("events", "readwrite");
-  //     const objectStore = transaction.objectStore("events");
-  //
-  //     console.log("CreateHistoricalRegistry.addRecordToIndexedDB start");
-  //
-  //     const record = {
-  //       [PREFIX_TO_SUPPORT_INDEX_DB("id")]: eventId,
-  //       [PREFIX_TO_SUPPORT_INDEX_DB("eventType")]: eventType,
-  //       [PREFIX_TO_SUPPORT_INDEX_DB("action")]: action,
-  //       timestamp: new Date().getTime()
-  //     };
-  //
-  //     objectStore.add(record);
-  //     transaction.onerror = txEvent => {
-  //       const dbRequest = txEvent.target;
-  //       reject(dbRequest.error);
-  //     };
-  //
-  //     transaction.onsuccess = () => {
-  //       // const updatedRecord = replaceDotsWithUnderscores(records[0]);
-  //       // objectStore.add(updatedRecord);
-  //       resolve(true);
-  //     };
-  //   });
-  // };
 
   const addExperienceEdgeEvent = event => {
     const { xdm = {} } = event.getContent();
@@ -164,26 +130,43 @@ export default () => {
     });
   };
 
-  const getEvent = (eventType, eventId) => {
+  const getEvents = (eventType, eventId) => {
     return new Promise((resolve, reject) => {
-      try {
-        const transaction = db.transaction("events", "readonly");
-        const objectStore = transaction.objectStore("events");
-        const index = objectStore.index("iam_id_iam_eventType_index");
+      const transaction = db.transaction("events", "readonly");
+      const objectStore = transaction.objectStore("events");
+      const index = objectStore.index("iam_id_iam_eventType_index");
 
-        const request = index.getAll([eventId, eventType]);
+      const request = index.getAll([eventId, eventType]);
 
-        request.onsuccess = eventObjStore => {
-          const dbRequest = eventObjStore.target;
-          const data = dbRequest
-            ? dbRequest.result.map(record => replaceUnderscoreWithDot(record))
-            : [];
-          resolve(data);
-        };
-      } catch (error) {
-        reject(error);
-      }
+      request.onsuccess = eventObjStore => {
+        const dbRequest = eventObjStore.target;
+        const data = dbRequest
+          ? dbRequest.result.map(record => replaceUnderscoreWithDot(record))
+          : [];
+        resolve(data);
+      };
+
+      request.onerror = eventObjStore => {
+        const dbRequest = eventObjStore.target;
+        reject(dbRequest.error);
+      };
     });
+  };
+
+  const getEventsFirstTimestamp = async (eventType, eventId) => {
+    const events = await getEvents(eventType, eventId);
+
+    if (!events || events.length === 0) {
+      return undefined;
+    }
+
+    return events.reduce(
+      (earliestTimestamp, currentEvent) =>
+        earliestTimestamp < currentEvent.timestamp
+          ? earliestTimestamp
+          : currentEvent.timestamp,
+      events[0].timestamp
+    );
   };
 
   setupIndexedDB()
@@ -198,7 +181,8 @@ export default () => {
     setupIndexedDB,
     addEvent,
     addExperienceEdgeEvent,
-    getEvent,
+    getEvents,
+    getEventsFirstTimestamp,
     getIndexDB: () => db
   };
 };

@@ -14,7 +14,7 @@ import {
   JSON_CONTENT_ITEM,
   RULESET_ITEM
 } from "../Personalization/constants/schema";
-import { DISPLAY } from "../Personalization/constants/eventType";
+import { PropositionEventType } from "../Personalization/constants/propositionEventType";
 
 import flattenArray from "../../utils/flattenArray";
 import createConsequenceAdapter from "./createConsequenceAdapter";
@@ -61,29 +61,33 @@ export default (payload, eventRegistry, decisionHistory) => {
   };
 
   const evaluate = async context => {
-    const displayEvent = eventRegistry.getEvent(DISPLAY, payload.id);
+    const displayedDate = await eventRegistry.getEventsFirstTimestamp(
+      PropositionEventType.DISPLAY,
+      activityId
+    );
 
-    const displayedDate = displayEvent
-      ? displayEvent.firstTimestamp
-      : undefined;
-
-    console.log("items are ", items);
     const consequences = await Promise.all(
       items.map(item => item.execute(context))
     );
-    const qualifyingItems = flattenArray(consequences)
-      .map(consequenceAdapter)
-      .map(item => {
-        const {
-          firstTimestamp: qualifiedDate
-        } = decisionHistory.recordQualified(activityId);
+    const consequencesFlattened = flattenArray(consequences).map(
+      consequenceAdapter
+    );
 
+    let qualifyingItems = [];
+    if (consequencesFlattened.length > 0) {
+      await decisionHistory.recordQualified(activityId);
+      const qualifiedDate = await eventRegistry.getEventsFirstTimestamp(
+        PropositionEventType.TRIGGER,
+        activityId
+      );
+      qualifyingItems = consequencesFlattened.map(item => {
         return {
           ...item,
           data: { ...item.data, qualifiedDate, displayedDate }
         };
       });
-    console.log("qualifyingItems are ", qualifyingItems);
+    }
+
     return {
       ...payload,
       items: qualifyingItems

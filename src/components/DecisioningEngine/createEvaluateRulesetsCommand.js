@@ -21,10 +21,10 @@ const validateOptions = ({ options }) => {
 };
 
 export default ({ contextProvider, decisionProvider }) => {
-  const run = ({ renderDecisions, decisionContext, applyResponse }) => {
+  const run = async ({ renderDecisions, decisionContext, applyResponse }) => {
     return applyResponse({
       renderDecisions,
-      propositions: decisionProvider.evaluate(
+      propositions: await decisionProvider.evaluate(
         contextProvider.getContext(decisionContext)
       )
     });
