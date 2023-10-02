@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { noop, sanitizeOrgIdForCookieName } from "../../utils";
+import { noop } from "../../utils";
 import createOnResponseHandler from "./createOnResponseHandler";
 import createDecisionProvider from "./createDecisionProvider";
 import createApplyResponse from "./createApplyResponse";
@@ -17,7 +17,6 @@ import createEventRegistry from "./createEventRegistry";
 import createContextProvider from "./createContextProvider";
 import createSubscribeRulesetItems from "./createSubscribeRulesetItems";
 import { ensureSchemaBasedRulesetConsequences } from "./utils";
-import "regenerator-runtime/runtime";
 
 import {
   CONTEXT_KEY,
@@ -25,25 +24,13 @@ import {
   MOBILE_EVENT_TYPE
 } from "./constants";
 import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand";
-import createHistoricalRegistry from "./createHistoricalRegistry";
 
-const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
-  const { orgId } = config;
-  const storage = createNamespacedStorage(
-    `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`
-  );
-  createEventRegistry({ storage: storage.persistent });
+const createDecisioningEngine = () => {
+  const eventRegistry = createEventRegistry();
   let applyResponse;
 
-  const historicalEventRegistry = createHistoricalRegistry();
-
-  const decisionProvider = createDecisionProvider({
-    eventRegistry: historicalEventRegistry
-  });
-  const contextProvider = createContextProvider({
-    eventRegistry: historicalEventRegistry,
-    window
-  });
+  const decisionProvider = createDecisionProvider({ eventRegistry });
+  const contextProvider = createContextProvider({ eventRegistry, window });
 
   const evaluateRulesetsCommand = createEvaluateRulesetsCommand({
     contextProvider,
@@ -82,7 +69,7 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
           })
         );
 
-        historicalEventRegistry.addExperienceEdgeEvent(event);
+        eventRegistry.addExperienceEdgeEvent(event);
       }
     },
     commands: {

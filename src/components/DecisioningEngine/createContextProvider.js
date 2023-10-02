@@ -88,7 +88,6 @@ export default ({ eventRegistry, window }) => {
     return {
       ...flattenObject(context),
       events: eventRegistry.getIndexDB()
-      // events: eventRegistry.toJSON()
     };
   };
   return {
