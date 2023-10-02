@@ -25,11 +25,6 @@ const transformPrefix = (parent, selector) => {
     return result;
   }
 
-  // IE doesn't support :scope
-  if (window.document.documentMode) {
-    return result.substring(1).trim();
-  }
-
   const prefix =
     parent instanceof Element || parent instanceof HTMLDocument
       ? ":scope"
