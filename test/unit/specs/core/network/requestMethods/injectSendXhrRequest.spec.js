@@ -15,9 +15,13 @@ import injectSendXhrRequest from "../../../../../../src/core/network/requestMeth
 describe("sendXhrRequest", () => {
   const url = "https://example.com/endpoint";
   let request;
-  let XMLHttpRequest;
   let sendXhrRequest;
   let body;
+  class FakeXMLHttpRequest {
+    constructor() {
+      return request;
+    }
+  }
 
   beforeEach(() => {
     request = jasmine.createSpyObj("xhrInstance", [
@@ -25,12 +29,13 @@ describe("sendXhrRequest", () => {
       "setRequestHeader",
       "send",
       "onloadstart",
+      "onreadystatechange",
       "getResponseHeader"
     ]);
-    XMLHttpRequest = () => {
-      return request;
-    };
-    sendXhrRequest = injectSendXhrRequest({ XMLHttpRequest });
+
+    sendXhrRequest = injectSendXhrRequest({
+      XMLHttpRequest: FakeXMLHttpRequest
+    });
     body = { a: "b" };
   });
 
