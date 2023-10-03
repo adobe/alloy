@@ -117,13 +117,13 @@ export const mockRulesetResponseWithCondition = condition => {
 
 const mockEvent = { getContent: () => ({}), getViewName: () => undefined };
 
-export const setupResponseHandler = (applyResponse, window, condition) => {
-  const storage = jasmine.createSpyObj("storage", [
-    "getItem",
-    "setItem",
-    "clear"
-  ]);
-  const eventRegistry = createEventRegistry({ storage });
+export const setupResponseHandler = async (
+  applyResponse,
+  window,
+  condition
+) => {
+  const eventRegistry = createEventRegistry();
+  await eventRegistry.setupIndexedDB();
   const decisionProvider = createDecisionProvider({ eventRegistry });
 
   const contextProvider = createContextProvider({ eventRegistry, window });
@@ -136,7 +136,7 @@ export const setupResponseHandler = (applyResponse, window, condition) => {
     decisionContext: contextProvider.getContext()
   });
 
-  onResponseHandler({
+  await onResponseHandler({
     response: mockRulesetResponseWithCondition(condition)
   });
 };

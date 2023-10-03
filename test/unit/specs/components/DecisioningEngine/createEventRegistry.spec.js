@@ -12,22 +12,58 @@ governing permissions and limitations under the License.
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
 
 describe("DecisioningEngine:createEventRegistry", () => {
-  let storage;
+  const eventRegistry = createEventRegistry();
   let mockedTimestamp;
-  beforeEach(() => {
-    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
+  beforeAll(async () => {
+    await eventRegistry.setupIndexedDB();
     mockedTimestamp = new Date("2023-05-24T08:00:00Z");
     jasmine.clock().install();
     jasmine.clock().mockDate(mockedTimestamp);
   });
 
-  afterEach(() => {
+  afterAll(() => {
+    eventRegistry.clearIndexedDB();
+    eventRegistry.getIndexDB().close();
     jasmine.clock().uninstall();
   });
 
-  it("registers events", () => {
-    const eventRegistry = createEventRegistry({ storage });
+  it("should add an event to the database", async () => {
+    const eventType = "trigger";
+    const eventId = "abc123";
+    const action = "click";
 
+    const result = await eventRegistry.addEvent({}, eventType, eventId, action);
+    expect(result).toBeTruthy();
+  });
+
+  it("should get events from the database if that exist", async () => {
+    const eventType = "trigger";
+    const eventId = "abc123";
+
+    const events = await eventRegistry.getEvents(eventType, eventId);
+    expect(Array.isArray(events)).toBe(true);
+  });
+
+  it("should return empty if the query is not found", async () => {
+    const eventType = "someMagicalEvent";
+    const eventId = "someFutureId";
+
+    const events = await eventRegistry.getEvents(eventType, eventId);
+    expect(events.length).toBe(0);
+  });
+
+  it("should get the first timestamp for events", async () => {
+    const eventType = "trigger";
+    const eventId = "abc123";
+
+    const timestamp = await eventRegistry.getEventsFirstTimestamp(
+      eventType,
+      eventId
+    );
+    expect(timestamp).toBe(mockedTimestamp.getTime());
+  });
+
+  it("should add experience edge event to the database", async () => {
     const getContent = () => ({
       xdm: {
         eventType: "decisioning.propositionDisplay",
@@ -65,139 +101,16 @@ describe("DecisioningEngine:createEventRegistry", () => {
       }
     });
 
-    const event = {
+    const mockEvent = {
       getContent
     };
 
-    eventRegistry.addExperienceEdgeEvent(event);
+    await eventRegistry.addExperienceEdgeEvent(mockEvent);
 
-    expect(eventRegistry.toJSON()).toEqual({
-      display: {
-        "111#aaa": {
-          event: jasmine.objectContaining({
-            "iam.id": "111#aaa",
-            "iam.eventType": "display"
-          }),
-          firstTimestamp: jasmine.any(Number),
-          timestamp: jasmine.any(Number),
-          count: 1
-        },
-        "222#bbb": {
-          event: jasmine.objectContaining({
-            "iam.id": "222#bbb",
-            "iam.eventType": "display"
-          }),
-          firstTimestamp: jasmine.any(Number),
-          timestamp: jasmine.any(Number),
-          count: 1
-        }
-      }
-    });
-  });
+    const eventType = "display";
+    const eventId1 = "111#aaa";
 
-  it("does not register invalid events", () => {
-    const eventRegistry = createEventRegistry({ storage });
-
-    eventRegistry.addExperienceEdgeEvent({
-      getContent: () => ({
-        xdm: {
-          eventType: "display"
-        }
-      })
-    });
-    eventRegistry.addExperienceEdgeEvent({
-      getContent: () => ({
-        xdm: {
-          eventType: "display",
-          _experience: {}
-        }
-      })
-    });
-    eventRegistry.addExperienceEdgeEvent({
-      getContent: () => ({
-        xdm: {
-          eventType: "display",
-          _experience: {
-            decisioning: {}
-          }
-        }
-      })
-    });
-    eventRegistry.addExperienceEdgeEvent({
-      getContent: () => ({})
-    });
-
-    expect(eventRegistry.toJSON()).toEqual({});
-  });
-
-  it("increments count and sets timestamp", done => {
-    const eventRegistry = createEventRegistry({ storage, saveDelay: 10 });
-
-    const getContent = () => ({
-      xdm: {
-        eventType: "decisioning.propositionDisplay",
-        _experience: {
-          decisioning: {
-            propositions: [
-              {
-                id: "111",
-                scope: "mobileapp://com.adobe.aguaAppIos",
-                scopeDetails: {
-                  decisionProvider: "AJO",
-                  correlationID: "ccaa539e-ca14-4d42-ac9a-0a17e69a63e4",
-                  activity: {
-                    id: "111#aaa"
-                  }
-                }
-              }
-            ],
-            propositionEventType: {
-              display: 1
-            }
-          }
-        }
-      }
-    });
-
-    const event = {
-      getContent
-    };
-    let lastEventTime = 0;
-    eventRegistry.addExperienceEdgeEvent(event);
-
-    expect(eventRegistry.getEvent("display", "111#aaa")).toEqual({
-      event: jasmine.objectContaining({
-        "iam.id": "111#aaa",
-        "iam.eventType": "display"
-      }),
-      firstTimestamp: jasmine.any(Number),
-      timestamp: jasmine.any(Number),
-      count: 1
-    });
-    expect(
-      eventRegistry.getEvent("display", "111#aaa").timestamp
-    ).toBeGreaterThan(lastEventTime);
-
-    lastEventTime = eventRegistry.getEvent("display", "111#aaa").timestamp;
-
-    setTimeout(() => {
-      eventRegistry.addExperienceEdgeEvent(event); // again
-
-      expect(eventRegistry.getEvent("display", "111#aaa")).toEqual({
-        event: jasmine.objectContaining({
-          "iam.id": "111#aaa",
-          "iam.eventType": "display"
-        }),
-        firstTimestamp: jasmine.any(Number),
-        timestamp: jasmine.any(Number),
-        count: 2
-      });
-      expect(
-        eventRegistry.getEvent("display", "111#aaa").timestamp
-      ).toBeGreaterThan(lastEventTime);
-      done();
-    }, 50);
-
-    jasmine.clock().tick(60);
+    const events1 = await eventRegistry.getEvents(eventType, eventId1);
+    expect(events1.length).toBeGreaterThan(0);
   });
 });

@@ -9,55 +9,33 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createDecisionHistory from "../../../../../src/components/DecisioningEngine/createDecisionHistory";
-import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
+import { PropositionEventType } from "../../../../../src/components/Personalization/constants/propositionEventType";
+import recordQualifiedModule from "../../../../../src/components/DecisioningEngine/createDecisionHistory";
 
 describe("DecisioningEngine:decisionHistory", () => {
-  let storage;
-  let history;
-
-  beforeEach(() => {
-    storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
-
-    history = createDecisionHistory({
-      eventRegistry: createEventRegistry({ storage, saveDelay: 10 })
-    });
+  it("should call eventRegistry.addEvent with the correct arguments when provided with an id", () => {
+    const eventRegistry = {
+      addEvent: jasmine.createSpy("addEvent")
+    };
+    const module = recordQualifiedModule({ eventRegistry });
+    const id = "someId";
+    module.recordQualified(id);
+    expect(eventRegistry.addEvent).toHaveBeenCalledWith(
+      {},
+      PropositionEventType.TRIGGER,
+      id
+    );
   });
 
-  it("records decision time", () => {
-    const decision = history.recordQualified({ id: "abc" });
+  it("should return undefined when not provided with an id", () => {
+    const eventRegistry = {
+      addEvent: jasmine.createSpy("addEvent")
+    };
 
-    expect(Object.getPrototypeOf(decision)).toEqual(Object.prototype);
-    expect(decision.timestamp).toEqual(jasmine.any(Number));
-  });
+    const module = recordQualifiedModule({ eventRegistry });
 
-  it("preserves first decision time, if decision already recorded", done => {
-    const firstDecision = history.recordQualified({ id: "abc" });
-
-    setTimeout(() => {
-      expect(history.recordQualified({ id: "abc" }).firstTimestamp).toEqual(
-        firstDecision.firstTimestamp
-      );
-      expect(history.recordQualified({ id: "abc" }).firstTimestamp).toEqual(
-        firstDecision.timestamp
-      );
-      done();
-    }, 20);
-  });
-
-  it("restores history from event storage", () => {
-    expect(storage.getItem).toHaveBeenCalledWith("events");
-  });
-
-  it("saves history to event storage", done => {
-    history.recordQualified({ id: "abc" });
-
-    setTimeout(() => {
-      expect(storage.setItem).toHaveBeenCalledWith(
-        "events",
-        jasmine.any(String)
-      );
-      done();
-    }, 20);
+    const result = module.recordQualified();
+    expect(eventRegistry.addEvent).not.toHaveBeenCalled();
+    expect(result).toBeUndefined();
   });
 });

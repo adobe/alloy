@@ -26,8 +26,7 @@ export default ({ contextProvider, decisionProvider }) => {
       decisionProvider
         .evaluate(contextProvider.getContext(decisionContext))
         .then(propositions => {
-          applyResponse({ renderDecisions, propositions });
-          resolve();
+          resolve(applyResponse({ renderDecisions, propositions }));
         });
     });
   };

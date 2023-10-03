@@ -56,6 +56,7 @@ export default () => {
 
       request.onsuccess = event => {
         db = event.target.result;
+        console.log("IndexedDB setup complete");
         resolve(true);
       };
     });
@@ -65,8 +66,6 @@ export default () => {
     return new Promise((resolve, reject) => {
       const transaction = db.transaction("events", "readwrite");
       const objectStore = transaction.objectStore("events");
-      console.log("CreateHistoricalRegistry.addRecordToIndexedDB start");
-
       const record = {
         [PREFIX_TO_SUPPORT_INDEX_DB("id")]: eventId,
         [PREFIX_TO_SUPPORT_INDEX_DB("eventType")]: eventType,
@@ -174,18 +173,33 @@ export default () => {
     });
   };
 
-  setupIndexedDB()
-    .then(() => {
-      console.log("IndexedDB setup complete.");
-    })
-    .catch(error => {
-      console.error(error);
+  // setupIndexedDB()
+  //   .then(() => {})
+  //   .catch(error => {
+  //     console.error("error message: ", error.message);
+  //   });
+
+  const clearIndexedDB = () => {
+    return new Promise((resolve, reject) => {
+      try {
+        const transaction = db.transaction("events", "readwrite");
+        const objectStore = transaction.objectStore("events");
+        const request = objectStore.clear();
+
+        request.onsuccess = () => {
+          resolve(true);
+        };
+      } catch (error) {
+        reject(error);
+      }
     });
+  };
 
   return {
     setupIndexedDB,
     addEvent,
     addExperienceEdgeEvent,
+    clearIndexedDB,
     getEvents,
     getEventsFirstTimestamp,
     getIndexDB: () => db
