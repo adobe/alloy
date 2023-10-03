@@ -173,11 +173,11 @@ export default () => {
     });
   };
 
-  // setupIndexedDB()
-  //   .then(() => {})
-  //   .catch(error => {
-  //     console.error("error message: ", error.message);
-  //   });
+  setupIndexedDB()
+    .then(() => {})
+    .catch(error => {
+      console.error("error message: ", error.message);
+    });
 
   const clearIndexedDB = () => {
     return new Promise((resolve, reject) => {
