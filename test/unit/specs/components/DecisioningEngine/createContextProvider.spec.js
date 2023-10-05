@@ -119,21 +119,11 @@ describe("DecisioningEngine:createContextProvider", () => {
     );
   });
 
-  // it("includes events context", async () => {
-  //   const events = {
-  //     abc: {
-  //       event: { "iam.id": "abc", "iam.eventType": "display" },
-  //       timestamp: new Date().getTime()
-  //     }
-  //   };
-  //   const eventRegistry = createEventRegistry({ indexedDB });
-  //   const contextProvider = createContextProvider({ eventRegistry, window });
-  //   // TODO: Oct 4: Do you really need await eventRegistry.getEvents("display", "abc");. You are not using the results.
-  //   // eventRegistry = await eventRegistry.getEvents("display", "abc");
-  //   // console.log("eventRegistry is ", eventRegistry);
-  //
-  //   expect(contextProvider.getContext({ cool: "beans" })).toEqual(
-  //     events
-  //   );
-  // });
+  it("includes events context in the form for DB instance", async () => {
+    const eventRegistry = createEventRegistry({ indexedDB });
+    const contextProvider = createContextProvider({ eventRegistry, window });
+    expect(contextProvider.getContext({ cool: "beans" })).toEqual(
+      jasmine.objectContaining({ events: jasmine.any(IDBDatabase) })
+    );
+  });
 });
