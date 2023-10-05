@@ -1,5 +1,5 @@
 /* eslint-disable no-bitwise, no-console */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./InAppMessagesStyle.css";
 
@@ -40,56 +40,51 @@ const uuidv4 = () => {
   );
 };
 
-const getInAppPayload = async payload => {
-  const res = await fetch(
-    `https://edge.adobedc.net/ee/or2/v1/interact?configId=${datastreamId}&requestId=${uuidv4()}`,
-    {
-      method: "POST",
-      body: JSON.stringify(payload)
-    }
-  );
-  return res.json();
-};
-
-const fetchMobilePayload = () =>
-  getInAppPayload({
-    events: [
-      {
-        query: {
-          personalization: {
-            surfaces: [surface]
-          }
-        },
-        xdm: {
-          timestamp: new Date().toISOString(),
-          implementationDetails: {
-            name: "https://ns.adobe.com/experience/mobilesdk/ios",
-            version: "3.7.4+1.5.0",
-            environment: "app"
-          }
-        }
-      }
-    ]
-  });
-
 export default function InAppMessages() {
-  const renderDecisions = () => {
-    window
-      .alloy("subscribeRulesetItems", {
-        surfaces: [surface],
-        callback: result => {
-          console.log("subscribeRulesetItems", result);
-        }
-      })
-      .then(fetchMobilePayload)
-      .then(response => {
-        console.log("getInAppPayload Yes papa yes papa --->>", response);
-        window.alloy("applyResponse", {
-          renderDecisions: true,
-          decisionContext,
-          responseBody: response
-        });
+  const [response, setResponse] = useState(null);
+  const getInAppPayload = async payload => {
+    const res = await fetch(
+      `https://edge.adobedc.net/ee/or2/v1/interact?configId=${datastreamId}&requestId=${uuidv4()}`,
+      {
+        method: "POST",
+        body: JSON.stringify(payload)
+      }
+    );
+    return res.json();
+  };
+
+  useEffect(() => {
+    const fetchInAppPayload = async () => {
+      const res = await getInAppPayload({
+        events: [
+          {
+            query: {
+              personalization: {
+                surfaces: [surface]
+              }
+            },
+            xdm: {
+              timestamp: new Date().toISOString(),
+              implementationDetails: {
+                name: "https://ns.adobe.com/experience/mobilesdk/ios",
+                version: "3.7.4+1.5.0",
+                environment: "app"
+              }
+            }
+          }
+        ]
       });
+      setResponse(res);
+    };
+    fetchInAppPayload();
+  }, []);
+
+  const renderDecisions = () => {
+    window.alloy("applyResponse", {
+      renderDecisions: true,
+      decisionContext,
+      responseBody: response
+    });
   };
 
   return (
