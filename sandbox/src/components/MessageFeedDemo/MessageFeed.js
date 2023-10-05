@@ -424,7 +424,6 @@ export default function MessageFeed() {
         surface: "web://target.jasonwaters.dev/aep.html",
         callback: ({ items = [], rendered, clicked }) => {
           setClickHandler(() => clicked);
-          console.log("subscribeMessageFeed hahah", items);
           setMessageFeedItems(items);
           rendered(items);
         }
