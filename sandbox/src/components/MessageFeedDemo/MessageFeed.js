@@ -453,29 +453,6 @@ export default function MessageFeed() {
       }
     });
   };
-  // let db;
-  // const dbName = "historicalDataStore";
-  // const request = indexedDB.open(dbName);
-  // request.onsuccess = event => {
-  //   db = event.target.result;
-  //   resolve(true);
-  // }
-  // const resetPersistentData = () => {
-  //   return new Promise((resolve, reject) => {
-  //     try {
-  //       const transaction = db.transaction("events", "readwrite");
-  //       const objectStore = transaction.objectStore("events");
-  //       const request = objectStore.delete();
-  //
-  //       request.onsuccess = () => {
-  //         resolve(true);
-  //       };
-  //     } catch (error) {
-  //       reject(error);
-  //     }
-  //   });
-  // };
-
   return (
     <div>
       <ContentSecurityPolicy />
@@ -485,9 +462,6 @@ export default function MessageFeed() {
         </button>
         <button id="deposit-funds" onClick={() => depositFunds()}>
           Deposit funds
-        </button>
-        <button id="reset" onClick={() => resetPersistentData()}>
-          Reset
         </button>
       </div>
       <div style={{ margin: "30px 0" }}>
