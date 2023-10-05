@@ -11,14 +11,19 @@ governing permissions and limitations under the License.
 */
 import createContextProvider from "../../../../../src/components/DecisioningEngine/createContextProvider";
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
+import createIndexedDB from "../../../../../src/components/DecisioningEngine/createIndexedDB";
 
 describe("DecisioningEngine:createContextProvider", () => {
-  let contextProvider;
-  let eventRegistry;
   let window;
   let mockedTimestamp;
+  let indexedDB;
 
-  beforeEach(() => {
+  beforeAll(async () => {
+    indexedDB = createIndexedDB();
+    await indexedDB.setupIndexedDB();
+  });
+
+  beforeEach(async () => {
     window = {
       title: "My awesome website",
       referrer: "https://stage.applookout.net/",
@@ -37,13 +42,18 @@ describe("DecisioningEngine:createContextProvider", () => {
     jasmine.clock().mockDate(mockedTimestamp);
   });
 
-  afterEach(() => {
+  afterAll(async () => {
+    await indexedDB.clearIndexedDB();
+    indexedDB.getIndexDB().close();
+  });
+
+  afterEach(async () => {
     jasmine.clock().uninstall();
   });
+
   it("returns page context", async () => {
-    eventRegistry = createEventRegistry();
-    await eventRegistry.setupIndexedDB();
-    contextProvider = createContextProvider({ eventRegistry, window });
+    const eventRegistry = createEventRegistry({ indexedDB });
+    const contextProvider = createContextProvider({ eventRegistry, window });
 
     expect(contextProvider.getContext()).toEqual(
       jasmine.objectContaining({
@@ -60,9 +70,8 @@ describe("DecisioningEngine:createContextProvider", () => {
     );
   });
   it("returns referring page context", async () => {
-    eventRegistry = createEventRegistry();
-    await eventRegistry.setupIndexedDB();
-    contextProvider = createContextProvider({ eventRegistry, window });
+    const eventRegistry = createEventRegistry({ indexedDB });
+    const contextProvider = createContextProvider({ eventRegistry, window });
 
     expect(contextProvider.getContext()).toEqual(
       jasmine.objectContaining({
@@ -77,9 +86,8 @@ describe("DecisioningEngine:createContextProvider", () => {
     );
   });
   it("returns browser context", async () => {
-    eventRegistry = createEventRegistry();
-    await eventRegistry.setupIndexedDB();
-    contextProvider = createContextProvider({ eventRegistry, window });
+    const eventRegistry = createEventRegistry({ indexedDB });
+    const contextProvider = createContextProvider({ eventRegistry, window });
 
     expect(contextProvider.getContext()).toEqual(
       jasmine.objectContaining({
@@ -88,9 +96,8 @@ describe("DecisioningEngine:createContextProvider", () => {
     );
   });
   it("returns windows context", async () => {
-    eventRegistry = createEventRegistry();
-    await eventRegistry.setupIndexedDB();
-    contextProvider = createContextProvider({ eventRegistry, window });
+    const eventRegistry = createEventRegistry({ indexedDB });
+    const contextProvider = createContextProvider({ eventRegistry, window });
 
     expect(contextProvider.getContext()).toEqual(
       jasmine.objectContaining({
@@ -102,9 +109,8 @@ describe("DecisioningEngine:createContextProvider", () => {
     );
   });
   it("includes provided context passed in", async () => {
-    eventRegistry = createEventRegistry();
-    await eventRegistry.setupIndexedDB();
-    contextProvider = createContextProvider({ eventRegistry, window });
+    const eventRegistry = createEventRegistry({ indexedDB });
+    const contextProvider = createContextProvider({ eventRegistry, window });
 
     expect(contextProvider.getContext({ cool: "beans" })).toEqual(
       jasmine.objectContaining({
@@ -120,11 +126,13 @@ describe("DecisioningEngine:createContextProvider", () => {
   //       timestamp: new Date().getTime()
   //     }
   //   };
-  //   eventRegistry = await eventRegistry.getEvents("display", "abc");
-  //   console.log("eventRegistry is ", eventRegistry);
-  //   contextProvider = createContextProvider({ eventRegistry, window });
+  //   const eventRegistry = createEventRegistry({ indexedDB });
+  //   const contextProvider = createContextProvider({ eventRegistry, window });
+  //   // TODO: Oct 4: Do you really need await eventRegistry.getEvents("display", "abc");. You are not using the results.
+  //   // eventRegistry = await eventRegistry.getEvents("display", "abc");
+  //   // console.log("eventRegistry is ", eventRegistry);
   //
-  //   expect(contextProvider.getContext({ cool: "beans" }).events).toEqual(
+  //   expect(contextProvider.getContext({ cool: "beans" })).toEqual(
   //     events
   //   );
   // });

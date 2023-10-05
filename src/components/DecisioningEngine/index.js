@@ -17,6 +17,7 @@ import createEventRegistry from "./createEventRegistry";
 import createContextProvider from "./createContextProvider";
 import createSubscribeRulesetItems from "./createSubscribeRulesetItems";
 import { ensureSchemaBasedRulesetConsequences } from "./utils";
+import createIndexedDB from "./createIndexedDB";
 
 import {
   CONTEXT_KEY,
@@ -26,7 +27,10 @@ import {
 import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand";
 
 const createDecisioningEngine = () => {
-  const eventRegistry = createEventRegistry();
+  const indexedDB = createIndexedDB();
+  indexedDB.setupIndexedDB();
+
+  const eventRegistry = createEventRegistry({ indexedDB });
   let applyResponse;
 
   const decisionProvider = createDecisionProvider({ eventRegistry });

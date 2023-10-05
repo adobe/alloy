@@ -14,6 +14,7 @@ import createContextProvider from "../../../../../src/components/DecisioningEngi
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
 import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider";
 import createApplyResponse from "../../../../../src/components/DecisioningEngine/createApplyResponse";
+import createIndexedDB from "../../../../../src/components/DecisioningEngine/createIndexedDB";
 
 describe("DecisioningEngine:evaluateRulesetsCommand", () => {
   let onDecision;
@@ -22,12 +23,14 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
   let contextProvider;
   let decisionProvider;
   let evaluateRulesetsCommand;
+  let indexedDB;
 
   beforeEach(async () => {
+    indexedDB = createIndexedDB();
+    await indexedDB.setupIndexedDB();
     onDecision = jasmine.createSpy();
     applyResponse = createApplyResponse({ onDecision });
-    eventRegistry = createEventRegistry();
-    await eventRegistry.setupIndexedDB();
+    eventRegistry = createEventRegistry({ indexedDB });
     contextProvider = createContextProvider({ eventRegistry, window });
     decisionProvider = createDecisionProvider({ eventRegistry });
 
@@ -110,6 +113,11 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
       contextProvider,
       decisionProvider
     });
+  });
+
+  afterEach(async () => {
+    await indexedDB.clearIndexedDB();
+    indexedDB.getIndexDB().close();
   });
 
   it("onDecisions receives renderDecisions=true", async () => {

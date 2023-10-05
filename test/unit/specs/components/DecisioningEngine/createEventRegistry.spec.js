@@ -10,20 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
+import createIndexedDB from "../../../../../src/components/DecisioningEngine/createIndexedDB";
 
 describe("DecisioningEngine:createEventRegistry", () => {
-  const eventRegistry = createEventRegistry();
+  let eventRegistry;
   let mockedTimestamp;
+  let indexedDB;
+
   beforeAll(async () => {
-    await eventRegistry.setupIndexedDB();
+    indexedDB = createIndexedDB();
+    await indexedDB.setupIndexedDB();
+    eventRegistry = createEventRegistry({ indexedDB });
     mockedTimestamp = new Date("2023-05-24T08:00:00Z");
     jasmine.clock().install();
     jasmine.clock().mockDate(mockedTimestamp);
   });
 
-  afterAll(() => {
-    eventRegistry.clearIndexedDB();
-    eventRegistry.getIndexDB().close();
+  afterAll(async () => {
+    await indexedDB.clearIndexedDB();
+    indexedDB.getIndexDB().close();
     jasmine.clock().uninstall();
   });
 

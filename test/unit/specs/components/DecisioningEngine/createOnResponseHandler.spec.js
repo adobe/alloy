@@ -13,22 +13,29 @@ import createOnResponseHandler from "../../../../../src/components/DecisioningEn
 import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider";
 import createApplyResponse from "../../../../../src/components/DecisioningEngine/createApplyResponse";
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
+import createIndexedDB from "../../../../../src/components/DecisioningEngine/createIndexedDB";
 
 describe("DecisioningEngine:createOnResponseHandler", () => {
   let lifecycle;
-  let eventRegistry;
   let decisionProvider;
   let applyResponse;
+  let indexedDB;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     lifecycle = jasmine.createSpyObj("lifecycle", {
       onDecision: Promise.resolve()
     });
 
-    eventRegistry = createEventRegistry();
-    await eventRegistry.setupIndexedDB();
+    indexedDB = createIndexedDB();
+    await indexedDB.setupIndexedDB();
+    const eventRegistry = createEventRegistry({ indexedDB });
     decisionProvider = createDecisionProvider({ eventRegistry });
     applyResponse = createApplyResponse(lifecycle);
+  });
+
+  afterAll(async () => {
+    await indexedDB.clearIndexedDB();
+    indexedDB.getIndexDB().close();
   });
 
   it("calls lifecycle.onDecision with propositions based on decisionContext", async () => {

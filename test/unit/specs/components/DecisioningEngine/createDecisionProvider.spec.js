@@ -11,14 +11,16 @@ governing permissions and limitations under the License.
 */
 import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider";
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
+import createIndexedDB from "../../../../../src/components/DecisioningEngine/createIndexedDB";
 
 describe("DecisioningEngine:createDecisionProvider", () => {
   let decisionProvider;
-  let eventRegistry;
+  let indexedDB;
 
-  beforeEach(async () => {
-    eventRegistry = createEventRegistry();
-    await eventRegistry.setupIndexedDB();
+  beforeAll(async () => {
+    indexedDB = createIndexedDB();
+    await indexedDB.setupIndexedDB();
+    const eventRegistry = createEventRegistry({ indexedDB });
 
     decisionProvider = createDecisionProvider({ eventRegistry });
     decisionProvider.addPayloads([
@@ -218,6 +220,12 @@ describe("DecisioningEngine:createDecisionProvider", () => {
       }
     ]);
   });
+
+  afterAll(async () => {
+    await indexedDB.clearIndexedDB();
+    indexedDB.getIndexDB().close();
+  });
+
   it("returns a single payload with items that qualify", async () => {
     const expectedResult = await decisionProvider.evaluate({
       color: "blue",

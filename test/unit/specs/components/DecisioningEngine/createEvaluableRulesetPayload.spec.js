@@ -12,15 +12,23 @@ governing permissions and limitations under the License.
 import createEvaluableRulesetPayload from "../../../../../src/components/DecisioningEngine/createEvaluableRulesetPayload";
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
 import createDecisionHistory from "../../../../../src/components/DecisioningEngine/createDecisionHistory";
+import createIndexedDB from "../../../../../src/components/DecisioningEngine/createIndexedDB";
 
 describe("DecisioningEngine:createEvaluableRulesetPayload", () => {
   let eventRegistry;
   let decisionHistory;
+  let indexedDB;
 
-  beforeEach(async () => {
-    eventRegistry = createEventRegistry();
-    await eventRegistry.setupIndexedDB();
+  beforeAll(async () => {
+    indexedDB = createIndexedDB();
+    await indexedDB.setupIndexedDB();
+    eventRegistry = createEventRegistry({ indexedDB });
     decisionHistory = createDecisionHistory({ eventRegistry });
+  });
+
+  afterAll(async () => {
+    await indexedDB.clearIndexedDB();
+    indexedDB.getIndexDB().close();
   });
 
   it("consumes ruleset-items", async () => {

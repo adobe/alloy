@@ -1,36 +1,46 @@
-// /*
-// Copyright 2023 Adobe. All rights reserved.
-// This file is licensed to you under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License. You may obtain a copy
-// of the License at http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software distributed under
-// the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-// OF ANY KIND, either express or implied. See the License for the specific language
-// governing permissions and limitations under the License.
-// */
+/*
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
 // import createDecisioningEngine from "../../../../../src/components/DecisioningEngine/index";
-// import { injectStorage } from "../../../../../src/utils";
 // import {
 //   mockRulesetResponseWithCondition,
 //   proposition
 // } from "./contextTestUtils";
-//
+// import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
+// import createIndexedDB from "../../../../../src/components/DecisioningEngine/createIndexedDB";
+
 // describe("createDecisioningEngine:commands:evaluateRulesets", () => {
 //   let mergeData;
 //   let mockEvent;
 //   let onResponseHandler;
 //   let decisioningEngine;
-//   beforeEach(() => {
+//   let eventRegistry;
+//   let indexedDB;
+//
+//   beforeAll(async () => {
+//     indexedDB = createIndexedDB();
+//     await indexedDB.setupIndexedDB();
+//     eventRegistry = createEventRegistry({ indexedDB });
+//     decisioningEngine = createDecisioningEngine({});
+//   });
+//
+//   afterEach(async () => {
+//     await indexedDB.clearIndexedDB();
+//   });
+//
+//   beforeEach(async () => {
 //     mergeData = jasmine.createSpy();
-//     const config = { orgId: "exampleOrgId" };
 //     window.referrer =
 //       "https://www.google.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer";
-//     const createNamespacedStorage = injectStorage(window);
-//     decisioningEngine = createDecisioningEngine({
-//       config,
-//       createNamespacedStorage
-//     });
+//
 //     mockEvent = {
 //       getContent: () => ({}),
 //       getViewName: () => undefined,

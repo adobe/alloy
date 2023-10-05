@@ -9,16 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { HISTORICAL_DATA_STORE } from "./constants";
 import { EVENT_TYPE_TRUE } from "../Personalization/event";
 import { getActivityId } from "./utils";
 
-const dbName = HISTORICAL_DATA_STORE;
 const PREFIX_TO_SUPPORT_INDEX_DB = key => `iam_${key}`;
 
-export default () => {
-  let db;
-
+export default ({ indexedDB }) => {
   const replaceUnderscoreWithDot = record => {
     const updatedRecord = {};
     Object.keys(record).forEach(key => {
@@ -27,63 +23,14 @@ export default () => {
     return updatedRecord;
   };
 
-  const setupIndexedDB = () => {
-    return new Promise((resolve, reject) => {
-      if (!("indexedDB" in window)) {
-        reject(new Error("This browser doesn't support IndexedDB."));
-      }
-
-      const request = indexedDB.open(dbName, 1);
-
-      request.onerror = event => {
-        const dbRequest = event.target;
-        reject(dbRequest.error);
-      };
-
-      request.onupgradeneeded = event => {
-        db = event.target.result;
-
-        const objectStore = db.createObjectStore("events", {
-          keyPath: "id",
-          autoIncrement: true
-        });
-        objectStore.createIndex(
-          "iam_id_iam_eventType_index",
-          ["iam_id", "iam_eventType"],
-          { unique: false }
-        );
-      };
-
-      request.onsuccess = event => {
-        db = event.target.result;
-        console.log("IndexedDB setup complete");
-        resolve(true);
-      };
-    });
-  };
-
   const addEvent = (event, eventType, eventId, action) => {
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction("events", "readwrite");
-      const objectStore = transaction.objectStore("events");
-      const record = {
-        [PREFIX_TO_SUPPORT_INDEX_DB("id")]: eventId,
-        [PREFIX_TO_SUPPORT_INDEX_DB("eventType")]: eventType,
-        action,
-        timestamp: new Date().getTime()
-      };
-
-      const objectStoreRequest = objectStore.add(record);
-
-      objectStoreRequest.onerror = txEvent => {
-        const dbRequest = txEvent.target;
-        reject(dbRequest.error);
-      };
-
-      objectStoreRequest.onsuccess = () => {
-        resolve(true);
-      };
-    });
+    const record = {
+      [PREFIX_TO_SUPPORT_INDEX_DB("id")]: eventId,
+      [PREFIX_TO_SUPPORT_INDEX_DB("eventType")]: eventType,
+      action,
+      timestamp: new Date().getTime()
+    };
+    return indexedDB.addRecord(record);
   };
 
   const addExperienceEdgeEvent = event => {
@@ -114,7 +61,6 @@ export default () => {
     }
 
     const { id: action } = propositionAction;
-
     propositionEventTypesList.forEach(propositionEventType => {
       if (propositionEventTypeObj[propositionEventType] === EVENT_TYPE_TRUE) {
         propositions.forEach(proposition => {
@@ -130,25 +76,14 @@ export default () => {
   };
 
   const getEvents = (eventType, eventId) => {
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction("events", "readonly");
-      const objectStore = transaction.objectStore("events");
-      const index = objectStore.index("iam_id_iam_eventType_index");
-
-      const request = index.getAll([eventId, eventType]);
-
-      request.onsuccess = eventObjStore => {
-        const dbRequest = eventObjStore.target;
-        const data = dbRequest
-          ? dbRequest.result.map(record => replaceUnderscoreWithDot(record))
-          : [];
-        resolve(data);
-      };
-
-      request.onerror = eventObjStore => {
-        const dbRequest = eventObjStore.target;
-        reject(dbRequest.error);
-      };
+    return new Promise(resolve => {
+      indexedDB.getRecords(eventType, eventId).then(events => {
+        resolve(
+          events && events.length > 0
+            ? events.map(record => replaceUnderscoreWithDot(record))
+            : []
+        );
+      });
     });
   };
 
@@ -173,35 +108,11 @@ export default () => {
     });
   };
 
-  setupIndexedDB()
-    .then(() => {})
-    .catch(error => {
-      console.error("error message: ", error.message);
-    });
-
-  const clearIndexedDB = () => {
-    return new Promise((resolve, reject) => {
-      try {
-        const transaction = db.transaction("events", "readwrite");
-        const objectStore = transaction.objectStore("events");
-        const request = objectStore.clear();
-
-        request.onsuccess = () => {
-          resolve(true);
-        };
-      } catch (error) {
-        reject(error);
-      }
-    });
-  };
-
   return {
-    setupIndexedDB,
     addEvent,
     addExperienceEdgeEvent,
-    clearIndexedDB,
     getEvents,
     getEventsFirstTimestamp,
-    getIndexDB: () => db
+    getIndexDB: () => indexedDB.getIndexDB()
   };
 };
