@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 const path = require("path");
-import { resolve } from "@rollup/plugin-node-resolve";
+import resolve from "@rollup/plugin-node-resolve";
 const globImport = require("rollup-plugin-glob-import");
 const commonjs = require("rollup-plugin-commonjs");
 import { babel } from "@rollup/plugin-babel";
