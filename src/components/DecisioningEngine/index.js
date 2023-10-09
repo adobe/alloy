@@ -28,7 +28,9 @@ import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand";
 
 const createDecisioningEngine = () => {
   const indexedDB = createIndexedDB();
-  indexedDB.setupIndexedDB();
+  indexedDB
+    .setupIndexedDB()
+    .then(() => console.log("IndexedDB setup is complete."));
 
   const eventRegistry = createEventRegistry({ indexedDB });
   let applyResponse;

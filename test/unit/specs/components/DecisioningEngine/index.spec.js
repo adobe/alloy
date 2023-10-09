@@ -9,173 +9,157 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-// import createDecisioningEngine from "../../../../../src/components/DecisioningEngine/index";
-// import {
-//   mockRulesetResponseWithCondition,
-//   proposition
-// } from "./contextTestUtils";
-// import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
-// import createIndexedDB from "../../../../../src/components/DecisioningEngine/createIndexedDB";
+import createDecisioningEngine from "../../../../../src/components/DecisioningEngine/index";
+import {
+  mockRulesetResponseWithCondition,
+  proposition
+} from "./contextTestUtils";
 
-// describe("createDecisioningEngine:commands:evaluateRulesets", () => {
-//   let mergeData;
-//   let mockEvent;
-//   let onResponseHandler;
-//   let decisioningEngine;
-//   let eventRegistry;
-//   let indexedDB;
-//
-//   beforeAll(async () => {
-//     indexedDB = createIndexedDB();
-//     await indexedDB.setupIndexedDB();
-//     eventRegistry = createEventRegistry({ indexedDB });
-//     decisioningEngine = createDecisioningEngine({});
-//   });
-//
-//   afterEach(async () => {
-//     await indexedDB.clearIndexedDB();
-//   });
-//
-//   beforeEach(async () => {
-//     mergeData = jasmine.createSpy();
-//     window.referrer =
-//       "https://www.google.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer";
-//
-//     mockEvent = {
-//       getContent: () => ({}),
-//       getViewName: () => undefined,
-//       mergeData
-//     };
-//     decisioningEngine.lifecycle.onComponentsRegistered(() => {});
-//   });
-//
-//   it("should run the evaluateRulesets command and satisfy the rule based on global context", () => {
-//     onResponseHandler = onResponse => {
-//       onResponse({
-//         response: mockRulesetResponseWithCondition({
-//           definition: {
-//             key: "referringPage.path",
-//             matcher: "eq",
-//             values: ["/search"]
-//           },
-//           type: "matcher"
-//         })
-//       });
-//     };
-//     decisioningEngine.lifecycle.onBeforeEvent({
-//       event: mockEvent,
-//       renderDecisions: true,
-//       decisionContext: {},
-//       onResponse: onResponseHandler
-//     });
-//     const result = decisioningEngine.commands.evaluateRulesets.run({});
-//     expect(result).toEqual({
-//       propositions: [proposition]
-//     });
-//   });
-//
-//   it("should run the evaluateRulesets command and does not satisfy rule due to unmatched global context", () => {
-//     onResponseHandler = onResponse => {
-//       onResponse({
-//         response: mockRulesetResponseWithCondition({
-//           definition: {
-//             key: "referringPage.path",
-//             matcher: "eq",
-//             values: ["/about"]
-//           },
-//           type: "matcher"
-//         })
-//       });
-//     };
-//     decisioningEngine.lifecycle.onBeforeEvent({
-//       event: mockEvent,
-//       renderDecisions: true,
-//       decisionContext: {},
-//       onResponse: onResponseHandler
-//     });
-//     const result = decisioningEngine.commands.evaluateRulesets.run({});
-//     expect(result).toEqual({
-//       propositions: []
-//     });
-//   });
-//
-//   it("should run the evaluateRulesets command and return propositions with renderDecisions true", () => {
-//     onResponseHandler = onResponse => {
-//       onResponse({
-//         response: mockRulesetResponseWithCondition({
-//           definition: {
-//             key: "referringPage.path",
-//             matcher: "eq",
-//             values: ["/search"]
-//           },
-//           type: "matcher"
-//         })
-//       });
-//     };
-//     decisioningEngine.lifecycle.onBeforeEvent({
-//       event: mockEvent,
-//       renderDecisions: true,
-//       decisionContext: {},
-//       onResponse: onResponseHandler
-//     });
-//     const result = decisioningEngine.commands.evaluateRulesets.run({});
-//     expect(result).toEqual({
-//       propositions: [proposition]
-//     });
-//   });
-//
-//   it("should run the evaluateRulesets command returns propositions with renderDecisions false", () => {
-//     onResponseHandler = onResponse => {
-//       onResponse({
-//         response: mockRulesetResponseWithCondition({
-//           definition: {
-//             key: "referringPage.path",
-//             matcher: "eq",
-//             values: ["/search"]
-//           },
-//           type: "matcher"
-//         })
-//       });
-//     };
-//     decisioningEngine.lifecycle.onBeforeEvent({
-//       event: mockEvent,
-//       renderDecisions: false,
-//       decisionContext: {},
-//       onResponse: onResponseHandler
-//     });
-//     const result = decisioningEngine.commands.evaluateRulesets.run({});
-//     expect(result).toEqual({
-//       propositions: [proposition]
-//     });
-//   });
-//
-//   it("ensures schema-based ruleset consequences", () => {
-//     onResponseHandler = onResponse => {
-//       onResponse({
-//         response: mockRulesetResponseWithCondition({
-//           definition: {
-//             key: "referringPage.path",
-//             matcher: "eq",
-//             values: ["/search"]
-//           },
-//           type: "matcher"
-//         })
-//       });
-//     };
-//
-//     decisioningEngine.lifecycle.onBeforeEvent({
-//       event: mockEvent,
-//       renderDecisions: false,
-//       decisionContext: {},
-//       onResponse: onResponseHandler
-//     });
-//
-//     expect(mergeData).toHaveBeenCalledOnceWith({
-//       __adobe: {
-//         ajo: {
-//           "in-app-response-format": 2
-//         }
-//       }
-//     });
-//   });
-// });
+describe("createDecisioningEngine:commands:evaluateRulesets", () => {
+  let mergeData;
+  let mockEvent;
+  let decisioningEngine;
+
+  beforeEach(() => {
+    mergeData = jasmine.createSpy();
+    window.referrer =
+      "https://www.google.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer";
+    decisioningEngine = createDecisioningEngine({});
+    mockEvent = {
+      getContent: () => ({}),
+      getViewName: () => undefined,
+      mergeData
+    };
+    decisioningEngine.lifecycle.onComponentsRegistered(() => {});
+  });
+
+  it("should run the evaluateRulesets command and satisfy the rule based on global context", async () => {
+    const onResponseHandler = onResponse => {
+      onResponse({
+        response: mockRulesetResponseWithCondition({
+          definition: {
+            key: "referringPage.path",
+            matcher: "eq",
+            values: ["/search"]
+          },
+          type: "matcher"
+        })
+      });
+    };
+    decisioningEngine.lifecycle.onBeforeEvent({
+      event: mockEvent,
+      renderDecisions: true,
+      decisionContext: {},
+      onResponse: onResponseHandler
+    });
+    const result = await decisioningEngine.commands.evaluateRulesets.run({});
+    expect(result).toEqual({
+      propositions: [proposition]
+    });
+  });
+
+  it("should run the evaluateRulesets command and does not satisfy rule due to unmatched global context", async () => {
+    const onResponseHandler = onResponse => {
+      onResponse({
+        response: mockRulesetResponseWithCondition({
+          definition: {
+            key: "referringPage.path",
+            matcher: "eq",
+            values: ["/about"]
+          },
+          type: "matcher"
+        })
+      });
+    };
+    decisioningEngine.lifecycle.onBeforeEvent({
+      event: mockEvent,
+      renderDecisions: true,
+      decisionContext: {},
+      onResponse: onResponseHandler
+    });
+    const result = await decisioningEngine.commands.evaluateRulesets.run({});
+    expect(result).toEqual({
+      propositions: []
+    });
+  });
+
+  it("should run the evaluateRulesets command and return propositions with renderDecisions true", async () => {
+    const onResponseHandler = onResponse => {
+      onResponse({
+        response: mockRulesetResponseWithCondition({
+          definition: {
+            key: "referringPage.path",
+            matcher: "eq",
+            values: ["/search"]
+          },
+          type: "matcher"
+        })
+      });
+    };
+    decisioningEngine.lifecycle.onBeforeEvent({
+      event: mockEvent,
+      renderDecisions: true,
+      decisionContext: {},
+      onResponse: onResponseHandler
+    });
+    const result = await decisioningEngine.commands.evaluateRulesets.run({});
+    expect(result).toEqual({
+      propositions: [proposition]
+    });
+  });
+
+  it("should run the evaluateRulesets command returns propositions with renderDecisions false", async () => {
+    const onResponseHandler = onResponse => {
+      onResponse({
+        response: mockRulesetResponseWithCondition({
+          definition: {
+            key: "referringPage.path",
+            matcher: "eq",
+            values: ["/search"]
+          },
+          type: "matcher"
+        })
+      });
+    };
+    decisioningEngine.lifecycle.onBeforeEvent({
+      event: mockEvent,
+      renderDecisions: false,
+      decisionContext: {},
+      onResponse: onResponseHandler
+    });
+    const result = await decisioningEngine.commands.evaluateRulesets.run({});
+    expect(result).toEqual({
+      propositions: [proposition]
+    });
+  });
+
+  it("ensures schema-based ruleset consequences", () => {
+    const onResponseHandler = onResponse => {
+      onResponse({
+        response: mockRulesetResponseWithCondition({
+          definition: {
+            key: "referringPage.path",
+            matcher: "eq",
+            values: ["/search"]
+          },
+          type: "matcher"
+        })
+      });
+    };
+
+    decisioningEngine.lifecycle.onBeforeEvent({
+      event: mockEvent,
+      renderDecisions: false,
+      decisionContext: {},
+      onResponse: onResponseHandler
+    });
+
+    expect(mergeData).toHaveBeenCalledOnceWith({
+      __adobe: {
+        ajo: {
+          "in-app-response-format": 2
+        }
+      }
+    });
+  });
+});

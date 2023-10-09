@@ -48,7 +48,6 @@ export default ({ eventRegistry }) => {
   };
 
   return {
-    // TODO: remove addPayload below if unsed from outside of this file.
     addPayload,
     addPayloads,
     evaluate

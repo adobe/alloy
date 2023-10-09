@@ -15,6 +15,7 @@ const dbName = HISTORICAL_DATA_STORE;
 
 export default () => {
   let db;
+  const DB_INITIALIZATION_TIMEOUT = 200;
 
   const setupIndexedDB = () => {
     return new Promise((resolve, reject) => {
@@ -50,47 +51,56 @@ export default () => {
     });
   };
 
+  const waitForDBInitialization = fn => {
+    // Wait for db to be ready.
+    if (db) {
+      fn();
+    } else {
+      setTimeout(() => {
+        waitForDBInitialization(fn);
+      }, DB_INITIALIZATION_TIMEOUT);
+    }
+  };
+
   const addRecord = record => {
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction("events", "readwrite");
-      const objectStore = transaction.objectStore("events");
-      const objectStoreRequest = objectStore.add(record);
+      waitForDBInitialization(() => {
+        const transaction = db.transaction("events", "readwrite");
+        const objectStore = transaction.objectStore("events");
+        const objectStoreRequest = objectStore.add(record);
 
-      objectStoreRequest.onerror = txEvent => {
-        const dbRequest = txEvent.target;
-        reject(dbRequest.error);
-      };
+        objectStoreRequest.onerror = txEvent => {
+          const dbRequest = txEvent.target;
+          reject(dbRequest.error);
+        };
 
-      objectStoreRequest.onsuccess = () => {
-        resolve(true);
-      };
+        objectStoreRequest.onsuccess = () => {
+          resolve(true);
+        };
+      });
     });
   };
 
   const getRecords = (eventType, eventId) => {
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction("events", "readonly");
-      const objectStore = transaction.objectStore("events");
-      const index = objectStore.index("iam_id_iam_eventType_index");
-      const request = index.getAll([eventId, eventType]);
+      waitForDBInitialization(() => {
+        const transaction = db.transaction("events", "readonly");
+        const objectStore = transaction.objectStore("events");
+        const index = objectStore.index("iam_id_iam_eventType_index");
+        const request = index.getAll([eventId, eventType]);
 
-      request.onsuccess = eventObjStore => {
-        const dbRequest = eventObjStore.target;
-        resolve(dbRequest ? dbRequest.result : []);
-      };
+        request.onsuccess = eventObjStore => {
+          const dbRequest = eventObjStore.target;
+          resolve(dbRequest ? dbRequest.result : []);
+        };
 
-      request.onerror = eventObjStore => {
-        const dbRequest = eventObjStore.target;
-        reject(dbRequest.error);
-      };
+        request.onerror = eventObjStore => {
+          const dbRequest = eventObjStore.target;
+          reject(dbRequest.error);
+        };
+      });
     });
   };
-
-  // setupIndexedDB()
-  //   .then(() => {})
-  //   .catch(error => {
-  //     console.error("error message: ", error.message);
-  //   });
 
   const clearIndexedDB = () => {
     return new Promise((resolve, reject) => {
