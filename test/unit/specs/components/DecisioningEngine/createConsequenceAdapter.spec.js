@@ -10,31 +10,29 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createConsequenceAdapter from "../../../../../src/components/DecisioningEngine/createConsequenceAdapter";
-import { APPLICATION_JSON } from "../../../../../src/components/Personalization/constants/contentType";
+import { TEXT_HTML } from "../../../../../src/components/Personalization/constants/contentType";
 
 describe("DecisioningEngine:createConsequenceAdapter", () => {
   const ADAPTED_CONSEQUENCE = {
     schema: "https://ns.adobe.com/personalization/message/in-app",
     data: {
-      content: {
-        mobileParameters: {
-          verticalAlign: "center",
-          dismissAnimation: "top",
-          verticalInset: 0,
-          backdropOpacity: 0.2,
-          cornerRadius: 15,
-          horizontalInset: 0,
-          uiTakeover: true,
-          horizontalAlign: "center",
-          width: 80,
-          displayAnimation: "top",
-          backdropColor: "#000000",
-          height: 60
-        },
-        webParameters: jasmine.any(Object),
-        html: "<!doctype html></html>"
+      mobileParameters: {
+        verticalAlign: "center",
+        dismissAnimation: "top",
+        verticalInset: 0,
+        backdropOpacity: 0.2,
+        cornerRadius: 15,
+        horizontalInset: 0,
+        uiTakeover: true,
+        horizontalAlign: "center",
+        width: 80,
+        displayAnimation: "top",
+        backdropColor: "#000000",
+        height: 60
       },
-      contentType: APPLICATION_JSON
+      webParameters: jasmine.any(Object),
+      content: "<!doctype html></html>",
+      contentType: TEXT_HTML
     },
     id: "72042c7c-4e34-44f6-af95-1072ae117424"
   };

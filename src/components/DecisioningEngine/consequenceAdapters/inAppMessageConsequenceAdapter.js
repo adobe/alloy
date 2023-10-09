@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { MESSAGE_IN_APP } from "../../Personalization/constants/schema";
-import { APPLICATION_JSON } from "../../Personalization/constants/contentType";
+import { TEXT_HTML } from "../../Personalization/constants/contentType";
 
 export default (id, type, detail) => {
   const { html, mobileParameters } = detail;
@@ -20,12 +20,10 @@ export default (id, type, detail) => {
   return {
     schema: MESSAGE_IN_APP,
     data: {
-      content: {
-        mobileParameters,
-        webParameters,
-        html
-      },
-      contentType: APPLICATION_JSON
+      mobileParameters,
+      webParameters,
+      content: html,
+      contentType: TEXT_HTML
     },
     id
   };
