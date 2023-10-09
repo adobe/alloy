@@ -21,8 +21,11 @@ import createAudiences from "../components/Audiences";
 import createPersonalization from "../components/Personalization";
 import createContext from "../components/Context";
 import createPrivacy from "../components/Privacy";
+/* @skipwhen ENV.alloy_eventmerge === false */
 import createEventMerge from "../components/EventMerge";
+/* @skipwhen ENV.alloy_libraryinfo === false */
 import createLibraryInfo from "../components/LibraryInfo";
+/* @skipwhen ENV.alloy_machinelearning === false */
 import createMachineLearning from "../components/MachineLearning";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
@@ -38,4 +41,4 @@ export default [
   createEventMerge,
   createLibraryInfo,
   createMachineLearning
-].filter((module) => typeof module !== "undefined");
+].filter(module => typeof module !== "undefined");

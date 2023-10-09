@@ -6,15 +6,16 @@ import terser from "@rollup/plugin-terser";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import types from "@babel/types";
+import moduleNames from "./moduleNames.mjs";
 // eslint-disable-next-line import/extensions, import/no-named-as-default, import/no-named-as-default-member
 import conditionalBuildBabelPlugin from "./conditionalBuildBabelPlugin.mjs";
 
 const argv = yargs(hideBin(process.argv))
   .scriptName("custom-builder")
-  .usage("$0 --exclude personalization audiences")
+  .usage(`$0 --exclude ${moduleNames.join(' ')}`)
   .option("exclude", {
     describe: "the modules that you want to be excluded from the build",
-    choices: ["personalization", "audiences"],
+    choices: moduleNames,
     type: "array"
   })
   .array("exclude").argv;
@@ -27,13 +28,13 @@ const buildConfig = (minify) => {
     }),
     commonjs(),
     babel({
-      envName: "rollup",
-      babelHelpers: "bundled",
-      configFile: "./babel.config.js",
+      // ...
       plugins: [
         conditionalBuildBabelPlugin(
           (argv.exclude || []).reduce((previousValue, currentValue) => {
-            previousValue[`alloy_${currentValue}`] = "false";
+            if (moduleNames.includes(currentValue)) {
+              previousValue[`alloy_${currentValue}`] = "false";
+            }
             return previousValue;
           }, {}),
           types

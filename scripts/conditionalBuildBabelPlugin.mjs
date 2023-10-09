@@ -9,18 +9,14 @@ export default (excludedModules, t) => {
           }) || [];
 
         if (skipWhenComments.length > 0) {
-          const [_, webSDKModuleName, value] = skipWhenComments[0].value.match(
+          const [, webSDKModuleName, value] = skipWhenComments[0].value.match(
             "ENV.(.*) === (false|true)"
           );
 
           if (excludedModules[webSDKModuleName] === value) {
             const variableName = path.node.specifiers[0].local.name;
 
-            path.replaceWith(
-              t.variableDeclaration("var", [
-                t.variableDeclarator(t.identifier(variableName))
-              ])
-            );
+            path.replaceWithSourceString(`const ${variableName} = null;`);
           }
         }
       }
