@@ -16,7 +16,7 @@ const usePropositions = ({ viewName }) => {
 };
 
 const Products = () => {
-  usePropositions({ viewName: "products" });
+  usePropositions({ viewName: "Products" });
   return (
     <div>
       <h2>Products</h2>

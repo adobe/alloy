@@ -6,19 +6,15 @@ import {
   Event
 } from "./Media/constants";
 import createMediaHelper from "./Media/createMediaHelper";
+import { deepAssign, isEmptyObject, isNumber } from "../../utils";
 
-const createSessionDetails = (mediaObject, contextData, config) => {
+const createSessionDetails = contextData => {
   const sessionDetailsKnownKeys = Object.values({
     ...MediaObjectKey,
     ...VideoMetadataKeys,
     ...AudioMetadataKeys
   });
-  const sessionDetails = {
-    ...mediaObject,
-    playerName: config.mediaAnalytics.playerName,
-    channel: config.mediaAnalytics.channel,
-    appVersion: config.mediaAnalytics.version
-  };
+  const sessionDetails = {};
   const customMetadata = [];
   Object.keys(contextData).forEach(key => {
     if (sessionDetailsKnownKeys.includes(key)) {
@@ -33,38 +29,21 @@ const createSessionDetails = (mediaObject, contextData, config) => {
 
   return { sessionDetails, customMetadata };
 };
-const createHeartbeat = ({
-  frequency,
-  playerState,
-  trackMediaEvent,
-  deferSession
-}) => {
+const createHeartbeat = ({ frequency, playerState, trackEvent }) => {
   // eslint-disable-next-line consistent-return
   return () => {
     const currentTime = Date.now();
-    console.log("heartbeat", currentTime, playerState.latestTriggeredEvent);
     if (
       Math.abs(currentTime - playerState.latestTriggeredEvent) / 1000 >
       frequency
     ) {
-      return deferSession.then(result => {
-        const { sessionID } = result;
-
-        return trackMediaEvent({
-          xdm: {
-            eventType: "ping",
-            mediaCollection: {
-              sessionID,
-              playhead: playerState.playhead
-            }
-          }
-        });
-        console.log("result", result);
-      });
+      return trackEvent({ eventType: "ping" });
     }
   };
 };
-const createMediaDetailsObject = () => {};
+const createMediaDetailsObject = (info, context) => {
+  Object.keys(info).forEach(infoKey => {});
+};
 
 const createGetInstance = ({
   config,
@@ -73,56 +52,66 @@ const createGetInstance = ({
   trackMediaEvent
 }) => {
   const { mediaAnalytics } = config;
-  const frequency = mediaAnalytics.heartbeatFrequency;
+  const frequency = mediaAnalytics.mainPingInterval;
   const trackerState = {
     qoe: null,
     lastPlayhead: 0,
     latestTriggeredEvent: null
   };
-
   let ticker;
-
   let deferSession = defer();
-  /*
-  const trackEvent = createTrackEvent({
-    deferSession,
-    getMediaSession,
-    trackerState
-  });
-*/
-  const trackEvent = () => {};
+
+  const updateLastTimeEventTriggered = () => {
+    trackerState.latestTriggeredEvent = Date.now();
+  };
+
+  const trackEvent = ({ eventType, mediaDetails }) => {
+    return deferSession.promise
+      .then(sessionID => {
+        updateLastTimeEventTriggered();
+        const xdm = {
+          eventType: `media.${eventType}`,
+          mediaCollection: {
+            sessionID,
+            playhead: trackerState.lastPlayhead
+          }
+        };
+        if (mediaDetails) {
+          deepAssign(xdm.mediaCollection, mediaDetails);
+        }
+        return trackMediaEvent({ xdm });
+      })
+      .catch(error => {
+        logger.info(error);
+      });
+  };
+
   const heartbeatEngine = createHeartbeat({
     frequency,
     deferSession,
     playerState: trackerState,
-    trackMediaEvent
+    trackEvent
   });
 
   return {
     trackSessionStart: (mediaObject, contextData = {}) => {
-      const {
-        mainPingInterval,
-        adPingInterval
-      } = mediaAnalytics.mainPingInterval;
-      trackerState.latestTriggeredEvent = Date.now();
-
-      const { sessionDetails, customMetadata } = createSessionDetails(
-        mediaObject,
-        contextData,
-        config
-      );
+      if (isEmptyObject(mediaObject)) {
+        deferSession.reject("invalid media object");
+        return {};
+      }
       const mediaCollection = {
-        playhead: 0,
-        sessionDetails,
-        customMetadata
+        playhead: 0
       };
+      const { sessionDetails } = createSessionDetails(contextData);
+      deepAssign(mediaCollection, mediaObject, { sessionDetails });
+
       return getMediaSession({
         xdm: {
           eventType: "media.sessionStart",
           mediaCollection
         }
       }).then(result => {
-        console.log("result", result);
+        updateLastTimeEventTriggered();
         deferSession.resolve(result.sessionId);
 
         ticker = setInterval(() => {
@@ -131,30 +120,18 @@ const createGetInstance = ({
       });
     },
     trackPlay: () => {
-      return trackEvent({
-        type: Event.Play,
-        playhead: 0
-      });
+      return trackEvent({ eventType: Event.Play });
     },
     trackPause: () => {
-      return trackEvent({
-        type: Event.Pause,
-        playhead: trackerState.lastPlayhead
-      });
+      return trackEvent({ eventType: Event.Pause });
     },
     trackSessionEnd: () => {
       clearInterval(ticker);
-      return trackEvent({
-        type: Event.SessionEnd,
-        playhead: trackerState.lastPlayhead
-      });
+      return trackEvent({ eventType: Event.SessionEnd });
     },
     trackComplete: () => {
       clearInterval(ticker);
-      return trackEvent({
-        type: "sessionComplete",
-        playhead: trackerState.lastPlayhead
-      });
+      return trackEvent({ eventType: Event.SessionComplete });
     },
     trackError: errorId => {
       logger.info(`trackError(${errorId})`);
@@ -166,26 +143,32 @@ const createGetInstance = ({
       const mediaDetails = {
         errorDetails
       };
-
-      return trackEvent({
-        type: "error",
-        playhead: trackerState.lastPlayhead,
-        mediaDetails
-      });
+      return trackEvent({ eventType: Event.SessionEnd, mediaDetails });
     },
     trackEvent: (eventType, info, context) => {
       const mediaDetails = createMediaDetailsObject(info, context);
-      return trackEvent({
-        type: eventType,
-        playhead: trackerState.lastPlayhead,
-        mediaDetails
+
+      return deferSession.promise.then(sessionID => {
+        return trackEvent({
+          eventType: Event.SessionComplete,
+          playhead: trackerState.lastPlayhead,
+          sessionID,
+          mediaDetails
+        });
       });
     },
     updatePlayhead: time => {
       // no event should be triggered to the MA edge
-      trackerState.lastPlayhead = time;
+      if (isNumber(time)) {
+        trackerState.lastPlayhead = parseInt(time, 10);
+      }
     },
-    updateQoEObject: () => {},
+    updateQoEObject: qoeObject => {
+      if (!qoeObject) {
+        return;
+      }
+      trackerState.qoe = qoeObject;
+    },
     destroy: () => {
       logger.info("Destroy called, destroying the tracker");
       clearInterval(ticker);

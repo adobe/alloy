@@ -11,9 +11,6 @@ const createThirdVideoPlayer = thirdVideoPlayerId => {
 
   return { thirdPlayerSettings, thirdVideoPlayer };
 };
-/*const getDemoVideoPlayedPlayhead = thirdVideoPlayer => {
-  return thirdVideoPlayer.currentTime;
-};*/
 
 document.addEventListener("DOMContentLoaded", async function(event) {
   const { thirdPlayerSettings, thirdVideoPlayer } = createThirdVideoPlayer(
@@ -36,13 +33,9 @@ document.addEventListener("DOMContentLoaded", async function(event) {
         "NinasVideoName",
         "Ninas player video",
         12355,
-        Media.MediaType.Video,
-        Media.StreamType.VOD
+        Media.StreamType.VOD,
+        Media.MediaType.Video
       );
-      //console.log("video details", thirdVideoPlayer.getVideoInfo());
-      // Set to true if this is a resume playback scenario (not starting from playhead 0)
-      // mediaInfo[Media.MediaObjectKey.MediaResumed] = true;
-
       const contextData = {
         isUserLoggedIn: "false",
         tvStation: "Sample TV station",
@@ -57,7 +50,12 @@ document.addEventListener("DOMContentLoaded", async function(event) {
       trackerInstance.trackSessionStart(mediaInfo, contextData);
 
       thirdPlayerSettings.videoLoaded = true;
+
+      thirdPlayerSettings.clock = setInterval(() => {
+        trackerInstance.updatePlayhead(thirdVideoPlayer.currentTime);
+      }, 1000);
     }
+    trackerInstance.trackPlay();
   });
 
   thirdVideoPlayer.addEventListener("seeking", function() {
@@ -66,10 +64,13 @@ document.addEventListener("DOMContentLoaded", async function(event) {
   thirdVideoPlayer.addEventListener("seeked", function() {
     console.log("seeked", thirdVideoPlayer);
   });
-  thirdVideoPlayer.addEventListener("pause", function() {});
+  thirdVideoPlayer.addEventListener("pause", function() {
+    trackerInstance.trackPause();
+  });
 
   thirdVideoPlayer.addEventListener("ended", function() {
     // reset player state
+    trackerInstance.trackSessionEnd();
     clearInterval(thirdPlayerSettings.clock);
     thirdPlayerSettings.videoLoaded = false;
   });

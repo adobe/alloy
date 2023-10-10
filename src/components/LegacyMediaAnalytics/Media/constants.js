@@ -40,6 +40,7 @@ export const Event = {
   StateEnd: "stateEnd",
   SessionStart: "sessionStart",
   SessionEnd: "sessionEnd",
+  SessionComplete: "sessionComplete",
   Play: "play",
   Pause: "pauseStart"
 };
