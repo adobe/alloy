@@ -9,14 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { APPLICATION_JSON } from "../constants/contentType";
+
 const DEFAULT_CONTENT = "defaultContent";
 
-const expectedProps = [
-  "mobileParameters",
-  "webParameters",
-  "content",
-  "contentType"
-];
+const expectedProps = ["content", "contentType"];
+const expectedContentProps = ["mobileParameters", "webParameters", "html"];
 
 const isValidInAppMessage = (data, logger) => {
   for (let i = 0; i < expectedProps.length; i += 1) {
@@ -30,42 +28,59 @@ const isValidInAppMessage = (data, logger) => {
     }
   }
 
+  const { content, contentType } = data;
+
+  if (contentType === APPLICATION_JSON) {
+    for (let i = 0; i < expectedContentProps.length; i += 1) {
+      const prop = expectedContentProps[i];
+      if (!Object.prototype.hasOwnProperty.call(content, prop)) {
+        logger.warn(
+          `Invalid in-app message data.content: missing property '${prop}'.`,
+          data
+        );
+        return false;
+      }
+    }
+  }
+
   return true;
 };
 
-export default ({ modules, logger }) => item => {
-  const data = item.getData();
-  const meta = item.getMeta();
+export default ({ modules, logger }) => {
+  return item => {
+    const data = item.getData();
+    const meta = item.getMeta();
 
-  if (!data) {
-    logger.warn("Invalid in-app message data: undefined.", data);
-    return {};
-  }
+    if (!data) {
+      logger.warn("Invalid in-app message data: undefined.", data);
+      return {};
+    }
 
-  const { type = DEFAULT_CONTENT } = data;
+    const { type = DEFAULT_CONTENT } = data;
 
-  if (!modules[type]) {
-    logger.warn("Invalid in-app message data: unknown type.", data);
-    return {};
-  }
+    if (!modules[type]) {
+      logger.warn("Invalid in-app message data: unknown type.", data);
+      return {};
+    }
 
-  if (!isValidInAppMessage(data, logger)) {
-    return {};
-  }
+    if (!isValidInAppMessage(data, logger)) {
+      return {};
+    }
 
-  if (!meta) {
-    logger.warn("Invalid in-app message meta: undefined.", meta);
-    return {};
-  }
+    if (!meta) {
+      logger.warn("Invalid in-app message meta: undefined.", meta);
+      return {};
+    }
 
-  return {
-    render: () => {
-      return modules[type]({
-        ...data,
-        meta
-      });
-    },
-    setRenderAttempted: true,
-    includeInNotification: true
+    return {
+      render: () => {
+        return modules[type]({
+          ...data,
+          meta
+        });
+      },
+      setRenderAttempted: true,
+      includeInNotification: true
+    };
   };
 };

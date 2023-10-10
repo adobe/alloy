@@ -262,7 +262,7 @@ const generateWebParameters = mobileParameters => {
   };
 };
 
-export const displayHTMLContentInIframe = (settings, interact) => {
+export const displayHTMLContentInIframe = (settings = {}, interact) => {
   dismissMessage();
   const { content, contentType, mobileParameters } = settings;
   let { webParameters } = settings;

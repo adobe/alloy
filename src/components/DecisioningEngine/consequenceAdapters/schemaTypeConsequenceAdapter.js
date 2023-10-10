@@ -9,23 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import inAppMessageConsequenceAdapter from "./consequenceAdapters/inAppMessageConsequenceAdapter";
-import schemaTypeConsequenceAdapter from "./consequenceAdapters/schemaTypeConsequenceAdapter";
 
-const CJM_IN_APP_MESSAGE_TYPE = "cjmiam";
-const SCHEMA = "schema";
+export default (id, type, detail) => {
+  const { schema, data, id: detailId } = detail;
 
-const adapters = {
-  [CJM_IN_APP_MESSAGE_TYPE]: inAppMessageConsequenceAdapter,
-  [SCHEMA]: schemaTypeConsequenceAdapter
-};
-
-export default () => {
-  return consequence => {
-    const { id, type, detail } = consequence;
-
-    return typeof adapters[type] === "function"
-      ? adapters[type](id, type, detail)
-      : detail;
-  };
+  return { schema, data, id: detailId || id };
 };
