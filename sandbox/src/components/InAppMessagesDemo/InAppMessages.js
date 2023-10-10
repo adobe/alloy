@@ -1,5 +1,5 @@
 /* eslint-disable no-bitwise, no-console */
-import React from "react";
+import React, { useState } from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./InAppMessagesStyle.css";
 
@@ -103,12 +103,21 @@ const fetchMobilePayload = () =>
   });
 
 export default function InAppMessages() {
+  const [customTraitKey, setCustomTraitKey] = useState("");
+  const [customTraitValue, setCustomTraitValue] = useState("");
+
   const renderDecisions = () => {
+    const context = { ...decisionContext };
+
+    if (customTraitKey.length !== 0 && customTraitValue.length !== 0) {
+      context[customTraitKey] = customTraitValue;
+    }
+
     if (surface.startsWith("mobileapp://")) {
       fetchMobilePayload().then(response => {
         window.alloy("applyResponse", {
           renderDecisions: true,
-          decisionContext,
+          decisionContext: context,
           responseBody: response
         });
       });
@@ -118,7 +127,7 @@ export default function InAppMessages() {
         personalization: {
           surfaces: [surface]
         },
-        decisionContext
+        decisionContext: context
       });
     }
   };
@@ -127,9 +136,32 @@ export default function InAppMessages() {
     <div>
       <ContentSecurityPolicy />
       <h1>In App Messages For Web</h1>
-      <button onClick={() => renderDecisions()}>
-        Execute Decisions and Render
-      </button>
+      <div>
+        <div style={{ marginBottom: "20px" }}>
+          <h3>Custom Trait</h3>
+          <span style={{ marginRight: "20px" }}>
+            <label htmlFor="input-custom-trait-key">Key</label>
+            <input
+              id="input-custom-trait-key"
+              type="text"
+              value={customTraitKey}
+              onChange={evt => setCustomTraitKey(evt.target.value)}
+            />
+          </span>
+          <span style={{ marginRight: "20px" }}>
+            <label htmlFor="input-custom-trait-value">Value</label>
+            <input
+              id="input-custom-trait-value"
+              type="text"
+              value={customTraitValue}
+              onChange={evt => setCustomTraitValue(evt.target.value)}
+            />
+          </span>
+        </div>
+        <button onClick={() => renderDecisions()}>
+          Execute Decisions and Render
+        </button>
+      </div>
     </div>
   );
 }
