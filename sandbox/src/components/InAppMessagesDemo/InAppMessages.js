@@ -3,10 +3,11 @@ import React, { useState } from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./InAppMessagesStyle.css";
 
-const configKey = "stage";
+const configKey = localStorage.getItem("iam-configKey") || "stage";
 
 const config = {
   cjmProdNld2: {
+    name: "CJM Prod NLD2 – Prod (NLD2)",
     datastreamId: "7a19c434-6648-48d3-948f-ba0258505d98",
     orgId: "4DA0571C5FDC4BF70A495FC2@AdobeOrg",
     surface: "mobileapp://com.adobe.iamTutorialiOS",
@@ -22,6 +23,7 @@ const config = {
     ]
   },
   aemonacpprodcampaign: {
+    name: "AEM Assets Departmental - Campaign – Prod (VA7)",
     datastreamId: "8cefc5ca-1c2a-479f-88f2-3d42cc302514",
     orgId: "906E3A095DC834230A495FD6@AdobeOrg",
     surface: "mobileapp://com.adobe.aguaAppIos",
@@ -132,11 +134,29 @@ export default function InAppMessages() {
     }
   };
 
+  const setNewCofigEnv = value => {
+    localStorage.setItem("iam-configKey", value);
+    window.location.reload();
+  };
+
   return (
     <div>
       <ContentSecurityPolicy />
       <h1>In App Messages For Web</h1>
       <div>
+        <label htmlFor="cars">Environment:</label>
+        <select
+          id="configEnv"
+          name="configEnv"
+          onChange={evt => setNewCofigEnv(evt.target.value)}
+          defaultValue={configKey}
+        >
+          {Object.keys(config).map(conf => (
+            <option key={conf} value={conf}>
+              {config[conf].name}
+            </option>
+          ))}
+        </select>
         <div style={{ marginBottom: "20px" }}>
           <h3>Custom Trait</h3>
           <span style={{ marginRight: "20px" }}>
