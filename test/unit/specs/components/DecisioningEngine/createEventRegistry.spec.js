@@ -16,6 +16,7 @@ describe("DecisioningEngine:createEventRegistry", () => {
   let eventRegistry;
   let mockedTimestamp;
   let indexedDB;
+  let addEventResult;
 
   beforeAll(async () => {
     indexedDB = createIndexedDB();
@@ -27,18 +28,28 @@ describe("DecisioningEngine:createEventRegistry", () => {
   });
 
   afterAll(async () => {
-    await indexedDB.clearIndexedDB();
     indexedDB.getIndexDB().close();
     jasmine.clock().uninstall();
   });
 
-  it("should add an event to the database", async () => {
+  beforeEach(async () => {
     const eventType = "trigger";
     const eventId = "abc123";
     const action = "click";
+    addEventResult = await eventRegistry.addEvent(
+      {},
+      eventType,
+      eventId,
+      action
+    );
+  });
 
-    const result = await eventRegistry.addEvent({}, eventType, eventId, action);
-    expect(result).toBeTruthy();
+  afterEach(async () => {
+    await indexedDB.clearIndexedDB();
+  });
+
+  it("should add an event to the database", async () => {
+    expect(addEventResult).toBe(true);
   });
 
   it("should get events from the database if that exist", async () => {
@@ -47,6 +58,7 @@ describe("DecisioningEngine:createEventRegistry", () => {
 
     const events = await eventRegistry.getEvents(eventType, eventId);
     expect(Array.isArray(events)).toBe(true);
+    expect(events.length).toBe(1);
   });
 
   it("should return empty if the query is not found", async () => {
@@ -56,17 +68,17 @@ describe("DecisioningEngine:createEventRegistry", () => {
     const events = await eventRegistry.getEvents(eventType, eventId);
     expect(events.length).toBe(0);
   });
-  // TODO: FIX the below test
-  // it("should get the first timestamp for events", async () => {
-  //   const eventType = "trigger";
-  //   const eventId = "abc123";
-  //
-  //   const timestamp = await eventRegistry.getEventsFirstTimestamp(
-  //     eventType,
-  //     eventId
-  //   );
-  //   expect(timestamp).toBe(mockedTimestamp.getTime());
-  // });
+
+  it("should get the first timestamp for events", async () => {
+    const eventType = "trigger";
+    const eventId = "abc123";
+
+    const timestamp = await eventRegistry.getEventsFirstTimestamp(
+      eventType,
+      eventId
+    );
+    expect(timestamp).toBe(mockedTimestamp.getTime());
+  });
 
   it("should add experience edge event to the database", async () => {
     const getContent = () => ({
