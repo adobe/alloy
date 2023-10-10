@@ -17,7 +17,8 @@ export const CONTEXT_KEY = {
 export const MOBILE_EVENT_TYPE = {
   LIFECYCLE: "com.adobe.eventType.lifecycle",
   TRACK: "com.adobe.eventType.generic.track",
-  EDGE: "com.adobe.eventType.edge"
+  EDGE: "com.adobe.eventType.edge",
+  RULES_ENGINE: "com.adobe.eventType.rulesEngine"
 };
 
 export const MOBILE_EVENT_SOURCE = {

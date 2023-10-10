@@ -115,14 +115,23 @@ const fetchMobilePayload = () =>
   });
 
 export default function InAppMessages() {
+  const [sentEvent, setSentEvent] = useState(false);
   const [customTraitKey, setCustomTraitKey] = useState("");
   const [customTraitValue, setCustomTraitValue] = useState("");
 
-  const renderDecisions = () => {
+  const renderDecisions = (useEvaluateRulesetsCommand = false) => {
     const context = { ...decisionContext };
 
     if (customTraitKey.length !== 0 && customTraitValue.length !== 0) {
       context[customTraitKey] = customTraitValue;
+    }
+
+    if (useEvaluateRulesetsCommand) {
+      alloyInstance("evaluateRulesets", {
+        renderDecisions: true,
+        decisionContext: context
+      });
+      return;
     }
 
     if (surface.startsWith("mobileapp://")) {
@@ -131,7 +140,7 @@ export default function InAppMessages() {
           renderDecisions: true,
           decisionContext: context,
           responseBody: response
-        });
+        }).then(() => setSentEvent(true));
       });
     } else {
       alloyInstance("sendEvent", {
@@ -140,7 +149,7 @@ export default function InAppMessages() {
           surfaces: [surface]
         },
         decisionContext: context
-      });
+      }).then(() => setSentEvent(true));
     }
   };
 
@@ -188,8 +197,9 @@ export default function InAppMessages() {
             />
           </span>
         </div>
-        <button onClick={() => renderDecisions()}>
-          Execute Decisions and Render
+        <button onClick={() => renderDecisions()}>sendEvent</button>
+        <button onClick={() => renderDecisions(true)} disabled={!sentEvent}>
+          evaluateRulesets
         </button>
       </div>
     </div>

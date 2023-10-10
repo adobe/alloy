@@ -80,7 +80,11 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
         run: ({ renderDecisions, decisionContext }) =>
           evaluateRulesetsCommand.run({
             renderDecisions,
-            decisionContext,
+            decisionContext: {
+              [CONTEXT_KEY.TYPE]: MOBILE_EVENT_TYPE.RULES_ENGINE,
+              [CONTEXT_KEY.SOURCE]: MOBILE_EVENT_SOURCE.REQUEST,
+              ...decisionContext
+            },
             applyResponse
           }),
         optionsValidator: evaluateRulesetsCommand.optionsValidator
