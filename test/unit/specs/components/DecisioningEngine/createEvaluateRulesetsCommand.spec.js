@@ -35,6 +35,11 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
 
     decisionProvider.addPayload({
       id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
+      scopeDetails: {
+        activity: {
+          id: "abc#xyz"
+        }
+      },
       items: [
         {
           id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
@@ -120,6 +125,11 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
       propositions: [
         {
           id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
+          scopeDetails: {
+            activity: {
+              id: "abc#xyz"
+            }
+          },
           items: [
             {
               schema: "https://ns.adobe.com/personalization/dom-action",
@@ -160,6 +170,11 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
       propositions: [
         {
           id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
+          scopeDetails: {
+            activity: {
+              id: "abc#xyz"
+            }
+          },
           items: [
             {
               schema: "https://ns.adobe.com/personalization/dom-action",
