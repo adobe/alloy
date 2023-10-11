@@ -145,9 +145,6 @@ export default function InAppMessages() {
     } else {
       alloyInstance("sendEvent", {
         renderDecisions: true,
-        personalization: {
-          surfaces: [surface]
-        },
         decisionContext: context
       }).then(() => setSentEvent(true));
     }
