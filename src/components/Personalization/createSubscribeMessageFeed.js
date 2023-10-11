@@ -15,7 +15,7 @@ import {
   string
 } from "../../utils/validation";
 import { MESSAGE_FEED_ITEM } from "./constants/schema";
-import { DISPLAY, INTERACT } from "./constants/eventType";
+import { DISPLAY, INTERACT } from "../../constants/eventType";
 
 const validateOptions = ({ options }) => {
   const validator = objectOf({

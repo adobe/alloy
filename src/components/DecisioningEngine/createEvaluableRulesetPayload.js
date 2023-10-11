@@ -14,7 +14,7 @@ import {
   JSON_CONTENT_ITEM,
   RULESET_ITEM
 } from "../Personalization/constants/schema";
-import { DISPLAY } from "../Personalization/constants/eventType";
+import { DISPLAY } from "../../constants/eventType";
 import { getActivityId } from "./utils";
 
 import flattenArray from "../../utils/flattenArray";

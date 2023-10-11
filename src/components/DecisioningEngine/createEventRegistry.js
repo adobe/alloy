@@ -15,7 +15,7 @@ import {
   getExpirationDate,
   getActivityId
 } from "./utils";
-import { EVENT_TYPE_TRUE } from "../Personalization/event";
+import { EVENT_TYPE_TRUE } from "../../constants/eventType";
 
 const STORAGE_KEY = "events";
 const MAX_EVENT_RECORDS = 1000;
