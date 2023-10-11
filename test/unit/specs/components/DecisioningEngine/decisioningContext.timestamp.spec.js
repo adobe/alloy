@@ -133,9 +133,9 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
   it("satisfies rule based on matched currentDay", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
-        key: "currentDay",
+        key: "~state.com.adobe.module.lifecycle/lifecyclecontextdata.dayofweek",
         matcher: "eq",
-        values: [mockedTimestamp.getDay()]
+        values: [mockedTimestamp.getDay() + 1]
       },
       type: "matcher"
     });
@@ -150,9 +150,9 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
   it("does not satisfy rule due to unmatched currentDay", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
-        key: "currentDay",
+        key: "~state.com.adobe.module.lifecycle/lifecyclecontextdata.dayofweek",
         matcher: "eq",
-        values: [mockedTimestamp.getDay() + 1]
+        values: [mockedTimestamp.getDay()]
       },
       type: "matcher"
     });
@@ -167,7 +167,7 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
   it("satisfies rule based on matched currentHour", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
-        key: "currentHour",
+        key: "~state.com.adobe.module.lifecycle/lifecyclecontextdata.hourofday",
         matcher: "eq",
         values: [mockedTimestamp.getHours()]
       },
@@ -184,7 +184,7 @@ describe("DecisioningEngine:globalContext:timeContext", () => {
   it("does not satisfy rule due to unmatched currentHour", () => {
     setupResponseHandler(applyResponse, mockWindow({}), {
       definition: {
-        key: "currentHour",
+        key: "~state.com.adobe.module.lifecycle/lifecyclecontextdata.hourofday",
         matcher: "eq",
         values: [mockedTimestamp.getHours() + 1]
       },
