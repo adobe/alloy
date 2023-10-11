@@ -59,7 +59,7 @@
     }
   ],
   "dependencies": {
-    "@adobe/aep-rules-engine": "^2.0.1",
+    "@adobe/aep-rules-engine": "file:../aepsdk-rulesengine-typescript",
     "@adobe/reactor-cookie": "^1.0.0",
     "@adobe/reactor-load-script": "^1.1.1",
     "@adobe/reactor-object-assign": "^1.0.0",
