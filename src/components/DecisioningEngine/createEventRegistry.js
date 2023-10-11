@@ -39,7 +39,7 @@ export const createEventPruner = (
         .sort((a, b) => a.firstTimestamp - b.firstTimestamp)
         .slice(-1 * limit)
         .forEach(entry => {
-          pruned[eventType][entry.event.id] = entry;
+          pruned[eventType][entry.event[prefixed("id")]] = entry;
         });
     });
     return pruned;
@@ -60,8 +60,6 @@ export default ({ storage, saveDelay = DEFAULT_SAVE_DELAY }) => {
     if (!events[eventType]) {
       events[eventType] = {};
     }
-    console.log("what is this events", events);
-    console.log("events before adding", events[eventType][eventId]);
     const existingEvent = events[eventType][eventId];
 
     const count = existingEvent ? existingEvent.count : 0;
@@ -81,8 +79,6 @@ export default ({ storage, saveDelay = DEFAULT_SAVE_DELAY }) => {
       timestamp,
       count: count + 1
     };
-
-    console.log("events being saved is", events);
 
     save(events);
 

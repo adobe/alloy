@@ -210,8 +210,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
     for (let i = 0; i < 2000; i += 1) {
       events["decisioning.propositionDisplay"][i] = {
         event: {
-          id: i,
-          type: "decisioning.propositionDisplay"
+          "iam.id": i,
+          "iam.eventType": "decisioning.propositionDisplay"
         },
         firstTimestamp: "2023-05-23T08:00:00Z",
         timestamp: mockedTimestamp,
@@ -220,8 +220,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
 
       events["decisioning.propositionInteract"][i] = {
         event: {
-          id: i,
-          type: "decisioning.propositionInteract"
+          "iam.id": i,
+          "iam.eventType": "decisioning.propositionInteract"
         },
         firstTimestamp: "2023-05-23T08:00:00Z",
         timestamp: mockedTimestamp,
@@ -240,8 +240,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
       expect(displayEvents.length).not.toBeGreaterThan(1000);
 
       if (i > 1000) {
-        expect(interactEvents[0].event.id).toEqual(i - 999);
-        expect(displayEvents[0].event.id).toEqual(i - 999);
+        expect(interactEvents[0].event["iam.id"]).toEqual(i - 999);
+        expect(displayEvents[0].event["iam.id"]).toEqual(i - 999);
       }
 
       if (i > 0) {
@@ -266,8 +266,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
     for (let i = 0; i < 20; i += 1) {
       events["decisioning.propositionDisplay"][i] = {
         event: {
-          id: i,
-          type: "decisioning.propositionDisplay"
+          "iam.id": i,
+          "iam.eventType": "decisioning.propositionDisplay"
         },
         firstTimestamp: 1,
         timestamp: 1,
@@ -291,8 +291,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
     events["decisioning.propositionDisplay"] = {
       1: {
         event: {
-          id: 1,
-          type: "decisioning.propositionInteract"
+          "iam.id": 1,
+          "iam.eventType": "decisioning.propositionInteract"
         },
         firstTimestamp: "2023-05-20T10:00:00Z",
         timestamp: mockedTimestamp,
@@ -300,8 +300,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
       },
       2: {
         event: {
-          id: 2,
-          type: "decisioning.propositionInteract"
+          "iam.id": 2,
+          "iam.eventType": "decisioning.propositionInteract"
         },
         firstTimestamp: "2023-05-24T15:00:00Z",
         timestamp: mockedTimestamp,
@@ -311,8 +311,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
     events["decisioning.propositionInteract"] = {
       3: {
         event: {
-          id: 3,
-          type: "decisioning.propositionInteract"
+          "iam.id": 3,
+          "iam.eventType": "decisioning.propositionInteract"
         },
         firstTimestamp: "2023-05-23T08:00:00Z",
         timestamp: mockedTimestamp,
@@ -320,8 +320,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
       },
       4: {
         event: {
-          id: 4,
-          type: "decisioning.propositionInteract"
+          "iam.id": 4,
+          "iam.eventType": "decisioning.propositionInteract"
         },
         firstTimestamp: "2023-05-23T08:00:00Z",
         timestamp: mockedTimestamp,
@@ -334,8 +334,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
       "decisioning.propositionDisplay": {
         2: {
           event: {
-            id: 2,
-            type: "decisioning.propositionInteract"
+            "iam.id": 2,
+            "iam.eventType": "decisioning.propositionInteract"
           },
           firstTimestamp: "2023-05-24T15:00:00Z",
           timestamp: mockedTimestamp,
@@ -345,8 +345,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
       "decisioning.propositionInteract": {
         3: {
           event: {
-            id: 3,
-            type: "decisioning.propositionInteract"
+            "iam.id": 3,
+            "iam.eventType": "decisioning.propositionInteract"
           },
           firstTimestamp: "2023-05-23T08:00:00Z",
           timestamp: mockedTimestamp,
@@ -354,8 +354,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
         },
         4: {
           event: {
-            id: 4,
-            type: "decisioning.propositionInteract"
+            "iam.id": 4,
+            "iam.eventType": "decisioning.propositionInteract"
           },
           firstTimestamp: "2023-05-23T08:00:00Z",
           timestamp: mockedTimestamp,
