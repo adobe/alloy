@@ -49,6 +49,8 @@ module.exports = {
       "error",
       {
         zones: [
+          // prevent components from importing from other components, but allow
+          // importing from themselves
           ...allComponentPaths.map((path, index, allPaths) => ({
             target: path,
             from: [
