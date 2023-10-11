@@ -11,14 +11,16 @@ governing permissions and limitations under the License.
 */
 import createEvaluableRulesetPayload from "./createEvaluableRulesetPayload";
 import createDecisionHistory from "./createDecisionHistory";
+import { getActivityId } from "./utils";
 
 export default ({ eventRegistry }) => {
-  const payloads = {};
+  const payloadsBasedOnActivityId = {};
 
   const decisionHistory = createDecisionHistory({ eventRegistry });
 
   const addPayload = payload => {
-    if (!payload.id) {
+    const activityId = getActivityId(payload);
+    if (!activityId) {
       return;
     }
 
@@ -29,12 +31,12 @@ export default ({ eventRegistry }) => {
     );
 
     if (evaluableRulesetPayload.isEvaluable) {
-      payloads[payload.id] = evaluableRulesetPayload;
+      payloadsBasedOnActivityId[activityId] = evaluableRulesetPayload;
     }
   };
 
   const evaluate = (context = {}) =>
-    Object.values(payloads)
+    Object.values(payloadsBasedOnActivityId)
       .map(payload => payload.evaluate(context))
       .filter(payload => payload.items.length > 0);
 
