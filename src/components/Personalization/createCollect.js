@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { DISPLAY } from "./constants/eventType";
-import { getPropositionEventType } from "./constants/propositionEventType";
+import { DISPLAY } from "../../constants/eventType";
+import { getPropositionEventType } from "../../constants/propositionEventType";
 import { isNonEmptyArray } from "../../utils";
 
 export default ({ eventManager, mergeDecisionsMeta }) => {

@@ -9,16 +9,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-const QUALIFIED_EVENT_TYPE = "decisioning.propositionQualified";
+import { PropositionEventType } from "../../constants/propositionEventType";
 
 export default ({ eventRegistry }) => {
-  const recordQualified = item => {
-    const { id } = item;
+  const recordQualified = id => {
     if (!id) {
       return undefined;
     }
-    return eventRegistry.addEvent(item, QUALIFIED_EVENT_TYPE, id);
+    return eventRegistry.addEvent({}, PropositionEventType.TRIGGER, id);
   };
 
   return { recordQualified };

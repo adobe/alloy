@@ -43,8 +43,10 @@ export default ({ eventRegistry, window }) => {
       pageLoadTimestamp,
       currentTimestamp,
       currentDate: now.getDate(),
-      currentDay: now.getDay(),
-      currentHour: now.getHours(),
+      // Day of the week starts on Monday as is practiced in ISO 8601, but we want it to start on Sunday to match the authoring UI rule
+      "~state.com.adobe.module.lifecycle/lifecyclecontextdata.dayofweek":
+        now.getDay() + 1,
+      "~state.com.adobe.module.lifecycle/lifecyclecontextdata.hourofday": now.getHours(),
       currentMinute: now.getMinutes(),
       currentMonth: now.getMonth(),
       currentYear: now.getFullYear(),

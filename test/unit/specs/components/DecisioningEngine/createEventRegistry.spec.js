@@ -32,10 +32,36 @@ describe("DecisioningEngine:createEventRegistry", () => {
 
     const getContent = () => ({
       xdm: {
-        eventType: "display",
+        eventType: "decisioning.propositionDisplay",
         _experience: {
           decisioning: {
-            propositions: [{ id: "abc" }, { id: "def" }, { id: "ghi" }]
+            propositions: [
+              {
+                id: "111",
+                scope: "mobileapp://com.adobe.aguaAppIos",
+                scopeDetails: {
+                  decisionProvider: "AJO",
+                  correlationID: "ccaa539e-ca14-4d42-ac9a-0a17e69a63e4",
+                  activity: {
+                    id: "111#aaa"
+                  }
+                }
+              },
+              {
+                id: "222",
+                scope: "mobileapp://com.adobe.aguaAppIos",
+                scopeDetails: {
+                  decisionProvider: "AJO",
+                  correlationID: "ccaa539e-ca14-4d42-ac9a-0a17e69a63e4",
+                  activity: {
+                    id: "222#bbb"
+                  }
+                }
+              }
+            ],
+            propositionEventType: {
+              display: 1
+            }
           }
         }
       }
@@ -46,23 +72,22 @@ describe("DecisioningEngine:createEventRegistry", () => {
     };
 
     eventRegistry.addExperienceEdgeEvent(event);
-
     expect(eventRegistry.toJSON()).toEqual({
       display: {
-        abc: {
-          event: jasmine.objectContaining({ id: "abc", type: "display" }),
+        "111#aaa": {
+          event: jasmine.objectContaining({
+            "iam.id": "111#aaa",
+            "iam.eventType": "display"
+          }),
           firstTimestamp: jasmine.any(Number),
           timestamp: jasmine.any(Number),
           count: 1
         },
-        def: {
-          event: jasmine.objectContaining({ id: "def", type: "display" }),
-          firstTimestamp: jasmine.any(Number),
-          timestamp: jasmine.any(Number),
-          count: 1
-        },
-        ghi: {
-          event: jasmine.objectContaining({ id: "ghi", type: "display" }),
+        "222#bbb": {
+          event: jasmine.objectContaining({
+            "iam.id": "222#bbb",
+            "iam.eventType": "display"
+          }),
           firstTimestamp: jasmine.any(Number),
           timestamp: jasmine.any(Number),
           count: 1
@@ -111,10 +136,25 @@ describe("DecisioningEngine:createEventRegistry", () => {
 
     const getContent = () => ({
       xdm: {
-        eventType: "display",
+        eventType: "decisioning.propositionDisplay",
         _experience: {
           decisioning: {
-            propositions: [{ id: "abc" }]
+            propositions: [
+              {
+                id: "111",
+                scope: "mobileapp://com.adobe.aguaAppIos",
+                scopeDetails: {
+                  decisionProvider: "AJO",
+                  correlationID: "ccaa539e-ca14-4d42-ac9a-0a17e69a63e4",
+                  activity: {
+                    id: "111#aaa"
+                  }
+                }
+              }
+            ],
+            propositionEventType: {
+              display: 1
+            }
           }
         }
       }
@@ -125,29 +165,35 @@ describe("DecisioningEngine:createEventRegistry", () => {
     };
     let lastEventTime = 0;
     eventRegistry.addExperienceEdgeEvent(event);
-
-    expect(eventRegistry.getEvent("display", "abc")).toEqual({
-      event: jasmine.objectContaining({ id: "abc", type: "display" }),
+    expect(eventRegistry.getEvent("display", "111#aaa")).toEqual({
+      event: jasmine.objectContaining({
+        "iam.id": "111#aaa",
+        "iam.eventType": "display"
+      }),
       firstTimestamp: jasmine.any(Number),
       timestamp: jasmine.any(Number),
       count: 1
     });
-    expect(eventRegistry.getEvent("display", "abc").timestamp).toBeGreaterThan(
-      lastEventTime
-    );
-    lastEventTime = eventRegistry.getEvent("display", "abc").timestamp;
+    expect(
+      eventRegistry.getEvent("display", "111#aaa").timestamp
+    ).toBeGreaterThan(lastEventTime);
+
+    lastEventTime = eventRegistry.getEvent("display", "111#aaa").timestamp;
 
     setTimeout(() => {
       eventRegistry.addExperienceEdgeEvent(event); // again
 
-      expect(eventRegistry.getEvent("display", "abc")).toEqual({
-        event: jasmine.objectContaining({ id: "abc", type: "display" }),
+      expect(eventRegistry.getEvent("display", "111#aaa")).toEqual({
+        event: jasmine.objectContaining({
+          "iam.id": "111#aaa",
+          "iam.eventType": "display"
+        }),
         firstTimestamp: jasmine.any(Number),
         timestamp: jasmine.any(Number),
         count: 2
       });
       expect(
-        eventRegistry.getEvent("display", "abc").timestamp
+        eventRegistry.getEvent("display", "111#aaa").timestamp
       ).toBeGreaterThan(lastEventTime);
       done();
     }, 50);
@@ -164,8 +210,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
     for (let i = 0; i < 2000; i += 1) {
       events["decisioning.propositionDisplay"][i] = {
         event: {
-          id: i,
-          type: "decisioning.propositionDisplay"
+          "iam.id": i,
+          "iam.eventType": "decisioning.propositionDisplay"
         },
         firstTimestamp: "2023-05-23T08:00:00Z",
         timestamp: mockedTimestamp,
@@ -174,8 +220,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
 
       events["decisioning.propositionInteract"][i] = {
         event: {
-          id: i,
-          type: "decisioning.propositionInteract"
+          "iam.id": i,
+          "iam.eventType": "decisioning.propositionInteract"
         },
         firstTimestamp: "2023-05-23T08:00:00Z",
         timestamp: mockedTimestamp,
@@ -194,8 +240,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
       expect(displayEvents.length).not.toBeGreaterThan(1000);
 
       if (i > 1000) {
-        expect(interactEvents[0].event.id).toEqual(i - 999);
-        expect(displayEvents[0].event.id).toEqual(i - 999);
+        expect(interactEvents[0].event["iam.id"]).toEqual(i - 999);
+        expect(displayEvents[0].event["iam.id"]).toEqual(i - 999);
       }
 
       if (i > 0) {
@@ -220,8 +266,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
     for (let i = 0; i < 20; i += 1) {
       events["decisioning.propositionDisplay"][i] = {
         event: {
-          id: i,
-          type: "decisioning.propositionDisplay"
+          "iam.id": i,
+          "iam.eventType": "decisioning.propositionDisplay"
         },
         firstTimestamp: 1,
         timestamp: 1,
@@ -245,8 +291,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
     events["decisioning.propositionDisplay"] = {
       1: {
         event: {
-          id: 1,
-          type: "decisioning.propositionInteract"
+          "iam.id": 1,
+          "iam.eventType": "decisioning.propositionInteract"
         },
         firstTimestamp: "2023-05-20T10:00:00Z",
         timestamp: mockedTimestamp,
@@ -254,8 +300,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
       },
       2: {
         event: {
-          id: 2,
-          type: "decisioning.propositionInteract"
+          "iam.id": 2,
+          "iam.eventType": "decisioning.propositionInteract"
         },
         firstTimestamp: "2023-05-24T15:00:00Z",
         timestamp: mockedTimestamp,
@@ -265,8 +311,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
     events["decisioning.propositionInteract"] = {
       3: {
         event: {
-          id: 3,
-          type: "decisioning.propositionInteract"
+          "iam.id": 3,
+          "iam.eventType": "decisioning.propositionInteract"
         },
         firstTimestamp: "2023-05-23T08:00:00Z",
         timestamp: mockedTimestamp,
@@ -274,8 +320,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
       },
       4: {
         event: {
-          id: 4,
-          type: "decisioning.propositionInteract"
+          "iam.id": 4,
+          "iam.eventType": "decisioning.propositionInteract"
         },
         firstTimestamp: "2023-05-23T08:00:00Z",
         timestamp: mockedTimestamp,
@@ -288,8 +334,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
       "decisioning.propositionDisplay": {
         2: {
           event: {
-            id: 2,
-            type: "decisioning.propositionInteract"
+            "iam.id": 2,
+            "iam.eventType": "decisioning.propositionInteract"
           },
           firstTimestamp: "2023-05-24T15:00:00Z",
           timestamp: mockedTimestamp,
@@ -299,8 +345,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
       "decisioning.propositionInteract": {
         3: {
           event: {
-            id: 3,
-            type: "decisioning.propositionInteract"
+            "iam.id": 3,
+            "iam.eventType": "decisioning.propositionInteract"
           },
           firstTimestamp: "2023-05-23T08:00:00Z",
           timestamp: mockedTimestamp,
@@ -308,8 +354,8 @@ describe("DecisioningEngine:createEventRegistry", () => {
         },
         4: {
           event: {
-            id: 4,
-            type: "decisioning.propositionInteract"
+            "iam.id": 4,
+            "iam.eventType": "decisioning.propositionInteract"
           },
           firstTimestamp: "2023-05-23T08:00:00Z",
           timestamp: mockedTimestamp,

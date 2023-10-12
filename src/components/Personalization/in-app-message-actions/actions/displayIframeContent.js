@@ -14,7 +14,7 @@ import { getNonce } from "../../dom-actions/dom";
 import { createElement, parseAnchor, removeElementById } from "../utils";
 import { TEXT_HTML } from "../../constants/contentType";
 import { assign } from "../../../../utils";
-import { getEventType } from "../../constants/propositionEventType";
+import { getEventType } from "../../../../constants/propositionEventType";
 
 const ALLOY_MESSAGING_CONTAINER_ID = "alloy-messaging-container";
 const ALLOY_OVERLAY_CONTAINER_ID = "alloy-overlay-container";

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createViewChangeHandler from "../../../../../src/components/Personalization/createViewChangeHandler";
-import { PropositionEventType } from "../../../../../src/components/Personalization/constants/propositionEventType";
+import { PropositionEventType } from "../../../../../src/constants/propositionEventType";
 import { CART_VIEW_DECISIONS } from "./responsesMock/eventResponses";
 import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
 

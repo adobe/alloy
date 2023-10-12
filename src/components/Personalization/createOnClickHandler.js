@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray, isNonEmptyString } from "../../utils";
-import { INTERACT } from "./constants/eventType";
-import { PropositionEventType } from "./constants/propositionEventType";
+import { INTERACT } from "../../constants/eventType";
+import { PropositionEventType } from "../../constants/propositionEventType";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
 
 export default ({

@@ -24,6 +24,8 @@ describe("DecisioningEngine:createDecisionProvider", () => {
     decisionProvider = createDecisionProvider({ eventRegistry });
     decisionProvider.addPayloads([
       {
+        id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
+        scope: "web://mywebsite.com",
         scopeDetails: {
           decisionProvider: "AJO",
           characteristics: {
@@ -41,7 +43,6 @@ describe("DecisioningEngine:createDecisionProvider", () => {
           },
           correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503"
         },
-        id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
         items: [
           {
             id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
@@ -124,10 +125,11 @@ describe("DecisioningEngine:createDecisionProvider", () => {
               ]
             }
           }
-        ],
-        scope: "web://mywebsite.com"
+        ]
       },
       {
+        id: "3d5d69cd-acde-4eca-b43b-a54574b67bb0",
+        scope: "web://mywebsite.com",
         scopeDetails: {
           decisionProvider: "AJO",
           characteristics: {
@@ -141,11 +143,10 @@ describe("DecisioningEngine:createDecisionProvider", () => {
           ],
           activity: {
             id:
-              "39ae8d4b-b55e-43dc-a143-77f50195b487#b47fde8b-57c1-4bbe-ae22-64d5b782d183"
+              "48ae8d4b-b55e-43dc-a143-77f50195b487#b47fde8b-57c1-4bbe-ae22-64d5b782d168"
           },
           correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503"
         },
-        id: "3d5d69cd-acde-4eca-b43b-a54574b67bb0",
         items: [
           {
             id: "5229f502-38d6-40c3-9a3a-b5b1a6adc441",
@@ -214,8 +215,7 @@ describe("DecisioningEngine:createDecisionProvider", () => {
               ]
             }
           }
-        ],
-        scope: "web://mywebsite.com"
+        ]
       }
     ]);
   });
@@ -224,6 +224,8 @@ describe("DecisioningEngine:createDecisionProvider", () => {
       decisionProvider.evaluate({ color: "blue", action: "lipstick" })
     ).toEqual([
       {
+        id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
+        scope: "web://mywebsite.com",
         scopeDetails: {
           decisionProvider: "AJO",
           characteristics: {
@@ -241,7 +243,6 @@ describe("DecisioningEngine:createDecisionProvider", () => {
           },
           correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503"
         },
-        id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
         items: [
           {
             schema: "https://ns.adobe.com/personalization/dom-action",
@@ -271,8 +272,7 @@ describe("DecisioningEngine:createDecisionProvider", () => {
             },
             id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
           }
-        ],
-        scope: "web://mywebsite.com"
+        ]
       }
     ]);
   });
@@ -294,7 +294,7 @@ describe("DecisioningEngine:createDecisionProvider", () => {
           ],
           activity: {
             id:
-              "39ae8d4b-b55e-43dc-a143-77f50195b487#b47fde8b-57c1-4bbe-ae22-64d5b782d183"
+              "48ae8d4b-b55e-43dc-a143-77f50195b487#b47fde8b-57c1-4bbe-ae22-64d5b782d168"
           },
           correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503"
         },
@@ -402,7 +402,7 @@ describe("DecisioningEngine:createDecisionProvider", () => {
           ],
           activity: {
             id:
-              "39ae8d4b-b55e-43dc-a143-77f50195b487#b47fde8b-57c1-4bbe-ae22-64d5b782d183"
+              "48ae8d4b-b55e-43dc-a143-77f50195b487#b47fde8b-57c1-4bbe-ae22-64d5b782d168"
           },
           correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503"
         },
