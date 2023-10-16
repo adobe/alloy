@@ -33,13 +33,6 @@ export const removeElements = cssClassName => {
   });
 };
 
-export const removeElementById = id => {
-  const element = document.getElementById(id);
-  if (element) {
-    element.remove();
-  }
-};
-
 export const parseAnchor = anchor => {
   const nothing = {};
 
@@ -73,9 +66,4 @@ export const parseAnchor = anchor => {
     label,
     uuid
   };
-};
-export const createElement = elementTagId => {
-  const element = document.createElement("div");
-  element.id = elementTagId;
-  return element;
 };

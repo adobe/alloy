@@ -11,22 +11,31 @@ governing permissions and limitations under the License.
 */
 
 import { getNonce } from "../../dom-actions/dom";
-import { createElement, parseAnchor, removeElementById } from "../utils";
+import { parseAnchor } from "../utils";
 import { TEXT_HTML } from "../../constants/contentType";
 import { assign } from "../../../../utils";
 import { getEventType } from "../../../../constants/propositionEventType";
+import { createNode, removeNode } from "../../../../utils/dom";
 
 const ALLOY_MESSAGING_CONTAINER_ID = "alloy-messaging-container";
 const ALLOY_OVERLAY_CONTAINER_ID = "alloy-overlay-container";
 const ALLOY_IFRAME_ID = "alloy-content-iframe";
 
-const dismissMessage = () =>
-  [ALLOY_MESSAGING_CONTAINER_ID, ALLOY_OVERLAY_CONTAINER_ID].forEach(
-    removeElementById
-  );
+export const dismissMessage = () => {
+  const elementIdsToRemove = [
+    ALLOY_MESSAGING_CONTAINER_ID,
+    ALLOY_OVERLAY_CONTAINER_ID
+  ];
 
+  elementIdsToRemove.forEach(id => {
+    const element = document.getElementById(id);
+    if (element) {
+      removeNode(element);
+    }
+  });
+};
 const setWindowLocationHref = link => {
-  window.location.assign(link);
+  window.location.href = link;
 };
 
 export const createIframeClickHandler = (
@@ -73,11 +82,13 @@ export const createIframe = (htmlContent, clickHandler) => {
   if (scriptTag) {
     scriptTag.setAttribute("nonce", getNonce());
   }
-  const element = document.createElement("iframe");
-  element.src = URL.createObjectURL(
-    new Blob([htmlDocument.documentElement.outerHTML], { type: TEXT_HTML })
-  );
-  element.id = ALLOY_IFRAME_ID;
+  const element = createNode("iframe", {
+    src: URL.createObjectURL(
+      new Blob([htmlDocument.documentElement.outerHTML], { type: "text/html" })
+    ),
+    id: ALLOY_IFRAME_ID
+  });
+
   element.addEventListener("load", () => {
     const { addEventListener } =
       element.contentDocument || element.contentWindow.document;
@@ -271,9 +282,9 @@ export const displayHTMLContentInIframe = (settings = {}, interact) => {
     return;
   }
 
-  const container = createElement(ALLOY_MESSAGING_CONTAINER_ID);
+  const container = createNode("div", { id: ALLOY_MESSAGING_CONTAINER_ID });
   const iframe = createIframe(content, createIframeClickHandler(interact));
-  const overlay = createElement(ALLOY_OVERLAY_CONTAINER_ID);
+  const overlay = createNode("div", { id: ALLOY_OVERLAY_CONTAINER_ID });
 
   if (!isValidWebParameters(webParameters)) {
     webParameters = generateWebParameters(mobileParameters);
