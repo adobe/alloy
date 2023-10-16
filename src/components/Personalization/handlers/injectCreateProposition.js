@@ -13,14 +13,10 @@ governing permissions and limitations under the License.
 import PAGE_WIDE_SCOPE from "../../../constants/pageWideScope";
 
 export default ({ preprocess, isPageWideSurface }) => {
-  const createItem = (item, meta) => {
+  const createItem = (item, proposition) => {
     const { schema, data, characteristics: { trackingLabel } = {} } = item;
 
     const processedData = preprocess(data);
-
-    if (trackingLabel) {
-      meta.trackingLabel = trackingLabel;
-    }
 
     return {
       getSchema() {
@@ -29,8 +25,11 @@ export default ({ preprocess, isPageWideSurface }) => {
       getData() {
         return processedData;
       },
-      getMeta() {
-        return meta;
+      getProposition() {
+        return proposition;
+      },
+      getTrackingLabel() {
+        return trackingLabel;
       },
       getOriginalItem() {
         return item;
@@ -65,7 +64,7 @@ export default ({ preprocess, isPageWideSurface }) => {
         return "proposition";
       },
       getItems() {
-        return items.map(item => createItem(item, { id, scope, scopeDetails }));
+        return items.map(item => createItem(item, this));
       },
       getNotification() {
         return { id, scope, scopeDetails };

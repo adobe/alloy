@@ -43,7 +43,10 @@ describe("createProcessPropositions", () => {
       schemaProcessors,
       logger
     });
-    createProposition = injectCreateProposition({ preprocess: data => data });
+    createProposition = injectCreateProposition({
+      preprocess: data => data,
+      isPageWideSurface: () => false
+    });
   });
 
   it("handles no propositions", async () => {

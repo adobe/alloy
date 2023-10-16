@@ -24,17 +24,22 @@ const getMetasIfMatches = (
   while (element && element !== documentElement) {
     if (matchesSelectorWithEq(selector, element)) {
       const matchedMetas = getClickMetasBySelector(selector);
-      const foundMetaWithLabel = matchedMetas.find(meta => meta.trackingLabel);
-      if (foundMetaWithLabel) {
-        return {
-          metas: matchedMetas,
-          label: foundMetaWithLabel.trackingLabel,
-          weight: i
-        };
-      }
-      return {
+      const returnValue = {
         metas: matchedMetas
       };
+      const foundMetaWithLabel = matchedMetas.find(meta => meta.trackingLabel);
+      if (foundMetaWithLabel) {
+        returnValue.label = foundMetaWithLabel.trackingLabel;
+        returnValue.weight = i;
+      }
+      const foundMetaWithScopeTypeView = matchedMetas.find(
+        meta => meta.scopeType === "view"
+      );
+      if (foundMetaWithScopeTypeView) {
+        returnValue.viewName = foundMetaWithScopeTypeView.scope;
+        returnValue.weight = i;
+      }
+      return returnValue;
     }
 
     element = element.parentNode;
@@ -48,8 +53,8 @@ const getMetasIfMatches = (
 
 const cleanMetas = metas =>
   metas.map(meta => {
-    delete meta.trackingLabel;
-    return meta;
+    const { trackingLabel, scopeType, ...rest } = meta;
+    return rest;
   });
 
 const dedupMetas = metas =>
@@ -67,10 +72,12 @@ export default (clickedElement, selectors, getClickMetasBySelector) => {
   const result = [];
   let resultLabel = "";
   let resultLabelWeight = Number.MAX_SAFE_INTEGER;
+  let resultViewName;
+  let resultViewNameWeight = Number.MAX_SAFE_INTEGER;
 
   /* eslint-disable no-continue */
   for (let i = 0; i < selectors.length; i += 1) {
-    const { metas, label, weight } = getMetasIfMatches(
+    const { metas, label, weight, viewName } = getMetasIfMatches(
       clickedElement,
       selectors[i],
       getClickMetasBySelector
@@ -84,11 +91,16 @@ export default (clickedElement, selectors, getClickMetasBySelector) => {
       resultLabel = label;
       resultLabelWeight = weight;
     }
+    if (viewName && weight <= resultViewNameWeight) {
+      resultViewName = viewName;
+      resultViewNameWeight = weight;
+    }
     result.push(...cleanMetas(metas));
   }
 
   return {
     decisionsMeta: dedupMetas(result),
-    eventLabel: resultLabel
+    eventLabel: resultLabel,
+    viewName: resultViewName
   };
 };

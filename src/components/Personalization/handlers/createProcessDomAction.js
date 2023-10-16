@@ -22,7 +22,14 @@ export default ({ modules, logger, storeClickMetrics }) => item => {
       logger.warn("Invalid DOM action data: missing selector.", item.getData());
       return {};
     }
-    storeClickMetrics({ selector, meta: item.getMeta() });
+    storeClickMetrics({
+      selector,
+      meta: {
+        ...item.getProposition().getNotification(),
+        trackingLabel: item.getTrackingLabel(),
+        scopeType: item.getProposition().getScopeType()
+      }
+    });
     return { setRenderAttempted: true, includeInNotification: false };
   }
 
