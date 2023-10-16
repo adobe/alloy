@@ -38,6 +38,7 @@ jobs:
           BUILD_NUMBER: $GITHUB_RUN_NUMBER
           BUILD_ID: $GITHUB_RUN_ID
           JOB_NUMBER: $GITHUB_JOB
+          REMOTE_DEBUGGING_PORT: 8080
 
   alloy-int-e2e:
     name: "Dev Functional Test - Saucectl"
