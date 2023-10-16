@@ -33,8 +33,7 @@ module.exports = config => {
       platformName: "Windows 11",
       browserVersion: "latest",
       "sauce:options": {
-        geckodriverVersion: "0.27.0",
-        remoteDebuggingPort: 8080
+        "moz:debuggerAddress": true
       }
     },
     sl_edgeW3C: {

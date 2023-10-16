@@ -27,7 +27,7 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run test:functional:build:int
-      - uses: saucelabs/sauce-connect-action@v2.2.1
+      - uses: saucelabs/sauce-connect-action@v2.3.2
         with:
           username: ${{ secrets.SAUCE_USERNAME }}
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
@@ -38,7 +38,6 @@ jobs:
           BUILD_NUMBER: $GITHUB_RUN_NUMBER
           BUILD_ID: $GITHUB_RUN_ID
           JOB_NUMBER: $GITHUB_JOB
-          REMOTE_DEBUGGING_PORT: 8080
 
   alloy-int-e2e:
     name: "Dev Functional Test - Saucectl"
