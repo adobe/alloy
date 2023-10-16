@@ -27,7 +27,7 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run test:functional:build:int
-      - uses: saucelabs/sauce-connect-action@v2.3.2
+      - uses: saucelabs/sauce-connect-action@v2.2.1
         with:
           username: ${{ secrets.SAUCE_USERNAME }}
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
