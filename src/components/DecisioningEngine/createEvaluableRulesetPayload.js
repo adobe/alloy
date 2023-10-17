@@ -31,14 +31,20 @@ const isRulesetItem = item => {
     return false;
   }
 
-  const content =
-    typeof data.content === "string" ? JSON.parse(data.content) : data.content;
+  try {
+    const content =
+      typeof data.content === "string"
+        ? JSON.parse(data.content)
+        : data.content;
 
-  return (
-    content &&
-    Object.prototype.hasOwnProperty.call(content, "version") &&
-    Object.prototype.hasOwnProperty.call(content, "rules")
-  );
+    return (
+      content &&
+      Object.prototype.hasOwnProperty.call(content, "version") &&
+      Object.prototype.hasOwnProperty.call(content, "rules")
+    );
+  } catch (error) {
+    return false;
+  }
 };
 
 export default (payload, eventRegistry, decisionHistory) => {
