@@ -10,10 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import RulesEngine from "@adobe/aep-rules-engine";
-import {
-  JSON_CONTENT_ITEM,
-  RULESET_ITEM
-} from "../Personalization/constants/schema";
+import { JSON_CONTENT_ITEM, RULESET_ITEM } from "../../constants/schema";
 import { DISPLAY } from "../../constants/eventType";
 import { getActivityId } from "./utils";
 

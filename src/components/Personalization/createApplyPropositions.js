@@ -15,7 +15,7 @@ import {
   DOM_ACTION,
   HTML_CONTENT_ITEM,
   MESSAGE_IN_APP
-} from "./constants/schema";
+} from "../../constants/schema";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
 
 const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM, MESSAGE_IN_APP];

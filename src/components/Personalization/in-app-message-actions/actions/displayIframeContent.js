@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { getNonce } from "../../dom-actions/dom";
 import { parseAnchor } from "../utils";
-import { TEXT_HTML } from "../../constants/contentType";
+import { TEXT_HTML } from "../../../../constants/contentType";
 import { assign } from "../../../../utils";
 import { getEventType } from "../../../../constants/propositionEventType";
 import { createNode, removeNode } from "../../../../utils/dom";

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { DEFAULT_CONTENT_ITEM } from "../../../../../src/components/Personalization/constants/schema";
+import { DEFAULT_CONTENT_ITEM } from "../../../../../src/constants/schema";
 import createViewCacheManager from "../../../../../src/components/Personalization/createViewCacheManager";
 
 describe("Personalization::createViewCacheManager", () => {

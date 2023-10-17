@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createConsequenceAdapter from "../../../../../src/components/DecisioningEngine/createConsequenceAdapter";
-import { TEXT_HTML } from "../../../../../src/components/Personalization/constants/contentType";
+import { TEXT_HTML } from "../../../../../src/constants/contentType";
 
 describe("DecisioningEngine:createConsequenceAdapter", () => {
   const ADAPTED_CONSEQUENCE = {

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import schemaTypeConsequenceAdapter from "../../../../../../src/components/DecisioningEngine/consequenceAdapters/schemaTypeConsequenceAdapter";
-import { TEXT_HTML } from "../../../../../../src/components/Personalization/constants/contentType";
+import { TEXT_HTML } from "../../../../../../src/constants/contentType";
 
 describe("DecisioningEngine:schemaTypeConsequenceAdapter", () => {
   it("handles schema", () => {
