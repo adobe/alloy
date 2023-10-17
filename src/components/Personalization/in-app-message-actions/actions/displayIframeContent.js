@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { getNonce } from "../../dom-actions/dom";
 import { parseAnchor } from "../utils";
 import { TEXT_HTML } from "../../../../constants/contentType";
-import { assign } from "../../../../utils";
+import { assign, includes } from "../../../../utils";
 import { getEventType } from "../../../../constants/propositionEventType";
 import { createNode, removeNode } from "../../../../utils/dom";
 
@@ -200,11 +200,11 @@ const isValidWebParameters = webParameters => {
 
   const ids = Object.keys(webParameters);
 
-  if (!ids.includes(ALLOY_MESSAGING_CONTAINER_ID)) {
+  if (!includes(ids, ALLOY_MESSAGING_CONTAINER_ID)) {
     return false;
   }
 
-  if (!ids.includes(ALLOY_OVERLAY_CONTAINER_ID)) {
+  if (!includes(ids, ALLOY_OVERLAY_CONTAINER_ID)) {
     return false;
   }
 
