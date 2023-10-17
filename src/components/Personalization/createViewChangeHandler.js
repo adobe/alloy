@@ -44,7 +44,9 @@ export default ({ mergeDecisionsMeta, processPropositions, viewCache }) => {
         return [];
       })
       .then(decisionsMeta => {
-        mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.DISPLAY);
+        mergeDecisionsMeta(event, decisionsMeta, [
+          PropositionEventType.DISPLAY
+        ]);
       });
   };
 };

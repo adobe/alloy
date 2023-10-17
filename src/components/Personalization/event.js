@@ -16,16 +16,20 @@ import { EVENT_TYPE_TRUE } from "../../constants/eventType";
 export const mergeDecisionsMeta = (
   event,
   decisionsMeta,
-  propositionEventType,
+  propositionEventTypes,
   propositionAction
 ) => {
+  const propositionEventType = {};
+
+  propositionEventTypes.forEach(type => {
+    propositionEventType[type] = EVENT_TYPE_TRUE;
+  });
+
   const xdm = {
     _experience: {
       decisioning: {
         propositions: decisionsMeta,
-        propositionEventType: {
-          [propositionEventType]: EVENT_TYPE_TRUE
-        }
+        propositionEventType
       }
     }
   };

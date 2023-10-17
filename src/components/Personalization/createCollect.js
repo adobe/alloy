@@ -20,7 +20,7 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
     propositionAction,
     documentMayUnload = false,
     eventType = DISPLAY,
-    propositionEventType = getPropositionEventType(eventType),
+    propositionEventTypes = [getPropositionEventType(eventType)],
     viewName
   }) => {
     const event = eventManager.createEvent();
@@ -35,7 +35,7 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
       mergeDecisionsMeta(
         event,
         decisionsMeta,
-        propositionEventType,
+        propositionEventTypes,
         propositionAction
       );
     }
