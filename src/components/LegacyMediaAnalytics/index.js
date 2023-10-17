@@ -24,14 +24,12 @@ const createLegacyMediaAnalytics = ({
     commands: {
       getMediaAnalyticsTracker: {
         run: () => {
-          const tracker = createMediaAnalyticsTracker({
+          return createMediaAnalyticsTracker({
             config,
             logger,
             getMediaSession,
             trackMediaEvent
           });
-
-          return tracker;
         }
       }
     }

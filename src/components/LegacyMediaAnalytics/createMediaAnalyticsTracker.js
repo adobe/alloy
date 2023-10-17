@@ -1,24 +1,31 @@
 import defer from "../../utils/defer";
 import {
+  AdMetadataKeys,
   AudioMetadataKeys,
+  mediaEvent as Event,
   MediaObjectKey,
-  VideoMetadataKeys,
-  Event
+  MediaType,
+  PlayerState,
+  StreamType,
+  VideoMetadataKeys
 } from "./Media/constants";
-import createMediaHelper from "./Media/createMediaHelper";
 import { deepAssign, isEmptyObject, isNumber } from "../../utils";
+import { adsToXdmKeys, mediaToXdmKeys } from "./Media/mediaKeysToXdmConverter";
+import {
+  createMediaObject,
+  createAdBreakObject,
+  createAdObject,
+  createChapterObject,
+  createStateObject,
+  createQoEObject
+} from "./createMediaHelper";
 
-const createSessionDetails = contextData => {
-  const sessionDetailsKnownKeys = Object.values({
-    ...MediaObjectKey,
-    ...VideoMetadataKeys,
-    ...AudioMetadataKeys
-  });
-  const sessionDetails = {};
+const convertSessionDetailsMetadataToXDM = contextData => {
   const customMetadata = [];
+  const sessionDetails = {};
   Object.keys(contextData).forEach(key => {
-    if (sessionDetailsKnownKeys.includes(key)) {
-      sessionDetails[key] = contextData[key];
+    if (mediaToXdmKeys[key]) {
+      sessionDetails[mediaToXdmKeys[key]] = contextData[key];
     } else {
       customMetadata.push({
         name: key,
@@ -29,6 +36,37 @@ const createSessionDetails = contextData => {
 
   return { sessionDetails, customMetadata };
 };
+
+const createMediaDetailsObject = ({ eventType, info, context }) => {
+  const mediaDetails = info;
+  const customMetadata = [];
+
+  if (context && !isEmptyObject(context)) {
+    if (eventType === Event.AdStart) {
+      Object.keys(context).forEach(key => {
+        if (adsToXdmKeys[key]) {
+          mediaDetails.advertisingDetails[mediaToXdmKeys[key]] = context[key];
+        } else {
+          customMetadata.push({
+            name: key,
+            value: context[key]
+          });
+        }
+      });
+    } else {
+      Object.keys(context).forEach(key => {
+        customMetadata.push({
+          name: key,
+          value: context[key]
+        });
+      });
+    }
+    mediaDetails.customMetadata = customMetadata;
+  }
+
+  return mediaDetails;
+};
+
 const createHeartbeat = ({ frequency, playerState, trackEvent }) => {
   // eslint-disable-next-line consistent-return
   return () => {
@@ -40,9 +78,6 @@ const createHeartbeat = ({ frequency, playerState, trackEvent }) => {
       return trackEvent({ eventType: "ping" });
     }
   };
-};
-const createMediaDetailsObject = (info, context) => {
-  Object.keys(info).forEach(infoKey => {});
 };
 
 const createGetInstance = ({
@@ -68,7 +103,6 @@ const createGetInstance = ({
   const trackEvent = ({ eventType, mediaDetails }) => {
     return deferSession.promise
       .then(sessionID => {
-        updateLastTimeEventTriggered();
         const xdm = {
           eventType: `media.${eventType}`,
           mediaCollection: {
@@ -76,10 +110,11 @@ const createGetInstance = ({
             playhead: trackerState.lastPlayhead
           }
         };
-        if (mediaDetails) {
-          deepAssign(xdm.mediaCollection, mediaDetails);
-        }
-        return trackMediaEvent({ xdm });
+        deepAssign(xdm.mediaCollection, mediaDetails);
+
+        return trackMediaEvent({ xdm }).then(() => {
+          updateLastTimeEventTriggered();
+        });
       })
       .catch(error => {
         logger.info(error);
@@ -102,9 +137,17 @@ const createGetInstance = ({
       const mediaCollection = {
         playhead: 0
       };
-      const { sessionDetails } = createSessionDetails(contextData);
-      deepAssign(mediaCollection, mediaObject, { sessionDetails });
+      const {
+        sessionDetails,
+        customMetadata
+      } = convertSessionDetailsMetadataToXDM(contextData);
 
+      deepAssign(
+        mediaCollection,
+        mediaObject,
+        { sessionDetails },
+        { customMetadata }
+      );
       return getMediaSession({
         xdm: {
           eventType: "media.sessionStart",
@@ -127,7 +170,9 @@ const createGetInstance = ({
     },
     trackSessionEnd: () => {
       clearInterval(ticker);
-      return trackEvent({ eventType: Event.SessionEnd });
+      return trackEvent({ eventType: Event.SessionEnd }).then(() => {
+        deferSession = null;
+      });
     },
     trackComplete: () => {
       clearInterval(ticker);
@@ -146,15 +191,19 @@ const createGetInstance = ({
       return trackEvent({ eventType: Event.SessionEnd, mediaDetails });
     },
     trackEvent: (eventType, info, context) => {
-      const mediaDetails = createMediaDetailsObject(info, context);
+      if (isEmptyObject(info)) {
+        logger.info("invalid media object");
+        return {};
+      }
+      const mediaDetails = createMediaDetailsObject({
+        eventType,
+        info,
+        context
+      });
 
-      return deferSession.promise.then(sessionID => {
-        return trackEvent({
-          eventType: Event.SessionComplete,
-          playhead: trackerState.lastPlayhead,
-          sessionID,
-          mediaDetails
-        });
+      return trackEvent({
+        eventType,
+        mediaDetails
       });
     },
     updatePlayhead: time => {
@@ -194,6 +243,19 @@ export const createMediaAnalyticsTracker = ({
         trackMediaEvent
       });
     },
-    createMediaHelper
+    Event,
+    MediaType,
+    PlayerState,
+    StreamType,
+    MediaObjectKey,
+    VideoMetadataKeys,
+    AudioMetadataKeys,
+    AdMetadataKeys,
+    createMediaObject,
+    createAdBreakObject,
+    createAdObject,
+    createChapterObject,
+    createStateObject,
+    createQoEObject
   };
 };
