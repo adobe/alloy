@@ -13,9 +13,10 @@ governing permissions and limitations under the License.
 import { getNonce } from "../../dom-actions/dom";
 import { parseAnchor } from "../utils";
 import { TEXT_HTML } from "../../../../constants/contentType";
-import { assign, includes } from "../../../../utils";
+import { assign, includes, values } from "../../../../utils";
 import { getEventType } from "../../../../constants/propositionEventType";
 import { createNode, removeNode } from "../../../../utils/dom";
+import { objectOf } from "../../../../utils/validation";
 
 const ALLOY_MESSAGING_CONTAINER_ID = "alloy-messaging-container";
 const ALLOY_OVERLAY_CONTAINER_ID = "alloy-overlay-container";
@@ -208,24 +209,19 @@ const isValidWebParameters = webParameters => {
     return false;
   }
 
-  const values = Object.values(webParameters);
+  const valuesArray = values(webParameters);
 
-  for (let i = 0; i < values.length; i += 1) {
-    if (!Object.prototype.hasOwnProperty.call(values[i], "style")) {
+  for (let i = 0; i < valuesArray.length; i += 1) {
+    if (!objectOf(valuesArray[i], "style")) {
       return false;
     }
 
-    if (!Object.prototype.hasOwnProperty.call(values[i], "params")) {
+    if (!objectOf(valuesArray[i], "params")) {
       return false;
     }
 
     for (let j = 0; j < REQUIRED_PARAMS.length; j += 1) {
-      if (
-        !Object.prototype.hasOwnProperty.call(
-          values[i].params,
-          REQUIRED_PARAMS[j]
-        )
-      ) {
+      if (!objectOf(valuesArray[i].params, REQUIRED_PARAMS[j])) {
         return false;
       }
     }
