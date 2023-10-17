@@ -16,7 +16,6 @@ import createApplyResponse from "./createApplyResponse";
 import createEventRegistry from "./createEventRegistry";
 import createContextProvider from "./createContextProvider";
 import createSubscribeRulesetItems from "./createSubscribeRulesetItems";
-import { ensureSchemaBasedRulesetConsequences } from "./utils";
 import {
   CONTEXT_KEY,
   MOBILE_EVENT_SOURCE,
@@ -56,8 +55,6 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
         decisionContext = {},
         onResponse = noop
       }) {
-        ensureSchemaBasedRulesetConsequences(event);
-
         onResponse(
           createOnResponseHandler({
             renderDecisions,

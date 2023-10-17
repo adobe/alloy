@@ -42,17 +42,6 @@ export const getExpirationDate = retentionPeriod => {
   expirationDate.setDate(expirationDate.getDate() - retentionPeriod);
   return expirationDate;
 };
-
-export const ensureSchemaBasedRulesetConsequences = event => {
-  event.mergeData({
-    __adobe: {
-      ajo: {
-        "in-app-response-format": 2
-      }
-    }
-  });
-};
-
 export const getActivityId = proposition => {
   const { scopeDetails = {} } = proposition;
   const { activity = {} } = scopeDetails;
