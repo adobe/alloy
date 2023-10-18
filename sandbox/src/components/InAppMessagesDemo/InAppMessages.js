@@ -28,7 +28,7 @@ const config = {
     alloyInstance: window.iamAlloy,
     datastreamId: "8cefc5ca-1c2a-479f-88f2-3d42cc302514",
     orgId: "906E3A095DC834230A495FD6@AdobeOrg",
-    surface: "mobileapp://com.adobe.aguaAppIos",
+    surface: "web://localhost:3000/inAppMessages",
     decisionContext: {},
     edgeDomain: "edge.adobedc.net",
     activeCampaigns: [

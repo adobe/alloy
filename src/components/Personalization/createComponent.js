@@ -33,9 +33,7 @@ export default ({
 }) => {
   return {
     lifecycle: {
-      onDecision({ viewName, renderDecisions, propositions }) {
-        return onDecisionHandler({ viewName, renderDecisions, propositions });
-      },
+      onDecision: onDecisionHandler,
       onBeforeRequest({ request }) {
         setTargetMigration(request);
         return Promise.resolve();

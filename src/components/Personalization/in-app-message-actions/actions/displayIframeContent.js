@@ -14,7 +14,8 @@ import { getNonce } from "../../dom-actions/dom";
 import { createElement, parseAnchor, removeElementById } from "../utils";
 import { TEXT_HTML } from "../../constants/contentType";
 import { assign } from "../../../../utils";
-import { getEventType } from "../../../../constants/propositionEventType";
+import { PropositionEventType } from "../../../../constants/propositionEventType";
+import { INTERACT } from "../../../../constants/eventType";
 
 const ALLOY_MESSAGING_CONTAINER_ID = "alloy-messaging-container";
 const ALLOY_OVERLAY_CONTAINER_ID = "alloy-overlay-container";
@@ -290,10 +291,18 @@ export default (settings, collect) => {
   return new Promise(resolve => {
     const { meta } = settings;
     displayHTMLContentInIframe(settings, (action, propositionAction) => {
+      const propositionEventTypes = new Set();
+      propositionEventTypes.add(PropositionEventType.INTERACT);
+
+      if (Object.values(PropositionEventType).indexOf(action) !== -1) {
+        propositionEventTypes.add(action);
+      }
+
       collect({
         decisionsMeta: [meta],
         propositionAction,
-        eventType: getEventType(action)
+        eventType: INTERACT,
+        propositionEventTypes: Array.from(propositionEventTypes)
       });
     });
 

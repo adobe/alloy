@@ -47,7 +47,7 @@ export default ({
         mergeDecisionsMeta(
           event,
           decisionsMeta,
-          PropositionEventType.INTERACT,
+          [PropositionEventType.INTERACT],
           eventLabel ? { label: eventLabel } : undefined
         );
       }
