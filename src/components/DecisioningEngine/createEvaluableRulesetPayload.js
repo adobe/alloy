@@ -10,10 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import RulesEngine from "@adobe/aep-rules-engine";
-import {
-  JSON_CONTENT_ITEM,
-  RULESET_ITEM
-} from "../Personalization/constants/schema";
+import { JSON_CONTENT_ITEM, RULESET_ITEM } from "../../constants/schema";
 import { DISPLAY } from "../../constants/eventType";
 import { getActivityId } from "./utils";
 
@@ -31,14 +28,20 @@ const isRulesetItem = item => {
     return false;
   }
 
-  const content =
-    typeof data.content === "string" ? JSON.parse(data.content) : data.content;
+  try {
+    const content =
+      typeof data.content === "string"
+        ? JSON.parse(data.content)
+        : data.content;
 
-  return (
-    content &&
-    Object.prototype.hasOwnProperty.call(content, "version") &&
-    Object.prototype.hasOwnProperty.call(content, "rules")
-  );
+    return (
+      content &&
+      Object.prototype.hasOwnProperty.call(content, "version") &&
+      Object.prototype.hasOwnProperty.call(content, "rules")
+    );
+  } catch (error) {
+    return false;
+  }
 };
 
 export default (payload, eventRegistry, decisionHistory) => {

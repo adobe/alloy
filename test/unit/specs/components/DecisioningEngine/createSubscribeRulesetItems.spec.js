@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 import { DOM_ACTION } from "@adobe/alloy/libEs5/components/Personalization/constants/schema";
 import createSubscribeRulesetItems from "../../../../../src/components/DecisioningEngine/createSubscribeRulesetItems";
-import { MESSAGE_FEED_ITEM } from "../../../../../src/components/Personalization/constants/schema";
+import { MESSAGE_FEED_ITEM } from "../../../../../src/constants/schema";
 
 describe("DecisioningEngine:subscribeRulesetItems", () => {
   let subscribeRulesetItems;

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createSubscribeMessageFeed from "../../../../../src/components/Personalization/createSubscribeMessageFeed";
-import { MESSAGE_FEED_ITEM } from "../../../../../src/components/Personalization/constants/schema";
+import { MESSAGE_FEED_ITEM } from "../../../../../src/constants/schema";
 
 describe("Personalization:subscribeMessageFeed", () => {
   let collect;

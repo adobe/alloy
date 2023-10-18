@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createOnDecisionHandler from "../../../../../src/components/Personalization/createOnDecisionHandler";
-import { MESSAGE_FEED_ITEM } from "../../../../../src/components/Personalization/constants/schema";
+import { MESSAGE_FEED_ITEM } from "../../../../../src/constants/schema";
 import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
 
 describe("Personalization::createOnDecisionHandler", () => {

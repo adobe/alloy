@@ -18,7 +18,7 @@ import {
 import cleanUpDomChanges from "../../../../../helpers/cleanUpDomChanges";
 import { getNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom";
 import { testResetCachedNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom/getNonce";
-import { TEXT_HTML } from "../../../../../../../src/components/Personalization/constants/contentType";
+import { TEXT_HTML } from "../../../../../../../src/constants/contentType";
 
 describe("DOM Actions on Iframe", () => {
   beforeEach(() => {

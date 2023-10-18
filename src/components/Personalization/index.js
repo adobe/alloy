@@ -31,7 +31,7 @@ import remapHeadOffers from "./dom-actions/remapHeadOffers";
 import createPreprocess from "./dom-actions/createPreprocess";
 import injectCreateProposition from "./handlers/injectCreateProposition";
 import createAsyncArray from "./utils/createAsyncArray";
-import * as schema from "./constants/schema";
+import * as schema from "../../constants/schema";
 import processDefaultContent from "./handlers/processDefaultContent";
 import { isPageWideSurface } from "./utils/surfaceUtils";
 import createProcessDomAction from "./handlers/createProcessDomAction";
