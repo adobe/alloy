@@ -10,10 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { PropositionEventType } from "../../constants/propositionEventType";
-
-export default ({ mergeDecisionsMeta, processPropositions, viewCache }) => {
-  return ({ personalizationDetails, event, onResponse }) => {
+export default ({ processPropositions, viewCache }) => {
+  return ({ personalizationDetails, onResponse }) => {
     let returnedPropositions;
     let returnedDecisions;
     const viewName = personalizationDetails.getViewName();
@@ -25,28 +23,21 @@ export default ({ mergeDecisionsMeta, processPropositions, viewCache }) => {
       };
     });
 
-    return viewCache
-      .getView(viewName)
-      .then(propositions => {
-        let render;
-        if (personalizationDetails.isRenderDecisions()) {
-          ({
-            render,
-            returnedPropositions,
-            returnedDecisions
-          } = processPropositions(propositions));
-          return render();
-        }
-        ({ returnedPropositions, returnedDecisions } = processPropositions(
-          [],
-          propositions
-        ));
-        return [];
-      })
-      .then(decisionsMeta => {
-        mergeDecisionsMeta(event, decisionsMeta, [
-          PropositionEventType.DISPLAY
-        ]);
-      });
+    return viewCache.getView(viewName).then(propositions => {
+      let render;
+      if (personalizationDetails.isRenderDecisions()) {
+        ({
+          render,
+          returnedPropositions,
+          returnedDecisions
+        } = processPropositions(propositions));
+        return render();
+      }
+      ({ returnedPropositions, returnedDecisions } = processPropositions(
+        [],
+        propositions
+      ));
+      return [];
+    });
   };
 };

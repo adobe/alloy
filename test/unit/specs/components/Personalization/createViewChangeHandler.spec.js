@@ -11,12 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import createViewChangeHandler from "../../../../../src/components/Personalization/createViewChangeHandler";
-import { PropositionEventType } from "../../../../../src/constants/propositionEventType";
 import { CART_VIEW_DECISIONS } from "./responsesMock/eventResponses";
 import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
 
 describe("Personalization::createViewChangeHandler", () => {
-  let mergeDecisionsMeta;
   let processPropositions;
   let viewCache;
 
@@ -27,7 +25,6 @@ describe("Personalization::createViewChangeHandler", () => {
   let createProposition;
 
   beforeEach(() => {
-    mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
     processPropositions = jasmine.createSpy("processPropositions");
     viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
 
@@ -46,16 +43,16 @@ describe("Personalization::createViewChangeHandler", () => {
 
   const run = async () => {
     const viewChangeHandler = createViewChangeHandler({
-      mergeDecisionsMeta,
       processPropositions,
       viewCache
     });
-    await viewChangeHandler({
+    const decisionsMeta = await viewChangeHandler({
       event,
       personalizationDetails,
       onResponse
     });
-    return onResponse.calls.argsFor(0)[0]();
+    const result = onResponse.calls.argsFor(0)[0]();
+    return { decisionsMeta, result };
   };
 
   it("should trigger render if renderDecisions is true", async () => {
@@ -70,12 +67,11 @@ describe("Personalization::createViewChangeHandler", () => {
       returnedDecisions: CART_VIEW_DECISIONS
     });
 
-    const result = await run();
+    const { decisionsMeta, result } = await run();
 
     expect(processPropositions).toHaveBeenCalledTimes(1);
-    expect(mergeDecisionsMeta).toHaveBeenCalledWith("myevent", "decisionMeta", [
-      PropositionEventType.DISPLAY
-    ]);
+    expect(decisionsMeta).toEqual("decisionMeta");
+
     expect(result.decisions).toEqual(CART_VIEW_DECISIONS);
   });
 });
