@@ -58,6 +58,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
   const viewCache = createViewCacheManager({ createProposition });
 
+  const executeRedirect = url => window.location.replace(url);
   const schemaProcessors = {
     [schema.DEFAULT_CONTENT_ITEM]: processDefaultContent,
     [schema.DOM_ACTION]: createProcessDomAction({
@@ -68,7 +69,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({ modules, logger }),
     [schema.REDIRECT_ITEM]: createProcessRedirect({
       logger,
-      executeRedirect: url => window.location.replace(url),
+      executeRedirect,
       collect
     })
   };
