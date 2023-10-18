@@ -102,11 +102,14 @@ export default ({
         return Promise.all(decisionsMetaPromises).then(decisionsMetas => {
           // We only want to call mergeDecisionsMeta once, but we can get the propositions
           // from two places: the pending display notifications and the view change handler.
-          mergeDecisionsMeta(
-            event,
-            flatMap(decisionsMetas, dms => dms),
-            PropositionEventType.DISPLAY
-          );
+          const decisionsMeta = flatMap(decisionsMetas, dms => dms);
+          if (decisionsMeta.length > 0) {
+            mergeDecisionsMeta(
+              event,
+              decisionsMeta,
+              PropositionEventType.DISPLAY
+            );
+          }
         });
       },
       onClick({ event, clickedElement }) {
