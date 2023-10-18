@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray, isObject } from "../../utils";
+import { isNonEmptyArray, isObject, defer } from "../../utils";
 import { DOM_ACTION, HTML_CONTENT_ITEM } from "./constants/schema";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
 
@@ -75,6 +75,11 @@ export default ({
   };
 
   return ({ propositions = [], metadata = {}, viewName }) => {
+    // We need to immediately call concat so that subsequent sendEvent
+    // calls will wait for applyPropositions to complete before executing.
+    const displayNotificationsDeferred = defer();
+    pendingDisplayNotifications.concat(displayNotificationsDeferred.promise);
+
     const propositionsToExecute = preparePropositions({
       propositions,
       metadata
@@ -93,7 +98,7 @@ export default ({
           ...additionalPropositions
         ]);
 
-        pendingDisplayNotifications.concat(render());
+        render().then(displayNotificationsDeferred.resolve);
 
         return {
           propositions: returnedPropositions
