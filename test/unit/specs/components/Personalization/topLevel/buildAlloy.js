@@ -30,7 +30,6 @@ import { createCallbackAggregator, assign } from "../../../../../../src/utils";
 import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition";
 import createProcessPropositions from "../../../../../../src/components/Personalization/handlers/createProcessPropositions";
 import createAsyncArray from "../../../../../../src/components/Personalization/utils/createAsyncArray";
-import createPendingNotificationsHandler from "../../../../../../src/components/Personalization/createPendingNotificationsHandler";
 import * as schema from "../../../../../../src/constants/schema";
 import createProcessDomAction from "../../../../../../src/components/Personalization/handlers/createProcessDomAction";
 import createProcessHtmlContent from "../../../../../../src/components/Personalization/handlers/createProcessHtmlContent";
@@ -117,10 +116,6 @@ const buildComponent = ({
   });
 
   const pendingDisplayNotifications = createAsyncArray();
-  const pendingNotificationsHandler = createPendingNotificationsHandler({
-    pendingDisplayNotifications,
-    mergeDecisionsMeta
-  });
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
     showContainers,
@@ -138,7 +133,6 @@ const buildComponent = ({
     getClickMetasBySelector
   });
   const viewChangeHandler = createViewChangeHandler({
-    mergeDecisionsMeta,
     processPropositions,
     viewCache
   });
@@ -175,7 +169,8 @@ const buildComponent = ({
     showContainers,
     applyPropositions,
     setTargetMigration,
-    pendingNotificationsHandler,
+    mergeDecisionsMeta,
+    pendingDisplayNotifications,
     onDecisionHandler,
     subscribeMessageFeed
   });

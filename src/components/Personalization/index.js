@@ -31,7 +31,6 @@ import remapHeadOffers from "./dom-actions/remapHeadOffers";
 import createPreprocess from "./dom-actions/createPreprocess";
 import injectCreateProposition from "./handlers/injectCreateProposition";
 import createAsyncArray from "./utils/createAsyncArray";
-import createPendingNotificationsHandler from "./createPendingNotificationsHandler";
 import * as schema from "../../constants/schema";
 import processDefaultContent from "./handlers/processDefaultContent";
 import { isPageWideSurface } from "./utils/surfaceUtils";
@@ -91,10 +90,6 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
 
   const pendingDisplayNotifications = createAsyncArray();
-  const pendingNotificationsHandler = createPendingNotificationsHandler({
-    pendingDisplayNotifications,
-    mergeDecisionsMeta
-  });
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
     showContainers,
@@ -112,7 +107,6 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     getClickMetasBySelector
   });
   const viewChangeHandler = createViewChangeHandler({
-    mergeDecisionsMeta,
     processPropositions,
     viewCache
   });
@@ -149,7 +143,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     showContainers,
     applyPropositions,
     setTargetMigration,
-    pendingNotificationsHandler,
+    mergeDecisionsMeta,
+    pendingDisplayNotifications,
     onDecisionHandler,
     subscribeMessageFeed
   });
