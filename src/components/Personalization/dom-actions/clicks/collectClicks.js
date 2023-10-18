@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import matchesSelectorWithEq from "../dom/matchesSelectorWithEq";
+import { VIEW_SCOPE_TYPE } from "../../constants/scopeType";
 
 const getMetasIfMatches = (
   clickedElement,
@@ -33,7 +34,7 @@ const getMetasIfMatches = (
         returnValue.weight = i;
       }
       const foundMetaWithScopeTypeView = matchedMetas.find(
-        meta => meta.scopeType === "view"
+        meta => meta.scopeType === VIEW_SCOPE_TYPE
       );
       if (foundMetaWithScopeTypeView) {
         returnValue.viewName = foundMetaWithScopeTypeView.scope;
