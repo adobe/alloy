@@ -24,25 +24,37 @@ describe("createProcessHtmlContent", () => {
 
   it("returns an empty object if the item has no data", () => {
     data = undefined;
-    expect(processHtmlContent(item)).toEqual({});
+    expect(processHtmlContent(item)).toEqual({
+      setRenderAttempted: false,
+      includeInNotification: false
+    });
     expect(logger.warn).not.toHaveBeenCalled();
   });
 
   it("returns an empty object if the item has no type", () => {
     data = { selector: ".myselector" };
-    expect(processHtmlContent(item)).toEqual({});
+    expect(processHtmlContent(item)).toEqual({
+      setRenderAttempted: false,
+      includeInNotification: false
+    });
     expect(logger.warn).not.toHaveBeenCalled();
   });
 
   it("returns an empty object if the item has no selector", () => {
     data = { type: "mytype" };
-    expect(processHtmlContent(item)).toEqual({});
+    expect(processHtmlContent(item)).toEqual({
+      setRenderAttempted: false,
+      includeInNotification: false
+    });
     expect(logger.warn).not.toHaveBeenCalled();
   });
 
   it("returns an empty object if the item has an unknown type, and logs unknown type", () => {
     data = { type: "typeC", selector: ".myselector", content: "mycontent" };
-    expect(processHtmlContent(item)).toEqual({});
+    expect(processHtmlContent(item)).toEqual({
+      setRenderAttempted: false,
+      includeInNotification: false
+    });
     expect(logger.warn).toHaveBeenCalledWith("Invalid HTML content data", {
       type: "typeC",
       selector: ".myselector",
