@@ -19,8 +19,9 @@ export default ({
   event,
   decisionContext
 }) => {
+  const eventContent = event.getContent();
   const context = {
-    ...flattenObject(event.getContent()),
+    ...flattenObject(eventContent),
     ...decisionContext
   };
   const viewName = event.getViewName();
@@ -29,6 +30,11 @@ export default ({
     decisionProvider.addPayloads(
       response.getPayloadsByType(PERSONALIZATION_DECISIONS_HANDLE)
     );
+
+    // only evaluate events that include a personalization query
+    if (!eventContent.query) {
+      return;
+    }
 
     const propositions = decisionProvider.evaluate(context);
 

@@ -37,6 +37,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
     const event = {
       getViewName: () => undefined,
       getContent: () => ({
+        query: {},
         xdm: {
           web: {
             webPageDetails: {
@@ -226,6 +227,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
     const event = {
       getViewName: () => "home",
       getContent: () => ({
+        query: {},
         xdm: {
           web: {
             webPageDetails: {

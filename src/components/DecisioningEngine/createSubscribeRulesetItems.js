@@ -15,6 +15,7 @@ import {
   objectOf,
   string
 } from "../../utils/validation";
+import createSubscription from "../../utils/createSubscription";
 
 const validateOptions = ({ options }) => {
   const validator = objectOf({
@@ -27,20 +28,21 @@ const validateOptions = ({ options }) => {
 };
 
 export default () => {
-  let subscriptionHandler;
+  const subscription = createSubscription();
   let surfacesFilter;
   let schemasFilter;
 
   const run = ({ surfaces, schemas, callback }) => {
-    subscriptionHandler = callback;
+    const unsubscribe = subscription.add(callback);
     surfacesFilter = surfaces instanceof Array ? surfaces : undefined;
     schemasFilter = schemas instanceof Array ? schemas : undefined;
+    return Promise.resolve({ unsubscribe });
   };
 
   const optionsValidator = options => validateOptions({ options });
 
   const refresh = propositions => {
-    if (!subscriptionHandler) {
+    if (!subscription.hasSubscriptions()) {
       return;
     }
 
@@ -65,7 +67,7 @@ export default () => {
       return;
     }
 
-    subscriptionHandler.call(null, result);
+    subscription.emit(result);
   };
 
   return {

@@ -412,17 +412,25 @@ export default function MessageFeed() {
 
   const [messageFeedItems, setMessageFeedItems] = useState([]);
 
+  let unsubscribeMessageFeed = () => undefined;
+  let unsubscribeRulesetItems = () => undefined;
+
   useEffect(() => {
     Promise.all([
       window.alloy("subscribeRulesetItems", {
         surfaces: ["web://target.jasonwaters.dev/aep.html"],
         callback: result => {
-          console.log("subscribeRulesetItems", result);
+          console.log(
+            `subscribeRulesetItems result: ${JSON.stringify(result, null, 4)}`
+          );
         }
       }),
       window.alloy("subscribeMessageFeed", {
         surface: "web://target.jasonwaters.dev/aep.html",
         callback: ({ items = [], rendered, clicked }) => {
+          console.log(
+            `subscribeMessageFeed result: ${JSON.stringify(items, null, 4)}`
+          );
           setClickHandler(() => clicked);
           setMessageFeedItems(items);
           rendered(items);
@@ -432,8 +440,16 @@ export default function MessageFeed() {
         renderDecisions: true,
         responseBody: mockResponse
       })
-    ]);
-  }, []);
+    ]).then(([rulesetItems, messageFeed]) => {
+      unsubscribeMessageFeed = () => messageFeed.unsubscribe();
+      unsubscribeRulesetItems = () => rulesetItems.unsubscribe();
+    });
+
+    return () => {
+      unsubscribeMessageFeed();
+      unsubscribeRulesetItems();
+    };
+  }, ["clickHandler"]);
 
   const shareSocialMedia = () => {
     window.alloy("evaluateRulesets", {

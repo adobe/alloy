@@ -16,6 +16,7 @@ import {
 } from "../../utils/validation";
 import { MESSAGE_FEED_ITEM } from "./constants/schema";
 import { DISPLAY, INTERACT } from "../../constants/eventType";
+import createSubscription from "../../utils/createSubscription";
 
 const validateOptions = ({ options }) => {
   const validator = objectOf({
@@ -27,11 +28,12 @@ const validateOptions = ({ options }) => {
 };
 
 export default ({ collect }) => {
-  let subscriptionHandler;
+  const subscription = createSubscription();
   let surfaceIdentifier;
   const run = ({ surface, callback }) => {
-    subscriptionHandler = callback;
+    const unsubscribe = subscription.add(callback);
     surfaceIdentifier = surface;
+    return Promise.resolve({ unsubscribe });
   };
 
   const optionsValidator = options => validateOptions({ options });
@@ -94,7 +96,7 @@ export default ({ collect }) => {
   };
 
   const refresh = propositions => {
-    if (!subscriptionHandler || !surfaceIdentifier) {
+    if (!subscription.hasSubscriptions() || !surfaceIdentifier) {
       return;
     }
 
@@ -114,8 +116,7 @@ export default ({ collect }) => {
         (a, b) =>
           b.qualifiedDate - a.qualifiedDate || b.publishedDate - a.publishedDate
       );
-
-    subscriptionHandler.call(null, { items: result, clicked, rendered });
+    subscription.emit({ items: result, clicked, rendered });
   };
 
   return {

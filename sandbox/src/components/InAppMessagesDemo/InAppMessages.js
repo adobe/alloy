@@ -1,5 +1,5 @@
 /* eslint-disable no-bitwise, no-console */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./InAppMessagesStyle.css";
 
@@ -66,13 +66,6 @@ if (alloyInstance !== window.alloy) {
   });
 }
 
-alloyInstance("subscribeRulesetItems", {
-  surfaces: [surface],
-  callback: result => {
-    console.log("subscribeRulesetItems", result);
-  }
-});
-
 const uuidv4 = () => {
   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
     (
@@ -119,6 +112,24 @@ export default function InAppMessages() {
   const [customTraitKey, setCustomTraitKey] = useState("");
   const [customTraitValue, setCustomTraitValue] = useState("");
 
+  let unsubscribeRulesetItems = () => undefined;
+
+  useEffect(() => {
+    alloyInstance("subscribeRulesetItems", {
+      callback: result => {
+        console.log(
+          `subscribeRulesetItems result: ${JSON.stringify(result, null, 4)}`
+        );
+      }
+    }).then(({ unsubscribe }) => {
+      unsubscribeRulesetItems = () => unsubscribe();
+    });
+
+    return () => {
+      unsubscribeRulesetItems();
+    };
+  }, []);
+
   const renderDecisions = (useEvaluateRulesetsCommand = false) => {
     const context = { ...decisionContext };
 
@@ -145,7 +156,8 @@ export default function InAppMessages() {
     } else {
       alloyInstance("sendEvent", {
         renderDecisions: true,
-        decisionContext: context
+        decisionContext: context,
+        personalization: { surfaces: ["#hello"] }
       }).then(() => setSentEvent(true));
     }
   };

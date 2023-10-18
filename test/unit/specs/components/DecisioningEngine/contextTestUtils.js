@@ -115,7 +115,10 @@ export const mockRulesetResponseWithCondition = condition => {
   };
 };
 
-const mockEvent = { getContent: () => ({}), getViewName: () => undefined };
+const mockEvent = {
+  getContent: () => ({ query: {} }),
+  getViewName: () => undefined
+};
 
 export const setupResponseHandler = (applyResponse, window, condition) => {
   const storage = jasmine.createSpyObj("storage", [

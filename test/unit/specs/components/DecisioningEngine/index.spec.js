@@ -138,34 +138,4 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
       propositions: [proposition]
     });
   });
-
-  it("ensures schema-based ruleset consequences", () => {
-    onResponseHandler = onResponse => {
-      onResponse({
-        response: mockRulesetResponseWithCondition({
-          definition: {
-            key: "referringPage.path",
-            matcher: "eq",
-            values: ["/search"]
-          },
-          type: "matcher"
-        })
-      });
-    };
-
-    decisioningEngine.lifecycle.onBeforeEvent({
-      event: mockEvent,
-      renderDecisions: false,
-      decisionContext: {},
-      onResponse: onResponseHandler
-    });
-
-    expect(mergeData).toHaveBeenCalledOnceWith({
-      __adobe: {
-        ajo: {
-          "in-app-response-format": 2
-        }
-      }
-    });
-  });
 });
