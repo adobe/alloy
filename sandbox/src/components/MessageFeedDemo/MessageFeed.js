@@ -420,17 +420,13 @@ export default function MessageFeed() {
       window.alloy("subscribeRulesetItems", {
         surfaces: ["web://target.jasonwaters.dev/aep.html"],
         callback: result => {
-          console.log(
-            `subscribeRulesetItems result: ${JSON.stringify(result, null, 4)}`
-          );
+          console.log("subscribeRulesetItems", result);
         }
       }),
       window.alloy("subscribeMessageFeed", {
         surface: "web://target.jasonwaters.dev/aep.html",
         callback: ({ items = [], rendered, clicked }) => {
-          console.log(
-            `subscribeMessageFeed result: ${JSON.stringify(items, null, 4)}`
-          );
+          console.log("subscribeMessageFeed", items);
           setClickHandler(() => clicked);
           setMessageFeedItems(items);
           rendered(items);
