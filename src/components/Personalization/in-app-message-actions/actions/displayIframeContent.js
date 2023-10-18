@@ -19,7 +19,6 @@ import { objectOf } from "../../../../utils/validation";
 import { PropositionEventType } from "../../../../constants/propositionEventType";
 import { INTERACT } from "../../../../constants/eventType";
 
-
 const ALLOY_MESSAGING_CONTAINER_ID = "alloy-messaging-container";
 const ALLOY_OVERLAY_CONTAINER_ID = "alloy-overlay-container";
 const ALLOY_IFRAME_ID = "alloy-content-iframe";
