@@ -43,7 +43,7 @@ describe("Personalization::createCollect", () => {
     expect(mergeDecisionsMeta).toHaveBeenCalledWith(
       event,
       decisionsMeta,
-      PropositionEventType.DISPLAY,
+      [PropositionEventType.DISPLAY],
       undefined
     );
     expect(eventManager.sendEvent).toHaveBeenCalled();

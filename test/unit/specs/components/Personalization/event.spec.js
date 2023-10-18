@@ -35,7 +35,7 @@ describe("Personalization::event", () => {
           scope: "cart"
         }
       ];
-      mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.DISPLAY);
+      mergeDecisionsMeta(event, decisionsMeta, [PropositionEventType.DISPLAY]);
       expect(event.mergeXdm).toHaveBeenCalledWith({
         _experience: {
           decisioning: {

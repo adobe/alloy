@@ -38,7 +38,7 @@ describe("Personalization::createPendingNotificationsHandler", () => {
       expect(mergeDecisionsMeta).toHaveBeenCalledOnceWith(
         event,
         ["mymeta1", "mymeta2"],
-        "display"
+        ["display"]
       );
     });
   });

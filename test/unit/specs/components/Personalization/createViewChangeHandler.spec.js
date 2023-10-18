@@ -73,11 +73,9 @@ describe("Personalization::createViewChangeHandler", () => {
     const result = await run();
 
     expect(processPropositions).toHaveBeenCalledTimes(1);
-    expect(mergeDecisionsMeta).toHaveBeenCalledWith(
-      "myevent",
-      "decisionMeta",
+    expect(mergeDecisionsMeta).toHaveBeenCalledWith("myevent", "decisionMeta", [
       PropositionEventType.DISPLAY
-    );
+    ]);
     expect(result.decisions).toEqual(CART_VIEW_DECISIONS);
   });
 });

@@ -15,6 +15,6 @@ export default ({ pendingDisplayNotifications, mergeDecisionsMeta }) => ({
   event
 }) => {
   return pendingDisplayNotifications.clear().then(decisionsMeta => {
-    mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.DISPLAY);
+    mergeDecisionsMeta(event, decisionsMeta, [PropositionEventType.DISPLAY]);
   });
 };
