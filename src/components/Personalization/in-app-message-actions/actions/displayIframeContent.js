@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 import { getNonce } from "../../dom-actions/dom";
-import { parseAnchor } from "../utils";
+import { parseAnchor, removeElementById } from "../utils";
 import { TEXT_HTML } from "../../../../constants/contentType";
 import { assign, includes, values } from "../../../../utils";
-import { createNode, removeNode } from "../../../../utils/dom";
+import { createNode } from "../../../../utils/dom";
 import { objectOf } from "../../../../utils/validation";
 import { PropositionEventType } from "../../../../constants/propositionEventType";
 import { INTERACT } from "../../../../constants/eventType";
@@ -23,19 +23,11 @@ const ALLOY_MESSAGING_CONTAINER_ID = "alloy-messaging-container";
 const ALLOY_OVERLAY_CONTAINER_ID = "alloy-overlay-container";
 const ALLOY_IFRAME_ID = "alloy-content-iframe";
 
-export const dismissMessage = () => {
-  const elementIdsToRemove = [
-    ALLOY_MESSAGING_CONTAINER_ID,
-    ALLOY_OVERLAY_CONTAINER_ID
-  ];
+const dismissMessage = () =>
+  [ALLOY_MESSAGING_CONTAINER_ID, ALLOY_OVERLAY_CONTAINER_ID].forEach(
+    removeElementById
+  );
 
-  elementIdsToRemove.forEach(id => {
-    const element = document.getElementById(id);
-    if (element) {
-      removeNode(element);
-    }
-  });
-};
 const setWindowLocationHref = link => {
   window.location.href = link;
 };

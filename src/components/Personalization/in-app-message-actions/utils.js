@@ -10,7 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { startsWith } from "../../../utils";
+import { removeNode } from "../../../utils/dom";
 
+export const removeElementById = id => {
+  const element = document.getElementById(id);
+  if (element) {
+    removeNode(element);
+  }
+};
 export const parseAnchor = anchor => {
   const nothing = {};
 
