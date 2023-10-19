@@ -26,6 +26,8 @@ export default ({
   return ({ cacheUpdate, personalizationDetails, event, onResponse }) => {
     if (personalizationDetails.isRenderDecisions()) {
       hideContainers(prehidingStyle);
+    } else {
+      showContainers();
     }
     mergeQuery(event, personalizationDetails.createQueryDetails());
 
