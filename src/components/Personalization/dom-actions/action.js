@@ -25,7 +25,6 @@ export { default as setStyles } from "./setStyles";
 export { default as setAttributes } from "./setAttributes";
 export { default as swapImage } from "./swapImage";
 export { default as rearrangeChildren } from "./rearrangeChildren";
-export { default as click } from "./click";
 
 const renderContent = (elements, content, renderFunc) => {
   const executions = elements.map(element => renderFunc(element, content));
@@ -34,8 +33,8 @@ const renderContent = (elements, content, renderFunc) => {
 };
 
 export const createAction = renderFunc => {
-  return settings => {
-    const { selector, prehidingSelector, content, meta } = settings;
+  return itemData => {
+    const { selector, prehidingSelector, content } = itemData;
 
     hideElements(prehidingSelector);
 
@@ -45,13 +44,12 @@ export const createAction = renderFunc => {
         () => {
           // if everything is OK, show elements
           showElements(prehidingSelector);
-          return { meta };
         },
         error => {
           // in case of awaiting timing or error, we need to remove the style tag
           // hence showing the pre-hidden elements
           showElements(prehidingSelector);
-          return { meta, error };
+          throw error;
         }
       );
   };

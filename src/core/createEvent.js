@@ -10,7 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isEmptyObject, deepAssign } from "../utils";
+import {
+  isEmptyObject,
+  deepAssign,
+  isNonEmptyArray,
+  deduplicateArray
+} from "../utils";
+
+const getXdmPropositions = xdm => {
+  return xdm &&
+    // eslint-disable-next-line no-underscore-dangle
+    xdm._experience &&
+    // eslint-disable-next-line no-underscore-dangle
+    xdm._experience.decisioning &&
+    // eslint-disable-next-line no-underscore-dangle
+    isNonEmptyArray(xdm._experience.decisioning.propositions)
+    ? // eslint-disable-next-line no-underscore-dangle
+      xdm._experience.decisioning.propositions
+    : [];
+};
 
 export default () => {
   const content = {};
@@ -63,8 +81,23 @@ export default () => {
         return;
       }
 
+      const newPropositions = deduplicateArray(
+        [...getXdmPropositions(userXdm), ...getXdmPropositions(content.xdm)],
+        (a, b) =>
+          a === b ||
+          (a.id &&
+            b.id &&
+            a.id === b.id &&
+            a.scope &&
+            b.scope &&
+            a.scope === b.scope)
+      );
       if (userXdm) {
-        event.mergeXdm(userXdm);
+        this.mergeXdm(userXdm);
+      }
+      if (newPropositions.length > 0) {
+        // eslint-disable-next-line no-underscore-dangle
+        content.xdm._experience.decisioning.propositions = newPropositions;
       }
 
       if (userData) {
@@ -115,7 +148,12 @@ export default () => {
       return shouldSendEvent;
     },
     getViewName() {
-      if (!userXdm || !userXdm.web || !userXdm.web.webPageDetails) {
+      if (
+        !userXdm ||
+        !userXdm.web ||
+        !userXdm.web.webPageDetails ||
+        !userXdm.web.webPageDetails.viewName
+      ) {
         return undefined;
       }
 

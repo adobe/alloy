@@ -3,8 +3,7 @@ import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
 const makePayload = (size, times = 1) => () => {
-  var i;
-  for (i = 0; i < times; i++) {
+  for (let i = 0; i < times; i += 1) {
     const payload = new Uint8Array(size * 1024);
     window.alloy("sendEvent", {
       documentUnloading: true,

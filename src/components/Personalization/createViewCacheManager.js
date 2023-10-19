@@ -10,32 +10,84 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign } from "../../utils";
+import { assign, groupBy } from "../../utils";
+import defer from "../../utils/defer";
+import { DEFAULT_CONTENT_ITEM } from "./constants/schema";
 
-export default () => {
+export default ({ createProposition }) => {
   const viewStorage = {};
-  let storeViewsCalledAtLeastOnce = false;
-  let previousStoreViewsComplete = Promise.resolve();
+  let cacheUpdateCreatedAtLeastOnce = false;
+  let previousUpdateCacheComplete = Promise.resolve();
 
-  const storeViews = decisionsPromise => {
-    storeViewsCalledAtLeastOnce = true;
-    previousStoreViewsComplete = previousStoreViewsComplete
-      .then(() => decisionsPromise)
-      .then(decisions => {
-        assign(viewStorage, decisions);
+  const getViewPropositions = (currentViewStorage, viewName) => {
+    const viewPropositions = currentViewStorage[viewName.toLowerCase()];
+    if (viewPropositions && viewPropositions.length > 0) {
+      return viewPropositions;
+    }
+
+    const emptyViewProposition = createProposition(
+      {
+        scope: viewName,
+        scopeDetails: {
+          characteristics: {
+            scopeType: "view"
+          }
+        },
+        items: [
+          {
+            schema: DEFAULT_CONTENT_ITEM
+          }
+        ]
+      },
+      false
+    );
+    return [emptyViewProposition];
+  };
+
+  // This should be called before making the request to experience edge.
+  const createCacheUpdate = viewName => {
+    const updateCacheDeferred = defer();
+
+    cacheUpdateCreatedAtLeastOnce = true;
+    previousUpdateCacheComplete = previousUpdateCacheComplete
+      .then(() => updateCacheDeferred.promise)
+      .then(newViewStorage => {
+        assign(viewStorage, newViewStorage);
       })
       .catch(() => {});
+
+    return {
+      update(viewPropositions) {
+        const viewPropositionsWithScope = viewPropositions.filter(proposition =>
+          proposition.getScope()
+        );
+        const newViewStorage = groupBy(viewPropositionsWithScope, proposition =>
+          proposition.getScope().toLowerCase()
+        );
+        updateCacheDeferred.resolve(newViewStorage);
+        if (viewName) {
+          return getViewPropositions(newViewStorage, viewName);
+        }
+        return [];
+      },
+      cancel() {
+        updateCacheDeferred.reject();
+      }
+    };
   };
 
   const getView = viewName => {
-    return previousStoreViewsComplete.then(() => viewStorage[viewName] || []);
+    return previousUpdateCacheComplete.then(() =>
+      getViewPropositions(viewStorage, viewName)
+    );
   };
 
   const isInitialized = () => {
-    return storeViewsCalledAtLeastOnce;
+    return cacheUpdateCreatedAtLeastOnce;
   };
+
   return {
-    storeViews,
+    createCacheUpdate,
     getView,
     isInitialized
   };

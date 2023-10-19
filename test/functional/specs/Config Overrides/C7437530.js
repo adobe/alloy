@@ -212,4 +212,9 @@ test("Test C7437530: `sendEvent` can override the datastreamId", async () => {
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
   const [request] = networkLogger.edgeEndpointLogs.requests;
   await t.expect(request.request.url).contains(alternateDatastreamId);
+
+  const body = JSON.parse(request.request.body);
+  await t
+    .expect(body.meta.sdkConfig.datastream.original)
+    .eql(originalDatastreamId);
 });

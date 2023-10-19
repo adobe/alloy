@@ -19,6 +19,11 @@ export const mergeDecisionsMeta = (
   eventType,
   eventLabel = ""
 ) => {
+  // Do not send a display notification with no decisions. Even empty view changes
+  // should include a proposition.
+  if (decisionsMeta.length === 0) {
+    return;
+  }
   const xdm = {
     _experience: {
       decisioning: {

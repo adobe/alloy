@@ -2,15 +2,15 @@ import React from "react";
 import UnsafeContentSecurityPolicy from "./components/UnsafeContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
-function loadLaunch() {
+const loadLaunch = () => {
   const script = document.createElement("script");
   script.src =
     "http://assets.adobedtm.com/launch-ENaa9d45a2136f487791ebc8420ec24dbe.min.js";
   script.async = true;
   document.body.appendChild(script);
-}
+};
 
-export default function DualTag() {
+export default () => {
   useSendPageViewEvent();
   return (
     <div>
@@ -29,4 +29,4 @@ export default function DualTag() {
       </p>
     </div>
   );
-}
+};

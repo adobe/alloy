@@ -10,6 +10,8 @@
  governing permissions and limitations under the License.
  */
 
+/* eslint-disable no-console, func-names */
+
 import React, { useEffect, useState } from "react";
 
 const readCookies = () => {

@@ -9,17 +9,23 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import addRenderAttemptedToDecisions from "./addRenderAttemptedToDecisions";
+export default ({ modules, logger }) => item => {
+  const { type, selector } = item.getData() || {};
 
-export default (decisions = [], renderDecisions) => {
-  const resultingObject = {
-    propositions: addRenderAttemptedToDecisions({
-      decisions,
-      renderAttempted: renderDecisions
-    })
-  };
-  if (!renderDecisions) {
-    resultingObject.decisions = decisions;
+  if (!selector || !type) {
+    return { setRenderAttempted: false, includeInNotification: false };
   }
-  return resultingObject;
+
+  if (!modules[type]) {
+    logger.warn("Invalid HTML content data", item.getData());
+    return { setRenderAttempted: false, includeInNotification: false };
+  }
+
+  return {
+    render: () => {
+      modules[type](item.getData());
+    },
+    setRenderAttempted: true,
+    includeInNotification: true
+  };
 };
