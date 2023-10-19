@@ -14,13 +14,13 @@ export default ({ modules, logger, storeClickMetrics }) => item => {
 
   if (!type) {
     logger.warn("Invalid DOM action data: missing type.", item.getData());
-    return {};
+    return { setRenderAttempted: false, includeInNotification: false };
   }
 
   if (type === "click") {
     if (!selector) {
       logger.warn("Invalid DOM action data: missing selector.", item.getData());
-      return {};
+      return { setRenderAttempted: false, includeInNotification: false };
     }
     storeClickMetrics({ selector, meta: item.getMeta() });
     return { setRenderAttempted: true, includeInNotification: false };
@@ -28,7 +28,7 @@ export default ({ modules, logger, storeClickMetrics }) => item => {
 
   if (!modules[type]) {
     logger.warn("Invalid DOM action data: unknown type.", item.getData());
-    return {};
+    return { setRenderAttempted: false, includeInNotification: false };
   }
 
   return {
