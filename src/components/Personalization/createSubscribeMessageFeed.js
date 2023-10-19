@@ -14,7 +14,7 @@ import {
   objectOf,
   string
 } from "../../utils/validation";
-import { MESSAGE_FEED_ITEM } from "./constants/schema";
+import { MESSAGE_FEED_ITEM } from "../../constants/schema";
 import { DISPLAY, INTERACT } from "../../constants/eventType";
 import createSubscription from "../../utils/createSubscription";
 

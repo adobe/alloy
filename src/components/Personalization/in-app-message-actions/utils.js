@@ -10,36 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { startsWith } from "../../../utils";
-
-export const addStyle = (styleTagId, cssText) => {
-  const existingStyle = document.getElementById(styleTagId);
-  if (existingStyle) {
-    existingStyle.remove();
-  }
-
-  const styles = document.createElement("style");
-  styles.id = styleTagId;
-
-  styles.appendChild(document.createTextNode(cssText));
-  document.head.appendChild(styles);
-};
-
-export const removeElements = cssClassName => {
-  [...document.getElementsByClassName(cssClassName)].forEach(element => {
-    if (!element) {
-      return;
-    }
-    element.remove();
-  });
-};
+import { removeNode } from "../../../utils/dom";
 
 export const removeElementById = id => {
   const element = document.getElementById(id);
   if (element) {
-    element.remove();
+    removeNode(element);
   }
 };
-
 export const parseAnchor = anchor => {
   const nothing = {};
 
@@ -73,9 +51,4 @@ export const parseAnchor = anchor => {
     label,
     uuid
   };
-};
-export const createElement = elementTagId => {
-  const element = document.createElement("div");
-  element.id = elementTagId;
-  return element;
 };

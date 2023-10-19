@@ -21,7 +21,7 @@ import {
   REDIRECT_ITEM,
   RULESET_ITEM,
   MESSAGE_FEED_ITEM
-} from "../../../../../src/components/Personalization/constants/schema";
+} from "../../../../../src/constants/schema";
 
 describe("Personalization::createPersonalizationDetails", () => {
   const TEST_SURFACE = "web://alloy.test.com/test/page/1";

@@ -40,7 +40,6 @@ export const getExpirationDate = retentionPeriod => {
   expirationDate.setDate(expirationDate.getDate() - retentionPeriod);
   return expirationDate;
 };
-
 export const getActivityId = proposition => {
   const { scopeDetails = {} } = proposition;
   const { activity = {} } = scopeDetails;

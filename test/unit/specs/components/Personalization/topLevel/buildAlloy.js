@@ -30,7 +30,7 @@ import { createCallbackAggregator, assign } from "../../../../../../src/utils";
 import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition";
 import createProcessPropositions from "../../../../../../src/components/Personalization/handlers/createProcessPropositions";
 import createAsyncArray from "../../../../../../src/components/Personalization/utils/createAsyncArray";
-import * as schema from "../../../../../../src/components/Personalization/constants/schema";
+import * as schema from "../../../../../../src/constants/schema";
 import createProcessDomAction from "../../../../../../src/components/Personalization/handlers/createProcessDomAction";
 import createProcessHtmlContent from "../../../../../../src/components/Personalization/handlers/createProcessHtmlContent";
 import createProcessRedirect from "../../../../../../src/components/Personalization/handlers/createProcessRedirect";

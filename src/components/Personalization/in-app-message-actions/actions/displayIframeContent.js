@@ -11,9 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import { getNonce } from "../../dom-actions/dom";
-import { createElement, parseAnchor, removeElementById } from "../utils";
-import { TEXT_HTML } from "../../constants/contentType";
-import { assign } from "../../../../utils";
+import { parseAnchor, removeElementById } from "../utils";
+import { TEXT_HTML } from "../../../../constants/contentType";
+import { assign, includes, values } from "../../../../utils";
+import { createNode } from "../../../../utils/dom";
+import { objectOf } from "../../../../utils/validation";
 import { PropositionEventType } from "../../../../constants/propositionEventType";
 import { INTERACT } from "../../../../constants/eventType";
 
@@ -27,7 +29,7 @@ const dismissMessage = () =>
   );
 
 const setWindowLocationHref = link => {
-  window.location.assign(link);
+  window.location.href = link;
 };
 
 export const createIframeClickHandler = (
@@ -74,11 +76,13 @@ export const createIframe = (htmlContent, clickHandler) => {
   if (scriptTag) {
     scriptTag.setAttribute("nonce", getNonce());
   }
-  const element = document.createElement("iframe");
-  element.src = URL.createObjectURL(
-    new Blob([htmlDocument.documentElement.outerHTML], { type: TEXT_HTML })
-  );
-  element.id = ALLOY_IFRAME_ID;
+  const element = createNode("iframe", {
+    src: URL.createObjectURL(
+      new Blob([htmlDocument.documentElement.outerHTML], { type: "text/html" })
+    ),
+    id: ALLOY_IFRAME_ID
+  });
+
   element.addEventListener("load", () => {
     const { addEventListener } =
       element.contentDocument || element.contentWindow.document;
@@ -190,32 +194,27 @@ const isValidWebParameters = webParameters => {
 
   const ids = Object.keys(webParameters);
 
-  if (!ids.includes(ALLOY_MESSAGING_CONTAINER_ID)) {
+  if (!includes(ids, ALLOY_MESSAGING_CONTAINER_ID)) {
     return false;
   }
 
-  if (!ids.includes(ALLOY_OVERLAY_CONTAINER_ID)) {
+  if (!includes(ids, ALLOY_OVERLAY_CONTAINER_ID)) {
     return false;
   }
 
-  const values = Object.values(webParameters);
+  const valuesArray = values(webParameters);
 
-  for (let i = 0; i < values.length; i += 1) {
-    if (!Object.prototype.hasOwnProperty.call(values[i], "style")) {
+  for (let i = 0; i < valuesArray.length; i += 1) {
+    if (!objectOf(valuesArray[i], "style")) {
       return false;
     }
 
-    if (!Object.prototype.hasOwnProperty.call(values[i], "params")) {
+    if (!objectOf(valuesArray[i], "params")) {
       return false;
     }
 
     for (let j = 0; j < REQUIRED_PARAMS.length; j += 1) {
-      if (
-        !Object.prototype.hasOwnProperty.call(
-          values[i].params,
-          REQUIRED_PARAMS[j]
-        )
-      ) {
+      if (!objectOf(valuesArray[i].params, REQUIRED_PARAMS[j])) {
         return false;
       }
     }
@@ -272,9 +271,9 @@ export const displayHTMLContentInIframe = (settings = {}, interact) => {
     return;
   }
 
-  const container = createElement(ALLOY_MESSAGING_CONTAINER_ID);
+  const container = createNode("div", { id: ALLOY_MESSAGING_CONTAINER_ID });
   const iframe = createIframe(content, createIframeClickHandler(interact));
-  const overlay = createElement(ALLOY_OVERLAY_CONTAINER_ID);
+  const overlay = createNode("div", { id: ALLOY_OVERLAY_CONTAINER_ID });
 
   if (!isValidWebParameters(webParameters)) {
     webParameters = generateWebParameters(mobileParameters);
