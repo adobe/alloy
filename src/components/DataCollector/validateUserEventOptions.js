@@ -32,7 +32,8 @@ export default ({ options }) => {
       decisionScopes: arrayOf(string()).uniqueItems(),
       surfaces: arrayOf(string()).uniqueItems(),
       sendDisplayNotifications: boolean().default(true),
-      includePendingDisplayNotifications: boolean().default(false)
+      includePendingDisplayNotifications: boolean().default(false),
+      requestPersonalization: boolean()
     }).default({ sendDisplayNotifications: true }),
     datasetId: string(),
     mergeId: string(),

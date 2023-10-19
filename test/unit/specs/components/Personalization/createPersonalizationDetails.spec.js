@@ -40,7 +40,7 @@ describe("Personalization::createPersonalizationDetails", () => {
 
   // s - has scopes or surfaces
   // i - cache is initialized
-  // ip - initializePersonalization flag
+  // ip - requestPersonalization flag
   // fetch - should fetch data
   [
     { s: false, i: false, ip: false, fetch: false },
@@ -63,18 +63,17 @@ describe("Personalization::createPersonalizationDetails", () => {
     }scopes, the cache is ${
       i ? "" : "not "
     }initialized, and initializePersonalization is '${ip}'`, () => {
-      viewCache.isInitialized.and.returnValue(i);
       const personalizationDetails = createPersonalizationDetails({
         getPageLocation,
         renderDecisions: true,
         decisionScopes: [],
         personalization: {
-          decisionScopes: s ? ["test"] : undefined
+          decisionScopes: s ? ["test"] : undefined,
+          requestPersonalization: ip
         },
         event,
-        viewCache,
-        logger,
-        initializePersonalization: ip
+        isCacheInitialized: i,
+        logger
       });
       expect(personalizationDetails.shouldFetchData()).toEqual(fetch);
     });

@@ -42,7 +42,6 @@ export default ({
         renderDecisions,
         decisionScopes = [],
         personalization = {},
-        initializePersonalization = null,
         onResponse = noop,
         onRequestFailure = noop
       }) {
