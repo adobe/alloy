@@ -30,26 +30,28 @@ const decisionContent =
   '<div id="C28755">Here is an awesome target offer!</div>';
 
 createFixture({
-  title: "CXXX: initializePersonalization should control fetching VEC offers",
+  title: "C14317242: requestPersonalization should control fetching VEC offers",
   requestHooks: [networkLogger.edgeEndpointLogs],
   url: `${TEST_PAGE_URL}?test=C28755`
 });
 
 test.meta({
-  ID: "CXXX",
+  ID: "C14317242",
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
 
-test("Test CXXX: initializePersonalization should control fetching VEC offers", async () => {
+test("Test C14317242: requestPersonalization should control fetching VEC offers", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  // Does not fetch offers because initializePersonalization is false.
-  await alloy.sendEvent({ initializePersonalization: false });
+  // Does not fetch offers because requestPersonalization is false.
+  await alloy.sendEvent({ personalization: { requestPersonalization: false } });
   // Fetches offers because the cache has not been initialized.
   const result2 = await alloy.sendEvent({});
   // Fetches offers because initializePersonalization is true.
-  const result3 = await alloy.sendEvent({ initializePersonalization: true });
+  const result3 = await alloy.sendEvent({
+    personalization: { requestPersonalization: true }
+  });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
