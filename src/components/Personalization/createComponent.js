@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop, flatMap } from "../../utils";
+import { noop, flatMap, isNonEmptyArray } from "../../utils";
 import createPersonalizationDetails from "./createPersonalizationDetails";
 import { AUTHORING_ENABLED } from "./constants/loggerMessage";
 import validateApplyPropositionsOptions from "./validateApplyPropositionsOptions";
@@ -103,7 +103,7 @@ export default ({
           // We only want to call mergeDecisionsMeta once, but we can get the propositions
           // from two places: the pending display notifications and the view change handler.
           const decisionsMeta = flatMap(decisionsMetas, dms => dms);
-          if (decisionsMeta.length > 0) {
+          if (isNonEmptyArray(decisionsMeta)) {
             mergeDecisionsMeta(
               event,
               decisionsMeta,
