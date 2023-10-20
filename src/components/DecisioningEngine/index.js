@@ -22,13 +22,19 @@ import {
   MOBILE_EVENT_TYPE
 } from "./constants";
 import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand";
+import createNoopEventRegistery from "./createNoopEventRegistry";
 
 const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
-  const { orgId } = config;
-  const storage = createNamespacedStorage(
-    `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`
-  );
-  const eventRegistry = createEventRegistry({ storage: storage.persistent });
+  const { orgId, personalizationStorageEnabled } = config;
+  let eventRegistry;
+  if (personalizationStorageEnabled) {
+    const storage = createNamespacedStorage(
+      `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`
+    );
+    eventRegistry = createEventRegistry({ storage: storage.persistent });
+  } else {
+    eventRegistry = createNoopEventRegistery();
+  }
   let applyResponse;
 
   const decisionProvider = createDecisionProvider({ eventRegistry });

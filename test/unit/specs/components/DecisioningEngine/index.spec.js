@@ -23,7 +23,10 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
   let decisioningEngine;
   beforeEach(() => {
     mergeData = jasmine.createSpy();
-    const config = { orgId: "exampleOrgId" };
+    const config = {
+      orgId: "exampleOrgId",
+      personalizationStorageEnabled: true
+    };
     window.referrer =
       "https://www.google.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer";
     const createNamespacedStorage = injectStorage(window);
