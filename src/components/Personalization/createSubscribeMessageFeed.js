@@ -28,15 +28,7 @@ const validateOptions = ({ options }) => {
 };
 
 export default ({ collect }) => {
-  const subscription = createSubscription();
-  let surfaceIdentifier;
-  const run = ({ surface, callback }) => {
-    const unsubscribe = subscription.add(callback);
-    surfaceIdentifier = surface;
-    return Promise.resolve({ unsubscribe });
-  };
-
-  const optionsValidator = options => validateOptions({ options });
+  const renderedSet = new Set();
 
   const createFeedItem = (payload, item) => {
     const { id, scope, scopeDetails } = payload;
@@ -55,8 +47,6 @@ export default ({ collect }) => {
       }
     };
   };
-
-  const renderedSet = new Set();
 
   const clicked = (items = []) => {
     if (!(items instanceof Array)) {
@@ -95,10 +85,9 @@ export default ({ collect }) => {
     }
   };
 
-  const refresh = propositions => {
-    if (!subscription.hasSubscriptions() || !surfaceIdentifier) {
-      return;
-    }
+  const subscription = createSubscription();
+  subscription.setEmissionPreprocessor((params, propositions) => {
+    const { surfaceIdentifier } = params;
 
     const result = propositions
       .filter(payload => payload.scope === surfaceIdentifier)
@@ -116,7 +105,25 @@ export default ({ collect }) => {
         (a, b) =>
           b.qualifiedDate - a.qualifiedDate || b.publishedDate - a.publishedDate
       );
-    subscription.emit({ items: result, clicked, rendered });
+
+    return [{ items: result, clicked, rendered }];
+  });
+
+  const run = ({ surface, callback }) => {
+    const unsubscribe = subscription.add(callback, {
+      surfaceIdentifier: surface
+    });
+    return Promise.resolve({ unsubscribe });
+  };
+
+  const optionsValidator = options => validateOptions({ options });
+
+  const refresh = propositions => {
+    if (!subscription.hasSubscriptions()) {
+      return;
+    }
+
+    subscription.emit(propositions);
   };
 
   return {

@@ -412,11 +412,8 @@ export default function MessageFeed() {
 
   const [messageFeedItems, setMessageFeedItems] = useState([]);
 
-  let unsubscribeMessageFeed = () => undefined;
-  let unsubscribeRulesetItems = () => undefined;
-
   useEffect(() => {
-    Promise.all([
+    const startupPromises = Promise.all([
       window.alloy("subscribeRulesetItems", {
         surfaces: ["web://target.jasonwaters.dev/aep.html"],
         callback: result => {
@@ -436,14 +433,13 @@ export default function MessageFeed() {
         renderDecisions: true,
         responseBody: mockResponse
       })
-    ]).then(([rulesetItems, messageFeed]) => {
-      unsubscribeMessageFeed = () => messageFeed.unsubscribe();
-      unsubscribeRulesetItems = () => rulesetItems.unsubscribe();
-    });
+    ]);
 
     return () => {
-      unsubscribeMessageFeed();
-      unsubscribeRulesetItems();
+      startupPromises.then(([rulesetItems, messageFeed]) => {
+        messageFeed.unsubscribe();
+        rulesetItems.unsubscribe();
+      });
     };
   }, ["clickHandler"]);
 

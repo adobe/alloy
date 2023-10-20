@@ -56,19 +56,15 @@ export default function InAppMessages() {
   const [customTraitKey, setCustomTraitKey] = useState("");
   const [customTraitValue, setCustomTraitValue] = useState("");
 
-  let unsubscribeRulesetItems = () => undefined;
-
   useEffect(() => {
-    alloyInstance("subscribeRulesetItems", {
+    const unsubscribePromise = alloyInstance("subscribeRulesetItems", {
       callback: result => {
         console.log("subscribeRulesetItems", result);
       }
-    }).then(({ unsubscribe }) => {
-      unsubscribeRulesetItems = () => unsubscribe();
     });
 
     return () => {
-      unsubscribeRulesetItems();
+      unsubscribePromise.then(({ unsubscribe }) => unsubscribe());
     };
   }, []);
 

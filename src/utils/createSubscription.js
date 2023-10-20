@@ -9,29 +9,56 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+const defaultPreprocessor = (params, ...args) => {
+  return args;
+};
+
+// eslint-disable-next-line no-unused-vars
+const defaultEmissionCondition = (params, ...args) => true;
+
 const createSubscription = () => {
+  let preprocessor = defaultPreprocessor;
+  let emissionCondition = defaultEmissionCondition;
   let counter = 0;
   const subscriptions = {};
 
   const createUnsubscribe = id => {
     return () => {
+      console.log(`unsubscribe ${id}!`);
       delete subscriptions[id];
     };
   };
 
-  const add = callback => {
+  const add = (callback, params = undefined) => {
     if (typeof callback !== "function") {
       return () => undefined;
     }
 
     counter += 1;
-    subscriptions[counter] = callback;
+    console.log(`subscribe ${counter}!`);
+
+    subscriptions[counter] = { callback, params };
     return createUnsubscribe(counter);
   };
 
+  const setEmissionPreprocessor = value => {
+    if (typeof value === "function") {
+      preprocessor = value;
+    }
+  };
+
+  const setEmissionCondition = value => {
+    if (typeof value === "function") {
+      emissionCondition = value;
+    }
+  };
+
   const emit = (...args) => {
-    Object.values(subscriptions).forEach(callback => {
-      callback(...args);
+    Object.values(subscriptions).forEach(({ callback, params }) => {
+      const result = preprocessor(params, ...args);
+      if (emissionCondition(params, ...result)) {
+        callback(...result);
+      }
     });
   };
 
@@ -40,7 +67,9 @@ const createSubscription = () => {
   return {
     add,
     emit,
-    hasSubscriptions
+    hasSubscriptions,
+    setEmissionPreprocessor,
+    setEmissionCondition
   };
 };
 

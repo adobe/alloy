@@ -82,4 +82,75 @@ describe("createSubscription", () => {
     expect(callback2).toHaveBeenCalledTimes(2);
     expect(callback3).toHaveBeenCalledTimes(3);
   });
+
+  it("emits distinct values for multiple subscriptions", () => {
+    const subscription = createSubscription();
+    subscription.setEmissionPreprocessor((params, basePrice) => {
+      const { name, profitMargin } = params;
+      const price = basePrice * profitMargin;
+      return [`hello ${name}! The price is $${price}`];
+    });
+
+    const unsubsubscribe1 = subscription.add(callback1, {
+      name: "jim",
+      profitMargin: 3
+    });
+    const unsubsubscribe2 = subscription.add(callback2, {
+      name: "bob",
+      profitMargin: 1.8
+    });
+    const unsubsubscribe3 = subscription.add(callback3, {
+      name: "tina",
+      profitMargin: 1.1
+    });
+
+    subscription.emit(10);
+
+    expect(callback1).toHaveBeenCalledOnceWith("hello jim! The price is $30");
+    expect(callback2).toHaveBeenCalledOnceWith("hello bob! The price is $18");
+    expect(callback3).toHaveBeenCalledOnceWith("hello tina! The price is $11");
+
+    unsubsubscribe1();
+    unsubsubscribe2();
+    unsubsubscribe3();
+  });
+
+  it("emits distinct values conditionally", () => {
+    const subscription = createSubscription();
+    subscription.setEmissionPreprocessor((params, basePrice) => {
+      const { name, profitMargin } = params;
+      const price = basePrice * profitMargin;
+      return [`hello ${name}! The price is $${price}`];
+    });
+    subscription.setEmissionCondition((params, result) => {
+      const price = parseInt(
+        result.substring(result.length - 2, result.length),
+        10
+      );
+      return price < 20;
+    });
+
+    const unsubsubscribe1 = subscription.add(callback1, {
+      name: "jim",
+      profitMargin: 3
+    });
+    const unsubsubscribe2 = subscription.add(callback2, {
+      name: "bob",
+      profitMargin: 1.8
+    });
+    const unsubsubscribe3 = subscription.add(callback3, {
+      name: "tina",
+      profitMargin: 1.1
+    });
+
+    subscription.emit(10);
+
+    expect(callback1).not.toHaveBeenCalled(); // price is > 20, so no emission
+    expect(callback2).toHaveBeenCalledOnceWith("hello bob! The price is $18");
+    expect(callback3).toHaveBeenCalledOnceWith("hello tina! The price is $11");
+
+    unsubsubscribe1();
+    unsubsubscribe2();
+    unsubsubscribe3();
+  });
 });
