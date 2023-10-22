@@ -31,7 +31,7 @@ If you are an internal contributor, start by creating a Wiki and reach out to th
 
 If you are an external contributor, start by creating a Github issue and describing your feature in details. Assign the ticket to https://github.com/jfkhoury.
 
-Once the feature has been approved by Product, here what happens next:
+#### Once the feature has been approved by Product, here what happens next:
 
 - Add detailed architecture and design to the technical document. (This document will be shared with the doc writers at Adobe, so make it as detailed as possible)
 - Share your changes with the AEP Web SDK team for design discussions and approval.
@@ -40,6 +40,17 @@ Once the feature has been approved by Product, here what happens next:
 - You need 3 approvals from the Core Web SDK team to get your PR approved.
 - If you and the Core team cannot agree over a specific concern with the code, Joe (https://github.com/jfkhoury) will be the tie breaker.
     - We encourage and enjoy open minded, deep discussions on this team. Try your best to propose a design that the whole team agrees with.
+ 
+#### Ownership
+
+As a contributor, you are not expected to own this feature in case there were bugs or enhancement requests in the future. 
+
+The AEP Web SDK core team will own it. For this to work though, we need few things from you:
+
+- As mentioned in the previous section, we need a detailed technical documents explaining the feature and architecture.
+- We need to have as many conversations as needed by the AEP Web SDK core team to fully understand and approve the design.
+- We need to have as many conversations as needed by the AEP Web SDK core team to fully understand and approve the code.
+
 
 
 ## Pull Request Approval Process
