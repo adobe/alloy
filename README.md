@@ -8,4 +8,7 @@ Alloy is the code name for the Adobe Experience Platform Web SDK. It allows for 
 
 For documentation on how to use Alloy, please see the [user documentation](https://experienceleague.adobe.com/docs/experience-platform/edge/home.html).
 
-For documentation on how to contribute to Alloy, please see the [developer documentation](https://github.com/adobe/alloy/wiki).
+
+## Contribution
+
+Check out the [contribution guidelines](https://github.com/adobe/alloy/CONTRIBUTION.md) for quick start information, and head over to the [developer documentation](https://github.com/adobe/alloy/wiki) to understand the architecture and structure of the library.
