@@ -113,7 +113,7 @@ const buildComponent = ({
     logger
   });
 
-  const pendingDisplayNotifications = createAsyncArray();
+  const renderedPropositions = createAsyncArray();
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
     showContainers,
@@ -122,7 +122,7 @@ const buildComponent = ({
     collect,
     processPropositions,
     createProposition,
-    pendingDisplayNotifications
+    renderedPropositions
   });
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
@@ -137,7 +137,7 @@ const buildComponent = ({
   const applyPropositions = createApplyPropositions({
     processPropositions,
     createProposition,
-    pendingDisplayNotifications,
+    renderedPropositions,
     viewCache
   });
   const setTargetMigration = createSetTargetMigration({
@@ -156,7 +156,7 @@ const buildComponent = ({
     applyPropositions,
     setTargetMigration,
     mergeDecisionsMeta,
-    pendingDisplayNotifications
+    renderedPropositions
   });
 };
 
@@ -179,7 +179,7 @@ export default mocks => {
         event,
         renderDecisions,
         decisionScopes,
-        personalization: personalization || { sendDisplayNotifications: true },
+        personalization: personalization || { sendDisplayEvent: true },
         onResponse: callbacks.add
       });
       const results = await callbacks.call({ response });

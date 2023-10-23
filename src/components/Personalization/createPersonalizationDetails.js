@@ -51,11 +51,11 @@ export default ({
     isRenderDecisions() {
       return renderDecisions;
     },
-    isSendDisplayNotifications() {
-      return !!personalization.sendDisplayNotifications;
+    isSendDisplayEvent() {
+      return !!personalization.sendDisplayEvent;
     },
-    shouldAddPendingDisplayNotifications() {
-      return !!personalization.includePendingDisplayNotifications;
+    shouldIncludeRenderedPropositions() {
+      return !!personalization.includeRenderedPropositions;
     },
     getViewName() {
       return viewName;

@@ -19,7 +19,7 @@ const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
 export default ({
   processPropositions,
   createProposition,
-  pendingDisplayNotifications,
+  renderedPropositions,
   viewCache
 }) => {
   const filterItemsPredicate = item =>
@@ -77,8 +77,8 @@ export default ({
   return ({ propositions = [], metadata = {}, viewName }) => {
     // We need to immediately call concat so that subsequent sendEvent
     // calls will wait for applyPropositions to complete before executing.
-    const displayNotificationsDeferred = defer();
-    pendingDisplayNotifications.concat(displayNotificationsDeferred.promise);
+    const renderedPropositionsDeferred = defer();
+    renderedPropositions.concat(renderedPropositionsDeferred.promise);
 
     const propositionsToExecute = preparePropositions({
       propositions,
@@ -98,7 +98,7 @@ export default ({
           ...additionalPropositions
         ]);
 
-        render().then(displayNotificationsDeferred.resolve);
+        render().then(renderedPropositionsDeferred.resolve);
 
         return {
           propositions: returnedPropositions

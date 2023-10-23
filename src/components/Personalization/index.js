@@ -80,7 +80,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     logger
   });
 
-  const pendingDisplayNotifications = createAsyncArray();
+  const renderedPropositions = createAsyncArray();
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
     showContainers,
@@ -89,7 +89,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     collect,
     processPropositions,
     createProposition,
-    pendingDisplayNotifications
+    renderedPropositions
   });
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
@@ -104,7 +104,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const applyPropositions = createApplyPropositions({
     processPropositions,
     createProposition,
-    pendingDisplayNotifications,
+    renderedPropositions,
     viewCache
   });
   const setTargetMigration = createSetTargetMigration({
@@ -123,7 +123,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     applyPropositions,
     setTargetMigration,
     mergeDecisionsMeta,
-    pendingDisplayNotifications
+    renderedPropositions
   });
 };
 
