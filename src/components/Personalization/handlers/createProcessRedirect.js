@@ -18,7 +18,10 @@ export default ({ logger, executeRedirect, collect }) => item => {
   }
 
   const render = () => {
-    return collect({ decisionsMeta: [item.getMeta()] }).then(() => {
+    return collect({
+      decisionsMeta: [item.getMeta()],
+      documentMayUnload: true
+    }).then(() => {
       executeRedirect(content);
       // We've already sent the display notification, so don't return anything
     });
