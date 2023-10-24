@@ -23,7 +23,7 @@ describe("Personalization::createFetchDataHandler", () => {
   let collect;
   let processPropositions;
   let createProposition;
-  let pendingDisplayNotifications;
+  let renderedPropositions;
 
   let cacheUpdate;
   let personalizationDetails;
@@ -43,20 +43,19 @@ describe("Personalization::createFetchDataHandler", () => {
       preprocess: data => data,
       isPageWideSurface: () => false
     });
-    pendingDisplayNotifications = jasmine.createSpyObj(
-      "pendingDisplayNotifications",
-      ["concat"]
-    );
+    renderedPropositions = jasmine.createSpyObj("renderedPropositions", [
+      "concat"
+    ]);
 
     cacheUpdate = jasmine.createSpyObj("cacheUpdate", ["update"]);
     personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
       "isRenderDecisions",
       "createQueryDetails",
       "getViewName",
-      "isSendDisplayNotifications"
+      "isSendDisplayEvent"
     ]);
     personalizationDetails.createQueryDetails.and.returnValue("myquerydetails");
-    personalizationDetails.isSendDisplayNotifications.and.returnValue(true);
+    personalizationDetails.isSendDisplayEvent.and.returnValue(true);
     event = "myevent";
     onResponse = jasmine.createSpy();
     response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
@@ -71,7 +70,7 @@ describe("Personalization::createFetchDataHandler", () => {
       collect,
       processPropositions,
       createProposition,
-      pendingDisplayNotifications
+      renderedPropositions
     });
     fetchDataHandler({
       cacheUpdate,

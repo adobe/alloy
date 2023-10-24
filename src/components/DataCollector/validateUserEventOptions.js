@@ -31,10 +31,10 @@ export default ({ options }) => {
     personalization: objectOf({
       decisionScopes: arrayOf(string()).uniqueItems(),
       surfaces: arrayOf(string()).uniqueItems(),
-      sendDisplayNotifications: boolean().default(true),
-      includePendingDisplayNotifications: boolean().default(false),
+      sendDisplayEvent: boolean().default(true),
+      includeRenderedPropositions: boolean().default(false),
       requestPersonalization: boolean()
-    }).default({ sendDisplayNotifications: true }),
+    }).default({ sendDisplayEvent: true }),
     datasetId: string(),
     mergeId: string(),
     edgeConfigOverrides: validateConfigOverride,

@@ -28,7 +28,7 @@ const METADATA = {
 describe("Personalization::createApplyPropositions", () => {
   let processPropositions;
   let createProposition;
-  let pendingDisplayNotifications;
+  let renderedPropositions;
   let viewCache;
   let applyPropositions;
   let render;
@@ -49,16 +49,15 @@ describe("Personalization::createApplyPropositions", () => {
       isPageWideSurface: () => false
     });
 
-    pendingDisplayNotifications = jasmine.createSpyObj(
-      "pendingDisplayNotifications",
-      ["concat"]
-    );
+    renderedPropositions = jasmine.createSpyObj("renderedPropositions", [
+      "concat"
+    ]);
     viewCache = jasmine.createSpyObj("viewCache", ["getView"]);
     viewCache.getView.and.returnValue(Promise.resolve([]));
     applyPropositions = createApplyPropositions({
       processPropositions,
       createProposition,
-      pendingDisplayNotifications,
+      renderedPropositions,
       viewCache
     });
   });
