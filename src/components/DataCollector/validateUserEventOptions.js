@@ -32,11 +32,13 @@ export default ({ options }) => {
       decisionScopes: arrayOf(string()).uniqueItems(),
       surfaces: arrayOf(string()).uniqueItems(),
       sendDisplayEvent: boolean().default(true),
-      includeRenderedPropositions: boolean().default(false)
+      includeRenderedPropositions: boolean().default(false),
+      requestPersonalization: boolean()
     }).default({ sendDisplayEvent: true }),
     datasetId: string(),
     mergeId: string(),
-    edgeConfigOverrides: validateConfigOverride
+    edgeConfigOverrides: validateConfigOverride,
+    initializePersonalization: boolean()
   })
     .required()
     .noUnknownFields();

@@ -83,7 +83,10 @@ export default ({
         logger
       );
 
-      if (!this.isCacheInitialized()) {
+      if (
+        !this.isCacheInitialized() ||
+        personalization.requestPersonalization
+      ) {
         addPageWideScope(scopes);
         addPageSurface(eventSurfaces, getPageLocation);
       }
@@ -110,7 +113,11 @@ export default ({
     },
     shouldFetchData() {
       return (
-        this.hasScopes() || this.hasSurfaces() || !this.isCacheInitialized()
+        this.hasScopes() ||
+        this.hasSurfaces() ||
+        personalization.requestPersonalization ||
+        (!this.isCacheInitialized() &&
+          personalization.requestPersonalization !== false)
       );
     },
     shouldUseCachedData() {

@@ -10,17 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, groupBy } from "../../utils";
+import { groupBy } from "../../utils";
 import defer from "../../utils/defer";
 import { DEFAULT_CONTENT_ITEM } from "./constants/schema";
 
 export default ({ createProposition }) => {
-  const viewStorage = {};
   let cacheUpdateCreatedAtLeastOnce = false;
-  let previousUpdateCacheComplete = Promise.resolve();
+  let viewStoragePromise = Promise.resolve({});
 
-  const getViewPropositions = (currentViewStorage, viewName) => {
-    const viewPropositions = currentViewStorage[viewName.toLowerCase()];
+  const getViewPropositions = (viewStorage, viewName) => {
+    const viewPropositions = viewStorage[viewName.toLowerCase()];
     if (viewPropositions && viewPropositions.length > 0) {
       return viewPropositions;
     }
@@ -49,12 +48,9 @@ export default ({ createProposition }) => {
     const updateCacheDeferred = defer();
 
     cacheUpdateCreatedAtLeastOnce = true;
-    previousUpdateCacheComplete = previousUpdateCacheComplete
-      .then(() => updateCacheDeferred.promise)
-      .then(newViewStorage => {
-        assign(viewStorage, newViewStorage);
-      })
-      .catch(() => {});
+    viewStoragePromise = viewStoragePromise.then(oldViewStorage =>
+      updateCacheDeferred.promise.catch(() => oldViewStorage)
+    );
 
     return {
       update(viewPropositions) {
@@ -77,7 +73,7 @@ export default ({ createProposition }) => {
   };
 
   const getView = viewName => {
-    return previousUpdateCacheComplete.then(() =>
+    return viewStoragePromise.then(viewStorage =>
       getViewPropositions(viewStorage, viewName)
     );
   };
