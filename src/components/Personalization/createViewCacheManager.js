@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import { groupBy } from "../../utils";
 import defer from "../../utils/defer";
 import { DEFAULT_CONTENT_ITEM } from "./constants/schema";
+import { VIEW_SCOPE_TYPE } from "./constants/scopeType";
 
 export default ({ createProposition }) => {
   let cacheUpdateCreatedAtLeastOnce = false;
@@ -29,7 +30,7 @@ export default ({ createProposition }) => {
         scope: viewName,
         scopeDetails: {
           characteristics: {
-            scopeType: "view"
+            scopeType: VIEW_SCOPE_TYPE
           }
         },
         items: [

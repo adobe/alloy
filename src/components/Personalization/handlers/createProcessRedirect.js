@@ -19,7 +19,7 @@ export default ({ logger, executeRedirect, collect }) => item => {
 
   const render = () => {
     return collect({
-      decisionsMeta: [item.getMeta()],
+      decisionsMeta: [item.getProposition().getNotification()],
       documentMayUnload: true
     }).then(() => {
       executeRedirect(content);

@@ -14,9 +14,7 @@ const metasToArray = metas => {
   return Object.keys(metas).map(key => {
     return {
       id: key,
-      scope: metas[key].scope,
-      scopeDetails: metas[key].scopeDetails,
-      trackingLabel: metas[key].trackingLabel
+      ...metas[key]
     };
   });
 };
@@ -24,14 +22,18 @@ const metasToArray = metas => {
 export default () => {
   const clickStorage = {};
 
-  const storeClickMetrics = value => {
-    if (!clickStorage[value.selector]) {
-      clickStorage[value.selector] = {};
+  const storeClickMetrics = ({
+    selector,
+    meta: { id, scope, scopeDetails, trackingLabel, scopeType }
+  }) => {
+    if (!clickStorage[selector]) {
+      clickStorage[selector] = {};
     }
-    clickStorage[value.selector][value.meta.id] = {
-      scope: value.meta.scope,
-      scopeDetails: value.meta.scopeDetails,
-      trackingLabel: value.meta.trackingLabel
+    clickStorage[selector][id] = {
+      scope,
+      scopeDetails,
+      trackingLabel,
+      scopeType
     };
   };
 

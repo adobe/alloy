@@ -3,19 +3,33 @@ import createProcessDomAction from "../../../../../../src/components/Personaliza
 describe("createProcessDomAction", () => {
   let item;
   let data;
+  let proposition;
   let meta;
+  let trackingLabel;
+  let scopeType;
   let modules;
   let logger;
   let storeClickMetrics;
   let processDomAction;
 
   beforeEach(() => {
+    proposition = {
+      getNotification() {
+        return meta;
+      },
+      getScopeType() {
+        return scopeType;
+      }
+    };
     item = {
       getData() {
         return data;
       },
-      getMeta() {
-        return meta;
+      getProposition() {
+        return proposition;
+      },
+      getTrackingLabel() {
+        return trackingLabel;
       }
     };
     modules = {
@@ -86,14 +100,21 @@ describe("createProcessDomAction", () => {
 
   it("handles a click type", () => {
     data = { type: "click", selector: ".selector" };
-    meta = "mymetavalue";
+    meta = { id: "myid", scope: "myscope" };
+    trackingLabel = "mytrackinglabel";
+    scopeType = "myscopetype";
     expect(processDomAction(item)).toEqual({
       setRenderAttempted: true,
       includeInNotification: false
     });
     expect(storeClickMetrics).toHaveBeenCalledWith({
       selector: ".selector",
-      meta: "mymetavalue"
+      meta: {
+        id: "myid",
+        scope: "myscope",
+        trackingLabel: "mytrackinglabel",
+        scopeType: "myscopetype"
+      }
     });
   });
 

@@ -9,6 +9,7 @@ describe("createProcessRedirect", () => {
   let collectDefer;
   let item;
   let data;
+  let proposition;
   let meta;
 
   let processRedirect;
@@ -20,12 +21,17 @@ describe("createProcessRedirect", () => {
     collect = jasmine
       .createSpy("collect")
       .and.returnValue(collectDefer.promise);
+    proposition = {
+      getNotification() {
+        return meta;
+      }
+    };
     item = {
       getData() {
         return data;
       },
-      getMeta() {
-        return meta;
+      getProposition() {
+        return proposition;
       }
     };
 

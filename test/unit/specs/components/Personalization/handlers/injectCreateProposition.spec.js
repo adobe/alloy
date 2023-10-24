@@ -41,12 +41,8 @@ describe("injectCreateProposition", () => {
     const item = proposition.getItems()[0];
     expect(item.getSchema()).toEqual("schema");
     expect(item.getData()).toEqual("preprocessed data");
-    expect(item.getMeta()).toEqual({
-      id: "id",
-      scope: "scope",
-      scopeDetails: { characteristics: { scopeType: "view" } },
-      trackingLabel: "trackingLabel"
-    });
+    expect(item.getProposition()).toEqual(proposition);
+    expect(item.getTrackingLabel()).toEqual("trackingLabel");
     expect(item.getOriginalItem()).toEqual({
       schema: "schema",
       data: "data",
