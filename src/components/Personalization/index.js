@@ -31,7 +31,6 @@ import remapHeadOffers from "./dom-actions/remapHeadOffers";
 import createPreprocess from "./dom-actions/createPreprocess";
 import injectCreateProposition from "./handlers/injectCreateProposition";
 import createAsyncArray from "./utils/createAsyncArray";
-import createPendingNotificationsHandler from "./createPendingNotificationsHandler";
 import * as schema from "./constants/schema";
 import processDefaultContent from "./handlers/processDefaultContent";
 import { isPageWideSurface } from "./utils/surfaceUtils";
@@ -39,6 +38,7 @@ import createProcessDomAction from "./handlers/createProcessDomAction";
 import createProcessHtmlContent from "./handlers/createProcessHtmlContent";
 import createProcessRedirect from "./handlers/createProcessRedirect";
 import createProcessPropositions from "./handlers/createProcessPropositions";
+import createRedirect from "./dom-actions/createRedirect";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -59,6 +59,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
   const viewCache = createViewCacheManager({ createProposition });
 
+  const executeRedirect = createRedirect(window);
   const schemaProcessors = {
     [schema.DEFAULT_CONTENT_ITEM]: processDefaultContent,
     [schema.DOM_ACTION]: createProcessDomAction({
@@ -69,7 +70,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({ modules, logger }),
     [schema.REDIRECT_ITEM]: createProcessRedirect({
       logger,
-      executeRedirect: url => window.location.replace(url),
+      executeRedirect,
       collect
     })
   };
@@ -79,11 +80,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     logger
   });
 
-  const pendingDisplayNotifications = createAsyncArray();
-  const pendingNotificationsHandler = createPendingNotificationsHandler({
-    pendingDisplayNotifications,
-    mergeDecisionsMeta
-  });
+  const renderedPropositions = createAsyncArray();
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
     showContainers,
@@ -92,7 +89,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     collect,
     processPropositions,
     createProposition,
-    pendingDisplayNotifications
+    renderedPropositions
   });
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
@@ -101,14 +98,13 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     getClickMetasBySelector
   });
   const viewChangeHandler = createViewChangeHandler({
-    mergeDecisionsMeta,
     processPropositions,
     viewCache
   });
   const applyPropositions = createApplyPropositions({
     processPropositions,
     createProposition,
-    pendingDisplayNotifications,
+    renderedPropositions,
     viewCache
   });
   const setTargetMigration = createSetTargetMigration({
@@ -126,7 +122,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     showContainers,
     applyPropositions,
     setTargetMigration,
-    pendingNotificationsHandler
+    mergeDecisionsMeta,
+    renderedPropositions
   });
 };
 

@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 import createFetchDataHandler from "../../../../../src/components/Personalization/createFetchDataHandler";
 import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
+import defer from "../../../../../src/utils/defer";
 
 describe("Personalization::createFetchDataHandler", () => {
   let prehidingStyle;
@@ -22,7 +23,7 @@ describe("Personalization::createFetchDataHandler", () => {
   let collect;
   let processPropositions;
   let createProposition;
-  let pendingDisplayNotifications;
+  let renderedPropositions;
 
   let cacheUpdate;
   let personalizationDetails;
@@ -42,20 +43,19 @@ describe("Personalization::createFetchDataHandler", () => {
       preprocess: data => data,
       isPageWideSurface: () => false
     });
-    pendingDisplayNotifications = jasmine.createSpyObj(
-      "pendingDisplayNotifications",
-      ["concat"]
-    );
+    renderedPropositions = jasmine.createSpyObj("renderedPropositions", [
+      "concat"
+    ]);
 
     cacheUpdate = jasmine.createSpyObj("cacheUpdate", ["update"]);
     personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
       "isRenderDecisions",
       "createQueryDetails",
       "getViewName",
-      "isSendDisplayNotifications"
+      "isSendDisplayEvent"
     ]);
     personalizationDetails.createQueryDetails.and.returnValue("myquerydetails");
-    personalizationDetails.isSendDisplayNotifications.and.returnValue(true);
+    personalizationDetails.isSendDisplayEvent.and.returnValue(true);
     event = "myevent";
     onResponse = jasmine.createSpy();
     response = jasmine.createSpyObj("response", ["getPayloadsByType"]);
@@ -70,7 +70,7 @@ describe("Personalization::createFetchDataHandler", () => {
       collect,
       processPropositions,
       createProposition,
-      pendingDisplayNotifications
+      renderedPropositions
     });
     fetchDataHandler({
       cacheUpdate,
@@ -147,6 +147,44 @@ describe("Personalization::createFetchDataHandler", () => {
     expect(collect).toHaveBeenCalledOnceWith({
       decisionsMeta: [{ id: "handle1" }],
       viewName: "myviewname"
+    });
+  });
+
+  it("should show containers immediately", async () => {
+    personalizationDetails.isRenderDecisions.and.returnValue(true);
+    const renderDeferred = defer();
+    processPropositions = () => {
+      return {
+        render: () => renderDeferred.promise,
+        returnedPropositions: [
+          {
+            id: "handle2",
+            scope: "__view__",
+            items: ["item1"],
+            renderAttempted: true
+          }
+        ],
+        returnedDecisions: []
+      };
+    };
+    run();
+    response.getPayloadsByType.and.returnValue([
+      {
+        id: "handle2",
+        scope: "__view__",
+        items: ["item1"]
+      }
+    ]);
+    cacheUpdate.update.and.returnValue([]);
+    expect(showContainers).not.toHaveBeenCalled();
+    returnResponse();
+    expect(showContainers).toHaveBeenCalled();
+    expect(collect).not.toHaveBeenCalled();
+    renderDeferred.resolve([{ id: "handle2" }]);
+    await flushPromiseChains();
+    expect(collect).toHaveBeenCalledOnceWith({
+      decisionsMeta: [{ id: "handle2" }],
+      viewName: undefined
     });
   });
 });

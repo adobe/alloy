@@ -13,12 +13,12 @@ export default ({ modules, logger }) => item => {
   const { type, selector } = item.getData() || {};
 
   if (!selector || !type) {
-    return {};
+    return { setRenderAttempted: false, includeInNotification: false };
   }
 
   if (!modules[type]) {
     logger.warn("Invalid HTML content data", item.getData());
-    return {};
+    return { setRenderAttempted: false, includeInNotification: false };
   }
 
   return {

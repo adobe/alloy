@@ -24,6 +24,8 @@ describe("Personalization", () => {
   let event;
   let personalizationComponent;
   let setTargetMigration;
+  let mergeDecisionsMeta;
+  let renderedPropositions;
   let cacheUpdate;
 
   const build = () => {
@@ -36,7 +38,9 @@ describe("Personalization", () => {
       mergeQuery,
       viewCache,
       showContainers,
-      setTargetMigration
+      setTargetMigration,
+      mergeDecisionsMeta,
+      renderedPropositions
     });
   };
 
@@ -62,6 +66,10 @@ describe("Personalization", () => {
     cacheUpdate = jasmine.createSpyObj("cacheUpdate", ["update", "cancel"]);
     viewCache.createCacheUpdate.and.returnValue(cacheUpdate);
     setTargetMigration = jasmine.createSpy("setTargetMigration");
+    mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
+    renderedPropositions = jasmine.createSpyObj("renderedPropositions", [
+      "clear"
+    ]);
 
     build();
   });

@@ -21,16 +21,18 @@ export default ({
   collect,
   processPropositions,
   createProposition,
-  pendingDisplayNotifications
+  renderedPropositions
 }) => {
   return ({ cacheUpdate, personalizationDetails, event, onResponse }) => {
     if (personalizationDetails.isRenderDecisions()) {
       hideContainers(prehidingStyle);
+    } else {
+      showContainers();
     }
     mergeQuery(event, personalizationDetails.createQueryDetails());
 
     let handleNotifications;
-    if (personalizationDetails.isSendDisplayNotifications()) {
+    if (personalizationDetails.isSendDisplayEvent()) {
       handleNotifications = decisionsMeta => {
         if (decisionsMeta.length > 0) {
           collect({
@@ -40,9 +42,9 @@ export default ({
         }
       };
     } else {
-      const displayNotificationsDeferred = defer();
-      pendingDisplayNotifications.concat(displayNotificationsDeferred.promise);
-      handleNotifications = displayNotificationsDeferred.resolve;
+      const renderedPropositionsDeferred = defer();
+      renderedPropositions.concat(renderedPropositionsDeferred.promise);
+      handleNotifications = renderedPropositionsDeferred.resolve;
     }
 
     onResponse(({ response }) => {
@@ -69,15 +71,12 @@ export default ({
           [...pagePropositions, ...currentViewPropositions],
           nonRenderedPropositions
         ));
-        render()
-          .then(decisionsMeta => {
-            showContainers();
-            handleNotifications(decisionsMeta);
-          })
-          .catch(e => {
-            showContainers();
-            throw e;
-          });
+        render().then(handleNotifications);
+
+        // Render could take a long time especially if one of the renders
+        // is waiting for html to appear on the page. We show the containers
+        // immediately, and whatever renders quickly will not have flicker.
+        showContainers();
       } else {
         ({ returnedPropositions, returnedDecisions } = processPropositions(
           [],

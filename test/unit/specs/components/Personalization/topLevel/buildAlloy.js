@@ -30,7 +30,6 @@ import { createCallbackAggregator, assign } from "../../../../../../src/utils";
 import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition";
 import createProcessPropositions from "../../../../../../src/components/Personalization/handlers/createProcessPropositions";
 import createAsyncArray from "../../../../../../src/components/Personalization/utils/createAsyncArray";
-import createPendingNotificationsHandler from "../../../../../../src/components/Personalization/createPendingNotificationsHandler";
 import * as schema from "../../../../../../src/components/Personalization/constants/schema";
 import createProcessDomAction from "../../../../../../src/components/Personalization/handlers/createProcessDomAction";
 import createProcessHtmlContent from "../../../../../../src/components/Personalization/handlers/createProcessHtmlContent";
@@ -114,11 +113,7 @@ const buildComponent = ({
     logger
   });
 
-  const pendingDisplayNotifications = createAsyncArray();
-  const pendingNotificationsHandler = createPendingNotificationsHandler({
-    pendingDisplayNotifications,
-    mergeDecisionsMeta
-  });
+  const renderedPropositions = createAsyncArray();
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
     showContainers,
@@ -127,7 +122,7 @@ const buildComponent = ({
     collect,
     processPropositions,
     createProposition,
-    pendingDisplayNotifications
+    renderedPropositions
   });
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
@@ -136,14 +131,13 @@ const buildComponent = ({
     getClickMetasBySelector
   });
   const viewChangeHandler = createViewChangeHandler({
-    mergeDecisionsMeta,
     processPropositions,
     viewCache
   });
   const applyPropositions = createApplyPropositions({
     processPropositions,
     createProposition,
-    pendingDisplayNotifications,
+    renderedPropositions,
     viewCache
   });
   const setTargetMigration = createSetTargetMigration({
@@ -161,7 +155,8 @@ const buildComponent = ({
     showContainers,
     applyPropositions,
     setTargetMigration,
-    pendingNotificationsHandler
+    mergeDecisionsMeta,
+    renderedPropositions
   });
 };
 
@@ -184,7 +179,7 @@ export default mocks => {
         event,
         renderDecisions,
         decisionScopes,
-        personalization: personalization || { sendDisplayNotifications: true },
+        personalization: personalization || { sendDisplayEvent: true },
         onResponse: callbacks.add
       });
       const results = await callbacks.call({ response });

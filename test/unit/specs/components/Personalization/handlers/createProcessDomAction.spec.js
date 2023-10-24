@@ -48,7 +48,10 @@ describe("createProcessDomAction", () => {
 
   it("returns an empty object if the item has no data, and logs missing type", () => {
     data = undefined;
-    expect(processDomAction(item)).toEqual({});
+    expect(processDomAction(item)).toEqual({
+      setRenderAttempted: false,
+      includeInNotification: false
+    });
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid DOM action data: missing type.",
       undefined
@@ -57,7 +60,10 @@ describe("createProcessDomAction", () => {
 
   it("returns an empty object if the item has no type, and logs missing type", () => {
     data = {};
-    expect(processDomAction(item)).toEqual({});
+    expect(processDomAction(item)).toEqual({
+      setRenderAttempted: false,
+      includeInNotification: false
+    });
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid DOM action data: missing type.",
       {}
@@ -66,7 +72,10 @@ describe("createProcessDomAction", () => {
 
   it("returns an empty object if the item has an unknown type, and logs unknown type", () => {
     data = { type: "typeC" };
-    expect(processDomAction(item)).toEqual({});
+    expect(processDomAction(item)).toEqual({
+      setRenderAttempted: false,
+      includeInNotification: false
+    });
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid DOM action data: unknown type.",
       {
@@ -77,7 +86,10 @@ describe("createProcessDomAction", () => {
 
   it("returns an empty object if the item has no selector for a click type, and logs missing selector", () => {
     data = { type: "click" };
-    expect(processDomAction(item)).toEqual({});
+    expect(processDomAction(item)).toEqual({
+      setRenderAttempted: false,
+      includeInNotification: false
+    });
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid DOM action data: missing selector.",
       {

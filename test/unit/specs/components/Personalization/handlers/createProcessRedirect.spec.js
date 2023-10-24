@@ -70,7 +70,10 @@ describe("createProcessRedirect", () => {
     expect(executeRedirect).not.toHaveBeenCalled();
     const renderPromise = result.render();
     await flushPromiseChains();
-    expect(collect).toHaveBeenCalledWith({ decisionsMeta: ["mymetavalue"] });
+    expect(collect).toHaveBeenCalledWith({
+      decisionsMeta: ["mymetavalue"],
+      documentMayUnload: true
+    });
     expect(executeRedirect).not.toHaveBeenCalled();
     collectDefer.resolve();
     await flushPromiseChains();
