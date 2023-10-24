@@ -11,12 +11,12 @@ governing permissions and limitations under the License.
 */
 import { PropositionEventType } from "../../constants/propositionEventType";
 
-export default ({ eventRegistry }) => {
+export default ({ eventContext }) => {
   const recordQualified = id => {
     if (!id) {
       return undefined;
     }
-    return eventRegistry.addEvent({}, PropositionEventType.TRIGGER, id);
+    return eventContext.addEvent({}, PropositionEventType.TRIGGER, id);
   };
 
   return { recordQualified };

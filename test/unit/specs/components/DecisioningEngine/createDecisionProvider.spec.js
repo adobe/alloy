@@ -11,17 +11,20 @@ governing permissions and limitations under the License.
 */
 import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider";
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
+import createEventContext from "../../../../../src/components/DecisioningEngine/createEventContext";
 
 describe("DecisioningEngine:createDecisionProvider", () => {
   let decisionProvider;
   let storage;
   let eventRegistry;
+  let eventContext;
 
   beforeEach(() => {
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
     eventRegistry = createEventRegistry({ storage });
-
-    decisionProvider = createDecisionProvider({ eventRegistry });
+    eventContext = createEventContext();
+    eventContext.setCurrentEventRegistry(eventRegistry);
+    decisionProvider = createDecisionProvider({ eventContext });
     decisionProvider.addPayloads([
       {
         id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",

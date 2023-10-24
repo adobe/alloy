@@ -12,16 +12,20 @@ governing permissions and limitations under the License.
 import createEvaluableRulesetPayload from "../../../../../src/components/DecisioningEngine/createEvaluableRulesetPayload";
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
 import createDecisionHistory from "../../../../../src/components/DecisioningEngine/createDecisionHistory";
+import createEventContext from "../../../../../src/components/DecisioningEngine/createEventContext";
 
 describe("DecisioningEngine:createEvaluableRulesetPayload", () => {
   let storage;
   let eventRegistry;
   let decisionHistory;
+  let eventContext;
 
   beforeEach(() => {
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
     eventRegistry = createEventRegistry({ storage });
-    decisionHistory = createDecisionHistory({ eventRegistry });
+    eventContext = createEventContext();
+    eventContext.setCurrentEventRegistry(eventRegistry);
+    decisionHistory = createDecisionHistory({ eventContext });
   });
 
   it("consumes ruleset-items", () => {
