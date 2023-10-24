@@ -31,9 +31,6 @@ const createDecisioningEngine = ({
   consent
 }) => {
   const { orgId, personalizationStorageEnabled } = config;
-  const storage = createNamespacedStorage(
-    `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`
-  );
   const eventContext = createEventContext();
   const decisionProvider = createDecisionProvider({ eventContext });
   const contextProvider = createContextProvider({ eventContext, window });
@@ -52,6 +49,9 @@ const createDecisioningEngine = ({
       onComponentsRegistered(tools) {
         applyResponse = createApplyResponse(tools.lifecycle);
         if (personalizationStorageEnabled) {
+          const storage = createNamespacedStorage(
+            `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`
+          );
           consent
             .awaitConsent()
             .then(() => {
