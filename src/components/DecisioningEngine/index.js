@@ -22,30 +22,27 @@ import {
   MOBILE_EVENT_TYPE
 } from "./constants";
 import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand";
-import createNoopEventRegistery from "./createNoopEventRegistry";
+import createEventContext from "./createEventContext";
+import createNoopEventRegistry from "./createNoopEventRegistry";
 
-const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
+const createDecisioningEngine = ({
+  config,
+  createNamespacedStorage,
+  consent
+}) => {
   const { orgId, personalizationStorageEnabled } = config;
-  let eventRegistry;
-  if (personalizationStorageEnabled) {
-    const storage = createNamespacedStorage(
-      `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`
-    );
-    eventRegistry = createEventRegistry({ storage: storage.persistent });
-  } else {
-    eventRegistry = createNoopEventRegistery();
-  }
-  let applyResponse;
-
-  const decisionProvider = createDecisionProvider({ eventRegistry });
-  const contextProvider = createContextProvider({ eventRegistry, window });
-
+  const storage = createNamespacedStorage(
+    `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`
+  );
+  const eventContext = createEventContext();
+  const decisionProvider = createDecisionProvider({ eventContext });
+  const contextProvider = createContextProvider({ eventContext, window });
   const evaluateRulesetsCommand = createEvaluateRulesetsCommand({
     contextProvider,
     decisionProvider
   });
-
   const subscribeRulesetItems = createSubscribeRulesetItems();
+  let applyResponse;
 
   return {
     lifecycle: {
@@ -54,6 +51,23 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
       },
       onComponentsRegistered(tools) {
         applyResponse = createApplyResponse(tools.lifecycle);
+        if (personalizationStorageEnabled) {
+          consent
+            .awaitConsent()
+            .then(() => {
+              const eventRegistry = createEventRegistry({
+                storage: storage.persistent
+              });
+              eventContext.setCurrentEventRegistry(eventRegistry);
+            })
+            .catch(() => {
+              // If consent is rejected, we want to clear the local storage.
+              if (storage) {
+                storage.persistent.clear();
+              }
+              eventContext.setCurrentEventRegistry(createNoopEventRegistry());
+            });
+        }
       },
       onBeforeEvent({
         event,
@@ -75,7 +89,7 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
           })
         );
 
-        eventRegistry.addExperienceEdgeEvent(event);
+        eventContext.addExperienceEdgeEvent(event);
       }
     },
     commands: {

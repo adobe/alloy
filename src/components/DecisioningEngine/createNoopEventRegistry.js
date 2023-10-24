@@ -9,15 +9,15 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const noop = () => {
+const EMPTY_OBJECT = () => {
   return {};
 };
 
 export default () => {
   return {
-    addExperienceEdgeEvent: noop,
-    addEvent: noop,
-    getEvent: noop,
-    toJSON: noop
+    addExperienceEdgeEvent: EMPTY_OBJECT,
+    addEvent: EMPTY_OBJECT,
+    getEvent: EMPTY_OBJECT,
+    toJSON: EMPTY_OBJECT
   };
 };
