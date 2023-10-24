@@ -29,7 +29,7 @@ export default ({
   applyPropositions,
   setTargetMigration,
   mergeDecisionsMeta,
-  pendingDisplayNotifications
+  renderedPropositions
 }) => {
   return {
     lifecycle: {
@@ -68,8 +68,8 @@ export default ({
         });
 
         const decisionsMetaPromises = [];
-        if (personalizationDetails.shouldAddPendingDisplayNotifications()) {
-          decisionsMetaPromises.push(pendingDisplayNotifications.clear());
+        if (personalizationDetails.shouldIncludeRenderedPropositions()) {
+          decisionsMetaPromises.push(renderedPropositions.clear());
         }
 
         if (personalizationDetails.shouldFetchData()) {
