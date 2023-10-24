@@ -117,6 +117,7 @@ export const mockRulesetResponseWithCondition = condition => {
 
 const mockEvent = {
   getContent: () => ({ query: {} }),
+  hasQuery: () => true,
   getViewName: () => undefined
 };
 

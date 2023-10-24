@@ -19,9 +19,8 @@ export default ({
   event,
   decisionContext
 }) => {
-  const eventContent = event.getContent();
   const context = {
-    ...flattenObject(eventContent),
+    ...flattenObject(event.getContent()),
     ...decisionContext
   };
   const viewName = event.getViewName();
@@ -32,7 +31,7 @@ export default ({
     );
 
     // only evaluate events that include a personalization query
-    if (!eventContent.query) {
+    if (!event.hasQuery()) {
       return;
     }
 

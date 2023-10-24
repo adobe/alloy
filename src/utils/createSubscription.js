@@ -24,7 +24,6 @@ const createSubscription = () => {
 
   const createUnsubscribe = id => {
     return () => {
-      console.log(`unsubscribe ${id}!`);
       delete subscriptions[id];
     };
   };
@@ -35,7 +34,6 @@ const createSubscription = () => {
     }
 
     counter += 1;
-    console.log(`subscribe ${counter}!`);
 
     subscriptions[counter] = { callback, params };
     return createUnsubscribe(counter);
