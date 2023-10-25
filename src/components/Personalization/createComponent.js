@@ -13,8 +13,8 @@ governing permissions and limitations under the License.
 import { noop, flatMap, isNonEmptyArray } from "../../utils";
 import createPersonalizationDetails from "./createPersonalizationDetails";
 import { AUTHORING_ENABLED } from "./constants/loggerMessage";
-import { PropositionEventType } from "../../constants/propositionEventType";
 import validateApplyPropositionsOptions from "./validateApplyPropositionsOptions";
+import { PropositionEventType } from "../../constants/propositionEventType";
 
 export default ({
   getPageLocation,
@@ -30,7 +30,8 @@ export default ({
   setTargetMigration,
   mergeDecisionsMeta,
   renderedPropositions,
-  onDecisionHandler
+  onDecisionHandler,
+  subscribeMessageFeed
 }) => {
   return {
     lifecycle: {
@@ -121,7 +122,8 @@ export default ({
         optionsValidator: options =>
           validateApplyPropositionsOptions({ logger, options }),
         run: applyPropositions
-      }
+      },
+      subscribeMessageFeed: subscribeMessageFeed.command
     }
   };
 };

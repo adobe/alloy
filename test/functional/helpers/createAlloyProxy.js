@@ -92,6 +92,7 @@ const commands = [
   "appendIdentityToUrl",
   "applyPropositions",
   "subscribeRulesetItems",
+  "subscribeMessageFeed",
   "evaluateRulesets"
 ];
 

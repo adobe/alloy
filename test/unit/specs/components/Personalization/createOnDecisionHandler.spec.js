@@ -183,6 +183,7 @@ describe("Personalization::createOnDecisionHandler", () => {
   let collect;
   let processPropositions;
   let createProposition;
+  let subscribeMessageFeed;
   let onDecisionHandler;
 
   beforeEach(() => {
@@ -199,11 +200,16 @@ describe("Personalization::createOnDecisionHandler", () => {
       isPageWideSurface: () => false
     });
 
+    subscribeMessageFeed = jasmine.createSpyObj("subscribeMessageFeed", [
+      "refresh"
+    ]);
+
     onDecisionHandler = createOnDecisionHandler({
       processPropositions,
       createProposition,
       render,
-      collect
+      collect,
+      subscribeMessageFeed
     });
   });
 
@@ -214,6 +220,7 @@ describe("Personalization::createOnDecisionHandler", () => {
       propositions: PROPOSITIONS
     });
 
+    expect(subscribeMessageFeed.refresh).toHaveBeenCalledOnceWith(PROPOSITIONS);
     expect(render).not.toHaveBeenCalled();
   });
 
@@ -225,6 +232,7 @@ describe("Personalization::createOnDecisionHandler", () => {
     });
 
     expect(propositions).toEqual(PROPOSITIONS);
+    expect(subscribeMessageFeed.refresh).toHaveBeenCalledOnceWith(PROPOSITIONS);
 
     expect(render).toHaveBeenCalledTimes(1);
 

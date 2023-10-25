@@ -26,7 +26,7 @@ import createViewChangeHandler from "../../../../../../src/components/Personaliz
 import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage";
 import createApplyPropositions from "../../../../../../src/components/Personalization/createApplyPropositions";
 import createSetTargetMigration from "../../../../../../src/components/Personalization/createSetTargetMigration";
-import { assign, createCallbackAggregator } from "../../../../../../src/utils";
+import { createCallbackAggregator, assign } from "../../../../../../src/utils";
 import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition";
 import createProcessPropositions from "../../../../../../src/components/Personalization/handlers/createProcessPropositions";
 import createAsyncArray from "../../../../../../src/components/Personalization/utils/createAsyncArray";
@@ -36,6 +36,7 @@ import createProcessHtmlContent from "../../../../../../src/components/Personali
 import createProcessRedirect from "../../../../../../src/components/Personalization/handlers/createProcessRedirect";
 import processDefaultContent from "../../../../../../src/components/Personalization/handlers/processDefaultContent";
 import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceUtils";
+import createSubscribeMessageFeed from "../../../../../../src/components/Personalization/createSubscribeMessageFeed";
 import createOnDecisionHandler from "../../../../../../src/components/Personalization/createOnDecisionHandler";
 
 const createAction = renderFunc => ({ selector, content }) => {
@@ -145,10 +146,15 @@ const buildComponent = ({
     targetMigrationEnabled
   });
 
+  const subscribeMessageFeed = createSubscribeMessageFeed({
+    collect
+  });
+
   const onDecisionHandler = createOnDecisionHandler({
     processPropositions,
     createProposition,
-    collect
+    collect,
+    subscribeMessageFeed
   });
 
   return createComponent({
@@ -165,7 +171,8 @@ const buildComponent = ({
     setTargetMigration,
     mergeDecisionsMeta,
     renderedPropositions,
-    onDecisionHandler
+    onDecisionHandler,
+    subscribeMessageFeed
   });
 };
 

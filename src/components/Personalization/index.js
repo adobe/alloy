@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, objectOf, string } from "../../utils/validation";
+import { string, boolean, objectOf } from "../../utils/validation";
 import createComponent from "./createComponent";
 import { initDomActionsModules } from "./dom-actions";
 import createCollect from "./createCollect";
@@ -38,6 +38,7 @@ import createProcessDomAction from "./handlers/createProcessDomAction";
 import createProcessHtmlContent from "./handlers/createProcessHtmlContent";
 import createProcessRedirect from "./handlers/createProcessRedirect";
 import createProcessPropositions from "./handlers/createProcessPropositions";
+import createSubscribeMessageFeed from "./createSubscribeMessageFeed";
 import createOnDecisionHandler from "./createOnDecisionHandler";
 import createProcessInAppMessage from "./handlers/createProcessInAppMessage";
 import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules";
@@ -121,10 +122,15 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     targetMigrationEnabled
   });
 
+  const subscribeMessageFeed = createSubscribeMessageFeed({
+    collect
+  });
+
   const onDecisionHandler = createOnDecisionHandler({
     processPropositions,
     createProposition,
-    collect
+    collect,
+    subscribeMessageFeed
   });
 
   return createComponent({
@@ -141,7 +147,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     setTargetMigration,
     mergeDecisionsMeta,
     renderedPropositions,
-    onDecisionHandler
+    onDecisionHandler,
+    subscribeMessageFeed
   });
 };
 
