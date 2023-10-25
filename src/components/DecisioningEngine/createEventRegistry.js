@@ -50,7 +50,9 @@ export default ({ storage }) => {
   let restore;
   let save;
   let events;
-  const updateStorage = () => {
+  const setStorage = newStorage => {
+    currentStorage = newStorage;
+
     restore = createRestoreStorage(currentStorage, STORAGE_KEY);
     save = createSaveStorage(
       currentStorage,
@@ -59,7 +61,8 @@ export default ({ storage }) => {
     );
     events = restore({});
   };
-  updateStorage();
+
+  setStorage(storage);
 
   const addEvent = (event, eventType, eventId, action) => {
     if (!events[eventType]) {
@@ -137,11 +140,6 @@ export default ({ storage }) => {
     }
 
     return events[eventType][eventId];
-  };
-
-  const setStorage = newStorage => {
-    currentStorage = newStorage;
-    updateStorage();
   };
 
   return {
