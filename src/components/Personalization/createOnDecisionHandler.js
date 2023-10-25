@@ -39,8 +39,9 @@ export default ({
         });
       }
     });
-    return {
+
+    return Promise.resolve({
       propositions: returnedPropositions
-    };
+    });
   };
 };

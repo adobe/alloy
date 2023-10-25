@@ -18,8 +18,8 @@ import createContextProvider from "./createContextProvider";
 import createSubscribeRulesetItems from "./createSubscribeRulesetItems";
 import {
   CONTEXT_KEY,
-  MOBILE_EVENT_SOURCE,
-  MOBILE_EVENT_TYPE
+  CONTEXT_EVENT_SOURCE,
+  CONTEXT_EVENT_TYPE
 } from "./constants";
 import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand";
 
@@ -62,8 +62,8 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
             applyResponse,
             event,
             decisionContext: contextProvider.getContext({
-              [CONTEXT_KEY.TYPE]: MOBILE_EVENT_TYPE.EDGE,
-              [CONTEXT_KEY.SOURCE]: MOBILE_EVENT_SOURCE.REQUEST,
+              [CONTEXT_KEY.TYPE]: CONTEXT_EVENT_TYPE.EDGE,
+              [CONTEXT_KEY.SOURCE]: CONTEXT_EVENT_SOURCE.REQUEST,
               ...decisionContext
             })
           })
@@ -78,8 +78,8 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
           evaluateRulesetsCommand.run({
             renderDecisions,
             decisionContext: {
-              [CONTEXT_KEY.TYPE]: MOBILE_EVENT_TYPE.RULES_ENGINE,
-              [CONTEXT_KEY.SOURCE]: MOBILE_EVENT_SOURCE.REQUEST,
+              [CONTEXT_KEY.TYPE]: CONTEXT_EVENT_TYPE.RULES_ENGINE,
+              [CONTEXT_KEY.SOURCE]: CONTEXT_EVENT_SOURCE.REQUEST,
               ...decisionContext
             },
             applyResponse
