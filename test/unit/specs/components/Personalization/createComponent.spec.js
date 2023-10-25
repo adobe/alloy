@@ -26,7 +26,6 @@ describe("Personalization", () => {
   let setTargetMigration;
   let mergeDecisionsMeta;
   let pendingDisplayNotifications;
-  let subscribeMessageFeed;
   let cacheUpdate;
 
   const build = () => {
@@ -41,8 +40,7 @@ describe("Personalization", () => {
       showContainers,
       setTargetMigration,
       mergeDecisionsMeta,
-      pendingDisplayNotifications,
-      subscribeMessageFeed
+      pendingDisplayNotifications
     });
   };
 
@@ -73,7 +71,6 @@ describe("Personalization", () => {
       "pendingDisplayNotifications",
       ["clear"]
     );
-    subscribeMessageFeed = jasmine.createSpy("subscribeMessageFeed");
 
     build();
   });

@@ -10,15 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({
-  processPropositions,
-  createProposition,
-  collect,
-  subscribeMessageFeed
-}) => {
+export default ({ processPropositions, createProposition, collect }) => {
   return ({ viewName, renderDecisions, propositions }) => {
-    subscribeMessageFeed.refresh(propositions);
-
     if (!renderDecisions) {
       return Promise.resolve();
     }

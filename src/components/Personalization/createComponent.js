@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop, flatMap } from "../../utils";
+import { flatMap, noop } from "../../utils";
 import createPersonalizationDetails from "./createPersonalizationDetails";
 import { AUTHORING_ENABLED } from "./constants/loggerMessage";
-import validateApplyPropositionsOptions from "./validateApplyPropositionsOptions";
 import { PropositionEventType } from "../../constants/propositionEventType";
+import validateApplyPropositionsOptions from "./validateApplyPropositionsOptions";
 
 export default ({
   getPageLocation,
@@ -30,8 +30,7 @@ export default ({
   setTargetMigration,
   mergeDecisionsMeta,
   pendingDisplayNotifications,
-  onDecisionHandler,
-  subscribeMessageFeed
+  onDecisionHandler
 }) => {
   return {
     lifecycle: {
@@ -121,8 +120,7 @@ export default ({
         optionsValidator: options =>
           validateApplyPropositionsOptions({ logger, options }),
         run: applyPropositions
-      },
-      subscribeMessageFeed: subscribeMessageFeed.command
+      }
     }
   };
 };
