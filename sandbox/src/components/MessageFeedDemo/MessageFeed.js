@@ -413,7 +413,7 @@ export default function MessageFeed() {
   const [messageFeedItems, setMessageFeedItems] = useState([]);
 
   useEffect(() => {
-    Promise.all([
+    const startupPromises = Promise.all([
       window.alloy("subscribeRulesetItems", {
         surfaces: ["web://target.jasonwaters.dev/aep.html"],
         callback: result => {
@@ -423,6 +423,7 @@ export default function MessageFeed() {
       window.alloy("subscribeMessageFeed", {
         surface: "web://target.jasonwaters.dev/aep.html",
         callback: ({ items = [], rendered, clicked }) => {
+          console.log("subscribeMessageFeed", items);
           setClickHandler(() => clicked);
           setMessageFeedItems(items);
           rendered(items);
@@ -433,7 +434,14 @@ export default function MessageFeed() {
         responseBody: mockResponse
       })
     ]);
-  }, []);
+
+    return () => {
+      startupPromises.then(([rulesetItems, messageFeed]) => {
+        messageFeed.unsubscribe();
+        rulesetItems.unsubscribe();
+      });
+    };
+  }, ["clickHandler"]);
 
   const shareSocialMedia = () => {
     window.alloy("evaluateRulesets", {

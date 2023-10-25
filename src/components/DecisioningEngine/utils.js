@@ -9,7 +9,6 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import debounce from "../../utils/debounce";
 
 export const createRestoreStorage = (storage, storageKey) => {
   return defaultValue => {
@@ -29,12 +28,11 @@ export const createRestoreStorage = (storage, storageKey) => {
 export const createSaveStorage = (
   storage,
   storageKey,
-  debounceDelay = 500,
   prepareFn = value => value
 ) => {
-  return debounce(value => {
+  return value => {
     storage.setItem(storageKey, JSON.stringify(prepareFn(value)));
-  }, debounceDelay);
+  };
 };
 
 export const getExpirationDate = retentionPeriod => {

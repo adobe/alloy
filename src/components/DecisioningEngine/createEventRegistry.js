@@ -19,7 +19,6 @@ import { EVENT_TYPE_TRUE } from "../../constants/eventType";
 
 const STORAGE_KEY = "events";
 const MAX_EVENT_RECORDS = 1000;
-const DEFAULT_SAVE_DELAY = 500;
 const RETENTION_PERIOD = 30;
 
 const prefixed = key => `iam.${key}`;
@@ -46,7 +45,7 @@ export const createEventPruner = (
   };
 };
 
-export default ({ storage, saveDelay = DEFAULT_SAVE_DELAY }) => {
+export default ({ storage }) => {
   let currentStorage = storage;
   let restore;
   let save;
@@ -56,7 +55,6 @@ export default ({ storage, saveDelay = DEFAULT_SAVE_DELAY }) => {
     save = createSaveStorage(
       currentStorage,
       STORAGE_KEY,
-      saveDelay,
       createEventPruner(MAX_EVENT_RECORDS, RETENTION_PERIOD)
     );
     events = restore({});

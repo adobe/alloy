@@ -15,6 +15,8 @@ import {
   objectOf,
   string
 } from "../../utils/validation";
+import createSubscription from "../../utils/createSubscription";
+import { includes } from "../../utils";
 
 const validateOptions = ({ options }) => {
   const validator = objectOf({
@@ -26,46 +28,55 @@ const validateOptions = ({ options }) => {
   return validator(options);
 };
 
+const emissionPreprocessor = (params, propositions) => {
+  const { surfacesFilter, schemasFilter } = params;
+
+  const result = {
+    propositions: propositions
+      .filter(payload =>
+        surfacesFilter ? includes(surfacesFilter, payload.scope) : true
+      )
+      .map(payload => {
+        const { items = [] } = payload;
+        return {
+          ...payload,
+          items: items.filter(item =>
+            schemasFilter ? includes(schemasFilter, item.schema) : true
+          )
+        };
+      })
+      .filter(payload => payload.items.length > 0)
+  };
+
+  return [result];
+};
+
+const emissionCondition = (params, result) => {
+  return result.propositions.length > 0;
+};
+
 export default () => {
-  let subscriptionHandler;
-  let surfacesFilter;
-  let schemasFilter;
+  const subscription = createSubscription();
+  subscription.setEmissionPreprocessor(emissionPreprocessor);
+  subscription.setEmissionCondition(emissionCondition);
 
   const run = ({ surfaces, schemas, callback }) => {
-    subscriptionHandler = callback;
-    surfacesFilter = surfaces instanceof Array ? surfaces : undefined;
-    schemasFilter = schemas instanceof Array ? schemas : undefined;
+    const unsubscribe = subscription.add(callback, {
+      surfacesFilter: surfaces instanceof Array ? surfaces : undefined,
+      schemasFilter: schemas instanceof Array ? schemas : undefined
+    });
+
+    return Promise.resolve({ unsubscribe });
   };
 
   const optionsValidator = options => validateOptions({ options });
 
   const refresh = propositions => {
-    if (!subscriptionHandler) {
+    if (!subscription.hasSubscriptions()) {
       return;
     }
 
-    const result = {
-      propositions: propositions
-        .filter(payload =>
-          surfacesFilter ? surfacesFilter.includes(payload.scope) : true
-        )
-        .map(payload => {
-          const { items = [] } = payload;
-          return {
-            ...payload,
-            items: items.filter(item =>
-              schemasFilter ? schemasFilter.includes(item.schema) : true
-            )
-          };
-        })
-        .filter(payload => payload.items.length > 0)
-    };
-
-    if (result.propositions.length === 0) {
-      return;
-    }
-
-    subscriptionHandler.call(null, result);
+    subscription.emit(propositions);
   };
 
   return {

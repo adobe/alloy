@@ -16,6 +16,7 @@ import {
 } from "../../utils/validation";
 import { MESSAGE_FEED_ITEM } from "../../constants/schema";
 import { DISPLAY, INTERACT } from "../../constants/eventType";
+import createSubscription from "../../utils/createSubscription";
 
 const validateOptions = ({ options }) => {
   const validator = objectOf({
@@ -27,14 +28,7 @@ const validateOptions = ({ options }) => {
 };
 
 export default ({ collect }) => {
-  let subscriptionHandler;
-  let surfaceIdentifier;
-  const run = ({ surface, callback }) => {
-    subscriptionHandler = callback;
-    surfaceIdentifier = surface;
-  };
-
-  const optionsValidator = options => validateOptions({ options });
+  const renderedSet = new Set();
 
   const createFeedItem = (payload, item) => {
     const { id, scope, scopeDetails } = payload;
@@ -53,8 +47,6 @@ export default ({ collect }) => {
       }
     };
   };
-
-  const renderedSet = new Set();
 
   const clicked = (items = []) => {
     if (!(items instanceof Array)) {
@@ -93,10 +85,9 @@ export default ({ collect }) => {
     }
   };
 
-  const refresh = propositions => {
-    if (!subscriptionHandler || !surfaceIdentifier) {
-      return;
-    }
+  const subscription = createSubscription();
+  subscription.setEmissionPreprocessor((params, propositions) => {
+    const { surfaceIdentifier } = params;
 
     const result = propositions
       .filter(payload => payload.scope === surfaceIdentifier)
@@ -115,7 +106,24 @@ export default ({ collect }) => {
           b.qualifiedDate - a.qualifiedDate || b.publishedDate - a.publishedDate
       );
 
-    subscriptionHandler.call(null, { items: result, clicked, rendered });
+    return [{ items: result, clicked, rendered }];
+  });
+
+  const run = ({ surface, callback }) => {
+    const unsubscribe = subscription.add(callback, {
+      surfaceIdentifier: surface
+    });
+    return Promise.resolve({ unsubscribe });
+  };
+
+  const optionsValidator = options => validateOptions({ options });
+
+  const refresh = propositions => {
+    if (!subscription.hasSubscriptions()) {
+      return;
+    }
+
+    subscription.emit(propositions);
   };
 
   return {

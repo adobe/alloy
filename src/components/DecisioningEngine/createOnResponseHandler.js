@@ -30,6 +30,11 @@ export default ({
       response.getPayloadsByType(PERSONALIZATION_DECISIONS_HANDLE)
     );
 
+    // only evaluate events that include a personalization query
+    if (!event.hasQuery()) {
+      return;
+    }
+
     const propositions = decisionProvider.evaluate(context);
 
     applyResponse({ viewName, renderDecisions, propositions });
