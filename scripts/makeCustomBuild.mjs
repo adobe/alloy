@@ -1,3 +1,14 @@
+/*
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
 import { rollup } from "rollup";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
@@ -16,17 +27,21 @@ const argv = yargs(hideBin(process.argv))
     .scriptName("custom-builder")
     .usage(`$0 --exclude ${moduleNames.join(' ')}`)
     .option("exclude", {
-      describe: "the modules that you want to be excluded from the build",
-      choices: moduleNames,
-      type: "array"
+        describe: "the modules that you want to be excluded from the build",
+        choices: moduleNames,
+        type: "array"
     })
     .array("exclude")
     .check((argv) => {
-      const forbiddenExclusions = (argv.exclude || []).filter((module) => untouchableModules.includes(module));
-      if (forbiddenExclusions.length > 0) {
-        throw new Error(`You're not allowed to exclude the following modules: ${forbiddenExclusions.join(', ')}. Nice try, though.`);
-      }
-      return true;
+        if (!argv.exclude) {
+            console.log(`Please provide the --exclude option with one or more of the following modules: ${moduleNames.join(', ')}.`);
+            process.exit(1);
+        }
+        const forbiddenExclusions = (argv.exclude || []).filter((module) => untouchableModules.includes(module));
+        if (forbiddenExclusions.length > 0) {
+            throw new Error(`You're not allowed to exclude the following modules: ${forbiddenExclusions.join(', ')}. Nice try, though.`);
+        }
+        return true;
     })
     .argv;
 
