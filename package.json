@@ -62,6 +62,8 @@
     "@adobe/reactor-load-script": "^1.1.1",
     "@adobe/reactor-object-assign": "^1.0.0",
     "@adobe/reactor-query-string": "^1.0.0",
+    "@babel/helper-plugin-utils": "^7.22.5",
+    "@babel/types": "^7.23.0",
     "css.escape": "^1.5.1",
     "js-cookie": "2.2.1",
     "uuid": "^3.3.2"
