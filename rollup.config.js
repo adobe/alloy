@@ -10,18 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { fileURLToPath } from 'url';
-import path from "path";
-import resolve from "@rollup/plugin-node-resolve";
-import commonjs from "@rollup/plugin-commonjs";
-import { babel } from "@rollup/plugin-babel";
-import terser from "@rollup/plugin-terser";
-import license from "rollup-plugin-license";
+const path = require("path");
+const resolve = require("@rollup/plugin-node-resolve").default;
+const commonjs = require("@rollup/plugin-commonjs").default;
+const { babel } = require("@rollup/plugin-babel");
+const terser = require("@rollup/plugin-terser").terser;
+const license = require("rollup-plugin-license");
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-// Set these boolean environment options to control which files are built:
-// build the snippet that must be add to the page
 const BASE_CODE = "BASE_CODE";
 // build the standalone distribution
 const STANDALONE = "STANDALONE";

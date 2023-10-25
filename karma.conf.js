@@ -9,11 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const rollupConfig = require("./rollup.test.config.mjs");
 
-const rollupConfig = require("./rollup.test.config.mjs");
+// eslint-disable-next-line import/extensions
+const rollupConfig = require("./rollup.test.config.js");
 
-module.exports = (config) => {
+module.exports = config => {
   config.set({
     basePath: "",
     frameworks: ["jasmine"],

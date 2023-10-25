@@ -76,14 +76,7 @@ module.exports = {
         ]
       }
     ],
-    "import/extensions": [
-      "error",
-      "ignorePackages",
-      {
-        js: "never",
-        mjs: "never"
-      }
-    ]
+    "import/extensions": "off"
   },
   globals: {
     expectAsync: "readonly", // newer jasmine feature
