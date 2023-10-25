@@ -32,7 +32,6 @@ import Identity from "./Identity";
 import AlloyVersion from "./components/AlloyVersion";
 import ConfigOverrides from "./ConfigOverrides.jsx";
 import InAppMessages from "./components/InAppMessagesDemo/InAppMessages";
-import MessageFeed from "./components/MessageFeedDemo/MessageFeed";
 
 const BasicExample = () => {
   return (
@@ -101,9 +100,6 @@ const BasicExample = () => {
             <li>
               <Link to="/inAppMessages">In-app Messages</Link>
             </li>
-            <li>
-              <Link to="/messageFeed">Message Feed</Link>
-            </li>
           </ul>
           <hr />
 
@@ -134,7 +130,6 @@ const BasicExample = () => {
           <Route path="/identity" component={Identity} />
           <Route path="/configOverrides" component={ConfigOverrides} />
           <Route path="/inAppMessages" component={InAppMessages} />
-          <Route path="/messageFeed" component={MessageFeed} />
         </div>
       </Router>
       <AlloyVersion />
