@@ -14,7 +14,7 @@ import parseUrl from "../../utils/parseUrl";
 import flattenObject from "../../utils/flattenObject";
 import libraryVersion from "../../constants/libraryVersion";
 
-export default ({ eventContext, window }) => {
+export default ({ eventRegistry, window }) => {
   const pageLoadTimestamp = new Date().getTime();
   const getBrowserContext = () => {
     return {
@@ -90,7 +90,7 @@ export default ({ eventContext, window }) => {
       ...addedContext
     };
 
-    return { ...flattenObject(context), events: eventContext.toJSON() };
+    return { ...flattenObject(context), events: eventRegistry.toJSON() };
   };
   return {
     getContext

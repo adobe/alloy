@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 import createContextProvider from "../../../../../src/components/DecisioningEngine/createContextProvider";
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
-import createEventContext from "../../../../../src/components/DecisioningEngine/createEventContext";
 
 describe("DecisioningEngine:createContextProvider", () => {
   let contextProvider;
@@ -19,7 +18,6 @@ describe("DecisioningEngine:createContextProvider", () => {
   let storage;
   let window;
   let mockedTimestamp;
-  let eventContext;
 
   beforeEach(() => {
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
@@ -46,9 +44,7 @@ describe("DecisioningEngine:createContextProvider", () => {
   });
   it("returns page context", () => {
     eventRegistry = createEventRegistry({ storage });
-    eventContext = createEventContext();
-    eventContext.setCurrentEventRegistry(eventRegistry);
-    contextProvider = createContextProvider({ eventContext, window });
+    contextProvider = createContextProvider({ eventRegistry, window });
 
     expect(contextProvider.getContext()).toEqual(
       jasmine.objectContaining({
@@ -66,9 +62,7 @@ describe("DecisioningEngine:createContextProvider", () => {
   });
   it("returns referring page context", () => {
     eventRegistry = createEventRegistry({ storage });
-    eventContext = createEventContext();
-    eventContext.setCurrentEventRegistry(eventRegistry);
-    contextProvider = createContextProvider({ eventContext, window });
+    contextProvider = createContextProvider({ eventRegistry, window });
 
     expect(contextProvider.getContext()).toEqual(
       jasmine.objectContaining({
@@ -84,9 +78,7 @@ describe("DecisioningEngine:createContextProvider", () => {
   });
   it("returns browser context", () => {
     eventRegistry = createEventRegistry({ storage });
-    eventContext = createEventContext();
-    eventContext.setCurrentEventRegistry(eventRegistry);
-    contextProvider = createContextProvider({ eventContext, window });
+    contextProvider = createContextProvider({ eventRegistry, window });
 
     expect(contextProvider.getContext()).toEqual(
       jasmine.objectContaining({
@@ -96,9 +88,7 @@ describe("DecisioningEngine:createContextProvider", () => {
   });
   it("returns windows context", () => {
     eventRegistry = createEventRegistry({ storage });
-    eventContext = createEventContext();
-    eventContext.setCurrentEventRegistry(eventRegistry);
-    contextProvider = createContextProvider({ eventContext, window });
+    contextProvider = createContextProvider({ eventRegistry, window });
 
     expect(contextProvider.getContext()).toEqual(
       jasmine.objectContaining({
@@ -111,9 +101,7 @@ describe("DecisioningEngine:createContextProvider", () => {
   });
   it("includes provided context passed in", () => {
     eventRegistry = createEventRegistry({ storage });
-    eventContext = createEventContext();
-    eventContext.setCurrentEventRegistry(eventRegistry);
-    contextProvider = createContextProvider({ eventContext, window });
+    contextProvider = createContextProvider({ eventRegistry, window });
 
     expect(contextProvider.getContext({ cool: "beans" })).toEqual(
       jasmine.objectContaining({
@@ -133,9 +121,7 @@ describe("DecisioningEngine:createContextProvider", () => {
     eventRegistry = {
       toJSON: () => events
     };
-    eventContext = createEventContext();
-    eventContext.setCurrentEventRegistry(eventRegistry);
-    contextProvider = createContextProvider({ eventContext, window });
+    contextProvider = createContextProvider({ eventRegistry, window });
 
     expect(contextProvider.getContext({ cool: "beans" }).events).toEqual(
       events

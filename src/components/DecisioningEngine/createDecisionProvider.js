@@ -13,10 +13,10 @@ import createEvaluableRulesetPayload from "./createEvaluableRulesetPayload";
 import createDecisionHistory from "./createDecisionHistory";
 import { getActivityId } from "./utils";
 
-export default ({ eventContext }) => {
+export default ({ eventRegistry }) => {
   const payloadsBasedOnActivityId = {};
 
-  const decisionHistory = createDecisionHistory({ eventContext });
+  const decisionHistory = createDecisionHistory({ eventRegistry });
 
   const addPayload = payload => {
     const activityId = getActivityId(payload);
@@ -26,7 +26,7 @@ export default ({ eventContext }) => {
 
     const evaluableRulesetPayload = createEvaluableRulesetPayload(
       payload,
-      eventContext,
+      eventRegistry,
       decisionHistory
     );
 

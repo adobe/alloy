@@ -22,8 +22,7 @@ import {
   MOBILE_EVENT_TYPE
 } from "./constants";
 import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand";
-import createEventContext from "./createEventContext";
-import createNoopEventRegistry from "./createNoopEventRegistry";
+import { clearLocalStorage, createInMemoryStorage } from "./utils";
 
 const createDecisioningEngine = ({
   config,
@@ -31,9 +30,19 @@ const createDecisioningEngine = ({
   consent
 }) => {
   const { orgId, personalizationStorageEnabled } = config;
-  const eventContext = createEventContext();
-  const decisionProvider = createDecisionProvider({ eventContext });
-  const contextProvider = createContextProvider({ eventContext, window });
+  const storage = createNamespacedStorage(
+    `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`
+  );
+  if (!personalizationStorageEnabled) {
+    clearLocalStorage(storage.persistent);
+  }
+
+  const eventRegistry = createEventRegistry({
+    storage: createInMemoryStorage()
+  });
+  const decisionProvider = createDecisionProvider({ eventRegistry });
+  const contextProvider = createContextProvider({ eventRegistry, window });
+
   const evaluateRulesetsCommand = createEvaluateRulesetsCommand({
     contextProvider,
     decisionProvider
@@ -49,23 +58,15 @@ const createDecisioningEngine = ({
       onComponentsRegistered(tools) {
         applyResponse = createApplyResponse(tools.lifecycle);
         if (personalizationStorageEnabled) {
-          const storage = createNamespacedStorage(
-            `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`
-          );
           consent
             .awaitConsent()
             .then(() => {
-              const eventRegistry = createEventRegistry({
-                storage: storage.persistent
-              });
-              eventContext.setCurrentEventRegistry(eventRegistry);
+              eventRegistry.setStorage(storage.persistent);
             })
             .catch(() => {
-              // If consent is rejected, we want to clear the local storage.
               if (storage) {
-                storage.persistent.clear();
+                clearLocalStorage(storage.persistent);
               }
-              eventContext.setCurrentEventRegistry(createNoopEventRegistry());
             });
         }
       },
@@ -89,7 +90,7 @@ const createDecisioningEngine = ({
           })
         );
 
-        eventContext.addExperienceEdgeEvent(event);
+        eventRegistry.addExperienceEdgeEvent(event);
       }
     },
     commands: {
