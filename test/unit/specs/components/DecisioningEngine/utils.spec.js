@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import {
+  createInMemoryStorage,
   createRestoreStorage,
   createSaveStorage,
   getActivityId,
@@ -18,9 +19,11 @@ import {
 
 describe("DecisioningEngine:utils", () => {
   let storage;
+  let inMemoryStorage;
 
   beforeEach(() => {
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
+    inMemoryStorage = createInMemoryStorage();
   });
 
   it("restores from storage", () => {
@@ -190,5 +193,28 @@ describe("DecisioningEngine:utils", () => {
       }
     };
     expect(getActivityId(proposition)).toEqual(undefined);
+  });
+  it("should set and retrieve an item from in-memory storage", () => {
+    const key = "testKey";
+    const value = "testValue";
+    inMemoryStorage.setItem(key, value);
+    const retrievedValue = inMemoryStorage.getItem(key);
+    expect(retrievedValue).toEqual(value);
+  });
+
+  it("should return null for a non-existent item", () => {
+    const key = "nonExistentKey";
+    const retrievedValue = inMemoryStorage.getItem(key);
+    expect(retrievedValue).toBeNull();
+  });
+
+  it("should overwrite the value for an existing key", () => {
+    const key = "existingKey";
+    const originalValue = "originalValue";
+    const updatedValue = "updatedValue";
+    inMemoryStorage.setItem(key, originalValue);
+    inMemoryStorage.setItem(key, updatedValue);
+    const retrievedValue = inMemoryStorage.getItem(key);
+    expect(retrievedValue).toEqual(updatedValue);
   });
 });
