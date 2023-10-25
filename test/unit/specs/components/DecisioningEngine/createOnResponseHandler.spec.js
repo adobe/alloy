@@ -28,7 +28,6 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
 
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
     eventRegistry = createEventRegistry({ storage });
-
     decisionProvider = createDecisionProvider({ eventRegistry });
     applyResponse = createApplyResponse(lifecycle);
   });

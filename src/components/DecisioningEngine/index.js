@@ -22,15 +22,24 @@ import {
   CONTEXT_EVENT_TYPE
 } from "./constants";
 import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand";
+import { clearLocalStorage, createInMemoryStorage } from "./utils";
 
-const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
-  const { orgId } = config;
+const createDecisioningEngine = ({
+  config,
+  createNamespacedStorage,
+  consent
+}) => {
+  const { orgId, personalizationStorageEnabled } = config;
   const storage = createNamespacedStorage(
     `${sanitizeOrgIdForCookieName(orgId)}.decisioning.`
   );
-  const eventRegistry = createEventRegistry({ storage: storage.persistent });
-  let applyResponse;
+  if (!personalizationStorageEnabled) {
+    clearLocalStorage(storage.persistent);
+  }
 
+  const eventRegistry = createEventRegistry({
+    storage: createInMemoryStorage()
+  });
   const decisionProvider = createDecisionProvider({ eventRegistry });
   const contextProvider = createContextProvider({ eventRegistry, window });
 
@@ -38,8 +47,8 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
     contextProvider,
     decisionProvider
   });
-
   const subscribeRulesetItems = createSubscribeRulesetItems();
+  let applyResponse;
 
   return {
     lifecycle: {
@@ -48,6 +57,18 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
       },
       onComponentsRegistered(tools) {
         applyResponse = createApplyResponse(tools.lifecycle);
+        if (personalizationStorageEnabled) {
+          consent
+            .awaitConsent()
+            .then(() => {
+              eventRegistry.setStorage(storage.persistent);
+            })
+            .catch(() => {
+              if (storage) {
+                clearLocalStorage(storage.persistent);
+              }
+            });
+        }
       },
       onBeforeEvent({
         event,

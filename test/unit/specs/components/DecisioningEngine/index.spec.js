@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createDecisioningEngine from "../../../../../src/components/DecisioningEngine/index";
-import { injectStorage } from "../../../../../src/utils";
+import { defer, injectStorage } from "../../../../../src/utils";
 import {
   mockRulesetResponseWithCondition,
   proposition
@@ -21,15 +21,26 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
   let mockEvent;
   let onResponseHandler;
   let decisioningEngine;
-  beforeEach(() => {
+  let awaitConsentDeferred;
+  let consent;
+
+  beforeEach(async () => {
     mergeData = jasmine.createSpy();
-    const config = { orgId: "exampleOrgId" };
+    awaitConsentDeferred = defer();
+    consent = jasmine.createSpyObj("consent", {
+      awaitConsent: awaitConsentDeferred.promise
+    });
+    const config = {
+      orgId: "exampleOrgId",
+      personalizationStorageEnabled: true
+    };
     window.referrer =
       "https://www.google.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer";
     const createNamespacedStorage = injectStorage(window);
     decisioningEngine = createDecisioningEngine({
       config,
-      createNamespacedStorage
+      createNamespacedStorage,
+      consent
     });
     mockEvent = {
       getContent: () => ({}),
@@ -38,6 +49,7 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
       mergeData
     };
     decisioningEngine.lifecycle.onComponentsRegistered(() => {});
+    await awaitConsentDeferred.resolve();
   });
 
   it("should run the evaluateRulesets command and satisfy the rule based on global context", () => {

@@ -40,8 +40,14 @@ const {
   alloyInstance
 } = config[configKey];
 
+const getURLParams = key => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(key);
+};
+
 if (alloyInstance !== window.alloy) {
   alloyInstance("configure", {
+    defaultConsent: getURLParams("defaultConsent") || "in",
     datastreamId,
     orgId,
     edgeDomain,

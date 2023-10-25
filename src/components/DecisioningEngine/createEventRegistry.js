@@ -46,14 +46,24 @@ export const createEventPruner = (
 };
 
 export default ({ storage }) => {
-  const restore = createRestoreStorage(storage, STORAGE_KEY);
-  const save = createSaveStorage(
-    storage,
-    STORAGE_KEY,
-    createEventPruner(MAX_EVENT_RECORDS, RETENTION_PERIOD)
-  );
+  let currentStorage = storage;
+  let restore;
+  let save;
+  let events;
+  const setStorage = newStorage => {
+    currentStorage = newStorage;
 
-  const events = restore({});
+    restore = createRestoreStorage(currentStorage, STORAGE_KEY);
+    save = createSaveStorage(
+      currentStorage,
+      STORAGE_KEY,
+      createEventPruner(MAX_EVENT_RECORDS, RETENTION_PERIOD)
+    );
+    events = restore({});
+  };
+
+  setStorage(storage);
+
   const addEvent = (event, eventType, eventId, action) => {
     if (!events[eventType]) {
       events[eventType] = {};
@@ -132,5 +142,11 @@ export default ({ storage }) => {
     return events[eventType][eventId];
   };
 
-  return { addExperienceEdgeEvent, addEvent, getEvent, toJSON: () => events };
+  return {
+    addExperienceEdgeEvent,
+    addEvent,
+    getEvent,
+    toJSON: () => events,
+    setStorage
+  };
 };

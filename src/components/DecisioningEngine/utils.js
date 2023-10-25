@@ -47,3 +47,17 @@ export const getActivityId = proposition => {
 
   return id;
 };
+export const createInMemoryStorage = () => {
+  const inMemoryStorage = {};
+  return {
+    getItem: key => {
+      return key in inMemoryStorage ? inMemoryStorage[key] : null;
+    },
+    setItem: (key, value) => {
+      inMemoryStorage[key] = value;
+    }
+  };
+};
+export const clearLocalStorage = storage => {
+  storage.clear();
+};
