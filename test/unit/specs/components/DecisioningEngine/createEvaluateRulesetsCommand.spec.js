@@ -14,7 +14,6 @@ import createContextProvider from "../../../../../src/components/DecisioningEngi
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
 import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider";
 import createApplyResponse from "../../../../../src/components/DecisioningEngine/createApplyResponse";
-import createEventContext from "../../../../../src/components/DecisioningEngine/createEventContext";
 
 describe("DecisioningEngine:evaluateRulesetsCommand", () => {
   let onDecision;
@@ -24,18 +23,15 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
   let contextProvider;
   let decisionProvider;
   let evaluateRulesetsCommand;
-  let eventContext;
 
   beforeEach(() => {
     onDecision = jasmine.createSpy();
     applyResponse = createApplyResponse({ onDecision });
 
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
-    eventContext = createEventContext();
     eventRegistry = createEventRegistry({ storage });
-    eventContext.setCurrentEventRegistry(eventRegistry);
-    contextProvider = createContextProvider({ eventContext, window });
-    decisionProvider = createDecisionProvider({ eventContext });
+    contextProvider = createContextProvider({ eventRegistry, window });
+    decisionProvider = createDecisionProvider({ eventRegistry });
 
     decisionProvider.addPayload({
       id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",

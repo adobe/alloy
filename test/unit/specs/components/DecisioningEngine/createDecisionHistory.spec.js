@@ -11,20 +11,17 @@ governing permissions and limitations under the License.
 */
 import createDecisionHistory from "../../../../../src/components/DecisioningEngine/createDecisionHistory";
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
-import createEventContext from "../../../../../src/components/DecisioningEngine/createEventContext";
 
 describe("DecisioningEngine:decisionHistory", () => {
   let storage;
   let history;
-  let eventRegistry;
-  let eventContext;
 
   beforeEach(() => {
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
-    eventRegistry = createEventRegistry({ storage, saveDelay: 10 });
-    eventContext = createEventContext();
-    eventContext.setCurrentEventRegistry(eventRegistry);
-    history = createDecisionHistory({ eventContext });
+
+    history = createDecisionHistory({
+      eventRegistry: createEventRegistry({ storage, saveDelay: 10 })
+    });
   });
 
   it("records decision time", () => {

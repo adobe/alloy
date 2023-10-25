@@ -13,7 +13,6 @@ import createContextProvider from "../../../../../src/components/DecisioningEngi
 import createOnResponseHandler from "../../../../../src/components/DecisioningEngine/createOnResponseHandler";
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
 import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider";
-import createEventContext from "../../../../../src/components/DecisioningEngine/createEventContext";
 
 export const proposition = {
   id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
@@ -125,10 +124,8 @@ export const setupResponseHandler = (applyResponse, window, condition) => {
     "clear"
   ]);
   const eventRegistry = createEventRegistry({ storage });
-  const eventContext = createEventContext();
-  eventContext.setCurrentEventRegistry(eventRegistry);
-  const decisionProvider = createDecisionProvider({ eventContext });
-  const contextProvider = createContextProvider({ eventContext, window });
+  const decisionProvider = createDecisionProvider({ eventRegistry });
+  const contextProvider = createContextProvider({ eventRegistry, window });
 
   const onResponseHandler = createOnResponseHandler({
     renderDecisions: true,

@@ -44,7 +44,7 @@ const isRulesetItem = item => {
   }
 };
 
-export default (payload, eventContext, decisionHistory) => {
+export default (payload, eventRegistry, decisionHistory) => {
   const consequenceAdapter = createConsequenceAdapter();
   const activityId = getActivityId(payload);
   const items = [];
@@ -64,7 +64,7 @@ export default (payload, eventContext, decisionHistory) => {
   };
 
   const evaluate = context => {
-    const displayEvent = eventContext.getEvent(DISPLAY, activityId);
+    const displayEvent = eventRegistry.getEvent(DISPLAY, activityId);
 
     const displayedDate = displayEvent
       ? displayEvent.firstTimestamp

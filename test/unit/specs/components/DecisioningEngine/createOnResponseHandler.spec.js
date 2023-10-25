@@ -13,7 +13,6 @@ import createOnResponseHandler from "../../../../../src/components/DecisioningEn
 import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider";
 import createApplyResponse from "../../../../../src/components/DecisioningEngine/createApplyResponse";
 import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
-import createEventContext from "../../../../../src/components/DecisioningEngine/createEventContext";
 
 describe("DecisioningEngine:createOnResponseHandler", () => {
   let lifecycle;
@@ -21,7 +20,6 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
   let eventRegistry;
   let decisionProvider;
   let applyResponse;
-  let eventContext;
 
   beforeEach(() => {
     lifecycle = jasmine.createSpyObj("lifecycle", {
@@ -30,9 +28,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
 
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
     eventRegistry = createEventRegistry({ storage });
-    eventContext = createEventContext();
-    eventContext.setCurrentEventRegistry(eventRegistry);
-    decisionProvider = createDecisionProvider({ eventContext });
+    decisionProvider = createDecisionProvider({ eventRegistry });
     applyResponse = createApplyResponse(lifecycle);
   });
 
