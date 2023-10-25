@@ -47,6 +47,9 @@ export default () => {
   };
 
   const event = {
+    hasQuery() {
+      return Object.prototype.hasOwnProperty.call(this.getContent(), "query");
+    },
     getContent() {
       const currentContent = JSON.parse(JSON.stringify(content));
 

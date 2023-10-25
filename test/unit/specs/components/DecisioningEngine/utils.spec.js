@@ -51,7 +51,7 @@ describe("DecisioningEngine:utils", () => {
     storage.getItem.and.returnValue(
       '{ "something": true, "color": "orange", "person": { "height": 5.83 } }'
     );
-    const save = createSaveStorage(storage, "zoink", 10);
+    const save = createSaveStorage(storage, "zoink");
 
     save({
       something: true,

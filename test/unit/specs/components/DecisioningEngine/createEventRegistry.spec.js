@@ -132,7 +132,7 @@ describe("DecisioningEngine:createEventRegistry", () => {
   });
 
   it("increments count and sets timestamp", done => {
-    const eventRegistry = createEventRegistry({ storage, saveDelay: 10 });
+    const eventRegistry = createEventRegistry({ storage });
 
     const getContent = () => ({
       xdm: {

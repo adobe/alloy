@@ -20,7 +20,7 @@ describe("DecisioningEngine:decisionHistory", () => {
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
 
     history = createDecisionHistory({
-      eventRegistry: createEventRegistry({ storage, saveDelay: 10 })
+      eventRegistry: createEventRegistry({ storage })
     });
   });
 
