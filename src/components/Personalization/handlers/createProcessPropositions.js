@@ -23,8 +23,8 @@ export default ({ schemaProcessors, logger }) => {
       .catch(error => {
         if (logger.enabled) {
           const { message, stack } = error;
-          const errorMessage = `Failed to execute action ${item.toString()}. ${message} ${stack}`;
-          logger.error(errorMessage);
+          const warning = `Failed to execute action ${item.toString()}. ${message} ${stack}`;
+          logger.warn(warning);
         }
         return false;
       });

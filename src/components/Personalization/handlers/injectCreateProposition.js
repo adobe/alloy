@@ -11,16 +11,17 @@ governing permissions and limitations under the License.
 */
 
 import PAGE_WIDE_SCOPE from "../../../constants/pageWideScope";
+import {
+  VIEW_SCOPE_TYPE,
+  PAGE_SCOPE_TYPE,
+  PROPOSITION_SCOPE_TYPE
+} from "../constants/scopeType";
 
 export default ({ preprocess, isPageWideSurface }) => {
-  const createItem = (item, meta) => {
+  const createItem = (item, proposition) => {
     const { schema, data, characteristics: { trackingLabel } = {} } = item;
 
     const processedData = preprocess(data);
-
-    if (trackingLabel) {
-      meta.trackingLabel = trackingLabel;
-    }
 
     return {
       getSchema() {
@@ -29,8 +30,11 @@ export default ({ preprocess, isPageWideSurface }) => {
       getData() {
         return processedData;
       },
-      getMeta() {
-        return meta;
+      getProposition() {
+        return proposition;
+      },
+      getTrackingLabel() {
+        return trackingLabel;
       },
       getOriginalItem() {
         return item;
@@ -57,15 +61,15 @@ export default ({ preprocess, isPageWideSurface }) => {
       },
       getScopeType() {
         if (scope === PAGE_WIDE_SCOPE || isPageWideSurface(scope)) {
-          return "page";
+          return PAGE_SCOPE_TYPE;
         }
-        if (scopeType === "view") {
-          return "view";
+        if (scopeType === VIEW_SCOPE_TYPE) {
+          return VIEW_SCOPE_TYPE;
         }
-        return "proposition";
+        return PROPOSITION_SCOPE_TYPE;
       },
       getItems() {
-        return items.map(item => createItem(item, { id, scope, scopeDetails }));
+        return items.map(item => createItem(item, this));
       },
       getNotification() {
         return { id, scope, scopeDetails };
