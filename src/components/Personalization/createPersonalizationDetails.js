@@ -54,11 +54,11 @@ export default ({
     isRenderDecisions() {
       return renderDecisions;
     },
-    isSendDisplayNotifications() {
-      return !!personalization.sendDisplayNotifications;
+    isSendDisplayEvent() {
+      return !!personalization.sendDisplayEvent;
     },
-    shouldAddPendingDisplayNotifications() {
-      return !!personalization.includePendingDisplayNotifications;
+    shouldIncludeRenderedPropositions() {
+      return !!personalization.includeRenderedPropositions;
     },
     getViewName() {
       return viewName;
@@ -86,7 +86,10 @@ export default ({
         logger
       );
 
-      if (!this.isCacheInitialized()) {
+      if (
+        !this.isCacheInitialized() ||
+        personalization.requestPersonalization
+      ) {
         addPageWideScope(scopes);
         addPageSurface(eventSurfaces, getPageLocation);
       }
@@ -116,7 +119,11 @@ export default ({
     },
     shouldFetchData() {
       return (
-        this.hasScopes() || this.hasSurfaces() || !this.isCacheInitialized()
+        this.hasScopes() ||
+        this.hasSurfaces() ||
+        personalization.requestPersonalization ||
+        (!this.isCacheInitialized() &&
+          personalization.requestPersonalization !== false)
       );
     },
     shouldUseCachedData() {

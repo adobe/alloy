@@ -170,12 +170,7 @@ export default () => {
       return shouldSendEvent;
     },
     getViewName() {
-      if (
-        !userXdm ||
-        !userXdm.web ||
-        !userXdm.web.webPageDetails ||
-        !userXdm.web.webPageDetails.viewName
-      ) {
+      if (!userXdm || !userXdm.web || !userXdm.web.webPageDetails) {
         return undefined;
       }
 

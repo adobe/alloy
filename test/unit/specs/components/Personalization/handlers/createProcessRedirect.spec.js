@@ -20,6 +20,7 @@ describe("createProcessRedirect", () => {
   let collectDefer;
   let item;
   let data;
+  let proposition;
   let meta;
 
   let processRedirect;
@@ -31,12 +32,17 @@ describe("createProcessRedirect", () => {
     collect = jasmine
       .createSpy("collect")
       .and.returnValue(collectDefer.promise);
+    proposition = {
+      getNotification() {
+        return meta;
+      }
+    };
     item = {
       getData() {
         return data;
       },
-      getMeta() {
-        return meta;
+      getProposition() {
+        return proposition;
       }
     };
 
@@ -75,7 +81,10 @@ describe("createProcessRedirect", () => {
     expect(executeRedirect).not.toHaveBeenCalled();
     const renderPromise = result.render();
     await flushPromiseChains();
-    expect(collect).toHaveBeenCalledWith({ decisionsMeta: ["mymetavalue"] });
+    expect(collect).toHaveBeenCalledWith({
+      decisionsMeta: ["mymetavalue"],
+      documentMayUnload: true
+    });
     expect(executeRedirect).not.toHaveBeenCalled();
     collectDefer.resolve();
     await flushPromiseChains();

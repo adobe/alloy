@@ -74,7 +74,7 @@ const createDecisioningEngine = ({ config, createNamespacedStorage }) => {
     },
     commands: {
       evaluateRulesets: {
-        run: ({ renderDecisions, decisionContext }) =>
+        run: ({ renderDecisions, decisionContext = {} }) =>
           evaluateRulesetsCommand.run({
             renderDecisions,
             decisionContext: {

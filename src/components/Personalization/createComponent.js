@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop, flatMap } from "../../utils";
+import { noop, flatMap, isNonEmptyArray } from "../../utils";
 import createPersonalizationDetails from "./createPersonalizationDetails";
 import { AUTHORING_ENABLED } from "./constants/loggerMessage";
 import validateApplyPropositionsOptions from "./validateApplyPropositionsOptions";
@@ -29,7 +29,7 @@ export default ({
   applyPropositions,
   setTargetMigration,
   mergeDecisionsMeta,
-  pendingDisplayNotifications,
+  renderedPropositions,
   onDecisionHandler,
   subscribeMessageFeed
 }) => {
@@ -71,8 +71,8 @@ export default ({
         });
 
         const decisionsMetaPromises = [];
-        if (personalizationDetails.shouldAddPendingDisplayNotifications()) {
-          decisionsMetaPromises.push(pendingDisplayNotifications.clear());
+        if (personalizationDetails.shouldIncludeRenderedPropositions()) {
+          decisionsMetaPromises.push(renderedPropositions.clear());
         }
 
         if (personalizationDetails.shouldFetchData()) {
@@ -105,11 +105,12 @@ export default ({
         return Promise.all(decisionsMetaPromises).then(decisionsMetas => {
           // We only want to call mergeDecisionsMeta once, but we can get the propositions
           // from two places: the pending display notifications and the view change handler.
-          mergeDecisionsMeta(
-            event,
-            flatMap(decisionsMetas, dms => dms),
-            [PropositionEventType.DISPLAY]
-          );
+          const decisionsMeta = flatMap(decisionsMetas, dms => dms);
+          if (isNonEmptyArray(decisionsMeta)) {
+            mergeDecisionsMeta(event, decisionsMeta, [
+              PropositionEventType.DISPLAY
+            ]);
+          }
         });
       },
       onClick({ event, clickedElement }) {

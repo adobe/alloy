@@ -32,12 +32,14 @@ export default ({ options }) => {
     personalization: objectOf({
       decisionScopes: arrayOf(string()).uniqueItems(),
       surfaces: arrayOf(string()).uniqueItems(),
-      sendDisplayNotifications: boolean().default(true),
-      includePendingDisplayNotifications: boolean().default(false)
-    }).default({ sendDisplayNotifications: true }),
+      sendDisplayEvent: boolean().default(true),
+      includeRenderedPropositions: boolean().default(false),
+      requestPersonalization: boolean()
+    }).default({ sendDisplayEvent: true }),
     datasetId: string(),
     mergeId: string(),
-    edgeConfigOverrides: validateConfigOverride
+    edgeConfigOverrides: validateConfigOverride,
+    initializePersonalization: boolean()
   })
     .required()
     .noUnknownFields();

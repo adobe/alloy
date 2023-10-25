@@ -49,7 +49,7 @@ const isValidInAppMessage = (data, logger) => {
 export default ({ modules, logger }) => {
   return item => {
     const data = item.getData();
-    const meta = item.getMeta();
+    const meta = { ...item.getProposition().getNotification() };
 
     if (!data) {
       logger.warn("Invalid in-app message data: undefined.", data);

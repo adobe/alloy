@@ -25,7 +25,7 @@ describe("Personalization", () => {
   let personalizationComponent;
   let setTargetMigration;
   let mergeDecisionsMeta;
-  let pendingDisplayNotifications;
+  let renderedPropositions;
   let subscribeMessageFeed;
   let cacheUpdate;
 
@@ -41,7 +41,7 @@ describe("Personalization", () => {
       showContainers,
       setTargetMigration,
       mergeDecisionsMeta,
-      pendingDisplayNotifications,
+      renderedPropositions,
       subscribeMessageFeed
     });
   };
@@ -69,10 +69,9 @@ describe("Personalization", () => {
     viewCache.createCacheUpdate.and.returnValue(cacheUpdate);
     setTargetMigration = jasmine.createSpy("setTargetMigration");
     mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
-    pendingDisplayNotifications = jasmine.createSpyObj(
-      "pendingDisplayNotifications",
-      ["clear"]
-    );
+    renderedPropositions = jasmine.createSpyObj("renderedPropositions", [
+      "clear"
+    ]);
     subscribeMessageFeed = jasmine.createSpy("subscribeMessageFeed");
 
     build();
