@@ -13,11 +13,18 @@ governing permissions and limitations under the License.
 import { getNonce } from "../../dom-actions/dom";
 import { parseAnchor, removeElementById } from "../utils";
 import { TEXT_HTML } from "../../../../constants/contentType";
-import { assign, includes, values } from "../../../../utils";
+import {
+  assign,
+  includes,
+  isNonEmptyString,
+  toArray,
+  values
+} from "../../../../utils";
 import { createNode } from "../../../../utils/dom";
 import { objectOf } from "../../../../utils/validation";
 import { PropositionEventType } from "../../../../constants/propositionEventType";
 import { INTERACT } from "../../../../constants/eventType";
+import createRedirect from "../../dom-actions/createRedirect";
 
 const ALLOY_MESSAGING_CONTAINER_ID = "alloy-messaging-container";
 const ALLOY_OVERLAY_CONTAINER_ID = "alloy-overlay-container";
@@ -27,14 +34,9 @@ const dismissMessage = () =>
   [ALLOY_MESSAGING_CONTAINER_ID, ALLOY_OVERLAY_CONTAINER_ID].forEach(
     removeElementById
   );
-
-const setWindowLocationHref = link => {
-  window.location.href = link;
-};
-
 export const createIframeClickHandler = (
   interact,
-  navigateToUrl = setWindowLocationHref
+  navigateToUrl = createRedirect(window)
 ) => {
   return event => {
     event.preventDefault();
@@ -62,7 +64,7 @@ export const createIframeClickHandler = (
       dismissMessage();
     }
 
-    if (typeof link === "string" && link.length > 0) {
+    if (isNonEmptyString(link) && link.length > 0) {
       navigateToUrl(link);
     }
   };
@@ -301,7 +303,7 @@ export default (settings, collect) => {
         decisionsMeta: [meta],
         propositionAction,
         eventType: INTERACT,
-        propositionEventTypes: Array.from(propositionEventTypes)
+        propositionEventTypes: toArray(propositionEventTypes)
       });
     });
 

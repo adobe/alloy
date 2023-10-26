@@ -64,7 +64,7 @@ describe("createActionsProvider", () => {
       expect(error.message).toEqual(
         `Action "truckee" not found for schema "hidden-valley"`
       );
-      expect(logger.error).toHaveBeenCalledOnceWith(
+      expect(logger.warn).toHaveBeenCalledOnceWith(
         jasmine.stringContaining(
           `Failed to execute action ${JSON.stringify(actionDetails)}.`
         )
@@ -84,7 +84,7 @@ describe("createActionsProvider", () => {
       expect(error.message).toEqual(
         `Action "truckee" not found for schema "something"`
       );
-      expect(logger.error).toHaveBeenCalledOnceWith(
+      expect(logger.warn).toHaveBeenCalledOnceWith(
         jasmine.stringContaining(
           `Failed to execute action ${JSON.stringify(actionDetails)}.`
         )
