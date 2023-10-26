@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { getNonce } from "../../dom-actions/dom";
 import { parseAnchor, removeElementById } from "../utils";
 import { TEXT_HTML } from "../../../../constants/contentType";
-import { assign, includes, values } from "../../../../utils";
+import { assign, includes, isNonEmptyString, values } from "../../../../utils";
 import { createNode } from "../../../../utils/dom";
 import { objectOf } from "../../../../utils/validation";
 import { PropositionEventType } from "../../../../constants/propositionEventType";
@@ -62,7 +62,7 @@ export const createIframeClickHandler = (
       dismissMessage();
     }
 
-    if (typeof link === "string" && link.length > 0) {
+    if (isNonEmptyString(link) && link.length > 0) {
       navigateToUrl(link);
     }
   };
