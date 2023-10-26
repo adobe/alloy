@@ -13,7 +13,13 @@ governing permissions and limitations under the License.
 import { getNonce } from "../../dom-actions/dom";
 import { parseAnchor, removeElementById } from "../utils";
 import { TEXT_HTML } from "../../../../constants/contentType";
-import { assign, includes, isNonEmptyString, values } from "../../../../utils";
+import {
+  assign,
+  includes,
+  isNonEmptyString,
+  toArray,
+  values
+} from "../../../../utils";
 import { createNode } from "../../../../utils/dom";
 import { objectOf } from "../../../../utils/validation";
 import { PropositionEventType } from "../../../../constants/propositionEventType";
@@ -301,7 +307,7 @@ export default (settings, collect) => {
         decisionsMeta: [meta],
         propositionAction,
         eventType: INTERACT,
-        propositionEventTypes: Array.from(propositionEventTypes)
+        propositionEventTypes: toArray(propositionEventTypes)
       });
     });
 
