@@ -205,10 +205,12 @@ test("Test C13348429: Verify DOM action using the applyResponse command.", async
 
   await alloy.applyResponse({
     renderDecisions: true,
-    decisionContext: {
-      "~type": "com.adobe.eventType.generic.track",
-      "~source": "com.adobe.eventSource.requestContent",
-      "~state.com.adobe.module.lifecycle/lifecyclecontextdata.dayofweek": 2
+    personalization: {
+      decisionContext: {
+        "~type": "com.adobe.eventType.generic.track",
+        "~source": "com.adobe.eventSource.requestContent",
+        "~state.com.adobe.module.lifecycle/lifecyclecontextdata.dayofweek": 2
+      }
     },
     responseBody: mockResponse
   });

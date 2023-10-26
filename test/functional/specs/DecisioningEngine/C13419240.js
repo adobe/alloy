@@ -210,10 +210,12 @@ test("Test C13419240: Verify DOM action using the sendEvent command", async () =
 
   await alloy.sendEvent({
     renderDecisions: true,
-    decisionContext: {
-      "~type": "com.adobe.eventType.generic.track",
-      "~source": "com.adobe.eventSource.requestContent",
-      "~state.com.adobe.module.lifecycle/lifecyclecontextdata.dayofweek": 2
+    personalization: {
+      decisionContext: {
+        "~type": "com.adobe.eventType.generic.track",
+        "~source": "com.adobe.eventSource.requestContent",
+        "~state.com.adobe.module.lifecycle/lifecyclecontextdata.dayofweek": 2
+      }
     }
   });
 

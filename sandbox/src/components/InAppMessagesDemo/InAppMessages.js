@@ -84,15 +84,16 @@ export default function InAppMessages() {
     if (useEvaluateRulesetsCommand) {
       alloyInstance("evaluateRulesets", {
         renderDecisions: true,
-        decisionContext: context
+        personalization: {
+          decisionContext: context
+        }
       });
       return;
     }
 
     alloyInstance("sendEvent", {
       renderDecisions: true,
-      decisionContext: context,
-      personalization: { surfaces: ["#hello"] }
+      personalization: { surfaces: ["#hello"], decisionContext: context }
     }).then(() => setSentEvent(true));
   };
 
