@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createDecisioningEngine from "../../../../../src/components/DecisioningEngine/index";
-import { defer, injectStorage } from "../../../../../src/utils";
+import { defer } from "../../../../../src/utils";
 import {
   mockRulesetResponseWithCondition,
   proposition
@@ -20,27 +20,26 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
   let mergeData;
   let mockEvent;
   let onResponseHandler;
-  let decisioningEngine;
   let awaitConsentDeferred;
   let consent;
+  let persistentStorage;
+  let createNamespacedStorage;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     mergeData = jasmine.createSpy();
     awaitConsentDeferred = defer();
     consent = jasmine.createSpyObj("consent", {
       awaitConsent: awaitConsentDeferred.promise
     });
-    const config = {
-      orgId: "exampleOrgId",
-      personalizationStorageEnabled: true
-    };
     window.referrer =
       "https://www.google.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer";
-    const createNamespacedStorage = injectStorage(window);
-    decisioningEngine = createDecisioningEngine({
-      config,
-      createNamespacedStorage,
-      consent
+    persistentStorage = jasmine.createSpyObj("persistentStorage", [
+      "getItem",
+      "setItem",
+      "clear"
+    ]);
+    createNamespacedStorage = jasmine.createSpy().and.returnValue({
+      persistent: persistentStorage
     });
     mockEvent = {
       getContent: () => ({}),
@@ -48,11 +47,27 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
       getViewName: () => undefined,
       mergeData
     };
-    decisioningEngine.lifecycle.onComponentsRegistered(() => {});
-    await awaitConsentDeferred.resolve();
   });
 
-  it("should run the evaluateRulesets command and satisfy the rule based on global context", () => {
+  const setUpDecisionEngine = ({ personalizationStorageEnabled }) => {
+    const config = {
+      orgId: "exampleOrgId",
+      personalizationStorageEnabled
+    };
+    const decisioningEngine = createDecisioningEngine({
+      config,
+      createNamespacedStorage,
+      consent
+    });
+    decisioningEngine.lifecycle.onComponentsRegistered(() => {});
+    return decisioningEngine;
+  };
+
+  it("should run the evaluateRulesets command and satisfy the rule based on global context", async () => {
+    const decisioningEngine = setUpDecisionEngine({
+      personalizationStorageEnabled: true
+    });
+    await awaitConsentDeferred.resolve();
     onResponseHandler = onResponse => {
       onResponse({
         response: mockRulesetResponseWithCondition({
@@ -77,7 +92,11 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
     });
   });
 
-  it("should run the evaluateRulesets command and does not satisfy rule due to unmatched global context", () => {
+  it("should run the evaluateRulesets command and does not satisfy rule due to unmatched global context", async () => {
+    const decisioningEngine = setUpDecisionEngine({
+      personalizationStorageEnabled: true
+    });
+    await awaitConsentDeferred.resolve();
     onResponseHandler = onResponse => {
       onResponse({
         response: mockRulesetResponseWithCondition({
@@ -102,7 +121,11 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
     });
   });
 
-  it("should run the evaluateRulesets command and return propositions with renderDecisions true", () => {
+  it("should run the evaluateRulesets command and return propositions with renderDecisions true", async () => {
+    const decisioningEngine = setUpDecisionEngine({
+      personalizationStorageEnabled: true
+    });
+    await awaitConsentDeferred.resolve();
     onResponseHandler = onResponse => {
       onResponse({
         response: mockRulesetResponseWithCondition({
@@ -127,7 +150,11 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
     });
   });
 
-  it("should run the evaluateRulesets command returns propositions with renderDecisions false", () => {
+  it("should run the evaluateRulesets command returns propositions with renderDecisions false", async () => {
+    const decisioningEngine = setUpDecisionEngine({
+      personalizationStorageEnabled: true
+    });
+    await awaitConsentDeferred.resolve();
     onResponseHandler = onResponse => {
       onResponse({
         response: mockRulesetResponseWithCondition({
@@ -150,5 +177,24 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
     expect(result).toEqual({
       propositions: [proposition]
     });
+  });
+  it("should clear the local storage when personalizationStorageEnabled is false", async () => {
+    setUpDecisionEngine({ personalizationStorageEnabled: false });
+    await awaitConsentDeferred.resolve();
+    expect(persistentStorage.clear).toHaveBeenCalled();
+  });
+
+  it("should set eventRegistry storage when consent is obtained", async () => {
+    setUpDecisionEngine({ personalizationStorageEnabled: true });
+    await awaitConsentDeferred.resolve();
+    await expectAsync(awaitConsentDeferred.promise).toBeResolved();
+    expect(persistentStorage.getItem).toHaveBeenCalled();
+  });
+
+  it("should clear the local storage when consent is not obtained", async () => {
+    setUpDecisionEngine({ personalizationStorageEnabled: true });
+    await awaitConsentDeferred.reject();
+    await expectAsync(awaitConsentDeferred.promise).toBeRejected();
+    expect(persistentStorage.clear).toHaveBeenCalled();
   });
 });
