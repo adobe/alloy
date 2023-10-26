@@ -209,10 +209,12 @@ test("Test C13405889: Verify DOM action using the evaluateRulesets command", asy
   });
   await alloy.evaluateRulesets({
     renderDecisions: true,
-    decisionContext: {
-      "~type": "com.adobe.eventType.generic.track",
-      "~source": "com.adobe.eventSource.requestContent",
-      "~state.com.adobe.module.lifecycle/lifecyclecontextdata.dayofweek": 2
+    personalization: {
+      decisionContext: {
+        "~type": "com.adobe.eventType.generic.track",
+        "~source": "com.adobe.eventSource.requestContent",
+        "~state.com.adobe.module.lifecycle/lifecyclecontextdata.dayofweek": 2
+      }
     }
   });
   const containerElement = await getIframeContainer();

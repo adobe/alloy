@@ -21,7 +21,6 @@ import {
 export default ({ options }) => {
   const validator = objectOf({
     renderDecisions: boolean(),
-    decisionContext: objectOf({}),
     responseHeaders: mapOfValues(string().required()),
     responseBody: objectOf({
       handle: arrayOf(
@@ -32,7 +31,8 @@ export default ({ options }) => {
       ).required()
     }).required(),
     personalization: objectOf({
-      sendDisplayEvent: boolean().default(true)
+      sendDisplayEvent: boolean().default(true),
+      decisionContext: objectOf({})
     }).default({ sendDisplayEvent: true })
   }).noUnknownFields();
 

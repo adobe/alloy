@@ -14,7 +14,9 @@ import { boolean, objectOf } from "../../utils/validation";
 const validateOptions = ({ options }) => {
   const validator = objectOf({
     renderDecisions: boolean(),
-    decisionContext: objectOf({})
+    personalization: objectOf({
+      decisionContext: objectOf({})
+    })
   }).noUnknownFields();
 
   return validator(options);

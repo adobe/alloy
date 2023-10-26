@@ -27,14 +27,14 @@ export default ({ options }) => {
     data: objectOf({}),
     documentUnloading: boolean(),
     renderDecisions: boolean(),
-    decisionContext: objectOf({}),
     decisionScopes: arrayOf(string()).uniqueItems(),
     personalization: objectOf({
       decisionScopes: arrayOf(string()).uniqueItems(),
       surfaces: arrayOf(string()).uniqueItems(),
       sendDisplayEvent: boolean().default(true),
       includeRenderedPropositions: boolean().default(false),
-      requestPersonalization: boolean()
+      requestPersonalization: boolean(),
+      decisionContext: objectOf({})
     }).default({ sendDisplayEvent: true }),
     datasetId: string(),
     mergeId: string(),
