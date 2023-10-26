@@ -79,8 +79,10 @@ test("Test C13405889: Verify DOM action using the evaluateRulesets command", asy
   });
   await alloy.evaluateRulesets({
     renderDecisions: true,
-    decisionContext: {
-      user: "alloy"
+    personalization: {
+      decisionContext: {
+        user: "alloy"
+      }
     }
   });
   const containerElement = await getIframeContainer();

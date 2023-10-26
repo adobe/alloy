@@ -83,7 +83,7 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
     decisioningEngine.lifecycle.onBeforeEvent({
       event: mockEvent,
       renderDecisions: true,
-      decisionContext: {},
+      personalization: { decisionContext: {} },
       onResponse: onResponseHandler
     });
     const result = decisioningEngine.commands.evaluateRulesets.run({});
@@ -112,7 +112,7 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
     decisioningEngine.lifecycle.onBeforeEvent({
       event: mockEvent,
       renderDecisions: true,
-      decisionContext: {},
+      personalization: { decisionContext: {} },
       onResponse: onResponseHandler
     });
     const result = decisioningEngine.commands.evaluateRulesets.run({});
@@ -141,7 +141,7 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
     decisioningEngine.lifecycle.onBeforeEvent({
       event: mockEvent,
       renderDecisions: true,
-      decisionContext: {},
+      personalization: { decisionContext: {} },
       onResponse: onResponseHandler
     });
     const result = decisioningEngine.commands.evaluateRulesets.run({});
@@ -170,7 +170,7 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
     decisioningEngine.lifecycle.onBeforeEvent({
       event: mockEvent,
       renderDecisions: false,
-      decisionContext: {},
+      personalization: { decisionContext: {} },
       onResponse: onResponseHandler
     });
     const result = decisioningEngine.commands.evaluateRulesets.run({});

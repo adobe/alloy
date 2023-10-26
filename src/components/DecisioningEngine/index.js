@@ -73,9 +73,11 @@ const createDecisioningEngine = ({
       onBeforeEvent({
         event,
         renderDecisions,
-        decisionContext = {},
+        personalization = {},
         onResponse = noop
       }) {
+        const { decisionContext = {} } = personalization;
+
         onResponse(
           createOnResponseHandler({
             renderDecisions,
@@ -95,8 +97,9 @@ const createDecisioningEngine = ({
     },
     commands: {
       evaluateRulesets: {
-        run: ({ renderDecisions, decisionContext = {} }) =>
-          evaluateRulesetsCommand.run({
+        run: ({ renderDecisions, personalization = {} }) => {
+          const { decisionContext = {} } = personalization;
+          return evaluateRulesetsCommand.run({
             renderDecisions,
             decisionContext: {
               [CONTEXT_KEY.TYPE]: CONTEXT_EVENT_TYPE.RULES_ENGINE,
@@ -104,7 +107,8 @@ const createDecisioningEngine = ({
               ...decisionContext
             },
             applyResponse
-          }),
+          });
+        },
         optionsValidator: evaluateRulesetsCommand.optionsValidator
       },
       subscribeRulesetItems: subscribeRulesetItems.command
