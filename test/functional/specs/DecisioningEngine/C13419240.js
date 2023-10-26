@@ -48,7 +48,7 @@ test("Test C13419240: Verify DOM action using the sendEvent command", async () =
   await alloy.sendEvent({
     renderDecisions: true,
     decisionContext: {
-      user: "alloy"
+      user: "alloytest"
     }
   });
 

@@ -75,7 +75,7 @@ test("Test C13348429: Verify DOM action using the applyResponse command.", async
   await alloy.applyResponse({
     renderDecisions: true,
     decisionContext: {
-      user: "alloy"
+      user: "alloytest"
     },
     responseBody: realResponse
   });

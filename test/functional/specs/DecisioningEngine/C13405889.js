@@ -80,7 +80,6 @@ test("Test C13405889: Verify DOM action using the evaluateRulesets command", asy
   await alloy.evaluateRulesets({
     renderDecisions: true,
     decisionContext: {
-      "~type": "com.adobe.eventType.edge",
       user: "alloy"
     }
   });
