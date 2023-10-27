@@ -1,10 +1,10 @@
 # Contributing
 
-We welcome pull requests from everyone. 🎉
+Welcome to the home of the AEP Web SDK! We appreciate your interest in contributing and are excited to collaborate.
 
-The following are a set of guidelines to follow when contributing to this project.
+The following guidelines will help ensure a smooth contribution process.
 
-Our guidelines differ based on the type of change you are submitting: New feature vs Enhancement & Bug fix.
+Our guidelines vary depending on the type of contribution: New Feature, Enhancement, or Bug Fix.
 
 
 ## Contributor license agreement
@@ -18,50 +18,53 @@ you are good to go!
 
 ## Bug Fix Process
 
-All submissions should come in the form of pull requests and need to be reviewed by the AEP Web SDK's Core team.
+Submit bug fixes via pull requests, to be reviewed by the AEP Web SDK's Core team.
 
-Describe the bug you are fixing, and list the steps to reproduce it.
+1. Create a pull request.
+2. Describe the bug, and provide steps to reproduce it. (More details on the PR process below)
 
 
 ## New Feature Process
 
-Every new feature change starts with a technical/prd document. 
+New feature contributions start with a Concept Approval (CA) / Proposal document.
 
-If you are an internal contributor, start by creating a Wiki and reach out to the AEP Web SDK's Product team to discuss your proposal.
+- Internal Contributors: Create a Wiki page and engage with the AEP Web SDK's Product team to discuss your proposal.
+- External Contributors: Create a GitHub issue detailing your feature and assign the ticket to https://github.com/jfkhoury.
+- No need for detailed architectural insights at this stage.
 
-If you are an external contributor, start by creating a Github issue and describing your feature in details. Assign the ticket to https://github.com/jfkhoury.
 
-#### Once the feature has been approved by Product, here what happens next:
+#### Post Approval
 
-- Add detailed architecture and design to the technical document. (This document will be shared with the doc writers at Adobe, so make it as detailed as possible)
-- Share your changes with the AEP Web SDK team for design discussions and approval.
-- Once the design has been approved, you can go ahead and start the development work, while we share the technical doc with the writers for public documentation.
-- Break down your PR into manageable and readable PRs, and multiple clear commits.
-- You need 3 approvals from the Core Web SDK team to get your PR approved.
-- If you and the Core team cannot agree over a specific concern with the code, Joe (https://github.com/jfkhoury) will be the tie breaker.
-    - We encourage and enjoy open minded, deep discussions on this team. Try your best to propose a design that the whole team agrees with.
- 
-#### Ownership
-
-As a contributor, you are not expected to own this feature in case there were bugs or enhancement requests in the future. 
-
-The AEP Web SDK core team will own it. For this to work though, we need few things from you:
-
-- As mentioned in the previous section, we need a detailed technical documents explaining the feature and architecture.
-- We need to have as many conversations as needed by the AEP Web SDK core team to fully understand and approve the design.
-- We need to have as many conversations as needed by the AEP Web SDK core team to fully understand and approve the code.
-
+1. Add a thorough architecture and design proposal to a technical document.
+    - Seek assistance from the AEP Web SDK Engineering team for design input if necessary.
+    - This document will be shared with Adobe's documentation writers, so ensure it's detailed.
+2. Share your CA and technical documents with the AEP Web SDK engineering team for further discussion and approval.
+    - A work session will be scheduled for a kickoff discussion. (Joe to set up)
+3. Upon design approval, proceed with development. The technical document will be shared with the documentation team for public documentation preparation.
 
 
 ## Pull Request Approval Process
 
-We do our best to keep on top of all the pull requests. We may suggest some changes, improvements or alternatives.
+We strive to review all pull requests promptly and may suggest improvements or alternatives.
 
-Things to add to your pull request:
+Include in your pull request:
 
-- Write a thorough pull request description, include screenshots. Describe your bug fix and why it's needed/important in the pull request description.
-- Write out your test cases in as much detail as possible. PRs without tests will not be reviewed.
+
+- Break down your PR into manageable commits and add a descriptive PR title and thorough description, including screenshots if applicable.
+- Ensure code adheres to our formatting and usage standards (`npm run format` and `npm run lint`)
+- Testing:
+    - Detail your test cases comprehensively. PRs lacking tests will not be reviewed.
+    - Include unit and functional tests.
+    - Test your feature in the [Sandbox](https://github.com/adobe/alloy/wiki/Running-the-sandbox-locally-over-HTTPS-on-Mac-OS).
 - Make sure the PR merges cleanly with the latest main.
-- 3 approvals from the Web SDK core team are required to consider your PR approved.
+- Obtain 3 approvals from the Core Web SDK team to have your PR approved.
+- If a consensus isn’t reached regarding any code concern, Joe will provide the final say.
+    - We encourage and enjoy open minded, deep discussions on this team. Try your best to propose a design that the whole team agrees with.
 
 
+## Ownership
+
+While contributors are not expected to maintain the feature post-contribution, for a smooth handover, we require:
+
+- Detailed technical documents explaining the feature and architecture.
+- Engage in discussions with the AEP Web SDK core team to ensure full understanding and approval of the design and code.
