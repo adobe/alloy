@@ -43,36 +43,36 @@ describe("Personalization::createPersonalizationDetails", () => {
 
   // s - has scopes or surfaces
   // i - cache is initialized
-  // ip - requestPersonalization flag
+  // dp - defaultPersonalizationEnabled flag
   // fetch - should fetch data
   [
-    { s: false, i: false, ip: false, fetch: false },
-    { s: true, i: false, ip: false, fetch: true },
-    { s: false, i: true, ip: false, fetch: false },
-    { s: true, i: true, ip: false, fetch: true },
+    { s: false, i: false, dp: false, fetch: false },
+    { s: true, i: false, dp: false, fetch: true },
+    { s: false, i: true, dp: false, fetch: false },
+    { s: true, i: true, dp: false, fetch: true },
 
-    { s: false, i: false, ip: true, fetch: true },
-    { s: true, i: false, ip: true, fetch: true },
-    { s: false, i: true, ip: true, fetch: true },
-    { s: true, i: true, ip: true, fetch: true },
+    { s: false, i: false, dp: true, fetch: true },
+    { s: true, i: false, dp: true, fetch: true },
+    { s: false, i: true, dp: true, fetch: true },
+    { s: true, i: true, dp: true, fetch: true },
 
     { s: false, i: false, fetch: true },
     { s: true, i: false, fetch: true },
     { s: false, i: true, fetch: false },
     { s: true, i: true, fetch: true }
-  ].forEach(({ s, i, ip, fetch }) => {
+  ].forEach(({ s, i, dp, fetch }) => {
     it(`should ${fetch ? "" : "not "}fetch data when ${
       s ? "" : "no "
     }scopes, the cache is ${
       i ? "" : "not "
-    }initialized, and initializePersonalization is '${ip}'`, () => {
+    }initialized, and initializePersonalization is '${dp}'`, () => {
       const personalizationDetails = createPersonalizationDetails({
         getPageLocation,
         renderDecisions: true,
         decisionScopes: [],
         personalization: {
           decisionScopes: s ? ["test"] : undefined,
-          requestPersonalization: ip
+          defaultPersonalizationEnabled: dp
         },
         event,
         isCacheInitialized: i,
