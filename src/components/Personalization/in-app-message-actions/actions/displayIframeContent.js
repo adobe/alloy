@@ -26,14 +26,12 @@ import { PropositionEventType } from "../../../../constants/propositionEventType
 import { INTERACT } from "../../../../constants/eventType";
 import createRedirect from "../../dom-actions/createRedirect";
 
-const ALLOY_MESSAGING_CONTAINER_ID = "alloy-messaging-container";
-const ALLOY_OVERLAY_CONTAINER_ID = "alloy-overlay-container";
-const ALLOY_IFRAME_ID = "alloy-content-iframe";
+const MESSAGING_CONTAINER_ID = "alloy-messaging-container";
+const OVERLAY_CONTAINER_ID = "alloy-overlay-container";
+const IFRAME_ID = "alloy-content-iframe";
 
 const dismissMessage = () =>
-  [ALLOY_MESSAGING_CONTAINER_ID, ALLOY_OVERLAY_CONTAINER_ID].forEach(
-    removeElementById
-  );
+  [MESSAGING_CONTAINER_ID, OVERLAY_CONTAINER_ID].forEach(removeElementById);
 export const createIframeClickHandler = (
   interact,
   navigateToUrl = createRedirect(window)
@@ -82,7 +80,7 @@ export const createIframe = (htmlContent, clickHandler) => {
     src: URL.createObjectURL(
       new Blob([htmlDocument.documentElement.outerHTML], { type: "text/html" })
     ),
-    id: ALLOY_IFRAME_ID
+    id: IFRAME_ID
   });
 
   element.addEventListener("load", () => {
@@ -96,9 +94,9 @@ export const createIframe = (htmlContent, clickHandler) => {
 
 const renderMessage = (iframe, webParameters, container, overlay) => {
   [
-    { id: ALLOY_OVERLAY_CONTAINER_ID, element: overlay },
-    { id: ALLOY_MESSAGING_CONTAINER_ID, element: container },
-    { id: ALLOY_IFRAME_ID, element: iframe }
+    { id: OVERLAY_CONTAINER_ID, element: overlay },
+    { id: MESSAGING_CONTAINER_ID, element: container },
+    { id: IFRAME_ID, element: iframe }
   ].forEach(({ id, element }) => {
     const { style = {}, params = {} } = webParameters[id];
 
@@ -196,11 +194,11 @@ const isValidWebParameters = webParameters => {
 
   const ids = Object.keys(webParameters);
 
-  if (!includes(ids, ALLOY_MESSAGING_CONTAINER_ID)) {
+  if (!includes(ids, MESSAGING_CONTAINER_ID)) {
     return false;
   }
 
-  if (!includes(ids, ALLOY_OVERLAY_CONTAINER_ID)) {
+  if (!includes(ids, OVERLAY_CONTAINER_ID)) {
     return false;
   }
 
@@ -233,7 +231,7 @@ const generateWebParameters = mobileParameters => {
   const { uiTakeover = false } = mobileParameters;
 
   return {
-    [ALLOY_IFRAME_ID]: {
+    [IFRAME_ID]: {
       style: {
         border: "none",
         width: "100%",
@@ -245,7 +243,7 @@ const generateWebParameters = mobileParameters => {
         insertionMethod: "appendChild"
       }
     },
-    [ALLOY_MESSAGING_CONTAINER_ID]: {
+    [MESSAGING_CONTAINER_ID]: {
       style: buildStyleFromMobileParameters(mobileParameters),
       params: {
         enabled: true,
@@ -253,7 +251,7 @@ const generateWebParameters = mobileParameters => {
         insertionMethod: "appendChild"
       }
     },
-    [ALLOY_OVERLAY_CONTAINER_ID]: {
+    [OVERLAY_CONTAINER_ID]: {
       style: mobileOverlay(mobileParameters),
       params: {
         enabled: uiTakeover === true,
@@ -273,9 +271,9 @@ export const displayHTMLContentInIframe = (settings = {}, interact) => {
     return;
   }
 
-  const container = createNode("div", { id: ALLOY_MESSAGING_CONTAINER_ID });
+  const container = createNode("div", { id: MESSAGING_CONTAINER_ID });
   const iframe = createIframe(content, createIframeClickHandler(interact));
-  const overlay = createNode("div", { id: ALLOY_OVERLAY_CONTAINER_ID });
+  const overlay = createNode("div", { id: OVERLAY_CONTAINER_ID });
 
   if (!isValidWebParameters(webParameters)) {
     webParameters = generateWebParameters(mobileParameters);
