@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 import { isNonEmptyArray, startsWith } from "../../../utils";
 import { removeNode, selectNodes } from "../../../utils/dom";
+import querystring from "../../../utils/querystring";
 
 export const removeElementById = id => {
   const element = selectNodes(`#${id}`, document);
@@ -40,9 +41,10 @@ export const parseAnchor = anchor => {
   let link;
 
   if (isNonEmptyArray(hrefParts)) {
-    const queryParams = new URLSearchParams(hrefParts[1]);
-    interaction = queryParams.get("interaction") || "";
-    link = decodeURIComponent(queryParams.get("link") || "");
+    const queryParamString = hrefParts[1];
+    const queryParams = querystring.parse(queryParamString);
+    interaction = queryParams.interaction || "";
+    link = decodeURIComponent(queryParams.link || "");
   }
   return {
     action,
