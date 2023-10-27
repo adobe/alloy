@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { isNonEmptyArray, startsWith } from "../../../utils";
+import { isNonEmptyArray, queryString, startsWith } from "../../../utils";
 import { removeNode, selectNodes } from "../../../utils/dom";
 
 export const removeElementById = id => {
@@ -40,9 +40,9 @@ export const parseAnchor = anchor => {
   let link;
 
   if (isNonEmptyArray(hrefParts)) {
-    const queryParams = new URLSearchParams(hrefParts[1]);
-    interaction = queryParams.get("interaction") || "";
-    link = decodeURIComponent(queryParams.get("link") || "");
+    const queryParams = queryString.parse(hrefParts[1]);
+    interaction = queryParams.interaction || "";
+    link = decodeURIComponent(queryParams.link || "");
   }
   return {
     action,
