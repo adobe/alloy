@@ -13,17 +13,11 @@ governing permissions and limitations under the License.
 import { getNonce } from "../../dom-actions/dom";
 import { parseAnchor, removeElementById } from "../utils";
 import { TEXT_HTML } from "../../../../constants/contentType";
-import {
-  assign,
-  includes,
-  isNonEmptyString,
-  toArray,
-  values
-} from "../../../../utils";
+import { assign, includes, isNonEmptyString, values } from "../../../../utils";
 import { createNode } from "../../../../utils/dom";
 import { objectOf } from "../../../../utils/validation";
 import { PropositionEventType } from "../../../../constants/propositionEventType";
-import { INTERACT } from "../../../../constants/eventType";
+import { EVENT_TYPE_TRUE, INTERACT } from "../../../../constants/eventType";
 import createRedirect from "../../dom-actions/createRedirect";
 
 const ALLOY_MESSAGING_CONTAINER_ID = "alloy-messaging-container";
@@ -292,18 +286,18 @@ export default (settings, collect) => {
   return new Promise(resolve => {
     const { meta } = settings;
     displayHTMLContentInIframe(settings, (action, propositionAction) => {
-      const propositionEventTypes = new Set();
-      propositionEventTypes.add(PropositionEventType.INTERACT);
+      const propositionEventTypes = {};
+      propositionEventTypes[PropositionEventType.INTERACT] = EVENT_TYPE_TRUE;
 
       if (Object.values(PropositionEventType).indexOf(action) !== -1) {
-        propositionEventTypes.add(action);
+        propositionEventTypes[action] = EVENT_TYPE_TRUE;
       }
 
       collect({
         decisionsMeta: [meta],
         propositionAction,
         eventType: INTERACT,
-        propositionEventTypes: toArray(propositionEventTypes)
+        propositionEventTypes: Object.keys(propositionEventTypes)
       });
     });
 
