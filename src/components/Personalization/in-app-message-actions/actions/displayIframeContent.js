@@ -288,6 +288,9 @@ export const displayHTMLContentInIframe = (settings = {}, interact) => {
   renderMessage(iframe, webParameters, container, overlay);
 };
 
+const isPropositionEventTypeValid = action => {
+  return Object.values(PropositionEventType).indexOf(action) !== -1;
+};
 export default (settings, collect) => {
   return new Promise(resolve => {
     const { meta } = settings;
@@ -295,7 +298,7 @@ export default (settings, collect) => {
       const propositionEventTypes = new Set();
       propositionEventTypes.add(PropositionEventType.INTERACT);
 
-      if (Object.values(PropositionEventType).indexOf(action) !== -1) {
+      if (isPropositionEventTypeValid) {
         propositionEventTypes.add(action);
       }
 
