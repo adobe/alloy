@@ -147,6 +147,39 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
     expect(result[0].textContent).toEqual("Buy Now");
   });
 
+  it("should select when chained :eq:shadow selector", () => {
+    if (ieDetected()) {
+      return;
+    }
+
+    defineCustomElements();
+
+    const content = `
+    <form id="form" action="https://www.adobe.com" method="post">
+      <buy-now-button>FirstButton</buy-now-button>
+      <buy-now-button>SecondButton</buy-now-button>
+      <product-order>FirstOrder</product-order>
+      <product-order>SecondOrder</product-order>
+      <input type="submit" value="Submit"/>
+    </form>`;
+
+    appendNode(
+      document.body,
+      createNode(
+        "DIV",
+        { id: "abc", class: CLEANUP_CLASS },
+        { innerHTML: content }
+      )
+    );
+
+    const result = selectNodesWithEq(
+      "#abc:eq(0) > FORM:nth-of-type(1) > PRODUCT-ORDER:eq(1):shadow > *:eq(0) > BUY-NOW-BUTTON:eq(0):shadow > DIV:nth-of-type(1) > LABEL:nth-of-type(1)"
+    );
+
+    expect(result[0].tagName).toEqual("LABEL");
+    expect(result[0].textContent).toEqual("Buy Now");
+  });
+
   it("should respect child selectors", () => {
     const content = `
       <div>
