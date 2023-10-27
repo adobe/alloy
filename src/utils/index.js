@@ -52,6 +52,7 @@ export { default as isString } from "./isString";
 export { default as memoize } from "./memoize";
 export { default as noop } from "./noop";
 export { default as padStart } from "./padStart";
+export { default as parseUrl } from "./parseUrl";
 export { default as prepareConfigOverridesForEdge } from "./prepareConfigOverridesForEdge";
 export { default as queryString } from "./querystring";
 export { default as sanitizeOrgIdForCookieName } from "./sanitizeOrgIdForCookieName";

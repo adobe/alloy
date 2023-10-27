@@ -17,9 +17,12 @@ import {
   DEFAULT_CONTENT_ITEM,
   DOM_ACTION,
   HTML_CONTENT_ITEM,
+  MESSAGE_IN_APP,
   JSON_CONTENT_ITEM,
-  REDIRECT_ITEM
-} from "./constants/schema";
+  REDIRECT_ITEM,
+  RULESET_ITEM,
+  MESSAGE_FEED_ITEM
+} from "../../constants/schema";
 
 const addPageWideScope = scopes => {
   if (!includes(scopes, PAGE_WIDE_SCOPE)) {
@@ -92,7 +95,10 @@ export default ({
         DEFAULT_CONTENT_ITEM,
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
-        REDIRECT_ITEM
+        REDIRECT_ITEM,
+        RULESET_ITEM,
+        MESSAGE_IN_APP,
+        MESSAGE_FEED_ITEM
       ];
 
       if (includes(scopes, PAGE_WIDE_SCOPE)) {

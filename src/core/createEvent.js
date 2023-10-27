@@ -47,6 +47,22 @@ export default () => {
   };
 
   const event = {
+    hasQuery() {
+      return Object.prototype.hasOwnProperty.call(this.getContent(), "query");
+    },
+    getContent() {
+      const currentContent = JSON.parse(JSON.stringify(content));
+
+      if (userXdm) {
+        deepAssign(currentContent, { xdm: userXdm });
+      }
+
+      if (userData) {
+        deepAssign(currentContent, { data: userData });
+      }
+
+      return currentContent;
+    },
     setUserXdm(value) {
       throwIfEventFinalized("setUserXdm");
       userXdm = value;
@@ -59,6 +75,12 @@ export default () => {
       throwIfEventFinalized("mergeXdm");
       if (xdm) {
         deepAssign(content, { xdm });
+      }
+    },
+    mergeData(data) {
+      throwIfEventFinalized("mergeData");
+      if (data) {
+        deepAssign(content, { data });
       }
     },
     mergeMeta(meta) {
@@ -101,7 +123,7 @@ export default () => {
       }
 
       if (userData) {
-        content.data = userData;
+        event.mergeData(userData);
       }
 
       // the event should already be considered finalized in case onBeforeEventSend throws an error

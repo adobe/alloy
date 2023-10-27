@@ -1,0 +1,68 @@
+/*
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+import createApplyResponse from "../../../../../src/components/DecisioningEngine/createApplyResponse";
+
+describe("DecisioningEngine:createApplyResponse", () => {
+  const proposition = {
+    id: "AT:eyJhY3Rpdml0eUlkIjoiMTQxMDY0IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
+    scope: "__view__",
+    items: []
+  };
+
+  it("calls lifecycle.onDecision with propositions", () => {
+    const lifecycle = jasmine.createSpyObj("lifecycle", {
+      onDecision: Promise.resolve()
+    });
+
+    const applyResponse = createApplyResponse(lifecycle);
+
+    applyResponse({ propositions: [proposition] });
+
+    expect(lifecycle.onDecision).toHaveBeenCalledWith({
+      viewName: undefined,
+      renderDecisions: false,
+      propositions: [proposition]
+    });
+  });
+
+  it("calls lifecycle.onDecision with viewName", () => {
+    const lifecycle = jasmine.createSpyObj("lifecycle", {
+      onDecision: Promise.resolve()
+    });
+
+    const applyResponse = createApplyResponse(lifecycle);
+
+    applyResponse({
+      viewName: "oh hai",
+      renderDecisions: true,
+      propositions: [proposition]
+    });
+
+    expect(lifecycle.onDecision).toHaveBeenCalledWith({
+      viewName: "oh hai",
+      renderDecisions: true,
+      propositions: [proposition]
+    });
+  });
+
+  it("does not call lifecycle.onDecision if no propositions", () => {
+    const lifecycle = jasmine.createSpyObj("lifecycle", {
+      onDecision: Promise.resolve()
+    });
+
+    const applyResponse = createApplyResponse(lifecycle);
+
+    applyResponse({ propositions: [] });
+
+    expect(lifecycle.onDecision).not.toHaveBeenCalled();
+  });
+});

@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray } from "../../utils";
-import { INTERACT } from "./constants/eventType";
-import { PropositionEventType } from "./constants/propositionEventType";
+import { INTERACT } from "../../constants/eventType";
+import { PropositionEventType } from "../../constants/propositionEventType";
 
 export default ({
   mergeDecisionsMeta,
@@ -45,8 +45,8 @@ export default ({
         mergeDecisionsMeta(
           event,
           decisionsMeta,
-          PropositionEventType.INTERACT,
-          eventLabel
+          [PropositionEventType.INTERACT],
+          eventLabel ? { label: eventLabel } : undefined
         );
       }
     }

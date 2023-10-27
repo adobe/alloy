@@ -31,7 +31,8 @@ export default ({ options }) => {
       ).required()
     }).required(),
     personalization: objectOf({
-      sendDisplayEvent: boolean().default(true)
+      sendDisplayEvent: boolean().default(true),
+      decisionContext: objectOf({})
     }).default({ sendDisplayEvent: true })
   }).noUnknownFields();
 

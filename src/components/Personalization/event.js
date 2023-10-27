@@ -10,29 +10,37 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const EVENT_TYPE_TRUE = 1;
+import { EVENT_TYPE_TRUE } from "../../constants/eventType";
 
 /* eslint-disable no-underscore-dangle */
 export const mergeDecisionsMeta = (
   event,
   decisionsMeta,
-  eventType,
-  eventLabel = ""
+  propositionEventTypes,
+  propositionAction
 ) => {
+  // Do not send a display notification with no decisions. Even empty view changes
+  // should include a proposition.
+  if (decisionsMeta.length === 0) {
+    return;
+  }
+  const propositionEventType = {};
+
+  propositionEventTypes.forEach(type => {
+    propositionEventType[type] = EVENT_TYPE_TRUE;
+  });
+
   const xdm = {
     _experience: {
       decisioning: {
         propositions: decisionsMeta,
-        propositionEventType: {
-          [eventType]: EVENT_TYPE_TRUE
-        }
+        propositionEventType
       }
     }
   };
-  if (eventLabel) {
-    xdm._experience.decisioning.propositionAction = {
-      label: eventLabel
-    };
+
+  if (propositionAction) {
+    xdm._experience.decisioning.propositionAction = propositionAction;
   }
   event.mergeXdm(xdm);
 };

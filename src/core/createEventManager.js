@@ -111,6 +111,7 @@ export default ({
     applyResponse(event, options = {}) {
       const {
         renderDecisions = false,
+        decisionContext = {},
         responseHeaders = {},
         responseBody = { handle: [] },
         personalization
@@ -124,6 +125,7 @@ export default ({
         .onBeforeEvent({
           event,
           renderDecisions,
+          decisionContext,
           decisionScopes: [PAGE_WIDE_SCOPE],
           personalization,
           onResponse: onResponseCallbackAggregator.add,

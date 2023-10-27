@@ -21,6 +21,7 @@ import createContext from "../components/Context";
 import createPrivacy from "../components/Privacy";
 import createEventMerge from "../components/EventMerge";
 import createLibraryInfo from "../components/LibraryInfo";
+import createDecisioningEngine from "../components/DecisioningEngine";
 import createMachineLearning from "../components/MachineLearning";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
@@ -35,5 +36,6 @@ export default [
   createPrivacy,
   createEventMerge,
   createLibraryInfo,
-  createMachineLearning
+  createMachineLearning,
+  createDecisioningEngine
 ];
