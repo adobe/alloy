@@ -33,7 +33,8 @@ export default ({ options }) => {
       surfaces: arrayOf(string()).uniqueItems(),
       sendDisplayEvent: boolean().default(true),
       includeRenderedPropositions: boolean().default(false),
-      requestPersonalization: boolean()
+      requestPersonalization: boolean(),
+      decisionContext: objectOf({})
     }).default({ sendDisplayEvent: true }),
     datasetId: string(),
     mergeId: string(),

@@ -16,9 +16,12 @@ import {
   DEFAULT_CONTENT_ITEM,
   DOM_ACTION,
   HTML_CONTENT_ITEM,
+  MESSAGE_IN_APP,
   JSON_CONTENT_ITEM,
-  REDIRECT_ITEM
-} from "../../../../../src/components/Personalization/constants/schema";
+  REDIRECT_ITEM,
+  RULESET_ITEM,
+  MESSAGE_FEED_ITEM
+} from "../../../../../src/constants/schema";
 
 describe("Personalization::createPersonalizationDetails", () => {
   const TEST_SURFACE = "web://alloy.test.com/test/page/1";
@@ -100,6 +103,9 @@ describe("Personalization::createPersonalizationDetails", () => {
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
+        RULESET_ITEM,
+        MESSAGE_IN_APP,
+        MESSAGE_FEED_ITEM,
         DOM_ACTION
       ],
       decisionScopes: expectedDecisionScopes,
@@ -137,6 +143,9 @@ describe("Personalization::createPersonalizationDetails", () => {
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
+        RULESET_ITEM,
+        MESSAGE_IN_APP,
+        MESSAGE_FEED_ITEM,
         DOM_ACTION
       ],
       decisionScopes: expectedDecisionScopes,
@@ -174,6 +183,9 @@ describe("Personalization::createPersonalizationDetails", () => {
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
+        RULESET_ITEM,
+        MESSAGE_IN_APP,
+        MESSAGE_FEED_ITEM,
         DOM_ACTION
       ],
       decisionScopes: expectedDecisionScopes,
@@ -210,7 +222,10 @@ describe("Personalization::createPersonalizationDetails", () => {
         DEFAULT_CONTENT_ITEM,
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
-        REDIRECT_ITEM
+        REDIRECT_ITEM,
+        RULESET_ITEM,
+        MESSAGE_IN_APP,
+        MESSAGE_FEED_ITEM
       ],
       decisionScopes: expectedDecisionScopes,
       surfaces: []
@@ -248,7 +263,10 @@ describe("Personalization::createPersonalizationDetails", () => {
         DEFAULT_CONTENT_ITEM,
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
-        REDIRECT_ITEM
+        REDIRECT_ITEM,
+        RULESET_ITEM,
+        MESSAGE_IN_APP,
+        MESSAGE_FEED_ITEM
       ],
       decisionScopes: expectedDecisionScopes,
       surfaces: ["web://test1.com/"]
@@ -288,7 +306,10 @@ describe("Personalization::createPersonalizationDetails", () => {
         DEFAULT_CONTENT_ITEM,
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
-        REDIRECT_ITEM
+        REDIRECT_ITEM,
+        RULESET_ITEM,
+        MESSAGE_IN_APP,
+        MESSAGE_FEED_ITEM
       ],
       decisionScopes: expectedDecisionScopes,
       surfaces: ["web://test1.com/"]
@@ -419,6 +440,9 @@ describe("Personalization::createPersonalizationDetails", () => {
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
+        RULESET_ITEM,
+        MESSAGE_IN_APP,
+        MESSAGE_FEED_ITEM,
         DOM_ACTION
       ],
       decisionScopes: expectedDecisionScopes,

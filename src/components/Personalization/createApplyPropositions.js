@@ -11,10 +11,14 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray, isObject, defer } from "../../utils";
-import { DOM_ACTION, HTML_CONTENT_ITEM } from "./constants/schema";
+import {
+  DOM_ACTION,
+  HTML_CONTENT_ITEM,
+  MESSAGE_IN_APP
+} from "../../constants/schema";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
 
-const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
+const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM, MESSAGE_IN_APP];
 
 export default ({
   processPropositions,

@@ -26,16 +26,17 @@ import createViewChangeHandler from "../../../../../../src/components/Personaliz
 import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage";
 import createApplyPropositions from "../../../../../../src/components/Personalization/createApplyPropositions";
 import createSetTargetMigration from "../../../../../../src/components/Personalization/createSetTargetMigration";
-import { createCallbackAggregator, assign } from "../../../../../../src/utils";
+import { assign, createCallbackAggregator } from "../../../../../../src/utils";
 import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition";
 import createProcessPropositions from "../../../../../../src/components/Personalization/handlers/createProcessPropositions";
 import createAsyncArray from "../../../../../../src/components/Personalization/utils/createAsyncArray";
-import * as schema from "../../../../../../src/components/Personalization/constants/schema";
+import * as schema from "../../../../../../src/constants/schema";
 import createProcessDomAction from "../../../../../../src/components/Personalization/handlers/createProcessDomAction";
 import createProcessHtmlContent from "../../../../../../src/components/Personalization/handlers/createProcessHtmlContent";
 import createProcessRedirect from "../../../../../../src/components/Personalization/handlers/createProcessRedirect";
 import processDefaultContent from "../../../../../../src/components/Personalization/handlers/processDefaultContent";
 import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceUtils";
+import createOnDecisionHandler from "../../../../../../src/components/Personalization/createOnDecisionHandler";
 
 const createAction = renderFunc => ({ selector, content }) => {
   renderFunc(selector, content);
@@ -143,6 +144,13 @@ const buildComponent = ({
   const setTargetMigration = createSetTargetMigration({
     targetMigrationEnabled
   });
+
+  const onDecisionHandler = createOnDecisionHandler({
+    processPropositions,
+    createProposition,
+    collect
+  });
+
   return createComponent({
     getPageLocation,
     logger,
@@ -156,7 +164,8 @@ const buildComponent = ({
     applyPropositions,
     setTargetMigration,
     mergeDecisionsMeta,
-    renderedPropositions
+    renderedPropositions,
+    onDecisionHandler
   });
 };
 

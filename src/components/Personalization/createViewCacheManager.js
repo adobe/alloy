@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { groupBy } from "../../utils";
 import defer from "../../utils/defer";
-import { DEFAULT_CONTENT_ITEM } from "./constants/schema";
+import { DEFAULT_CONTENT_ITEM } from "../../constants/schema";
 import { VIEW_SCOPE_TYPE } from "./constants/scopeType";
 
 export default ({ createProposition }) => {

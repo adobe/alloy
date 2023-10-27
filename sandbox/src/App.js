@@ -31,6 +31,7 @@ import PersonalizationFormBased from "./PersonalizationFormBased";
 import Identity from "./Identity";
 import AlloyVersion from "./components/AlloyVersion";
 import ConfigOverrides from "./ConfigOverrides.jsx";
+import InAppMessages from "./components/InAppMessagesDemo/InAppMessages";
 
 const BasicExample = () => {
   return (
@@ -96,6 +97,9 @@ const BasicExample = () => {
             <li>
               <a href="/configOverrides">Config Overrides</a>
             </li>
+            <li>
+              <Link to="/inAppMessages">In-app Messages</Link>
+            </li>
           </ul>
           <hr />
 
@@ -125,6 +129,7 @@ const BasicExample = () => {
           <Route path="/redirectedNewPage" component={RedirectedNewPage} />
           <Route path="/identity" component={Identity} />
           <Route path="/configOverrides" component={ConfigOverrides} />
+          <Route path="/inAppMessages" component={InAppMessages} />
         </div>
       </Router>
       <AlloyVersion />

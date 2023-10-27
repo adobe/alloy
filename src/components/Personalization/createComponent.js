@@ -13,8 +13,8 @@ governing permissions and limitations under the License.
 import { noop, flatMap, isNonEmptyArray } from "../../utils";
 import createPersonalizationDetails from "./createPersonalizationDetails";
 import { AUTHORING_ENABLED } from "./constants/loggerMessage";
+import { PropositionEventType } from "../../constants/propositionEventType";
 import validateApplyPropositionsOptions from "./validateApplyPropositionsOptions";
-import { PropositionEventType } from "./constants/propositionEventType";
 
 export default ({
   getPageLocation,
@@ -29,10 +29,12 @@ export default ({
   applyPropositions,
   setTargetMigration,
   mergeDecisionsMeta,
-  renderedPropositions
+  renderedPropositions,
+  onDecisionHandler
 }) => {
   return {
     lifecycle: {
+      onDecision: onDecisionHandler,
       onBeforeRequest({ request }) {
         setTargetMigration(request);
         return Promise.resolve();
@@ -104,11 +106,9 @@ export default ({
           // from two places: the pending display notifications and the view change handler.
           const decisionsMeta = flatMap(decisionsMetas, dms => dms);
           if (isNonEmptyArray(decisionsMeta)) {
-            mergeDecisionsMeta(
-              event,
-              decisionsMeta,
+            mergeDecisionsMeta(event, decisionsMeta, [
               PropositionEventType.DISPLAY
-            );
+            ]);
           }
         });
       },
