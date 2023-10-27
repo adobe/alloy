@@ -49,6 +49,11 @@ export default ({ createProposition }) => {
     const updateCacheDeferred = defer();
 
     cacheUpdateCreatedAtLeastOnce = true;
+
+    // Additional updates will merge the new view propositions with the old.
+    // i.e. if there are new "cart" view propositions they will overwrite the
+    // old "cart" view propositions, but if there are no new "cart" view
+    // propositions the old "cart" view propositions will remain.
     viewStoragePromise = viewStoragePromise.then(oldViewStorage => {
       return updateCacheDeferred.promise
         .then(newViewStorage => {
