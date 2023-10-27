@@ -83,10 +83,7 @@ export default ({
         logger
       );
 
-      if (
-        !this.isCacheInitialized() ||
-        personalization.requestPersonalization
-      ) {
+      if (this.shouldRequestDefaultPersonalization()) {
         addPageWideScope(scopes);
         addPageSurface(eventSurfaces, getPageLocation);
       }
@@ -115,13 +112,18 @@ export default ({
       return (
         this.hasScopes() ||
         this.hasSurfaces() ||
-        personalization.requestPersonalization ||
-        (!this.isCacheInitialized() &&
-          personalization.requestPersonalization !== false)
+        this.shouldRequestDefaultPersonalization()
       );
     },
     shouldUseCachedData() {
-      return this.hasViewName() && this.isCacheInitialized();
+      return this.hasViewName() && !this.shouldFetchData();
+    },
+    shouldRequestDefaultPersonalization() {
+      return (
+        personalization.defaultPersonalizationEnabled ||
+        (!this.isCacheInitialized() &&
+          personalization.defaultPersonalizationEnabled !== false)
+      );
     }
   };
 };
