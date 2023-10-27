@@ -13,7 +13,8 @@ import {
   createRestoreStorage,
   createSaveStorage,
   getExpirationDate,
-  getActivityId
+  getActivityId,
+  hasExperienceData
 } from "./utils";
 import { EVENT_TYPE_TRUE } from "../../constants/eventType";
 
@@ -95,16 +96,12 @@ export default ({ storage }) => {
 
   const addExperienceEdgeEvent = event => {
     const { xdm = {} } = event.getContent();
-    const { eventType = "", _experience } = xdm;
+    const { _experience } = xdm;
 
-    if (
-      !eventType ||
-      !_experience ||
-      typeof _experience !== "object" ||
-      eventType === ""
-    ) {
+    if (!hasExperienceData(xdm)) {
       return;
     }
+
     const { decisioning = {} } = _experience;
     const {
       propositionEventType: propositionEventTypeObj = {},
@@ -119,10 +116,14 @@ export default ({ storage }) => {
       return;
     }
 
+    const validPropositionEventType = propositionEventType =>
+      propositionEventTypeObj[propositionEventType] === EVENT_TYPE_TRUE;
+
     const { id: action } = propositionAction;
 
-    propositionEventTypesList.forEach(propositionEventType => {
-      if (propositionEventTypeObj[propositionEventType] === EVENT_TYPE_TRUE) {
+    propositionEventTypesList
+      .filter(validPropositionEventType)
+      .forEach(propositionEventType => {
         propositions.forEach(proposition => {
           addEvent(
             {},
@@ -131,8 +132,7 @@ export default ({ storage }) => {
             action
           );
         });
-      }
-    });
+      });
   };
   const getEvent = (eventType, eventId) => {
     if (!events[eventType]) {
