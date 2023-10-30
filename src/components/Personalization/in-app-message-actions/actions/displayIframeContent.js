@@ -18,7 +18,7 @@ import { createNode } from "../../../../utils/dom";
 import { objectOf } from "../../../../utils/validation";
 import { PropositionEventType } from "../../../../constants/propositionEventType";
 import { EVENT_TYPE_TRUE, INTERACT } from "../../../../constants/eventType";
-import createRedirect from "../../dom-actions/createRedirect";
+import redirectWithHistory from "../../dom-actions/redirectWithHistory";
 
 const MESSAGING_CONTAINER_ID = "alloy-messaging-container";
 const OVERLAY_CONTAINER_ID = "alloy-overlay-container";
@@ -28,7 +28,7 @@ const dismissMessage = () =>
   [MESSAGING_CONTAINER_ID, OVERLAY_CONTAINER_ID].forEach(removeElementById);
 export const createIframeClickHandler = (
   interact,
-  navigateToUrl = createRedirect(window)
+  navigateToUrl = redirectWithHistory(window)
 ) => {
   return event => {
     event.preventDefault();
