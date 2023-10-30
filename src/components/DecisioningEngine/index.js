@@ -84,6 +84,7 @@ const createDecisioningEngine = ({
             decisionProvider,
             applyResponse,
             event,
+            personalization,
             decisionContext: contextProvider.getContext({
               [CONTEXT_KEY.TYPE]: CONTEXT_EVENT_TYPE.EDGE,
               [CONTEXT_KEY.SOURCE]: CONTEXT_EVENT_SOURCE.REQUEST,

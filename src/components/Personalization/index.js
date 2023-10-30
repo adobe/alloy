@@ -42,6 +42,7 @@ import createOnDecisionHandler from "./createOnDecisionHandler";
 import createProcessInAppMessage from "./handlers/createProcessInAppMessage";
 import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules";
 import createRedirect from "./dom-actions/createRedirect";
+import createNotificationHandler from "./createNotificationHandler";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -91,16 +92,21 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
 
   const renderedPropositions = createAsyncArray();
+  const notificationHandler = createNotificationHandler(
+    collect,
+    renderedPropositions
+  );
+
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
     showContainers,
     hideContainers,
     mergeQuery,
-    collect,
     processPropositions,
     createProposition,
-    renderedPropositions
+    notificationHandler
   });
+
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
     collectClicks,
@@ -124,7 +130,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const onDecisionHandler = createOnDecisionHandler({
     processPropositions,
     createProposition,
-    collect
+    notificationHandler
   });
 
   return createComponent({
