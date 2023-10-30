@@ -1,4 +1,5 @@
 // customBuilder.js
+const fs = require("fs");
 const { rollup } = require("rollup");
 const nodeResolve = require("@rollup/plugin-node-resolve").default;
 const commonjs = require("@rollup/plugin-commonjs");
@@ -78,6 +79,12 @@ const buildConfig = minify => {
   };
 };
 
+const getFileSizeInKB = filePath => {
+  const stats = fs.statSync(filePath);
+  const fileSizeInBytes = stats.size;
+  return (fileSizeInBytes / 1024).toFixed(2);
+};
+
 const buildWithComponents = async () => {
   const prodBuild = buildConfig(false);
   const minifiedBuild = buildConfig(true);
@@ -86,11 +93,13 @@ const buildWithComponents = async () => {
   console.log("✔️ Built alloy.js");
   await bundleProd.write(prodBuild.output[0]);
   console.log(`✔️ Wrote alloy.js to ${prodBuild.output[0].file}`);
+  console.log(`📏 Size: ${getFileSizeInKB(prodBuild.output[0].file)} KB`);
 
   const bundleMinified = await rollup(minifiedBuild);
   console.log("✔️ Built alloy.min.js");
   await bundleMinified.write(minifiedBuild.output[0]);
   console.log(`✔️ Wrote alloy.min.js to ${minifiedBuild.output[0].file}`);
+  console.log(`📏 Size: ${getFileSizeInKB(minifiedBuild.output[0].file)} KB`);
 };
 
 buildWithComponents();
