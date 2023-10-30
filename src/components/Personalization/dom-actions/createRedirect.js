@@ -16,5 +16,7 @@ export default window => (url, preserveHistory = false) => {
   } else {
     window.location.replace(url);
   }
+  // Return a promise that never resolves because redirects never complete
+  // within the current page.
   return new Promise(() => undefined);
 };
