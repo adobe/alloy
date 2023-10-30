@@ -3,7 +3,8 @@ import React, { useEffect, useState } from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./InAppMessagesStyle.css";
 
-const configKey = localStorage.getItem("iam-configKey") || "stage";
+const configKey =
+  localStorage.getItem("iam-configKey") || "aemonacpprodcampaign";
 
 const config = {
   cjmProdNld2: {

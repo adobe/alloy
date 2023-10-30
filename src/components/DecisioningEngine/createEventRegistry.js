@@ -66,6 +66,10 @@ export default ({ storage }) => {
   setStorage(storage);
 
   const addEvent = (event, eventType, eventId, action) => {
+    if (!eventType || !eventId) {
+      return undefined;
+    }
+
     if (!events[eventType]) {
       events[eventType] = {};
     }
