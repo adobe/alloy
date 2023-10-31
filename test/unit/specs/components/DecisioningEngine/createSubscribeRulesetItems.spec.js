@@ -237,6 +237,7 @@ describe("DecisioningEngine:subscribeRulesetItems", () => {
       propositions: [
         {
           id: "1a3d874f-39ee-4310-bfa9-6559a10041a4",
+          renderAttempted: true,
           items: [
             {
               schema: "https://ns.adobe.com/personalization/message/feed-item",
@@ -287,6 +288,7 @@ describe("DecisioningEngine:subscribeRulesetItems", () => {
         },
         {
           id: "1ae11bc5-96dc-41c7-8f71-157c57a5290e",
+          renderAttempted: true,
           items: [
             {
               schema: "https://ns.adobe.com/personalization/message/feed-item",
@@ -337,6 +339,7 @@ describe("DecisioningEngine:subscribeRulesetItems", () => {
         },
         {
           id: "d1f7d411-a549-47bc-a4d8-c8e638b0a46b",
+          renderAttempted: true,
           items: [
             {
               schema: "https://ns.adobe.com/personalization/message/feed-item",
@@ -384,6 +387,7 @@ describe("DecisioningEngine:subscribeRulesetItems", () => {
       propositions: [
         {
           id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
+          renderAttempted: true,
           items: [
             {
               schema: "https://ns.adobe.com/personalization/dom-action",
@@ -468,10 +472,12 @@ describe("DecisioningEngine:subscribeRulesetItems", () => {
               id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
             }
           ],
-          scope: "web://mywebsite.com/feed"
+          scope: "web://mywebsite.com/feed",
+          renderAttempted: true
         },
         {
           id: "1a3d874f-39ee-4310-bfa9-6559a10041a4",
+          renderAttempted: true,
           items: [
             {
               schema: "https://ns.adobe.com/personalization/message/feed-item",
@@ -522,6 +528,7 @@ describe("DecisioningEngine:subscribeRulesetItems", () => {
         },
         {
           id: "1ae11bc5-96dc-41c7-8f71-157c57a5290e",
+          renderAttempted: true,
           items: [
             {
               schema: "https://ns.adobe.com/personalization/message/feed-item",
@@ -572,6 +579,7 @@ describe("DecisioningEngine:subscribeRulesetItems", () => {
         },
         {
           id: "d1f7d411-a549-47bc-a4d8-c8e638b0a46b",
+          renderAttempted: true,
           items: [
             {
               schema: "https://ns.adobe.com/personalization/message/feed-item",
@@ -634,6 +642,7 @@ describe("DecisioningEngine:subscribeRulesetItems", () => {
       propositions: [
         {
           id: "abc",
+          renderAttempted: true,
           items: [
             jasmine.objectContaining({
               schema: DOM_ACTION,
@@ -674,6 +683,7 @@ describe("DecisioningEngine:subscribeRulesetItems", () => {
       propositions: [
         {
           id: "abc",
+          renderAttempted: true,
           items: [
             {
               schema: "https://ns.adobe.com/personalization/dom-action",
@@ -697,6 +707,7 @@ describe("DecisioningEngine:subscribeRulesetItems", () => {
         },
         {
           id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
+          renderAttempted: true,
           items: [
             {
               schema: "https://ns.adobe.com/personalization/dom-action",
@@ -732,6 +743,7 @@ describe("DecisioningEngine:subscribeRulesetItems", () => {
         },
         {
           id: "1a3d874f-39ee-4310-bfa9-6559a10041a4",
+          renderAttempted: true,
           items: [
             {
               schema: "https://ns.adobe.com/personalization/message/feed-item",
@@ -782,6 +794,7 @@ describe("DecisioningEngine:subscribeRulesetItems", () => {
         },
         {
           id: "1ae11bc5-96dc-41c7-8f71-157c57a5290e",
+          renderAttempted: true,
           items: [
             {
               schema: "https://ns.adobe.com/personalization/message/feed-item",
@@ -832,6 +845,7 @@ describe("DecisioningEngine:subscribeRulesetItems", () => {
         },
         {
           id: "d1f7d411-a549-47bc-a4d8-c8e638b0a46b",
+          renderAttempted: true,
           items: [
             {
               schema: "https://ns.adobe.com/personalization/message/feed-item",

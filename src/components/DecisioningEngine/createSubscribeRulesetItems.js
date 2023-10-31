@@ -40,6 +40,7 @@ const emissionPreprocessor = (params, propositions) => {
         const { items = [] } = payload;
         return {
           ...payload,
+          renderAttempted: propositions.renderAttempted || true,
           items: items.filter(item =>
             schemasFilter ? includes(schemasFilter, item.schema) : true
           )
@@ -47,7 +48,6 @@ const emissionPreprocessor = (params, propositions) => {
       })
       .filter(payload => payload.items.length > 0)
   };
-
   return [result];
 };
 
