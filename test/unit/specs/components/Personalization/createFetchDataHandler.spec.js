@@ -14,6 +14,7 @@ import createFetchDataHandler from "../../../../../src/components/Personalizatio
 import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
 import flushPromiseChains from "../../../helpers/flushPromiseChains";
 import defer from "../../../../../src/utils/defer";
+import createNotificationHandler from "../../../../../src/components/Personalization/createNotificationHandler";
 
 describe("Personalization::createFetchDataHandler", () => {
   let prehidingStyle;
@@ -24,6 +25,7 @@ describe("Personalization::createFetchDataHandler", () => {
   let processPropositions;
   let createProposition;
   let renderedPropositions;
+  let notificationHandler;
 
   let cacheUpdate;
   let personalizationDetails;
@@ -46,6 +48,10 @@ describe("Personalization::createFetchDataHandler", () => {
     renderedPropositions = jasmine.createSpyObj("renderedPropositions", [
       "concat"
     ]);
+    notificationHandler = createNotificationHandler(
+      collect,
+      renderedPropositions
+    );
 
     cacheUpdate = jasmine.createSpyObj("cacheUpdate", ["update"]);
     personalizationDetails = jasmine.createSpyObj("personalizationDetails", [
@@ -67,10 +73,9 @@ describe("Personalization::createFetchDataHandler", () => {
       showContainers,
       hideContainers,
       mergeQuery,
-      collect,
       processPropositions,
       createProposition,
-      renderedPropositions
+      notificationHandler
     });
     fetchDataHandler({
       cacheUpdate,

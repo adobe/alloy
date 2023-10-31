@@ -17,13 +17,13 @@ export default ({
   decisionProvider,
   applyResponse,
   event,
+  personalization,
   decisionContext
 }) => {
   const context = {
     ...flattenObject(event.getContent()),
     ...decisionContext
   };
-  const viewName = event.getViewName();
 
   return ({ response }) => {
     decisionProvider.addPayloads(
@@ -32,11 +32,15 @@ export default ({
 
     // only evaluate events that include a personalization query
     if (!event.hasQuery()) {
-      return;
+      return { propositions: [] };
     }
 
     const propositions = decisionProvider.evaluate(context);
-
-    applyResponse({ viewName, renderDecisions, propositions });
+    return applyResponse({
+      renderDecisions,
+      propositions,
+      event,
+      personalization
+    });
   };
 };

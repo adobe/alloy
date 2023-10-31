@@ -37,6 +37,7 @@ import createProcessRedirect from "../../../../../../src/components/Personalizat
 import processDefaultContent from "../../../../../../src/components/Personalization/handlers/processDefaultContent";
 import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceUtils";
 import createOnDecisionHandler from "../../../../../../src/components/Personalization/createOnDecisionHandler";
+import createNotificationHandler from "../../../../../../src/components/Personalization/createNotificationHandler";
 
 const createAction = renderFunc => ({ selector, content }) => {
   renderFunc(selector, content);
@@ -115,15 +116,19 @@ const buildComponent = ({
   });
 
   const renderedPropositions = createAsyncArray();
+  const notificationHandler = createNotificationHandler(
+    collect,
+    renderedPropositions
+  );
+
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
     showContainers,
     hideContainers,
     mergeQuery,
-    collect,
     processPropositions,
     createProposition,
-    renderedPropositions
+    notificationHandler
   });
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
@@ -148,7 +153,7 @@ const buildComponent = ({
   const onDecisionHandler = createOnDecisionHandler({
     processPropositions,
     createProposition,
-    collect
+    notificationHandler
   });
 
   return createComponent({

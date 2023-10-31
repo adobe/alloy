@@ -65,12 +65,14 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
       color: "orange",
       action: "lipstick"
     };
+    const personalization = { surfaces: ["#woof"] };
 
     const responseHandler = createOnResponseHandler({
       renderDecisions: true,
       decisionProvider,
       applyResponse,
       event,
+      personalization,
       decisionContext
     });
 
@@ -176,7 +178,8 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
     });
 
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
-      viewName: undefined,
+      event,
+      personalization,
       renderDecisions: true,
       propositions: [
         {
@@ -254,11 +257,14 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
 
     const decisionContext = {};
 
+    const personalization = {};
+
     const responseHandler = createOnResponseHandler({
       renderDecisions: true,
       decisionProvider,
       applyResponse,
       event,
+      personalization,
       decisionContext
     });
 
@@ -353,7 +359,6 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
     });
 
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
-      viewName: "home",
       renderDecisions: true,
       propositions: [
         {
@@ -381,7 +386,9 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
           ],
           scope: "web://target.jasonwaters.dev/aep.html"
         }
-      ]
+      ],
+      event,
+      personalization
     });
   });
 });
