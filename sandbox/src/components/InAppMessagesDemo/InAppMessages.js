@@ -54,6 +54,7 @@ if (alloyInstance !== window.alloy) {
     edgeDomain,
     thirdPartyCookiesEnabled: false,
     targetMigrationEnabled: false,
+    personalizationStorageEnabled: true,
     debugEnabled: true
   });
 }
