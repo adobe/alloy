@@ -14,9 +14,11 @@ import {
   createSaveStorage,
   getExpirationDate,
   getActivityId,
-  hasExperienceData
+  hasExperienceData,
+  getDecisionProvider
 } from "./utils";
 import { EVENT_TYPE_TRUE } from "../../constants/eventType";
+import { ADOBE_JOURNEY_OPTIMIZER } from "../../constants/decisionProvider";
 
 const STORAGE_KEY = "events";
 const MAX_EVENT_RECORDS = 1000;
@@ -129,6 +131,9 @@ export default ({ storage }) => {
       .filter(validPropositionEventType)
       .forEach(propositionEventType => {
         propositions.forEach(proposition => {
+          if (getDecisionProvider(proposition) !== ADOBE_JOURNEY_OPTIMIZER) {
+            return;
+          }
           addEvent(
             {},
             propositionEventType,
