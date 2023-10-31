@@ -246,7 +246,8 @@ describe("DOM Actions on Iframe", () => {
         link: "https://www.google.com"
       });
       expect(mockNavigateToUrl).toHaveBeenCalledOnceWith(
-        "https://www.google.com"
+        "https://www.google.com",
+        true
       );
       expect(overlayContainerAfterDismissal).toBeNull();
     });

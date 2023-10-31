@@ -57,7 +57,7 @@ export const createIframeClickHandler = (
     }
 
     if (isNonEmptyString(link) && link.length > 0) {
-      navigateToUrl(link);
+      navigateToUrl(link, true);
     }
   };
 };
