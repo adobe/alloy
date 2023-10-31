@@ -119,6 +119,6 @@ const createDecisioningEngine = ({
 
 createDecisioningEngine.namespace = "DecisioningEngine";
 createDecisioningEngine.configValidators = objectOf({
-  personalizationStorageEnabled: boolean().default(true)
+  personalizationStorageEnabled: boolean().default(false)
 });
 export default createDecisioningEngine;
