@@ -57,6 +57,17 @@ describe("DecisioningEngine:createEventRegistry", () => {
                     id: "222#bbb"
                   }
                 }
+              },
+              {
+                id: "333",
+                scope: "web://something",
+                scopeDetails: {
+                  decisionProvider: "TGT",
+                  correlationID: "aasfsdf",
+                  activity: {
+                    id: "333#ccc"
+                  }
+                }
               }
             ],
             propositionEventType: {

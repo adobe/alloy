@@ -75,3 +75,9 @@ export const hasExperienceData = xdm => {
 
   return true;
 };
+
+export const getDecisionProvider = proposition => {
+  const { scopeDetails = {} } = proposition;
+  const { decisionProvider } = scopeDetails;
+  return decisionProvider;
+};
