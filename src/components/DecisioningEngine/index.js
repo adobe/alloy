@@ -23,6 +23,7 @@ import {
 } from "./constants";
 import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand";
 import { clearLocalStorage, createInMemoryStorage } from "./utils";
+import { objectOf, boolean } from "../../utils/validation";
 
 const createDecisioningEngine = ({
   config,
@@ -118,4 +119,7 @@ const createDecisioningEngine = ({
 };
 
 createDecisioningEngine.namespace = "DecisioningEngine";
+createDecisioningEngine.configValidators = objectOf({
+  personalizationStorageEnabled: boolean().default(false)
+});
 export default createDecisioningEngine;
