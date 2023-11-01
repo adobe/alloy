@@ -1,4 +1,3 @@
-// customBuilder.js
 const fs = require("fs");
 const { rollup } = require("rollup");
 const nodeResolve = require("@rollup/plugin-node-resolve").default;
@@ -100,6 +99,20 @@ const buildWithComponents = async () => {
   await bundleMinified.write(minifiedBuild.output[0]);
   console.log(`✔️ Wrote alloy.min.js to ${minifiedBuild.output[0].file}`);
   console.log(`📏 Size: ${getFileSizeInKB(minifiedBuild.output[0].file)} KB`);
+
+  const excludedPaths = (argv.exclude || []).map(component => {
+    const dirName = component.toLowerCase();
+    const moduleNameToDirName = {
+      personalization: "Personalization",
+      audiences: "Audiences",
+      eventmerge: "EventMerge",
+      libraryinfo: "LibraryInfo",
+      machinelearning: "MachineLearning",
+      identity: "Identity"
+    };
+    return `test/functional/specs/${moduleNameToDirName[dirName]}`;
+  });
+  fs.writeFileSync("custom-config.txt", excludedPaths.join("\n"));
 };
 
 buildWithComponents();

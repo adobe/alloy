@@ -4,5 +4,6 @@ module.exports = [
   "audiences",
   "eventmerge",
   "libraryinfo",
-  "machinelearning"
+  "machinelearning",
+  "identity"
 ];
