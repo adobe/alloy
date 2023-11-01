@@ -31,9 +31,10 @@ const prepareLibraryInfo = ({ config, componentRegistry }) => {
     version: libraryVersion,
     configs: resultConfig,
     commands: allCommands
+    // need to add the componentsCreators.js, build type - if its custom build, change the build type, the environment is set. Build type value
+    //
   };
 };
-
 const createLibraryInfo = ({ config, componentRegistry }) => {
   const libraryInfo = prepareLibraryInfo({ config, componentRegistry });
   return {

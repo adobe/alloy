@@ -6,47 +6,66 @@ const babel = require("@rollup/plugin-babel").default;
 const terser = require("rollup-plugin-terser").terser;
 const yargs = require("yargs/yargs");
 const { hideBin } = require("yargs/helpers");
-const moduleNames = require("./moduleNames");
+const componentNames = require("./componentNames");
 const conditionalBuildBabelPlugin = require("./conditionalBuildBabelPlugin");
 
-const untouchableModules = ["context", "privacy", "identity"];
+const untouchableModules = [
+  "context",
+  "privacy",
+  "identity",
+  "datacollector",
+  "libraryinfo"
+];
+
+// Provide a console log message with the available options
 
 const argv = yargs(hideBin(process.argv))
   .scriptName("custom-builder")
-  .usage(`$0 --exclude ${moduleNames.join(" ")}`)
+  .usage(`$0 --exclude ${Object.keys(componentNames).join(" ")}`)
   .option("exclude", {
-    describe: "the modules that you want to be excluded from the build",
-    choices: moduleNames,
+    describe: "the components that you want to be excluded from the build",
+    choices: Object.keys(componentNames),
     type: "array"
   })
   .array("exclude")
   // eslint-disable-next-line no-shadow
   .check(argv => {
-    const forbiddenExclusions = (argv.exclude || []).filter(module =>
-      untouchableModules.includes(module)
+    const forbiddenExclusions = (argv.exclude || []).filter(component =>
+      untouchableModules.includes(component)
     );
     if (forbiddenExclusions.length > 0) {
       throw new Error(
-        `You're not allowed to exclude the following modules: ${forbiddenExclusions.join(
+        `You're not allowed to exclude the following components: ${forbiddenExclusions.join(
           ", "
-        )}. Nice try, though.`
+        )}.`
       );
     }
     return true;
   }).argv;
 
+if (!argv.exclude) {
+  console.log(
+    `Looks like you're trying to build without excluding any components, try running "npm run custom:build -- --exclude personalization". Your choices are: ${Object.keys(
+      componentNames
+    )
+      .filter(name => !untouchableModules.includes(name))
+      .join(", ")}`
+  );
+  process.exit(0);
+}
+
 const buildConfig = minify => {
   const plugins = [
     nodeResolve({
       preferBuiltins: false,
-      mainFields: ["module", "main", "browser"]
+      mainFields: ["component", "main", "browser"]
     }),
     commonjs(),
     babel({
       plugins: [
         conditionalBuildBabelPlugin(
           (argv.exclude || []).reduce((previousValue, currentValue) => {
-            if (moduleNames.includes(currentValue)) {
+            if (componentNames.includes(currentValue)) {
               previousValue[`alloy_${currentValue}`] = "false";
             }
             return previousValue;
@@ -78,6 +97,8 @@ const buildConfig = minify => {
   };
 };
 
+// Library info should show that this is a custom build
+
 const getFileSizeInKB = filePath => {
   const stats = fs.statSync(filePath);
   const fileSizeInBytes = stats.size;
@@ -100,19 +121,13 @@ const buildWithComponents = async () => {
   console.log(`✔️ Wrote alloy.min.js to ${minifiedBuild.output[0].file}`);
   console.log(`📏 Size: ${getFileSizeInKB(minifiedBuild.output[0].file)} KB`);
 
+  // exclude and include const that will include a list of items that can be included or excluded from the build
+
   const excludedPaths = (argv.exclude || []).map(component => {
-    const dirName = component.toLowerCase();
-    const moduleNameToDirName = {
-      personalization: "Personalization",
-      audiences: "Audiences",
-      eventmerge: "EventMerge",
-      libraryinfo: "LibraryInfo",
-      machinelearning: "MachineLearning",
-      identity: "Identity"
-    };
-    return `test/functional/specs/${moduleNameToDirName[dirName]}`;
+    return `test/functional/specs/${componentNames[component]}`;
   });
-  fs.writeFileSync("custom-config.txt", excludedPaths.join("\n"));
+
+  fs.writeFileSync("testcafe.json", excludedPaths.join("\n"));
 };
 
 buildWithComponents();
