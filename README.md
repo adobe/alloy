@@ -11,4 +11,4 @@ For documentation on how to use Alloy, please see the [user documentation](https
 
 ## Contribution
 
-Check out the [contribution guidelines](https://github.com/adobe/alloy/CONTRIBUTION.md) for quick start information, and head over to the [developer documentation](https://github.com/adobe/alloy/wiki) to understand the architecture and structure of the library.
+Check out the [contribution guidelines](CONTRIBUTING.md) for quick start information, and head over to the [developer documentation](https://github.com/adobe/alloy/wiki) to understand the architecture and structure of the library.
