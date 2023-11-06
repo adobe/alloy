@@ -65,7 +65,7 @@ const buildConfig = minify => {
       plugins: [
         conditionalBuildBabelPlugin(
           (argv.exclude || []).reduce((previousValue, currentValue) => {
-            if (componentNames.includes(currentValue)) {
+            if (Object.keys(componentNames).includes(currentValue)) {
               previousValue[`alloy_${currentValue}`] = "false";
             }
             return previousValue;
@@ -120,14 +120,6 @@ const buildWithComponents = async () => {
   await bundleMinified.write(minifiedBuild.output[0]);
   console.log(`✔️ Wrote alloy.min.js to ${minifiedBuild.output[0].file}`);
   console.log(`📏 Size: ${getFileSizeInKB(minifiedBuild.output[0].file)} KB`);
-
-  // exclude and include const that will include a list of items that can be included or excluded from the build
-
-  const excludedPaths = (argv.exclude || []).map(component => {
-    return `test/functional/specs/${componentNames[component]}`;
-  });
-
-  fs.writeFileSync("testcafe.json", excludedPaths.join("\n"));
 };
 
 buildWithComponents();
