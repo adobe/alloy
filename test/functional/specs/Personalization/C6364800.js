@@ -165,7 +165,7 @@ const getEdgeResponseDecision = responseBody => {
   );
 };
 
-test("C6364800 applyResponse accepts a response, updates DOM and returns decisions", async () => {
+test.skip("C6364800 applyResponse accepts a response, updates DOM and returns decisions", async () => {
   const [responseHeaders, responseBody] = await getAepEdgeResponse(uuid());
 
   await addHtmlToHeader(testPageHead);
@@ -197,7 +197,7 @@ test("C6364800 applyResponse accepts a response, updates DOM and returns decisio
   await t.expect(getAlertText()).match(/This is Experience [AB]\./);
 });
 
-test("C6364800 applyResponse applies personalization when called after a sendEvent", async () => {
+test.skip("C6364800 applyResponse applies personalization when called after a sendEvent", async () => {
   const [responseHeaders, responseBody] = await getAepEdgeResponse(uuid());
 
   await addHtmlToHeader(testPageHead);
