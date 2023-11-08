@@ -40,11 +40,12 @@ test("Test C44363: Return proposition when QA mode set up with token of experien
     renderDecisions: true,
     decisionScopes: ["Happy-mbox"]
   });
+  const resultProposition = result.propositions.find(
+    p => p.scope === "Happy-mbox"
+  );
   const EXPERIENCE_A =
     "<p>Geckos are a group of usually small, usually nocturnal lizards. They are found on every continent except Australia.</p>\n \n<p>Some species live in houses where they hunt insects attracted by artificial light.</p>";
-  await t
-    .expect(result.propositions[0].items[0].data.content)
-    .eql(EXPERIENCE_A);
+  await t.expect(resultProposition.items[0].data.content).eql(EXPERIENCE_A);
 });
 
 test("Test C44363: Return proposition  when QA mode set up with token of experience B", async () => {
@@ -59,9 +60,10 @@ test("Test C44363: Return proposition  when QA mode set up with token of experie
     renderDecisions: true,
     decisionScopes: ["Happy-mbox"]
   });
+  const resultProposition = result.propositions.find(
+    p => p.scope === "Happy-mbox"
+  );
   const EXPERIENCE_B =
     "<p>Apollo astronauts:</p>\n\n<ul>\n    <li>Neil Armstrong</li>\n    <li>Alan Bean</li>\n    <li>Peter Conrad</li>\n    <li>Edgar Mitchell</li>\n    <li>Alan Shepard</li>\n</ul>";
-  await t
-    .expect(result.propositions[0].items[0].data.content)
-    .eql(EXPERIENCE_B);
+  await t.expect(resultProposition.items[0].data.content).eql(EXPERIENCE_B);
 });
