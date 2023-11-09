@@ -154,8 +154,9 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
 
     expect(result).toEqual(expectedResult);
     expect(onDecision).toHaveBeenCalledOnceWith({
-      viewName: undefined,
       renderDecisions: true,
+      event: undefined,
+      personalization: undefined,
       ...expectedResult
     });
   });
@@ -199,8 +200,9 @@ describe("DecisioningEngine:evaluateRulesetsCommand", () => {
 
     expect(result).toEqual(expectedResult);
     expect(onDecision).toHaveBeenCalledOnceWith({
-      viewName: undefined,
       renderDecisions: false,
+      event: undefined,
+      personalization: undefined,
       ...expectedResult
     });
   });
