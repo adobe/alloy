@@ -33,7 +33,8 @@
     "prepublishOnly": "rimraf libEs5 libEs6 && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
     "add-license": "./scripts/add-license.js",
-    "build:custom": "npm run clean && node scripts/helpers/customBuild.js"
+    "build:custom": "npm run clean && node scripts/helpers/customBuild.js",
+    "sandbox:custom": "SANDBOX=true npm run build:custom -- --exclude personalization && cd sandbox && npm run build"
   },
   "lint-staged": {
     "./*.js": [

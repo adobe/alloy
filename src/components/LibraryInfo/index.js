@@ -27,11 +27,12 @@ const prepareLibraryInfo = ({ config, componentRegistry }) => {
     }
     resultConfig[key] = value.toString();
   });
+  const components = componentRegistry.getComponentNames();
   return {
     version: libraryVersion,
     configs: resultConfig,
     commands: allCommands,
-    components: componentRegistry.getComponentNames()
+    components
     // need to add the componentsCreators.js, build type - if its custom build, change the build type, the environment is set. Build type value
     //
   };

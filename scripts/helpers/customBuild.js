@@ -54,7 +54,7 @@ if (!argv.exclude) {
   process.exit(0);
 }
 
-const buildConfig = minify => {
+const buildConfig = (minify, sandbox) => {
   const plugins = [
     nodeResolve({
       preferBuiltins: false,
@@ -79,11 +79,16 @@ const buildConfig = minify => {
     plugins.push(terser());
   }
 
+  let filename = `dist/alloy${minify ? ".min" : ""}.js`;
+  if (sandbox) {
+    filename = `sandbox/public/alloy${minify ? ".min" : ""}.js`;
+  }
+
   return {
     input: "src/standalone.js",
     output: [
       {
-        file: `dist/alloy${minify ? ".min" : ""}.js`,
+        file: filename,
         format: "iife",
         intro:
           "if (document.documentMode && document.documentMode < 11) {\n" +
@@ -96,18 +101,15 @@ const buildConfig = minify => {
     plugins
   };
 };
-
-// Library info should show that this is a custom build
-
 const getFileSizeInKB = filePath => {
   const stats = fs.statSync(filePath);
   const fileSizeInBytes = stats.size;
   return (fileSizeInBytes / 1024).toFixed(2);
 };
 
-const buildWithComponents = async () => {
-  const prodBuild = buildConfig(false);
-  const minifiedBuild = buildConfig(true);
+const buildWithComponents = async sandbox => {
+  const prodBuild = buildConfig(false, sandbox);
+  const minifiedBuild = buildConfig(true, sandbox);
 
   const bundleProd = await rollup(prodBuild);
   console.log("✔️ Built alloy.js");
@@ -122,4 +124,4 @@ const buildWithComponents = async () => {
   console.log(`📏 Size: ${getFileSizeInKB(minifiedBuild.output[0].file)} KB`);
 };
 
-buildWithComponents();
+buildWithComponents(!!process.env.SANDBOX);

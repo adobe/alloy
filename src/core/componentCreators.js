@@ -30,12 +30,18 @@ import createMachineLearning from "../components/MachineLearning";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
 // TODO: Figure out how sub-components will be made available/registered
+
+const finalCreatePersonalization =
+  typeof createPersonalization !== "undefined"
+    ? createPersonalization
+    : undefined;
+
 export default [
   createDataCollector,
   createActivityCollector,
   createIdentity,
   createAudiences,
-  createPersonalization,
+  finalCreatePersonalization,
   createContext,
   createPrivacy,
   createEventMerge,
