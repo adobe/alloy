@@ -208,6 +208,7 @@ describe("Identity::injectEnsureSingleIdentity", () => {
 
   it("calls awaitIdentityCookie with the correct parameters", () => {
     awaitIdentityCookie = jasmine.createSpy("awaitIdentityCookie");
+    awaitIdentityCookie.and.returnValue(Promise.resolve());
     setup();
     sendRequest();
     expect(awaitIdentityCookie).toHaveBeenCalledWith({

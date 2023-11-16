@@ -19,6 +19,7 @@ describe("Identity::injectAwaitIdentityCookie", () => {
   let runOnRequestFailureCallbacks;
   let onResponse;
   let onRequestFailure;
+  let logger;
 
   beforeEach(() => {
     identityCookieExists = true;
@@ -36,31 +37,35 @@ describe("Identity::injectAwaitIdentityCookie", () => {
       });
     };
     onRequestFailure = callback => onRequestFailureCallbacks.push(callback);
+    logger = jasmine.createSpyObj("logger", ["warn"]);
     awaitIdentityCookie = injectAwaitIdentityCookie({
       orgId: "org@adobe",
-      doesIdentityCookieExist: () => identityCookieExists
+      doesIdentityCookieExist: () => identityCookieExists,
+      logger
     });
   });
 
   it("resolves promise if identity cookie exists after response", () => {
     const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
     runOnResponseCallbacks();
+    expect(logger.warn).not.toHaveBeenCalled();
     return promise;
   });
 
-  it("rejects promise if identity cookie does not exist after response", () => {
+  it("rejects promise if identity cookie does not exist after response and logs warning", () => {
     identityCookieExists = false;
     const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
-    const errorRegex = /An identity was not set properly/i;
-    expect(() => {
-      runOnResponseCallbacks();
-    }).toThrowError(errorRegex);
-    return expectAsync(promise).toBeRejectedWithError(errorRegex);
+    runOnResponseCallbacks();
+    expect(logger.warn).toHaveBeenCalled();
+    return expectAsync(promise).toBeRejectedWithError(
+      /Identity cookie not found/i
+    );
   });
 
   it("resolves promise if identity cookie exists after request failure", () => {
     const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
     runOnRequestFailureCallbacks();
+    expect(logger.warn).not.toHaveBeenCalled();
     return promise;
   });
 
@@ -68,6 +73,9 @@ describe("Identity::injectAwaitIdentityCookie", () => {
     identityCookieExists = false;
     const promise = awaitIdentityCookie({ onResponse, onRequestFailure });
     runOnRequestFailureCallbacks();
-    return expectAsync(promise).toBeRejected();
+    expect(logger.warn).not.toHaveBeenCalled();
+    return expectAsync(promise).toBeRejectedWithError(
+      /Identity cookie not found/i
+    );
   });
 });

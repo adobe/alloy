@@ -91,7 +91,8 @@ const createIdentity = ({
   );
   const awaitIdentityCookie = injectAwaitIdentityCookie({
     doesIdentityCookieExist,
-    orgId
+    orgId,
+    logger
   });
   const ensureSingleIdentity = injectEnsureSingleIdentity({
     doesIdentityCookieExist,
