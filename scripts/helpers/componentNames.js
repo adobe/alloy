@@ -1,4 +1,3 @@
-// componentNames.js
 module.exports = {
   datacollector: "DataCollector",
   decisioningengine: "DecisioningEngine",

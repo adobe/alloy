@@ -34,7 +34,7 @@
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
     "add-license": "./scripts/add-license.js",
     "build:custom": "npm run clean && node scripts/helpers/customBuild.js",
-    "sandbox:custom": "SANDBOX=true npm run build:custom -- --exclude personalization && cd sandbox && npm run build"
+    "sandbox:custom": "SANDBOX=true npm run build:custom -- --exclude personalization && cd sandbox && npm run build && npm run start"
   },
   "lint-staged": {
     "./*.js": [
