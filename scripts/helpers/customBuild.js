@@ -17,14 +17,14 @@ const untouchableModules = [
   "libraryinfo"
 ];
 
-// Provide a console log message with the available options
-
 const argv = yargs(hideBin(process.argv))
   .scriptName("custom-builder")
-  .usage(`$0 --exclude ${Object.keys(componentNames).join(" ")}`)
+  .usage(
+    `$0 --exclude ${componentNames.map(component => component.name).join(" ")}`
+  )
   .option("exclude", {
     describe: "the components that you want to be excluded from the build",
-    choices: Object.keys(componentNames),
+    choices: componentNames.map(component => component.name),
     type: "array"
   })
   .array("exclude")
@@ -45,9 +45,8 @@ const argv = yargs(hideBin(process.argv))
 
 if (!argv.exclude) {
   console.log(
-    `Looks like you're trying to build without excluding any components, try running "npm run custom:build -- --exclude personalization". Your choices are: ${Object.keys(
-      componentNames
-    )
+    `Looks like you're trying to build without excluding any components, try running "npm run custom:build -- --exclude personalization". Your choices are: ${componentNames
+      .map(component => component.name)
       .filter(name => !untouchableModules.includes(name))
       .join(", ")}`
   );
@@ -65,7 +64,11 @@ const buildConfig = (minify, sandbox) => {
       plugins: [
         conditionalBuildBabelPlugin(
           (argv.exclude || []).reduce((previousValue, currentValue) => {
-            if (Object.keys(componentNames).includes(currentValue)) {
+            if (
+              componentNames
+                .map(component => component.name)
+                .includes(currentValue)
+            ) {
               previousValue[`alloy_${currentValue}`] = "false";
             }
             return previousValue;
@@ -101,6 +104,7 @@ const buildConfig = (minify, sandbox) => {
     plugins
   };
 };
+
 const getFileSizeInKB = filePath => {
   const stats = fs.statSync(filePath);
   const fileSizeInBytes = stats.size;

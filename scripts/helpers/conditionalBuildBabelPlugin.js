@@ -28,8 +28,16 @@ module.exports = excludedModules => {
         if (path.node.declaration.type === "ArrayExpression") {
           path.node.declaration.elements = path.node.declaration.elements.filter(
             element => {
-              const variableName = element.name;
-              return !Object.keys(excludedModules).includes(variableName);
+              if (element.name) {
+                const variableName = element.name;
+                const componentName = variableName
+                  .replace("create", "")
+                  .toLowerCase();
+                return !Object.keys(excludedModules).includes(
+                  `alloy_${componentName}`
+                );
+              }
+              return true;
             }
           );
         }
