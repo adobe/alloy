@@ -25,6 +25,7 @@ import createPrivacy from "../components/Privacy";
 import createEventMerge from "../components/EventMerge";
 /* @skipwhen ENV.alloy_libraryinfo === false */
 import createLibraryInfo from "../components/LibraryInfo";
+import createDecisioningEngine from "../components/DecisioningEngine";
 /* @skipwhen ENV.alloy_machinelearning === false */
 import createMachineLearning from "../components/MachineLearning";
 
@@ -41,5 +42,6 @@ export default [
   createPrivacy,
   createEventMerge,
   createLibraryInfo,
-  createMachineLearning
+  createMachineLearning,
+  createDecisioningEngine
 ];
