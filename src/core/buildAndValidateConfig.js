@@ -83,11 +83,6 @@ export default ({
       coreConfigValidators
     );
 
-  // componentCreators.map(({ configValidators }) => {
-  //   console.log("CONSOLE", configValidators);
-  //   console.log("HERE", componentCreators);
-  // });
-
   const config = createConfig(
     transformOptions({ combinedConfigValidator, options, logger: queuedLogger })
   );
