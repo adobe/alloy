@@ -12,22 +12,17 @@ export default ({ eventManager, heartbeatTicker, playerCache }) => {
       }
     });
 
-    const sessionIdPromise = eventManager.sendEvent(event).then(result => {
-      if (!result.sessionId) {
-        return Promise.reject(new Error("No session ID available."));
-      }
-
-      playerCache.startTicker({
-        heartbeatTicker,
-        playerId,
-        sessionId: result.sessionId
-      });
-
-      return result.sessionId;
-    });
-
+    const sessionIdPromise = eventManager.sendEvent(event);
     playerCache.put(playerId, {
-      sessionId: sessionIdPromise,
+      sessionId: sessionIdPromise.then(result => {
+        playerCache.startTicker({
+          heartbeatTicker,
+          playerId,
+          sessionId: result.sessionId
+        });
+
+        return result.sessionId;
+      }),
       onBeforeMediaEvent
     });
 

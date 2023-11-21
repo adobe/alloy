@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", async function(event) {
       const mediaInfo = Media.createMediaObject(
         "NinasVideoName",
         "Ninas player video",
-        12355,
+        60,
         Media.StreamType.VOD,
         Media.MediaType.Video
       );

@@ -206,7 +206,7 @@ document.addEventListener("DOMContentLoaded", async function(event) {
                 rating: "4.8/5",
                 season: "1521",
                 show: "Friends Series",
-                length: 100,
+                length: 60,
                 firstDigitalDate: "releaseDate",
                 artist: "test-artist",
                 hasResume: false,

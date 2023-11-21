@@ -10,6 +10,7 @@ export default ({ config, eventManager, automaticSessionHandler, logger }) => {
     const event = eventManager.createEvent();
     event.mergeXdm(options.xdm);
     event.mergeXdm({
+      eventType: "media.sessionStart",
       mediaCollection: {
         sessionDetails: {
           playerName:

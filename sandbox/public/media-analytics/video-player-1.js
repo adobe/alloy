@@ -164,7 +164,6 @@ document.addEventListener("DOMContentLoaded", async function(event) {
     if (!playerSettings.videoLoaded) {
       sessionPromise = window
         .alloy("createMediaSession", {
-          // start media session
           playerId: "episode-1", // unique identifier
           xdm: {
             eventType: "media.sessionStart",
@@ -186,7 +185,7 @@ document.addEventListener("DOMContentLoaded", async function(event) {
                 rating: "4.8/5",
                 season: "1521",
                 show: "Friends Series",
-                length: 100,
+                length: 60,
                 firstDigitalDate: "releaseDate",
                 artist: "test-artist",
                 hasResume: false,
@@ -216,11 +215,12 @@ document.addEventListener("DOMContentLoaded", async function(event) {
           );
           playerSettings.clock = setInterval(sampleDemoEventTriggerer, 1000);
           console.log("session Id", sessionId);
+          return sessionId;
         });
 
       sessionPromise
         .then(result => {
-          console.log("sesssionPromise result", result);
+          console.log("sessionPromise result", result);
         })
         .catch(error => {
           console.log("error", error);
@@ -230,13 +230,8 @@ document.addEventListener("DOMContentLoaded", async function(event) {
 
     window.alloy("sendMediaEvent", {
       playerId: "episode-1",
-      //  type: "play",
       xdm: {
-        eventType: "media.play",
-        mediaCollection: {
-          //  playhead: 0
-          // sessionID: result.sessionId
-        }
+        eventType: "media.play"
       }
     });
   });
@@ -252,11 +247,7 @@ document.addEventListener("DOMContentLoaded", async function(event) {
     window.alloy("sendMediaEvent", {
       playerId: "episode-1",
       xdm: {
-        eventType: "media.pauseStart",
-        mediaCollection: {
-          playhead: 0
-          // sessionID: result.sessionId
-        }
+        eventType: "media.pauseStart"
       }
     });
     // });
@@ -267,11 +258,7 @@ document.addEventListener("DOMContentLoaded", async function(event) {
       .alloy("sendMediaEvent", {
         playerId: "episode-1",
         xdm: {
-          eventType: "media.sessionComplete",
-          mediaCollection: {
-            playhead: 0
-            // sessionID: result.sessionId
-          }
+          eventType: "media.sessionComplete"
         }
       })
       .then(result => {

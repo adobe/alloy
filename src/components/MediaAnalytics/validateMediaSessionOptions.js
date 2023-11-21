@@ -14,7 +14,6 @@ export default ({ options }) => {
         playerId: string().required(),
         onBeforeMediaEvent: callback().required(),
         xdm: objectOf({
-          eventType: string().required(),
           mediaCollection: objectOf({
             sessionDetails: objectOf(anything()).required()
           })
