@@ -16,4 +16,5 @@ governing permissions and limitations under the License.
  * @param {String} suffix The string to search for.
  * @returns {boolean}
  */
-export default (str, suffix) => str.substr(-suffix.length) === suffix;
+export default (str, suffix) =>
+  str.substring(str.length - suffix.length) === suffix;
