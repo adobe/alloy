@@ -12,15 +12,15 @@ governing permissions and limitations under the License.
 
 import { groupBy } from "../../utils";
 import defer from "../../utils/defer";
-import { DEFAULT_CONTENT_ITEM } from "./constants/schema";
+import { DEFAULT_CONTENT_ITEM } from "../../constants/schema";
+import { VIEW_SCOPE_TYPE } from "./constants/scopeType";
 
 export default ({ createProposition }) => {
-  const viewStorage = {};
   let cacheUpdateCreatedAtLeastOnce = false;
-  let previousUpdateCacheComplete = Promise.resolve();
+  let viewStoragePromise = Promise.resolve({});
 
-  const getViewPropositions = (currentViewStorage, viewName) => {
-    const viewPropositions = currentViewStorage[viewName.toLowerCase()];
+  const getViewPropositions = (viewStorage, viewName) => {
+    const viewPropositions = viewStorage[viewName.toLowerCase()];
     if (viewPropositions && viewPropositions.length > 0) {
       return viewPropositions;
     }
@@ -30,7 +30,7 @@ export default ({ createProposition }) => {
         scope: viewName,
         scopeDetails: {
           characteristics: {
-            scopeType: "view"
+            scopeType: VIEW_SCOPE_TYPE
           }
         },
         items: [
@@ -49,12 +49,18 @@ export default ({ createProposition }) => {
     const updateCacheDeferred = defer();
 
     cacheUpdateCreatedAtLeastOnce = true;
-    previousUpdateCacheComplete = previousUpdateCacheComplete
-      .then(() => updateCacheDeferred.promise)
-      .then(newViewStorage => {
-        Object.assign(viewStorage, newViewStorage);
-      })
-      .catch(() => {});
+
+    // Additional updates will merge the new view propositions with the old.
+    // i.e. if there are new "cart" view propositions they will overwrite the
+    // old "cart" view propositions, but if there are no new "cart" view
+    // propositions the old "cart" view propositions will remain.
+    viewStoragePromise = viewStoragePromise.then(oldViewStorage => {
+      return updateCacheDeferred.promise
+        .then(newViewStorage => {
+          return { ...oldViewStorage, ...newViewStorage };
+        })
+        .catch(() => oldViewStorage);
+    });
 
     return {
       update(viewPropositions) {
@@ -77,7 +83,7 @@ export default ({ createProposition }) => {
   };
 
   const getView = viewName => {
-    return previousUpdateCacheComplete.then(() =>
+    return viewStoragePromise.then(viewStorage =>
       getViewPropositions(viewStorage, viewName)
     );
   };

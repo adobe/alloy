@@ -10,14 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export const DEFAULT_CONTENT_ITEM =
-  "https://ns.adobe.com/personalization/default-content-item";
-export const DOM_ACTION = "https://ns.adobe.com/personalization/dom-action";
-export const HTML_CONTENT_ITEM =
-  "https://ns.adobe.com/personalization/html-content-item";
-export const JSON_CONTENT_ITEM =
-  "https://ns.adobe.com/personalization/json-content-item";
-export const REDIRECT_ITEM =
-  "https://ns.adobe.com/personalization/redirect-item";
-export const MEASUREMENT_SCHEMA =
-  "https://ns.adobe.com/personalization/measurement";
+export default window => (url, preserveHistory = false) => {
+  if (preserveHistory) {
+    window.location.href = url;
+  } else {
+    window.location.replace(url);
+  }
+  // Return a promise that never resolves because redirects never complete
+  // within the current page.
+  return new Promise(() => undefined);
+};

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, boolean, objectOf } from "../../utils/validation";
+import { boolean, objectOf, string } from "../../utils/validation";
 import createComponent from "./createComponent";
 import { initDomActionsModules } from "./dom-actions";
 import createCollect from "./createCollect";
@@ -31,14 +31,18 @@ import remapHeadOffers from "./dom-actions/remapHeadOffers";
 import createPreprocess from "./dom-actions/createPreprocess";
 import injectCreateProposition from "./handlers/injectCreateProposition";
 import createAsyncArray from "./utils/createAsyncArray";
-import createPendingNotificationsHandler from "./createPendingNotificationsHandler";
-import * as schema from "./constants/schema";
+import * as schema from "../../constants/schema";
 import processDefaultContent from "./handlers/processDefaultContent";
 import { isPageWideSurface } from "./utils/surfaceUtils";
 import createProcessDomAction from "./handlers/createProcessDomAction";
 import createProcessHtmlContent from "./handlers/createProcessHtmlContent";
 import createProcessRedirect from "./handlers/createProcessRedirect";
 import createProcessPropositions from "./handlers/createProcessPropositions";
+import createOnDecisionHandler from "./createOnDecisionHandler";
+import createProcessInAppMessage from "./handlers/createProcessInAppMessage";
+import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules";
+import createRedirect from "./dom-actions/createRedirect";
+import createNotificationHandler from "./createNotificationHandler";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -50,7 +54,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     storeClickMetrics
   } = createClickStorage();
   const getPageLocation = createGetPageLocation({ window });
-  const modules = initDomActionsModules();
+  const domActionsModules = initDomActionsModules();
 
   const preprocess = createPreprocess([remapHeadOffers, remapCustomCodeOffers]);
   const createProposition = injectCreateProposition({
@@ -59,18 +63,26 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
   const viewCache = createViewCacheManager({ createProposition });
 
+  const executeRedirect = createRedirect(window);
   const schemaProcessors = {
     [schema.DEFAULT_CONTENT_ITEM]: processDefaultContent,
     [schema.DOM_ACTION]: createProcessDomAction({
-      modules,
+      modules: domActionsModules,
       logger,
       storeClickMetrics
     }),
-    [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({ modules, logger }),
+    [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({
+      modules: domActionsModules,
+      logger
+    }),
     [schema.REDIRECT_ITEM]: createProcessRedirect({
       logger,
-      executeRedirect: url => window.location.replace(url),
+      executeRedirect,
       collect
+    }),
+    [schema.MESSAGE_IN_APP]: createProcessInAppMessage({
+      modules: initInAppMessageActionsModules(collect),
+      logger
     })
   };
 
@@ -79,21 +91,22 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     logger
   });
 
-  const pendingDisplayNotifications = createAsyncArray();
-  const pendingNotificationsHandler = createPendingNotificationsHandler({
-    pendingDisplayNotifications,
-    mergeDecisionsMeta
-  });
+  const renderedPropositions = createAsyncArray();
+  const notificationHandler = createNotificationHandler(
+    collect,
+    renderedPropositions
+  );
+
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
     showContainers,
     hideContainers,
     mergeQuery,
-    collect,
     processPropositions,
     createProposition,
-    pendingDisplayNotifications
+    notificationHandler
   });
+
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
     collectClicks,
@@ -101,19 +114,25 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     getClickMetasBySelector
   });
   const viewChangeHandler = createViewChangeHandler({
-    mergeDecisionsMeta,
     processPropositions,
     viewCache
   });
   const applyPropositions = createApplyPropositions({
     processPropositions,
     createProposition,
-    pendingDisplayNotifications,
+    renderedPropositions,
     viewCache
   });
   const setTargetMigration = createSetTargetMigration({
     targetMigrationEnabled
   });
+
+  const onDecisionHandler = createOnDecisionHandler({
+    processPropositions,
+    createProposition,
+    notificationHandler
+  });
+
   return createComponent({
     getPageLocation,
     logger,
@@ -126,7 +145,9 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     showContainers,
     applyPropositions,
     setTargetMigration,
-    pendingNotificationsHandler
+    mergeDecisionsMeta,
+    renderedPropositions,
+    onDecisionHandler
   });
 };
 

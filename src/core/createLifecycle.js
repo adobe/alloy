@@ -29,7 +29,10 @@ const hookNames = [
   // { response } is passed as the parameter)
   "onRequestFailure",
   // A user clicked on an element.
-  "onClick"
+  "onClick",
+  // Called by DecisioningEngine when a ruleset is satisfied with a list of
+  // propositions
+  "onDecision"
 ];
 
 const createHook = (componentRegistry, hookName) => {

@@ -30,13 +30,14 @@ import { createCallbackAggregator } from "../../../../../../src/utils";
 import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition";
 import createProcessPropositions from "../../../../../../src/components/Personalization/handlers/createProcessPropositions";
 import createAsyncArray from "../../../../../../src/components/Personalization/utils/createAsyncArray";
-import createPendingNotificationsHandler from "../../../../../../src/components/Personalization/createPendingNotificationsHandler";
-import * as schema from "../../../../../../src/components/Personalization/constants/schema";
+import * as schema from "../../../../../../src/constants/schema";
 import createProcessDomAction from "../../../../../../src/components/Personalization/handlers/createProcessDomAction";
 import createProcessHtmlContent from "../../../../../../src/components/Personalization/handlers/createProcessHtmlContent";
 import createProcessRedirect from "../../../../../../src/components/Personalization/handlers/createProcessRedirect";
 import processDefaultContent from "../../../../../../src/components/Personalization/handlers/processDefaultContent";
 import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceUtils";
+import createOnDecisionHandler from "../../../../../../src/components/Personalization/createOnDecisionHandler";
+import createNotificationHandler from "../../../../../../src/components/Personalization/createNotificationHandler";
 
 const createAction = renderFunc => ({ selector, content }) => {
   renderFunc(selector, content);
@@ -114,20 +115,20 @@ const buildComponent = ({
     logger
   });
 
-  const pendingDisplayNotifications = createAsyncArray();
-  const pendingNotificationsHandler = createPendingNotificationsHandler({
-    pendingDisplayNotifications,
-    mergeDecisionsMeta
-  });
+  const renderedPropositions = createAsyncArray();
+  const notificationHandler = createNotificationHandler(
+    collect,
+    renderedPropositions
+  );
+
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
     showContainers,
     hideContainers,
     mergeQuery,
-    collect,
     processPropositions,
     createProposition,
-    pendingDisplayNotifications
+    notificationHandler
   });
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
@@ -136,19 +137,25 @@ const buildComponent = ({
     getClickMetasBySelector
   });
   const viewChangeHandler = createViewChangeHandler({
-    mergeDecisionsMeta,
     processPropositions,
     viewCache
   });
   const applyPropositions = createApplyPropositions({
     processPropositions,
     createProposition,
-    pendingDisplayNotifications,
+    renderedPropositions,
     viewCache
   });
   const setTargetMigration = createSetTargetMigration({
     targetMigrationEnabled
   });
+
+  const onDecisionHandler = createOnDecisionHandler({
+    processPropositions,
+    createProposition,
+    notificationHandler
+  });
+
   return createComponent({
     getPageLocation,
     logger,
@@ -161,7 +168,9 @@ const buildComponent = ({
     showContainers,
     applyPropositions,
     setTargetMigration,
-    pendingNotificationsHandler
+    mergeDecisionsMeta,
+    renderedPropositions,
+    onDecisionHandler
   });
 };
 
@@ -184,7 +193,7 @@ export default mocks => {
         event,
         renderDecisions,
         decisionScopes,
-        personalization: personalization || { sendDisplayNotifications: true },
+        personalization: personalization || { sendDisplayEvent: true },
         onResponse: callbacks.add
       });
       const results = await callbacks.call({ response });

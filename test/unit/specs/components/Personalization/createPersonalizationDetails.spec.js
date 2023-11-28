@@ -16,9 +16,12 @@ import {
   DEFAULT_CONTENT_ITEM,
   DOM_ACTION,
   HTML_CONTENT_ITEM,
+  MESSAGE_IN_APP,
   JSON_CONTENT_ITEM,
-  REDIRECT_ITEM
-} from "../../../../../src/components/Personalization/constants/schema";
+  REDIRECT_ITEM,
+  RULESET_ITEM,
+  MESSAGE_FEED_ITEM
+} from "../../../../../src/constants/schema";
 
 describe("Personalization::createPersonalizationDetails", () => {
   const TEST_SURFACE = "web://alloy.test.com/test/page/1";
@@ -36,6 +39,47 @@ describe("Personalization::createPersonalizationDetails", () => {
   beforeEach(() => {
     event = jasmine.createSpyObj("event", ["getViewName"]);
     logger = jasmine.createSpyObj("logger", ["info", "warn", "error"]);
+  });
+
+  // s - has scopes or surfaces
+  // i - cache is initialized
+  // dp - defaultPersonalizationEnabled flag
+  // fetch - should fetch data
+  [
+    { s: false, i: false, dp: false, fetch: false },
+    { s: true, i: false, dp: false, fetch: true },
+    { s: false, i: true, dp: false, fetch: false },
+    { s: true, i: true, dp: false, fetch: true },
+
+    { s: false, i: false, dp: true, fetch: true },
+    { s: true, i: false, dp: true, fetch: true },
+    { s: false, i: true, dp: true, fetch: true },
+    { s: true, i: true, dp: true, fetch: true },
+
+    { s: false, i: false, fetch: true },
+    { s: true, i: false, fetch: true },
+    { s: false, i: true, fetch: false },
+    { s: true, i: true, fetch: true }
+  ].forEach(({ s, i, dp, fetch }) => {
+    it(`should ${fetch ? "" : "not "}fetch data when ${
+      s ? "" : "no "
+    }scopes, the cache is ${
+      i ? "" : "not "
+    }initialized, and initializePersonalization is '${dp}'`, () => {
+      const personalizationDetails = createPersonalizationDetails({
+        getPageLocation,
+        renderDecisions: true,
+        decisionScopes: [],
+        personalization: {
+          decisionScopes: s ? ["test"] : undefined,
+          defaultPersonalizationEnabled: dp
+        },
+        event,
+        isCacheInitialized: i,
+        logger
+      });
+      expect(personalizationDetails.shouldFetchData()).toEqual(fetch);
+    });
   });
 
   it("should fetch data when no cache, renderDecisions is true, no viewName and decisionScopes/surfaces (in non SPA world)", () => {
@@ -59,6 +103,9 @@ describe("Personalization::createPersonalizationDetails", () => {
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
+        RULESET_ITEM,
+        MESSAGE_IN_APP,
+        MESSAGE_FEED_ITEM,
         DOM_ACTION
       ],
       decisionScopes: expectedDecisionScopes,
@@ -96,6 +143,9 @@ describe("Personalization::createPersonalizationDetails", () => {
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
+        RULESET_ITEM,
+        MESSAGE_IN_APP,
+        MESSAGE_FEED_ITEM,
         DOM_ACTION
       ],
       decisionScopes: expectedDecisionScopes,
@@ -133,6 +183,9 @@ describe("Personalization::createPersonalizationDetails", () => {
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
+        RULESET_ITEM,
+        MESSAGE_IN_APP,
+        MESSAGE_FEED_ITEM,
         DOM_ACTION
       ],
       decisionScopes: expectedDecisionScopes,
@@ -169,7 +222,10 @@ describe("Personalization::createPersonalizationDetails", () => {
         DEFAULT_CONTENT_ITEM,
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
-        REDIRECT_ITEM
+        REDIRECT_ITEM,
+        RULESET_ITEM,
+        MESSAGE_IN_APP,
+        MESSAGE_FEED_ITEM
       ],
       decisionScopes: expectedDecisionScopes,
       surfaces: []
@@ -207,7 +263,10 @@ describe("Personalization::createPersonalizationDetails", () => {
         DEFAULT_CONTENT_ITEM,
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
-        REDIRECT_ITEM
+        REDIRECT_ITEM,
+        RULESET_ITEM,
+        MESSAGE_IN_APP,
+        MESSAGE_FEED_ITEM
       ],
       decisionScopes: expectedDecisionScopes,
       surfaces: ["web://test1.com/"]
@@ -247,7 +306,10 @@ describe("Personalization::createPersonalizationDetails", () => {
         DEFAULT_CONTENT_ITEM,
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
-        REDIRECT_ITEM
+        REDIRECT_ITEM,
+        RULESET_ITEM,
+        MESSAGE_IN_APP,
+        MESSAGE_FEED_ITEM
       ],
       decisionScopes: expectedDecisionScopes,
       surfaces: ["web://test1.com/"]
@@ -378,6 +440,9 @@ describe("Personalization::createPersonalizationDetails", () => {
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
         REDIRECT_ITEM,
+        RULESET_ITEM,
+        MESSAGE_IN_APP,
+        MESSAGE_FEED_ITEM,
         DOM_ACTION
       ],
       decisionScopes: expectedDecisionScopes,

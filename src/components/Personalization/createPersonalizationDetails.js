@@ -17,9 +17,12 @@ import {
   DEFAULT_CONTENT_ITEM,
   DOM_ACTION,
   HTML_CONTENT_ITEM,
+  MESSAGE_IN_APP,
   JSON_CONTENT_ITEM,
-  REDIRECT_ITEM
-} from "./constants/schema";
+  REDIRECT_ITEM,
+  RULESET_ITEM,
+  MESSAGE_FEED_ITEM
+} from "../../constants/schema";
 
 const addPageWideScope = scopes => {
   if (!scopes.includes(PAGE_WIDE_SCOPE)) {
@@ -51,11 +54,11 @@ export default ({
     isRenderDecisions() {
       return renderDecisions;
     },
-    isSendDisplayNotifications() {
-      return !!personalization.sendDisplayNotifications;
+    isSendDisplayEvent() {
+      return !!personalization.sendDisplayEvent;
     },
-    shouldAddPendingDisplayNotifications() {
-      return !!personalization.includePendingDisplayNotifications;
+    shouldIncludeRenderedPropositions() {
+      return !!personalization.includeRenderedPropositions;
     },
     getViewName() {
       return viewName;
@@ -83,7 +86,7 @@ export default ({
         logger
       );
 
-      if (!this.isCacheInitialized()) {
+      if (this.shouldRequestDefaultPersonalization()) {
         addPageWideScope(scopes);
         addPageSurface(eventSurfaces, getPageLocation);
       }
@@ -92,7 +95,10 @@ export default ({
         DEFAULT_CONTENT_ITEM,
         HTML_CONTENT_ITEM,
         JSON_CONTENT_ITEM,
-        REDIRECT_ITEM
+        REDIRECT_ITEM,
+        RULESET_ITEM,
+        MESSAGE_IN_APP,
+        MESSAGE_FEED_ITEM
       ];
 
       if (scopes.includes(PAGE_WIDE_SCOPE)) {
@@ -110,11 +116,20 @@ export default ({
     },
     shouldFetchData() {
       return (
-        this.hasScopes() || this.hasSurfaces() || !this.isCacheInitialized()
+        this.hasScopes() ||
+        this.hasSurfaces() ||
+        this.shouldRequestDefaultPersonalization()
       );
     },
     shouldUseCachedData() {
-      return this.hasViewName() && this.isCacheInitialized();
+      return this.hasViewName() && !this.shouldFetchData();
+    },
+    shouldRequestDefaultPersonalization() {
+      return (
+        personalization.defaultPersonalizationEnabled ||
+        (!this.isCacheInitialized() &&
+          personalization.defaultPersonalizationEnabled !== false)
+      );
     }
   };
 };

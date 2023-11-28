@@ -52,3 +52,32 @@ test("Test C205528: A redirect offer should redirect the page to the URL in the 
     await t.expect(redirectLogger.count(() => true)).eql(1);
   }
 });
+
+test("Test C205528: A redirect offer should not redirect if renderDecisions is false", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  await alloy.sendEvent({});
+  // wait 1 second for the redirect to happen
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  await t.expect(redirectLogger.count(() => true)).eql(0);
+});
+
+test("Test 205528: When there is a redirect offer web sdk should not send a bottom of page event", async () => {
+  const alloy = createAlloyProxy();
+  await alloy.configure(config);
+  await alloy.sendEventAsync({
+    renderDecisions: true,
+    personalization: {
+      sendDisplayEvent: false
+    }
+  });
+  await alloy.sendEventAsync({
+    personalization: {
+      includeRenderedPropositions: true
+    }
+  });
+
+  await t.expect(redirectLogger.count(() => true)).eql(1);
+  // 1 for the initial request, 1 for the redirect display notification
+  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
+});

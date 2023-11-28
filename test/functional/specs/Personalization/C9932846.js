@@ -134,4 +134,5 @@ test("Test C9932846: AJO click-tracking offers are delivered", async () => {
   await t
     .expect(interactEvent.xdm._experience.decisioning.propositions[0].id)
     .eql(personalizationPayload.id);
+  await t.expect(interactEvent.xdm.web.webPageDetails.viewName).notOk();
 });

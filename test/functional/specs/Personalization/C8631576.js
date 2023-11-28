@@ -46,6 +46,13 @@ test(DESCRIPTION, async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent(sendEventOptions);
+  const browserHintProposition = eventResult.propositions.find(
+    proposition => proposition.scope === "chromeBrowserClientHint"
+  );
+  const hasChromeBrowserClientHintProposition =
+    browserHintProposition !== undefined &&
+    browserHintProposition.items[0].schema !==
+      "https://ns.adobe.com/personalization/default-content-item";
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
@@ -60,20 +67,16 @@ test(DESCRIPTION, async () => {
     await t.expect(requestHeaders["sec-ch-ua-platform"]).ok();
 
     if (requestHeaders["sec-ch-ua"].indexOf("Chrome") > -1) {
-      await t.expect(eventResult.propositions.length).eq(1);
-      const expectedProposition = eventResult.propositions.find(
-        proposition => proposition.scope === "chromeBrowserClientHint"
-      );
-      await t.expect(expectedProposition).ok();
+      await t.expect(hasChromeBrowserClientHintProposition).ok();
     } else {
       // Edge browser users will not qualify even though Edge supports client hints
-      await t.expect(eventResult.propositions.length).notOk();
+      await t.expect(hasChromeBrowserClientHintProposition).notOk();
     }
   } else {
     // Firefox, Safari do not currently support client hints
     await t.expect(requestHeaders["sec-ch-ua"]).notOk();
     await t.expect(requestHeaders["sec-ch-ua-mobile"]).notOk();
     await t.expect(requestHeaders["sec-ch-ua-platform"]).notOk();
-    await t.expect(eventResult.propositions.length).notOk();
+    await t.expect(hasChromeBrowserClientHintProposition).notOk();
   }
 });

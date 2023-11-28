@@ -18,9 +18,15 @@ export default ({ logger, executeRedirect, collect }) => item => {
   }
 
   const render = () => {
-    return collect({ decisionsMeta: [item.getMeta()] }).then(() => {
-      executeRedirect(content);
-      // We've already sent the display notification, so don't return anything
+    return collect({
+      decisionsMeta: [item.getProposition().getNotification()],
+      documentMayUnload: true
+    }).then(() => {
+      return executeRedirect(content);
+      // Execute redirect will never resolve. If there are bottom of page events that are waiting
+      // for display notifications from this request, they will never run because this promise will
+      // not resolve. This is intentional because we don't want to run bottom of page events if
+      // there is a redirect.
     });
   };
 

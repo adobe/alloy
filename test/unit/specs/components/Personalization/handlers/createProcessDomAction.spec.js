@@ -1,21 +1,46 @@
+/*
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
 import createProcessDomAction from "../../../../../../src/components/Personalization/handlers/createProcessDomAction";
 
 describe("createProcessDomAction", () => {
   let item;
   let data;
+  let proposition;
   let meta;
+  let trackingLabel;
+  let scopeType;
   let modules;
   let logger;
   let storeClickMetrics;
   let processDomAction;
 
   beforeEach(() => {
+    proposition = {
+      getNotification() {
+        return meta;
+      },
+      getScopeType() {
+        return scopeType;
+      }
+    };
     item = {
       getData() {
         return data;
       },
-      getMeta() {
-        return meta;
+      getProposition() {
+        return proposition;
+      },
+      getTrackingLabel() {
+        return trackingLabel;
       }
     };
     modules = {
@@ -34,7 +59,10 @@ describe("createProcessDomAction", () => {
 
   it("returns an empty object if the item has no data, and logs missing type", () => {
     data = undefined;
-    expect(processDomAction(item)).toEqual({});
+    expect(processDomAction(item)).toEqual({
+      setRenderAttempted: false,
+      includeInNotification: false
+    });
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid DOM action data: missing type.",
       undefined
@@ -43,7 +71,10 @@ describe("createProcessDomAction", () => {
 
   it("returns an empty object if the item has no type, and logs missing type", () => {
     data = {};
-    expect(processDomAction(item)).toEqual({});
+    expect(processDomAction(item)).toEqual({
+      setRenderAttempted: false,
+      includeInNotification: false
+    });
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid DOM action data: missing type.",
       {}
@@ -52,7 +83,10 @@ describe("createProcessDomAction", () => {
 
   it("returns an empty object if the item has an unknown type, and logs unknown type", () => {
     data = { type: "typeC" };
-    expect(processDomAction(item)).toEqual({});
+    expect(processDomAction(item)).toEqual({
+      setRenderAttempted: false,
+      includeInNotification: false
+    });
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid DOM action data: unknown type.",
       {
@@ -63,7 +97,10 @@ describe("createProcessDomAction", () => {
 
   it("returns an empty object if the item has no selector for a click type, and logs missing selector", () => {
     data = { type: "click" };
-    expect(processDomAction(item)).toEqual({});
+    expect(processDomAction(item)).toEqual({
+      setRenderAttempted: false,
+      includeInNotification: false
+    });
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid DOM action data: missing selector.",
       {
@@ -74,14 +111,21 @@ describe("createProcessDomAction", () => {
 
   it("handles a click type", () => {
     data = { type: "click", selector: ".selector" };
-    meta = "mymetavalue";
+    meta = { id: "myid", scope: "myscope" };
+    trackingLabel = "mytrackinglabel";
+    scopeType = "myscopetype";
     expect(processDomAction(item)).toEqual({
       setRenderAttempted: true,
       includeInNotification: false
     });
     expect(storeClickMetrics).toHaveBeenCalledWith({
       selector: ".selector",
-      meta: "mymetavalue"
+      meta: {
+        id: "myid",
+        scope: "myscope",
+        trackingLabel: "mytrackinglabel",
+        scopeType: "myscopetype"
+      }
     });
   });
 

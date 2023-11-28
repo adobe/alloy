@@ -1,3 +1,14 @@
+/*
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
 import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition";
 
 describe("injectCreateProposition", () => {
@@ -41,12 +52,8 @@ describe("injectCreateProposition", () => {
     const item = proposition.getItems()[0];
     expect(item.getSchema()).toEqual("schema");
     expect(item.getData()).toEqual("preprocessed data");
-    expect(item.getMeta()).toEqual({
-      id: "id",
-      scope: "scope",
-      scopeDetails: { characteristics: { scopeType: "view" } },
-      trackingLabel: "trackingLabel"
-    });
+    expect(item.getProposition()).toEqual(proposition);
+    expect(item.getTrackingLabel()).toEqual("trackingLabel");
     expect(item.getOriginalItem()).toEqual({
       schema: "schema",
       data: "data",

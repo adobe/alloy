@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 // Please keep in alphabetical order.
 export { default as areThirdPartyCookiesSupportedByDefault } from "./areThirdPartyCookiesSupportedByDefault";
+export { default as assignConcatArrayValues } from "./assignConcatArrayValues";
 export { default as assignIf } from "./assignIf";
 export { default as clone } from "./clone";
 export { default as cookieJar } from "./cookieJar";
@@ -49,6 +50,7 @@ export { default as isString } from "./isString";
 export { default as memoize } from "./memoize";
 export { default as noop } from "./noop";
 export { default as padStart } from "./padStart";
+export { default as parseUrl } from "./parseUrl";
 export { default as prepareConfigOverridesForEdge } from "./prepareConfigOverridesForEdge";
 export { default as queryString } from "./querystring";
 export { default as sanitizeOrgIdForCookieName } from "./sanitizeOrgIdForCookieName";

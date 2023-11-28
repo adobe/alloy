@@ -9,12 +9,4 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { PropositionEventType } from "./constants/propositionEventType";
-
-export default ({ pendingDisplayNotifications, mergeDecisionsMeta }) => ({
-  event
-}) => {
-  return pendingDisplayNotifications.clear().then(decisionsMeta => {
-    mergeDecisionsMeta(event, decisionsMeta, PropositionEventType.DISPLAY);
-  });
-};
+export const PERSONALIZATION_DECISIONS_HANDLE = "personalization:decisions";

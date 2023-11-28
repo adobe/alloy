@@ -10,9 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop } from "../../utils";
+import { noop, flatMap, isNonEmptyArray } from "../../utils";
 import createPersonalizationDetails from "./createPersonalizationDetails";
 import { AUTHORING_ENABLED } from "./constants/loggerMessage";
+import { PropositionEventType } from "../../constants/propositionEventType";
 import validateApplyPropositionsOptions from "./validateApplyPropositionsOptions";
 
 export default ({
@@ -27,10 +28,13 @@ export default ({
   showContainers,
   applyPropositions,
   setTargetMigration,
-  pendingNotificationsHandler
+  mergeDecisionsMeta,
+  renderedPropositions,
+  onDecisionHandler
 }) => {
   return {
     lifecycle: {
+      onDecision: onDecisionHandler,
       onBeforeRequest({ request }) {
         setTargetMigration(request);
         return Promise.resolve();
@@ -65,9 +69,9 @@ export default ({
           logger
         });
 
-        const handlerPromises = [];
-        if (personalizationDetails.shouldAddPendingDisplayNotifications()) {
-          handlerPromises.push(pendingNotificationsHandler({ event }));
+        const decisionsMetaPromises = [];
+        if (personalizationDetails.shouldIncludeRenderedPropositions()) {
+          decisionsMetaPromises.push(renderedPropositions.clear());
         }
 
         if (personalizationDetails.shouldFetchData()) {
@@ -84,7 +88,7 @@ export default ({
           });
         } else if (personalizationDetails.shouldUseCachedData()) {
           // eslint-disable-next-line consistent-return
-          handlerPromises.push(
+          decisionsMetaPromises.push(
             viewChangeHandler({
               personalizationDetails,
               event,
@@ -93,9 +97,20 @@ export default ({
             })
           );
         }
-        // We can wait for personalization to be applied and for
-        // the fetch data request to complete in parallel.
-        return Promise.all(handlerPromises);
+
+        // This promise.all waits for both the pending display notifications to be resolved
+        // (i.e. the top of page call to finish rendering) and the view change handler to
+        // finish rendering anything for this view.
+        return Promise.all(decisionsMetaPromises).then(decisionsMetas => {
+          // We only want to call mergeDecisionsMeta once, but we can get the propositions
+          // from two places: the pending display notifications and the view change handler.
+          const decisionsMeta = flatMap(decisionsMetas, dms => dms);
+          if (isNonEmptyArray(decisionsMeta)) {
+            mergeDecisionsMeta(event, decisionsMeta, [
+              PropositionEventType.DISPLAY
+            ]);
+          }
+        });
       },
       onClick({ event, clickedElement }) {
         onClickHandler({ event, clickedElement });

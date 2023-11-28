@@ -31,8 +31,9 @@ export default ({ options }) => {
       ).required()
     }).required(),
     personalization: objectOf({
-      sendDisplayNotifications: boolean().default(true)
-    }).default({ sendDisplayNotifications: true })
+      sendDisplayEvent: boolean().default(true),
+      decisionContext: objectOf({})
+    }).default({ sendDisplayEvent: true })
   }).noUnknownFields();
 
   return validator(options);

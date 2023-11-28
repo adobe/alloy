@@ -10,16 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray, isObject } from "../../utils";
-import { DOM_ACTION, HTML_CONTENT_ITEM } from "./constants/schema";
+import { isNonEmptyArray, isObject, defer } from "../../utils";
+import {
+  DOM_ACTION,
+  HTML_CONTENT_ITEM,
+  MESSAGE_IN_APP
+} from "../../constants/schema";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
 
-const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM];
+const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM, MESSAGE_IN_APP];
 
 export default ({
   processPropositions,
   createProposition,
-  pendingDisplayNotifications,
+  renderedPropositions,
   viewCache
 }) => {
   const filterItemsPredicate = item =>
@@ -75,6 +79,11 @@ export default ({
   };
 
   return ({ propositions = [], metadata = {}, viewName }) => {
+    // We need to immediately call concat so that subsequent sendEvent
+    // calls will wait for applyPropositions to complete before executing.
+    const renderedPropositionsDeferred = defer();
+    renderedPropositions.concat(renderedPropositionsDeferred.promise);
+
     const propositionsToExecute = preparePropositions({
       propositions,
       metadata
@@ -93,7 +102,7 @@ export default ({
           ...additionalPropositions
         ]);
 
-        pendingDisplayNotifications.concat(render());
+        render().then(renderedPropositionsDeferred.resolve);
 
         return {
           propositions: returnedPropositions
