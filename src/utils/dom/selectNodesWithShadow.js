@@ -26,7 +26,7 @@ const transformPrefix = (parent, selector) => {
   }
 
   const prefix =
-    parent instanceof Element || parent instanceof HTMLDocument
+    parent instanceof Element || parent instanceof Document
       ? ":scope"
       : ":host"; // see https://bugs.webkit.org/show_bug.cgi?id=233380
 
