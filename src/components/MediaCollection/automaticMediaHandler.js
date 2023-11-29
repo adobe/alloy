@@ -5,7 +5,8 @@ import injectTimestamp from "../Context/injectTimestamp";
 export default ({
   playerCache,
   sendEdgeNetworkRequest,
-  postProcessMediaEvent
+  postProcessMediaEvent,
+  consent
 }) => {
   return ({ xdm, playerId, mediaRequestPayload, request }) => {
     const player = playerCache.get(playerId);
@@ -37,10 +38,12 @@ export default ({
       timestamp(event.xdm);
 
       mediaRequestPayload.addEvent(event);
-      postProcessMediaEvent({ playerId, xdm });
-      return sendEdgeNetworkRequest({ request }).then(() => {
-        playerCache.updateLastTriggeredEventTS({ playerId });
-        return {};
+      return consent.awaitConsent().then(() => {
+        sendEdgeNetworkRequest({ request }).then(() => {
+          playerCache.updateLastTriggeredEventTS({ playerId });
+          postProcessMediaEvent({ playerId, xdm });
+          return {};
+        });
       });
     });
   };

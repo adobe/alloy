@@ -67,13 +67,13 @@ const createMediaDetailsObject = ({ eventType, info, context }) => {
   return mediaDetails;
 };
 
-const createHeartbeat = ({ frequency, playerState, trackEvent }) => {
+const createHeartbeat = ({ mainPingInterval, playerState, trackEvent }) => {
   // eslint-disable-next-line consistent-return
   return () => {
     const currentTime = Date.now();
     if (
       Math.abs(currentTime - playerState.latestTriggeredEvent) / 1000 >
-      frequency
+      mainPingInterval
     ) {
       return trackEvent({ eventType: "ping" });
     }
@@ -86,8 +86,8 @@ const createGetInstance = ({
   getMediaSession,
   trackMediaEvent
 }) => {
-  const { mediaAnalytics } = config;
-  const frequency = mediaAnalytics.mainPingInterval;
+  const mediaCollectionConfig = config.mediaCollection;
+  const { mainPingInterval } = mediaCollectionConfig;
   const trackerState = {
     qoe: null,
     lastPlayhead: 0,
@@ -122,7 +122,7 @@ const createGetInstance = ({
   };
 
   const heartbeatEngine = createHeartbeat({
-    frequency,
+    mainPingInterval,
     deferSession,
     playerState: trackerState,
     trackEvent
@@ -150,7 +150,6 @@ const createGetInstance = ({
       );
       return getMediaSession({
         xdm: {
-          eventType: "media.sessionStart",
           mediaCollection
         }
       }).then(result => {
@@ -207,7 +206,6 @@ const createGetInstance = ({
       });
     },
     updatePlayhead: time => {
-      // no event should be triggered to the MA edge
       if (isNumber(time)) {
         trackerState.lastPlayhead = parseInt(time, 10);
       }
@@ -221,7 +219,7 @@ const createGetInstance = ({
     destroy: () => {
       logger.info("Destroy called, destroying the tracker");
       clearInterval(ticker);
-      deferSession = null; // how to stop the tracker
+      deferSession = null;
     }
   };
 };

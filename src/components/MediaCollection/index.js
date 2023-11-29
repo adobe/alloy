@@ -21,27 +21,29 @@ import automaticMediaSessionHandler from "./automaticMediaSessionHandler";
 import createMediaEventProcesor from "./createMediaEventProcesor";
 import automaticMediaHandler from "./automaticMediaHandler";
 
-const createMediaAnalytics = ({
+const createMediaCollection = ({
   config,
   logger,
   eventManager,
-  sendEdgeNetworkRequest
+  sendEdgeNetworkRequest,
+  consent
 }) => {
   const playerCache = createPlayerCacheManager();
   const postProcessMediaEvent = createMediaEventProcesor({
-    playerCache,
-    config
+    playerCache
   });
   const handleMediaEventAutomatically = automaticMediaHandler({
     playerCache,
     sendEdgeNetworkRequest,
-    postProcessMediaEvent
+    postProcessMediaEvent,
+    consent
   });
   const trackMediaEvent = createTrackMediaEvent({
     sendEdgeNetworkRequest,
     handleMediaEventAutomatically,
     config,
-    logger
+    logger,
+    consent
   });
   const heartbeatTicker = createHeartbeatTicker({
     config,
@@ -87,10 +89,10 @@ const createMediaAnalytics = ({
   };
 };
 
-createMediaAnalytics.namespace = "Media Analytics";
+createMediaCollection.namespace = "Media Data Collection";
 
-createMediaAnalytics.configValidators = objectOf({
-  mediaAnalytics: objectOf({
+createMediaCollection.configValidators = objectOf({
+  mediaCollection: objectOf({
     channel: string()
       .nonEmpty()
       .required(),
@@ -98,14 +100,14 @@ createMediaAnalytics.configValidators = objectOf({
       .nonEmpty()
       .required(),
     version: string().nonEmpty(),
-    mainPingInterval: number() // maxim 60 sec
+    mainPingInterval: number()
       .minimum(10)
       .maximum(60)
       .default(10),
-    adPingInterval: number() // 10 default - mobile maxim - 60 sec
+    adPingInterval: number()
       .minimum(10)
       .maximum(60)
       .default(10)
   })
 });
-export default createMediaAnalytics;
+export default createMediaCollection;

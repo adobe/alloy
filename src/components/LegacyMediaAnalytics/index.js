@@ -1,6 +1,6 @@
 import { createMediaAnalyticsTracker } from "./createMediaAnalyticsTracker";
-import createGetMediaSession from "../MediaAnalytics/createGetMediaSession";
-import createTrackMediaEvent from "../MediaAnalytics/createTrackMediaEvent";
+import createGetMediaSession from "../MediaCollection/createGetMediaSession";
+import createTrackMediaEvent from "../MediaCollection/createTrackMediaEvent";
 
 const createLegacyMediaAnalytics = ({
   eventManager,

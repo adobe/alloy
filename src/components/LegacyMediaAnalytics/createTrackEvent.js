@@ -1,6 +1,6 @@
 import createMediaRequestPayload from "./createMediaRequestPayload";
-import createMediaRequest from "../MediaAnalytics/createMediaRequest";
-import createMediaEvent from "./createMediaEvent";
+import createMediaRequest from "../MediaCollection/createMediaRequest";
+import injectTimestamp from "../Context/injectTimestamp";
 
 const createEventType = type => {
   return `media.${type}`;
@@ -14,17 +14,18 @@ export default ({ deferSession, sendEdgeNetworkRequest, trackerState }) => {
 
     const eventType = createEventType(type);
     return deferSession.promise.then(sessionID => {
-      const mediaCollection = {
-        playhead,
-        sessionID,
-        ...mediaDetails
-      };
-      const event = createMediaEvent({
+      const xdm = {
         eventType,
-        mediaCollection
-      });
+        mediaCollection: {
+          playhead,
+          sessionID,
+          ...mediaDetails
+        }
+      };
+      const timestamp = injectTimestamp(() => new Date());
+      timestamp(xdm);
 
-      mediaRequestPayload.addEvent(event);
+      mediaRequestPayload.addEvent({ xdm });
       trackerState.latestTriggeredEvent = Date.now();
       return sendEdgeNetworkRequest({ request });
     });

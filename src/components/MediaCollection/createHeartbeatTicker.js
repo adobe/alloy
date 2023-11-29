@@ -3,7 +3,7 @@ export default ({ config, trackMediaEvent, playerCache }) => {
     const currentTime = Date.now();
     const player = playerCache.get(playerId);
     const { onBeforeMediaEvent } = player;
-    const { mainPingInterval } = config.mediaAnalytics;
+    const { mainPingInterval } = config.mediaCollection;
 
     if (
       Math.abs(currentTime - player.latestTriggeredEvent) / 1000 >

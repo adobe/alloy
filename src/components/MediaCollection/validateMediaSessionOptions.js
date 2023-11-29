@@ -21,7 +21,6 @@ export default ({ options }) => {
       }).required(),
       objectOf({
         xdm: objectOf({
-          eventType: string().required(),
           mediaCollection: objectOf({
             playhead: number().required(),
             sessionDetails: objectOf(anything()).required()

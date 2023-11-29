@@ -72,71 +72,24 @@
     </script>
     <script nonce="%REACT_APP_NONCE%">
       alloy("configure", {
-        mediaAnalytics: { // adobeStreamingMedia
+        mediaCollection: { // adobeStreamingMedia
           // need to move these at session creation command
           channel: "video channel",
           playerName: "ninas player",
           version: "alloy 2.16.0" // not required
         },
-        defaultConsent: getUrlParameter("defaultConsent") || "in",
-        edgeDomain:
-          location.host.indexOf("alloyio.com") !== -1
-            ? "firstparty.alloyio.com"
-            : undefined,
-        edgeBasePath: getUrlParameter("edgeBasePath") || "ee",
+        defaultConsent: "in",
+        edgeBasePath: "ee",
         edgeConfigId: "27dae196-8c75-4eed-82d1-3895616f85d6",
         orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg", // UnifiedJS
         debugEnabled: true,
-        idMigrationEnabled: !(
-          getUrlParameter("idMigrationEnabled") === "false"
-        ),
         prehidingStyle: ".personalization-container { opacity: 0 !important }",
         onBeforeEventSend: function(options) {
-          const xdm = options.xdm;
-          const data = options.data;
-          const titleParam = getUrlParameter("title");
-          if (titleParam) {
-            xdm.web.webPageDetails.name = titleParam;
-          }
-          const campaignParam = getUrlParameter("campaign");
-          if (campaignParam) {
-            data.campaign = campaignParam;
-          }
-          return true;
-        },
-        onBeforeLinkClickSend: function(options) {
-          console.log("options", options);
-          // options.linkElement
-          // options.xdm
-          // options.data
-
-          const xdm = options.xdm;
-          const data = options.data;
-          const { webInteraction } = xdm.web;
-
-          if (webInteraction.name === "Large Payload") {
-            xdm.web.webInteraction.name = "changed link name";
-            data.custom = "custom field for changed link name";
-
-            return true;
-          }
-
-          if (webInteraction.name === "Personalization") {
-            return false;
-          }
-
-          if (webInteraction.URL === "https://alloyio.com/download.zip") {
-            return false;
-          }
-
-          return true;
-        },
-        targetMigrationEnabled: true,
-        clickCollectionEnabled: true
+          console.log("onBeforeEEveeent", options);
+        }
       });
     </script>
     <script src="video-player-1.js"></script>
-
     <script src="video-player-2.js"></script>
     <script src="video-player-3.js"></script>
 

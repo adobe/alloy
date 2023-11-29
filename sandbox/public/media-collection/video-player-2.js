@@ -1,6 +1,7 @@
-const createVideoPlayer = videoPlayerId => {
-  const videoPlayer = document.getElementById(videoPlayerId);
-  const playerSettings = {
+const createSecondVideoPlayer = secondVideoPlayerId => {
+  const secondVideoPlayer = document.getElementById(secondVideoPlayerId);
+
+  const secondPlayerSettings = {
     playerName: "samplePlayerName",
     videoId: "123",
     videoName: "",
@@ -8,19 +9,19 @@ const createVideoPlayer = videoPlayerId => {
     clock: null
   };
 
-  return { playerSettings, videoPlayer };
+  return { secondPlayerSettings, secondVideoPlayer };
 };
-
-const getVideoPlayedPlayhead = videoPlayer => {
-  return videoPlayer.currentTime;
+const getDemoVideoPlayedPlayhead = secondVideoPlayer => {
+  return secondVideoPlayer.currentTime;
 };
-const createAddSampleEventsBasedOnPlayhead = videoPlayer => {
+const createSecondSampleEventsBasedOnPlayhead = ({
+  secondVideoPlayer,
+  sessionId
+}) => {
   return () => {
-    const playhead = getVideoPlayedPlayhead(videoPlayer);
+    const playhead = getDemoVideoPlayedPlayhead(secondVideoPlayer);
     if (playhead > 1 && playhead < 2) {
-      console.log("chapter start");
       window.alloy("sendMediaEvent", {
-        playerId: "episode-1",
         xdm: {
           eventType: "media.chapterStart",
           mediaCollection: {
@@ -29,7 +30,9 @@ const createAddSampleEventsBasedOnPlayhead = videoPlayer => {
               length: 20,
               index: 1,
               offset: 0
-            }
+            },
+            sessionID: sessionId,
+            playhead: parseInt(playhead, 10)
           }
         }
       });
@@ -37,29 +40,30 @@ const createAddSampleEventsBasedOnPlayhead = videoPlayer => {
 
     if (playhead > 20 && playhead < 21) {
       window.alloy("sendMediaEvent", {
-        playerId: "episode-1",
         xdm: {
-          eventType: "media.chapterComplete"
+          eventType: "media.chapterComplete",
+          mediaCollection: {
+            sessionID: sessionId,
+            playhead: parseInt(playhead, 10)
+          }
         }
       });
     }
 
     if (playhead > 21 && playhead < 22) {
       window.alloy("sendMediaEvent", {
-        playerId: "episode-1",
-        xdm: {
-          eventType: "media.adBreakStart",
-          mediaCollection: {
-            advertisingPodDetails: {
-              friendlyName: "Mid-roll",
-              offset: 0,
-              index: 1
-            }
-          }
+        eventType: "media.adBreakStart",
+        mediaCollection: {
+          advertisingPodDetails: {
+            friendlyName: "Mid-roll",
+            offset: 0,
+            index: 1
+          },
+          sessionID: sessionId,
+          playhead: parseInt(playhead, 10)
         }
       });
       window.alloy("sendMediaEvent", {
-        playerId: "episode-1",
         xdm: {
           eventType: "media.adStart",
           mediaCollection: {
@@ -75,7 +79,9 @@ const createAddSampleEventsBasedOnPlayhead = videoPlayer => {
               siteID: "siteID",
               podPosition: 11,
               playerName: "HTML5 player" // ?? why do we have it here as well? same as the one from session start event?
-            }
+            },
+            sessionID: sessionId,
+            playhead: parseInt(playhead, 10)
           }
         }
       });
@@ -83,16 +89,18 @@ const createAddSampleEventsBasedOnPlayhead = videoPlayer => {
 
     if (playhead > 25 && playhead < 26) {
       window.alloy("sendMediaEvent", {
-        playerId: "episode-1",
         xdm: {
-          eventType: "media.adComplete"
+          eventType: "media.adComplete",
+          mediaCollection: {
+            sessionID: sessionId,
+            playhead: parseInt(playhead, 10)
+          }
         }
       });
     }
 
     if (playhead > 26 && playhead < 27) {
       window.alloy("sendMediaEvent", {
-        playerId: "episode-1",
         xdm: {
           eventType: "media.adStart",
           mediaCollection: {
@@ -108,7 +116,9 @@ const createAddSampleEventsBasedOnPlayhead = videoPlayer => {
               siteID: "siteID",
               podPosition: 17,
               playerName: "HTML5 player" // ?? why do we have it here as well? same as the one from session start event?
-            }
+            },
+            sessionID: sessionId,
+            playhead: parseInt(playhead, 10)
           }
         }
       });
@@ -116,22 +126,27 @@ const createAddSampleEventsBasedOnPlayhead = videoPlayer => {
 
     if (playhead > 29 && playhead < 30) {
       window.alloy("sendMediaEvent", {
-        playerId: "episode-1",
         xdm: {
-          eventType: "media.adSkip"
+          eventType: "media.adSkip",
+          mediaCollection: {
+            sessionID: sessionId,
+            playhead: parseInt(playhead, 10)
+          }
         }
       });
       window.alloy("sendMediaEvent", {
-        playerId: "episode-1",
         xdm: {
-          eventType: "media.adBreakComplete"
+          eventType: "media.adBreakComplete",
+          mediaCollection: {
+            sessionID: sessionId,
+            playhead: parseInt(playhead, 10)
+          }
         }
       });
     }
 
     if (playhead > 30 && playhead < 31) {
       window.alloy("sendMediaEvent", {
-        playerId: "episode-1",
         xdm: {
           eventType: "media.chapterStart",
           mediaCollection: {
@@ -140,7 +155,9 @@ const createAddSampleEventsBasedOnPlayhead = videoPlayer => {
               length: 30,
               index: 2,
               offset: 0
-            }
+            },
+            sessionID: sessionId,
+            playhead: parseInt(playhead, 10)
           }
         }
       });
@@ -148,23 +165,27 @@ const createAddSampleEventsBasedOnPlayhead = videoPlayer => {
 
     if (playhead > 59 && playhead < 60) {
       window.alloy("sendMediaEvent", {
-        playerId: "episode-1",
         xdm: {
-          eventType: "media.chapterComplete"
+          eventType: "media.chapterComplete",
+          mediaCollection: {
+            sessionID: sessionId,
+            playhead: parseInt(playhead, 10)
+          }
         }
       });
     }
   };
 };
 document.addEventListener("DOMContentLoaded", async function(event) {
-  const { playerSettings, videoPlayer } = createVideoPlayer("media-movie");
+  const { secondPlayerSettings, secondVideoPlayer } = createSecondVideoPlayer(
+    "media-second-movie"
+  );
 
   let sessionPromise;
-  videoPlayer.addEventListener("playing", function() {
-    if (!playerSettings.videoLoaded) {
+  secondVideoPlayer.addEventListener("playing", function() {
+    if (!secondPlayerSettings.videoLoaded) {
       sessionPromise = window
         .alloy("createMediaSession", {
-          playerId: "episode-1", // unique identifier
           xdm: {
             eventType: "media.sessionStart",
             mediaCollection: {
@@ -199,74 +220,79 @@ document.addEventListener("DOMContentLoaded", async function(event) {
                 contentType: "VOD",
                 feed: "sourceFeed",
                 network: "test-network"
-              }
+              },
+              playhead: 0
             }
-          },
-          onBeforeMediaEvent: () => {
-            const getPlayhead = getVideoPlayedPlayhead(videoPlayer);
-            return {
-              playhead: getPlayhead
-            };
           }
         })
-        .then(sessionId => {
-          const sampleDemoEventTriggerer = createAddSampleEventsBasedOnPlayhead(
-            videoPlayer
-          );
-          playerSettings.clock = setInterval(sampleDemoEventTriggerer, 1000);
-          console.log("session Id", sessionId);
-          return sessionId;
-        });
-
-      sessionPromise
         .then(result => {
-          console.log("sessionPromise result", result);
+          const { sessionId } = result;
+          const sampleDemoEventTriggerer = createSecondSampleEventsBasedOnPlayhead(
+            { secondVideoPlayer, sessionId }
+          );
+          secondPlayerSettings.clock = setInterval(
+            sampleDemoEventTriggerer,
+            1000
+          );
+          return sessionId;
         })
         .catch(error => {
           console.log("error", error);
         });
-      playerSettings.videoLoaded = true;
+
+      secondPlayerSettings.videoLoaded = true;
     }
 
-    window.alloy("sendMediaEvent", {
-      playerId: "episode-1",
-      xdm: {
-        eventType: "media.play"
-      }
-    });
-  });
-  videoPlayer.addEventListener("seeking", function() {
-    console.log("seeking", videoPlayer);
-  });
-  videoPlayer.addEventListener("seeked", function() {
-    console.log("seeked", videoPlayer);
-  });
-  videoPlayer.addEventListener("pause", function() {
-    // console.log("pause", videoPlayer, session);
-    // session.then(result => {
-    window.alloy("sendMediaEvent", {
-      playerId: "episode-1",
-      xdm: {
-        eventType: "media.pauseStart"
-      }
-    });
-    // });
-  });
-  videoPlayer.addEventListener("ended", function() {
-    // session.then(result => {
-    window
-      .alloy("sendMediaEvent", {
-        playerId: "episode-1",
+    sessionPromise.then(sessionId => {
+      window.alloy("sendMediaEvent", {
         xdm: {
-          eventType: "media.sessionComplete"
+          eventType: "media.play",
+          mediaCollection: {
+            playhead: parseInt(getDemoVideoPlayedPlayhead(this), 10),
+            sessionID: sessionId
+          }
         }
-      })
-      .then(result => {
-        console.log("sessionComplete result", result);
       });
+    });
+  });
 
+  secondVideoPlayer.addEventListener("seeking", function() {
+    console.log("seeking", secondVideoPlayer);
+  });
+  secondVideoPlayer.addEventListener("seeked", function() {
+    console.log("seeked", secondVideoPlayer);
+  });
+  secondVideoPlayer.addEventListener("pause", function() {
+    sessionPromise.then(sessionId => {
+      window.alloy("sendMediaEvent", {
+        xdm: {
+          eventType: "media.pauseStart",
+          mediaCollection: {
+            playhead: getDemoVideoPlayedPlayhead(this),
+            sessionID: sessionId
+          }
+        }
+      });
+    });
+  });
+  secondVideoPlayer.addEventListener("ended", function() {
+    sessionPromise.then(sessionId => {
+      window
+        .alloy("sendMediaEvent", {
+          xdm: {
+            eventType: "media.sessionComplete",
+            mediaCollection: {
+              playhead: parseInt(getDemoVideoPlayedPlayhead(this), 10),
+              sessionID: sessionId
+            }
+          }
+        })
+        .then(result => {
+          console.log("sessionComplete result", result);
+        });
+    });
     // reset player state
-    clearInterval(playerSettings.clock);
-    playerSettings.videoLoaded = false;
+    clearInterval(secondPlayerSettings.clock);
+    secondPlayerSettings.videoLoaded = false;
   });
 });

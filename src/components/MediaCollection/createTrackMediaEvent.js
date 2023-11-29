@@ -10,10 +10,11 @@ export default ({
   sendEdgeNetworkRequest,
   handleMediaEventAutomatically,
   config,
-  logger
+  logger,
+  consent
 }) => {
   return options => {
-    if (!config.mediaAnalytics) {
+    if (!config.mediaCollection) {
       logger.info("Media Analytics was not configured.");
       return Promise.reject(new Error("Media Analytics was not configured."));
     }
@@ -25,7 +26,7 @@ export default ({
       action
     });
 
-    if (playerId && handleMediaEventAutomatically) {
+    if (playerId) {
       return handleMediaEventAutomatically({
         xdm,
         playerId,
@@ -39,8 +40,10 @@ export default ({
     timestamp(event.xdm);
     mediaRequestPayload.addEvent(event);
 
-    return sendEdgeNetworkRequest({ request }).then(() => {
-      return {};
+    return consent.awaitConsent().then(() => {
+      sendEdgeNetworkRequest({ request }).then(() => {
+        return {};
+      });
     });
   };
 };

@@ -23,7 +23,6 @@ export const mediaToXdmKeys = {
   "a.media.station": "station",
   "a.media.publisher": "publisher",
   "media.resumed": "hasResume"
-  // "media.granularadtracking": "" ?? TODO: add correct mapping
 };
 
 export const adsToXdmKeys = {
