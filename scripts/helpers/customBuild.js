@@ -38,16 +38,14 @@ const formattedComponentNames = componentNames.map(name => ({
   filePath: name.slice(6)
 }));
 
-const untouchableComponent = [
-  "context",
-  "privacy",
-  "identity",
-  "datacollector",
-  "libraryinfo"
-];
+// Extract required components from componentCreatorsContent
+const requiredComponents = componentCreatorsContent
+  .match(/REQUIRED_COMPONENTS = \[[\s\S]*?\]/)[0]
+  .match(/create[A-Z]\w+/g)
+  .map(component => component.slice(6).toLowerCase());
 
 const argv = yargs(hideBin(process.argv))
-  .scriptName("custom-builder")
+  .scriptName("build:custom")
   .usage(
     `$0 --exclude ${formattedComponentNames
       .map(component => component.name)
@@ -62,7 +60,7 @@ const argv = yargs(hideBin(process.argv))
   // eslint-disable-next-line no-shadow
   .check(argv => {
     const forbiddenExclusions = (argv.exclude || []).filter(component =>
-      untouchableComponent.includes(component)
+      requiredComponents.includes(component)
     );
     if (forbiddenExclusions.length > 0) {
       throw new Error(
@@ -78,7 +76,7 @@ if (!argv.exclude) {
   console.log(
     `Looks like you're trying to build without excluding any components, try running "npm run custom:build -- --exclude personalization". Your choices are: ${formattedComponentNames
       .map(component => component.name)
-      .filter(name => !untouchableComponent.includes(name))
+      .filter(name => !requiredComponents.includes(name))
       .join(", ")}`
   );
   process.exit(0);

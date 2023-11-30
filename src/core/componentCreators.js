@@ -29,19 +29,23 @@ import createDecisioningEngine from "../components/DecisioningEngine";
 /* @skipwhen ENV.alloy_machinelearning === false */
 import createMachineLearning from "../components/MachineLearning";
 
-// TODO: Register the Components here statically for now. They might be registered differently.
-// TODO: Figure out how sub-components will be made available/registered
+export const REQUIRED_COMPONENTS = [
+  createContext,
+  createPrivacy,
+  createIdentity,
+  createDataCollector,
+  createLibraryInfo
+];
 
-export default [
+export const OPTIONAL_COMPONENTS = [
   createDataCollector,
   createActivityCollector,
   createIdentity,
   createAudiences,
   createPersonalization,
-  createContext,
-  createPrivacy,
   createEventMerge,
-  createLibraryInfo,
   createMachineLearning,
   createDecisioningEngine
 ];
+
+export default [...REQUIRED_COMPONENTS, ...OPTIONAL_COMPONENTS];
