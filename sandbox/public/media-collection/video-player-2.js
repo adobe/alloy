@@ -268,7 +268,7 @@ document.addEventListener("DOMContentLoaded", async function(event) {
         xdm: {
           eventType: "media.pauseStart",
           mediaCollection: {
-            playhead: getDemoVideoPlayedPlayhead(this),
+            playhead: parseInt(getDemoVideoPlayedPlayhead(this), 10),
             sessionID: sessionId
           }
         }

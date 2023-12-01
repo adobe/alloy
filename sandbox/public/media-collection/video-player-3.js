@@ -114,6 +114,8 @@ document.addEventListener("DOMContentLoaded", async function(event) {
       contextData[Media.VideoMetadataKeys.Show] = "Sample Show";
 
       trackerInstance.trackSessionStart(mediaInfo, contextData);
+      trackerInstance.trackEvent(Media.Event.BufferStart);
+      trackerInstance.trackEvent(Media.Event.BufferComplete);
 
       thirdPlayerSettings.videoLoaded = true;
 
