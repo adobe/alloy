@@ -12,13 +12,13 @@ governing permissions and limitations under the License.
 
 import { string, number, objectOf } from "../../utils/validation";
 import createTrackMediaEvent from "./createTrackMediaEvent";
-import createPlayerCacheManager from "./createPlayerCacheManager";
+import createPlayerCacheManager from "./createPlayerCache";
 import validateMediaEventOptions from "./validateMediaEventOptions";
 import validateSessionOptions from "./validateMediaSessionOptions";
 import createGetMediaSession from "./createGetMediaSession";
 import createHeartbeatTicker from "./createHeartbeatTicker";
 import automaticMediaSessionHandler from "./automaticMediaSessionHandler";
-import createMediaEventProcesor from "./createMediaEventProcesor";
+import createMediaEventProcesor from "./createMediaEventProcessor";
 import automaticMediaHandler from "./automaticMediaHandler";
 
 const createMediaCollection = ({
@@ -65,7 +65,7 @@ const createMediaCollection = ({
     lifecycle: {
       onResponse({ response }) {
         const sessionId = response.getPayloadsByType(
-          "media-analytics:new-session"
+          "media-collection:new-session"
         );
         logger.info("MA session ID returned: ", sessionId);
 
@@ -89,7 +89,7 @@ const createMediaCollection = ({
   };
 };
 
-createMediaCollection.namespace = "Media Data Collection";
+createMediaCollection.namespace = "Media Collection";
 
 createMediaCollection.configValidators = objectOf({
   mediaCollection: objectOf({

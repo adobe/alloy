@@ -1,4 +1,4 @@
-import MediaEvents from "./MediaConstants/MediaEvents";
+import MediaEvents from "./MediaConstants/mediaEvents";
 
 export default ({ config, eventManager, automaticSessionHandler, logger }) => {
   return options => {

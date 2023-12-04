@@ -1,4 +1,4 @@
-import MediaEvents from "./MediaConstants/MediaEvents";
+import MediaEvents from "./MediaConstants/mediaEvents";
 
 export default ({ playerCache }) => {
   return ({ playerId, xdm }) => {
