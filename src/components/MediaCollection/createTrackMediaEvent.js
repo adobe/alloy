@@ -15,8 +15,8 @@ export default ({
 }) => {
   return options => {
     if (!config.mediaCollection) {
-      logger.info("Media Analytics was not configured.");
-      return Promise.reject(new Error("Media Analytics was not configured."));
+      logger.info("Media Collection was not configured.");
+      return Promise.reject(new Error("Media Collection was not configured."));
     }
     const { xdm, playerId } = options;
     const mediaRequestPayload = createMediaRequestPayload();

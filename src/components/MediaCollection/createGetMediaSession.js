@@ -3,9 +3,9 @@ import MediaEvents from "./MediaConstants/MediaEvents";
 export default ({ config, eventManager, automaticSessionHandler, logger }) => {
   return options => {
     if (!config.mediaCollection) {
-      logger.info("Media Analytics was not configured.");
+      logger.info("Media Collection was not configured.");
 
-      return Promise.reject(new Error("Media Analytics was not configured."));
+      return Promise.reject(new Error("Media Collection was not configured."));
     }
     const { playerName, channel, version } = config.mediaCollection;
 
