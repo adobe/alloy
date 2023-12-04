@@ -29,7 +29,7 @@ import createDecisioningEngine from "../components/DecisioningEngine";
 /* @skipwhen ENV.alloy_machinelearning === false */
 import createMachineLearning from "../components/MachineLearning";
 
-export const REQUIRED_COMPONENTS = [
+const REQUIRED_COMPONENTS = [
   createContext,
   createPrivacy,
   createIdentity,
@@ -37,7 +37,7 @@ export const REQUIRED_COMPONENTS = [
   createLibraryInfo
 ];
 
-export const OPTIONAL_COMPONENTS = [
+const OPTIONAL_COMPONENTS = [
   createDataCollector,
   createActivityCollector,
   createIdentity,
@@ -48,4 +48,9 @@ export const OPTIONAL_COMPONENTS = [
   createDecisioningEngine
 ];
 
-export default [...REQUIRED_COMPONENTS, ...OPTIONAL_COMPONENTS];
+const componentCreators = {
+  REQUIRED_COMPONENTS,
+  OPTIONAL_COMPONENTS
+};
+
+export default componentCreators;
