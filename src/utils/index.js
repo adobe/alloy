@@ -52,6 +52,7 @@ export { default as isObject } from "./isObject";
 export { default as isString } from "./isString";
 export { default as memoize } from "./memoize";
 export { default as noop } from "./noop";
+export { default as noopPromise } from "./noopPromise";
 export { default as padStart } from "./padStart";
 export { default as parseUrl } from "./parseUrl";
 export { default as prepareConfigOverridesForEdge } from "./prepareConfigOverridesForEdge";

@@ -12,12 +12,12 @@ governing permissions and limitations under the License.
 
 import createInstanceFunction from "./createInstanceFunction";
 import {
-  getApexDomain,
-  injectStorage,
   cookieJar,
-  isFunction,
   createLoggingCookieJar,
-  injectFireReferrerHideableImage
+  getApexDomain,
+  injectFireReferrerHideableImage,
+  injectStorage,
+  isFunction
 } from "../utils";
 import createLogController from "./createLogController";
 import createLifecycle from "./createLifecycle";
@@ -54,6 +54,7 @@ import injectGetLocationHint from "./edgeNetwork/injectGetLocationHint";
 import isRequestRetryable from "./network/isRequestRetryable";
 import getRequestRetryDelay from "./network/getRequestRetryDelay";
 import injectApplyResponse from "./edgeNetwork/injectApplyResponse";
+import createAtjs from "../atjs/createAtjs";
 
 const createNamespacedStorage = injectStorage(window);
 
@@ -205,6 +206,7 @@ export const createExecuteCommand = ({
 export default () => {
   // eslint-disable-next-line no-underscore-dangle
   const instanceNames = window.__alloyNS;
+  const atjs = createAtjs(window);
 
   if (instanceNames) {
     instanceNames.forEach(instanceName => {
@@ -217,11 +219,14 @@ export default () => {
         getMonitors
       });
 
+      atjs.configure(instanceName);
+
       const executeCommand = createExecuteCommand({
         instanceName,
         logController
       });
       const instance = createInstanceFunction(executeCommand);
+      atjs.init();
 
       const queue = window[instanceName].q;
       queue.push = instance;
