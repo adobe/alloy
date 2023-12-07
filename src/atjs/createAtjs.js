@@ -14,16 +14,28 @@ import configure from "./configure";
 import getSettings from "./getSettings";
 import translateToDeliveryResponse from "./translateToDeliveryResponse";
 import translateDeliveryRequest from "./translateDeliveryRequest";
+import createPropositionCache from "./createPropositionCache";
 
 export default win => {
+  const propositionCache = createPropositionCache();
   let alloyInstance;
 
   const settings = getSettings(win);
 
   const getOffers = options => {
-    return alloyInstance("sendEvent", translateDeliveryRequest(options)).then(
-      translateToDeliveryResponse
-    );
+    return alloyInstance(
+      "sendEvent",
+      translateDeliveryRequest(options, propositionCache)
+    )
+      .then(propositionCache.storePropositions)
+      .then(translateToDeliveryResponse);
+  };
+
+  const sendNotifications = options => {
+    return alloyInstance(
+      "sendEvent",
+      translateDeliveryRequest(options, propositionCache)
+    ).then(translateToDeliveryResponse);
   };
 
   const triggerView = viewName => {
@@ -49,7 +61,7 @@ export default win => {
     getOffers,
     applyOffer: noop,
     applyOffers: noopPromise,
-    sendNotifications: noop,
+    sendNotifications,
     trackEvent: noop,
     triggerView,
     registerExtension: noop,
