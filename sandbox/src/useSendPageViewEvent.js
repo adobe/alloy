@@ -19,7 +19,7 @@ export default ({
   viewName,
   data = {},
   xdm = {},
-  decisionScopes = ["test-nina-mbox"],
+  decisionScopes,
   setPropositions
 } = {}) => {
   useEffect(() => {
