@@ -12,15 +12,13 @@ const createThirdVideoPlayer = thirdVideoPlayerId => {
   return { thirdPlayerSettings, thirdVideoPlayer };
 };
 
-function createAddSampleEventsBasedOnVideoPlayhead({
+const createAddSampleEventsBasedOnVideoPlayhead = ({
   trackerInstance,
   Media,
   videoPlayer
-}) {
+}) => {
   const playhead = videoPlayer.currentTime;
   if (playhead > 1 && playhead < 2) {
-    console.log("chapter start");
-
     const chapterContextData = {
       segmentType: "Sample segment type"
     };
@@ -90,10 +88,6 @@ document.addEventListener("DOMContentLoaded", async function(event) {
   const trackerInstance = Media.getInstance();
 
   thirdVideoPlayer.addEventListener("playing", function() {
-    console.log(
-      "here is the player that will use legacy media analytics",
-      thirdVideoPlayer
-    );
     if (!thirdPlayerSettings.videoLoaded) {
       const mediaInfo = Media.createMediaObject(
         "NinasVideoName",

@@ -1,3 +1,15 @@
+/*
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
 import defer from "../../utils/defer";
 import {
   AdMetadataKeys,
@@ -80,14 +92,9 @@ const createHeartbeat = ({ mainPingInterval, playerState, trackEvent }) => {
   };
 };
 
-const createGetInstance = ({
-  config,
-  logger,
-  getMediaSession,
-  trackMediaEvent
-}) => {
-  const mediaCollectionConfig = config.mediaCollection;
-  const { mainPingInterval } = mediaCollectionConfig;
+const createGetInstance = ({ config, logger, mediaEventManager }) => {
+  const { mainPingInterval } = config.mediaCollection;
+
   const trackerState = {
     qoe: null,
     lastPlayhead: 0,
@@ -99,20 +106,26 @@ const createGetInstance = ({
   const updateLastTimeEventTriggered = () => {
     trackerState.latestTriggeredEvent = Date.now();
   };
+  const getEventType = ({ eventType }) => {
+    if (eventType === Event.BufferComplete) {
+      return `media.${Event.Play}`;
+    }
+    return `media.${eventType}`;
+  };
 
   const trackEvent = ({ eventType, mediaDetails }) => {
     return deferSession.promise
       .then(sessionID => {
         const xdm = {
-          eventType: `media.${eventType}`,
+          eventType: getEventType({ eventType }),
           mediaCollection: {
             sessionID,
             playhead: trackerState.lastPlayhead
           }
         };
         deepAssign(xdm.mediaCollection, mediaDetails);
-
-        return trackMediaEvent({ xdm }).then(() => {
+        const event = mediaEventManager.createMediaEvent({ options: { xdm } });
+        return mediaEventManager.trackMediaEvent({ event }).then(() => {
           updateLastTimeEventTriggered();
         });
       })
@@ -134,6 +147,7 @@ const createGetInstance = ({
         deferSession.reject("invalid media object");
         return {};
       }
+
       const mediaCollection = {
         playhead: 0
       };
@@ -148,18 +162,24 @@ const createGetInstance = ({
         { sessionDetails },
         { customMetadata }
       );
-      return getMediaSession({
+      const event = mediaEventManager.createMediaSession({
         xdm: {
           mediaCollection
         }
-      }).then(result => {
-        updateLastTimeEventTriggered();
-        deferSession.resolve(result.sessionId);
-
-        ticker = setInterval(() => {
-          heartbeatEngine();
-        }, 1000);
       });
+
+      return mediaEventManager
+        .trackMediaSession({
+          event
+        })
+        .then(result => {
+          updateLastTimeEventTriggered();
+          deferSession.resolve(result.sessionId);
+
+          ticker = setInterval(() => {
+            heartbeatEngine();
+          }, 1000);
+        });
     },
     trackPlay: () => {
       return trackEvent({ eventType: Event.Play });
@@ -227,8 +247,7 @@ const createGetInstance = ({
 export const createMediaAnalyticsTracker = ({
   config,
   logger,
-  getMediaSession,
-  trackMediaEvent
+  mediaEventManager
 }) => {
   logger.info("Media Analytics Component was configured");
 
@@ -237,8 +256,7 @@ export const createMediaAnalyticsTracker = ({
       return createGetInstance({
         config,
         logger,
-        getMediaSession,
-        trackMediaEvent
+        mediaEventManager
       });
     },
     Event,

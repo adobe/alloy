@@ -25,7 +25,7 @@ export default ({ options }) => {
         xdm: objectOf({
           eventType: string().required(),
           mediaCollection: objectOf(anything())
-        })
+        }).required()
       }).required(),
       objectOf({
         xdm: objectOf({
@@ -36,7 +36,7 @@ export default ({ options }) => {
               .required(),
             sessionID: string().required()
           })
-        })
+        }).required()
       }).required()
     ],
     "Error validating the sendMediaEvent command options."

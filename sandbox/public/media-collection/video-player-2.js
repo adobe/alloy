@@ -52,15 +52,17 @@ const createSecondSampleEventsBasedOnPlayhead = ({
 
     if (playhead > 21 && playhead < 22) {
       window.alloy("sendMediaEvent", {
-        eventType: "media.adBreakStart",
-        mediaCollection: {
-          advertisingPodDetails: {
-            friendlyName: "Mid-roll",
-            offset: 0,
-            index: 1
-          },
-          sessionID: sessionId,
-          playhead: parseInt(playhead, 10)
+        xdm: {
+          eventType: "media.adBreakStart",
+          mediaCollection: {
+            advertisingPodDetails: {
+              friendlyName: "Mid-roll",
+              offset: 0,
+              index: 1
+            },
+            sessionID: sessionId,
+            playhead: parseInt(playhead, 10)
+          }
         }
       });
       window.alloy("sendMediaEvent", {

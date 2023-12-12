@@ -10,17 +10,24 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createRequest } from "../../utils/request";
+import {
+  createAddIdentity,
+  createHasIdentity,
+  createRequestPayload
+} from "../../utils/request";
 
-export default ({ mediaRequestPayload, action }) => {
-  return createRequest({
-    payload: mediaRequestPayload,
-    edgeSubPath: "/va",
-    getAction() {
-      return action;
-    },
-    getUseSendBeacon() {
-      return true;
-    }
+export default () => {
+  const content = {};
+  const payload = createRequestPayload({
+    content,
+    addIdentity: createAddIdentity(content),
+    hasIdentity: createHasIdentity(content)
   });
+
+  payload.addEvent = event => {
+    content.events = content.events || [];
+    content.events.push(event);
+  };
+
+  return payload;
 };

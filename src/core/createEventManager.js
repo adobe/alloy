@@ -59,7 +59,9 @@ export default ({
         renderDecisions = false,
         decisionScopes,
         edgeConfigOverrides: localConfigOverrides,
-        personalization
+        media,
+        personalization,
+        ...otherOptions
       } = options;
       const requestParams = createRequestParams({
         payload: createDataCollectionRequestPayload(),
@@ -76,6 +78,7 @@ export default ({
           renderDecisions,
           decisionScopes,
           personalization,
+          otherOptions,
           onResponse: onResponseCallbackAggregator.add,
           onRequestFailure: onRequestFailureCallbackAggregator.add
         })

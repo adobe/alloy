@@ -1,5 +1,5 @@
 /*
-Copyright 2019 Adobe. All rights reserved.
+Copyright 2023 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -11,15 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import { string, number, objectOf } from "../../utils/validation";
-import createTrackMediaEvent from "./createTrackMediaEvent";
-import createPlayerCacheManager from "./createPlayerCache";
+import createMediaSessionCacheManager from "./createMediaSessionCacheManager";
 import validateMediaEventOptions from "./validateMediaEventOptions";
 import validateSessionOptions from "./validateMediaSessionOptions";
-import createGetMediaSession from "./createGetMediaSession";
-import createHeartbeatTicker from "./createHeartbeatTicker";
-import automaticMediaSessionHandler from "./automaticMediaSessionHandler";
-import createMediaEventProcesor from "./createMediaEventProcessor";
-import automaticMediaHandler from "./automaticMediaHandler";
+import createMediaEventManager from "./createMediaEventManager";
+import { noop } from "../../utils";
+import createHeartbeatEngine from "./createHeartbeatEngine";
+import createUpdateMediaSessionState from "./createUpdateMediaSessionState";
 
 const createMediaCollection = ({
   config,
@@ -28,62 +26,109 @@ const createMediaCollection = ({
   sendEdgeNetworkRequest,
   consent
 }) => {
-  const playerCache = createPlayerCacheManager();
-  const postProcessMediaEvent = createMediaEventProcesor({
-    playerCache
-  });
-  const handleMediaEventAutomatically = automaticMediaHandler({
-    playerCache,
-    sendEdgeNetworkRequest,
-    postProcessMediaEvent,
-    consent
-  });
-  const trackMediaEvent = createTrackMediaEvent({
-    sendEdgeNetworkRequest,
-    handleMediaEventAutomatically,
+  const mediaSessionCacheManager = createMediaSessionCacheManager({ config });
+  const mediaEventManager = createMediaEventManager({
     config,
+    eventManager,
     logger,
-    consent
+    consent,
+    sendEdgeNetworkRequest
   });
-  const heartbeatTicker = createHeartbeatTicker({
+
+  const heartbeatTicker = createHeartbeatEngine({
     config,
-    trackMediaEvent,
-    playerCache
+    mediaEventManager,
+    mediaSessionCacheManager
   });
-  const automaticSessionHandler = automaticMediaSessionHandler({
-    eventManager,
-    heartbeatTicker,
-    playerCache
+
+  const updateMediaSessionState = createUpdateMediaSessionState({
+    mediaSessionCacheManager
   });
-  const getMediaSession = createGetMediaSession({
-    config,
-    eventManager,
-    automaticSessionHandler,
-    logger
-  });
+
   return {
     lifecycle: {
-      onResponse({ response }) {
-        const sessionId = response.getPayloadsByType(
-          "media-collection:new-session"
-        );
-        logger.info("MA session ID returned: ", sessionId);
+      onBeforeEvent({ otherOptions, onResponse = noop }) {
+        const { playerId, onBeforeMediaEvent } = otherOptions;
+        onResponse(({ response }) => {
+          const sessionId = response.getPayloadsByType(
+            "media-analytics:new-session"
+          );
+          logger.info("Media session ID returned: ", sessionId);
 
-        if (sessionId.length > 0) {
-          return { sessionId: sessionId[0].sessionId };
-        }
+          if (sessionId.length > 0) {
+            if (playerId && onBeforeMediaEvent) {
+              const heartbeatId = setInterval(() => {
+                heartbeatTicker({
+                  sessionId: sessionId[0].sessionId,
+                  playerId,
+                  onBeforeMediaEvent
+                });
+              }, 1000);
+              mediaSessionCacheManager.saveHeartbeat({ playerId, heartbeatId });
+            }
+            return { sessionId: sessionId[0].sessionId };
+          }
 
-        return {};
+          return {};
+        });
       }
     },
     commands: {
       createMediaSession: {
         optionsValidator: options => validateSessionOptions({ options }),
-        run: getMediaSession
+        run: options => {
+          const { playerId, onBeforeMediaEvent } = options;
+          const event = mediaEventManager.createMediaSession(options);
+          mediaEventManager.augmentMediaEvent({
+            event,
+            playerId,
+            onBeforeMediaEvent
+          });
+
+          const sessionPromise = mediaEventManager.trackMediaSession({
+            event,
+            playerId,
+            onBeforeMediaEvent
+          });
+
+          mediaSessionCacheManager.storeSession({
+            playerId,
+            sessionDetails: {
+              sessionPromise,
+              onBeforeMediaEvent,
+              latestTriggeredEvent: Date.now()
+            }
+          });
+
+          return sessionPromise;
+        }
       },
       sendMediaEvent: {
         optionsValidator: options => validateMediaEventOptions({ options }),
-        run: trackMediaEvent
+        run: options => {
+          const event = mediaEventManager.createMediaEvent({ options });
+          const { playerId } = options;
+
+          return mediaSessionCacheManager
+            .getSession(playerId)
+            .then(sessionDetails => {
+              const { onBeforeMediaEvent, sessionPromise } = sessionDetails;
+              sessionPromise.then(result => {
+                const finalEvent = mediaEventManager.augmentMediaEvent({
+                  event,
+                  playerId,
+                  onBeforeMediaEvent,
+                  sessionID: result.sessionId
+                });
+
+                return mediaEventManager
+                  .trackMediaEvent({ event: finalEvent })
+                  .then(() => {
+                    updateMediaSessionState({ playerId, xdm: finalEvent.xdm });
+                  });
+              });
+            });
+        }
       }
     }
   };
