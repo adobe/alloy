@@ -77,7 +77,7 @@ const createAddSampleEventsBasedOnVideoPlayhead = ({
     trackerInstance.trackEvent(Media.Event.AdSkip);
     trackerInstance.trackEvent(Media.Event.AdBreakComplete);
   }
-}
+};
 
 document.addEventListener("DOMContentLoaded", async function(event) {
   const { thirdPlayerSettings, thirdVideoPlayer } = createThirdVideoPlayer(
