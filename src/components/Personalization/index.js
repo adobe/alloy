@@ -10,11 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, boolean, objectOf } from "../../utils/validation";
+import { boolean, objectOf, string } from "../../utils/validation";
 import createComponent from "./createComponent";
-import { initDomActionsModules, executeActions } from "./dom-actions";
+import { initDomActionsModules } from "./dom-actions";
 import createCollect from "./createCollect";
-import createExecuteDecisions from "./createExecuteDecisions";
 import { hideContainers, showContainers } from "./flicker";
 import createFetchDataHandler from "./createFetchDataHandler";
 import collectClicks from "./dom-actions/clicks/collectClicks";
@@ -23,15 +22,26 @@ import { mergeDecisionsMeta, mergeQuery } from "./event";
 import createOnClickHandler from "./createOnClickHandler";
 import createViewCacheManager from "./createViewCacheManager";
 import createViewChangeHandler from "./createViewChangeHandler";
-import groupDecisions from "./groupDecisions";
-import createOnResponseHandler from "./createOnResponseHandler";
 import createClickStorage from "./createClickStorage";
-import createRedirectHandler from "./createRedirectHandler";
-import createAutorenderingHandler from "./createAutoRenderingHandler";
-import createNonRenderingHandler from "./createNonRenderingHandler";
 import createApplyPropositions from "./createApplyPropositions";
 import createGetPageLocation from "./createGetPageLocation";
 import createSetTargetMigration from "./createSetTargetMigration";
+import remapCustomCodeOffers from "./dom-actions/remapCustomCodeOffers";
+import remapHeadOffers from "./dom-actions/remapHeadOffers";
+import createPreprocess from "./dom-actions/createPreprocess";
+import injectCreateProposition from "./handlers/injectCreateProposition";
+import createAsyncArray from "./utils/createAsyncArray";
+import * as schema from "../../constants/schema";
+import processDefaultContent from "./handlers/processDefaultContent";
+import { isPageWideSurface } from "./utils/surfaceUtils";
+import createProcessDomAction from "./handlers/createProcessDomAction";
+import createProcessHtmlContent from "./handlers/createProcessHtmlContent";
+import createProcessRedirect from "./handlers/createProcessRedirect";
+import createProcessPropositions from "./handlers/createProcessPropositions";
+import createOnDecisionHandler from "./createOnDecisionHandler";
+import createProcessInAppMessage from "./handlers/createProcessInAppMessage";
+import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules";
+import createRedirect from "./dom-actions/createRedirect";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -43,41 +53,53 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     storeClickMetrics
   } = createClickStorage();
   const getPageLocation = createGetPageLocation({ window });
-  const viewCache = createViewCacheManager();
-  const modules = initDomActionsModules(storeClickMetrics);
-  const executeDecisions = createExecuteDecisions({
-    modules,
-    logger,
-    executeActions
+  const domActionsModules = initDomActionsModules();
+
+  const preprocess = createPreprocess([remapHeadOffers, remapCustomCodeOffers]);
+  const createProposition = injectCreateProposition({
+    preprocess,
+    isPageWideSurface
   });
-  const handleRedirectDecisions = createRedirectHandler({
-    collect,
-    window,
-    logger,
-    showContainers
+  const viewCache = createViewCacheManager({ createProposition });
+
+  const executeRedirect = createRedirect(window);
+  const schemaProcessors = {
+    [schema.DEFAULT_CONTENT_ITEM]: processDefaultContent,
+    [schema.DOM_ACTION]: createProcessDomAction({
+      modules: domActionsModules,
+      logger,
+      storeClickMetrics
+    }),
+    [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({
+      modules: domActionsModules,
+      logger
+    }),
+    [schema.REDIRECT_ITEM]: createProcessRedirect({
+      logger,
+      executeRedirect,
+      collect
+    }),
+    [schema.MESSAGE_IN_APP]: createProcessInAppMessage({
+      modules: initInAppMessageActionsModules(collect),
+      logger
+    })
+  };
+
+  const processPropositions = createProcessPropositions({
+    schemaProcessors,
+    logger
   });
-  const autoRenderingHandler = createAutorenderingHandler({
-    viewCache,
-    executeDecisions,
-    showContainers,
-    collect
-  });
-  const applyPropositions = createApplyPropositions({
-    executeDecisions
-  });
-  const nonRenderingHandler = createNonRenderingHandler({ viewCache });
-  const responseHandler = createOnResponseHandler({
-    autoRenderingHandler,
-    nonRenderingHandler,
-    groupDecisions,
-    handleRedirectDecisions,
-    showContainers
-  });
+
+  const renderedPropositions = createAsyncArray();
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
-    responseHandler,
+    showContainers,
     hideContainers,
-    mergeQuery
+    mergeQuery,
+    collect,
+    processPropositions,
+    createProposition,
+    renderedPropositions
   });
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
@@ -86,14 +108,25 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     getClickMetasBySelector
   });
   const viewChangeHandler = createViewChangeHandler({
-    mergeDecisionsMeta,
-    collect,
-    executeDecisions,
+    processPropositions,
+    viewCache
+  });
+  const applyPropositions = createApplyPropositions({
+    processPropositions,
+    createProposition,
+    renderedPropositions,
     viewCache
   });
   const setTargetMigration = createSetTargetMigration({
     targetMigrationEnabled
   });
+
+  const onDecisionHandler = createOnDecisionHandler({
+    processPropositions,
+    createProposition,
+    collect
+  });
+
   return createComponent({
     getPageLocation,
     logger,
@@ -105,7 +138,10 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     viewCache,
     showContainers,
     applyPropositions,
-    setTargetMigration
+    setTargetMigration,
+    mergeDecisionsMeta,
+    renderedPropositions,
+    onDecisionHandler
   });
 };
 

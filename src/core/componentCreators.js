@@ -21,6 +21,7 @@ import createContext from "../components/Context";
 import createPrivacy from "../components/Privacy";
 import createEventMerge from "../components/EventMerge";
 import createLibraryInfo from "../components/LibraryInfo";
+import createDecisioningEngine from "../components/DecisioningEngine";
 import createMachineLearning from "../components/MachineLearning";
 import createMediaCollection from "../components/MediaCollection";
 import createLegacyMediaAnalytics from "../components/LegacyMediaAnalytics";
@@ -38,6 +39,7 @@ export default [
   createEventMerge,
   createLibraryInfo,
   createMachineLearning,
+  createDecisioningEngine,
   createLegacyMediaAnalytics,
   createMediaCollection
 ];

@@ -11,4 +11,3 @@ governing permissions and limitations under the License.
 */
 
 export { default as initDomActionsModules } from "./initDomActionsModules";
-export { default as executeActions } from "./executeActions";

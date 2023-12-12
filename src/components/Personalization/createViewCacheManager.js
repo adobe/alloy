@@ -10,39 +10,90 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign } from "../../utils";
+import { assign, groupBy } from "../../utils";
 import defer from "../../utils/defer";
+import { DEFAULT_CONTENT_ITEM } from "../../constants/schema";
+import { VIEW_SCOPE_TYPE } from "./constants/scopeType";
 
-export default () => {
-  let viewStorage;
-  const viewStorageDeferred = defer();
+export default ({ createProposition }) => {
+  let cacheUpdateCreatedAtLeastOnce = false;
+  let viewStoragePromise = Promise.resolve({});
 
-  const storeViews = decisionsPromise => {
-    decisionsPromise
-      .then(decisions => {
-        if (viewStorage === undefined) {
-          viewStorage = {};
+  const getViewPropositions = (viewStorage, viewName) => {
+    const viewPropositions = viewStorage[viewName.toLowerCase()];
+    if (viewPropositions && viewPropositions.length > 0) {
+      return viewPropositions;
+    }
+
+    const emptyViewProposition = createProposition(
+      {
+        scope: viewName,
+        scopeDetails: {
+          characteristics: {
+            scopeType: VIEW_SCOPE_TYPE
+          }
+        },
+        items: [
+          {
+            schema: DEFAULT_CONTENT_ITEM
+          }
+        ]
+      },
+      false
+    );
+    return [emptyViewProposition];
+  };
+
+  // This should be called before making the request to experience edge.
+  const createCacheUpdate = viewName => {
+    const updateCacheDeferred = defer();
+
+    cacheUpdateCreatedAtLeastOnce = true;
+
+    // Additional updates will merge the new view propositions with the old.
+    // i.e. if there are new "cart" view propositions they will overwrite the
+    // old "cart" view propositions, but if there are no new "cart" view
+    // propositions the old "cart" view propositions will remain.
+    viewStoragePromise = viewStoragePromise.then(oldViewStorage => {
+      return updateCacheDeferred.promise
+        .then(newViewStorage => {
+          return assign({}, oldViewStorage, newViewStorage);
+        })
+        .catch(() => oldViewStorage);
+    });
+
+    return {
+      update(viewPropositions) {
+        const viewPropositionsWithScope = viewPropositions.filter(proposition =>
+          proposition.getScope()
+        );
+        const newViewStorage = groupBy(viewPropositionsWithScope, proposition =>
+          proposition.getScope().toLowerCase()
+        );
+        updateCacheDeferred.resolve(newViewStorage);
+        if (viewName) {
+          return getViewPropositions(newViewStorage, viewName);
         }
-        assign(viewStorage, decisions);
-        viewStorageDeferred.resolve();
-      })
-      .catch(() => {
-        if (viewStorage === undefined) {
-          viewStorage = {};
-        }
-        viewStorageDeferred.resolve();
-      });
+        return [];
+      },
+      cancel() {
+        updateCacheDeferred.reject();
+      }
+    };
   };
 
   const getView = viewName => {
-    return viewStorageDeferred.promise.then(() => viewStorage[viewName] || []);
+    return viewStoragePromise.then(viewStorage =>
+      getViewPropositions(viewStorage, viewName)
+    );
   };
 
   const isInitialized = () => {
-    return !(viewStorage === undefined);
+    return cacheUpdateCreatedAtLeastOnce;
   };
+
   return {
-    storeViews,
+    createCacheUpdate,
     getView,
     isInitialized
   };

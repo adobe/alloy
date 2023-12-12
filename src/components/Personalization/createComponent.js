@@ -10,9 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop, defer } from "../../utils";
+import { noop, flatMap, isNonEmptyArray } from "../../utils";
 import createPersonalizationDetails from "./createPersonalizationDetails";
 import { AUTHORING_ENABLED } from "./constants/loggerMessage";
+import { PropositionEventType } from "../../constants/propositionEventType";
 import validateApplyPropositionsOptions from "./validateApplyPropositionsOptions";
 
 export default ({
@@ -26,10 +27,14 @@ export default ({
   viewCache,
   showContainers,
   applyPropositions,
-  setTargetMigration
+  setTargetMigration,
+  mergeDecisionsMeta,
+  renderedPropositions,
+  onDecisionHandler
 }) => {
   return {
     lifecycle: {
+      onDecision: onDecisionHandler,
       onBeforeRequest({ request }) {
         setTargetMigration(request);
         return Promise.resolve();
@@ -51,7 +56,7 @@ export default ({
 
           // If we are in authoring mode we disable personalization
           mergeQuery(event, { enabled: false });
-          return;
+          return Promise.resolve();
         }
 
         const personalizationDetails = createPersonalizationDetails({
@@ -60,33 +65,52 @@ export default ({
           decisionScopes,
           personalization,
           event,
-          viewCache,
+          isCacheInitialized: viewCache.isInitialized(),
           logger
         });
 
-        if (personalizationDetails.shouldFetchData()) {
-          const decisionsDeferred = defer();
+        const decisionsMetaPromises = [];
+        if (personalizationDetails.shouldIncludeRenderedPropositions()) {
+          decisionsMetaPromises.push(renderedPropositions.clear());
+        }
 
-          viewCache.storeViews(decisionsDeferred.promise);
-          onRequestFailure(() => decisionsDeferred.reject());
+        if (personalizationDetails.shouldFetchData()) {
+          const cacheUpdate = viewCache.createCacheUpdate(
+            personalizationDetails.getViewName()
+          );
+          onRequestFailure(() => cacheUpdate.cancel());
+
           fetchDataHandler({
-            decisionsDeferred,
+            cacheUpdate,
             personalizationDetails,
             event,
             onResponse
           });
-          return;
+        } else if (personalizationDetails.shouldUseCachedData()) {
+          // eslint-disable-next-line consistent-return
+          decisionsMetaPromises.push(
+            viewChangeHandler({
+              personalizationDetails,
+              event,
+              onResponse,
+              onRequestFailure
+            })
+          );
         }
 
-        if (personalizationDetails.shouldUseCachedData()) {
-          // eslint-disable-next-line consistent-return
-          return viewChangeHandler({
-            personalizationDetails,
-            event,
-            onResponse,
-            onRequestFailure
-          });
-        }
+        // This promise.all waits for both the pending display notifications to be resolved
+        // (i.e. the top of page call to finish rendering) and the view change handler to
+        // finish rendering anything for this view.
+        return Promise.all(decisionsMetaPromises).then(decisionsMetas => {
+          // We only want to call mergeDecisionsMeta once, but we can get the propositions
+          // from two places: the pending display notifications and the view change handler.
+          const decisionsMeta = flatMap(decisionsMetas, dms => dms);
+          if (isNonEmptyArray(decisionsMeta)) {
+            mergeDecisionsMeta(event, decisionsMeta, [
+              PropositionEventType.DISPLAY
+            ]);
+          }
+        });
       },
       onClick({ event, clickedElement }) {
         onClickHandler({ event, clickedElement });

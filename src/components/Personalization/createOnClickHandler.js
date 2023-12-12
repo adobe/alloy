@@ -11,9 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { isNonEmptyArray } from "../../utils";
-import { INTERACT } from "./constants/eventType";
-import { PropositionEventType } from "./constants/propositionEventType";
-import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
+import { INTERACT } from "../../constants/eventType";
+import { PropositionEventType } from "../../constants/propositionEventType";
 
 export default ({
   mergeDecisionsMeta,
@@ -25,7 +24,7 @@ export default ({
   return ({ event, clickedElement }) => {
     const selectors = getClickSelectors();
     if (isNonEmptyArray(selectors)) {
-      const { decisionsMeta, eventLabel } = collectClicks(
+      const { decisionsMeta, eventLabel, viewName } = collectClicks(
         clickedElement,
         selectors,
         getClickMetasBySelector
@@ -33,12 +32,11 @@ export default ({
 
       if (isNonEmptyArray(decisionsMeta)) {
         const xdm = { eventType: INTERACT };
-        const scope = decisionsMeta[0].scope;
 
-        if (scope !== PAGE_WIDE_SCOPE) {
+        if (viewName) {
           xdm.web = {
             webPageDetails: {
-              viewName: scope
+              viewName
             }
           };
         }
@@ -47,8 +45,8 @@ export default ({
         mergeDecisionsMeta(
           event,
           decisionsMeta,
-          PropositionEventType.INTERACT,
-          eventLabel
+          [PropositionEventType.INTERACT],
+          eventLabel ? { label: eventLabel } : undefined
         );
       }
     }

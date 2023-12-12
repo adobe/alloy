@@ -1,3 +1,5 @@
+/* eslint-disable no-console, func-names */
+
 import React, { useEffect, useState } from "react";
 
 const KONDUCTOR_COOKIE_PREFIX = "kndctr_5BFE274A5F6980A50A495C08_AdobeOrg_";
@@ -33,7 +35,9 @@ const originalHasIdentityCookie = getHasIdentityCookie();
 const originalHasLegacyIdentityCookie = getHasLegacyIdentityCookie();
 
 const monitor = {};
+// eslint-disable-next-line no-underscore-dangle
 window.__alloyMonitors = window.__alloyMonitors || [];
+// eslint-disable-next-line no-underscore-dangle
 window.__alloyMonitors.push(monitor);
 
 export default () => {

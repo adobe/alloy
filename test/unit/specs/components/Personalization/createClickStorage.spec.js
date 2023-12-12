@@ -21,7 +21,9 @@ describe("Personalization::createClickStorage", () => {
       scope: "__view__",
       scopeDetails: {
         test: "blah1"
-      }
+      },
+      trackingLabel: "mylabel",
+      scopeType: "myscopetype"
     }
   };
   const SECOND_CLICK = {
@@ -103,7 +105,8 @@ describe("Personalization::createClickStorage", () => {
       2
     );
   });
-  it("getClickMetasBySelector returns the id, scopeDetails, scope", () => {
+
+  it("getClickMetasBySelector returns the id, scopeDetails, scope, trackingLabel, and scopeType", () => {
     clickStorage.storeClickMetrics(FIRST_CLICK);
 
     const meta = clickStorage.getClickMetasBySelector("div:123:h2");
@@ -114,7 +117,8 @@ describe("Personalization::createClickStorage", () => {
       id: "AT:123",
       scope: "__view__",
       scopeDetails: { test: "blah1" },
-      trackingLabel: undefined
+      trackingLabel: "mylabel",
+      scopeType: "myscopetype"
     });
   });
 });

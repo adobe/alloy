@@ -20,7 +20,7 @@ export default function ContentSecurityPolicy() {
         http-equiv="Content-Security-Policy"
         // cdn.tt.omtrdc.net is necessary for Target VEC to function properly.
         // *.sc.omtrdc.net is necessary for Analytics Data Insertion API to function properly
-        content={`default-src 'self';
+        content={`default-src 'self' blob:;
               script-src 'self' 'nonce-${process.env.REACT_APP_NONCE}' cdn.jsdelivr.net assets.adobedtm.com cdn.tt.omtrdc.net;
               style-src 'self' 'unsafe-inline';
               img-src * data:;

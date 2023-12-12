@@ -23,11 +23,10 @@ import {
   appendHtml,
   prependHtml,
   insertHtmlAfter,
-  insertHtmlBefore,
-  click
+  insertHtmlBefore
 } from "./action";
 
-export default store => {
+export default () => {
   return {
     setHtml: createAction(setHtml),
     customCode: createAction(prependHtml),
@@ -43,8 +42,6 @@ export default store => {
     insertBefore: createAction(insertHtmlBefore),
     replaceHtml: createAction(replaceHtml),
     prependHtml: createAction(prependHtml),
-    appendHtml: createAction(appendHtml),
-    click: settings => click(settings, store),
-    defaultContent: settings => Promise.resolve({ meta: settings.meta })
+    appendHtml: createAction(appendHtml)
   };
 };

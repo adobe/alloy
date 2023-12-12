@@ -10,7 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isEmptyObject, deepAssign } from "../utils";
+import {
+  isEmptyObject,
+  deepAssign,
+  isNonEmptyArray,
+  deduplicateArray
+} from "../utils";
+
+const getXdmPropositions = xdm => {
+  return xdm &&
+    // eslint-disable-next-line no-underscore-dangle
+    xdm._experience &&
+    // eslint-disable-next-line no-underscore-dangle
+    xdm._experience.decisioning &&
+    // eslint-disable-next-line no-underscore-dangle
+    isNonEmptyArray(xdm._experience.decisioning.propositions)
+    ? // eslint-disable-next-line no-underscore-dangle
+      xdm._experience.decisioning.propositions
+    : [];
+};
 
 export default () => {
   const content = {};
@@ -29,6 +47,22 @@ export default () => {
   };
 
   const event = {
+    hasQuery() {
+      return Object.prototype.hasOwnProperty.call(this.getContent(), "query");
+    },
+    getContent() {
+      const currentContent = JSON.parse(JSON.stringify(content));
+
+      if (userXdm) {
+        deepAssign(currentContent, { xdm: userXdm });
+      }
+
+      if (userData) {
+        deepAssign(currentContent, { data: userData });
+      }
+
+      return currentContent;
+    },
     setUserXdm(value) {
       throwIfEventFinalized("setUserXdm");
       userXdm = value;
@@ -41,6 +75,12 @@ export default () => {
       throwIfEventFinalized("mergeXdm");
       if (xdm) {
         deepAssign(content, { xdm });
+      }
+    },
+    mergeData(data) {
+      throwIfEventFinalized("mergeData");
+      if (data) {
+        deepAssign(content, { data });
       }
     },
     mergeMeta(meta) {
@@ -63,12 +103,27 @@ export default () => {
         return;
       }
 
+      const newPropositions = deduplicateArray(
+        [...getXdmPropositions(userXdm), ...getXdmPropositions(content.xdm)],
+        (a, b) =>
+          a === b ||
+          (a.id &&
+            b.id &&
+            a.id === b.id &&
+            a.scope &&
+            b.scope &&
+            a.scope === b.scope)
+      );
       if (userXdm) {
-        event.mergeXdm(userXdm);
+        this.mergeXdm(userXdm);
+      }
+      if (newPropositions.length > 0) {
+        // eslint-disable-next-line no-underscore-dangle
+        content.xdm._experience.decisioning.propositions = newPropositions;
       }
 
       if (userData) {
-        content.data = userData;
+        event.mergeData(userData);
       }
 
       // the event should already be considered finalized in case onBeforeEventSend throws an error

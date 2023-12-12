@@ -15,8 +15,8 @@ const useAlloyVersion = (instanceName = "alloy") => {
   const [version, setVersion] = useState("0.0.0");
   useEffect(() => {
     window[instanceName]("getLibraryInfo").then(
-      ({ libraryInfo: { version } }) => {
-        setVersion(version);
+      ({ libraryInfo: { version: v } }) => {
+        setVersion(v);
       }
     );
   }, [instanceName]);
@@ -27,6 +27,7 @@ const useAlloyVersion = (instanceName = "alloy") => {
  * Display the Alloy version in a footer in the bottom right.
  */
 export default () => {
+  // eslint-disable-next-line no-underscore-dangle
   const alloyVersion = useAlloyVersion(window.__alloyNS[0]);
   return (
     <div

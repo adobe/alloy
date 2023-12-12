@@ -82,7 +82,7 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
     expect(result).not.toEqual(EMPTY_PROPOSITIONS);
   });
 
-  it("it should log a warning when propositions is empty array", () => {
+  it("it should not log a warning when propositions is empty array", () => {
     const result = validateApplyPropositionsOptions({
       logger,
       options: {
@@ -90,7 +90,7 @@ describe("Personalization::validateApplyPropositionsOptions", () => {
       }
     });
 
-    expect(loggerSpy).toHaveBeenCalled();
+    expect(loggerSpy).not.toHaveBeenCalled();
     expect(result).toEqual(EMPTY_PROPOSITIONS);
   });
 

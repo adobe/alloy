@@ -1,18 +1,18 @@
 import React from "react";
 
 const getQueryStringParameter = key => {
-  var searchParams = new URLSearchParams(window.location.search);
+  const searchParams = new URLSearchParams(window.location.search);
   return searchParams.get(key);
 };
 
 const urlWithUpdatedQueryStringParameter = (key, value, defaultValue) => {
-  var searchParams = new URLSearchParams(window.location.search);
+  const searchParams = new URLSearchParams(window.location.search);
   if (value !== defaultValue) {
     searchParams.set(key, value);
   } else {
     searchParams.delete(key);
   }
-  return window.location.pathname + "?" + searchParams;
+  return `${window.location.pathname}?${searchParams}`;
 };
 
 const defaultConsent = getQueryStringParameter("defaultConsent") || "in";
@@ -29,16 +29,15 @@ const ConfigurationLinks = ({ param, currentValue, defaultValue, options }) => {
           {label}
         </span>
       );
-    } else {
-      return (
-        <a
-          key={index}
-          href={urlWithUpdatedQueryStringParameter(param, value, defaultValue)}
-        >
-          {label}
-        </a>
-      );
     }
+    return (
+      <a
+        key={index}
+        href={urlWithUpdatedQueryStringParameter(param, value, defaultValue)}
+      >
+        {label}
+      </a>
+    );
   });
 };
 

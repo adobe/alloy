@@ -29,7 +29,11 @@ export default ({ options }) => {
           payload: anything().required()
         })
       ).required()
-    }).required()
+    }).required(),
+    personalization: objectOf({
+      sendDisplayEvent: boolean().default(true),
+      decisionContext: objectOf({})
+    }).default({ sendDisplayEvent: true })
   }).noUnknownFields();
 
   return validator(options);

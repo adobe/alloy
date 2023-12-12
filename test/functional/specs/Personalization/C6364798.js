@@ -124,24 +124,14 @@ const simulatePageLoad = async alloy => {
     personalizationPayload,
     PAGE_WIDE_SCOPE
   );
-  await t
-    .expect(
-      // eslint-disable-next-line no-underscore-dangle
-      notificationRequestBody.events[0].xdm._experience.decisioning.propositions
-    )
-    .eql(pageWideScopeDecisionsMeta);
+
   await t
     .expect(
       // eslint-disable-next-line no-underscore-dangle
       notificationRequestBody.events[0].xdm._experience.decisioning
-        .propositionEventType.display
+        .propositions[0]
     )
-    .eql(1);
-  // notification for view rendered decisions
-  const viewNotificationRequest = networkLogger.edgeEndpointLogs.requests[2];
-  const viewNotificationRequestBody = JSON.parse(
-    viewNotificationRequest.request.body
-  );
+    .eql(pageWideScopeDecisionsMeta[0]);
   const productsViewDecisionsMeta = getDecisionsMetaByScope(
     personalizationPayload,
     "products"
@@ -149,17 +139,26 @@ const simulatePageLoad = async alloy => {
   await t
     .expect(
       // eslint-disable-next-line no-underscore-dangle
-      viewNotificationRequestBody.events[0].xdm._experience.decisioning
-        .propositions
+      notificationRequestBody.events[0].xdm._experience.decisioning
+        .propositions[1]
     )
-    .eql(productsViewDecisionsMeta);
+    .eql(productsViewDecisionsMeta[0]);
   await t
     .expect(
       // eslint-disable-next-line no-underscore-dangle
-      viewNotificationRequestBody.events[0].xdm._experience.decisioning
+      notificationRequestBody.events[0].xdm._experience.decisioning.propositions
+        .length
+    )
+    .eql(2);
+
+  await t
+    .expect(
+      // eslint-disable-next-line no-underscore-dangle
+      notificationRequestBody.events[0].xdm._experience.decisioning
         .propositionEventType.display
     )
     .eql(1);
+
   const allPropositionsWereRendered = resultingObject.propositions.every(
     proposition => proposition.renderAttempted
   );
@@ -176,12 +175,12 @@ const simulateViewChange = async (alloy, personalizationPayload) => {
     xdm: {
       web: {
         webPageDetails: {
-          viewName: "cart"
+          viewName: "Cart"
         }
       }
     }
   });
-  const viewChangeRequest = networkLogger.edgeEndpointLogs.requests[3];
+  const viewChangeRequest = networkLogger.edgeEndpointLogs.requests[2];
   const viewChangeRequestBody = JSON.parse(viewChangeRequest.request.body);
   // assert that no personalization query was attached to the request
   await t.expect(viewChangeRequestBody.events[0].query).eql(undefined);
@@ -230,30 +229,36 @@ const simulateViewChangeForNonExistingView = async alloy => {
     }
   });
 
-  const noViewViewChangeRequest = networkLogger.edgeEndpointLogs.requests[4];
+  const noViewViewChangeRequest = networkLogger.edgeEndpointLogs.requests[3];
   const noViewViewChangeRequestBody = JSON.parse(
     noViewViewChangeRequest.request.body
   );
   // assert that no personalization query was attached to the request
   await t.expect(noViewViewChangeRequestBody.events[0].query).eql(undefined);
-  // assert that a notification call with xdm.web.webPageDetails.viewName and no personalization meta is sent
-  await flushPromiseChains();
-  const noViewNotificationRequest = networkLogger.edgeEndpointLogs.requests[5];
-  const noViewNotificationRequestBody = JSON.parse(
-    noViewNotificationRequest.request.body
-  );
-  await t
-    .expect(noViewNotificationRequestBody.events[0].xdm.eventType)
-    .eql("decisioning.propositionDisplay");
   await t
     .expect(
-      noViewNotificationRequestBody.events[0].xdm.web.webPageDetails.viewName
+      // eslint-disable-next-line no-underscore-dangle
+      noViewViewChangeRequestBody.events[0].xdm._experience.decisioning
+        .propositions
+    )
+    .eql([
+      {
+        scope: "noView",
+        scopeDetails: {
+          characteristics: {
+            scopeType: "view"
+          }
+        }
+      }
+    ]);
+  await t
+    .expect(
+      noViewViewChangeRequestBody.events[0].xdm.web.webPageDetails.viewName
     )
     .eql("noView");
   await t
-    // eslint-disable-next-line no-underscore-dangle
-    .expect(noViewNotificationRequestBody.events[0].xdm._experience)
-    .eql(undefined);
+    .expect(noViewViewChangeRequestBody.events[0].xdm.eventType)
+    .eql("noviewoffers");
 };
 
 const simulateViewRerender = async (alloy, propositions) => {
@@ -269,7 +274,7 @@ const simulateViewRerender = async (alloy, propositions) => {
     .expect(applyPropositionsResult.propositions.length)
     .eql(propositions.length);
   // make sure no new network requests are sent - applyPropositions is a client-side only command.
-  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(4);
+  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(3);
 };
 
 test("Test C6364798: applyPropositions should re-render SPA view without sending view notifications", async () => {
