@@ -35,7 +35,7 @@ export default ({ options }) => {
               .integer()
               .required(),
             sessionID: string().required()
-          })
+          }).required()
         }).required()
       }).required()
     ],

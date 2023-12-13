@@ -16,7 +16,7 @@ export default (typeName, maximum) => (value, path) => {
     value <= maximum,
     value,
     path,
-    `${typeName} lower than or equal to ${maximum}`
+    `${typeName} less than or equal to ${maximum}`
   );
   return value;
 };

@@ -10,37 +10,36 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import toInteger from "../../../libEs6/utils/toInteger";
+import toInteger from "../../utils/toInteger";
 
 export default ({ config, mediaEventManager, mediaSessionCacheManager }) => {
   return ({ playerId, sessionId, onBeforeMediaEvent }) => {
     const currentTime = Date.now();
     const { mainPingInterval } = config.mediaCollection;
 
-    return mediaSessionCacheManager.getSession(playerId).then(session => {
-      if (
-        Math.abs(currentTime - session.latestTriggeredEvent) / 1000 >
-        mainPingInterval
-      ) {
-        const { playhead } = onBeforeMediaEvent(playerId);
-        const xdm = {
-          eventType: "media.ping",
-          mediaCollection: {
-            playhead: toInteger(playhead),
-            sessionID: sessionId
-          }
-        };
-        const event = mediaEventManager.createMediaEvent({ options: { xdm } });
-        return mediaEventManager
-          .trackMediaEvent({
-            event
-          })
-          .then(() => {
-            mediaSessionCacheManager.updateLastTriggeredEventTS({ playerId });
-          });
-      }
-
-      return Promise.resolve();
-    });
+    const playerSession = mediaSessionCacheManager.getSession(playerId);
+    if (
+      Math.abs(currentTime - playerSession.latestTriggeredEvent) / 1000 >
+      mainPingInterval
+    ) {
+      const { playhead, qoeDataDetails } = onBeforeMediaEvent(playerId);
+      const xdm = {
+        eventType: "media.ping",
+        mediaCollection: {
+          playhead: toInteger(playhead),
+          sessionID: sessionId,
+          qoeDataDetails
+        }
+      };
+      const event = mediaEventManager.createMediaEvent({ options: { xdm } });
+      return mediaEventManager
+        .trackMediaEvent({
+          event
+        })
+        .then(() => {
+          mediaSessionCacheManager.updateLastTriggeredEventTS({ playerId });
+        });
+    }
+    return Promise.resolve();
   };
 };

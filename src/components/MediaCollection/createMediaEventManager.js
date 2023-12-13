@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import MediaEvents from "./MediaConstants/mediaEvents";
+import MediaEvents from "./mediaConstants/mediaEvents";
 import createMediaRequestPayload from "./createMediaRequestPayload";
 import createMediaRequest from "./createMediaRequest";
 import injectTimestamp from "../Context/injectTimestamp";
@@ -30,7 +30,7 @@ export default ({ config, eventManager, consent, sendEdgeNetworkRequest }) => {
     createMediaSession(options) {
       const { playerName, channel, version } = config.mediaCollection;
       const event = eventManager.createEvent();
-      event.mergeXdm(options.xdm);
+      event.setUserXdm(options.xdm);
       event.mergeXdm({
         eventType: MediaEvents.SESSION_START,
         mediaCollection: {

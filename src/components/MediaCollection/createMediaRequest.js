@@ -20,7 +20,7 @@ export default ({ mediaRequestPayload, action }) => {
       return action;
     },
     getUseSendBeacon() {
-      return true;
+      return false;
     }
   });
 };

@@ -20,9 +20,9 @@ import {
   PlayerState,
   StreamType,
   VideoMetadataKeys
-} from "./Media/constants";
+} from "./media/constants";
 import { deepAssign, isEmptyObject, isNumber } from "../../utils";
-import { adsToXdmKeys, mediaToXdmKeys } from "./Media/mediaKeysToXdmConverter";
+import { adsToXdmKeys, mediaToXdmKeys } from "./media/mediaKeysToXdmConverter";
 import {
   createMediaObject,
   createAdBreakObject,

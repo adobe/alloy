@@ -47,8 +47,7 @@ const createMediaCollection = ({
 
   return {
     lifecycle: {
-      onBeforeEvent({ otherOptions, onResponse = noop }) {
-        const { playerId, onBeforeMediaEvent } = otherOptions;
+      onBeforeEvent({ playerId, onBeforeMediaEvent, onResponse = noop }) {
         onResponse(({ response }) => {
           const sessionId = response.getPayloadsByType(
             "media-analytics:new-session"
@@ -109,25 +108,24 @@ const createMediaCollection = ({
           const event = mediaEventManager.createMediaEvent({ options });
           const { playerId } = options;
 
-          return mediaSessionCacheManager
-            .getSession(playerId)
-            .then(sessionDetails => {
-              const { onBeforeMediaEvent, sessionPromise } = sessionDetails;
-              sessionPromise.then(result => {
-                const finalEvent = mediaEventManager.augmentMediaEvent({
-                  event,
-                  playerId,
-                  onBeforeMediaEvent,
-                  sessionID: result.sessionId
-                });
-
-                return mediaEventManager
-                  .trackMediaEvent({ event: finalEvent })
-                  .then(() => {
-                    updateMediaSessionState({ playerId, xdm: finalEvent.xdm });
-                  });
-              });
+          const {
+            onBeforeMediaEvent,
+            sessionPromise
+          } = mediaSessionCacheManager.getSession(playerId);
+          sessionPromise.then(result => {
+            const finalEvent = mediaEventManager.augmentMediaEvent({
+              event,
+              playerId,
+              onBeforeMediaEvent,
+              sessionID: result.sessionId
             });
+
+            return mediaEventManager
+              .trackMediaEvent({ event: finalEvent })
+              .then(() => {
+                updateMediaSessionState({ playerId, xdm: finalEvent.xdm });
+              });
+          });
         }
       }
     }
@@ -153,6 +151,6 @@ createMediaCollection.configValidators = objectOf({
       .minimum(10)
       .maximum(60)
       .default(10)
-  })
+  }).noUnknownFields()
 });
 export default createMediaCollection;
