@@ -14,8 +14,7 @@ import MediaEvents from "./mediaConstants/mediaEvents";
 import createMediaRequestPayload from "./createMediaRequestPayload";
 import createMediaRequest from "./createMediaRequest";
 import injectTimestamp from "../Context/injectTimestamp";
-import toInteger from "../../../libEs6/utils/toInteger";
-import { deepAssign } from "../../utils";
+import { deepAssign, toInteger } from "../../utils";
 
 export default ({ config, eventManager, consent, sendEdgeNetworkRequest }) => {
   return {
