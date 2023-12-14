@@ -75,9 +75,8 @@ export default (payload, eventRegistry, decisionHistory) => {
     )
       .map(consequenceAdapter)
       .map(item => {
-        const {
-          firstTimestamp: qualifiedDate
-        } = decisionHistory.recordQualified(activityId);
+        const { firstTimestamp: qualifiedDate } =
+          decisionHistory.recordQualified(activityId) || {};
 
         return {
           ...item,

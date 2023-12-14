@@ -3,7 +3,8 @@ import React, { useEffect, useState } from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./InAppMessagesStyle.css";
 
-const configKey = localStorage.getItem("iam-configKey") || "stage";
+const configKey =
+  localStorage.getItem("iam-configKey") || "aemonacpprodcampaign";
 
 const config = {
   cjmProdNld2: {
@@ -53,14 +54,32 @@ if (alloyInstance !== window.alloy) {
     edgeDomain,
     thirdPartyCookiesEnabled: false,
     targetMigrationEnabled: false,
+    personalizationStorageEnabled: true,
     debugEnabled: true
   });
 }
 
+const CUSTOM_TRAIT_KEY = "iam-customtrait-key";
+const CUSTOM_TRAIT_VALUE = "iam-customtrait-value";
+
 export default function InAppMessages() {
   const [sentEvent, setSentEvent] = useState(false);
-  const [customTraitKey, setCustomTraitKey] = useState("");
-  const [customTraitValue, setCustomTraitValue] = useState("");
+  const [customTraitKey, setCustomTraitKeyInternal] = useState(
+    localStorage.getItem(CUSTOM_TRAIT_KEY) || ""
+  );
+  const [customTraitValue, setCustomTraitValueInternal] = useState(
+    localStorage.getItem(CUSTOM_TRAIT_VALUE) || ""
+  );
+
+  const setCustomTraitKey = value => {
+    setCustomTraitKeyInternal(value);
+    localStorage.setItem(CUSTOM_TRAIT_KEY, value);
+  };
+
+  const setCustomTraitValue = value => {
+    setCustomTraitValueInternal(value);
+    localStorage.setItem(CUSTOM_TRAIT_VALUE, value);
+  };
 
   useEffect(() => {
     const unsubscribePromise = alloyInstance("subscribeRulesetItems", {
@@ -93,8 +112,24 @@ export default function InAppMessages() {
 
     alloyInstance("sendEvent", {
       renderDecisions: true,
-      personalization: { surfaces: ["#hello"], decisionContext: context }
-    }).then(() => setSentEvent(true));
+      type: "decisioning.propositionFetch",
+      personalization: {
+        surfaces: ["#hello"],
+        decisionContext: context,
+        sendDisplayEvent: false
+      }
+    }).then(() => {
+      setSentEvent(true);
+    });
+  };
+
+  const sendDisplayEvents = () => {
+    alloyInstance("sendEvent", {
+      renderDecisions: false,
+      personalization: {
+        includeRenderedPropositions: true
+      }
+    });
   };
 
   const deleteAllCookies = () => {
@@ -154,6 +189,9 @@ export default function InAppMessages() {
           </span>
         </div>
         <button onClick={() => renderDecisions()}>sendEvent</button>
+        <button onClick={() => sendDisplayEvents()} disabled={!sentEvent}>
+          send display events
+        </button>
         <button onClick={() => renderDecisions(true)} disabled={!sentEvent}>
           evaluateRulesets
         </button>

@@ -23,6 +23,7 @@ import {
 } from "./constants";
 import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand";
 import { clearLocalStorage, createInMemoryStorage } from "./utils";
+import { objectOf, boolean } from "../../utils/validation";
 
 const createDecisioningEngine = ({
   config,
@@ -84,6 +85,7 @@ const createDecisioningEngine = ({
             decisionProvider,
             applyResponse,
             event,
+            personalization,
             decisionContext: contextProvider.getContext({
               [CONTEXT_KEY.TYPE]: CONTEXT_EVENT_TYPE.EDGE,
               [CONTEXT_KEY.SOURCE]: CONTEXT_EVENT_SOURCE.REQUEST,
@@ -117,4 +119,7 @@ const createDecisioningEngine = ({
 };
 
 createDecisioningEngine.namespace = "DecisioningEngine";
+createDecisioningEngine.configValidators = objectOf({
+  personalizationStorageEnabled: boolean().default(false)
+});
 export default createDecisioningEngine;

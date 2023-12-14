@@ -18,8 +18,8 @@ import getBaseConfig from "../../helpers/getBaseConfig";
 import { compose, debugEnabled } from "../../helpers/constants/configParts";
 
 const networkLogger = createNetworkLogger();
-const organizationId = "906E3A095DC834230A495FD6@AdobeOrg";
-const dataStreamId = "8cefc5ca-1c2a-479f-88f2-3d42cc302514";
+const organizationId = "5BFE274A5F6980A50A495C08@AdobeOrg";
+const dataStreamId = "ae47e1ea-7625-49b9-b69f-8ad372e46344";
 
 const orgMainConfigMain = getBaseConfig(organizationId, dataStreamId);
 const config = compose(orgMainConfigMain, debugEnabled);

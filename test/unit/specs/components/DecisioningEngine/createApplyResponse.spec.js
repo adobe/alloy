@@ -25,12 +25,20 @@ describe("DecisioningEngine:createApplyResponse", () => {
 
     const applyResponse = createApplyResponse(lifecycle);
 
-    applyResponse({ propositions: [proposition] });
+    const mockEvent = { getViewName: () => undefined };
+    const personalization = {};
+
+    applyResponse({
+      propositions: [proposition],
+      event: mockEvent,
+      personalization
+    });
 
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
-      viewName: undefined,
       renderDecisions: false,
-      propositions: [proposition]
+      propositions: [proposition],
+      event: mockEvent,
+      personalization: {}
     });
   });
 
@@ -40,17 +48,20 @@ describe("DecisioningEngine:createApplyResponse", () => {
     });
 
     const applyResponse = createApplyResponse(lifecycle);
+    const mockEvent = { getViewName: () => "oh hai" };
 
     applyResponse({
-      viewName: "oh hai",
       renderDecisions: true,
+      event: mockEvent,
+      personalization: {},
       propositions: [proposition]
     });
 
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
-      viewName: "oh hai",
       renderDecisions: true,
-      propositions: [proposition]
+      propositions: [proposition],
+      event: mockEvent,
+      personalization: {}
     });
   });
 

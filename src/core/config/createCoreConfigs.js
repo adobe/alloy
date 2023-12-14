@@ -38,7 +38,6 @@ export default () =>
     orgId: string()
       .unique()
       .required(),
-    personalizationStorageEnabled: boolean().default(true),
     onBeforeEventSend: callback().default(noop),
     edgeConfigOverrides: validateConfigOverride
   }).deprecated("edgeConfigId", string().unique(), "datastreamId");
