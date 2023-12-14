@@ -32,6 +32,7 @@ const createNetworkLogger = () => {
   const acquireEndpoint = /v1\/identity\/acquire\?configId=/;
   const targetDeliveryEndpoint = /rest\/v1\/delivery\?client=/;
   const targetMboxJsonEndpoint = /m2\/unifiedjsqeonly\/mbox\/json\?mbox=/;
+  const mediaEdgeEndpoint = /va\/v1/;
 
   const edgeEndpointLogs = createRequestLogger(edgeEndpoint);
   const edgeCollectEndpointLogs = createRequestLogger(edgeCollectEndpoint);
@@ -44,6 +45,7 @@ const createNetworkLogger = () => {
   const targetMboxJsonEndpointLogs = createRequestLogger(
     targetMboxJsonEndpoint
   );
+  const mediaEdgeEndpointLogs = createRequestLogger(mediaEdgeEndpoint);
 
   const clearLogs = async () => {
     await edgeEndpointLogs.clear();
@@ -53,6 +55,7 @@ const createNetworkLogger = () => {
     await acquireEndpointLogs.clear();
     await targetDeliveryEndpointLogs.clear();
     await targetMboxJsonEndpointLogs.clear();
+    await mediaEdgeEndpointLogs.clear();
   };
 
   return {
@@ -65,6 +68,7 @@ const createNetworkLogger = () => {
     acquireEndpointLogs,
     targetDeliveryEndpointLogs,
     targetMboxJsonEndpointLogs,
+    mediaEdgeEndpointLogs,
     clearLogs
   };
 };

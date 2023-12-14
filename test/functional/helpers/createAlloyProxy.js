@@ -92,7 +92,9 @@ const commands = [
   "appendIdentityToUrl",
   "applyPropositions",
   "subscribeRulesetItems",
-  "evaluateRulesets"
+  "evaluateRulesets",
+  "createMediaSession",
+  "sendMediaEvent"
 ];
 
 export default (instanceName = "alloy") => {
