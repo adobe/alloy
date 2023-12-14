@@ -9,7 +9,6 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import PAGE_WIDE_SCOPE from "../constants/pageWideScope";
 import { JSON_CONTENT_ITEM } from "../constants/schema";
 
 const schemaTypeMapping = {
@@ -56,15 +55,16 @@ export default aepResponse => {
   propositions
     .filter(proposition => proposition.scopeDetails.decisionProvider === "TGT")
     .forEach(proposition => {
-      const { scope } = proposition;
+      // const { scope } = proposition;
 
       const mbox = createMbox(proposition);
 
-      if (scope === PAGE_WIDE_SCOPE) {
-        executeMboxes.push(mbox);
-      } else {
-        prefetchMboxes.push(mbox);
-      }
+      // if (scope === PAGE_WIDE_SCOPE) {
+      // for now, everything is execute.  but supposedly mboxes will go to prefetch by default in jan 2024.  propositionFetch can be used to force prefetch
+      executeMboxes.push(mbox);
+      // } else {
+      //   prefetchMboxes.push(mbox);
+      // }
     });
 
   const deliveryResponse = {
