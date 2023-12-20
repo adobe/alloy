@@ -9,15 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { t, ClientFunction } from "testcafe";
+import { t } from "testcafe";
 import createNetworkLogger from "../../helpers/networkLogger";
 import { responseStatus } from "../../helpers/assertions/index";
 import createFixture from "../../helpers/createFixture";
-import {
-  compose,
-  orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
+import { compose } from "../../helpers/constants/configParts";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody";
 import createResponse from "../../helpers/createResponse";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
@@ -39,7 +35,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test.only("Test : Implement Media Collection in automatic mode", async () => {
+test("Test : Implement Media Collection in automatic mode", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const sessionResult = await alloy.createMediaSession({
@@ -90,7 +86,6 @@ test.only("Test : Implement Media Collection in automatic mode", async () => {
     .expect(mediaCollectionPayload[0].sessionId)
     .eql(sessionResult.sessionId);
   const playEvent = networkLogger.mediaEdgeEndpointLogs.requests;
-  console.log("ree", playEvent);
   const playEventBody = JSON.parse(playEvent.request.body).events[0];
   await t.expect(playEventBody.xdm.mediaCollection.playhead).eql(3);
   await t
