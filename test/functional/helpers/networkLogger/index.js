@@ -32,7 +32,7 @@ const createNetworkLogger = () => {
   const acquireEndpoint = /v1\/identity\/acquire\?configId=/;
   const targetDeliveryEndpoint = /rest\/v1\/delivery\?client=/;
   const targetMboxJsonEndpoint = /m2\/unifiedjsqeonly\/mbox\/json\?mbox=/;
-  const mediaEdgeEndpoint = /va\/v1/;
+  const mediaEdgeEndpoint = /va\/v1\//;
 
   const edgeEndpointLogs = createRequestLogger(edgeEndpoint);
   const edgeCollectEndpointLogs = createRequestLogger(edgeCollectEndpoint);

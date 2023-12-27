@@ -142,7 +142,7 @@ createMediaCollection.configValidators = objectOf({
     playerName: string()
       .nonEmpty()
       .required(),
-    version: string().nonEmpty(),
+    version: string(),
     mainPingInterval: number()
       .minimum(10)
       .maximum(60)

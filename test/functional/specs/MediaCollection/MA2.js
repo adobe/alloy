@@ -25,7 +25,7 @@ import { sleep } from "../Migration/helper";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMediaConfig, mediaCollection);
 createFixture({
-  title: "Media Collection in automatic mode:",
+  title: "Media Collection in non-automatic mode",
   url: TEST_PAGE_URL,
   requestHooks: [
     networkLogger.edgeEndpointLogs,
@@ -39,36 +39,29 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test that MC component sends pings, augment the events with playhead and session", async () => {
+test("Test that MC component doesn't send pings or augment the events with playhead and session", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  const sessionResult = await alloy.createMediaSession({
-    playerId: "player1",
+  const { sessionId } = await alloy.createMediaSession({
     xdm: {
       mediaCollection: {
+        playhead: 0,
         sessionDetails: {
           length: 60,
           contentType: "VOD",
           name: "test name of the video"
         }
       }
-    },
-    onBeforeMediaEvent: () => {
-      return {
-        playhead: 3,
-        qoeDataDetails: {
-          bitrate: 1,
-          droppedFrames: 2,
-          framesPerSecond: 3,
-          timeToStart: 4
-        }
-      };
     }
   });
+
   await alloy.sendMediaEvent({
-    playerId: "player1",
     xdm: {
-      eventType: "media.play"
+      eventType: "media.play",
+      mediaCollection: {
+        playhead: 1,
+        sessionID: sessionId
+      }
     }
   });
 
@@ -78,44 +71,23 @@ test("Test that MC component sends pings, augment the events with playhead and s
   const createSession = networkLogger.edgeEndpointLogs.requests[0];
   const requestBody = JSON.parse(createSession.request.body);
   await t.expect(requestBody.events[0].xdm.eventType).eql("media.sessionStart");
-  await t.expect(requestBody.events[0].xdm.mediaCollection.playhead).eql(3);
+  await t.expect(requestBody.events[0].xdm.mediaCollection.playhead).eql(0);
   const response = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
   const mediaCollectionPayload = createResponse({
     content: response
   }).getPayloadsByType("media-analytics:new-session");
-  await t
-    .expect(mediaCollectionPayload[0].sessionId)
-    .eql(sessionResult.sessionId);
+  await t.expect(mediaCollectionPayload[0].sessionId).eql(sessionId);
 
   const playEventRequest = networkLogger.mediaEdgeEndpointLogs.requests[0];
 
   const playEvent = JSON.parse(playEventRequest.request.body).events[0];
-  await t.expect(playEvent.xdm.mediaCollection.playhead).eql(3);
-  await t
-    .expect(playEvent.xdm.mediaCollection.sessionID)
-    .eql(sessionResult.sessionId);
+  await t.expect(playEvent.xdm.mediaCollection.playhead).eql(1);
+  await t.expect(playEvent.xdm.mediaCollection.sessionID).eql(sessionId);
   await new Promise(resolve => setTimeout(resolve, 2000));
   await sleep(10000);
 
-  const pingEventRequest = networkLogger.mediaEdgeEndpointLogs.requests[1];
-  const pingEvent = JSON.parse(pingEventRequest.request.body).events[0];
-  await t
-    .expect(pingEvent.xdm.mediaCollection.sessionID)
-    .eql(sessionResult.sessionId);
-  await t.expect(pingEvent.xdm.eventType).eql("media.ping");
-
-  await alloy.sendMediaEvent({
-    playerId: "player1",
-    xdm: {
-      eventType: "media.sessionComplete"
-    }
-  });
-  await sleep(10000);
-
-  const secondPingEventRequest =
-    networkLogger.mediaEdgeEndpointLogs.requests[3];
-  await t.expect(secondPingEventRequest).eql(undefined);
-  await t.expect(pingEvent.xdm.eventType).eql("media.ping");
+  const pingEventRequest = networkLogger.mediaEdgeEndpointLogs.requests[3];
+  await t.expect(pingEventRequest).eql(undefined);
 });
