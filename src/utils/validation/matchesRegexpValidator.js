@@ -9,25 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { assertValid } from "./utils";
 
-import {
-  createAddIdentity,
-  createHasIdentity,
-  createRequestPayload
-} from "../../utils/request";
+export default (regexp, message) => (value, path) => {
+  assertValid(regexp.test(value), value, path, message);
 
-export default () => {
-  const content = {};
-  const payload = createRequestPayload({
-    content,
-    addIdentity: createAddIdentity(content),
-    hasIdentity: createHasIdentity(content)
-  });
-
-  payload.addEvent = event => {
-    content.events = content.events || [];
-    content.events.push(event);
-  };
-
-  return payload;
+  return value;
 };

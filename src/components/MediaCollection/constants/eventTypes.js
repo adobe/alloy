@@ -5,5 +5,6 @@ export default {
   AD_START: "media.adStart",
   SESSION_END: "media.sessionEnd",
   SESSION_START: "media.sessionStart",
-  SESSION_COMPLETE: "media.sessionComplete"
+  SESSION_COMPLETE: "media.sessionComplete",
+  PING: "media.ping"
 };

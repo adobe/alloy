@@ -133,19 +133,17 @@ export const createChapterObject = (name, position, length, startTime) => {
   }
 };
 export const createStateObject = stateName => {
-  const STATE_NAME_REGEX = new RegExp("^[a-zA-Z0-9_\\.]{1,64}$");
+  const STATE_NAME_REGEX = new RegExp("^[a-zA-Z0-9_]{1,64}$");
 
-  const state = {
-    state: stateName
-  };
-  const validator = objectOf({
-    state: string().regexp(STATE_NAME_REGEX)
-  });
+  const validator = string().matches(
+    STATE_NAME_REGEX,
+    "This is not a valid state name."
+  );
 
   try {
-    const result = validator(state);
+    const result = validator(stateName);
     const stateDetails = {
-      name: result.name
+      name: result
     };
 
     return { stateDetails };

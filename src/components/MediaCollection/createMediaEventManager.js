@@ -11,37 +11,34 @@ governing permissions and limitations under the License.
 */
 /* eslint-disable import/no-restricted-paths */
 
-import MediaEvents from "./mediaConstants/mediaEvents";
-import createMediaRequestPayload from "./createMediaRequestPayload";
+import MediaEvents from "./constants/eventTypes";
 import createMediaRequest from "./createMediaRequest";
 import injectTimestamp from "../Context/injectTimestamp";
-import { deepAssign, toInteger } from "../../utils";
+import { toInteger } from "../../utils";
+import { createDataCollectionRequestPayload } from "../../utils/request";
 
 export default ({ config, eventManager, consent, sendEdgeNetworkRequest }) => {
   return {
     createMediaEvent({ options }) {
-      const { xdm = {} } = options;
-      const event = { xdm };
+      const event = eventManager.createEvent();
+      const { xdm } = options;
       const timestamp = injectTimestamp(() => new Date());
-      timestamp(event.xdm);
-
+      timestamp(xdm);
+      event.setUserXdm(xdm);
       return event;
     },
     createMediaSession(options) {
       const { playerName, channel, version } = config.mediaCollection;
       const event = eventManager.createEvent();
+      const { sessionDetails } = options.xdm.mediaCollection;
       event.setUserXdm(options.xdm);
       event.mergeXdm({
         eventType: MediaEvents.SESSION_START,
         mediaCollection: {
           sessionDetails: {
-            playerName:
-              options.xdm.mediaCollection.sessionDetails.playerName ||
-              playerName,
-            channel:
-              options.xdm.mediaCollection.sessionDetails.channel || channel,
-            appVersion:
-              options.xdm.mediaCollection.sessionDetails.appVersion || version
+            playerName: sessionDetails.playerName || playerName,
+            channel: sessionDetails.channel || channel,
+            appVersion: sessionDetails.appVersion || version
           }
         }
       });
@@ -54,37 +51,26 @@ export default ({ config, eventManager, consent, sendEdgeNetworkRequest }) => {
       }
       const { playhead, qoeDataDetails } = onBeforeMediaEvent({ playerId });
 
-      if (event.mergeXdm) {
-        event.mergeXdm({
-          mediaCollection: {
-            playhead: toInteger(playhead),
-            qoeDataDetails
-          }
-        });
-        return event;
-      }
-      return deepAssign(event, {
-        xdm: {
-          mediaCollection: {
-            playhead: toInteger(playhead),
-            qoeDataDetails,
-            sessionID
-          }
+      event.mergeXdm({
+        mediaCollection: {
+          playhead: toInteger(playhead),
+          qoeDataDetails,
+          sessionID
         }
       });
+      return event;
     },
     trackMediaSession({ event, playerId, onBeforeMediaEvent }) {
       return eventManager.sendEvent(event, { playerId, onBeforeMediaEvent });
     },
-    trackMediaEvent({ event }) {
-      const action = event.xdm.eventType.split(".")[1];
-
-      const mediaRequestPayload = createMediaRequestPayload();
+    trackMediaEvent({ event, action }) {
+      const mediaRequestPayload = createDataCollectionRequestPayload();
       const request = createMediaRequest({
         mediaRequestPayload,
         action
       });
       mediaRequestPayload.addEvent(event);
+      event.finalize();
 
       return consent.awaitConsent().then(() => {
         return sendEdgeNetworkRequest({ request }).then(() => {

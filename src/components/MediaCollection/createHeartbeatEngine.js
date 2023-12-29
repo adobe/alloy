@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import toInteger from "../../utils/toInteger";
+import MediaEvent from "./constants/eventTypes";
 
 export default ({ config, mediaEventManager, mediaSessionCacheManager }) => {
   return ({ playerId, sessionId, onBeforeMediaEvent }) => {
@@ -23,8 +24,9 @@ export default ({ config, mediaEventManager, mediaSessionCacheManager }) => {
       mainPingInterval
     ) {
       const { playhead, qoeDataDetails } = onBeforeMediaEvent(playerId);
+      const action = "ping";
       const xdm = {
-        eventType: "media.ping",
+        eventType: MediaEvent.PING,
         mediaCollection: {
           playhead: toInteger(playhead),
           sessionID: sessionId,
@@ -34,7 +36,8 @@ export default ({ config, mediaEventManager, mediaSessionCacheManager }) => {
       const event = mediaEventManager.createMediaEvent({ options: { xdm } });
       return mediaEventManager
         .trackMediaEvent({
-          event
+          event,
+          action
         })
         .then(() => {
           mediaSessionCacheManager.updateLastTriggeredEventTS({ playerId });

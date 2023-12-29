@@ -106,14 +106,15 @@ const createMediaCollection = ({
         optionsValidator: options => validateMediaEventOptions({ options }),
         run: options => {
           const event = mediaEventManager.createMediaEvent({ options });
-          const { playerId } = options;
-
+          const { playerId, xdm } = options;
+          const eventType = xdm.eventType;
+          const action = eventType.split(".")[1];
           const {
             onBeforeMediaEvent,
             sessionPromise
           } = mediaSessionCacheManager.getSession(playerId);
           sessionPromise.then(result => {
-            const finalEvent = mediaEventManager.augmentMediaEvent({
+            mediaEventManager.augmentMediaEvent({
               event,
               playerId,
               onBeforeMediaEvent,
@@ -121,9 +122,12 @@ const createMediaCollection = ({
             });
 
             return mediaEventManager
-              .trackMediaEvent({ event: finalEvent })
+              .trackMediaEvent({ event, action })
               .then(() => {
-                updateMediaSessionState({ playerId, xdm: finalEvent.xdm });
+                updateMediaSessionState({ playerId, eventType });
+              })
+              .catch(error => {
+                logger.warn(`The Media Event of type ${action} failed.`, error);
               });
           });
         }
@@ -145,11 +149,11 @@ createMediaCollection.configValidators = objectOf({
     version: string(),
     mainPingInterval: number()
       .minimum(10)
-      .maximum(60)
+      .maximum(50)
       .default(10),
     adPingInterval: number()
       .minimum(10)
-      .maximum(60)
+      .maximum(50)
       .default(10)
   }).noUnknownFields()
 });

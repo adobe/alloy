@@ -10,14 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import MediaEvents from "./mediaConstants/mediaEvents";
+import MediaEvents from "./constants/eventTypes";
 
 export default ({ mediaSessionCacheManager }) => {
-  return ({ playerId, xdm }) => {
+  return ({ playerId, eventType }) => {
     if (!playerId) {
       return;
     }
-    const { eventType } = xdm;
     if (
       eventType === MediaEvents.SESSION_COMPLETE ||
       eventType === MediaEvents.SESSION_END

@@ -91,6 +91,7 @@ import numberValidator from "./numberValidator";
 import regexpValidator from "./regexpValidator";
 import requiredValidator from "./requiredValidator";
 import stringValidator from "./stringValidator";
+import matchesRegexpValidator from "./matchesRegexpValidator";
 
 // The base validator does no validation and just returns the value unchanged
 const base = value => value;
@@ -132,6 +133,9 @@ const nonEmptyObject = function nonEmptyObject() {
 };
 const regexp = function regexp() {
   return nullSafeChain(this, regexpValidator);
+};
+const matches = function matches(regexpPattern, message) {
+  return nullSafeChain(this, matchesRegexpValidator(regexpPattern, message));
 };
 const unique = function createUnique() {
   return nullSafeChain(this, createUniqueValidator());
@@ -213,7 +217,8 @@ const string = function string() {
     regexp,
     domain,
     nonEmpty: nonEmptyString,
-    unique
+    unique,
+    matches
   });
 };
 

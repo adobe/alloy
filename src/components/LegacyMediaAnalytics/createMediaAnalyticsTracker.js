@@ -125,9 +125,11 @@ const createGetInstance = ({ config, logger, mediaEventManager }) => {
         };
         deepAssign(xdm.mediaCollection, mediaDetails);
         const event = mediaEventManager.createMediaEvent({ options: { xdm } });
-        return mediaEventManager.trackMediaEvent({ event }).then(() => {
-          updateLastTimeEventTriggered();
-        });
+        return mediaEventManager
+          .trackMediaEvent({ event, action: eventType })
+          .then(() => {
+            updateLastTimeEventTriggered();
+          });
       })
       .catch(error => {
         logger.info(error);
