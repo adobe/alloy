@@ -12,25 +12,19 @@ governing permissions and limitations under the License.
 
 import defer from "../../utils/defer";
 import {
-  AdMetadataKeys,
-  AudioMetadataKeys,
-  mediaEvent as Event,
-  MediaObjectKey,
-  MediaType,
-  PlayerState,
-  StreamType,
-  VideoMetadataKeys
+  AD_METADATA_KEYS as AdMetadataKeys,
+  AUDIO_METADATA_KEYS as AudioMetadataKeys,
+  EVENT as Event,
+  PLAYER_STATE as PlayerState,
+  STREAM_TYPE as StreamType,
+  MEDIA_OBJECT_KEYS as MediaObjectKey,
+  VIDEO_METADATA_KEYS as VideoMetadataKeys,
+  MEDIA_TYPE as MediaType,
+  MEDIA_EVENTS
 } from "./media/constants";
 import { deepAssign, isEmptyObject, isNumber } from "../../utils";
 import { adsToXdmKeys, mediaToXdmKeys } from "./media/mediaKeysToXdmConverter";
-import {
-  createMediaObject,
-  createAdBreakObject,
-  createAdObject,
-  createChapterObject,
-  createStateObject,
-  createQoEObject
-} from "./createMediaHelper";
+import createMediaHelper from "./createMediaHelper";
 
 const convertSessionDetailsMetadataToXDM = contextData => {
   const customMetadata = [];
@@ -54,7 +48,7 @@ const createMediaDetailsObject = ({ eventType, info, context }) => {
   const customMetadata = [];
 
   if (context && !isEmptyObject(context)) {
-    if (eventType === Event.AdStart) {
+    if (eventType === MEDIA_EVENTS.AdStart) {
       Object.keys(context).forEach(key => {
         if (adsToXdmKeys[key]) {
           mediaDetails.advertisingDetails[mediaToXdmKeys[key]] = context[key];
@@ -107,8 +101,8 @@ const createGetInstance = ({ config, logger, mediaEventManager }) => {
     trackerState.latestTriggeredEvent = Date.now();
   };
   const getEventType = ({ eventType }) => {
-    if (eventType === Event.BufferComplete) {
-      return `media.${Event.Play}`;
+    if (eventType === MEDIA_EVENTS.BufferComplete) {
+      return `media.${MEDIA_EVENTS.Play}`;
     }
     return `media.${eventType}`;
   };
@@ -132,7 +126,10 @@ const createGetInstance = ({ config, logger, mediaEventManager }) => {
           });
       })
       .catch(error => {
-        logger.info(error);
+        logger.warn(
+          `An error occurred while sending ${eventType} Media Event.`,
+          error
+        );
       });
   };
 
@@ -252,6 +249,7 @@ export const createMediaAnalyticsTracker = ({
   mediaEventManager
 }) => {
   logger.info("Media Analytics Component was configured");
+  const mediaAnalyticsHelper = createMediaHelper({ logger });
 
   return {
     getInstance: () => {
@@ -269,11 +267,6 @@ export const createMediaAnalyticsTracker = ({
     VideoMetadataKeys,
     AudioMetadataKeys,
     AdMetadataKeys,
-    createMediaObject,
-    createAdBreakObject,
-    createAdObject,
-    createChapterObject,
-    createStateObject,
-    createQoEObject
+    ...mediaAnalyticsHelper
   };
 };

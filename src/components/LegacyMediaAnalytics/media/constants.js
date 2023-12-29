@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export const MediaType = {
+export const MEDIA_TYPE = {
   Video: "video",
   Audio: "audio"
 };
-export const StreamType = {
+export const STREAM_TYPE = {
   VOD: "vod",
   Live: "live",
   Linear: "linear",
@@ -22,7 +22,7 @@ export const StreamType = {
   Audiobook: "audiobook",
   AOD: "aod"
 };
-export const PlayerState = {
+export const PLAYER_STATE = {
   FullScreen: "fullScreen",
   ClosedCaption: "closedCaptioning",
   Mute: "mute",
@@ -30,7 +30,7 @@ export const PlayerState = {
   InFocus: "inFocus"
 };
 
-export const Event = {
+export const EVENT = {
   /**
    * Constant defining event type for AdBreak start
    */
@@ -92,21 +92,21 @@ export const Event = {
    */
   StateEnd: "stateEnd"
 };
-export const mediaEvent = {
+export const MEDIA_EVENTS = {
   SessionStart: "sessionStart",
   SessionEnd: "sessionEnd",
   SessionComplete: "sessionComplete",
   Play: "play",
   Pause: "pauseStart",
-  ...Event
+  ...EVENT
 };
 
-export const MediaObjectKey = {
+export const MEDIA_OBJECT_KEYS = {
   MediaResumed: "media.resumed",
   GranularAdTracking: "media.granularadtracking"
 };
 
-export const VideoMetadataKeys = {
+export const VIDEO_METADATA_KEYS = {
   Show: "a.media.show",
   Season: "a.media.season",
   Episode: "a.media.episode",
@@ -126,7 +126,7 @@ export const VideoMetadataKeys = {
   StreamFormat: "a.media.format"
 };
 
-export const AudioMetadataKeys = {
+export const AUDIO_METADATA_KEYS = {
   Artist: "a.media.artist",
   Album: "a.media.album",
   Label: "a.media.label",
@@ -135,7 +135,7 @@ export const AudioMetadataKeys = {
   Publisher: "a.media.publisher"
 };
 
-export const AdMetadataKeys = {
+export const AD_METADATA_KEYS = {
   Advertiser: "a.media.ad.advertiser",
   CampaignId: "a.media.ad.campaign",
   CreativeId: "a.media.ad.creative",
