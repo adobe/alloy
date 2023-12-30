@@ -88,14 +88,14 @@ document.addEventListener("DOMContentLoaded", async function(event) {
   const trackerInstance = Media.getInstance();
 
   thirdVideoPlayer.addEventListener("playing", function() {
+    const mediaInfo = Media.createMediaObject(
+      "NinasVideoName",
+      "Ninas player video",
+      60,
+      Media.StreamType.VOD,
+      Media.MediaType.Video
+    );
     if (!thirdPlayerSettings.videoLoaded) {
-      const mediaInfo = Media.createMediaObject(
-        "NinasVideoName",
-        "Ninas player video",
-        60,
-        Media.StreamType.VOD,
-        Media.MediaType.Video
-      );
       const contextData = {
         isUserLoggedIn: "false",
         tvStation: "Sample TV station",

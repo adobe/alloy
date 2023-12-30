@@ -13,18 +13,22 @@ governing permissions and limitations under the License.
 import toInteger from "../../utils/toInteger";
 import MediaEvent from "./constants/eventTypes";
 
+const ACTION = "ping";
+
+const getCurrentInterval = playerSession => {
+  const currentTime = Date.now();
+
+  return Math.abs(currentTime - playerSession.latestTriggeredEvent) / 1000;
+};
+
 export default ({ config, mediaEventManager, mediaSessionCacheManager }) => {
   return ({ playerId, sessionId, onBeforeMediaEvent }) => {
-    const currentTime = Date.now();
     const { mainPingInterval } = config.mediaCollection;
-
     const playerSession = mediaSessionCacheManager.getSession(playerId);
-    if (
-      Math.abs(currentTime - playerSession.latestTriggeredEvent) / 1000 >
-      mainPingInterval
-    ) {
+    const currentInterval = getCurrentInterval(playerSession);
+
+    if (currentInterval > mainPingInterval) {
       const { playhead, qoeDataDetails } = onBeforeMediaEvent(playerId);
-      const action = "ping";
       const xdm = {
         eventType: MediaEvent.PING,
         mediaCollection: {
@@ -34,15 +38,17 @@ export default ({ config, mediaEventManager, mediaSessionCacheManager }) => {
         }
       };
       const event = mediaEventManager.createMediaEvent({ options: { xdm } });
+
       return mediaEventManager
         .trackMediaEvent({
           event,
-          action
+          action: ACTION
         })
         .then(() => {
           mediaSessionCacheManager.updateLastTriggeredEventTS({ playerId });
         });
     }
+
     return Promise.resolve();
   };
 };

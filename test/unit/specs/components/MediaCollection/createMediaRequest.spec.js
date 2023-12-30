@@ -9,3 +9,24 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+import createMediaRequest from "../../../../../src/components/MediaCollection/createMediaRequest";
+
+describe("createMediaRequest", () => {
+  it("should call createRequest with correct parameters", () => {
+    const mediaRequestPayload = {}; // replace with valid payload
+    const action = "testAction";
+    const expectedParams = {
+      payload: mediaRequestPayload,
+      edgeSubPath: "/va",
+      getAction: jasmine.any(Function),
+      getUseSendBeacon: jasmine.any(Function)
+    };
+
+    const result = createMediaRequest({ mediaRequestPayload, action });
+
+    expect(result.getAction()).toEqual(action);
+    expect(result.getEdgeSubPath()).toEqual(expectedParams.edgeSubPath);
+    expect(result.getUseSendBeacon()).toEqual(false);
+  });
+});
