@@ -16,17 +16,11 @@ describe("createMediaRequest", () => {
   it("should call createRequest with correct parameters", () => {
     const mediaRequestPayload = {}; // replace with valid payload
     const action = "testAction";
-    const expectedParams = {
-      payload: mediaRequestPayload,
-      edgeSubPath: "/va",
-      getAction: jasmine.any(Function),
-      getUseSendBeacon: jasmine.any(Function)
-    };
-
+    const edgeSubPath = "/va";
     const result = createMediaRequest({ mediaRequestPayload, action });
 
     expect(result.getAction()).toEqual(action);
-    expect(result.getEdgeSubPath()).toEqual(expectedParams.edgeSubPath);
+    expect(result.getEdgeSubPath()).toEqual(edgeSubPath);
     expect(result.getUseSendBeacon()).toEqual(false);
   });
 });
