@@ -134,8 +134,8 @@ const nonEmptyObject = function nonEmptyObject() {
 const regexp = function regexp() {
   return nullSafeChain(this, regexpValidator);
 };
-const matches = function matches(regexpPattern, message) {
-  return nullSafeChain(this, matchesRegexpValidator(regexpPattern, message));
+const matches = function matches(regexpPattern) {
+  return nullSafeChain(this, matchesRegexpValidator(regexpPattern));
 };
 const unique = function createUnique() {
   return nullSafeChain(this, createUniqueValidator());
