@@ -9,3 +9,70 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+import createMediaSessionCacheManager from "../../../../../src/components/MediaCollection/createMediaSessionCacheManager";
+
+describe("MediaCollection::createMediaSessionCacheManager", () => {
+  let mediaSessionCacheManager;
+
+  beforeEach(() => {
+    mediaSessionCacheManager = createMediaSessionCacheManager();
+  });
+
+  it("getSession should return correct session", () => {
+    const playerId = "player1";
+    const sessionDetails = { id: "session1" };
+    mediaSessionCacheManager.storeSession({ playerId, sessionDetails });
+
+    const result = mediaSessionCacheManager.getSession(playerId);
+
+    expect(result).toEqual(sessionDetails);
+  });
+
+  it("stopHeartbeat should stop the heartbeat", () => {
+    const playerId = "player1";
+    const sessionDetails = { id: "session1", heartbeatId: 1 };
+
+    mediaSessionCacheManager.storeSession({ playerId, sessionDetails });
+
+    const result = mediaSessionCacheManager.getSession(playerId);
+
+    mediaSessionCacheManager.stopHeartbeat({ playerId });
+
+    expect(result.heartbeatId).toEqual(null);
+  });
+
+  it("updateLastTriggeredEventTS should update the timestamp", () => {
+    const playerId = "player1";
+    const now = Date.now();
+    const sessionDetails = { id: "session1", heartbeatId: 1 };
+
+    mediaSessionCacheManager.storeSession({ playerId, sessionDetails });
+    mediaSessionCacheManager.updateLastTriggeredEventTS({ playerId });
+
+    const session = mediaSessionCacheManager.getSession(playerId);
+
+    expect(session.latestTriggeredEvent).toBeGreaterThanOrEqual(now);
+  });
+
+  it("storeSession should store the session", () => {
+    const playerId = "player1";
+    const sessionDetails = { id: "session1" };
+    mediaSessionCacheManager.storeSession({ playerId, sessionDetails });
+
+    const session = mediaSessionCacheManager.getSession(playerId);
+
+    expect(session).toEqual(sessionDetails);
+  });
+
+  it("saveHeartbeat should save the heartbeat", () => {
+    const playerId = "player1";
+    const sessionDetails = { id: "session1" };
+    mediaSessionCacheManager.storeSession({ playerId, sessionDetails });
+    mediaSessionCacheManager.saveHeartbeat({ playerId, heartbeatId: 1 });
+
+    const session = mediaSessionCacheManager.getSession(playerId);
+
+    expect(session.heartbeatId).toEqual(1);
+  });
+});

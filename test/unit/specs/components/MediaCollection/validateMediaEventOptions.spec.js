@@ -9,3 +9,56 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+import validateMediaEventOptions from "../../../../../src/components/MediaCollection/validateMediaEventOptions";
+
+describe("MediaCollection::validateMediaEventOptions", () => {
+  it("should not fail when payerId and xdm are used", () => {
+    const options = {
+      playerId: "playerId",
+      xdm: {
+        eventType: "eventType",
+        mediaCollection: {
+          playhead: 0,
+          sessionID: "sessionID"
+        }
+      }
+    };
+
+    expect(() => {
+      validateMediaEventOptions({ options });
+    }).not.toThrowError();
+  });
+
+  it("should not fail when xdm with playhead is used", () => {
+    const options = {
+      xdm: {
+        eventType: "eventType",
+        mediaCollection: {
+          playhead: 0,
+          sessionID: "sessionID"
+        }
+      }
+    };
+
+    expect(() => {
+      validateMediaEventOptions({ options });
+    }).not.toThrowError();
+  });
+
+  it("should throw an error when invalid options are passed", () => {
+    const options = {
+      xdm: {
+        eventType: "eventType",
+        mediaCollection: {
+          playhead: "0",
+          sessionID: "sessionID"
+        }
+      }
+    };
+
+    expect(() => {
+      validateMediaEventOptions({ options });
+    }).toThrowError();
+  });
+});

@@ -31,6 +31,7 @@ export default ({ options }) => {
           })
         })
       }).required(),
+
       objectOf({
         xdm: objectOf({
           mediaCollection: objectOf({
@@ -40,6 +41,7 @@ export default ({ options }) => {
         })
       }).required()
     ],
+
     "Error validating the createMediaSession command options."
   );
 

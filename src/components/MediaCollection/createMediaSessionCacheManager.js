@@ -18,34 +18,42 @@ export default () => {
   };
 
   const saveHeartbeat = ({ playerId, heartbeatId }) => {
-    const mediaSession = mediaSessionCache[playerId];
-    if (!mediaSession) {
+    const sessionDetails = mediaSessionCache[playerId];
+
+    if (!sessionDetails) {
       return;
     }
-    mediaSession.heartbeatId = heartbeatId;
+
+    sessionDetails.heartbeatId = heartbeatId;
   };
 
   const stopHeartbeat = ({ playerId }) => {
-    const mediaSession = mediaSessionCache[playerId];
-    if (!mediaSession) {
+    const sessionDetails = mediaSessionCache[playerId];
+
+    if (!sessionDetails) {
       return;
     }
-    clearInterval(mediaSession.heartbeatId);
-    mediaSession.heartbeatId = null;
+
+    clearInterval(sessionDetails.heartbeatId);
+
+    sessionDetails.heartbeatId = null;
   };
 
   const updateLastTriggeredEventTS = ({ playerId }) => {
-    const player = mediaSessionCache[playerId];
-    if (!player) {
+    const sessionDetails = mediaSessionCache[playerId];
+
+    if (!sessionDetails) {
       return;
     }
-    player.latestTriggeredEvent = Date.now();
+
+    sessionDetails.latestTriggeredEvent = Date.now();
   };
 
   const storeSession = ({ playerId, sessionDetails }) => {
     if (mediaSessionCache === undefined) {
       mediaSessionCache = {};
     }
+
     mediaSessionCache[playerId] = sessionDetails;
   };
 

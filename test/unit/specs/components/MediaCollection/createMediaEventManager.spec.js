@@ -14,7 +14,7 @@ governing permissions and limitations under the License.
 
 import createMediaEventManager from "../../../../../src/components/MediaCollection/createMediaEventManager";
 
-describe("createMediaEventManager", () => {
+describe("MediaCollection::createMediaEventManager", () => {
   let config;
   let eventManager;
   let consent;

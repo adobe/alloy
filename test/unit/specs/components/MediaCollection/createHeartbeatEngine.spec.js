@@ -14,7 +14,7 @@ governing permissions and limitations under the License.
 
 import createHeartbeatEngine from "../../../../../src/components/MediaCollection/createHeartbeatEngine";
 
-describe("createHeartbeatEngine", () => {
+describe("MediaCollection::createHeartbeatEngine", () => {
   let config;
   let mediaEventManager;
   let mediaSessionCacheManager;

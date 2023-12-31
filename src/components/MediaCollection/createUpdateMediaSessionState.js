@@ -14,9 +14,6 @@ import MediaEvents from "./constants/eventTypes";
 
 export default ({ mediaSessionCacheManager }) => {
   return ({ playerId, eventType }) => {
-    if (!playerId) {
-      return;
-    }
     if (
       eventType === MediaEvents.SESSION_COMPLETE ||
       eventType === MediaEvents.SESSION_END
@@ -24,8 +21,6 @@ export default ({ mediaSessionCacheManager }) => {
       mediaSessionCacheManager.stopHeartbeat({ playerId });
     }
 
-    mediaSessionCacheManager.updateLastTriggeredEventTS({
-      playerId
-    });
+    mediaSessionCacheManager.updateLastTriggeredEventTS({ playerId });
   };
 };

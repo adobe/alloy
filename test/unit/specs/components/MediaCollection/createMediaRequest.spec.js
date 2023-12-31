@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import createMediaRequest from "../../../../../src/components/MediaCollection/createMediaRequest";
 
-describe("createMediaRequest", () => {
+describe("MediaCollection::createMediaRequest", () => {
   it("should call createRequest with correct parameters", () => {
     const mediaRequestPayload = {}; // replace with valid payload
     const action = "testAction";
