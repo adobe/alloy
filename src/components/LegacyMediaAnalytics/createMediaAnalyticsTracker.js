@@ -102,16 +102,17 @@ const createGetInstance = ({ config, logger, mediaEventManager }) => {
   };
   const getEventType = ({ eventType }) => {
     if (eventType === MEDIA_EVENTS.BufferComplete) {
-      return `media.${MEDIA_EVENTS.Play}`;
+      return MEDIA_EVENTS.Play;
     }
-    return `media.${eventType}`;
+    return eventType;
   };
 
   const trackEvent = ({ eventType, mediaDetails }) => {
     return deferSession.promise
       .then(sessionID => {
+        const action = getEventType({ eventType });
         const xdm = {
-          eventType: getEventType({ eventType }),
+          eventType: `media.${action}`,
           mediaCollection: {
             sessionID,
             playhead: trackerState.lastPlayhead
@@ -119,11 +120,9 @@ const createGetInstance = ({ config, logger, mediaEventManager }) => {
         };
         deepAssign(xdm.mediaCollection, mediaDetails);
         const event = mediaEventManager.createMediaEvent({ options: { xdm } });
-        return mediaEventManager
-          .trackMediaEvent({ event, action: eventType })
-          .then(() => {
-            updateLastTimeEventTriggered();
-          });
+        return mediaEventManager.trackMediaEvent({ event, action }).then(() => {
+          updateLastTimeEventTriggered();
+        });
       })
       .catch(error => {
         logger.warn(
@@ -181,20 +180,20 @@ const createGetInstance = ({ config, logger, mediaEventManager }) => {
         });
     },
     trackPlay: () => {
-      return trackEvent({ eventType: Event.Play });
+      return trackEvent({ eventType: MEDIA_EVENTS.Play });
     },
     trackPause: () => {
-      return trackEvent({ eventType: Event.Pause });
+      return trackEvent({ eventType: MEDIA_EVENTS.Pause });
     },
     trackSessionEnd: () => {
       clearInterval(ticker);
-      return trackEvent({ eventType: Event.SessionEnd }).then(() => {
+      return trackEvent({ eventType: MEDIA_EVENTS.SessionEnd }).then(() => {
         deferSession = null;
       });
     },
     trackComplete: () => {
       clearInterval(ticker);
-      return trackEvent({ eventType: Event.SessionComplete });
+      return trackEvent({ eventType: MEDIA_EVENTS.SessionComplete });
     },
     trackError: errorId => {
       logger.info(`trackError(${errorId})`);
@@ -206,7 +205,7 @@ const createGetInstance = ({ config, logger, mediaEventManager }) => {
       const mediaDetails = {
         errorDetails
       };
-      return trackEvent({ eventType: Event.SessionEnd, mediaDetails });
+      return trackEvent({ eventType: MEDIA_EVENTS.SessionEnd, mediaDetails });
     },
     trackEvent: (eventType, info, context) => {
       if (isEmptyObject(info)) {
