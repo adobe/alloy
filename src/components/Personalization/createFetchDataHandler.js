@@ -30,7 +30,10 @@ export default ({
     }
     mergeQuery(event, personalizationDetails.createQueryDetails());
 
+    // This needs to be called before the response so that future sendEvent calls
+    // can know to wait until this request is complete for pending display notifications.
     const handleNotifications = notificationHandler(
+      personalizationDetails.isRenderDecisions(),
       personalizationDetails.isSendDisplayEvent(),
       personalizationDetails.getViewName()
     );

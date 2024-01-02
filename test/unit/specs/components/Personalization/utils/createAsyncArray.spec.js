@@ -21,15 +21,15 @@ describe("Personalization::utils::createAsyncArray", () => {
 
   it("should add items to the array, and clear the items", async () => {
     const asyncArray = createAsyncArray();
-    await asyncArray.concat(Promise.resolve(["myitem1"]));
+    asyncArray.concat(Promise.resolve(["myitem1"]));
     expect(await asyncArray.clear()).toEqual(["myitem1"]);
     expect(await asyncArray.clear()).toEqual([]);
   });
 
   it("should add multiple arrays", async () => {
     const asyncArray = createAsyncArray();
-    await asyncArray.concat(Promise.resolve(["myitem1"]));
-    await asyncArray.concat(Promise.resolve(["myitem2"]));
+    asyncArray.concat(Promise.resolve(["myitem1"]));
+    asyncArray.concat(Promise.resolve(["myitem2"]));
     expect(await asyncArray.clear()).toEqual(["myitem1", "myitem2"]);
   });
 
@@ -42,5 +42,12 @@ describe("Personalization::utils::createAsyncArray", () => {
     expectAsync(clearPromise).toBePending();
     deferred.resolve(["myitem1"]);
     expect(await clearPromise).toEqual(["myitem1"]);
+  });
+
+  it("should handle rejected promises", async () => {
+    const asyncArray = createAsyncArray();
+    asyncArray.concat(Promise.resolve([1, 2]));
+    asyncArray.concat(Promise.reject(new Error("Error!")));
+    expect(await asyncArray.clear()).toEqual([1, 2]);
   });
 });
