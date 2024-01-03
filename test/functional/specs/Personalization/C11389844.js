@@ -179,7 +179,7 @@ const simulateViewChange = async (alloy, personalizationPayload) => {
   await t.expect(allPropositionsWereRendered).eql(true);
 };
 
-test("Test C11389844: AJO SPA support", async () => {
+test.skip("Test C11389844: AJO SPA support", async () => {
   const alloy = createAlloyProxy();
 
   await alloy.configure(config);

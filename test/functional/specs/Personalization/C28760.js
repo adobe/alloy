@@ -53,7 +53,9 @@ test("Test C28760: A notification collect should be triggered if a VEC dom actio
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
-  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
+  await t
+    .expect(networkLogger.edgeEndpointLogs.requests.count(() => true))
+    .eql(2);
 
   const sendEventRequest = networkLogger.edgeEndpointLogs.requests[0];
   const requestBody = JSON.parse(sendEventRequest.request.body);

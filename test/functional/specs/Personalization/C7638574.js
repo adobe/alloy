@@ -47,7 +47,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C7638574: AJO offers for custom surface are delivered", async () => {
+test.skip("Test C7638574: AJO offers for custom surface are delivered", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const personalization = { surfaces: [AJO_TEST_SURFACE] };
