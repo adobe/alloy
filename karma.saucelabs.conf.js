@@ -32,7 +32,9 @@ module.exports = config => {
       browserName: "firefox",
       platformName: "Windows 11",
       browserVersion: "latest",
-      "moz:debuggerAddress": true
+      "sauce:options": {
+        "moz:debuggerAddress": true
+      }
     },
     sl_edgeW3C: {
       base: "SauceLabs",
