@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { GENERAL } from "../../constants/consentPurpose";
+import { IN, OUT } from "../../constants/consentStatus";
 
 export default ({
   storedConsent,
@@ -20,7 +21,9 @@ export default ({
   sendSetConsentRequest,
   validateSetConsentOptions,
   consentHashStore,
-  doesIdentityCookieExist
+  doesIdentityCookieExist,
+  logger,
+  createConsentStateMachine
 }) => {
   const defaultConsentByPurpose = { [GENERAL]: defaultConsent };
   let storedConsentByPurpose = storedConsent.read();
@@ -37,15 +40,23 @@ export default ({
     storedConsentByPurpose = {};
   }
 
-  consent.initializeConsent(defaultConsentByPurpose, storedConsentByPurpose);
+  const generalConsentState = createConsentStateMachine({
+    logger,
+    defaultState: defaultConsentByPurpose[GENERAL],
+    storedState: storedConsentByPurpose[GENERAL]
+  });
+  consent.initializeConsent(generalConsentState);
 
   const readCookieIfQueueEmpty = () => {
     if (taskQueue.length === 0) {
       const storedConsentObject = storedConsent.read();
       // Only read cookies when there are no outstanding setConsent
       // requests. This helps with race conditions.
-      if (storedConsentObject[GENERAL] !== undefined) {
-        consent.setConsent(storedConsentObject);
+      if (storedConsentObject[GENERAL] === IN) {
+        generalConsentState.in();
+      }
+      if (storedConsentObject[GENERAL] === OUT) {
+        generalConsentState.out();
       }
     }
   };
@@ -59,7 +70,7 @@ export default ({
           identityMap,
           edgeConfigOverrides
         }) => {
-          consent.suspend();
+          generalConsentState.pending();
           const consentHashes = consentHashStore.lookup(consentOptions);
           return taskQueue
             .addTask(() => {

@@ -10,50 +10,34 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { IN, OUT, PENDING } from "../../constants/consentStatus";
-import { GENERAL } from "../../constants/consentPurpose";
-import {
-  CONSENT_SOURCE_DEFAULT,
-  CONSENT_SOURCE_INITIAL,
-  CONSENT_SOURCE_NEW
-} from "./createConsentStateMachine";
+import { defer } from "../../utils";
 
-export default ({ generalConsentState, logger }) => {
-  const setConsent = (consentByPurpose, source) => {
-    switch (consentByPurpose[GENERAL]) {
-      case IN:
-        generalConsentState.in(source);
-        break;
-      case OUT:
-        generalConsentState.out(source);
-        break;
-      case PENDING:
-        generalConsentState.pending(source);
-        break;
-      default:
-        logger.warn(`Unknown consent value: ${consentByPurpose[GENERAL]}`);
-        break;
-    }
-  };
+export default () => {
+  const generalConsentStateDefer = defer();
+
   return {
-    initializeConsent(defaultConsentByPurpose, storedConsentByPurpose) {
-      if (storedConsentByPurpose[GENERAL]) {
-        setConsent(storedConsentByPurpose, CONSENT_SOURCE_INITIAL);
-      } else {
-        setConsent(defaultConsentByPurpose, CONSENT_SOURCE_DEFAULT);
-      }
+    initializeConsent(generalConsentState) {
+      generalConsentStateDefer.resolve(generalConsentState);
     },
-    setConsent(consentByPurpose) {
-      setConsent(consentByPurpose, CONSENT_SOURCE_NEW);
-    },
-    suspend() {
-      generalConsentState.pending();
-    },
+    /**
+     * Waits for consent to be resolved (i.e. read consent cookie or setConsent is called) and then resolves or rejects.
+     *
+     * @returns resolved promise if consent is IN, rejected promise if consent is OUT.
+     */
     awaitConsent() {
-      return generalConsentState.awaitConsent();
+      return generalConsentStateDefer.promise.then(generalConsentState =>
+        generalConsentState.awaitConsent()
+      );
     },
+    /**
+     * Run if consent is IN, but return immediately for anything else
+     *
+     * @returns resolved promise if consent is IN, rejected promise if consent is OUT or PENDING
+     */
     withConsent() {
-      return generalConsentState.withConsent();
+      return generalConsentStateDefer.promise.then(generalConsentState =>
+        generalConsentState.withConsent()
+      );
     }
   };
 };

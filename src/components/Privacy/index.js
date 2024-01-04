@@ -20,6 +20,7 @@ import createComponent from "./createComponent";
 import createConsentHashStore from "./createConsentHashStore";
 import createConsentRequestPayload from "./createConsentRequestPayload";
 import createConsentRequest from "./createConsentRequest";
+import createConsentStateMachine from "./createConsentStateMachine";
 import createStoredConsent from "./createStoredConsent";
 import injectSendSetConsentRequest from "./injectSendSetConsentRequest";
 import parseConsentCookie from "./parseConsentCookie";
@@ -29,7 +30,8 @@ const createPrivacy = ({
   config,
   consent,
   sendEdgeNetworkRequest,
-  createNamespacedStorage
+  createNamespacedStorage,
+  logger
 }) => {
   const { orgId, defaultConsent } = config;
   const storedConsent = createStoredConsent({
@@ -61,10 +63,26 @@ const createPrivacy = ({
     sendSetConsentRequest,
     validateSetConsentOptions,
     consentHashStore,
-    doesIdentityCookieExist
+    doesIdentityCookieExist,
+    logger,
+    createConsentStateMachine
   });
 };
 
 createPrivacy.namespace = "Privacy";
 
 export default createPrivacy;
+
+/*
+// Excluded component would look like this:
+
+export default ({
+  consent
+}) => {
+  consent.initializeConsent({
+    awaitConsent: () => Promise.resolve(),
+    withConsent: () => Promise.resolve()
+  });
+};
+
+*/

@@ -40,7 +40,9 @@ describe("privacy:createComponent", () => {
   let doesIdentityCookieExist;
   let requestFailureError;
   let component;
-  let config;
+  let logger;
+  let createConsentStateMachine;
+  let consentStateMachine;
 
   const setIdentityCookie = () => {
     doesIdentityCookieExist.and.returnValue(true);
@@ -73,9 +75,14 @@ describe("privacy:createComponent", () => {
     setIdentityCookie();
     consentHashes.isNew.and.returnValue(true);
     requestFailureError = new Error("Request for setting test consent failed.");
-    config = {
-      edgeConfigOverrides: {}
-    };
+    logger = {};
+    consentStateMachine = jasmine.createSpyObj("consentStateMachine", [
+      "in",
+      "out",
+      "pending"
+    ]);
+    createConsentStateMachine = jasmine.createSpy("createConsentStateMachine");
+    createConsentStateMachine.and.returnValue(consentStateMachine);
   });
 
   const build = () => {
@@ -88,7 +95,8 @@ describe("privacy:createComponent", () => {
       validateSetConsentOptions,
       consentHashStore,
       doesIdentityCookieExist,
-      config
+      logger,
+      createConsentStateMachine
     });
   };
 
@@ -131,10 +139,12 @@ describe("privacy:createComponent", () => {
     defaultConsent = "mydefaultconsent";
     storedConsent.read.and.returnValue({ general: "myinitialconsent" });
     build();
-    expect(consent.initializeConsent).toHaveBeenCalledWith(
-      { general: "mydefaultconsent" },
-      { general: "myinitialconsent" }
-    );
+    expect(createConsentStateMachine).toHaveBeenCalledWith({
+      logger,
+      defaultState: "mydefaultconsent",
+      storedState: "myinitialconsent"
+    });
+    expect(consent.initializeConsent).toHaveBeenCalledWith(consentStateMachine);
   });
 
   it("handles the setConsent command", () => {
@@ -146,7 +156,7 @@ describe("privacy:createComponent", () => {
     component.commands.setConsent
       .run({ identityMap: { my: "map" }, ...CONSENT_IN })
       .then(onResolved);
-    expect(consent.suspend).toHaveBeenCalled();
+    expect(consentStateMachine.pending).toHaveBeenCalled();
     setConsentMock.respondWithIn();
     return flushPromiseChains().then(() => {
       expect(sendSetConsentRequest).toHaveBeenCalledWith(
@@ -155,7 +165,7 @@ describe("privacy:createComponent", () => {
           identityMap: { my: "map" }
         })
       );
-      expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
+      expect(consentStateMachine.in).toHaveBeenCalled();
       expect(onResolved).toHaveBeenCalledWith(undefined);
     });
   });
@@ -177,7 +187,7 @@ describe("privacy:createComponent", () => {
         ...CONSENT_IN
       })
       .then(onResolved);
-    expect(consent.suspend).toHaveBeenCalled();
+    expect(consentStateMachine.pending).toHaveBeenCalled();
     setConsentMock.respondWithIn();
     return flushPromiseChains().then(() => {
       expect(sendSetConsentRequest).toHaveBeenCalledWith({
@@ -189,7 +199,7 @@ describe("privacy:createComponent", () => {
           }
         }
       });
-      expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
+      expect(consentStateMachine.in).toHaveBeenCalled();
       expect(onResolved).toHaveBeenCalledWith(undefined);
     });
   });
@@ -204,7 +214,7 @@ describe("privacy:createComponent", () => {
     setConsentCookieIn();
     setConsentMock.respondWithError();
     return flushPromiseChains().then(() => {
-      expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
+      expect(consentStateMachine.in).toHaveBeenCalled();
       expect(onRejected).toHaveBeenCalledWith(requestFailureError);
     });
   });
@@ -222,12 +232,12 @@ describe("privacy:createComponent", () => {
             consentOptions: CONSENT_IN.consent
           })
         );
-        expect(consent.setConsent).not.toHaveBeenCalledWith({ general: "in" });
+        expect(consentStateMachine.in).not.toHaveBeenCalled();
         setConsentMock.respondWithIn();
         return flushPromiseChains();
       })
       .then(() => {
-        expect(consent.setConsent).toHaveBeenCalledWith({ general: "in" });
+        expect(consentStateMachine.in).toHaveBeenCalled();
       });
   });
 
@@ -261,9 +271,8 @@ describe("privacy:createComponent", () => {
         return flushPromiseChains();
       })
       .then(() => {
-        expect(consent.setConsent).not.toHaveBeenCalledWith({ general: "in" });
-        expect(consent.setConsent).toHaveBeenCalledTimes(1);
-        expect(consent.setConsent).toHaveBeenCalledWith({ general: "out" });
+        expect(consentStateMachine.in).not.toHaveBeenCalled();
+        expect(consentStateMachine.out).toHaveBeenCalledTimes(1);
       });
   });
 
@@ -272,7 +281,7 @@ describe("privacy:createComponent", () => {
     build();
     setConsentCookieOut();
     component.lifecycle.onResponse();
-    expect(consent.setConsent).toHaveBeenCalledWith({ general: "out" });
+    expect(consentStateMachine.out).toHaveBeenCalled();
   });
 
   it("checks the cookie after an error response", () => {
@@ -280,7 +289,7 @@ describe("privacy:createComponent", () => {
     build();
     setConsentCookieOut();
     component.lifecycle.onRequestFailure();
-    expect(consent.setConsent).toHaveBeenCalledWith({ general: "out" });
+    expect(consentStateMachine.out).toHaveBeenCalled();
   });
 
   it("clears storage when the identity cookie is missing", () => {
@@ -289,10 +298,11 @@ describe("privacy:createComponent", () => {
     build();
     expect(consentHashStore.clear).toHaveBeenCalled();
     expect(storedConsent.clear).toHaveBeenCalled();
-    expect(consent.initializeConsent).toHaveBeenCalledWith(
-      { general: "in" },
-      {}
-    );
+    expect(createConsentStateMachine).toHaveBeenCalledWith({
+      logger,
+      defaultState: "in",
+      storedState: undefined
+    });
   });
 
   it("clears storage when the consent cookie is missing", () => {
@@ -307,13 +317,15 @@ describe("privacy:createComponent", () => {
     clearConsentCookie();
     build();
     component.lifecycle.onResponse();
-    expect(consent.setConsent).not.toHaveBeenCalled();
+    expect(consentStateMachine.in).not.toHaveBeenCalled();
+    expect(consentStateMachine.out).not.toHaveBeenCalled();
   });
 
   it("doesn't call setConsent when there is no cookie after onRequestFailure", () => {
     clearConsentCookie();
     build();
     component.lifecycle.onRequestFailure();
-    expect(consent.setConsent).not.toHaveBeenCalled();
+    expect(consentStateMachine.in).not.toHaveBeenCalled();
+    expect(consentStateMachine.out).not.toHaveBeenCalled();
   });
 });

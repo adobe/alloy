@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { toError, updateErrorMessage } from "../utils";
-import { DECLINED_CONSENT_ERROR_CODE } from "./consent/createConsentStateMachine";
+import { DECLINED_CONSENT_ERROR_CODE } from "../components/Privacy/createConsentStateMachine";
 
 export default ({ errorPrefix, logger }) => (error, operation) => {
   const err = toError(error);

@@ -25,7 +25,7 @@ import createComponentRegistry from "./createComponentRegistry";
 import injectSendNetworkRequest from "./network/injectSendNetworkRequest";
 import injectExtractEdgeInfo from "./edgeNetwork/injectExtractEdgeInfo";
 import createConsent from "./consent/createConsent";
-import createConsentStateMachine from "./consent/createConsentStateMachine";
+import createConsentStateMachine from "../components/Privacy/createConsentStateMachine";
 import createEvent from "./createEvent";
 import injectCreateResponse from "./injectCreateResponse";
 import injectExecuteCommand from "./injectExecuteCommand";

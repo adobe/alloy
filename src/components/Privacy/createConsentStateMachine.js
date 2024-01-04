@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { IN, OUT, PENDING } from "../../constants/consentStatus";
 import { defer } from "../../utils";
 
 export const DECLINED_CONSENT = "The user declined consent.";
@@ -24,10 +25,8 @@ const createDeclinedConsentError = errorMessage => {
   error.message = errorMessage;
   return error;
 };
-
-export default ({ logger }) => {
+export default ({ logger, defaultState, storedState }) => {
   const deferreds = [];
-
   const runAll = () => {
     while (deferreds.length) {
       deferreds.shift().resolve();
@@ -41,76 +40,83 @@ export default ({ logger }) => {
     }
   };
 
-  const awaitInitial = () =>
-    Promise.reject(new Error("Consent has not been initialized."));
   const awaitInDefault = () => Promise.resolve();
   const awaitIn = () => Promise.resolve();
+
   const awaitOutDefault = () =>
     Promise.reject(
       createDeclinedConsentError("No consent preferences have been set.")
     );
   const awaitOut = () =>
     Promise.reject(createDeclinedConsentError("The user declined consent."));
-  const awaitPending = returnImmediately => {
-    if (returnImmediately) {
-      return Promise.reject(new Error("Consent is pending."));
-    }
+
+  const awaitPendingDefault = () => {
     const deferred = defer();
     deferreds.push(deferred);
     return deferred.promise;
   };
+  const awaitPending = awaitPendingDefault;
 
-  return {
-    in(source) {
-      if (source === CONSENT_SOURCE_DEFAULT) {
-        this.awaitConsent = awaitInDefault;
-      } else {
-        if (source === CONSENT_SOURCE_INITIAL) {
+  const initial = (() => {
+    if (storedState) {
+      switch (storedState) {
+        case IN:
           logger.info(
             "Loaded user consent preferences. The user previously consented."
           );
-        } else if (
-          source === CONSENT_SOURCE_NEW &&
-          this.awaitConsent !== awaitIn
-        ) {
-          logger.info("User consented.");
-        }
+          return awaitIn;
+        case OUT:
+          logger.warn(
+            "Loaded user consent preferences. The user previously declined consent."
+          );
+          return awaitOut;
+        default:
+          logger.warn(`Unknown stored consent value: ${storedState}.`);
+      }
+    }
+    switch (defaultState) {
+      case IN:
+        return awaitInDefault;
+      case OUT:
+        logger.warn(
+          "User consent preferences not found. Default consent of out will be used."
+        );
+        return awaitOutDefault;
+      case PENDING:
+        logger.info(
+          "User consent preferences not found. Default consent of pending will be used. Some commands may be delayed."
+        );
+        return awaitPendingDefault;
+      default:
+        // This shouldn't ever be reached because we validate the default consent option.
+        return undefined;
+    }
+  })();
+
+  return {
+    in() {
+      if (this.awaitConsent !== awaitIn) {
+        logger.info("User consented.");
         runAll();
         this.awaitConsent = awaitIn;
       }
     },
-    out(source) {
-      if (source === CONSENT_SOURCE_DEFAULT) {
-        logger.warn(
-          "User consent preferences not found. Default consent of out will be used."
-        );
-        this.awaitConsent = awaitOutDefault;
-      } else {
-        if (source === CONSENT_SOURCE_INITIAL) {
-          logger.warn(
-            "Loaded user consent preferences. The user previously declined consent."
-          );
-        } else if (
-          source === CONSENT_SOURCE_NEW &&
-          this.awaitConsent !== awaitOut
-        ) {
-          logger.warn("User declined consent.");
-        }
+    out() {
+      if (this.awaitConsent !== awaitOut) {
+        logger.warn("User declined consent.");
         discardAll();
         this.awaitConsent = awaitOut;
       }
     },
-    pending(source) {
-      if (source === CONSENT_SOURCE_DEFAULT) {
-        logger.info(
-          "User consent preferences not found. Default consent of pending will be used. Some commands may be delayed."
-        );
-      }
+    pending() {
       this.awaitConsent = awaitPending;
     },
-    awaitConsent: awaitInitial,
+    awaitConsent: initial,
     withConsent() {
-      return this.awaitConsent(true);
+      if (this.awaitConsent === awaitPendingDefault) {
+        return Promise.reject(new Error("Consent is pending."));
+      }
+      return this.awaitConsent();
     }
   };
 };
