@@ -26,7 +26,7 @@ import createViewChangeHandler from "../../../../../../src/components/Personaliz
 import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage";
 import createApplyPropositions from "../../../../../../src/components/Personalization/createApplyPropositions";
 import createSetTargetMigration from "../../../../../../src/components/Personalization/createSetTargetMigration";
-import { createCallbackAggregator, assign } from "../../../../../../src/utils";
+import { assign, createCallbackAggregator } from "../../../../../../src/utils";
 import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition";
 import createProcessPropositions from "../../../../../../src/components/Personalization/handlers/createProcessPropositions";
 import createAsyncArray from "../../../../../../src/components/Personalization/utils/createAsyncArray";
@@ -38,6 +38,7 @@ import processDefaultContent from "../../../../../../src/components/Personalizat
 import { isPageWideSurface } from "../../../../../../src/components/Personalization/utils/surfaceUtils";
 import createSubscribeMessageFeed from "../../../../../../src/components/Personalization/createSubscribeMessageFeed";
 import createOnDecisionHandler from "../../../../../../src/components/Personalization/createOnDecisionHandler";
+import createNotificationHandler from "../../../../../../src/components/Personalization/createNotificationHandler";
 
 const createAction = renderFunc => ({ selector, content }) => {
   renderFunc(selector, content);
@@ -116,15 +117,19 @@ const buildComponent = ({
   });
 
   const renderedPropositions = createAsyncArray();
+  const notificationHandler = createNotificationHandler(
+    collect,
+    renderedPropositions
+  );
+
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
     showContainers,
     hideContainers,
     mergeQuery,
-    collect,
     processPropositions,
     createProposition,
-    renderedPropositions
+    notificationHandler
   });
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
@@ -153,7 +158,7 @@ const buildComponent = ({
   const onDecisionHandler = createOnDecisionHandler({
     processPropositions,
     createProposition,
-    collect,
+    notificationHandler,
     subscribeMessageFeed
   });
 

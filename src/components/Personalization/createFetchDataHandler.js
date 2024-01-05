@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { defer, groupBy } from "../../utils";
+import { groupBy } from "../../utils";
 
 const DECISIONS_HANDLE = "personalization:decisions";
 
@@ -18,10 +18,9 @@ export default ({
   showContainers,
   hideContainers,
   mergeQuery,
-  collect,
   processPropositions,
   createProposition,
-  renderedPropositions
+  notificationHandler
 }) => {
   return ({ cacheUpdate, personalizationDetails, event, onResponse }) => {
     if (personalizationDetails.isRenderDecisions()) {
@@ -31,21 +30,10 @@ export default ({
     }
     mergeQuery(event, personalizationDetails.createQueryDetails());
 
-    let handleNotifications;
-    if (personalizationDetails.isSendDisplayEvent()) {
-      handleNotifications = decisionsMeta => {
-        if (decisionsMeta.length > 0) {
-          collect({
-            decisionsMeta,
-            viewName: personalizationDetails.getViewName()
-          });
-        }
-      };
-    } else {
-      const renderedPropositionsDeferred = defer();
-      renderedPropositions.concat(renderedPropositionsDeferred.promise);
-      handleNotifications = renderedPropositionsDeferred.resolve;
-    }
+    const handleNotifications = notificationHandler(
+      personalizationDetails.isSendDisplayEvent(),
+      personalizationDetails.getViewName()
+    );
 
     onResponse(({ response }) => {
       const handles = response.getPayloadsByType(DECISIONS_HANDLE);

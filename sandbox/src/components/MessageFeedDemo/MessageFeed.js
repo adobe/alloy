@@ -446,8 +446,10 @@ export default function MessageFeed() {
   const shareSocialMedia = () => {
     window.alloy("evaluateRulesets", {
       renderDecisions: true,
-      decisionContext: {
-        action: "share-social-media"
+      personalization: {
+        decisionContext: {
+          action: "share-social-media"
+        }
       }
     });
   };
@@ -455,8 +457,10 @@ export default function MessageFeed() {
   const depositFunds = () => {
     window.alloy("evaluateRulesets", {
       renderDecisions: true,
-      decisionContext: {
-        action: "deposit-funds"
+      personalization: {
+        decisionContext: {
+          action: "deposit-funds"
+        }
       }
     });
   };

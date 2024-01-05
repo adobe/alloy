@@ -125,22 +125,7 @@ describe("Personalization::createViewCacheManager", () => {
       })
     ]);
 
-    expect(await cartViewPromise.then(propsToJSON)).toEqual([
-      {
-        scope: "cart",
-        scopeDetails: {
-          characteristics: {
-            scopeType: "view"
-          }
-        },
-        items: [
-          {
-            schema: DEFAULT_CONTENT_ITEM
-          }
-        ]
-      }
-    ]);
-
+    expect(await cartViewPromise).toEqual([propositions[2]]);
     expect(await viewCacheManager.getView("about").then(propsToJSON)).toEqual([
       {
         id: "foo4",

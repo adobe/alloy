@@ -23,6 +23,7 @@ import {
 } from "./constants";
 import createEvaluateRulesetsCommand from "./createEvaluateRulesetsCommand";
 import { clearLocalStorage, createInMemoryStorage } from "./utils";
+import { objectOf, boolean } from "../../utils/validation";
 
 const createDecisioningEngine = ({
   config,
@@ -73,15 +74,18 @@ const createDecisioningEngine = ({
       onBeforeEvent({
         event,
         renderDecisions,
-        decisionContext = {},
+        personalization = {},
         onResponse = noop
       }) {
+        const { decisionContext = {} } = personalization;
+
         onResponse(
           createOnResponseHandler({
             renderDecisions,
             decisionProvider,
             applyResponse,
             event,
+            personalization,
             decisionContext: contextProvider.getContext({
               [CONTEXT_KEY.TYPE]: CONTEXT_EVENT_TYPE.EDGE,
               [CONTEXT_KEY.SOURCE]: CONTEXT_EVENT_SOURCE.REQUEST,
@@ -95,8 +99,9 @@ const createDecisioningEngine = ({
     },
     commands: {
       evaluateRulesets: {
-        run: ({ renderDecisions, decisionContext = {} }) =>
-          evaluateRulesetsCommand.run({
+        run: ({ renderDecisions, personalization = {} }) => {
+          const { decisionContext = {} } = personalization;
+          return evaluateRulesetsCommand.run({
             renderDecisions,
             decisionContext: {
               [CONTEXT_KEY.TYPE]: CONTEXT_EVENT_TYPE.RULES_ENGINE,
@@ -104,7 +109,8 @@ const createDecisioningEngine = ({
               ...decisionContext
             },
             applyResponse
-          }),
+          });
+        },
         optionsValidator: evaluateRulesetsCommand.optionsValidator
       },
       subscribeRulesetItems: subscribeRulesetItems.command
@@ -113,4 +119,7 @@ const createDecisioningEngine = ({
 };
 
 createDecisioningEngine.namespace = "DecisioningEngine";
+createDecisioningEngine.configValidators = objectOf({
+  personalizationStorageEnabled: boolean().default(false)
+});
 export default createDecisioningEngine;

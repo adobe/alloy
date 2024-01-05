@@ -9,13 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { startsWith } from "../../../utils";
-import { removeNode } from "../../../utils/dom";
+import { isNonEmptyArray, queryString, startsWith } from "../../../utils";
+import { removeNode, selectNodes } from "../../../utils/dom";
 
 export const removeElementById = id => {
-  const element = document.getElementById(id);
-  if (element) {
-    removeNode(element);
+  const element = selectNodes(`#${id}`, document);
+  if (element && element.length > 0) {
+    removeNode(element[0]);
   }
 };
 export const parseAnchor = anchor => {
@@ -39,10 +39,10 @@ export const parseAnchor = anchor => {
   let interaction;
   let link;
 
-  if (hrefParts.length > 1) {
-    const queryParams = new URLSearchParams(hrefParts[1]);
-    interaction = queryParams.get("interaction") || "";
-    link = decodeURIComponent(queryParams.get("link") || "");
+  if (isNonEmptyArray(hrefParts)) {
+    const queryParams = queryString.parse(hrefParts[1]);
+    interaction = queryParams.interaction || "";
+    link = decodeURIComponent(queryParams.link || "");
   }
   return {
     action,

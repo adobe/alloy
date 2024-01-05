@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 import createOnDecisionHandler from "../../../../../src/components/Personalization/createOnDecisionHandler";
 import { MESSAGE_FEED_ITEM } from "../../../../../src/constants/schema";
 import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
+import createNotificationHandler from "../../../../../src/components/Personalization/createNotificationHandler";
 
 describe("Personalization::createOnDecisionHandler", () => {
   const PROPOSITIONS = [
@@ -183,8 +184,10 @@ describe("Personalization::createOnDecisionHandler", () => {
   let collect;
   let processPropositions;
   let createProposition;
-  let subscribeMessageFeed;
   let onDecisionHandler;
+  let renderedPropositions;
+  let notificationHandler;
+  let subscribeMessageFeed;
 
   beforeEach(() => {
     render = jasmine
@@ -200,6 +203,15 @@ describe("Personalization::createOnDecisionHandler", () => {
       isPageWideSurface: () => false
     });
 
+    renderedPropositions = jasmine.createSpyObj("renderedPropositions", [
+      "concat"
+    ]);
+
+    notificationHandler = createNotificationHandler(
+      collect,
+      renderedPropositions
+    );
+
     subscribeMessageFeed = jasmine.createSpyObj("subscribeMessageFeed", [
       "refresh"
     ]);
@@ -207,8 +219,7 @@ describe("Personalization::createOnDecisionHandler", () => {
     onDecisionHandler = createOnDecisionHandler({
       processPropositions,
       createProposition,
-      render,
-      collect,
+      notificationHandler,
       subscribeMessageFeed
     });
   });
@@ -225,8 +236,10 @@ describe("Personalization::createOnDecisionHandler", () => {
   });
 
   it("calls render if renderDecisions=true", async () => {
+    const mockEvent = { getViewName: () => "blippi" };
     const { propositions } = await onDecisionHandler({
-      viewName: "blippi",
+      event: mockEvent,
+      personalization: {},
       renderDecisions: true,
       propositions: PROPOSITIONS
     });
@@ -240,5 +253,20 @@ describe("Personalization::createOnDecisionHandler", () => {
       decisionsMeta: [{ hi: true }],
       viewName: "blippi"
     });
+    expect(renderedPropositions.concat).not.toHaveBeenCalled();
+  });
+
+  it("defers sending display notification when sendDisplayEvent=false", async () => {
+    await onDecisionHandler({
+      renderDecisions: true,
+      propositions: PROPOSITIONS,
+      event: { getViewName: () => "blippi" },
+      personalization: {
+        sendDisplayEvent: false
+      }
+    });
+
+    expect(collect).not.toHaveBeenCalled();
+    expect(renderedPropositions.concat).toHaveBeenCalledTimes(1);
   });
 });

@@ -10,11 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 export default lifecycle => {
-  return ({ viewName, renderDecisions = false, propositions = [] }) => {
+  return ({
+    renderDecisions = false,
+    propositions = [],
+    event,
+    personalization
+  }) => {
     if (propositions.length > 0 && lifecycle) {
-      lifecycle.onDecision({ renderDecisions, viewName, propositions });
+      lifecycle.onDecision({
+        renderDecisions,
+        propositions,
+        event,
+        personalization
+      });
     }
-
     return { propositions };
   };
 };

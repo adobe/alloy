@@ -53,7 +53,6 @@ test("Test C14400: When ID migration is disabled and no identity cookie is found
   await alloy.sendEvent({ renderDecisions: true });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
-  await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
     networkLogger.edgeEndpointLogs.requests[0].request.body

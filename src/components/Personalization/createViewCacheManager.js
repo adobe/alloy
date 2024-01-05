@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { groupBy } from "../../utils";
+import { assign, groupBy } from "../../utils";
 import defer from "../../utils/defer";
 import { DEFAULT_CONTENT_ITEM } from "../../constants/schema";
 import { VIEW_SCOPE_TYPE } from "./constants/scopeType";
@@ -49,9 +49,18 @@ export default ({ createProposition }) => {
     const updateCacheDeferred = defer();
 
     cacheUpdateCreatedAtLeastOnce = true;
-    viewStoragePromise = viewStoragePromise.then(oldViewStorage =>
-      updateCacheDeferred.promise.catch(() => oldViewStorage)
-    );
+
+    // Additional updates will merge the new view propositions with the old.
+    // i.e. if there are new "cart" view propositions they will overwrite the
+    // old "cart" view propositions, but if there are no new "cart" view
+    // propositions the old "cart" view propositions will remain.
+    viewStoragePromise = viewStoragePromise.then(oldViewStorage => {
+      return updateCacheDeferred.promise
+        .then(newViewStorage => {
+          return assign({}, oldViewStorage, newViewStorage);
+        })
+        .catch(() => oldViewStorage);
+    });
 
     return {
       update(viewPropositions) {

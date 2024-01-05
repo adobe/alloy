@@ -92,8 +92,8 @@ const commands = [
   "appendIdentityToUrl",
   "applyPropositions",
   "subscribeRulesetItems",
-  "subscribeMessageFeed",
-  "evaluateRulesets"
+  "evaluateRulesets",
+  "subscribeMessageFeed"
 ];
 
 export default (instanceName = "alloy") => {

@@ -13,15 +13,17 @@ governing permissions and limitations under the License.
 export default ({
   processPropositions,
   createProposition,
-  collect,
+  notificationHandler,
   subscribeMessageFeed
 }) => {
-  return ({ viewName, renderDecisions, propositions }) => {
+  return ({ renderDecisions, propositions, event, personalization = {} }) => {
     subscribeMessageFeed.refresh(propositions);
-
     if (!renderDecisions) {
       return Promise.resolve();
     }
+
+    const { sendDisplayEvent = true } = personalization;
+    const viewName = event ? event.getViewName() : undefined;
 
     const propositionsToExecute = propositions.map(proposition =>
       createProposition(proposition, true)
@@ -31,14 +33,8 @@ export default ({
       propositionsToExecute
     );
 
-    render().then(decisionsMeta => {
-      if (decisionsMeta.length > 0) {
-        collect({
-          decisionsMeta,
-          viewName
-        });
-      }
-    });
+    const handleNotifications = notificationHandler(sendDisplayEvent, viewName);
+    render().then(handleNotifications);
 
     return Promise.resolve({
       propositions: returnedPropositions

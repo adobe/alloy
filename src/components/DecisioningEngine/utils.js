@@ -61,3 +61,23 @@ export const createInMemoryStorage = () => {
 export const clearLocalStorage = storage => {
   storage.clear();
 };
+
+export const hasExperienceData = xdm => {
+  const { eventType = "", _experience } = xdm;
+
+  if (!eventType || eventType === "") {
+    return false;
+  }
+
+  if (!_experience || typeof _experience !== "object") {
+    return false;
+  }
+
+  return true;
+};
+
+export const getDecisionProvider = proposition => {
+  const { scopeDetails = {} } = proposition;
+  const { decisionProvider } = scopeDetails;
+  return decisionProvider;
+};

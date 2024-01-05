@@ -21,7 +21,7 @@ export default ({ modules, preprocessors = createPreprocessors(), logger }) => {
         stack ? `\n ${stack}` : ""
       }`;
 
-      logger.error(errorMessage);
+      logger.warn(errorMessage);
     }
   };
 

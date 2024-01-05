@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, boolean, objectOf } from "../../utils/validation";
+import { boolean, objectOf, string } from "../../utils/validation";
 import createComponent from "./createComponent";
 import { initDomActionsModules } from "./dom-actions";
 import createCollect from "./createCollect";
@@ -38,11 +38,12 @@ import createProcessDomAction from "./handlers/createProcessDomAction";
 import createProcessHtmlContent from "./handlers/createProcessHtmlContent";
 import createProcessRedirect from "./handlers/createProcessRedirect";
 import createProcessPropositions from "./handlers/createProcessPropositions";
-import createSubscribeMessageFeed from "./createSubscribeMessageFeed";
 import createOnDecisionHandler from "./createOnDecisionHandler";
 import createProcessInAppMessage from "./handlers/createProcessInAppMessage";
 import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules";
 import createRedirect from "./dom-actions/createRedirect";
+import createNotificationHandler from "./createNotificationHandler";
+import createSubscribeMessageFeed from "./createSubscribeMessageFeed";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -92,16 +93,21 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   });
 
   const renderedPropositions = createAsyncArray();
+  const notificationHandler = createNotificationHandler(
+    collect,
+    renderedPropositions
+  );
+
   const fetchDataHandler = createFetchDataHandler({
     prehidingStyle,
     showContainers,
     hideContainers,
     mergeQuery,
-    collect,
     processPropositions,
     createProposition,
-    renderedPropositions
+    notificationHandler
   });
+
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
     collectClicks,
@@ -122,14 +128,12 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     targetMigrationEnabled
   });
 
-  const subscribeMessageFeed = createSubscribeMessageFeed({
-    collect
-  });
+  const subscribeMessageFeed = createSubscribeMessageFeed();
 
   const onDecisionHandler = createOnDecisionHandler({
     processPropositions,
     createProposition,
-    collect,
+    notificationHandler,
     subscribeMessageFeed
   });
 

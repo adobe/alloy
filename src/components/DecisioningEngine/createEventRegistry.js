@@ -13,9 +13,12 @@ import {
   createRestoreStorage,
   createSaveStorage,
   getExpirationDate,
-  getActivityId
+  getActivityId,
+  hasExperienceData,
+  getDecisionProvider
 } from "./utils";
 import { EVENT_TYPE_TRUE } from "../../constants/eventType";
+import { ADOBE_JOURNEY_OPTIMIZER } from "../../constants/decisionProvider";
 
 const STORAGE_KEY = "events";
 const MAX_EVENT_RECORDS = 1000;
@@ -65,6 +68,10 @@ export default ({ storage }) => {
   setStorage(storage);
 
   const addEvent = (event, eventType, eventId, action) => {
+    if (!eventType || !eventId) {
+      return undefined;
+    }
+
     if (!events[eventType]) {
       events[eventType] = {};
     }
@@ -95,16 +102,12 @@ export default ({ storage }) => {
 
   const addExperienceEdgeEvent = event => {
     const { xdm = {} } = event.getContent();
-    const { eventType = "", _experience } = xdm;
+    const { _experience } = xdm;
 
-    if (
-      !eventType ||
-      !_experience ||
-      typeof _experience !== "object" ||
-      eventType === ""
-    ) {
+    if (!hasExperienceData(xdm)) {
       return;
     }
+
     const { decisioning = {} } = _experience;
     const {
       propositionEventType: propositionEventTypeObj = {},
@@ -119,11 +122,18 @@ export default ({ storage }) => {
       return;
     }
 
+    const validPropositionEventType = propositionEventType =>
+      propositionEventTypeObj[propositionEventType] === EVENT_TYPE_TRUE;
+
     const { id: action } = propositionAction;
 
-    propositionEventTypesList.forEach(propositionEventType => {
-      if (propositionEventTypeObj[propositionEventType] === EVENT_TYPE_TRUE) {
+    propositionEventTypesList
+      .filter(validPropositionEventType)
+      .forEach(propositionEventType => {
         propositions.forEach(proposition => {
+          if (getDecisionProvider(proposition) !== ADOBE_JOURNEY_OPTIMIZER) {
+            return;
+          }
           addEvent(
             {},
             propositionEventType,
@@ -131,8 +141,7 @@ export default ({ storage }) => {
             action
           );
         });
-      }
-    });
+      });
   };
   const getEvent = (eventType, eventId) => {
     if (!events[eventType]) {

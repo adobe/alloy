@@ -57,6 +57,17 @@ describe("DecisioningEngine:createEventRegistry", () => {
                     id: "222#bbb"
                   }
                 }
+              },
+              {
+                id: "333",
+                scope: "web://something",
+                scopeDetails: {
+                  decisionProvider: "TGT",
+                  correlationID: "aasfsdf",
+                  activity: {
+                    id: "333#ccc"
+                  }
+                }
               }
             ],
             propositionEventType: {
@@ -129,6 +140,46 @@ describe("DecisioningEngine:createEventRegistry", () => {
     });
 
     expect(eventRegistry.toJSON()).toEqual({});
+  });
+
+  it("does not register events without type and id", () => {
+    const eventRegistry = createEventRegistry({ storage });
+
+    expect(eventRegistry.addEvent({}, "trigger")).toBeUndefined();
+    expect(eventRegistry.addEvent({}, "trigger", undefined)).toBeUndefined();
+    expect(eventRegistry.addEvent({})).toBeUndefined();
+
+    expect(eventRegistry.toJSON()).toEqual({});
+
+    expect(
+      eventRegistry.addEvent({ something: "special" }, "display", "abc#123")
+    ).toEqual({
+      event: {
+        "iam.id": "abc#123",
+        "iam.eventType": "display",
+        "iam.action": undefined,
+        something: "special"
+      },
+      firstTimestamp: jasmine.any(Number),
+      timestamp: jasmine.any(Number),
+      count: 1
+    });
+
+    expect(eventRegistry.toJSON()).toEqual({
+      display: {
+        "abc#123": {
+          event: {
+            "iam.id": "abc#123",
+            "iam.eventType": "display",
+            "iam.action": undefined,
+            something: "special"
+          },
+          firstTimestamp: jasmine.any(Number),
+          timestamp: jasmine.any(Number),
+          count: 1
+        }
+      }
+    });
   });
 
   it("increments count and sets timestamp", done => {
