@@ -57,8 +57,8 @@ export default ({
           : edgeDomain;
         const locationHint = getLocationHint();
         const edgeBasePathWithLocationHint = locationHint
-          ? `${edgeBasePath}/${locationHint}`
-          : edgeBasePath;
+          ? `${edgeBasePath}/${locationHint}${request.getEdgeSubPath()}`
+          : `${edgeBasePath}${request.getEdgeSubPath()}`;
         const configId = request.getDatastreamIdOverride() || datastreamId;
         const payload = request.getPayload();
         if (configId !== datastreamId) {
