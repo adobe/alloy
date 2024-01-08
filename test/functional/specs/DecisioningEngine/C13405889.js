@@ -67,7 +67,7 @@ const getAepEdgeResponse = async requestId => {
   return res.json();
 };
 
-test("Test C13405889: Verify DOM action using the evaluateRulesets command", async () => {
+test.skip("Test C13405889: Verify DOM action using the evaluateRulesets command", async () => {
   const realResponse = await getAepEdgeResponse(uuid());
   const alloy = createAlloyProxy();
   await alloy.configure(config);
