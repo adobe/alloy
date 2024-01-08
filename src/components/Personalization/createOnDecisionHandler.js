@@ -31,7 +31,11 @@ export default ({
       propositionsToExecute
     );
 
-    const handleNotifications = notificationHandler(sendDisplayEvent, viewName);
+    const handleNotifications = notificationHandler(
+      renderDecisions,
+      sendDisplayEvent,
+      viewName
+    );
     render().then(handleNotifications);
 
     return Promise.resolve({

@@ -30,7 +30,7 @@ describe("Personalization::createNotificationHandler", () => {
   });
 
   it("emits a notification immediately", () => {
-    const handleNotifications = notificationHandler(true, "foo");
+    const handleNotifications = notificationHandler(true, true, "foo");
     handleNotifications(NOTIFICATIONS);
     expect(collect).toHaveBeenCalledOnceWith({
       decisionsMeta: NOTIFICATIONS,
@@ -39,10 +39,15 @@ describe("Personalization::createNotificationHandler", () => {
   });
 
   it("defers the notification", () => {
-    const handleNotifications = notificationHandler(false, "foo");
+    const handleNotifications = notificationHandler(true, false, undefined);
     handleNotifications(NOTIFICATIONS);
 
     expect(collect).not.toHaveBeenCalled();
     expect(renderedPropositions.concat).toHaveBeenCalledTimes(1);
+  });
+
+  it("doesn't do anything if renderDecisions is false", () => {
+    notificationHandler(false, true, undefined);
+    expect(renderedPropositions.concat).not.toHaveBeenCalled();
   });
 });
