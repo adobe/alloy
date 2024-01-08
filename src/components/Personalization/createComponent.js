@@ -15,6 +15,7 @@ import createPersonalizationDetails from "./createPersonalizationDetails";
 import { AUTHORING_ENABLED } from "./constants/loggerMessage";
 import { PropositionEventType } from "../../constants/propositionEventType";
 import validateApplyPropositionsOptions from "./validateApplyPropositionsOptions";
+import { IN } from "../../constants/consentStatus";
 
 export default ({
   getPageLocation,
@@ -32,6 +33,7 @@ export default ({
   renderedPropositions,
   onDecisionHandler
 }) => {
+
   return {
     lifecycle: {
       onDecision: onDecisionHandler,

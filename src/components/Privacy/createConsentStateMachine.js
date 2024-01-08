@@ -117,6 +117,15 @@ export default ({ logger, defaultState, storedState }) => {
         return Promise.reject(new Error("Consent is pending."));
       }
       return this.awaitConsent();
+    },
+    getConsent() {
+      if (this.awaitConsent === awaitInDefault || this.awaitConsent === awaitIn) {
+        return IN;
+      }
+      if (this.awaitConsent === awaitOutDefault || this.awaitConsent === this.awaitOut) {
+        return OUT;
+      }
+      return PENDING;
     }
   };
 };

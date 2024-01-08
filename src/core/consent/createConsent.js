@@ -38,6 +38,11 @@ export default () => {
       return generalConsentStateDefer.promise.then(generalConsentState =>
         generalConsentState.withConsent()
       );
+    },
+    getConsent() {
+      return generalConsentStateDefer.promise.then(generalConsentState =>
+        generalConsentState.getConsent()
+      );
     }
   };
 };
