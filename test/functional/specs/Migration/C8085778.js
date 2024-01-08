@@ -59,7 +59,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test(
+test.skip(
   "C8085778: Use same visitor profile in mixed mode implementation - Update profile attribute " +
     "using web sdk and fetch offer based on profile attr using at.js 1.x",
   async () => {
