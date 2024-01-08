@@ -1,7 +1,6 @@
 name: Alloy Dev
 on:
   pull_request:
-    types: [opened, reopened]
   workflow_dispatch:
 env:
   SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
