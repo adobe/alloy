@@ -10,16 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { t } from "testcafe";
 import {
   compose,
-  orgMainConfigMain
+  orgMainConfigMain,
+  debugEnabled
 } from "../../helpers/constants/configParts";
 import { TEST_PAGE } from "../../helpers/constants/url";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import createFixture from "../../helpers/createFixture";
+import createConsoleLogger from "../../helpers/consoleLogger";
 
-const mainConfig = compose(orgMainConfigMain, {
+const config = compose(orgMainConfigMain, debugEnabled, {
   orgId: "invalid-org-id@Adobe"
 });
 
@@ -36,10 +37,10 @@ test.meta({
 });
 
 test("C5598188: Informative error message given when using an invalid orgID", async () => {
+  const logger = await createConsoleLogger();
   const validAlloy = createAlloyProxy();
-  await validAlloy.configure(mainConfig);
-  const errorMessage = await validAlloy.sendEventErrorMessage({});
-
-  await t.expect(errorMessage).contains("An identity was not set properly.");
-  await t.expect(errorMessage).contains(mainConfig.orgId);
+  await validAlloy.configure(config);
+  await validAlloy.sendEvent({});
+  await logger.warn.expectMessageMatching(/Identity cookie not found/);
+  await logger.warn.expectMessageMatching(/invalid-org-id/);
 });
