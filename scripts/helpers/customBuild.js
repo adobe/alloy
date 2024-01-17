@@ -33,16 +33,16 @@ const componentNames = componentCreatorsContent.match(/create[A-Z]\w+/g);
 
 // Format component names for export
 const formattedComponentNames = componentNames.map(name => ({
-  name: name.slice(6).toLowerCase(),
+  name: name.replace(/^create/, "").toLowerCase(),
   exportName: name,
-  filePath: name.slice(6)
+  filePath: name.replace(/^create/, "")
 }));
 
 // Extract required components from componentCreatorsContent
 const requiredComponents = componentCreatorsContent
   .match(/REQUIRED_COMPONENTS = \[[\s\S]*?\]/)[0]
   .match(/create[A-Z]\w+/g)
-  .map(component => component.slice(6).toLowerCase());
+  .map(component => component.replace(/^create/, "").toLowerCase());
 
 const argv = yargs(hideBin(process.argv))
   .scriptName("build:custom")

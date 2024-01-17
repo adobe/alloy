@@ -41,16 +41,19 @@ const OPTIONAL_COMPONENTS = [
   createDataCollector,
   createActivityCollector,
   createIdentity,
-  createAudiences,
-  createPersonalization,
-  createEventMerge,
-  createMachineLearning,
-  createDecisioningEngine
+  typeof createAudiences !== "undefined" ? createAudiences : () => {},
+  typeof createPersonalization !== "undefined"
+    ? createPersonalization
+    : () => {},
+  typeof createEventMerge !== "undefined" ? createEventMerge : () => {},
+  typeof createMachineLearning !== "undefined"
+    ? createMachineLearning
+    : () => {},
+  typeof createDecisioningEngine !== "undefined"
+    ? createDecisioningEngine
+    : () => {}
 ];
 
-const componentCreators = {
-  REQUIRED_COMPONENTS,
-  OPTIONAL_COMPONENTS
-};
+const componentCreators = [...REQUIRED_COMPONENTS, ...OPTIONAL_COMPONENTS];
 
 export default componentCreators;
