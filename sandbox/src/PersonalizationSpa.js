@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Heading } from "@adobe/react-spectrum";
 import { Switch, Route, useRouteMatch, Link } from "react-router-dom";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
@@ -71,7 +72,7 @@ export default function Personalization() {
   return (
     <div>
       <ContentSecurityPolicy />
-      <h1>Personalization - SPA</h1>
+      <Heading level={1}>Personalization - SPA</Heading>
       <p>
         Below are links to two different single-page app views. Each view
         contains personalized content set up in Target using a view scope of{" "}

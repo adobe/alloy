@@ -1,4 +1,5 @@
 import React from "react";
+import { Heading } from "@adobe/react-spectrum";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 import "./Consent.css";
@@ -84,7 +85,7 @@ export default function Consent() {
   return (
     <div>
       <ContentSecurityPolicy />
-      <h1>Consent</h1>
+      <Heading level={1}>Consent</Heading>
       <h2>Opt-In</h2>
       <p>This page tests user consent:</p>
 

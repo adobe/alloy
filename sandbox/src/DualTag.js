@@ -1,4 +1,5 @@
 import React from "react";
+import { Heading } from "@adobe/react-spectrum";
 import UnsafeContentSecurityPolicy from "./components/UnsafeContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
@@ -17,7 +18,7 @@ export default () => {
       {/* Need less restrictive CSP for old libraries */}
       <UnsafeContentSecurityPolicy />
       {loadLaunch()}
-      <h1>Dual Tagging</h1>
+      <Heading level={1}>Dual Tagging</Heading>
       <p>
         This page loads a launch library containing Analytics, ECID, DIL, and
         Target.

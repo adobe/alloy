@@ -1,4 +1,5 @@
 import React from "react";
+import { Heading } from "@adobe/react-spectrum";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
@@ -16,7 +17,7 @@ export default function Links() {
   return (
     <div>
       <ContentSecurityPolicy />
-      <h1>Links</h1>
+      <Heading level={1}>Links</Heading>
       <p>
         This page shows a few different ways link clicks can be handled in
         Alloy.

@@ -1,4 +1,5 @@
 import React from "react";
+import { Heading } from "@adobe/react-spectrum";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
@@ -7,7 +8,7 @@ export default function Personalization() {
   return (
     <div>
       <ContentSecurityPolicy />
-      <h1>Personalization</h1>
+      <Heading level={1}>Personalization</Heading>
       <p>
         This page tests rendering of activities using a <i>__view__</i> scope.
         If you navigated here from another sandbox view, you will probably need

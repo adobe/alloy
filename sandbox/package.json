@@ -3,12 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@babel/polyfill": "^7.4.3",
+    "@adobe/react-spectrum": "^3.33.1",
+    "@adobe/spectrum-css": "^3.0.0",
+    "core-js": "^3.35.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-helmet": "^6.1.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^5.0.1"
+    "react-scripts": "^5.0.1",
+    "regenerator-runtime": "^0.14.1"
   },
   "scripts": {
     "start": "react-scripts start",

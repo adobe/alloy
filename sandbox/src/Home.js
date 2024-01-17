@@ -1,6 +1,7 @@
 /* eslint-disable no-console, func-names */
 
 import React from "react";
+import { Heading } from "@adobe/react-spectrum";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
@@ -30,7 +31,7 @@ export default function Home() {
   return (
     <div>
       <ContentSecurityPolicy />
-      <h1>Home</h1>
+      <Heading level={1}>Home</Heading>
       <section>
         <h2>Get Identity</h2>
         <div>

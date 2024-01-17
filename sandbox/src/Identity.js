@@ -13,6 +13,7 @@
 /* eslint-disable no-console, func-names */
 
 import React, { useEffect, useState } from "react";
+import { Heading } from "@adobe/react-spectrum";
 
 const readCookies = () => {
   const cookies = {};
@@ -110,7 +111,7 @@ export default function Identity() {
 
   return (
     <div>
-      <h1>Identity</h1>
+      <Heading level={1}>Identity</Heading>
       <section>
         This page demonstrates recieving or sending identity within the URL. No
         calls to experience edge are made until you press one of the buttons

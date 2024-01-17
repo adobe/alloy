@@ -1,11 +1,12 @@
 import React from "react";
+import { Heading } from "@adobe/react-spectrum";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
 export default function OrgTwo() {
   useSendPageViewEvent({ instanceName: "organizationTwo" });
   return (
     <div>
-      <h1>Multiple Organizations</h1>
+      <Heading level={1}>Multiple Organizations</Heading>
       <p>
         This view is managed by a partnering company that owns a different Org
         ID.

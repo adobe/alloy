@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { Heading } from "@adobe/react-spectrum";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import {
@@ -48,7 +49,7 @@ export default function PersonalizationAnalyticsClientSide() {
   return (
     <div>
       <ContentSecurityPolicy />
-      <h1>Personalization with A4T client side logging</h1>
+      <Heading level={1}>Personalization with A4T client side logging</Heading>
       <p>
         This page tests rendering of activities using a <i>__view__</i> scope,
         collecting the analyticsTokens from the rendered propositions and

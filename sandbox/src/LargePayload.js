@@ -1,4 +1,5 @@
 import React from "react";
+import { Heading } from "@adobe/react-spectrum";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
@@ -19,7 +20,7 @@ export default function LargePayload() {
   return (
     <div>
       <ContentSecurityPolicy />
-      <h1>Large Payload</h1>
+      <Heading level={1}>Large Payload</Heading>
       <p>This page tests send really large payloads to the edge.</p>
       <p>
         All those requests should attempt to use <code>sendBeacon</code> and

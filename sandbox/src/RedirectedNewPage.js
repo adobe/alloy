@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
 import React, { useEffect } from "react";
+import { Heading } from "@adobe/react-spectrum";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 
 export default function RedirectedNewPage() {
@@ -17,7 +18,7 @@ export default function RedirectedNewPage() {
     <div className="personalization-container">
       <ContentSecurityPolicy />
       <div>
-        <h1>You have qualified for the redirect offer</h1>
+        <Heading level={1}>You have qualified for the redirect offer</Heading>
         <h2>Here are the newer offers!</h2>
       </div>
     </div>

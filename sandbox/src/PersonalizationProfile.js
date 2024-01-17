@@ -1,4 +1,5 @@
 import React from "react";
+import { Heading } from "@adobe/react-spectrum";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
@@ -16,7 +17,7 @@ export default function Personalization() {
   return (
     <div>
       <ContentSecurityPolicy />
-      <h1>Personalization Profile</h1>
+      <Heading level={1}>Personalization Profile</Heading>
       <div id="profile-based-offer">
         This will be replaced by an offer based on a profile attribute.
       </div>

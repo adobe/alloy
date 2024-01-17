@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Heading } from "@adobe/react-spectrum";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
@@ -37,7 +38,7 @@ export default function Personalization() {
   return (
     <div>
       <ContentSecurityPolicy />
-      <h1>Personalization</h1>
+      <Heading level={1}>Personalization</Heading>
       <h2>Number of times rendered: {renderCounter}</h2>
       <button
         onClick={() => updateComponent({ renderCounter, setRenderCounter })}

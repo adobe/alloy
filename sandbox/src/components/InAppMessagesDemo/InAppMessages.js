@@ -152,7 +152,7 @@ export default function InAppMessages() {
   return (
     <div>
       <ContentSecurityPolicy />
-      <h1>In App Messages For Web</h1>
+      <Heading level={1}>In App Messages For Web</Heading>
       <div>
         <label htmlFor="cars">Environment:</label>
         <select
