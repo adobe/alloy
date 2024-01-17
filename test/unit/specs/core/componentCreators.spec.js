@@ -13,17 +13,10 @@ governing permissions and limitations under the License.
 import componentCreators from "../../../../src/core/componentCreators";
 
 describe("componentCreators", () => {
-  it("is an object with arrays of component creators", () => {
-    expect(componentCreators).toEqual(jasmine.any(Object));
-    expect(componentCreators.REQUIRED_COMPONENTS).toEqual(jasmine.any(Array));
-    expect(componentCreators.OPTIONAL_COMPONENTS).toEqual(jasmine.any(Array));
+  it("is an array of component creators", () => {
+    expect(componentCreators).toEqual(jasmine.any(Array));
 
-    const allComponentCreators = [
-      ...componentCreators.REQUIRED_COMPONENTS,
-      ...componentCreators.OPTIONAL_COMPONENTS
-    ];
-
-    allComponentCreators.forEach(componentCreator => {
+    componentCreators.forEach(componentCreator => {
       expect(componentCreator).toEqual(jasmine.any(Function));
       expect(componentCreator.namespace).toEqual(jasmine.any(String));
 
