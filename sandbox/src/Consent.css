@@ -1,6 +1,7 @@
 table {
   border: solid 1px #DDEEEE;
   border-collapse: collapse;
+  background-color: #ffffff;
 }
 td {
   border: solid 1px #DDEEEE;

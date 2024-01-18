@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { useMediaQuery } from "@react-spectrum/utils";
-import { Button, Text, Menu } from "@adobe/react-spectrum";
+import { Button, Text, Menu, Provider } from "@adobe/react-spectrum";
 import ShowMenu from "@spectrum-icons/workflow/ShowMenu";
 
 import Home from "./Home";
@@ -173,7 +173,7 @@ const MenuIcon = function MenuIcon() {
 const BasicExample = () => {
   const isMobileView = useMediaQuery("(max-width: 700px)");
   return (
-    <>
+    <Provider colorScheme="light">
       <Router>
         <div style={{ display: "flex" }}>
           {isMobileView ? (
@@ -290,7 +290,7 @@ const BasicExample = () => {
         </div>
       </Router>
       <AlloyVersion />
-    </>
+    </Provider>
   );
 };
 

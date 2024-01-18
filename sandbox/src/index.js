@@ -11,13 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import React from "react";
-import { Provider, defaultTheme } from "@adobe/react-spectrum";
+import { lightTheme, Provider } from "@adobe/react-spectrum";
 import ReactDOM from "react-dom";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
 ReactDOM.render(
-  <Provider theme={defaultTheme}>
+  <Provider theme={lightTheme}>
     <App />
   </Provider>,
   document.getElementById("root")
