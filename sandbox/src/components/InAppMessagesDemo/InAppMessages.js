@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 /* eslint-disable no-bitwise, no-console */
+import { Heading } from "@adobe/react-spectrum";
 import React, { useEffect, useState } from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./InAppMessagesStyle.css";
