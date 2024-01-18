@@ -10,8 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { useMediaQuery } from "@react-spectrum/utils";
+import { Button, Text, Menu } from "@adobe/react-spectrum";
+import ShowMenu from "@spectrum-icons/workflow/ShowMenu";
 
 import Home from "./Home";
 import Consent from "./Consent";
@@ -33,12 +36,36 @@ import AlloyVersion from "./components/AlloyVersion";
 import ConfigOverrides from "./ConfigOverrides.jsx";
 import InAppMessages from "./components/InAppMessagesDemo/InAppMessages";
 
-const BasicExample = () => {
+const MenuIcon = function MenuIcon() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpen = () => {
+    setIsOpen(true);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
   return (
     <>
-      <Router>
-        <div style={{ display: "flex" }}>
-          <nav style={{ listStyleType: "none", padding: 0 }}>
+      <Button variant="primary" onPress={handleOpen}>
+        <Menu />
+        <ShowMenu />
+        <Text>Menu</Text>
+      </Button>
+      {isOpen && (
+        <nav
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "200px",
+            height: "100vh",
+            background: "white"
+          }}
+        >
+          <ul>
             <li style={{ display: "block" }}>
               <img
                 src="logo.png"
@@ -46,68 +73,183 @@ const BasicExample = () => {
                 style={{ width: "150px" }}
               />
             </li>
-            <li style={{ display: "block" }}>
-              <Link to="/">Home</Link>
+            <li>
+              <Link to="/" onClick={handleClose}>
+                Home
+              </Link>
             </li>
-            <li style={{ display: "block" }}>
-              <Link to="/consent">Consent</Link>
+            <li>
+              <Link to="/consent" onClick={handleClose}>
+                Consent
+              </Link>
             </li>
-            <li style={{ display: "block" }}>
-              <Link to="/personalization">Personalization</Link>
+            <li>
+              <Link to="/personalization" onClick={handleClose}>
+                Personalization
+              </Link>
             </li>
-            <li style={{ display: "block" }}>
-              <Link to="/personalizationSpa">Personalization - SPA</Link>
+            <li>
+              <Link to="/personalizationSpa" onClick={handleClose}>
+                Personalization - SPA
+              </Link>
             </li>
-            <li style={{ display: "block" }}>
-              <Link to="/personalizationAjo">Personalization - AJO</Link>
+            <li>
+              <Link to="/personalizationAjo" onClick={handleClose}>
+                Personalization - AJO
+              </Link>
             </li>
-            <li style={{ display: "block" }}>
-              <Link to="/personalizationA4TClientSide">
+            <li>
+              <Link to="/personalizationA4TClientSide" onClick={handleClose}>
                 Personalization - A4T Client Side
               </Link>
             </li>
-            <li style={{ display: "block" }}>
-              <Link to="/personalizationProfile">
+            <li>
+              <Link to="/personalizationProfile" onClick={handleClose}>
                 Personalization - Profile
               </Link>
             </li>
-            <li style={{ display: "block" }}>
-              <Link to="/personalizationFormBased">
+            <li>
+              <Link to="/personalizationFormBased" onClick={handleClose}>
                 Personalization - Form Based
               </Link>
             </li>
-            <li style={{ display: "block" }}>
-              <Link to="/links">Links</Link>
+            <li>
+              <Link to="/links" onClick={handleClose}>
+                Links
+              </Link>
             </li>
-            <li style={{ display: "block" }}>
-              <Link to="/eventMerge">Event-Merge</Link>
+            <li>
+              <Link to="/eventMerge" onClick={handleClose}>
+                Event-Merge
+              </Link>
             </li>
-            <li style={{ display: "block" }}>
-              <Link to="/largePayload">Large Payload</Link>
+            <li>
+              <Link to="/largePayload" onClick={handleClose}>
+                Large Payload
+              </Link>
             </li>
-            <li style={{ display: "block" }}>
-              <Link to="/orgTwo">Multiple Orgs</Link>
+            <li>
+              <Link to="/orgTwo" onClick={handleClose}>
+                Multiple Orgs
+              </Link>
             </li>
-            <li style={{ display: "block" }}>
-              {/* Anchor tag to ensure app is reloaded with unsafe CSP */}
-              <a href="/dualTag">Dual Tag</a>
+            <li>
+              <a href="/dualTag" onClick={handleClose}>
+                Dual Tag
+              </a>
             </li>
-            <li style={{ display: "block" }}>
-              <a href="/legacy.html">Legacy Visitor ID</a>
+            <li>
+              <a href="/legacy.html" onClick={handleClose}>
+                Legacy Visitor ID
+              </a>
             </li>
-            <li style={{ display: "block" }}>
-              <a href="/redirectOffers">Redirect Offers</a>
+            <li>
+              <a href="/redirectOffers" onClick={handleClose}>
+                Redirect Offers
+              </a>
             </li>
-            <li style={{ display: "block" }}>
-              <a href="/identity">Identity</a>
+            <li>
+              <a href="/identity" onClick={handleClose}>
+                Identity
+              </a>
             </li>
-            <li style={{ display: "block" }}>
-              <a href="/configOverrides">Config Overrides</a>
+            <li>
+              <a href="/configOverrides" onClick={handleClose}>
+                Config Overrides
+              </a>
             </li>
-            <li style={{ display: "block" }}>
-              <Link to="/inAppMessages">In-app Messages</Link>
+            <li>
+              <Link to="/inAppMessages" onClick={handleClose}>
+                In-app Messages
+              </Link>
             </li>
-          </nav>
+          </ul>
+        </nav>
+      )}
+    </>
+  );
+};
+
+const BasicExample = () => {
+  const isMobileView = useMediaQuery("(max-width: 700px)");
+  return (
+    <>
+      <Router>
+        <div style={{ display: "flex" }}>
+          {isMobileView ? (
+            <MenuIcon />
+          ) : (
+            <nav style={{ listStyleType: "none", padding: 0 }}>
+              <li style={{ display: "block" }}>
+                <img
+                  src="logo.png"
+                  alt="Adobe AEP Web SDK"
+                  style={{ width: "150px" }}
+                />
+              </li>
+              <li style={{ display: "block" }}>
+                <Link to="/">Home</Link>
+              </li>
+              <li style={{ display: "block" }}>
+                <Link to="/consent">Consent</Link>
+              </li>
+              <li style={{ display: "block" }}>
+                <Link to="/personalization">Personalization</Link>
+              </li>
+              <li style={{ display: "block" }}>
+                <Link to="/personalizationSpa">Personalization - SPA</Link>
+              </li>
+              <li style={{ display: "block" }}>
+                <Link to="/personalizationAjo">Personalization - AJO</Link>
+              </li>
+              <li style={{ display: "block" }}>
+                <Link to="/personalizationA4TClientSide">
+                  Personalization - A4T Client Side
+                </Link>
+              </li>
+              <li style={{ display: "block" }}>
+                <Link to="/personalizationProfile">
+                  Personalization - Profile
+                </Link>
+              </li>
+              <li style={{ display: "block" }}>
+                <Link to="/personalizationFormBased">
+                  Personalization - Form Based
+                </Link>
+              </li>
+              <li style={{ display: "block" }}>
+                <Link to="/links">Links</Link>
+              </li>
+              <li style={{ display: "block" }}>
+                <Link to="/eventMerge">Event-Merge</Link>
+              </li>
+              <li style={{ display: "block" }}>
+                <Link to="/largePayload">Large Payload</Link>
+              </li>
+              <li style={{ display: "block" }}>
+                <Link to="/orgTwo">Multiple Orgs</Link>
+              </li>
+              <li style={{ display: "block" }}>
+                {/* Anchor tag to ensure app is reloaded with unsafe CSP */}
+                <a href="/dualTag">Dual Tag</a>
+              </li>
+              <li style={{ display: "block" }}>
+                <a href="/legacy.html">Legacy Visitor ID</a>
+              </li>
+              <li style={{ display: "block" }}>
+                <a href="/redirectOffers">Redirect Offers</a>
+              </li>
+              <li style={{ display: "block" }}>
+                <a href="/identity">Identity</a>
+              </li>
+              <li style={{ display: "block" }}>
+                <a href="/configOverrides">Config Overrides</a>
+              </li>
+              <li style={{ display: "block" }}>
+                <Link to="/inAppMessages">In-app Messages</Link>
+              </li>
+            </nav>
+          )}
           <main
             style={{
               float: "right",
