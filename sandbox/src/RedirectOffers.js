@@ -14,9 +14,12 @@ governing permissions and limitations under the License.
 
 import React, { useEffect } from "react";
 import { Heading, View } from "@adobe/react-spectrum";
+import { useHistory } from "react-router-dom";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 
 export default function RedirectOffers() {
+  const history = useHistory();
+
   useEffect(() => {
     window
       .alloy("sendEvent", {
@@ -24,6 +27,7 @@ export default function RedirectOffers() {
       })
       .then(({ decisions = [] }) => {
         console.log("personalized decisions", decisions);
+        history.push("/redirectedNewPage"); // Redirect to the new page
       });
   }, []);
   return (
