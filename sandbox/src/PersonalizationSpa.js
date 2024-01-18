@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Heading } from "@adobe/react-spectrum";
-import { Switch, Route, useRouteMatch, Link } from "react-router-dom";
+import { Heading, View, Link } from "@adobe/react-spectrum";
+import { Switch, Route, useRouteMatch } from "react-router-dom";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
@@ -19,50 +19,51 @@ const usePropositions = ({ viewName }) => {
 const Products = () => {
   usePropositions({ viewName: "products" });
   return (
-    <div>
-      <h2>Products</h2>
-      <div
-        style={{ border: "1px solid red" }}
+    <View>
+      <Heading level="2">Products</Heading>
+      <View
+        UNSAFE_style={{ border: "1px solid red" }}
         id="personalization-products-container"
         className="personalization-container"
       >
         This is the personalization placeholder for the products view.
         Personalized content has not been loaded.
-      </div>
-    </div>
+      </View>
+    </View>
   );
 };
 
 const Cart = () => {
   usePropositions({ viewName: "cart" });
   return (
-    <div>
-      <h2>Cart</h2>
-      <div
-        style={{ border: "1px solid red" }}
+    <View>
+      <Heading level="2">Cart</Heading>
+      <View
+        UNSAFE_style={{ border: "1px solid red" }}
         id="personalization-cart-container"
         className="personalization-container"
       >
         This is the personalization placeholder for the cart view. Personalized
         content has not been loaded.
-      </div>
-    </div>
+      </View>
+    </View>
   );
 };
+
 const Promotion = () => {
   usePropositions({ viewName: "promotion" });
   return (
-    <div>
-      <h2>Cart</h2>
-      <div
-        style={{ border: "1px solid red" }}
-        id="personalization-cart-container"
+    <View>
+      <Heading level="2">Promotion</Heading>
+      <View
+        UNSAFE_style={{ border: "1px solid red" }}
+        id="personalization-promotion-container"
         className="personalization-container"
       >
         This is the personalization placeholder for the promotion view. We use
         this view to test the use case when nothing was stored in cache.
-      </div>
-    </div>
+      </View>
+    </View>
   );
 };
 
@@ -70,9 +71,9 @@ export default function Personalization() {
   useSendPageViewEvent();
   const match = useRouteMatch();
   return (
-    <div>
+    <View>
       <ContentSecurityPolicy />
-      <Heading level={1}>Personalization - SPA</Heading>
+      <Heading level="1">Personalization - SPA</Heading>
       <p>
         Below are links to two different single-page app views. Each view
         contains personalized content set up in Target using a view scope of{" "}
@@ -101,6 +102,6 @@ export default function Personalization() {
           <Promotion />
         </Route>
       </Switch>
-    </div>
+    </View>
   );
 }

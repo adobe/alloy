@@ -1,5 +1,17 @@
+/*
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
 import React from "react";
-import { Heading } from "@adobe/react-spectrum";
+import { Heading, View, Button } from "@adobe/react-spectrum";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 import "./Consent.css";
@@ -83,10 +95,10 @@ export default function Consent() {
   useSendPageViewEvent();
 
   return (
-    <div>
+    <View>
       <ContentSecurityPolicy />
       <Heading level={1}>Consent</Heading>
-      <h2>Opt-In</h2>
+      <Heading level={2}>Opt-In</Heading>
       <p>This page tests user consent:</p>
 
       <dl>
@@ -100,81 +112,81 @@ export default function Consent() {
         </dd>
         <dt>Adobe 1.0</dt>
         <dd>
-          <button onClick={executeCommand("setConsent", adobe1Consent("in"))}>
+          <Button onPress={executeCommand("setConsent", adobe1Consent("in"))}>
             In
-          </button>
-          <button onClick={executeCommand("setConsent", adobe1Consent("out"))}>
+          </Button>
+          <Button onPress={executeCommand("setConsent", adobe1Consent("out"))}>
             Out
-          </button>
+          </Button>
         </dd>
         <dt>Adobe 2.0</dt>
         <dd>
-          <button
-            onClick={executeCommand(
+          <Button
+            onPress={executeCommand(
               "setConsent",
               adobe2Consent({ collect: "y" })
             )}
           >
             Collect="y"
-          </button>
-          <button
-            onClick={executeCommand(
+          </Button>
+          <Button
+            onPress={executeCommand(
               "setConsent",
               adobe2Consent({ collect: "n" })
             )}
           >
             Collect="n"
-          </button>
-          <button
-            onClick={executeCommand(
+          </Button>
+          <Button
+            onPress={executeCommand(
               "setConsent",
               adobe2Consent({ collect: "y", personalize: "y" })
             )}
           >
             Collect="y" Personalize="y"
-          </button>
-          <button
-            onClick={executeCommand(
+          </Button>
+          <Button
+            onPress={executeCommand(
               "setConsent",
               adobe2Consent({ collect: "y", personalize: "n" })
             )}
           >
             Collect="y" Personalize="n"
-          </button>
+          </Button>
         </dd>
         <dt>IAB TCF 2.0</dt>
         <dd>
-          <button
-            onClick={executeCommand("setConsent", iabConsent(IAB_OPT_IN))}
+          <Button
+            onPress={executeCommand("setConsent", iabConsent(IAB_OPT_IN))}
           >
             In
-          </button>
-          <button
-            onClick={executeCommand("setConsent", iabConsent(IAB_OPT_OUT))}
+          </Button>
+          <Button
+            onPress={executeCommand("setConsent", iabConsent(IAB_OPT_OUT))}
           >
             Out
-          </button>
-          <button
-            onClick={executeCommand(
+          </Button>
+          <Button
+            onPress={executeCommand(
               "setConsent",
               iabConsent(IAB_OPT_IN_GOOGLE_VENDOR)
             )}
           >
             Google Vendor In
-          </button>
-          <button
-            onClick={executeCommand(
+          </Button>
+          <Button
+            onPress={executeCommand(
               "setConsent",
               iabConsent(IAB_OPT_OUT_GOOGLE_VENDOR)
             )}
           >
             Google Vendor Out
-          </button>
+          </Button>
         </dd>
         <dt>Adobe 2.0 and IAB TCF 2.0</dt>
         <dd>
-          <button
-            onClick={executeCommand(
+          <Button
+            onPress={executeCommand(
               "setConsent",
               mergeConsent(
                 adobe2Consent({ collect: "y" }),
@@ -183,9 +195,9 @@ export default function Consent() {
             )}
           >
             In
-          </button>
-          <button
-            onClick={executeCommand(
+          </Button>
+          <Button
+            onPress={executeCommand(
               "setConsent",
               mergeConsent(
                 adobe2Consent({ collect: "n" }),
@@ -194,21 +206,21 @@ export default function Consent() {
             )}
           >
             Out
-          </button>
+          </Button>
         </dd>
         <dt>Legacy Opt-in Object</dt>
         <dd>
-          <button onClick={() => window.adobe.optIn.approveAll()}>
+          <Button onPress={() => window.adobe.optIn.approveAll()}>
             Approve All
-          </button>
-          <button onClick={() => window.adobe.optIn.denyAll()}>Deny All</button>
+          </Button>
+          <Button onPress={() => window.adobe.optIn.denyAll()}>Deny All</Button>
         </dd>
         <dt>Alloy Commands</dt>
         <dd>
-          <button onClick={executeCommand("sendEvent")}>Send Event</button>
-          <button onClick={executeCommand("getIdentity")}>Get Identity</button>
+          <Button onPress={executeCommand("sendEvent")}>Send Event</Button>
+          <Button onPress={executeCommand("getIdentity")}>Get Identity</Button>
         </dd>
       </dl>
-    </div>
+    </View>
   );
 }

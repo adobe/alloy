@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import React from "react";
-import { Heading } from "@adobe/react-spectrum";
+import { Heading, View } from "@adobe/react-spectrum";
 import UnsafeContentSecurityPolicy from "./components/UnsafeContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
@@ -26,11 +26,10 @@ const loadLaunch = () => {
 export default () => {
   useSendPageViewEvent();
   return (
-    <div>
-      {/* Need less restrictive CSP for old libraries */}
+    <View>
       <UnsafeContentSecurityPolicy />
       {loadLaunch()}
-      <Heading level={1}>Dual Tagging</Heading>
+      <Heading level="1">Dual Tagging</Heading>
       <p>
         This page loads a launch library containing Analytics, ECID, DIL, and
         Target.
@@ -40,6 +39,6 @@ export default () => {
         In particular we are looking for conflicts in personalization, ecid, and
         id/dest syncs.
       </p>
-    </div>
+    </View>
   );
 };

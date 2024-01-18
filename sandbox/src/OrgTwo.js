@@ -11,39 +11,39 @@ governing permissions and limitations under the License.
 */
 
 import React from "react";
-import { Heading } from "@adobe/react-spectrum";
+import { Heading, View, Text } from "@adobe/react-spectrum";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
 export default function OrgTwo() {
   useSendPageViewEvent({ instanceName: "organizationTwo" });
   return (
-    <div>
+    <View>
       <Heading level={1}>Multiple Organizations</Heading>
-      <p>
+      <Text>
         This view is managed by a partnering company that owns a different Org
         ID.
-      </p>
-      <p>
+      </Text>
+      <Text>
         For that reason, we have created a second instance of Alloy, and
         configured it using the Org and Property IDs of Organization Two.
-      </p>
-      <p>
+      </Text>
+      <Text>
         Alloy instance is called: <i>organizationTwo</i>
-      </p>
-      <pre>
-        <code>
+      </Text>
+      <View>
+        <Text>
           {`
                 organizationTwo("configure", {
                   datastreamId: 8888888,
                     log: true
                 });
             `}
-        </code>
-      </pre>
-      <p>
+        </Text>
+      </View>
+      <Text>
         By going to the Network tab in your Developer Tools, you should see
         requests ending with <i>?configId=8888888</i>
-      </p>
-    </div>
+      </Text>
+    </View>
   );
 }

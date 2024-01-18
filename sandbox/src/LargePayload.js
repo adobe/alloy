@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import React from "react";
-import { Heading } from "@adobe/react-spectrum";
+import { Heading, View, Button, Text, Flex } from "@adobe/react-spectrum";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
@@ -30,44 +30,34 @@ const makePayload = (size, times = 1) => () => {
 export default function LargePayload() {
   useSendPageViewEvent();
   return (
-    <div>
+    <View>
       <ContentSecurityPolicy />
-      <Heading level={1}>Large Payload</Heading>
-      <p>This page tests send really large payloads to the edge.</p>
-      <p>
-        All those requests should attempt to use <code>sendBeacon</code> and
-        fall back to <code>fetch</code> if the request can't be queued.
-      </p>
-      <p>The sizes below do not include the size of the Context data:</p>
+      <Heading level="1">Large Payload</Heading>
+      <View marginBottom="size-200">
+        <Text>This page tests send really large payloads to the edge.</Text>
+        <Text>
+          All those requests should attempt to use <code>sendBeacon</code> and
+          fall back to <code>fetch</code> if the request can't be queued.
+        </Text>
+        <Text>
+          The sizes below do not include the size of the Context data:
+        </Text>
+      </View>
 
-      <button type="button" onClick={makePayload(5)}>
-        Send 5kb payload
-      </button>
-      <button type="button" onClick={makePayload(10)}>
-        Send 10kb payload
-      </button>
-      <button type="button" onClick={makePayload(20)}>
-        Send 20kb payload
-      </button>
-      <button type="button" onClick={makePayload(50)}>
-        Send 50kb payload
-      </button>
-      <button type="button" onClick={makePayload(100)}>
-        Send 100kb payload
-      </button>
-      <button type="button" onClick={makePayload(200)}>
-        Send 200kb payload
-      </button>
+      <Flex direction="column" gap="size-100">
+        <Button onPress={makePayload(5)}>Send 5kb payload</Button>
+        <Button onPress={makePayload(10)}>Send 10kb payload</Button>
+        <Button onPress={makePayload(20)}>Send 20kb payload</Button>
+        <Button onPress={makePayload(50)}>Send 50kb payload</Button>
+        <Button onPress={makePayload(100)}>Send 100kb payload</Button>
+        <Button onPress={makePayload(200)}>Send 200kb payload</Button>
+      </Flex>
 
-      <button type="button" onClick={makePayload(5, 2)}>
-        Send 2 5kb payloads
-      </button>
-      <button type="button" onClick={makePayload(5, 3)}>
-        Send 3 5kb payloads
-      </button>
-      <button type="button" onClick={makePayload(5, 4)}>
-        Send 4 5kb payloads
-      </button>
-    </div>
+      <Flex direction="column" gap="size-100">
+        <Button onPress={makePayload(5, 2)}>Send 2 5kb payloads</Button>
+        <Button onPress={makePayload(5, 3)}>Send 3 5kb payloads</Button>
+        <Button onPress={makePayload(5, 4)}>Send 4 5kb payloads</Button>
+      </Flex>
+    </View>
   );
 }

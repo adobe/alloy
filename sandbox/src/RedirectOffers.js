@@ -13,13 +13,10 @@ governing permissions and limitations under the License.
 /* eslint-disable no-console */
 
 import React, { useEffect } from "react";
-import { useHistory } from "react-router-dom";
-import { Heading } from "@adobe/react-spectrum";
+import { Heading, View } from "@adobe/react-spectrum";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 
 export default function RedirectOffers() {
-  const history = useHistory();
-
   useEffect(() => {
     window
       .alloy("sendEvent", {
@@ -27,19 +24,20 @@ export default function RedirectOffers() {
       })
       .then(({ decisions = [] }) => {
         console.log("personalized decisions", decisions);
-        history.push("/redirectedNewPage");
       });
-  }, [history]);
-
+  }, []);
   return (
-    <div className="personalization-container">
+    <View className="personalization-container">
       <ContentSecurityPolicy />
-      <div>
-        <Heading level={1}>Redirect Offers</Heading>
-        <h2>You shouldn't see it, this is an old page!!!</h2>
-
-        <h2>The new content was moved to /redirectedNewPage </h2>
-      </div>
-    </div>
+      <View>
+        <Heading level="1">Redirect Offers</Heading>
+        <Heading level="2">
+          You shouldn't see it, this is an old page!!!
+        </Heading>
+        <Heading level="2">
+          The new content was moved to /redirectedNewPage{" "}
+        </Heading>
+      </View>
+    </View>
   );
 }

@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 /* eslint-disable no-console, func-names */
 
 import React from "react";
-import { Heading } from "@adobe/react-spectrum";
+import { Heading, View, Button } from "@adobe/react-spectrum";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
@@ -41,23 +41,25 @@ const sendDataToSecondaryDataset = () => {
 export default function Home() {
   useSendPageViewEvent();
   return (
-    <div>
+    <View>
       <ContentSecurityPolicy />
-      <Heading level={1}>Home</Heading>
+      <Heading level="1">Home</Heading>
       <section>
-        <h2>Get Identity</h2>
-        <div>
-          <button onClick={getIdentity}>Get ECID</button>
-        </div>
+        <Heading level="2">Get Identity</Heading>
+        <View>
+          <Button onPress={getIdentity}>Get ECID</Button>
+        </View>
       </section>
       <section>
-        <h2>Collect data by overriding the Dataset configured in Config UI</h2>
-        <div>
-          <button onClick={sendDataToSecondaryDataset}>
+        <Heading level="2">
+          Collect data by overriding the Dataset configured in Config UI
+        </Heading>
+        <View>
+          <Button onPress={sendDataToSecondaryDataset}>
             Send Event to Secondary Dataset
-          </button>
-        </div>
+          </Button>
+        </View>
       </section>
-    </div>
+    </View>
   );
 }

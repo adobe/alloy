@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 /* eslint-disable no-console */
 
 import React, { useEffect } from "react";
-import { Heading } from "@adobe/react-spectrum";
+import { Heading, View } from "@adobe/react-spectrum";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 
 export default function RedirectedNewPage() {
@@ -27,12 +27,12 @@ export default function RedirectedNewPage() {
       });
   }, []);
   return (
-    <div className="personalization-container">
+    <View className="personalization-container">
       <ContentSecurityPolicy />
-      <div>
-        <Heading level={1}>You have qualified for the redirect offer</Heading>
-        <h2>Here are the newer offers!</h2>
-      </div>
-    </div>
+      <View>
+        <Heading level="1">You have qualified for the redirect offer</Heading>
+        <Heading level="2">Here are the newer offers!</Heading>
+      </View>
+    </View>
   );
 }

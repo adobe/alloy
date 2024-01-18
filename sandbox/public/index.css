@@ -7,22 +7,22 @@ body {
   font-size: 1em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #ffffff; /* Changed from #333 to #ffffff */
+  background-color: #ffffff;
   color: #eaeaea;
 }
 
 nav {
-  flex: 0 0 200px; /* Adjust this value to change the width of the navigation */
+  flex: 0 0 200px;
   padding: 1em;
-  background-color: #f5f5f5; /* Adjust this value to change the background color of the navigation */
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow to the navigation */
+  background-color: #f5f5f5;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 nav ul {
   display: flex;
   flex-direction: column;
-  width: 200px; /* adjust this value as needed */
-  overflow-y: auto; /* This allows the area to be scrollable */
+  width: 200px;
+  overflow-y: auto;
   position: fixed;
   left: 0;
   top: 0;
@@ -47,7 +47,7 @@ nav a {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
   monospace;
-  color: #acecfe;
+  color: #000000;
 }
 
 section {

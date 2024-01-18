@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import React from "react";
-import { Heading } from "@adobe/react-spectrum";
+import { Heading, View, Text, Link } from "@adobe/react-spectrum";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import useSendPageViewEvent from "./useSendPageViewEvent";
 
@@ -27,42 +27,42 @@ const adobeLink = () => {
 export default function Links() {
   useSendPageViewEvent();
   return (
-    <div>
+    <View>
       <ContentSecurityPolicy />
-      <Heading level={1}>Links</Heading>
-      <p>
+      <Heading level="1">Links</Heading>
+      <Text>
         This page shows a few different ways link clicks can be handled in
         Alloy.
-      </p>
-      <p>
-        When clicking on this <a href="https://example.com">exit link</a>, Alloy
-        records and transmits an exit-link web interaction event.
-      </p>
-      <p>
+      </Text>
+      <Text>
+        When clicking on this <Link href="https://example.com">exit link</Link>,
+        Alloy records and transmits an exit-link web interaction event.
+      </Text>
+      <Text>
         When clicking on this{" "}
-        <a href="download.zip" target="_blank">
+        <Link href="download.zip" target="_blank">
           download link
-        </a>
+        </Link>
         , Alloy records and transmits a download-link web interaction event.
-      </p>
-      <p>
+      </Text>
+      <Text>
         When clicking on this{" "}
-        <a onClick={adobeLink} href="http://www.adobe.com">
+        <Link onClick={adobeLink} href="http://www.adobe.com">
           custom link
-        </a>
+        </Link>
         , Alloy is instructed to collect a custom event through a sendBeacon
         call (in browsers that support beacons).
-      </p>
-      <p>
+      </Text>
+      <Text>
         In addition when clicking on any of the internal links (e.g. navigation
         menu), Alloy records and transmits a web interaction link (of type
         other) click event.
-      </p>
+      </Text>
       <br />
-      <i>
+      <Text>
         <b>TIP:</b>&nbsp;&nbsp;You can view the source of this page to gain more
         insight on how the different links work.
-      </i>
-    </div>
+      </Text>
+    </View>
   );
 }

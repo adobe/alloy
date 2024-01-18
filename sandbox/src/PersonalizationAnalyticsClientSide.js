@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import React, { useEffect } from "react";
-import { Heading } from "@adobe/react-spectrum";
+import { Heading, View, Button } from "@adobe/react-spectrum";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 import {
@@ -22,32 +22,32 @@ import {
 const Products = () => {
   personalizationEvent({ renderDecisions: true });
   return (
-    <div>
-      <h2>Products</h2>
-      <div
-        style={{ border: "1px solid red" }}
+    <View>
+      <Heading level="2">Products</Heading>
+      <View
+        UNSAFE_style={{ border: "1px solid red" }}
         id="personalization-products-container"
       >
         This is the personalization placeholder for the products view.
         Personalized content has not been loaded.
-      </div>
-    </div>
+      </View>
+    </View>
   );
 };
 
 const Cart = () => {
   personalizationEvent({ renderDecisions: true });
   return (
-    <div>
-      <h2>Cart</h2>
-      <div
-        style={{ border: "1px solid red" }}
+    <View>
+      <Heading level="2">Cart</Heading>
+      <View
+        UNSAFE_style={{ border: "1px solid red" }}
         id="personalization-cart-container"
       >
         This is the personalization placeholder for the cart view. Personalized
         content has not been loaded.
-      </div>
-    </div>
+      </View>
+    </View>
   );
 };
 
@@ -59,9 +59,9 @@ export default function PersonalizationAnalyticsClientSide() {
   const match = useRouteMatch();
 
   return (
-    <div>
+    <View>
       <ContentSecurityPolicy />
-      <Heading level={1}>Personalization with A4T client side logging</Heading>
+      <Heading level="1">Personalization with A4T client side logging</Heading>
       <p>
         This page tests rendering of activities using a <i>__view__</i> scope,
         collecting the analyticsTokens from the rendered propositions and
@@ -70,35 +70,35 @@ export default function PersonalizationAnalyticsClientSide() {
         refresh your browser because this is how to properly simulate a non-SPA
         workflow.
       </p>
-      <div
-        style={{ border: "1px solid red" }}
+      <View
+        UNSAFE_style={{ border: "1px solid red" }}
         className="personalization-container"
       >
         This is the personalization placeholder. Personalized content has not
         been loaded.
-      </div>
-      <div>
+      </View>
+      <View>
         <p>To retrieve a form based composed offer click on this button:</p>
-        <button onClick={getFormBasedOffer}>
+        <Button onPress={getFormBasedOffer}>
           Get a4t-test-scope location offer
-        </button>
+        </Button>
 
-        <div
-          style={{ border: "1px solid red", margin: "10px 0 10px 0" }}
+        <View
+          UNSAFE_style={{ border: "1px solid red", margin: "10px 0 10px 0" }}
           id="form-based-offer-container"
         >
           This is the personalization placeholder for a form based composed
           offer. Personalized content has not been loaded.
-        </div>
+        </View>
 
-        <button
-          style={{ margin: "10px 0 10px 0" }}
+        <Button
+          UNSAFE_style={{ margin: "10px 0 10px 0" }}
           id="form-based-click-metric"
         >
           {" "}
           Click me!
-        </button>
-      </div>
+        </Button>
+      </View>
       <p> This section is to simulate a SPA use case. </p>
       <ul>
         <li>
@@ -116,6 +116,6 @@ export default function PersonalizationAnalyticsClientSide() {
           <Cart />
         </Route>
       </Switch>
-    </div>
+    </View>
   );
 }

@@ -10,12 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import "core-js/stable";
-import "regenerator-runtime/runtime";
 import React from "react";
-import ReactDOM from "react-dom";
 import { Provider, defaultTheme } from "@adobe/react-spectrum";
-import "@adobe/spectrum-css/dist/spectrum-core.css";
+import ReactDOM from "react-dom";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
