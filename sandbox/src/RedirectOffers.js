@@ -13,10 +13,13 @@ governing permissions and limitations under the License.
 /* eslint-disable no-console */
 
 import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import { Heading } from "@adobe/react-spectrum";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
 
 export default function RedirectOffers() {
+  const history = useHistory();
+
   useEffect(() => {
     window
       .alloy("sendEvent", {
@@ -24,8 +27,9 @@ export default function RedirectOffers() {
       })
       .then(({ decisions = [] }) => {
         console.log("personalized decisions", decisions);
+        history.push("/redirectedNewPage");
       });
-  }, []);
+  }, [history]);
 
   return (
     <div className="personalization-container">
