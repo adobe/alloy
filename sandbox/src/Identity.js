@@ -1,18 +1,20 @@
 /*
- Copyright 2022 Adobe. All rights reserved.
- This file is licensed to you under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License. You may obtain a copy
- of the License at http://www.apache.org/licenses/LICENSE-2.0
+Copyright 2023 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
 
- Unless required by applicable law or agreed to in writing, software distributed under
- the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
- OF ANY KIND, either express or implied. See the License for the specific language
- governing permissions and limitations under the License.
- */
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
 
 /* eslint-disable no-console, func-names */
 
 import React, { useEffect, useState } from "react";
+import { Heading, View, Button, Text, Link } from "@adobe/react-spectrum";
+import { TableView, TableBody, Row, Cell } from "@react-spectrum/table";
 
 const readCookies = () => {
   const cookies = {};
@@ -109,64 +111,70 @@ export default function Identity() {
   };
 
   return (
-    <div>
-      <h1>Identity</h1>
-      <section>
-        This page demonstrates recieving or sending identity within the URL. No
-        calls to experience edge are made until you press one of the buttons
-        below. The table shows the current and original identities. If you click
-        on the link on the bottom, it will generate a link to another domain
-        with the ID included in the URL.
-      </section>
-      <section>
-        <button onClick={getIdentity(wrappedSetIdentity)}>Get Identity</button>
-        <button onClick={sendEvent(wrappedSetIdentity)}>Send Event</button>
-        <button onClick={setConsent(wrappedSetIdentity)}>Set Consent</button>
-      </section>
-      <section>
-        <table>
-          <tbody>
-            <tr>
-              <td>Original Identity Cookie</td>
-              <td>
-                <pre>{originalIdentityCookie}</pre>
-              </td>
-            </tr>
-            <tr>
-              <td>Current Identity Cookie</td>
-              <td>
-                <pre>{currentIdentityCookie}</pre>
-              </td>
-            </tr>
-            <tr>
-              <td>Identity from Web SDK</td>
-              <td>
-                <pre>{identity}</pre>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-      <section>
-        <a href={`/Identity${searchWithoutAdobeMc}`}>Web SDK identity page</a>
+    <View>
+      <Heading level="1">Identity</Heading>
+      <View>
+        <Text>
+          This page demonstrates recieving or sending identity within the URL.
+          No calls to experience edge are made until you press one of the
+          buttons below. The table shows the current and original identities. If
+          you click on the link on the bottom, it will generate a link to
+          another domain with the ID included in the URL.
+        </Text>
+      </View>
+      <View>
+        <Button onPress={getIdentity(wrappedSetIdentity)}>Get Identity</Button>
+        <Button onPress={sendEvent(wrappedSetIdentity)}>Send Event</Button>
+        <Button onPress={setConsent(wrappedSetIdentity)}>Set Consent</Button>
+      </View>
+      <View>
+        <TableView>
+          <TableBody>
+            <Row>
+              <Cell>Original Identity Cookie</Cell>
+              <Cell>
+                <Text>{originalIdentityCookie}</Text>
+              </Cell>
+            </Row>
+            <Row>
+              <Cell>Current Identity Cookie</Cell>
+              <Cell>
+                <Text>{currentIdentityCookie}</Text>
+              </Cell>
+            </Row>
+            <Row>
+              <Cell>Identity from Web SDK</Cell>
+              <Cell>
+                <Text>{identity}</Text>
+              </Cell>
+            </Row>
+          </TableBody>
+        </TableView>
+      </View>
+      <View>
+        <Link href={`/Identity${searchWithoutAdobeMc}`}>
+          Web SDK identity page
+        </Link>
         <br />
-        <a href={`/legacy.html${searchWithoutAdobeMc}`}>Legacy identity page</a>
+        <Link href={`/legacy.html${searchWithoutAdobeMc}`}>
+          Legacy identity page
+        </Link>
         <br />
-        <a
+        <Link
           href={`https://${otherHost}/identity${searchWithoutAdobeMc}`}
           onClick={appendIdentityToUrl}
         >
           Cross domain Web SDK identity page
-        </a>
+        </Link>
         <br />
-        <a
+        <Link
           href={`https://${otherHost}/legacy.html${searchWithoutAdobeMc}`}
           onClick={appendIdentityToUrl}
         >
           Cross domain legacy identity page
-        </a>
+        </Link>
         <br />
-      </section>
-    </div>
+      </View>
+    </View>
   );
 }

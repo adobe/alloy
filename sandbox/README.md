@@ -1,4 +1,79 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Overview
+
+The codebase is a React application that uses Adobe's React Spectrum for styling. It's a sandbox for showcasing and demoing the web SDK.
+
+# Structure
+
+The application is structured with different components for different functionalities such as:
+
+- Home
+- Consent
+- Personalization
+- Links
+- EventMerge
+- LargePayload
+- OrgTwo
+- DualTag
+- RedirectOffers
+- Identity
+- ConfigOverrides
+- InAppMessages
+
+# Bootstrapping
+
+The application is bootstrapped with Create React App and uses react-router-dom for routing. The main entry point of the application is the `index.js` file where the `App` component is rendered inside a Provider with the `defaultTheme` from React Spectrum:
+
+```js
+ReactDOM.render(
+  <React.StrictMode>
+    <Provider theme={defaultTheme}>
+      <App />
+    </Provider>
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+```
+
+# Styling and Polyfills
+
+The application uses the Adobe React Spectrum library for UI components and styling. The `spectrum-css` library is also used for additional Adobe Spectrum CSS styles.
+
+The application also uses `core-js` and `regenerator-runtime` for polyfilling and async function support:
+
+```js
+import "core-js";
+import "regenerator-runtime/runtime"; 
+```
+
+# Build and Test
+
+The `package.json` file shows that the application uses `react-scripts` for building, testing, and starting the application in development mode. The `browserslist` field specifies the browsers the application should support.
+
+# Components
+
+The `PersonalizationAnalyticsClientSide.js`, `Personalization.js`, `PersonalizationSpa.js`,  `Home.js`, `App.js`, `PersonalizationAjo.js`, `InAppMessages.js`, `RedirectOffers.js`, and `DualTag.js` files are all React components used in the application.
+
+They all import the `Heading` component from `@adobe/react-spectrum` for rendering headings:
+
+```js
+import { Heading } from "@adobe/react-spectrum";
+```
+
+# React Features
+
+The `PersonalizationAnalyticsClientSide.js`, `PersonalizationAjo.js`, `InAppMessages.js`, `RedirectOffers.js`, and `DualTag.js` files all use the `useEffect` hook from React to perform side effects, such as sending events or loading scripts, after the component has rendered.
+
+The `InAppMessages.js` file also uses the `useState` hook from React to manage state within the component.
+
+The `App.js` file uses `react-router-dom` to set up routing for the application. It renders different components based on the current URL path.
+
+# Functionality
+
+The `InAppMessages.js` file defines several functions for interacting with the application, such as sending display events and deleting all cookies. It also uses the `localStorage` API to store and retrieve the current configuration environment.
+
+The `RedirectOffers.js` file uses the `useEffect` hook to send an event when the component has rendered. It uses the global `alloy` function, presumably provided by an Adobe library, to send the event.
+
+The `DualTag.js` file uses the `useEffect` hook to load a script when the component has rendered. It creates a new script element, sets its `src` attribute to the URL of a launch library, and appends it to the document body.
 
 ## Available Scripts
 
