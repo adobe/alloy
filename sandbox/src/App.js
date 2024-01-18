@@ -62,7 +62,8 @@ const MenuIcon = function MenuIcon() {
             left: 0,
             width: "200px",
             height: "100vh",
-            background: "white"
+            background: "white",
+            zIndex: 1000
           }}
         >
           <ul>
