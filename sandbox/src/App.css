@@ -10,8 +10,8 @@
 .App-header ul {
   flex-direction: column;
   align-items: flex-start;
-  overflow-y: auto;
-  height: 100vh;
+  overflow-y: auto; /* This allows the area to be scrollable */
+  height: 100vh; /* This sets the maximum height of the area */
   position: fixed;
   left: 0;
   top: 0;
