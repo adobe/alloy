@@ -28,7 +28,7 @@ export default ({ config, eventManager, consent, sendEdgeNetworkRequest }) => {
       return event;
     },
     createMediaSession(options) {
-      const { playerName, channel, version } = config.mediaCollection;
+      const { playerName, channel, appVersion } = config.mediaCollection;
       const event = eventManager.createEvent();
       const { sessionDetails } = options.xdm.mediaCollection;
       event.setUserXdm(options.xdm);
@@ -38,7 +38,7 @@ export default ({ config, eventManager, consent, sendEdgeNetworkRequest }) => {
           sessionDetails: {
             playerName: sessionDetails.playerName || playerName,
             channel: sessionDetails.channel || channel,
-            appVersion: sessionDetails.appVersion || version
+            appVersion: sessionDetails.appVersion || appVersion
           }
         }
       });

@@ -146,14 +146,14 @@ createMediaCollection.configValidators = objectOf({
     playerName: string()
       .nonEmpty()
       .required(),
-    version: string(),
+    appVersion: string(),
     mainPingInterval: number()
       .minimum(10)
       .maximum(50)
       .default(10),
     adPingInterval: number()
-      .minimum(10)
-      .maximum(50)
+      .minimum(1)
+      .maximum(10)
       .default(10)
   }).noUnknownFields()
 });
