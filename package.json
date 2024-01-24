@@ -88,6 +88,7 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "babel-plugin-version": "^0.2.3",
     "bundlesize": "^0.18.0",
+    "chai": "^5.0.0",
     "chalk": "^2.4.2",
     "concurrently": "^6.5.0",
     "date-fns": "^2.23.0",
