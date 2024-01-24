@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { exec } from "child_process";
-import { assert } from "chai";
+const { exec } = require("child_process");
+const assert = require("chai").assert;
 
 // eslint-disable-next-line no-unused-vars
 test("Check if build completes without errors", async t => {

@@ -9,9 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { exec } from "child_process";
-import { expect } from "chai";
-import fs from "fs";
+const { exec } = require("child_process");
+const expect = require("chai").expect;
+const fs = require("fs");
 
 test("Check if excluded components are not present", async () => {
   const componentToExclude = "personalization";

@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { exec } from "child_process";
-import fs from "fs";
+const { exec } = require("child_process");
+const fs = require("fs");
 
 test("Check if correct files are generated", async () => {
   exec("npm run build:custom", error => {
