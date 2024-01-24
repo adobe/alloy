@@ -140,6 +140,25 @@ const getFileSizeInKB = filePath => {
 const buildWithComponents = async sandbox => {
   const prodBuild = buildConfig(false, sandbox);
   const minifiedBuild = buildConfig(true, sandbox);
+
+  // Run rollup command
+  // eslint-disable-next-line global-require
+  const { exec } = require("child_process");
+  exec(
+    'rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN && echo "Base Code:" && cat distTest/baseCode.min.js',
+    (error, stdout, stderr) => {
+      if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
+    }
+  );
+
   const bundleProd = await rollup(prodBuild);
   console.log("✔️ Built alloy.js");
   await bundleProd.write(prodBuild.output[0]);
