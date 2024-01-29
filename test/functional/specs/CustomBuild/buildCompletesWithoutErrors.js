@@ -9,13 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const { exec } = require("child_process");
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
 const assert = require("chai").assert;
 
-// eslint-disable-next-line no-unused-vars
-test("Check if build completes without errors", async t => {
-  exec("npm run build:custom", (error, stdout, stderr) => {
-    assert.isNull(error);
-    assert.isEmpty(stderr);
-  });
+test("Check if build completes without errors", async () => {
+  const { error, stderr } = await exec("npm run build:custom");
+  assert.isNull(error);
+  assert.isEmpty(stderr);
 });

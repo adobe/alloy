@@ -1,34 +1,46 @@
 #!/usr/bin/env node
 
+const fs = require("fs");
 const glob = require("glob");
 const createTestCafe = require("testcafe");
-const yargs = require("yargs/yargs");
-const { hideBin } = require("yargs/helpers");
 
-const argv = yargs(hideBin(process.argv)).option("exclude", {
-  type: "array",
-  default: []
-}).argv;
-
-glob("test/functional/specs/**/*.js", (err, files) => {
-  if (err) {
-    console.error(err);
-    process.exit(1);
+fs.readFile("dist/alloy.js", "utf8", (readFileErr, data) => {
+  if (readFileErr) {
+    console.error(`readFile error: ${readFileErr}`);
+    return;
   }
 
-  const testFiles = files.filter(file => {
-    const shouldExclude = argv.exclude.some(excludedDir =>
-      file.includes(excludedDir)
-    );
-    return !shouldExclude;
-  });
+  glob("test/functional/specs/**/*.js", (globErr, files) => {
+    if (globErr) {
+      console.error(globErr);
+      process.exit(1);
+    }
 
-  createTestCafe().then(testcafe => {
-    const runner = testcafe.createRunner();
-    runner
-      .src(testFiles)
-      .browsers("chrome")
-      .run()
-      .then(() => testcafe.close());
+    let componentNames = files.map(file => file.split("/")[3]);
+    componentNames = [...new Set(componentNames)]; // remove duplicates
+
+    const testFiles = [];
+    const excludedComponents = [];
+
+    componentNames.forEach(name => {
+      if (data.includes(`alloy_${name}`)) {
+        testFiles.push(files.find(file => file.split("/")[3] === name));
+      } else {
+        excludedComponents.push(name);
+      }
+    });
+
+    if (excludedComponents.length > 0) {
+      console.log(`Excluding components: ${excludedComponents.join(", ")}`);
+    }
+
+    createTestCafe().then(testcafe => {
+      const runner = testcafe.createRunner();
+      runner
+        .src(testFiles)
+        .browsers("chrome")
+        .run()
+        .then(() => testcafe.close());
+    });
   });
 });

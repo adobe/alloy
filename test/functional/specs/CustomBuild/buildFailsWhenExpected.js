@@ -9,12 +9,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const { exec } = require("child_process");
+
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
 
 test("Check if build fails when expected", async () => {
-  exec("npm run build:custom -- --exclude nonExistingComponent", error => {
-    if (!error) {
-      console.error("Expected error but none was thrown");
-    }
-  });
+  try {
+    await exec("npm run build:custom -- --exclude nonExistingComponent");
+  } catch (error) {
+    console.error("Expected error but none was thrown");
+  }
 });

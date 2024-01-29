@@ -9,18 +9,14 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const { exec } = require("child_process");
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
 const assert = require("chai").assert;
 
 test("Check if build works with different configurations", async () => {
-  exec(
-    "npm run build:custom -- --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN",
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        return;
-      }
-      assert.isEmpty(stderr);
-    }
+  const { error, stderr } = await exec(
+    "npm run build:custom -- --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN"
   );
+  assert.isNull(error);
+  assert.isEmpty(stderr);
 });
