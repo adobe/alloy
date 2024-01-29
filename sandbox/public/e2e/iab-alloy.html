@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>End-to-end Test Page running the IAB testing suite.</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' *.demdex.net;
+            script-src 'self' 'unsafe-inline' assets.adobedtm.com cdn.tt.omtrdc.net 
+                cdn.cookielaw.org cdn1.adoberesources.net geolocation.onetrust.com;
+            style-src 'self' 'unsafe-inline' cdn.tt.omtrdc.net;
+            img-src * data:;
+            connect-src 'self' *.alloyio.com *.demdex.net *.adobedc.net *.cookielaw.org *.onetrust.com"
+    />
+    <style>
+      button {
+        display: block;
+        margin: 25px 0;
+        font-size: 110%;
+        cursor: pointer;
+      }
+    </style>
+
+    <!-- OneTrust Cookies Consent Notice start 
+    REMOVING FOR NOW BECAUSE THE POP UP IS BREAKING THE E2E TESTS.
+    TODO: FIND A WAY TO NOT OPEN IT.
+    <script
+      src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"
+      type="text/javascript"
+      charset="UTF-8"
+      data-domain-script="679b1dc5-4386-4fa9-ba2b-8c8cee2d8d6f-test"
+    ></script>
+    <script type="text/javascript">
+      function OptanonWrapper() {}
+    </script>
+     OneTrust Cookies Consent Notice end -->
+
+    <!-- prettier-ignore -->
+    <script>
+        !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
+        []).push(o),n[o]=function(){var u=arguments;return new Promise(
+        function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
+        (window,["alloy"]);
+    </script>
+    <script src="../alloy.js" async></script>
+    <script>
+      const orgId =
+        getUrlParameter("orgId") || "5BFE274A5F6980A50A495C08@AdobeOrg";
+      function getUrlParameter(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        var results = regex.exec(location.search);
+        return results === null
+          ? ""
+          : decodeURIComponent(results[1].replace(/\+/g, " "));
+      }
+
+      function resolveEdgeDomain() {
+        var defaultEdgeDomain =
+          location.host.indexOf("alloyio.com") !== -1
+            ? "firstparty.alloyio.com"
+            : undefined;
+
+        return getUrlParameter("edgeDomain") || defaultEdgeDomain;
+      }
+
+      function stringToBoolean(str) {
+        if (str) {
+          return JSON.parse(str);
+        }
+      }
+
+      function resolveBooleanQueryParam(param, defaultValue) {
+        return getUrlParameter(param)
+          ? stringToBoolean(getUrlParameter(param))
+          : defaultValue;
+      }
+
+      alloy("configure", {
+        edgeDomain: resolveEdgeDomain(),
+        datastreamId:
+          getUrlParameter("configId") || "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
+        orgId,
+        thirdPartyCookiesEnabled: getUrlParameter("thirdPartyCookiesEnabled")
+          ? true
+          : false,
+        debugEnabled: true,
+        // If `pending`, wait for the user's consent, but listening to the `setConsent` command.
+        defaultConsent: "in",
+        // Look for existing ECID Cookies set by the legacy Visitor.js library.
+        // That means we need a cookie names: `AMCV_5BFE274A5F6980A50A495C08%40AdobeOrg: MCMID|76365103486713493572334524`
+        idMigrationEnabled: true
+      });
+    </script>
+  </head>
+  <body>
+    <h1>End-to-end Test Page running the IAB testing suite using Alloy.</h1>
+    <button class="iab-opt-in">
+      Opt in to IAB consent using hardcoded string
+    </button>
+    <button class="iab-opt-out">
+      Opt out of IAB consent using hardcoded string
+    </button>
+    <button class="iab-in-query-string">
+      Consent via string passed in Query Param
+    </button>
+    <button class="iab-opt-in-onetrust-api">Opt In Via OneTrust JS API</button>
+    <button class="iab-opt-out-onetrust-api">
+      Opt Out Via OneTrust JS API
+    </button>
+    <button class="in-goog-vendor">Opt In to Google Vendor</button>
+    <button class="no-goog-vendor">Opt Out of Google Vendor</button>
+    <button class="send-event-btn">Send an event with Consent</button>
+    <button class="get-ecid">Get the ECID value</button>
+    <button class="create-amcv-cookie">Create the Legacy AMCV cookie</button>
+
+    <div>
+      <h2>Available QueryString parameter:</h2>
+      <ul>
+        <li>ECID</li>
+        <li>orgId</li>
+        <li>configId</li>
+        <li>edgeDomain</li>
+        <li>gdprApplies</li>
+        <li>iabConsentString</li>
+        <li>eventConsentString</li>
+        <li>thirdPartyCookiesEnabled</li>
+      </ul>
+    </div>
+
+    <script>
+      var iabOptInBtn = document.querySelector(".iab-opt-in");
+      var iabOptOutBtn = document.querySelector(".iab-opt-out");
+      var iabStringFromQueryStringBtn = document.querySelector(
+        ".iab-in-query-string"
+      );
+      var optInViaOneTrustApi = document.querySelector(
+        ".iab-opt-in-onetrust-api"
+      );
+      var optOutViaOneTrustApi = document.querySelector(
+        ".iab-opt-out-onetrust-api"
+      );
+      var noGoogVendorBtn = document.querySelector(".no-goog-vendor");
+      var optInGoogVendorBtn = document.querySelector(".in-goog-vendor");
+      var sendEventWithConsentBtn = document.querySelector(".send-event-btn");
+      var getEcidButton = document.querySelector(".get-ecid");
+      var createAmcvCookieBtn = document.querySelector(".create-amcv-cookie");
+
+      createAmcvCookieBtn.addEventListener("click", function() {
+        const ecid = getUrlParameter("ECID");
+        document.cookie = `AMCV_${encodeURIComponent(orgId)}=MCMID|${ecid}`;
+      });
+
+      optInViaOneTrustApi.addEventListener("click", function() {
+        OneTrust.AllowAll();
+      });
+
+      optOutViaOneTrustApi.addEventListener("click", function() {
+        OneTrust.RejectAll();
+      });
+
+      getEcidButton.addEventListener("click", function() {
+        alloy("getIdentity")
+          .then(function(result) {
+            window.ecid = result.identity.ECID;
+            console.log("ECID is: " + window.ecid);
+          })
+          .catch(function(error) {
+            console.log("Get identity error:", error);
+          });
+      });
+
+      sendEventWithConsentBtn.addEventListener("click", function() {
+        if (!getUrlParameter("eventConsentString")) {
+          console.error(
+            "You need to pass an `eventConsentString` query param."
+          );
+          return;
+        }
+
+        const type = "Alloy-E2E-sendEvent-consent";
+        const xdm = {
+          consentStrings: [
+            {
+              consentStandard: "IAB TCF",
+              consentStandardVersion: "2.0",
+              consentStringValue: getUrlParameter("eventConsentString"),
+              gdprApplies: resolveBooleanQueryParam("gdprApplies", true),
+              containsPersonalData: false
+            }
+          ]
+        };
+
+        alloy("sendEvent", { type, xdm }).then(() =>
+          console.log("Event has been sent!!")
+        );
+      });
+
+      optInGoogVendorBtn.addEventListener("click", function() {
+        var optInToGoogConsentString =
+          "CO2ISm8O2IbZcAVAMBFRACBsAIBAAAAgEIYgGPtjup3rYdY178JUkiCIFabBlBymqcio5Ao1cEACRNnQIUAIyhKBCQmaUqJBKhQRWBDAQtQwBCB06EBmgIQNUmkj1MQGQgCRKSF7BmQBEwQMCagoBDeRAAo-kIhkLCAAqO0E_AB4F5wAgEagLzAA";
+        alloy("setConsent", {
+          consent: [
+            {
+              standard: "IAB TCF",
+              version: "2.0",
+              value: optInToGoogConsentString,
+              gdprApplies: resolveBooleanQueryParam("gdprApplies", true)
+            }
+          ]
+        });
+      });
+
+      noGoogVendorBtn.addEventListener("click", function() {
+        var optOutOfGoogConsentString =
+          "CO2IS8PO2IbuvAVAMBFRACBsAIBAAAAgEIYgGQBiNh14tYnCZ-5fXnRqprc2dYaErJs0dFpVJBA0ALi95QggwAQXEIa4JmghQMIEJASUkIIMEjHIgsJSyMEIAMIgjpJqrggEIFVAIIgPDKAULEQQkBQcCCC2mhZURCaVE0AVLMF0CNYAICNQAA==";
+        alloy("setConsent", {
+          consent: [
+            {
+              standard: "IAB TCF",
+              version: "2.0",
+              value: optOutOfGoogConsentString,
+              gdprApplies: resolveBooleanQueryParam("gdprApplies", true)
+            }
+          ]
+        });
+      });
+
+      iabStringFromQueryStringBtn.addEventListener("click", function() {
+        alloy("setConsent", {
+          consent: [
+            {
+              standard: "IAB TCF",
+              version: "2.0",
+              value: getUrlParameter("iabConsentString"),
+              gdprApplies: resolveBooleanQueryParam("gdprApplies", true)
+            }
+          ]
+        });
+      });
+
+      iabOptInBtn.addEventListener("click", function() {
+        var optedInConsentString =
+          "CO1Z4yuO1Z4yuAcABBENArCsAP_AAH_AACiQGCNX_T5eb2vj-3Zdt_tkaYwf55y3o-wzhhaIse8NwIeH7BoGP2MwvBX4JiQCGBAkkiKBAQdtHGhcCQABgIhRiTKMYk2MjzNKJLJAilsbe0NYCD9mnsHT3ZCY70--u__7P3fAwQgkwVLwCRIWwgJJs0ohTABCOICpBwCUEIQEClhoACAnYFAR6gAAAIDAACAAAAEEEBAIABAAAkIgAAAEBAKACIBAACAEaAhAARIEAsAJEgCAAVA0JACKIIQBCDgwCjlACAoAAAAA.YAAAAAAAAAAA";
+        alloy("setConsent", {
+          consent: [
+            {
+              standard: "IAB TCF",
+              version: "2.0",
+              value: optedInConsentString,
+              gdprApplies: resolveBooleanQueryParam("gdprApplies", true)
+            }
+          ]
+        });
+      });
+
+      iabOptOutBtn.addEventListener("click", function() {
+        var optedOutConsentString =
+          "CO1Z5evO1Z5evAcABBENArCgAAAAAH_AACiQGCNX_T5eb2vj-3Zdt_tkaYwf55y3o-wzhhaIse8NwIeH7BoGP2MwvBX4JiQCGBAkkiKBAQdtHGhcCQABgIhRiTKMYk2MjzNKBLJAilsbe0NYCD9mnsHT3ZCY70--u__7P3fAwQgkwVLwCRIWwgJJs0ohTABCOICpBwCUEIQEClhoACAnYFAR6gAAAIDAACAAAAEEEBAIABAAAkIgAAAEBAKACIBAACAEaAhAARIEAsAJEgCAAVA0JACKIIQBCDgwCjlACAoAAAAA.YAAAAAAAAAAA";
+        alloy("setConsent", {
+          consent: [
+            {
+              standard: "IAB TCF",
+              version: "2.0",
+              value: optedOutConsentString,
+              gdprApplies: resolveBooleanQueryParam("gdprApplies", true)
+            }
+          ]
+        });
+      });
+    </script>
+  </body>
+</html>

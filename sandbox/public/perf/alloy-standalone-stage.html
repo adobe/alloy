@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Alloy - Standalone</title>
+
+    <!-- prettier-ignore -->
+    <script>
+      !function(e,a,n,t){var i=e.head;if(i){
+      if (a) return;
+      var o=e.createElement("style");
+      o.id="alloy-prehiding",o.innerText=n,i.appendChild(o),
+      setTimeout(function(){o.parentNode&&o.parentNode.removeChild(o)},t)}}
+      (document, document.location.href.indexOf("mboxEdit") !== -1, "body { opacity: 0 !important }", 3000);
+    </script>
+
+    <!-- prettier-ignore -->
+    <script>
+      !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
+      []).push(o),n[o]=function(){var u=arguments;return new Promise(
+      function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}
+      (window,["alloy"]);
+    </script>
+
+    <script
+      src="https://cdn1-staging.adoberesources.net/alloy/latest/alloy.min.js"
+      async
+    ></script>
+
+    <script>
+      alloy("configure", {
+        edgeDomain: "firstparty.alloyio.com",
+        datastreamId: "2c7ea11d-7a81-47db-b0d7-745890d68e67",
+        orgId: "97D1F3F459CE0AD80A495CBE@AdobeOrg"
+      });
+      alloy("sendEvent", {
+        renderDecisions: true
+      });
+    </script>
+  </head>
+
+  <body>
+    <h1>Alloy - Standalone</h1>
+    <div id="offer">Some awesome default content.</div>
+  </body>
+</html>
