@@ -10,14 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string, number, objectOf } from "../../utils/validation";
 import createMediaSessionCacheManager from "./createMediaSessionCacheManager";
-import validateMediaEventOptions from "./validateMediaEventOptions";
-import validateSessionOptions from "./validateMediaSessionOptions";
 import createMediaEventManager from "./createMediaEventManager";
-import { noop } from "../../utils";
-import createHeartbeatEngine from "./createHeartbeatEngine";
-import createUpdateMediaSessionState from "./createUpdateMediaSessionState";
+import createSendMediaEvent from "./createSendMediaEvent";
+import configValidators from "./configValidators";
+import createMediaComponent from "./createMediaComponent";
 
 const createMediaCollection = ({
   config,
@@ -35,126 +32,21 @@ const createMediaCollection = ({
     sendEdgeNetworkRequest
   });
 
-  const heartbeatTicker = createHeartbeatEngine({
+  const trackMediaEvent = createSendMediaEvent({
+    mediaSessionCacheManager,
+    mediaEventManager,
+    config
+  });
+
+  return createMediaComponent({
     config,
+    logger,
+    trackMediaEvent,
     mediaEventManager,
     mediaSessionCacheManager
   });
-
-  const updateMediaSessionState = createUpdateMediaSessionState({
-    mediaSessionCacheManager
-  });
-
-  return {
-    lifecycle: {
-      onBeforeEvent({ playerId, onBeforeMediaEvent, onResponse = noop }) {
-        onResponse(({ response }) => {
-          const sessionId = response.getPayloadsByType(
-            "media-analytics:new-session"
-          );
-          logger.info("Media session ID returned: ", sessionId);
-
-          if (sessionId.length > 0) {
-            if (playerId && onBeforeMediaEvent) {
-              const heartbeatId = setInterval(() => {
-                heartbeatTicker({
-                  sessionId: sessionId[0].sessionId,
-                  playerId,
-                  onBeforeMediaEvent
-                });
-              }, 1000);
-              mediaSessionCacheManager.saveHeartbeat({ playerId, heartbeatId });
-            }
-            return { sessionId: sessionId[0].sessionId };
-          }
-
-          return {};
-        });
-      }
-    },
-    commands: {
-      createMediaSession: {
-        optionsValidator: options => validateSessionOptions({ options }),
-        run: options => {
-          const { playerId, onBeforeMediaEvent } = options;
-          const event = mediaEventManager.createMediaSession(options);
-          mediaEventManager.augmentMediaEvent({
-            event,
-            playerId,
-            onBeforeMediaEvent
-          });
-
-          const sessionPromise = mediaEventManager.trackMediaSession({
-            event,
-            playerId,
-            onBeforeMediaEvent
-          });
-
-          mediaSessionCacheManager.storeSession({
-            playerId,
-            sessionDetails: {
-              sessionPromise,
-              onBeforeMediaEvent,
-              latestTriggeredEvent: Date.now()
-            }
-          });
-
-          return sessionPromise;
-        }
-      },
-      sendMediaEvent: {
-        optionsValidator: options => validateMediaEventOptions({ options }),
-        run: options => {
-          const event = mediaEventManager.createMediaEvent({ options });
-          const { playerId, xdm } = options;
-          const eventType = xdm.eventType;
-          const action = eventType.split(".")[1];
-          const {
-            onBeforeMediaEvent,
-            sessionPromise
-          } = mediaSessionCacheManager.getSession(playerId);
-          sessionPromise.then(result => {
-            mediaEventManager.augmentMediaEvent({
-              event,
-              playerId,
-              onBeforeMediaEvent,
-              sessionID: result.sessionId
-            });
-
-            return mediaEventManager
-              .trackMediaEvent({ event, action })
-              .then(() => {
-                updateMediaSessionState({ playerId, eventType });
-              })
-              .catch(error => {
-                logger.warn(`The Media Event of type ${action} failed.`, error);
-              });
-          });
-        }
-      }
-    }
-  };
 };
-
 createMediaCollection.namespace = "Media Collection";
 
-createMediaCollection.configValidators = objectOf({
-  mediaCollection: objectOf({
-    channel: string()
-      .nonEmpty()
-      .required(),
-    playerName: string()
-      .nonEmpty()
-      .required(),
-    appVersion: string(),
-    mainPingInterval: number()
-      .minimum(10)
-      .maximum(50)
-      .default(10),
-    adPingInterval: number()
-      .minimum(1)
-      .maximum(10)
-      .default(10)
-  }).noUnknownFields()
-});
+createMediaCollection.configValidators = configValidators;
 export default createMediaCollection;

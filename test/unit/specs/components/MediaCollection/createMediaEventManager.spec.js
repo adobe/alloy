@@ -20,6 +20,7 @@ describe("MediaCollection::createMediaEventManager", () => {
   let consent;
   let sendEdgeNetworkRequest;
   let mediaEventManager;
+  let logger;
 
   beforeEach(() => {
     config = {
@@ -29,6 +30,7 @@ describe("MediaCollection::createMediaEventManager", () => {
         version: "1.0.0"
       }
     };
+    logger = jasmine.createSpyObj("logger", ["warn"]);
     eventManager = jasmine.createSpyObj("eventManager", [
       "createEvent",
       "sendEvent"
@@ -41,7 +43,8 @@ describe("MediaCollection::createMediaEventManager", () => {
       config,
       eventManager,
       consent,
-      sendEdgeNetworkRequest
+      sendEdgeNetworkRequest,
+      logger
     });
   });
 

@@ -26,9 +26,9 @@ import { deepAssign, isEmptyObject, isNumber } from "../../utils";
 import { adsToXdmKeys, mediaToXdmKeys } from "./media/mediaKeysToXdmConverter";
 import createMediaHelper from "./createMediaHelper";
 
-const convertSessionDetailsMetadataToXDM = contextData => {
+const createSessionStartXdmObject = (mediaObject, contextData) => {
   const customMetadata = [];
-  const sessionDetails = {};
+  const { sessionDetails } = mediaObject;
   Object.keys(contextData).forEach(key => {
     if (mediaToXdmKeys[key]) {
       sessionDetails[mediaToXdmKeys[key]] = contextData[key];
@@ -40,90 +40,119 @@ const convertSessionDetailsMetadataToXDM = contextData => {
     }
   });
 
-  return { sessionDetails, customMetadata };
+  return {
+    xdm: {
+      mediaCollection: {
+        playhead: 0,
+        sessionDetails,
+        customMetadata
+      }
+    }
+  };
 };
 
+const addAdStartContextToMediaDetails = (
+  context,
+  mediaDetails,
+  customMetadata
+) => {
+  Object.keys(context).forEach(key => {
+    if (adsToXdmKeys[key]) {
+      mediaDetails.advertisingDetails[adsToXdmKeys[key]] = context[key];
+    } else {
+      customMetadata.push({
+        name: key,
+        value: context[key]
+      });
+    }
+  });
+};
+
+const addContextToCustomMetadata = (context, customMetadata) => {
+  Object.keys(context).forEach(key => {
+    customMetadata.push({
+      name: key,
+      value: context[key]
+    });
+  });
+};
 const createMediaDetailsObject = ({ eventType, info, context }) => {
   const mediaDetails = info;
   const customMetadata = [];
 
-  if (context && !isEmptyObject(context)) {
-    if (eventType === MEDIA_EVENTS.AdStart) {
-      Object.keys(context).forEach(key => {
-        if (adsToXdmKeys[key]) {
-          mediaDetails.advertisingDetails[mediaToXdmKeys[key]] = context[key];
-        } else {
-          customMetadata.push({
-            name: key,
-            value: context[key]
-          });
-        }
-      });
-    } else {
-      Object.keys(context).forEach(key => {
-        customMetadata.push({
-          name: key,
-          value: context[key]
-        });
-      });
-    }
-    mediaDetails.customMetadata = customMetadata;
+  if (!context || isEmptyObject(context)) {
+    return mediaDetails;
   }
+
+  if (eventType === MEDIA_EVENTS.AdStart) {
+    addAdStartContextToMediaDetails(context, mediaDetails, customMetadata);
+  } else {
+    addContextToCustomMetadata(context, customMetadata);
+  }
+
+  mediaDetails.customMetadata = customMetadata;
 
   return mediaDetails;
 };
 
-const createHeartbeat = ({ mainPingInterval, playerState, trackEvent }) => {
-  // eslint-disable-next-line consistent-return
-  return () => {
-    const currentTime = Date.now();
-    if (
-      Math.abs(currentTime - playerState.latestTriggeredEvent) / 1000 >
-      mainPingInterval
-    ) {
-      return trackEvent({ eventType: "ping" });
-    }
-  };
-};
-
 const createGetInstance = ({ config, logger, mediaEventManager }) => {
-  const { mainPingInterval } = config.mediaCollection;
-
   const trackerState = {
     qoe: null,
     lastPlayhead: 0,
-    latestTriggeredEvent: null
+    ticker: null,
+    deferSession: defer()
   };
-  let ticker;
-  let deferSession = defer();
 
-  const updateLastTimeEventTriggered = () => {
-    trackerState.latestTriggeredEvent = Date.now();
-  };
   const getEventType = ({ eventType }) => {
     if (eventType === MEDIA_EVENTS.BufferComplete) {
       return MEDIA_EVENTS.Play;
     }
     return eventType;
   };
+  const createXdmObject = ({ eventType, mediaDetails, sessionID }) => {
+    const action = getEventType({ eventType });
+    const xdm = {
+      eventType: `media.${action}`,
+      mediaCollection: {
+        sessionID,
+        playhead: trackerState.lastPlayhead
+      }
+    };
+    deepAssign(xdm.mediaCollection, mediaDetails);
+    return xdm;
+  };
+
+  const createAndTrackMediaEvent = ({ xdm, action }) => {
+    const event = mediaEventManager.createMediaEvent({ options: { xdm } });
+    return mediaEventManager.trackMediaEvent({ event, action });
+  };
+  const createAndTrackMediaSession = ({ xdm }) => {
+    const event = mediaEventManager.createMediaSession(xdm);
+    return mediaEventManager.trackMediaSession({ event });
+  };
+
+  const setTicker = ({ func, eventType }) => {
+    clearTimeout(trackerState.ticker);
+    const pingInterval =
+      eventType === MEDIA_EVENTS.AdStart ||
+      eventType === MEDIA_EVENTS.AdBreakStart
+        ? config.mediaCollection.adPingInterval
+        : config.mediaCollection.mainPingInterval;
+    trackerState.ticker = setTimeout(() => {
+      func({ eventType: "ping" });
+    }, pingInterval * 1000);
+  };
 
   const trackEvent = ({ eventType, mediaDetails }) => {
-    return deferSession.promise
+    return trackerState.deferSession.promise
       .then(sessionID => {
-        const action = getEventType({ eventType });
-        const xdm = {
-          eventType: `media.${action}`,
-          mediaCollection: {
-            sessionID,
-            playhead: trackerState.lastPlayhead
-          }
-        };
-        deepAssign(xdm.mediaCollection, mediaDetails);
-        const event = mediaEventManager.createMediaEvent({ options: { xdm } });
-        return mediaEventManager.trackMediaEvent({ event, action }).then(() => {
-          updateLastTimeEventTriggered();
+        const xdm = createXdmObject({ eventType, mediaDetails, sessionID });
+        return createAndTrackMediaEvent({
+          xdm,
+          action: getEventType({ eventType })
         });
       })
+      .then(setTicker({ func: trackEvent, eventType }))
       .catch(error => {
         logger.warn(
           `An error occurred while sending ${eventType} Media Event.`,
@@ -132,52 +161,24 @@ const createGetInstance = ({ config, logger, mediaEventManager }) => {
       });
   };
 
-  const heartbeatEngine = createHeartbeat({
-    mainPingInterval,
-    deferSession,
-    playerState: trackerState,
-    trackEvent
-  });
-
   return {
     trackSessionStart: (mediaObject, contextData = {}) => {
       if (isEmptyObject(mediaObject)) {
-        deferSession.reject("invalid media object");
+        trackerState.deferSession.reject("invalid media object");
         return {};
       }
+      const xdm = createSessionStartXdmObject(mediaObject, contextData);
 
-      const mediaCollection = {
-        playhead: 0
-      };
-      const {
-        sessionDetails,
-        customMetadata
-      } = convertSessionDetailsMetadataToXDM(contextData);
-
-      deepAssign(
-        mediaCollection,
-        mediaObject,
-        { sessionDetails },
-        { customMetadata }
-      );
-      const event = mediaEventManager.createMediaSession({
-        xdm: {
-          mediaCollection
+      return createAndTrackMediaSession({ xdm }).then(result => {
+        if (result.sessionId) {
+          trackerState.deferSession.resolve(result.sessionId);
+          setTicker({ func: trackEvent });
+        } else {
+          trackerState.deferSession.reject(
+            "There was an error when creating the session.Thus no more media events are triggered."
+          );
         }
       });
-
-      return mediaEventManager
-        .trackMediaSession({
-          event
-        })
-        .then(result => {
-          updateLastTimeEventTriggered();
-          deferSession.resolve(result.sessionId);
-
-          ticker = setInterval(() => {
-            heartbeatEngine();
-          }, 1000);
-        });
     },
     trackPlay: () => {
       return trackEvent({ eventType: MEDIA_EVENTS.Play });
@@ -186,13 +187,13 @@ const createGetInstance = ({ config, logger, mediaEventManager }) => {
       return trackEvent({ eventType: MEDIA_EVENTS.Pause });
     },
     trackSessionEnd: () => {
-      clearInterval(ticker);
+      clearInterval(trackerState.ticker);
       return trackEvent({ eventType: MEDIA_EVENTS.SessionEnd }).then(() => {
-        deferSession = null;
+        trackerState.deferSession = null;
       });
     },
     trackComplete: () => {
-      clearInterval(ticker);
+      clearInterval(trackerState.ticker);
       return trackEvent({ eventType: MEDIA_EVENTS.SessionComplete });
     },
     trackError: errorId => {
@@ -236,8 +237,8 @@ const createGetInstance = ({ config, logger, mediaEventManager }) => {
     },
     destroy: () => {
       logger.info("Destroy called, destroying the tracker");
-      clearInterval(ticker);
-      deferSession = null;
+      clearInterval(trackerState.ticker);
+      trackerState.deferSession = null;
     }
   };
 };

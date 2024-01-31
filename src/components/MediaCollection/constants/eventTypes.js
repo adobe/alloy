@@ -14,6 +14,7 @@ export default {
   PLAY: "media.play",
   BUFFERING: "media.buffering",
   AD_START: "media.adStart",
+  Ad_BREAK_START: "media.adBreakStart",
   SESSION_END: "media.sessionEnd",
   SESSION_START: "media.sessionStart",
   SESSION_COMPLETE: "media.sessionComplete",

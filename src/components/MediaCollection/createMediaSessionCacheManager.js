@@ -23,6 +23,9 @@ export default () => {
     if (!sessionDetails) {
       return;
     }
+    if (sessionDetails.heartbeatId) {
+      clearTimeout(sessionDetails.heartbeatId);
+    }
 
     sessionDetails.heartbeatId = heartbeatId;
   };
@@ -34,21 +37,10 @@ export default () => {
       return;
     }
 
-    clearInterval(sessionDetails.heartbeatId);
+    clearTimeout(sessionDetails.heartbeatId);
 
     sessionDetails.heartbeatId = null;
   };
-
-  const updateLastTriggeredEventTS = ({ playerId }) => {
-    const sessionDetails = mediaSessionCache[playerId];
-
-    if (!sessionDetails) {
-      return;
-    }
-
-    sessionDetails.latestTriggeredEvent = Date.now();
-  };
-
   const storeSession = ({ playerId, sessionDetails }) => {
     if (mediaSessionCache === undefined) {
       mediaSessionCache = {};
@@ -59,9 +51,8 @@ export default () => {
 
   return {
     getSession,
-    stopHeartbeat,
-    updateLastTriggeredEventTS,
     storeSession,
+    stopHeartbeat,
     saveHeartbeat
   };
 };

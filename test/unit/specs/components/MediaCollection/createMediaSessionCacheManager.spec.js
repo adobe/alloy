@@ -42,19 +42,6 @@ describe("MediaCollection::createMediaSessionCacheManager", () => {
     expect(result.heartbeatId).toEqual(null);
   });
 
-  it("updateLastTriggeredEventTS should update the timestamp", () => {
-    const playerId = "player1";
-    const now = Date.now();
-    const sessionDetails = { id: "session1", heartbeatId: 1 };
-
-    mediaSessionCacheManager.storeSession({ playerId, sessionDetails });
-    mediaSessionCacheManager.updateLastTriggeredEventTS({ playerId });
-
-    const session = mediaSessionCacheManager.getSession(playerId);
-
-    expect(session.latestTriggeredEvent).toBeGreaterThanOrEqual(now);
-  });
-
   it("storeSession should store the session", () => {
     const playerId = "player1";
     const sessionDetails = { id: "session1" };

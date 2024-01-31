@@ -121,8 +121,9 @@ document.addEventListener("DOMContentLoaded", async function(event) {
           videoPlayer: thirdVideoPlayer
         });
       }, 1000);
+    } else {
+      trackerInstance.trackPlay();
     }
-    trackerInstance.trackPlay();
   });
 
   thirdVideoPlayer.addEventListener("seeking", function() {
