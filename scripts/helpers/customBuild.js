@@ -28,56 +28,41 @@ const componentCreatorsPath = path.join(
 // Read componentCreators.js
 const componentCreatorsContent = fs.readFileSync(componentCreatorsPath, "utf8");
 
-// Extract component names
-const componentNames = componentCreatorsContent.match(/create[A-Z]\w+/g);
+// Extract optional components based on @skipwhen directive
+const optionalComponents = componentCreatorsContent
+  .split("\n")
+  .filter(line => line.trim().startsWith("/* @skipwhen"))
+  .map(line => {
+    const match = line.match(/ENV\.alloy_([a-zA-Z0-9]+) === false/);
+    if (match) {
+      const [, componentName] = match;
+      return componentName.toLowerCase(); // Ensure this matches the expected format for exclusion
+    }
+    return null;
+  })
+  .filter(Boolean);
 
-// Format component names for export
-const formattedComponentNames = componentNames.map(name => ({
-  name: name.replace(/^create/, "").toLowerCase(),
-  exportName: name,
-  filePath: name.replace(/^create/, "")
-}));
-
-// Extract required components from componentCreatorsContent
-const requiredComponents = componentCreatorsContent
-  .match(/REQUIRED_COMPONENTS = \[[\s\S]*?\]/)[0]
-  .match(/create[A-Z]\w+/g)
-  .map(component => component.replace(/^create/, "").toLowerCase());
+console.log("Optional Components:", optionalComponents); // Debugging line
 
 const argv = yargs(hideBin(process.argv))
   .scriptName("build:custom")
-  .usage(
-    `$0 --exclude ${formattedComponentNames
-      .map(component => component.name)
-      .join(" ")}`
-  )
+  .usage(`$0 --exclude ${optionalComponents.join(" ")}`)
   .option("exclude", {
     describe: "the components that you want to be excluded from the build",
-    choices: formattedComponentNames.map(component => component.name),
+    choices: optionalComponents,
     type: "array"
   })
   .array("exclude")
-  // eslint-disable-next-line no-shadow
-  .check(argv => {
-    const forbiddenExclusions = (argv.exclude || []).filter(component =>
-      requiredComponents.includes(component)
-    );
-    if (forbiddenExclusions.length > 0) {
-      throw new Error(
-        `You're not allowed to exclude the following components: ${forbiddenExclusions.join(
-          ", "
-        )}.`
-      );
-    }
+  .check(() => {
+    // No need to check for required components as we're using @skipwhen to determine optionality
     return true;
   }).argv;
 
 if (!argv.exclude) {
   console.log(
-    `Looks like you're trying to build without excluding any components, try running "npm run custom:build -- --exclude personalization". Your choices are: ${formattedComponentNames
-      .map(component => component.name)
-      .filter(name => !requiredComponents.includes(name))
-      .join(", ")}`
+    `No components excluded. To exclude components, try running "npm run build:custom -- --exclude personalization". Your choices are: ${optionalComponents.join(
+      ", "
+    )}`
   );
   process.exit(0);
 }
@@ -93,13 +78,7 @@ const buildConfig = (minify, sandbox) => {
       plugins: [
         conditionalBuildBabelPlugin(
           (argv.exclude || []).reduce((previousValue, currentValue) => {
-            if (
-              formattedComponentNames
-                .map(component => component.name)
-                .includes(currentValue)
-            ) {
-              previousValue[`alloy_${currentValue}`] = "false";
-            }
+            previousValue[`alloy_${currentValue}`] = "false";
             return previousValue;
           }, {})
         )
@@ -141,30 +120,14 @@ const buildWithComponents = async sandbox => {
   const prodBuild = buildConfig(false, sandbox);
   const minifiedBuild = buildConfig(true, sandbox);
 
-  // Run rollup command
-  // eslint-disable-next-line global-require
-  const { exec } = require("child_process");
-  exec(
-    'rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN && echo "Base Code:" && cat distTest/baseCode.min.js',
-    (error, stdout, stderr) => {
-      if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
-    }
-  );
-
   const bundleProd = await rollup(prodBuild);
   console.log("✔️ Built alloy.js");
   await bundleProd.write(prodBuild.output[0]);
   console.log(`✔️ Wrote alloy.js to ${prodBuild.output[0].file}`);
   console.log(`📏 Size: ${getFileSizeInKB(prodBuild.output[0].file)} KB`);
+
   const bundleMinified = await rollup(minifiedBuild);
+
   console.log("✔️ Built alloy.min.js");
   await bundleMinified.write(minifiedBuild.output[0]);
   console.log(`✔️ Wrote alloy.min.js to ${minifiedBuild.output[0].file}`);

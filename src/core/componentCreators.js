@@ -16,48 +16,45 @@ governing permissions and limitations under the License.
 /* eslint-disable import/no-restricted-paths */
 
 import createDataCollector from "../components/DataCollector";
+
 /* @skipwhen ENV.alloy_activitycollector === false */
 import createActivityCollector from "../components/ActivityCollector";
+
 import createIdentity from "../components/Identity";
+
 /* @skipwhen ENV.alloy_audiences === false */
 import createAudiences from "../components/Audiences";
+
 /* @skipwhen ENV.alloy_personalization === false */
 import createPersonalization from "../components/Personalization";
+
 import createContext from "../components/Context";
 import createPrivacy from "../components/Privacy";
+
 /* @skipwhen ENV.alloy_eventmerge === false */
 import createEventMerge from "../components/EventMerge";
+
 import createLibraryInfo from "../components/LibraryInfo";
+
 /* @skipwhen ENV.alloy_decisioningengine === false */
 import createDecisioningEngine from "../components/DecisioningEngine";
+
 /* @skipwhen ENV.alloy_machinelearning === false */
 import createMachineLearning from "../components/MachineLearning";
 
-const REQUIRED_COMPONENTS = [
+// TODO: Register the Components here statically for now. They might be registered differently.
+// TODO: Figure out how sub-components will be made available/registered
+
+export default [
+  createDataCollector,
+  createActivityCollector,
+  createIdentity,
+  createAudiences,
+  createPersonalization,
   createContext,
   createPrivacy,
-  createIdentity,
-  createDataCollector,
-  createLibraryInfo
+  createEventMerge,
+  createLibraryInfo,
+  createMachineLearning,
+  createDecisioningEngine
 ];
-
-const OPTIONAL_COMPONENTS = [
-  typeof createActivityCollector !== "undefined"
-    ? createActivityCollector
-    : () => {},
-  typeof createAudiences !== "undefined" ? createAudiences : () => {},
-  typeof createPersonalization !== "undefined"
-    ? createPersonalization
-    : () => {},
-  typeof createEventMerge !== "undefined" ? createEventMerge : () => {},
-  typeof createMachineLearning !== "undefined"
-    ? createMachineLearning
-    : () => {},
-  typeof createDecisioningEngine !== "undefined"
-    ? createDecisioningEngine
-    : () => {}
-];
-
-const componentCreators = [...REQUIRED_COMPONENTS, ...OPTIONAL_COMPONENTS];
-
-export default componentCreators;
