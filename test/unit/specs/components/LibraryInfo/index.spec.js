@@ -20,7 +20,8 @@ describe("LibraryInfo", () => {
         foo: "bar"
       },
       componentRegistry: {
-        getCommandNames: () => ["bar"]
+        getCommandNames: () => ["bar"],
+        getComponentNames: () => ["ComponentA", "ComponentB"]
       }
     };
   });
@@ -30,7 +31,8 @@ describe("LibraryInfo", () => {
       libraryInfo: {
         version: `__VERSION__`,
         configs: { foo: "bar" },
-        commands: ["bar", "configure", "setDebug"]
+        commands: ["bar", "configure", "setDebug"],
+        components: ["ComponentA", "ComponentB"]
       }
     });
   });

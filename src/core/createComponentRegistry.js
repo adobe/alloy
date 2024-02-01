@@ -99,6 +99,9 @@ export default () => {
     },
     getLifecycleCallbacks(hookName) {
       return lifecycleCallbacksByName[hookName] || [];
+    },
+    getComponentNames() {
+      return Object.keys(componentsByNamespace);
     }
   };
 };

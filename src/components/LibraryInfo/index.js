@@ -27,10 +27,12 @@ const prepareLibraryInfo = ({ config, componentRegistry }) => {
     }
     resultConfig[key] = value.toString();
   });
+  const components = componentRegistry.getComponentNames();
   return {
     version: libraryVersion,
     configs: resultConfig,
-    commands: allCommands
+    commands: allCommands,
+    components
   };
 };
 
