@@ -4,43 +4,54 @@ const fs = require("fs");
 const glob = require("glob");
 const createTestCafe = require("testcafe");
 
-fs.readFile("dist/alloy.js", "utf8", (readFileErr, data) => {
+fs.readFile("dist/alloy.js", "utf8", (readFileErr, alloyData) => {
   if (readFileErr) {
     console.error(`readFile error: ${readFileErr}`);
     return;
   }
 
-  glob("test/functional/specs/**/*.js", (globErr, files) => {
+  // Extract componentCreators array from alloyData
+  const componentCreatorsMatch = alloyData.match(
+    /var componentCreators = \[(.*?)\];/s
+  );
+  if (!componentCreatorsMatch) {
+    console.error("componentCreators array not found in dist/alloy.js");
+    return;
+  }
+  const componentCreators = componentCreatorsMatch[1]
+    .split(",")
+    .map(name => name.trim().replace("create", ""));
+
+  // Convert component creator function names to component names
+  const componentNames = componentCreators.map(
+    creator => creator.charAt(0).toLowerCase() + creator.slice(1) // Ensure first letter is lowercase to match directory names
+  );
+
+  // Generate a glob pattern to match only the included components' test specs
+  const includedComponentsPattern = componentNames.join("|");
+  const testSpecsGlobPattern = `test/functional/specs/@(${includedComponentsPattern})/**/*.js`;
+
+  glob(testSpecsGlobPattern, (globErr, files) => {
     if (globErr) {
       console.error(globErr);
       process.exit(1);
     }
 
-    let componentNames = files.map(file => file.split("/")[3]);
-    componentNames = [...new Set(componentNames)]; // remove duplicates
-
-    const testFiles = [];
-    const excludedComponents = [];
-
-    componentNames.forEach(name => {
-      if (data.includes(`alloy_${name}`)) {
-        testFiles.push(files.find(file => file.split("/")[3] === name));
-      } else {
-        excludedComponents.push(name);
-      }
-    });
-
-    if (excludedComponents.length > 0) {
-      console.log(`Excluding components: ${excludedComponents.join(", ")}`);
+    if (files.length === 0) {
+      console.log("No test files found for the included components.");
+      return;
     }
 
     createTestCafe().then(testcafe => {
       const runner = testcafe.createRunner();
       runner
-        .src(testFiles)
+        .src(files)
         .browsers("chrome")
         .run()
-        .then(() => testcafe.close());
+        .then(failedCount => {
+          console.log(`Tests finished. Failed count: ${failedCount}`);
+          testcafe.close();
+        });
     });
   });
 });

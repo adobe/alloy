@@ -30,7 +30,7 @@
     "sandbox:build:custom": "SANDBOX=true npm run build:custom -- --exclude personalization && cd sandbox && npm run build && npm run start",
     "dev": "concurrently --names build,sandbox \"rollup -c -w --environment SANDBOX\" \"cd sandbox && export REACT_APP_NONCE=321 && npm start\"",
     "build": "npm run format && npm run lint && npm run clean && rollup -c --environment BASE_CODE_MIN,STANDALONE,STANDALONE_MIN && echo \"Base Code:\" && cat distTest/baseCode.min.js",
-    "build:custom": "npm run clean && node scripts/helpers/customBuild.js",
+    "build:custom": "npm run clean && rollup -c --environment BASE_CODE_MIN,NPM_PACKAGE_LOCAL && node scripts/helpers/customBuild.js",
     "prepare": "husky install && cd sandbox && npm install",
     "prepublishOnly": "rimraf libEs5 libEs6 && babel src -d libEs5 --env-name npmEs5 && babel src -d libEs6 --env-name npmEs6",
     "checkthattestfilesexist": "./scripts/checkThatTestFilesExist.js",
