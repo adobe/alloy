@@ -48,7 +48,11 @@ const components = [
 
 // Run tests for all components
 const runTests = async () => {
-  await Promise.all(components.map(testExcludeComponent));
+  // eslint-disable-next-line no-restricted-syntax
+  for (const component of components) {
+    // eslint-disable-next-line no-await-in-loop
+    await testExcludeComponent(component);
+  }
 };
 
 runTests();
