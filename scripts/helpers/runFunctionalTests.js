@@ -27,8 +27,27 @@ fs.readFile("dist/alloy.js", "utf8", (readFileErr, alloyData) => {
     creator => creator.charAt(0).toLowerCase() + creator.slice(1) // Ensure first letter is lowercase to match directory names
   );
 
+  // Define a mapping from component names to their test directory names
+  const componentNameToTestDirMapping = {
+    dataCollector: "Data Collector",
+    activityCollector: "Activity Collector",
+    identity: "Identity",
+    audiences: "Audiences",
+    context: "Context",
+    privacy: "Privacy",
+    eventMerge: "EventMerge",
+    libraryInfo: "LibraryInfo",
+    machineLearning: "MachineLearning",
+    decisioningEngine: "DecisioningEngine"
+  };
+
+  // Adjust componentNames using the mapping
+  const adjustedComponentNames = componentNames.map(
+    name => componentNameToTestDirMapping[name] || name
+  );
+
   // Generate a glob pattern to match only the included components' test specs
-  const includedComponentsPattern = componentNames.join("|");
+  const includedComponentsPattern = adjustedComponentNames.join("|");
   const testSpecsGlobPattern = `test/functional/specs/@(${includedComponentsPattern})/**/*.js`;
 
   glob(testSpecsGlobPattern, (globErr, files) => {
