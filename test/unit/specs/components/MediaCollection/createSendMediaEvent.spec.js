@@ -15,7 +15,7 @@ describe("createSendMediaEvent", () => {
     };
     mediaSessionCacheManager = {
       getSession: jasmine.createSpy().and.returnValue({
-        onBeforeMediaEvent: jasmine.createSpy(),
+        getPlayerDetails: jasmine.createSpy(),
         sessionPromise: Promise.resolve({ sessionId: "123" })
       }),
       stopHeartbeat: jasmine.createSpy(),

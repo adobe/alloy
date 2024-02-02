@@ -22,7 +22,7 @@ export default ({
 }) => {
   return {
     lifecycle: {
-      onBeforeEvent({ playerId, onBeforeMediaEvent, onResponse = noop }) {
+      onBeforeEvent({ playerId, getPlayerDetails, onResponse = noop }) {
         onResponse(({ response }) => {
           const sessionId = response.getPayloadsByType(
             "media-analytics:new-session"
@@ -30,7 +30,7 @@ export default ({
           logger.info("Media session ID returned: ", sessionId);
 
           if (sessionId.length > 0) {
-            if (playerId && onBeforeMediaEvent) {
+            if (playerId && getPlayerDetails) {
               const heartbeatId = setTimeout(() => {
                 trackMediaEvent({ playerId });
               }, config.mediaCollection.mainPingInterval * 1000);
@@ -54,26 +54,26 @@ export default ({
             return Promise.resolve();
           }
 
-          const { playerId, onBeforeMediaEvent } = options;
+          const { playerId, getPlayerDetails } = options;
           const event = mediaEventManager.createMediaSession(options);
 
           mediaEventManager.augmentMediaEvent({
             event,
             playerId,
-            onBeforeMediaEvent
+            getPlayerDetails
           });
 
           const sessionPromise = mediaEventManager.trackMediaSession({
             event,
             playerId,
-            onBeforeMediaEvent
+            getPlayerDetails
           });
 
           mediaSessionCacheManager.storeSession({
             playerId,
             sessionDetails: {
               sessionPromise,
-              onBeforeMediaEvent
+              getPlayerDetails
             }
           });
 

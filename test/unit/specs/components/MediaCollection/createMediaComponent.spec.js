@@ -56,7 +56,7 @@ describe("MediaCollection::createComponent", () => {
     build({});
     const options = {
       playerId: "testPlayerId",
-      onBeforeMediaEvent: () => {},
+      getPlayerDetails: () => {},
       xdm: {
         mediaCollection: {
           sessionDetails: {
@@ -78,11 +78,11 @@ describe("MediaCollection::createComponent", () => {
     const playerName = "testPlayerName";
     const eventType = "media.sessionStart";
     const event = { eventType };
-    const onBeforeMediaEvent = () => {};
+    const getPlayerDetails = () => {};
 
     const options = {
       playerId,
-      onBeforeMediaEvent,
+      getPlayerDetails,
       xdm: {
         mediaCollection: {
           sessionDetails: {
@@ -114,20 +114,20 @@ describe("MediaCollection::createComponent", () => {
     expect(mediaEventManager.augmentMediaEvent).toHaveBeenCalledWith({
       event,
       playerId,
-      onBeforeMediaEvent
+      getPlayerDetails
     });
 
     expect(mediaEventManager.trackMediaSession).toHaveBeenCalledWith({
       event,
       playerId,
-      onBeforeMediaEvent
+      getPlayerDetails
     });
 
     expect(mediaSessionCacheManager.storeSession).toHaveBeenCalledWith({
       playerId,
       sessionDetails: {
         sessionPromise,
-        onBeforeMediaEvent
+        getPlayerDetails
       }
     });
   });

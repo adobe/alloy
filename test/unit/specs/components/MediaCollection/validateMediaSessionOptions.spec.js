@@ -16,7 +16,7 @@ describe("MediaCollection::validateMediaSessionOptions", () => {
   it("should not fail when playerId, callback and xdm are used", () => {
     const options = {
       playerId: "playerId",
-      onBeforeMediaEvent: () => {},
+      getPlayerDetails: () => {},
       xdm: {
         eventType: "eventType",
         mediaCollection: {

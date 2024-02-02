@@ -18,14 +18,14 @@ export default ({ mediaEventManager, mediaSessionCacheManager, config }) => {
     const eventType = xdm.eventType;
     const action = eventType.split(".")[1];
     const {
-      onBeforeMediaEvent,
+      getPlayerDetails,
       sessionPromise
     } = mediaSessionCacheManager.getSession(playerId);
     return sessionPromise.then(result => {
       mediaEventManager.augmentMediaEvent({
         event,
         playerId,
-        onBeforeMediaEvent,
+        getPlayerDetails,
         sessionID: result.sessionId
       });
 

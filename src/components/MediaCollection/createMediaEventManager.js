@@ -45,11 +45,11 @@ export default ({ config, eventManager, consent, sendEdgeNetworkRequest }) => {
 
       return event;
     },
-    augmentMediaEvent({ event, playerId, onBeforeMediaEvent, sessionID }) {
-      if (!playerId || !onBeforeMediaEvent) {
+    augmentMediaEvent({ event, playerId, getPlayerDetails, sessionID }) {
+      if (!playerId || !getPlayerDetails) {
         return event;
       }
-      const { playhead, qoeDataDetails } = onBeforeMediaEvent({ playerId });
+      const { playhead, qoeDataDetails } = getPlayerDetails({ playerId });
 
       event.mergeXdm({
         mediaCollection: {
@@ -60,8 +60,8 @@ export default ({ config, eventManager, consent, sendEdgeNetworkRequest }) => {
       });
       return event;
     },
-    trackMediaSession({ event, playerId, onBeforeMediaEvent }) {
-      return eventManager.sendEvent(event, { playerId, onBeforeMediaEvent });
+    trackMediaSession({ event, playerId, getPlayerDetails }) {
+      return eventManager.sendEvent(event, { playerId, getPlayerDetails });
     },
     trackMediaEvent({ event, action }) {
       const mediaRequestPayload = createDataCollectionRequestPayload();

@@ -53,7 +53,7 @@ test("Test that MC component sends pings, augment the events with playhead and s
         }
       }
     },
-    onBeforeMediaEvent: () => {
+    getPlayerDetails: () => {
       return {
         playhead: 3,
         qoeDataDetails: {

@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", async function(event) {
               }
             }
           },
-          onBeforeMediaEvent: () => {
+          getPlayerDetails: () => {
             const getPlayhead = getVideoPlayedPlayhead(videoPlayer);
             return {
               playhead: getPlayhead
@@ -215,7 +215,7 @@ document.addEventListener("DOMContentLoaded", async function(event) {
             videoPlayer
           );
           playerSettings.clock = setInterval(sampleDemoEventTriggerer, 1000);
-          console.log("session Id", sessionId);
+
           return sessionId;
         });
 

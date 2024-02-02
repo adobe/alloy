@@ -92,8 +92,8 @@ describe("MediaCollection::createMediaEventManager", () => {
       mergeXdm: jasmine.createSpy("mergeXdm")
     };
     const playerId = "player1";
-    const onBeforeMediaEvent = jasmine
-      .createSpy("onBeforeMediaEvent")
+    const getPlayerDetails = jasmine
+      .createSpy("getPlayerDetails")
       .and.returnValue({
         playhead: 10,
         qoeDataDetails: { duration: 60 }
@@ -103,12 +103,12 @@ describe("MediaCollection::createMediaEventManager", () => {
     const result = mediaEventManager.augmentMediaEvent({
       event,
       playerId,
-      onBeforeMediaEvent,
+      getPlayerDetails,
       sessionID
     });
 
     expect(result).toBe(event);
-    expect(onBeforeMediaEvent).toHaveBeenCalledWith({ playerId });
+    expect(getPlayerDetails).toHaveBeenCalledWith({ playerId });
     expect(event.mergeXdm).toHaveBeenCalledWith({
       mediaCollection: {
         playhead: 10,
@@ -118,20 +118,20 @@ describe("MediaCollection::createMediaEventManager", () => {
     });
   });
 
-  it("should track media session with event, playerId, and onBeforeMediaEvent", () => {
+  it("should track media session with event, playerId, and getPlayerDetails", () => {
     const event = {};
     const playerId = "player1";
-    const onBeforeMediaEvent = jasmine.createSpy("onBeforeMediaEvent");
+    const getPlayerDetails = jasmine.createSpy("getPlayerDetails");
 
     mediaEventManager.trackMediaSession({
       event,
       playerId,
-      onBeforeMediaEvent
+      getPlayerDetails
     });
 
     expect(eventManager.sendEvent).toHaveBeenCalledWith(event, {
       playerId,
-      onBeforeMediaEvent
+      getPlayerDetails
     });
   });
 
