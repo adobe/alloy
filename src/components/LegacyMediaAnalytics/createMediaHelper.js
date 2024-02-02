@@ -148,7 +148,7 @@ export default ({ logger }) => {
     }
   };
   const createStateObject = stateName => {
-    const STATE_NAME_REGEX = "^[a-zA-Z0-9_]{1,64}$";
+    const STATE_NAME_REGEX = new RegExp("^[a-zA-Z0-9_]{1,64}$");
 
     const validator = string().matches(
       STATE_NAME_REGEX,

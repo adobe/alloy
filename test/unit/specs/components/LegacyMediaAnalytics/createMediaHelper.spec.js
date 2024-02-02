@@ -177,7 +177,7 @@ describe("createMediaHelper", () => {
     });
   });
 
-  fdescribe("createStateObject", () => {
+  describe("createStateObject", () => {
     it("should return a valid state object when called with valid arguments", () => {
       const stateName = "testState";
 
