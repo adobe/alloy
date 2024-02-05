@@ -123,24 +123,14 @@ const simulatePageLoad = async alloy => {
     personalizationPayload,
     PAGE_WIDE_SCOPE
   );
-  await t
-    .expect(
-      // eslint-disable-next-line no-underscore-dangle
-      notificationRequestBody.events[0].xdm._experience.decisioning.propositions
-    )
-    .eql(pageWideScopeDecisionsMeta);
+
   await t
     .expect(
       // eslint-disable-next-line no-underscore-dangle
       notificationRequestBody.events[0].xdm._experience.decisioning
-        .propositionEventType.display
+        .propositions[0]
     )
-    .eql(1);
-  // notification for view rendered decisions
-  const viewNotificationRequest = networkLogger.edgeEndpointLogs.requests[2];
-  const viewNotificationRequestBody = JSON.parse(
-    viewNotificationRequest.request.body
-  );
+    .eql(pageWideScopeDecisionsMeta[0]);
   const productsViewDecisionsMeta = getDecisionsMetaByScope(
     personalizationPayload,
     "products"
@@ -148,14 +138,14 @@ const simulatePageLoad = async alloy => {
   await t
     .expect(
       // eslint-disable-next-line no-underscore-dangle
-      viewNotificationRequestBody.events[0].xdm._experience.decisioning
-        .propositions
+      notificationRequestBody.events[0].xdm._experience.decisioning
+        .propositions[1]
     )
-    .eql(productsViewDecisionsMeta);
+    .eql(productsViewDecisionsMeta[0]);
   await t
     .expect(
       // eslint-disable-next-line no-underscore-dangle
-      viewNotificationRequestBody.events[0].xdm._experience.decisioning
+      notificationRequestBody.events[0].xdm._experience.decisioning
         .propositionEventType.display
     )
     .eql(1);
@@ -180,7 +170,7 @@ const simulateViewChange = async (alloy, personalizationPayload) => {
       }
     }
   });
-  const viewChangeRequest = networkLogger.edgeEndpointLogs.requests[3];
+  const viewChangeRequest = networkLogger.edgeEndpointLogs.requests[2];
   const viewChangeRequestBody = JSON.parse(viewChangeRequest.request.body);
   // assert that no personalization query was attached to the request
   await t.expect(viewChangeRequestBody.events[0].query).eql(undefined);
@@ -227,30 +217,40 @@ const simulateViewChangeForNonExistingView = async alloy => {
     }
   });
 
-  const noViewViewChangeRequest = networkLogger.edgeEndpointLogs.requests[4];
+  const noViewViewChangeRequest = networkLogger.edgeEndpointLogs.requests[3];
   const noViewViewChangeRequestBody = JSON.parse(
     noViewViewChangeRequest.request.body
   );
   // assert that no personalization query was attached to the request
   await t.expect(noViewViewChangeRequestBody.events[0].query).eql(undefined);
   // assert that a notification call with xdm.web.webPageDetails.viewName and no personalization meta is sent
-  await flushPromiseChains();
-  const noViewNotificationRequest = networkLogger.edgeEndpointLogs.requests[5];
-  const noViewNotificationRequestBody = JSON.parse(
-    noViewNotificationRequest.request.body
-  );
+
   await t
-    .expect(noViewNotificationRequestBody.events[0].xdm.eventType)
-    .eql("decisioning.propositionDisplay");
+    .expect(noViewViewChangeRequestBody.events[0].xdm.eventType)
+    .eql("noviewoffers");
   await t
     .expect(
-      noViewNotificationRequestBody.events[0].xdm.web.webPageDetails.viewName
+      noViewViewChangeRequestBody.events[0].xdm.web.webPageDetails.viewName
     )
     .eql("noView");
   await t
     // eslint-disable-next-line no-underscore-dangle
-    .expect(noViewNotificationRequestBody.events[0].xdm._experience)
-    .eql(undefined);
+    .expect(noViewViewChangeRequestBody.events[0].xdm._experience.decisioning)
+    .eql({
+      propositions: [
+        {
+          scope: "noView",
+          scopeDetails: {
+            characteristics: {
+              scopeType: "view"
+            }
+          }
+        }
+      ],
+      propositionEventType: {
+        display: 1
+      }
+    });
 };
 
 test("Test C782718: SPA support with auto-rendering and view notifications", async () => {

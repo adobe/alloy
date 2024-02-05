@@ -53,9 +53,6 @@ describe("Personalization::createOnClickHandler", () => {
 
     const expectedXdm = {
       eventType: "decisioning.propositionInteract",
-      web: {
-        webPageDetails: { viewName: "foo" }
-      },
       _experience: {
         decisioning: {
           propositions: [
@@ -102,9 +99,6 @@ describe("Personalization::createOnClickHandler", () => {
 
     const expectedXdm = {
       eventType: "decisioning.propositionInteract",
-      web: {
-        webPageDetails: { viewName: "foo" }
-      },
       _experience: {
         decisioning: {
           propositions: [
@@ -149,5 +143,56 @@ describe("Personalization::createOnClickHandler", () => {
 
     expect(event.mergeXdm).not.toHaveBeenCalled();
     expect(collectClicks).not.toHaveBeenCalled();
+  });
+
+  it("adds a viewName to the response", () => {
+    const selectors = ["foo", "foo2"];
+    collectClicks.and.returnValue({
+      decisionsMeta,
+      viewName: "myview"
+    });
+    getClickSelectors.and.returnValue(selectors);
+    const handleOnClick = createOnClickHandler({
+      mergeDecisionsMeta,
+      collectClicks,
+      getClickSelectors,
+      getClickMetasBySelector
+    });
+    const clickedElement = "foo";
+
+    handleOnClick({ event, clickedElement });
+
+    const expectedXdm = {
+      eventType: "decisioning.propositionInteract",
+      web: {
+        webPageDetails: {
+          viewName: "myview"
+        }
+      },
+      _experience: {
+        decisioning: {
+          propositions: [
+            {
+              id: 1,
+              scope: "foo"
+            }
+          ],
+          propositionEventType: {
+            interact: 1
+          }
+        }
+      }
+    };
+
+    expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
+    expect(collectClicks).toHaveBeenCalledWith(
+      clickedElement,
+      selectors,
+      getClickMetasBySelector
+    );
+    event.finalize();
+    expect(event.toJSON()).toEqual({
+      xdm: expectedXdm
+    });
   });
 });

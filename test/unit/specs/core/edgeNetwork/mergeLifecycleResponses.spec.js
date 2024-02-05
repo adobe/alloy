@@ -70,6 +70,9 @@ describe("mergeLifecycleResponses", () => {
                 ]
               }
             ]
+          },
+          {
+            propositions: []
           }
         ]
       ])

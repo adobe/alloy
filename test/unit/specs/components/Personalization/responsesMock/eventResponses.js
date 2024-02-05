@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
 export const SCOPES_FOO1_FOO2_DECISIONS = [
   {
     id: "TNT:ABC:A",
@@ -374,8 +375,7 @@ export const MIXED_PROPOSITIONS = [
           id: "1202449"
         }
       }
-    ],
-    renderAttempted: false
+    ]
   },
   {
     id: "AT:eyJhY3Rpdml0eUlkIjoiMTQxNjY0IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
@@ -401,7 +401,6 @@ export const MIXED_PROPOSITIONS = [
   {
     id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
     scope: "__view__",
-    renderAttempted: true,
     items: [
       {
         id: "442358",
@@ -417,7 +416,6 @@ export const MIXED_PROPOSITIONS = [
   {
     id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn2=",
     scope: "__view__",
-    renderAttempted: false,
     items: [
       {
         id: "442379",

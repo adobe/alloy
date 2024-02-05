@@ -43,6 +43,13 @@ test(DESCRIPTION, async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent(sendEventOptions);
+  const browserHintProposition = eventResult.propositions.find(
+    proposition => proposition.scope === "chromeBrowserClientHint"
+  );
+  const hasChromeBrowserClientHintProposition =
+    browserHintProposition !== undefined &&
+    browserHintProposition.items[0].schema !==
+      "https://ns.adobe.com/personalization/default-content-item";
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
@@ -86,17 +93,13 @@ test(DESCRIPTION, async () => {
       parsedBody.events[0].xdm.environment.browserDetails.userAgentClientHints
         .bitness;
     if (bitness.indexOf("64") > -1) {
-      await t.expect(eventResult.propositions.length).gt(0);
-      const expectedProposition = eventResult.propositions.find(
-        proposition => proposition.scope === "64BitClientHint"
-      );
-      await t.expect(expectedProposition).ok();
+      await t.expect(hasChromeBrowserClientHintProposition).ok();
     } else {
       // Users on 32-bit platforms will not qualify
-      await t.expect(eventResult.propositions.length).notOk();
+      await t.expect(hasChromeBrowserClientHintProposition).notOk();
     }
   } else {
     // Firefox, Safari do not currently support client hints
-    await t.expect(eventResult.propositions.length).notOk();
+    await t.expect(hasChromeBrowserClientHintProposition).notOk();
   }
 });

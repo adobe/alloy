@@ -120,8 +120,6 @@ describe("createEventManager", () => {
           expect(lifecycle.onBeforeEvent).toHaveBeenCalledWith({
             event,
             renderDecisions: true,
-            decisionScopes: undefined,
-            personalization: undefined,
             onResponse: jasmine.any(Function),
             onRequestFailure: jasmine.any(Function)
           });

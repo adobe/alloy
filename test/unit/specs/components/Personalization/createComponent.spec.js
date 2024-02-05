@@ -24,6 +24,9 @@ describe("Personalization", () => {
   let event;
   let personalizationComponent;
   let setTargetMigration;
+  let mergeDecisionsMeta;
+  let renderedPropositions;
+  let cacheUpdate;
 
   const build = () => {
     personalizationComponent = createComponent({
@@ -35,7 +38,9 @@ describe("Personalization", () => {
       mergeQuery,
       viewCache,
       showContainers,
-      setTargetMigration
+      setTargetMigration,
+      mergeDecisionsMeta,
+      renderedPropositions
     });
   };
 
@@ -56,9 +61,15 @@ describe("Personalization", () => {
     mergeQuery = jasmine.createSpy("mergeQuery");
     viewCache = jasmine.createSpyObj("viewCache", [
       "isInitialized",
-      "storeViews"
+      "createCacheUpdate"
     ]);
+    cacheUpdate = jasmine.createSpyObj("cacheUpdate", ["update", "cancel"]);
+    viewCache.createCacheUpdate.and.returnValue(cacheUpdate);
     setTargetMigration = jasmine.createSpy("setTargetMigration");
+    mergeDecisionsMeta = jasmine.createSpy("mergeDecisionsMeta");
+    renderedPropositions = jasmine.createSpyObj("renderedPropositions", [
+      "clear"
+    ]);
 
     build();
   });
@@ -85,7 +96,7 @@ describe("Personalization", () => {
       expect(viewChangeHandler).not.toHaveBeenCalled();
       expect(onClickHandler).not.toHaveBeenCalled();
       expect(showContainers).not.toHaveBeenCalled();
-      expect(viewCache.storeViews).not.toHaveBeenCalled();
+      expect(viewCache.createCacheUpdate).not.toHaveBeenCalled();
     });
 
     it("should trigger pageLoad if there are decisionScopes", () => {
@@ -104,7 +115,7 @@ describe("Personalization", () => {
       expect(viewChangeHandler).not.toHaveBeenCalled();
       expect(mergeQuery).not.toHaveBeenCalled();
       expect(onClickHandler).not.toHaveBeenCalled();
-      expect(viewCache.storeViews).toHaveBeenCalled();
+      expect(viewCache.createCacheUpdate).toHaveBeenCalled();
     });
     it("should trigger pageLoad if cache is not initialized", () => {
       const renderDecisions = false;
@@ -124,7 +135,7 @@ describe("Personalization", () => {
       expect(viewChangeHandler).not.toHaveBeenCalled();
       expect(mergeQuery).not.toHaveBeenCalled();
       expect(onClickHandler).not.toHaveBeenCalled();
-      expect(viewCache.storeViews).toHaveBeenCalled();
+      expect(viewCache.createCacheUpdate).toHaveBeenCalled();
     });
     it("should trigger viewHandler if cache is initialized and viewName is provided", () => {
       const renderDecisions = false;
@@ -145,7 +156,7 @@ describe("Personalization", () => {
       expect(viewChangeHandler).toHaveBeenCalled();
       expect(mergeQuery).not.toHaveBeenCalled();
       expect(onClickHandler).not.toHaveBeenCalled();
-      expect(viewCache.storeViews).not.toHaveBeenCalled();
+      expect(viewCache.createCacheUpdate).not.toHaveBeenCalled();
     });
     it("should trigger onClickHandler at onClick", () => {
       personalizationComponent.lifecycle.onClick({ event });

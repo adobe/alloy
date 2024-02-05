@@ -97,12 +97,14 @@ test("Test C5805676: Merged metric propositions should be delivered", async () =
   const personalizationPayload = createResponse({
     content: response
   }).getPayloadsByType("personalization:decisions");
+  const responseBodyProposition = personalizationPayload.find(
+    p => p.scope === FORM_BASED_SCOPE
+  );
 
-  await t.expect(personalizationPayload[0].scope).eql(FORM_BASED_SCOPE);
-  await t.expect(personalizationPayload[0].items.length).eql(2);
+  await t.expect(responseBodyProposition.items.length).eql(2);
 
-  await t.expect(personalizationPayload[0].items[0]).eql(DEFAULT_CONTENT_ITEM);
-  await t.expect(personalizationPayload[0].items[1]).eql(MEASUREMENT_ITEM);
+  await t.expect(responseBodyProposition.items[0]).eql(DEFAULT_CONTENT_ITEM);
+  await t.expect(responseBodyProposition.items[1]).eql(MEASUREMENT_ITEM);
 
   const formBasedScopePropositions = eventResult.propositions.filter(
     proposition => proposition.scope === FORM_BASED_SCOPE

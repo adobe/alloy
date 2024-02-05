@@ -11,3 +11,5 @@ governing permissions and limitations under the License.
 */
 
 export const VIEW_SCOPE_TYPE = "view";
+export const PAGE_SCOPE_TYPE = "page";
+export const PROPOSITION_SCOPE_TYPE = "proposition";

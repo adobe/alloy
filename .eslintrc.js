@@ -9,6 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+const glob = require("glob");
+
+const allComponentPaths = glob.sync("src/components/*/");
+
 module.exports = {
   extends: ["airbnb-base", "prettier", "plugin:testcafe/recommended"],
   env: {
@@ -45,33 +49,27 @@ module.exports = {
       "error",
       {
         zones: [
+          // prevent components from importing from other components, but allow
+          // importing from themselves
+          ...allComponentPaths.map((path, index, allPaths) => ({
+            target: path,
+            from: [
+              "src/core",
+              "src/baseCode",
+              ...allPaths.filter(p => p !== path)
+            ]
+          })),
           {
-            from: "./src/components",
-            target: "./src/core"
+            target: "src/core",
+            from: "src/baseCode"
           },
           {
-            from: "./src/core",
-            target: "./src/components"
+            target: "src/utils",
+            from: ["src/core", "src/components", "src/baseCode"]
           },
           {
-            from: "./src/core",
-            target: "./src/utils"
-          },
-          {
-            from: "./src/core",
-            target: "./src/constants"
-          },
-          {
-            from: "./src/components",
-            target: "./src/utils"
-          },
-          {
-            from: "./src/components",
-            target: "./src/constants"
-          },
-          {
-            from: "./src/utils",
-            target: "./src/constants"
+            target: "src/constants",
+            from: ["src/core", "src/components", "src/utils", "src/baseCode"]
           }
         ]
       }

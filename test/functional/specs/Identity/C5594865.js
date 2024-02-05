@@ -34,7 +34,6 @@ const config = compose(
 const networkLogger = createNetworkLogger();
 
 createFixture({
-  // url: `${TEST_PAGE_URL}?adobe_mc=${adobemc}`,
   title:
     "C5594865: Identity can be maintained across domains via the adobe_mc query string parameter",
   requestHooks: [networkLogger.edgeEndpointLogs]

@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { t, ClientFunction } from "testcafe";
+import { t, ClientFunction, Selector } from "testcafe";
 import fetch from "node-fetch";
 import uuid from "uuid/v4";
 import createNetworkLogger from "../../helpers/networkLogger";
@@ -90,6 +90,11 @@ const getAepEdgeResponse = async requestId => {
           {
             key: "kndctr_97D1F3F459CE0AD80A495CBE_AdobeOrg_cluster",
             value: "or2"
+          },
+          {
+            key: "at_qa_mode",
+            value:
+              '{"token":"xFgbBknmbC1SwBodlfVLxgF5KVrsCNsY4g8dvHk0wA0","listedActivitiesOnly":true,"previewIndexes":[{"activityIndex":1,"experienceIndex":1}]}'
           }
         ]
       }
@@ -141,7 +146,7 @@ const getPageHeaderText = ClientFunction(() => {
 });
 
 const getAlertText = ClientFunction(() => {
-  const element = document.querySelector(".alert.alert-success");
+  const element = document.querySelector(".alert.alert-info");
 
   if (!element) {
     return "";
@@ -191,7 +196,8 @@ test("C6364800 applyResponse accepts a response, updates DOM and returns decisio
 
   // validate alloy updated the DOM for target VEC activity in response
   // https://experience.adobe.com/#/@unifiedjslab/target/activities/activitydetails/A-B/aep-edge-samplesvecoffer
-  const pageHeaderText = getPageHeaderText();
+  await t.expect(Selector(".page-header").exists).ok();
+  const pageHeaderText = await getPageHeaderText();
   await t.expect(pageHeaderText).notEql("Hello World!");
   await t.expect(pageHeaderText).match(/(Greetings.+)|(Thanks.+)/);
   await t.expect(getAlertText()).match(/This is Experience [AB]\./);

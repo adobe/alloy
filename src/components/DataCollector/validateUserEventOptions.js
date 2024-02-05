@@ -30,11 +30,16 @@ export default ({ options }) => {
     decisionScopes: arrayOf(string()).uniqueItems(),
     personalization: objectOf({
       decisionScopes: arrayOf(string()).uniqueItems(),
-      surfaces: arrayOf(string()).uniqueItems()
-    }),
+      surfaces: arrayOf(string()).uniqueItems(),
+      sendDisplayEvent: boolean().default(true),
+      includeRenderedPropositions: boolean().default(false),
+      defaultPersonalizationEnabled: boolean(),
+      decisionContext: objectOf({})
+    }).default({ sendDisplayEvent: true }),
     datasetId: string(),
     mergeId: string(),
-    edgeConfigOverrides: validateConfigOverride
+    edgeConfigOverrides: validateConfigOverride,
+    initializePersonalization: boolean()
   })
     .required()
     .noUnknownFields();
