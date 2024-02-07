@@ -23,8 +23,8 @@ const CREATE_SESSION_QUERY = `
   }`;
 
 const FETCH_EVENTS_QUERY = `
-  query eventsQuery($sessionUuid: UUID!, $cursor: EventCursor) {
-    events(sessionUuid:$sessionUuid,first:1000,after:$cursor){
+  query eventsQuery($sessionUuid: UUID!) {
+    events(sessionUuid:$sessionUuid,first:100) {
       uuid
       eventNumber
       clientId
@@ -51,6 +51,9 @@ export default authHeaders => {
       body: JSON.stringify({ query, variables })
     });
     const json = await response.json();
+    if (json.errors) {
+      throw new Error(json.errors.message);
+    }
     return json.data;
   };
 
@@ -68,7 +71,7 @@ export default authHeaders => {
       return uuid;
     },
     fetchEvents: sessionUuid => {
-      let cursor = null;
+      const seenUuids = new Set();
       let events = [];
       let i = 0;
       return {
@@ -77,15 +80,16 @@ export default authHeaders => {
         },
         advance: async () => {
           if (i >= events.length) {
-            if (events.length > 0) {
-              const { eventNumber, timestamp } = events[events.length - 1];
-              cursor = { eventNumber, timestamp, sessionUuid };
-            }
             const response = await makeGraphRequest(FETCH_EVENTS_QUERY, {
-              sessionUuid,
-              cursor
+              sessionUuid
             });
-            events = response.events;
+            events = response.events.filter(e => {
+              if (seenUuids.has(e.uuid)) {
+                return false;
+              }
+              seenUuids.add(e.uuid);
+              return true;
+            });
             i = 0;
             return events.length > 0;
           }

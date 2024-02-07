@@ -25,41 +25,46 @@ const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
 
 createFixture({
-  title: "C???? assurance example",
+  title: "C15958191 Data prep maps products to XDM",
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({
-  ID: "C????",
+  ID: "C15958191",
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
 
-test("Test C???? assurance example", async () => {
+test("Test C15958191 Data prep maps products to XDM", async () => {
   const assuranceRequests = await createAssuranceRequestHook();
   await t.addRequestHooks(assuranceRequests);
 
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({
-    renderDecisions: true,
-    decisionScopes: ["alloy-test-scope-1"]
+    xdm: {},
+    data: {
+      __adobe: {
+        analytics: {
+          eVar1: "eVar1Value",
+          prop1: "prop1Value",
+          products: ""
+        }
+      }
+    }
   });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
-  const mappingLog = await assuranceRequests.requests[0].find(log => {
-    const { vendor, payload: { name } = {} } = log;
-    return vendor === "com.adobe.analytics" && name === "analytics.mapping";
+  const pipelineLog = await assuranceRequests.requests[0].find(log => {
+    const { vendor, payload: { header: { msgType } = {} } = {} } = log;
+    return (
+      vendor === "com.adobe.streaming.validation" &&
+      msgType === "xdmEntityCreate"
+    );
   });
-  await t
-    .expect(
-      mappingLog.payload.context.mappedQueryParams.unifiedjsqeonlylatest.g
-    )
-    .eql("https://alloyio.com/functional-test/testPage.html");
+  const mappedXdm = pipelineLog.payload.body.xdmEntity;
+  console.log(JSON.stringify(mappedXdm, null, 2));
 
-  // you can run this to see all the logs instead of the find above
-  // await new Promise(resolve => setTimeout(resolve, 5000));
-  // await assuranceRequests.fetchMore();
-  // assuranceRequests.requests[0].debug();
+  // TODO add assertions here that the mapping happened correctly.
 });

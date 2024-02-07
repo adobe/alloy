@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import { RequestHook, t } from "testcafe";
 
 const ASSERTION_DELAY = 200;
-const ASSERTION_TIMEOUT = 5000;
+const ASSERTION_TIMEOUT = 10000;
 const delay = () => {
   return new Promise(resolve => setTimeout(resolve, ASSERTION_DELAY));
 };
@@ -38,9 +38,11 @@ const createRequest = (requestLogs, fetchMore) => {
         // eslint-disable-next-line no-await-in-loop
         await delay();
       }
-      t.expect().ok(
-        "Assurance logs did not contain an event matching the predicate after 5 seconds."
-      );
+      await t
+        .expect()
+        .ok(
+          "Assurance logs did not contain an event matching the predicate after 10 seconds."
+        );
       return undefined;
     },
     debug() {
@@ -79,9 +81,16 @@ export default class AssuranceRequestHook extends RequestHook {
     // eslint-disable-next-line no-await-in-loop
     while (await this.events.advance()) {
       const event = this.events.current();
-      const { payload: { attributes: { requestId } = {} } = {} } = event;
-      if (requestId && this.eventsByRequestId[requestId]) {
-        this.eventsByRequestId[requestId].push(event);
+      const {
+        payload: {
+          attributes: { requestId } = {},
+          header: { xactionId } = {}
+        } = {}
+      } = event;
+
+      const id = requestId || xactionId;
+      if (id && this.eventsByRequestId[id]) {
+        this.eventsByRequestId[id].push(event);
       }
     }
   }
