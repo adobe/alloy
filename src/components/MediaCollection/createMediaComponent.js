@@ -12,6 +12,8 @@ governing permissions and limitations under the License.
 import { noop } from "../../utils";
 import validateSessionOptions from "./validateMediaSessionOptions";
 import validateMediaEventOptions from "./validateMediaEventOptions";
+import isBlankString from "../../utils/isBlankString";
+import MediaEvents from "./constants/eventTypes";
 
 export default ({
   config,
@@ -24,22 +26,33 @@ export default ({
     lifecycle: {
       onBeforeEvent({ playerId, getPlayerDetails, onResponse = noop }) {
         onResponse(({ response }) => {
-          const sessionId = response.getPayloadsByType(
+          const mediaPayload = response.getPayloadsByType(
             "media-analytics:new-session"
           );
-          logger.info("Media session ID returned: ", sessionId);
 
-          if (sessionId.length > 0) {
-            if (playerId && getPlayerDetails) {
-              const heartbeatId = setTimeout(() => {
-                trackMediaEvent({ playerId });
-              }, config.mediaCollection.mainPingInterval * 1000);
-              mediaSessionCacheManager.saveHeartbeat({ playerId, heartbeatId });
-            }
-            return { sessionId: sessionId[0].sessionId };
+          logger.info("Media payload returned: ", mediaPayload);
+
+          const { sessionId } = mediaPayload[0];
+          if (isBlankString(sessionId)) {
+            return {};
           }
 
-          return {};
+          if (!playerId || !getPlayerDetails) {
+            return { sessionId };
+          }
+
+          const heartbeatId = setTimeout(() => {
+            trackMediaEvent({
+              playerId,
+              xdm: {
+                eventType: MediaEvents.PING
+              }
+            });
+          }, config.mediaCollection.mainPingInterval * 1000);
+
+          mediaSessionCacheManager.saveHeartbeat({ playerId, heartbeatId });
+
+          return { sessionId };
         });
       }
     },

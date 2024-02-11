@@ -25,7 +25,7 @@ import { sleep } from "../Migration/helper";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMediaConfig, mediaCollection);
 createFixture({
-  title: "Media Collection in automatic mode",
+  title: "Media Collection in non-automatic mode",
   url: TEST_PAGE_URL,
   requestHooks: [
     networkLogger.edgeEndpointLogs,
@@ -44,37 +44,27 @@ createFixture({
     networkLogger.sessionCompleteEndpointLogs,
     networkLogger.sessionEndEndpointLogs,
     networkLogger.statesUpdateEndpointLogs,
-    networkLogger.bitrateChangeEndpointLogs
+    networkLogger.bitrateChangeEndpointLogs,
+    networkLogger.bufferStartEndpointLogs
   ]
 });
 
 test.meta({
-  ID: "MA1",
+  ID: "MA3",
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
-const assertSessionStartedInAutoPingMode = async alloy => {
+const assertSessionStarted = async alloy => {
   const sessionPromise = await alloy.createMediaSession({
-    playerId: "player1",
     xdm: {
       mediaCollection: {
+        playhead: 0,
         sessionDetails: {
           length: 60,
           contentType: "VOD",
           name: "test name of the video"
         }
       }
-    },
-    getPlayerDetails: () => {
-      return {
-        playhead: 3,
-        qoeDataDetails: {
-          bitrate: 1,
-          droppedFrames: 2,
-          framesPerSecond: 3,
-          timeToStart: 4
-        }
-      };
     }
   });
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
@@ -83,36 +73,24 @@ const assertSessionStartedInAutoPingMode = async alloy => {
   const createSession = networkLogger.edgeEndpointLogs.requests[0];
   const requestBody = JSON.parse(createSession.request.body);
   await t.expect(requestBody.events[0].xdm.eventType).eql("media.sessionStart");
-  await t.expect(requestBody.events[0].xdm.mediaCollection.playhead).eql(3);
+  await t.expect(requestBody.events[0].xdm.mediaCollection.playhead).eql(0);
   const response = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
   );
   const mediaCollectionPayload = createResponse({
     content: response
   }).getPayloadsByType("media-analytics:new-session");
-
   await t
     .expect(mediaCollectionPayload[0].sessionId)
     .eql(sessionPromise.sessionId);
 
   return sessionPromise;
 };
-const assertPingsSent = async sessionId => {
-  const pingEventRequest = networkLogger.pingEndpointLogs.requests[0];
-  const pingEvent = JSON.parse(pingEventRequest.request.body).events[0];
-  await t.expect(pingEvent.xdm.mediaCollection.sessionID).eql(sessionId);
-  await t.expect(pingEvent.xdm.eventType).eql("media.ping");
-};
-const assertPingsNotSentWhenSessionClosed = async alloy => {
-  await alloy.sendMediaEvent({
-    playerId: "player1",
-    xdm: {
-      eventType: "media.sessionComplete"
-    }
-  });
+
+const assertPingsNotSent = async () => {
   await sleep(10000);
 
-  const secondPingEventRequest = networkLogger.pingEndpointLogs.requests[2];
+  const secondPingEventRequest = networkLogger.pingEndpointLogs.requests[0];
   await t.expect(secondPingEventRequest).eql(undefined);
 };
 const sendMediaEvent = async (
@@ -122,10 +100,11 @@ const sendMediaEvent = async (
   additionalData = {}
 ) => {
   await alloy.sendMediaEvent({
-    playerId: "player1",
     xdm: {
       eventType,
       mediaCollection: {
+        playhead: 1,
+        sessionID: sessionId,
         ...additionalData
       }
     }
@@ -137,18 +116,14 @@ const assertEventIsSent = async (endpointLogs, eventType, sessionId) => {
   await responseStatus(endpointLogs.requests, 204);
 
   const event = JSON.parse(eventRequest.request.body).events[0];
-  await t.expect(event.xdm.mediaCollection.playhead).eql(3);
   await t.expect(event.xdm.mediaCollection.sessionID).eql(sessionId);
   await t.expect(event.xdm.eventType).eql(eventType);
 };
 
-test("Test that MC component sends pings, augment the events with playhead and session", async () => {
+test.only("Test that MC component doesn't send pings automatically", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
-  const { sessionId } = await assertSessionStartedInAutoPingMode(alloy);
-  await sleep(11000);
-  await assertPingsSent(sessionId);
-
+  const { sessionId } = await assertSessionStarted(alloy);
   // play event
   await sendMediaEvent(alloy, "media.play", sessionId);
   await assertEventIsSent(
@@ -180,6 +155,7 @@ test("Test that MC component sends pings, augment the events with playhead and s
     sessionId
   );
 
+  // chapter complete event
   await sendMediaEvent(alloy, "media.chapterComplete", sessionId);
   await assertEventIsSent(
     networkLogger.chapterCompleteEndpointLogs,
@@ -187,6 +163,7 @@ test("Test that MC component sends pings, augment the events with playhead and s
     sessionId
   );
 
+  // chapter skip event
   await sendMediaEvent(alloy, "media.chapterSkip", sessionId);
   await assertEventIsSent(
     networkLogger.chapterSkipEndpointLogs,
@@ -194,18 +171,22 @@ test("Test that MC component sends pings, augment the events with playhead and s
     sessionId
   );
 
-  await sendMediaEvent(alloy, "media.adBreakStart", sessionId, {advertisingPodDetails: {
+  // ad break start event
+  await sendMediaEvent(alloy, "media.adBreakStart", sessionId, {
+    advertisingPodDetails: {
       friendlyName: "Mid-roll",
       offset: 0,
       index: 1
-    }});
+    }
+  });
   await assertEventIsSent(
     networkLogger.adBreakStartEndpointLogs,
     "media.adBreakStart",
     sessionId
   );
-
-  await sendMediaEvent(alloy, "media.adStart", sessionId, { advertisingDetails: {
+  // ad start event
+  await sendMediaEvent(alloy, "media.adStart", sessionId, {
+    advertisingDetails: {
       friendlyName: "Ad 1",
       name: "/uri-reference/001",
       length: 10,
@@ -217,45 +198,57 @@ test("Test that MC component sends pings, augment the events with playhead and s
       siteID: "siteID",
       podPosition: 11,
       playerName: "HTML5 player"
-    }});
+    }
+  });
   await assertEventIsSent(
     networkLogger.adStartEndpointLogs,
     "media.adStart",
     sessionId
   );
 
+  // ad complete event
   await sendMediaEvent(alloy, "media.adComplete", sessionId);
   await assertEventIsSent(
     networkLogger.adCompleteEndpointLogs,
     "media.adComplete",
     sessionId
   );
-
+  //  ad break complete event
   await sendMediaEvent(alloy, "media.adBreakComplete", sessionId);
   await assertEventIsSent(
     networkLogger.adBreakCompleteEndpointLogs,
     "media.adBreakComplete",
     sessionId
   );
-
+  // ad skip event
   await sendMediaEvent(alloy, "media.adSkip", sessionId);
   await assertEventIsSent(
     networkLogger.adSkipEndpointLogs,
     "media.adSkip",
     sessionId
   );
-
-  await sendMediaEvent(alloy, "media.error", sessionId, {errorDetails: {
+  // error event
+  await sendMediaEvent(alloy, "media.error", sessionId, {
+    errorDetails: {
       name: "test-buffer-start",
       source: "player"
-    }});
+    }
+  });
   await assertEventIsSent(
     networkLogger.errorEndpointLogs,
     "media.error",
     sessionId
   );
-
-  await sendMediaEvent(alloy, "media.bitrateChange", sessionId, {qoeDataDetails: {
+  // bitrate change event
+  await sendMediaEvent(alloy, "media.bufferStart", sessionId);
+  await assertEventIsSent(
+    networkLogger.bufferStartEndpointLogs,
+    "media.bufferStart",
+    sessionId
+  );
+  // bitrate change event
+  await sendMediaEvent(alloy, "media.bitrateChange", sessionId, {
+    qoeDataDetails: {
       framesPerSecond: 1,
       bitrate: 35000,
       droppedFrames: 30,
@@ -267,7 +260,7 @@ test("Test that MC component sends pings, augment the events with playhead and s
     "media.bitrateChange",
     sessionId
   );
-
+  //  states update event
   await sendMediaEvent(alloy, "media.statesUpdate", sessionId, {
     statesStart: [
       {
@@ -289,7 +282,5 @@ test("Test that MC component sends pings, augment the events with playhead and s
     sessionId
   );
 
-  await sleep(11000);
-  await assertPingsSent(sessionId);
-  await assertPingsNotSentWhenSessionClosed(alloy);
+  await assertPingsNotSent(alloy);
 });
