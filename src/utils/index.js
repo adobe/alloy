@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 // Please keep in alphabetical order.
 export { default as areThirdPartyCookiesSupportedByDefault } from "./areThirdPartyCookiesSupportedByDefault";
-export { default as assign } from "./assign";
 export { default as assignConcatArrayValues } from "./assignConcatArrayValues";
 export { default as assignIf } from "./assignIf";
 export { default as clone } from "./clone";
@@ -26,7 +25,6 @@ export { default as defer } from "./defer";
 export { default as deduplicateArray } from "./deduplicateArray";
 export { default as deepAssign } from "./deepAssign";
 export { default as endsWith } from "./endsWith";
-export { default as find } from "./find";
 export { default as fireImage } from "./fireImage";
 export { default as injectFireReferrerHideableImage } from "./injectFireReferrerHideableImage";
 export { default as filterObject } from "./filterObject";
@@ -35,7 +33,6 @@ export { default as getApexDomain } from "./getApexDomain";
 export { default as getLastArrayItems } from "./getLastArrayItems";
 export { default as getNamespacedCookieName } from "./getNamespacedCookieName";
 export { default as groupBy } from "./groupBy";
-export { default as includes } from "./includes";
 export { default as injectDoesIdentityCookieExist } from "./injectDoesIdentityCookieExist";
 export { default as injectStorage } from "./injectStorage";
 export { default as intersection } from "./intersection";
@@ -68,4 +65,3 @@ export { default as uuid } from "./uuid";
 export { default as updateErrorMessage } from "./updateErrorMessage";
 export { default as validateIdentityMap } from "./validateIdentityMap";
 export { default as validateConfigOverride } from "./validateConfigOverride";
-export { default as values } from "./values";

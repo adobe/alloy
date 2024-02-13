@@ -9,7 +9,17 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-import queryString from "@adobe/reactor-query-string";
-
-export default queryString;
+export default {
+  parse: string => {
+    // Remove leading ?, #, & for some leniency so you can pass in location.search or
+    // location.hash directly.
+    let parsedString = string;
+    if (typeof string === "string") {
+      parsedString = string.trim().replace(/^[?#&]/, "");
+      parsedString = decodeURIComponent(parsedString);
+    }
+    return Object.fromEntries(new URLSearchParams(parsedString).entries());
+  },
+  stringify: object =>
+    new URLSearchParams(object).toString().replace("+", "%20")
+};

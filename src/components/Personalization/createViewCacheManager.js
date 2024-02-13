@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { assign, groupBy } from "../../utils";
+import { groupBy } from "../../utils";
 import defer from "../../utils/defer";
 import { DEFAULT_CONTENT_ITEM } from "../../constants/schema";
 import { VIEW_SCOPE_TYPE } from "./constants/scopeType";
@@ -57,7 +57,7 @@ export default ({ createProposition }) => {
     viewStoragePromise = viewStoragePromise.then(oldViewStorage => {
       return updateCacheDeferred.promise
         .then(newViewStorage => {
-          return assign({}, oldViewStorage, newViewStorage);
+          return { ...oldViewStorage, ...newViewStorage };
         })
         .catch(() => oldViewStorage);
     });

@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import { CHROME, EDGE, EDGE_CHROMIUM, IE, UNKNOWN } from "../constants/browser";
-import includes from "./includes";
 
 // Users could have also disabled third-party cookies within these browsers, but
 // we don't know. We also assume "unknown" browsers support third-party cookies,
@@ -24,4 +23,4 @@ const browsersSupportingThirdPartyCookie = [
   UNKNOWN
 ];
 
-export default browser => includes(browsersSupportingThirdPartyCookie, browser);
+export default browser => browsersSupportingThirdPartyCookie.includes(browser);

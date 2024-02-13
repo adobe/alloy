@@ -16,7 +16,7 @@ import {
   SURFACE_TYPE_DELIMITER,
   FRAGMENT_DELIMITER
 } from "../constants/surface";
-import { startsWith, isNil, isNonEmptyString, includes } from "../../../utils";
+import { startsWith, isNil, isNonEmptyString } from "../../../utils";
 
 const SURFACE_REGEX = /^(\w+):\/\/([^/#]+)(\/[^#]*)?(#.*)?$/;
 const AUTHORITY_REGEX = /^(?:.*@)?(?:[a-z\d\u00a1-\uffff.-]+|\[[a-f\d:]+])(?::\d+)?$/;
@@ -83,7 +83,7 @@ const validateSurface = (surface, getPageLocation, logger) => {
   if (parsed === null) {
     return invalidateSurface(`Invalid surface: ${surface}`);
   }
-  if (!includes([WEB, WEBAPP], parsed.surfaceType)) {
+  if (![WEB, WEBAPP].includes(parsed.surfaceType)) {
     return invalidateSurface(
       `Unsupported surface type ${parsed.surfaceType} in surface: ${surface}`
     );

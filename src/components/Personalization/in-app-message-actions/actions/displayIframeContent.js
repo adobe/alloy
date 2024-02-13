@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { getNonce } from "../../dom-actions/dom";
 import { parseAnchor, removeElementById } from "../utils";
 import { TEXT_HTML } from "../../../../constants/contentType";
-import { assign, includes, isNonEmptyString, values } from "../../../../utils";
+import { isNonEmptyString } from "../../../../utils";
 import { createNode } from "../../../../utils/dom";
 import { objectOf } from "../../../../utils/validation";
 import { PropositionEventType } from "../../../../constants/propositionEventType";
@@ -94,7 +94,7 @@ const renderMessage = (iframe, webParameters, container, overlay) => {
   ].forEach(({ id, element }) => {
     const { style = {}, params = {} } = webParameters[id];
 
-    assign(element.style, style);
+    Object.assign(element.style, style);
 
     const {
       parentElement = "body",
@@ -188,15 +188,15 @@ const isValidWebParameters = webParameters => {
 
   const ids = Object.keys(webParameters);
 
-  if (!includes(ids, MESSAGING_CONTAINER_ID)) {
+  if (!ids.includes(MESSAGING_CONTAINER_ID)) {
     return false;
   }
 
-  if (!includes(ids, OVERLAY_CONTAINER_ID)) {
+  if (!ids.includes(OVERLAY_CONTAINER_ID)) {
     return false;
   }
 
-  const valuesArray = values(webParameters);
+  const valuesArray = Object.values(webParameters);
 
   for (let i = 0; i < valuesArray.length; i += 1) {
     if (!objectOf(valuesArray[i], "style")) {

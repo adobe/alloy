@@ -10,13 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { find } from "../../utils";
 import ecidNamespace from "../../constants/ecidNamespace";
 
 export default response => {
   const identityResultPayloads = response.getPayloadsByType("identity:result");
-  const ecidPayload = find(
-    identityResultPayloads,
+  const ecidPayload = identityResultPayloads.find(
     payload => payload.namespace && payload.namespace.code === ecidNamespace
   );
   return ecidPayload ? ecidPayload.id : undefined;

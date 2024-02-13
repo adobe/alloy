@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 // This is used to add methods onto a function.
-import assign from "../assign";
 
 /**
  * Wraps a validator returning the value if it is null or undefined, otherwise
@@ -83,7 +82,7 @@ const callSequentiallyJoinErrors = (firstValidator, secondValidator) =>
  * @returns {function}
  */
 export const chain = (baseValidator, newValidator, additionalMethods) => {
-  return assign(
+  return Object.assign(
     callSequentially(baseValidator, newValidator),
     baseValidator,
     additionalMethods
@@ -110,7 +109,7 @@ export const nullSafeChain = (
   newValidator,
   additionalMethods
 ) => {
-  return assign(
+  return Object.assign(
     callSequentially(baseValidator, skipIfNull(newValidator)),
     baseValidator,
     additionalMethods
@@ -133,7 +132,7 @@ export const reverseNullSafeChainJoinErrors = (
   newValidator,
   additionalMethods
 ) => {
-  return assign(
+  return Object.assign(
     callSequentiallyJoinErrors(skipIfNull(newValidator), baseValidator),
     baseValidator,
     additionalMethods

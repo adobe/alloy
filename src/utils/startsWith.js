@@ -16,4 +16,4 @@ governing permissions and limitations under the License.
  * @param {String} prefix The string to search for.
  * @returns {boolean}
  */
-export default (str, prefix) => str.substr(0, prefix.length) === prefix;
+export default (str, prefix) => str.substring(0, prefix.length) === prefix;

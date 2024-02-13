@@ -19,7 +19,6 @@ governing permissions and limitations under the License.
 import { selectNodes } from "../../../utils/dom";
 import { is } from "./scripts";
 import { createFragment, selectNodesWithEq } from "./dom";
-import { assign } from "../../../utils";
 import isBlankString from "../../../utils/isBlankString";
 import { HEAD } from "../../../constants/tagName";
 
@@ -33,7 +32,7 @@ const filterHeadContent = content => {
 };
 
 export default action => {
-  const result = assign({}, action);
+  const result = { ...action };
   const { content, selector } = result;
 
   if (isBlankString(content)) {
