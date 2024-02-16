@@ -36,7 +36,7 @@ const createAddSampleEventsBasedOnVideoPlayhead = ({
 
   if (playhead > 21 && playhead < 22) {
     const adBreakInfo = Media.createAdBreakObject("addBreakName", 12, 12);
-    const adInfo = Media.createAdObject("firstAdd", 123, 10, 10);
+    const adInfo = Media.createAdObject("firstAdd", "123", 10, 10);
 
     const adContextData = {
       affiliate: "Sample affiliate",
@@ -56,7 +56,7 @@ const createAddSampleEventsBasedOnVideoPlayhead = ({
   }
 
   if (playhead > 26 && playhead < 27) {
-    const secondAdInfo = Media.createAdObject("secondAdd", 123, 10, 10);
+    const secondAdInfo = Media.createAdObject("secondAdd", "hjui", 10, 10);
 
     const adContextData = {
       affiliate: "Sample affiliate 2",
@@ -84,9 +84,10 @@ document.addEventListener("DOMContentLoaded", async function(event) {
     "media-third-movie"
   );
   const Media = await window.alloy("getMediaAnalyticsTracker", {});
-
+  console.log("Media", Media);
   const trackerInstance = Media.getInstance();
-
+  const trackerInstance2 = Media.getInstance();
+  console.log("trackerInstance2", trackerInstance2);
   thirdVideoPlayer.addEventListener("playing", function() {
     const mediaInfo = Media.createMediaObject(
       "NinasVideoName",
@@ -108,10 +109,21 @@ document.addEventListener("DOMContentLoaded", async function(event) {
       contextData[Media.VideoMetadataKeys.Show] = "Sample Show";
 
       trackerInstance.trackSessionStart(mediaInfo, contextData);
+      trackerInstance2.trackSessionStart(mediaInfo, contextData);
       trackerInstance.trackEvent(Media.Event.BufferStart);
       trackerInstance.trackEvent(Media.Event.BufferComplete);
+      // StateStart (ex: Mute is switched on)
+      const stateObject = Media.createStateObject(Media.PlayerState.Mute);
+      console.log("stateObject", stateObject);
+      trackerInstance.trackEvent(Media.Event.StateStart, stateObject);
 
+      // StateEnd (ex: Mute is switched off)
+      trackerInstance.trackEvent(Media.Event.StateEnd, stateObject);
+
+      const qoeObject = Media.createQoEObject(1000000, 24, 25, 10);
+      trackerInstance.updateQoEObject(qoeObject);
       thirdPlayerSettings.videoLoaded = true;
+      trackerInstance.trackEvent(window.Media.Event.BitrateChange);
 
       thirdPlayerSettings.clock = setInterval(() => {
         trackerInstance.updatePlayhead(thirdVideoPlayer.currentTime);

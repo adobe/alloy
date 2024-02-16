@@ -24,6 +24,7 @@ export default ({ mediaEventManager, mediaSessionCacheManager, config }) => {
     return sessionPromise.then(result => {
       mediaEventManager.augmentMediaEvent({
         event,
+        eventType,
         playerId,
         getPlayerDetails,
         sessionID: result.sessionId

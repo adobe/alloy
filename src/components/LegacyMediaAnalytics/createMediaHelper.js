@@ -157,11 +157,10 @@ export default ({ logger }) => {
 
     try {
       const result = validator(stateName);
-      const stateDetails = {
+
+      return {
         name: result
       };
-
-      return { stateDetails };
     } catch (error) {
       logger.warn(`An error occurred while creating the State Object.`, error);
       return {};
@@ -184,14 +183,13 @@ export default ({ logger }) => {
 
     try {
       const result = validator(qoeObject);
-      const qoeDetails = {
+
+      return {
         bitrate: result.bitrate,
         droppedFrames: result.droppedFrames,
-        fps: result.fps,
-        startupTime: result.startupTime
+        framesPerSecond: result.fps,
+        timeToStart: result.startupTime
       };
-
-      return { qoeDetails };
     } catch (error) {
       logger.warn(`An error occurred while creating the QOE Object.`, error);
       return {};

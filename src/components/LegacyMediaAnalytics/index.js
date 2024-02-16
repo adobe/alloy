@@ -11,8 +11,24 @@ governing permissions and limitations under the License.
 */
 /* eslint-disable import/no-restricted-paths */
 
-import { createMediaAnalyticsTracker } from "./createMediaAnalyticsTracker";
 import createMediaEventManager from "../MediaCollection/createMediaEventManager";
+import createMediaSessionCacheManager from "../MediaCollection/createMediaSessionCacheManager";
+import createTrackMediaEvent from "../MediaCollection/createTrackMediaEvent";
+import createTrackMediaSession from "../MediaCollection/createTrackMediaSession";
+import createMediaHelper from "./createMediaHelper";
+import {
+  AD_METADATA_KEYS as AdMetadataKeys,
+  AUDIO_METADATA_KEYS as AudioMetadataKeys,
+  EVENT as Event,
+  MEDIA_OBJECT_KEYS as MediaObjectKey,
+  MEDIA_TYPE as MediaType,
+  PLAYER_STATE as PlayerState,
+  STREAM_TYPE as StreamType,
+  VIDEO_METADATA_KEYS as VideoMetadataKeys
+} from "./media/constants";
+import createGetInstance from "./createGetInstance";
+import { noop } from "../../utils";
+import createOnBeforeMediaEvent from "../MediaCollection/createOnBeforeMediaEvent";
 
 const createLegacyMediaAnalytics = ({
   eventManager,
@@ -21,6 +37,8 @@ const createLegacyMediaAnalytics = ({
   logger,
   consent
 }) => {
+  const mediaSessionCacheManager = createMediaSessionCacheManager({ config });
+
   const mediaEventManager = createMediaEventManager({
     sendEdgeNetworkRequest,
     config,
@@ -29,14 +47,65 @@ const createLegacyMediaAnalytics = ({
     eventManager
   });
 
+  const trackMediaEvent = createTrackMediaEvent({
+    mediaSessionCacheManager,
+    mediaEventManager,
+    config
+  });
+  const trackMediaSession = createTrackMediaSession({
+    config,
+    logger,
+    mediaEventManager,
+    mediaSessionCacheManager,
+    legacy: true
+  });
+  const onBeforeMediaEvent = createOnBeforeMediaEvent({
+    mediaSessionCacheManager,
+    logger,
+    config,
+    trackMediaEvent
+  });
   return {
+    lifecycle: {
+      onBeforeEvent({ mediaOptions, onResponse = noop }) {
+        const { legacy, playerId, getPlayerDetails } = mediaOptions;
+
+        if (!legacy) {
+          return;
+        }
+        onResponse(({ response }) => {
+          return onBeforeMediaEvent({ playerId, getPlayerDetails, response });
+        });
+      }
+    },
     commands: {
       getMediaAnalyticsTracker: {
         run: () => {
-          return createMediaAnalyticsTracker({
-            config,
-            logger,
-            mediaEventManager
+          if (!config.mediaCollection) {
+            logger.warn("Media Collection is not configured.");
+          }
+
+          logger.info("Media Analytics Legacy Component was configured");
+
+          const mediaAnalyticsHelper = createMediaHelper({ logger });
+
+          return Promise.resolve({
+            getInstance: () => {
+              return createGetInstance({
+                logger,
+                trackMediaEvent,
+                trackMediaSession
+              });
+            },
+            Event,
+            MediaType,
+            PlayerState,
+            StreamType,
+            MediaObjectKey,
+            VideoMetadataKeys,
+            AudioMetadataKeys,
+            AdMetadataKeys,
+            ...mediaAnalyticsHelper
           });
         }
       }

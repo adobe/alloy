@@ -1,5 +1,5 @@
 /*
-Copyright 2023 Adobe. All rights reserved.
+Copyright 2024 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -25,7 +25,7 @@ import { sleep } from "../Migration/helper";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMediaConfig, mediaCollection);
 createFixture({
-  title: "Media Collection in automatic mode",
+  title: "Media Collection in automatic mode.",
   url: TEST_PAGE_URL,
   requestHooks: [
     networkLogger.edgeEndpointLogs,
@@ -194,18 +194,21 @@ test("Test that MC component sends pings, augment the events with playhead and s
     sessionId
   );
 
-  await sendMediaEvent(alloy, "media.adBreakStart", sessionId, {advertisingPodDetails: {
+  await sendMediaEvent(alloy, "media.adBreakStart", sessionId, {
+    advertisingPodDetails: {
       friendlyName: "Mid-roll",
       offset: 0,
       index: 1
-    }});
+    }
+  });
   await assertEventIsSent(
     networkLogger.adBreakStartEndpointLogs,
     "media.adBreakStart",
     sessionId
   );
 
-  await sendMediaEvent(alloy, "media.adStart", sessionId, { advertisingDetails: {
+  await sendMediaEvent(alloy, "media.adStart", sessionId, {
+    advertisingDetails: {
       friendlyName: "Ad 1",
       name: "/uri-reference/001",
       length: 10,
@@ -217,7 +220,8 @@ test("Test that MC component sends pings, augment the events with playhead and s
       siteID: "siteID",
       podPosition: 11,
       playerName: "HTML5 player"
-    }});
+    }
+  });
   await assertEventIsSent(
     networkLogger.adStartEndpointLogs,
     "media.adStart",
@@ -245,17 +249,20 @@ test("Test that MC component sends pings, augment the events with playhead and s
     sessionId
   );
 
-  await sendMediaEvent(alloy, "media.error", sessionId, {errorDetails: {
+  await sendMediaEvent(alloy, "media.error", sessionId, {
+    errorDetails: {
       name: "test-buffer-start",
       source: "player"
-    }});
+    }
+  });
   await assertEventIsSent(
     networkLogger.errorEndpointLogs,
     "media.error",
     sessionId
   );
 
-  await sendMediaEvent(alloy, "media.bitrateChange", sessionId, {qoeDataDetails: {
+  await sendMediaEvent(alloy, "media.bitrateChange", sessionId, {
+    qoeDataDetails: {
       framesPerSecond: 1,
       bitrate: 35000,
       droppedFrames: 30,

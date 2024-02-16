@@ -94,7 +94,8 @@ const commands = [
   "subscribeRulesetItems",
   "evaluateRulesets",
   "createMediaSession",
-  "sendMediaEvent"
+  "sendMediaEvent",
+  "getMediaAnalyticsTracker"
 ];
 
 export default (instanceName = "alloy") => {

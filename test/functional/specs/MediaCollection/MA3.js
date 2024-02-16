@@ -1,5 +1,5 @@
 /*
-Copyright 2023 Adobe. All rights reserved.
+Copyright 2024 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -120,7 +120,7 @@ const assertEventIsSent = async (endpointLogs, eventType, sessionId) => {
   await t.expect(event.xdm.eventType).eql(eventType);
 };
 
-test.only("Test that MC component doesn't send pings automatically", async () => {
+test("Test that MC component doesn't send pings automatically", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const { sessionId } = await assertSessionStarted(alloy);

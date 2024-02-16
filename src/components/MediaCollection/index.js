@@ -12,9 +12,11 @@ governing permissions and limitations under the License.
 
 import createMediaSessionCacheManager from "./createMediaSessionCacheManager";
 import createMediaEventManager from "./createMediaEventManager";
-import createSendMediaEvent from "./createSendMediaEvent";
+import createTrackMediaEvent from "./createTrackMediaEvent";
 import configValidators from "./configValidators";
 import createMediaComponent from "./createMediaComponent";
+import createTrackMediaSession from "./createTrackMediaSession";
+import createOnBeforeMediaEvent from "./createOnBeforeMediaEvent";
 
 const createMediaCollection = ({
   config,
@@ -32,10 +34,23 @@ const createMediaCollection = ({
     sendEdgeNetworkRequest
   });
 
-  const trackMediaEvent = createSendMediaEvent({
+  const trackMediaEvent = createTrackMediaEvent({
     mediaSessionCacheManager,
     mediaEventManager,
     config
+  });
+  const trackMediaSession = createTrackMediaSession({
+    config,
+    logger,
+    mediaEventManager,
+    mediaSessionCacheManager
+  });
+
+  const onBeforeMediaEvent = createOnBeforeMediaEvent({
+    mediaSessionCacheManager,
+    logger,
+    config,
+    trackMediaEvent
   });
 
   return createMediaComponent({
@@ -43,7 +58,8 @@ const createMediaCollection = ({
     logger,
     trackMediaEvent,
     mediaEventManager,
-    mediaSessionCacheManager
+    onBeforeMediaEvent,
+    trackMediaSession
   });
 };
 createMediaCollection.namespace = "Media Collection";

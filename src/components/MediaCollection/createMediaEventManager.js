@@ -45,7 +45,13 @@ export default ({ config, eventManager, consent, sendEdgeNetworkRequest }) => {
 
       return event;
     },
-    augmentMediaEvent({ event, playerId, getPlayerDetails, sessionID }) {
+    augmentMediaEvent({
+      event,
+      playerId,
+      getPlayerDetails,
+      sessionID,
+      eventType
+    }) {
       if (!playerId || !getPlayerDetails) {
         return event;
       }
@@ -58,10 +64,20 @@ export default ({ config, eventManager, consent, sendEdgeNetworkRequest }) => {
           sessionID
         }
       });
+
+      if (eventType === MediaEvents.AD_START) {
+        event.mergeXdm({
+          mediaCollection: {
+            advertisingDetails: {
+              playerName: config.mediaCollection.playerName
+            }
+          }
+        });
+      }
       return event;
     },
-    trackMediaSession({ event, playerId, getPlayerDetails }) {
-      return eventManager.sendEvent(event, { playerId, getPlayerDetails });
+    trackMediaSession({ event, mediaOptions }) {
+      return eventManager.sendEvent(event, { mediaOptions });
     },
     trackMediaEvent({ event, action }) {
       const mediaRequestPayload = createDataCollectionRequestPayload();

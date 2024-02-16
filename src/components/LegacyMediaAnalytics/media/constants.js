@@ -98,6 +98,7 @@ export const MEDIA_EVENTS = {
   SessionComplete: "sessionComplete",
   Play: "play",
   Pause: "pauseStart",
+  Error: "error",
   ...EVENT
 };
 

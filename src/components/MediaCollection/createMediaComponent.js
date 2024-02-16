@@ -12,47 +12,23 @@ governing permissions and limitations under the License.
 import { noop } from "../../utils";
 import validateSessionOptions from "./validateMediaSessionOptions";
 import validateMediaEventOptions from "./validateMediaEventOptions";
-import isBlankString from "../../utils/isBlankString";
-import MediaEvents from "./constants/eventTypes";
 
 export default ({
   config,
   logger,
   trackMediaEvent,
-  mediaEventManager,
-  mediaSessionCacheManager
+  trackMediaSession,
+  onBeforeMediaEvent
 }) => {
   return {
     lifecycle: {
-      onBeforeEvent({ playerId, getPlayerDetails, onResponse = noop }) {
+      onBeforeEvent({ mediaOptions, onResponse = noop }) {
+        const { legacy, playerId, getPlayerDetails } = mediaOptions;
+        if (legacy) {
+          return;
+        }
         onResponse(({ response }) => {
-          const mediaPayload = response.getPayloadsByType(
-            "media-analytics:new-session"
-          );
-
-          logger.info("Media payload returned: ", mediaPayload);
-
-          const { sessionId } = mediaPayload[0];
-          if (isBlankString(sessionId)) {
-            return {};
-          }
-
-          if (!playerId || !getPlayerDetails) {
-            return { sessionId };
-          }
-
-          const heartbeatId = setTimeout(() => {
-            trackMediaEvent({
-              playerId,
-              xdm: {
-                eventType: MediaEvents.PING
-              }
-            });
-          }, config.mediaCollection.mainPingInterval * 1000);
-
-          mediaSessionCacheManager.saveHeartbeat({ playerId, heartbeatId });
-
-          return { sessionId };
+          return onBeforeMediaEvent({ playerId, getPlayerDetails, response });
         });
       }
     },
@@ -60,38 +36,7 @@ export default ({
       createMediaSession: {
         optionsValidator: options => validateSessionOptions({ options }),
 
-        run: options => {
-          if (!config.mediaCollection) {
-            logger.warn("Media Collection is not configured.");
-
-            return Promise.resolve();
-          }
-
-          const { playerId, getPlayerDetails } = options;
-          const event = mediaEventManager.createMediaSession(options);
-
-          mediaEventManager.augmentMediaEvent({
-            event,
-            playerId,
-            getPlayerDetails
-          });
-
-          const sessionPromise = mediaEventManager.trackMediaSession({
-            event,
-            playerId,
-            getPlayerDetails
-          });
-
-          mediaSessionCacheManager.storeSession({
-            playerId,
-            sessionDetails: {
-              sessionPromise,
-              getPlayerDetails
-            }
-          });
-
-          return sessionPromise;
-        }
+        run: options => trackMediaSession(options)
       },
 
       sendMediaEvent: {
