@@ -1,8 +1,8 @@
-import createSendMediaEvent from "../../../../../src/components/MediaCollection/createSendMediaEvent";
+import createTrackMediaEvent from "../../../../../src/components/MediaCollection/createTrackMediaEvent";
 import MediaEvents from "../../../../../src/components/MediaCollection/constants/eventTypes";
 
-describe("createSendMediaEvent", () => {
-  let sendMediaEvent;
+describe("createTrackMediaEvent", () => {
+  let trackMediaEvent;
   let mediaEventManager;
   let mediaSessionCacheManager;
   let config;
@@ -27,7 +27,7 @@ describe("createSendMediaEvent", () => {
         mainPingInterval: 10
       }
     };
-    sendMediaEvent = createSendMediaEvent({
+    trackMediaEvent = createTrackMediaEvent({
       mediaEventManager,
       mediaSessionCacheManager,
       config
@@ -42,7 +42,7 @@ describe("createSendMediaEvent", () => {
       }
     };
 
-    await sendMediaEvent(options);
+    await trackMediaEvent(options);
 
     expect(mediaEventManager.createMediaEvent).toHaveBeenCalledWith({
       options
@@ -62,7 +62,7 @@ describe("createSendMediaEvent", () => {
       }
     };
 
-    await sendMediaEvent(options);
+    await trackMediaEvent(options);
 
     expect(mediaSessionCacheManager.stopHeartbeat).toHaveBeenCalledWith({
       playerId: options.playerId
@@ -77,7 +77,7 @@ describe("createSendMediaEvent", () => {
       }
     };
 
-    await sendMediaEvent(options);
+    await trackMediaEvent(options);
 
     expect(mediaSessionCacheManager.saveHeartbeat).toHaveBeenCalled();
   });

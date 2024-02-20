@@ -27,7 +27,7 @@ import {
   VIDEO_METADATA_KEYS as VideoMetadataKeys
 } from "./media/constants";
 import createGetInstance from "./createGetInstance";
-import { noop } from "../../utils";
+import { noop, uuid } from "../../utils";
 import createOnBeforeMediaEvent from "../MediaCollection/createOnBeforeMediaEvent";
 
 const createLegacyMediaAnalytics = ({
@@ -94,7 +94,8 @@ const createLegacyMediaAnalytics = ({
               return createGetInstance({
                 logger,
                 trackMediaEvent,
-                trackMediaSession
+                trackMediaSession,
+                uuid
               });
             },
             Event,

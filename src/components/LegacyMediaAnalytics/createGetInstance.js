@@ -1,8 +1,8 @@
 import { MEDIA_EVENTS } from "./media/constants";
-import { isEmptyObject, isNumber, uuid } from "../../utils";
+import { isEmptyObject, isNonEmptyArray, isNumber } from "../../utils";
 import { adsToXdmKeys, mediaToXdmKeys } from "./media/mediaKeysToXdmConverter";
 
-export default ({ logger, trackMediaSession, trackMediaEvent }) => {
+export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
   let trackerState = {
     qoe: null,
     lastPlayhead: 0,
@@ -67,8 +67,10 @@ export default ({ logger, trackMediaSession, trackMediaEvent }) => {
         });
       }
     });
+    if (isNonEmptyArray(customMetadata)) {
+      xdm.mediaCollection.customMetadata = customMetadata;
+    }
 
-    xdm.mediaCollection.customMetadata = customMetadata;
     return xdm;
   };
 

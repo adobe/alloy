@@ -1,5 +1,6 @@
 import isBlankString from "../../utils/isBlankString";
 import MediaEvents from "./constants/eventTypes";
+import { isNonEmptyArray } from "../../utils";
 
 export default ({
   mediaSessionCacheManager,
@@ -12,27 +13,29 @@ export default ({
       "media-analytics:new-session"
     );
     logger.info("Media payload returned: ", mediaPayload);
+    if (isNonEmptyArray(mediaPayload)) {
+      const { sessionId } = mediaPayload[0];
+      if (isBlankString(sessionId)) {
+        return {};
+      }
 
-    const { sessionId } = mediaPayload[0];
-    if (isBlankString(sessionId)) {
-      return {};
-    }
+      if (!playerId || !getPlayerDetails) {
+        return { sessionId };
+      }
 
-    if (!playerId || !getPlayerDetails) {
+      const heartbeatId = setTimeout(() => {
+        trackMediaEvent({
+          playerId,
+          xdm: {
+            eventType: MediaEvents.PING
+          }
+        });
+      }, config.mediaCollection.mainPingInterval * 1000);
+
+      mediaSessionCacheManager.saveHeartbeat({ playerId, heartbeatId });
+
       return { sessionId };
     }
-
-    const heartbeatId = setTimeout(() => {
-      trackMediaEvent({
-        playerId,
-        xdm: {
-          eventType: MediaEvents.PING
-        }
-      });
-    }, config.mediaCollection.mainPingInterval * 1000);
-
-    mediaSessionCacheManager.saveHeartbeat({ playerId, heartbeatId });
-
-    return { sessionId };
+    return {};
   };
 };

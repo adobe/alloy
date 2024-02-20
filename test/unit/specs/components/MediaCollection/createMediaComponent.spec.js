@@ -23,36 +23,28 @@ describe("MediaCollection::createComponent", () => {
   let logger;
   let mediaComponent;
   let trackMediaEvent;
-  let mediaEventManager;
-  let mediaSessionCacheManager;
+  let onBeforeMediaEvent;
+  let trackMediaSession;
 
   const build = configs => {
     mediaComponent = createMediaComponent({
       config: configs,
       logger,
       trackMediaEvent,
-      mediaEventManager,
-      mediaSessionCacheManager
+      onBeforeMediaEvent,
+      trackMediaSession
     });
   };
 
   beforeEach(() => {
-    // setup common variables
     logger = jasmine.createSpyObj("logger", ["warn"]);
-    mediaEventManager = jasmine.createSpyObj("mediaEventManager", [
-      "createMediaSession",
-      "augmentMediaEvent",
-      "trackMediaSession"
-    ]);
+    onBeforeMediaEvent = jasmine.createSpy();
     trackMediaEvent = jasmine.createSpy();
-    mediaSessionCacheManager = jasmine.createSpyObj(
-      "mediaSessionCacheManager",
-      ["storeSession"]
-    );
+    trackMediaSession = jasmine.createSpy();
     build(config);
   });
 
-  it("should not initialize component with invalid config", () => {
+  it("should call trackSession when with invalid config", async () => {
     build({});
     const options = {
       playerId: "testPlayerId",
@@ -67,69 +59,8 @@ describe("MediaCollection::createComponent", () => {
     };
 
     const createMediaSession = mediaComponent.commands.createMediaSession;
-    return createMediaSession.run(options).then(() => {
-      expect(logger.warn).toHaveBeenCalled();
-    });
-  });
-
-  it("should track a session", async () => {
-    const sessionPromise = Promise.resolve("123");
-    const playerId = "testPlayerId";
-    const playerName = "testPlayerName";
-    const eventType = "media.sessionStart";
-    const event = { eventType };
-    const getPlayerDetails = () => {};
-
-    const options = {
-      playerId,
-      getPlayerDetails,
-      xdm: {
-        mediaCollection: {
-          sessionDetails: {
-            playerName
-          }
-        }
-      }
-    };
-    mediaEventManager.createMediaSession.and.returnValue({ eventType });
-    mediaEventManager.augmentMediaEvent.and.returnValue({
-      eventType,
-      xdm: {
-        mediaCollection: {
-          sessionDetails: {
-            playerName
-          },
-          playhead: 0
-        }
-      }
-    });
-    mediaEventManager.trackMediaSession.and.returnValue(sessionPromise);
-
-    const { createMediaSession } = mediaComponent.commands;
-
     await createMediaSession.run(options);
-
-    expect(mediaEventManager.createMediaSession).toHaveBeenCalledWith(options);
-
-    expect(mediaEventManager.augmentMediaEvent).toHaveBeenCalledWith({
-      event,
-      playerId,
-      getPlayerDetails
-    });
-
-    expect(mediaEventManager.trackMediaSession).toHaveBeenCalledWith({
-      event,
-      playerId,
-      getPlayerDetails
-    });
-
-    expect(mediaSessionCacheManager.storeSession).toHaveBeenCalledWith({
-      playerId,
-      sessionDetails: {
-        sessionPromise,
-        getPlayerDetails
-      }
-    });
+    expect(trackMediaSession).toHaveBeenCalled();
   });
 
   it("should not send media event if no valid configs", async () => {

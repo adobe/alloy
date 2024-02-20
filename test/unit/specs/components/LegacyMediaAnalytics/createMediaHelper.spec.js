@@ -182,9 +182,7 @@ describe("createMediaHelper", () => {
       const stateName = "testState";
 
       const expectedResult = {
-        stateDetails: {
-          name: stateName
-        }
+        name: stateName
       };
 
       const result = mediaHelper.createStateObject(stateName);
@@ -208,23 +206,21 @@ describe("createMediaHelper", () => {
     it("should return a valid QOE object when called with valid arguments", () => {
       const bitrate = 5000;
       const droppedFrames = 10;
-      const fps = 30;
-      const startupTime = 2;
+      const framesPerSecond = 30;
+      const timeToStart = 2;
 
       const expectedResult = {
-        qoeDetails: {
-          bitrate,
-          droppedFrames,
-          fps,
-          startupTime
-        }
+        bitrate,
+        droppedFrames,
+        framesPerSecond,
+        timeToStart
       };
 
       const result = mediaHelper.createQoEObject(
         bitrate,
         droppedFrames,
-        fps,
-        startupTime
+        framesPerSecond,
+        timeToStart
       );
 
       expect(result).toEqual(expectedResult);
