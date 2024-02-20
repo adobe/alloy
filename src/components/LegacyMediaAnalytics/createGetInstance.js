@@ -1,6 +1,9 @@
-import { MEDIA_EVENTS } from "./media/constants";
+import { MEDIA_EVENTS } from "./constants/constants";
 import { isEmptyObject, isNonEmptyArray, isNumber } from "../../utils";
-import { adsToXdmKeys, mediaToXdmKeys } from "./media/mediaKeysToXdmConverter";
+import {
+  adsToXdmKeys,
+  mediaToXdmKeys
+} from "./constants/mediaKeysToXdmConverter";
 
 export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
   let trackerState = {

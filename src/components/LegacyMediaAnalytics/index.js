@@ -25,7 +25,7 @@ import {
   PLAYER_STATE as PlayerState,
   STREAM_TYPE as StreamType,
   VIDEO_METADATA_KEYS as VideoMetadataKeys
-} from "./media/constants";
+} from "./constants/constants";
 import createGetInstance from "./createGetInstance";
 import { noop, uuid } from "../../utils";
 import createOnBeforeMediaEvent from "../MediaCollection/createOnBeforeMediaEvent";
