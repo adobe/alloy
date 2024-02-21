@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ doesIdentityCookieExist, orgId }) => {
+export default ({ doesIdentityCookieExist, orgId, logger }) => {
   /**
    * Returns a promise that will be resolved once an identity cookie exists.
    * If an identity cookie doesn't already exist, it should always exist after
@@ -24,18 +24,16 @@ export default ({ doesIdentityCookieExist, orgId }) => {
         } else {
           // This logic assumes that the code setting the cookie is working as expected and that
           // the cookie was missing from the response.
-          const noIdentityCookieError = new Error(
-            `An identity was not set properly. Please verify that the org ID ${orgId} configured in Alloy matches the org ID specified in the edge configuration.`
+          logger.warn(
+            `Identity cookie not found. This could be caused by any of the following issues:\n` +
+              `\t* The org ID ${orgId} configured in Alloy doesn't match the org ID specified in the edge configuration.\n` +
+              `\t* Experience edge was not able to set the identity cookie due to domain or cookie restrictions.\n` +
+              `\t* The request was canceled by the browser and not fully processed.`
           );
 
-          // Rejecting the promise will reject commands that were queued
-          // by the Identity component while waiting on the response to
-          // the initial request.
-          reject(noIdentityCookieError);
-
-          // Throwing an error will reject the event command that initiated
-          // the request.
-          throw noIdentityCookieError;
+          // Rejecting the promise will tell queued events to still go out
+          // one at a time.
+          reject(new Error("Identity cookie not found."));
         }
       });
       onRequestFailure(() => {
@@ -44,7 +42,7 @@ export default ({ doesIdentityCookieExist, orgId }) => {
         } else {
           // The error from the request failure will be logged separately. Rejecting this here
           // will tell ensureSingleIdentity to send the next request without identity
-          reject(new Error("No identity was set on response."));
+          reject(new Error("Identity cookie not found."));
         }
       });
     });

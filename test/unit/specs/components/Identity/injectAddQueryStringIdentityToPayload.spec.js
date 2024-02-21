@@ -29,7 +29,7 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
       "?foo=bar&adobe_mc=TS%3D1641432103%7CMCMID%3D77094828402023918047117570965393734545%7CMCORGID%3DFAF554945B90342F0A495E2C%40AdobeOrg&a=b";
     date = new Date(1641432103 * 1000);
     orgId = "FAF554945B90342F0A495E2C@AdobeOrg";
-    logger = jasmine.createSpyObj("logger", ["info"]);
+    logger = jasmine.createSpyObj("logger", ["info", "warn"]);
   });
 
   const run = () => {
@@ -162,6 +162,29 @@ describe("Identity::injectAddQueryStringIdentityToPayload", () => {
       expect(payload.addIdentity).toHaveBeenCalledOnceWith("ECID", {
         id: "06387190804794960331430905673364101813"
       });
+    });
+
+    it("handles multiple copies of the adobe_mc param", () => {
+      locationSearch =
+        "?adobe_mc=MCMID%3Dfirst%7CMCORGID%3Dabc%7CTS%3D1653516560&adobe_mc=MCMID%3Dsecond%7CMCORGID%3Dabc%7CTS%3D1653516560";
+      orgId = "abc";
+      date = new Date(1653516560 * 1000);
+      run();
+      expect(payload.addIdentity).toHaveBeenCalledOnceWith("ECID", {
+        id: "second"
+      });
+      expect(logger.warn).toHaveBeenCalled();
+    });
+
+    it("handles multiple copies of the adobe_mc param with empty param", () => {
+      locationSearch =
+        "?adobe_mc=MCMID%3Dfirst%7CMCORGID%3Dabc%7CTS%3D1653516560&adobe_mc=";
+      orgId = "abc";
+      date = new Date(1653516560 * 1000);
+      run();
+      expect(payload.addIdentity).not.toHaveBeenCalled();
+      expect(logger.warn).toHaveBeenCalled();
+      expect(logger.info).toHaveBeenCalled();
     });
   });
 });

@@ -12,8 +12,13 @@ governing permissions and limitations under the License.
 import { defer } from "../../utils";
 
 export default (collect, renderedPropositions) => {
-  return (sendDisplayEvent, viewName) => {
-    if (!sendDisplayEvent) {
+  return (isRenderDecisions, isSendDisplayEvent, viewName) => {
+    if (!isRenderDecisions) {
+      // If we aren't rendering anything, then we don't need to sendDisplayEvents.
+      return () => undefined;
+    }
+
+    if (!isSendDisplayEvent) {
       const renderedPropositionsDeferred = defer();
       renderedPropositions.concat(renderedPropositionsDeferred.promise);
       return renderedPropositionsDeferred.resolve;
