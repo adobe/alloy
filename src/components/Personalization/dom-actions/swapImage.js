@@ -11,20 +11,23 @@ governing permissions and limitations under the License.
 */
 
 import { SRC } from "../../../constants/elementAttribute";
-import { setAttribute, removeAttribute } from "./dom";
+import { removeAttribute, setAttribute } from "./dom";
 import { isImage, loadImage } from "./images";
 
-export default (container, url) => {
+export default (container, url, decorateProposition) => {
   if (!isImage(container)) {
-    return;
+    return Promise.resolve();
   }
 
   // Start downloading the image
   loadImage(url);
+
+  decorateProposition(container);
 
   // Remove "src" so there is no flicker
   removeAttribute(container, SRC);
 
   // Replace the image "src"
   setAttribute(container, SRC, url);
+  return Promise.resolve();
 };

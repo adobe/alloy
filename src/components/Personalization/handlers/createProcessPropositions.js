@@ -10,7 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+const executeSequentially = promises =>
+  promises.reduce((sequence, promise) => {
+    return sequence.then(result =>
+      promise().then(nextResult => [...result, nextResult])
+    );
+  }, Promise.resolve([]));
+
 export default ({ schemaProcessors, logger }) => {
+  // eslint-disable-next-line no-unused-vars
   const wrapRenderWithLogging = (render, item) => () => {
     return Promise.resolve()
       .then(render)
@@ -31,7 +39,7 @@ export default ({ schemaProcessors, logger }) => {
   };
 
   const renderItems = (renderers, meta) =>
-    Promise.all(renderers.map(renderer => renderer())).then(successes => {
+    executeSequentially(renderers).then(successes => {
       // as long as at least one renderer succeeds, we want to add the notification
       // to the display notifications
       if (!successes.includes(true)) {
@@ -193,7 +201,7 @@ export default ({ schemaProcessors, logger }) => {
       );
     });
     const render = () => {
-      return Promise.all(renderers.map(renderer => renderer())).then(metas =>
+      return executeSequentially(renderers).then(metas =>
         metas.filter(meta => meta)
       );
     };

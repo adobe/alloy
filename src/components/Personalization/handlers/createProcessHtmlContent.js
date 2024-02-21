@@ -9,7 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-export default ({ modules, logger }) => item => {
+import createDecorateProposition from "./createDecorateProposition";
+
+export default ({ modules, logger, storeClickMeta }) => item => {
   const { type, selector } = item.getData() || {};
 
   if (!selector || !type) {
@@ -23,7 +25,10 @@ export default ({ modules, logger }) => item => {
 
   return {
     render: () => {
-      modules[type](item.getData());
+      return modules[type](
+        item.getData(),
+        createDecorateProposition(item, storeClickMeta)
+      );
     },
     setRenderAttempted: true,
     includeInNotification: true

@@ -12,8 +12,10 @@ governing permissions and limitations under the License.
 
 import { setAttribute } from "./dom";
 
-export default (container, attributes) => {
+export default (container, attributes, decorateProposition) => {
   Object.keys(attributes).forEach(key => {
+    decorateProposition(container);
     setAttribute(container, key, attributes[key]);
   });
+  return Promise.resolve();
 };

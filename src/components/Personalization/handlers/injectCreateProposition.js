@@ -12,20 +12,29 @@ governing permissions and limitations under the License.
 
 import PAGE_WIDE_SCOPE from "../../../constants/pageWideScope";
 import {
-  VIEW_SCOPE_TYPE,
   PAGE_SCOPE_TYPE,
-  PROPOSITION_SCOPE_TYPE
+  PROPOSITION_SCOPE_TYPE,
+  VIEW_SCOPE_TYPE
 } from "../constants/scopeType";
+import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules";
 
 export default ({ preprocess, isPageWideSurface }) => {
   const createItem = (item, proposition) => {
-    const { schema, data, characteristics: { trackingLabel } = {} } = item;
+    const { id, schema, data, characteristics: { trackingLabel } = {} } = item;
+
+    const { type: schemaType } = data;
 
     const processedData = preprocess(data);
 
     return {
+      getId() {
+        return id;
+      },
       getSchema() {
         return schema;
+      },
+      getSchemaType() {
+        return schemaType;
       },
       getData() {
         return processedData;
@@ -69,10 +78,22 @@ export default ({ preprocess, isPageWideSurface }) => {
         return PROPOSITION_SCOPE_TYPE;
       },
       getItems() {
-        return items.map(item => createItem(item, this));
+        const first = [];
+        const last = [];
+        items.forEach(rawItem => {
+          const item = createItem(rawItem, this);
+          Array.prototype.push.call(
+            item.getSchemaType() !== DOM_ACTION_CLICK ? first : last,
+            item
+          );
+        });
+        return [...first, ...last];
       },
       getNotification() {
         return { id, scope, scopeDetails };
+      },
+      getId() {
+        return id;
       },
       toJSON() {
         return payload;

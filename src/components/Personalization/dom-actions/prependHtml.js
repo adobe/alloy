@@ -20,13 +20,13 @@ import {
 import { loadImages } from "./images";
 import addNonceToInlineStyleElements from "./addNonceToInlineStyleElements";
 import {
-  getInlineScripts,
-  getRemoteScriptsUrls,
   executeInlineScripts,
-  executeRemoteScripts
+  executeRemoteScripts,
+  getInlineScripts,
+  getRemoteScriptsUrls
 } from "./scripts";
 
-export default (container, html) => {
+export default (container, html, decorateProposition) => {
   const fragment = createFragment(html);
   addNonceToInlineStyleElements(fragment);
   const elements = getChildNodes(fragment);
@@ -41,6 +41,8 @@ export default (container, html) => {
   // We are inserting elements in reverse order
   while (i >= 0) {
     const element = elements[i];
+    decorateProposition(element);
+
     const firstChild = getFirstChild(container);
 
     if (firstChild) {

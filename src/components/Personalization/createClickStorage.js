@@ -10,47 +10,59 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const metasToArray = metas => {
-  return Object.keys(metas).map(key => {
-    return {
-      id: key,
-      ...metas[key]
-    };
-  });
-};
-
 export default () => {
-  const clickStorage = {};
+  const clickMetaStorage = {};
+  const clickItemStorage = {};
 
-  const storeClickMetrics = ({
-    selector,
-    meta: { id, scope, scopeDetails, trackingLabel, scopeType }
-  }) => {
-    if (!clickStorage[selector]) {
-      clickStorage[selector] = {};
+  const storeClickMeta = (item, interactId) => {
+    const propositionId = item.getProposition().getId();
+
+    if (!clickMetaStorage[interactId]) {
+      clickMetaStorage[interactId] = {};
+      clickItemStorage[interactId] = {};
     }
-    clickStorage[selector][id] = {
-      scope,
-      scopeDetails,
-      trackingLabel,
-      scopeType
+
+    if (!clickItemStorage[interactId][propositionId]) {
+      clickItemStorage[interactId][propositionId] = {};
+    }
+
+    clickItemStorage[interactId][propositionId][item.getId()] = item;
+
+    const scopeType = item.getProposition().getScopeType();
+
+    clickMetaStorage[interactId][propositionId] = {
+      ...item.getProposition().getNotification(),
+      scopeType,
+      items: Object.values(clickItemStorage[interactId][propositionId]).map(
+        itm => ({
+          id: itm.getId(),
+          characteristics: {
+            label: itm.getTrackingLabel()
+          }
+        })
+      )
     };
   };
 
-  const getClickSelectors = () => {
-    return Object.keys(clickStorage);
+  const getClickMetas = (interactId, clickToken) => {
+    return Object.values(clickMetaStorage[interactId] || {}).map(meta => {
+      return {
+        ...meta,
+        items: meta.items.map(itm => {
+          return {
+            ...itm,
+            characteristics: {
+              ...itm.characteristics,
+              token: clickToken
+            }
+          };
+        })
+      };
+    });
   };
 
-  const getClickMetasBySelector = selector => {
-    const metas = clickStorage[selector];
-    if (!metas) {
-      return {};
-    }
-    return metasToArray(clickStorage[selector]);
-  };
   return {
-    storeClickMetrics,
-    getClickSelectors,
-    getClickMetasBySelector
+    storeClickMeta,
+    getClickMetas
   };
 };

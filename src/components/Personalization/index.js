@@ -48,11 +48,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
 
-  const {
-    getClickMetasBySelector,
-    getClickSelectors,
-    storeClickMetrics
-  } = createClickStorage();
+  const { storeClickMeta, getClickMetas } = createClickStorage();
   const getPageLocation = createGetPageLocation({ window });
   const domActionsModules = initDomActionsModules();
 
@@ -69,11 +65,12 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     [schema.DOM_ACTION]: createProcessDomAction({
       modules: domActionsModules,
       logger,
-      storeClickMetrics
+      storeClickMeta
     }),
     [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({
       modules: domActionsModules,
-      logger
+      logger,
+      storeClickMeta
     }),
     [schema.REDIRECT_ITEM]: createProcessRedirect({
       logger,
@@ -110,8 +107,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
     collectClicks,
-    getClickSelectors,
-    getClickMetasBySelector
+    getClickMetas
   });
   const viewChangeHandler = createViewChangeHandler({
     processPropositions,

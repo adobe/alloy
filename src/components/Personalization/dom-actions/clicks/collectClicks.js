@@ -10,47 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import matchesSelectorWithEq from "../dom/matchesSelectorWithEq";
 import { VIEW_SCOPE_TYPE } from "../../constants/scopeType";
-
-const getMetasIfMatches = (
-  clickedElement,
-  selector,
-  getClickMetasBySelector
-) => {
-  const { documentElement } = document;
-  let element = clickedElement;
-  let i = 0;
-
-  while (element && element !== documentElement) {
-    if (matchesSelectorWithEq(selector, element)) {
-      const matchedMetas = getClickMetasBySelector(selector);
-      const returnValue = {
-        metas: matchedMetas
-      };
-      const foundMetaWithLabel = matchedMetas.find(meta => meta.trackingLabel);
-      if (foundMetaWithLabel) {
-        returnValue.label = foundMetaWithLabel.trackingLabel;
-        returnValue.weight = i;
-      }
-      const foundMetaWithScopeTypeView = matchedMetas.find(
-        meta => meta.scopeType === VIEW_SCOPE_TYPE
-      );
-      if (foundMetaWithScopeTypeView) {
-        returnValue.viewName = foundMetaWithScopeTypeView.scope;
-        returnValue.weight = i;
-      }
-      return returnValue;
-    }
-
-    element = element.parentNode;
-    i += 1;
-  }
-
-  return {
-    metas: null
-  };
-};
+import getAttribute from "../dom/getAttribute";
+import {
+  CLICK_LABEL_DATA_ATTRIBUTE,
+  CLICK_TOKEN_DATA_ATTRIBUTE,
+  INTERACT_ID_DATA_ATTRIBUTE
+} from "../../handlers/createDecorateProposition";
 
 const cleanMetas = metas =>
   metas.map(meta => {
@@ -58,50 +24,55 @@ const cleanMetas = metas =>
     return rest;
   });
 
-const dedupMetas = metas =>
-  metas.filter((meta, index) => {
-    const stringifiedMeta = JSON.stringify(meta);
-    return (
-      index ===
-      metas.findIndex(
-        innerMeta => JSON.stringify(innerMeta) === stringifiedMeta
-      )
-    );
-  });
+const getInteractionDetail = clickedElement => {
+  const { documentElement } = document;
+  let element = clickedElement;
 
-export default (clickedElement, selectors, getClickMetasBySelector) => {
-  const result = [];
-  let resultLabel = "";
-  let resultLabelWeight = Number.MAX_SAFE_INTEGER;
-  let resultViewName;
-  let resultViewNameWeight = Number.MAX_SAFE_INTEGER;
+  let interactId;
+  let clickLabel;
+  let clickToken;
 
-  /* eslint-disable no-continue */
-  for (let i = 0; i < selectors.length; i += 1) {
-    const { metas, label, weight, viewName } = getMetasIfMatches(
-      clickedElement,
-      selectors[i],
-      getClickMetasBySelector
-    );
+  while (element && element !== documentElement && !interactId) {
+    interactId =
+      interactId || getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE);
 
-    if (!metas) {
-      continue;
-    }
+    clickLabel =
+      clickLabel || getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE);
 
-    if (label && weight <= resultLabelWeight) {
-      resultLabel = label;
-      resultLabelWeight = weight;
-    }
-    if (viewName && weight <= resultViewNameWeight) {
-      resultViewName = viewName;
-      resultViewNameWeight = weight;
-    }
-    result.push(...cleanMetas(metas));
+    clickToken =
+      clickToken || getAttribute(element, CLICK_TOKEN_DATA_ATTRIBUTE);
+
+    element = element.parentNode;
   }
 
+  return { interactId, clickLabel, clickToken };
+};
+
+const extractViewName = metas => {
+  const foundMetaWithScopeTypeView = metas.find(
+    meta => meta.scopeType === VIEW_SCOPE_TYPE
+  );
+
+  return foundMetaWithScopeTypeView
+    ? foundMetaWithScopeTypeView.scope
+    : undefined;
+};
+
+export default (clickedElement, getClickMetas) => {
+  const { interactId, clickLabel = "", clickToken } = getInteractionDetail(
+    clickedElement
+  );
+
+  if (!interactId) {
+    return {};
+  }
+
+  const metas = getClickMetas(interactId, clickToken);
+
   return {
-    decisionsMeta: dedupMetas(result),
-    eventLabel: resultLabel,
-    viewName: resultViewName
+    decisionsMeta: cleanMetas(metas),
+    propositionActionLabel: clickLabel,
+    propositionActionToken: clickToken,
+    viewName: extractViewName(metas)
   };
 };

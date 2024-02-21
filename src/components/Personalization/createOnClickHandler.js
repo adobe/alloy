@@ -14,41 +14,53 @@ import { isNonEmptyArray } from "../../utils";
 import { INTERACT } from "../../constants/eventType";
 import { PropositionEventType } from "../../constants/propositionEventType";
 
-export default ({
-  mergeDecisionsMeta,
-  collectClicks,
-  getClickSelectors,
-  getClickMetasBySelector
-}) => {
+const createPropositionAction = (eventLabel, eventToken) => {
+  if (!eventToken && !eventLabel) {
+    return undefined;
+  }
+
+  const propositionAction = {};
+
+  if (eventLabel) {
+    propositionAction.label = eventLabel;
+  }
+
+  if (eventToken) {
+    propositionAction.token = eventToken;
+  }
+
+  return propositionAction;
+};
+
+export default ({ mergeDecisionsMeta, collectClicks, getClickMetas }) => {
   // Called when an element qualifying for conversion within an offer is clicked.
   return ({ event, clickedElement }) => {
-    const selectors = getClickSelectors();
-    if (isNonEmptyArray(selectors)) {
-      const { decisionsMeta, eventLabel, viewName } = collectClicks(
-        clickedElement,
-        selectors,
-        getClickMetasBySelector
-      );
+    const {
+      decisionsMeta,
+      propositionActionLabel,
+      propositionActionToken,
+      viewName
+    } = collectClicks(clickedElement, getClickMetas);
 
-      if (isNonEmptyArray(decisionsMeta)) {
-        const xdm = { eventType: INTERACT };
+    if (isNonEmptyArray(decisionsMeta)) {
+      const xdm = { eventType: INTERACT };
 
-        if (viewName) {
-          xdm.web = {
-            webPageDetails: {
-              viewName
-            }
-          };
-        }
-
-        event.mergeXdm(xdm);
-        mergeDecisionsMeta(
-          event,
-          decisionsMeta,
-          [PropositionEventType.INTERACT],
-          eventLabel ? { label: eventLabel } : undefined
-        );
+      if (viewName) {
+        xdm.web = {
+          webPageDetails: {
+            viewName
+          }
+        };
       }
+
+      event.mergeXdm(xdm);
+
+      mergeDecisionsMeta(
+        event,
+        decisionsMeta,
+        [PropositionEventType.INTERACT],
+        createPropositionAction(propositionActionLabel, propositionActionToken)
+      );
     }
   };
 };
