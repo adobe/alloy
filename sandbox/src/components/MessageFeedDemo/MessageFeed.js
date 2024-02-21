@@ -85,8 +85,7 @@ const mockResponse = {
                                 "mobileapp://com.adobe.sampleApp/feed/promos"
                             },
                             content: {
-                              imageUrl:
-                                "https://target.jasonwaters.dev/img/lumon.png",
+                              imageUrl: "/img/lumon.png",
                               actionTitle: "Shop the sale!",
                               actionUrl: "https://luma.com/sale",
                               body: "a handshake is available upon request.",
@@ -214,8 +213,7 @@ const mockResponse = {
                                 "mobileapp://com.adobe.sampleApp/feed/promos"
                             },
                             content: {
-                              imageUrl:
-                                "https://target.jasonwaters.dev/img/twitter.png",
+                              imageUrl: "/img/twitter.png",
                               actionTitle: "Shop the sale!",
                               actionUrl: "https://luma.com/sale",
                               body:
@@ -317,8 +315,7 @@ const mockResponse = {
                                 "mobileapp://com.adobe.sampleApp/feed/promos"
                             },
                             content: {
-                              imageUrl:
-                                "https://media.giphy.com/media/ADgfsbHcS62Jy/giphy.gif",
+                              imageUrl: "/img/gold-coin.jpg",
                               actionTitle: "Shop the sale!",
                               actionUrl: "https://luma.com/sale",
                               body: "Now you're ready to earn!",
