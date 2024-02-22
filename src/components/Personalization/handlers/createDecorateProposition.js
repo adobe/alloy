@@ -39,7 +39,7 @@ const createDecorateProposition = (item, storeClickMeta) => {
 
     setAttribute(element, INTERACT_ID_DATA_ATTRIBUTE, interactId);
 
-    if (trackingLabel) {
+    if (trackingLabel && !getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)) {
       setAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE, trackingLabel);
     }
   };
