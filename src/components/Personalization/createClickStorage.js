@@ -35,30 +35,14 @@ export default () => {
       scopeType,
       items: Object.values(clickItemStorage[interactId][propositionId]).map(
         itm => ({
-          id: itm.getId(),
-          characteristics: {
-            label: itm.getTrackingLabel()
-          }
+          id: itm.getId()
         })
       )
     };
   };
 
-  const getClickMetas = (interactId, clickToken) => {
-    return Object.values(clickMetaStorage[interactId] || {}).map(meta => {
-      return {
-        ...meta,
-        items: meta.items.map(itm => {
-          return {
-            ...itm,
-            characteristics: {
-              ...itm.characteristics,
-              token: clickToken
-            }
-          };
-        })
-      };
-    });
+  const getClickMetas = interactId => {
+    return Object.values(clickMetaStorage[interactId] || {});
   };
 
   return {

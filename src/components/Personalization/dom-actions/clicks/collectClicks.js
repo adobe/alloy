@@ -67,7 +67,7 @@ export default (clickedElement, getClickMetas) => {
     return {};
   }
 
-  const metas = getClickMetas(interactId, clickToken);
+  const metas = getClickMetas(interactId);
 
   return {
     decisionsMeta: cleanMetas(metas),
