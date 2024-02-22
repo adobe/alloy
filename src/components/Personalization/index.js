@@ -128,7 +128,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     targetMigrationEnabled
   });
 
-  const subscribeMessageFeed = createSubscribeMessageFeed();
+  const subscribeMessageFeed = createSubscribeMessageFeed({ collect });
 
   const onDecisionHandler = createOnDecisionHandler({
     processPropositions,

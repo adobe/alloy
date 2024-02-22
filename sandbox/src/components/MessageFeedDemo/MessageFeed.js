@@ -111,8 +111,7 @@ const mockResponse = {
                                 "mobileapp://com.adobe.sampleApp/feed/promos"
                             },
                             content: {
-                              imageUrl:
-                                "https://media.giphy.com/media/l0Ex3vQtX5VX2YtAQ/giphy.gif",
+                              imageUrl: "/img/achievement.jpg",
                               actionTitle: "Shop the sale!",
                               actionUrl: "https://luma.com/sale",
                               body: "Great job, you completed your profile.",
@@ -481,7 +480,7 @@ export default function MessageFeed() {
           Reset
         </button>
       </div>
-      <div style={{ margin: "30px 0" }}>
+      <div style={{ margin: "30px 0", maxWidth: "1000px" }}>
         <h3>Message Feed</h3>
         <div id="message-feed">
           {messageFeedItems.map((item, index) => (

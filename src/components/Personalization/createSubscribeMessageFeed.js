@@ -15,7 +15,7 @@ import {
   string
 } from "../../utils/validation";
 import { MESSAGE_FEED_ITEM } from "../../constants/schema";
-// import { DISPLAY, INTERACT } from "../../constants/eventType";
+import { DISPLAY, INTERACT } from "../../constants/eventType";
 import createSubscription from "../../utils/createSubscription";
 
 const validateOptions = ({ options }) => {
@@ -27,7 +27,7 @@ const validateOptions = ({ options }) => {
   return validator(options);
 };
 
-export default () => {
+export default ({ collect }) => {
   const renderedSet = new Set();
 
   const createFeedItem = (payload, item) => {
@@ -64,9 +64,9 @@ export default () => {
       }
     });
 
-    // if (decisionsMeta.length > 0) {
-    //   collect({ decisionsMeta, eventType: INTERACT, documentMayUnload: true });
-    // }
+    if (decisionsMeta.length > 0) {
+      collect({ decisionsMeta, eventType: INTERACT, documentMayUnload: true });
+    }
   };
 
   const rendered = (items = []) => {
@@ -79,10 +79,10 @@ export default () => {
         renderedSet.add(analyticsMeta.id);
       }
     });
-    // TODO: uncomment this when we have a way to send DISPLAY events
-    // if (decisionsMeta.length > 0) {
-    //   collect({ decisionsMeta, eventType: DISPLAY });
-    // }
+
+    if (decisionsMeta.length > 0) {
+      collect({ decisionsMeta, eventType: DISPLAY });
+    }
   };
 
   const subscription = createSubscription();

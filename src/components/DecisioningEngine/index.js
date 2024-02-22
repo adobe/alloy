@@ -93,8 +93,14 @@ const createDecisioningEngine = ({
             })
           })
         );
-
-        eventRegistry.addExperienceEdgeEvent(event);
+      },
+      onBeforeRequest({ request }) {
+        const payload = request.getPayload().toJSON();
+        const { events = [] } = payload;
+        if (events.length === 0) {
+          return;
+        }
+        events.forEach(event => eventRegistry.addExperienceEdgeEvent(event));
       }
     },
     commands: {
