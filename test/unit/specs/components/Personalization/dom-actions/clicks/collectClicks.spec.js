@@ -273,6 +273,16 @@ describe("Personalization::tracking::clicks", () => {
     // outer
     storeClickMeta(
       "1",
+      "p",
+      "page",
+      {
+        id: "AT:outer-id-1",
+        scope: "outer-scope1"
+      },
+      99
+    );
+    storeClickMeta(
+      "1",
       "a",
       "page",
       {
@@ -360,53 +370,58 @@ describe("Personalization::tracking::clicks", () => {
       propositionActionToken
     } = collectClicks(element, getClickMetas);
 
-    expect(decisionsMeta).toEqual([
-      {
-        id: "AJO:inner-id-2",
-        scope: "inner-scope2",
-        items: [
-          {
-            id: "b"
-          }
-        ]
-      },
-      {
-        id: "AT:inner-id-1",
-        scope: "inner-scope1",
-        items: [
-          {
-            id: "d"
-          }
-        ]
-      },
-      {
-        id: "AJO:inner-id-3",
-        scope: "inner-scope3",
-        items: [
-          {
-            id: "f"
-          }
-        ]
-      },
-      {
-        id: "AT:outer-id-1",
-        scope: "outer-scope1",
-        items: [
-          {
-            id: "a"
-          }
-        ]
-      },
-      {
-        id: "AJO:outer-id-3",
-        scope: "outer-scope3",
-        items: [
-          {
-            id: "c"
-          }
-        ]
-      }
-    ]);
+    expect(decisionsMeta).toEqual(
+      jasmine.arrayContaining([
+        {
+          id: "AJO:inner-id-2",
+          scope: "inner-scope2",
+          items: [
+            {
+              id: "b"
+            }
+          ]
+        },
+        {
+          id: "AT:inner-id-1",
+          scope: "inner-scope1",
+          items: [
+            {
+              id: "d"
+            }
+          ]
+        },
+        {
+          id: "AJO:inner-id-3",
+          scope: "inner-scope3",
+          items: [
+            {
+              id: "f"
+            }
+          ]
+        },
+        {
+          id: "AT:outer-id-1",
+          scope: "outer-scope1",
+          items: [
+            {
+              id: "p"
+            },
+            {
+              id: "a"
+            }
+          ]
+        },
+        {
+          id: "AJO:outer-id-3",
+          scope: "outer-scope3",
+          items: [
+            {
+              id: "c"
+            }
+          ]
+        }
+      ])
+    );
     expect(propositionActionLabel).toEqual("inner-label-2");
     expect(propositionActionToken).toEqual("inner-token-2");
   });

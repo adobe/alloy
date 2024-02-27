@@ -24,17 +24,6 @@ const cleanMetas = metas =>
     return rest;
   });
 
-const dedupMetas = metas =>
-  metas.filter((meta, index) => {
-    const stringifiedMeta = JSON.stringify(meta);
-    return (
-      index ===
-      metas.findIndex(
-        innerMeta => JSON.stringify(innerMeta) === stringifiedMeta
-      )
-    );
-  });
-
 const getInteractionDetail = clickedElement => {
   const { documentElement } = document;
   let element = clickedElement;
@@ -84,7 +73,7 @@ export default (clickedElement, getClickMetas) => {
   const metas = getClickMetas(interactIds);
 
   return {
-    decisionsMeta: dedupMetas(cleanMetas(metas)),
+    decisionsMeta: cleanMetas(metas),
     propositionActionLabel: clickLabel,
     propositionActionToken: clickToken,
     viewName: extractViewName(metas)
