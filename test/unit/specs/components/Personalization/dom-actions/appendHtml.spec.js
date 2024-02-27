@@ -60,12 +60,11 @@ describe("Personalization::actions::appendHtml", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#appendHtml",
       prehidingSelector: "#appendHtml",
       content: `<li>2</li><li>3</li>`,
-      meta
+      meta: { a: 1 }
     };
 
     return appendHtml(settings, decorateProposition).then(() => {

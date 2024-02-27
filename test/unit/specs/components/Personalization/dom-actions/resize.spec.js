@@ -51,12 +51,11 @@ describe("Personalization::actions::resize", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#resize",
       prehidingSelector: "#resize",
       content: { width: "100px", height: "100px" },
-      meta
+      meta: { a: 1 }
     };
 
     return resize(settings, decorateProposition).then(() => {

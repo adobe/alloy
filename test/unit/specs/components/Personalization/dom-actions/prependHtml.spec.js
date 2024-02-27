@@ -60,12 +60,11 @@ describe("Personalization::actions::prependHtml", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#prependHtml",
       prehidingSelector: "#prependHtml",
       content: `<li>1</li><li>2</li>`,
-      meta
+      meta: { a: 1 }
     };
 
     return prependHtml(settings, decorateProposition).then(() => {

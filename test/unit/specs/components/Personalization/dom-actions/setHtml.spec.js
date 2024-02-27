@@ -58,12 +58,11 @@ describe("Personalization::actions::setHtml", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#setHtml",
       prehidingSelector: "#setHtml",
       content: "bar",
-      meta
+      meta: { a: 1 }
     };
 
     await setHtml(settings, decorateProposition);
@@ -83,13 +82,12 @@ describe("Personalization::actions::setHtml", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#setHtml",
       prehidingSelector: "#setHtml",
       content:
         "<script id='evar123'>setTimeout(function onTimeout() { window.someEvar123 = 1; }, 500);</script>",
-      meta
+      meta: { a: 1 }
     };
 
     await setHtml(settings, decorateProposition);
@@ -111,7 +109,6 @@ describe("Personalization::actions::setHtml", () => {
     appendNode(document.body, button);
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#setHtml",
       prehidingSelector: "#setHtml",
@@ -119,7 +116,7 @@ describe("Personalization::actions::setHtml", () => {
           var btn = document.getElementById('btn');
           btn.addEventListener('click', function onEvent() { window.someEvar123 = 2; });
         </script>`,
-      meta
+      meta: { a: 1 }
     };
 
     await setHtml(settings, decorateProposition);

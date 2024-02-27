@@ -52,11 +52,10 @@ describe("Personalization::actions::remove", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#remove",
       prehidingSelector: "#remove",
-      meta
+      meta: { a: 1 }
     };
 
     return remove(settings, decorateProposition).then(() => {

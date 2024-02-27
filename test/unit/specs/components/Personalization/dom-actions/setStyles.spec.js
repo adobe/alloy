@@ -51,12 +51,11 @@ describe("Personalization::actions::setStyle", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#setStyle",
       prehidingSelector: "#setStyle",
       content: { "font-size": "33px", priority: "important" },
-      meta
+      meta: { a: 1 }
     };
 
     return setStyle(settings, decorateProposition).then(() => {

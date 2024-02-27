@@ -60,12 +60,11 @@ describe("Personalization::actions::replaceHtml", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#a",
       prehidingSelector: "#a",
       content: `<div id="b" class="rh">BBB</div>`,
-      meta
+      meta: { a: 1 }
     };
 
     return replaceHtml(settings, decorateProposition).then(() => {

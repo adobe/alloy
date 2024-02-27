@@ -51,12 +51,11 @@ describe("Personalization::actions::setAttribute", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#setAttribute",
       prehidingSelector: "#setAttribute",
       content: { "data-test": "bar" },
-      meta
+      meta: { a: 1 }
     };
 
     return setAttribute(settings, decorateProposition).then(() => {

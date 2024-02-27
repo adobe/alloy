@@ -52,12 +52,11 @@ describe("Personalization::actions::setImageSource", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#setImageSource",
       prehidingSelector: "#setImageSource",
       content: "http://foo.com/b.png",
-      meta
+      meta: { a: 1 }
     };
 
     return setImageSource(settings, decorateProposition).then(() => {

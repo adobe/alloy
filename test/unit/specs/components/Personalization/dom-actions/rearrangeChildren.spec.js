@@ -64,12 +64,11 @@ describe("Personalization::actions::rearrange", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#rearrange",
       prehidingSelector: "#rearrange",
       content: { from: 0, to: 2 },
-      meta
+      meta: { a: 1 }
     };
 
     return rearrange(settings, decorateProposition).then(() => {
@@ -113,12 +112,11 @@ describe("Personalization::actions::rearrange", () => {
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#rearrange",
       prehidingSelector: "#rearrange",
       content: { from: 2, to: 0 },
-      meta
+      meta: { a: 1 }
     };
 
     return rearrange(settings, decorateProposition).then(() => {
