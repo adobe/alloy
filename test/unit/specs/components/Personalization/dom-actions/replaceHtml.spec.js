@@ -16,10 +16,32 @@ import {
 } from "../../../../../../src/utils/dom";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage";
+import createDecorateProposition, {
+  CLICK_LABEL_DATA_ATTRIBUTE,
+  INTERACT_ID_DATA_ATTRIBUTE
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
 
 describe("Personalization::actions::replaceHtml", () => {
+  let storeClickMeta;
+  let decorateProposition;
+
   beforeEach(() => {
     cleanUpDomChanges("replaceHtml");
+    ({ storeClickMeta } = createClickStorage());
+    decorateProposition = createDecorateProposition(
+      "propositionID",
+      "itemId",
+      "trackingLabel",
+      "page",
+      {
+        id: "notifyId",
+        scope: "web://mywebsite.com",
+        scopeDetails: { something: true }
+      },
+      storeClickMeta
+    );
   });
 
   afterEach(() => {
@@ -46,11 +68,18 @@ describe("Personalization::actions::replaceHtml", () => {
       meta
     };
 
-    return replaceHtml(settings).then(() => {
+    return replaceHtml(settings, decorateProposition).then(() => {
       const result = selectNodes("div#replaceHtml .rh");
 
       expect(result.length).toEqual(1);
       expect(result[0].innerHTML).toEqual("BBB");
+
+      expect(getAttribute(result[0], CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+        "trackingLabel"
+      );
+      expect(
+        getAttribute(result[0], INTERACT_ID_DATA_ATTRIBUTE)
+      ).not.toBeNull();
     });
   });
 });

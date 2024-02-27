@@ -16,10 +16,28 @@ import {
 } from "../../../../../../src/utils/dom";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage";
+import createDecorateProposition from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
 
 describe("Personalization::actions::remove", () => {
+  let storeClickMeta;
+  let decorateProposition;
+
   beforeEach(() => {
     cleanUpDomChanges("remove");
+    ({ storeClickMeta } = createClickStorage());
+    decorateProposition = createDecorateProposition(
+      "propositionID",
+      "itemId",
+      "trackingLabel",
+      "page",
+      {
+        id: "notifyId",
+        scope: "web://mywebsite.com",
+        scopeDetails: { something: true }
+      },
+      storeClickMeta
+    );
   });
 
   afterEach(() => {
@@ -41,7 +59,7 @@ describe("Personalization::actions::remove", () => {
       meta
     };
 
-    return remove(settings).then(() => {
+    return remove(settings, decorateProposition).then(() => {
       const result = selectNodes("#child");
 
       expect(result.length).toEqual(0);

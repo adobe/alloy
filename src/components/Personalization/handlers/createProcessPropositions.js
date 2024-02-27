@@ -10,15 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const executeSequentially = promises =>
-  promises.reduce((sequence, promise) => {
+const executeSequentially = promiseFunctions =>
+  promiseFunctions.reduce((sequence, promiseFunction) => {
     return sequence.then(result =>
-      promise().then(nextResult => [...result, nextResult])
+      promiseFunction().then(nextResult => [...result, nextResult])
     );
   }, Promise.resolve([]));
 
 export default ({ schemaProcessors, logger }) => {
-  // eslint-disable-next-line no-unused-vars
   const wrapRenderWithLogging = (render, item) => () => {
     return Promise.resolve()
       .then(render)
@@ -119,7 +118,7 @@ export default ({ schemaProcessors, logger }) => {
         : undefined;
       renderers.push(() => renderItems(itemRenderers, meta));
     } else if (atLeastOneWithNotification) {
-      renderers.push(() => proposition.getNotification());
+      renderers.push(() => Promise.resolve(proposition.getNotification()));
     }
     if (renderedItems.length > 0) {
       proposition.addToReturnValues(

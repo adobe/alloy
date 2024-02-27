@@ -24,17 +24,31 @@ const cleanMetas = metas =>
     return rest;
   });
 
+const dedupMetas = metas =>
+  metas.filter((meta, index) => {
+    const stringifiedMeta = JSON.stringify(meta);
+    return (
+      index ===
+      metas.findIndex(
+        innerMeta => JSON.stringify(innerMeta) === stringifiedMeta
+      )
+    );
+  });
+
 const getInteractionDetail = clickedElement => {
   const { documentElement } = document;
   let element = clickedElement;
 
-  let interactId;
+  const interactIds = new Set();
   let clickLabel;
   let clickToken;
 
-  while (element && element !== documentElement && !interactId) {
-    interactId =
-      interactId || getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE);
+  while (element && element !== documentElement) {
+    const interactId = getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE);
+
+    if (interactId) {
+      interactIds.add(interactId);
+    }
 
     clickLabel =
       clickLabel || getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE);
@@ -45,7 +59,7 @@ const getInteractionDetail = clickedElement => {
     element = element.parentNode;
   }
 
-  return { interactId, clickLabel, clickToken };
+  return { interactIds: [...interactIds], clickLabel, clickToken };
 };
 
 const extractViewName = metas => {
@@ -59,18 +73,18 @@ const extractViewName = metas => {
 };
 
 export default (clickedElement, getClickMetas) => {
-  const { interactId, clickLabel = "", clickToken } = getInteractionDetail(
+  const { interactIds, clickLabel = "", clickToken } = getInteractionDetail(
     clickedElement
   );
 
-  if (!interactId) {
+  if (interactIds.length === 0) {
     return {};
   }
 
-  const metas = getClickMetas(interactId);
+  const metas = getClickMetas(interactIds);
 
   return {
-    decisionsMeta: cleanMetas(metas),
+    decisionsMeta: dedupMetas(cleanMetas(metas)),
     propositionActionLabel: clickLabel,
     propositionActionToken: clickToken,
     viewName: extractViewName(metas)

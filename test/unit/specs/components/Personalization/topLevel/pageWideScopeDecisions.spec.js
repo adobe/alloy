@@ -157,6 +157,31 @@ describe("PersonalizationComponent", () => {
         }
       ])
     );
+
+    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
+      "#foo",
+      "<div>Hola Mundo</div>"
+    );
+    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
+      "#foo2",
+      "<div>here is a target activity</div>"
+    );
+    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
+      "#foo",
+      "<div>Hola Mundo</div>"
+    );
+    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
+      "#foo2",
+      "<div>here is a target activity</div>"
+    );
+    expect(mocks.actions.setHtml).toHaveBeenCalledTimes(4);
+    expect(mocks.logger.warn).not.toHaveBeenCalled();
+    expect(mocks.logger.error).not.toHaveBeenCalled();
+
+    await new Promise(resolve => {
+      setTimeout(() => resolve(), 100);
+    });
+
     expect(mocks.sendEvent).toHaveBeenCalledWith({
       xdm: {
         _experience: {
@@ -185,24 +210,5 @@ describe("PersonalizationComponent", () => {
         eventType: "decisioning.propositionDisplay"
       }
     });
-    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
-      "#foo",
-      "<div>Hola Mundo</div>"
-    );
-    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
-      "#foo2",
-      "<div>here is a target activity</div>"
-    );
-    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
-      "#foo",
-      "<div>Hola Mundo</div>"
-    );
-    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
-      "#foo2",
-      "<div>here is a target activity</div>"
-    );
-    expect(mocks.actions.setHtml).toHaveBeenCalledTimes(4);
-    expect(mocks.logger.warn).not.toHaveBeenCalled();
-    expect(mocks.logger.error).not.toHaveBeenCalled();
   });
 });

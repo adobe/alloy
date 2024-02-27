@@ -12,12 +12,18 @@ governing permissions and limitations under the License.
 */
 
 import createDecorateProposition from "./createDecorateProposition";
+import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules";
 
 export default ({ modules, logger, storeClickMeta }) => item => {
-  const { type } = item.getData() || {};
+  const { type, selector } = item.getData() || {};
 
   if (!type) {
     logger.warn("Invalid DOM action data: missing type.", item.getData());
+    return { setRenderAttempted: false, includeInNotification: false };
+  }
+
+  if (type === DOM_ACTION_CLICK && !selector) {
+    logger.warn("Invalid DOM action data: missing selector.", item.getData());
     return { setRenderAttempted: false, includeInNotification: false };
   }
 
@@ -30,9 +36,16 @@ export default ({ modules, logger, storeClickMeta }) => item => {
     render: () =>
       modules[type](
         item.getData(),
-        createDecorateProposition(item, storeClickMeta)
+        createDecorateProposition(
+          item.getProposition().getId(),
+          item.getId(),
+          item.getTrackingLabel(),
+          item.getProposition().getScopeType(),
+          item.getProposition().getNotification(),
+          storeClickMeta
+        )
       ),
     setRenderAttempted: true,
-    includeInNotification: true
+    includeInNotification: type !== DOM_ACTION_CLICK
   };
 };

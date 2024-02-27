@@ -12,113 +12,166 @@ governing permissions and limitations under the License.
 import createClickStorage from "../../../../../src/components/Personalization/createClickStorage";
 
 describe("Personalization::createClickStorage", () => {
-  let clickStorage;
+  let storeClickMeta;
+  let getClickMetas;
 
-  const FIRST_CLICK = {
-    selector: "div:123:h2",
-    meta: {
-      id: "AT:123",
-      scope: "__view__",
-      scopeDetails: {
-        test: "blah1"
-      },
-      trackingLabel: "mylabel",
-      scopeType: "myscopetype"
-    }
-  };
-  const SECOND_CLICK = {
-    selector: "div:123:h2",
-    meta: {
-      id: "AT:123",
-      scope: "consent",
-      scopeDetails: {
-        test: "blah3"
-      }
-    }
-  };
-  const THIRD_CLICK = {
-    selector: "div:123:h2",
-    meta: {
-      id: "AT:234",
-      scope: "consent",
-      scopeDetails: {
-        test: "blah4"
-      }
-    }
-  };
-  const FORTH_CLICK = {
-    selector: "div:123:h1",
-    meta: {
-      id: "AT:123",
-      scope: "consent",
-      scopeDetails: {
-        test: "blah5"
-      }
-    }
-  };
+  let PROPOSITIONS = [];
 
-  /*  this is how the clickStorage map should look like
-  const expectedClicksInStorage = {
-    "div:123:h1": {
-      "AT:123": {
-        scope: "consent",
-        scopeDetails: {
-          blah: "blah"
-        }
-      }
-    },
-    "div:123:h2": {
-      "AT:123": {
-        scope: "consent",
-        scopeDetails: {
-          blah: "blah"
-          },
-        },
-      "AT:234": {
-        scope: "consent",
-        scopeDetails: {
-          blah: "blah"
-          }
-        }
-    }
-  }; */
+  let interactIDs = {};
+
   beforeEach(() => {
-    clickStorage = createClickStorage();
+    ({ storeClickMeta, getClickMetas } = createClickStorage());
+
+    interactIDs = {
+      "div:123:h2": [1],
+      "div:123:h1": [2]
+    };
+
+    PROPOSITIONS = [
+      {
+        id: "AT:123",
+        scope: "__view__",
+        scopeDetails: {
+          test: "blah1",
+          characteristics: {
+            scopeType: "page"
+          }
+        },
+        items: [
+          {
+            id: "0632668e-53a4-4f31-b092-45696e45829d",
+            schema: "https://ns.adobe.com/personalization/dom-action",
+            data: {
+              type: "click",
+              selector: "div:123:h2"
+            },
+            characteristics: {
+              trackingLabel: "mylabel"
+            }
+          }
+        ]
+      },
+      {
+        id: "AT:123",
+        scope: "consent",
+        scopeDetails: {
+          test: "blah3",
+          characteristics: {
+            scopeType: "view"
+          }
+        },
+        items: [
+          {
+            id: "0632668e-53a4-4f31-b092-45696e45829d",
+            schema: "https://ns.adobe.com/personalization/dom-action",
+            data: {
+              type: "click",
+              selector: "div:123:h2"
+            }
+          }
+        ]
+      },
+      {
+        id: "AT:234",
+        scope: "consent",
+        scopeDetails: {
+          test: "blah4",
+          characteristics: {
+            scopeType: "view"
+          }
+        },
+        items: [
+          {
+            id: "0632668e-53a4-4f31-b092-45696e45829d",
+            schema: "https://ns.adobe.com/personalization/dom-action",
+            data: {
+              type: "click",
+              selector: "div:123:h2"
+            }
+          }
+        ]
+      },
+      {
+        id: "AT:123",
+        scope: "consent",
+        scopeDetails: {
+          test: "blah5",
+          characteristics: {
+            scopeType: "view"
+          }
+        },
+        items: [
+          {
+            id: "0632668e-53a4-4f31-b092-45696e45829d",
+            schema: "https://ns.adobe.com/personalization/dom-action",
+            data: {
+              type: "click",
+              selector: "div:123:h1"
+            }
+          }
+        ]
+      }
+    ];
   });
 
-  it("returns empty array if empty storage", () => {
-    expect(clickStorage.getClickSelectors()).toEqual([]);
+  it("returns empty array when no metadata for this selector", () => {
+    expect(getClickMetas([1])).toEqual([]);
   });
 
-  it("returns empty object when no metadata for this selector", () => {
-    expect(clickStorage.getClickMetasBySelector("123")).toEqual({});
+  it("stores clicks as a map in the click storage and returns the metadata", () => {
+    PROPOSITIONS.forEach(proposition => {
+      const { id, scope, scopeDetails } = proposition;
+      proposition.items.forEach(item =>
+        storeClickMeta(
+          proposition.id,
+          item.id,
+          proposition.scopeDetails.characteristics.scopeType,
+          { id, scope, scopeDetails },
+          interactIDs[item.data.selector]
+        )
+      );
+    });
+
+    expect(getClickMetas(interactIDs["div:123:h2"]).length).toEqual(2);
+    expect(getClickMetas(interactIDs["div:123:h1"]).length).toEqual(1);
   });
 
-  it("stores clicks as a map in the click storage and returns the selectors and metadata", () => {
-    clickStorage.storeClickMetrics(FIRST_CLICK);
-    clickStorage.storeClickMetrics(SECOND_CLICK);
-    clickStorage.storeClickMetrics(THIRD_CLICK);
-    clickStorage.storeClickMetrics(FORTH_CLICK);
+  it("getClickMetas returns the id, scopeDetails, scope, trackingLabel, and scopeType", () => {
+    const proposition = PROPOSITIONS[0];
 
-    expect(clickStorage.getClickSelectors().length).toEqual(2);
-    expect(clickStorage.getClickMetasBySelector("div:123:h2").length).toEqual(
-      2
+    proposition.items.forEach(item =>
+      storeClickMeta(
+        proposition.id,
+        item.id,
+        proposition.scopeDetails.characteristics.scopeType,
+        {
+          id: proposition.id,
+          scope: proposition.scope,
+          scopeDetails: proposition.scopeDetails
+        },
+        interactIDs[item.data.selector]
+      )
     );
-  });
 
-  it("getClickMetasBySelector returns the id, scopeDetails, scope, trackingLabel, and scopeType", () => {
-    clickStorage.storeClickMetrics(FIRST_CLICK);
+    const meta = getClickMetas(interactIDs["div:123:h2"]);
 
-    const meta = clickStorage.getClickMetasBySelector("div:123:h2");
-
-    expect(clickStorage.getClickSelectors().length).toEqual(1);
     expect(meta.length).toEqual(1);
+
     expect(meta[0]).toEqual({
       id: "AT:123",
       scope: "__view__",
-      scopeDetails: { test: "blah1" },
-      trackingLabel: "mylabel",
-      scopeType: "myscopetype"
+      scopeDetails: {
+        test: "blah1",
+        characteristics: {
+          scopeType: "page"
+        }
+      },
+      scopeType: "page",
+      items: [
+        {
+          id: "0632668e-53a4-4f31-b092-45696e45829d"
+        }
+      ]
     });
   });
 });

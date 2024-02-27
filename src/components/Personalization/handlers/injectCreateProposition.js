@@ -22,7 +22,7 @@ export default ({ preprocess, isPageWideSurface }) => {
   const createItem = (item, proposition) => {
     const { id, schema, data, characteristics: { trackingLabel } = {} } = item;
 
-    const { type: schemaType } = data;
+    const schemaType = data ? data.type : undefined;
 
     const processedData = preprocess(data);
 

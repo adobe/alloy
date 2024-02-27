@@ -16,10 +16,32 @@ import {
 } from "../../../../../../src/utils/dom";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import createDecorateProposition, {
+  CLICK_LABEL_DATA_ATTRIBUTE,
+  INTERACT_ID_DATA_ATTRIBUTE
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
+import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
 
 describe("Personalization::actions::insertBefore", () => {
+  let storeClickMeta;
+  let decorateProposition;
+
   beforeEach(() => {
     cleanUpDomChanges("insertBefore");
+    ({ storeClickMeta } = createClickStorage());
+    decorateProposition = createDecorateProposition(
+      "propositionID",
+      "itemId",
+      "trackingLabel",
+      "page",
+      {
+        id: "notifyId",
+        scope: "web://mywebsite.com",
+        scopeDetails: { something: true }
+      },
+      storeClickMeta
+    );
   });
 
   afterEach(() => {
@@ -46,11 +68,23 @@ describe("Personalization::actions::insertBefore", () => {
       meta
     };
 
-    return insertBefore(settings).then(() => {
-      const result = selectNodes("div#insertBefore .ib");
+    return insertBefore(settings, decorateProposition).then(() => {
+      const [insertedElement, existingElement] = selectNodes(
+        "div#insertBefore .ib"
+      );
 
-      expect(result[0].innerHTML).toEqual("BBB");
-      expect(result[1].innerHTML).toEqual("AAA");
+      expect(insertedElement.innerHTML).toEqual("BBB");
+      expect(getAttribute(insertedElement, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+        "trackingLabel"
+      );
+      expect(
+        getAttribute(insertedElement, INTERACT_ID_DATA_ATTRIBUTE)
+      ).not.toBeNull();
+
+      expect(existingElement.innerHTML).toEqual("AAA");
+      expect(
+        getAttribute(existingElement, INTERACT_ID_DATA_ATTRIBUTE)
+      ).toBeNull();
     });
   });
 });

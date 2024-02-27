@@ -4,5 +4,4 @@
 npm run checkthattestfilesexist
 STAGED_ONLY=true npm run add-license
 npx lint-staged
-# TODO: uncomment tests 👇
-#npm run test:unit
+npm run test:unit

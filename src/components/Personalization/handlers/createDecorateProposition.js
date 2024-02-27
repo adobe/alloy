@@ -26,16 +26,21 @@ const getInteractId = (propositionId, existingInteractId) => {
   return ++lastInteractId;
 };
 
-const createDecorateProposition = (item, storeClickMeta) => {
-  const trackingLabel = item.getTrackingLabel();
-
+const createDecorateProposition = (
+  propositionId,
+  itemId,
+  trackingLabel,
+  scopeType,
+  notification,
+  storeClickMeta
+) => {
   return element => {
     const interactId = getInteractId(
-      item.getProposition().getId(),
+      propositionId,
       getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)
     );
 
-    storeClickMeta(item, interactId);
+    storeClickMeta(propositionId, itemId, scopeType, notification, interactId);
 
     setAttribute(element, INTERACT_ID_DATA_ATTRIBUTE, interactId);
 

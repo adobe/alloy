@@ -12,10 +12,32 @@ governing permissions and limitations under the License.
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage";
+import createDecorateProposition, {
+  CLICK_LABEL_DATA_ATTRIBUTE,
+  INTERACT_ID_DATA_ATTRIBUTE
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
 
 describe("Personalization::actions::resize", () => {
+  let storeClickMeta;
+  let decorateProposition;
+
   beforeEach(() => {
     cleanUpDomChanges("resize");
+    ({ storeClickMeta } = createClickStorage());
+    decorateProposition = createDecorateProposition(
+      "propositionID",
+      "itemId",
+      "trackingLabel",
+      "page",
+      {
+        id: "notifyId",
+        scope: "web://mywebsite.com",
+        scopeDetails: { something: true }
+      },
+      storeClickMeta
+    );
   });
 
   afterEach(() => {
@@ -26,7 +48,6 @@ describe("Personalization::actions::resize", () => {
     const modules = initDomActionsModules();
     const { resize } = modules;
     const element = createNode("div", { id: "resize" });
-    const elements = [element];
 
     appendNode(document.body, element);
 
@@ -38,9 +59,14 @@ describe("Personalization::actions::resize", () => {
       meta
     };
 
-    return resize(settings).then(() => {
-      expect(elements[0].style.width).toEqual("100px");
-      expect(elements[0].style.height).toEqual("100px");
+    return resize(settings, decorateProposition).then(() => {
+      expect(element.style.width).toEqual("100px");
+      expect(element.style.height).toEqual("100px");
+
+      expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+        "trackingLabel"
+      );
+      expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
     });
   });
 });

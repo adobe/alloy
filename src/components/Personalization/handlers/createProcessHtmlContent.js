@@ -27,7 +27,14 @@ export default ({ modules, logger, storeClickMeta }) => item => {
     render: () => {
       return modules[type](
         item.getData(),
-        createDecorateProposition(item, storeClickMeta)
+        createDecorateProposition(
+          item.getProposition().getId(),
+          item.getId(),
+          item.getTrackingLabel(),
+          item.getProposition().getScopeType(),
+          item.getProposition().getNotification(),
+          storeClickMeta
+        )
       );
     },
     setRenderAttempted: true,

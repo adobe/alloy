@@ -9,69 +9,77 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import {
-  appendNode,
-  createNode,
-  selectNodes,
-  removeNode
-} from "../../../../../../src/utils/dom";
+import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
+import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage";
+import createDecorateProposition from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
+import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 
 describe("Personalization::actions::customCode", () => {
+  let storeClickMeta;
+  let decorateProposition;
+  let customCode;
+  let element;
+
   beforeEach(() => {
-    selectNodes(".customCode").forEach(removeNode);
+    cleanUpDomChanges("customCode");
     delete window.someEvar123;
+
+    ({ storeClickMeta } = createClickStorage());
+    decorateProposition = createDecorateProposition(
+      "propositionID",
+      "itemId",
+      "trackingLabel",
+      "page",
+      {
+        id: "notifyId",
+        scope: "web://mywebsite.com",
+        scopeDetails: { something: true }
+      },
+      storeClickMeta
+    );
+
+    const modules = initDomActionsModules();
+    ({ customCode } = modules);
   });
 
   afterEach(() => {
-    selectNodes(".customCode").forEach(removeNode);
+    cleanUpDomChanges("customCode");
     delete window.someEvar123;
   });
 
-  it("should set content in container that has children", () => {
-    const modules = initDomActionsModules();
-    const { customCode } = modules;
-    const element = createNode("div", { class: "customCode" });
+  it("should set content in container that has children", async () => {
+    element = createNode("div", { id: "customCode", class: "customCode" });
     element.innerHTML = `<div id="inner1"></div><div id="inner2"></div>`;
-    const elements = [element];
-
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: ".customCode",
       prehidingSelector: ".customCode",
       content: "<p>Hola!</p>",
-      meta
+      meta: { a: 1 }
     };
-    const event = { elements };
 
-    return customCode(settings, event).then(() => {
-      expect(elements[0].innerHTML).toEqual(
-        `<p>Hola!</p><div id="inner1"></div><div id="inner2"></div>`
-      );
-    });
+    await customCode(settings, decorateProposition);
+    expect(element.innerHTML).toMatch(
+      /<p data-aep-interact-id="\d+" data-aep-click-label="trackingLabel">Hola!<\/p><div id="inner1"><\/div><div id="inner2"><\/div>/
+    );
   });
 
-  it("should set content in container that has NO children", () => {
-    const modules = initDomActionsModules();
-    const { customCode } = modules;
-    const element = createNode("div", { class: "customCode" });
-    const elements = [element];
-
+  it("should set content in container that has NO children", async () => {
+    element = createNode("div", { id: "customCode", class: "customCode" });
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: ".customCode",
       prehidingSelector: ".customCode",
       content: "<p>Hola!</p><div>Hello</div>",
-      meta
+      meta: { a: 1 }
     };
-    const event = { elements };
 
-    return customCode(settings, event).then(() => {
-      expect(elements[0].innerHTML).toEqual(`<p>Hola!</p><div>Hello</div>`);
-    });
+    await customCode(settings, decorateProposition);
+    expect(element.innerHTML).toMatch(
+      /<p data-aep-interact-id="\d+" data-aep-click-label="trackingLabel">Hola!<\/p><div data-aep-interact-id="\d+" data-aep-click-label="trackingLabel">Hello<\/div>/
+    );
   });
 });

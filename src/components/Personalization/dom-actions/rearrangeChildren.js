@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { getChildren, insertAfter, insertBefore } from "./dom";
 
-export default (container, { from, to }) => {
+export default (container, { from, to }, decorateProposition) => {
   return new Promise(resolve => {
     const children = getChildren(container);
     const elementFrom = children[from];
@@ -25,11 +25,16 @@ export default (container, { from, to }) => {
       return;
     }
 
+    decorateProposition(elementTo);
+
     if (from < to) {
       insertAfter(elementTo, elementFrom);
     } else {
       insertBefore(elementTo, elementFrom);
     }
+
+    decorateProposition(elementFrom);
+
     resolve();
   });
 };

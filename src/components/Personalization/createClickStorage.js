@@ -14,35 +14,45 @@ export default () => {
   const clickMetaStorage = {};
   const clickItemStorage = {};
 
-  const storeClickMeta = (item, interactId) => {
-    const propositionId = item.getProposition().getId();
-
+  const storeClickMeta = (
+    propositionId,
+    itemId,
+    scopeType,
+    notification,
+    interactId
+  ) => {
     if (!clickMetaStorage[interactId]) {
       clickMetaStorage[interactId] = {};
       clickItemStorage[interactId] = {};
     }
 
     if (!clickItemStorage[interactId][propositionId]) {
-      clickItemStorage[interactId][propositionId] = {};
+      clickItemStorage[interactId][propositionId] = new Set();
     }
 
-    clickItemStorage[interactId][propositionId][item.getId()] = item;
-
-    const scopeType = item.getProposition().getScopeType();
+    clickItemStorage[interactId][propositionId].add(itemId);
 
     clickMetaStorage[interactId][propositionId] = {
-      ...item.getProposition().getNotification(),
+      ...notification,
       scopeType,
-      items: Object.values(clickItemStorage[interactId][propositionId]).map(
-        itm => ({
-          id: itm.getId()
-        })
-      )
+      items: Array.from(
+        clickItemStorage[interactId][propositionId]
+      ).map(id => ({ id }))
     };
   };
 
-  const getClickMetas = interactId => {
-    return Object.values(clickMetaStorage[interactId] || {});
+  const getClickMetas = interactIds => {
+    if (!Array.isArray(interactIds) || interactIds.length === 0) {
+      return [];
+    }
+
+    return interactIds.reduce(
+      (metas, interactId) => [
+        ...metas,
+        ...Object.values(clickMetaStorage[interactId] || {})
+      ],
+      []
+    );
   };
 
   return {

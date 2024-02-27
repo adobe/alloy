@@ -12,13 +12,36 @@ governing permissions and limitations under the License.
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage";
+import createDecorateProposition, {
+  CLICK_LABEL_DATA_ATTRIBUTE,
+  INTERACT_ID_DATA_ATTRIBUTE
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 describe("Personalization::actions::setHtml", () => {
+  let storeClickMeta;
+  let decorateProposition;
+
   beforeEach(() => {
     cleanUpDomChanges("setHtml");
     delete window.someEvar123;
+
+    ({ storeClickMeta } = createClickStorage());
+    decorateProposition = createDecorateProposition(
+      "propositionID",
+      "itemId",
+      "trackingLabel",
+      "page",
+      {
+        id: "notifyId",
+        scope: "web://mywebsite.com",
+        scopeDetails: { something: true }
+      },
+      storeClickMeta
+    );
   });
 
   afterEach(() => {
@@ -43,8 +66,13 @@ describe("Personalization::actions::setHtml", () => {
       meta
     };
 
-    await setHtml(settings);
+    await setHtml(settings, decorateProposition);
     expect(element.innerHTML).toEqual("bar");
+
+    expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+      "trackingLabel"
+    );
+    expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
   });
 
   it("should execute inline JavaScript", async () => {
@@ -64,7 +92,7 @@ describe("Personalization::actions::setHtml", () => {
       meta
     };
 
-    await setHtml(settings);
+    await setHtml(settings, decorateProposition);
     await sleep(501);
 
     expect(window.someEvar123).toEqual(1);
@@ -94,7 +122,7 @@ describe("Personalization::actions::setHtml", () => {
       meta
     };
 
-    await setHtml(settings);
+    await setHtml(settings, decorateProposition);
 
     button.click();
     expect(window.someEvar123).toEqual(2);

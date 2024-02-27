@@ -16,10 +16,32 @@ import {
 } from "../../../../../../src/utils/dom";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage";
+import createDecorateProposition, {
+  CLICK_LABEL_DATA_ATTRIBUTE,
+  INTERACT_ID_DATA_ATTRIBUTE
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
 
 describe("Personalization::actions::rearrange", () => {
+  let storeClickMeta;
+  let decorateProposition;
+
   beforeEach(() => {
     cleanUpDomChanges("rearrange");
+    ({ storeClickMeta } = createClickStorage());
+    decorateProposition = createDecorateProposition(
+      "propositionID",
+      "itemId",
+      "trackingLabel",
+      "page",
+      {
+        id: "notifyId",
+        scope: "web://mywebsite.com",
+        scopeDetails: { something: true }
+      },
+      storeClickMeta
+    );
   });
 
   afterEach(() => {
@@ -50,12 +72,28 @@ describe("Personalization::actions::rearrange", () => {
       meta
     };
 
-    return rearrange(settings).then(() => {
+    return rearrange(settings, decorateProposition).then(() => {
       const result = selectNodes("li");
 
       expect(result[0].textContent).toEqual("2");
+      expect(getAttribute(result[0], CLICK_LABEL_DATA_ATTRIBUTE)).toBeNull();
+      expect(getAttribute(result[0], INTERACT_ID_DATA_ATTRIBUTE)).toBeNull();
+
       expect(result[1].textContent).toEqual("3");
+      expect(getAttribute(result[1], CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+        "trackingLabel"
+      );
+      expect(
+        getAttribute(result[1], INTERACT_ID_DATA_ATTRIBUTE)
+      ).not.toBeNull();
+
       expect(result[2].textContent).toEqual("1");
+      expect(getAttribute(result[2], CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+        "trackingLabel"
+      );
+      expect(
+        getAttribute(result[2], INTERACT_ID_DATA_ATTRIBUTE)
+      ).not.toBeNull();
     });
   });
 
@@ -83,7 +121,7 @@ describe("Personalization::actions::rearrange", () => {
       meta
     };
 
-    return rearrange(settings).then(() => {
+    return rearrange(settings, decorateProposition).then(() => {
       const result = selectNodes("li");
 
       expect(result[0].textContent).toEqual("3");
