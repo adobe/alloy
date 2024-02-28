@@ -11,21 +11,19 @@ governing permissions and limitations under the License.
 */
 
 import { removeNode } from "../../../utils/dom";
-import {
-  appendHtml,
-  click,
-  createAction,
-  insertHtmlAfter,
-  insertHtmlBefore,
-  prependHtml,
-  rearrangeChildren,
-  replaceHtml,
-  setAttributes,
-  setHtml,
-  setStyles,
-  setText,
-  swapImage
-} from "./action";
+import setHtml from "./setHtml";
+import prependHtml from "./prependHtml";
+import { createAction } from "./action";
+import setText from "./setText";
+import setAttributes from "./setAttributes";
+import swapImage from "./swapImage";
+import setStyles from "./setStyles";
+import rearrangeChildren from "./rearrangeChildren";
+import insertHtmlAfter from "./insertHtmlAfter";
+import insertHtmlBefore from "./insertHtmlBefore";
+import replaceHtml from "./replaceHtml";
+import appendHtml from "./appendHtml";
+import click from "./click";
 
 export const DOM_ACTION_SET_HTML = "setHtml";
 export const DOM_ACTION_CUSTOM_CODE = "customCode";

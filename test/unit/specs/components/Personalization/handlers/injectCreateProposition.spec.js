@@ -79,4 +79,133 @@ describe("injectCreateProposition", () => {
     });
     expect(proposition.getScopeType()).toEqual("page");
   });
+
+  it("returns items with click actions at the end", () => {
+    const proposition = createProposition({
+      id: "675",
+      scope: "web://mywebsite.com/",
+      scopeDetails: {
+        characteristics: {
+          eventToken: "eyJ"
+        }
+      },
+      items: [
+        {
+          id: "be5",
+          schema: "https://ns.adobe.com/personalization/dom-action",
+          data: {
+            type: "insertAfter",
+            content: "<div id='somewhere_after'>hello</div>",
+            selector: "#somewhere",
+            prehidingSelector: "#some-buttons"
+          }
+        },
+        {
+          id: "d08",
+          schema: "https://ns.adobe.com/personalization/dom-action",
+          data: {
+            type: "click",
+            selector: "#btn-buy-now"
+          },
+          characteristics: {
+            trackingLabel: "lblPurchase"
+          }
+        },
+        {
+          id: "45e",
+          schema: "https://ns.adobe.com/personalization/dom-action",
+          data: {
+            type: "setAttribute",
+            content: {
+              class: "woof"
+            },
+            selector: "#somewhere_after",
+            prehidingSelector: "#somewhere_after"
+          }
+        },
+        {
+          id: "f28",
+          schema: "https://ns.adobe.com/personalization/dom-action",
+          data: {
+            type: "click",
+            selector: "#btn-subscribe"
+          },
+          characteristics: {
+            trackingLabel: "lblSubscribe"
+          }
+        },
+        {
+          id: "40b",
+          schema: "https://ns.adobe.com/personalization/dom-action",
+          data: {
+            type: "setStyle",
+            content: {
+              width: "600px"
+            },
+            selector: "#somewhere_after",
+            prehidingSelector: "#somewhere_after"
+          }
+        }
+      ]
+    });
+
+    expect(proposition.getItems().map(item => item.toJSON())).toEqual([
+      {
+        id: "be5",
+        schema: "https://ns.adobe.com/personalization/dom-action",
+        data: {
+          type: "insertAfter",
+          content: "<div id='somewhere_after'>hello</div>",
+          selector: "#somewhere",
+          prehidingSelector: "#some-buttons"
+        }
+      },
+      {
+        id: "45e",
+        schema: "https://ns.adobe.com/personalization/dom-action",
+        data: {
+          type: "setAttribute",
+          content: {
+            class: "woof"
+          },
+          selector: "#somewhere_after",
+          prehidingSelector: "#somewhere_after"
+        }
+      },
+      {
+        id: "40b",
+        schema: "https://ns.adobe.com/personalization/dom-action",
+        data: {
+          type: "setStyle",
+          content: {
+            width: "600px"
+          },
+          selector: "#somewhere_after",
+          prehidingSelector: "#somewhere_after"
+        }
+      },
+      {
+        id: "d08",
+        schema: "https://ns.adobe.com/personalization/dom-action",
+        data: {
+          type: "click",
+          selector: "#btn-buy-now"
+        },
+        characteristics: {
+          trackingLabel: "lblPurchase"
+        }
+      },
+      {
+        id: "f28",
+        schema: "https://ns.adobe.com/personalization/dom-action",
+        data: {
+          type: "click",
+          selector: "#btn-subscribe"
+        },
+        characteristics: {
+          trackingLabel: "lblSubscribe"
+        }
+      }
+    ]);
+  });
 });

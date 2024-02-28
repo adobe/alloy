@@ -25,14 +25,13 @@ export default (container, { from, to }, decorateProposition) => {
       return;
     }
 
-    decorateProposition(elementTo);
-
     if (from < to) {
       insertAfter(elementTo, elementFrom);
     } else {
       insertBefore(elementTo, elementFrom);
     }
 
+    decorateProposition(elementTo);
     decorateProposition(elementFrom);
 
     resolve();

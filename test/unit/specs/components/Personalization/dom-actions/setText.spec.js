@@ -12,32 +12,19 @@ governing permissions and limitations under the License.
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
-import createDecorateProposition, {
+import {
   CLICK_LABEL_DATA_ATTRIBUTE,
   INTERACT_ID_DATA_ATTRIBUTE
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
-import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
 
 describe("Personalization::actions::setText", () => {
-  let storeClickMeta;
   let decorateProposition;
 
   beforeEach(() => {
     cleanUpDomChanges("setText");
-    ({ storeClickMeta } = createClickStorage());
-    decorateProposition = createDecorateProposition(
-      "propositionID",
-      "itemId",
-      "trackingLabel",
-      "page",
-      {
-        id: "notifyId",
-        scope: "web://mywebsite.com",
-        scopeDetails: { something: true }
-      },
-      storeClickMeta
-    );
+    decorateProposition = createDecoratePropositionForTest();
   });
 
   afterEach(() => {

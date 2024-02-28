@@ -11,12 +11,10 @@ governing permissions and limitations under the License.
 */
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
-import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage";
-import createDecorateProposition from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
 
 describe("Personalization::actions::customCode", () => {
-  let storeClickMeta;
   let decorateProposition;
   let customCode;
   let element;
@@ -25,19 +23,7 @@ describe("Personalization::actions::customCode", () => {
     cleanUpDomChanges("customCode");
     delete window.someEvar123;
 
-    ({ storeClickMeta } = createClickStorage());
-    decorateProposition = createDecorateProposition(
-      "propositionID",
-      "itemId",
-      "trackingLabel",
-      "page",
-      {
-        id: "notifyId",
-        scope: "web://mywebsite.com",
-        scopeDetails: { something: true }
-      },
-      storeClickMeta
-    );
+    decorateProposition = createDecoratePropositionForTest();
 
     const modules = initDomActionsModules();
     ({ customCode } = modules);

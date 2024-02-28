@@ -1,19 +1,17 @@
-import createDecorateProposition, {
+import {
   CLICK_LABEL_DATA_ATTRIBUTE,
   INTERACT_ID_DATA_ATTRIBUTE
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
-import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
 
 describe("Personalization::createDecorateProposition", () => {
-  let storeClickMeta;
   let decorateProposition;
 
   beforeEach(() => {
     cleanUpDomChanges("something");
-    ({ storeClickMeta } = createClickStorage());
   });
 
   afterEach(() => {
@@ -21,18 +19,9 @@ describe("Personalization::createDecorateProposition", () => {
   });
 
   it("sets a data-attribute for interact id and label", () => {
-    decorateProposition = createDecorateProposition(
-      "propId",
-      "itemId",
-      "myTrackingLabel",
-      "page",
-      {
-        id: "notifyId",
-        scope: "web://mywebsite.com",
-        scopeDetails: { something: true }
-      },
-      storeClickMeta
-    );
+    decorateProposition = createDecoratePropositionForTest({
+      trackingLabel: "myTrackingLabel"
+    });
 
     const element = createNode(
       "div",
@@ -50,18 +39,9 @@ describe("Personalization::createDecorateProposition", () => {
   });
 
   it("does not set a data-attribute for label if no label is specified", () => {
-    decorateProposition = createDecorateProposition(
-      "propId",
-      "itemId",
-      undefined,
-      "page",
-      {
-        id: "notifyId",
-        scope: "web://mywebsite.com",
-        scopeDetails: { something: true }
-      },
-      storeClickMeta
-    );
+    decorateProposition = createDecoratePropositionForTest({
+      trackingLabel: null
+    });
 
     const element = createNode(
       "div",
@@ -84,18 +64,10 @@ describe("Personalization::createDecorateProposition", () => {
     );
     appendNode(document.body, element);
 
-    decorateProposition = createDecorateProposition(
-      "propId",
-      "itemId1",
-      "myTrackingLabel",
-      "page",
-      {
-        id: "notifyId1",
-        scope: "web://mywebsite.com",
-        scopeDetails: { something: true }
-      },
-      storeClickMeta
-    );
+    decorateProposition = createDecoratePropositionForTest({
+      itemId: "itemId1",
+      trackingLabel: "myTrackingLabel"
+    });
     decorateProposition(element);
 
     expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
@@ -104,21 +76,13 @@ describe("Personalization::createDecorateProposition", () => {
     const interactId = getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE);
     expect(interactId).not.toBeNull();
 
-    decorateProposition = createDecorateProposition(
-      "propId",
-      "itemId2",
-      "myTrackingLabel",
-      "page",
-      {
-        id: "notifyId2",
-        scope: "web://mywebsite.com",
-        scopeDetails: { something: true }
-      },
-      storeClickMeta
-    );
-
+    decorateProposition = createDecoratePropositionForTest({
+      itemId: "itemId2",
+      trackingLabel: "myOtherTrackingLabel"
+    });
     decorateProposition(element);
 
+    // tracking label remains the same despite another item targeting the same element with trackingLabel set to "myOtherTrackingLabel" (first one wins)
     expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
       "myTrackingLabel"
     );
@@ -142,18 +106,16 @@ describe("Personalization::createDecorateProposition", () => {
     const interactIds = new Set();
 
     ["one", "two", "three"].forEach((value, idx) => {
-      decorateProposition = createDecorateProposition(
-        `propId_${value}`,
-        `itemId_${idx}`,
-        `trackingLabel${value}`,
-        "page",
-        {
+      decorateProposition = createDecoratePropositionForTest({
+        propositionId: `propId_${value}`,
+        itemId: `itemId_${idx}`,
+        trackingLabel: `trackingLabel${value}`,
+        notification: {
           id: `notifyId${idx}`,
           scope: "web://mywebsite.com",
           scopeDetails: { something: true }
-        },
-        storeClickMeta
-      );
+        }
+      });
       const li = document.querySelector(`#something .${value}`);
       decorateProposition(li);
 

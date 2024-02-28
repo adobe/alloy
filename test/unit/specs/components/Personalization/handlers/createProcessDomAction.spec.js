@@ -11,14 +11,12 @@ governing permissions and limitations under the License.
 */
 import createProcessDomAction from "../../../../../../src/components/Personalization/handlers/createProcessDomAction";
 import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition";
-import {
-  click,
-  createAction
-} from "../../../../../../src/components/Personalization/dom-actions/action";
+import { createAction } from "../../../../../../src/components/Personalization/dom-actions/action";
 import { DOM_ACTION_CLICK } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { DOM_ACTION } from "../../../../../../src/constants/schema";
+import click from "../../../../../../src/components/Personalization/dom-actions/click";
 
 describe("createProcessDomAction", () => {
   let modules;

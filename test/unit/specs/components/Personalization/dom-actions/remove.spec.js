@@ -10,34 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import {
-  selectNodes,
   appendNode,
-  createNode
+  createNode,
+  selectNodes
 } from "../../../../../../src/utils/dom";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
-import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage";
-import createDecorateProposition from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
 
 describe("Personalization::actions::remove", () => {
-  let storeClickMeta;
   let decorateProposition;
 
   beforeEach(() => {
     cleanUpDomChanges("remove");
-    ({ storeClickMeta } = createClickStorage());
-    decorateProposition = createDecorateProposition(
-      "propositionID",
-      "itemId",
-      "trackingLabel",
-      "page",
-      {
-        id: "notifyId",
-        scope: "web://mywebsite.com",
-        scopeDetails: { something: true }
-      },
-      storeClickMeta
-    );
+    decorateProposition = createDecoratePropositionForTest();
   });
 
   afterEach(() => {
