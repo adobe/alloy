@@ -16,7 +16,7 @@ export default lifecycle => {
     event,
     personalization
   }) => {
-    if (propositions.length > 0 && lifecycle) {
+    if (lifecycle) {
       lifecycle.onDecision({
         renderDecisions,
         propositions,

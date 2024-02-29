@@ -15,7 +15,7 @@ import {
   string
 } from "../../utils/validation";
 import { MESSAGE_FEED_ITEM } from "../../constants/schema";
-import { DISPLAY, INTERACT } from "../../constants/eventType";
+import { DISMISS, DISPLAY, INTERACT } from "../../constants/eventType";
 import createSubscription from "../../utils/createSubscription";
 
 const validateOptions = ({ options }) => {
@@ -69,7 +69,32 @@ export default ({ collect }) => {
     }
   };
 
+  const dismissed = (items = []) => {
+    if (!(items instanceof Array)) {
+      return Promise.resolve();
+    }
+
+    const decisionsMeta = [];
+    const dismissedSet = new Set();
+
+    items.forEach(item => {
+      const analyticsMeta = item.getAnalyticsDetail();
+      if (!dismissedSet.has(analyticsMeta.id)) {
+        decisionsMeta.push(analyticsMeta);
+        dismissedSet.add(analyticsMeta.id);
+      }
+    });
+
+    return decisionsMeta.length > 0
+      ? collect({ decisionsMeta, eventType: DISMISS, documentMayUnload: true })
+      : Promise.resolve();
+  };
+
   const rendered = (items = []) => {
+    if (!(items instanceof Array)) {
+      return;
+    }
+
     const decisionsMeta = [];
 
     items.forEach(item => {
@@ -106,7 +131,7 @@ export default ({ collect }) => {
           b.qualifiedDate - a.qualifiedDate || b.publishedDate - a.publishedDate
       );
 
-    return [{ items: result, clicked, rendered }];
+    return [{ items: result, clicked, rendered, dismissed }];
   });
 
   const run = ({ surface, callback }) => {

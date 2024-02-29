@@ -249,7 +249,8 @@ describe("Personalization:subscribeMessageFeed", () => {
         })
       ],
       clicked: jasmine.any(Function),
-      rendered: jasmine.any(Function)
+      rendered: jasmine.any(Function),
+      dismissed: jasmine.any(Function)
     });
   });
   it("has helper methods on items", () => {
@@ -335,7 +336,7 @@ describe("Personalization:subscribeMessageFeed", () => {
     });
   });
 
-  it("collects separately interact events for each distinct proposition", () => {
+  it("collects separate interact events for each distinct proposition", () => {
     const { command, refresh } = subscribeMessageFeed;
 
     const callback = jasmine.createSpy();
@@ -477,6 +478,99 @@ describe("Personalization:subscribeMessageFeed", () => {
     expect(collect).toHaveBeenCalledWith({
       decisionsMeta: [items[2].getAnalyticsDetail()],
       eventType: "decisioning.propositionDisplay"
+    });
+  });
+
+  it("collects dismiss events", () => {
+    const { command, refresh } = subscribeMessageFeed;
+
+    const callback = jasmine.createSpy();
+
+    command.run({ surface: "web://mywebsite.com/feed", callback });
+
+    refresh(PROPOSITIONS);
+
+    const { items, dismissed } = callback.calls.first().args[0];
+
+    dismissed([items[0]]);
+
+    expect(collect).toHaveBeenCalledWith({
+      decisionsMeta: [items[0].getAnalyticsDetail()],
+      documentMayUnload: true,
+      eventType: "decisioning.propositionDismiss"
+    });
+  });
+
+  it("collects only one dismiss event per proposition", () => {
+    const { command, refresh } = subscribeMessageFeed;
+
+    const callback = jasmine.createSpy();
+
+    command.run({ surface: "web://mywebsite.com/feed", callback });
+
+    refresh(PROPOSITIONS);
+
+    const { items, dismissed } = callback.calls.first().args[0];
+
+    dismissed([items[0], items[0], items[0]]);
+
+    expect(collect).toHaveBeenCalledOnceWith({
+      decisionsMeta: [items[0].getAnalyticsDetail()],
+      eventType: "decisioning.propositionDismiss",
+      documentMayUnload: true
+    });
+  });
+
+  it("collects separate dismiss events for each distinct proposition", () => {
+    const { command, refresh } = subscribeMessageFeed;
+
+    const callback = jasmine.createSpy();
+
+    command.run({ surface: "web://mywebsite.com/feed", callback });
+
+    refresh(PROPOSITIONS);
+
+    const { items, dismissed } = callback.calls.first().args[0];
+
+    dismissed([items[0]]);
+
+    expect(collect).toHaveBeenCalledWith({
+      decisionsMeta: [items[0].getAnalyticsDetail()],
+      eventType: "decisioning.propositionDismiss",
+      documentMayUnload: true
+    });
+
+    dismissed([items[0]]);
+
+    expect(collect).toHaveBeenCalledWith({
+      decisionsMeta: [items[0].getAnalyticsDetail()],
+      eventType: "decisioning.propositionDismiss",
+      documentMayUnload: true
+    });
+
+    expect(collect).toHaveBeenCalledTimes(2);
+  });
+
+  it("collects multiple dismiss events for distinct propositions", () => {
+    const { command, refresh } = subscribeMessageFeed;
+
+    const callback = jasmine.createSpy();
+
+    command.run({ surface: "web://mywebsite.com/feed", callback });
+
+    refresh(PROPOSITIONS);
+
+    const { items, dismissed } = callback.calls.first().args[0];
+
+    dismissed([items[0], items[1]]);
+
+    expect(collect).toHaveBeenCalledOnceWith({
+      decisionsMeta: [
+        items[0].getAnalyticsDetail(),
+        items[1].getAnalyticsDetail()
+      ],
+      eventType: "decisioning.propositionDismiss",
+      documentMayUnload: true
     });
   });
 });

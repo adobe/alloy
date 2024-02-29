@@ -65,15 +65,27 @@ describe("DecisioningEngine:createApplyResponse", () => {
     });
   });
 
-  it("does not call lifecycle.onDecision if no propositions", () => {
+  it("call lifecycle.onDecision even if no propositions", () => {
+    // this use case is necessary for message feeds with no items
     const lifecycle = jasmine.createSpyObj("lifecycle", {
       onDecision: Promise.resolve()
     });
 
     const applyResponse = createApplyResponse(lifecycle);
+    const mockEvent = { getViewName: () => undefined };
 
-    applyResponse({ propositions: [] });
+    applyResponse({
+      renderDecisions: true,
+      propositions: [],
+      event: mockEvent,
+      personalization: {}
+    });
 
-    expect(lifecycle.onDecision).not.toHaveBeenCalled();
+    expect(lifecycle.onDecision).toHaveBeenCalledWith({
+      renderDecisions: true,
+      propositions: [],
+      event: mockEvent,
+      personalization: {}
+    });
   });
 });

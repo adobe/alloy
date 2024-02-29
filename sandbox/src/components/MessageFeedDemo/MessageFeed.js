@@ -52,6 +52,20 @@ const mockResponse = {
                         conditions: [
                           {
                             definition: {
+                              events: [
+                                {
+                                  "iam.eventType": "dismiss",
+                                  "iam.id":
+                                    "8e24e51d-5203-4d0b-99c9-2b3c95ff48f2#05885219-ea84-43bc-874e-1ef4a85b6fbb"
+                                }
+                              ],
+                              matcher: "le",
+                              value: 0
+                            },
+                            type: "historical"
+                          },
+                          {
+                            definition: {
                               conditions: [
                                 {
                                   definition: {
@@ -59,9 +73,23 @@ const mockResponse = {
                                     matcher: "ex"
                                   },
                                   type: "matcher"
+                                },
+                                {
+                                  definition: {
+                                    events: [
+                                      {
+                                        "iam.eventType": "trigger",
+                                        "iam.id":
+                                          "8e24e51d-5203-4d0b-99c9-2b3c95ff48f2#05885219-ea84-43bc-874e-1ef4a85b6fbb"
+                                      }
+                                    ],
+                                    matcher: "ge",
+                                    value: 1
+                                  },
+                                  type: "historical"
                                 }
                               ],
-                              logic: "and"
+                              logic: "or"
                             },
                             type: "group"
                           }
@@ -96,7 +124,95 @@ const mockResponse = {
                           id: "a48ca420-faea-467e-989a-5d179d9f562d"
                         },
                         id: "a48ca420-faea-467e-989a-5d179d9f562d"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          scope: "web://target.jasonwaters.dev/aep.html"
+        },
+        {
+          scopeDetails: {
+            decisionProvider: "AJO",
+            characteristics: {
+              eventToken:
+                "eyJtZXNzYWdlRXhlY3V0aW9uIjp7Im1lc3NhZ2VFeGVjdXRpb25JRCI6Ik5BIiwibWVzc2FnZUlEIjoiMDJjNzdlYTgtN2MwZS00ZDMzLTgwOTAtNGE1YmZkM2Q3NTAzIiwibWVzc2FnZVR5cGUiOiJtYXJrZXRpbmciLCJjYW1wYWlnbklEIjoiMzlhZThkNGItYjU1ZS00M2RjLWExNDMtNzdmNTAxOTViNDg3IiwiY2FtcGFpZ25WZXJzaW9uSUQiOiJiZDg1ZDllOC0yMDM3LTQyMmYtYjZkMi0zOTU3YzkwNTU5ZDMiLCJjYW1wYWlnbkFjdGlvbklEIjoiYjQ3ZmRlOGItNTdjMS00YmJlLWFlMjItNjRkNWI3ODJkMTgzIiwibWVzc2FnZVB1YmxpY2F0aW9uSUQiOiJhZTUyY2VkOC0yMDBjLTQ5N2UtODc4Ny1lZjljZmMxNzgyMTUifSwibWVzc2FnZVByb2ZpbGUiOnsiY2hhbm5lbCI6eyJfaWQiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbHMvd2ViIiwiX3R5cGUiOiJodHRwczovL25zLmFkb2JlLmNvbS94ZG0vY2hhbm5lbC10eXBlcy93ZWIifSwibWVzc2FnZVByb2ZpbGVJRCI6ImY1Y2Q5OTk1LTZiNDQtNDIyMS05YWI3LTViNTMzOGQ1ZjE5MyJ9fQ=="
+            },
+            strategies: [
+              {
+                strategyID: "3VQe3oIqiYq2RAsYzmDTSf",
+                treatmentID: "yu7rkogezumca7i0i44v"
+              }
+            ],
+            activity: {
+              id:
+                "9d8d3896-872f-4fab-8440-220c7f012ba8#b1e22d27-40cb-42ba-aa1f-9a6d26a737a6"
+            },
+            correlationID: "02c77ea8-7c0e-4d33-8090-4a5bfd3d7503"
+          },
+          id: "532a0ac7-7412-42e1-b2c3-62fb0d0e5db0",
+          items: [
+            {
+              id: "97b69bf2-dc9c-43d4-8a39-4c9def816cf2",
+              schema: "https://ns.adobe.com/personalization/ruleset-item",
+              data: {
+                version: 1,
+                rules: [
+                  {
+                    condition: {
+                      definition: {
+                        conditions: [
+                          {
+                            definition: {
+                              events: [
+                                {
+                                  "iam.eventType": "dismiss",
+                                  "iam.id":
+                                    "9d8d3896-872f-4fab-8440-220c7f012ba8#b1e22d27-40cb-42ba-aa1f-9a6d26a737a6"
+                                }
+                              ],
+                              matcher: "le",
+                              value: 0
+                            },
+                            type: "historical"
+                          },
+                          {
+                            definition: {
+                              conditions: [
+                                {
+                                  definition: {
+                                    key: "events",
+                                    matcher: "ex"
+                                  },
+                                  type: "matcher"
+                                },
+                                {
+                                  definition: {
+                                    events: [
+                                      {
+                                        "iam.eventType": "trigger",
+                                        "iam.id":
+                                          "9d8d3896-872f-4fab-8440-220c7f012ba8#b1e22d27-40cb-42ba-aa1f-9a6d26a737a6"
+                                      }
+                                    ],
+                                    matcher: "ge",
+                                    value: 1
+                                  },
+                                  type: "historical"
+                                }
+                              ],
+                              logic: "or"
+                            },
+                            type: "group"
+                          }
+                        ],
+                        logic: "and"
                       },
+                      type: "group"
+                    },
+                    consequences: [
                       {
                         type: "schema",
                         detail: {
@@ -164,6 +280,20 @@ const mockResponse = {
                         conditions: [
                           {
                             definition: {
+                              events: [
+                                {
+                                  "iam.eventType": "dismiss",
+                                  "iam.id":
+                                    "cf087a6e-131d-4147-adc7-bc1ea947f09c#ff64e6e6-e43f-479d-b5c0-f5568c771b3b"
+                                }
+                              ],
+                              matcher: "le",
+                              value: 0
+                            },
+                            type: "historical"
+                          },
+                          {
+                            definition: {
                               conditions: [
                                 {
                                   definition: {
@@ -177,7 +307,7 @@ const mockResponse = {
                                   definition: {
                                     events: [
                                       {
-                                        "iam.eventType": "display",
+                                        "iam.eventType": "trigger",
                                         "iam.id":
                                           "cf087a6e-131d-4147-adc7-bc1ea947f09c#ff64e6e6-e43f-479d-b5c0-f5568c771b3b"
                                       }
@@ -264,6 +394,20 @@ const mockResponse = {
                     condition: {
                       definition: {
                         conditions: [
+                          {
+                            definition: {
+                              events: [
+                                {
+                                  "iam.eventType": "dismiss",
+                                  "iam.id":
+                                    "57712381-1690-4d19-9469-0a35ea5bd4e3#74f8e5cf-d770-41c3-b595-557b3ee00ba3"
+                                }
+                              ],
+                              matcher: "le",
+                              value: 0
+                            },
+                            type: "historical"
+                          },
                           {
                             definition: {
                               conditions: [
@@ -402,9 +546,8 @@ const prettyDate = value => {
 };
 
 export default function MessageFeed() {
-  const [clickHandler, setClickHandler] = useState(() => items =>
-    console.log("items clicked!", items)
-  );
+  const [clickHandler, setClickHandler] = useState(() => () => {});
+  const [dismissHandler, setDismissHandler] = useState(() => () => {});
 
   const [messageFeedItems, setMessageFeedItems] = useState([]);
 
@@ -418,9 +561,10 @@ export default function MessageFeed() {
       }),
       window.alloy("subscribeMessageFeed", {
         surface: "web://target.jasonwaters.dev/aep.html",
-        callback: ({ items = [], rendered, clicked }) => {
+        callback: ({ items = [], rendered, clicked, dismissed }) => {
           console.log("subscribeMessageFeed", items);
           setClickHandler(() => clicked);
+          setDismissHandler(() => dismissed);
           setMessageFeedItems(items);
           rendered(items);
         }
@@ -438,6 +582,14 @@ export default function MessageFeed() {
       });
     };
   }, ["clickHandler"]);
+
+  const dismissFeedItem = items => {
+    dismissHandler(items).then(() => {
+      window.alloy("evaluateRulesets", {
+        renderDecisions: true
+      });
+    });
+  };
 
   const shareSocialMedia = () => {
     window.alloy("evaluateRulesets", {
@@ -489,6 +641,7 @@ export default function MessageFeed() {
               className="pretty-card"
               onClick={() => clickHandler([item])}
             >
+              <button onClick={() => dismissFeedItem([item])}>dismiss</button>
               <p>{item.title}</p>
               <p>
                 {item.imageUrl && <img src={item.imageUrl} alt="Item Image" />}
