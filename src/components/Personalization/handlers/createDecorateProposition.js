@@ -35,6 +35,10 @@ const createDecorateProposition = (
   storeClickMeta
 ) => {
   return element => {
+    if (!element.tagName) {
+      return;
+    }
+
     const interactId = getInteractId(
       propositionId,
       getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)

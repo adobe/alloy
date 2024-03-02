@@ -50,7 +50,7 @@ describe("Personalization::actions::insertAfter", () => {
     const settings = {
       selector: "#a",
       prehidingSelector: "#a",
-      content: `<div id="b" class="ia">BBB</div>`,
+      content: `<div id="b" class="ia">BBB</div><div id="c" class="ia">CCC</div>`,
       meta: { a: 1 }
     };
 
@@ -59,6 +59,7 @@ describe("Personalization::actions::insertAfter", () => {
 
       expect(result[0].innerHTML).toEqual("AAA");
       expect(result[1].innerHTML).toEqual("BBB");
+      expect(result[2].innerHTML).toEqual("CCC");
 
       expect(getAttribute(result[1], CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
         "trackingLabel"

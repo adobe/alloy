@@ -115,6 +115,49 @@ describe("Personalization::createOnClickHandler", () => {
     });
   });
 
+  it("collects clicks with token", () => {
+    collectClicks.and.returnValue({
+      decisionsMeta,
+      propositionActionToken: "click-token"
+    });
+
+    const handleOnClick = createOnClickHandler({
+      mergeDecisionsMeta,
+      collectClicks,
+      getClickMetas
+    });
+    const clickedElement = createNode("div", { class: "clicked-element" });
+
+    handleOnClick({ event, clickedElement });
+
+    const expectedXdm = {
+      eventType: "decisioning.propositionInteract",
+      _experience: {
+        decisioning: {
+          propositions: [
+            {
+              id: 1,
+              scope: "foo"
+            }
+          ],
+          propositionEventType: {
+            interact: 1
+          },
+          propositionAction: {
+            tokens: ["click-token"]
+          }
+        }
+      }
+    };
+
+    expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
+    expect(collectClicks).toHaveBeenCalledWith(clickedElement, getClickMetas);
+    event.finalize();
+    expect(event.toJSON()).toEqual({
+      xdm: expectedXdm
+    });
+  });
+
   it("collects clicks shouldn't be called when clickStorage is empty", () => {
     collectClicks = jasmine
       .createSpy("collectClicks")

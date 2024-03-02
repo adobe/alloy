@@ -38,11 +38,10 @@ describe("Personalization::actions::appendHtml", () => {
   it("should append personalized content", () => {
     const modules = initDomActionsModules();
     const { appendHtml } = modules;
-    const content = `<li>1</li>`;
     const element = createNode(
       "ul",
       { id: "appendHtml" },
-      { innerHTML: content }
+      { innerHTML: "<li>1</li>" }
     );
 
     appendNode(document.body, element);

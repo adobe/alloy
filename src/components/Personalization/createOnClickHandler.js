@@ -14,19 +14,19 @@ import { isNonEmptyArray } from "../../utils";
 import { INTERACT } from "../../constants/eventType";
 import { PropositionEventType } from "../../constants/propositionEventType";
 
-const createPropositionAction = (eventLabel, eventToken) => {
-  if (!eventToken && !eventLabel) {
+const createPropositionAction = (clickLabel, clickToken) => {
+  if (!clickToken && !clickLabel) {
     return undefined;
   }
 
   const propositionAction = {};
 
-  if (eventLabel) {
-    propositionAction.label = eventLabel;
+  if (clickLabel) {
+    propositionAction.label = clickLabel;
   }
 
-  if (eventToken) {
-    propositionAction.token = eventToken;
+  if (clickToken) {
+    propositionAction.tokens = [clickToken];
   }
 
   return propositionAction;

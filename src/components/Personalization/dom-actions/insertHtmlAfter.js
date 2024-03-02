@@ -29,9 +29,12 @@ export default (container, html, decorateProposition) => {
 
   loadImages(fragment);
 
+  let insertionPoint = container;
+
   elements.forEach(element => {
     decorateProposition(element);
-    insertAfter(container, element);
+    insertAfter(insertionPoint, element);
+    insertionPoint = element;
   });
 
   executeInlineScripts(container, scripts);
