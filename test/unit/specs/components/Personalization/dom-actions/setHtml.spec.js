@@ -18,8 +18,7 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
-
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+import pause from "../../../../helpers/pause";
 
 describe("Personalization::actions::setHtml", () => {
   let decorateProposition;
@@ -78,7 +77,7 @@ describe("Personalization::actions::setHtml", () => {
     };
 
     await setHtml(settings, decorateProposition);
-    await sleep(501);
+    await pause(501);
 
     expect(window.someEvar123).toEqual(1);
 

@@ -13,6 +13,7 @@ import { PAGE_WIDE_SCOPE_DECISIONS } from "../responsesMock/eventResponses";
 
 import buildMocks from "./buildMocks";
 import buildAlloy from "./buildAlloy";
+import pause from "../../../../helpers/pause";
 
 describe("PersonalizationComponent", () => {
   it("PAGE_WIDE_SCOPE_DECISIONS", async () => {
@@ -178,9 +179,7 @@ describe("PersonalizationComponent", () => {
     expect(mocks.logger.warn).not.toHaveBeenCalled();
     expect(mocks.logger.error).not.toHaveBeenCalled();
 
-    await new Promise(resolve => {
-      setTimeout(() => resolve(), 100);
-    });
+    await pause(100);
 
     expect(mocks.sendEvent).toHaveBeenCalledWith({
       xdm: {
