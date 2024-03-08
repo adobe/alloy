@@ -166,6 +166,50 @@ const mockResponse = {
                         conditions: [
                           {
                             definition: {
+                              conditions: [
+                                {
+                                  definition: {
+                                    key: "action",
+                                    matcher: "eq",
+                                    values: ["cancel-subscription"]
+                                  },
+                                  type: "matcher"
+                                }
+                              ],
+                              logic: "and"
+                            },
+                            type: "group"
+                          }
+                        ],
+                        logic: "and"
+                      },
+                      type: "group"
+                    },
+                    consequences: [
+                      {
+                        type: "schema",
+                        detail: {
+                          schema:
+                            "https://ns.adobe.com/personalization/instruction",
+                          data: {
+                            type: "sendSyntheticEvent",
+                            content: {
+                              eventType: "dismiss",
+                              evaluateRulesets: true
+                            }
+                          },
+                          id: "e631ed49-5e0b-4ce7-bc9e-edd62c6c37bb"
+                        },
+                        id: "e631ed49-5e0b-4ce7-bc9e-edd62c6c37bb"
+                      }
+                    ]
+                  },
+                  {
+                    condition: {
+                      definition: {
+                        conditions: [
+                          {
+                            definition: {
                               events: [
                                 {
                                   "iam.eventType": "dismiss",
@@ -581,14 +625,10 @@ export default function MessageFeed() {
         rulesetItems.unsubscribe();
       });
     };
-  }, ["clickHandler"]);
+  }, ["clickHandler", "dismissHandler"]);
 
-  const dismissFeedItem = items => {
-    dismissHandler(items).then(() => {
-      window.alloy("evaluateRulesets", {
-        renderDecisions: true
-      });
-    });
+  const dismissFeedItem = (evt, items) => {
+    dismissHandler(items);
   };
 
   const shareSocialMedia = () => {
@@ -613,6 +653,17 @@ export default function MessageFeed() {
     });
   };
 
+  const cancelSubscription = () => {
+    window.alloy("evaluateRulesets", {
+      renderDecisions: true,
+      personalization: {
+        decisionContext: {
+          action: "cancel-subscription"
+        }
+      }
+    });
+  };
+
   const resetPersistentData = () => {
     localStorage.clear();
     window.location.reload();
@@ -627,6 +678,9 @@ export default function MessageFeed() {
         </button>
         <button id="deposit-funds" onClick={() => depositFunds()}>
           Deposit funds
+        </button>{" "}
+        <button id="cancel-subscription" onClick={() => cancelSubscription()}>
+          Cancel Subscription
         </button>
         <button id="reset" onClick={() => resetPersistentData()}>
           Reset
@@ -641,7 +695,9 @@ export default function MessageFeed() {
               className="pretty-card"
               onClick={() => clickHandler([item])}
             >
-              <button onClick={() => dismissFeedItem([item])}>dismiss</button>
+              <button onClick={evt => dismissFeedItem(evt, [item])}>
+                dismiss
+              </button>
               <p>{item.title}</p>
               <p>
                 {item.imageUrl && <img src={item.imageUrl} alt="Item Image" />}

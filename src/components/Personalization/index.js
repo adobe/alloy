@@ -44,6 +44,8 @@ import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMe
 import createRedirect from "./dom-actions/createRedirect";
 import createNotificationHandler from "./createNotificationHandler";
 import createSubscribeMessageFeed from "./createSubscribeMessageFeed";
+import createProcessInstruction from "./handlers/createProcessInstruction";
+import initInstructionActionsModules from "./in-app-message-actions/initInstructionActionsModules";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -83,6 +85,10 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     }),
     [schema.MESSAGE_IN_APP]: createProcessInAppMessage({
       modules: initInAppMessageActionsModules(collect),
+      logger
+    }),
+    [schema.INSTRUCTION]: createProcessInstruction({
+      modules: initInstructionActionsModules(collect),
       logger
     })
   };

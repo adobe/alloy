@@ -21,7 +21,8 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
     documentMayUnload = false,
     eventType = DISPLAY,
     propositionEventTypes = [getPropositionEventType(eventType)],
-    viewName
+    viewName,
+    evaluateRulesets = false
   }) => {
     const event = eventManager.createEvent();
     const data = { eventType };
@@ -41,6 +42,7 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
     }
 
     event.mergeXdm(data);
+    event.setEvaluateRulesets(evaluateRulesets);
 
     if (documentMayUnload) {
       event.documentMayUnload();

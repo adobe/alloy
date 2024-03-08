@@ -69,7 +69,7 @@ export default ({ collect }) => {
     }
   };
 
-  const dismissed = (items = []) => {
+  const dismissed = (items = [], evaluateRulesets = true) => {
     if (!(items instanceof Array)) {
       return Promise.resolve();
     }
@@ -86,7 +86,12 @@ export default ({ collect }) => {
     });
 
     return decisionsMeta.length > 0
-      ? collect({ decisionsMeta, eventType: DISMISS, documentMayUnload: true })
+      ? collect({
+          decisionsMeta,
+          eventType: DISMISS,
+          documentMayUnload: true,
+          evaluateRulesets
+        })
       : Promise.resolve();
   };
 

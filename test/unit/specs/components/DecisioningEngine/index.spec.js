@@ -43,7 +43,7 @@ describe("createDecisioningEngine:commands:evaluateRulesets", () => {
     });
     mockEvent = {
       getContent: () => ({}),
-      hasQuery: () => true,
+      shouldEvaluateRulesets: () => true,
       getViewName: () => undefined,
       mergeData
     };

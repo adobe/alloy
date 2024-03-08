@@ -28,5 +28,7 @@ export const MESSAGE_FEED_ITEM =
 export const MESSAGE_NATIVE_ALERT =
   "https://ns.adobe.com/personalization/message/native-alert";
 
+export const INSTRUCTION = "https://ns.adobe.com/personalization/instruction";
+
 export const MEASUREMENT_SCHEMA =
   "https://ns.adobe.com/personalization/measurement";

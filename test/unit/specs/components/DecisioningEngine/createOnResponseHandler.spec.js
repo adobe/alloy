@@ -35,7 +35,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
   it("calls lifecycle.onDecision with propositions based on decisionContext", () => {
     const event = {
       getViewName: () => undefined,
-      hasQuery: () => true,
+      shouldEvaluateRulesets: () => true,
       getContent: () => ({
         query: {},
         xdm: {
@@ -229,7 +229,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
   it("calls lifecycle.onDecision with propositions based on xdm and event data", () => {
     const event = {
       getViewName: () => "home",
-      hasQuery: () => true,
+      shouldEvaluateRulesets: () => true,
       getContent: () => ({
         query: {},
         xdm: {

@@ -22,7 +22,8 @@ describe("Personalization::createCollect", () => {
     }
   ];
   const event = {
-    mergeXdm: jasmine.createSpy()
+    mergeXdm: jasmine.createSpy(),
+    setEvaluateRulesets: jasmine.createSpy()
   };
 
   beforeEach(() => {
@@ -40,12 +41,15 @@ describe("Personalization::createCollect", () => {
     expect(event.mergeXdm).toHaveBeenCalledWith({
       eventType: "decisioning.propositionDisplay"
     });
+    expect(event.setEvaluateRulesets).toHaveBeenCalledWith(false);
+
     expect(mergeDecisionsMeta).toHaveBeenCalledWith(
       event,
       decisionsMeta,
       [PropositionEventType.DISPLAY],
       undefined
     );
+
     expect(eventManager.sendEvent).toHaveBeenCalled();
   });
 });

@@ -37,6 +37,7 @@ export default () => {
   let documentMayUnload = false;
   let isFinalized = false;
   let shouldSendEvent = true;
+  let forceEvaluateRulesets = false;
 
   const throwIfEventFinalized = methodName => {
     if (isFinalized) {
@@ -176,6 +177,14 @@ export default () => {
 
       return userXdm.web.webPageDetails.viewName;
     },
+    shouldEvaluateRulesets() {
+      return this.hasQuery() || forceEvaluateRulesets;
+    },
+
+    setEvaluateRulesets(value) {
+      forceEvaluateRulesets = value;
+    },
+
     toJSON() {
       if (!isFinalized) {
         throw new Error("toJSON called before finalize");

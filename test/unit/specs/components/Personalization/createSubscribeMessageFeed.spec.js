@@ -497,6 +497,28 @@ describe("Personalization:subscribeMessageFeed", () => {
     expect(collect).toHaveBeenCalledWith({
       decisionsMeta: [items[0].getAnalyticsDetail()],
       documentMayUnload: true,
+      evaluateRulesets: true,
+      eventType: "decisioning.propositionDismiss"
+    });
+  });
+
+  it("collects dismiss events with evaluateRulesets=false", () => {
+    const { command, refresh } = subscribeMessageFeed;
+
+    const callback = jasmine.createSpy();
+
+    command.run({ surface: "web://mywebsite.com/feed", callback });
+
+    refresh(PROPOSITIONS);
+
+    const { items, dismissed } = callback.calls.first().args[0];
+
+    dismissed([items[0]], false);
+
+    expect(collect).toHaveBeenCalledWith({
+      decisionsMeta: [items[0].getAnalyticsDetail()],
+      documentMayUnload: true,
+      evaluateRulesets: false,
       eventType: "decisioning.propositionDismiss"
     });
   });
@@ -517,6 +539,7 @@ describe("Personalization:subscribeMessageFeed", () => {
     expect(collect).toHaveBeenCalledOnceWith({
       decisionsMeta: [items[0].getAnalyticsDetail()],
       eventType: "decisioning.propositionDismiss",
+      evaluateRulesets: true,
       documentMayUnload: true
     });
   });
@@ -537,6 +560,7 @@ describe("Personalization:subscribeMessageFeed", () => {
     expect(collect).toHaveBeenCalledWith({
       decisionsMeta: [items[0].getAnalyticsDetail()],
       eventType: "decisioning.propositionDismiss",
+      evaluateRulesets: true,
       documentMayUnload: true
     });
 
@@ -545,6 +569,7 @@ describe("Personalization:subscribeMessageFeed", () => {
     expect(collect).toHaveBeenCalledWith({
       decisionsMeta: [items[0].getAnalyticsDetail()],
       eventType: "decisioning.propositionDismiss",
+      evaluateRulesets: true,
       documentMayUnload: true
     });
 
@@ -570,6 +595,7 @@ describe("Personalization:subscribeMessageFeed", () => {
         items[1].getAnalyticsDetail()
       ],
       eventType: "decisioning.propositionDismiss",
+      evaluateRulesets: true,
       documentMayUnload: true
     });
   });

@@ -30,8 +30,7 @@ export default ({
       response.getPayloadsByType(PERSONALIZATION_DECISIONS_HANDLE)
     );
 
-    // only evaluate events that include a personalization query
-    if (!event.hasQuery()) {
+    if (!event.shouldEvaluateRulesets()) {
       return { propositions: [] };
     }
 
