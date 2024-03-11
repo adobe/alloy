@@ -19,6 +19,7 @@ import createOnBeforeMediaEvent from "../MediaCollection/createOnBeforeMediaEven
 import createLegacyMediaComponent from "./createLegacyMediaComponent";
 import createMediaHelper from "./createMediaHelper";
 import createGetInstance from "./createGetInstance";
+import injectTimestamp from "../Context/injectTimestamp";
 
 const createLegacyMediaAnalytics = ({
   eventManager,
@@ -33,7 +34,8 @@ const createLegacyMediaAnalytics = ({
     sendEdgeNetworkRequest,
     config,
     consent,
-    eventManager
+    eventManager,
+    setTimestamp: injectTimestamp(() => new Date())
   });
 
   const trackMediaEvent = createTrackMediaEvent({

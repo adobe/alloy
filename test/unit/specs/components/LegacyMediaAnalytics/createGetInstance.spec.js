@@ -2,7 +2,7 @@ const createGetInstance = require("../../../../../src/components/LegacyMediaAnal
 
 describe("createGetInstance", () => {
   const logger = {
-    info: jasmine.createSpy()
+    debug: jasmine.createSpy()
   };
   let trackMediaSession;
   let trackMediaEvent;
@@ -129,6 +129,7 @@ describe("createGetInstance", () => {
         }
       }
     });
+    expect(logger.debug).toHaveBeenCalled();
   });
 
   it("when trackComplete is called", () => {

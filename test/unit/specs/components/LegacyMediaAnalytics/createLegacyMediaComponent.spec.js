@@ -50,12 +50,12 @@ describe("LegacyMediaAnalytics::createLegacyMediaComponent", () => {
     build(config);
   });
 
-  it("should call logger.warn when with invalid config", async () => {
+  it("should reject promise when called with invalid config", async () => {
     build({});
     const getMediaAnalyticsTracker =
       legacyMediaComponent.commands.getMediaAnalyticsTracker;
-    await getMediaAnalyticsTracker.run();
-    expect(logger.warn).toHaveBeenCalled();
+
+    return expectAsync(getMediaAnalyticsTracker.run()).toBeRejected();
   });
 
   it("should call createGetInstance when getInstance Media API is called", async () => {
@@ -66,11 +66,40 @@ describe("LegacyMediaAnalytics::createLegacyMediaComponent", () => {
     mediaApi.getInstance();
     expect(createGetInstance).toHaveBeenCalled();
   });
-  it("should call onBeforeMedia Event at on response when legacy is true", async () => {
-    build(config);
 
-    const { onBeforeEvent } = legacyMediaComponent.commands;
-    await onBeforeEvent.run({});
-    expect(createGetInstance).toHaveBeenCalled();
+  it("should call onBeforeMediaEvent when onBeforeEvent is called with legacy flag", async () => {
+    build(config);
+    const getPlayerDetails = () => {};
+    const { onBeforeEvent } = legacyMediaComponent.lifecycle;
+    const mediaOptions = {
+      legacy: true,
+      playerId: "testPlayerId",
+      getPlayerDetails
+    };
+    const onResponseHandler = onResponse => {
+      onResponse({ response: {} });
+    };
+    onBeforeEvent({ mediaOptions, onResponse: onResponseHandler });
+    expect(onBeforeMediaEvent).toHaveBeenCalledWith({
+      getPlayerDetails,
+      playerId: "testPlayerId",
+      response: {}
+    });
+  });
+
+  it("should not call onBeforeMediaEvent when onBeforeEvent is called without legacy flag", async () => {
+    build(config);
+    const getPlayerDetails = () => {};
+    const { onBeforeEvent } = legacyMediaComponent.lifecycle;
+    const mediaOptions = {
+      legacy: false,
+      playerId: "testPlayerId",
+      getPlayerDetails
+    };
+    const onResponseHandler = onResponse => {
+      onResponse({ response: {} });
+    };
+    onBeforeEvent({ mediaOptions, onResponse: onResponseHandler });
+    expect(onBeforeMediaEvent).not.toHaveBeenCalled();
   });
 });

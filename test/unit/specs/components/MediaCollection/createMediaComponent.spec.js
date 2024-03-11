@@ -73,7 +73,6 @@ describe("MediaCollection::createComponent", () => {
     };
 
     const { sendMediaEvent } = mediaComponent.commands;
-    await sendMediaEvent.run(options);
-    expect(logger.warn).toHaveBeenCalled();
+    return expectAsync(sendMediaEvent.run(options)).toBeRejected();
   });
 });

@@ -98,7 +98,6 @@ describe("createTrackMediaEvent", () => {
     config = {};
     trackMediaSession = createTrackMediaSession({
       config,
-      logger,
       mediaEventManager,
       mediaSessionCacheManager
     });
@@ -109,14 +108,6 @@ describe("createTrackMediaEvent", () => {
       },
       getPlayerDetails: ""
     };
-    await trackMediaSession(options);
-
-    expect(logger.warn).toHaveBeenCalled();
-    expect(mediaEventManager.createMediaSession).not.toHaveBeenCalled();
-
-    expect(mediaEventManager.trackMediaSession).not.toHaveBeenCalled();
-    expect(mediaEventManager.augmentMediaEvent).not.toHaveBeenCalled();
-    expect(mediaEventManager.trackMediaSession).not.toHaveBeenCalled();
-    expect(mediaSessionCacheManager.storeSession).not.toHaveBeenCalled();
+    return expectAsync(trackMediaSession(options)).toBeRejected();
   });
 });
