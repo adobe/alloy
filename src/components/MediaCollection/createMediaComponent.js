@@ -15,7 +15,6 @@ import validateMediaEventOptions from "./validateMediaEventOptions";
 
 export default ({
   config,
-  logger,
   trackMediaEvent,
   trackMediaSession,
   onBeforeMediaEvent
@@ -36,7 +35,7 @@ export default ({
       createMediaSession: {
         optionsValidator: options => validateSessionOptions({ options }),
 
-        run: options => trackMediaSession(options)
+        run: trackMediaSession
       },
 
       sendMediaEvent: {
@@ -44,17 +43,12 @@ export default ({
 
         run: options => {
           if (!config.mediaCollection) {
-            logger.warn("Media Collection is not configured.");
-
-            return Promise.resolve();
+            return Promise.reject(
+              new Error("Media Collection is not configured.")
+            );
           }
 
-          const { xdm } = options;
-          const eventType = xdm.eventType;
-
-          return trackMediaEvent(options).catch(error => {
-            logger.warn(`The Media Event of type ${eventType} failed.`, error);
-          });
+          return trackMediaEvent(options);
         }
       }
     }

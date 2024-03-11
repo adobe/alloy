@@ -56,6 +56,7 @@ test.meta({
 });
 
 const assertSessionStarted = async () => {
+  await t.expect(networkLogger.edgeEndpointLogs.count(() => true)).gte(1);
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
@@ -74,10 +75,12 @@ const assertSessionStarted = async () => {
 };
 
 const assertPingsNotSent = async () => {
+  await sleep(10000);
   const secondPingEventRequest = networkLogger.pingEndpointLogs.requests[2];
   await t.expect(secondPingEventRequest).eql(undefined);
 };
 const assertPingsSent = async sessionId => {
+  await t.expect(networkLogger.pingEndpointLogs.count(() => true)).gte(1);
   const pingEventRequest = networkLogger.pingEndpointLogs.requests[0];
   const pingEvent = JSON.parse(pingEventRequest.request.body).events[0];
   await t.expect(pingEvent.xdm.mediaCollection.sessionID).eql(sessionId);
@@ -90,6 +93,7 @@ const assertEventIsSent = async (
   playhead,
   order = 0
 ) => {
+  await t.expect(endpointLogs.count(() => true)).gte(order + 1);
   const eventRequest = endpointLogs.requests[order];
   await responseStatus(endpointLogs.requests, 204);
 
@@ -241,12 +245,10 @@ test("Test that legacy component send pings automatically and events are transfo
   await alloy.configure(config);
   await initializeTracker();
   await trackSessionStart();
-  await sleep(1000);
   const sessionId = await assertSessionStarted();
 
   // play event
   await trackPlay();
-  await sleep(1000);
   await assertEventIsSent(
     networkLogger.mediaPlayEndpointLogs,
     "media.play",
@@ -256,7 +258,6 @@ test("Test that legacy component send pings automatically and events are transfo
 
   // pause event
   await trackPause();
-  await sleep(1000);
   await assertEventIsSent(
     networkLogger.mediaPauseEndpointLogs,
     "media.pauseStart",
@@ -266,7 +267,6 @@ test("Test that legacy component send pings automatically and events are transfo
 
   // chapter start event
   await startChapter();
-  await sleep(1000);
   await assertEventIsSent(
     networkLogger.chapterStartEndpointLogs,
     "media.chapterStart",
@@ -290,7 +290,6 @@ test("Test that legacy component send pings automatically and events are transfo
   // ad break start event
 
   await trackAds();
-  await sleep(1000);
   await assertEventIsSent(
     networkLogger.chapterCompleteEndpointLogs,
     "media.chapterComplete",
@@ -377,9 +376,7 @@ test("Test that legacy component send pings automatically and events are transfo
     10,
     1
   );
-  await sleep(10000);
   await assertPingsSent(sessionId);
   await sessionComplete();
-  await sleep(10000);
   await assertPingsNotSent();
 });

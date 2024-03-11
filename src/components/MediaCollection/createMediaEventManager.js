@@ -13,18 +13,36 @@ governing permissions and limitations under the License.
 
 import MediaEvents from "./constants/eventTypes";
 import createMediaRequest from "./createMediaRequest";
-import injectTimestamp from "../Context/injectTimestamp";
 import { toInteger } from "../../utils";
 import { createDataCollectionRequestPayload } from "../../utils/request";
 
-export default ({ config, eventManager, consent, sendEdgeNetworkRequest }) => {
+export default ({
+  config,
+  eventManager,
+  consent,
+  sendEdgeNetworkRequest,
+  setTimestamp
+}) => {
   return {
     createMediaEvent({ options }) {
       const event = eventManager.createEvent();
       const { xdm } = options;
-      const timestamp = injectTimestamp(() => new Date());
-      timestamp(xdm);
+      setTimestamp(xdm);
       event.setUserXdm(xdm);
+
+      if (xdm.eventType === MediaEvents.AD_START) {
+        const { advertisingDetails } = options.xdm.mediaCollection;
+
+        event.mergeXdm({
+          mediaCollection: {
+            advertisingDetails: {
+              playerName:
+                advertisingDetails.playerName ||
+                config.mediaCollection.playerName
+            }
+          }
+        });
+      }
       return event;
     },
     createMediaSession(options) {
@@ -45,13 +63,7 @@ export default ({ config, eventManager, consent, sendEdgeNetworkRequest }) => {
 
       return event;
     },
-    augmentMediaEvent({
-      event,
-      playerId,
-      getPlayerDetails,
-      sessionID,
-      eventType
-    }) {
+    augmentMediaEvent({ event, playerId, getPlayerDetails, sessionID }) {
       if (!playerId || !getPlayerDetails) {
         return event;
       }
@@ -64,16 +76,6 @@ export default ({ config, eventManager, consent, sendEdgeNetworkRequest }) => {
           sessionID
         }
       });
-
-      if (eventType === MediaEvents.AD_START) {
-        event.mergeXdm({
-          mediaCollection: {
-            advertisingDetails: {
-              playerName: config.mediaCollection.playerName
-            }
-          }
-        });
-      }
       return event;
     },
     trackMediaSession({ event, mediaOptions }) {

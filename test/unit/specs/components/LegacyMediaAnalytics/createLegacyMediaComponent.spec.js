@@ -50,7 +50,7 @@ describe("LegacyMediaAnalytics::createLegacyMediaComponent", () => {
     build(config);
   });
 
-  it("should call logger.debug when with invalid config", async () => {
+  it("should call logger.warn when with invalid config", async () => {
     build({});
     const getMediaAnalyticsTracker =
       legacyMediaComponent.commands.getMediaAnalyticsTracker;
@@ -58,12 +58,19 @@ describe("LegacyMediaAnalytics::createLegacyMediaComponent", () => {
     expect(logger.warn).toHaveBeenCalled();
   });
 
-  it("should not send media event if no valid configs", async () => {
-    build({ mediaCollection: { playerName: "bla", channel: "bka" } });
+  it("should call createGetInstance when getInstance Media API is called", async () => {
+    build(config);
 
     const { getMediaAnalyticsTracker } = legacyMediaComponent.commands;
     const mediaApi = await getMediaAnalyticsTracker.run();
     mediaApi.getInstance();
+    expect(createGetInstance).toHaveBeenCalled();
+  });
+  it("should call onBeforeMedia Event at on response when legacy is true", async () => {
+    build(config);
+
+    const { onBeforeEvent } = legacyMediaComponent.commands;
+    await onBeforeEvent.run({});
     expect(createGetInstance).toHaveBeenCalled();
   });
 });

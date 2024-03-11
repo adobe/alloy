@@ -17,6 +17,7 @@ import configValidators from "./configValidators";
 import createMediaComponent from "./createMediaComponent";
 import createTrackMediaSession from "./createTrackMediaSession";
 import createOnBeforeMediaEvent from "./createOnBeforeMediaEvent";
+import injectTimestamp from "../Context/injectTimestamp";
 
 const createMediaCollection = ({
   config,
@@ -31,7 +32,8 @@ const createMediaCollection = ({
     eventManager,
     logger,
     consent,
-    sendEdgeNetworkRequest
+    sendEdgeNetworkRequest,
+    setTimestamp: injectTimestamp(() => new Date())
   });
 
   const trackMediaEvent = createTrackMediaEvent({
