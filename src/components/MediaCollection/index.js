@@ -41,23 +41,21 @@ const createMediaCollection = ({
     mediaEventManager,
     config
   });
+
   const trackMediaSession = createTrackMediaSession({
     config,
-    logger,
     mediaEventManager,
     mediaSessionCacheManager
   });
 
   const onBeforeMediaEvent = createOnBeforeMediaEvent({
     mediaSessionCacheManager,
-    logger,
     config,
     trackMediaEvent
   });
 
   return createMediaComponent({
     config,
-    logger,
     trackMediaEvent,
     mediaEventManager,
     onBeforeMediaEvent,

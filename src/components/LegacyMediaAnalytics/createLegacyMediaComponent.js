@@ -48,7 +48,9 @@ export default ({
       getMediaAnalyticsTracker: {
         run: () => {
           if (!config.mediaCollection) {
-            logger.warn("Media Collection is not configured.");
+            return Promise.reject(
+              new Error("Media Collection is not configured.")
+            );
           }
           logger.debug("Media Collection is configured in legacy mode.");
           const mediaAnalyticsHelper = createMediaHelper({ logger });

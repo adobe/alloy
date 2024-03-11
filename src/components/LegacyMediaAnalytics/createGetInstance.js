@@ -91,7 +91,7 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
   return {
     trackSessionStart: (mediaObject, contextData = {}) => {
       if (isEmptyObject(mediaObject)) {
-        logger.info("Invalid media object");
+        logger.debug("Invalid media object");
         return {};
       }
       const xdm = createXdmObject({
@@ -113,7 +113,7 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
     },
     trackPlay: () => {
       if (trackerState === null) {
-        logger.info("The Media Session was completed.");
+        logger.debug("The Media Session was completed.");
         return {};
       }
 
@@ -123,7 +123,7 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
     },
     trackPause: () => {
       if (trackerState === null) {
-        logger.info("The Media Session was completed.");
+        logger.debug("The Media Session was completed.");
         return {};
       }
 
@@ -133,7 +133,7 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
     },
     trackSessionEnd: () => {
       if (trackerState === null) {
-        logger.info("The Media Session was completed.");
+        logger.debug("The Media Session was completed.");
         return {};
       }
 
@@ -143,7 +143,7 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
     },
     trackComplete: () => {
       if (trackerState === null) {
-        logger.info("The Media Session was completed.");
+        logger.debug("The Media Session was completed.");
         return {};
       }
 
@@ -152,9 +152,9 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
       return trackMediaEvent({ playerId: trackerState.playerId, xdm });
     },
     trackError: errorId => {
-      logger.info(`trackError(${errorId})`);
+      logger.debug(`trackError(${errorId})`);
       if (trackerState === null) {
-        logger.info("The Media Session was completed.");
+        logger.debug("The Media Session was completed.");
         return {};
       }
 
@@ -172,7 +172,7 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
     trackEvent: (eventType, info, context) => {
       if (isEmptyObject(info) || trackerState === null) {
         // TODO: or eventType is not in MEDIA_EVENTS
-        logger.info("Invalid media object or the session was terminated.");
+        logger.debug("Invalid media object or the session was terminated.");
         return {};
       }
       const xdm = createXdmObject({
@@ -185,7 +185,7 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
     },
     updatePlayhead: time => {
       if (trackerState === null) {
-        logger.info("The Media Session was completed.");
+        logger.debug("The Media Session was completed.");
         return;
       }
 
@@ -195,7 +195,7 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
     },
     updateQoEObject: qoeObject => {
       if (trackerState === null) {
-        logger.info("The Media Session was completed.");
+        logger.debug("The Media Session was completed.");
         return;
       }
 
@@ -205,7 +205,7 @@ export default ({ logger, trackMediaSession, trackMediaEvent, uuid }) => {
       trackerState.qoe = qoeObject;
     },
     destroy: () => {
-      logger.info("Destroy called, destroying the tracker");
+      logger.debug("Destroy called, destroying the tracker");
       trackerState = null;
     }
   };

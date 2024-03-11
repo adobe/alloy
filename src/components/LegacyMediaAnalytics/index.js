@@ -32,7 +32,6 @@ const createLegacyMediaAnalytics = ({
   const mediaEventManager = createMediaEventManager({
     sendEdgeNetworkRequest,
     config,
-    logger,
     consent,
     eventManager
   });
@@ -44,14 +43,12 @@ const createLegacyMediaAnalytics = ({
   });
   const trackMediaSession = createTrackMediaSession({
     config,
-    logger,
     mediaEventManager,
     mediaSessionCacheManager,
     legacy: true
   });
   const onBeforeMediaEvent = createOnBeforeMediaEvent({
     mediaSessionCacheManager,
-    logger,
     config,
     trackMediaEvent
   });
