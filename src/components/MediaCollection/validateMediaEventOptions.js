@@ -12,10 +12,12 @@ governing permissions and limitations under the License.
 import {
   anyOf,
   anything,
+  enumOf,
   number,
   objectOf,
   string
 } from "../../utils/validation";
+import EventTypes from "./constants/eventTypes";
 
 export default ({ options }) => {
   const validator = anyOf(
@@ -23,14 +25,14 @@ export default ({ options }) => {
       objectOf({
         playerId: string().required(),
         xdm: objectOf({
-          eventType: string().required(),
+          eventType: enumOf(...Object.values(EventTypes)).required(),
           mediaCollection: objectOf(anything())
         }).required()
       }).required(),
 
       objectOf({
         xdm: objectOf({
-          eventType: string().required(),
+          eventType: enumOf(...Object.values(EventTypes)).required(),
           mediaCollection: objectOf({
             playhead: number()
               .integer()

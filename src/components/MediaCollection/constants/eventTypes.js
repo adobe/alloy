@@ -12,11 +12,20 @@ governing permissions and limitations under the License.
 export default {
   PAUSE: "media.pauseStart",
   PLAY: "media.play",
-  BUFFERING: "media.buffering",
+  BUFFER_START: "media.bufferStart",
   AD_START: "media.adStart",
   Ad_BREAK_START: "media.adBreakStart",
   SESSION_END: "media.sessionEnd",
   SESSION_START: "media.sessionStart",
   SESSION_COMPLETE: "media.sessionComplete",
-  PING: "media.ping"
+  PING: "media.ping",
+  AD_BREAK_COMPLETE: "media.adBreakComplete",
+  AD_COMPLETE: "media.adComplete",
+  AD_SKIP: "media.adSkip",
+  BITRATE_CHANGE: "media.bitrateChange",
+  CHAPTER_COMPLETE: "media.chapterComplete",
+  CHAPTER_SKIP: "media.chapterSkip",
+  CHAPTER_START: "media.chapterStart",
+  ERROR: "media.error",
+  STATES_UPDATE: "media.statesUpdate"
 };

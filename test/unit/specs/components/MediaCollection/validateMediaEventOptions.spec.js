@@ -17,7 +17,7 @@ describe("MediaCollection::validateMediaEventOptions", () => {
     const options = {
       playerId: "playerId",
       xdm: {
-        eventType: "eventType",
+        eventType: "media.play",
         mediaCollection: {
           playhead: 0,
           sessionID: "sessionID"
@@ -33,7 +33,7 @@ describe("MediaCollection::validateMediaEventOptions", () => {
   it("should not fail when xdm with playhead is used", () => {
     const options = {
       xdm: {
-        eventType: "eventType",
+        eventType: "media.play",
         mediaCollection: {
           playhead: 0,
           sessionID: "sessionID"
@@ -49,7 +49,7 @@ describe("MediaCollection::validateMediaEventOptions", () => {
   it("should throw an error when invalid options are passed", () => {
     const options = {
       xdm: {
-        eventType: "eventType",
+        eventType: "media.play",
         mediaCollection: {
           playhead: "0",
           sessionID: "sessionID"

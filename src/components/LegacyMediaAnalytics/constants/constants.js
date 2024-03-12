@@ -92,14 +92,13 @@ export const EVENT = {
    */
   StateEnd: "stateEnd"
 };
-export const MEDIA_EVENTS = {
+export const MEDIA_EVENTS_INTERNAL = {
   SessionStart: "sessionStart",
   SessionEnd: "sessionEnd",
   SessionComplete: "sessionComplete",
   Play: "play",
   Pause: "pauseStart",
-  Error: "error",
-  ...EVENT
+  Error: "error"
 };
 
 export const MEDIA_OBJECT_KEYS = {

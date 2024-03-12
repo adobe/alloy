@@ -52,7 +52,7 @@ export default ({
               new Error("Media Collection is not configured.")
             );
           }
-          logger.debug("Media Collection is configured in legacy mode.");
+          logger.info("Media Collection is configured in legacy mode.");
           const mediaAnalyticsHelper = createMediaHelper({ logger });
 
           return Promise.resolve({

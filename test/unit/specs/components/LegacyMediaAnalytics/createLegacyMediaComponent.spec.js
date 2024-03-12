@@ -41,7 +41,7 @@ describe("LegacyMediaAnalytics::createLegacyMediaComponent", () => {
   };
 
   beforeEach(() => {
-    logger = jasmine.createSpyObj("logger", ["warn", "debug"]);
+    logger = jasmine.createSpyObj("logger", ["info"]);
     onBeforeMediaEvent = jasmine.createSpy();
     trackMediaEvent = jasmine.createSpy();
     trackMediaSession = jasmine.createSpy();
