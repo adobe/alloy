@@ -23,7 +23,7 @@ describe("MediaCollection::createComponent", () => {
   let logger;
   let mediaComponent;
   let trackMediaEvent;
-  let onBeforeMediaEvent;
+  let mediaResponseHandler;
   let trackMediaSession;
 
   const build = configs => {
@@ -31,14 +31,14 @@ describe("MediaCollection::createComponent", () => {
       config: configs,
       logger,
       trackMediaEvent,
-      onBeforeMediaEvent,
+      mediaResponseHandler,
       trackMediaSession
     });
   };
 
   beforeEach(() => {
     logger = jasmine.createSpyObj("logger", ["warn"]);
-    onBeforeMediaEvent = jasmine.createSpy();
+    mediaResponseHandler = jasmine.createSpy();
     trackMediaEvent = jasmine.createSpy();
     trackMediaSession = jasmine.createSpy();
     build(config);

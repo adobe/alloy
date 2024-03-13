@@ -15,7 +15,7 @@ import createMediaEventManager from "../MediaCollection/createMediaEventManager"
 import createMediaSessionCacheManager from "../MediaCollection/createMediaSessionCacheManager";
 import createTrackMediaEvent from "../MediaCollection/createTrackMediaEvent";
 import createTrackMediaSession from "../MediaCollection/createTrackMediaSession";
-import createOnBeforeMediaEvent from "../MediaCollection/createOnBeforeMediaEvent";
+import createMediaResponseHandler from "../MediaCollection/createMediaResponseHandler";
 import createLegacyMediaComponent from "./createLegacyMediaComponent";
 import createMediaHelper from "./createMediaHelper";
 import createGetInstance from "./createGetInstance";
@@ -49,14 +49,14 @@ const createLegacyMediaAnalytics = ({
     mediaSessionCacheManager,
     legacy: true
   });
-  const onBeforeMediaEvent = createOnBeforeMediaEvent({
+  const mediaResponseHandler = createMediaResponseHandler({
     mediaSessionCacheManager,
     config,
     trackMediaEvent
   });
 
   return createLegacyMediaComponent({
-    onBeforeMediaEvent,
+    mediaResponseHandler,
     trackMediaSession,
     trackMediaEvent,
     createMediaHelper,

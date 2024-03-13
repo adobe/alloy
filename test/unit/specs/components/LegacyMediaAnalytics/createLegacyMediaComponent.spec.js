@@ -23,7 +23,7 @@ describe("LegacyMediaAnalytics::createLegacyMediaComponent", () => {
   let logger;
   let legacyMediaComponent;
   let trackMediaEvent;
-  let onBeforeMediaEvent;
+  let mediaResponseHandler;
   let trackMediaSession;
   let createMediaHelper;
   let createGetInstance;
@@ -33,7 +33,7 @@ describe("LegacyMediaAnalytics::createLegacyMediaComponent", () => {
       config: configs,
       logger,
       trackMediaEvent,
-      onBeforeMediaEvent,
+      mediaResponseHandler,
       trackMediaSession,
       createMediaHelper,
       createGetInstance
@@ -42,7 +42,7 @@ describe("LegacyMediaAnalytics::createLegacyMediaComponent", () => {
 
   beforeEach(() => {
     logger = jasmine.createSpyObj("logger", ["info"]);
-    onBeforeMediaEvent = jasmine.createSpy();
+    mediaResponseHandler = jasmine.createSpy();
     trackMediaEvent = jasmine.createSpy();
     trackMediaSession = jasmine.createSpy();
     createMediaHelper = jasmine.createSpy();
@@ -80,7 +80,7 @@ describe("LegacyMediaAnalytics::createLegacyMediaComponent", () => {
       onResponse({ response: {} });
     };
     onBeforeEvent({ mediaOptions, onResponse: onResponseHandler });
-    expect(onBeforeMediaEvent).toHaveBeenCalledWith({
+    expect(mediaResponseHandler).toHaveBeenCalledWith({
       getPlayerDetails,
       playerId: "testPlayerId",
       response: {}
@@ -100,6 +100,6 @@ describe("LegacyMediaAnalytics::createLegacyMediaComponent", () => {
       onResponse({ response: {} });
     };
     onBeforeEvent({ mediaOptions, onResponse: onResponseHandler });
-    expect(onBeforeMediaEvent).not.toHaveBeenCalled();
+    expect(mediaResponseHandler).not.toHaveBeenCalled();
   });
 });

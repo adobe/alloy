@@ -16,7 +16,7 @@ import createTrackMediaEvent from "./createTrackMediaEvent";
 import configValidators from "./configValidators";
 import createMediaComponent from "./createMediaComponent";
 import createTrackMediaSession from "./createTrackMediaSession";
-import createOnBeforeMediaEvent from "./createOnBeforeMediaEvent";
+import createMediaResponseHandler from "./createMediaResponseHandler";
 import injectTimestamp from "../Context/injectTimestamp";
 
 const createMediaCollection = ({
@@ -48,7 +48,7 @@ const createMediaCollection = ({
     mediaSessionCacheManager
   });
 
-  const onBeforeMediaEvent = createOnBeforeMediaEvent({
+  const mediaResponseHandler = createMediaResponseHandler({
     mediaSessionCacheManager,
     config,
     trackMediaEvent
@@ -58,7 +58,7 @@ const createMediaCollection = ({
     config,
     trackMediaEvent,
     mediaEventManager,
-    onBeforeMediaEvent,
+    mediaResponseHandler,
     trackMediaSession
   });
 };

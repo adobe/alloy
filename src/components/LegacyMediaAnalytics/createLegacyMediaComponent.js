@@ -25,7 +25,7 @@ import {
 export default ({
   trackMediaEvent,
   trackMediaSession,
-  onBeforeMediaEvent,
+  mediaResponseHandler,
   logger,
   createMediaHelper,
   createGetInstance,
@@ -34,13 +34,16 @@ export default ({
   return {
     lifecycle: {
       onBeforeEvent({ mediaOptions, onResponse = noop }) {
+        if (!mediaOptions) {
+          return;
+        }
         const { legacy, playerId, getPlayerDetails } = mediaOptions;
 
         if (!legacy) {
           return;
         }
         onResponse(({ response }) => {
-          return onBeforeMediaEvent({ playerId, getPlayerDetails, response });
+          return mediaResponseHandler({ playerId, getPlayerDetails, response });
         });
       }
     },

@@ -25,7 +25,7 @@ import { sleep } from "../Migration/helper";
 const networkLogger = createNetworkLogger();
 const config = compose(orgMediaConfig, mediaCollection);
 createFixture({
-  title: "Media Collection for legacy migration usecases.",
+  title: "Media Collection for legacy migration use cases.",
   url: TEST_PAGE_URL,
   requestHooks: [
     networkLogger.edgeEndpointLogs,
@@ -376,7 +376,9 @@ test("Test that legacy component send pings automatically and events are transfo
     10,
     1
   );
+  await sleep(10000);
   await assertPingsSent(sessionId);
   await sessionComplete();
+  await sleep(10000);
   await assertPingsNotSent();
 });

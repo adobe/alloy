@@ -17,17 +17,20 @@ export default ({
   config,
   trackMediaEvent,
   trackMediaSession,
-  onBeforeMediaEvent
+  mediaResponseHandler
 }) => {
   return {
     lifecycle: {
       onBeforeEvent({ mediaOptions, onResponse = noop }) {
+        if (!mediaOptions) {
+          return;
+        }
         const { legacy, playerId, getPlayerDetails } = mediaOptions;
         if (legacy) {
           return;
         }
         onResponse(({ response }) => {
-          return onBeforeMediaEvent({ playerId, getPlayerDetails, response });
+          return mediaResponseHandler({ playerId, getPlayerDetails, response });
         });
       }
     },

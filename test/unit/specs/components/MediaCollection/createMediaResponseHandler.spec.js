@@ -1,11 +1,11 @@
-import createOnBeforeMediaEvent from "../../../../../src/components/MediaCollection/createOnBeforeMediaEvent";
+import createMediaResponseHandler from "../../../../../src/components/MediaCollection/createMediaResponseHandler";
 
-describe("onBeforeMediaEvent", () => {
+describe("createMediaResponseHandler", () => {
   let trackMediaEvent;
   let mediaSessionCacheManager;
   let config;
   let logger;
-  let onBeforeMediaEvent;
+  let mediaResponseHandler;
   let response;
   const getPlayerDetails = () => {};
 
@@ -31,7 +31,7 @@ describe("onBeforeMediaEvent", () => {
       info: jasmine.createSpy()
     };
     trackMediaEvent = jasmine.createSpy();
-    onBeforeMediaEvent = createOnBeforeMediaEvent({
+    mediaResponseHandler = createMediaResponseHandler({
       mediaSessionCacheManager,
       logger,
       config,
@@ -42,7 +42,7 @@ describe("onBeforeMediaEvent", () => {
   it("should return empty object when no media payload", async () => {
     response.getPayloadsByType.and.returnValue([]);
 
-    const result = await onBeforeMediaEvent({
+    const result = await mediaResponseHandler({
       response,
       playerId: "player1",
       getPlayerDetails
@@ -54,7 +54,7 @@ describe("onBeforeMediaEvent", () => {
   it("should return session id", async () => {
     response.getPayloadsByType.and.returnValue([{ sessionId: "123" }]);
 
-    const result = await onBeforeMediaEvent({
+    const result = await mediaResponseHandler({
       response,
       playerId: "player1",
       getPlayerDetails
@@ -66,7 +66,7 @@ describe("onBeforeMediaEvent", () => {
   it("should return sessionId when no player or getPlayerDetails function", async () => {
     response.getPayloadsByType.and.returnValue([{ sessionId: "123" }]);
 
-    const result = await onBeforeMediaEvent({
+    const result = await mediaResponseHandler({
       response
     });
     await expect(result).toEqual({ sessionId: "123" });
