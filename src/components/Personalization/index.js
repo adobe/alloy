@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, objectOf, string } from "../../utils/validation";
+import { arrayOf, boolean, objectOf, string } from "../../utils/validation";
 import createComponent from "./createComponent";
 import { initDomActionsModules } from "./dom-actions";
 import createCollect from "./createCollect";
@@ -43,9 +43,14 @@ import createProcessInAppMessage from "./handlers/createProcessInAppMessage";
 import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules";
 import createRedirect from "./dom-actions/createRedirect";
 import createNotificationHandler from "./createNotificationHandler";
+import { ADOBE_JOURNEY_OPTIMIZER } from "../../constants/decisionProvider";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
-  const { targetMigrationEnabled, prehidingStyle } = config;
+  const {
+    targetMigrationEnabled,
+    prehidingStyle,
+    autoTrackPropositionInteractions
+  } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
 
   const { storeClickMeta, getClickMetas } = createClickStorage();
@@ -65,12 +70,14 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     [schema.DOM_ACTION]: createProcessDomAction({
       modules: domActionsModules,
       logger,
-      storeClickMeta
+      storeClickMeta,
+      autoTrackPropositionInteractions
     }),
     [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({
       modules: domActionsModules,
       logger,
-      storeClickMeta
+      storeClickMeta,
+      autoTrackPropositionInteractions
     }),
     [schema.REDIRECT_ITEM]: createProcessRedirect({
       logger,
@@ -151,7 +158,10 @@ createPersonalization.namespace = "Personalization";
 
 createPersonalization.configValidators = objectOf({
   prehidingStyle: string().nonEmpty(),
-  targetMigrationEnabled: boolean().default(false)
+  targetMigrationEnabled: boolean().default(false),
+  autoTrackPropositionInteractions: arrayOf(string()).default([
+    ADOBE_JOURNEY_OPTIMIZER
+  ])
 });
 
 export default createPersonalization;

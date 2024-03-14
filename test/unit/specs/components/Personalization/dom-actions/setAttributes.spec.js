@@ -18,13 +18,16 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
+import { DOM_ACTION_SET_ATTRIBUTE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 
 describe("Personalization::actions::setAttribute", () => {
   let decorateProposition;
 
   beforeEach(() => {
     cleanUpDomChanges("setAttribute");
-    decorateProposition = createDecoratePropositionForTest();
+    decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_SET_ATTRIBUTE
+    });
   });
 
   afterEach(() => {

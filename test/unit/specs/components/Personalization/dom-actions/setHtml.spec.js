@@ -19,6 +19,7 @@ import {
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
 import pause from "../../../../helpers/pause";
+import { DOM_ACTION_SET_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 
 describe("Personalization::actions::setHtml", () => {
   let decorateProposition;
@@ -27,7 +28,9 @@ describe("Personalization::actions::setHtml", () => {
     cleanUpDomChanges("setHtml");
     delete window.someEvar123;
 
-    decorateProposition = createDecoratePropositionForTest();
+    decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_SET_HTML
+    });
   });
 
   afterEach(() => {

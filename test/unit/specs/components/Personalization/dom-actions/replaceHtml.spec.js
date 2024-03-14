@@ -22,13 +22,16 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
+import { DOM_ACTION_REPLACE_HTML } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 
 describe("Personalization::actions::replaceHtml", () => {
   let decorateProposition;
 
   beforeEach(() => {
     cleanUpDomChanges("replaceHtml");
-    decorateProposition = createDecoratePropositionForTest();
+    decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_REPLACE_HTML
+    });
   });
 
   afterEach(() => {

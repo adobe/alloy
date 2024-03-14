@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { getAttribute, setAttribute } from "../dom-actions/dom";
+import { includes, noop } from "../../../utils";
+import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules";
 
 export const INTERACT_ID_DATA_ATTRIBUTE = "data-aep-interact-id";
 export const CLICK_LABEL_DATA_ATTRIBUTE = "data-aep-click-label";
@@ -27,6 +29,8 @@ const getInteractId = (propositionId, existingInteractId) => {
 };
 
 const createDecorateProposition = (
+  autoTrackPropositionInteractions,
+  type,
   propositionId,
   itemId,
   trackingLabel,
@@ -34,6 +38,16 @@ const createDecorateProposition = (
   notification,
   storeClickMeta
 ) => {
+  const { scopeDetails = {} } = notification;
+  const { decisionProvider } = scopeDetails;
+
+  if (
+    !includes(autoTrackPropositionInteractions, decisionProvider) &&
+    type !== DOM_ACTION_CLICK
+  ) {
+    return noop;
+  }
+
   return element => {
     if (!element.tagName) {
       return;

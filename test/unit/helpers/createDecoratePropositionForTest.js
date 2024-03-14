@@ -9,10 +9,13 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+import { ADOBE_JOURNEY_OPTIMIZER } from "../../../src/constants/decisionProvider";
 import createClickStorage from "../../../src/components/Personalization/createClickStorage";
 import createDecorateProposition from "../../../src/components/Personalization/handlers/createDecorateProposition";
 
 export default ({
+  autoTrackPropositionInteractions = [ADOBE_JOURNEY_OPTIMIZER],
+  type,
   propositionId = "propositionID",
   itemId = "itemId",
   trackingLabel = "trackingLabel",
@@ -20,11 +23,13 @@ export default ({
   notification = {
     id: "notifyId",
     scope: "web://mywebsite.com",
-    scopeDetails: { something: true }
+    scopeDetails: { something: true, decisionProvider: ADOBE_JOURNEY_OPTIMIZER }
   }
 } = {}) => {
   const { storeClickMeta } = createClickStorage();
   return createDecorateProposition(
+    autoTrackPropositionInteractions,
+    type,
     propositionId,
     itemId,
     trackingLabel,

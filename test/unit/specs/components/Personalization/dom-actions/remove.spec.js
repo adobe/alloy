@@ -17,13 +17,16 @@ import {
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
+import { DOM_ACTION_REMOVE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 
 describe("Personalization::actions::remove", () => {
   let decorateProposition;
 
   beforeEach(() => {
     cleanUpDomChanges("remove");
-    decorateProposition = createDecoratePropositionForTest();
+    decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_REMOVE
+    });
   });
 
   afterEach(() => {

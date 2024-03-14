@@ -7,13 +7,16 @@ import { initDomActionsModules } from "../../../../../../src/components/Personal
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
+import { DOM_ACTION_CLICK } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 
 describe("Personalization::actions::click", () => {
   let decorateProposition;
 
   beforeEach(() => {
     cleanUpDomChanges("click-me");
-    decorateProposition = createDecoratePropositionForTest();
+    decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_CLICK
+    });
   });
 
   afterEach(() => {

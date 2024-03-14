@@ -17,6 +17,7 @@ import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { DOM_ACTION } from "../../../../../../src/constants/schema";
 import click from "../../../../../../src/components/Personalization/dom-actions/click";
+import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../../../src/constants/decisionProvider";
 
 describe("createProcessDomAction", () => {
   let modules;
@@ -33,7 +34,10 @@ describe("createProcessDomAction", () => {
     return createProposition({
       id: "id",
       scope: "__view__",
-      scopeDetails,
+      scopeDetails: {
+        decisionProvider: "AJO",
+        ...scopeDetails
+      },
       items: [item]
     });
   };
@@ -52,7 +56,8 @@ describe("createProcessDomAction", () => {
     processDomAction = createProcessDomAction({
       modules,
       logger,
-      storeClickMeta
+      storeClickMeta,
+      autoTrackPropositionInteractions: [ADOBE_JOURNEY_OPTIMIZER]
     });
   });
 
@@ -143,7 +148,10 @@ describe("createProcessDomAction", () => {
         }
       },
       {
-        characteristics: { scopeType: "page", trackingLabel: "mytrackinglabel" }
+        characteristics: {
+          scopeType: "page",
+          trackingLabel: "mytrackinglabel"
+        }
       }
     );
     const clickAction = processDomAction(proposition.getItems()[0]);
@@ -167,7 +175,8 @@ describe("createProcessDomAction", () => {
           characteristics: {
             scopeType: "page",
             trackingLabel: "mytrackinglabel"
-          }
+          },
+          decisionProvider: "AJO"
         }
       },
       jasmine.any(Number)

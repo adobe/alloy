@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 import createEvent from "../../../../../../src/core/createEvent";
 import createResponse from "../../../../../functional/helpers/createResponse";
+import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../../../src/constants/decisionProvider";
 
 export default decisions => {
   const response = createResponse({
@@ -40,7 +41,8 @@ export default decisions => {
 
   const config = {
     targetMigrationEnabled: true,
-    prehidingStyle: "myprehidingstyle"
+    prehidingStyle: "myprehidingstyle",
+    autoTrackPropositionInteractions: [ADOBE_JOURNEY_OPTIMIZER]
   };
   const logger = {
     warn: spyOn(console, "warn").and.callThrough(),

@@ -6,6 +6,10 @@ import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
+import {
+  DOM_ACTION_CLICK,
+  DOM_ACTION_SET_HTML
+} from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 
 describe("Personalization::createDecorateProposition", () => {
   let decorateProposition;
@@ -20,6 +24,7 @@ describe("Personalization::createDecorateProposition", () => {
 
   it("sets a data-attribute for interact id and label", () => {
     decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_CLICK,
       trackingLabel: "myTrackingLabel"
     });
 
@@ -40,6 +45,7 @@ describe("Personalization::createDecorateProposition", () => {
 
   it("does not set a data-attribute for label if no label is specified", () => {
     decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_CLICK,
       trackingLabel: null
     });
 
@@ -65,6 +71,7 @@ describe("Personalization::createDecorateProposition", () => {
     appendNode(document.body, element);
 
     decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_CLICK,
       itemId: "itemId1",
       trackingLabel: "myTrackingLabel"
     });
@@ -77,6 +84,7 @@ describe("Personalization::createDecorateProposition", () => {
     expect(interactId).not.toBeNull();
 
     decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_CLICK,
       itemId: "itemId2",
       trackingLabel: "myOtherTrackingLabel"
     });
@@ -107,6 +115,7 @@ describe("Personalization::createDecorateProposition", () => {
 
     ["one", "two", "three"].forEach((value, idx) => {
       decorateProposition = createDecoratePropositionForTest({
+        type: DOM_ACTION_CLICK,
         propositionId: `propId_${value}`,
         itemId: `itemId_${idx}`,
         trackingLabel: `trackingLabel${value}`,
@@ -128,5 +137,47 @@ describe("Personalization::createDecorateProposition", () => {
       interactIds.add(interactId);
     });
     expect(interactIds.size).toEqual(3);
+  });
+
+  it("does not set data-attribute for interact id and label if autoTrackPropositionInteractions does not include the appropriate decisionProvider and dom action is not 'click'", () => {
+    decorateProposition = createDecoratePropositionForTest({
+      autoTrackPropositionInteractions: ["MOO"],
+      type: DOM_ACTION_SET_HTML,
+      trackingLabel: "myTrackingLabel"
+    });
+
+    const element = createNode(
+      "div",
+      { id: "something" },
+      { innerText: "superfluous" }
+    );
+    appendNode(document.body, element);
+
+    decorateProposition(element);
+
+    expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toBeNull();
+    expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).toBeNull();
+  });
+
+  it("sets data-attribute for interact id and label for all 'click' dom actions, regardless of autoTrackPropositionInteractions", () => {
+    decorateProposition = createDecoratePropositionForTest({
+      autoTrackPropositionInteractions: ["MOO"],
+      type: DOM_ACTION_CLICK,
+      trackingLabel: "myTrackingLabel"
+    });
+
+    const element = createNode(
+      "div",
+      { id: "something" },
+      { innerText: "superfluous" }
+    );
+    appendNode(document.body, element);
+
+    decorateProposition(element);
+
+    expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+      "myTrackingLabel"
+    );
+    expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
   });
 });

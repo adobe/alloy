@@ -95,7 +95,11 @@ const buildComponent = ({
     };
   };
 
-  const { targetMigrationEnabled, prehidingStyle } = config;
+  const {
+    targetMigrationEnabled,
+    prehidingStyle,
+    autoTrackPropositionInteractions
+  } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
 
   const { storeClickMeta, getClickMetas } = createClickStorage();
@@ -114,12 +118,14 @@ const buildComponent = ({
     [schema.DOM_ACTION]: createProcessDomAction({
       modules,
       logger,
-      storeClickMeta
+      storeClickMeta,
+      autoTrackPropositionInteractions
     }),
     [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({
       modules,
       logger,
-      storeClickMeta
+      storeClickMeta,
+      autoTrackPropositionInteractions
     }),
     [schema.REDIRECT_ITEM]: createProcessRedirect({
       logger,

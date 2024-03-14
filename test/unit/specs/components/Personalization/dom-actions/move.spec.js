@@ -18,13 +18,16 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
+import { DOM_ACTION_MOVE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 
 describe("Personalization::actions::move", () => {
   let decorateProposition;
 
   beforeEach(() => {
     cleanUpDomChanges("move");
-    decorateProposition = createDecoratePropositionForTest();
+    decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_MOVE
+    });
   });
 
   afterEach(() => {

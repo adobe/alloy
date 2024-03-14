@@ -22,13 +22,16 @@ import {
 } from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
 import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
+import { DOM_ACTION_INSERT_AFTER } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 
 describe("Personalization::actions::insertAfter", () => {
   let decorateProposition;
 
   beforeEach(() => {
     cleanUpDomChanges("insertAfter");
-    decorateProposition = createDecoratePropositionForTest();
+    decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_INSERT_AFTER
+    });
   });
 
   afterEach(() => {

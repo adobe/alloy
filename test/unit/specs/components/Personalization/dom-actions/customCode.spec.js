@@ -13,6 +13,7 @@ import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
+import { DOM_ACTION_CUSTOM_CODE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 
 describe("Personalization::actions::customCode", () => {
   let decorateProposition;
@@ -23,7 +24,9 @@ describe("Personalization::actions::customCode", () => {
     cleanUpDomChanges("customCode");
     delete window.someEvar123;
 
-    decorateProposition = createDecoratePropositionForTest();
+    decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_CUSTOM_CODE
+    });
 
     const modules = initDomActionsModules();
     ({ customCode } = modules);

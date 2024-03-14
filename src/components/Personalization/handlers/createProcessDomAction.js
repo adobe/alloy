@@ -13,7 +13,12 @@ governing permissions and limitations under the License.
 import createDecorateProposition from "./createDecorateProposition";
 import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules";
 
-export default ({ modules, logger, storeClickMeta }) => item => {
+export default ({
+  modules,
+  logger,
+  storeClickMeta,
+  autoTrackPropositionInteractions
+}) => item => {
   const { type, selector } = item.getData() || {};
 
   if (!type) {
@@ -31,19 +36,19 @@ export default ({ modules, logger, storeClickMeta }) => item => {
     return { setRenderAttempted: false, includeInNotification: false };
   }
 
+  const decorateProposition = createDecorateProposition(
+    autoTrackPropositionInteractions,
+    type,
+    item.getProposition().getId(),
+    item.getId(),
+    item.getTrackingLabel(),
+    item.getProposition().getScopeType(),
+    item.getProposition().getNotification(),
+    storeClickMeta
+  );
+
   return {
-    render: () =>
-      modules[type](
-        item.getData(),
-        createDecorateProposition(
-          item.getProposition().getId(),
-          item.getId(),
-          item.getTrackingLabel(),
-          item.getProposition().getScopeType(),
-          item.getProposition().getNotification(),
-          storeClickMeta
-        )
-      ),
+    render: () => modules[type](item.getData(), decorateProposition),
     setRenderAttempted: true,
     includeInNotification: type !== DOM_ACTION_CLICK
   };
