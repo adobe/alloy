@@ -9,16 +9,17 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { t, ClientFunction } from "testcafe";
+import { ClientFunction, t } from "testcafe";
 import createFixture from "../../helpers/createFixture";
 
 import {
   compose,
-  orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
+  orgMainConfigMain
 } from "../../helpers/constants/configParts";
 
 import createAlloyProxy from "../../helpers/createAlloyProxy";
+import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../src/constants/decisionProvider";
 
 const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled, {
   onBeforeEventSend: () => {}
@@ -61,7 +62,8 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
     orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
     thirdPartyCookiesEnabled: true,
     targetMigrationEnabled: false,
-    personalizationStorageEnabled: false
+    personalizationStorageEnabled: false,
+    autoTrackPropositionInteractions: [ADOBE_JOURNEY_OPTIMIZER]
   };
 
   const alloy = createAlloyProxy();
