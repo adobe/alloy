@@ -27,12 +27,12 @@ export default ({
     return { setRenderAttempted: false, includeInNotification: false };
   }
 
-  if (type === DOM_ACTION_CLICK && !selector) {
-    logger.warn("Invalid DOM action data: missing selector.", item.getData());
-    return { setRenderAttempted: false, includeInNotification: false };
-  }
-
   if (type === DOM_ACTION_CLICK) {
+    if (!selector) {
+      logger.warn("Invalid DOM action data: missing selector.", item.getData());
+      return { setRenderAttempted: false, includeInNotification: false };
+    }
+
     storeClickMeta({
       selector,
       meta: {
@@ -64,6 +64,6 @@ export default ({
   return {
     render: () => modules[type](item.getData(), decorateProposition),
     setRenderAttempted: true,
-    includeInNotification: type !== DOM_ACTION_CLICK
+    includeInNotification: true
   };
 };
