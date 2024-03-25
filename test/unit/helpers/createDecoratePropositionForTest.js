@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { ADOBE_JOURNEY_OPTIMIZER } from "../../../src/constants/decisionProvider";
-import createClickStorage from "../../../src/components/Personalization/createClickStorage";
+import createInteractionStorage from "../../../src/components/Personalization/createInteractionStorage";
 import createDecorateProposition from "../../../src/components/Personalization/handlers/createDecorateProposition";
 
 export default ({
@@ -26,7 +26,7 @@ export default ({
     scopeDetails: { something: true, decisionProvider: ADOBE_JOURNEY_OPTIMIZER }
   }
 } = {}) => {
-  const { storeClickMeta } = createClickStorage();
+  const { storeInteractionMeta } = createInteractionStorage();
   return createDecorateProposition(
     autoTrackPropositionInteractions,
     type,
@@ -35,6 +35,6 @@ export default ({
     trackingLabel,
     scopeType,
     notification,
-    storeClickMeta
+    storeInteractionMeta
   );
 };

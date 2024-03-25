@@ -1,5 +1,5 @@
 /*
-Copyright 2023 Adobe. All rights reserved.
+Copyright 2024 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -12,166 +12,111 @@ governing permissions and limitations under the License.
 import createClickStorage from "../../../../../src/components/Personalization/createClickStorage";
 
 describe("Personalization::createClickStorage", () => {
-  let storeClickMeta;
-  let getClickMetas;
+  let clickStorage;
 
-  let PROPOSITIONS = [];
-
-  let interactIDs = {};
-
-  beforeEach(() => {
-    ({ storeClickMeta, getClickMetas } = createClickStorage());
-
-    interactIDs = {
-      "div:123:h2": [1],
-      "div:123:h1": [2]
-    };
-
-    PROPOSITIONS = [
-      {
-        id: "AT:123",
-        scope: "__view__",
-        scopeDetails: {
-          test: "blah1",
-          characteristics: {
-            scopeType: "page"
-          }
-        },
-        items: [
-          {
-            id: "0632668e-53a4-4f31-b092-45696e45829d",
-            schema: "https://ns.adobe.com/personalization/dom-action",
-            data: {
-              type: "click",
-              selector: "div:123:h2"
-            },
-            characteristics: {
-              trackingLabel: "mylabel"
-            }
-          }
-        ]
-      },
-      {
-        id: "AT:123",
-        scope: "consent",
-        scopeDetails: {
-          test: "blah3",
-          characteristics: {
-            scopeType: "view"
-          }
-        },
-        items: [
-          {
-            id: "0632668e-53a4-4f31-b092-45696e45829d",
-            schema: "https://ns.adobe.com/personalization/dom-action",
-            data: {
-              type: "click",
-              selector: "div:123:h2"
-            }
-          }
-        ]
-      },
-      {
-        id: "AT:234",
-        scope: "consent",
-        scopeDetails: {
-          test: "blah4",
-          characteristics: {
-            scopeType: "view"
-          }
-        },
-        items: [
-          {
-            id: "0632668e-53a4-4f31-b092-45696e45829d",
-            schema: "https://ns.adobe.com/personalization/dom-action",
-            data: {
-              type: "click",
-              selector: "div:123:h2"
-            }
-          }
-        ]
-      },
-      {
-        id: "AT:123",
-        scope: "consent",
-        scopeDetails: {
-          test: "blah5",
-          characteristics: {
-            scopeType: "view"
-          }
-        },
-        items: [
-          {
-            id: "0632668e-53a4-4f31-b092-45696e45829d",
-            schema: "https://ns.adobe.com/personalization/dom-action",
-            data: {
-              type: "click",
-              selector: "div:123:h1"
-            }
-          }
-        ]
-      }
-    ];
-  });
-
-  it("returns empty array when no metadata for this selector", () => {
-    expect(getClickMetas([1])).toEqual([]);
-  });
-
-  it("stores clicks as a map in the click storage and returns the metadata", () => {
-    PROPOSITIONS.forEach(proposition => {
-      const { id, scope, scopeDetails } = proposition;
-      proposition.items.forEach(item =>
-        storeClickMeta(
-          proposition.id,
-          item.id,
-          proposition.scopeDetails.characteristics.scopeType,
-          { id, scope, scopeDetails },
-          interactIDs[item.data.selector]
-        )
-      );
-    });
-
-    expect(getClickMetas(interactIDs["div:123:h2"]).length).toEqual(2);
-    expect(getClickMetas(interactIDs["div:123:h1"]).length).toEqual(1);
-  });
-
-  it("getClickMetas returns the id, scopeDetails, scope, trackingLabel, and scopeType", () => {
-    const proposition = PROPOSITIONS[0];
-
-    proposition.items.forEach(item =>
-      storeClickMeta(
-        proposition.id,
-        item.id,
-        proposition.scopeDetails.characteristics.scopeType,
-        {
-          id: proposition.id,
-          scope: proposition.scope,
-          scopeDetails: proposition.scopeDetails
-        },
-        interactIDs[item.data.selector]
-      )
-    );
-
-    const meta = getClickMetas(interactIDs["div:123:h2"]);
-
-    expect(meta.length).toEqual(1);
-
-    expect(meta[0]).toEqual({
+  const FIRST_CLICK = {
+    selector: "div:123:h2",
+    meta: {
       id: "AT:123",
       scope: "__view__",
       scopeDetails: {
-        test: "blah1",
-        characteristics: {
-          scopeType: "page"
-        }
+        test: "blah1"
       },
-      scopeType: "page",
-      items: [
-        {
-          id: "0632668e-53a4-4f31-b092-45696e45829d"
+      trackingLabel: "mylabel",
+      scopeType: "myscopetype"
+    }
+  };
+  const SECOND_CLICK = {
+    selector: "div:123:h2",
+    meta: {
+      id: "AT:123",
+      scope: "consent",
+      scopeDetails: {
+        test: "blah3"
+      }
+    }
+  };
+  const THIRD_CLICK = {
+    selector: "div:123:h2",
+    meta: {
+      id: "AT:234",
+      scope: "consent",
+      scopeDetails: {
+        test: "blah4"
+      }
+    }
+  };
+  const FORTH_CLICK = {
+    selector: "div:123:h1",
+    meta: {
+      id: "AT:123",
+      scope: "consent",
+      scopeDetails: {
+        test: "blah5"
+      }
+    }
+  };
+
+  /*  this is how the clickStorage map should look like
+  const expectedClicksInStorage = {
+    "div:123:h1": {
+      "AT:123": {
+        scope: "consent",
+        scopeDetails: {
+          blah: "blah"
         }
-      ]
+      }
+    },
+    "div:123:h2": {
+      "AT:123": {
+        scope: "consent",
+        scopeDetails: {
+          blah: "blah"
+          },
+        },
+      "AT:234": {
+        scope: "consent",
+        scopeDetails: {
+          blah: "blah"
+          }
+        }
+    }
+  }; */
+  beforeEach(() => {
+    clickStorage = createClickStorage();
+  });
+
+  it("returns empty array if empty storage", () => {
+    expect(clickStorage.getClickSelectors()).toEqual([]);
+  });
+
+  it("returns empty object when no metadata for this selector", () => {
+    expect(clickStorage.getClickMetas("123")).toEqual({});
+  });
+
+  it("stores clicks as a map in the click storage and returns the selectors and metadata", () => {
+    clickStorage.storeClickMeta(FIRST_CLICK);
+    clickStorage.storeClickMeta(SECOND_CLICK);
+    clickStorage.storeClickMeta(THIRD_CLICK);
+    clickStorage.storeClickMeta(FORTH_CLICK);
+
+    expect(clickStorage.getClickSelectors().length).toEqual(2);
+    expect(clickStorage.getClickMetas("div:123:h2").length).toEqual(2);
+  });
+
+  it("getClickMetas returns the id, scopeDetails, scope, trackingLabel, and scopeType", () => {
+    clickStorage.storeClickMeta(FIRST_CLICK);
+
+    const meta = clickStorage.getClickMetas("div:123:h2");
+
+    expect(clickStorage.getClickSelectors().length).toEqual(1);
+    expect(meta.length).toEqual(1);
+    expect(meta[0]).toEqual({
+      id: "AT:123",
+      scope: "__view__",
+      scopeDetails: { test: "blah1" },
+      trackingLabel: "mylabel",
+      scopeType: "myscopetype"
     });
   });
 });

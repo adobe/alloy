@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import initDomActionsModules, {
   DOM_ACTION_APPEND_HTML,
-  DOM_ACTION_CLICK,
   DOM_ACTION_CUSTOM_CODE,
   DOM_ACTION_INSERT_AFTER,
   DOM_ACTION_INSERT_BEFORE,
@@ -48,7 +47,6 @@ const buildSet = () => {
   result.add(DOM_ACTION_REPLACE_HTML);
   result.add(DOM_ACTION_PREPEND_HTML);
   result.add(DOM_ACTION_APPEND_HTML);
-  result.add(DOM_ACTION_CLICK);
 
   return result;
 };

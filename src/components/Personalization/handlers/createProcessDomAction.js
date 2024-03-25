@@ -16,6 +16,7 @@ import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules";
 export default ({
   modules,
   logger,
+  storeInteractionMeta,
   storeClickMeta,
   autoTrackPropositionInteractions
 }) => item => {
@@ -31,6 +32,19 @@ export default ({
     return { setRenderAttempted: false, includeInNotification: false };
   }
 
+  if (type === DOM_ACTION_CLICK) {
+    storeClickMeta({
+      selector,
+      meta: {
+        ...item.getProposition().getNotification(),
+        trackingLabel: item.getTrackingLabel(),
+        scopeType: item.getProposition().getScopeType()
+      }
+    });
+
+    return { setRenderAttempted: true, includeInNotification: false };
+  }
+
   if (!modules[type]) {
     logger.warn("Invalid DOM action data: unknown type.", item.getData());
     return { setRenderAttempted: false, includeInNotification: false };
@@ -44,7 +58,7 @@ export default ({
     item.getTrackingLabel(),
     item.getProposition().getScopeType(),
     item.getProposition().getNotification(),
-    storeClickMeta
+    storeInteractionMeta
   );
 
   return {

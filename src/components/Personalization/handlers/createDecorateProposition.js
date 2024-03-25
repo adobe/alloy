@@ -36,7 +36,7 @@ const createDecorateProposition = (
   trackingLabel,
   scopeType,
   notification,
-  storeClickMeta
+  storeInteractionMeta
 ) => {
   const { scopeDetails = {} } = notification;
   const { decisionProvider } = scopeDetails;
@@ -58,7 +58,13 @@ const createDecorateProposition = (
       getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)
     );
 
-    storeClickMeta(propositionId, itemId, scopeType, notification, interactId);
+    storeInteractionMeta(
+      propositionId,
+      itemId,
+      scopeType,
+      notification,
+      interactId
+    );
 
     setAttribute(element, INTERACT_ID_DATA_ATTRIBUTE, interactId);
 

@@ -16,13 +16,13 @@ import { initDomActionsModules } from "./dom-actions";
 import createCollect from "./createCollect";
 import { hideContainers, showContainers } from "./flicker";
 import createFetchDataHandler from "./createFetchDataHandler";
-import collectClicks from "./dom-actions/clicks/collectClicks";
+import collectInteractions from "./dom-actions/clicks/collectInteractions";
 import isAuthoringModeEnabled from "./utils/isAuthoringModeEnabled";
 import { mergeDecisionsMeta, mergeQuery } from "./event";
 import createOnClickHandler from "./createOnClickHandler";
 import createViewCacheManager from "./createViewCacheManager";
 import createViewChangeHandler from "./createViewChangeHandler";
-import createClickStorage from "./createClickStorage";
+import createInteractionStorage from "./createInteractionStorage";
 import createApplyPropositions from "./createApplyPropositions";
 import createGetPageLocation from "./createGetPageLocation";
 import createSetTargetMigration from "./createSetTargetMigration";
@@ -44,6 +44,8 @@ import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMe
 import createRedirect from "./dom-actions/createRedirect";
 import createNotificationHandler from "./createNotificationHandler";
 import { ADOBE_JOURNEY_OPTIMIZER } from "../../constants/decisionProvider";
+import createClickStorage from "./createClickStorage";
+import collectClicks from "./dom-actions/clicks/collectClicks";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const {
@@ -53,7 +55,17 @@ const createPersonalization = ({ config, logger, eventManager }) => {
   } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
 
-  const { storeClickMeta, getClickMetas } = createClickStorage();
+  const {
+    storeInteractionMeta,
+    getInteractionMetas
+  } = createInteractionStorage();
+
+  const {
+    storeClickMeta,
+    getClickSelectors,
+    getClickMetas
+  } = createClickStorage();
+
   const getPageLocation = createGetPageLocation({ window });
   const domActionsModules = initDomActionsModules();
 
@@ -70,13 +82,14 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     [schema.DOM_ACTION]: createProcessDomAction({
       modules: domActionsModules,
       logger,
+      storeInteractionMeta,
       storeClickMeta,
       autoTrackPropositionInteractions
     }),
     [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({
       modules: domActionsModules,
       logger,
-      storeClickMeta,
+      storeInteractionMeta,
       autoTrackPropositionInteractions
     }),
     [schema.REDIRECT_ITEM]: createProcessRedirect({
@@ -113,8 +126,11 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
+    collectInteractions,
     collectClicks,
-    getClickMetas
+    getInteractionMetas,
+    getClickMetas,
+    getClickSelectors
   });
   const viewChangeHandler = createViewChangeHandler({
     processPropositions,

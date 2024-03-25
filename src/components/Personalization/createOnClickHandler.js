@@ -32,15 +32,46 @@ const createPropositionAction = (clickLabel, clickToken) => {
   return propositionAction;
 };
 
-export default ({ mergeDecisionsMeta, collectClicks, getClickMetas }) => {
+export default ({
+  mergeDecisionsMeta,
+  collectInteractions,
+  collectClicks,
+  getInteractionMetas,
+  getClickMetas,
+  getClickSelectors
+}) => {
   // Called when an element qualifying for conversion within an offer is clicked.
   return ({ event, clickedElement }) => {
-    const {
-      decisionsMeta,
-      propositionActionLabel,
-      propositionActionToken,
-      viewName
-    } = collectClicks(clickedElement, getClickMetas);
+    const decisionsMeta = [];
+    let propositionActionLabel;
+    let propositionActionToken;
+    let viewName;
+
+    [
+      collectInteractions(clickedElement, getInteractionMetas),
+      collectClicks(clickedElement, getClickSelectors(), getClickMetas)
+    ].forEach(
+      ({
+        decisionsMeta: curDecisionsMeta,
+        propositionActionLabel: curPropositionActionLabel,
+        propositionActionToken: curPropositionActionToken,
+        viewName: curViewName
+      }) => {
+        Array.prototype.push.apply(decisionsMeta, curDecisionsMeta);
+
+        if (!propositionActionLabel && curPropositionActionLabel) {
+          propositionActionLabel = curPropositionActionLabel;
+        }
+
+        if (!propositionActionToken && curPropositionActionToken) {
+          propositionActionToken = curPropositionActionToken;
+        }
+
+        if (!viewName && curViewName) {
+          viewName = curViewName;
+        }
+      }
+    );
 
     if (isNonEmptyArray(decisionsMeta)) {
       const xdm = { eventType: INTERACT };

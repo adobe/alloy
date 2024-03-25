@@ -14,7 +14,7 @@ import createDecorateProposition from "./createDecorateProposition";
 export default ({
   modules,
   logger,
-  storeClickMeta,
+  storeInteractionMeta,
   autoTrackPropositionInteractions
 }) => item => {
   const { type, selector } = item.getData() || {};
@@ -36,7 +36,7 @@ export default ({
     item.getTrackingLabel(),
     item.getProposition().getScopeType(),
     item.getProposition().getNotification(),
-    storeClickMeta
+    storeInteractionMeta
   );
 
   return {

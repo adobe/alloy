@@ -23,7 +23,6 @@ import insertHtmlAfter from "./insertHtmlAfter";
 import insertHtmlBefore from "./insertHtmlBefore";
 import replaceHtml from "./replaceHtml";
 import appendHtml from "./appendHtml";
-import click from "./click";
 
 export const DOM_ACTION_SET_HTML = "setHtml";
 export const DOM_ACTION_CUSTOM_CODE = "customCode";
@@ -58,7 +57,6 @@ export default () => {
     [DOM_ACTION_INSERT_BEFORE]: createAction(insertHtmlBefore),
     [DOM_ACTION_REPLACE_HTML]: createAction(replaceHtml),
     [DOM_ACTION_PREPEND_HTML]: createAction(prependHtml),
-    [DOM_ACTION_APPEND_HTML]: createAction(appendHtml),
-    [DOM_ACTION_CLICK]: createAction(click)
+    [DOM_ACTION_APPEND_HTML]: createAction(appendHtml)
   };
 };

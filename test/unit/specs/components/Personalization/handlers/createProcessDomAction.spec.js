@@ -11,17 +11,15 @@ governing permissions and limitations under the License.
 */
 import createProcessDomAction from "../../../../../../src/components/Personalization/handlers/createProcessDomAction";
 import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition";
-import { createAction } from "../../../../../../src/components/Personalization/dom-actions/action";
-import { DOM_ACTION_CLICK } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { DOM_ACTION } from "../../../../../../src/constants/schema";
-import click from "../../../../../../src/components/Personalization/dom-actions/click";
 import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../../../src/constants/decisionProvider";
 
 describe("createProcessDomAction", () => {
   let modules;
   let logger;
+  let storeInteractionMeta;
   let storeClickMeta;
   let processDomAction;
 
@@ -47,15 +45,16 @@ describe("createProcessDomAction", () => {
 
     modules = {
       typeA: jasmine.createSpy("typeA"),
-      typeB: jasmine.createSpy("typeB"),
-      [DOM_ACTION_CLICK]: createAction(click)
+      typeB: jasmine.createSpy("typeB")
     };
     logger = jasmine.createSpyObj("logger", ["warn"]);
+    storeInteractionMeta = jasmine.createSpy("storeInteractionMeta");
     storeClickMeta = jasmine.createSpy("storeClickMeta");
 
     processDomAction = createProcessDomAction({
       modules,
       logger,
+      storeInteractionMeta,
       storeClickMeta,
       autoTrackPropositionInteractions: [ADOBE_JOURNEY_OPTIMIZER]
     });
@@ -158,29 +157,26 @@ describe("createProcessDomAction", () => {
 
     expect(clickAction).toEqual({
       setRenderAttempted: true,
-      includeInNotification: false,
-      render: jasmine.any(Function)
+      includeInNotification: false
     });
 
-    await clickAction.render();
-
-    expect(storeClickMeta).toHaveBeenCalledWith(
-      "id",
-      "itemId",
-      "page",
-      {
+    expect(storeInteractionMeta).not.toHaveBeenCalled();
+    expect(storeClickMeta).toHaveBeenCalledWith({
+      selector: ".click-element",
+      meta: {
         id: "id",
         scope: "__view__",
         scopeDetails: {
+          decisionProvider: "AJO",
           characteristics: {
             scopeType: "page",
             trackingLabel: "mytrackinglabel"
-          },
-          decisionProvider: "AJO"
-        }
-      },
-      jasmine.any(Number)
-    );
+          }
+        },
+        trackingLabel: "mytrackinglabel",
+        scopeType: "page"
+      }
+    });
   });
 
   it("handles a non-click known type", () => {

@@ -10,72 +10,79 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import matchesSelectorWithEq from "../dom/matchesSelectorWithEq";
 import { VIEW_SCOPE_TYPE } from "../../constants/scopeType";
-import getAttribute from "../dom/getAttribute";
-import {
-  CLICK_LABEL_DATA_ATTRIBUTE,
-  CLICK_TOKEN_DATA_ATTRIBUTE,
-  INTERACT_ID_DATA_ATTRIBUTE
-} from "../../handlers/createDecorateProposition";
+import { cleanMetas, dedupeMetas } from "../../utils/metaUtils";
 
-const cleanMetas = metas =>
-  metas.map(meta => {
-    const { trackingLabel, scopeType, ...rest } = meta;
-    return rest;
-  });
-
-const getInteractionDetail = clickedElement => {
+const getMetasIfMatches = (clickedElement, selector, getClickMetas) => {
   const { documentElement } = document;
   let element = clickedElement;
-
-  const interactIds = new Set();
-  let clickLabel;
-  let clickToken;
+  let i = 0;
 
   while (element && element !== documentElement) {
-    const interactId = getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE);
-
-    if (interactId) {
-      interactIds.add(interactId);
+    if (matchesSelectorWithEq(selector, element)) {
+      const matchedMetas = getClickMetas(selector);
+      const returnValue = {
+        metas: matchedMetas
+      };
+      const foundMetaWithLabel = matchedMetas.find(meta => meta.trackingLabel);
+      if (foundMetaWithLabel) {
+        returnValue.label = foundMetaWithLabel.trackingLabel;
+        returnValue.weight = i;
+      }
+      const foundMetaWithScopeTypeView = matchedMetas.find(
+        meta => meta.scopeType === VIEW_SCOPE_TYPE
+      );
+      if (foundMetaWithScopeTypeView) {
+        returnValue.viewName = foundMetaWithScopeTypeView.scope;
+        returnValue.weight = i;
+      }
+      return returnValue;
     }
 
-    clickLabel =
-      clickLabel || getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE);
-
-    clickToken =
-      clickToken || getAttribute(element, CLICK_TOKEN_DATA_ATTRIBUTE);
-
     element = element.parentNode;
+    i += 1;
   }
-
-  return { interactIds: [...interactIds], clickLabel, clickToken };
-};
-
-const extractViewName = metas => {
-  const foundMetaWithScopeTypeView = metas.find(
-    meta => meta.scopeType === VIEW_SCOPE_TYPE
-  );
-
-  return foundMetaWithScopeTypeView
-    ? foundMetaWithScopeTypeView.scope
-    : undefined;
-};
-
-export default (clickedElement, getClickMetas) => {
-  const { interactIds, clickLabel = "", clickToken } = getInteractionDetail(
-    clickedElement
-  );
-
-  if (interactIds.length === 0) {
-    return {};
-  }
-
-  const metas = getClickMetas(interactIds);
 
   return {
-    decisionsMeta: cleanMetas(metas),
-    propositionActionLabel: clickLabel,
-    propositionActionToken: clickToken,
-    viewName: extractViewName(metas)
+    metas: null
+  };
+};
+
+export default (clickedElement, selectors, getClickMetas) => {
+  const result = [];
+  let resultLabel = "";
+  let resultLabelWeight = Number.MAX_SAFE_INTEGER;
+  let resultViewName;
+  let resultViewNameWeight = Number.MAX_SAFE_INTEGER;
+
+  /* eslint-disable no-continue */
+  for (let i = 0; i < selectors.length; i += 1) {
+    const { metas, label, weight, viewName } = getMetasIfMatches(
+      clickedElement,
+      selectors[i],
+      getClickMetas
+    );
+
+    if (!metas) {
+      continue;
+    }
+
+    if (label && weight <= resultLabelWeight) {
+      resultLabel = label;
+      resultLabelWeight = weight;
+    }
+    if (viewName && weight <= resultViewNameWeight) {
+      resultViewName = viewName;
+      resultViewNameWeight = weight;
+    }
+    result.push(...cleanMetas(metas));
+  }
+
+  return {
+    decisionsMeta: dedupeMetas(result),
+    propositionActionLabel: resultLabel,
+    propositionActionToken: undefined,
+    viewName: resultViewName
   };
 };

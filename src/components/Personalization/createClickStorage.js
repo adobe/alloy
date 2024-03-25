@@ -10,71 +10,47 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+const metasToArray = metas => {
+  return Object.keys(metas).map(key => {
+    return {
+      id: key,
+      ...metas[key]
+    };
+  });
+};
+
 export default () => {
-  const clickMetaStorage = {};
-  const clickItemStorage = {};
+  const clickStorage = {};
 
-  const storeClickMeta = (
-    propositionId,
-    itemId,
-    scopeType,
-    notification,
-    interactId
-  ) => {
-    // eslint-disable-next-line no-param-reassign
-    interactId = parseInt(interactId, 10);
-
-    if (!clickMetaStorage[interactId]) {
-      clickMetaStorage[interactId] = {};
-      clickItemStorage[interactId] = {};
+  const storeClickMeta = ({
+    selector,
+    meta: { id, scope, scopeDetails, trackingLabel, scopeType }
+  }) => {
+    if (!clickStorage[selector]) {
+      clickStorage[selector] = {};
     }
-
-    if (!clickItemStorage[interactId][propositionId]) {
-      clickItemStorage[interactId][propositionId] = new Set();
-    }
-
-    clickItemStorage[interactId][propositionId].add(itemId);
-
-    clickMetaStorage[interactId][propositionId] = {
-      ...notification,
+    clickStorage[selector][id] = {
+      scope,
+      scopeDetails,
+      trackingLabel,
       scopeType
     };
   };
 
-  const getClickMetas = interactIds => {
-    if (!Array.isArray(interactIds) || interactIds.length === 0) {
-      return [];
-    }
-
-    return Object.values(
-      interactIds
-        .map(value => parseInt(value, 10))
-        .reduce((metaMap, interactId) => {
-          Object.keys(clickMetaStorage[interactId] || {}).forEach(
-            propositionId => {
-              if (!metaMap[propositionId]) {
-                metaMap[propositionId] = {
-                  proposition: clickMetaStorage[interactId][propositionId],
-                  items: new Set()
-                };
-              }
-
-              metaMap[propositionId].items = new Set([
-                ...metaMap[propositionId].items,
-                ...clickItemStorage[interactId][propositionId]
-              ]);
-            }
-          );
-          return metaMap;
-        }, {})
-    ).map(({ proposition, items }) => ({
-      ...proposition,
-      items: Array.from(items).map(id => ({ id }))
-    }));
+  const getClickSelectors = () => {
+    return Object.keys(clickStorage);
   };
 
+  const getClickMetas = selector => {
+    const metas = clickStorage[selector];
+    if (!metas) {
+      return {};
+    }
+    return metasToArray(clickStorage[selector]);
+  };
   return {
     storeClickMeta,
+    getClickSelectors,
     getClickMetas
   };
 };

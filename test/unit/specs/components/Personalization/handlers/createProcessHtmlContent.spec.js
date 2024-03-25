@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../../../src/constants/decisionProvider";
 import createProcessHtmlContent from "../../../../../../src/components/Personalization/handlers/createProcessHtmlContent";
-import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage";
+import createInteractionStorage from "../../../../../../src/components/Personalization/createInteractionStorage";
 import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition";
 import { HTML_CONTENT_ITEM } from "../../../../../../src/constants/schema";
 
@@ -38,7 +38,7 @@ describe("createProcessHtmlContent", () => {
   };
 
   beforeEach(() => {
-    const { storeClickMeta } = createClickStorage();
+    const { storeInteractionMeta } = createInteractionStorage();
 
     modules = {
       typeA: jasmine.createSpy("typeA"),
@@ -49,7 +49,7 @@ describe("createProcessHtmlContent", () => {
     processHtmlContent = createProcessHtmlContent({
       modules,
       logger,
-      storeClickMeta,
+      storeInteractionMeta,
       autoTrackPropositionInteractions: [ADOBE_JOURNEY_OPTIMIZER]
     });
   });

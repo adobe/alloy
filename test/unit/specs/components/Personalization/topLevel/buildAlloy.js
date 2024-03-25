@@ -14,7 +14,7 @@ import flushPromiseChains from "../../../../helpers/flushPromiseChains";
 import createComponent from "../../../../../../src/components/Personalization/createComponent";
 import createCollect from "../../../../../../src/components/Personalization/createCollect";
 import createFetchDataHandler from "../../../../../../src/components/Personalization/createFetchDataHandler";
-import collectClicks from "../../../../../../src/components/Personalization/dom-actions/clicks/collectClicks";
+import collectInteractions from "../../../../../../src/components/Personalization/dom-actions/clicks/collectInteractions";
 import isAuthoringModeEnabled from "../../../../../../src/components/Personalization/utils/isAuthoringModeEnabled";
 import {
   mergeDecisionsMeta,
@@ -23,6 +23,7 @@ import {
 import createOnClickHandler from "../../../../../../src/components/Personalization/createOnClickHandler";
 import createViewCacheManager from "../../../../../../src/components/Personalization/createViewCacheManager";
 import createViewChangeHandler from "../../../../../../src/components/Personalization/createViewChangeHandler";
+import createInteractionStorage from "../../../../../../src/components/Personalization/createInteractionStorage";
 import createClickStorage from "../../../../../../src/components/Personalization/createClickStorage";
 import createApplyPropositions from "../../../../../../src/components/Personalization/createApplyPropositions";
 import createSetTargetMigration from "../../../../../../src/components/Personalization/createSetTargetMigration";
@@ -56,6 +57,7 @@ import {
   DOM_ACTION_SET_STYLE,
   DOM_ACTION_SET_TEXT
 } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+import collectClicks from "../../../../../../src/components/Personalization/dom-actions/clicks/collectClicks";
 
 const createAction = renderFunc => ({ selector, content }) => {
   if (selector === "#error") {
@@ -102,7 +104,16 @@ const buildComponent = ({
   } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
 
-  const { storeClickMeta, getClickMetas } = createClickStorage();
+  const {
+    storeInteractionMeta,
+    getInteractionMetas
+  } = createInteractionStorage();
+
+  const {
+    storeClickMeta,
+    getClickSelectors,
+    getClickMetas
+  } = createClickStorage();
 
   const preprocess = action => action;
   const createProposition = injectCreateProposition({
@@ -118,13 +129,14 @@ const buildComponent = ({
     [schema.DOM_ACTION]: createProcessDomAction({
       modules,
       logger,
+      storeInteractionMeta,
       storeClickMeta,
       autoTrackPropositionInteractions
     }),
     [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({
       modules,
       logger,
-      storeClickMeta,
+      storeInteractionMeta,
       autoTrackPropositionInteractions
     }),
     [schema.REDIRECT_ITEM]: createProcessRedirect({
@@ -156,8 +168,11 @@ const buildComponent = ({
   });
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
+    collectInteractions,
     collectClicks,
-    getClickMetas
+    getInteractionMetas,
+    getClickMetas,
+    getClickSelectors
   });
   const viewChangeHandler = createViewChangeHandler({
     processPropositions,
