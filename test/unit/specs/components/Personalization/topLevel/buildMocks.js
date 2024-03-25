@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 import createEvent from "../../../../../../src/core/createEvent";
 import createResponse from "../../../../../functional/helpers/createResponse";
+import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../../../src/constants/decisionProvider";
 
 export default decisions => {
   const response = createResponse({
@@ -22,25 +23,26 @@ export default decisions => {
     }
   });
 
-  const actions = jasmine.createSpyObj("actions", [
-    "createAction",
-    "setHtml",
-    "setText",
-    "setAttributes",
-    "swapImage",
-    "setStyles",
-    "rearrangeChildren",
-    "removeNode",
-    "replaceHtml",
-    "appendHtml",
-    "prependHtml",
-    "insertHtmlAfter",
-    "insertHtmlBefore"
-  ]);
+  const actions = jasmine.createSpyObj("actions", {
+    setHtml: () => Promise.resolve(),
+    setText: () => Promise.resolve(),
+    setAttributes: () => Promise.resolve(),
+    swapImage: () => Promise.resolve(),
+    setStyles: () => Promise.resolve(),
+    rearrangeChildren: () => Promise.resolve(),
+    removeNode: () => Promise.resolve(),
+    replaceHtml: () => Promise.resolve(),
+    appendHtml: () => Promise.resolve(),
+    prependHtml: () => Promise.resolve(),
+    insertHtmlAfter: () => Promise.resolve(),
+    insertHtmlBefore: () => Promise.resolve(),
+    click: () => Promise.resolve()
+  });
 
   const config = {
     targetMigrationEnabled: true,
-    prehidingStyle: "myprehidingstyle"
+    prehidingStyle: "myprehidingstyle",
+    autoTrackPropositionInteractions: [ADOBE_JOURNEY_OPTIMIZER]
   };
   const logger = {
     warn: spyOn(console, "warn").and.callThrough(),

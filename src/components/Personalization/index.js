@@ -10,19 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, objectOf, string } from "../../utils/validation";
+import { arrayOf, boolean, objectOf, string } from "../../utils/validation";
 import createComponent from "./createComponent";
 import { initDomActionsModules } from "./dom-actions";
 import createCollect from "./createCollect";
 import { hideContainers, showContainers } from "./flicker";
 import createFetchDataHandler from "./createFetchDataHandler";
-import collectClicks from "./dom-actions/clicks/collectClicks";
+import collectInteractions from "./dom-actions/clicks/collectInteractions";
 import isAuthoringModeEnabled from "./utils/isAuthoringModeEnabled";
 import { mergeDecisionsMeta, mergeQuery } from "./event";
 import createOnClickHandler from "./createOnClickHandler";
 import createViewCacheManager from "./createViewCacheManager";
 import createViewChangeHandler from "./createViewChangeHandler";
-import createClickStorage from "./createClickStorage";
+import createInteractionStorage from "./createInteractionStorage";
 import createApplyPropositions from "./createApplyPropositions";
 import createGetPageLocation from "./createGetPageLocation";
 import createSetTargetMigration from "./createSetTargetMigration";
@@ -43,16 +43,29 @@ import createProcessInAppMessage from "./handlers/createProcessInAppMessage";
 import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules";
 import createRedirect from "./dom-actions/createRedirect";
 import createNotificationHandler from "./createNotificationHandler";
+import { ADOBE_JOURNEY_OPTIMIZER } from "../../constants/decisionProvider";
+import createClickStorage from "./createClickStorage";
+import collectClicks from "./dom-actions/clicks/collectClicks";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
-  const { targetMigrationEnabled, prehidingStyle } = config;
+  const {
+    targetMigrationEnabled,
+    prehidingStyle,
+    autoTrackPropositionInteractions
+  } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
 
   const {
-    getClickMetasBySelector,
+    storeInteractionMeta,
+    getInteractionMetas
+  } = createInteractionStorage();
+
+  const {
+    storeClickMeta,
     getClickSelectors,
-    storeClickMetrics
+    getClickMetas
   } = createClickStorage();
+
   const getPageLocation = createGetPageLocation({ window });
   const domActionsModules = initDomActionsModules();
 
@@ -69,11 +82,15 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     [schema.DOM_ACTION]: createProcessDomAction({
       modules: domActionsModules,
       logger,
-      storeClickMetrics
+      storeInteractionMeta,
+      storeClickMeta,
+      autoTrackPropositionInteractions
     }),
     [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({
       modules: domActionsModules,
-      logger
+      logger,
+      storeInteractionMeta,
+      autoTrackPropositionInteractions
     }),
     [schema.REDIRECT_ITEM]: createProcessRedirect({
       logger,
@@ -109,9 +126,11 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
+    collectInteractions,
     collectClicks,
-    getClickSelectors,
-    getClickMetasBySelector
+    getInteractionMetas,
+    getClickMetas,
+    getClickSelectors
   });
   const viewChangeHandler = createViewChangeHandler({
     processPropositions,
@@ -155,7 +174,10 @@ createPersonalization.namespace = "Personalization";
 
 createPersonalization.configValidators = objectOf({
   prehidingStyle: string().nonEmpty(),
-  targetMigrationEnabled: boolean().default(false)
+  targetMigrationEnabled: boolean().default(false),
+  autoTrackPropositionInteractions: arrayOf(string()).default([
+    ADOBE_JOURNEY_OPTIMIZER
+  ])
 });
 
 export default createPersonalization;

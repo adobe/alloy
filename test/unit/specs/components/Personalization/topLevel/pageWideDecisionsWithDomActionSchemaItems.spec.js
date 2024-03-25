@@ -13,17 +13,15 @@ import { PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS } from "../responsesMo
 
 import buildMocks from "./buildMocks";
 import buildAlloy from "./buildAlloy";
+import pause from "../../../../helpers/pause";
 
 describe("PersonalizationComponent", () => {
   it("PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS", async () => {
     const mocks = buildMocks(PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS);
     const alloy = buildAlloy(mocks);
-    const { event, result } = await alloy.sendEvent(
-      {
-        renderDecisions: true
-      },
-      PAGE_WIDE_DECISIONS_WITH_DOM_ACTION_SCHEMA_ITEMS
-    );
+    const { event, result } = await alloy.sendEvent({
+      renderDecisions: true
+    });
     expect(event.toJSON()).toEqual({
       query: {
         personalization: {
@@ -107,6 +105,29 @@ describe("PersonalizationComponent", () => {
       ],
       decisions: []
     });
+
+    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
+      "#foo",
+      "<div>Hola Mundo</div>"
+    );
+    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
+      "#foo2",
+      "<div>here is a target activity</div>"
+    );
+    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
+      "#foo",
+      "<div>Hola Mundo</div>"
+    );
+    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
+      "#foo2",
+      "<div>here is a target activity</div>"
+    );
+    expect(mocks.actions.setHtml).toHaveBeenCalledTimes(4);
+    expect(mocks.logger.warn).not.toHaveBeenCalled();
+    expect(mocks.logger.error).not.toHaveBeenCalled();
+
+    await pause(100);
+
     expect(mocks.sendEvent).toHaveBeenCalledWith({
       xdm: {
         _experience: {
@@ -135,24 +156,5 @@ describe("PersonalizationComponent", () => {
         eventType: "decisioning.propositionDisplay"
       }
     });
-    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
-      "#foo",
-      "<div>Hola Mundo</div>"
-    );
-    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
-      "#foo2",
-      "<div>here is a target activity</div>"
-    );
-    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
-      "#foo",
-      "<div>Hola Mundo</div>"
-    );
-    expect(mocks.actions.setHtml).toHaveBeenCalledWith(
-      "#foo2",
-      "<div>here is a target activity</div>"
-    );
-    expect(mocks.actions.setHtml).toHaveBeenCalledTimes(4);
-    expect(mocks.logger.warn).not.toHaveBeenCalled();
-    expect(mocks.logger.error).not.toHaveBeenCalled();
   });
 });

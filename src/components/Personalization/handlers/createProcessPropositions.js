@@ -10,6 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+const executeSequentially = promiseFunctions =>
+  promiseFunctions.reduce((sequence, promiseFunction) => {
+    return sequence.then(result =>
+      promiseFunction().then(nextResult => [...result, nextResult])
+    );
+  }, Promise.resolve([]));
+
 export default ({ schemaProcessors, logger }) => {
   const wrapRenderWithLogging = (render, item) => () => {
     return Promise.resolve()
@@ -31,7 +38,7 @@ export default ({ schemaProcessors, logger }) => {
   };
 
   const renderItems = (renderers, meta) =>
-    Promise.all(renderers.map(renderer => renderer())).then(successes => {
+    executeSequentially(renderers).then(successes => {
       // as long as at least one renderer succeeds, we want to add the notification
       // to the display notifications
       if (!successes.includes(true)) {
@@ -111,7 +118,7 @@ export default ({ schemaProcessors, logger }) => {
         : undefined;
       renderers.push(() => renderItems(itemRenderers, meta));
     } else if (atLeastOneWithNotification) {
-      renderers.push(() => proposition.getNotification());
+      renderers.push(() => Promise.resolve(proposition.getNotification()));
     }
     if (renderedItems.length > 0) {
       proposition.addToReturnValues(
@@ -193,7 +200,7 @@ export default ({ schemaProcessors, logger }) => {
       );
     });
     const render = () => {
-      return Promise.all(renderers.map(renderer => renderer())).then(metas =>
+      return executeSequentially(renderers).then(metas =>
         metas.filter(meta => meta)
       );
     };

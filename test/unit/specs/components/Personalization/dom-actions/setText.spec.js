@@ -12,35 +12,49 @@ governing permissions and limitations under the License.
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import {
+  CLICK_LABEL_DATA_ATTRIBUTE,
+  INTERACT_ID_DATA_ATTRIBUTE
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
+import { DOM_ACTION_SET_TEXT } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 
 describe("Personalization::actions::setText", () => {
+  let decorateProposition;
+
   beforeEach(() => {
     cleanUpDomChanges("setText");
+    decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_SET_TEXT
+    });
   });
 
   afterEach(() => {
     cleanUpDomChanges("setText");
   });
 
-  it("should set personalized text", () => {
+  it("should set personalized text", async () => {
+    const itemData = {
+      type: "setText",
+      selector: "#setText",
+      prehidingSelector: "#setText",
+      content: "bar",
+      meta: { a: 1 }
+    };
+
     const modules = initDomActionsModules();
     const { setText } = modules;
     const element = createNode("div", { id: "setText" });
     element.textContent = "foo";
-    const elements = [element];
-
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
-    const settings = {
-      selector: "#setText",
-      prehidingSelector: "#setText",
-      content: "bar",
-      meta
-    };
+    await setText(itemData, decorateProposition);
 
-    return setText(settings).then(() => {
-      expect(elements[0].textContent).toEqual("bar");
-    });
+    expect(element.textContent).toEqual("bar");
+    expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+      "trackingLabel"
+    );
+    expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
   });
 });

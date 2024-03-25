@@ -12,19 +12,16 @@ governing permissions and limitations under the License.
 
 import matchesSelectorWithEq from "../dom/matchesSelectorWithEq";
 import { VIEW_SCOPE_TYPE } from "../../constants/scopeType";
+import { cleanMetas, dedupeMetas } from "../../utils/metaUtils";
 
-const getMetasIfMatches = (
-  clickedElement,
-  selector,
-  getClickMetasBySelector
-) => {
+const getMetasIfMatches = (clickedElement, selector, getClickMetas) => {
   const { documentElement } = document;
   let element = clickedElement;
   let i = 0;
 
   while (element && element !== documentElement) {
     if (matchesSelectorWithEq(selector, element)) {
-      const matchedMetas = getClickMetasBySelector(selector);
+      const matchedMetas = getClickMetas(selector);
       const returnValue = {
         metas: matchedMetas
       };
@@ -52,24 +49,7 @@ const getMetasIfMatches = (
   };
 };
 
-const cleanMetas = metas =>
-  metas.map(meta => {
-    const { trackingLabel, scopeType, ...rest } = meta;
-    return rest;
-  });
-
-const dedupMetas = metas =>
-  metas.filter((meta, index) => {
-    const stringifiedMeta = JSON.stringify(meta);
-    return (
-      index ===
-      metas.findIndex(
-        innerMeta => JSON.stringify(innerMeta) === stringifiedMeta
-      )
-    );
-  });
-
-export default (clickedElement, selectors, getClickMetasBySelector) => {
+export default (clickedElement, selectors, getClickMetas) => {
   const result = [];
   let resultLabel = "";
   let resultLabelWeight = Number.MAX_SAFE_INTEGER;
@@ -81,7 +61,7 @@ export default (clickedElement, selectors, getClickMetasBySelector) => {
     const { metas, label, weight, viewName } = getMetasIfMatches(
       clickedElement,
       selectors[i],
-      getClickMetasBySelector
+      getClickMetas
     );
 
     if (!metas) {
@@ -100,8 +80,9 @@ export default (clickedElement, selectors, getClickMetasBySelector) => {
   }
 
   return {
-    decisionsMeta: dedupMetas(result),
-    eventLabel: resultLabel,
+    decisionsMeta: dedupeMetas(result),
+    propositionActionLabel: resultLabel,
+    propositionActionToken: undefined,
     viewName: resultViewName
   };
 };

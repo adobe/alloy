@@ -11,11 +11,13 @@ governing permissions and limitations under the License.
 */
 
 export default node => {
-  const parent = node.parentNode;
+  return new Promise(resolve => {
+    const parent = node.parentNode;
 
-  if (parent) {
-    return parent.removeChild(node);
-  }
+    if (parent) {
+      parent.removeChild(node);
+    }
 
-  return null;
+    resolve();
+  });
 };

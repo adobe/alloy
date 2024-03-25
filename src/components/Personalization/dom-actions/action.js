@@ -14,32 +14,24 @@ import { awaitSelector } from "../../../utils/dom";
 import { hideElements, showElements } from "../flicker";
 import { selectNodesWithEq } from "./dom";
 
-export { default as setText } from "./setText";
-export { default as setHtml } from "./setHtml";
-export { default as appendHtml } from "./appendHtml";
-export { default as prependHtml } from "./prependHtml";
-export { default as replaceHtml } from "./replaceHtml";
-export { default as insertHtmlBefore } from "./insertHtmlBefore";
-export { default as insertHtmlAfter } from "./insertHtmlAfter";
-export { default as setStyles } from "./setStyles";
-export { default as setAttributes } from "./setAttributes";
-export { default as swapImage } from "./swapImage";
-export { default as rearrangeChildren } from "./rearrangeChildren";
-
-const renderContent = (elements, content, renderFunc) => {
-  const executions = elements.map(element => renderFunc(element, content));
+const renderContent = (elements, content, decorateProposition, renderFunc) => {
+  const executions = elements.map(element =>
+    renderFunc(element, content, decorateProposition)
+  );
 
   return Promise.all(executions);
 };
 
 export const createAction = renderFunc => {
-  return itemData => {
+  return (itemData, decorateProposition) => {
     const { selector, prehidingSelector, content } = itemData;
 
     hideElements(prehidingSelector);
 
     return awaitSelector(selector, selectNodesWithEq)
-      .then(elements => renderContent(elements, content, renderFunc))
+      .then(elements =>
+        renderContent(elements, content, decorateProposition, renderFunc)
+      )
       .then(
         () => {
           // if everything is OK, show elements

@@ -9,7 +9,17 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-export default ({ modules, logger, storeClickMetrics }) => item => {
+
+import createDecorateProposition from "./createDecorateProposition";
+import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules";
+
+export default ({
+  modules,
+  logger,
+  storeInteractionMeta,
+  storeClickMeta,
+  autoTrackPropositionInteractions
+}) => item => {
   const { type, selector } = item.getData() || {};
 
   if (!type) {
@@ -17,12 +27,13 @@ export default ({ modules, logger, storeClickMetrics }) => item => {
     return { setRenderAttempted: false, includeInNotification: false };
   }
 
-  if (type === "click") {
+  if (type === DOM_ACTION_CLICK) {
     if (!selector) {
       logger.warn("Invalid DOM action data: missing selector.", item.getData());
       return { setRenderAttempted: false, includeInNotification: false };
     }
-    storeClickMetrics({
+
+    storeClickMeta({
       selector,
       meta: {
         ...item.getProposition().getNotification(),
@@ -30,6 +41,7 @@ export default ({ modules, logger, storeClickMetrics }) => item => {
         scopeType: item.getProposition().getScopeType()
       }
     });
+
     return { setRenderAttempted: true, includeInNotification: false };
   }
 
@@ -38,8 +50,19 @@ export default ({ modules, logger, storeClickMetrics }) => item => {
     return { setRenderAttempted: false, includeInNotification: false };
   }
 
+  const decorateProposition = createDecorateProposition(
+    autoTrackPropositionInteractions,
+    type,
+    item.getProposition().getId(),
+    item.getId(),
+    item.getTrackingLabel(),
+    item.getProposition().getScopeType(),
+    item.getProposition().getNotification(),
+    storeInteractionMeta
+  );
+
   return {
-    render: () => modules[type](item.getData()),
+    render: () => modules[type](item.getData(), decorateProposition),
     setRenderAttempted: true,
     includeInNotification: true
   };

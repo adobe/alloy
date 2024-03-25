@@ -14,13 +14,13 @@ import { createFragment, getChildNodes, insertBefore } from "./dom";
 import { loadImages } from "./images";
 import addNonceToInlineStyleElements from "./addNonceToInlineStyleElements";
 import {
-  getInlineScripts,
-  getRemoteScriptsUrls,
   executeInlineScripts,
-  executeRemoteScripts
+  executeRemoteScripts,
+  getInlineScripts,
+  getRemoteScriptsUrls
 } from "./scripts";
 
-export default (container, html) => {
+export default (container, html, decorateProposition) => {
   const fragment = createFragment(html);
   addNonceToInlineStyleElements(fragment);
   const elements = getChildNodes(fragment);
@@ -30,6 +30,7 @@ export default (container, html) => {
   loadImages(fragment);
 
   elements.forEach(element => {
+    decorateProposition(element);
     insertBefore(container, element);
   });
 

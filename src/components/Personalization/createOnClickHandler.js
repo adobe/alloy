@@ -14,41 +14,84 @@ import { isNonEmptyArray } from "../../utils";
 import { INTERACT } from "../../constants/eventType";
 import { PropositionEventType } from "../../constants/propositionEventType";
 
+const createPropositionAction = (clickLabel, clickToken) => {
+  if (!clickToken && !clickLabel) {
+    return undefined;
+  }
+
+  const propositionAction = {};
+
+  if (clickLabel) {
+    propositionAction.label = clickLabel;
+  }
+
+  if (clickToken) {
+    propositionAction.tokens = [clickToken];
+  }
+
+  return propositionAction;
+};
+
 export default ({
   mergeDecisionsMeta,
+  collectInteractions,
   collectClicks,
-  getClickSelectors,
-  getClickMetasBySelector
+  getInteractionMetas,
+  getClickMetas,
+  getClickSelectors
 }) => {
   // Called when an element qualifying for conversion within an offer is clicked.
   return ({ event, clickedElement }) => {
-    const selectors = getClickSelectors();
-    if (isNonEmptyArray(selectors)) {
-      const { decisionsMeta, eventLabel, viewName } = collectClicks(
-        clickedElement,
-        selectors,
-        getClickMetasBySelector
-      );
+    const decisionsMeta = [];
+    let propositionActionLabel;
+    let propositionActionToken;
+    let viewName;
 
-      if (isNonEmptyArray(decisionsMeta)) {
-        const xdm = { eventType: INTERACT };
+    [
+      collectInteractions(clickedElement, getInteractionMetas),
+      collectClicks(clickedElement, getClickSelectors(), getClickMetas)
+    ].forEach(
+      ({
+        decisionsMeta: curDecisionsMeta,
+        propositionActionLabel: curPropositionActionLabel,
+        propositionActionToken: curPropositionActionToken,
+        viewName: curViewName
+      }) => {
+        Array.prototype.push.apply(decisionsMeta, curDecisionsMeta);
 
-        if (viewName) {
-          xdm.web = {
-            webPageDetails: {
-              viewName
-            }
-          };
+        if (!propositionActionLabel && curPropositionActionLabel) {
+          propositionActionLabel = curPropositionActionLabel;
         }
 
-        event.mergeXdm(xdm);
-        mergeDecisionsMeta(
-          event,
-          decisionsMeta,
-          [PropositionEventType.INTERACT],
-          eventLabel ? { label: eventLabel } : undefined
-        );
+        if (!propositionActionToken && curPropositionActionToken) {
+          propositionActionToken = curPropositionActionToken;
+        }
+
+        if (!viewName && curViewName) {
+          viewName = curViewName;
+        }
       }
+    );
+
+    if (isNonEmptyArray(decisionsMeta)) {
+      const xdm = { eventType: INTERACT };
+
+      if (viewName) {
+        xdm.web = {
+          webPageDetails: {
+            viewName
+          }
+        };
+      }
+
+      event.mergeXdm(xdm);
+
+      mergeDecisionsMeta(
+        event,
+        decisionsMeta,
+        [PropositionEventType.INTERACT],
+        createPropositionAction(propositionActionLabel, propositionActionToken)
+      );
     }
   };
 };

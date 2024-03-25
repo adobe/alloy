@@ -12,10 +12,22 @@ governing permissions and limitations under the License.
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
+import {
+  CLICK_LABEL_DATA_ATTRIBUTE,
+  INTERACT_ID_DATA_ATTRIBUTE
+} from "../../../../../../src/components/Personalization/handlers/createDecorateProposition";
+import { getAttribute } from "../../../../../../src/components/Personalization/dom-actions/dom";
+import createDecoratePropositionForTest from "../../../../helpers/createDecoratePropositionForTest";
+import { DOM_ACTION_SET_IMAGE_SOURCE } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 
 describe("Personalization::actions::setImageSource", () => {
+  let decorateProposition;
+
   beforeEach(() => {
     cleanUpDomChanges("setImageSource");
+    decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_SET_IMAGE_SOURCE
+    });
   });
 
   afterEach(() => {
@@ -27,20 +39,23 @@ describe("Personalization::actions::setImageSource", () => {
     const modules = initDomActionsModules();
     const { setImageSource } = modules;
     const element = createNode("img", { id: "setImageSource", src: url });
-    const elements = [element];
 
     appendNode(document.body, element);
 
-    const meta = { a: 1 };
     const settings = {
       selector: "#setImageSource",
       prehidingSelector: "#setImageSource",
       content: "http://foo.com/b.png",
-      meta
+      meta: { a: 1 }
     };
 
-    return setImageSource(settings).then(() => {
-      expect(elements[0].getAttribute("src")).toEqual("http://foo.com/b.png");
+    return setImageSource(settings, decorateProposition).then(() => {
+      expect(element.getAttribute("src")).toEqual("http://foo.com/b.png");
+
+      expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+        "trackingLabel"
+      );
+      expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
     });
   });
 });

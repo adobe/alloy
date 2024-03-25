@@ -12,10 +12,15 @@ governing permissions and limitations under the License.
 
 import { setStyle } from "./dom";
 
-export default (container, styles) => {
-  const { priority, ...style } = styles;
+export default (container, styles, decorateProposition) => {
+  return new Promise(resolve => {
+    const { priority, ...style } = styles;
 
-  Object.keys(style).forEach(key => {
-    setStyle(container, key, style[key], priority);
+    Object.keys(style).forEach(key => {
+      decorateProposition(container);
+      setStyle(container, key, style[key], priority);
+    });
+
+    resolve();
   });
 };

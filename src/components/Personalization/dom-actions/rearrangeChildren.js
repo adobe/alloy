@@ -12,20 +12,28 @@ governing permissions and limitations under the License.
 
 import { getChildren, insertAfter, insertBefore } from "./dom";
 
-export default (container, { from, to }) => {
-  const children = getChildren(container);
-  const elementFrom = children[from];
-  const elementTo = children[to];
+export default (container, { from, to }, decorateProposition) => {
+  return new Promise(resolve => {
+    const children = getChildren(container);
+    const elementFrom = children[from];
+    const elementTo = children[to];
 
-  if (!elementFrom || !elementTo) {
-    // TODO: We will need to add logging
-    // to ease troubleshooting
-    return;
-  }
+    if (!elementFrom || !elementTo) {
+      // TODO: We will need to add logging
+      // to ease troubleshooting
+      resolve();
+      return;
+    }
 
-  if (from < to) {
-    insertAfter(elementTo, elementFrom);
-  } else {
-    insertBefore(elementTo, elementFrom);
-  }
+    if (from < to) {
+      insertAfter(elementTo, elementFrom);
+    } else {
+      insertBefore(elementTo, elementFrom);
+    }
+
+    decorateProposition(elementTo);
+    decorateProposition(elementFrom);
+
+    resolve();
+  });
 };
