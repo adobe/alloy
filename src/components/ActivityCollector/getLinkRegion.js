@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { truncateWhiteSpace } from "./utils";
+import truncateWhiteSpace from "./utils/truncateWhiteSpace";
 import { isNonEmptyString } from "../../utils";
 
 const semanticElements = /^(HEADER|MAIN|FOOTER|NAV)$/i;

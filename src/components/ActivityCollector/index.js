@@ -12,22 +12,24 @@ governing permissions and limitations under the License.
 
 import attachClickActivityCollector from "./attachClickActivityCollector";
 import configValidators from "./configValidators";
-import createLinkClick from "./createLinkClick";
-import createGetLinkDetails from "./createGetLinkDetails";
+import createInjectClickedElementProperties from "./createInjectClickedElementProperties";
+import createRecallAndInjectClickedElementProperties from "./createRecallAndInjectClickedElementProperties";
+import createGetClickedElementProperties from "./createGetClickedElementProperties";
+import createClickActivityStorage from "./createClickActivityStorage";
+import createStorePageViewProperties from "./createStorePageViewProperties";
 import getLinkName from "./getLinkName";
 import getLinkRegion from "./getLinkRegion";
-import {
-  determineLinkType,
-  findSupportedAnchorElement,
-  getAbsoluteUrlFromAnchorElement
-} from "./utils";
+import getAbsoluteUrlFromAnchorElement from "./utils/dom/getAbsoluteUrlFromAnchorElement";
+import findClickableElement from "./utils/dom/findClickableElement";
+import determineLinkType from "./utils/determineLinkType";
+import isPageViewEvent from "./utils/isPageViewEvent";
 
-const getLinkDetails = createGetLinkDetails({
+const getClickedElementProperties = createGetClickedElementProperties({
   window,
   getLinkName,
   getLinkRegion,
   getAbsoluteUrlFromAnchorElement,
-  findSupportedAnchorElement,
+  findClickableElement,
   determineLinkType
 });
 
@@ -37,8 +39,25 @@ const createActivityCollector = ({
   handleError,
   logger
 }) => {
-  const linkClick = createLinkClick({ getLinkDetails, config, logger });
-
+  const clickCollection = config.clickCollection;
+  const clickActivityStorage = createClickActivityStorage({
+    config,
+    window
+  });
+  const injectClickedElementProperties = createInjectClickedElementProperties({
+    config,
+    logger,
+    clickActivityStorage,
+    getClickedElementProperties
+  });
+  const recallAndInjectClickedElementProperties = createRecallAndInjectClickedElementProperties(
+    {
+      clickActivityStorage
+    }
+  );
+  const storePageViewProperties = createStorePageViewProperties({
+    clickActivityStorage
+  });
   return {
     lifecycle: {
       onComponentsRegistered(tools) {
@@ -50,8 +69,22 @@ const createActivityCollector = ({
         });
         // TODO: createScrollActivityCollector ...
       },
-      onClick({ event, clickedElement }) {
-        linkClick({ targetElement: clickedElement, event });
+      onClick({ event, targetElement }) {
+        injectClickedElementProperties({
+          event,
+          targetElement
+        });
+      },
+      onBeforeEvent({ event }) {
+        if (isPageViewEvent(event)) {
+          if (clickCollection.eventGroupingEnabled) {
+            recallAndInjectClickedElementProperties(
+              event,
+              clickActivityStorage
+            );
+          }
+          storePageViewProperties(event, logger, clickActivityStorage);
+        }
       }
     }
   };
@@ -65,7 +98,11 @@ createActivityCollector.buildOnInstanceConfiguredExtraParams = ({
 }) => {
   return {
     getLinkDetails: targetElement => {
-      return getLinkDetails({ targetElement, config, logger });
+      return getClickedElementProperties({
+        targetElement,
+        config,
+        logger
+      }).options;
     }
   };
 };

@@ -15,7 +15,8 @@ import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
 import {
   compose,
   orgMainConfigMain,
-  clickCollectionEnabled
+  clickCollectionEnabled,
+  clickCollectionEventGroupingDisabled
 } from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import preventLinkNavigation from "../../helpers/preventLinkNavigation";
@@ -58,7 +59,11 @@ test("Test C8118: Verify link click sends a request to the collect endpoint when
   const collectEndpointAsserter = await createCollectEndpointAsserter();
   await preventLinkNavigation();
   const alloy = createAlloyProxy();
-  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled);
+  const testConfig = compose(
+    orgMainConfigMain,
+    clickCollectionEnabled,
+    clickCollectionEventGroupingDisabled // To prevent internal link click to get cached
+  );
   await alloy.configure(testConfig);
   await addLinkToBody();
   await clickLink();

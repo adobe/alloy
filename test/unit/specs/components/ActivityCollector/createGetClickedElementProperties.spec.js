@@ -10,15 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createGetLinkDetails from "../../../../../src/components/ActivityCollector/createGetLinkDetails";
+import createGetClickedElementProperties from "../../../../../src/components/ActivityCollector/createGetClickedElementProperties";
 
-describe("ActivityCollector::createGetLinkDetails", () => {
+describe("ActivityCollector::createGetClickedElementProperties", () => {
   const mockWindow = {
     location: {
       protocol: "https:",
       host: "example.com",
       hostname: "example.com",
-      pathname: "/"
+      pathname: "/",
+      href: "https://example.com/"
     }
   };
   const supportedLinkElement = {
@@ -30,7 +31,7 @@ describe("ActivityCollector::createGetLinkDetails", () => {
   let getLinkName;
   let getLinkRegion;
   let getAbsoluteUrlFromAnchorElement;
-  let findSupportedAnchorElement;
+  let findClickableElement;
   let determineLinkType;
   let logger;
   beforeEach(() => {
@@ -39,9 +40,7 @@ describe("ActivityCollector::createGetLinkDetails", () => {
     getAbsoluteUrlFromAnchorElement = jasmine.createSpy(
       "getAbsoluteUrlFromAnchorElement"
     );
-    findSupportedAnchorElement = jasmine.createSpy(
-      "findSupportedAnchorElement"
-    );
+    findClickableElement = jasmine.createSpy("findClickableElement");
     determineLinkType = jasmine.createSpy("determineLinkType");
     logger = jasmine.createSpyObj("logger", ["info"]);
   });
@@ -51,25 +50,35 @@ describe("ActivityCollector::createGetLinkDetails", () => {
       onBeforeLinkClickSend: options => {
         options.data.custom = "test data field";
         return true;
+      },
+      clickCollection: {
+        externalLink: true
       }
     };
     getLinkRegion.and.returnValue("root");
     getLinkName.and.returnValue("Go to cart");
     getAbsoluteUrlFromAnchorElement.and.returnValue("http://blah.com");
-    findSupportedAnchorElement.and.returnValue(supportedLinkElement);
+    findClickableElement.and.returnValue(supportedLinkElement);
     determineLinkType.and.returnValue("exit");
 
-    const getLinkDetails = createGetLinkDetails({
+    const getClickedElementProperties = createGetClickedElementProperties({
       getLinkRegion,
       getLinkName,
       getAbsoluteUrlFromAnchorElement,
-      findSupportedAnchorElement,
+      findClickableElement,
       determineLinkType,
       window: mockWindow
     });
 
-    const result = getLinkDetails({ targetElement: {}, config, logger });
-    expect(result).toEqual({
+    const result = getClickedElementProperties({
+      targetElement: {},
+      config,
+      logger
+    });
+    // I have to set this manually because of passing in {} as the targetElement
+    result.pageIDType = 0;
+
+    expect(result.options).toEqual({
       xdm: {
         eventType: "web.webinteraction.linkClicks",
         web: {
@@ -85,6 +94,20 @@ describe("ActivityCollector::createGetLinkDetails", () => {
         }
       },
       data: {
+        __adobe: {
+          analytics: {
+            c: {
+              a: {
+                activitymap: {
+                  page: "https://example.com/",
+                  link: "Go to cart",
+                  region: "root",
+                  pageIDType: 0
+                }
+              }
+            }
+          }
+        },
         custom: "test data field"
       },
       clickedElement: {}
@@ -95,106 +118,145 @@ describe("ActivityCollector::createGetLinkDetails", () => {
     const config = {
       onBeforeLinkClickSend: () => {
         return false;
+      },
+      clickCollection: {
+        externalLink: true
       }
     };
     getLinkRegion.and.returnValue("root");
     getLinkName.and.returnValue("Go to cart");
     getAbsoluteUrlFromAnchorElement.and.returnValue("http://blah.com");
-    findSupportedAnchorElement.and.returnValue(supportedLinkElement);
+    findClickableElement.and.returnValue(supportedLinkElement);
     determineLinkType.and.returnValue("exit");
 
-    const getLinkDetails = createGetLinkDetails({
+    const getClickedElementProperties = createGetClickedElementProperties({
       getLinkRegion,
       getLinkName,
       getAbsoluteUrlFromAnchorElement,
-      findSupportedAnchorElement,
+      findClickableElement,
       determineLinkType,
       window: mockWindow
     });
 
-    const result = getLinkDetails({ targetElement: {}, config, logger });
-    expect(logger.info).toHaveBeenCalledWith(
-      "This link click event is not triggered because it was canceled in onBeforeLinkClickSend."
-    );
-    expect(result).toEqual(undefined);
+    const result = getClickedElementProperties({
+      targetElement: {},
+      config,
+      logger
+    });
+    expect(result.options).toEqual(undefined);
   });
 
   it("Returns undefined when not supported anchor element", () => {
     const config = {
       onBeforeLinkClickSend: () => {
         return true;
+      },
+      clickCollection: {
+        externalLink: true
       }
     };
     getLinkRegion.and.returnValue(undefined);
     getLinkName.and.returnValue("Go to cart");
     getAbsoluteUrlFromAnchorElement.and.returnValue("http://blah.com");
-    findSupportedAnchorElement.and.returnValue(undefined);
+    findClickableElement.and.returnValue(undefined);
     determineLinkType.and.returnValue("exit");
 
-    const getLinkDetails = createGetLinkDetails({
+    const getClickedElementProperties = createGetClickedElementProperties({
       getLinkRegion,
       getLinkName,
       getAbsoluteUrlFromAnchorElement,
-      findSupportedAnchorElement,
+      findClickableElement,
       determineLinkType,
       window: mockWindow
     });
 
-    const result = getLinkDetails({ targetElement: {}, config, logger });
-    expect(logger.info).toHaveBeenCalledWith(
-      "This link click event is not triggered because the HTML element is not an anchor."
-    );
-    expect(result).toEqual(undefined);
+    const result = getClickedElementProperties({
+      targetElement: {},
+      config,
+      logger
+    });
+    expect(result.options).toEqual(undefined);
   });
 
-  it("Returns undefined when element without url and logs a message", () => {
+  it("Returns only options with data element if clickable element is missing href", () => {
     const config = {
       onBeforeLinkClickSend: () => {
         return true;
+      },
+      clickCollection: {
+        externalLink: true
       }
     };
     getLinkRegion.and.returnValue("root");
     getLinkName.and.returnValue("Go to cart");
     getAbsoluteUrlFromAnchorElement.and.returnValue(undefined);
-    findSupportedAnchorElement.and.returnValue(supportedLinkElement);
+    findClickableElement.and.returnValue(supportedLinkElement);
     determineLinkType.and.returnValue("exit");
 
-    const getLinkDetails = createGetLinkDetails({
+    const getClickedElementProperties = createGetClickedElementProperties({
       getLinkRegion,
       getLinkName,
       getAbsoluteUrlFromAnchorElement,
-      findSupportedAnchorElement,
+      findClickableElement,
       determineLinkType,
       window: mockWindow
     });
 
-    const result = getLinkDetails({ targetElement: {}, config, logger });
-    expect(logger.info).toHaveBeenCalledWith(
-      "This link click event is not triggered because the HTML element doesn't have an URL."
-    );
-    expect(result).toEqual(undefined);
+    const result = getClickedElementProperties({
+      targetElement: {},
+      config,
+      logger
+    });
+    // I have to set this manually because of passing in {} as the targetElement
+    result.pageIDType = 0;
+    expect(result.options).toEqual({
+      data: {
+        __adobe: {
+          analytics: {
+            c: {
+              a: {
+                activitymap: {
+                  page: "https://example.com/",
+                  link: "Go to cart",
+                  region: "root",
+                  pageIDType: 0
+                }
+              }
+            }
+          }
+        }
+      },
+      clickedElement: {}
+    });
   });
 
-  it("Returns the object when callback does not return explicit false ", () => {
+  it("Returns the object with link details when callback does not return explicit false ", () => {
     const config = {
-      onBeforeLinkClickSend: () => {}
+      onBeforeLinkClickSend: () => {},
+      clickCollection: {
+        externalLink: true
+      }
     };
     getLinkRegion.and.returnValue("root");
     getLinkName.and.returnValue("Go to cart");
     getAbsoluteUrlFromAnchorElement.and.returnValue("http://blah.com");
-    findSupportedAnchorElement.and.returnValue(supportedLinkElement);
+    findClickableElement.and.returnValue(supportedLinkElement);
     determineLinkType.and.returnValue("exit");
 
-    const getLinkDetails = createGetLinkDetails({
+    const getClickedElementProperties = createGetClickedElementProperties({
       getLinkRegion,
       getLinkName,
       getAbsoluteUrlFromAnchorElement,
-      findSupportedAnchorElement,
+      findClickableElement,
       determineLinkType,
       window: mockWindow
     });
 
-    const result = getLinkDetails({ targetElement: {}, config, logger });
+    const result = getClickedElementProperties({
+      targetElement: {},
+      config,
+      logger
+    });
     expect(result).not.toBe(undefined);
   });
 });

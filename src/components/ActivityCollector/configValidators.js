@@ -20,6 +20,20 @@ export const downloadLinkQualifier = string()
 
 export default objectOf({
   clickCollectionEnabled: boolean().default(true),
-  onBeforeLinkClickSend: callback(),
-  downloadLinkQualifier
+  clickCollection: objectOf({
+    internalLinkEnabled: boolean().default(true),
+    externalLinkEnabled: boolean().default(true),
+    downloadLinkEnabled: boolean().default(true),
+    // TODO: Consider moving downloadLinkQualifier here.
+    sessionStorageEnabled: boolean().default(true),
+    eventGroupingEnabled: boolean().default(true)
+  }).default({
+    internalLinkEnabled: true,
+    externalLinkEnabled: true,
+    downloadLinkEnabled: true,
+    sessionStorageEnabled: true,
+    eventGroupingEnabled: true
+  }),
+  downloadLinkQualifier,
+  onBeforeLinkClickSend: callback()
 });

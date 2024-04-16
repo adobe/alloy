@@ -15,7 +15,8 @@ import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
 import {
   compose,
   orgMainConfigMain,
-  clickCollectionEnabled
+  clickCollectionEnabled,
+  clickCollectionEventGroupingDisabled
 } from "../../helpers/constants/configParts";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import preventLinkNavigation from "../../helpers/preventLinkNavigation";
@@ -77,8 +78,11 @@ test("Test C81181: Verify that if onBeforeLinkClickSend not defined and clickCol
   const collectEndpointAsserter = await createCollectEndpointAsserter();
   await preventLinkNavigation();
   const alloy = createAlloyProxy();
-
-  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled);
+  const testConfig = compose(
+    orgMainConfigMain,
+    clickCollectionEnabled,
+    clickCollectionEventGroupingDisabled
+  );
   await alloy.configure(testConfig);
   await addLinksToBody();
   await clickLink("#alloy-link-test");
@@ -99,13 +103,17 @@ test("Test C81181: Verify that onBeforeLinkClickSend cancels a request based on 
   await preventLinkNavigation();
   const alloy = createAlloyProxy();
 
-  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
-    onBeforeLinkClickSend: options => {
-      const { clickedElement } = options;
-
-      return clickedElement.id !== "canceled-alloy-link-test";
+  const testConfig = compose(
+    orgMainConfigMain,
+    clickCollectionEnabled,
+    clickCollectionEventGroupingDisabled,
+    {
+      onBeforeLinkClickSend: options => {
+        const { clickedElement } = options;
+        return clickedElement.id !== "canceled-alloy-link-test";
+      }
     }
-  });
+  );
   await alloy.configure(testConfig);
   await addLinksToBody();
   await clickLink("#canceled-alloy-link-test");
@@ -128,20 +136,26 @@ test("Test C81181: Verify that onBeforeLinkClickSend augments a request", async 
   await preventLinkNavigation();
   const alloy = createAlloyProxy();
 
-  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
-    // eslint-disable-next-line consistent-return
-    onBeforeLinkClickSend: options => {
-      const { xdm, data, clickedElement } = options;
+  const testConfig = compose(
+    orgMainConfigMain,
+    clickCollectionEnabled,
+    clickCollectionEventGroupingDisabled,
+    {
+      // eslint-disable-next-line consistent-return
+      onBeforeLinkClickSend: options => {
+        const { xdm, data, clickedElement } = options;
 
-      if (clickedElement.id === "alloy-link-test") {
-        xdm.web.webInteraction.name = "Augmented name";
-        data.customField = "test123";
+        if (clickedElement.id === "alloy-link-test") {
+          xdm.web.webInteraction.name = "Augmented name";
+          data.customField = "test123";
 
-        return true;
+          return true;
+        }
+        return false;
       }
-      return false;
     }
-  });
+  );
+
   await alloy.configure(testConfig);
   await addLinksToBody();
   await clickLink("#canceled-alloy-link-test");
@@ -158,7 +172,27 @@ test("Test C81181: Verify that onBeforeLinkClickSend augments a request", async 
     linkClicks: { value: 1 }
   };
 
-  await assertRequestXdm(interactRequest, expectedXdmWebInteraction, {
+  const expectedData = {
+    __adobe: {
+      analytics: {
+        c: {
+          a: {
+            activitymap: {
+              link: "Test Link",
+              page: "https://alloyio.com/functional-test/testPage.html",
+              pageIDType: 0,
+              region: "BODY"
+            }
+          }
+        }
+      }
+    },
     customField: "test123"
-  });
+  };
+
+  await assertRequestXdm(
+    interactRequest,
+    expectedXdmWebInteraction,
+    expectedData
+  );
 });

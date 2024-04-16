@@ -10,23 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { truncateWhiteSpace } from "./utils";
-
-const unsupportedNodeNames = /^(SCRIPT|STYLE|LINK|CANVAS|NOSCRIPT|#COMMENT)$/i;
-
-/**
- * Determines if a node qualifies as a supported link text node.
- * @param {*} node Node to determine support for.
- * @returns {boolean}
- */
-const isSupportedTextNode = node => {
-  if (node && node.nodeName) {
-    if (node.nodeName.match(unsupportedNodeNames)) {
-      return false;
-    }
-  }
-  return true;
-};
+import truncateWhiteSpace from "./utils/truncateWhiteSpace";
+import isSupportedTextNode from "./utils/dom/isSupportedTextNode";
 
 /**
  * Orders and returns specified node and its child nodes in arrays of supported

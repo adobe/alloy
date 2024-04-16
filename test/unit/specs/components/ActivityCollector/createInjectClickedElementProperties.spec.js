@@ -10,23 +10,30 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createLinkClick from "../../../../../src/components/ActivityCollector/createLinkClick";
+import createInjectClickedElementProperties from "../../../../../src/components/ActivityCollector/createInjectClickedElementProperties";
 import createEvent from "../../../../../src/core/createEvent";
 import { downloadLinkQualifier as dlwValidator } from "../../../../../src/components/ActivityCollector/configValidators";
 
-describe("ActivityCollector::createLinkClick", () => {
-  const getLinkDetails = jasmine.createSpy("getLinkDetails");
+describe("ActivityCollector::createInjectClickedElementProperties", () => {
+  const getClickedElementProperties = jasmine.createSpy(
+    "getClickedElementProperties"
+  );
+  const clickActivityStorage = jasmine.createSpy("clickActivityStorage", {
+    save: () => {}
+  });
   const downloadLinkQualifier = dlwValidator();
 
   it("Extends event XDM data with link information for supported anchor elements when clickCollectionEnabled", () => {
     const config = {
       downloadLinkQualifier,
-      clickCollectionEnabled: true
+      clickCollectionEnabled: true,
+      clickCollection: {}
     };
-    const linkClick = createLinkClick({ getLinkDetails, config });
-
+    const injectClickedElementProperties = createInjectClickedElementProperties(
+      { getClickedElementProperties, clickActivityStorage, config }
+    );
     const event = createEvent();
-    getLinkDetails.and.returnValue({
+    getClickedElementProperties.and.returnValue({
       xdm: {
         web: {
           webInteraction: {
@@ -34,21 +41,28 @@ describe("ActivityCollector::createLinkClick", () => {
           }
         }
       },
-      data: {}
+      data: {},
+      isValidLink: () => true,
+      isInternalLink: () => false,
+      isValidActivityMapData: () => true
     });
-    linkClick({ targetElement: {}, event });
+    injectClickedElementProperties({ event, targetElement: {} });
     expect(event.isEmpty()).toBe(false);
   });
+
   it("does not extend event XDM data when clickCollectionEnabled is false", () => {
     const event = createEvent();
     const config = {
       downloadLinkQualifier,
       clickCollectionEnabled: false
     };
-
-    const linkClick = createLinkClick({ getLinkDetails, config });
-
-    getLinkDetails.and.returnValue({
+    const injectClickedElementProperties = createInjectClickedElementProperties(
+      {
+        getClickedElementProperties,
+        config
+      }
+    );
+    getClickedElementProperties.and.returnValue({
       xdm: {
         web: {
           webInteraction: {
@@ -58,20 +72,32 @@ describe("ActivityCollector::createLinkClick", () => {
       },
       data: {}
     });
-    linkClick({ targetElement: {}, event });
+    injectClickedElementProperties({ targetElement: {}, event });
     expect(event.isEmpty()).toBe(true);
   });
+
   it("Does not extend event XDM data with link information for unsupported anchor elements", () => {
     const event = createEvent();
     const config = {
       downloadLinkQualifier,
-      clickCollectionEnabled: true
+      clickCollectionEnabled: true,
+      clickCollection: {}
     };
+    const injectClickedElementProperties = createInjectClickedElementProperties(
+      {
+        getClickedElementProperties,
+        clickActivityStorage,
+        config
+      }
+    );
+    getClickedElementProperties.and.returnValue({
+      data: {},
+      isValidLink: () => false,
+      isInternalLink: () => false,
+      isValidActivityMapData: () => true
+    });
 
-    const linkClick = createLinkClick({ getLinkDetails, config });
-
-    getLinkDetails.and.returnValue(undefined);
-    linkClick({ targetElement: {}, event });
+    injectClickedElementProperties({ targetElement: {}, event });
     expect(event.isEmpty()).toBe(true);
   });
 });
