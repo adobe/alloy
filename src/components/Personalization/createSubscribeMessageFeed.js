@@ -117,8 +117,10 @@ export default ({ collect }) => {
     }
   };
 
-  const subscription = createSubscription();
-  subscription.setEmissionPreprocessor((params, propositions) => {
+  let emitPropositions = () => undefined;
+
+  const subscriptions = createSubscription();
+  subscriptions.setEmissionPreprocessor((params, propositions) => {
     const { surfaceIdentifier } = params;
 
     const result = propositions
@@ -142,20 +144,26 @@ export default ({ collect }) => {
   });
 
   const run = ({ surface, callback }) => {
-    const unsubscribe = subscription.add(callback, {
+    const { id, unsubscribe } = subscriptions.add(callback, {
       surfaceIdentifier: surface
     });
+    emitPropositions(id);
     return Promise.resolve({ unsubscribe });
   };
 
   const optionsValidator = options => validateOptions({ options });
 
   const refresh = propositions => {
-    if (!subscription.hasSubscriptions()) {
-      return;
-    }
+    emitPropositions = subscriptionId => {
+      if (subscriptionId) {
+        subscriptions.emitOne(subscriptionId, propositions);
+        return;
+      }
 
-    subscription.emit(propositions);
+      subscriptions.emit(propositions);
+    };
+
+    emitPropositions();
   };
 
   return {

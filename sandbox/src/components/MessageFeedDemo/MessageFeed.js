@@ -673,8 +673,8 @@ export default function MessageFeed() {
           setMessageFeedItems(items);
           rendered(items);
         }
-      }),
-      alloyInstance("evaluateRulesets")
+      })
+      // alloyInstance("evaluateRulesets")
       // alloyInstance("sendEvent", {
       //   renderDecisions: true,
       //   type: "decisioning.propositionFetch",

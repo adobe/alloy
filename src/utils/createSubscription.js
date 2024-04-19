@@ -38,7 +38,7 @@ const createSubscription = () => {
     counter += 1;
 
     subscriptions[counter] = { callback, params };
-    return createUnsubscribe(counter);
+    return { id: counter, unsubscribe: createUnsubscribe(counter) };
   };
 
   const setEmissionPreprocessor = value => {
@@ -62,11 +62,25 @@ const createSubscription = () => {
     });
   };
 
+  const emitOne = (subscriptionId, ...args) => {
+    if (!subscriptionId || !subscriptions[subscriptionId]) {
+      return;
+    }
+
+    const { callback, params } = subscriptions[subscriptionId];
+
+    const result = preprocessor(params, ...args);
+    if (emissionCondition(params, ...result)) {
+      callback(...result);
+    }
+  };
+
   const hasSubscriptions = () => Object.keys(subscriptions).length > 0;
 
   return {
     add,
     emit,
+    emitOne,
     hasSubscriptions,
     setEmissionPreprocessor,
     setEmissionCondition

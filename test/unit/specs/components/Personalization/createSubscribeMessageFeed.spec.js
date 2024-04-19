@@ -203,8 +203,10 @@ describe("Personalization:subscribeMessageFeed", () => {
 
     // register a subscription.  equivalent to alloy("subscribeMessageFeed", {surface, callback})
     command.run({ surface: "web://mywebsite.com/feed", callback });
+    expect(callback).not.toHaveBeenCalled();
 
     refresh(PROPOSITIONS);
+
     expect(callback).toHaveBeenCalledOnceWith({
       items: [
         jasmine.objectContaining({
@@ -253,6 +255,163 @@ describe("Personalization:subscribeMessageFeed", () => {
       dismissed: jasmine.any(Function)
     });
   });
+
+  it("calls the callback with list of items at time of subscription (when there are existing propositions)", () => {
+    const { command, refresh } = subscribeMessageFeed;
+
+    const callback = jasmine.createSpy();
+
+    refresh(PROPOSITIONS);
+    command.run({ surface: "web://mywebsite.com/feed", callback });
+
+    expect(callback).toHaveBeenCalledOnceWith({
+      items: [
+        jasmine.objectContaining({
+          imageUrl: "img/twitter.png",
+          actionTitle: "Shop the sale!",
+          actionUrl: "https://luma.com/sale",
+          publishedDate: 1678098240000,
+          body: "Posting on social media helps us spread the word.",
+          title: "Thanks for sharing!",
+          qualifiedDate: 1683042658312,
+          displayedDate: 1683042658316
+        }),
+        jasmine.objectContaining({
+          imageUrl: "img/gold-coin.jpg",
+          actionTitle: "Shop the sale!",
+          actionUrl: "https://luma.com/sale",
+          publishedDate: 1678184640000,
+          body: "Now you're ready to earn!",
+          title: "Funds deposited!",
+          qualifiedDate: 1683042653905,
+          displayedDate: 1683042653909
+        }),
+        jasmine.objectContaining({
+          imageUrl: "img/achievement.png",
+          actionTitle: "Shop the sale!",
+          actionUrl: "https://luma.com/sale",
+          publishedDate: 1677839040000,
+          body: "Great job, you completed your profile.",
+          title: "Achievement Unlocked!",
+          qualifiedDate: 1683042628064,
+          displayedDate: 1683042628070
+        }),
+        jasmine.objectContaining({
+          imageUrl: "img/lumon.png",
+          actionTitle: "Shop the sale!",
+          actionUrl: "https://luma.com/sale",
+          publishedDate: 1677752640000,
+          body: "a handshake is available upon request.",
+          title: "Welcome to Lumon!",
+          qualifiedDate: 1683042628064,
+          displayedDate: 1683042628070
+        })
+      ],
+      clicked: jasmine.any(Function),
+      rendered: jasmine.any(Function),
+      dismissed: jasmine.any(Function)
+    });
+  });
+
+  it("calls the callback with most recent list of items at time of subscription", () => {
+    const { command, refresh } = subscribeMessageFeed;
+
+    const callbackA = jasmine.createSpy("callbackA");
+    const callbackB = jasmine.createSpy("callbackB");
+
+    refresh(PROPOSITIONS.slice(0, 2));
+    command.run({ surface: "web://mywebsite.com/feed", callback: callbackA });
+
+    refresh(PROPOSITIONS.slice(2));
+    command.run({ surface: "web://mywebsite.com/feed", callback: callbackB });
+
+    expect(callbackA).toHaveBeenCalledTimes(2);
+
+    expect(callbackA).toHaveBeenCalledWith({
+      items: [
+        jasmine.objectContaining({
+          imageUrl: "img/achievement.png",
+          actionTitle: "Shop the sale!",
+          actionUrl: "https://luma.com/sale",
+          publishedDate: 1677839040000,
+          body: "Great job, you completed your profile.",
+          title: "Achievement Unlocked!",
+          qualifiedDate: 1683042628064,
+          displayedDate: 1683042628070
+        }),
+        jasmine.objectContaining({
+          imageUrl: "img/lumon.png",
+          actionTitle: "Shop the sale!",
+          actionUrl: "https://luma.com/sale",
+          publishedDate: 1677752640000,
+          body: "a handshake is available upon request.",
+          title: "Welcome to Lumon!",
+          qualifiedDate: 1683042628064,
+          displayedDate: 1683042628070
+        })
+      ],
+      clicked: jasmine.any(Function),
+      rendered: jasmine.any(Function),
+      dismissed: jasmine.any(Function)
+    });
+
+    expect(callbackA).toHaveBeenCalledWith({
+      items: [
+        jasmine.objectContaining({
+          imageUrl: "img/twitter.png",
+          actionTitle: "Shop the sale!",
+          actionUrl: "https://luma.com/sale",
+          publishedDate: 1678098240000,
+          body: "Posting on social media helps us spread the word.",
+          title: "Thanks for sharing!",
+          qualifiedDate: 1683042658312,
+          displayedDate: 1683042658316
+        }),
+        jasmine.objectContaining({
+          imageUrl: "img/gold-coin.jpg",
+          actionTitle: "Shop the sale!",
+          actionUrl: "https://luma.com/sale",
+          publishedDate: 1678184640000,
+          body: "Now you're ready to earn!",
+          title: "Funds deposited!",
+          qualifiedDate: 1683042653905,
+          displayedDate: 1683042653909
+        })
+      ],
+      clicked: jasmine.any(Function),
+      rendered: jasmine.any(Function),
+      dismissed: jasmine.any(Function)
+    });
+
+    expect(callbackB).toHaveBeenCalledOnceWith({
+      items: [
+        jasmine.objectContaining({
+          imageUrl: "img/twitter.png",
+          actionTitle: "Shop the sale!",
+          actionUrl: "https://luma.com/sale",
+          publishedDate: 1678098240000,
+          body: "Posting on social media helps us spread the word.",
+          title: "Thanks for sharing!",
+          qualifiedDate: 1683042658312,
+          displayedDate: 1683042658316
+        }),
+        jasmine.objectContaining({
+          imageUrl: "img/gold-coin.jpg",
+          actionTitle: "Shop the sale!",
+          actionUrl: "https://luma.com/sale",
+          publishedDate: 1678184640000,
+          body: "Now you're ready to earn!",
+          title: "Funds deposited!",
+          qualifiedDate: 1683042653905,
+          displayedDate: 1683042653909
+        })
+      ],
+      clicked: jasmine.any(Function),
+      rendered: jasmine.any(Function),
+      dismissed: jasmine.any(Function)
+    });
+  });
+
   it("has helper methods on items", () => {
     const { command, refresh } = subscribeMessageFeed;
 
