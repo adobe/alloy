@@ -23,7 +23,7 @@ import preventLinkNavigation from "../../helpers/preventLinkNavigation";
 import createCollectEndpointAsserter from "../../helpers/createCollectEndpointAsserter";
 
 createFixture({
-  title: "C8118: Send event with information about link clicks."
+  title: "C8118: Collects and sends information about link clicks."
 });
 
 test.meta({
@@ -32,21 +32,45 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-const addLinkToBody = () => {
-  return addHtmlToBody(
-    `<a href="blank.html"><span id="alloy-link-test">Test Link</span></a>`
-  );
+const INTERNAL_LINK_ANCHOR_1 = `<a href="blank.html"><span id="alloy-link-test">Test Link</span></a>`;
+const INTERNAL_LINK_ANCHOR_2 = `<a href="blank.html" id="alloy-link-test">Internal Link</a>`;
+const DOWNLOAD_LINK_ANCHOR = `<a href="example.zip" id="alloy-link-test" download>Download Zip File</a>`;
+const EXTERNAL_LINK_ANCHOR = `<a href="https://example.com" id="alloy-link-test">External Link</a>`;
+
+const addLinkToBody = link => {
+  return addHtmlToBody(`${link}`);
 };
 
 const clickLink = async () => {
   await t.click(Selector("#alloy-link-test"));
 };
 
-const assertRequestXdm = async request => {
-  const requestBody = JSON.parse(request.request.body);
-  const eventXdm = requestBody.events[0].xdm;
-  await t.expect(eventXdm.eventType).eql("web.webinteraction.linkClicks");
-  await t.expect(eventXdm.web.webInteraction).eql({
+const getEventTypeFromRequest = req => {
+  const bodyJson = JSON.parse(req.request.body);
+  return bodyJson.events[0].xdm.eventType;
+};
+
+const getWebInteractionFromRequest = req => {
+  const bodyJson = JSON.parse(req.request.body);
+  return bodyJson.events[0].xdm.web.webInteraction;
+};
+
+const getXdmFromRequest = req => {
+  const bodyJson = JSON.parse(req.request.body);
+  return bodyJson.events[0].xdm;
+};
+
+/* eslint no-underscore-dangle: 0 */
+const getActivityMapDataFromRequest = req => {
+  const bodyJson = JSON.parse(req.request.body);
+  return bodyJson.events[0].data.__adobe.analytics.c.a.activitymap;
+};
+
+const assertRequestXdm = async req => {
+  const eventType = getEventTypeFromRequest(req);
+  await t.expect(eventType).eql("web.webinteraction.linkClicks");
+  const webInteraction = getWebInteractionFromRequest(req);
+  await t.expect(webInteraction).eql({
     name: "Test Link",
     region: "BODY",
     type: "other",
@@ -56,16 +80,16 @@ const assertRequestXdm = async request => {
 };
 
 test("Test C8118: Verify link click sends a request to the collect endpoint when identity has been established, interact endpoint otherwise", async () => {
-  const collectEndpointAsserter = await createCollectEndpointAsserter();
-  await preventLinkNavigation();
-  const alloy = createAlloyProxy();
   const testConfig = compose(
     orgMainConfigMain,
     clickCollectionEnabled,
     clickCollectionEventGroupingDisabled // To prevent internal link click to get cached
   );
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  const alloy = createAlloyProxy();
   await alloy.configure(testConfig);
-  await addLinkToBody();
+  await preventLinkNavigation();
+  await addLinkToBody(INTERNAL_LINK_ANCHOR_1);
   await clickLink();
   await collectEndpointAsserter.assertInteractCalledAndNotCollect();
   const interactRequest = await collectEndpointAsserter.getInteractRequest();
@@ -85,4 +109,216 @@ test("Test C8118: Verify link click sends a request to the collect endpoint when
   await collectEndpointAsserter.assertCollectCalledAndNotInteract();
   const collectRequest = collectEndpointAsserter.getCollectRequest();
   await assertRequestXdm(collectRequest);
+});
+
+test("Test C8118: Verify that a download link click data is not sent when download link click collection is disabled", async () => {
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      downloadLinkEnabled: false,
+      eventGroupingEnabled: false
+    }
+  });
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  const alloy = createAlloyProxy();
+  await alloy.configure(testConfig);
+  await preventLinkNavigation();
+  await addLinkToBody(DOWNLOAD_LINK_ANCHOR);
+  await clickLink();
+  await collectEndpointAsserter.assertNeitherCollectNorInteractCalled();
+});
+
+test("Test C8118: Verify that a download link click data is sent when download link click collection is enabled", async () => {
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      downloadLinkEnabled: true,
+      eventGroupingEnabled: false
+    }
+  });
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  const alloy = createAlloyProxy();
+  await alloy.configure(testConfig);
+  await preventLinkNavigation();
+  await addLinkToBody(DOWNLOAD_LINK_ANCHOR);
+  await clickLink();
+  await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  const interactRequest = await collectEndpointAsserter.getInteractRequest();
+  const webInteraction = await getWebInteractionFromRequest(interactRequest);
+  await t.expect(webInteraction).eql({
+    name: "Download Zip File",
+    region: "BODY",
+    type: "download",
+    URL: "https://alloyio.com/functional-test/example.zip",
+    linkClicks: { value: 1 }
+  });
+  const activityMapData = getActivityMapDataFromRequest(interactRequest);
+  await t.expect(activityMapData).eql({
+    page: "https://alloyio.com/functional-test/testPage.html",
+    link: "Download Zip File",
+    region: "BODY",
+    pageIDType: 0
+  });
+});
+
+test("Test C8118: Verify that a internal link click data is not sent when internal link click collection is disabled", async () => {
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      internalLinkEnabled: false,
+      eventGroupingEnabled: false
+    }
+  });
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  const alloy = createAlloyProxy();
+  await alloy.configure(testConfig);
+  await preventLinkNavigation();
+  await addLinkToBody(INTERNAL_LINK_ANCHOR_1);
+  await clickLink();
+  await collectEndpointAsserter.assertNeitherCollectNorInteractCalled();
+});
+
+test("Test C8118: Verify that a internal link click data is sent when internal link click collection is enabled", async () => {
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      internalLinkEnabled: true,
+      eventGroupingEnabled: false
+    }
+  });
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  const alloy = createAlloyProxy();
+  await alloy.configure(testConfig);
+  await preventLinkNavigation();
+  await addLinkToBody(INTERNAL_LINK_ANCHOR_2);
+  await clickLink();
+  await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  const interactRequest = await collectEndpointAsserter.getInteractRequest();
+  const webInteraction = await getWebInteractionFromRequest(interactRequest);
+  await t.expect(webInteraction).eql({
+    name: "Internal Link",
+    region: "BODY",
+    type: "other",
+    URL: "https://alloyio.com/functional-test/blank.html",
+    linkClicks: { value: 1 }
+  });
+  const activityMapData = getActivityMapDataFromRequest(interactRequest);
+  await t.expect(activityMapData).eql({
+    page: "https://alloyio.com/functional-test/testPage.html",
+    link: "Internal Link",
+    region: "BODY",
+    pageIDType: 0
+  });
+});
+
+test("Test C8118: Verify that a external link click data is not sent when external link click collection is disabled", async () => {
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      externalLinkEnabled: false,
+      eventGroupingEnabled: false
+    }
+  });
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  const alloy = createAlloyProxy();
+  await alloy.configure(testConfig);
+  await preventLinkNavigation();
+  await addLinkToBody(EXTERNAL_LINK_ANCHOR);
+  await clickLink();
+  await collectEndpointAsserter.assertNeitherCollectNorInteractCalled();
+});
+
+test("Test C8118: Verify that a external link click data is sent when external link click collection is enabled", async () => {
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      externalLinkEnabled: true,
+      eventGroupingEnabled: false
+    }
+  });
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  const alloy = createAlloyProxy();
+  await alloy.configure(testConfig);
+  await preventLinkNavigation();
+  await addLinkToBody(EXTERNAL_LINK_ANCHOR);
+  await clickLink();
+  await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  const interactRequest = await collectEndpointAsserter.getInteractRequest();
+  const webInteraction = await getWebInteractionFromRequest(interactRequest);
+  await t.expect(webInteraction).eql({
+    name: "External Link",
+    region: "BODY",
+    type: "exit",
+    URL: "https://example.com",
+    linkClicks: { value: 1 }
+  });
+  const activityMapData = getActivityMapDataFromRequest(interactRequest);
+  await t.expect(activityMapData).eql({
+    page: "https://alloyio.com/functional-test/testPage.html",
+    link: "External Link",
+    region: "BODY",
+    pageIDType: 0
+  });
+});
+
+test("Test C8118: Verify that a internal link click data is not sent when event grouping is enabled", async () => {
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      internalLinkEnabled: true,
+      eventGroupingEnabled: true
+    }
+  });
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  const alloy = createAlloyProxy();
+  await alloy.configure(testConfig);
+  await preventLinkNavigation();
+  await addLinkToBody(INTERNAL_LINK_ANCHOR_1);
+  await clickLink();
+  await collectEndpointAsserter.assertNeitherCollectNorInteractCalled();
+});
+
+test("Test C8118: Verify cached internal link click data is sent on the next page view event", async () => {
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      internalLinkEnabled: true,
+      eventGroupingEnabled: true
+    }
+  });
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  const alloy = createAlloyProxy();
+  await alloy.configure(testConfig);
+  await preventLinkNavigation();
+  await addLinkToBody(INTERNAL_LINK_ANCHOR_1);
+  await clickLink();
+  await collectEndpointAsserter.assertNeitherCollectNorInteractCalled();
+  await collectEndpointAsserter.reset();
+  await alloy.sendEvent({
+    xdm: {
+      web: {
+        eventType: "web.webpagedetails.pageViews",
+        webPageDetails: {
+          name: "Test Page",
+          pageViews: {
+            value: 1
+          }
+        }
+      }
+    }
+  });
+  await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  const interactRequest = await collectEndpointAsserter.getInteractRequest();
+  const xdm = await getXdmFromRequest(interactRequest);
+  await t.expect(xdm.web.webInteraction).eql({
+    name: "Test Link",
+    region: "BODY",
+    type: "other",
+    URL: "https://alloyio.com/functional-test/blank.html",
+    linkClicks: { value: 1 }
+  });
+  await t.expect(xdm.web.webPageDetails).eql({
+    URL: "https://alloyio.com/functional-test/testPage.html",
+    name: "Test Page",
+    pageViews: { value: 1 }
+  });
+  const activityMapData = getActivityMapDataFromRequest(interactRequest);
+  await t.expect(activityMapData).eql({
+    page: "https://alloyio.com/functional-test/testPage.html",
+    link: "Test Link",
+    region: "BODY",
+    pageIDType: 0
+  });
 });

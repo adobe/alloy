@@ -13,7 +13,15 @@ governing permissions and limitations under the License.
 import trimQueryFromUrl from "../trimQueryFromUrl";
 
 export default (downloadLinkQualifier, linkUrl, clickedObj) => {
-  const re = new RegExp(downloadLinkQualifier);
-  const trimmedLinkUrl = trimQueryFromUrl(linkUrl).toLowerCase();
-  return clickedObj.download ? true : re.test(trimmedLinkUrl);
+  let result = false;
+  if (linkUrl) {
+    if (clickedObj && clickedObj.download) {
+      result = true;
+    } else if (downloadLinkQualifier) {
+      const re = new RegExp(downloadLinkQualifier);
+      const trimmedLinkUrl = trimQueryFromUrl(linkUrl).toLowerCase();
+      result = re.test(trimmedLinkUrl);
+    }
+  }
+  return result;
 };

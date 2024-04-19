@@ -13,7 +13,24 @@ governing permissions and limitations under the License.
 import findClickableElement from "../../../../../../../src/components/ActivityCollector/utils/dom/findClickableElement";
 
 describe("ActivityCollector::findClickableElement", () => {
-  it("should be defined", () => {
-    expect(findClickableElement).toBeDefined();
+  it("returns null if no clickable element is found", () => {
+    const targetElement = document.createElement("div");
+    const parentElement = document.createElement("div");
+    parentElement.appendChild(targetElement);
+    expect(findClickableElement(targetElement)).toBeNull();
+  });
+
+  it("returns the target element if it is clickable", () => {
+    const targetElement = document.createElement("a");
+    targetElement.href = "http://www.example.com";
+    expect(findClickableElement(targetElement)).toBe(targetElement);
+  });
+
+  it("returns the target element's parent if it is not clickable", () => {
+    const targetElement = document.createElement("div");
+    const parentElement = document.createElement("a");
+    parentElement.href = "http://www.example.com";
+    parentElement.appendChild(targetElement);
+    expect(findClickableElement(targetElement)).toBe(parentElement);
   });
 });

@@ -13,10 +13,12 @@ governing permissions and limitations under the License.
 import trimQueryFromUrl from "../trimQueryFromUrl";
 
 export default (window, linkUrl) => {
-  const currentHostname = window.location.hostname.toLowerCase();
-  const trimmedLinkUrl = trimQueryFromUrl(linkUrl).toLowerCase();
-  if (trimmedLinkUrl.indexOf(currentHostname) >= 0) {
-    return false;
+  let result = false;
+  // window.location.hostname should always be defined, but checking just in case
+  if (linkUrl && window.location.hostname) {
+    const currentHostname = window.location.hostname.toLowerCase();
+    const trimmedLinkUrl = trimQueryFromUrl(linkUrl).toLowerCase();
+    result = trimmedLinkUrl.indexOf(currentHostname) < 0;
   }
-  return true;
+  return result;
 };

@@ -13,7 +13,45 @@ governing permissions and limitations under the License.
 import determineLinkType from "../../../../../../src/components/ActivityCollector/utils/determineLinkType";
 
 describe("ActivityCollector::determineLinkType", () => {
-  it("should be defined", () => {
-    expect(determineLinkType).toBeDefined();
+  let window;
+  let config;
+  let linkUrl;
+  let clickedObj;
+
+  beforeEach(() => {
+    window = {};
+    config = {};
+    linkUrl = "";
+    clickedObj = {};
+  });
+
+  it("returns 'other' if linkUrl is an empty string", () => {
+    const result = determineLinkType(window, config, linkUrl, clickedObj);
+    expect(result).toBe("other");
+  });
+
+  it("returns 'download' if linkUrl qualify as download link", () => {
+    linkUrl = "https://example.com/download.pdf";
+    config.downloadLinkQualifier = /\.pdf$/;
+    const result = determineLinkType(window, config, linkUrl, clickedObj);
+    expect(result).toBe("download");
+  });
+
+  it("returns 'exit' if linkUrl is an exit link", () => {
+    linkUrl = "https://adobe.com";
+    window.location = {
+      hostname: "example.com"
+    };
+    const result = determineLinkType(window, config, linkUrl, clickedObj);
+    expect(result).toBe("exit");
+  });
+
+  it("returns 'other' if linkUrl is not a download or exit link", () => {
+    linkUrl = "https://example.com";
+    window.location = {
+      hostname: "example.com"
+    };
+    const result = determineLinkType(window, config, linkUrl, clickedObj);
+    expect(result).toBe("other");
   });
 });

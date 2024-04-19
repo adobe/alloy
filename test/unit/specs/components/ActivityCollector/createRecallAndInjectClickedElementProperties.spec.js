@@ -13,7 +13,74 @@ governing permissions and limitations under the License.
 import createRecallAndInjectClickedElementProperties from "../../../../../src/components/ActivityCollector/createRecallAndInjectClickedElementProperties";
 
 describe("ActivityCollector::createRecallAndInjectClickedElementProperties", () => {
-  it("should be defined", () => {
-    expect(createRecallAndInjectClickedElementProperties).toBeDefined();
+  let props;
+  let clickActivityStorage;
+  let event;
+
+  beforeEach(() => {
+    props = {};
+    clickActivityStorage = {
+      load: jasmine.createSpy().and.returnValue(props),
+      save: jasmine.createSpy()
+    };
+    event = {
+      mergeXdm: jasmine.createSpy(),
+      setUserData: jasmine.createSpy()
+    };
+  });
+
+  it("should return a function", () => {
+    const recallAndInjectClickedElementProperties = createRecallAndInjectClickedElementProperties(
+      { clickActivityStorage }
+    );
+    expect(recallAndInjectClickedElementProperties).toEqual(
+      jasmine.any(Function)
+    );
+  });
+
+  it("should merge stored clicked element properties to event XDM and DATA", () => {
+    const recallClickElementProperties = createRecallAndInjectClickedElementProperties(
+      { clickActivityStorage }
+    );
+    props.pageName = "examplePage";
+    props.linkName = "example";
+    props.linkRegion = "exampleRegion";
+    props.linkType = "external";
+    props.linkUrl = "https://example.com";
+    props.pageIDType = 1;
+    recallClickElementProperties(event);
+    expect(event.mergeXdm).toHaveBeenCalledWith({
+      web: {
+        webInteraction: {
+          name: "example",
+          region: "exampleRegion",
+          type: "external",
+          URL: "https://example.com",
+          linkClicks: {
+            value: 1
+          }
+        }
+      }
+    });
+    expect(event.setUserData).toHaveBeenCalledWith({
+      __adobe: {
+        analytics: {
+          c: {
+            a: {
+              activitymap: {
+                page: "examplePage",
+                link: "example",
+                region: "exampleRegion",
+                pageIDType: 1
+              }
+            }
+          }
+        }
+      }
+    });
+    expect(clickActivityStorage.save).toHaveBeenCalledWith({
+      pageName: "examplePage",
+      pageIDType: 1
+    });
   });
 });

@@ -18,7 +18,9 @@ describe("ActivityCollector::isDownloadLink", () => {
     const clickedElement = {
       download: "filename"
     };
-    expect(isDownloadLink("", "", clickedElement)).toBe(true);
+    expect(isDownloadLink(null, "https://example.com/", clickedElement)).toBe(
+      true
+    );
   });
   it("Returns true if the link matches the download link qualifying regular expression", () => {
     const downloadLinks = [

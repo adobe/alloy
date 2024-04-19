@@ -13,7 +13,38 @@ governing permissions and limitations under the License.
 import createStorePageViewProperties from "../../../../../src/components/ActivityCollector/createStorePageViewProperties";
 
 describe("ActivityCollector::createStorePageViewProperties", () => {
-  it("should be defined", () => {
-    expect(createStorePageViewProperties).toBeDefined();
+  let clickActivityStorage;
+  beforeEach(() => {
+    clickActivityStorage = {
+      save: jasmine.createSpy()
+    };
+  });
+
+  it("should return a function", () => {
+    const storePageViewProperties = createStorePageViewProperties({
+      clickActivityStorage
+    });
+    expect(storePageViewProperties).toEqual(jasmine.any(Function));
+  });
+
+  it("stores page view properties when available in event", () => {
+    const storePageViewProperties = createStorePageViewProperties({
+      clickActivityStorage
+    });
+    storePageViewProperties({
+      getContent: () => ({
+        xdm: {
+          web: {
+            webPageDetails: {
+              name: "testPageName"
+            }
+          }
+        }
+      })
+    });
+    expect(clickActivityStorage.save).toHaveBeenCalledWith({
+      pageName: "testPageName",
+      pageIDType: 1
+    });
   });
 });

@@ -21,7 +21,10 @@ export default ({ clickActivityStorage }) => {
       elementProperties.isValidActivityMapData()
     ) {
       if (elementProperties.isValidLink()) {
-        event.mergeXdm(elementProperties.xdm);
+        const xdm = elementProperties.xdm;
+        // Have to delete the eventType not to override the page view
+        delete xdm.eventType;
+        event.mergeXdm(xdm);
       }
       if (elementProperties.isValidActivityMapData()) {
         event.setUserData(elementProperties.data);

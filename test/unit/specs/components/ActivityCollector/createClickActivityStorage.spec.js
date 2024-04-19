@@ -13,7 +13,34 @@ governing permissions and limitations under the License.
 import createClickActivityStorage from "../../../../../src/components/ActivityCollector/createClickActivityStorage";
 
 describe("ActivityCollector::createClickActivityStorage", () => {
-  it("should be defined", () => {
-    expect(createClickActivityStorage).toBeDefined();
+  let config;
+  let window;
+
+  beforeEach(() => {
+    window = {};
+    config = {
+      orgId: "ABC@AdobeOrg",
+      clickCollection: {
+        sessionStorageEnabled: false
+      }
+    };
+  });
+
+  it("enables for transient storage when created", () => {
+    createClickActivityStorage({ config, window });
+    expect(window["com.adobe.alloy.ABC@AdobeOrg"]).toBeDefined();
+  });
+
+  it("saves data to storage", () => {
+    const storage = createClickActivityStorage({ config, window });
+    storage.save({ some: "data" });
+    expect(storage.load()).toEqual({ some: "data" });
+  });
+
+  it("removes data from storage", () => {
+    const storage = createClickActivityStorage({ config, window });
+    storage.save({ some: "data" });
+    storage.remove();
+    expect(storage.load()).toBeNull();
   });
 });

@@ -16,11 +16,12 @@ import createTransientStorage from "./utils/createTransientStorage";
 
 export default ({ config, window }) => {
   const createNamespacedStorage = injectStorage(window);
-  const storage = createNamespacedStorage(`${config.orgId}.`);
+  const orgId = config.orgId || "";
+  const storage = createNamespacedStorage(orgId);
   const clickCollectionConfig = config.clickCollection;
 
   // Transient in-memory if sessionStorage is disabled
-  const transientStorage = createTransientStorage(window, `${config.orgId}`);
+  const transientStorage = createTransientStorage(window, orgId);
   const availableStorage = clickCollectionConfig.sessionStorageEnabled
     ? storage.session
     : transientStorage;
