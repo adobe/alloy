@@ -34,10 +34,17 @@ export default ({ collect }) => {
     const { id, scope, scopeDetails } = payload;
 
     const { data = {} } = item;
-    const { content = {}, publishedDate, qualifiedDate, displayedDate } = data;
+    const {
+      content = {},
+      meta = {},
+      publishedDate,
+      qualifiedDate,
+      displayedDate
+    } = data;
 
     return {
       ...content,
+      meta,
       qualifiedDate,
       displayedDate,
       publishedDate,

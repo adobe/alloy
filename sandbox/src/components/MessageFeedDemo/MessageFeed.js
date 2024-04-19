@@ -1,7 +1,36 @@
-/* eslint-disable no-console */
+/* eslint-disable */
 import React, { useEffect, useState } from "react";
 import ContentSecurityPolicy from "../ContentSecurityPolicy";
 import "./MessageFeed.css";
+import { deleteAllCookies, getAlloyTestConfigs } from "../utils";
+
+const configKey = localStorage.getItem("iam-configKey") || "stage";
+let responseSource = localStorage.getItem("iam-responseSource") || "mock";
+
+const config = getAlloyTestConfigs();
+
+const {
+  datastreamId,
+  orgId,
+  decisionContext,
+  edgeDomain,
+  alloyInstance
+} = config[configKey];
+
+if (alloyInstance !== window.alloy) {
+  alloyInstance("configure", {
+    defaultConsent: "in",
+    datastreamId,
+    orgId,
+    edgeDomain,
+    thirdPartyCookiesEnabled: false,
+    targetMigrationEnabled: false,
+    personalizationStorageEnabled: true,
+    debugEnabled: true
+  });
+}
+
+const surface = "web://aepdemo.com/messageFeed";
 
 const mockResponse = {
   requestId: "5a38a9ef-67d7-4f66-8977-c4dc0e0967b6",
@@ -109,8 +138,7 @@ const mockResponse = {
                             publishedDate: 1677752640000,
                             meta: {
                               feedName: "Winter Promo",
-                              surface:
-                                "mobileapp://com.adobe.sampleApp/feed/promos"
+                              surface
                             },
                             content: {
                               imageUrl: "/img/lumon.png",
@@ -131,7 +159,7 @@ const mockResponse = {
               }
             }
           ],
-          scope: "web://target.jasonwaters.dev/aep.html"
+          scope: surface
         },
         {
           scopeDetails: {
@@ -223,8 +251,7 @@ const mockResponse = {
                             publishedDate: 1677839040000,
                             meta: {
                               feedName: "Winter Promo",
-                              surface:
-                                "mobileapp://com.adobe.sampleApp/feed/promos"
+                              surface
                             },
                             content: {
                               imageUrl: "/img/achievement.jpg",
@@ -245,7 +272,7 @@ const mockResponse = {
               }
             }
           ],
-          scope: "web://target.jasonwaters.dev/aep.html"
+          scope: surface
         },
         {
           scopeDetails: {
@@ -338,8 +365,7 @@ const mockResponse = {
                             publishedDate: 1678098240000,
                             meta: {
                               feedName: "Winter Promo",
-                              surface:
-                                "mobileapp://com.adobe.sampleApp/feed/promos"
+                              surface
                             },
                             content: {
                               imageUrl: "/img/twitter.png",
@@ -361,7 +387,7 @@ const mockResponse = {
               }
             }
           ],
-          scope: "web://target.jasonwaters.dev/aep.html"
+          scope: surface
         },
         {
           scopeDetails: {
@@ -454,8 +480,7 @@ const mockResponse = {
                             publishedDate: 1678184640000,
                             meta: {
                               feedName: "Winter Promo",
-                              surface:
-                                "mobileapp://com.adobe.sampleApp/feed/promos"
+                              surface
                             },
                             content: {
                               imageUrl: "/img/gold-coin.jpg",
@@ -476,7 +501,7 @@ const mockResponse = {
               }
             }
           ],
-          scope: "web://target.jasonwaters.dev/aep.html"
+          scope: surface
         }
       ],
       type: "personalization:decisions",
@@ -553,14 +578,14 @@ export default function MessageFeed() {
 
   useEffect(() => {
     const startupPromises = Promise.all([
-      window.alloy("subscribeRulesetItems", {
-        surfaces: ["web://target.jasonwaters.dev/aep.html"],
+      alloyInstance("subscribeRulesetItems", {
+        surfaces: [surface],
         callback: result => {
           console.log("subscribeRulesetItems", result);
         }
       }),
-      window.alloy("subscribeMessageFeed", {
-        surface: "web://target.jasonwaters.dev/aep.html",
+      alloyInstance("subscribeMessageFeed", {
+        surface,
         callback: ({ items = [], rendered, clicked, dismissed }) => {
           console.log("subscribeMessageFeed", items);
           setClickHandler(() => clicked);
@@ -569,10 +594,20 @@ export default function MessageFeed() {
           rendered(items);
         }
       }),
-      window.alloy("applyResponse", {
-        renderDecisions: true,
-        responseBody: mockResponse
-      })
+      responseSource === "edge"
+        ? alloyInstance("sendEvent", {
+            renderDecisions: true,
+            type: "decisioning.propositionFetch",
+            personalization: {
+              surfaces: [surface],
+              decisionContext: { ...decisionContext },
+              sendDisplayEvent: false
+            }
+          })
+        : alloyInstance("applyResponse", {
+            renderDecisions: true,
+            responseBody: mockResponse
+          })
     ]);
 
     return () => {
@@ -585,14 +620,29 @@ export default function MessageFeed() {
 
   const dismissFeedItem = items => {
     dismissHandler(items).then(() => {
-      window.alloy("evaluateRulesets", {
+      alloyInstance("evaluateRulesets", {
         renderDecisions: true
       });
     });
   };
 
+  const onClickedFeedItem = items => {
+    if (items.length === 0) {
+      return;
+    }
+
+    clickHandler(items);
+
+    const { actionUrl = "" } = items[0];
+    if (typeof actionUrl !== "string" || actionUrl.length === 0) {
+      return;
+    }
+
+    window.location.href = actionUrl;
+  };
+
   const shareSocialMedia = () => {
-    window.alloy("evaluateRulesets", {
+    alloyInstance("evaluateRulesets", {
       renderDecisions: true,
       personalization: {
         decisionContext: {
@@ -603,7 +653,7 @@ export default function MessageFeed() {
   };
 
   const depositFunds = () => {
-    window.alloy("evaluateRulesets", {
+    alloyInstance("evaluateRulesets", {
       renderDecisions: true,
       personalization: {
         decisionContext: {
@@ -613,20 +663,72 @@ export default function MessageFeed() {
     });
   };
 
+  const renderMessageFeed = () => {
+    Promise.all([
+      alloyInstance("subscribeMessageFeed", {
+        surface,
+        callback: ({ items = [], rendered, clicked, dismissed }) => {
+          setClickHandler(() => clicked);
+          setDismissHandler(() => dismissed);
+          setMessageFeedItems(items);
+          rendered(items);
+        }
+      }),
+      alloyInstance("evaluateRulesets")
+      // alloyInstance("sendEvent", {
+      //   renderDecisions: true,
+      //   type: "decisioning.propositionFetch",
+      //   personalization: {
+      //     surfaces: [surface],
+      //     decisionContext: { ...decisionContext },
+      //     sendDisplayEvent: false
+      //   }
+      // })
+    ]);
+  };
+
   const resetPersistentData = () => {
+    deleteAllCookies();
     localStorage.clear();
+    localStorage.setItem("iam-configKey", configKey);
+    localStorage.setItem("iam-responseSource", responseSource);
     window.location.reload();
+  };
+
+  const setResponseSource = value => {
+    responseSource = value;
+    localStorage.setItem("iam-responseSource", responseSource);
+    resetPersistentData();
   };
 
   return (
     <div>
       <ContentSecurityPolicy />
+      <div>
+        <label htmlFor="cars">Response Source:</label>
+        <select
+          id="responseSource"
+          name="responseSource"
+          onChange={evt => setResponseSource(evt.target.value)}
+          defaultValue={responseSource}
+        >
+          <option key="mock" value="mock">
+            Mock
+          </option>
+          <option key="edge" value="edge">
+            Edge
+          </option>
+        </select>
+      </div>
       <div style={{ margin: "10px 0" }}>
         <button id="social-media-share" onClick={() => shareSocialMedia()}>
           Share on social media
         </button>
         <button id="deposit-funds" onClick={() => depositFunds()}>
           Deposit funds
+        </button>
+        <button id="reset" onClick={() => renderMessageFeed()}>
+          Render Feed
         </button>
         <button id="reset" onClick={() => resetPersistentData()}>
           Reset
@@ -639,9 +741,16 @@ export default function MessageFeed() {
             <div
               key={index}
               className="pretty-card"
-              onClick={() => clickHandler([item])}
+              onClick={() => onClickedFeedItem([item])}
             >
-              <button onClick={() => dismissFeedItem([item])}>dismiss</button>
+              <button
+                onClick={evt => {
+                  evt.stopPropagation();
+                  dismissFeedItem([item]);
+                }}
+              >
+                dismiss
+              </button>
               <p>{item.title}</p>
               <p>
                 {item.imageUrl && <img src={item.imageUrl} alt="Item Image" />}
