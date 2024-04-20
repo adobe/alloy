@@ -159,8 +159,14 @@ export default properties => {
       }
       return buildDataFromClickedElementProperties(this);
     },
-    // TODO: Consider exposing a simpler property filter function that doesn't deal with JSON
-    // applyPropertyFilter: function(filter) { ... },
+    applyPropertyFilter(filter) {
+      if (filter && filter(props) === false) {
+        // logger.info(
+        //   `Clicked element properties were rejected by filter function`
+        // );
+        props = {};
+      }
+    },
     applyOptionsFilter(filter) {
       const opts = this.options;
       if (opts && opts.clickedElement && (opts.xdm || opts.data)) {

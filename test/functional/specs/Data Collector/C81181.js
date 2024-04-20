@@ -74,6 +74,23 @@ test("Test C81181: Verify that onBeforeLinkClickSend cancels a request", async (
   await collectEndpointAsserter.assertNeitherCollectNorInteractCalled();
 });
 
+test("Test C81181: Verify that filterClickedElementProperties can cancel a request", async () => {
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  await preventLinkNavigation();
+  const alloy = createAlloyProxy();
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      filterClickedElementProperties: () => {
+        return false;
+      }
+    }
+  });
+  await alloy.configure(testConfig);
+  await addLinksToBody();
+  await clickLink("#alloy-link-test");
+  await collectEndpointAsserter.assertNeitherCollectNorInteractCalled();
+});
+
 test("Test C81181: Verify that if onBeforeLinkClickSend not defined and clickCollectionEnabled link clicks are collected", async () => {
   const collectEndpointAsserter = await createCollectEndpointAsserter();
   await preventLinkNavigation();
@@ -114,6 +131,36 @@ test("Test C81181: Verify that onBeforeLinkClickSend cancels a request based on 
       }
     }
   );
+  await alloy.configure(testConfig);
+  await addLinksToBody();
+  await clickLink("#canceled-alloy-link-test");
+  await collectEndpointAsserter.assertNeitherCollectNorInteractCalled();
+  await clickLink("#alloy-link-test");
+  await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  const interactRequest = collectEndpointAsserter.getInteractRequest();
+  const expectedXdm = {
+    name: "Test Link",
+    region: "BODY",
+    type: "other",
+    URL: "https://alloyio.com/functional-test/valid.html",
+    linkClicks: { value: 1 }
+  };
+  await assertRequestXdm(interactRequest, expectedXdm);
+});
+
+test("Test C81181: Verify that filterClickedElementProperties can cancels a request based on link details", async () => {
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  await preventLinkNavigation();
+  const alloy = createAlloyProxy();
+
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      eventGroupingEnabled: false,
+      filterClickedElementProperties: props => {
+        return props.clickedElement.id !== "canceled-alloy-link-test";
+      }
+    }
+  });
   await alloy.configure(testConfig);
   await addLinksToBody();
   await clickLink("#canceled-alloy-link-test");
@@ -188,6 +235,64 @@ test("Test C81181: Verify that onBeforeLinkClickSend augments a request", async 
       }
     },
     customField: "test123"
+  };
+
+  await assertRequestXdm(
+    interactRequest,
+    expectedXdmWebInteraction,
+    expectedData
+  );
+});
+
+test("Test C81181: Verify that filterClickedElementProperties can augment a request", async () => {
+  const collectEndpointAsserter = await createCollectEndpointAsserter();
+  await preventLinkNavigation();
+  const alloy = createAlloyProxy();
+
+  const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
+    clickCollection: {
+      eventGroupingEnabled: false,
+      filterClickedElementProperties: props => {
+        if (props.clickedElement.id === "alloy-link-test") {
+          props.linkName = "Augmented name";
+          return true;
+        }
+        return false;
+      }
+    }
+  });
+
+  await alloy.configure(testConfig);
+  await addLinksToBody();
+  await clickLink("#canceled-alloy-link-test");
+  await collectEndpointAsserter.assertNeitherCollectNorInteractCalled();
+  await clickLink("#alloy-link-test");
+  await collectEndpointAsserter.assertInteractCalledAndNotCollect();
+  const interactRequest = collectEndpointAsserter.getInteractRequest();
+
+  const expectedXdmWebInteraction = {
+    name: "Augmented name",
+    region: "BODY",
+    type: "other",
+    URL: "https://alloyio.com/functional-test/valid.html",
+    linkClicks: { value: 1 }
+  };
+
+  const expectedData = {
+    __adobe: {
+      analytics: {
+        c: {
+          a: {
+            activitymap: {
+              link: "Augmented name",
+              page: "https://alloyio.com/functional-test/testPage.html",
+              pageIDType: 0,
+              region: "BODY"
+            }
+          }
+        }
+      }
+    }
   };
 
   await assertRequestXdm(

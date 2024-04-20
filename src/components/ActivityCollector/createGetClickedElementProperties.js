@@ -23,9 +23,10 @@ export default ({
 }) => {
   return ({ targetElement, config }) => {
     const {
-      onBeforeLinkClickSend: optionsFilter
-      //      filterClickedElementProperties: propertyFilter
+      onBeforeLinkClickSend: optionsFilter, // Deprecated
+      clickCollection
     } = config;
+    const { filterClickedElementProperties: propertyFilter } = clickCollection;
     const clickActivityStorage = createClickActivityStorage({
       config,
       window
@@ -59,13 +60,12 @@ export default ({
           // Like if pageName starts with "http" then pageIDType = 0
           elementProperties.pageIDType = 1;
         }
-        // If defined, run user provided filter function (clickCollection.filterClickedElementProperties)
-        // if (propertyFilter) {
-        //   elementProperties.applyPropertyFilter(propertyFilter);
-        // }
-        // Deprecated onBeforeEventClickSend:
-        // else
-        if (optionsFilter) {
+        // If defined, run user provided filter function
+        if (propertyFilter) {
+          // clickCollection.filterClickedElementProperties
+          elementProperties.applyPropertyFilter(propertyFilter);
+        } else if (optionsFilter) {
+          // onBeforeLinkClickSend
           elementProperties.applyOptionsFilter(optionsFilter);
         }
       }

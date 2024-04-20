@@ -26,7 +26,8 @@ export default objectOf({
     downloadLinkEnabled: boolean().default(true),
     // TODO: Consider moving downloadLinkQualifier here.
     sessionStorageEnabled: boolean().default(true),
-    eventGroupingEnabled: boolean().default(true)
+    eventGroupingEnabled: boolean().default(true),
+    filterClickedElementProperties: callback()
   }).default({
     internalLinkEnabled: true,
     externalLinkEnabled: true,
@@ -36,4 +37,8 @@ export default objectOf({
   }),
   downloadLinkQualifier,
   onBeforeLinkClickSend: callback()
-});
+}).deprecated(
+  "clickCollection.filterClickedElementProperties",
+  callback(),
+  "onBeforeLinkClickSend"
+);

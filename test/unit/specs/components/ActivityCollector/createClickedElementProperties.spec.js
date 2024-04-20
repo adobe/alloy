@@ -134,6 +134,31 @@ describe("ActivityCollector::createClickedElementProperties", () => {
       pageIDType: 1
     });
   });
+  it("Can apply a property filter", () => {
+    const props = createClickedElementProperties(fullProps);
+    // Need a clickedElement for the filter to be executed
+    props.clickedElement = {};
+    const filter = p => {
+      p.linkType = "filtered";
+    };
+    props.applyPropertyFilter(filter);
+    expect(props.linkType).toBe("filtered");
+  });
+  it("Can apply a property filter for all properties", () => {
+    const props = createClickedElementProperties(fullProps);
+    props.clickedElement = {};
+    const filter = p => {
+      p.pageName = "filtered";
+      p.linkName = "filtered";
+      p.linkRegion = "filtered";
+      p.linkType = "filtered";
+      p.linkUrl = "filtered";
+      p.pageIDType = 1;
+    };
+    props.applyPropertyFilter(filter);
+    expect(props.linkType).toBe("filtered");
+    expect(props.pageName).toBe("filtered");
+  });
   it("Can apply an options property filter", () => {
     const props = createClickedElementProperties(fullProps);
     // Need a clickedElement for the filter to be executed
