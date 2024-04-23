@@ -56,27 +56,34 @@ const emissionCondition = (params, result) => {
 };
 
 export default () => {
-  const subscription = createSubscription();
-  subscription.setEmissionPreprocessor(emissionPreprocessor);
-  subscription.setEmissionCondition(emissionCondition);
+  let emitPropositions = () => undefined;
+
+  const subscriptions = createSubscription();
+  subscriptions.setEmissionPreprocessor(emissionPreprocessor);
+  subscriptions.setEmissionCondition(emissionCondition);
 
   const run = ({ surfaces, schemas, callback }) => {
-    const unsubscribe = subscription.add(callback, {
+    const { id, unsubscribe } = subscriptions.add(callback, {
       surfacesFilter: surfaces instanceof Array ? surfaces : undefined,
       schemasFilter: schemas instanceof Array ? schemas : undefined
     });
-
+    emitPropositions(id);
     return Promise.resolve({ unsubscribe });
   };
 
   const optionsValidator = options => validateOptions({ options });
 
   const refresh = propositions => {
-    if (!subscription.hasSubscriptions()) {
-      return;
-    }
+    emitPropositions = subscriptionId => {
+      if (subscriptionId) {
+        subscriptions.emitOne(subscriptionId, propositions);
+        return;
+      }
 
-    subscription.emit(propositions);
+      subscriptions.emit(propositions);
+    };
+
+    emitPropositions();
   };
 
   return {

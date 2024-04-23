@@ -256,6 +256,24 @@ describe("Personalization:subscribeMessageFeed", () => {
     });
   });
 
+  it("does not call the callback when unsubscribed", async () => {
+    const { command, refresh } = subscribeMessageFeed;
+
+    const callback = jasmine.createSpy("callback");
+
+    // register a subscription.  equivalent to alloy("subscribeMessageFeed", {surface, callback})
+    const { unsubscribe } = await command.run({
+      surface: "web://mywebsite.com/feed",
+      callback
+    });
+
+    expect(unsubscribe instanceof Function).toBeTrue();
+    unsubscribe();
+
+    refresh(PROPOSITIONS);
+    expect(callback).not.toHaveBeenCalled();
+  });
+
   it("calls the callback with list of items at time of subscription (when there are existing propositions)", () => {
     const { command, refresh } = subscribeMessageFeed;
 
