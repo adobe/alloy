@@ -71,11 +71,11 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     });
 
     const result = getClickedElementProperties({
-      targetElement: {},
+      clickedElement: {},
       config,
       logger
     });
-    // I have to set this manually because of passing in {} as the targetElement
+    // I have to set this manually because of passing in {} as the clickedElement
     result.pageIDType = 0;
 
     expect(result.options).toEqual({
@@ -139,7 +139,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     });
 
     const result = getClickedElementProperties({
-      targetElement: {},
+      clickedElement: {},
       config,
       logger
     });
@@ -171,7 +171,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     });
 
     const result = getClickedElementProperties({
-      targetElement: {},
+      clickedElement: {},
       config,
       logger
     });
@@ -203,11 +203,11 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     });
 
     const result = getClickedElementProperties({
-      targetElement: {},
+      clickedElement: {},
       config,
       logger
     });
-    // I have to set this manually because of passing in {} as the targetElement
+    // I have to set this manually because of passing in {} as the clickedElement
     result.pageIDType = 0;
     expect(result.options).toEqual({
       data: {
@@ -253,7 +253,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     });
 
     const result = getClickedElementProperties({
-      targetElement: {},
+      clickedElement: {},
       config,
       logger
     });

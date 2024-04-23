@@ -69,10 +69,10 @@ const createActivityCollector = ({
         });
         // TODO: createScrollActivityCollector ...
       },
-      onClick({ event, targetElement }) {
+      onClick({ event, clickedElement }) {
         injectClickedElementProperties({
           event,
-          targetElement
+          clickedElement
         });
       },
       onBeforeEvent({ event }) {
@@ -99,7 +99,7 @@ createActivityCollector.buildOnInstanceConfiguredExtraParams = ({
   return {
     getLinkDetails: targetElement => {
       return getClickedElementProperties({
-        targetElement,
+        clickedElement: targetElement,
         config,
         logger
       }).options;

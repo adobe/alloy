@@ -30,9 +30,9 @@ export default ({
     return () => undefined;
   }
 
-  return ({ event, targetElement }) => {
+  return ({ event, clickedElement }) => {
     const elementProperties = getClickedElementProperties({
-      targetElement,
+      clickedElement,
       config,
       logger
     });

@@ -46,7 +46,7 @@ describe("ActivityCollector::createInjectClickedElementProperties", () => {
       isInternalLink: () => false,
       isValidActivityMapData: () => true
     });
-    injectClickedElementProperties({ event, targetElement: {} });
+    injectClickedElementProperties({ event, clickedElement: {} });
     expect(event.isEmpty()).toBe(false);
   });
 
@@ -72,7 +72,7 @@ describe("ActivityCollector::createInjectClickedElementProperties", () => {
       },
       data: {}
     });
-    injectClickedElementProperties({ targetElement: {}, event });
+    injectClickedElementProperties({ clickedElement: {}, event });
     expect(event.isEmpty()).toBe(true);
   });
 
@@ -97,7 +97,7 @@ describe("ActivityCollector::createInjectClickedElementProperties", () => {
       isValidActivityMapData: () => true
     });
 
-    injectClickedElementProperties({ targetElement: {}, event });
+    injectClickedElementProperties({ clickedElement: {}, event });
     expect(event.isEmpty()).toBe(true);
   });
 });

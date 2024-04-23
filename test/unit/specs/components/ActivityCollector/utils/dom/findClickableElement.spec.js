@@ -14,23 +14,23 @@ import findClickableElement from "../../../../../../../src/components/ActivityCo
 
 describe("ActivityCollector::findClickableElement", () => {
   it("returns null if no clickable element is found", () => {
-    const targetElement = document.createElement("div");
+    const element = document.createElement("div");
     const parentElement = document.createElement("div");
-    parentElement.appendChild(targetElement);
-    expect(findClickableElement(targetElement)).toBeNull();
+    parentElement.appendChild(element);
+    expect(findClickableElement(element)).toBeNull();
   });
 
   it("returns the target element if it is clickable", () => {
-    const targetElement = document.createElement("a");
-    targetElement.href = "http://www.example.com";
-    expect(findClickableElement(targetElement)).toBe(targetElement);
+    const element = document.createElement("a");
+    element.href = "http://www.example.com";
+    expect(findClickableElement(element)).toBe(element);
   });
 
   it("returns the target element's parent if it is not clickable", () => {
-    const targetElement = document.createElement("div");
+    const element = document.createElement("div");
     const parentElement = document.createElement("a");
     parentElement.href = "http://www.example.com";
-    parentElement.appendChild(targetElement);
-    expect(findClickableElement(targetElement)).toBe(parentElement);
+    parentElement.appendChild(element);
+    expect(findClickableElement(element)).toBe(parentElement);
   });
 });

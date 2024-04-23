@@ -15,8 +15,8 @@ import elementHasClickHandler from "./elementHasClickHandler";
 import isInputSubmitElement from "./isInputSubmitElement";
 import isButtonSubmitElement from "./isButtonSubmitElement";
 
-export default targetElement => {
-  let node = targetElement;
+export default element => {
+  let node = element;
   while (node) {
     if (
       isSupportedAnchorElement(node) ||

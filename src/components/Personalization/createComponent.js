@@ -113,7 +113,7 @@ export default ({
         });
       },
       onClick({ event, clickedElement }) {
-        onClickHandler({ event, targetElement: clickedElement });
+        onClickHandler({ event, clickedElement });
       }
     },
     commands: {

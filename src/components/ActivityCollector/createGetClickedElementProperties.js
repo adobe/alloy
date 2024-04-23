@@ -21,7 +21,7 @@ export default ({
   findClickableElement,
   determineLinkType
 }) => {
-  return ({ targetElement, config }) => {
+  return ({ clickedElement, config }) => {
     const {
       onBeforeLinkClickSend: optionsFilter, // Deprecated
       clickCollection
@@ -32,12 +32,10 @@ export default ({
       window
     });
     const elementProperties = createClickedElementProperties();
-    if (targetElement) {
-      const clickableElement = findClickableElement(targetElement);
+    if (clickedElement) {
+      const clickableElement = findClickableElement(clickedElement);
       if (clickableElement) {
-        // Setting the clicked element as the target element
-        // This is the element that that the click event was triggered on
-        elementProperties.clickedElement = targetElement;
+        elementProperties.clickedElement = clickedElement;
         elementProperties.linkUrl = getAbsoluteUrlFromAnchorElement(
           window,
           clickableElement
