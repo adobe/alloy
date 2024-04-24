@@ -35,7 +35,7 @@ export default ({ mediaSessionCacheManager, config, trackMediaEvent }) => {
             eventType: MediaEvents.PING
           }
         });
-      }, config.mediaCollection.mainPingInterval * 1000);
+      }, config.streamingMedia.mainPingInterval * 1000);
 
       mediaSessionCacheManager.saveHeartbeat({ playerId, heartbeatId });
 

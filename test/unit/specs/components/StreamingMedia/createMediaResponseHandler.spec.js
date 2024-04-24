@@ -1,4 +1,4 @@
-import createMediaResponseHandler from "../../../../../src/components/MediaCollection/createMediaResponseHandler";
+import createMediaResponseHandler from "../../../../../src/components/StreamingMedia/createMediaResponseHandler";
 
 describe("createMediaResponseHandler", () => {
   let trackMediaEvent;
@@ -22,7 +22,7 @@ describe("createMediaResponseHandler", () => {
       saveHeartbeat: jasmine.createSpy()
     };
     config = {
-      mediaCollection: {
+      streamingMedia: {
         adPingInterval: 5,
         mainPingInterval: 10
       }

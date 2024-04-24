@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createMediaSessionCacheManager from "../../../../../src/components/MediaCollection/createMediaSessionCacheManager";
+import createMediaSessionCacheManager from "../../../../../src/components/StreamingMedia/createMediaSessionCacheManager";
 
-describe("MediaCollection::createMediaSessionCacheManager", () => {
+describe("StreamingMedia::createMediaSessionCacheManager", () => {
   let mediaSessionCacheManager;
 
   beforeEach(() => {

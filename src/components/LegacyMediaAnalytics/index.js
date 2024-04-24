@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 /* eslint-disable import/no-restricted-paths */
 
-import createMediaEventManager from "../MediaCollection/createMediaEventManager";
-import createMediaSessionCacheManager from "../MediaCollection/createMediaSessionCacheManager";
-import createTrackMediaEvent from "../MediaCollection/createTrackMediaEvent";
-import createTrackMediaSession from "../MediaCollection/createTrackMediaSession";
-import createMediaResponseHandler from "../MediaCollection/createMediaResponseHandler";
+import createMediaEventManager from "../StreamingMedia/createMediaEventManager";
+import createMediaSessionCacheManager from "../StreamingMedia/createMediaSessionCacheManager";
+import createTrackMediaEvent from "../StreamingMedia/createTrackMediaEvent";
+import createTrackMediaSession from "../StreamingMedia/createTrackMediaSession";
+import createMediaResponseHandler from "../StreamingMedia/createMediaResponseHandler";
 import createLegacyMediaComponent from "./createLegacyMediaComponent";
 import createMediaHelper from "./createMediaHelper";
 import createGetInstance from "./createGetInstance";

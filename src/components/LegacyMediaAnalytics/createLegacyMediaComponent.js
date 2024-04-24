@@ -50,12 +50,12 @@ export default ({
     commands: {
       getMediaAnalyticsTracker: {
         run: () => {
-          if (!config.mediaCollection) {
+          if (!config.streamingMedia) {
             return Promise.reject(
-              new Error("Media Collection is not configured.")
+              new Error("Streaming media is not configured.")
             );
           }
-          logger.info("Media Collection is configured in legacy mode.");
+          logger.info("Streaming media is configured in legacy mode.");
           const mediaAnalyticsHelper = createMediaHelper({ logger });
 
           return Promise.resolve({

@@ -19,13 +19,13 @@ import createResponse from "../../helpers/createResponse";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
 import createAlloyProxy from "../../helpers/createAlloyProxy";
 import orgMediaConfig from "../../helpers/constants/configParts/orgMediaConfig";
-import mediaCollection from "../../helpers/constants/configParts/mediaCollection";
+import streamingMedia from "../../helpers/constants/configParts/streamingMedia";
 import { sleep } from "../Migration/helper";
 
 const networkLogger = createNetworkLogger();
-const config = compose(orgMediaConfig, mediaCollection);
+const config = compose(orgMediaConfig, streamingMedia);
 createFixture({
-  title: "Media Collection for legacy migration use cases.",
+  title: "Streaming media  for legacy migration use cases.",
   url: TEST_PAGE_URL,
   requestHooks: [
     networkLogger.edgeEndpointLogs,

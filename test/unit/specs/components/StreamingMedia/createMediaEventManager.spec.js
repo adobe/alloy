@@ -12,9 +12,9 @@ governing permissions and limitations under the License.
 
 // tests for createMediaEventManager.js
 
-import createMediaEventManager from "../../../../../src/components/MediaCollection/createMediaEventManager";
+import createMediaEventManager from "../../../../../src/components/StreamingMedia/createMediaEventManager";
 
-describe("MediaCollection::createMediaEventManager", () => {
+describe("StreamingMedia::createMediaEventManager", () => {
   let config;
   let eventManager;
   let consent;
@@ -24,7 +24,7 @@ describe("MediaCollection::createMediaEventManager", () => {
 
   beforeEach(() => {
     config = {
-      mediaCollection: {
+      streamingMedia: {
         playerName: "player1",
         channel: "channel1",
         version: "1.0.0"

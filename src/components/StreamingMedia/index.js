@@ -14,12 +14,12 @@ import createMediaSessionCacheManager from "./createMediaSessionCacheManager";
 import createMediaEventManager from "./createMediaEventManager";
 import createTrackMediaEvent from "./createTrackMediaEvent";
 import configValidators from "./configValidators";
-import createMediaComponent from "./createMediaComponent";
+import createStreamingMediaComponent from "./createStreamingMediaComponent";
 import createTrackMediaSession from "./createTrackMediaSession";
 import createMediaResponseHandler from "./createMediaResponseHandler";
 import injectTimestamp from "../Context/injectTimestamp";
 
-const createMediaCollection = ({
+const createStreamingMedia = ({
   config,
   logger,
   eventManager,
@@ -54,7 +54,7 @@ const createMediaCollection = ({
     trackMediaEvent
   });
 
-  return createMediaComponent({
+  return createStreamingMediaComponent({
     config,
     trackMediaEvent,
     mediaEventManager,
@@ -62,7 +62,7 @@ const createMediaCollection = ({
     trackMediaSession
   });
 };
-createMediaCollection.namespace = "Media Collection";
+createStreamingMedia.namespace = "Streaming media";
 
-createMediaCollection.configValidators = configValidators;
-export default createMediaCollection;
+createStreamingMedia.configValidators = configValidators;
+export default createStreamingMedia;

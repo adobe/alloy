@@ -23,7 +23,7 @@ import createEventMerge from "../components/EventMerge";
 import createLibraryInfo from "../components/LibraryInfo";
 import createDecisioningEngine from "../components/DecisioningEngine";
 import createMachineLearning from "../components/MachineLearning";
-import createMediaCollection from "../components/MediaCollection";
+import createStreamingMedia from "../components/StreamingMedia";
 import createLegacyMediaAnalytics from "../components/LegacyMediaAnalytics";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
@@ -41,5 +41,5 @@ export default [
   createMachineLearning,
   createDecisioningEngine,
   createLegacyMediaAnalytics,
-  createMediaCollection
+  createStreamingMedia
 ];

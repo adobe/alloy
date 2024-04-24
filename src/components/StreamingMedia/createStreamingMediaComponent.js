@@ -45,9 +45,9 @@ export default ({
         optionsValidator: options => validateMediaEventOptions({ options }),
 
         run: options => {
-          if (!config.mediaCollection) {
+          if (!config.streamingMedia) {
             return Promise.reject(
-              new Error("Media Collection is not configured.")
+              new Error("Streaming media is not configured.")
             );
           }
 

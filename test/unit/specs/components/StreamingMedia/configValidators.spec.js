@@ -10,29 +10,29 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import configValidators from "../../../../../src/components/MediaCollection/configValidators";
+import configValidators from "../../../../../src/components/StreamingMedia/configValidators";
 import testConfigValidators from "../../../helpers/testConfigValidators";
 
-describe("MediaCollection config validators", () => {
+describe("Streaming Media config validators", () => {
   testConfigValidators({
     configValidators,
     validConfigurations: [
       {},
       {
-        mediaCollection: {
+        streamingMedia: {
           channel: "test-channel",
           playerName: "test-player-name"
         }
       },
       {
-        mediaCollection: {
+        streamingMedia: {
           channel: "test-channel",
           playerName: "test-player-name",
           appVersion: "test-app-version"
         }
       },
       {
-        mediaCollection: {
+        streamingMedia: {
           channel: "test-channel",
           playerName: "test-player-name",
           appVersion: "test-app-version",
@@ -42,22 +42,22 @@ describe("MediaCollection config validators", () => {
       }
     ],
     invalidConfigurations: [
-      { mediaCollection: "" },
-      { mediaCollection: {} },
-      { mediaCollection: { channel: "test-channel" } },
-      { mediaCollection: { playerName: "test-player-name" } }
+      { streamingMedia: "" },
+      { streamingMedia: {} },
+      { streamingMedia: { channel: "test-channel" } },
+      { streamingMedia: { playerName: "test-player-name" } }
     ],
     defaultValues: {}
   });
 
-  it("provides default values when Media Collection configured", () => {
+  it("provides default values when Streaming media configured", () => {
     const config = configValidators({
-      mediaCollection: {
+      streamingMedia: {
         channel: "test-channel",
         playerName: "test-player-name"
       }
     });
-    expect(config.mediaCollection.adPingInterval).toBe(10);
-    expect(config.mediaCollection.mainPingInterval).toBe(10);
+    expect(config.streamingMedia.adPingInterval).toBe(10);
+    expect(config.streamingMedia.mainPingInterval).toBe(10);
   });
 });

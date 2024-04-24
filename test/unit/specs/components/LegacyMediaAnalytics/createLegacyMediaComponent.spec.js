@@ -14,7 +14,7 @@ import createLegacyMediaComponent from "../../../../../src/components/LegacyMedi
 
 describe("LegacyMediaAnalytics::createLegacyMediaComponent", () => {
   const config = {
-    mediaCollection: {
+    streamingMedia: {
       channel: "testChannel",
       playerName: "testPlayerName",
       appVersion: "testAppVersion"

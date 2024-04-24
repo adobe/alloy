@@ -36,7 +36,7 @@ export default ({
             advertisingDetails: {
               playerName:
                 advertisingDetails.playerName ||
-                config.mediaCollection.playerName
+                config.streamingMedia.playerName
             }
           }
         });
@@ -44,7 +44,7 @@ export default ({
       return event;
     },
     createMediaSession(options) {
-      const { playerName, channel, appVersion } = config.mediaCollection;
+      const { playerName, channel, appVersion } = config.streamingMedia;
       const event = eventManager.createEvent();
       const { sessionDetails } = options.xdm.mediaCollection;
       event.setUserXdm(options.xdm);

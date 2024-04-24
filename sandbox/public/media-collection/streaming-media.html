@@ -72,7 +72,7 @@
     </script>
     <script nonce="%REACT_APP_NONCE%">
       alloy("configure", {
-        mediaCollection: {
+        streamingMedia: {
           // adobeStreamingMedia
           // need to move these at session creation command
           channel: "video channel",
@@ -97,7 +97,7 @@
   <body>
     <div>
       <h2>
-        Media Collection with automatic handling of sessionID and playhead.
+        Collect streaming media events using automatic session handling option.
       </h2>
       <video id="media-movie" width="600" preload controls muted>
         <source
@@ -105,14 +105,16 @@
           type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
         />
       </video>
-      <h2>Media Collection with custom handling of sessionID and playhead.</h2>
+      <h2>
+        Collect streaming media events using manual session handling option.
+      </h2>
       <video id="media-second-movie" width="600" preload controls muted>
         <source
           src="clickbaby.mp4"
           type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
         />
       </video>
-      <h2>Media Analytics for migrating customers.</h2>
+      <h2>Collect streaming media events using legacy Media Analytics API.</h2>
       <video id="media-third-movie" width="600" preload controls muted>
         <source
           src="clickbaby.mp4"

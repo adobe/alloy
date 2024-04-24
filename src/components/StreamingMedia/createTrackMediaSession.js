@@ -16,8 +16,8 @@ export default ({
   legacy = false
 }) => {
   return options => {
-    if (!config.mediaCollection) {
-      return Promise.reject(new Error("Media Collection is not configured."));
+    if (!config.streamingMedia) {
+      return Promise.reject(new Error("Streaming media is not configured."));
     }
 
     const { playerId, getPlayerDetails } = options;

@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createMediaRequest from "../../../../../src/components/MediaCollection/createMediaRequest";
+import createMediaRequest from "../../../../../src/components/StreamingMedia/createMediaRequest";
 
-describe("MediaCollection::createMediaRequest", () => {
+describe("StreamingMedia::createMediaRequest", () => {
   it("should call createRequest with correct parameters", () => {
     const mediaRequestPayload = {}; // replace with valid payload
     const action = "testAction";

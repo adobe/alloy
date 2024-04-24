@@ -1,4 +1,4 @@
-import createTrackMediaSession from "../../../../../src/components/MediaCollection/createTrackMediaSession";
+import createTrackMediaSession from "../../../../../src/components/StreamingMedia/createTrackMediaSession";
 
 describe("createTrackMediaEvent", () => {
   let trackMediaSession;
@@ -20,7 +20,7 @@ describe("createTrackMediaEvent", () => {
       storeSession: jasmine.createSpy()
     };
     config = {
-      mediaCollection: {
+      streamingMedia: {
         playerName: "testPlayerName",
         channel: "testChannel",
         adPingInterval: 5,

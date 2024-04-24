@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createMediaComponent from "../../../../../src/components/MediaCollection/createMediaComponent";
+import createStreamingMediaComponent from "../../../../../src/components/StreamingMedia/createStreamingMediaComponent";
 
-describe("MediaCollection::createComponent", () => {
+describe("StreamingMedia::createComponent", () => {
   const config = {
-    mediaCollection: {
+    streamingMedia: {
       channel: "testChannel",
       playerName: "testPlayerName",
       appVersion: "testAppVersion"
@@ -27,7 +27,7 @@ describe("MediaCollection::createComponent", () => {
   let trackMediaSession;
 
   const build = configs => {
-    mediaComponent = createMediaComponent({
+    mediaComponent = createStreamingMediaComponent({
       config: configs,
       logger,
       trackMediaEvent,

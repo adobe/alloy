@@ -1,5 +1,5 @@
-import createTrackMediaEvent from "../../../../../src/components/MediaCollection/createTrackMediaEvent";
-import MediaEvents from "../../../../../src/components/MediaCollection/constants/eventTypes";
+import createTrackMediaEvent from "../../../../../src/components/StreamingMedia/createTrackMediaEvent";
+import MediaEvents from "../../../../../src/components/StreamingMedia/constants/eventTypes";
 
 describe("createTrackMediaEvent", () => {
   let trackMediaEvent;
@@ -22,7 +22,7 @@ describe("createTrackMediaEvent", () => {
       saveHeartbeat: jasmine.createSpy()
     };
     config = {
-      mediaCollection: {
+      streamingMedia: {
         adPingInterval: 5,
         mainPingInterval: 10
       }

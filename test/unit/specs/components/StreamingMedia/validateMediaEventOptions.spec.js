@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import validateMediaEventOptions from "../../../../../src/components/MediaCollection/validateMediaEventOptions";
+import validateMediaEventOptions from "../../../../../src/components/StreamingMedia/validateMediaEventOptions";
 
-describe("MediaCollection::validateMediaEventOptions", () => {
+describe("StreamingMedia::validateMediaEventOptions", () => {
   it("should not fail when payerId and xdm are used", () => {
     const options = {
       playerId: "playerId",

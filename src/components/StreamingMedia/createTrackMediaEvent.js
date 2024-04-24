@@ -41,8 +41,8 @@ export default ({ mediaEventManager, mediaSessionCacheManager, config }) => {
             const interval =
               eventType === MediaEvents.AD_START ||
               eventType === MediaEvents.Ad_BREAK_START
-                ? config.mediaCollection.adPingInterval
-                : config.mediaCollection.mainPingInterval;
+                ? config.streamingMedia.adPingInterval
+                : config.streamingMedia.mainPingInterval;
 
             const heartbeatId = setTimeout(() => {
               const heartbeatOptions = {
