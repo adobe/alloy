@@ -21,6 +21,14 @@ import {
   DOM_ACTION_CLICK,
   DOM_ACTION_SET_HTML
 } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+import {
+  DECORATED_ELEMENTS_ONLY,
+  NEVER
+} from "../../../../../../src/constants/propositionInteractionType";
+import {
+  ADOBE_JOURNEY_OPTIMIZER,
+  ADOBE_TARGET
+} from "../../../../../../src/constants/decisionProvider";
 
 describe("Personalization::createDecorateProposition", () => {
   let decorateProposition;
@@ -35,6 +43,31 @@ describe("Personalization::createDecorateProposition", () => {
 
   it("sets a data-attribute for interact id and label", () => {
     decorateProposition = createDecoratePropositionForTest({
+      type: DOM_ACTION_CLICK,
+      trackingLabel: "myTrackingLabel"
+    });
+
+    const element = createNode(
+      "div",
+      { id: "something" },
+      { innerText: "superfluous" }
+    );
+    appendNode(document.body, element);
+
+    decorateProposition(element);
+
+    expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toEqual(
+      "myTrackingLabel"
+    );
+    expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).not.toBeNull();
+  });
+
+  it("sets a data-attribute for interact id and label when autoTrackPropositionInteractions=decoratedElementsOnly", () => {
+    decorateProposition = createDecoratePropositionForTest({
+      autoTrackPropositionInteractions: {
+        [ADOBE_JOURNEY_OPTIMIZER]: DECORATED_ELEMENTS_ONLY,
+        [ADOBE_TARGET]: NEVER
+      },
       type: DOM_ACTION_CLICK,
       trackingLabel: "myTrackingLabel"
     });
@@ -153,6 +186,29 @@ describe("Personalization::createDecorateProposition", () => {
   it("does not set data-attribute for interact id and label if autoTrackPropositionInteractions does not include the appropriate decisionProvider and dom action is not 'click'", () => {
     decorateProposition = createDecoratePropositionForTest({
       autoTrackPropositionInteractions: {},
+      type: DOM_ACTION_SET_HTML,
+      trackingLabel: "myTrackingLabel"
+    });
+
+    const element = createNode(
+      "div",
+      { id: "something" },
+      { innerText: "superfluous" }
+    );
+    appendNode(document.body, element);
+
+    decorateProposition(element);
+
+    expect(getAttribute(element, CLICK_LABEL_DATA_ATTRIBUTE)).toBeNull();
+    expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).toBeNull();
+  });
+
+  it("does not set data-attribute for interact id and label if autoTrackPropositionInteractions does not include the appropriate decisionProvider and dom action is not 'click'", () => {
+    decorateProposition = createDecoratePropositionForTest({
+      autoTrackPropositionInteractions: {
+        [ADOBE_JOURNEY_OPTIMIZER]: NEVER,
+        [ADOBE_TARGET]: NEVER
+      },
       type: DOM_ACTION_SET_HTML,
       trackingLabel: "myTrackingLabel"
     });

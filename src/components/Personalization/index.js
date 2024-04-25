@@ -187,7 +187,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
 createPersonalization.namespace = "Personalization";
 
-const trackPropositionInteractionOptions = PROPOSITION_INTERACTION_TYPES.map(
+const interactionConfigOptions = PROPOSITION_INTERACTION_TYPES.map(
   propositionInteractionType => literal(propositionInteractionType)
 );
 
@@ -195,11 +195,14 @@ createPersonalization.configValidators = objectOf({
   prehidingStyle: string().nonEmpty(),
   targetMigrationEnabled: boolean().default(false),
   autoTrackPropositionInteractions: objectOf({
-    [ADOBE_JOURNEY_OPTIMIZER]: anyOf(
-      trackPropositionInteractionOptions
-    ).default(ALWAYS),
-    [ADOBE_TARGET]: anyOf(trackPropositionInteractionOptions).default(NEVER)
-  }).noUnknownFields()
+    [ADOBE_JOURNEY_OPTIMIZER]: anyOf(interactionConfigOptions).default(ALWAYS),
+    [ADOBE_TARGET]: anyOf(interactionConfigOptions).default(NEVER)
+  })
+    .default({
+      [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
+      [ADOBE_TARGET]: NEVER
+    })
+    .noUnknownFields()
 });
 
 export default createPersonalization;
