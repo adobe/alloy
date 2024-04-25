@@ -18,10 +18,21 @@ import {
   selectNodes
 } from "../../../../../../../src/utils/dom";
 import collectInteractions from "../../../../../../../src/components/Personalization/dom-actions/clicks/collectInteractions";
+import {
+  ADOBE_JOURNEY_OPTIMIZER,
+  ADOBE_TARGET
+} from "../../../../../../../src/constants/decisionProvider";
+import {
+  ALWAYS,
+  DECORATED_ELEMENTS_ONLY,
+  NEVER
+} from "../../../../../../../src/constants/propositionInteractionType";
 
 describe("Personalization::tracking::interactions", () => {
   let storeInteractionMeta;
   let getInteractionMetas;
+  let autoTrackPropositionInteractions;
+  let scopeDetails;
 
   beforeEach(() => {
     selectNodes(".eq").forEach(removeNode);
@@ -29,6 +40,13 @@ describe("Personalization::tracking::interactions", () => {
       storeInteractionMeta,
       getInteractionMetas
     } = createInteractionStorage());
+
+    autoTrackPropositionInteractions = {
+      [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
+      [ADOBE_TARGET]: NEVER
+    };
+
+    scopeDetails = { decisionProvider: ADOBE_JOURNEY_OPTIMIZER };
   });
 
   afterEach(() => {
@@ -42,7 +60,8 @@ describe("Personalization::tracking::interactions", () => {
       "page",
       {
         id: "AT:1234",
-        scope: "example_scope"
+        scope: "example_scope",
+        scopeDetails
       },
       99
     );
@@ -84,12 +103,17 @@ describe("Personalization::tracking::interactions", () => {
         decisionsMeta,
         propositionActionLabel,
         propositionActionToken
-      } = collectInteractions(element, getInteractionMetas);
+      } = collectInteractions(
+        element,
+        getInteractionMetas,
+        autoTrackPropositionInteractions
+      );
 
       expect(decisionsMeta).toEqual([
         {
           id: "AT:1234",
           scope: "example_scope",
+          scopeDetails,
           items: [
             {
               id: "063"
@@ -102,6 +126,151 @@ describe("Personalization::tracking::interactions", () => {
     });
   });
 
+  it("should collect interactions for elements decorated with label when configured for 'decoratedElementsOnly'", () => {
+    autoTrackPropositionInteractions = {
+      [ADOBE_JOURNEY_OPTIMIZER]: DECORATED_ELEMENTS_ONLY,
+      [ADOBE_TARGET]: NEVER
+    };
+
+    storeInteractionMeta(
+      "AT:1234",
+      "063",
+      "page",
+      {
+        id: "AT:1234",
+        scope: "example_scope",
+        scopeDetails
+      },
+      99
+    );
+
+    const content = `
+      <div class="b" data-aep-interact-id="99">
+        <div id="one" class="c" data-aep-click-label="lbl-first" data-aep-click-token="tok-111">first</div>
+        <div id="two" class="c" data-aep-click-label="lbl-second" data-aep-click-token="tok-222">second</div>
+        <div id="three" class="c" data-aep-click-label="lbl-third" data-aep-click-token="tok-333">third</div>
+      </div>
+    `;
+    const node = createNode(
+      "DIV",
+      { id: "abc", class: "eq" },
+      { innerHTML: content }
+    );
+
+    appendNode(document.body, node);
+
+    [
+      {
+        elementId: "one",
+        expectedLabel: "lbl-first",
+        expectedToken: "tok-111"
+      },
+      {
+        elementId: "two",
+        expectedLabel: "lbl-second",
+        expectedToken: "tok-222"
+      },
+      {
+        elementId: "three",
+        expectedLabel: "lbl-third",
+        expectedToken: "tok-333"
+      }
+    ].forEach(definition => {
+      const element = document.getElementById(definition.elementId);
+      const {
+        decisionsMeta,
+        propositionActionLabel,
+        propositionActionToken
+      } = collectInteractions(
+        element,
+        getInteractionMetas,
+        autoTrackPropositionInteractions
+      );
+
+      expect(decisionsMeta).toEqual([
+        {
+          id: "AT:1234",
+          scope: "example_scope",
+          scopeDetails,
+          items: [
+            {
+              id: "063"
+            }
+          ]
+        }
+      ]);
+      expect(propositionActionLabel).toEqual(definition.expectedLabel);
+      expect(propositionActionToken).toEqual(definition.expectedToken);
+    });
+  });
+
+  it("should NOT collect interactions for elements NOT decorated with label when configured for 'decoratedElementsOnly'", () => {
+    autoTrackPropositionInteractions = {
+      [ADOBE_JOURNEY_OPTIMIZER]: DECORATED_ELEMENTS_ONLY,
+      [ADOBE_TARGET]: NEVER
+    };
+
+    storeInteractionMeta(
+      "AT:1234",
+      "063",
+      "page",
+      {
+        id: "AT:1234",
+        scope: "example_scope",
+        scopeDetails
+      },
+      99
+    );
+
+    const content = `
+      <div class="b" data-aep-interact-id="99">
+        <div id="one" class="c">first</div>
+        <div id="two" class="c">second</div>
+        <div id="three" class="c">third</div>
+      </div>
+    `;
+    const node = createNode(
+      "DIV",
+      { id: "abc", class: "eq" },
+      { innerHTML: content }
+    );
+
+    appendNode(document.body, node);
+
+    [
+      {
+        elementId: "one",
+        expectedLabel: undefined,
+        expectedToken: undefined
+      },
+      {
+        elementId: "two",
+        expectedLabel: undefined,
+        expectedToken: undefined
+      },
+      {
+        elementId: "three",
+        expectedLabel: undefined,
+        expectedToken: undefined
+      }
+    ].forEach(definition => {
+      const element = document.getElementById(definition.elementId);
+      const {
+        decisionsMeta,
+        propositionActionLabel,
+        propositionActionToken
+      } = collectInteractions(
+        element,
+        getInteractionMetas,
+        autoTrackPropositionInteractions
+      );
+
+      expect(decisionsMeta).toEqual([]);
+      expect(propositionActionLabel).toBeNull();
+      expect(propositionActionToken).toBeNull();
+    });
+  });
+
   it("should find closest label and token", () => {
     storeInteractionMeta(
       "AT:1234",
@@ -109,7 +278,8 @@ describe("Personalization::tracking::interactions", () => {
       "page",
       {
         id: "AT:1234",
-        scope: "example_scope"
+        scope: "example_scope",
+        scopeDetails
       },
       99
     );
@@ -150,12 +320,17 @@ describe("Personalization::tracking::interactions", () => {
         decisionsMeta,
         propositionActionLabel,
         propositionActionToken
-      } = collectInteractions(element, getInteractionMetas);
+      } = collectInteractions(
+        element,
+        getInteractionMetas,
+        autoTrackPropositionInteractions
+      );
 
       expect(decisionsMeta).toEqual([
         {
           id: "AT:1234",
           scope: "example_scope",
+          scopeDetails,
           items: [
             {
               id: "063"
@@ -175,7 +350,8 @@ describe("Personalization::tracking::interactions", () => {
       "page",
       {
         id: "AT:1234",
-        scope: "example_scope"
+        scope: "example_scope",
+        scopeDetails
       },
       99
     );
@@ -220,12 +396,17 @@ describe("Personalization::tracking::interactions", () => {
         decisionsMeta,
         propositionActionLabel,
         propositionActionToken
-      } = collectInteractions(element, getInteractionMetas);
+      } = collectInteractions(
+        element,
+        getInteractionMetas,
+        autoTrackPropositionInteractions
+      );
 
       expect(decisionsMeta).toEqual([
         {
           id: "AT:1234",
           scope: "example_scope",
+          scopeDetails,
           items: [
             {
               id: "063"
@@ -245,7 +426,8 @@ describe("Personalization::tracking::interactions", () => {
       "page",
       {
         id: "AT:1234",
-        scope: "example_scope"
+        scope: "example_scope",
+        scopeDetails
       },
       99
     );
@@ -269,7 +451,13 @@ describe("Personalization::tracking::interactions", () => {
     appendNode(document.body, node);
 
     const element = document.getElementById("onegreatgrandchild");
-    expect(collectInteractions(element, getInteractionMetas)).toEqual({});
+    expect(
+      collectInteractions(
+        element,
+        getInteractionMetas,
+        autoTrackPropositionInteractions
+      )
+    ).toEqual({});
   });
 
   it("should collect and dedupe interactions with labels", () => {
@@ -280,7 +468,8 @@ describe("Personalization::tracking::interactions", () => {
       "page",
       {
         id: "AT:outer-id-1",
-        scope: "outer-scope1"
+        scope: "outer-scope1",
+        scopeDetails
       },
       99
     );
@@ -290,7 +479,8 @@ describe("Personalization::tracking::interactions", () => {
       "page",
       {
         id: "AT:outer-id-1",
-        scope: "outer-scope1"
+        scope: "outer-scope1",
+        scopeDetails
       },
       99
     );
@@ -301,6 +491,7 @@ describe("Personalization::tracking::interactions", () => {
       {
         id: "AJO:inner-id-2",
         scope: "inner-scope2",
+        scopeDetails,
         trackingLabel: "outer-label-2"
       },
       99
@@ -312,6 +503,7 @@ describe("Personalization::tracking::interactions", () => {
       {
         id: "AJO:outer-id-3",
         scope: "outer-scope3",
+        scopeDetails,
         trackingLabel: "outer-label-3"
       },
       99
@@ -324,7 +516,8 @@ describe("Personalization::tracking::interactions", () => {
       "page",
       {
         id: "AT:inner-id-1",
-        scope: "inner-scope1"
+        scope: "inner-scope1",
+        scopeDetails
       },
       11
     );
@@ -335,6 +528,7 @@ describe("Personalization::tracking::interactions", () => {
       {
         id: "AJO:inner-id-2",
         scope: "inner-scope2",
+        scopeDetails,
         trackingLabel: "inner-label-2"
       },
       11
@@ -346,6 +540,7 @@ describe("Personalization::tracking::interactions", () => {
       {
         id: "AJO:inner-id-3",
         scope: "inner-scope3",
+        scopeDetails,
         trackingLabel: "inner-label-3"
       },
       11
@@ -371,13 +566,18 @@ describe("Personalization::tracking::interactions", () => {
       decisionsMeta,
       propositionActionLabel,
       propositionActionToken
-    } = collectInteractions(element, getInteractionMetas);
+    } = collectInteractions(
+      element,
+      getInteractionMetas,
+      autoTrackPropositionInteractions
+    );
 
     expect(decisionsMeta).toEqual(
       jasmine.arrayContaining([
         {
           id: "AJO:inner-id-2",
           scope: "inner-scope2",
+          scopeDetails,
           items: [
             {
               id: "b"
@@ -387,6 +587,7 @@ describe("Personalization::tracking::interactions", () => {
         {
           id: "AT:inner-id-1",
           scope: "inner-scope1",
+          scopeDetails,
           items: [
             {
               id: "d"
@@ -396,6 +597,7 @@ describe("Personalization::tracking::interactions", () => {
         {
           id: "AJO:inner-id-3",
           scope: "inner-scope3",
+          scopeDetails,
           items: [
             {
               id: "f"
@@ -405,6 +607,7 @@ describe("Personalization::tracking::interactions", () => {
         {
           id: "AT:outer-id-1",
           scope: "outer-scope1",
+          scopeDetails,
           items: [
             {
               id: "p"
@@ -417,6 +620,7 @@ describe("Personalization::tracking::interactions", () => {
         {
           id: "AJO:outer-id-3",
           scope: "outer-scope3",
+          scopeDetails,
           items: [
             {
               id: "c"

@@ -9,11 +9,18 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../../../src/constants/decisionProvider";
+import {
+  ADOBE_JOURNEY_OPTIMIZER,
+  ADOBE_TARGET
+} from "../../../../../../src/constants/decisionProvider";
 import createProcessHtmlContent from "../../../../../../src/components/Personalization/handlers/createProcessHtmlContent";
 import createInteractionStorage from "../../../../../../src/components/Personalization/createInteractionStorage";
 import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition";
 import { HTML_CONTENT_ITEM } from "../../../../../../src/constants/schema";
+import {
+  ALWAYS,
+  NEVER
+} from "../../../../../../src/constants/propositionInteractionType";
 
 describe("createProcessHtmlContent", () => {
   let modules;
@@ -50,7 +57,10 @@ describe("createProcessHtmlContent", () => {
       modules,
       logger,
       storeInteractionMeta,
-      autoTrackPropositionInteractions: [ADOBE_JOURNEY_OPTIMIZER]
+      autoTrackPropositionInteractions: {
+        [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
+        [ADOBE_TARGET]: NEVER
+      }
     });
   });
 

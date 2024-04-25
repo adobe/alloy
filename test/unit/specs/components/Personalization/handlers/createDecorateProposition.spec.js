@@ -152,7 +152,7 @@ describe("Personalization::createDecorateProposition", () => {
 
   it("does not set data-attribute for interact id and label if autoTrackPropositionInteractions does not include the appropriate decisionProvider and dom action is not 'click'", () => {
     decorateProposition = createDecoratePropositionForTest({
-      autoTrackPropositionInteractions: ["MOO"],
+      autoTrackPropositionInteractions: {},
       type: DOM_ACTION_SET_HTML,
       trackingLabel: "myTrackingLabel"
     });
@@ -172,7 +172,7 @@ describe("Personalization::createDecorateProposition", () => {
 
   it("sets data-attribute for interact id and label for all 'click' dom actions, regardless of autoTrackPropositionInteractions", () => {
     decorateProposition = createDecoratePropositionForTest({
-      autoTrackPropositionInteractions: ["MOO"],
+      autoTrackPropositionInteractions: {},
       type: DOM_ACTION_CLICK,
       trackingLabel: "myTrackingLabel"
     });

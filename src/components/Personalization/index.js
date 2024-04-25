@@ -10,7 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { arrayOf, boolean, objectOf, string } from "../../utils/validation";
+import {
+  anyOf,
+  boolean,
+  literal,
+  objectOf,
+  string
+} from "../../utils/validation";
 import createComponent from "./createComponent";
 import { initDomActionsModules } from "./dom-actions";
 import createCollect from "./createCollect";
@@ -43,9 +49,17 @@ import createProcessInAppMessage from "./handlers/createProcessInAppMessage";
 import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules";
 import createRedirect from "./dom-actions/createRedirect";
 import createNotificationHandler from "./createNotificationHandler";
-import { ADOBE_JOURNEY_OPTIMIZER } from "../../constants/decisionProvider";
+import {
+  ADOBE_JOURNEY_OPTIMIZER,
+  ADOBE_TARGET
+} from "../../constants/decisionProvider";
 import createClickStorage from "./createClickStorage";
 import collectClicks from "./dom-actions/clicks/collectClicks";
+import {
+  ALWAYS,
+  NEVER,
+  PROPOSITION_INTERACTION_TYPES
+} from "../../constants/propositionInteractionType";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const {
@@ -130,7 +144,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     collectClicks,
     getInteractionMetas,
     getClickMetas,
-    getClickSelectors
+    getClickSelectors,
+    autoTrackPropositionInteractions
   });
   const viewChangeHandler = createViewChangeHandler({
     processPropositions,
@@ -172,12 +187,19 @@ const createPersonalization = ({ config, logger, eventManager }) => {
 
 createPersonalization.namespace = "Personalization";
 
+const trackPropositionInteractionOptions = PROPOSITION_INTERACTION_TYPES.map(
+  propositionInteractionType => literal(propositionInteractionType)
+);
+
 createPersonalization.configValidators = objectOf({
   prehidingStyle: string().nonEmpty(),
   targetMigrationEnabled: boolean().default(false),
-  autoTrackPropositionInteractions: arrayOf(string()).default([
-    ADOBE_JOURNEY_OPTIMIZER
-  ])
+  autoTrackPropositionInteractions: objectOf({
+    [ADOBE_JOURNEY_OPTIMIZER]: anyOf(
+      trackPropositionInteractionOptions
+    ).default(ALWAYS),
+    [ADOBE_TARGET]: anyOf(trackPropositionInteractionOptions).default(NEVER)
+  }).noUnknownFields()
 });
 
 export default createPersonalization;

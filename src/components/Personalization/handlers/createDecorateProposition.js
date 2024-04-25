@@ -12,6 +12,10 @@ governing permissions and limitations under the License.
 import { getAttribute, setAttribute } from "../dom-actions/dom";
 import { includes, noop } from "../../../utils";
 import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules";
+import {
+  ALWAYS,
+  DECORATED_ELEMENTS_ONLY
+} from "../../../constants/propositionInteractionType";
 
 export const INTERACT_ID_DATA_ATTRIBUTE = "data-aep-interact-id";
 export const CLICK_LABEL_DATA_ATTRIBUTE = "data-aep-click-label";
@@ -28,6 +32,24 @@ const getInteractId = (propositionId, existingInteractId) => {
   return ++lastInteractId;
 };
 
+const interactionTrackingSupported = (
+  autoTrackPropositionInteractions,
+  decisionProvider
+) => {
+  if (!autoTrackPropositionInteractions) {
+    return false;
+  }
+
+  if (!autoTrackPropositionInteractions[decisionProvider]) {
+    return false;
+  }
+
+  return includes(
+    [ALWAYS, DECORATED_ELEMENTS_ONLY],
+    autoTrackPropositionInteractions[decisionProvider]
+  );
+};
+
 const createDecorateProposition = (
   autoTrackPropositionInteractions,
   type,
@@ -42,7 +64,10 @@ const createDecorateProposition = (
   const { decisionProvider } = scopeDetails;
 
   if (
-    !includes(autoTrackPropositionInteractions, decisionProvider) &&
+    !interactionTrackingSupported(
+      autoTrackPropositionInteractions,
+      decisionProvider
+    ) &&
     type !== DOM_ACTION_CLICK
   ) {
     return noop;

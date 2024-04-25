@@ -14,7 +14,14 @@ import injectCreateProposition from "../../../../../../src/components/Personaliz
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { DOM_ACTION } from "../../../../../../src/constants/schema";
-import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../../../src/constants/decisionProvider";
+import {
+  ADOBE_JOURNEY_OPTIMIZER,
+  ADOBE_TARGET
+} from "../../../../../../src/constants/decisionProvider";
+import {
+  ALWAYS,
+  NEVER
+} from "../../../../../../src/constants/propositionInteractionType";
 
 describe("createProcessDomAction", () => {
   let modules;
@@ -56,7 +63,10 @@ describe("createProcessDomAction", () => {
       logger,
       storeInteractionMeta,
       storeClickMeta,
-      autoTrackPropositionInteractions: [ADOBE_JOURNEY_OPTIMIZER]
+      autoTrackPropositionInteractions: {
+        [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
+        [ADOBE_TARGET]: NEVER
+      }
     });
   });
 

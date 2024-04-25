@@ -38,7 +38,8 @@ export default ({
   collectClicks,
   getInteractionMetas,
   getClickMetas,
-  getClickSelectors
+  getClickSelectors,
+  autoTrackPropositionInteractions
 }) => {
   // Called when an element qualifying for conversion within an offer is clicked.
   return ({ event, clickedElement }) => {
@@ -48,7 +49,11 @@ export default ({
     let viewName;
 
     [
-      collectInteractions(clickedElement, getInteractionMetas),
+      collectInteractions(
+        clickedElement,
+        getInteractionMetas,
+        autoTrackPropositionInteractions
+      ),
       collectClicks(clickedElement, getClickSelectors(), getClickMetas)
     ].forEach(
       ({

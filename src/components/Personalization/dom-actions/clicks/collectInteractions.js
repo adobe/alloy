@@ -18,6 +18,10 @@ import {
   INTERACT_ID_DATA_ATTRIBUTE
 } from "../../handlers/createDecorateProposition";
 import { cleanMetas } from "../../utils/metaUtils";
+import {
+  ALWAYS,
+  DECORATED_ELEMENTS_ONLY
+} from "../../../../constants/propositionInteractionType";
 
 const getInteractionDetail = clickedElement => {
   const { documentElement } = document;
@@ -56,16 +60,46 @@ const extractViewName = metas => {
     : undefined;
 };
 
-export default (clickedElement, getInteractionMetas) => {
+const createMetaFilter = (
+  autoTrackPropositionInteractions,
+  clickLabel,
+  clickToken
+) => meta => {
+  const { scopeDetails = {} } = meta;
+  const { decisionProvider } = scopeDetails;
+  if (autoTrackPropositionInteractions[decisionProvider] === ALWAYS) {
+    return true;
+  }
+
+  return (
+    autoTrackPropositionInteractions[decisionProvider] ===
+      DECORATED_ELEMENTS_ONLY &&
+    (clickLabel || clickToken)
+  );
+};
+
+export default (
+  clickedElement,
+  getInteractionMetas,
+  autoTrackPropositionInteractions
+) => {
   const { interactIds, clickLabel = "", clickToken } = getInteractionDetail(
     clickedElement
+  );
+
+  const metasMatchingConfigurationOptions = createMetaFilter(
+    autoTrackPropositionInteractions,
+    clickLabel,
+    clickToken
   );
 
   if (interactIds.length === 0) {
     return {};
   }
 
-  const metas = getInteractionMetas(interactIds);
+  const metas = getInteractionMetas(interactIds).filter(
+    metasMatchingConfigurationOptions
+  );
 
   return {
     decisionsMeta: cleanMetas(metas),

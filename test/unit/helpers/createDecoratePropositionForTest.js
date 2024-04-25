@@ -9,12 +9,22 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { ADOBE_JOURNEY_OPTIMIZER } from "../../../src/constants/decisionProvider";
+import {
+  ADOBE_JOURNEY_OPTIMIZER,
+  ADOBE_TARGET
+} from "../../../src/constants/decisionProvider";
 import createInteractionStorage from "../../../src/components/Personalization/createInteractionStorage";
 import createDecorateProposition from "../../../src/components/Personalization/handlers/createDecorateProposition";
+import {
+  ALWAYS,
+  NEVER
+} from "../../../src/constants/propositionInteractionType";
 
 export default ({
-  autoTrackPropositionInteractions = [ADOBE_JOURNEY_OPTIMIZER],
+  autoTrackPropositionInteractions = {
+    [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
+    [ADOBE_TARGET]: NEVER
+  },
   type,
   propositionId = "propositionID",
   itemId = "itemId",

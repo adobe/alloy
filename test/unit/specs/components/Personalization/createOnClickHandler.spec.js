@@ -14,6 +14,15 @@ import { mergeDecisionsMeta } from "../../../../../src/components/Personalizatio
 import createEvent from "../../../../../src/core/createEvent";
 import { createNode } from "../../../../../src/utils/dom";
 
+import {
+  ALWAYS,
+  NEVER
+} from "../../../../../src/constants/propositionInteractionType";
+import {
+  ADOBE_JOURNEY_OPTIMIZER,
+  ADOBE_TARGET
+} from "../../../../../src/constants/decisionProvider";
+
 describe("Personalization::createOnClickHandler", () => {
   let collectInteractions;
   let collectClicks;
@@ -36,6 +45,9 @@ describe("Personalization::createOnClickHandler", () => {
       scope: "bar"
     }
   ];
+
+  let autoTrackPropositionInteractions;
+
   beforeEach(() => {
     collectInteractions = jasmine.createSpy("collectInteractions");
     collectClicks = jasmine.createSpy("collectClicks");
@@ -47,6 +59,11 @@ describe("Personalization::createOnClickHandler", () => {
 
     event = createEvent();
     spyOn(event, "mergeXdm").and.callThrough();
+
+    autoTrackPropositionInteractions = {
+      [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
+      [ADOBE_TARGET]: NEVER
+    };
   });
 
   it("collects clicks", () => {
@@ -64,7 +81,8 @@ describe("Personalization::createOnClickHandler", () => {
       collectClicks,
       getInteractionMetas,
       getClickMetas,
-      getClickSelectors
+      getClickSelectors,
+      autoTrackPropositionInteractions
     });
 
     const clickedElement = "foo";
@@ -113,7 +131,8 @@ describe("Personalization::createOnClickHandler", () => {
       collectClicks,
       getInteractionMetas,
       getClickMetas,
-      getClickSelectors
+      getClickSelectors,
+      autoTrackPropositionInteractions
     });
     const clickedElement = createNode("div", { class: "clicked-element" });
 
@@ -139,7 +158,8 @@ describe("Personalization::createOnClickHandler", () => {
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectInteractions).toHaveBeenCalledWith(
       clickedElement,
-      getInteractionMetas
+      getInteractionMetas,
+      autoTrackPropositionInteractions
     );
     event.finalize();
     expect(event.toJSON()).toEqual({
@@ -161,7 +181,8 @@ describe("Personalization::createOnClickHandler", () => {
       collectClicks,
       getInteractionMetas,
       getClickMetas,
-      getClickSelectors
+      getClickSelectors,
+      autoTrackPropositionInteractions
     });
     const clickedElement = "foo";
 
@@ -212,7 +233,8 @@ describe("Personalization::createOnClickHandler", () => {
       collectClicks,
       getInteractionMetas,
       getClickMetas,
-      getClickSelectors
+      getClickSelectors,
+      autoTrackPropositionInteractions
     });
     const clickedElement = createNode("div", { class: "clicked-element" });
 
@@ -241,7 +263,8 @@ describe("Personalization::createOnClickHandler", () => {
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectInteractions).toHaveBeenCalledWith(
       clickedElement,
-      getInteractionMetas
+      getInteractionMetas,
+      autoTrackPropositionInteractions
     );
     event.finalize();
     expect(event.toJSON()).toEqual({
@@ -264,7 +287,8 @@ describe("Personalization::createOnClickHandler", () => {
       collectClicks,
       getInteractionMetas,
       getClickMetas,
-      getClickSelectors
+      getClickSelectors,
+      autoTrackPropositionInteractions
     });
     const clickedElement = createNode("div", { class: "clicked-element" });
 
@@ -293,7 +317,8 @@ describe("Personalization::createOnClickHandler", () => {
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectInteractions).toHaveBeenCalledWith(
       clickedElement,
-      getInteractionMetas
+      getInteractionMetas,
+      autoTrackPropositionInteractions
     );
     event.finalize();
     expect(event.toJSON()).toEqual({
@@ -311,7 +336,8 @@ describe("Personalization::createOnClickHandler", () => {
       collectClicks,
       getInteractionMetas,
       getClickMetas,
-      getClickSelectors
+      getClickSelectors,
+      autoTrackPropositionInteractions
     });
     const clickedElement = createNode("div", { class: "clicked-element" });
 
@@ -332,7 +358,8 @@ describe("Personalization::createOnClickHandler", () => {
       collectClicks,
       getInteractionMetas,
       getClickMetas,
-      getClickSelectors
+      getClickSelectors,
+      autoTrackPropositionInteractions
     });
     const clickedElement = createNode("div", { class: "clicked-element" });
 
@@ -363,7 +390,8 @@ describe("Personalization::createOnClickHandler", () => {
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectInteractions).toHaveBeenCalledWith(
       clickedElement,
-      getInteractionMetas
+      getInteractionMetas,
+      autoTrackPropositionInteractions
     );
     event.finalize();
     expect(event.toJSON()).toEqual({
@@ -385,7 +413,8 @@ describe("Personalization::createOnClickHandler", () => {
       collectClicks,
       getInteractionMetas,
       getClickMetas,
-      getClickSelectors
+      getClickSelectors,
+      autoTrackPropositionInteractions
     });
     const clickedElement = "foo";
 
@@ -440,7 +469,8 @@ describe("Personalization::createOnClickHandler", () => {
       collectClicks,
       getInteractionMetas,
       getClickMetas,
-      getClickSelectors
+      getClickSelectors,
+      autoTrackPropositionInteractions
     });
     const clickedElement = createNode("div", { class: "clicked-element" });
 
@@ -473,7 +503,8 @@ describe("Personalization::createOnClickHandler", () => {
     expect(event.mergeXdm).toHaveBeenCalledWith(expectedXdm);
     expect(collectInteractions).toHaveBeenCalledWith(
       clickedElement,
-      getInteractionMetas
+      getInteractionMetas,
+      autoTrackPropositionInteractions
     );
     event.finalize();
     expect(event.toJSON()).toEqual({

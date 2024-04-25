@@ -19,7 +19,14 @@ import {
 } from "../../helpers/constants/configParts";
 
 import createAlloyProxy from "../../helpers/createAlloyProxy";
-import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../src/constants/decisionProvider";
+import {
+  ADOBE_JOURNEY_OPTIMIZER,
+  ADOBE_TARGET
+} from "../../../../src/constants/decisionProvider";
+import {
+  ALWAYS,
+  NEVER
+} from "../../../../src/constants/propositionInteractionType";
 
 const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled, {
   onBeforeEventSend: () => {}
@@ -63,7 +70,10 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
     thirdPartyCookiesEnabled: true,
     targetMigrationEnabled: false,
     personalizationStorageEnabled: false,
-    autoTrackPropositionInteractions: [ADOBE_JOURNEY_OPTIMIZER]
+    autoTrackPropositionInteractions: {
+      [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
+      [ADOBE_TARGET]: NEVER
+    }
   };
 
   const alloy = createAlloyProxy();

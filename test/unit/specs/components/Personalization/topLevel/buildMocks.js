@@ -11,7 +11,14 @@ governing permissions and limitations under the License.
 */
 import createEvent from "../../../../../../src/core/createEvent";
 import createResponse from "../../../../../functional/helpers/createResponse";
-import { ADOBE_JOURNEY_OPTIMIZER } from "../../../../../../src/constants/decisionProvider";
+import {
+  ADOBE_JOURNEY_OPTIMIZER,
+  ADOBE_TARGET
+} from "../../../../../../src/constants/decisionProvider";
+import {
+  ALWAYS,
+  NEVER
+} from "../../../../../../src/constants/propositionInteractionType";
 
 export default decisions => {
   const response = createResponse({
@@ -42,7 +49,10 @@ export default decisions => {
   const config = {
     targetMigrationEnabled: true,
     prehidingStyle: "myprehidingstyle",
-    autoTrackPropositionInteractions: [ADOBE_JOURNEY_OPTIMIZER]
+    autoTrackPropositionInteractions: {
+      [ADOBE_JOURNEY_OPTIMIZER]: ALWAYS,
+      [ADOBE_TARGET]: NEVER
+    }
   };
   const logger = {
     warn: spyOn(console, "warn").and.callThrough(),
