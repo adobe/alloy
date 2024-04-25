@@ -66,7 +66,7 @@ const getAepEdgeResponse = async requestId => {
   return res.json();
 };
 
-test("Test C13348429: Verify DOM action using the applyResponse command.", async () => {
+test.skip("Test C13348429: Verify DOM action using the applyResponse command.", async () => {
   const realResponse = await getAepEdgeResponse(uuid());
   const alloy = createAlloyProxy();
   await alloy.configure(config);

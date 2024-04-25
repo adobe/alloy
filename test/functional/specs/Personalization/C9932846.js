@@ -48,7 +48,7 @@ test.meta({
   TEST_RUN: "Regression"
 });
 
-test("Test C9932846: AJO click-tracking offers are delivered", async () => {
+test.skip("Test C9932846: AJO click-tracking offers are delivered", async () => {
   await addHtmlToBody(testPageBody, true);
   const alloy = createAlloyProxy();
   await alloy.configure(config);

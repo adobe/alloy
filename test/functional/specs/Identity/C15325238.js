@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { t } from "testcafe";
 import createFixture from "../../helpers/createFixture";
-import { SECONDARY_TEST_PAGE } from "../../helpers/constants/url";
+import { SECONDARY_TEST_PAGE, TEST_PAGE } from "../../helpers/constants/url";
 import {
   compose,
   orgMainConfigMain,
@@ -35,33 +35,42 @@ const networkLogger = createNetworkLogger();
 
 createFixture({
   title:
-    "C5594865: Identity can be maintained across domains via the adobe_mc query string parameter",
+    "C15325238: When there are multiple adobe_mc parameters, the last one is used.",
   requestHooks: [networkLogger.edgeEndpointLogs]
 });
 
 test.meta({
-  ID: "C5594865",
+  ID: "C15325238",
   SEVERITY: "P0",
   TEST_RUN: "Regression"
 });
 
-test("C5594865: Identity can be maintained across domains via the adobe_mc query string parameter", async () => {
+test("C15325238: When there are multiple adobe_mc parameters, the last one is used.", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.sendEvent({});
-  const { url: newUrl } = await alloy.appendIdentityToUrl({
-    url: SECONDARY_TEST_PAGE
+  const { url: newUrl1 } = await alloy.appendIdentityToUrl({
+    url: TEST_PAGE
   });
 
-  await t.navigateTo(newUrl);
+  await t.navigateTo(SECONDARY_TEST_PAGE);
   await alloy.configure(config);
   await alloy.sendEvent({});
 
-  const [originalEcid, newEcid] = networkLogger.edgeEndpointLogs.requests.map(
+  const { url: newUrl2 } = await alloy.appendIdentityToUrl({
+    url: newUrl1
+  });
+
+  await t.navigateTo(newUrl2);
+  await alloy.configure(config);
+  await alloy.sendEvent({});
+
+  const [ecid1, ecid2, ecid3] = networkLogger.edgeEndpointLogs.requests.map(
     getReturnedEcid
   );
-  await t.expect(newEcid).eql(originalEcid);
+  await t.expect(ecid1).notEql(ecid2);
+  await t.expect(ecid2).eql(ecid3);
 
   const { identity } = await alloy.getIdentity();
-  await t.expect(identity.ECID).eql(originalEcid);
+  await t.expect(identity.ECID).eql(ecid2);
 });

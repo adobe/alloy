@@ -25,9 +25,16 @@ export default ({ locationSearch, dateProvider, orgId, logger }) => payload => {
   }
 
   const parsedQueryString = queryString.parse(locationSearch);
-  const queryStringValue = parsedQueryString[queryStringIdentityParam];
+  let queryStringValue = parsedQueryString[queryStringIdentityParam];
+
   if (queryStringValue === undefined) {
     return;
+  }
+  if (Array.isArray(queryStringValue)) {
+    logger.warn(
+      "Found multiple adobe_mc query string paramters, only using the last one."
+    );
+    queryStringValue = queryStringValue[queryStringValue.length - 1];
   }
 
   const properties = queryStringValue.split("|").reduce((memo, keyValue) => {
