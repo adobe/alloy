@@ -33,7 +33,7 @@ suites:
   - name: "Edge"
     browserName: "microsoftedge"
     headless: true
-    browserVersion: "latest"
+    browserVersion: "119"
     src:
       - "test/functional/specs/**/*.js"
     platformName: "Windows 11"

@@ -15,6 +15,7 @@ import componentCreators from "../../../../src/core/componentCreators";
 describe("componentCreators", () => {
   it("is an array of component creators", () => {
     expect(componentCreators).toEqual(jasmine.any(Array));
+
     componentCreators.forEach(componentCreator => {
       expect(componentCreator).toEqual(jasmine.any(Function));
       expect(componentCreator.namespace).toEqual(jasmine.any(String));

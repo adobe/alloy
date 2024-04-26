@@ -31,7 +31,10 @@ module.exports = config => {
       base: "SauceLabs",
       browserName: "firefox",
       platformName: "Windows 11",
-      browserVersion: "latest"
+      browserVersion: "latest",
+      "sauce:options": {
+        geckodriverVersion: "0.34.0"
+      }
     },
     sl_edgeW3C: {
       base: "SauceLabs",
