@@ -27,6 +27,7 @@ export default ({
   viewCache,
   showContainers,
   applyPropositions,
+  trackProposition,
   setTargetMigration,
   mergeDecisionsMeta,
   renderedPropositions,
@@ -121,7 +122,8 @@ export default ({
         optionsValidator: options =>
           validateApplyPropositionsOptions({ logger, options }),
         run: applyPropositions
-      }
+      },
+      trackProposition: trackProposition.command
     }
   };
 };

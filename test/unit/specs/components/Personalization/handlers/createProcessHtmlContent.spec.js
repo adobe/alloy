@@ -15,34 +15,17 @@ import {
 } from "../../../../../../src/constants/decisionProvider";
 import createProcessHtmlContent from "../../../../../../src/components/Personalization/handlers/createProcessHtmlContent";
 import createInteractionStorage from "../../../../../../src/components/Personalization/createInteractionStorage";
-import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition";
 import { HTML_CONTENT_ITEM } from "../../../../../../src/constants/schema";
 import {
   ALWAYS,
   NEVER
 } from "../../../../../../src/constants/propositionInteractionType";
+import createMockProposition from "../../../../helpers/createMockProposition";
 
 describe("createProcessHtmlContent", () => {
   let modules;
   let logger;
   let processHtmlContent;
-
-  const createProposition = injectCreateProposition({
-    preprocess: data => data,
-    isPageWideSurface: () => false
-  });
-
-  const createMockProposition = item => {
-    return createProposition({
-      id: "id",
-      scope: "scope",
-      scopeDetails: {
-        characteristics: { scopeType: "page" },
-        decisionProvider: "AJO"
-      },
-      items: [item]
-    });
-  };
 
   beforeEach(() => {
     const { storeInteractionMeta } = createInteractionStorage();

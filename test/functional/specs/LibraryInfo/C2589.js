@@ -53,7 +53,8 @@ test("C2589: getLibraryInfo command returns library information.", async () => {
     "getIdentity",
     "sendEvent",
     "setConsent",
-    "setDebug"
+    "setDebug",
+    "trackProposition"
   ];
   const currentConfigs = {
     clickCollectionEnabled: true,

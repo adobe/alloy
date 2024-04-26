@@ -91,6 +91,7 @@ const commands = [
   "getLibraryInfo",
   "appendIdentityToUrl",
   "applyPropositions",
+  "trackProposition",
   "subscribeRulesetItems",
   "evaluateRulesets"
 ];

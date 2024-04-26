@@ -28,6 +28,11 @@ describe("Personalization", () => {
   let renderedPropositions;
   let cacheUpdate;
 
+  const trackProposition = {
+    optionsValidator: jasmine.createSpy("optionsValidator"),
+    run: jasmine.createSpy("run")
+  };
+
   const build = () => {
     personalizationComponent = createComponent({
       logger,
@@ -40,7 +45,8 @@ describe("Personalization", () => {
       showContainers,
       setTargetMigration,
       mergeDecisionsMeta,
-      renderedPropositions
+      renderedPropositions,
+      trackProposition
     });
   };
 

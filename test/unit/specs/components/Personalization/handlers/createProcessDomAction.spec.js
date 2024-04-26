@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createProcessDomAction from "../../../../../../src/components/Personalization/handlers/createProcessDomAction";
-import injectCreateProposition from "../../../../../../src/components/Personalization/handlers/injectCreateProposition";
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges";
 import { appendNode, createNode } from "../../../../../../src/utils/dom";
 import { DOM_ACTION } from "../../../../../../src/constants/schema";
@@ -22,6 +21,7 @@ import {
   ALWAYS,
   NEVER
 } from "../../../../../../src/constants/propositionInteractionType";
+import createMockProposition from "../../../../helpers/createMockProposition";
 
 describe("createProcessDomAction", () => {
   let modules;
@@ -29,23 +29,6 @@ describe("createProcessDomAction", () => {
   let storeInteractionMeta;
   let storeClickMeta;
   let processDomAction;
-
-  const createProposition = injectCreateProposition({
-    preprocess: data => data,
-    isPageWideSurface: () => false
-  });
-
-  const createMockProposition = (item, scopeDetails = {}) => {
-    return createProposition({
-      id: "id",
-      scope: "__view__",
-      scopeDetails: {
-        decisionProvider: "AJO",
-        ...scopeDetails
-      },
-      items: [item]
-    });
-  };
 
   beforeEach(() => {
     cleanUpDomChanges("click-element");
@@ -175,7 +158,7 @@ describe("createProcessDomAction", () => {
       selector: ".click-element",
       meta: {
         id: "id",
-        scope: "__view__",
+        scope: "scope",
         scopeDetails: {
           decisionProvider: "AJO",
           characteristics: {
@@ -184,7 +167,7 @@ describe("createProcessDomAction", () => {
           }
         },
         trackingLabel: "mytrackinglabel",
-        scopeType: "page"
+        scopeType: "proposition"
       }
     });
   });
