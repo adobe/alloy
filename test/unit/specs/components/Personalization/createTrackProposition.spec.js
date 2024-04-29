@@ -166,6 +166,85 @@ describe("Personalization:trackProposition", () => {
     });
   });
 
+  it("fails gracefully when no element or selector specified", async () => {
+    const { command } = trackProposition;
+
+    const proposition = createMockProposition({
+      id: "abc",
+      schema: JSON_CONTENT_ITEM,
+      data: { word: "up" }
+    });
+
+    await expectAsync(
+      command.run({
+        proposition: proposition.toJSON()
+      })
+    ).toBeRejectedWithError("Invalid DOM element!");
+
+    const element = document.getElementById(testElementId);
+    expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).toBeNull();
+  });
+
+  it("fails gracefully invalid element specified", async () => {
+    const { command } = trackProposition;
+
+    const proposition = createMockProposition({
+      id: "abc",
+      schema: JSON_CONTENT_ITEM,
+      data: { word: "up" }
+    });
+
+    await expectAsync(
+      command.run({
+        proposition: proposition.toJSON(),
+        element: {}
+      })
+    ).toBeRejectedWithError("Invalid DOM element!");
+
+    const element = document.getElementById(testElementId);
+    expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).toBeNull();
+  });
+
+  it("fails gracefully when invalid selector specified", async () => {
+    const { command } = trackProposition;
+
+    const proposition = createMockProposition({
+      id: "abc",
+      schema: JSON_CONTENT_ITEM,
+      data: { word: "up" }
+    });
+
+    await expectAsync(
+      command.run({
+        proposition: proposition.toJSON(),
+        selector: ".splendid"
+      })
+    ).toBeRejectedWithError("Invalid DOM element!");
+
+    const element = document.getElementById(testElementId);
+    expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).toBeNull();
+  });
+
+  it("fails gracefully selector lookup fails", async () => {
+    const { command } = trackProposition;
+
+    const proposition = createMockProposition({
+      id: "abc",
+      schema: JSON_CONTENT_ITEM,
+      data: { word: "up" }
+    });
+
+    await expectAsync(
+      command.run({
+        proposition: proposition.toJSON(),
+        selector: ""
+      })
+    ).toBeRejectedWithError("Invalid DOM element!");
+
+    const element = document.getElementById(testElementId);
+    expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).toBeNull();
+  });
+
   it("fails gracefully if malformed proposition json", async () => {
     const { command } = trackProposition;
 

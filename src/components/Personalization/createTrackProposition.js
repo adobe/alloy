@@ -78,8 +78,16 @@ export default ({
     if (error) {
       return Promise.reject(error);
     }
+    let elements;
 
-    const elements = isDomElement(element) ? [element] : selectNodes(selector);
+    try {
+      elements = isDomElement(element) ? [element] : selectNodes(selector);
+      if (elements.length === 0) {
+        return Promise.reject(new Error("Invalid DOM element!"));
+      }
+    } catch (err) {
+      return Promise.reject(new Error("Invalid DOM element!"));
+    }
 
     const proposition = createProposition(propositionJSON);
 
