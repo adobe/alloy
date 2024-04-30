@@ -48,7 +48,9 @@ if (argv.reporters && argv.reporters.split(",").includes("coverage")) {
 
 module.exports = {
   output: {
-    sourcemap: true,
+    dir: "distTest",
+    name: "alloy",
+    sourcemap: "inline",
     format: "iife",
     // Allow non-IE browsers and IE11
     // document.documentMode was added in IE8, and is specific to IE.
