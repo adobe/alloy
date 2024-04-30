@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 const rollupConfig = require("./rollup.test.config");
 
-module.exports = config => {
+module.exports = (config) => {
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: "",
@@ -23,8 +23,8 @@ module.exports = config => {
       "node_modules/promise-polyfill/dist/polyfill.js",
       {
         pattern: "test/unit/specs/karmaEntry.spec.js",
-        watched: false // The preprocessor will use its own watcher
-      }
+        watched: false, // The preprocessor will use its own watcher
+      },
     ],
 
     // list of files to exclude
@@ -33,7 +33,7 @@ module.exports = config => {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "test/unit/specs/karmaEntry.spec.js": ["rollup"]
+      "test/unit/specs/karmaEntry.spec.js": ["rollup"],
     },
 
     // test results reporter to use
@@ -60,8 +60,8 @@ module.exports = config => {
     customLaunchers: {
       ChromeHeadlessNoSandbox: {
         base: "ChromeHeadless",
-        flags: ["--no-sandbox"]
-      }
+        flags: ["--no-sandbox"],
+      },
     },
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
@@ -74,8 +74,8 @@ module.exports = config => {
     coverageReporter: {
       reporters: [
         { type: "html" },
-        { type: "lcovonly", subdir: ".", file: "lcov.dat" }
-      ]
+        { type: "lcovonly", subdir: ".", file: "lcov.dat" },
+      ],
     },
 
     captureTimeout: 180000,
@@ -83,6 +83,6 @@ module.exports = config => {
     browserDisconnectTolerance: 3,
     browserNoActivityTimeout: 300000,
 
-    rollupPreprocessor: rollupConfig
+    rollupPreprocessor: rollupConfig,
   });
 };

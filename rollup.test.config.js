@@ -11,10 +11,10 @@ governing permissions and limitations under the License.
 */
 
 const path = require("path");
-const resolve = require("rollup-plugin-node-resolve");
+const resolve = require("@rollup/plugin-node-resolve");
 const globImport = require("rollup-plugin-glob-import");
-const commonjs = require("rollup-plugin-commonjs");
-const babel = require("rollup-plugin-babel");
+const commonjs = require("@rollup/plugin-commonjs");
+const babel = require("@rollup/plugin-babel");
 const istanbul = require("rollup-plugin-istanbul");
 const minimist = require("minimist");
 const ignorePatterns = require("./coverageignore");
@@ -26,23 +26,23 @@ const plugins = [
     preferBuiltins: false,
     // Support the browser field in dependencies' package.json.
     // Useful for the uuid package.
-    mainFields: ["module", "main", "browser"]
+    mainFields: ["module", "main", "browser"],
   }),
   commonjs(),
   babel({
     envName: "rollup",
-    runtimeHelpers: true,
-    configFile: path.resolve(__dirname, "babel.test.config.js")
-  })
+    babelHelpers: "runtime",
+    configFile: path.resolve(__dirname, "babel.test.config.js"),
+  }),
 ];
 
 if (argv.reporters && argv.reporters.split(",").includes("coverage")) {
   plugins.unshift(
     istanbul({
       exclude: ["test/unit/**", "node_modules/**"].concat(
-        ignorePatterns.map(ignorePattern => path.join("src", ignorePattern))
-      )
-    })
+        ignorePatterns.map((ignorePattern) => path.join("src", ignorePattern)),
+      ),
+    }),
   );
 }
 
@@ -54,7 +54,7 @@ module.exports = {
     // document.documentMode was added in IE8, and is specific to IE.
     // IE7 and lower are not ES5 compatible so will get a parse error loading the library.
     intro:
-      "if (document.documentMode && document.documentMode < 11) { console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.'); return; }"
+      "if (document.documentMode && document.documentMode < 11) { console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.'); return; }",
   },
-  plugins
+  plugins,
 };
