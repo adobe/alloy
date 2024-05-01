@@ -32,6 +32,7 @@ export default ({
 
   return ({ event, clickedElement }) => {
     const elementProperties = getClickedElementProperties({
+      clickActivityStorage,
       clickedElement,
       config,
       logger

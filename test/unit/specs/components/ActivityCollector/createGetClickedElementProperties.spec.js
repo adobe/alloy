@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import createGetClickedElementProperties from "../../../../../src/components/ActivityCollector/createGetClickedElementProperties";
+import createClickActivityStorage from "../../../../../src/components/ActivityCollector/createClickActivityStorage";
 
 describe("ActivityCollector::createGetClickedElementProperties", () => {
   const mockWindow = {
@@ -34,6 +35,7 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
   let findClickableElement;
   let determineLinkType;
   let logger;
+  let clickActivityStorage;
   beforeEach(() => {
     getLinkName = jasmine.createSpy("getLinkName");
     getLinkRegion = jasmine.createSpy("getLinkRegion");
@@ -43,6 +45,13 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     findClickableElement = jasmine.createSpy("findClickableElement");
     determineLinkType = jasmine.createSpy("determineLinkType");
     logger = jasmine.createSpyObj("logger", ["info"]);
+    clickActivityStorage = createClickActivityStorage({
+      storage: {
+        getItem: () => {},
+        setItem: () => {},
+        removeItem: () => {}
+      }
+    });
   });
 
   it("Returns complete linkDetails when it is a supported anchor element", () => {
@@ -73,7 +82,8 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     const result = getClickedElementProperties({
       clickedElement: {},
       config,
-      logger
+      logger,
+      clickActivityStorage
     });
     // I have to set this manually because of passing in {} as the clickedElement
     result.pageIDType = 0;
@@ -141,7 +151,8 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     const result = getClickedElementProperties({
       clickedElement: {},
       config,
-      logger
+      logger,
+      clickActivityStorage
     });
     expect(result.options).toEqual(undefined);
   });
@@ -173,7 +184,8 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     const result = getClickedElementProperties({
       clickedElement: {},
       config,
-      logger
+      logger,
+      clickActivityStorage
     });
     expect(result.options).toEqual(undefined);
   });
@@ -205,7 +217,8 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     const result = getClickedElementProperties({
       clickedElement: {},
       config,
-      logger
+      logger,
+      clickActivityStorage
     });
     // I have to set this manually because of passing in {} as the clickedElement
     result.pageIDType = 0;
@@ -255,7 +268,8 @@ describe("ActivityCollector::createGetClickedElementProperties", () => {
     const result = getClickedElementProperties({
       clickedElement: {},
       config,
-      logger
+      logger,
+      clickActivityStorage
     });
     expect(result).not.toBe(undefined);
   });

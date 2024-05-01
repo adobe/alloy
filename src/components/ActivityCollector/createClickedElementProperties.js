@@ -73,8 +73,8 @@ const populateClickedElementPropertiesFromOptions = (options, props) => {
   }
 };
 
-export default properties => {
-  let props = properties || {};
+export default ({ properties = {}, logger } = {}) => {
+  let props = properties;
   const clickedElementProperties = {
     get pageName() {
       return props.pageName;
@@ -161,9 +161,15 @@ export default properties => {
     },
     applyPropertyFilter(filter) {
       if (filter && filter(props) === false) {
-        // logger.info(
-        //   `Clicked element properties were rejected by filter function`
-        // );
+        if (logger) {
+          logger.info(
+            `Clicked element properties were rejected by filter function: ${JSON.stringify(
+              this.properties,
+              null,
+              2
+            )}`
+          );
+        }
         props = {};
       }
     },
@@ -172,9 +178,15 @@ export default properties => {
       if (opts && opts.clickedElement && (opts.xdm || opts.data)) {
         // Properties are rejected if filter is explicitly false.
         if (filter && filter(opts) === false) {
-          // logger.info(
-          //   `Clicked element properties were rejected by filter function`
-          // );
+          if (logger) {
+            logger.info(
+              `Clicked element properties were rejected by filter function: ${JSON.stringify(
+                this.properties,
+                null,
+                2
+              )}`
+            );
+          }
           this.options = undefined;
           return undefined;
         }

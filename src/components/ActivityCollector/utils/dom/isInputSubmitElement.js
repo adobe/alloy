@@ -16,6 +16,8 @@ export default element => {
     if (type === "submit") {
       return true;
     }
+    // Image type input elements are considered submit elements.
+    // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/image
     if (type === "image" && element.src) {
       return true;
     }

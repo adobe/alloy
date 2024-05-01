@@ -10,36 +10,24 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { injectStorage } from "../../utils";
 import { CLICK_ACTIVITY_DATA } from "../../constants/sessionDataKeys";
-import createTransientStorage from "./utils/createTransientStorage";
 
-export default ({ config, window }) => {
-  const createNamespacedStorage = injectStorage(window);
-  const orgId = config.orgId || "";
-  const storage = createNamespacedStorage(orgId);
-  const clickCollectionConfig = config.clickCollection;
-
-  // Transient in-memory if sessionStorage is disabled
-  const transientStorage = createTransientStorage(window, orgId);
-  const availableStorage = clickCollectionConfig.sessionStorageEnabled
-    ? storage.session
-    : transientStorage;
+export default ({ storage }) => {
   return {
     save: data => {
       const jsonData = JSON.stringify(data);
-      availableStorage.setItem(CLICK_ACTIVITY_DATA, jsonData);
+      storage.setItem(CLICK_ACTIVITY_DATA, jsonData);
     },
     load: () => {
       let jsonData = null;
-      const data = availableStorage.getItem(CLICK_ACTIVITY_DATA);
+      const data = storage.getItem(CLICK_ACTIVITY_DATA);
       if (data) {
         jsonData = JSON.parse(data);
       }
       return jsonData;
     },
     remove: () => {
-      availableStorage.removeItem(CLICK_ACTIVITY_DATA);
+      storage.removeItem(CLICK_ACTIVITY_DATA);
     }
   };
 };

@@ -11,36 +11,41 @@ governing permissions and limitations under the License.
 */
 
 import createClickActivityStorage from "../../../../../src/components/ActivityCollector/createClickActivityStorage";
+import { CLICK_ACTIVITY_DATA } from "../../../../../src/constants/sessionDataKeys";
 
 describe("ActivityCollector::createClickActivityStorage", () => {
-  let config;
-  let window;
-
+  let storage;
+  let clickActivityStorage;
   beforeEach(() => {
-    window = {};
-    config = {
-      orgId: "ABC@AdobeOrg",
-      clickCollection: {
-        sessionStorageEnabled: false
-      }
-    };
+    storage = jasmine.createSpyObj("storage", [
+      "getItem",
+      "setItem",
+      "removeItem"
+    ]);
+    clickActivityStorage = createClickActivityStorage({ storage });
   });
 
-  it("enables for transient storage when created", () => {
-    createClickActivityStorage({ config, window });
-    expect(window["com.adobe.alloy.ABC@AdobeOrg"]).toBeDefined();
+  it("saves data", () => {
+    clickActivityStorage.save({ key: "value" });
+    expect(storage.setItem).toHaveBeenCalledWith(
+      CLICK_ACTIVITY_DATA,
+      '{"key":"value"}'
+    );
   });
 
-  it("saves data to storage", () => {
-    const storage = createClickActivityStorage({ config, window });
-    storage.save({ some: "data" });
-    expect(storage.load()).toEqual({ some: "data" });
+  it("loads data", () => {
+    storage.getItem.and.returnValue('{"key":"value"}');
+    const data = clickActivityStorage.load();
+    expect(data).toEqual({ key: "value" });
   });
 
-  it("removes data from storage", () => {
-    const storage = createClickActivityStorage({ config, window });
-    storage.save({ some: "data" });
-    storage.remove();
-    expect(storage.load()).toBeNull();
+  it("loads null when no data is present", () => {
+    const data = clickActivityStorage.load();
+    expect(data).toBeNull();
+  });
+
+  it("removes data", () => {
+    clickActivityStorage.remove();
+    expect(storage.removeItem).toHaveBeenCalledWith(CLICK_ACTIVITY_DATA);
   });
 });

@@ -10,23 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import baseNamespace from "../../../constants/namespace";
-
-// TODO: Maybe include this in the storage utility
-export default (window, namespace) => {
-  const finalNamespace = baseNamespace + namespace;
-  if (!window[finalNamespace]) {
-    window[finalNamespace] = {};
-  }
+export default () => {
+  const storage = {};
   return {
     getItem: key => {
-      return window[finalNamespace][key];
+      return storage[key];
     },
     setItem: (key, value) => {
-      window[finalNamespace][key] = value;
+      storage[key] = value;
     },
     removeItem: key => {
-      delete window[finalNamespace][key];
+      delete storage[key];
     }
   };
 };

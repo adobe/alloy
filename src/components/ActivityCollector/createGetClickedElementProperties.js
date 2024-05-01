@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createClickActivityStorage from "./createClickActivityStorage";
 import createClickedElementProperties from "./createClickedElementProperties";
 
 export default ({
@@ -21,17 +20,13 @@ export default ({
   findClickableElement,
   determineLinkType
 }) => {
-  return ({ clickedElement, config }) => {
+  return ({ clickedElement, config, logger, clickActivityStorage }) => {
     const {
       onBeforeLinkClickSend: optionsFilter, // Deprecated
       clickCollection
     } = config;
     const { filterClickedElementProperties: propertyFilter } = clickCollection;
-    const clickActivityStorage = createClickActivityStorage({
-      config,
-      window
-    });
-    const elementProperties = createClickedElementProperties();
+    const elementProperties = createClickedElementProperties({ logger });
     if (clickedElement) {
       const clickableElement = findClickableElement(clickedElement);
       if (clickableElement) {

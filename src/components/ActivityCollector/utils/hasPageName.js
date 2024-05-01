@@ -13,11 +13,11 @@ governing permissions and limitations under the License.
 export default event => {
   const content = event.getContent();
   return (
-    content.xdm &&
+    content.xdm !== undefined &&
     // NOTE: A page view event should "ideally" include the pageViews type
     // && event.xdm.eventType === "web.webpagedetails.pageViews"
-    content.xdm.web &&
-    content.xdm.web.webPageDetails &&
-    content.xdm.web.webPageDetails.name
+    content.xdm.web !== undefined &&
+    content.xdm.web.webPageDetails !== undefined &&
+    content.xdm.web.webPageDetails.name !== undefined
   );
 };

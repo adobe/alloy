@@ -13,9 +13,9 @@ governing permissions and limitations under the License.
 import createClickedElementProperties from "../../../../../src/components/ActivityCollector/createClickedElementProperties";
 
 describe("ActivityCollector::createClickedElementProperties", () => {
-  let fullProps;
+  let properties;
   beforeEach(() => {
-    fullProps = {
+    properties = {
       pageName: "testPageName",
       linkName: "testLinkName",
       linkRegion: "testLinkRegion",
@@ -25,34 +25,34 @@ describe("ActivityCollector::createClickedElementProperties", () => {
     };
   });
   it("Should return object with the init properties", () => {
-    const props = createClickedElementProperties(fullProps);
-    expect(props.properties).toEqual(fullProps);
+    const props = createClickedElementProperties({ properties });
+    expect(props.properties).toEqual(properties);
   });
   it("Can determine it holds valid link properties", () => {
-    const props = createClickedElementProperties(fullProps);
+    const props = createClickedElementProperties({ properties });
     expect(props.isValidLink()).toBe(true);
   });
   it("Can determine it holds invalid link properties", () => {
     let props = createClickedElementProperties({});
     expect(props.isValidLink()).toBe(false);
-    props = createClickedElementProperties(fullProps);
+    props = createClickedElementProperties({ properties });
     props.linkName = "";
     expect(props.isValidLink()).toBe(false);
   });
   it("Can determine it holds internal link properties", () => {
-    const props = createClickedElementProperties(fullProps);
+    const props = createClickedElementProperties({ properties });
     expect(props.isInternalLink()).toBe(false);
     props.linkType = "other";
     expect(props.isInternalLink()).toBe(true);
   });
   it("Can determine it holds valid ActivityMap properties", () => {
-    const props = createClickedElementProperties(fullProps);
+    const props = createClickedElementProperties({ properties });
     expect(props.isValidActivityMapData()).toBe(true);
     props.pageName = "";
     expect(props.isValidActivityMapData()).toBe(false);
   });
   it("Can convert properties to a populated DATA Analytics schema with ActivityMap data", () => {
-    const props = createClickedElementProperties(fullProps);
+    const props = createClickedElementProperties({ properties });
     const data = props.data;
     expect(data).toEqual({
       __adobe: {
@@ -72,7 +72,7 @@ describe("ActivityCollector::createClickedElementProperties", () => {
     });
   });
   it("Can convert properties to a populated XDM Analytics schema with ActivityMap data", () => {
-    const props = createClickedElementProperties(fullProps);
+    const props = createClickedElementProperties({ properties });
     const data = props.xdm;
     expect(data).toEqual({
       eventType: "web.webinteraction.linkClicks",
@@ -135,7 +135,7 @@ describe("ActivityCollector::createClickedElementProperties", () => {
     });
   });
   it("Can apply a property filter", () => {
-    const props = createClickedElementProperties(fullProps);
+    const props = createClickedElementProperties({ properties });
     // Need a clickedElement for the filter to be executed
     props.clickedElement = {};
     const filter = p => {
@@ -144,8 +144,24 @@ describe("ActivityCollector::createClickedElementProperties", () => {
     props.applyPropertyFilter(filter);
     expect(props.linkType).toBe("filtered");
   });
+  it("Prints message when filter rejects properties", () => {
+    const logger = jasmine.createSpyObj("logger", ["info"]);
+    const props = createClickedElementProperties({ properties, logger });
+    // Need a clickedElement for the filter to be executed
+    props.clickedElement = {};
+    const filter = p => {
+      p.linkType = "filtered";
+      return false;
+    };
+    props.applyPropertyFilter(filter);
+    expect(logger.info).toHaveBeenCalledWith(
+      jasmine.stringMatching(
+        /^Clicked element properties were rejected by filter function/
+      )
+    );
+  });
   it("Can apply a property filter for all properties", () => {
-    const props = createClickedElementProperties(fullProps);
+    const props = createClickedElementProperties({ properties });
     props.clickedElement = {};
     const filter = p => {
       p.pageName = "filtered";
@@ -160,7 +176,7 @@ describe("ActivityCollector::createClickedElementProperties", () => {
     expect(props.pageName).toBe("filtered");
   });
   it("Can apply an options property filter", () => {
-    const props = createClickedElementProperties(fullProps);
+    const props = createClickedElementProperties({ properties });
     // Need a clickedElement for the filter to be executed
     props.clickedElement = {};
     const filter = options => {
@@ -170,7 +186,7 @@ describe("ActivityCollector::createClickedElementProperties", () => {
     expect(props.linkType).toBe("filtered");
   });
   it("Can apply an options property filter for all properties", () => {
-    const props = createClickedElementProperties(fullProps);
+    const props = createClickedElementProperties({ properties });
     props.clickedElement = {};
     const filter = options => {
       if (

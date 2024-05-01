@@ -22,7 +22,9 @@ import getLinkRegion from "./getLinkRegion";
 import getAbsoluteUrlFromAnchorElement from "./utils/dom/getAbsoluteUrlFromAnchorElement";
 import findClickableElement from "./utils/dom/findClickableElement";
 import determineLinkType from "./utils/determineLinkType";
-import isPageViewEvent from "./utils/isPageViewEvent";
+import hasPageName from "./utils/hasPageName";
+import createTransientStorage from "./utils/createTransientStorage";
+import { injectStorage } from "../../utils";
 
 const getClickedElementProperties = createGetClickedElementProperties({
   window,
@@ -33,6 +35,8 @@ const getClickedElementProperties = createGetClickedElementProperties({
   determineLinkType
 });
 
+let clickActivityStorage;
+
 const createActivityCollector = ({
   config,
   eventManager,
@@ -40,10 +44,14 @@ const createActivityCollector = ({
   logger
 }) => {
   const clickCollection = config.clickCollection;
-  const clickActivityStorage = createClickActivityStorage({
-    config,
-    window
-  });
+  const createNamespacedStorage = injectStorage(window);
+  const nameSpacedStorage = createNamespacedStorage(config.orgId || "");
+  // Use transient in-memory if sessionStorage is disabled
+  const transientStorage = createTransientStorage();
+  const storage = clickCollection.sessionStorageEnabled
+    ? nameSpacedStorage.session
+    : transientStorage;
+  clickActivityStorage = createClickActivityStorage({ storage });
   const injectClickedElementProperties = createInjectClickedElementProperties({
     config,
     logger,
@@ -76,12 +84,9 @@ const createActivityCollector = ({
         });
       },
       onBeforeEvent({ event }) {
-        if (isPageViewEvent(event)) {
+        if (hasPageName(event)) {
           if (clickCollection.eventGroupingEnabled) {
-            recallAndInjectClickedElementProperties(
-              event,
-              clickActivityStorage
-            );
+            recallAndInjectClickedElementProperties(event);
           }
           storePageViewProperties(event, logger, clickActivityStorage);
         }
@@ -99,6 +104,7 @@ createActivityCollector.buildOnInstanceConfiguredExtraParams = ({
   return {
     getLinkDetails: targetElement => {
       return getClickedElementProperties({
+        clickActivityStorage,
         clickedElement: targetElement,
         config,
         logger

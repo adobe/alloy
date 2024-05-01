@@ -15,7 +15,7 @@ import createClickedElementProperties from "./createClickedElementProperties";
 export default ({ clickActivityStorage }) => {
   return event => {
     const properties = clickActivityStorage.load();
-    const elementProperties = createClickedElementProperties(properties);
+    const elementProperties = createClickedElementProperties({ properties });
     if (
       elementProperties.isValidLink() ||
       elementProperties.isValidActivityMapData()
