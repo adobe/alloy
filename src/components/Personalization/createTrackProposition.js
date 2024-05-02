@@ -19,10 +19,20 @@ import selectNodes from "../../utils/dom/selectNodes";
 const validateOptions = ({ options }) => {
   const validator = objectOf({
     proposition: objectOf({
-      id: string(),
-      scope: string(),
-      scopeDetails: anything(),
-      items: arrayOf(anything())
+      id: string().required(),
+      scope: string().required(),
+      scopeDetails: objectOf({
+        decisionProvider: string().required()
+      }).required(),
+      items: arrayOf(
+        objectOf({
+          id: string().required(),
+          schema: string().required(),
+          data: objectOf({ content: anything().required() }).required()
+        })
+      )
+        .required()
+        .nonEmpty()
     }).required(),
     element: anything(),
     selector: string()
@@ -31,53 +41,12 @@ const validateOptions = ({ options }) => {
   return validator(options);
 };
 
-const REQUIRED_FIELDS_PROPOSITION = ["id", "scope", "scopeDetails", "items"];
-const REQUIRED_FIELDS_ITEM = ["id", "schema", "data"];
-
-const checkMalformedPropositionJSON = propositionJSON => {
-  for (let i = 0; i < REQUIRED_FIELDS_PROPOSITION.length; i += 1) {
-    if (
-      !Object.hasOwnProperty.call(
-        propositionJSON,
-        REQUIRED_FIELDS_PROPOSITION[i]
-      )
-    ) {
-      return new Error(
-        `Proposition object is missing "${REQUIRED_FIELDS_PROPOSITION[i]}" field`
-      );
-    }
-  }
-
-  const { items } = propositionJSON;
-
-  if (!Array.isArray(items)) {
-    return new Error(`Proposition items must be an Array`);
-  }
-
-  for (let i = 0; i < items.length; i += 1) {
-    for (let j = 0; j < REQUIRED_FIELDS_ITEM.length; j += 1) {
-      if (!Object.hasOwnProperty.call(items[i], REQUIRED_FIELDS_ITEM[j])) {
-        return new Error(
-          `Proposition item is missing "${REQUIRED_FIELDS_ITEM[j]}" field`
-        );
-      }
-    }
-  }
-
-  return undefined;
-};
-
 export default ({
   autoTrackPropositionInteractions,
   storeInteractionMeta,
   createProposition
 }) => {
   const run = ({ proposition: propositionJSON, element, selector }) => {
-    const error = checkMalformedPropositionJSON(propositionJSON);
-
-    if (error) {
-      return Promise.reject(error);
-    }
     let elements;
 
     try {

@@ -245,94 +245,132 @@ describe("Personalization:trackProposition", () => {
     expect(getAttribute(element, INTERACT_ID_DATA_ATTRIBUTE)).toBeNull();
   });
 
-  it("fails gracefully if malformed proposition json", async () => {
+  it("validates malformed proposition json", () => {
     const { command } = trackProposition;
 
     const scopeDetails = { decisionProvider: "AJO" };
 
     const element = document.getElementById(testElementId);
-    await expectAsync(
-      command.run({ proposition: {}, element })
-    ).toBeRejectedWithError('Proposition object is missing "id" field');
 
-    await expectAsync(
-      command.run({ proposition: { id: 1 }, element })
-    ).toBeRejectedWithError('Proposition object is missing "scope" field');
-
-    await expectAsync(
-      command.run({
-        proposition: { id: 1, scope: "web://aepdemo.com/" },
-        element
-      })
-    ).toBeRejectedWithError(
-      'Proposition object is missing "scopeDetails" field'
+    expect(() =>
+      command.optionsValidator({ proposition: {}, element })
+    ).toThrowError(
+      "'proposition.id' is a required option\n" +
+        "'proposition.scope' is a required option\n" +
+        "'proposition.scopeDetails' is a required option\n" +
+        "'proposition.items' is a required option"
     );
 
-    await expectAsync(
-      command.run({
-        proposition: { id: 1, scope: "web://aepdemo.com/", scopeDetails },
+    expect(() =>
+      command.optionsValidator({ proposition: { id: "abc" }, element })
+    ).toThrowError(
+      "'proposition.scope' is a required option\n" +
+        "'proposition.scopeDetails' is a required option\n" +
+        "'proposition.items' is a required option"
+    );
+
+    expect(() =>
+      command.optionsValidator({
+        proposition: { id: "abc", scope: "web://aepdemo.com/" },
         element
       })
-    ).toBeRejectedWithError('Proposition object is missing "items" field');
+    ).toThrowError(
+      "'proposition.scopeDetails' is a required option\n" +
+        "'proposition.items' is a required option"
+    );
 
-    await expectAsync(
-      command.run({
+    expect(() =>
+      command.optionsValidator({
+        proposition: { id: "abc", scope: "web://aepdemo.com/", scopeDetails },
+        element
+      })
+    ).toThrowError("'proposition.items' is a required option");
+
+    expect(() =>
+      command.optionsValidator({
         proposition: {
-          id: 1,
+          id: "abc",
           scope: "web://aepdemo.com/",
           scopeDetails,
-          items: undefined
+          items: []
         },
         element
       })
-    ).toBeRejectedWithError("Proposition items must be an Array");
+    ).toThrowError(
+      "'proposition.items': Expected a non-empty array, but got []."
+    );
 
-    await expectAsync(
-      command.run({
+    expect(() =>
+      command.optionsValidator({
         proposition: {
-          id: 1,
+          id: "abc",
           scope: "web://aepdemo.com/",
           scopeDetails,
           items: [{}]
         },
         element
       })
-    ).toBeRejectedWithError('Proposition item is missing "id" field');
+    ).toThrowError(
+      "'proposition.items[0].id' is a required option\n" +
+        "'proposition.items[0].schema' is a required option\n" +
+        "'proposition.items[0].data' is a required option"
+    );
 
-    await expectAsync(
-      command.run({
+    expect(() =>
+      command.optionsValidator({
         proposition: {
-          id: 1,
+          id: "abc",
           scope: "web://aepdemo.com/",
           scopeDetails,
           items: [{ id: "abc" }]
         },
         element
       })
-    ).toBeRejectedWithError('Proposition item is missing "schema" field');
+    ).toThrowError(
+      "'proposition.items[0].schema' is a required option\n" +
+        "'proposition.items[0].data' is a required option"
+    );
 
-    await expectAsync(
-      command.run({
+    expect(() =>
+      command.optionsValidator({
         proposition: {
-          id: 1,
+          id: "abc",
           scope: "web://aepdemo.com/",
           scopeDetails,
           items: [{ id: "abc", schema: JSON_CONTENT_ITEM }]
         },
         element
       })
-    ).toBeRejectedWithError('Proposition item is missing "data" field');
+    ).toThrowError("'proposition.items[0].data' is a required option");
 
-    await expectAsync(
-      command.run({
+    expect(() =>
+      command.optionsValidator({
         proposition: {
-          id: 1,
+          id: "abc",
           scope: "web://aepdemo.com/",
           scopeDetails,
           items: [{ id: "abc", schema: JSON_CONTENT_ITEM, data: {} }]
         },
         element
       })
-    ).not.toBeRejected();
+    ).toThrowError("'proposition.items[0].data.content' is a required option");
+
+    expect(() =>
+      command.optionsValidator({
+        proposition: {
+          id: "abc",
+          scope: "web://aepdemo.com/",
+          scopeDetails,
+          items: [
+            {
+              id: "abc",
+              schema: JSON_CONTENT_ITEM,
+              data: { content: { hello: "world" } }
+            }
+          ]
+        },
+        element
+      })
+    ).not.toThrowError();
   });
 });
