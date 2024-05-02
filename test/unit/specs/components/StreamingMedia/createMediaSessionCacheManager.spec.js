@@ -29,17 +29,17 @@ describe("StreamingMedia::createMediaSessionCacheManager", () => {
     expect(result).toEqual(sessionDetails);
   });
 
-  it("stopHeartbeat should stop the heartbeat", () => {
+  it("stopPing should stop the Ping", () => {
     const playerId = "player1";
-    const sessionDetails = { id: "session1", heartbeatId: 1 };
+    const sessionDetails = { id: "session1", pingId: 1 };
 
     mediaSessionCacheManager.storeSession({ playerId, sessionDetails });
 
     const result = mediaSessionCacheManager.getSession(playerId);
 
-    mediaSessionCacheManager.stopHeartbeat({ playerId });
+    mediaSessionCacheManager.stopPing({ playerId });
 
-    expect(result.heartbeatId).toEqual(null);
+    expect(result.pingId).toEqual(null);
   });
 
   it("storeSession should store the session", () => {
@@ -52,14 +52,14 @@ describe("StreamingMedia::createMediaSessionCacheManager", () => {
     expect(session).toEqual(sessionDetails);
   });
 
-  it("saveHeartbeat should save the heartbeat", () => {
+  it("savePing should save the Ping", () => {
     const playerId = "player1";
     const sessionDetails = { id: "session1" };
     mediaSessionCacheManager.storeSession({ playerId, sessionDetails });
-    mediaSessionCacheManager.saveHeartbeat({ playerId, heartbeatId: 1 });
+    mediaSessionCacheManager.savePing({ playerId, pingId: 1 });
 
     const session = mediaSessionCacheManager.getSession(playerId);
 
-    expect(session.heartbeatId).toEqual(1);
+    expect(session.pingId).toEqual(1);
   });
 });

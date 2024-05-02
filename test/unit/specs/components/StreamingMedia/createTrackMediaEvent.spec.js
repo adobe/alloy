@@ -18,8 +18,8 @@ describe("createTrackMediaEvent", () => {
         getPlayerDetails: jasmine.createSpy(),
         sessionPromise: Promise.resolve({ sessionId: "123" })
       }),
-      stopHeartbeat: jasmine.createSpy(),
-      saveHeartbeat: jasmine.createSpy()
+      stopPing: jasmine.createSpy(),
+      savePing: jasmine.createSpy()
     };
     config = {
       streamingMedia: {
@@ -54,7 +54,7 @@ describe("createTrackMediaEvent", () => {
     expect(mediaEventManager.trackMediaEvent).toHaveBeenCalled();
   });
 
-  it("should stop the heartbeat for session complete event", async () => {
+  it("should stop the Ping for session complete event", async () => {
     const options = {
       playerId: "player1",
       xdm: {
@@ -64,12 +64,12 @@ describe("createTrackMediaEvent", () => {
 
     await trackMediaEvent(options);
 
-    expect(mediaSessionCacheManager.stopHeartbeat).toHaveBeenCalledWith({
+    expect(mediaSessionCacheManager.stopPing).toHaveBeenCalledWith({
       playerId: options.playerId
     });
   });
 
-  it("should save the heartbeat for non-session complete event", async () => {
+  it("should save the Ping for non-session complete event", async () => {
     const options = {
       playerId: "player1",
       xdm: {
@@ -79,6 +79,6 @@ describe("createTrackMediaEvent", () => {
 
     await trackMediaEvent(options);
 
-    expect(mediaSessionCacheManager.saveHeartbeat).toHaveBeenCalled();
+    expect(mediaSessionCacheManager.savePing).toHaveBeenCalled();
   });
 });

@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 import isBlankString from "../../utils/isBlankString";
 import MediaEvents from "./constants/eventTypes";
 import { isNonEmptyArray } from "../../utils";
+import PlaybackState from "./constants/playbackState";
 
 export default ({ mediaSessionCacheManager, config, trackMediaEvent }) => {
   return ({ response, playerId, getPlayerDetails }) => {
@@ -28,7 +29,7 @@ export default ({ mediaSessionCacheManager, config, trackMediaEvent }) => {
         return { sessionId };
       }
 
-      const heartbeatId = setTimeout(() => {
+      const pingId = setTimeout(() => {
         trackMediaEvent({
           playerId,
           xdm: {
@@ -37,7 +38,11 @@ export default ({ mediaSessionCacheManager, config, trackMediaEvent }) => {
         });
       }, config.streamingMedia.mainPingInterval * 1000);
 
-      mediaSessionCacheManager.saveHeartbeat({ playerId, heartbeatId });
+      mediaSessionCacheManager.savePing({
+        playerId,
+        pingId,
+        playbackState: PlaybackState.MAIN
+      });
 
       return { sessionId };
     }

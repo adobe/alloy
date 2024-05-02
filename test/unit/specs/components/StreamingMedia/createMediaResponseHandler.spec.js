@@ -18,8 +18,8 @@ describe("createMediaResponseHandler", () => {
         getPlayerDetails: jasmine.createSpy(),
         sessionPromise: Promise.resolve({ sessionId: "123" })
       }),
-      stopHeartbeat: jasmine.createSpy(),
-      saveHeartbeat: jasmine.createSpy()
+      stopPing: jasmine.createSpy(),
+      savePing: jasmine.createSpy()
     };
     config = {
       streamingMedia: {
@@ -48,7 +48,7 @@ describe("createMediaResponseHandler", () => {
       getPlayerDetails
     });
     await expect(result).toEqual({});
-    await expect(mediaSessionCacheManager.saveHeartbeat).not.toHaveBeenCalled();
+    await expect(mediaSessionCacheManager.savePing).not.toHaveBeenCalled();
   });
 
   it("should return session id", async () => {
@@ -60,7 +60,7 @@ describe("createMediaResponseHandler", () => {
       getPlayerDetails
     });
     await expect(result).toEqual({ sessionId: "123" });
-    await expect(mediaSessionCacheManager.saveHeartbeat).toHaveBeenCalled();
+    await expect(mediaSessionCacheManager.savePing).toHaveBeenCalled();
   });
 
   it("should return sessionId when no player or getPlayerDetails function", async () => {
@@ -70,6 +70,6 @@ describe("createMediaResponseHandler", () => {
       response
     });
     await expect(result).toEqual({ sessionId: "123" });
-    await expect(mediaSessionCacheManager.saveHeartbeat).not.toHaveBeenCalled();
+    await expect(mediaSessionCacheManager.savePing).not.toHaveBeenCalled();
   });
 });

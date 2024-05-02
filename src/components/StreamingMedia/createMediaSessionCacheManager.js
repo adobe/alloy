@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import PlaybackState from "./constants/playbackState";
+
 export default () => {
   let mediaSessionCache;
 
@@ -17,29 +19,29 @@ export default () => {
     return mediaSessionCache[playerId] || {};
   };
 
-  const saveHeartbeat = ({ playerId, heartbeatId }) => {
-    const sessionDetails = mediaSessionCache[playerId];
-
-    if (!sessionDetails) {
+  const savePing = ({ playerId, pingId, playbackState }) => {
+    if (!mediaSessionCache[playerId]) {
       return;
     }
-    if (sessionDetails.heartbeatId) {
-      clearTimeout(sessionDetails.heartbeatId);
+    if (mediaSessionCache[playerId].pingId) {
+      clearTimeout(mediaSessionCache[playerId].pingId);
     }
 
-    sessionDetails.heartbeatId = heartbeatId;
+    mediaSessionCache[playerId].pingId = pingId;
+    mediaSessionCache[playerId].playbackState = playbackState;
   };
 
-  const stopHeartbeat = ({ playerId }) => {
+  const stopPing = ({ playerId }) => {
     const sessionDetails = mediaSessionCache[playerId];
 
     if (!sessionDetails) {
       return;
     }
 
-    clearTimeout(sessionDetails.heartbeatId);
+    clearTimeout(sessionDetails.pingId);
 
-    sessionDetails.heartbeatId = null;
+    sessionDetails.pingId = null;
+    sessionDetails.playbackState = PlaybackState.COMPLETED;
   };
   const storeSession = ({ playerId, sessionDetails }) => {
     if (mediaSessionCache === undefined) {
@@ -52,7 +54,7 @@ export default () => {
   return {
     getSession,
     storeSession,
-    stopHeartbeat,
-    saveHeartbeat
+    stopPing,
+    savePing
   };
 };

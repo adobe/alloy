@@ -1,4 +1,5 @@
 import createTrackMediaSession from "../../../../../src/components/StreamingMedia/createTrackMediaSession";
+import PlaybackState from "../../../../../src/components/StreamingMedia/constants/playbackState";
 
 describe("createTrackMediaEvent", () => {
   let trackMediaSession;
@@ -90,7 +91,8 @@ describe("createTrackMediaEvent", () => {
       playerId,
       sessionDetails: {
         sessionPromise,
-        getPlayerDetails
+        getPlayerDetails,
+        playbackState: PlaybackState.MAIN
       }
     });
   });

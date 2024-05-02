@@ -11,6 +11,33 @@ governing permissions and limitations under the License.
 */
 import MediaEvents from "./constants/eventTypes";
 
+const getContentState = (eventType, sessionContentState) => {
+  if (
+    eventType === MediaEvents.AD_START ||
+    eventType === MediaEvents.Ad_BREAK_START ||
+    eventType === MediaEvents.AD_SKIP ||
+    eventType === MediaEvents.AD_COMPLETE
+  ) {
+    return "ad";
+  }
+  if (
+    eventType === MediaEvents.AD_BREAK_COMPLETE ||
+    eventType === MediaEvents.CHAPTER_COMPLETE ||
+    eventType === MediaEvents.CHAPTER_START ||
+    eventType === MediaEvents.CHAPTER_SKIP ||
+    eventType === MediaEvents.SESSION_START
+  ) {
+    return "main";
+  }
+  if (
+    eventType === MediaEvents.SESSION_END ||
+    eventType === MediaEvents.SESSION_COMPLETE
+  ) {
+    return "completed";
+  }
+  return sessionContentState;
+};
+
 export default ({ mediaEventManager, mediaSessionCacheManager, config }) => {
   const sendMediaEvent = options => {
     const event = mediaEventManager.createMediaEvent({ options });
@@ -19,7 +46,8 @@ export default ({ mediaEventManager, mediaSessionCacheManager, config }) => {
     const action = eventType.split(".")[1];
     const {
       getPlayerDetails,
-      sessionPromise
+      sessionPromise,
+      playbackState
     } = mediaSessionCacheManager.getSession(playerId);
     return sessionPromise.then(result => {
       mediaEventManager.augmentMediaEvent({
@@ -36,26 +64,34 @@ export default ({ mediaEventManager, mediaSessionCacheManager, config }) => {
             eventType === MediaEvents.SESSION_COMPLETE ||
             eventType === MediaEvents.SESSION_END
           ) {
-            mediaSessionCacheManager.stopHeartbeat({ playerId });
+            mediaSessionCacheManager.stopPing({ playerId });
           } else {
+            const sessionPlaybackState = getContentState(
+              eventType,
+              playbackState
+            );
+
+            if (sessionPlaybackState === "completed") {
+              return;
+            }
             const interval =
-              eventType === MediaEvents.AD_START ||
-              eventType === MediaEvents.Ad_BREAK_START
+              sessionPlaybackState === "ad"
                 ? config.streamingMedia.adPingInterval
                 : config.streamingMedia.mainPingInterval;
 
-            const heartbeatId = setTimeout(() => {
-              const heartbeatOptions = {
+            const pingId = setTimeout(() => {
+              const pingOptions = {
                 playerId,
                 xdm: {
                   eventType: MediaEvents.PING
                 }
               };
-              sendMediaEvent(heartbeatOptions);
+              sendMediaEvent(pingOptions);
             }, interval * 1000);
-            mediaSessionCacheManager.saveHeartbeat({
+            mediaSessionCacheManager.savePing({
               playerId,
-              heartbeatId
+              pingId,
+              playbackState: sessionPlaybackState
             });
           }
         }
