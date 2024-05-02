@@ -10,13 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const executeSequentially = promiseFunctions =>
-  promiseFunctions.reduce((sequence, promiseFunction) => {
-    return sequence.then(result =>
-      promiseFunction().then(nextResult => [...result, nextResult])
-    );
-  }, Promise.resolve([]));
-
 export default ({ schemaProcessors, logger }) => {
   const wrapRenderWithLogging = (render, item) => () => {
     return Promise.resolve()
@@ -38,7 +31,7 @@ export default ({ schemaProcessors, logger }) => {
   };
 
   const renderItems = (renderers, meta) =>
-    executeSequentially(renderers).then(successes => {
+    Promise.all(renderers.map(renderer => renderer())).then(successes => {
       // as long as at least one renderer succeeds, we want to add the notification
       // to the display notifications
       if (!successes.includes(true)) {
@@ -200,7 +193,7 @@ export default ({ schemaProcessors, logger }) => {
       );
     });
     const render = () => {
-      return executeSequentially(renderers).then(metas =>
+      return Promise.all(renderers.map(renderer => renderer())).then(metas =>
         metas.filter(meta => meta)
       );
     };
