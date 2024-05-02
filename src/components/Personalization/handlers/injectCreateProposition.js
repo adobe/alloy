@@ -16,7 +16,6 @@ import {
   PROPOSITION_SCOPE_TYPE,
   VIEW_SCOPE_TYPE
 } from "../constants/scopeType";
-import { DOM_ACTION_CLICK } from "../dom-actions/initDomActionsModules";
 
 export default ({ preprocess, isPageWideSurface }) => {
   const createItem = (item, proposition) => {
@@ -78,16 +77,7 @@ export default ({ preprocess, isPageWideSurface }) => {
         return PROPOSITION_SCOPE_TYPE;
       },
       getItems() {
-        const first = [];
-        const last = [];
-        items.forEach(rawItem => {
-          const item = createItem(rawItem, this);
-          Array.prototype.push.call(
-            item.getSchemaType() !== DOM_ACTION_CLICK ? first : last,
-            item
-          );
-        });
-        return [...first, ...last];
+        return items.map(item => createItem(item, this));
       },
       getNotification() {
         return { id, scope, scopeDetails };
