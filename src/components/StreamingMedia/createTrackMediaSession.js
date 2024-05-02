@@ -44,9 +44,9 @@ export default ({
       playerId,
       sessionDetails: {
         sessionPromise,
-        getPlayerDetails
-      },
-      playbackState: PlaybackState.MAIN
+        getPlayerDetails,
+        playbackState: PlaybackState.MAIN
+      }
     });
 
     return sessionPromise;
