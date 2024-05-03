@@ -12,11 +12,11 @@ governing permissions and limitations under the License.
 
 import isDownloadLink from "./dom/isDownloadLink";
 import isExitLink from "./dom/isExitLink";
-import isEmptyString from "./isEmptyString";
+import isNonEmptyString from "../../../utils/isNonEmptyString";
 
 export default (window, config, linkUrl, clickedObj) => {
   let linkType = "other";
-  if (!isEmptyString(linkUrl)) {
+  if (isNonEmptyString(linkUrl)) {
     if (isDownloadLink(config.downloadLinkQualifier, linkUrl, clickedObj)) {
       linkType = "download";
     } else if (isExitLink(window, linkUrl)) {
