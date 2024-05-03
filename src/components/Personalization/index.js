@@ -43,6 +43,7 @@ import createProcessInAppMessage from "./handlers/createProcessInAppMessage";
 import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules";
 import createRedirect from "./dom-actions/createRedirect";
 import createNotificationHandler from "./createNotificationHandler";
+import createHandleConsentFlicker from "./createHandleConsentFlicker";
 
 const createPersonalization = ({ config, logger, eventManager, consent }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
@@ -134,7 +135,10 @@ const createPersonalization = ({ config, logger, eventManager, consent }) => {
     notificationHandler
   });
 
-  handleConsentFlicker({ showContainers, consent });
+  const handleConsentFlicker = createHandleConsentFlicker({
+    showContainers,
+    consent
+  });
 
   return createComponent({
     getPageLocation,
@@ -150,7 +154,8 @@ const createPersonalization = ({ config, logger, eventManager, consent }) => {
     setTargetMigration,
     mergeDecisionsMeta,
     renderedPropositions,
-    onDecisionHandler
+    onDecisionHandler,
+    handleConsentFlicker
   });
 };
 
