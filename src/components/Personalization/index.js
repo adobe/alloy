@@ -44,7 +44,7 @@ import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMe
 import createRedirect from "./dom-actions/createRedirect";
 import createNotificationHandler from "./createNotificationHandler";
 
-const createPersonalization = ({ config, logger, eventManager }) => {
+const createPersonalization = ({ config, logger, eventManager, consent }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
 
@@ -132,6 +132,8 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     createProposition,
     notificationHandler
   });
+
+  handleConsentFlicker({ showContainers, consent });
 
   return createComponent({
     getPageLocation,
