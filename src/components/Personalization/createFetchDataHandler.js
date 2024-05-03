@@ -20,13 +20,17 @@ export default ({
   mergeQuery,
   processPropositions,
   createProposition,
-  notificationHandler
+  notificationHandler,
+  consent
 }) => {
   return ({ cacheUpdate, personalizationDetails, event, onResponse }) => {
-    if (personalizationDetails.isRenderDecisions()) {
-      hideContainers(prehidingStyle);
-    } else {
-      showContainers();
+    const { state, wasSet } = consent.current();
+    if (!(state === "out" && wasSet)) {
+      if (personalizationDetails.isRenderDecisions()) {
+        hideContainers(prehidingStyle);
+      } else {
+        showContainers();
+      }
     }
     mergeQuery(event, personalizationDetails.createQueryDetails());
 

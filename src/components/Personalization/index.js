@@ -104,7 +104,8 @@ const createPersonalization = ({ config, logger, eventManager, consent }) => {
     mergeQuery,
     processPropositions,
     createProposition,
-    notificationHandler
+    notificationHandler,
+    consent
   });
 
   const onClickHandler = createOnClickHandler({
