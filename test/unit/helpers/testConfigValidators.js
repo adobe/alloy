@@ -39,9 +39,9 @@ export default ({
 
   deprecatedConfigurations.forEach((cfg, i) => {
     it(`outputs messages for deprecated fields (${i})`, () => {
-      expect(() => {
-        configValidators(cfg);
-      }).toThrowError();
+      const logger = jasmine.createSpyObj("logger", ["warn"]);
+      configValidators.call({ logger }, cfg);
+      expect(logger.warn).toHaveBeenCalled();
     });
   });
 };

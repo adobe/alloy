@@ -1,5 +1,5 @@
 /*
-Copyright 2019 Adobe. All rights reserved.
+Copyright 2024 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,42 +10,56 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { objectOf, string } from "../../../../../src/utils/validation";
+import {
+  objectOf,
+  callback,
+  string,
+  boolean
+} from "../../../../../src/utils/validation";
 import describeValidation from "../../../helpers/describeValidation";
 
 describe("validation::deprecated", () => {
-  const testCases = [
-    { value: { old: "a", new: "a" }, expected: { new: "a" }, warning: true },
-    { value: { old: "a" }, expected: { new: "a" }, warning: true },
-    { value: { new: "a" } },
-    { value: { old: "a", new: "b" }, error: true },
-    { value: "foo", error: true },
-    { value: 1, error: true },
-    { value: undefined }
-  ];
-
   describeValidation(
-    "works for a single deprecated field",
+    "works for a string field",
     objectOf({
-      new: string().required()
-    }).deprecated("old", string(), "new"),
-    testCases
+      old: string().deprecated(),
+      new: string()
+    }),
+    [
+      { value: { old: "a" }, expected: { old: "a" }, warning: true },
+      { value: {}, expected: {}, warning: false },
+      { value: { new: "b" }, expected: { new: "b" }, warning: false }
+    ]
   );
 
   describeValidation(
-    "works for multiple deprecated fields",
+    "works for a boolean field",
     objectOf({
-      new1: string().required(),
-      new2: string().required()
-    })
-      .deprecated("old1", string(), "new1")
-      .deprecated("old2", string(), "new2"),
+      old: boolean().deprecated(),
+      new: boolean()
+    }),
+    [
+      { value: { old: true }, expected: { old: true }, warning: true },
+      { value: {}, expected: {}, warning: false },
+      { value: { new: false }, expected: { new: false }, warning: false }
+    ]
+  );
+
+  const noop = () => undefined;
+  describeValidation(
+    "works for a callback field",
+    objectOf({
+      old: callback().deprecated(),
+      new: callback()
+    }),
     [
       {
-        value: { old1: "a", old2: "b" },
-        expected: { new1: "a", new2: "b" },
+        value: { old: noop, new: noop },
+        expected: { old: noop, new: noop },
         warning: true
-      }
+      },
+      { value: {}, expected: {}, warning: false },
+      { value: { new: noop }, expected: { new: noop }, warning: false }
     ]
   );
 });

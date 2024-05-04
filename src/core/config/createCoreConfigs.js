@@ -40,4 +40,4 @@ export default () =>
       .required(),
     onBeforeEventSend: callback().default(noop),
     edgeConfigOverrides: validateConfigOverride
-  }).deprecated("edgeConfigId", string().unique(), "datastreamId");
+  }).renamed("edgeConfigId", string().unique(), "datastreamId");

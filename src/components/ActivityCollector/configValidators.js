@@ -36,9 +36,7 @@ export default objectOf({
     eventGroupingEnabled: true
   }),
   downloadLinkQualifier,
-  onBeforeLinkClickSend: callback()
-}).deprecated(
-  "clickCollection.filterClickedElementProperties",
-  callback(),
-  "onBeforeLinkClickSend"
-);
+  onBeforeLinkClickSend: callback().deprecated(
+    'The field "onBeforeLinkClickSend" has been deprecated. Use "clickCollection.filterClickedElementProperties" instead.'
+  )
+});
