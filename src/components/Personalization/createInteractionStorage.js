@@ -12,7 +12,32 @@ governing permissions and limitations under the License.
 
 export default () => {
   const clickMetaStorage = {};
+  /*
+        clickMetaStorage example.
+        `abc' and 'def' are proposition IDs.  1 is an interact id.  The object with an id, scope and scopeDetails
+        is the notification.
+
+          {
+            1: {
+              "abc": { "id": "abc", "scope": "proposition", "scopeDetails": {} },
+              "def": { "id": "def", "scope": "proposition", "scopeDetails": {} }
+            }
+          }
+  */
+
   const clickItemStorage = {};
+  /*
+        clickItemStorage example.
+        `abc' and 'def' are proposition IDs.  1 is an interact id.  The sets contain proposition-item IDs which
+        are used in notifications that are sent.
+
+          {
+            1: {
+              abc: new Set(["itemAAA", "itemCCC"]),
+              def: new Set(["itemEEE", "itemFFF"]),
+            },
+          }
+  */
 
   const storeInteractionMeta = (
     propositionId,
