@@ -25,7 +25,7 @@ export default ({
       onBeforeLinkClickSend: optionsFilter, // Deprecated
       clickCollection
     } = config;
-    const { filterClickedElementProperties: propertyFilter } = clickCollection;
+    const { filterClickDetails: propertyFilter } = clickCollection;
     const elementProperties = createClickedElementProperties({ logger });
     if (clickedElement) {
       const clickableElement = findClickableElement(clickedElement);
@@ -55,7 +55,7 @@ export default ({
         }
         // If defined, run user provided filter function
         if (propertyFilter) {
-          // clickCollection.filterClickedElementProperties
+          // clickCollection.filterClickDetails
           elementProperties.applyPropertyFilter(propertyFilter);
         } else if (optionsFilter) {
           // onBeforeLinkClickSend

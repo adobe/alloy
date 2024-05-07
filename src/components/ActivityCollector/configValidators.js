@@ -27,7 +27,7 @@ export default objectOf({
     // TODO: Consider moving downloadLinkQualifier here.
     sessionStorageEnabled: boolean().default(true),
     eventGroupingEnabled: boolean().default(true),
-    filterClickedElementProperties: callback()
+    filterClickProperties: callback()
   }).default({
     internalLinkEnabled: true,
     externalLinkEnabled: true,
@@ -37,6 +37,6 @@ export default objectOf({
   }),
   downloadLinkQualifier,
   onBeforeLinkClickSend: callback().deprecated(
-    'The field "onBeforeLinkClickSend" has been deprecated. Use "clickCollection.filterClickedElementProperties" instead.'
+    'The field "onBeforeLinkClickSend" has been deprecated. Use "clickCollection.filterClickDetails" instead.'
   )
 });

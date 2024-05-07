@@ -74,13 +74,13 @@ test("Test C81181: Verify that onBeforeLinkClickSend cancels a request", async (
   await collectEndpointAsserter.assertNeitherCollectNorInteractCalled();
 });
 
-test("Test C81181: Verify that filterClickedElementProperties can cancel a request", async () => {
+test("Test C81181: Verify that filterClickDetails can cancel a request", async () => {
   const collectEndpointAsserter = await createCollectEndpointAsserter();
   await preventLinkNavigation();
   const alloy = createAlloyProxy();
   const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
     clickCollection: {
-      filterClickedElementProperties: () => {
+      filterClickDetails: () => {
         return false;
       }
     }
@@ -148,7 +148,7 @@ test("Test C81181: Verify that onBeforeLinkClickSend cancels a request based on 
   await assertRequestXdm(interactRequest, expectedXdm);
 });
 
-test("Test C81181: Verify that filterClickedElementProperties can cancels a request based on link details", async () => {
+test("Test C81181: Verify that filterClickDetails can cancels a request based on link details", async () => {
   const collectEndpointAsserter = await createCollectEndpointAsserter();
   await preventLinkNavigation();
   const alloy = createAlloyProxy();
@@ -156,7 +156,7 @@ test("Test C81181: Verify that filterClickedElementProperties can cancels a requ
   const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
     clickCollection: {
       eventGroupingEnabled: false,
-      filterClickedElementProperties: props => {
+      filterClickDetails: props => {
         return props.clickedElement.id !== "canceled-alloy-link-test";
       }
     }
@@ -244,7 +244,7 @@ test("Test C81181: Verify that onBeforeLinkClickSend augments a request", async 
   );
 });
 
-test("Test C81181: Verify that filterClickedElementProperties can augment a request", async () => {
+test("Test C81181: Verify that filterClickDetails can augment a request", async () => {
   const collectEndpointAsserter = await createCollectEndpointAsserter();
   await preventLinkNavigation();
   const alloy = createAlloyProxy();
@@ -252,7 +252,7 @@ test("Test C81181: Verify that filterClickedElementProperties can augment a requ
   const testConfig = compose(orgMainConfigMain, clickCollectionEnabled, {
     clickCollection: {
       eventGroupingEnabled: false,
-      filterClickedElementProperties: props => {
+      filterClickDetails: props => {
         if (props.clickedElement.id === "alloy-link-test") {
           props.linkName = "Augmented name";
           return true;
