@@ -16,7 +16,7 @@ import {
   BAD_GATEWAY,
   GATEWAY_TIMEOUT
 } from "../../constants/httpStatusCode";
-import { includes } from "../../utils";
+import { includes } from "../../utils/index.js";
 
 const MAX_RETRIES = 3;
 

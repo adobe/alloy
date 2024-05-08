@@ -10,18 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   configOverridesMain as overrides,
   configOverridesAlt as alternateOverrides,
   orgMainConfigMain,
   debugEnabled,
-  consentIn
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  consentIn,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, consentIn, debugEnabled);
@@ -29,13 +29,13 @@ const config = compose(orgMainConfigMain, consentIn, debugEnabled);
 createFixture({
   title:
     "C7437532: `appendIdentityToUrl` can receive config overrides in command options and in `configure`",
-  requestHooks: [networkLogger.acquireEndpointLogs]
+  requestHooks: [networkLogger.acquireEndpointLogs],
 });
 
 test.meta({
   ID: "C2592",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C7437532: `appendIdentityToUrl` can receive config overrides in command options", async () => {
@@ -44,19 +44,19 @@ test("Test C7437532: `appendIdentityToUrl` can receive config overrides in comma
   // this should get an ECID
   await alloy.appendIdentityToUrl({
     url: "https://example.com",
-    edgeConfigOverrides: overrides
+    edgeConfigOverrides: overrides,
   });
 
   await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
   await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
-    networkLogger.acquireEndpointLogs.requests[0].request.body
+    networkLogger.acquireEndpointLogs.requests[0].request.body,
   );
 
   await t
     .expect(
-      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event,
     )
     .eql(overrides.com_adobe_experience_platform.datasets.event);
   await t
@@ -75,19 +75,19 @@ test("Test C7437532: `appendIdentityToUrl` can receive config overrides from `co
   await alloy.configure(compose(config, { edgeConfigOverrides: overrides }));
   // this should get an ECID
   await alloy.appendIdentityToUrl({
-    url: "https://example.com"
+    url: "https://example.com",
   });
 
   await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
   await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
-    networkLogger.acquireEndpointLogs.requests[0].request.body
+    networkLogger.acquireEndpointLogs.requests[0].request.body,
   );
 
   await t
     .expect(
-      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event,
     )
     .eql(overrides.com_adobe_experience_platform.datasets.event);
   await t
@@ -104,24 +104,24 @@ test("Test C7437532: `appendIdentityToUrl` can receive config overrides from `co
 test("Test C7437532: overrides from the `appendIdentityToUrl` should take precedence over the ones from `configure`", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(
-    compose(config, { edgeConfigOverrides: alternateOverrides })
+    compose(config, { edgeConfigOverrides: alternateOverrides }),
   );
   // this should get an ECID
   await alloy.appendIdentityToUrl({
     url: "https://example.com",
-    edgeConfigOverrides: overrides
+    edgeConfigOverrides: overrides,
   });
 
   await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
   await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
-    networkLogger.acquireEndpointLogs.requests[0].request.body
+    networkLogger.acquireEndpointLogs.requests[0].request.body,
   );
 
   await t
     .expect(
-      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event,
     )
     .eql(overrides.com_adobe_experience_platform.datasets.event);
   await t
@@ -143,21 +143,21 @@ test("Test C7437532: empty configuration overrides should not be sent to the Edg
     url: "https://example.com",
     edgeConfigOverrides: compose(overrides, {
       com_adobe_target: {
-        propertyToken: ""
-      }
-    })
+        propertyToken: "",
+      },
+    }),
   });
 
   await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
   await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
-    networkLogger.acquireEndpointLogs.requests[0].request.body
+    networkLogger.acquireEndpointLogs.requests[0].request.body,
   );
 
   await t
     .expect(
-      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event,
     )
     .eql(overrides.com_adobe_experience_platform.datasets.event);
   await t
@@ -177,8 +177,8 @@ test("Test C7437532: `appendIdentityToUrl` can override the datastreamId", async
   await alloy.appendIdentityToUrl({
     url: "https://example.com",
     edgeConfigOverrides: {
-      datastreamId: alternateDatastreamId
-    }
+      datastreamId: alternateDatastreamId,
+    },
   });
 
   await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);

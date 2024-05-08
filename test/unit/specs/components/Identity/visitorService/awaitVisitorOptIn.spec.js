@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import awaitVisitorOptIn from "../../../../../../src/components/Identity/visitorService/awaitVisitorOptIn";
+import awaitVisitorOptIn from "../../../../../../src/components/Identity/visitorService/awaitVisitorOptIn.js";
 
 const logger = jasmine.createSpyObj(["info"]);
 

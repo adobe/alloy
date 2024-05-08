@@ -1,5 +1,5 @@
 /*
-Copyright 2019 Adobe. All rights reserved.
+Copyright 2019 Adobe. Ackll rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,56 +10,53 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { boolean, objectOf, string } from "../../utils/validation";
-import createComponent from "./createComponent";
-import { initDomActionsModules } from "./dom-actions";
-import createCollect from "./createCollect";
-import { hideContainers, showContainers } from "./flicker";
-import createFetchDataHandler from "./createFetchDataHandler";
-import collectClicks from "./dom-actions/clicks/collectClicks";
-import isAuthoringModeEnabled from "./utils/isAuthoringModeEnabled";
-import { mergeDecisionsMeta, mergeQuery } from "./event";
-import createOnClickHandler from "./createOnClickHandler";
-import createViewCacheManager from "./createViewCacheManager";
-import createViewChangeHandler from "./createViewChangeHandler";
-import createClickStorage from "./createClickStorage";
-import createApplyPropositions from "./createApplyPropositions";
-import createGetPageLocation from "./createGetPageLocation";
-import createSetTargetMigration from "./createSetTargetMigration";
-import remapCustomCodeOffers from "./dom-actions/remapCustomCodeOffers";
-import remapHeadOffers from "./dom-actions/remapHeadOffers";
-import createPreprocess from "./dom-actions/createPreprocess";
-import injectCreateProposition from "./handlers/injectCreateProposition";
-import createAsyncArray from "./utils/createAsyncArray";
-import * as schema from "../../constants/schema";
-import processDefaultContent from "./handlers/processDefaultContent";
-import { isPageWideSurface } from "./utils/surfaceUtils";
-import createProcessDomAction from "./handlers/createProcessDomAction";
-import createProcessHtmlContent from "./handlers/createProcessHtmlContent";
-import createProcessRedirect from "./handlers/createProcessRedirect";
-import createProcessPropositions from "./handlers/createProcessPropositions";
-import createOnDecisionHandler from "./createOnDecisionHandler";
-import createProcessInAppMessage from "./handlers/createProcessInAppMessage";
-import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules";
-import createRedirect from "./dom-actions/createRedirect";
-import createNotificationHandler from "./createNotificationHandler";
+import { boolean, objectOf, string } from "../../utils/validation/index.js";
+import createComponent from "./createComponent.js";
+import { initDomActionsModules } from "./dom-actions/index.js";
+import createCollect from "./createCollect.js";
+import { hideContainers, showContainers } from "./flicker/index.js";
+import createFetchDataHandler from "./createFetchDataHandler.js";
+import collectClicks from "./dom-actions/clicks/collectClicks.js";
+import isAuthoringModeEnabled from "./utils/isAuthoringModeEnabled.js";
+import { mergeDecisionsMeta, mergeQuery } from "./event.js";
+import createOnClickHandler from "./createOnClickHandler.js";
+import createViewCacheManager from "./createViewCacheManager.js";
+import createViewChangeHandler from "./createViewChangeHandler.js";
+import createClickStorage from "./createClickStorage.js";
+import createApplyPropositions from "./createApplyPropositions.js";
+import createGetPageLocation from "./createGetPageLocation.js";
+import createSetTargetMigration from "./createSetTargetMigration.js";
+import remapCustomCodeOffers from "./dom-actions/remapCustomCodeOffers.js";
+import remapHeadOffers from "./dom-actions/remapHeadOffers.js";
+import createPreprocess from "./dom-actions/createPreprocess.js";
+import injectCreateProposition from "./handlers/injectCreateProposition.js";
+import createAsyncArray from "./utils/createAsyncArray.js";
+import * as schema from "../../constants/schema.js";
+import processDefaultContent from "./handlers/processDefaultContent.js";
+import { isPageWideSurface } from "./utils/surfaceutils.js";
+import createProcessDomAction from "./handlers/createProcessDomAction.js";
+import createProcessHtmlContent from "./handlers/createProcessHtmlContent.js";
+import createProcessRedirect from "./handlers/createProcessRedirect.js";
+import createProcessPropositions from "./handlers/createProcessPropositions.js";
+import createOnDecisionHandler from "./createOnDecisionHandler.js";
+import createProcessInAppMessage from "./handlers/createProcessInAppMessage.js";
+import initInAppMessageActionsModules from "./in-app-message-actions/initInAppMessageActionsModules.js";
+import createRedirect from "./dom-actions/createRedirect.js";
+import createNotificationHandler from "./createNotificationHandler.js";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const { targetMigrationEnabled, prehidingStyle } = config;
   const collect = createCollect({ eventManager, mergeDecisionsMeta });
 
-  const {
-    getClickMetasBySelector,
-    getClickSelectors,
-    storeClickMetrics
-  } = createClickStorage();
+  const { getClickMetasBySelector, getClickSelectors, storeClickMetrics } =
+    createClickStorage();
   const getPageLocation = createGetPageLocation({ window });
   const domActionsModules = initDomActionsModules();
 
   const preprocess = createPreprocess([remapHeadOffers, remapCustomCodeOffers]);
   const createProposition = injectCreateProposition({
     preprocess,
-    isPageWideSurface
+    isPageWideSurface,
   });
   const viewCache = createViewCacheManager({ createProposition });
 
@@ -69,32 +66,32 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     [schema.DOM_ACTION]: createProcessDomAction({
       modules: domActionsModules,
       logger,
-      storeClickMetrics
+      storeClickMetrics,
     }),
     [schema.HTML_CONTENT_ITEM]: createProcessHtmlContent({
       modules: domActionsModules,
-      logger
+      logger,
     }),
     [schema.REDIRECT_ITEM]: createProcessRedirect({
       logger,
       executeRedirect,
-      collect
+      collect,
     }),
     [schema.MESSAGE_IN_APP]: createProcessInAppMessage({
       modules: initInAppMessageActionsModules(collect),
-      logger
-    })
+      logger,
+    }),
   };
 
   const processPropositions = createProcessPropositions({
     schemaProcessors,
-    logger
+    logger,
   });
 
   const renderedPropositions = createAsyncArray();
   const notificationHandler = createNotificationHandler(
     collect,
-    renderedPropositions
+    renderedPropositions,
   );
 
   const fetchDataHandler = createFetchDataHandler({
@@ -104,33 +101,33 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     mergeQuery,
     processPropositions,
     createProposition,
-    notificationHandler
+    notificationHandler,
   });
 
   const onClickHandler = createOnClickHandler({
     mergeDecisionsMeta,
     collectClicks,
     getClickSelectors,
-    getClickMetasBySelector
+    getClickMetasBySelector,
   });
   const viewChangeHandler = createViewChangeHandler({
     processPropositions,
-    viewCache
+    viewCache,
   });
   const applyPropositions = createApplyPropositions({
     processPropositions,
     createProposition,
     renderedPropositions,
-    viewCache
+    viewCache,
   });
   const setTargetMigration = createSetTargetMigration({
-    targetMigrationEnabled
+    targetMigrationEnabled,
   });
 
   const onDecisionHandler = createOnDecisionHandler({
     processPropositions,
     createProposition,
-    notificationHandler
+    notificationHandler,
   });
 
   return createComponent({
@@ -147,7 +144,7 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     setTargetMigration,
     mergeDecisionsMeta,
     renderedPropositions,
-    onDecisionHandler
+    onDecisionHandler,
   });
 };
 
@@ -155,7 +152,7 @@ createPersonalization.namespace = "Personalization";
 
 createPersonalization.configValidators = objectOf({
   prehidingStyle: string().nonEmpty(),
-  targetMigrationEnabled: boolean().default(false)
+  targetMigrationEnabled: boolean().default(false),
 });
 
 export default createPersonalization;

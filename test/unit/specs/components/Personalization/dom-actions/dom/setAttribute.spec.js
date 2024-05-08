@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import setAttribute from "../../../../../../../src/components/Personalization/dom-actions/dom/setAttribute";
+import setAttribute from "../../../../../../../src/components/Personalization/dom-actions/dom/setAttribute.js";
 import {
   createNode,
   removeNode,
   selectNodes
 } from "../../../../../../../src/utils/dom";
-import { getAttribute } from "../../../../../../../src/components/Personalization/dom-actions/dom";
+import { getAttribute } from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 
 describe("Personalization::DOM::setAttribute", () => {
   afterEach(() => {

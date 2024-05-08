@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import configValidators from "../../../../../src/components/ActivityCollector/configValidators";
-import testConfigValidators from "../../../helpers/testConfigValidators";
+import configValidators from "../../../../../src/components/ActivityCollector/configValidators.js";
+import testConfigValidators from "../../../helpers/testConfigValidators.js";
 
 describe("ActivityCollector config validators", () => {
   testConfigValidators({

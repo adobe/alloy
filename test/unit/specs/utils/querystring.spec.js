@@ -11,4 +11,4 @@ governing permissions and limitations under the License.
 */
 
 // eslint-disable-next-line no-unused-vars
-import querystring from "../../../../src/utils/querystring";
+import querystring from "../../../../src/utils/querystring.js";

@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray, isObject, defer } from "../../utils";
+import { isNonEmptyArray, isObject, defer } from "../../utils/index.js";
 import {
   DOM_ACTION,
   HTML_CONTENT_ITEM,
   MESSAGE_IN_APP
 } from "../../constants/schema";
-import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
+import PAGE_WIDE_SCOPE from "../../constants/pageWideScope.js";
 
 const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM, MESSAGE_IN_APP];
 

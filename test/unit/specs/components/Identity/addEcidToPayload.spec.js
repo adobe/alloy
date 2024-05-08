@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import addEcidToPayload from "../../../../../src/components/Identity/addEcidToPayload";
+import addEcidToPayload from "../../../../../src/components/Identity/addEcidToPayload.js";
 
 describe("Identity:addEcidToPayload", () => {
   it("adds ECID to payload", () => {

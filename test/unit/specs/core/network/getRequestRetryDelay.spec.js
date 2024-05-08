@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getRequestRetryDelay from "../../../../../src/core/network/getRequestRetryDelay";
+import getRequestRetryDelay from "../../../../../src/core/network/getRequestRetryDelay.js";
 
 describe("getRequestRetryDelay", () => {
   beforeEach(() => {

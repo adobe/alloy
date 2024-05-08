@@ -9,10 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createOnResponseHandler from "../../../../../src/components/DecisioningEngine/createOnResponseHandler";
-import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider";
-import createApplyResponse from "../../../../../src/components/DecisioningEngine/createApplyResponse";
-import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
+import createOnResponseHandler from "../../../../../src/components/DecisioningEngine/createOnResponseHandler.js";
+import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider.js";
+import createApplyResponse from "../../../../../src/components/DecisioningEngine/createApplyResponse.js";
+import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry.js";
 
 describe("DecisioningEngine:createOnResponseHandler", () => {
   let lifecycle;

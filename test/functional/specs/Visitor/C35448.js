@@ -10,30 +10,27 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { ClientFunction, t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
-import getVisitorEcid from "../../helpers/visitorService/getVisitorEcid";
+import createFixture from "../../helpers/createFixture/index.js";
+import getVisitorEcid from "../../helpers/visitorService/getVisitorEcid.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  migrationEnabled
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-// using require here so that the constant can be used in the clientFunction
-const {
-  default: REMOTE_VISITOR_LIBRARY_URL
-} = require("../../helpers/constants/remoteVisitorLibraryUrl");
+  migrationEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import { default as REMOTE_VISITOR_LIBRARY_URL } from "../../helpers/constants/remoteVisitorLibraryUrl.js";
 
 createFixture({
   title:
     "C35448 - When ID migration is enabled and Visitor is on the page, Alloy waits for Visitor to get ECID and then uses this value.",
-  includeVisitorLibrary: false
+  includeVisitorLibrary: false,
 });
 
 test.meta({
   ID: "C35448",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const config = compose(orgMainConfigMain, debugEnabled, migrationEnabled);
@@ -46,7 +43,7 @@ const injectVisitor = ClientFunction(
     s.src = REMOTE_VISITOR_LIBRARY_URL;
     document.body.appendChild(s);
   },
-  { dependencies: { REMOTE_VISITOR_LIBRARY_URL } }
+  { dependencies: { REMOTE_VISITOR_LIBRARY_URL } },
 );
 
 test("C35448 - When ID migration is enabled and Visitor is on the page, Alloy waits for Visitor to get ECID and then uses this value.", async () => {

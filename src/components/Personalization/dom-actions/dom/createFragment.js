@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createNode } from "../../../../utils/dom";
-import { DIV } from "../../../../constants/tagName";
+import { createNode } from "../../../../utils/dom/index.js";
+import { DIV } from "../../../../constants/tagName.js";
 
 export default content => {
   return createNode(DIV, {}, { innerHTML: content });

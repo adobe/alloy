@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
-import React, { useEffect } from "react";
-import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
+import React, { useEffect } from "react.js";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy.js";
 
 export default function RedirectedNewPage() {
   useEffect(() => {

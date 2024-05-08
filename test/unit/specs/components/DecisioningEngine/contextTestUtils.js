@@ -9,10 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createContextProvider from "../../../../../src/components/DecisioningEngine/createContextProvider";
-import createOnResponseHandler from "../../../../../src/components/DecisioningEngine/createOnResponseHandler";
-import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
-import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider";
+import createContextProvider from "../../../../../src/components/DecisioningEngine/createContextProvider.js";
+import createOnResponseHandler from "../../../../../src/components/DecisioningEngine/createOnResponseHandler.js";
+import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry.js";
+import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider.js";
 
 export const proposition = {
   id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",

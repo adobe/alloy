@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isObject from "../isObject";
-import { assertValid } from "./utils";
+import isObject from "../isObject.js";
+import { assertValid } from "./utils.js";
 
 export default schema =>
   function objectOf(value, path) {

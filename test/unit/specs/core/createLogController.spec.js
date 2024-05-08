@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createLogController from "../../../../src/core/createLogController";
+import createLogController from "../../../../src/core/createLogController.js";
 
 const instanceName = "alloy123";
 

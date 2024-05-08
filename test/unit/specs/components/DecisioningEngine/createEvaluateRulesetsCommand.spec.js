@@ -9,11 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createEvaluateRulesetsCommand from "../../../../../src/components/DecisioningEngine/createEvaluateRulesetsCommand";
-import createContextProvider from "../../../../../src/components/DecisioningEngine/createContextProvider";
-import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
-import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider";
-import createApplyResponse from "../../../../../src/components/DecisioningEngine/createApplyResponse";
+import createEvaluateRulesetsCommand from "../../../../../src/components/DecisioningEngine/createEvaluateRulesetsCommand.js";
+import createContextProvider from "../../../../../src/components/DecisioningEngine/createContextProvider.js";
+import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry.js";
+import createDecisionProvider from "../../../../../src/components/DecisioningEngine/createDecisionProvider.js";
+import createApplyResponse from "../../../../../src/components/DecisioningEngine/createApplyResponse.js";
 
 describe("DecisioningEngine:evaluateRulesetsCommand", () => {
   let onDecision;

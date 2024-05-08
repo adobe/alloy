@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createPreprocessors from "./createPreprocessors";
-import { assign } from "../../utils";
+import createPreprocessors from "./createPreprocessors.js";
+import { assign } from "../../utils/index.js";
 
 export default ({ modules, preprocessors = createPreprocessors(), logger }) => {
   const logActionError = (action, error) => {

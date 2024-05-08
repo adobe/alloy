@@ -15,9 +15,9 @@ import {
   createNode,
   appendNode,
   selectNodes,
-  removeNode
+  removeNode,
 } from "../../../../../src/utils/dom";
-import { selectNodesWithEq } from "../../../../../src/components/Personalization/dom-actions/dom";
+import { selectNodesWithEq } from "../../../../../src/components/Personalization/dom-actions/dom/index.js";
 
 const ieDetected = () => !!document.documentMode;
 
@@ -45,7 +45,7 @@ const defineCustomElements = () => {
         const shadowRoot = this.attachShadow({ mode: "open" });
         shadowRoot.innerHTML = buyNowContent;
       }
-    }
+    },
   );
 
   const productOrderContent = `<div><p>Product order</p><buy-now-button>Buy</buy-now-button></div>`;
@@ -58,7 +58,7 @@ const defineCustomElements = () => {
         const shadowRoot = this.attachShadow({ mode: "open" });
         shadowRoot.innerHTML = productOrderContent;
       }
-    }
+    },
   );
 };
 
@@ -72,7 +72,7 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
   it("should select when no shadow", () => {
     appendNode(
       document.body,
-      createNode("DIV", { id: "noShadow", class: CLEANUP_CLASS })
+      createNode("DIV", { id: "noShadow", class: CLEANUP_CLASS }),
     );
 
     const result = selectNodes("#noShadow");
@@ -100,12 +100,12 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
       createNode(
         "DIV",
         { id: "abc", class: CLEANUP_CLASS },
-        { innerHTML: content }
-      )
+        { innerHTML: content },
+      ),
     );
 
     const result = selectNodesWithEq(
-      "#abc:eq(0) > FORM:nth-of-type(1) > BUY-NOW-BUTTON:nth-of-type(2):shadow > DIV:nth-of-type(1) > LABEL:nth-of-type(1)"
+      "#abc:eq(0) > FORM:nth-of-type(1) > BUY-NOW-BUTTON:nth-of-type(2):shadow > DIV:nth-of-type(1) > LABEL:nth-of-type(1)",
     );
 
     expect(result.length).toEqual(1);
@@ -135,12 +135,12 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
       createNode(
         "DIV",
         { id: "abc", class: CLEANUP_CLASS },
-        { innerHTML: content }
-      )
+        { innerHTML: content },
+      ),
     );
 
     const result = selectNodesWithEq(
-      "#abc:eq(0) > FORM:nth-of-type(1) > PRODUCT-ORDER:nth-of-type(2):shadow > *:eq(0) > BUY-NOW-BUTTON:nth-of-type(1):shadow > DIV:nth-of-type(1) > LABEL:nth-of-type(1)"
+      "#abc:eq(0) > FORM:nth-of-type(1) > PRODUCT-ORDER:nth-of-type(2):shadow > *:eq(0) > BUY-NOW-BUTTON:nth-of-type(1):shadow > DIV:nth-of-type(1) > LABEL:nth-of-type(1)",
     );
 
     expect(result[0].tagName).toEqual("LABEL");
@@ -168,12 +168,12 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
       createNode(
         "DIV",
         { id: "abc", class: CLEANUP_CLASS },
-        { innerHTML: content }
-      )
+        { innerHTML: content },
+      ),
     );
 
     const result = selectNodesWithEq(
-      "#abc:eq(0) > FORM:nth-of-type(1) > PRODUCT-ORDER:eq(1):shadow > *:eq(0) > BUY-NOW-BUTTON:eq(0):shadow > DIV:nth-of-type(1) > LABEL:nth-of-type(1)"
+      "#abc:eq(0) > FORM:nth-of-type(1) > PRODUCT-ORDER:eq(1):shadow > *:eq(0) > BUY-NOW-BUTTON:eq(0):shadow > DIV:nth-of-type(1) > LABEL:nth-of-type(1)",
     );
 
     expect(result[0].tagName).toEqual("LABEL");
@@ -193,7 +193,7 @@ describe("Utils::DOM::selectNodesWithShadow", () => {
     const node = createNode(
       "DIV",
       { id: "target", class: CLEANUP_CLASS },
-      { innerHTML: content }
+      { innerHTML: content },
     );
 
     appendNode(document.body, node);

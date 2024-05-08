@@ -14,7 +14,7 @@ import {
   injectDoesIdentityCookieExist,
   cookieJar
 } from "../../../../src/utils";
-import removeAllCookies from "../../helpers/removeAllCookies";
+import removeAllCookies from "../../helpers/removeAllCookies.js";
 
 describe("Identity::injectDoesIdentityCookieExist", () => {
   beforeEach(removeAllCookies);

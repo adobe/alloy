@@ -10,19 +10,19 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import { responseStatus } from "../../helpers/assertions";
-import createFixture from "../../helpers/createFixture";
-import createResponse from "../../helpers/createResponse";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import createResponse from "../../helpers/createResponse.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
   migrationEnabled
-} from "../../helpers/constants/configParts";
-import setLegacyIdentityCookie from "../../helpers/setLegacyIdentityCookie";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+} from "../../helpers/constants/configParts/index.js";
+import setLegacyIdentityCookie from "../../helpers/setLegacyIdentityCookie.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const config = compose(orgMainConfigMain, debugEnabled, migrationEnabled);
 

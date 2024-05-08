@@ -9,7 +9,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectProcessResponse from "../../../../../src/components/Audiences/injectProcessResponse";
+import injectProcessResponse from "../../../../../src/components/Audiences/injectProcessResponse.js";
 
 describe("injectProcessResponse", () => {
   let response;

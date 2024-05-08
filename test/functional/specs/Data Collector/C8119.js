@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t, Selector } from "testcafe";
-import createFixture from "../../helpers/createFixture";
-import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
+import createFixture from "../../helpers/createFixture/index.js";
+import addHtmlToBody from "../../helpers/dom/addHtmlToBody.js";
 import {
   compose,
   orgMainConfigMain
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import preventLinkNavigation from "../../helpers/preventLinkNavigation";
-import createCollectEndpointAsserter from "../../helpers/createCollectEndpointAsserter";
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import preventLinkNavigation from "../../helpers/preventLinkNavigation.js";
+import createCollectEndpointAsserter from "../../helpers/createCollectEndpointAsserter.js";
 
 createFixture({
   title:

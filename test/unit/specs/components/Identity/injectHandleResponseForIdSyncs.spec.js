@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectHandleResponseForIdSyncs from "../../../../../src/components/Identity/injectHandleResponseForIdSyncs";
+import injectHandleResponseForIdSyncs from "../../../../../src/components/Identity/injectHandleResponseForIdSyncs.js";
 
 describe("Identity::injectHandleResponseForIdSyncs", () => {
   it("processes ID syncs", () => {

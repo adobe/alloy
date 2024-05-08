@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import groupBy from "../../../../src/utils/groupBy";
+import groupBy from "../../../../src/utils/groupBy.js";
 
 describe("groupBy", () => {
   it("expects empty obj if array is empty", () => {

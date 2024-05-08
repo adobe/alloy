@@ -9,10 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createOnDecisionHandler from "../../../../../src/components/Personalization/createOnDecisionHandler";
-import { MESSAGE_FEED_ITEM } from "../../../../../src/constants/schema";
-import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
-import createNotificationHandler from "../../../../../src/components/Personalization/createNotificationHandler";
+import createOnDecisionHandler from "../../../../../src/components/Personalization/createOnDecisionHandler.js";
+import { MESSAGE_FEED_ITEM } from "../../../../../src/constants/schema.js";
+import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition.js";
+import createNotificationHandler from "../../../../../src/components/Personalization/createNotificationHandler.js";
 
 describe("Personalization::createOnDecisionHandler", () => {
   const PROPOSITIONS = [

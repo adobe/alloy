@@ -9,9 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createOnClickHandler from "../../../../../src/components/Personalization/createOnClickHandler";
-import { mergeDecisionsMeta } from "../../../../../src/components/Personalization/event";
-import createEvent from "../../../../../src/core/createEvent";
+import createOnClickHandler from "../../../../../src/components/Personalization/createOnClickHandler.js";
+import { mergeDecisionsMeta } from "../../../../../src/components/Personalization/event.js";
+import createEvent from "../../../../../src/core/createEvent.js";
 
 describe("Personalization::createOnClickHandler", () => {
   let collectClicks;

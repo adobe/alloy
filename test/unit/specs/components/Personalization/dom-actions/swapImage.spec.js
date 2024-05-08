@@ -11,4 +11,4 @@ governing permissions and limitations under the License.
 */
 
 // eslint-disable-next-line no-unused-vars
-import swapImage from "../../../../../../src/components/Personalization/dom-actions/swapImage";
+import swapImage from "../../../../../../src/components/Personalization/dom-actions/swapImage.js";

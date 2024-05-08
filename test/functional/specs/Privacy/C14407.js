@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
-import { CONSENT_IN } from "../../helpers/constants/consent";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import reloadPage from "../../helpers/reloadPage";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import { CONSENT_IN } from "../../helpers/constants/consent.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import reloadPage from "../../helpers/reloadPage.js";
 
 const networkLogger = createNetworkLogger();
 

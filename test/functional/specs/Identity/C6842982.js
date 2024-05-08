@@ -17,12 +17,12 @@ import {
   debugEnabled,
   thirdPartyCookiesDisabled,
   migrationDisabled
-} from "../../helpers/constants/configParts";
-import { TEST_PAGE } from "../../helpers/constants/url";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createFixture from "../../helpers/createFixture";
-import createNetworkLogger from "../../helpers/networkLogger";
-import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
+} from "../../helpers/constants/configParts/index.js";
+import { TEST_PAGE } from "../../helpers/constants/url.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(

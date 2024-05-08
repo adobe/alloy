@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import appendNode from "./appendNode";
-import isObject from "../isObject";
+import appendNode from "./appendNode.js";
+import isObject from "../isObject.js";
 
 const populateElementProperties = (element, props) => {
   Object.keys(props).forEach(key => {

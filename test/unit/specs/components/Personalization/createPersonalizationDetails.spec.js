@@ -9,9 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import PAGE_WIDE_SCOPE from "../../../../../src/constants/pageWideScope";
-import createPersonalizationDetails from "../../../../../src/components/Personalization/createPersonalizationDetails";
-import createGetPageLocation from "../../../../../src/components/Personalization/createGetPageLocation";
+import PAGE_WIDE_SCOPE from "../../../../../src/constants/pageWideScope.js";
+import createPersonalizationDetails from "../../../../../src/components/Personalization/createPersonalizationDetails.js";
+import createGetPageLocation from "../../../../../src/components/Personalization/createGetPageLocation.js";
 import {
   DEFAULT_CONTENT_ITEM,
   DOM_ACTION,

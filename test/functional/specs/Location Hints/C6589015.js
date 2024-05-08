@@ -10,17 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import cookies from "../../helpers/cookies";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import cookies from "../../helpers/cookies.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   thirdPartyCookiesDisabled,
   debugEnabled
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import { MAIN_CLUSTER_COOKIE_NAME } from "../../helpers/constants/cookies";
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import { MAIN_CLUSTER_COOKIE_NAME } from "../../helpers/constants/cookies.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(

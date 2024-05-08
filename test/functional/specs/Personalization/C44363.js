@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import { compose, debugEnabled } from "../../helpers/constants/configParts";
-import getBaseConfig from "../../helpers/getBaseConfig";
+import createFixture from "../../helpers/createFixture/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import { compose, debugEnabled } from "../../helpers/constants/configParts/index.js";
+import getBaseConfig from "../../helpers/getBaseConfig.js";
 
 createFixture({
   title: "C44363: Proposition based on QA Mode"

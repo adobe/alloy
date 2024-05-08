@@ -1,4 +1,4 @@
-import createNotificationHandler from "../../../../../src/components/Personalization/createNotificationHandler";
+import createNotificationHandler from "../../../../../src/components/Personalization/createNotificationHandler.js";
 
 describe("Personalization::createNotificationHandler", () => {
   let collect;

@@ -15,8 +15,8 @@ import {
   objectOf,
   string
 } from "../../utils/validation";
-import createSubscription from "../../utils/createSubscription";
-import { includes } from "../../utils";
+import createSubscription from "../../utils/createSubscription.js";
+import { includes } from "../../utils/index.js";
 
 const validateOptions = ({ options }) => {
   const validator = objectOf({

@@ -1,4 +1,4 @@
-import createRedirect from "../../../../../../src/components/Personalization/dom-actions/createRedirect";
+import createRedirect from "../../../../../../src/components/Personalization/dom-actions/createRedirect.js";
 
 describe("createRedirect", () => {
   it("redirects", () => {

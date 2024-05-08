@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createFixture from "../../helpers/createFixture";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createFixture from "../../helpers/createFixture/index.js";
 
 createFixture({
   title: "C13817: Throws error when running command after bad configure"

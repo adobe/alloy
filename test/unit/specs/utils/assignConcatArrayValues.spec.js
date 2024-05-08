@@ -1,4 +1,4 @@
-import assignConcatArrayValues from "../../../../src/utils/assignConcatArrayValues";
+import assignConcatArrayValues from "../../../../src/utils/assignConcatArrayValues.js";
 
 describe("assignConcatArrayValues", () => {
   it("throws an error if no arguments are passed", () => {

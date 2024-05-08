@@ -9,17 +9,17 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createFixture from "../../helpers/createFixture";
-import createNetworkLogger from "../../helpers/networkLogger";
+import createFixture from "../../helpers/createFixture/index.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import {
   compose,
   orgMainConfigMain,
   consentPending,
   debugEnabled
-} from "../../helpers/constants/configParts";
-import createConsoleLogger from "../../helpers/consoleLogger";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import { CONSENT_OUT } from "../../helpers/constants/consent";
+} from "../../helpers/constants/configParts/index.js";
+import createConsoleLogger from "../../helpers/consoleLogger/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import { CONSENT_OUT } from "../../helpers/constants/consent.js";
 
 const config = compose(orgMainConfigMain, consentPending, debugEnabled);
 

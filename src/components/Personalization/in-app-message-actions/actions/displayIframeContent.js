@@ -10,15 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { getNonce } from "../../dom-actions/dom";
-import { parseAnchor, removeElementById } from "../utils";
-import { TEXT_HTML } from "../../../../constants/contentType";
-import { assign, includes, isNonEmptyString, values } from "../../../../utils";
-import { createNode } from "../../../../utils/dom";
-import { objectOf } from "../../../../utils/validation";
-import { PropositionEventType } from "../../../../constants/propositionEventType";
-import { EVENT_TYPE_TRUE, INTERACT } from "../../../../constants/eventType";
-import createRedirect from "../../dom-actions/createRedirect";
+import { getNonce } from "../../dom-actions/dom/index.js";
+import { parseAnchor, removeElementById } from "../utils.js";
+import { TEXT_HTML } from "../../../../constants/contentType.js";
+import {
+  assign,
+  includes,
+  isNonEmptyString,
+  values,
+} from "../../../../utils/index.js";
+import { createNode } from "../../../../utils/dom/index.js";
+import { objectOf } from "../../../../utils/validation/index.js";
+import { PropositionEventType } from "../../../../constants/propositionEventType.js";
+import { EVENT_TYPE_TRUE, INTERACT } from "../../../../constants/eventType.js";
+import createRedirect from "../../dom-actions/createRedirect.js";
 
 const MESSAGING_CONTAINER_ID = "alloy-messaging-container";
 const OVERLAY_CONTAINER_ID = "alloy-overlay-container";
@@ -28,9 +33,9 @@ const dismissMessage = () =>
   [MESSAGING_CONTAINER_ID, OVERLAY_CONTAINER_ID].forEach(removeElementById);
 export const createIframeClickHandler = (
   interact,
-  navigateToUrl = createRedirect(window)
+  navigateToUrl = createRedirect(window),
 ) => {
-  return event => {
+  return (event) => {
     event.preventDefault();
     event.stopImmediatePropagation();
 
@@ -49,7 +54,7 @@ export const createIframeClickHandler = (
       label,
       id: interaction,
       uuid,
-      link
+      link,
     });
 
     if (action === "dismiss") {
@@ -72,9 +77,9 @@ export const createIframe = (htmlContent, clickHandler) => {
   }
   const element = createNode("iframe", {
     src: URL.createObjectURL(
-      new Blob([htmlDocument.documentElement.outerHTML], { type: "text/html" })
+      new Blob([htmlDocument.documentElement.outerHTML], { type: "text/html" }),
     ),
-    id: IFRAME_ID
+    id: IFRAME_ID,
   });
 
   element.addEventListener("load", () => {
@@ -90,7 +95,7 @@ const renderMessage = (iframe, webParameters, container, overlay) => {
   [
     { id: OVERLAY_CONTAINER_ID, element: overlay },
     { id: MESSAGING_CONTAINER_ID, element: container },
-    { id: IFRAME_ID, element: iframe }
+    { id: IFRAME_ID, element: iframe },
   ].forEach(({ id, element }) => {
     const { style = {}, params = {} } = webParameters[id];
 
@@ -99,7 +104,7 @@ const renderMessage = (iframe, webParameters, container, overlay) => {
     const {
       parentElement = "body",
       insertionMethod = "appendChild",
-      enabled = true
+      enabled = true,
     } = params;
 
     const parent = document.querySelector(parentElement);
@@ -109,7 +114,7 @@ const renderMessage = (iframe, webParameters, container, overlay) => {
   });
 };
 
-export const buildStyleFromMobileParameters = mobileParameters => {
+export const buildStyleFromMobileParameters = (mobileParameters) => {
   const {
     verticalAlign,
     width,
@@ -119,7 +124,7 @@ export const buildStyleFromMobileParameters = mobileParameters => {
     cornerRadius,
     horizontalInset,
     verticalInset,
-    uiTakeover = false
+    uiTakeover = false,
   } = mobileParameters;
 
   const style = {
@@ -128,7 +133,7 @@ export const buildStyleFromMobileParameters = mobileParameters => {
     borderRadius: cornerRadius ? `${cornerRadius}px` : "0px",
     border: "none",
     position: uiTakeover ? "fixed" : "relative",
-    overflow: "hidden"
+    overflow: "hidden",
   };
   if (horizontalAlign === "left") {
     style.left = horizontalInset ? `${horizontalInset}%` : "0";
@@ -162,7 +167,7 @@ export const buildStyleFromMobileParameters = mobileParameters => {
   return style;
 };
 
-export const mobileOverlay = mobileParameters => {
+export const mobileOverlay = (mobileParameters) => {
   const { backdropOpacity, backdropColor } = mobileParameters;
   const opacity = backdropOpacity || 0.5;
   const color = backdropColor || "#FFFFFF";
@@ -174,14 +179,14 @@ export const mobileOverlay = mobileParameters => {
     height: "100%",
     background: "transparent",
     opacity,
-    backgroundColor: color
+    backgroundColor: color,
   };
   return style;
 };
 
 const REQUIRED_PARAMS = ["enabled", "parentElement", "insertionMethod"];
 
-const isValidWebParameters = webParameters => {
+const isValidWebParameters = (webParameters) => {
   if (!webParameters) {
     return false;
   }
@@ -217,7 +222,7 @@ const isValidWebParameters = webParameters => {
   return true;
 };
 
-const generateWebParameters = mobileParameters => {
+const generateWebParameters = (mobileParameters) => {
   if (!mobileParameters) {
     return undefined;
   }
@@ -229,30 +234,30 @@ const generateWebParameters = mobileParameters => {
       style: {
         border: "none",
         width: "100%",
-        height: "100%"
+        height: "100%",
       },
       params: {
         enabled: true,
         parentElement: "#alloy-messaging-container",
-        insertionMethod: "appendChild"
-      }
+        insertionMethod: "appendChild",
+      },
     },
     [MESSAGING_CONTAINER_ID]: {
       style: buildStyleFromMobileParameters(mobileParameters),
       params: {
         enabled: true,
         parentElement: "body",
-        insertionMethod: "appendChild"
-      }
+        insertionMethod: "appendChild",
+      },
     },
     [OVERLAY_CONTAINER_ID]: {
       style: mobileOverlay(mobileParameters),
       params: {
         enabled: uiTakeover === true,
         parentElement: "body",
-        insertionMethod: "appendChild"
-      }
-    }
+        insertionMethod: "appendChild",
+      },
+    },
   };
 };
 
@@ -281,7 +286,7 @@ export const displayHTMLContentInIframe = (settings = {}, interact) => {
 };
 
 export default (settings, collect) => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const { meta } = settings;
     displayHTMLContentInIframe(settings, (action, propositionAction) => {
       const propositionEventTypes = {};
@@ -295,7 +300,7 @@ export default (settings, collect) => {
         decisionsMeta: [meta],
         propositionAction,
         eventType: INTERACT,
-        propositionEventTypes: Object.keys(propositionEventTypes)
+        propositionEventTypes: Object.keys(propositionEventTypes),
       });
     });
 

@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import addNonceToInlineStyleElements from "../../../../../../src/components/Personalization/dom-actions/addNonceToInlineStyleElements";
-import { testResetCachedNonce } from "../../../../../../src/components/Personalization/dom-actions/dom/getNonce";
-import { createFragment } from "../../../../../../src/components/Personalization/dom-actions/dom";
-import { STYLE } from "../../../../../../src/constants/tagName";
+import addNonceToInlineStyleElements from "../../../../../../src/components/Personalization/dom-actions/addNonceToInlineStyleElements.js";
+import { testResetCachedNonce } from "../../../../../../src/components/Personalization/dom-actions/dom/getNonce.js";
+import { createFragment } from "../../../../../../src/components/Personalization/dom-actions/dom/index.js";
+import { STYLE } from "../../../../../../src/constants/tagName.js";
 import {
   selectNodes,
   removeNode,

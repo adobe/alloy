@@ -10,25 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
   targetMigrationEnabled
-} from "../../helpers/constants/configParts";
-import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url";
+} from "../../helpers/constants/configParts/index.js";
+import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url.js";
 import {
   fetchMboxOffer,
   getEcid,
   getPropositionCustomContent,
   injectAlloyAndSendEvent,
   MIGRATION_LOCATION
-} from "./helper";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../helpers/createResponse";
-import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled";
+} from "./helper.js";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
+import createResponse from "../../helpers/createResponse.js";
+import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled.js";
 
 const favoriteColor = "green-1234";
 const networkLogger = createNetworkLogger();

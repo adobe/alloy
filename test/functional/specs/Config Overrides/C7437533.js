@@ -10,18 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   configOverridesMain as overrides,
   configOverridesAlt as alternateOverrides,
   orgMainConfigMain,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import { IAB_CONSENT_IN } from "../../helpers/constants/consent";
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import { IAB_CONSENT_IN } from "../../helpers/constants/consent.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled);
@@ -29,32 +29,32 @@ const config = compose(orgMainConfigMain, debugEnabled);
 createFixture({
   title:
     "C7437533: `setConsent` can receive config overrides in command options and in `configure`",
-  requestHooks: [networkLogger.setConsentEndpointLogs]
+  requestHooks: [networkLogger.setConsentEndpointLogs],
 });
 
 test.meta({
   ID: "C2592",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C7437533: `setConsent` can receive config overrides in command options", async () => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   await alloy.setConsent(
-    compose(IAB_CONSENT_IN, { edgeConfigOverrides: overrides })
+    compose(IAB_CONSENT_IN, { edgeConfigOverrides: overrides }),
   );
 
   await responseStatus(networkLogger.setConsentEndpointLogs.requests, 200);
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
-    networkLogger.setConsentEndpointLogs.requests[0].request.body
+    networkLogger.setConsentEndpointLogs.requests[0].request.body,
   );
 
   await t
     .expect(
-      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event,
     )
     .eql(overrides.com_adobe_experience_platform.datasets.event);
   await t
@@ -77,12 +77,12 @@ test("Test C7437533: `setConsent` can receive config overrides from `configure`"
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
-    networkLogger.setConsentEndpointLogs.requests[0].request.body
+    networkLogger.setConsentEndpointLogs.requests[0].request.body,
   );
 
   await t
     .expect(
-      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event,
     )
     .eql(overrides.com_adobe_experience_platform.datasets.event);
   await t
@@ -100,19 +100,19 @@ test("Test C7437533: overrides from `setConsent` should take precedence over the
   const alloy = createAlloyProxy();
   await alloy.configure(compose(config, { edgeConfigOverrides: overrides }));
   await alloy.setConsent(IAB_CONSENT_IN, {
-    edgeConfigOverrides: alternateOverrides
+    edgeConfigOverrides: alternateOverrides,
   });
 
   await responseStatus(networkLogger.setConsentEndpointLogs.requests, 200);
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
-    networkLogger.setConsentEndpointLogs.requests[0].request.body
+    networkLogger.setConsentEndpointLogs.requests[0].request.body,
   );
 
   await t
     .expect(
-      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event,
     )
     .eql(overrides.com_adobe_experience_platform.datasets.event);
   await t
@@ -133,22 +133,22 @@ test("Test C7437533: empty configuration overrides should not be sent to the Edg
     compose(IAB_CONSENT_IN, {
       edgeConfigOverrides: compose(overrides, {
         com_adobe_target: {
-          propertyToken: ""
-        }
-      })
-    })
+          propertyToken: "",
+        },
+      }),
+    }),
   );
 
   await responseStatus(networkLogger.setConsentEndpointLogs.requests, 200);
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
-    networkLogger.setConsentEndpointLogs.requests[0].request.body
+    networkLogger.setConsentEndpointLogs.requests[0].request.body,
   );
 
   await t
     .expect(
-      request.meta.configOverrides.com_adobe_experience_platform.datasets.event
+      request.meta.configOverrides.com_adobe_experience_platform.datasets.event,
     )
     .eql(overrides.com_adobe_experience_platform.datasets.event);
   await t
@@ -168,9 +168,9 @@ test("Test C7437533: `setConsent` can override the datastreamId", async () => {
   await alloy.setConsent(
     compose(IAB_CONSENT_IN, {
       edgeConfigOverrides: {
-        datastreamId: alternateDatastreamId
-      }
-    })
+        datastreamId: alternateDatastreamId,
+      },
+    }),
   );
 
   await responseStatus(networkLogger.setConsentEndpointLogs.requests, 200);

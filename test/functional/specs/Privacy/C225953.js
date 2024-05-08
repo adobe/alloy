@@ -9,19 +9,18 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createFixture from "../../helpers/createFixture";
-import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions/index";
+import createFixture from "../../helpers/createFixture/index.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
 
 import {
   compose,
   orgMainConfigMain,
   consentPending,
-  debugEnabled
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-
-const { CONSENT_IN } = require("../../helpers/constants/consent");
+  debugEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import { CONSENT_IN } from "../../helpers/constants/consent.js";
 
 const config = compose(orgMainConfigMain, consentPending, debugEnabled);
 
@@ -29,13 +28,13 @@ const networkLogger = createNetworkLogger();
 
 createFixture({
   title: "C225953: Identity map can be sent on a setConsent command",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C225953",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C225953: Identity map can be sent on a setConsent command", async () => {
@@ -45,11 +44,11 @@ test("Test C225953: Identity map can be sent on a setConsent command", async () 
     identityMap: {
       HYP: [
         {
-          id: "id123"
-        }
-      ]
+          id: "id123",
+        },
+      ],
     },
-    consent: CONSENT_IN.consent
+    consent: CONSENT_IN.consent,
   });
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 });

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createComponent from "../../../../../src/components/Personalization/createComponent";
+import createComponent from "../../../../../src/components/Personalization/createComponent.js";
 
 describe("Personalization", () => {
   let logger;

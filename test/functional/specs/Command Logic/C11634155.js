@@ -12,29 +12,29 @@ governing permissions and limitations under the License.
 import {
   compose,
   debugEnabled,
-  orgMainConfigMain
-} from "../../helpers/constants/configParts";
-import createFixture from "../../helpers/createFixture";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createNetworkLogger from "../../helpers/networkLogger";
-import { responseStatus } from "../../helpers/assertions";
-import createConsoleLogger from "../../helpers/consoleLogger";
+  orgMainConfigMain,
+} from "../../helpers/constants/configParts/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
+import createConsoleLogger from "../../helpers/consoleLogger/index.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled, {
-  edgeConfigId: orgMainConfigMain.datastreamId
+  edgeConfigId: orgMainConfigMain.datastreamId,
 });
 delete config.datastreamId;
 
 createFixture({
   title: "C11634155: Deprecates options like edgeConfigId and warns with use",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C11634155",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C11634155: Deprecates options like edgeConfigId and warns with use", async () => {
@@ -44,7 +44,7 @@ test("Test C11634155: Deprecates options like edgeConfigId and warns with use", 
   await alloy.configure(config);
 
   await logger.warn.expectMessageMatching(
-    /The field 'edgeConfigId' is deprecated./
+    /The field 'edgeConfigId' is deprecated./,
   );
 });
 
@@ -56,11 +56,11 @@ test("Test C11634155: Deprecates options like edgeConfigId and warns when both a
   await alloy.configure(configWithBoth);
 
   await logger.warn.expectMessageMatching(
-    /The field 'edgeConfigId' is deprecated./
+    /The field 'edgeConfigId' is deprecated./,
   );
 });
 
-test("Test C11634155: When specifying a deprecated option like edgeConfigId, it uses the specified alternative, datastreamId", async t => {
+test("Test C11634155: When specifying a deprecated option like edgeConfigId, it uses the specified alternative, datastreamId", async (t) => {
   const alloy = createAlloyProxy();
   await alloy.configureAsync(config);
 

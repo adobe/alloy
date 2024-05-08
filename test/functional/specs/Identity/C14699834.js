@@ -17,13 +17,13 @@ import {
   thirdPartyCookiesDisabled,
   debugEnabled,
   edgeDomainFirstParty
-} from "../../helpers/constants/configParts";
-import { TEST_PAGE } from "../../helpers/constants/url";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createFixture from "../../helpers/createFixture";
-import cookies from "../../helpers/cookies";
-import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
-import { CONSENT_IN } from "../../helpers/constants/consent";
+} from "../../helpers/constants/configParts/index.js";
+import { TEST_PAGE } from "../../helpers/constants/url.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import cookies from "../../helpers/cookies.js";
+import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies.js";
+import { CONSENT_IN } from "../../helpers/constants/consent.js";
 
 createFixture({
   url: TEST_PAGE,

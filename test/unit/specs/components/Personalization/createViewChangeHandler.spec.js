@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createViewChangeHandler from "../../../../../src/components/Personalization/createViewChangeHandler";
-import { CART_VIEW_DECISIONS } from "./responsesMock/eventResponses";
-import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
+import createViewChangeHandler from "../../../../../src/components/Personalization/createViewChangeHandler.js";
+import { CART_VIEW_DECISIONS } from "./responsesMock/eventResponses.js";
+import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition.js";
 
 describe("Personalization::createViewChangeHandler", () => {
   let processPropositions;

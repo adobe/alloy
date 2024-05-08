@@ -17,7 +17,7 @@ import {
   isExitLink,
   trimQueryFromUrl
 } from "../../../../../src/components/ActivityCollector/utils";
-import { downloadLinkQualifier } from "../../../../../src/components/ActivityCollector/configValidators";
+import { downloadLinkQualifier } from "../../../../../src/components/ActivityCollector/configValidators.js";
 
 const initAnchorState = (window, element, anchorState) => {
   element.href = anchorState["element.href"];

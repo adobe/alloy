@@ -14,7 +14,7 @@ import {
   mergeDecisionsMeta,
   mergeQuery
 } from "../../../../../src/components/Personalization/event";
-import { PropositionEventType } from "../../../../../src/constants/propositionEventType";
+import { PropositionEventType } from "../../../../../src/constants/propositionEventType.js";
 
 describe("Personalization::event", () => {
   let event;

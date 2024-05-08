@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import COOKIE_NAME_PREFIX from "../constants/cookieNamePrefix";
-import sanitizeOrgIdForCookieName from "./sanitizeOrgIdForCookieName";
+import COOKIE_NAME_PREFIX from "../constants/cookieNamePrefix.js";
+import sanitizeOrgIdForCookieName from "./sanitizeOrgIdForCookieName.js";
 
 /**
  * Determines whether a cookie name is namespaced according to the contract

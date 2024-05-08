@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import toArray from "../../../../src/utils/toArray";
+import toArray from "../../../../src/utils/toArray.js";
 
 describe("toArray", () => {
   it("does not convert value if already an array", () => {

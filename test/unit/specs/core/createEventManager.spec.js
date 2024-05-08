@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createEventManager from "../../../../src/core/createEventManager";
-import createConfig from "../../../../src/core/config/createConfig";
-import { defer } from "../../../../src/utils";
-import flushPromiseChains from "../../helpers/flushPromiseChains";
+import createEventManager from "../../../../src/core/createEventManager.js";
+import createConfig from "../../../../src/core/config/createConfig.js";
+import { defer } from "../../../../src/utils/index.js";
+import flushPromiseChains from "../../helpers/flushPromiseChains.js";
 
 const CANCELLATION_MESSAGE_REGEX = /Event was canceled/;
 

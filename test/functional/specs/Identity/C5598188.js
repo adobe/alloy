@@ -14,11 +14,11 @@ import {
   compose,
   orgMainConfigMain,
   debugEnabled
-} from "../../helpers/constants/configParts";
-import { TEST_PAGE } from "../../helpers/constants/url";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createFixture from "../../helpers/createFixture";
-import createConsoleLogger from "../../helpers/consoleLogger";
+} from "../../helpers/constants/configParts/index.js";
+import { TEST_PAGE } from "../../helpers/constants/url.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import createConsoleLogger from "../../helpers/consoleLogger/index.js";
 
 const config = compose(orgMainConfigMain, debugEnabled, {
   orgId: "invalid-org-id@Adobe"

@@ -10,6 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import SHADOW_SEPARATOR from "../../constants/shadowSeparator";
+import SHADOW_SEPARATOR from "../../constants/shadowSeparator.js";
 
 export default str => str.indexOf(SHADOW_SEPARATOR) !== -1;

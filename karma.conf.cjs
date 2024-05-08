@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const rollupConfig = require("./rollup.test.config");
+const rollupConfig = require("./rollup.test.config.cjs");
 
 module.exports = (config) => {
   config.set({
@@ -22,7 +22,7 @@ module.exports = (config) => {
     files: [
       "node_modules/promise-polyfill/dist/polyfill.js",
       {
-        pattern: "test/unit/specs/karmaEntry.spec.js",
+        pattern: "test/unit/specs/karmaEntry.spec.cjs",
         watched: false, // The preprocessor will use its own watcher
       },
     ],
@@ -33,7 +33,7 @@ module.exports = (config) => {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "test/unit/specs/karmaEntry.spec.js": ["rollup"],
+      "test/unit/specs/karmaEntry.spec.cjs": ["rollup"],
     },
 
     // test results reporter to use

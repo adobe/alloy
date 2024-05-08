@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { CHROME, EDGE, EDGE_CHROMIUM, IE, UNKNOWN } from "../constants/browser";
-import includes from "./includes";
+import { CHROME, EDGE, EDGE_CHROMIUM, IE, UNKNOWN } from "../constants/browser.js";
+import includes from "./includes.js";
 
 // Users could have also disabled third-party cookies within these browsers, but
 // we don't know. We also assume "unknown" browsers support third-party cookies,

@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { validateIdentityMap } from "../../../../src/utils";
-import describeValidation from "../../helpers/describeValidation";
+import { validateIdentityMap } from "../../../../src/utils/index.js";
+import describeValidation from "../../helpers/describeValidation.js";
 
 describeValidation("utils:validateIdentityMap", validateIdentityMap, [
   { value: { a: [{ authenticatedState: "unknown" }] }, error: true },

@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createConsentStateMachine from "../../../../../src/core/consent/createConsentStateMachine";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
+import createConsentStateMachine from "../../../../../src/core/consent/createConsentStateMachine.js";
+import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 const DECLINED_CONSENT_ERROR_CODE = "declinedConsent";
 

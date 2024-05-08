@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createStoredConsent from "../../../../../src/components/Privacy/createStoredConsent";
+import createStoredConsent from "../../../../../src/components/Privacy/createStoredConsent.js";
 
 describe("Privacy:createStoredConsent", () => {
   let parseConsentCookie;

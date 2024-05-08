@@ -16,7 +16,7 @@ import {
   selectNodes,
   removeNode
 } from "../../../../../../../src/utils/dom";
-import matchesSelectorWithEq from "../../../../../../../src/components/Personalization/dom-actions/dom/matchesSelectorWithEq";
+import matchesSelectorWithEq from "../../../../../../../src/components/Personalization/dom-actions/dom/matchesSelectorWithEq.js";
 
 describe("Personalization::DOM::matchesSelectorWithEq", () => {
   afterEach(() => {

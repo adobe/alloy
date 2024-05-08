@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isRequestRetryable from "../../../../../src/core/network/isRequestRetryable";
+import isRequestRetryable from "../../../../../src/core/network/isRequestRetryable.js";
 
 describe("isRequestRetryable", () => {
   [429, 503, 502, 504].forEach(statusCode => {

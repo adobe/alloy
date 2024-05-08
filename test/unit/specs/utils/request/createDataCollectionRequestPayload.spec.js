@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createDataCollectionRequestPayload } from "../../../../../src/utils/request";
-import createEvent from "../../../../../src/core/createEvent";
-import describeRequestPayload from "../../../helpers/describeRequestPayload";
+import { createDataCollectionRequestPayload } from "../../../../../src/utils/request/index.js";
+import createEvent from "../../../../../src/core/createEvent.js";
+import describeRequestPayload from "../../../helpers/describeRequestPayload.js";
 
 describe("createDataCollectionRequestPayload", () => {
   describeRequestPayload(createDataCollectionRequestPayload);

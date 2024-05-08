@@ -10,18 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
-import createMockOptIn from "../../helpers/optIn/createMockOptIn";
+import createFixture from "../../helpers/createFixture/index.js";
+import createMockOptIn from "../../helpers/optIn/createMockOptIn.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
   migrationEnabled,
   consentPending
-} from "../../helpers/constants/configParts";
-import { CONSENT_IN } from "../../helpers/constants/consent";
-import getVisitorEcid from "../../helpers/visitorService/getVisitorEcid";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+} from "../../helpers/constants/configParts/index.js";
+import { CONSENT_IN } from "../../helpers/constants/consent.js";
+import getVisitorEcid from "../../helpers/visitorService/getVisitorEcid.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 createFixture({
   title:

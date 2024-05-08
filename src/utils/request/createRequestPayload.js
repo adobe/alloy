@@ -14,19 +14,19 @@ import { createMerger, prepareConfigOverridesForEdge } from "..";
 
 // This provides the base functionality that all types of
 // request payloads share.
-export default options => {
+export default (options) => {
   const { content, addIdentity, hasIdentity } = options;
   const mergeConfigOverride = createMerger(content, "meta.configOverrides");
   return {
     mergeMeta: createMerger(content, "meta"),
     mergeState: createMerger(content, "meta.state"),
     mergeQuery: createMerger(content, "query"),
-    mergeConfigOverride: updates =>
+    mergeConfigOverride: (updates) =>
       mergeConfigOverride(prepareConfigOverridesForEdge(updates)),
     addIdentity,
     hasIdentity,
     toJSON() {
       return content;
-    }
+    },
   };
 };

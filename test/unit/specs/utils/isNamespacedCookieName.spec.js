@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isNamespacedCookieName from "../../../../src/utils/isNamespacedCookieName";
+import isNamespacedCookieName from "../../../../src/utils/isNamespacedCookieName.js";
 
 describe("isNamespacedCookieName", () => {
   it("returns true if it's a namespaced cookie name", () => {

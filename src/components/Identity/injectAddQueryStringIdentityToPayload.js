@@ -12,9 +12,9 @@ governing permissions and limitations under the License.
 // Example: adobe_mc=TS%3D1641432103%7CMCMID%3D77094828402023918047117570965393734545%7CMCORGID%3DFAF554945B90342F0A495E2C%40AdobeOrg
 // Decoded: adobe_mc=TS=1641432103|MCMID=77094828402023918047117570965393734545|MCORGID=FAF554945B90342F0A495E2C@AdobeOrg
 
-import { queryString } from "../../utils";
-import queryStringIdentityParam from "../../constants/queryStringIdentityParam";
-import ecidNamespace from "../../constants/ecidNamespace";
+import { queryString } from "../../utils/index.js";
+import queryStringIdentityParam from "../../constants/queryStringIdentityParam.js";
+import ecidNamespace from "../../constants/ecidNamespace.js";
 
 const LINK_TTL_SECONDS = 300; // 5 minute link time to live
 

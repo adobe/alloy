@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
-import flushPromiseChains from "../../helpers/flushPromiseChains";
-import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain";
-import { compose, consentPending } from "../../helpers/constants/configParts";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import { CONSENT_IN } from "../../helpers/constants/consent";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import flushPromiseChains from "../../helpers/flushPromiseChains.js";
+import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain.js";
+import { compose, consentPending } from "../../helpers/constants/configParts/index.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import { CONSENT_IN } from "../../helpers/constants/consent.js";
 
 const networkLogger = createNetworkLogger();
 

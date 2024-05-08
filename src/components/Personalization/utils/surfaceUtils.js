@@ -16,7 +16,7 @@ import {
   SURFACE_TYPE_DELIMITER,
   FRAGMENT_DELIMITER
 } from "../constants/surface";
-import { startsWith, isNil, isNonEmptyString, includes } from "../../../utils";
+import { startsWith, isNil, isNonEmptyString, includes } from "../../../utils/index.js";
 
 const SURFACE_REGEX = /^(\w+):\/\/([^/#]+)(\/[^#]*)?(#.*)?$/;
 const AUTHORITY_REGEX = /^(?:.*@)?(?:[a-z\d\u00a1-\uffff.-]+|\[[a-f\d:]+])(?::\d+)?$/;

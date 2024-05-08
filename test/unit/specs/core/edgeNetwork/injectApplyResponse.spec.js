@@ -9,10 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import injectApplyResponse from "../../../../../src/core/edgeNetwork/injectApplyResponse";
-import assertFunctionCallOrder from "../../../helpers/assertFunctionCallOrder";
-import { defer } from "../../../../../src/utils";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
+import injectApplyResponse from "../../../../../src/core/edgeNetwork/injectApplyResponse.js";
+import assertFunctionCallOrder from "../../../helpers/assertFunctionCallOrder.js";
+import { defer } from "../../../../../src/utils/index.js";
+import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 describe("injectApplyResponse", () => {
   let lifecycle;

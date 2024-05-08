@@ -9,19 +9,23 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const zlib = require("zlib");
+import zlib from "zlib";
 
-const getResponseBody = request => {
+const getResponseBody = (request) => {
   const encoding = request.response.headers["content-encoding"];
   const bodyBuffer = request.response.body;
   let decompressedBody;
   switch (encoding) {
-    case "deflate":
-      decompressedBody = zlib.inflateRawSync(bodyBuffer);
-      break;
-    case "gzip":
-      decompressedBody = zlib.gunzipSync(bodyBuffer);
-      break;
+    // case "deflate":
+    //   decompressedBody = zlib.inflateRawSync(bodyBuffer);
+    //   break;
+    // case "gzip":
+    //   console.log("AAA", encoding, bodyBuffer.toString("ascii"));
+    //   decompressedBody = zlib.gunzipSync(bodyBuffer, {
+    //     wbits: zlib.MAX_WBITS | 16,
+    //   });
+    //   console.log("BBB");
+    //   break;
     default:
       decompressedBody = bodyBuffer;
   }

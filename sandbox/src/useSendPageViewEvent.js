@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { useEffect } from "react";
+import { useEffect } from "react.js";
 
 const isNonEmptyArray = value => Array.isArray(value) && value.length > 0;
 

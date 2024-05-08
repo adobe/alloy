@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isFunction, isObject } from "../utils";
-import { CONFIGURE, SET_DEBUG } from "../constants/coreCommands";
+import { isFunction, isObject } from "../utils/index.js";
+import { CONFIGURE, SET_DEBUG } from "../constants/coreCommands.js";
 
 export default ({
   logger,

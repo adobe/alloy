@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { noop, flatMap, isNonEmptyArray } from "../../utils";
-import createPersonalizationDetails from "./createPersonalizationDetails";
-import { AUTHORING_ENABLED } from "./constants/loggerMessage";
-import { PropositionEventType } from "../../constants/propositionEventType";
-import validateApplyPropositionsOptions from "./validateApplyPropositionsOptions";
+import { noop, flatMap, isNonEmptyArray } from "../../utils/index.js";
+import createPersonalizationDetails from "./createPersonalizationDetails.js";
+import { AUTHORING_ENABLED } from "./constants/loggerMessage.js";
+import { PropositionEventType } from "../../constants/propositionEventType.js";
+import validateApplyPropositionsOptions from "./validateApplyPropositionsOptions.js";
 
 export default ({
   getPageLocation,

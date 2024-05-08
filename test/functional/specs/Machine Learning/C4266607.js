@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import { orgMainConfigMain } from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createFixture from "../../helpers/createFixture";
+import { orgMainConfigMain } from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createFixture from "../../helpers/createFixture/index.js";
 
 createFixture({
   title: "C4266607 sendEvent command returns an `inferences` key in the result"

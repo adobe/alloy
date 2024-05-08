@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import buildAndValidateConfig from "../../../../src/core/buildAndValidateConfig";
-import createConfig from "../../../../src/core/config/createConfig";
-import { boolean, objectOf } from "../../../../src/utils/validation";
+import buildAndValidateConfig from "../../../../src/core/buildAndValidateConfig.js";
+import createConfig from "../../../../src/core/config/createConfig.js";
+import { boolean, objectOf } from "../../../../src/utils/validation/index.js";
 
 describe("buildAndValidateConfig", () => {
   let options;

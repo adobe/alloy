@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { queryString, stringToBoolean } from "../utils";
-import debugQueryParam from "../constants/debugQueryParam";
+import { queryString, stringToBoolean } from "../utils/index.js";
+import debugQueryParam from "../constants/debugQueryParam.js";
 
 export default ({
   console,

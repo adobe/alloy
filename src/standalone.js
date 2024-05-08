@@ -12,6 +12,6 @@ governing permissions and limitations under the License.
 
 // This file is used by rollup to create the browser version that is uploaded to cdn
 
-import core from "./core";
+import core from "./core.js";
 
 core();

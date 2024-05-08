@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { anything, objectOf, arrayOf, string } from "../../utils/validation";
+import { anything, objectOf, arrayOf, string } from "../../utils/validation/index.js";
 
 export const EMPTY_PROPOSITIONS = { propositions: [] };
 

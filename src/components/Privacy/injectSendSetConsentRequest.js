@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isObject } from "../../utils";
-import { createRequestParams } from "../../utils/request";
+import { isObject } from "../../utils/index.js";
+import { createRequestParams } from "../../utils/request/index.js";
 
 export default ({
   createConsentRequestPayload,

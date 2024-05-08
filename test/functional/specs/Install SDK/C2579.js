@@ -10,52 +10,52 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { RequestLogger, t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   orgAltConfigAlt,
   debugEnabled,
-  migrationDisabled
-} from "../../helpers/constants/configParts";
-import DATASTREAM_ID from "../../helpers/constants/datastreamId";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+  migrationDisabled,
+} from "../../helpers/constants/configParts/index.js";
+import DATASTREAM_ID from "../../helpers/constants/datastreamId.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const mainConfig = compose(orgMainConfigMain, debugEnabled, migrationDisabled);
 const altConfig = compose(orgAltConfigAlt, debugEnabled, migrationDisabled);
 
 const networkLoggerConfig = {
   logRequestBody: true,
-  stringifyRequestBody: true
+  stringifyRequestBody: true,
 };
 const networkLogger1 = RequestLogger(
   /v1\/(interact|collect)\?configId=9999999/,
-  networkLoggerConfig
+  networkLoggerConfig,
 );
 
 const networkLogger2 = RequestLogger(
   new RegExp(`v1\\/(interact|collect)\\?configId=${DATASTREAM_ID}`),
-  networkLoggerConfig
+  networkLoggerConfig,
 );
 
 createFixture({
   title: "C2579: Isolates multiple SDK instances",
-  requestHooks: [networkLogger1, networkLogger2]
+  requestHooks: [networkLogger1, networkLogger2],
 });
 
 test.meta({
   ID: "C2579",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
-const getIdentityCookieValue = request => {
+const getIdentityCookieValue = (request) => {
   const payload = JSON.parse(request.request.body);
   if (!payload.meta.state.entries) {
     return undefined;
   }
-  const identityEntry = payload.meta.state.entries.find(entry =>
-    entry.key.includes("_identity")
+  const identityEntry = payload.meta.state.entries.find((entry) =>
+    entry.key.includes("_identity"),
   );
   return identityEntry.value;
 };

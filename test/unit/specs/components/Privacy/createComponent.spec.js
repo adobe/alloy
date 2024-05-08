@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createComponent from "../../../../../src/components/Privacy/createComponent";
-import { createTaskQueue, defer } from "../../../../../src/utils";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
+import createComponent from "../../../../../src/components/Privacy/createComponent.js";
+import { createTaskQueue, defer } from "../../../../../src/utils/index.js";
+import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 const createConsent = generalConsent => ({
   consent: [

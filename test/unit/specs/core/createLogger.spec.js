@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createLogger from "../../../../src/core/createLogger";
+import createLogger from "../../../../src/core/createLogger.js";
 
 const logMethods = ["info", "warn", "error"];
 const monitorMethods = [

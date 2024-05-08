@@ -11,23 +11,23 @@ governing permissions and limitations under the License.
 */
 
 import { t } from "testcafe";
-import uuid from "uuid/v4";
+import { v4 as uuidv4 } from "uuid";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
   migrationDisabled,
   thirdPartyCookiesDisabled,
-  edgeDomainFirstParty
-} from "../../helpers/constants/configParts";
-import { TEST_PAGE } from "../../helpers/constants/url";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
-import createFixture from "../../helpers/createFixture";
-import reloadPage from "../../helpers/reloadPage";
-import cookies from "../../helpers/cookies";
-import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
+  edgeDomainFirstParty,
+} from "../../helpers/constants/configParts/index.js";
+import { TEST_PAGE } from "../../helpers/constants/url.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import reloadPage from "../../helpers/reloadPage.js";
+import cookies from "../../helpers/cookies.js";
+import { MAIN_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(
@@ -35,27 +35,27 @@ const config = compose(
   debugEnabled,
   migrationDisabled,
   thirdPartyCookiesDisabled,
-  edgeDomainFirstParty
+  edgeDomainFirstParty,
 );
 
 createFixture({
   url: TEST_PAGE,
   title: "C6842981: FPID from a custom FPID cookie is used to generate an ECID",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C6842981",
   SEVERTIY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("C6842981: FPID from a custom FPID cookie generates an ECID", async () => {
   await t.setCookies({
     name: "myFPID",
-    value: uuid(),
+    value: uuidv4(),
     domain: "alloyio.com",
-    path: "/"
+    path: "/",
   });
 
   const alloy = createAlloyProxy();
@@ -71,7 +71,7 @@ test("C6842981: FPID from a custom FPID cookie generates an ECID", async () => {
   await alloy.sendEvent();
 
   const ecidCompare = getReturnedEcid(
-    networkLogger.edgeEndpointLogs.requests[1]
+    networkLogger.edgeEndpointLogs.requests[1],
   );
   await t.expect(ecid).eql(ecidCompare);
 });

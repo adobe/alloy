@@ -15,32 +15,32 @@ governing permissions and limitations under the License.
 
 /* eslint-disable import/no-restricted-paths */
 
-import createDataCollector from "../components/DataCollector";
+import createDataCollector from "../components/DataCollector/index.js";
 
 /* @skipwhen ENV.alloy_activitycollector === false */
-import createActivityCollector from "../components/ActivityCollector";
+import createActivityCollector from "../components/ActivityCollector/index.js";
 
-import createIdentity from "../components/Identity";
+import createIdentity from "../components/Identity/index.js";
 
 /* @skipwhen ENV.alloy_audiences === false */
-import createAudiences from "../components/Audiences";
+import createAudiences from "../components/Audiences/index.js";
 
 /* @skipwhen ENV.alloy_personalization === false */
-import createPersonalization from "../components/Personalization";
+import createPersonalization from "../components/Personalization/index.js";
 
-import createContext from "../components/Context";
-import createPrivacy from "../components/Privacy";
+import createContext from "../components/Context/index.js";
+import createPrivacy from "../components/Privacy/index.js";
 
 /* @skipwhen ENV.alloy_eventmerge === false */
-import createEventMerge from "../components/EventMerge";
+import createEventMerge from "../components/EventMerge/index.js";
 
-import createLibraryInfo from "../components/LibraryInfo";
+import createLibraryInfo from "../components/LibraryInfo/index.js";
 
 /* @skipwhen ENV.alloy_decisioningengine === false */
-import createDecisioningEngine from "../components/DecisioningEngine";
+import createDecisioningEngine from "../components/DecisioningEngine/index.js";
 
 /* @skipwhen ENV.alloy_machinelearning === false */
-import createMachineLearning from "../components/MachineLearning";
+import createMachineLearning from "../components/MachineLearning/index.js";
 
 // TODO: Register the Components here statically for now. They might be registered differently.
 // TODO: Figure out how sub-components will be made available/registered
@@ -56,5 +56,5 @@ export default [
   createEventMerge,
   createLibraryInfo,
   createMachineLearning,
-  createDecisioningEngine
+  createDecisioningEngine,
 ];
