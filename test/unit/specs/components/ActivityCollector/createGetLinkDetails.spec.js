@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createGetLinkDetails from "../../../../../src/components/ActivityCollector/createGetLinkDetails";
+import createGetLinkDetails from "../../../../../src/components/ActivityCollector/createGetLinkDetails.js";
 
 describe("ActivityCollector::createGetLinkDetails", () => {
   const mockWindow = {

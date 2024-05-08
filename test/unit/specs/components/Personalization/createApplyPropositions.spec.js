@@ -14,9 +14,9 @@ import {
   MIXED_PROPOSITIONS,
   PAGE_WIDE_SCOPE_DECISIONS,
 } from "./responsesMock/eventResponses";
-import createApplyPropositions from "../../../../../src/components/Personalization/createApplyPropositions";
-import clone from "../../../../../src/utils/clone";
-import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
+import createApplyPropositions from "../../../../../src/components/Personalization/createApplyPropositions.js";
+import clone from "../../../../../src/utils/clone.js";
+import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition.js";
 
 const METADATA = {
   home: {

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getBrowser from "../../../../src/utils/getBrowser";
+import getBrowser from "../../../../src/utils/getBrowser.js";
 import {
   EDGE,
   EDGE_CHROMIUM,

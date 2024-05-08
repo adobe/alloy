@@ -10,21 +10,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../../helpers/networkLogger";
-import { responseStatus } from "../../../helpers/assertions/index";
-import createFixture from "../../../helpers/createFixture";
-import createResponse from "../../../helpers/createResponse";
-import getResponseBody from "../../../helpers/networkLogger/getResponseBody";
-import cookies from "../../../helpers/cookies";
+import createNetworkLogger from "../../../helpers/networkLogger/index.js";
+import { responseStatus } from "../../../helpers/assertions/index.js";
+import createFixture from "../../../helpers/createFixture/index.js";
+import createResponse from "../../../helpers/createResponse.js";
+import getResponseBody from "../../../helpers/networkLogger/getResponseBody.js";
+import cookies from "../../../helpers/cookies.js";
 import {
   compose,
   orgMainConfigMain,
   consentPending,
   debugEnabled
-} from "../../../helpers/constants/configParts";
-import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies";
-import createAlloyProxy from "../../../helpers/createAlloyProxy";
-import { IAB_CONSENT_IN } from "../../../helpers/constants/consent";
+} from "../../../helpers/constants/configParts/index.js";
+import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies.js";
+import createAlloyProxy from "../../../helpers/createAlloyProxy.js";
+import { IAB_CONSENT_IN } from "../../../helpers/constants/consent.js";
 
 const config = compose(orgMainConfigMain, consentPending, debugEnabled);
 

@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectEnsureSingleIdentity from "../../../../../src/components/Identity/injectEnsureSingleIdentity";
-import { defer } from "../../../../../src/utils";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
+import injectEnsureSingleIdentity from "../../../../../src/components/Identity/injectEnsureSingleIdentity.js";
+import { defer } from "../../../../../src/utils/index.js";
+import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 describe("Identity::injectEnsureSingleIdentity", () => {
   let doesIdentityCookieExist;

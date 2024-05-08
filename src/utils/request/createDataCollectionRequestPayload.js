@@ -9,9 +9,9 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createRequestPayload from "./createRequestPayload";
-import createAddIdentity from "./createAddIdentity";
-import createHasIdentity from "./createHasIdentity";
+import createRequestPayload from "./createRequestPayload.js";
+import createAddIdentity from "./createAddIdentity.js";
+import createHasIdentity from "./createHasIdentity.js";
 
 export default () => {
   const content = {};

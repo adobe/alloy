@@ -10,25 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
   targetMigrationEnabled
-} from "../../helpers/constants/configParts";
-import { TEST_PAGE, TEST_PAGE_AT_JS_TWO } from "../../helpers/constants/url";
-import cookies from "../../helpers/cookies";
+} from "../../helpers/constants/configParts/index.js";
+import { TEST_PAGE, TEST_PAGE_AT_JS_TWO } from "../../helpers/constants/url.js";
+import cookies from "../../helpers/cookies.js";
 import {
   MBOX_EDGE_CLUSTER,
   MBOX
-} from "../../../../src/constants/legacyCookies";
+} from "../../../../src/constants/legacyCookies.js";
 import {
   assertTargetMigrationEnabledIsSent,
   getLocationHint,
   injectAlloyAndSendEvent
-} from "./helper";
+} from "./helper.js";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled, targetMigrationEnabled);

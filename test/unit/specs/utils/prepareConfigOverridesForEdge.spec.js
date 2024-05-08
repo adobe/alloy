@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { prepareConfigOverridesForEdge } from "../../../../src/utils";
+import { prepareConfigOverridesForEdge } from "../../../../src/utils/index.js";
 
 describe("utils:prepareConfigOverridesForEdge", () => {
   it("should filter out functions, unused objects and keys, empty arrays, and empty strings", () => {

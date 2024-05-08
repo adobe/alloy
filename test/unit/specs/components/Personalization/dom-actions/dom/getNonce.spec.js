@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { testResetCachedNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom/getNonce";
+import { testResetCachedNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom/getNonce.js";
 import {
   selectNodes,
   removeNode,
   appendNode,
   createNode
 } from "../../../../../../../src/utils/dom";
-import { getNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom";
+import { getNonce } from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 
 describe("Personalization::DOM::getNonce", () => {
   afterEach(() => {

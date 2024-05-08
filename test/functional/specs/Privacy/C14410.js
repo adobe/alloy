@@ -9,10 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createFixture from "../../helpers/createFixture";
-import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import { CONSENT_IN } from "../../helpers/constants/consent";
+import createFixture from "../../helpers/createFixture/index.js";
+import orgMainConfigMain from "../../helpers/constants/configParts/orgMainConfigMain.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import { CONSENT_IN } from "../../helpers/constants/consent.js";
 
 createFixture({
   title:

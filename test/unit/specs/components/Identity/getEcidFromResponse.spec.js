@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getEcidFromResponse from "../../../../../src/components/Identity/getEcidFromResponse";
+import getEcidFromResponse from "../../../../../src/components/Identity/getEcidFromResponse.js";
 
 describe("Identity::getEcidFromResponse", () => {
   it("does not return ECID if ECID does not exist in response", () => {

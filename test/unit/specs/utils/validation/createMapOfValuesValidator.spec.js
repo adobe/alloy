@@ -16,7 +16,7 @@ import {
   anything,
   string
 } from "../../../../../src/utils/validation";
-import describeValidation from "../../../helpers/describeValidation";
+import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation::mapOfValues", () => {
   describeValidation(

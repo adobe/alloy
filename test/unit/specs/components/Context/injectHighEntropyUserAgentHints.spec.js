@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectHighEntropyUserAgentHints from "../../../../../src/components/Context/injectHighEntropyUserAgentHints";
+import injectHighEntropyUserAgentHints from "../../../../../src/components/Context/injectHighEntropyUserAgentHints.js";
 
 describe("Context::injectHighEntropyUserAgentHints", () => {
   const navigator = {

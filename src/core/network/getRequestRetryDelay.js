@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { RETRY_AFTER } from "../../constants/httpHeaderNames";
-import { isInteger } from "../../utils";
+import { RETRY_AFTER } from "../../constants/httpHeaderNames.js";
+import { isInteger } from "../../utils/index.js";
 
 // The retry gets incrementally (but not exponentially) longer for each retry.
 const FIRST_DELAY_MILLIS = 1000;

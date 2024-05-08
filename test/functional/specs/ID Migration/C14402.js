@@ -10,24 +10,24 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t, ClientFunction } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import { responseStatus } from "../../helpers/assertions";
-import createFixture from "../../helpers/createFixture";
-import createResponse from "../../helpers/createResponse";
-import { ECID as ECID_REGEX } from "../../helpers/constants/regex";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
+import { responseStatus } from "../../helpers/assertions/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
+import createResponse from "../../helpers/createResponse.js";
+import { ECID as ECID_REGEX } from "../../helpers/constants/regex.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
   migrationEnabled
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import {
   LEGACY_IDENTITY_COOKIE_NAME,
   LEGACY_IDENTITY_COOKIE_UNESCAPED_NAME
-} from "../../helpers/constants/cookies";
-import createConsoleLogger from "../../helpers/consoleLogger";
+} from "../../helpers/constants/cookies.js";
+import createConsoleLogger from "../../helpers/consoleLogger/index.js";
 
 const config = compose(orgMainConfigMain, debugEnabled, migrationEnabled);
 

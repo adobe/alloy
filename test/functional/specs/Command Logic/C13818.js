@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { RequestLogger, ClientFunction } from "testcafe";
-import createFixture from "../../helpers/createFixture";
+import createFixture from "../../helpers/createFixture/index.js";
 
 import {
   orgMainConfigMain,
   orgAltConfigAlt
-} from "../../helpers/constants/configParts";
+} from "../../helpers/constants/configParts/index.js";
 
 const networkLoggerConfig = {
   logRequestBody: true,

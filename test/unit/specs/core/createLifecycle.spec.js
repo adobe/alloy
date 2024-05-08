@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createLifecycle from "../../../../src/core/createLifecycle";
+import createLifecycle from "../../../../src/core/createLifecycle.js";
 
 describe("createLifecycle", () => {
   it("exposes all lifecycle methods and they return promises", () => {

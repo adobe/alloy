@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import validateUserEventOptions from "./validateUserEventOptions";
-import validateApplyResponse from "./validateApplyResponse";
-import { deepAssign } from "../../utils";
+import validateUserEventOptions from "./validateUserEventOptions.js";
+import validateApplyResponse from "./validateApplyResponse.js";
+import { deepAssign } from "../../utils/index.js";
 
 const createDataCollector = ({ eventManager, logger }) => {
   return {

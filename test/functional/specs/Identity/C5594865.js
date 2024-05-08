@@ -11,17 +11,17 @@ governing permissions and limitations under the License.
 */
 
 import { t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
-import { SECONDARY_TEST_PAGE } from "../../helpers/constants/url";
+import createFixture from "../../helpers/createFixture/index.js";
+import { SECONDARY_TEST_PAGE } from "../../helpers/constants/url.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
   thirdPartyCookiesDisabled
-} from "../../helpers/constants/configParts";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
+} from "../../helpers/constants/configParts/index.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid.js";
 
 // We disable third party cookies so that the domains don't share identities
 // through the demdex cookies.

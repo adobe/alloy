@@ -11,19 +11,19 @@ governing permissions and limitations under the License.
 */
 
 import { t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled
-} from "../../helpers/constants/configParts";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createRandomEcid from "../../helpers/createRandomEcid";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
-import { CONSENT_IN } from "../../helpers/constants/consent";
-import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
-import createAdobeMC from "../../helpers/createAdobeMC";
+} from "../../helpers/constants/configParts/index.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createRandomEcid from "../../helpers/createRandomEcid.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
+import { CONSENT_IN } from "../../helpers/constants/consent.js";
+import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid.js";
+import createAdobeMC from "../../helpers/createAdobeMC.js";
 
 const config = compose(
   orgMainConfigMain,

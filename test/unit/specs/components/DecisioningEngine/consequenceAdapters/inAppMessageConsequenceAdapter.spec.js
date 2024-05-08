@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import inAppMessageConsequenceAdapter from "../../../../../../src/components/DecisioningEngine/consequenceAdapters/inAppMessageConsequenceAdapter";
-import { TEXT_HTML } from "../../../../../../src/constants/contentType";
+import inAppMessageConsequenceAdapter from "../../../../../../src/components/DecisioningEngine/consequenceAdapters/inAppMessageConsequenceAdapter.js";
+import { TEXT_HTML } from "../../../../../../src/constants/contentType.js";
 
 describe("DecisioningEngine:inAppMessageConsequenceAdapter", () => {
   it("handles cjmiam", () => {

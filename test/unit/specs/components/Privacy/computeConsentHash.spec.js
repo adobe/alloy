@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import computeConsentHash from "../../../../../src/components/Privacy/computeConsentHash";
+import computeConsentHash from "../../../../../src/components/Privacy/computeConsentHash.js";
 
 describe("computeConsentHash", () => {
   it("works", () => {

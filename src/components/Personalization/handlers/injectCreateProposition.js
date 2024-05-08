@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import PAGE_WIDE_SCOPE from "../../../constants/pageWideScope";
+import PAGE_WIDE_SCOPE from "../../../constants/pageWideScope.js";
 import {
   VIEW_SCOPE_TYPE,
   PAGE_SCOPE_TYPE,

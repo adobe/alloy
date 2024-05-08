@@ -10,30 +10,30 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t, Selector } from "testcafe";
-import createFixture from "../../helpers/createFixture";
-import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
+import createFixture from "../../helpers/createFixture/index.js";
+import addHtmlToBody from "../../helpers/dom/addHtmlToBody.js";
 import {
   compose,
   orgMainConfigMain,
-  clickCollectionEnabled
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import preventLinkNavigation from "../../helpers/preventLinkNavigation";
-import createCollectEndpointAsserter from "../../helpers/createCollectEndpointAsserter";
+  clickCollectionEnabled,
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import preventLinkNavigation from "../../helpers/preventLinkNavigation.js";
+import createCollectEndpointAsserter from "../../helpers/createCollectEndpointAsserter.js";
 
 createFixture({
-  title: "C8118: Send event with information about link clicks."
+  title: "C8118: Send event with information about link clicks.",
 });
 
 test.meta({
   ID: "C8118",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const addLinkToBody = () => {
   return addHtmlToBody(
-    `<a href="blank.html"><span id="alloy-link-test">Test Link</span></a>`
+    `<a href="blank.html"><span id="alloy-link-test">Test Link</span></a>`,
   );
 };
 
@@ -41,7 +41,7 @@ const clickLink = async () => {
   await t.click(Selector("#alloy-link-test"));
 };
 
-const assertRequestXdm = async request => {
+const assertRequestXdm = async (request) => {
   const requestBody = JSON.parse(request.request.body);
   const eventXdm = requestBody.events[0].xdm;
   await t.expect(eventXdm.eventType).eql("web.webinteraction.linkClicks");
@@ -50,7 +50,7 @@ const assertRequestXdm = async request => {
     region: "BODY",
     type: "other",
     URL: "https://alloyio.com/functional-test/blank.html",
-    linkClicks: { value: 1 }
+    linkClicks: { value: 1 },
   });
 };
 
@@ -63,7 +63,7 @@ test("Test C8118: Verify link click sends a request to the collect endpoint when
   await addLinkToBody();
   await clickLink();
   await collectEndpointAsserter.assertInteractCalledAndNotCollect();
-  const interactRequest = await collectEndpointAsserter.getInteractRequest();
+  const interactRequest = collectEndpointAsserter.getInteractRequest();
   await collectEndpointAsserter.reset();
   // If an identity has not been established, we hit the interact endpoint using
   // fetch even though the user may be navigating away from the page. In the
@@ -79,5 +79,6 @@ test("Test C8118: Verify link click sends a request to the collect endpoint when
   await clickLink();
   await collectEndpointAsserter.assertCollectCalledAndNotInteract();
   const collectRequest = collectEndpointAsserter.getCollectRequest();
+  console.log("aa", collectRequest);
   await assertRequestXdm(collectRequest);
 });

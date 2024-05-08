@@ -17,8 +17,8 @@ import {
   hasExperienceData,
   getDecisionProvider
 } from "./utils";
-import { EVENT_TYPE_TRUE } from "../../constants/eventType";
-import { ADOBE_JOURNEY_OPTIMIZER } from "../../constants/decisionProvider";
+import { EVENT_TYPE_TRUE } from "../../constants/eventType.js";
+import { ADOBE_JOURNEY_OPTIMIZER } from "../../constants/decisionProvider.js";
 
 const STORAGE_KEY = "events";
 const MAX_EVENT_RECORDS = 1000;

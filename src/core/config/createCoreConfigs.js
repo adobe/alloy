@@ -17,10 +17,10 @@ import {
   enumOf,
   objectOf
 } from "../../utils/validation";
-import { noop, validateConfigOverride } from "../../utils";
-import { EDGE as EDGE_DOMAIN } from "../../constants/domain";
-import EDGE_BASE_PATH from "../../constants/edgeBasePath";
-import { IN, OUT, PENDING } from "../../constants/consentStatus";
+import { noop, validateConfigOverride } from "../../utils/index.js";
+import { EDGE as EDGE_DOMAIN } from "../../constants/domain.js";
+import EDGE_BASE_PATH from "../../constants/edgeBasepath";
+import { IN, OUT, PENDING } from "../../constants/consentStatus.js";
 
 export default () =>
   objectOf({

@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { t, ClientFunction } from "testcafe";
-import createFixture from "../../helpers/createFixture";
+import createFixture from "../../helpers/createFixture/index.js";
 
 import {
   compose,
   orgMainConfigMain,
   debugEnabled
-} from "../../helpers/constants/configParts";
+} from "../../helpers/constants/configParts/index.js";
 
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const debugEnabledConfig = compose(orgMainConfigMain, debugEnabled, {
   onBeforeEventSend: () => {}

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { filterObject } from "../../../../src/utils";
+import { filterObject } from "../../../../src/utils/index.js";
 
 describe("utils:filterObject", () => {
   it("should filter out keys with values that do not pass the predicate", () => {

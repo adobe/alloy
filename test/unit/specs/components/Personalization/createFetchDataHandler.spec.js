@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createFetchDataHandler from "../../../../../src/components/Personalization/createFetchDataHandler";
-import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
-import defer from "../../../../../src/utils/defer";
-import createNotificationHandler from "../../../../../src/components/Personalization/createNotificationHandler";
+import createFetchDataHandler from "../../../../../src/components/Personalization/createFetchDataHandler.js";
+import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition.js";
+import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
+import defer from "../../../../../src/utils/defer.js";
+import createNotificationHandler from "../../../../../src/components/Personalization/createNotificationHandler.js";
 
 describe("Personalization::createFetchDataHandler", () => {
   let prehidingStyle;

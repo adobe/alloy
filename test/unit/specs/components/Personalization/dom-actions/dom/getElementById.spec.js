@@ -16,7 +16,7 @@ import {
   appendNode,
   createNode
 } from "../../../../../../../src/utils/dom";
-import { getElementById } from "../../../../../../../src/components/Personalization/dom-actions/dom";
+import { getElementById } from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 
 describe("Personalization::DOM::getElementById", () => {
   afterEach(() => {

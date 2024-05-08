@@ -9,7 +9,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getLinkRegion from "../../../../../src/components/ActivityCollector/getLinkRegion";
+import getLinkRegion from "../../../../../src/components/ActivityCollector/getLinkRegion.js";
 
 const createChildElement = element => {
   return {

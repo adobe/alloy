@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import path from "path";
-import resolve from "rollup-plugin-node-resolve";
-import commonjs from "rollup-plugin-commonjs";
-import babel from "rollup-plugin-babel";
-import { terser } from "rollup-plugin-terser";
-import license from "rollup-plugin-license";
+import resolve from "rollup-plugin-node-resolve.js";
+import commonjs from "rollup-plugin-commo.js";
+import babel from "rollup-plugin-babel.js";
+import { terser } from "rollup-plugin-terser.js";
+import license from "rollup-plugin-license.js";
 
 // Set these boolean environment options to control which files are built:
 // build the snippet that must be add to the page

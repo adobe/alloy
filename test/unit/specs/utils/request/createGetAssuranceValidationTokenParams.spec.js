@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createGetAssuranceValidationTokenParams } from "../../../../../src/utils/request";
-import { injectStorage } from "../../../../../src/utils";
-import uuidV4Regex from "../../../constants/uuidV4Regex";
+import { createGetAssuranceValidationTokenParams } from "../../../../../src/utils/request/index.js";
+import { injectStorage } from "../../../../../src/utils/index.js";
+import uuidV4Regex from "../../../constants/uuidV4Regex.js";
 
 const win = {
   location: {

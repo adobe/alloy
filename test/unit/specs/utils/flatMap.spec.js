@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import flatMap from "../../../../src/utils/flatMap";
+import flatMap from "../../../../src/utils/flatMap.js";
 
 const identity = item => item;
 

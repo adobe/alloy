@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectAwaitIdentityCookie from "../../../../../src/components/Identity/injectAwaitIdentityCookie";
+import injectAwaitIdentityCookie from "../../../../../src/components/Identity/injectAwaitIdentityCookie.js";
 
 describe("Identity::injectAwaitIdentityCookie", () => {
   let identityCookieExists;

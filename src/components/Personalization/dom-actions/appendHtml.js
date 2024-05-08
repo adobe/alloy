@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { appendNode } from "../../../utils/dom";
-import { createFragment, getChildNodes } from "./dom";
-import { loadImages } from "./images";
-import addNonceToInlineStyleElements from "./addNonceToInlineStyleElements";
+import { appendNode } from "../../../utils/dom/index.js";
+import { createFragment, getChildNodes } from "./dom/index.js";
+import { loadImages } from "./images.js";
+import addNonceToInlineStyleElements from "./addNonceToInlineStyleElements.js";
 import {
   getInlineScripts,
   getRemoteScriptsUrls,

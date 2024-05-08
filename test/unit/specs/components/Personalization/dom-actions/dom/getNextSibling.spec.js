@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import getNextSibling from "../../../../../../../src/components/Personalization/dom-actions/dom/getNextSibling";
-import createFragment from "../../../../../../../src/components/Personalization/dom-actions/dom/createFragment";
-import getFirstChild from "../../../../../../../src/components/Personalization/dom-actions/dom/getFirstChild";
+import getNextSibling from "../../../../../../../src/components/Personalization/dom-actions/dom/getNextSibling.js";
+import createFragment from "../../../../../../../src/components/Personalization/dom-actions/dom/createFragment.js";
+import getFirstChild from "../../../../../../../src/components/Personalization/dom-actions/dom/getFirstChild.js";
 
 describe("Personalization::helper::dom::getNextSibling", () => {
   it("returns the element next sibling", () => {

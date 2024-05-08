@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import addRenderAttemptedToDecisions from "../../../../../../src/components/Personalization/utils/addRenderAttemptedToDecisions";
+import addRenderAttemptedToDecisions from "../../../../../../src/components/Personalization/utils/addRenderAttemptedToDecisions.js";
 
 describe("Personalization::addRenderAttemptedToDecisions", () => {
   it("adds a renderAttempted flag", () => {

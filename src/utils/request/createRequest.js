@@ -13,14 +13,15 @@ governing permissions and limitations under the License.
 import { uuid } from "..";
 
 // This provides the base functionality that all types of requests share.
-export default options => {
+export default (options) => {
   const {
     payload,
     getAction,
     getUseSendBeacon,
     datastreamIdOverride,
-    edgeSubPath
+    edgeSubPath,
   } = options;
+
   const id = uuid();
   let shouldUseThirdPartyDomain = false;
   let isIdentityEstablished = false;
@@ -55,6 +56,6 @@ export default options => {
     },
     setIsIdentityEstablished() {
       isIdentityEstablished = true;
-    }
+    },
   };
 };

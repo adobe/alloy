@@ -11,18 +11,18 @@ governing permissions and limitations under the License.
 */
 
 import { t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
+import createFixture from "../../helpers/createFixture/index.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled
-} from "../../helpers/constants/configParts";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createRandomEcid from "../../helpers/createRandomEcid";
-import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
-import createAdobeMC from "../../helpers/createAdobeMC";
+} from "../../helpers/constants/configParts/index.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createRandomEcid from "../../helpers/createRandomEcid.js";
+import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid.js";
+import createAdobeMC from "../../helpers/createAdobeMC.js";
 
 const config = compose(orgMainConfigMain, debugEnabled);
 

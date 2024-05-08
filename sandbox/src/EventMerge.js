@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 
-import React, { useRef, useEffect } from "react";
-import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
-import useSendPageViewEvent from "./useSendPageViewEvent";
+import React, { useRef, useEffect } from "react.js";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy.js";
+import useSendPageViewEvent from "./useSendPageViewEvent.js";
 
 export default function EventMerge() {
   useSendPageViewEvent();

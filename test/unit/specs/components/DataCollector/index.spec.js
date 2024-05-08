@@ -9,8 +9,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createDataCollector from "../../../../../src/components/DataCollector/index";
-import { noop } from "../../../../../src/utils";
+import createDataCollector from "../../../../../src/components/DataCollector/index.js";
+import { noop } from "../../../../../src/utils/index.js";
 
 describe("Event Command", () => {
   let event;

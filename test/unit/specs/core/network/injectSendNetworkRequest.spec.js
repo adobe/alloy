@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectSendNetworkRequest from "../../../../../src/core/network/injectSendNetworkRequest";
-import flushPromiseChains from "../../../helpers/flushPromiseChains";
+import injectSendNetworkRequest from "../../../../../src/core/network/injectSendNetworkRequest.js";
+import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
 describe("injectSendNetworkRequest", () => {
   const url = "https://example.com";

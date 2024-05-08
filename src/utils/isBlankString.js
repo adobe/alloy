@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isString from "./isString";
+import isString from "./isString.js";
 
 /**
  * Returns whether a string value is blank. Also returns true if the value is not a string.

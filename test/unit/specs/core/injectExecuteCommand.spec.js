@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectExecuteCommand from "../../../../src/core/injectExecuteCommand";
-import flushPromiseChains from "../../helpers/flushPromiseChains";
+import injectExecuteCommand from "../../../../src/core/injectExecuteCommand.js";
+import flushPromiseChains from "../../helpers/flushPromiseChains.js";
 
 describe("injectExecuteCommand", () => {
   let logger;

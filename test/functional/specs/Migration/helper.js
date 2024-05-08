@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import { ClientFunction, t } from "testcafe";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createConsoleLogger from "../../helpers/consoleLogger";
-import { injectAlloyDuringTest } from "../../helpers/createFixture/clientScripts";
-import cookies from "../../helpers/cookies";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../helpers/createResponse";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createConsoleLogger from "../../helpers/consoleLogger/index.js";
+import { injectAlloyDuringTest } from "../../helpers/createFixture/clientScripts.js";
+import cookies from "../../helpers/cookies.js";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
+import createResponse from "../../helpers/createResponse.js";
 
 export const MIGRATION_LOCATION = "location-for-migration-testing";
 export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));

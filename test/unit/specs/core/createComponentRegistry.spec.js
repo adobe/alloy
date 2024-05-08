@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createComponentRegistry from "../../../../src/core/createComponentRegistry";
+import createComponentRegistry from "../../../../src/core/createComponentRegistry.js";
 
 const commandErrorRegex = /\[CompOne\] An error occurred while executing the perform command./;
 const lifecycleErrorRegex = /\[CompOne\] An error occurred while executing the onBeforeEvent lifecycle hook./;

@@ -11,16 +11,16 @@ governing permissions and limitations under the License.
 */
 
 import { t } from "testcafe";
-import createFixture from "../../helpers/createFixture";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled
-} from "../../helpers/constants/configParts";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import createRandomEcid from "../../helpers/createRandomEcid";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
-import createAdobeMC from "../../helpers/createAdobeMC";
+} from "../../helpers/constants/configParts/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import createRandomEcid from "../../helpers/createRandomEcid.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
+import createAdobeMC from "../../helpers/createAdobeMC.js";
 
 const config = compose(orgMainConfigMain, debugEnabled);
 

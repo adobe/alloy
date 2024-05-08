@@ -9,7 +9,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import validateUserEventOptions from "../../../../../src/components/DataCollector/validateUserEventOptions";
+import validateUserEventOptions from "../../../../../src/components/DataCollector/validateUserEventOptions.js";
 
 describe("DataCollector::validateUserEventOptions", () => {
   it("throws error for invalid options", () => {

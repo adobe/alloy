@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import find from "../../../../src/utils/find";
+import find from "../../../../src/utils/find.js";
 
 const items = ["a", "b", "c"];
 

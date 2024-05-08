@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectShouldTransferCookie from "../../../../src/core/injectShouldTransferCookie";
+import injectShouldTransferCookie from "../../../../src/core/injectShouldTransferCookie.js";
 
 describe("shouldTransferCookie", () => {
   let targetMigrationEnabled;

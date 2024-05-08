@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createMerger from "../../../../src/utils/createMerger";
+import createMerger from "../../../../src/utils/createMerger.js";
 
 describe("createMerger", () => {
   it("populates key if key doesn't exist", () => {

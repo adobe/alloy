@@ -16,7 +16,7 @@ import {
   removeNode,
   selectNodes
 } from "../../../../../src/utils/dom";
-import querySelectorAll from "../../../../../src/utils/dom/querySelectorAll";
+import querySelectorAll from "../../../../../src/utils/dom/querySelectorAll.js";
 
 describe("Personalization::DOM::querySelectorAll", () => {
   afterEach(() => {

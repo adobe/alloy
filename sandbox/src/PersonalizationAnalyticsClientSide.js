@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
-import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
-import ContentSecurityPolicy from "./components/ContentSecurityPolicy";
+import React, { useEffect } from "react.js";
+import { Link, Route, Switch, useRouteMatch } from "react-router-dom.js";
+import ContentSecurityPolicy from "./components/ContentSecurityPolicy.js";
 import {
   getFormBasedOffer,
   personalizationEvent

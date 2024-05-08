@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import { t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   edgeDomainThirdParty,
@@ -22,11 +22,11 @@ import {
   thirdPartyCookiesEnabled,
   migrationEnabled,
   migrationDisabled
-} from "../../helpers/constants/configParts";
-import reloadPage from "../../helpers/reloadPage";
-import setLegacyIdentityCookie from "../../helpers/setLegacyIdentityCookie";
-import areThirdPartyCookiesSupported from "../../helpers/areThirdPartyCookiesSupported";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
+} from "../../helpers/constants/configParts/index.js";
+import reloadPage from "../../helpers/reloadPage.js";
+import setLegacyIdentityCookie from "../../helpers/setLegacyIdentityCookie.js";
+import areThirdPartyCookiesSupported from "../../helpers/areThirdPartyCookiesSupported.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
 const networkLogger = createNetworkLogger();
 

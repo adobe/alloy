@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createComponent from "../../../../../src/components/Context/createComponent";
-import createConfig from "../../../../../src/core/config/createConfig";
+import createComponent from "../../../../../src/components/Context/createComponent.js";
+import createConfig from "../../../../../src/core/config/createConfig.js";
 
 describe("Context::createComponent", () => {
   const logger = {

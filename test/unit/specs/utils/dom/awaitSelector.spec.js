@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import awaitSelector from "../../../../../src/utils/dom/awaitSelector";
-import selectNodes from "../../../../../src/utils/dom/selectNodes";
+import awaitSelector from "../../../../../src/utils/dom/awaitSelector.js";
+import selectNodes from "../../../../../src/utils/dom/selectNodes.js";
 import {
   createNode,
   appendNode,

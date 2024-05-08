@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { deepAssign, toInteger } from "../../utils";
+import { deepAssign, toInteger } from "../../utils/index.js";
 
 export default window => {
   return xdm => {

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 // This is used to add methods onto a function.
-import assign from "../assign";
+import assign from "../assign.js";
 
 /**
  * Wraps a validator returning the value if it is null or undefined, otherwise

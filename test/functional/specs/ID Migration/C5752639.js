@@ -11,21 +11,21 @@ governing permissions and limitations under the License.
 */
 
 import { t, ClientFunction } from "testcafe";
-import createFixture from "../../helpers/createFixture";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
   migrationEnabled
-} from "../../helpers/constants/configParts";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import reloadPage from "../../helpers/reloadPage";
-import createRandomEcid from "../../helpers/createRandomEcid";
-import createAdobeMC from "../../helpers/createAdobeMC";
-import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid";
-import setLegacyIdentityCookie from "../../helpers/setLegacyIdentityCookie";
-import { LEGACY_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies";
+} from "../../helpers/constants/configParts/index.js";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import reloadPage from "../../helpers/reloadPage.js";
+import createRandomEcid from "../../helpers/createRandomEcid.js";
+import createAdobeMC from "../../helpers/createAdobeMC.js";
+import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid.js";
+import setLegacyIdentityCookie from "../../helpers/setLegacyIdentityCookie.js";
+import { LEGACY_IDENTITY_COOKIE_NAME } from "../../helpers/constants/cookies.js";
 
 const config = compose(orgMainConfigMain, debugEnabled, migrationEnabled);
 

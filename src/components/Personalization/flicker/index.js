@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createNode, appendNode, removeNode } from "../../../utils/dom";
-import { STYLE } from "../../../constants/tagName";
-import { getElementById, getNonce } from "../dom-actions/dom";
+import { createNode, appendNode, removeNode } from "../../../utils/dom/index.js";
+import { STYLE } from "../../../constants/tagName.js";
+import { getElementById, getNonce } from "../dom-actions/dom/index.js";
 
 const PREHIDING_ID = "alloy-prehiding";
 const HIDING_STYLE_DEFINITION = "{ visibility: hidden }";

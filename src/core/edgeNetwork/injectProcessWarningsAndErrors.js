@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { NO_CONTENT } from "../../constants/httpStatusCode";
+import { NO_CONTENT } from "../../constants/httpStatusCode.js";
 
 const MESSAGE_PREFIX = "The server responded with a";
 

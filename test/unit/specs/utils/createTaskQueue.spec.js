@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createTaskQueue from "../../../../src/utils/createTaskQueue";
-import { defer } from "../../../../src/utils";
-import flushPromiseChains from "../../helpers/flushPromiseChains";
+import createTaskQueue from "../../../../src/utils/createTaskQueue.js";
+import { defer } from "../../../../src/utils/index.js";
+import flushPromiseChains from "../../helpers/flushPromiseChains.js";
 
 describe("createTaskQueue", () => {
   it("executes a single task once even when it throws an error", () => {

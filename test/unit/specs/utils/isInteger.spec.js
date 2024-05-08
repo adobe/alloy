@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import isInteger from "../../../../src/utils/isInteger";
+import isInteger from "../../../../src/utils/isInteger.js";
 
 describe("isInteger", () => {
   it("returns true if the value is an integer", () => {

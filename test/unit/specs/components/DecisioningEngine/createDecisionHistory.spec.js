@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createDecisionHistory from "../../../../../src/components/DecisioningEngine/createDecisionHistory";
-import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
+import createDecisionHistory from "../../../../../src/components/DecisioningEngine/createDecisionHistory.js";
+import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry.js";
 
 describe("DecisioningEngine:decisionHistory", () => {
   let storage;

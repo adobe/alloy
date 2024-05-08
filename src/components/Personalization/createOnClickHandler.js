@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray } from "../../utils";
-import { INTERACT } from "../../constants/eventType";
-import { PropositionEventType } from "../../constants/propositionEventType";
+import { isNonEmptyArray } from "../../utils/index.js";
+import { INTERACT } from "../../constants/eventType.js";
+import { PropositionEventType } from "../../constants/propositionEventType.js";
 
 export default ({
   mergeDecisionsMeta,

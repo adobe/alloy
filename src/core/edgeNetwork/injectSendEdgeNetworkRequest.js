@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain";
-import apiVersion from "../../constants/apiVersion";
-import { createCallbackAggregator, noop } from "../../utils";
-import mergeLifecycleResponses from "./mergeLifecycleResponses";
-import handleRequestFailure from "./handleRequestFailure";
+import { ID_THIRD_PARTY as ID_THIRD_PARTY_DOMAIN } from "../../constants/domain.js";
+import apiVersion from "../../constants/apiVersion.js";
+import { createCallbackAggregator, noop } from "../../utils/index.js";
+import mergeLifecycleResponses from "./mergeLifecycleResponses.js";
+import handleRequestFailure from "./handleRequestFailure.js";
 
 export default ({
   config,

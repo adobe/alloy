@@ -17,7 +17,7 @@ const commonjs = require("@rollup/plugin-commonjs");
 const babel = require("@rollup/plugin-babel");
 const istanbul = require("rollup-plugin-istanbul");
 const minimist = require("minimist");
-const ignorePatterns = require("./coverageignore");
+const ignorePatterns = require("./coverageignore.cjs");
 
 const argv = minimist(process.argv.slice(2));
 const plugins = [
@@ -32,7 +32,7 @@ const plugins = [
   babel({
     envName: "rollup",
     babelHelpers: "runtime",
-    configFile: path.resolve(__dirname, "babel.test.config.js"),
+    configFile: path.resolve(__dirname, "babel.test.config.cjs"),
   }),
 ];
 

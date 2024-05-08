@@ -1,21 +1,21 @@
 /* eslint-disable no-underscore-dangle */
 
 import { ClientFunction, t } from "testcafe";
-import createNetworkLogger from "../../helpers/networkLogger";
-import createFixture from "../../helpers/createFixture";
+import createNetworkLogger from "../../helpers/networkLogger/index.js";
+import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
   debugEnabled,
   thirdPartyCookiesDisabled,
   ajoConfigForStage
-} from "../../helpers/constants/configParts";
-import getResponseBody from "../../helpers/networkLogger/getResponseBody";
-import createResponse from "../../helpers/createResponse";
-import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url";
-import createAlloyProxy from "../../helpers/createAlloyProxy";
-import addHtmlToBody from "../../helpers/dom/addHtmlToBody";
-import { testPageBody } from "../../fixtures/Personalization/C9932846";
+} from "../../helpers/constants/configParts/index.js";
+import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
+import createResponse from "../../helpers/createResponse.js";
+import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
+import createAlloyProxy from "../../helpers/createAlloyProxy.js";
+import addHtmlToBody from "../../helpers/dom/addHtmlToBody.js";
+import { testPageBody } from "../../fixtures/Personalization/C9932846.js";
 
 const PAGE_WIDE_SCOPE = "__view__";
 const AJO_TEST_SURFACE = "web://alloyio.com/personalizationAjo";

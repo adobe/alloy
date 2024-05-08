@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { DISPLAY, INTERACT, TRIGGER, DISMISS } from "./eventType";
+import { DISPLAY, INTERACT, TRIGGER, DISMISS } from "./eventType.js";
 
 export const PropositionEventType = {
   DISPLAY: "display",

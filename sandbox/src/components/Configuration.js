@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react.js";
 
 const getQueryStringParameter = key => {
   const searchParams = new URLSearchParams(window.location.search);

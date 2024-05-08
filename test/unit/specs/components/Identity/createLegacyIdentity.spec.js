@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createLegacyIdentity from "../../../../../src/components/Identity/createLegacyIdentity";
+import createLegacyIdentity from "../../../../../src/components/Identity/createLegacyIdentity.js";
 
 describe("Identity::createLegacyIdentity", () => {
   let idMigrationEnabled;

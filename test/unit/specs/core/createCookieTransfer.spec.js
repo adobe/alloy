@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createCookieTransfer from "../../../../src/core/createCookieTransfer";
+import createCookieTransfer from "../../../../src/core/createCookieTransfer.js";
 
 describe("createCookieTransfer", () => {
   const apexDomain = "example.com";

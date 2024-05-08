@@ -10,9 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createLinkClick from "../../../../../src/components/ActivityCollector/createLinkClick";
-import createEvent from "../../../../../src/core/createEvent";
-import { downloadLinkQualifier as dlwValidator } from "../../../../../src/components/ActivityCollector/configValidators";
+import createLinkClick from "../../../../../src/components/ActivityCollector/createLinkClick.js";
+import createEvent from "../../../../../src/core/createEvent.js";
+import { downloadLinkQualifier as dlwValidator } from "../../../../../src/components/ActivityCollector/configValidators.js";
 
 describe("ActivityCollector::createLinkClick", () => {
   const getLinkDetails = jasmine.createSpy("getLinkDetails");

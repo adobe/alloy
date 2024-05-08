@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectTimestamp from "../../../../../src/components/Context/injectTimestamp";
+import injectTimestamp from "../../../../../src/components/Context/injectTimestamp.js";
 
 describe("Context::injectTimestamp", () => {
   let dateProvider;

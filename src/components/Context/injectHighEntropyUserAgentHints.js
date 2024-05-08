@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { deepAssign, noop } from "../../utils";
-import highEntropyUserAgentHints from "../../constants/highEntropyUserAgentClientHints";
+import { deepAssign, noop } from "../../utils/index.js";
+import highEntropyUserAgentHints from "../../constants/highEntropyUserAgentClientHints.js";
 
 const browserSupportsUserAgentClientHints = navigator => {
   return typeof navigator.userAgentData !== "undefined";

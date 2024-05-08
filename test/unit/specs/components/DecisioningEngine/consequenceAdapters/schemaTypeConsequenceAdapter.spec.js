@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import schemaTypeConsequenceAdapter from "../../../../../../src/components/DecisioningEngine/consequenceAdapters/schemaTypeConsequenceAdapter";
-import { TEXT_HTML } from "../../../../../../src/constants/contentType";
+import schemaTypeConsequenceAdapter from "../../../../../../src/components/DecisioningEngine/consequenceAdapters/schemaTypeConsequenceAdapter.js";
+import { TEXT_HTML } from "../../../../../../src/constants/contentType.js";
 
 describe("DecisioningEngine:schemaTypeConsequenceAdapter", () => {
   it("handles schema", () => {

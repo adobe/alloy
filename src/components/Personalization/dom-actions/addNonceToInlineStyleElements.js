@@ -10,16 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { selectNodes } from "../../../utils/dom";
-import { STYLE } from "../../../constants/tagName";
-import { SRC } from "../../../constants/elementAttribute";
-import { getAttribute, getNonce } from "./dom";
+import { selectNodes } from "../../../utils/dom/index.js";
+import { STYLE } from "../../../constants/tagName.js";
+import { SRC } from "../../../constants/elementAttribute.js";
+import { getAttribute, getNonce } from "./dom/index.js";
 
 const is = (element, tagName) => element.tagName === tagName;
-const isInlineStyleElement = element =>
+const isInlineStyleElement = (element) =>
   is(element, STYLE) && !getAttribute(element, SRC);
 
-export default fragment => {
+export default (fragment) => {
   const styleNodes = selectNodes(STYLE, fragment);
   const { length } = styleNodes;
   const nonce = getNonce();

@@ -13,7 +13,7 @@ import {
   DOM_ACTION,
   MESSAGE_FEED_ITEM
 } from "../../../../../src/constants/schema";
-import createSubscribeRulesetItems from "../../../../../src/components/DecisioningEngine/createSubscribeRulesetItems";
+import createSubscribeRulesetItems from "../../../../../src/components/DecisioningEngine/createSubscribeRulesetItems.js";
 
 describe("DecisioningEngine:subscribeRulesetItems", () => {
   let subscribeRulesetItems;

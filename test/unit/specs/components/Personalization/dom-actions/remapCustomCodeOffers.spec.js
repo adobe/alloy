@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import remapCustomCodeOffers from "../../../../../../src/components/Personalization/dom-actions/remapCustomCodeOffers";
+import remapCustomCodeOffers from "../../../../../../src/components/Personalization/dom-actions/remapCustomCodeOffers.js";
 
 describe("remapCustomCodeOffers", () => {
   it("changes target selector to parent for standard body selector", () => {

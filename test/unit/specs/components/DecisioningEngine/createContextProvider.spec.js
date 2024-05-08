@@ -9,8 +9,8 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import createContextProvider from "../../../../../src/components/DecisioningEngine/createContextProvider";
-import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry";
+import createContextProvider from "../../../../../src/components/DecisioningEngine/createContextProvider.js";
+import createEventRegistry from "../../../../../src/components/DecisioningEngine/createEventRegistry.js";
 
 describe("DecisioningEngine:createContextProvider", () => {
   let contextProvider;

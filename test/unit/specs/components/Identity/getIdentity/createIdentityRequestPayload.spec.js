@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createIdentityPayload from "../../../../../../src/components/Identity/getIdentity/createIdentityRequestPayload";
-import describeRequestPayload from "../../../../helpers/describeRequestPayload";
+import createIdentityPayload from "../../../../../../src/components/Identity/getIdentity/createIdentityRequestPayload.js";
+import describeRequestPayload from "../../../../helpers/describeRequestPayload.js";
 
 describe("createIdentityRequestPayload", () => {
   describeRequestPayload(() => {

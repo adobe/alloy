@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import attachClickActivityCollector from "./attachClickActivityCollector";
-import configValidators from "./configValidators";
-import createLinkClick from "./createLinkClick";
-import createGetLinkDetails from "./createGetLinkDetails";
-import getLinkName from "./getLinkName";
-import getLinkRegion from "./getLinkRegion";
+import attachClickActivityCollector from "./attachClickActivityCollector.js";
+import configValidators from "./configValidators.js";
+import createLinkClick from "./createLinkClick.js";
+import createGetLinkDetails from "./createGetLinkDetails.js";
+import getLinkName from "./getLinkName.js";
+import getLinkRegion from "./getLinkRegion.js";
 import {
   determineLinkType,
   findSupportedAnchorElement,

@@ -1,4 +1,4 @@
-import createSubscription from "../../../../src/utils/createSubscription";
+import createSubscription from "../../../../src/utils/createSubscription.js";
 
 describe("createSubscription", () => {
   const value = { something: 42 };

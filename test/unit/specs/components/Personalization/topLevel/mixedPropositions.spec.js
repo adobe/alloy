@@ -9,12 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { MIXED_PROPOSITIONS } from "../responsesMock/eventResponses";
+import { MIXED_PROPOSITIONS } from "../responsesMock/eventResponses.js";
 
-import buildMocks from "./buildMocks";
-import buildAlloy from "./buildAlloy";
-import resetMocks from "./resetMocks";
-import flushPromiseChains from "../../../../helpers/flushPromiseChains";
+import buildMocks from "./buildMocks.js";
+import buildAlloy from "./buildAlloy.js";
+import resetMocks from "./resetMocks.js";
+import flushPromiseChains from "../../../../helpers/flushPromiseChains.js";
 
 describe("PersonalizationComponent", () => {
   it("MIXED_PROPOSITIONS", async () => {

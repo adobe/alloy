@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createCoreConfigs from "../../../../../src/core/config/createCoreConfigs";
-import { IN, OUT, PENDING } from "../../../../../src/constants/consentStatus";
+import createCoreConfigs from "../../../../../src/core/config/createCoreConfigs.js";
+import { IN, OUT, PENDING } from "../../../../../src/constants/consentStatus.js";
 
 describe("createCoreConfigs", () => {
   let validator;

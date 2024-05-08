@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { t } from "testcafe";
-import { INTERNET_EXPLORER } from "./constants/browsers";
+import { INTERNET_EXPLORER } from "./constants/browsers.js";
 
 // This must be a function called during the test, otherwise TestCafe will throw
 // an error about how it can't resolve the right context for "t".

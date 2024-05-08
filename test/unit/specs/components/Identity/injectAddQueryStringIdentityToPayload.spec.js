@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import injectAddQueryStringIdentityToPayload from "../../../../../src/components/Identity/injectAddQueryStringIdentityToPayload";
-import createDataCollectionRequestPayload from "../../../../../src/utils/request/createDataCollectionRequestPayload";
-import createIdentityRequestPayload from "../../../../../src/components/Identity/getIdentity/createIdentityRequestPayload";
-import createConsentRequestPayload from "../../../../../src/components/Privacy/createConsentRequestPayload";
+import injectAddQueryStringIdentityToPayload from "../../../../../src/components/Identity/injectAddQueryStringIdentityToPayload.js";
+import createDataCollectionRequestPayload from "../../../../../src/utils/request/createDataCollectionRequestPayload.js";
+import createIdentityRequestPayload from "../../../../../src/components/Identity/getIdentity/createIdentityRequestPayload.js";
+import createConsentRequestPayload from "../../../../../src/components/Privacy/createConsentRequestPayload.js";
 
 describe("Identity::injectAddQueryStringIdentityToPayload", () => {
   let locationSearch;

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createGetPageLocation from "../../../../../src/components/Personalization/createGetPageLocation";
+import createGetPageLocation from "../../../../../src/components/Personalization/createGetPageLocation.js";
 
 describe("Personalization::createGetPageLocation", () => {
   it("it should return page location object", () => {

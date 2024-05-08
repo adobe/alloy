@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { literal } from "../../../../../src/utils/validation";
-import describeValidation from "../../../helpers/describeValidation";
+import { literal } from "../../../../../src/utils/validation/index.js";
+import describeValidation from "../../../helpers/describeValidation.js";
 
 describe("validation:literal", () => {
   describeValidation("literal optional string", literal("hello"), [

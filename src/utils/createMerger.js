@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import deepAssign from "./deepAssign";
+import deepAssign from "./deepAssign.js";
 
 /**
  * Creates a function that, when passed an object of updates, will merge
