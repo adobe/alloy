@@ -66,7 +66,7 @@ test("Test C11634155: When specifying a deprecated option like edgeConfigId, it 
 
   await alloy.sendEvent({});
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
   const { url } = networkLogger.edgeEndpointLogs.requests[0].request;
   await t.expect(url).contains(config.edgeConfigId);

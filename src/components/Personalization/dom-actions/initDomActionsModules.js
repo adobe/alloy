@@ -23,6 +23,7 @@ import insertHtmlAfter from "./insertHtmlAfter";
 import insertHtmlBefore from "./insertHtmlBefore";
 import replaceHtml from "./replaceHtml";
 import appendHtml from "./appendHtml";
+import trackInteraction from "./trackInteraction";
 
 export const DOM_ACTION_SET_HTML = "setHtml";
 export const DOM_ACTION_CUSTOM_CODE = "customCode";
@@ -40,6 +41,7 @@ export const DOM_ACTION_REPLACE_HTML = "replaceHtml";
 export const DOM_ACTION_PREPEND_HTML = "prependHtml";
 export const DOM_ACTION_APPEND_HTML = "appendHtml";
 export const DOM_ACTION_CLICK = "click";
+export const DOM_ACTION_TRACK_INTERACTION = "track";
 
 export default () => {
   return {
@@ -57,6 +59,7 @@ export default () => {
     [DOM_ACTION_INSERT_BEFORE]: createAction(insertHtmlBefore),
     [DOM_ACTION_REPLACE_HTML]: createAction(replaceHtml),
     [DOM_ACTION_PREPEND_HTML]: createAction(prependHtml),
-    [DOM_ACTION_APPEND_HTML]: createAction(appendHtml)
+    [DOM_ACTION_APPEND_HTML]: createAction(appendHtml),
+    [DOM_ACTION_TRACK_INTERACTION]: createAction(trackInteraction)
   };
 };

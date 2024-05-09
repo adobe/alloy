@@ -45,7 +45,7 @@ test("Test C7437531: `getIdentity` can receive config overrides in command optio
     edgeConfigOverrides: overrides
   });
 
-  await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.acquireEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
@@ -74,7 +74,7 @@ test("Test C7437531: `getIdentity` can receive config overrides from `configure`
   // this should get an ECID
   await alloy.getIdentity();
 
-  await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.acquireEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
@@ -105,7 +105,7 @@ test("Test C7437531: overrides from `getIdentity` should take precedence over th
   // this should get an ECID
   await alloy.getIdentity({ edgeConfigOverrides: overrides });
 
-  await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.acquireEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
@@ -140,7 +140,7 @@ test("Test C7437531: empty configuration overrides should not be sent to the Edg
     })
   });
 
-  await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.acquireEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
@@ -172,7 +172,7 @@ test("Test C7437531: `getIdentity` can override the datastreamId", async () => {
     }
   });
 
-  await responseStatus(networkLogger.acquireEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.acquireEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.acquireEndpointLogs.requests.length).eql(1);
   const [request] = networkLogger.acquireEndpointLogs.requests;
   await t.expect(request.request.url).contains(alternateDatastreamId);

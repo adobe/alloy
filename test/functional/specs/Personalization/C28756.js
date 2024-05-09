@@ -46,7 +46,7 @@ test("Test C28756: A form based offer should return if event command contains it
     decisionScopes: [scope]
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 

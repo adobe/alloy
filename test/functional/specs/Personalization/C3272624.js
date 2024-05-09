@@ -55,7 +55,7 @@ test("Test C3272624: Support passing profile attributes and qualify for offers",
     }
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
 

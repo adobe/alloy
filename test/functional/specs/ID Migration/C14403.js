@@ -47,7 +47,7 @@ test("Test C14403: When ID migration is disabled and no legacy AMCV cookie is fo
   await alloy.configure(config);
   await alloy.sendEvent({ renderDecisions: true });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   const response = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])

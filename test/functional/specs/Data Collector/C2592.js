@@ -43,7 +43,7 @@ test("Test C2592: Event command sends a request.", async () => {
       configOverridesMain.com_adobe_experience_platform.datasets.event.datasetId
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 

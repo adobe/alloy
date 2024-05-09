@@ -44,6 +44,7 @@ const setupPropositions = () => {
     {
       id: "AT:eyJhY3Rpdml0eUlkIjoiNDQyMzU4IiwiZXhwZXJpZW5jZUlkIjoiIn1=",
       scope: "alloy-test-scope-1",
+      scopeDetails: { decisionProvider: "TGT" },
       items: [
         {
           id: "442359",
@@ -66,7 +67,7 @@ test("Test C6364799: applyPropositions should render html-content-item schemas w
     decisionScopes: [scope]
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 

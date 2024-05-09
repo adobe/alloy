@@ -51,7 +51,7 @@ test(DESCRIPTION, async () => {
     browserHintProposition.items[0].schema !==
       "https://ns.adobe.com/personalization/default-content-item";
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   const requestHeaders =

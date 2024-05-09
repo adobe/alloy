@@ -58,7 +58,6 @@ import {
   DOM_ACTION_SET_TEXT
 } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 import collectClicks from "../../../../../../src/components/Personalization/dom-actions/clicks/collectClicks";
-import createTrackProposition from "../../../../../../src/components/Personalization/createTrackProposition";
 
 const createAction = renderFunc => ({ selector, content }) => {
   if (selector === "#error") {
@@ -176,12 +175,6 @@ const buildComponent = ({
     getClickSelectors
   });
 
-  const trackProposition = createTrackProposition({
-    autoTrackPropositionInteractions,
-    storeInteractionMeta,
-    createProposition
-  });
-
   const viewChangeHandler = createViewChangeHandler({
     processPropositions,
     viewCache
@@ -213,7 +206,6 @@ const buildComponent = ({
     viewCache,
     showContainers,
     applyPropositions,
-    trackProposition,
     setTargetMigration,
     mergeDecisionsMeta,
     renderedPropositions,

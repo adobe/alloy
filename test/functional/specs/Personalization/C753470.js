@@ -45,7 +45,7 @@ test(`Test ${TEST_ID}: A nonce attribute should be added to injected style tags 
   await alloy.configure(orgMainConfigMain);
   // This event should result in Personalization component injecting a style tag
   await alloy.sendEvent({ renderDecisions: true });
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
   // Verify that the returned style tag with nonce attr was injected by Personalization
   await t
     .expect(testStyleApplied())

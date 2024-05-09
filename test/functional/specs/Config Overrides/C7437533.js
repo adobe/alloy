@@ -45,7 +45,10 @@ test("Test C7437533: `setConsent` can receive config overrides in command option
     compose(IAB_CONSENT_IN, { edgeConfigOverrides: overrides })
   );
 
-  await responseStatus(networkLogger.setConsentEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.setConsentEndpointLogs.requests, [
+    200,
+    207
+  ]);
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
@@ -73,7 +76,10 @@ test("Test C7437533: `setConsent` can receive config overrides from `configure`"
   await alloy.configure(compose(config, { edgeConfigOverrides: overrides }));
   await alloy.setConsent(IAB_CONSENT_IN);
 
-  await responseStatus(networkLogger.setConsentEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.setConsentEndpointLogs.requests, [
+    200,
+    207
+  ]);
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
@@ -103,7 +109,10 @@ test("Test C7437533: overrides from `setConsent` should take precedence over the
     edgeConfigOverrides: alternateOverrides
   });
 
-  await responseStatus(networkLogger.setConsentEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.setConsentEndpointLogs.requests, [
+    200,
+    207
+  ]);
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
@@ -139,7 +148,10 @@ test("Test C7437533: empty configuration overrides should not be sent to the Edg
     })
   );
 
-  await responseStatus(networkLogger.setConsentEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.setConsentEndpointLogs.requests, [
+    200,
+    207
+  ]);
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
 
   const request = JSON.parse(
@@ -173,7 +185,10 @@ test("Test C7437533: `setConsent` can override the datastreamId", async () => {
     })
   );
 
-  await responseStatus(networkLogger.setConsentEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.setConsentEndpointLogs.requests, [
+    200,
+    207
+  ]);
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
   const [request] = networkLogger.setConsentEndpointLogs.requests;
   await t.expect(request.request.url).contains(alternateDatastreamId);

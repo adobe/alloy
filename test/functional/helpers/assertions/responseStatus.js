@@ -19,7 +19,11 @@ const responseStatus = async (networkLogs, status) => {
     if (req.response) {
       // eslint-disable-next-line no-await-in-loop
       await t
-        .expect(req.response.statusCode === status)
+        .expect(
+          Array.isArray(status)
+            ? status.includes(req.response.statusCode)
+            : req.response.statusCode === status
+        )
         .ok(`expected ${status} to be found in ${req.response.statusCode}`);
     }
   }

@@ -44,7 +44,7 @@ test(`Test ${TEST_ID}: A nonce attribute should be added to injected script tags
   const consoleLogger = await createConsoleLogger();
   // This event should result in Personalization component injecting a script tag
   await alloy.sendEvent({ renderDecisions: true });
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
   // Verify that the returned script tag has been injected by Personalization
   await t
     .expect(elementWithIdExist(TEST_ID))

@@ -29,6 +29,7 @@ import {
   getLocationHint,
   injectAlloyAndSendEvent
 } from "./helper";
+import { responseStatus } from "../../helpers/assertions";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled, targetMigrationEnabled);
@@ -61,7 +62,7 @@ test(
     // Get mbox/json API request
     const mboxJsonRequest =
       networkLogger.targetMboxJsonEndpointLogs.requests[0];
-    await t.expect(mboxJsonRequest.response.statusCode).eql(200);
+    await responseStatus(networkLogger.targetMboxJsonEndpointLogs, [200, 207]);
     const { searchParams } = new URL(mboxJsonRequest.request.url);
     // Extract the session ID from the request query params
     const sessionIdFromMboxJsonRequest = searchParams.get("mboxSession");

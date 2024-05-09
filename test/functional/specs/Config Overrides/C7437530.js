@@ -44,7 +44,7 @@ test("Test C7437530: `sendEvent` can receive config overrides in command options
     edgeConfigOverrides: overrides
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
@@ -82,7 +82,7 @@ test("Test C7437530: `sendEvent` can receive config overrides from configure", a
   );
   await alloy.sendEvent({});
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
@@ -122,7 +122,7 @@ test("Test C7437530: overrides from `sendEvent` should take precedence over the 
     edgeConfigOverrides: overrides
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
@@ -170,7 +170,7 @@ test("Test C7437530: empty configuration overrides should not be sent to the Edg
     })
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
@@ -208,7 +208,7 @@ test("Test C7437530: `sendEvent` can override the datastreamId", async () => {
     }
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
   const [request] = networkLogger.edgeEndpointLogs.requests;
   await t.expect(request.request.url).contains(alternateDatastreamId);

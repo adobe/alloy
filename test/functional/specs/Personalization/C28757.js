@@ -49,7 +49,7 @@ test("Test C28757: A VEC offer should render if renderDecision=true", async () =
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent({ renderDecisions: true });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
 

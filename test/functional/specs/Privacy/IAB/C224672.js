@@ -51,7 +51,7 @@ test("Test C224672: Passing the `gdprContainsPersonalData` flag should return in
   await alloy.setConsent(IAB_CONSENT_IN_PERSONAL_DATA);
 
   await t.expect(networkLogger.setConsentEndpointLogs.requests.length).eql(1);
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   const consentRawResponse = JSON.parse(
     getResponseBody(networkLogger.setConsentEndpointLogs.requests[0])

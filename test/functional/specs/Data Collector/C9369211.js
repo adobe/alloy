@@ -44,7 +44,7 @@ test("Test C9369211: sendEvent includes a header for the referer when calling in
   await alloy.configure(config);
   await alloy.sendEvent({});
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   await t

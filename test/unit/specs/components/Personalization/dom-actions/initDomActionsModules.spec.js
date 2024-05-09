@@ -25,7 +25,8 @@ import initDomActionsModules, {
   DOM_ACTION_SET_HTML,
   DOM_ACTION_SET_IMAGE_SOURCE,
   DOM_ACTION_SET_STYLE,
-  DOM_ACTION_SET_TEXT
+  DOM_ACTION_SET_TEXT,
+  DOM_ACTION_TRACK_INTERACTION
 } from "../../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
 
 const buildSet = () => {
@@ -47,6 +48,7 @@ const buildSet = () => {
   result.add(DOM_ACTION_REPLACE_HTML);
   result.add(DOM_ACTION_PREPEND_HTML);
   result.add(DOM_ACTION_APPEND_HTML);
+  result.add(DOM_ACTION_TRACK_INTERACTION);
 
   return result;
 };

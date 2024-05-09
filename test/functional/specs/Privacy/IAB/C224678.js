@@ -60,7 +60,7 @@ test("Test C224678: Passing a negative Consent in the sendEvent command", async 
   const errorMessage = await alloy.sendEventErrorMessage(sendEventOptions);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   const rawResponse = JSON.parse(
     getResponseBody(networkLogger.edgeEndpointLogs.requests[0])

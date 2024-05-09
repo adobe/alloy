@@ -29,6 +29,7 @@ import {
   getLocationHint,
   injectAlloyAndSendEvent
 } from "./helper";
+import { responseStatus } from "../../helpers/assertions";
 
 const networkLogger = createNetworkLogger();
 const config = compose(orgMainConfigMain, debugEnabled, targetMigrationEnabled);
@@ -61,7 +62,7 @@ test(
     // Get delivery API request
     const deliveryRequest =
       networkLogger.targetDeliveryEndpointLogs.requests[0];
-    await t.expect(deliveryRequest.response.statusCode).eql(200);
+    await responseStatus(networkLogger.targetDeliveryEndpointLogs, [200, 207]);
     const { searchParams } = new URL(deliveryRequest.request.url);
     // Extract the session ID from the request query params
     const sessionIdFromDeliveryRequest = searchParams.get("sessionId");

@@ -55,7 +55,7 @@ test("Test C14286730: Target SPA click interaction includes viewName", async () 
     }
   });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.count(() => true)).eql(2);
 

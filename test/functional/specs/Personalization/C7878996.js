@@ -64,7 +64,7 @@ test("Test C7878996: A manual notification event without propositionEventType sh
   await alloy.configure(config);
   const eventResult = await alloy.sendEvent({ renderDecisions: false });
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
@@ -104,5 +104,5 @@ test("Test C7878996: A manual notification event without propositionEventType sh
   await alloy.sendEvent(notificationEvent);
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 });

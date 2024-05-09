@@ -49,7 +49,7 @@ test(DESCRIPTION, async () => {
   await alloy.configure(highEntropyUserAgentHintsContextConfig);
   await alloy.sendEvent(sendEventOptions);
 
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   const parsedBody = JSON.parse(

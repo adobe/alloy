@@ -10,15 +10,29 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { isNonEmptyArray, isObject, defer } from "../../utils";
+import { defer, isEmptyObject, isNonEmptyArray } from "../../utils";
 import {
   DOM_ACTION,
   HTML_CONTENT_ITEM,
+  JSON_CONTENT_ITEM,
   MESSAGE_IN_APP
 } from "../../constants/schema";
 import PAGE_WIDE_SCOPE from "../../constants/pageWideScope";
+import { DOM_ACTION_TRACK_INTERACTION } from "./dom-actions/initDomActionsModules";
 
-const SUPPORTED_SCHEMAS = [DOM_ACTION, HTML_CONTENT_ITEM, MESSAGE_IN_APP];
+const isInteractionTrackingItem = (schema, actionType) =>
+  schema === JSON_CONTENT_ITEM && actionType === DOM_ACTION_TRACK_INTERACTION;
+
+const SUPPORTED_SCHEMAS = {
+  [DOM_ACTION]: () => true,
+  [HTML_CONTENT_ITEM]: () => true,
+  [JSON_CONTENT_ITEM]: isInteractionTrackingItem,
+  [MESSAGE_IN_APP]: () => true
+};
+
+const filterItemsPredicate = (schema, actionType) =>
+  typeof SUPPORTED_SCHEMAS[schema] === "function" &&
+  SUPPORTED_SCHEMAS[schema](schema, actionType);
 
 export default ({
   processPropositions,
@@ -26,23 +40,30 @@ export default ({
   renderedPropositions,
   viewCache
 }) => {
-  const filterItemsPredicate = item =>
-    SUPPORTED_SCHEMAS.indexOf(item.schema) > -1;
+  const updatePropositionItems = ({ items, metadataForScope = {} }) => {
+    const { actionType, selector } = metadataForScope;
 
-  const updatePropositionItems = ({ items, metadataForScope }) => {
     return items
-      .filter(filterItemsPredicate)
+      .filter(item => filterItemsPredicate(item.schema, actionType))
       .map(item => {
-        if (item.schema !== HTML_CONTENT_ITEM) {
+        const { schema } = item;
+
+        if (
+          schema !== HTML_CONTENT_ITEM &&
+          !isInteractionTrackingItem(schema, actionType)
+        ) {
           return { ...item };
         }
-        if (isObject(metadataForScope)) {
+        if (!isEmptyObject(metadataForScope)) {
           return {
             ...item,
+            schema: isInteractionTrackingItem(schema, actionType)
+              ? DOM_ACTION
+              : schema,
             data: {
               ...item.data,
-              selector: metadataForScope.selector,
-              type: metadataForScope.actionType
+              selector,
+              type: actionType
             }
           };
         }

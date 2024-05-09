@@ -17,6 +17,12 @@ import {
 import createApplyPropositions from "../../../../../src/components/Personalization/createApplyPropositions";
 import clone from "../../../../../src/utils/clone";
 import injectCreateProposition from "../../../../../src/components/Personalization/handlers/injectCreateProposition";
+import createMockProposition from "../../../helpers/createMockProposition";
+import { DOM_ACTION_TRACK_INTERACTION } from "../../../../../src/components/Personalization/dom-actions/initDomActionsModules";
+import {
+  JSON_CONTENT_ITEM,
+  DOM_ACTION
+} from "../../../../../src/constants/schema";
 
 const METADATA = {
   home: {
@@ -236,5 +242,53 @@ describe("Personalization::createApplyPropositions", () => {
         }
       ]
     });
+  });
+
+  it("handles track actions for json-content-item", async () => {
+    const testElementId = "superfluous123";
+
+    const proposition = createMockProposition({
+      id: "abc",
+      schema: JSON_CONTENT_ITEM,
+      data: { isGood: true }
+    });
+
+    const expectedProposition = {
+      id: "id",
+      scope: "scope",
+      scopeDetails: {
+        decisionProvider: "AJO"
+      },
+      items: [
+        {
+          id: "abc",
+          schema: DOM_ACTION,
+          data: {
+            isGood: true,
+            selector: "#superfluous123",
+            type: DOM_ACTION_TRACK_INTERACTION
+          }
+        }
+      ]
+    };
+
+    const result = await applyPropositions({
+      propositions: [proposition.toJSON()],
+      metadata: {
+        scope: {
+          selector: `#${testElementId}`,
+          actionType: DOM_ACTION_TRACK_INTERACTION
+        }
+      }
+    });
+
+    expect(result).toEqual({
+      propositions: [{ ...expectedProposition, renderAttempted: true }]
+    });
+    expect(processPropositions).toHaveBeenCalledTimes(1);
+
+    expect(processPropositions.calls.first().args[0][0].toJSON()).toEqual(
+      expectedProposition
+    );
   });
 });

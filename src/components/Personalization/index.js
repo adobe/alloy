@@ -60,7 +60,6 @@ import {
   NEVER,
   PROPOSITION_INTERACTION_TYPES
 } from "../../constants/propositionInteractionType";
-import createTrackProposition from "./createTrackProposition";
 
 const createPersonalization = ({ config, logger, eventManager }) => {
   const {
@@ -149,12 +148,6 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     autoTrackPropositionInteractions
   });
 
-  const trackProposition = createTrackProposition({
-    autoTrackPropositionInteractions,
-    storeInteractionMeta,
-    createProposition
-  });
-
   const viewChangeHandler = createViewChangeHandler({
     processPropositions,
     viewCache
@@ -186,7 +179,6 @@ const createPersonalization = ({ config, logger, eventManager }) => {
     viewCache,
     showContainers,
     applyPropositions,
-    trackProposition,
     setTargetMigration,
     mergeDecisionsMeta,
     renderedPropositions,

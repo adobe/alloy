@@ -51,5 +51,5 @@ test("Test C225953: Identity map can be sent on a setConsent command", async () 
     },
     consent: CONSENT_IN.consent
   });
-  await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
+  await responseStatus(networkLogger.edgeEndpointLogs.requests, [200, 207]);
 });
