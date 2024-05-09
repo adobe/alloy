@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import activityMapExtensionEnabled from "./utils/activityMapExtensionEnabled";
+
 const isDissallowedLinkType = (clickCollection, linkType) => {
   return (
     linkType &&
@@ -38,6 +40,10 @@ export default ({
       logger
     });
     const linkType = elementProperties.linkType;
+    // Avoid clicks to be collected for the ActivityMap interface
+    if (activityMapExtensionEnabled()) {
+      return;
+    }
     if (
       elementProperties.isValidLink() &&
       isDissallowedLinkType(clickCollection, linkType)

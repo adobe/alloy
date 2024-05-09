@@ -73,8 +73,8 @@ const populateClickedElementPropertiesFromOptions = (options, props) => {
   }
 };
 
-export default ({ properties = {}, logger } = {}) => {
-  let props = properties;
+export default ({ properties, logger } = {}) => {
+  let props = properties || {};
   const clickedElementProperties = {
     get pageName() {
       return props.pageName;

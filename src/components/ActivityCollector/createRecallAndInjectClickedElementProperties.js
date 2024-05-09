@@ -11,9 +11,14 @@ governing permissions and limitations under the License.
 */
 
 import createClickedElementProperties from "./createClickedElementProperties";
+import activityMapExtensionEnabled from "./utils/activityMapExtensionEnabled";
 
 export default ({ clickActivityStorage }) => {
   return event => {
+    // Avoid clicks to be collected for the ActivityMap interface
+    if (activityMapExtensionEnabled()) {
+      return;
+    }
     const properties = clickActivityStorage.load();
     const elementProperties = createClickedElementProperties({ properties });
     if (
