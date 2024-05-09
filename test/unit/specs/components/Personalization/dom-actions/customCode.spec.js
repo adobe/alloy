@@ -13,7 +13,7 @@ import {
   appendNode,
   createNode,
   selectNodes,
-  removeNode
+  removeNode,
 } from "../../../../../../src/utils/dom";
 import { initDomActionsModules } from "../../../../../../src/components/Personalization/dom-actions/index.js";
 
@@ -42,13 +42,13 @@ describe("Personalization::actions::customCode", () => {
       selector: ".customCode",
       prehidingSelector: ".customCode",
       content: "<p>Hola!</p>",
-      meta
+      meta,
     };
     const event = { elements };
 
     return customCode(settings, event).then(() => {
       expect(elements[0].innerHTML).toEqual(
-        `<p>Hola!</p><div id="inner1"></div><div id="inner2"></div>`
+        `<p>Hola!</p><div id="inner1"></div><div id="inner2"></div>`,
       );
     });
   });
@@ -66,7 +66,7 @@ describe("Personalization::actions::customCode", () => {
       selector: ".customCode",
       prehidingSelector: ".customCode",
       content: "<p>Hola!</p><div>Hello</div>",
-      meta
+      meta,
     };
     const event = { elements };
 

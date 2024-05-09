@@ -23,8 +23,8 @@ export default (id, type, detail) => {
       mobileParameters,
       webParameters,
       content: html,
-      contentType: TEXT_HTML
+      contentType: TEXT_HTML,
     },
-    id
+    id,
   };
 };

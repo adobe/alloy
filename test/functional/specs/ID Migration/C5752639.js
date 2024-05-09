@@ -16,7 +16,7 @@ import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  migrationEnabled
+  migrationEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
@@ -37,13 +37,13 @@ const adobemc = createAdobeMC({ id });
 createFixture({
   title:
     "C5752639: Identity can be changed via the adobe_mc query string parameter when id_migration is enabled",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C5752639",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const getDocumentCookie = ClientFunction(() => document.cookie);

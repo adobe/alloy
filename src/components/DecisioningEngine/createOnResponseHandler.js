@@ -18,16 +18,16 @@ export default ({
   applyResponse,
   event,
   personalization,
-  decisionContext
+  decisionContext,
 }) => {
   const context = {
     ...flattenObject(event.getContent()),
-    ...decisionContext
+    ...decisionContext,
   };
 
   return ({ response }) => {
     decisionProvider.addPayloads(
-      response.getPayloadsByType(PERSONALIZATION_DECISIONS_HANDLE)
+      response.getPayloadsByType(PERSONALIZATION_DECISIONS_HANDLE),
     );
 
     // only evaluate events that include a personalization query
@@ -40,7 +40,7 @@ export default ({
       renderDecisions,
       propositions,
       event,
-      personalization
+      personalization,
     });
   };
 };

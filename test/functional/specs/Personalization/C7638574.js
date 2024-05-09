@@ -17,7 +17,7 @@ import {
   orgMainConfigMain,
   debugEnabled,
   thirdPartyCookiesDisabled,
-  ajoConfigForStage
+  ajoConfigForStage,
 } from "../../helpers/constants/configParts/index.js";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
 import createResponse from "../../helpers/createResponse.js";
@@ -32,19 +32,19 @@ const config = compose(
   orgMainConfigMain,
   ajoConfigForStage,
   debugEnabled,
-  thirdPartyCookiesDisabled
+  thirdPartyCookiesDisabled,
 );
 
 createFixture({
   title: "C7638574: AJO offers for custom surface are delivered",
   url: `${TEST_PAGE_URL}?test=C7638574`,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C7638574",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test.skip("Test C7638574: AJO offers for custom surface are delivered", async () => {
@@ -53,7 +53,7 @@ test.skip("Test C7638574: AJO offers for custom surface are delivered", async ()
   const personalization = { surfaces: [AJO_TEST_SURFACE] };
   const eventResult = await alloy.sendEvent({
     renderDecisions: true,
-    personalization
+    personalization,
   });
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
@@ -76,22 +76,22 @@ test.skip("Test C7638574: AJO offers for custom surface are delivered", async ()
     "https://ns.adobe.com/personalization/dom-action",
     "https://ns.adobe.com/personalization/html-content-item",
     "https://ns.adobe.com/personalization/json-content-item",
-    "https://ns.adobe.com/personalization/redirect-item"
-  ].every(schema => personalizationSchemas.includes(schema));
+    "https://ns.adobe.com/personalization/redirect-item",
+  ].every((schema) => personalizationSchemas.includes(schema));
 
   await t.expect(result).eql(true);
 
   const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
   );
   const personalizationPayload = createResponse({
-    content: response
+    content: response,
   })
     .getPayloadsByType("personalization:decisions")
     .filter(
-      payload =>
+      (payload) =>
         payload.scope === AJO_TEST_SURFACE &&
-        payload.items.some(item => item.data.type === "setHtml")
+        payload.items.some((item) => item.data.type === "setHtml"),
     )[0];
 
   await t.expect(personalizationPayload.items.length).eql(1);

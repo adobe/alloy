@@ -13,13 +13,13 @@ governing permissions and limitations under the License.
 import ecidNamespace from "../../constants/ecidNamespace.js";
 
 export default ({ getLegacyEcid, addEcidToPayload }) => {
-  return payload => {
+  return (payload) => {
     if (payload.hasIdentity(ecidNamespace)) {
       // don't get the legacy identity if we already have the query string identity or if
       // the user specified it in the identity map
       return Promise.resolve();
     }
-    return getLegacyEcid().then(ecidToMigrate => {
+    return getLegacyEcid().then((ecidToMigrate) => {
       if (ecidToMigrate) {
         addEcidToPayload(payload, ecidToMigrate);
       }

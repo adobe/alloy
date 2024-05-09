@@ -15,4 +15,4 @@ governing permissions and limitations under the License.
  * @param {*} value
  * @returns {boolean}
  */
-export default value => Array.isArray(value) && value.length > 0;
+export default (value) => Array.isArray(value) && value.length > 0;

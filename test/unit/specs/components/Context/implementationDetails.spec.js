@@ -20,8 +20,8 @@ describe("Context::implementationDetails", () => {
       implementationDetails: {
         name: "https://ns.adobe.com/experience/alloy",
         version: "__VERSION__",
-        environment: "browser"
-      }
+        environment: "browser",
+      },
     });
   });
 });

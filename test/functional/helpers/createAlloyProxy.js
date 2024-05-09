@@ -62,9 +62,9 @@ const errorMessageProxyFunction = ClientFunction(
     // return a promise that resolves to the error message or undefined
     return window[instanceName](command, options).then(
       () => undefined,
-      e => e.message
+      (e) => e.message,
     );
-  }
+  },
 );
 
 const getLastPromise = ClientFunction(() => {
@@ -77,7 +77,7 @@ const getLastErrorMessage = ClientFunction(() => {
   // using the last promise set by asyncProxyFunction
   return window.lastAlloyProxyPromise.then(
     () => undefined,
-    e => e.message
+    (e) => e.message,
   );
 });
 
@@ -95,21 +95,21 @@ const commands = [
   "evaluateRulesets",
   "createMediaSession",
   "sendMediaEvent",
-  "getMediaAnalyticsTracker"
+  "getMediaAnalyticsTracker",
 ];
 
 export default (instanceName = "alloy") => {
   const proxy = {};
-  commands.forEach(command => {
+  commands.forEach((command) => {
     // Run the command and return the result.
-    proxy[command] = options => proxyFunction(instanceName, command, options);
+    proxy[command] = (options) => proxyFunction(instanceName, command, options);
 
     // Run the command and return the error message or undefined.
-    proxy[`${command}ErrorMessage`] = options =>
+    proxy[`${command}ErrorMessage`] = (options) =>
       errorMessageProxyFunction(instanceName, command, options);
 
     // Run the command, but don't wait on the result.
-    proxy[`${command}Async`] = async options => {
+    proxy[`${command}Async`] = async (options) => {
       // This command calls three separate ClientFunctions to get three promises:
       // 1. We await on the TestCafe generated promise from running the client function.
       //    This ensures that commands are run in order

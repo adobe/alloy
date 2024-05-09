@@ -19,23 +19,23 @@ describe("Identity config validators", () => {
     validConfigurations: [
       {},
       {
-        thirdPartyCookiesEnabled: false
+        thirdPartyCookiesEnabled: false,
       },
       {
-        idMigrationEnabled: true
-      }
+        idMigrationEnabled: true,
+      },
     ],
     invalidConfigurations: [
       {
-        thirdPartyCookiesEnabled: 42
+        thirdPartyCookiesEnabled: 42,
       },
       {
-        idMigrationEnabled: () => {}
-      }
+        idMigrationEnabled: () => {},
+      },
     ],
     defaultValues: {
       thirdPartyCookiesEnabled: true,
-      idMigrationEnabled: true
-    }
+      idMigrationEnabled: true,
+    },
   });
 });

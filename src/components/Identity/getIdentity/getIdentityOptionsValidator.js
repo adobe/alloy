@@ -22,9 +22,9 @@ export default objectOf({
     .nonEmpty()
     .uniqueItems()
     .default(["ECID"]),
-  edgeConfigOverrides: validateConfigOverride
+  edgeConfigOverrides: validateConfigOverride,
 })
   .noUnknownFields()
   .default({
-    namespaces: ["ECID"]
+    namespaces: ["ECID"],
   });

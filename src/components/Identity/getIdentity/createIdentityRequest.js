@@ -21,6 +21,6 @@ export default ({ payload, datastreamIdOverride }) => {
     },
     getUseSendBeacon() {
       return false;
-    }
+    },
   });
 };

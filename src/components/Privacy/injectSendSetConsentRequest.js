@@ -14,33 +14,34 @@ import { isObject } from "../../utils/index.js";
 import { createRequestParams } from "../../utils/request/index.js";
 
 export default ({
-  createConsentRequestPayload,
-  createConsentRequest,
-  sendEdgeNetworkRequest,
-  edgeConfigOverrides: globalConfigOverrides
-}) => ({
-  consentOptions,
-  identityMap,
-  edgeConfigOverrides: localConfigOverrides
-}) => {
-  const requestParams = createRequestParams({
-    payload: createConsentRequestPayload(),
-    globalConfigOverrides,
-    localConfigOverrides
-  });
-  requestParams.payload.setConsent(consentOptions);
-  if (isObject(identityMap)) {
-    Object.keys(identityMap).forEach(key => {
-      identityMap[key].forEach(identity => {
-        requestParams.payload.addIdentity(key, identity);
-      });
+    createConsentRequestPayload,
+    createConsentRequest,
+    sendEdgeNetworkRequest,
+    edgeConfigOverrides: globalConfigOverrides,
+  }) =>
+  ({
+    consentOptions,
+    identityMap,
+    edgeConfigOverrides: localConfigOverrides,
+  }) => {
+    const requestParams = createRequestParams({
+      payload: createConsentRequestPayload(),
+      globalConfigOverrides,
+      localConfigOverrides,
     });
-  }
-  const request = createConsentRequest(requestParams);
-  return sendEdgeNetworkRequest({
-    request
-  }).then(() => {
-    // Don't let response data disseminate beyond this
-    // point unless necessary.
-  });
-};
+    requestParams.payload.setConsent(consentOptions);
+    if (isObject(identityMap)) {
+      Object.keys(identityMap).forEach((key) => {
+        identityMap[key].forEach((identity) => {
+          requestParams.payload.addIdentity(key, identity);
+        });
+      });
+    }
+    const request = createConsentRequest(requestParams);
+    return sendEdgeNetworkRequest({
+      request,
+    }).then(() => {
+      // Don't let response data disseminate beyond this
+      // point unless necessary.
+    });
+  };

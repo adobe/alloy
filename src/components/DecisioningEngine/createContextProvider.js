@@ -18,21 +18,21 @@ export default ({ eventRegistry, window }) => {
   const pageLoadTimestamp = new Date().getTime();
   const getBrowserContext = () => {
     return {
-      name: getBrowser(window)
+      name: getBrowser(window),
     };
   };
   const getPageContext = () => {
     return {
       title: window.title,
       url: window.url,
-      ...parseUrl(window.url)
+      ...parseUrl(window.url),
     };
   };
 
   const getReferrerContext = () => {
     return {
       url: window.referrer,
-      ...parseUrl(window.referrer)
+      ...parseUrl(window.referrer),
     };
   };
   const getTimeContext = () => {
@@ -46,13 +46,14 @@ export default ({ eventRegistry, window }) => {
       // Day of the week starts on Monday as is practiced in ISO 8601, but we want it to start on Sunday to match the authoring UI rule
       "~state.com.adobe.module.lifecycle/lifecyclecontextdata.dayofweek":
         now.getDay() + 1,
-      "~state.com.adobe.module.lifecycle/lifecyclecontextdata.hourofday": now.getHours(),
+      "~state.com.adobe.module.lifecycle/lifecyclecontextdata.hourofday":
+        now.getHours(),
       currentMinute: now.getMinutes(),
       currentMonth: now.getMonth(),
       currentYear: now.getFullYear(),
       pageVisitDuration: currentTimestamp - pageLoadTimestamp,
       "~timestampu": currentTimestamp / 1000,
-      "~timestampz": now.toISOString()
+      "~timestampz": now.toISOString(),
     };
   };
 
@@ -65,14 +66,14 @@ export default ({ eventRegistry, window }) => {
       height,
       width,
       scrollY,
-      scrollX
+      scrollX,
     };
   };
 
   const coreGlobalContext = {
     browser: getBrowserContext(),
     page: getPageContext(),
-    referringPage: getReferrerContext()
+    referringPage: getReferrerContext(),
   };
 
   const getGlobalContext = () => {
@@ -80,19 +81,19 @@ export default ({ eventRegistry, window }) => {
       ...coreGlobalContext,
       ...getTimeContext(),
       window: getWindowContext(),
-      "~sdkver": libraryVersion
+      "~sdkver": libraryVersion,
     };
   };
 
   const getContext = (addedContext = {}) => {
     const context = {
       ...getGlobalContext(),
-      ...addedContext
+      ...addedContext,
     };
 
     return { ...flattenObject(context), events: eventRegistry.toJSON() };
   };
   return {
-    getContext
+    getContext,
   };
 };

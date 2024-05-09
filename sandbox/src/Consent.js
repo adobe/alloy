@@ -14,17 +14,17 @@ const IAB_OPT_IN_GOOGLE_VENDOR =
 const IAB_OPT_OUT_GOOGLE_VENDOR =
   "CO2IS8PO2IbuvAVAMBFRACBsAIBAAAAgEIYgGQBiNh14tYnCZ-5fXnRqprc2dYaErJs0dFpVJBA0ALi95QggwAQXEIa4JmghQMIEJASUkIIMEjHIgsJSyMEIAMIgjpJqrggEIFVAIIgPDKAULEQQkBQcCCC2mhZURCaVE0AVLMF0CNYAICNQAA==";
 
-const adobe1Consent = generalPurpose => {
+const adobe1Consent = (generalPurpose) => {
   return {
     consent: [
       {
         standard: "Adobe",
         version: "1.0",
         value: {
-          general: generalPurpose
-        }
-      }
-    ]
+          general: generalPurpose,
+        },
+      },
+    ],
   };
 };
 
@@ -36,31 +36,31 @@ const adobe2Consent = ({ collect, personalize }) => {
         version: "2.0",
         value: {
           collect: {
-            val: collect
-          }
-        }
-      }
-    ]
+            val: collect,
+          },
+        },
+      },
+    ],
   };
   if (personalize) {
     setConsentOptions.consent[0].value.personalize = {
       content: {
-        val: personalize
-      }
+        val: personalize,
+      },
     };
   }
   return setConsentOptions;
 };
 
-const iabConsent = consentString => {
+const iabConsent = (consentString) => {
   return {
     consent: [
       {
         standard: "IAB TCF",
         version: "2.0",
-        value: consentString
-      }
-    ]
+        value: consentString,
+      },
+    ],
   };
 };
 
@@ -70,13 +70,15 @@ const mergeConsent = (...consentObjects) => {
       memo.consent = memo.consent.concat(consent);
       return memo;
     },
-    { consent: [] }
+    { consent: [] },
   );
 };
 
-const executeCommand = (command, options = {}) => () => {
-  window.alloy(command, options);
-};
+const executeCommand =
+  (command, options = {}) =>
+  () => {
+    window.alloy(command, options);
+  };
 
 export default function Consent() {
   useSendPageViewEvent();
@@ -111,7 +113,7 @@ export default function Consent() {
           <button
             onClick={executeCommand(
               "setConsent",
-              adobe2Consent({ collect: "y" })
+              adobe2Consent({ collect: "y" }),
             )}
           >
             Collect="y"
@@ -119,7 +121,7 @@ export default function Consent() {
           <button
             onClick={executeCommand(
               "setConsent",
-              adobe2Consent({ collect: "n" })
+              adobe2Consent({ collect: "n" }),
             )}
           >
             Collect="n"
@@ -127,7 +129,7 @@ export default function Consent() {
           <button
             onClick={executeCommand(
               "setConsent",
-              adobe2Consent({ collect: "y", personalize: "y" })
+              adobe2Consent({ collect: "y", personalize: "y" }),
             )}
           >
             Collect="y" Personalize="y"
@@ -135,7 +137,7 @@ export default function Consent() {
           <button
             onClick={executeCommand(
               "setConsent",
-              adobe2Consent({ collect: "y", personalize: "n" })
+              adobe2Consent({ collect: "y", personalize: "n" }),
             )}
           >
             Collect="y" Personalize="n"
@@ -156,7 +158,7 @@ export default function Consent() {
           <button
             onClick={executeCommand(
               "setConsent",
-              iabConsent(IAB_OPT_IN_GOOGLE_VENDOR)
+              iabConsent(IAB_OPT_IN_GOOGLE_VENDOR),
             )}
           >
             Google Vendor In
@@ -164,7 +166,7 @@ export default function Consent() {
           <button
             onClick={executeCommand(
               "setConsent",
-              iabConsent(IAB_OPT_OUT_GOOGLE_VENDOR)
+              iabConsent(IAB_OPT_OUT_GOOGLE_VENDOR),
             )}
           >
             Google Vendor Out
@@ -177,8 +179,8 @@ export default function Consent() {
               "setConsent",
               mergeConsent(
                 adobe2Consent({ collect: "y" }),
-                iabConsent(IAB_OPT_IN)
-              )
+                iabConsent(IAB_OPT_IN),
+              ),
             )}
           >
             In
@@ -188,8 +190,8 @@ export default function Consent() {
               "setConsent",
               mergeConsent(
                 adobe2Consent({ collect: "n" }),
-                iabConsent(IAB_OPT_OUT)
-              )
+                iabConsent(IAB_OPT_OUT),
+              ),
             )}
           >
             Out

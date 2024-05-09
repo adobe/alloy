@@ -16,7 +16,7 @@ import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
@@ -28,13 +28,13 @@ const config = compose(orgMainConfigMain, debugEnabled);
 createFixture({
   title: "C14286730: Target SPA click interaction includes viewName",
   requestHooks: [networkLogger.edgeEndpointLogs],
-  url: `${TEST_PAGE_URL}?test=C14286730`
+  url: `${TEST_PAGE_URL}?test=C14286730`,
 });
 
 test.meta({
   ID: "C28755",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C14286730: Target SPA click interaction includes viewName", async () => {
@@ -42,17 +42,17 @@ test("Test C14286730: Target SPA click interaction includes viewName", async () 
   await alloy.configure(config);
 
   await addHtmlToBody(
-    `<div id="personalization-products-container">Products</div>`
+    `<div id="personalization-products-container">Products</div>`,
   );
   await alloy.sendEvent({
     renderDecisions: true,
     xdm: {
       web: {
         webPageDetails: {
-          viewName: "products"
-        }
-      }
-    }
+          viewName: "products",
+        },
+      },
+    },
   });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
@@ -64,10 +64,10 @@ test("Test C14286730: Target SPA click interaction includes viewName", async () 
   await t.expect(networkLogger.edgeEndpointLogs.count(() => true)).eql(3);
 
   const displayNotification = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[1].request.body
+    networkLogger.edgeEndpointLogs.requests[1].request.body,
   );
   const interactNotification = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[2].request.body
+    networkLogger.edgeEndpointLogs.requests[2].request.body,
   );
 
   await t

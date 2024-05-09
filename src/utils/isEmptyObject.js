@@ -17,4 +17,4 @@ import isObject from "./isObject.js";
  * @param {*} value
  * @returns {boolean}
  */
-export default value => isObject(value) && Object.keys(value).length === 0;
+export default (value) => isObject(value) && Object.keys(value).length === 0;

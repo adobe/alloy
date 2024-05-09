@@ -19,7 +19,7 @@ import {
   orgMainConfigMain,
   debugEnabled,
   thirdPartyCookiesDisabled,
-  ajoConfigForStage
+  ajoConfigForStage,
 } from "../../helpers/constants/configParts/index.js";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
 import createResponse from "../../helpers/createResponse.js";
@@ -32,23 +32,23 @@ const config = compose(
   orgMainConfigMain,
   ajoConfigForStage,
   debugEnabled,
-  thirdPartyCookiesDisabled
+  thirdPartyCookiesDisabled,
 );
 const AJO_TEST_SURFACE = "web://alloyio.com/personalizationAjoSpa";
 
 createFixture({
   title: "C11389844: AJO SPA support",
   url: `${TEST_PAGE_WITH_CSP}?test=C11389844`,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C11389844",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
-const getDecisionContent = ClientFunction(elementId => {
+const getDecisionContent = ClientFunction((elementId) => {
   const container = document.getElementById(elementId);
 
   return container.innerText;
@@ -57,12 +57,12 @@ const getDecisionContent = ClientFunction(elementId => {
 const getDecisionsMetaByScope = (decisions, scope) => {
   const metas = [];
 
-  decisions.forEach(decision => {
+  decisions.forEach((decision) => {
     if (decision.scope === scope) {
       metas.push({
         id: decision.id,
         scope: decision.scope,
-        scopeDetails: decision.scopeDetails
+        scopeDetails: decision.scopeDetails,
       });
     }
   });
@@ -78,16 +78,16 @@ const addContentContainer = () => {
       >
         This is the AJO personalization placeholder for the products view.
         Personalized content has not been loaded.
-      </div>`
+      </div>`,
   );
 };
 
-const simulatePageLoad = async alloy => {
+const simulatePageLoad = async (alloy) => {
   const personalization = { surfaces: [AJO_TEST_SURFACE] };
 
   await alloy.sendEvent({
     renderDecisions: true,
-    personalization
+    personalization,
   });
 
   // asserts the request fired to Experience Edge has the expected event query
@@ -108,16 +108,16 @@ const simulatePageLoad = async alloy => {
     "https://ns.adobe.com/personalization/dom-action",
     "https://ns.adobe.com/personalization/html-content-item",
     "https://ns.adobe.com/personalization/json-content-item",
-    "https://ns.adobe.com/personalization/redirect-item"
-  ].every(schema => personalizationSchemas.includes(schema));
+    "https://ns.adobe.com/personalization/redirect-item",
+  ].every((schema) => personalizationSchemas.includes(schema));
 
   await t.expect(result).eql(true);
 
   const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
   );
   const personalizationPayload = createResponse({
-    content: response
+    content: response,
   }).getPayloadsByType("personalization:decisions");
 
   await t.expect(personalizationPayload.length).eql(1);
@@ -133,10 +133,10 @@ const simulateViewChange = async (alloy, personalizationPayload) => {
     xdm: {
       web: {
         webPageDetails: {
-          viewName: "products"
-        }
-      }
-    }
+          viewName: "products",
+        },
+      },
+    },
   });
 
   const viewChangeRequest = networkLogger.edgeEndpointLogs.requests[1];
@@ -163,7 +163,7 @@ const simulateViewChange = async (alloy, personalizationPayload) => {
   // the decisions that were rendered
   const productsViewDecisionsMeta = getDecisionsMetaByScope(
     personalizationPayload,
-    "products"
+    "products",
   );
 
   await t
@@ -173,7 +173,7 @@ const simulateViewChange = async (alloy, personalizationPayload) => {
 
   // assert we return the renderAttempted flag set to true
   const allPropositionsWereRendered = resultingObject.propositions.every(
-    proposition => proposition.renderAttempted
+    (proposition) => proposition.renderAttempted,
   );
 
   await t.expect(allPropositionsWereRendered).eql(true);

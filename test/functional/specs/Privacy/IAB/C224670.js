@@ -20,7 +20,7 @@ import {
   compose,
   orgMainConfigMain,
   consentPending,
-  debugEnabled
+  debugEnabled,
 } from "../../../helpers/constants/configParts/index.js";
 import { MAIN_CONSENT_COOKIE_NAME } from "../../../helpers/constants/cookies.js";
 import createAlloyProxy from "../../../helpers/createAlloyProxy.js";
@@ -34,14 +34,14 @@ createFixture({
   title: "C224670: Opt in to IAB using the setConsent command.",
   requestHooks: [
     networkLogger.setConsentEndpointLogs,
-    networkLogger.edgeEndpointLogs
-  ]
+    networkLogger.edgeEndpointLogs,
+  ],
 });
 
 test.meta({
   ID: "C224670",
   SEVERITY: "P0",
-  TEST_RUN: "REGRESSION"
+  TEST_RUN: "REGRESSION",
 });
 
 test("Test C224670: Opt in to IAB", async () => {
@@ -53,7 +53,7 @@ test("Test C224670: Opt in to IAB", async () => {
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
   const consentRawResponse = JSON.parse(
-    getResponseBody(networkLogger.setConsentEndpointLogs.requests[0])
+    getResponseBody(networkLogger.setConsentEndpointLogs.requests[0]),
   );
 
   const consentResponse = createResponse({ content: consentRawResponse });
@@ -66,7 +66,7 @@ test("Test C224670: Opt in to IAB", async () => {
 
   // 2. The ECID should exist in the response payload as well, if queried
   const identityHandle = consentResponse.getPayloadsByType("identity:result");
-  const returnedNamespaces = identityHandle.map(i => i.namespace.code);
+  const returnedNamespaces = identityHandle.map((i) => i.namespace.code);
   await t.expect(identityHandle.length).eql(1);
   await t.expect(returnedNamespaces).contains("ECID");
 

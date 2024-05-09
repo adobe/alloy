@@ -21,7 +21,7 @@ const { hideBin } = require("yargs/helpers");
 
 const argv = yargs(hideBin(process.argv)).option("browsers", {
   type: "array",
-  default: ["chrome"]
+  default: ["chrome"],
 }).argv;
 
 /**
@@ -47,7 +47,7 @@ const effectByEventCode = {
   async END() {
     if (firstBuildComplete) {
       console.log(
-        `Press Ctrl+R to restart the test run against the new build.`
+        `Press Ctrl+R to restart the test run against the new build.`,
       );
     } else {
       firstBuildComplete = true;
@@ -59,7 +59,7 @@ const effectByEventCode = {
   },
   ERROR(event) {
     console.error(event.error.stack);
-  }
+  },
 };
 
 (async () => {
@@ -70,12 +70,12 @@ const effectByEventCode = {
   process.env.NPM_PACKAGE_LOCAL = "true";
   process.env.BASE_CODE_MIN = "true";
   const { options, warnings } = await loadConfigFile(
-    path.join(__dirname, "../rollup.config.js")
+    path.join(__dirname, "../rollup.config.js"),
   );
 
   warnings.flush();
   const watcher = rollup.watch(options);
-  watcher.on("event", event => {
+  watcher.on("event", (event) => {
     const effect = effectByEventCode[event.code];
 
     if (effect) {

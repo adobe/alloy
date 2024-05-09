@@ -14,7 +14,7 @@ import PAGE_WIDE_SCOPE from "../../../constants/pageWideScope.js";
 import {
   VIEW_SCOPE_TYPE,
   PAGE_SCOPE_TYPE,
-  PROPOSITION_SCOPE_TYPE
+  PROPOSITION_SCOPE_TYPE,
 } from "../constants/scopeType";
 
 export default ({ preprocess, isPageWideSurface }) => {
@@ -44,7 +44,7 @@ export default ({ preprocess, isPageWideSurface }) => {
       },
       toJSON() {
         return item;
-      }
+      },
     };
   };
 
@@ -69,7 +69,7 @@ export default ({ preprocess, isPageWideSurface }) => {
         return PROPOSITION_SCOPE_TYPE;
       },
       getItems() {
-        return items.map(item => createItem(item, this));
+        return items.map((item) => createItem(item, this));
       },
       getNotification() {
         return { id, scope, scopeDetails };
@@ -81,22 +81,22 @@ export default ({ preprocess, isPageWideSurface }) => {
         propositions,
         decisions,
         includedItems,
-        renderAttempted
+        renderAttempted,
       ) {
         if (visibleInReturnedItems) {
           propositions.push({
             ...payload,
-            items: includedItems.map(i => i.getOriginalItem()),
-            renderAttempted
+            items: includedItems.map((i) => i.getOriginalItem()),
+            renderAttempted,
           });
           if (!renderAttempted) {
             decisions.push({
               ...payload,
-              items: includedItems.map(i => i.getOriginalItem())
+              items: includedItems.map((i) => i.getOriginalItem()),
             });
           }
         }
-      }
+      },
     };
   };
 };

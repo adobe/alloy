@@ -19,7 +19,7 @@ describe("exec", () => {
   it("throws an ApplicationError on a non-zero exit code.", async () => {
     const [outputStream] = createStringBackedWritableStream();
     await expectAsync(
-      exec("bad exit", "exit 42", { outputStream })
+      exec("bad exit", "exit 42", { outputStream }),
     ).toBeRejectedWithError(ApplicationError);
   });
   it("logs the exit code", async () => {

@@ -21,25 +21,25 @@ describe("createIdentityRequestPayload", () => {
   it("adds identities", () => {
     const payload = createIdentityPayload(["NS1", "NS2", "NS3"]);
     payload.addIdentity("IDNS", {
-      id: "ABC123"
+      id: "ABC123",
     });
     payload.addIdentity("IDNS", {
-      id: "DEF456"
+      id: "DEF456",
     });
     expect(payload.toJSON()).toEqual({
       xdm: {
         identityMap: {
           IDNS: [
             {
-              id: "ABC123"
+              id: "ABC123",
             },
             {
-              id: "DEF456"
-            }
-          ]
-        }
+              id: "DEF456",
+            },
+          ],
+        },
       },
-      query: { identity: { fetch: ["NS1", "NS2", "NS3"] } }
+      query: { identity: { fetch: ["NS1", "NS2", "NS3"] } },
     });
   });
 });

@@ -16,7 +16,7 @@ import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
@@ -36,13 +36,13 @@ const adobemc = createAdobeMC({ timestamp, id });
 createFixture({
   url: `${TEST_PAGE_URL}?adobe_mc=${adobemc}`,
   title: "C5594872: An expired adobe_mc query string parameter is not used",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C5594872",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("C5594872: An expired adobe_mc query string parameter is not used", async () => {

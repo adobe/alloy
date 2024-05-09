@@ -15,13 +15,13 @@ import createConsentHashStore from "../../../../../src/components/Privacy/create
 const CONSENT_IN = {
   standard: "Adobe",
   version: "1.0",
-  value: { general: "in" }
+  value: { general: "in" },
 };
 
 const CONSENT_OUT = {
   standard: "Adobe",
   version: "1.0",
-  value: { general: "out" }
+  value: { general: "out" },
 };
 
 describe("createConsentHashStore", () => {

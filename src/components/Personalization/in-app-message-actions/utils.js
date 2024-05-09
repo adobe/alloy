@@ -9,16 +9,20 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-import { isNonEmptyArray, queryString, startsWith } from "../../../utils/index.js";
+import {
+  isNonEmptyArray,
+  queryString,
+  startsWith,
+} from "../../../utils/index.js";
 import { removeNode, selectNodes } from "../../../utils/dom/index.js";
 
-export const removeElementById = id => {
+export const removeElementById = (id) => {
   const element = selectNodes(`#${id}`, document);
   if (element && element.length > 0) {
     removeNode(element[0]);
   }
 };
-export const parseAnchor = anchor => {
+export const parseAnchor = (anchor) => {
   const nothing = {};
 
   if (!anchor || anchor.tagName.toLowerCase() !== "a") {
@@ -49,6 +53,6 @@ export const parseAnchor = anchor => {
     interaction,
     link,
     label,
-    uuid
+    uuid,
   };
 };

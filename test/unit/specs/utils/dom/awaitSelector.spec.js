@@ -15,17 +15,17 @@ import selectNodes from "../../../../../src/utils/dom/selectNodes.js";
 import {
   createNode,
   appendNode,
-  removeNode
+  removeNode,
 } from "../../../../../src/utils/dom";
 
 describe("DOM::awaitSelector", () => {
-  const createAndAppendNodeDelayed = id => {
+  const createAndAppendNodeDelayed = (id) => {
     setTimeout(() => {
       appendNode(document.head, createNode("div", { id }));
     }, 50);
   };
 
-  const cleanUp = id => {
+  const cleanUp = (id) => {
     const nodes = selectNodes(`#${id}`);
 
     removeNode(nodes[0]);
@@ -37,13 +37,13 @@ describe("DOM::awaitSelector", () => {
     createAndAppendNodeDelayed(id);
 
     return result
-      .then(nodes => {
+      .then((nodes) => {
         expect(nodes[0].tagName).toEqual("DIV");
       })
       .finally(() => {
         cleanUp(id);
       })
-      .catch(e => {
+      .catch((e) => {
         throw new Error(`${id} should be found. Error was ${e}`);
       });
   };
@@ -54,7 +54,7 @@ describe("DOM::awaitSelector", () => {
 
   it("await via requestAnimationFrame", () => {
     const win = {
-      requestAnimationFrame: window.requestAnimationFrame.bind(window)
+      requestAnimationFrame: window.requestAnimationFrame.bind(window),
     };
     const doc = { visibilityState: "visible" };
 

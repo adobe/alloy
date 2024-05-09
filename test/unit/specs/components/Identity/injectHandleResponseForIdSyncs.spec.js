@@ -20,14 +20,14 @@ describe("Identity::injectHandleResponseForIdSyncs", () => {
       .and.returnValue(processIdSyncsPromise);
     const idSyncPayloads = [
       {
-        type: "idSync"
-      }
+        type: "idSync",
+      },
     ];
     const response = jasmine.createSpyObj("response", {
-      getPayloadsByType: idSyncPayloads
+      getPayloadsByType: idSyncPayloads,
     });
     const handleResponseForIdSyncs = injectHandleResponseForIdSyncs({
-      processIdSyncs
+      processIdSyncs,
     });
     const result = handleResponseForIdSyncs(response);
     expect(processIdSyncs).toHaveBeenCalledWith(idSyncPayloads);

@@ -14,7 +14,7 @@ import {
   createNode,
   appendNode,
   selectNodes,
-  removeNode
+  removeNode,
 } from "../../../../../../../src/utils/dom";
 import matchesSelectorWithEq from "../../../../../../../src/components/Personalization/dom-actions/dom/matchesSelectorWithEq.js";
 
@@ -49,8 +49,8 @@ describe("Personalization::DOM::matchesSelectorWithEq", () => {
       "DIV",
       { id: "abc", class: "eq" },
       {
-        innerHTML: content
-      }
+        innerHTML: content,
+      },
     );
 
     appendNode(document.body, node);
@@ -76,7 +76,7 @@ describe("Personalization::DOM::matchesSelectorWithEq", () => {
     const node = createNode(
       "DIV",
       { id: "abc", class: "eq" },
-      { innerHTML: content }
+      { innerHTML: content },
     );
 
     appendNode(document.body, node);

@@ -52,7 +52,7 @@ const container = {
   npmToken: process.env.NPM_TOKEN,
   process,
   urlExists,
-  version
+  version,
 };
 
 const run = async () => {

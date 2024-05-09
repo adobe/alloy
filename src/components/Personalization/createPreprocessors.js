@@ -15,6 +15,6 @@ import remapCustomCodeOffers from "./dom-actions/remapCustomCodeOffers.js";
 
 export default () => {
   return {
-    [DOM_ACTION]: [remapHeadOffers, remapCustomCodeOffers]
+    [DOM_ACTION]: [remapHeadOffers, remapCustomCodeOffers],
   };
 };

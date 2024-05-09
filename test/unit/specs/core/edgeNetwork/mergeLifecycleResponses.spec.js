@@ -18,22 +18,21 @@ describe("mergeLifecycleResponses", () => {
         [
           null,
           {
-            destinations: []
+            destinations: [],
           },
           null,
           {
-            inferences: []
-          }
+            inferences: [],
+          },
         ],
         [
           {
-            propositions: []
+            propositions: [],
           },
           {
             decisions: [
               {
-                id:
-                  "AT:eyJhY3Rpdml0eUlkIjoiNTYzMTcwIiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
+                id: "AT:eyJhY3Rpdml0eUlkIjoiNTYzMTcwIiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
                 scope: "superfluous",
                 items: [
                   {
@@ -43,17 +42,16 @@ describe("mergeLifecycleResponses", () => {
                     data: {
                       id: "1",
                       format: "text/html",
-                      content: "<div>hi</div>"
-                    }
-                  }
-                ]
-              }
+                      content: "<div>hi</div>",
+                    },
+                  },
+                ],
+              },
             ],
             propositions: [
               {
                 renderAttempted: true,
-                id:
-                  "AT:eyJhY3Rpdml0eUlkIjoiNTYzMTY5IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
+                id: "AT:eyJhY3Rpdml0eUlkIjoiNTYzMTY5IiwiZXhwZXJpZW5jZUlkIjoiMCJ9",
                 scope: "__view__",
                 items: [
                   {
@@ -64,18 +62,18 @@ describe("mergeLifecycleResponses", () => {
                       format: "application/vnd.adobe.target.dom-action",
                       content: "<div>hai</div>",
                       selector: "HTML > BODY > H3:nth-of-type(1)",
-                      prehidingSelector: "HTML > BODY > H3:nth-of-type(1)"
-                    }
-                  }
-                ]
-              }
-            ]
+                      prehidingSelector: "HTML > BODY > H3:nth-of-type(1)",
+                    },
+                  },
+                ],
+              },
+            ],
           },
           {
-            propositions: []
-          }
-        ]
-      ])
+            propositions: [],
+          },
+        ],
+      ]),
     ).toEqual({
       destinations: [],
       inferences: [],
@@ -93,11 +91,11 @@ describe("mergeLifecycleResponses", () => {
                 format: "application/vnd.adobe.target.dom-action",
                 content: "<div>hai</div>",
                 selector: "HTML > BODY > H3:nth-of-type(1)",
-                prehidingSelector: "HTML > BODY > H3:nth-of-type(1)"
-              }
-            }
-          ]
-        }
+                prehidingSelector: "HTML > BODY > H3:nth-of-type(1)",
+              },
+            },
+          ],
+        },
       ],
       decisions: [
         {
@@ -110,12 +108,12 @@ describe("mergeLifecycleResponses", () => {
               data: {
                 id: "1",
                 format: "text/html",
-                content: "<div>hi</div>"
-              }
-            }
-          ]
-        }
-      ]
+                content: "<div>hi</div>",
+              },
+            },
+          ],
+        },
+      ],
     });
   });
 });

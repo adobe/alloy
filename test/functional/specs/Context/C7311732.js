@@ -25,23 +25,23 @@ const DESCRIPTION = `${ID} - Adds only userAgentClientHints context data when on
 
 createFixture({
   title: DESCRIPTION,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID,
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const sendEventOptions = {
   xdm: {
     web: {
       webPageDetails: {
-        URL: TEST_PAGE_URL
-      }
-    }
-  }
+        URL: TEST_PAGE_URL,
+      },
+    },
+  },
 };
 
 test(DESCRIPTION, async () => {
@@ -53,7 +53,7 @@ test(DESCRIPTION, async () => {
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   const parsedBody = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
+    networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
 
   await t.expect(parsedBody.events[0].xdm.placeContext).notOk();
@@ -63,7 +63,8 @@ test(DESCRIPTION, async () => {
     await t.expect(parsedBody.events[0].xdm.environment.type).notOk();
     await t
       .expect(
-        parsedBody.events[0].xdm.environment.browserDetails.userAgentClientHints
+        parsedBody.events[0].xdm.environment.browserDetails
+          .userAgentClientHints,
       )
       .ok();
   }

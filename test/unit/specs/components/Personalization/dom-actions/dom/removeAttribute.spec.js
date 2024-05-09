@@ -14,11 +14,11 @@ import removeAttribute from "../../../../../../../src/components/Personalization
 import {
   createNode,
   removeNode,
-  selectNodes
+  selectNodes,
 } from "../../../../../../../src/utils/dom";
 import {
   getAttribute,
-  setAttribute
+  setAttribute,
 } from "../../../../../../../src/components/Personalization/dom-actions/dom";
 
 describe("Personalization::DOM::removeAttribute", () => {

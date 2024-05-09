@@ -14,33 +14,33 @@ import { DEFAULT_CONTENT_ITEM } from "../../../../../src/constants/schema.js";
 import createViewCacheManager from "../../../../../src/components/Personalization/createViewCacheManager.js";
 import flushPromiseChains from "../../../helpers/flushPromiseChains.js";
 
-const propsToJSON = props => props.map(p => p.toJSON());
+const propsToJSON = (props) => props.map((p) => p.toJSON());
 
 describe("Personalization::createViewCacheManager", () => {
   const viewHandles = [
     {
       id: "foo1",
-      scope: "home"
+      scope: "home",
     },
     {
       id: "foo2",
-      scope: "home"
+      scope: "home",
     },
     {
       id: "foo3",
-      scope: "cart"
+      scope: "cart",
     },
     {
       id: "foo4",
-      scope: "other"
-    }
+      scope: "other",
+    },
   ];
 
   let createProposition;
   let propositions;
 
   beforeEach(() => {
-    createProposition = viewHandle => {
+    createProposition = (viewHandle) => {
       const { scope } = viewHandle;
       return {
         getScope() {
@@ -48,7 +48,7 @@ describe("Personalization::createViewCacheManager", () => {
         },
         toJSON() {
           return viewHandle;
-        }
+        },
       };
     };
     propositions = viewHandles.map(createProposition);
@@ -77,20 +77,20 @@ describe("Personalization::createViewCacheManager", () => {
     cacheUpdate.cancel();
 
     const homeViews = await viewCacheManager.getView("home");
-    expect(homeViews.map(h => h.toJSON())).toEqual([
+    expect(homeViews.map((h) => h.toJSON())).toEqual([
       {
         scope: "home",
         scopeDetails: {
           characteristics: {
-            scopeType: "view"
-          }
+            scopeType: "view",
+          },
         },
         items: [
           {
-            schema: DEFAULT_CONTENT_ITEM
-          }
-        ]
-      }
+            schema: DEFAULT_CONTENT_ITEM,
+          },
+        ],
+      },
     ]);
   });
 
@@ -121,8 +121,8 @@ describe("Personalization::createViewCacheManager", () => {
       createProposition({
         id: "foo4",
         items: [],
-        scope: "about"
-      })
+        scope: "about",
+      }),
     ]);
 
     expect(await cartViewPromise).toEqual([propositions[2]]);
@@ -130,8 +130,8 @@ describe("Personalization::createViewCacheManager", () => {
       {
         id: "foo4",
         items: [],
-        scope: "about"
-      }
+        scope: "about",
+      },
     ]);
   });
 
@@ -161,7 +161,7 @@ describe("Personalization::createViewCacheManager", () => {
     update2.cancel();
     expect(await viewCacheManager.getView("home")).toEqual([
       propositions[0],
-      propositions[1]
+      propositions[1],
     ]);
   });
   /*

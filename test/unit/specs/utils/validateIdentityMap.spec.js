@@ -32,5 +32,5 @@ describeValidation("utils:validateIdentityMap", validateIdentityMap, [
   { value: { a: null }, error: true },
   { value: { a: undefined }, error: true },
   { value: { a: "string" }, error: true },
-  { value: {} }
+  { value: {} },
 ]);

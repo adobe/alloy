@@ -20,7 +20,7 @@ describe("createTaskQueue", () => {
     const task1 = jasmine
       .createSpy("task1")
       .and.returnValue(Promise.reject(Error("myerror")));
-    return queue.addTask(task1).then(fail, e => {
+    return queue.addTask(task1).then(fail, (e) => {
       expect(e.message).toEqual("myerror");
       expect(task1).toHaveBeenCalledTimes(1);
     });

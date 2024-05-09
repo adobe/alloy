@@ -10,13 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default window => (url, preserveHistory = false) => {
-  if (preserveHistory) {
-    window.location.href = url;
-  } else {
-    window.location.replace(url);
-  }
-  // Return a promise that never resolves because redirects never complete
-  // within the current page.
-  return new Promise(() => undefined);
-};
+export default (window) =>
+  (url, preserveHistory = false) => {
+    if (preserveHistory) {
+      window.location.href = url;
+    } else {
+      window.location.replace(url);
+    }
+    // Return a promise that never resolves because redirects never complete
+    // within the current page.
+    return new Promise(() => undefined);
+  };

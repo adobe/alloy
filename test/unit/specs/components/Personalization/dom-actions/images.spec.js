@@ -13,11 +13,11 @@ governing permissions and limitations under the License.
 import cleanUpDomChanges from "../../../../helpers/cleanUpDomChanges.js";
 import {
   createFragment,
-  getChildNodes
+  getChildNodes,
 } from "../../../../../../src/components/Personalization/dom-actions/dom";
 import {
   isImage,
-  loadImage
+  loadImage,
 } from "../../../../../../src/components/Personalization/dom-actions/images";
 import { IMG } from "../../../../../../src/constants/tagName.js";
 import { createNode } from "../../../../../../src/utils/dom/index.js";

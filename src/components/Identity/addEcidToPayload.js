@@ -14,6 +14,6 @@ import ecidNamespace from "../../constants/ecidNamespace.js";
 
 export default (payload, ecid) => {
   payload.addIdentity(ecidNamespace, {
-    id: ecid
+    id: ecid,
   });
 };

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import createEventRegistry, {
-  createEventPruner
+  createEventPruner,
 } from "../../../../../src/components/DecisioningEngine/createEventRegistry";
 
 describe("DecisioningEngine:createEventRegistry", () => {
@@ -43,9 +43,9 @@ describe("DecisioningEngine:createEventRegistry", () => {
                   decisionProvider: "AJO",
                   correlationID: "ccaa539e-ca14-4d42-ac9a-0a17e69a63e4",
                   activity: {
-                    id: "111#aaa"
-                  }
-                }
+                    id: "111#aaa",
+                  },
+                },
               },
               {
                 id: "222",
@@ -54,9 +54,9 @@ describe("DecisioningEngine:createEventRegistry", () => {
                   decisionProvider: "AJO",
                   correlationID: "ccaa539e-ca14-4d42-ac9a-0a17e69a63e4",
                   activity: {
-                    id: "222#bbb"
-                  }
-                }
+                    id: "222#bbb",
+                  },
+                },
               },
               {
                 id: "333",
@@ -65,21 +65,21 @@ describe("DecisioningEngine:createEventRegistry", () => {
                   decisionProvider: "TGT",
                   correlationID: "aasfsdf",
                   activity: {
-                    id: "333#ccc"
-                  }
-                }
-              }
+                    id: "333#ccc",
+                  },
+                },
+              },
             ],
             propositionEventType: {
-              display: 1
-            }
-          }
-        }
-      }
+              display: 1,
+            },
+          },
+        },
+      },
     });
 
     const event = {
-      getContent
+      getContent,
     };
 
     eventRegistry.addExperienceEdgeEvent(event);
@@ -88,22 +88,22 @@ describe("DecisioningEngine:createEventRegistry", () => {
         "111#aaa": {
           event: jasmine.objectContaining({
             "iam.id": "111#aaa",
-            "iam.eventType": "display"
+            "iam.eventType": "display",
           }),
           firstTimestamp: jasmine.any(Number),
           timestamp: jasmine.any(Number),
-          count: 1
+          count: 1,
         },
         "222#bbb": {
           event: jasmine.objectContaining({
             "iam.id": "222#bbb",
-            "iam.eventType": "display"
+            "iam.eventType": "display",
           }),
           firstTimestamp: jasmine.any(Number),
           timestamp: jasmine.any(Number),
-          count: 1
-        }
-      }
+          count: 1,
+        },
+      },
     });
   });
 
@@ -113,30 +113,30 @@ describe("DecisioningEngine:createEventRegistry", () => {
     eventRegistry.addExperienceEdgeEvent({
       getContent: () => ({
         xdm: {
-          eventType: "display"
-        }
-      })
+          eventType: "display",
+        },
+      }),
     });
     eventRegistry.addExperienceEdgeEvent({
       getContent: () => ({
         xdm: {
           eventType: "display",
-          _experience: {}
-        }
-      })
+          _experience: {},
+        },
+      }),
     });
     eventRegistry.addExperienceEdgeEvent({
       getContent: () => ({
         xdm: {
           eventType: "display",
           _experience: {
-            decisioning: {}
-          }
-        }
-      })
+            decisioning: {},
+          },
+        },
+      }),
     });
     eventRegistry.addExperienceEdgeEvent({
-      getContent: () => ({})
+      getContent: () => ({}),
     });
 
     expect(eventRegistry.toJSON()).toEqual({});
@@ -152,17 +152,17 @@ describe("DecisioningEngine:createEventRegistry", () => {
     expect(eventRegistry.toJSON()).toEqual({});
 
     expect(
-      eventRegistry.addEvent({ something: "special" }, "display", "abc#123")
+      eventRegistry.addEvent({ something: "special" }, "display", "abc#123"),
     ).toEqual({
       event: {
         "iam.id": "abc#123",
         "iam.eventType": "display",
         "iam.action": undefined,
-        something: "special"
+        something: "special",
       },
       firstTimestamp: jasmine.any(Number),
       timestamp: jasmine.any(Number),
-      count: 1
+      count: 1,
     });
 
     expect(eventRegistry.toJSON()).toEqual({
@@ -172,17 +172,17 @@ describe("DecisioningEngine:createEventRegistry", () => {
             "iam.id": "abc#123",
             "iam.eventType": "display",
             "iam.action": undefined,
-            something: "special"
+            something: "special",
           },
           firstTimestamp: jasmine.any(Number),
           timestamp: jasmine.any(Number),
-          count: 1
-        }
-      }
+          count: 1,
+        },
+      },
     });
   });
 
-  it("increments count and sets timestamp", done => {
+  it("increments count and sets timestamp", (done) => {
     const eventRegistry = createEventRegistry({ storage });
 
     const getContent = () => ({
@@ -198,35 +198,35 @@ describe("DecisioningEngine:createEventRegistry", () => {
                   decisionProvider: "AJO",
                   correlationID: "ccaa539e-ca14-4d42-ac9a-0a17e69a63e4",
                   activity: {
-                    id: "111#aaa"
-                  }
-                }
-              }
+                    id: "111#aaa",
+                  },
+                },
+              },
             ],
             propositionEventType: {
-              display: 1
-            }
-          }
-        }
-      }
+              display: 1,
+            },
+          },
+        },
+      },
     });
 
     const event = {
-      getContent
+      getContent,
     };
     let lastEventTime = 0;
     eventRegistry.addExperienceEdgeEvent(event);
     expect(eventRegistry.getEvent("display", "111#aaa")).toEqual({
       event: jasmine.objectContaining({
         "iam.id": "111#aaa",
-        "iam.eventType": "display"
+        "iam.eventType": "display",
       }),
       firstTimestamp: jasmine.any(Number),
       timestamp: jasmine.any(Number),
-      count: 1
+      count: 1,
     });
     expect(
-      eventRegistry.getEvent("display", "111#aaa").timestamp
+      eventRegistry.getEvent("display", "111#aaa").timestamp,
     ).toBeGreaterThan(lastEventTime);
 
     lastEventTime = eventRegistry.getEvent("display", "111#aaa").timestamp;
@@ -237,14 +237,14 @@ describe("DecisioningEngine:createEventRegistry", () => {
       expect(eventRegistry.getEvent("display", "111#aaa")).toEqual({
         event: jasmine.objectContaining({
           "iam.id": "111#aaa",
-          "iam.eventType": "display"
+          "iam.eventType": "display",
         }),
         firstTimestamp: jasmine.any(Number),
         timestamp: jasmine.any(Number),
-        count: 2
+        count: 2,
       });
       expect(
-        eventRegistry.getEvent("display", "111#aaa").timestamp
+        eventRegistry.getEvent("display", "111#aaa").timestamp,
       ).toBeGreaterThan(lastEventTime);
       done();
     }, 50);
@@ -262,30 +262,30 @@ describe("DecisioningEngine:createEventRegistry", () => {
       events["decisioning.propositionDisplay"][i] = {
         event: {
           "iam.id": i,
-          "iam.eventType": "decisioning.propositionDisplay"
+          "iam.eventType": "decisioning.propositionDisplay",
         },
         firstTimestamp: "2023-05-23T08:00:00Z",
         timestamp: mockedTimestamp,
-        count: 1
+        count: 1,
       };
 
       events["decisioning.propositionInteract"][i] = {
         event: {
           "iam.id": i,
-          "iam.eventType": "decisioning.propositionInteract"
+          "iam.eventType": "decisioning.propositionInteract",
         },
         firstTimestamp: "2023-05-23T08:00:00Z",
         timestamp: mockedTimestamp,
-        count: 1
+        count: 1,
       };
 
       const pruned = prune(events);
       const interactEvents = Object.values(
-        pruned["decisioning.propositionInteract"]
+        pruned["decisioning.propositionInteract"],
       );
 
       const displayEvents = Object.values(
-        pruned["decisioning.propositionDisplay"]
+        pruned["decisioning.propositionDisplay"],
       );
       expect(interactEvents.length).not.toBeGreaterThan(1000);
       expect(displayEvents.length).not.toBeGreaterThan(1000);
@@ -298,11 +298,11 @@ describe("DecisioningEngine:createEventRegistry", () => {
       if (i > 0) {
         expect(
           interactEvents[0].timestamp <
-            interactEvents[interactEvents.length - 1].timestamp
+            interactEvents[interactEvents.length - 1].timestamp,
         );
         expect(
           displayEvents[0].timestamp <
-            displayEvents[interactEvents.length - 1].timestamp
+            displayEvents[interactEvents.length - 1].timestamp,
         );
       }
     }
@@ -318,17 +318,17 @@ describe("DecisioningEngine:createEventRegistry", () => {
       events["decisioning.propositionDisplay"][i] = {
         event: {
           "iam.id": i,
-          "iam.eventType": "decisioning.propositionDisplay"
+          "iam.eventType": "decisioning.propositionDisplay",
         },
         firstTimestamp: 1,
         timestamp: 1,
-        count: 1
+        count: 1,
       };
 
       const pruned = prune(events);
 
       const displayEvents = Object.values(
-        pruned["decisioning.propositionDisplay"]
+        pruned["decisioning.propositionDisplay"],
       );
 
       expect(displayEvents.length).not.toBeGreaterThan(10);
@@ -343,41 +343,41 @@ describe("DecisioningEngine:createEventRegistry", () => {
       1: {
         event: {
           "iam.id": 1,
-          "iam.eventType": "decisioning.propositionInteract"
+          "iam.eventType": "decisioning.propositionInteract",
         },
         firstTimestamp: "2023-05-20T10:00:00Z",
         timestamp: mockedTimestamp,
-        count: 1
+        count: 1,
       },
       2: {
         event: {
           "iam.id": 2,
-          "iam.eventType": "decisioning.propositionInteract"
+          "iam.eventType": "decisioning.propositionInteract",
         },
         firstTimestamp: "2023-05-24T15:00:00Z",
         timestamp: mockedTimestamp,
-        count: 1
-      }
+        count: 1,
+      },
     };
     events["decisioning.propositionInteract"] = {
       3: {
         event: {
           "iam.id": 3,
-          "iam.eventType": "decisioning.propositionInteract"
+          "iam.eventType": "decisioning.propositionInteract",
         },
         firstTimestamp: "2023-05-23T08:00:00Z",
         timestamp: mockedTimestamp,
-        count: 1
+        count: 1,
       },
       4: {
         event: {
           "iam.id": 4,
-          "iam.eventType": "decisioning.propositionInteract"
+          "iam.eventType": "decisioning.propositionInteract",
         },
         firstTimestamp: "2023-05-23T08:00:00Z",
         timestamp: mockedTimestamp,
-        count: 1
-      }
+        count: 1,
+      },
     };
 
     const prunedEvents = pruner(events);
@@ -386,33 +386,33 @@ describe("DecisioningEngine:createEventRegistry", () => {
         2: {
           event: {
             "iam.id": 2,
-            "iam.eventType": "decisioning.propositionInteract"
+            "iam.eventType": "decisioning.propositionInteract",
           },
           firstTimestamp: "2023-05-24T15:00:00Z",
           timestamp: mockedTimestamp,
-          count: 1
-        }
+          count: 1,
+        },
       },
       "decisioning.propositionInteract": {
         3: {
           event: {
             "iam.id": 3,
-            "iam.eventType": "decisioning.propositionInteract"
+            "iam.eventType": "decisioning.propositionInteract",
           },
           firstTimestamp: "2023-05-23T08:00:00Z",
           timestamp: mockedTimestamp,
-          count: 1
+          count: 1,
         },
         4: {
           event: {
             "iam.id": 4,
-            "iam.eventType": "decisioning.propositionInteract"
+            "iam.eventType": "decisioning.propositionInteract",
           },
           firstTimestamp: "2023-05-23T08:00:00Z",
           timestamp: mockedTimestamp,
-          count: 1
-        }
-      }
+          count: 1,
+        },
+      },
     });
   });
 });

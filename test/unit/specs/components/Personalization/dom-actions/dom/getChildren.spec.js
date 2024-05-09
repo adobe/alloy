@@ -16,7 +16,7 @@ import createFragment from "../../../../../../../src/components/Personalization/
 describe("Personalization::helper::dom::getChildren", () => {
   it("returns an array of children", () => {
     const element = createFragment(
-      `<div id="foo">foo</div><h1>hello there</h1>`
+      `<div id="foo">foo</div><h1>hello there</h1>`,
     );
     const result = getChildren(element);
 

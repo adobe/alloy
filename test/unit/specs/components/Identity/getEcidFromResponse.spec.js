@@ -18,11 +18,11 @@ describe("Identity::getEcidFromResponse", () => {
       getPayloadsByType: [
         {
           namespace: {
-            code: "other"
+            code: "other",
           },
-          id: "user123"
-        }
-      ]
+          id: "user123",
+        },
+      ],
     });
 
     expect(getEcidFromResponse(response)).toBeUndefined();
@@ -34,17 +34,17 @@ describe("Identity::getEcidFromResponse", () => {
       getPayloadsByType: [
         {
           namespace: {
-            code: "other"
+            code: "other",
           },
-          id: "user123"
+          id: "user123",
         },
         {
           namespace: {
-            code: "ECID"
+            code: "ECID",
           },
-          id: "user@adobe"
-        }
-      ]
+          id: "user@adobe",
+        },
+      ],
     });
 
     expect(getEcidFromResponse(response)).toBe("user@adobe");

@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { isFunction } from "../../../utils/index.js";
 
-export default window => {
+export default (window) => {
   const Visitor = window.Visitor;
   return isFunction(Visitor) && isFunction(Visitor.getInstance) && Visitor;
 };

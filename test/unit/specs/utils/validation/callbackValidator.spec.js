@@ -21,13 +21,13 @@ describe("validation::callback", () => {
     { value: {}, error: true },
     { value: 0, error: true },
     { value: () => undefined },
-    { value: function func() {} }
+    { value: function func() {} },
   ]);
 
   describeValidation("required callback", callback().required(), [
     { value: () => undefined },
     { value: null, error: true },
-    { value: undefined, error: true }
+    { value: undefined, error: true },
   ]);
 
   const func1 = () => {};
@@ -35,6 +35,6 @@ describe("validation::callback", () => {
   describeValidation("callback with default value", callback().default(func1), [
     { value: null, expected: func1 },
     { value: undefined, expected: func1 },
-    { value: func2, expected: func2 }
+    { value: func2, expected: func2 },
   ]);
 });

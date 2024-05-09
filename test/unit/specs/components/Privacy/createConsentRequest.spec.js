@@ -33,7 +33,7 @@ describe("createConsentRequest", () => {
     const datastreamIdOverride = "my-edge-config-id-override";
     const request = createConsentRequest({
       payload,
-      datastreamIdOverride
+      datastreamIdOverride,
     });
     expect(request.getDatastreamIdOverride()).toBe(datastreamIdOverride);
   });

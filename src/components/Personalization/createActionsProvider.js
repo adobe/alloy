@@ -25,7 +25,7 @@ export default ({ modules, preprocessors = createPreprocessors(), logger }) => {
     }
   };
 
-  const logActionCompleted = action => {
+  const logActionCompleted = (action) => {
     if (logger.enabled) {
       const details = JSON.stringify(action);
 
@@ -37,14 +37,14 @@ export default ({ modules, preprocessors = createPreprocessors(), logger }) => {
     if (!modules[schema] || !modules[schema][type]) {
       return () =>
         Promise.reject(
-          new Error(`Action "${type}" not found for schema "${schema}"`)
+          new Error(`Action "${type}" not found for schema "${schema}"`),
         );
     }
 
     return modules[schema][type];
   };
 
-  const applyPreprocessors = action => {
+  const applyPreprocessors = (action) => {
     const { schema } = action;
 
     const preprocessorsList = preprocessors[schema];
@@ -59,28 +59,28 @@ export default ({ modules, preprocessors = createPreprocessors(), logger }) => {
 
     return preprocessorsList.reduce(
       (processed, fn) => assign(processed, fn(processed)),
-      action
+      action,
     );
   };
 
-  const executeAction = action => {
+  const executeAction = (action) => {
     const processedAction = applyPreprocessors(action);
     const { type, schema } = processedAction;
 
     const execute = getExecuteAction(schema, type);
 
     return execute(processedAction)
-      .then(result => {
+      .then((result) => {
         logActionCompleted(processedAction);
         return result;
       })
-      .catch(error => {
+      .catch((error) => {
         logActionError(processedAction, error);
         throw error;
       });
   };
 
   return {
-    executeAction
+    executeAction,
   };
 };

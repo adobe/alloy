@@ -11,6 +11,6 @@ governing permissions and limitations under the License.
 */
 import isString from "./isString.js";
 
-export default str => {
+export default (str) => {
   return isString(str) && str.toLowerCase() === "true";
 };

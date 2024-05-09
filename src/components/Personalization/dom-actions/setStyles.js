@@ -15,7 +15,7 @@ import { setStyle } from "./dom/index.js";
 export default (container, styles) => {
   const { priority, ...style } = styles;
 
-  Object.keys(style).forEach(key => {
+  Object.keys(style).forEach((key) => {
     setStyle(container, key, style[key], priority);
   });
 };

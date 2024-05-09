@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import path from "path";
-import resolve from "rollup-plugin-node-resolve.js";
-import commonjs from "rollup-plugin-commo.js";
-import babel from "rollup-plugin-babel.js";
-import { terser } from "rollup-plugin-terser.js";
-import license from "rollup-plugin-license.js";
+import resolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import babel from "@rollup/plugin-babel";
+import terser from "@rollup/plugin-terser";
+import license from "rollup-plugin-license";
 
 // Set these boolean environment options to control which files are built:
 // build the snippet that must be add to the page
@@ -30,19 +30,22 @@ const NPM_PACKAGE_LOCAL = "NPM_PACKAGE_LOCAL";
 const NPM_PACKAGE_PROD = "NPM_PACKAGE_PROD";
 // Add "_MIN" to the end of the option name to build the minified version
 
+const __dirname = import.meta.dirname;
+
 const buildPlugins = (variant, minify) => {
   const plugins = [
     resolve({
       preferBuiltins: false,
       // Support the browser field in dependencies' package.json.
       // Useful for the uuid package.
-      mainFields: ["module", "main", "browser"]
+      mainFields: ["module", "main", "browser"],
     }),
     commonjs(),
     babel({
       envName: "rollup",
-      configFile: path.resolve(__dirname, "babel.config.js")
-    })
+      babelHelpers: "bundled",
+      configFile: path.resolve(__dirname, "babel.config.js"),
+    }),
   ];
 
   if (minify) {
@@ -51,13 +54,13 @@ const buildPlugins = (variant, minify) => {
         terser({
           mangle: true,
           compress: {
-            unused: true
+            unused: true,
           },
           output: {
-            wrap_func_args: false
+            wrap_func_args: false,
           },
-          toplevel: true
-        })
+          toplevel: true,
+        }),
       );
     } else {
       plugins.push(terser());
@@ -69,10 +72,10 @@ const buildPlugins = (variant, minify) => {
       license({
         banner: {
           content: {
-            file: path.join(__dirname, "LICENSE_BANNER")
-          }
-        }
-      })
+            file: path.join(__dirname, "LICENSE_BANNER"),
+          },
+        },
+      }),
     );
   }
 
@@ -90,10 +93,10 @@ const buildConfig = (variant, minify) => {
         {
           file: `distTest/baseCode${minifiedExtension}.js`,
           format: "cjs",
-          strict: false
-        }
+          strict: false,
+        },
       ],
-      plugins
+      plugins,
     };
   }
   if (variant === STANDALONE || variant === SANDBOX) {
@@ -110,10 +113,10 @@ const buildConfig = (variant, minify) => {
             "  console.warn('The Adobe Experience Cloud Web SDK does not support IE 10 and below.');\n" +
             "  return;\n" +
             "}\n",
-          sourcemap: variant === SANDBOX
-        }
+          sourcemap: variant === SANDBOX,
+        },
       ],
-      plugins
+      plugins,
     };
   }
 
@@ -126,16 +129,16 @@ const buildConfig = (variant, minify) => {
     output: [
       {
         file: `distTest/${filename}${minifiedExtension}.js`,
-        format: "iife"
-      }
+        format: "iife",
+      },
     ],
-    plugins
+    plugins,
   };
 };
 
 const config = [];
 
-const addConfig = version => {
+const addConfig = (version) => {
   if (process.env[version]) {
     config.push(buildConfig(version, false));
   }
@@ -152,7 +155,7 @@ addConfig(NPM_PACKAGE_PROD);
 
 if (config.length === 0) {
   throw new Error(
-    "No files specified. Usage: rollup -c --environment BASE_CODE,STANDALONE,SANDBOX,NPM_PACKAGE_LOCAL,NPM_PACKAGE_PROD"
+    "No files specified. Usage: rollup -c --environment BASE_CODE,STANDALONE,SANDBOX,NPM_PACKAGE_LOCAL,NPM_PACKAGE_PROD",
   );
 }
 export default config;

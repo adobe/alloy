@@ -17,7 +17,7 @@ describe("setupDeployment", () => {
       githubRepository,
       logger,
       npmToken,
-      container
+      container,
     };
   });
 
@@ -27,15 +27,15 @@ describe("setupDeployment", () => {
     // make sure all the container parameters are defined
     expect(exec).toHaveBeenCalledWith(
       jasmine.anything(),
-      jasmine.stringMatching(/myactor/)
+      jasmine.stringMatching(/myactor/),
     );
     expect(exec).toHaveBeenCalledWith(
       jasmine.anything(),
-      jasmine.stringMatching(/myrepo/)
+      jasmine.stringMatching(/myrepo/),
     );
     expect(exec).toHaveBeenCalledWith(
       jasmine.anything(),
-      jasmine.stringMatching(/mytoken/)
+      jasmine.stringMatching(/mytoken/),
     );
   });
 });

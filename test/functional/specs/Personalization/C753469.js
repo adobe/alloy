@@ -25,16 +25,16 @@ const TEST_ID = "C753469";
 createFixture({
   title: `${TEST_ID}: A nonce attribute should be added to injected script tags when CSP nonce is available`,
   url: `${TEST_PAGE_WITH_CSP_URL}?test=${TEST_ID}`,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: `${TEST_ID}`,
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
-const elementWithIdExist = ClientFunction(id => {
+const elementWithIdExist = ClientFunction((id) => {
   return !!document.getElementById(id);
 });
 
@@ -51,6 +51,6 @@ test(`Test ${TEST_ID}: A nonce attribute should be added to injected script tags
     .ok(`Could not find element with id ${TEST_ID}`);
   // Verify that the script tag with nonce attr was allowed to execute by the CSP
   await consoleLogger.log.expectMessageMatching(
-    new RegExp(`${TEST_ID} SCRIPT INJECTION CSP NONCE TEST`)
+    new RegExp(`${TEST_ID} SCRIPT INJECTION CSP NONCE TEST`),
   );
 });

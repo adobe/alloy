@@ -16,7 +16,7 @@ import {
   orgMainConfigMain,
   debugEnabled,
   thirdPartyCookiesDisabled,
-  migrationDisabled
+  migrationDisabled,
 } from "../../helpers/constants/configParts/index.js";
 import { TEST_PAGE } from "../../helpers/constants/url.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
@@ -29,20 +29,20 @@ const config = compose(
   orgMainConfigMain,
   debugEnabled,
   thirdPartyCookiesDisabled,
-  migrationDisabled
+  migrationDisabled,
 );
 
 createFixture({
   url: TEST_PAGE,
   title:
     "C6842982: existing identity cookie takes precedence over an FPID provided in the identity map.",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C6842982",
   SEVERTIY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const fpid = {
@@ -50,11 +50,11 @@ const fpid = {
     identityMap: {
       FPID: [
         {
-          id: "UUID"
-        }
-      ]
-    }
-  }
+          id: "UUID",
+        },
+      ],
+    },
+  },
 };
 
 test("C6842982: identity cookie takes precedence over an FPID", async () => {
@@ -62,11 +62,11 @@ test("C6842982: identity cookie takes precedence over an FPID", async () => {
   await alloy.configure(config);
   await alloy.sendEvent();
   const ecid = await getReturnedEcid(
-    networkLogger.edgeEndpointLogs.requests[0]
+    networkLogger.edgeEndpointLogs.requests[0],
   );
   await alloy.sendEvent(fpid);
   const ecidCompare = getReturnedEcid(
-    networkLogger.edgeEndpointLogs.requests[1]
+    networkLogger.edgeEndpointLogs.requests[1],
   );
   await t.expect(ecid).eql(ecidCompare);
 });

@@ -18,49 +18,52 @@ import ecidNamespace from "../../constants/ecidNamespace.js";
 
 const LINK_TTL_SECONDS = 300; // 5 minute link time to live
 
-export default ({ locationSearch, dateProvider, orgId, logger }) => payload => {
-  if (payload.hasIdentity(ecidNamespace)) {
-    // don't overwrite a user provided ecid identity
-    return;
-  }
+export default ({ locationSearch, dateProvider, orgId, logger }) =>
+  (payload) => {
+    if (payload.hasIdentity(ecidNamespace)) {
+      // don't overwrite a user provided ecid identity
+      return;
+    }
 
-  const parsedQueryString = queryString.parse(locationSearch);
-  let queryStringValue = parsedQueryString[queryStringIdentityParam];
+    const parsedQueryString = queryString.parse(locationSearch);
+    let queryStringValue = parsedQueryString[queryStringIdentityParam];
 
-  if (queryStringValue === undefined) {
-    return;
-  }
-  if (Array.isArray(queryStringValue)) {
-    logger.warn(
-      "Found multiple adobe_mc query string paramters, only using the last one."
-    );
-    queryStringValue = queryStringValue[queryStringValue.length - 1];
-  }
+    if (queryStringValue === undefined) {
+      return;
+    }
+    if (Array.isArray(queryStringValue)) {
+      logger.warn(
+        "Found multiple adobe_mc query string paramters, only using the last one.",
+      );
+      queryStringValue = queryStringValue[queryStringValue.length - 1];
+    }
 
-  const properties = queryStringValue.split("|").reduce((memo, keyValue) => {
-    const [key, value] = keyValue.split("=");
-    memo[key] = value;
-    return memo;
-  }, {});
-  // We are using MCMID and MCORGID to be compatible with Visitor.
-  const ts = parseInt(properties.TS, 10);
-  const mcmid = properties.MCMID;
-  const mcorgid = decodeURIComponent(properties.MCORGID);
+    const properties = queryStringValue.split("|").reduce((memo, keyValue) => {
+      const [key, value] = keyValue.split("=");
+      memo[key] = value;
+      return memo;
+    }, {});
+    // We are using MCMID and MCORGID to be compatible with Visitor.
+    const ts = parseInt(properties.TS, 10);
+    const mcmid = properties.MCMID;
+    const mcorgid = decodeURIComponent(properties.MCORGID);
 
-  if (
-    // When TS is not specified or not a number, the following inequality returns false.
-    // All inequalities with NaN variables are false.
-    dateProvider().getTime() / 1000 <= ts + LINK_TTL_SECONDS &&
-    mcorgid === orgId &&
-    mcmid
-  ) {
-    logger.info(
-      `Found valid ECID identity ${mcmid} from the adobe_mc query string parameter.`
-    );
-    payload.addIdentity(ecidNamespace, {
-      id: mcmid
-    });
-  } else {
-    logger.info("Detected invalid or expired adobe_mc query string parameter.");
-  }
-};
+    if (
+      // When TS is not specified or not a number, the following inequality returns false.
+      // All inequalities with NaN variables are false.
+      dateProvider().getTime() / 1000 <= ts + LINK_TTL_SECONDS &&
+      mcorgid === orgId &&
+      mcmid
+    ) {
+      logger.info(
+        `Found valid ECID identity ${mcmid} from the adobe_mc query string parameter.`,
+      );
+      payload.addIdentity(ecidNamespace, {
+        id: mcmid,
+      });
+    } else {
+      logger.info(
+        "Detected invalid or expired adobe_mc query string parameter.",
+      );
+    }
+  };

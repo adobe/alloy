@@ -16,7 +16,7 @@ import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  targetMigrationEnabled
+  targetMigrationEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url.js";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
@@ -25,7 +25,7 @@ import {
   fetchMboxOffer,
   getEcid,
   MIGRATION_LOCATION,
-  sleep
+  sleep,
 } from "./helper.js";
 import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
@@ -38,7 +38,7 @@ const config = compose(
   orgMainConfigMain,
   debugEnabled,
   migrationEnabled,
-  targetMigrationEnabled
+  targetMigrationEnabled,
 );
 
 createFixture({
@@ -47,16 +47,16 @@ createFixture({
     "using web sdk and fetch offer based on profile attr using at.js 1.x",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
-    networkLogger.targetMboxJsonEndpointLogs
+    networkLogger.targetMboxJsonEndpointLogs,
   ],
   url: TEST_PAGE,
-  includeAlloyLibrary: true
+  includeAlloyLibrary: true,
 });
 
 test.meta({
   ID: "C8085778",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test.skip(
@@ -68,10 +68,10 @@ test.skip(
       data: {
         __adobe: {
           target: {
-            "profile.favoriteColor": favoriteColor
-          }
-        }
-      }
+            "profile.favoriteColor": favoriteColor,
+          },
+        },
+      },
     };
     const alloy = createAlloyProxy();
     await alloy.configure(config);
@@ -83,11 +83,11 @@ test.skip(
 
     // Extract state:store payload
     const response = JSON.parse(
-      getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+      getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
     );
 
     const identityPayload = createResponse({
-      content: response
+      content: response,
     }).getPayloadsByType("identity:result");
     const ecid = getEcid(identityPayload)[0].id;
 
@@ -98,7 +98,7 @@ test.skip(
       .expect(networkLogger.targetMboxJsonEndpointLogs.count(() => true))
       .eql(1);
     await fetchMboxOffer({
-      mbox: MIGRATION_LOCATION
+      mbox: MIGRATION_LOCATION,
     });
     await t
       .expect(networkLogger.targetMboxJsonEndpointLogs.count(() => true))
@@ -116,5 +116,5 @@ test.skip(
     await t
       .expect(mboxContent)
       .eql(`The favorite Color for this visitor is ${favoriteColor}.`);
-  }
+  },
 );

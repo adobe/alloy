@@ -17,41 +17,41 @@ const responseContent = {
   handle: [
     {
       type: "type1",
-      payload: "payload1a"
+      payload: "payload1a",
     },
     {
       type: "type2",
-      payload: "payload2a"
+      payload: "payload2a",
     },
     {
       type: "type1",
-      payload: "payload1b"
+      payload: "payload1b",
     },
     {
       type: "type1",
-      payload: "payload1c"
-    }
+      payload: "payload1c",
+    },
   ],
   errors: [
     {
       code: "general:100",
-      message: "General error occurred."
+      message: "General error occurred.",
     },
     {
       code: "personalization:204",
-      message: "Personalization error occurred."
-    }
+      message: "Personalization error occurred.",
+    },
   ],
   warnings: [
     {
       code: "general:101",
-      message: "General warning."
+      message: "General warning.",
     },
     {
       code: "personalization:205",
-      message: "Personalization warning."
-    }
-  ]
+      message: "Personalization warning.",
+    },
+  ],
 };
 
 describe("createResponse", () => {
@@ -66,7 +66,7 @@ describe("createResponse", () => {
     createResponse = injectCreateResponse({ extractEdgeInfo });
     response = createResponse({
       content: responseContent,
-      getHeader
+      getHeader,
     });
   });
 
@@ -93,7 +93,7 @@ describe("createResponse", () => {
       expect(response.getPayloadsByType("type1")).toEqual([
         "payload1a",
         "payload1b",
-        "payload1c"
+        "payload1c",
       ]);
     });
   });

@@ -31,11 +31,11 @@ describe("DecisioningEngine:inAppMessageConsequenceAdapter", () => {
             width: 80,
             displayAnimation: "top",
             backdropColor: "#000000",
-            height: 60
+            height: 60,
           },
-          html: "<!doctype html></html>"
-        }
-      )
+          html: "<!doctype html></html>",
+        },
+      ),
     ).toEqual({
       schema: "https://ns.adobe.com/personalization/message/in-app",
       data: {
@@ -51,13 +51,13 @@ describe("DecisioningEngine:inAppMessageConsequenceAdapter", () => {
           width: 80,
           displayAnimation: "top",
           backdropColor: "#000000",
-          height: 60
+          height: 60,
         },
         webParameters: jasmine.any(Object),
         content: "<!doctype html></html>",
-        contentType: TEXT_HTML
+        contentType: TEXT_HTML,
       },
-      id: "72042c7c-4e34-44f6-af95-1072ae117424"
+      id: "72042c7c-4e34-44f6-af95-1072ae117424",
     });
   });
 });

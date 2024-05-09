@@ -18,7 +18,7 @@ export default ({
   cookieJar,
   shouldTransferCookie,
   apexDomain,
-  dateProvider
+  dateProvider,
 }) => {
   return {
     /**
@@ -31,7 +31,7 @@ export default ({
 
       const state = {
         domain: apexDomain,
-        cookiesEnabled: true
+        cookiesEnabled: true,
       };
 
       // If the endpoint is first-party, there's no need to transfer cookies
@@ -42,10 +42,10 @@ export default ({
 
         const entries = Object.keys(cookies)
           .filter(shouldTransferCookie)
-          .map(qualifyingCookieName => {
+          .map((qualifyingCookieName) => {
             return {
               key: qualifyingCookieName,
-              value: cookies[qualifyingCookieName]
+              value: cookies[qualifyingCookieName],
             };
           });
 
@@ -62,31 +62,33 @@ export default ({
      * as directed in the response body.
      */
     responseToCookies(response) {
-      response.getPayloadsByType(STATE_STORE_HANDLE_TYPE).forEach(stateItem => {
-        const options = { domain: apexDomain };
+      response
+        .getPayloadsByType(STATE_STORE_HANDLE_TYPE)
+        .forEach((stateItem) => {
+          const options = { domain: apexDomain };
 
-        const sameSite =
-          stateItem.attrs &&
-          stateItem.attrs.SameSite &&
-          stateItem.attrs.SameSite.toLowerCase();
+          const sameSite =
+            stateItem.attrs &&
+            stateItem.attrs.SameSite &&
+            stateItem.attrs.SameSite.toLowerCase();
 
-        if (stateItem.maxAge !== undefined) {
-          // cookieJar expects "expires" as a date object
-          options.expires = new Date(
-            dateProvider().getTime() + stateItem.maxAge * 1000
-          );
-        }
-        if (sameSite !== undefined) {
-          options.sameSite = sameSite;
-        }
-        // When sameSite is set to none, the secure flag must be set.
-        // Experience edge will not set the secure flag in these cases.
-        if (sameSite === "none") {
-          options.secure = true;
-        }
+          if (stateItem.maxAge !== undefined) {
+            // cookieJar expects "expires" as a date object
+            options.expires = new Date(
+              dateProvider().getTime() + stateItem.maxAge * 1000,
+            );
+          }
+          if (sameSite !== undefined) {
+            options.sameSite = sameSite;
+          }
+          // When sameSite is set to none, the secure flag must be set.
+          // Experience edge will not set the secure flag in these cases.
+          if (sameSite === "none") {
+            options.secure = true;
+          }
 
-        cookieJar.set(stateItem.key, stateItem.value, options);
-      });
-    }
+          cookieJar.set(stateItem.key, stateItem.value, options);
+        });
+    },
   };
 };

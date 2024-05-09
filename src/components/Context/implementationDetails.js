@@ -13,11 +13,11 @@ import { deepAssign } from "../../utils/index.js";
 import libraryName from "../../constants/libraryName.js";
 import libraryVersion from "../../constants/libraryVersion.js";
 
-export default xdm => {
+export default (xdm) => {
   const implementationDetails = {
     name: libraryName,
     version: libraryVersion,
-    environment: "browser"
+    environment: "browser",
   };
   deepAssign(xdm, { implementationDetails });
 };

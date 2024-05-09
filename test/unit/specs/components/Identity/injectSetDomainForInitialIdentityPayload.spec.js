@@ -19,18 +19,17 @@ describe("Identity::injectSetDomainForInitialIdentityPayload", () => {
   let setDomainForInitialIdentityPayload;
 
   const build = () => {
-    setDomainForInitialIdentityPayload = injectSetDomainForInitialIdentityPayload(
-      {
+    setDomainForInitialIdentityPayload =
+      injectSetDomainForInitialIdentityPayload({
         thirdPartyCookiesEnabled,
-        areThirdPartyCookiesSupportedByDefault
-      }
-    );
+        areThirdPartyCookiesSupportedByDefault,
+      });
   };
 
   beforeEach(() => {
     request = jasmine.createSpyObj("request", ["setUseIdThirdPartyDomain"]);
     areThirdPartyCookiesSupportedByDefault = jasmine.createSpy(
-      "areThirdPartyCookiesSupportedByDefault"
+      "areThirdPartyCookiesSupportedByDefault",
     );
   });
 
@@ -48,7 +47,7 @@ describe("Identity::injectSetDomainForInitialIdentityPayload", () => {
     build();
     setDomainForInitialIdentityPayload(request);
     expect(areThirdPartyCookiesSupportedByDefault).toHaveBeenCalledWith(
-      jasmine.any(String)
+      jasmine.any(String),
     );
     expect(request.setUseIdThirdPartyDomain).not.toHaveBeenCalled();
   });
@@ -59,7 +58,7 @@ describe("Identity::injectSetDomainForInitialIdentityPayload", () => {
     build();
     setDomainForInitialIdentityPayload(request);
     expect(areThirdPartyCookiesSupportedByDefault).toHaveBeenCalledWith(
-      jasmine.any(String)
+      jasmine.any(String),
     );
     expect(request.setUseIdThirdPartyDomain).toHaveBeenCalled();
   });

@@ -14,12 +14,12 @@ import {
   createNode,
   appendNode,
   selectNodes,
-  removeNode
+  removeNode,
 } from "../../../../../../../src/utils/dom";
 import {
   escapeIdentifiersInSelector,
   parseSelector,
-  selectNodesWithEq
+  selectNodesWithEq,
 } from "../../../../../../../src/components/Personalization/dom-actions/dom/selectNodesWithEq";
 
 describe("Personalization::DOM::escapeIdentifiersInSelector", () => {
@@ -61,7 +61,7 @@ describe("Personalization::DOM::parseSelector", () => {
 
   it("should parse selector when eq", () => {
     const result = parseSelector(
-      "HTML > BODY > DIV.wrapper:eq(0) > HEADER.header:eq(0) > DIV.pagehead:eq(0) > P:nth-of-type(1)"
+      "HTML > BODY > DIV.wrapper:eq(0) > HEADER.header:eq(0) > DIV.pagehead:eq(0) > P:nth-of-type(1)",
     );
 
     expect(result[0]).toEqual({ sel: "HTML > BODY > DIV.wrapper", eq: 0 });
@@ -98,7 +98,7 @@ describe("Personalization::DOM::selectNodesWithEq", () => {
 
     appendNode(
       document.body,
-      createNode("DIV", { id: "abc", class: "eq" }, { innerHTML: content })
+      createNode("DIV", { id: "abc", class: "eq" }, { innerHTML: content }),
     );
 
     const result = selectNodesWithEq("#abc:eq(0) > div.b:eq(0) > div.c:eq(0)");
@@ -120,7 +120,7 @@ describe("Personalization::DOM::selectNodesWithEq", () => {
 
     appendNode(
       document.body,
-      createNode("DIV", { id: "abc", class: "eq" }, { innerHTML: content })
+      createNode("DIV", { id: "abc", class: "eq" }, { innerHTML: content }),
     );
 
     const result = selectNodesWithEq("#abc:eq(0) > div.b:eq(0) > div.c");
@@ -161,7 +161,7 @@ describe("Personalization::DOM::selectNodesWithEq", () => {
 
     appendNode(
       document.body,
-      createNode("DIV", { id: "abc", class: "eq" }, { innerHTML: content })
+      createNode("DIV", { id: "abc", class: "eq" }, { innerHTML: content }),
     );
 
     // NOTE: eq has zero based index, while nth-child index starts at 1
@@ -180,10 +180,10 @@ describe("Personalization::DOM::selectNodesWithEq", () => {
       "#abc:eq(eq())",
       "#abc:eq(0))",
       "#abc.123",
-      " > "
+      " > ",
     ];
 
-    selectors.forEach(selector => {
+    selectors.forEach((selector) => {
       expect(() => selectNodesWithEq(selector)).toThrow();
     });
   });

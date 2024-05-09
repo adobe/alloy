@@ -12,10 +12,10 @@ governing permissions and limitations under the License.
 
 import { ClientFunction } from "testcafe";
 
-export default ClientFunction(orgId => {
-  return new Promise(resolve => {
+export default ClientFunction((orgId) => {
+  return new Promise((resolve) => {
     const visitor = window.Visitor.getInstance(orgId, {});
-    visitor.getMarketingCloudVisitorID(ecid => {
+    visitor.getMarketingCloudVisitorID((ecid) => {
       resolve(ecid);
     }, true);
   });

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 
 import { ClientFunction } from "testcafe";
 
-export default ClientFunction(html => {
+export default ClientFunction((html) => {
   const head = document.createElement("head");
   head.innerHTML = html;
   while (head.firstChild) {

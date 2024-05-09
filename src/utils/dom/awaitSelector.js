@@ -22,15 +22,15 @@ const VISIBLE = "visible";
 const DELAY = 100;
 const MAX_POLLING_TIMEOUT = 5000;
 
-const createError = selector => {
+const createError = (selector) => {
   return new Error(`Could not find: ${selector}`);
 };
 
-const createPromise = executor => {
+const createPromise = (executor) => {
   return new Promise(executor);
 };
 
-export const canUseMutationObserver = win => {
+export const canUseMutationObserver = (win) => {
   return isFunction(win[MUTATION_OBSERVER]);
 };
 
@@ -39,7 +39,7 @@ export const awaitUsingMutationObserver = (
   doc,
   selector,
   timeout,
-  selectFunc
+  selectFunc,
 ) => {
   return createPromise((resolve, reject) => {
     const mutationObserver = new win[MUTATION_OBSERVER](() => {
@@ -60,7 +60,7 @@ export const awaitUsingMutationObserver = (
   });
 };
 
-export const canUseRequestAnimationFrame = doc => {
+export const canUseRequestAnimationFrame = (doc) => {
   return doc[VISIBILITY_STATE] === VISIBLE;
 };
 
@@ -68,7 +68,7 @@ export const awaitUsingRequestAnimation = (
   win,
   selector,
   timeout,
-  selectFunc
+  selectFunc,
 ) => {
   return createPromise((resolve, reject) => {
     const execute = () => {
@@ -116,7 +116,7 @@ export default (
   selectFunc = selectNodes,
   timeout = MAX_POLLING_TIMEOUT,
   win = window,
-  doc = document
+  doc = document,
 ) => {
   const nodes = selectFunc(selector);
 

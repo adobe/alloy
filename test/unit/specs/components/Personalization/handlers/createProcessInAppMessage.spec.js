@@ -26,16 +26,16 @@ describe("Personalization::handlers::createProcessInAppMessage", () => {
       },
       getProposition() {
         return { getNotification: () => meta };
-      }
+      },
     };
     modules = {
-      defaultContent: jasmine.createSpy("defaultContent")
+      defaultContent: jasmine.createSpy("defaultContent"),
     };
     logger = jasmine.createSpyObj("logger", ["warn"]);
 
     processInAppMessage = createProcessInAppMessage({
       modules,
-      logger
+      logger,
     });
   });
 
@@ -44,7 +44,7 @@ describe("Personalization::handlers::createProcessInAppMessage", () => {
     expect(processInAppMessage(item)).toEqual({});
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid in-app message data: undefined.",
-      undefined
+      undefined,
     );
   });
 
@@ -53,7 +53,7 @@ describe("Personalization::handlers::createProcessInAppMessage", () => {
     expect(processInAppMessage(item)).toEqual({});
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid in-app message data: unknown type.",
-      data
+      data,
     );
   });
 
@@ -65,12 +65,12 @@ describe("Personalization::handlers::createProcessInAppMessage", () => {
         decisionProvider: "AJO",
         correlationID: "21d",
         characteristics: {
-          eventToken: "yadayaya"
+          eventToken: "yadayaya",
         },
         activity: {
-          id: "foo#bar"
-        }
-      }
+          id: "foo#bar",
+        },
+      },
     };
     data = {
       mobileParameters: {
@@ -79,19 +79,19 @@ describe("Personalization::handlers::createProcessInAppMessage", () => {
         uiTakeover: true,
         width: 72,
         backdropColor: "#4CA206",
-        height: 63
+        height: 63,
       },
       webParameters: {},
       content: "<html></html>",
       contentType: "text/html",
-      qualifiedDate: 1694731987996
+      qualifiedDate: 1694731987996,
     };
 
     const result = processInAppMessage(item);
     expect(result).toEqual({
       render: jasmine.any(Function),
       setRenderAttempted: true,
-      includeInNotification: true
+      includeInNotification: true,
     });
     expect(modules.defaultContent).not.toHaveBeenCalled();
     result.render();
@@ -106,12 +106,12 @@ describe("Personalization::handlers::createProcessInAppMessage", () => {
         decisionProvider: "AJO",
         correlationID: "21d",
         characteristics: {
-          eventToken: "yadayaya"
+          eventToken: "yadayaya",
         },
         activity: {
-          id: "foo#bar"
-        }
-      }
+          id: "foo#bar",
+        },
+      },
     };
     data = {
       mobileParameters: {
@@ -120,17 +120,17 @@ describe("Personalization::handlers::createProcessInAppMessage", () => {
         uiTakeover: true,
         width: 72,
         backdropColor: "#4CA206",
-        height: 63
+        height: 63,
       },
       webParameters: {},
       contentType: "text/html",
-      qualifiedDate: 1694731987996
+      qualifiedDate: 1694731987996,
     };
 
     expect(processInAppMessage(item)).toEqual({});
     expect(logger.warn).toHaveBeenCalledWith(
       "Invalid in-app message data: missing property 'content'.",
-      data
+      data,
     );
   });
 });

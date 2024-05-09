@@ -47,7 +47,7 @@ describe("createConsentStateMachine", () => {
   [
     ["default", "No consent preferences have been set."],
     ["initial", "The user declined consent."],
-    ["new", "The user declined consent."]
+    ["new", "The user declined consent."],
   ].forEach(([source, expectedMessage]) => {
     it("rejects promise if user consented to no purposes", () => {
       subject.out(source);
@@ -112,28 +112,28 @@ describe("createConsentStateMachine", () => {
       "in",
       "initial",
       "Loaded user consent preferences. The user previously consented.",
-      "info"
+      "info",
     ],
     ["in", "new", "User consented.", "info"],
     [
       "out",
       "default",
-      "User consent preferences not found. Default consent of out will be used."
+      "User consent preferences not found. Default consent of out will be used.",
     ],
     [
       "out",
       "initial",
-      "Loaded user consent preferences. The user previously declined consent."
+      "Loaded user consent preferences. The user previously declined consent.",
     ],
     ["out", "new", "User declined consent."],
     [
       "pending",
       "default",
       "User consent preferences not found. Default consent of pending will be used. Some commands may be delayed.",
-      "info"
+      "info",
     ],
     ["pending", "initial"],
-    ["pending", "new"]
+    ["pending", "new"],
   ].forEach(([action, source, expectedMessage, logLevel = "warn"]) => {
     it(`logs the correct messages when ${action} is called with source ${source}`, () => {
       subject[action](source);
@@ -147,9 +147,9 @@ describe("createConsentStateMachine", () => {
 
   [
     ["in", "User consented.", "info"],
-    ["out", "User declined consent.", "warn"]
+    ["out", "User declined consent.", "warn"],
   ].forEach(([action, expectedMessage, logLevel]) => {
-    ["in", "out", "pending"].forEach(defaultConsent => {
+    ["in", "out", "pending"].forEach((defaultConsent) => {
       it(`logs a message when first setting consent (${defaultConsent} => ${action}) using setConsent`, () => {
         subject[defaultConsent]("default");
         subject.pending();
@@ -174,7 +174,7 @@ describe("createConsentStateMachine", () => {
   });
 
   describe("withConsent", () => {
-    ["default", "initial", "new"].forEach(source => {
+    ["default", "initial", "new"].forEach((source) => {
       it(`returns immediately when ${source} consent is set to "in"`, () => {
         subject.in(source);
         return expectAsync(subject.withConsent()).toBeResolvedTo();

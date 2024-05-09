@@ -21,8 +21,8 @@ describe("Context::injectPlaceContext", () => {
     expect(xdm).toEqual({
       placeContext: {
         localTime: "2019-03-25T21:56:18.000-07:00",
-        localTimezoneOffset: 7 * 60
-      }
+        localTimezoneOffset: 7 * 60,
+      },
     });
   });
 
@@ -34,8 +34,8 @@ describe("Context::injectPlaceContext", () => {
     expect(xdm).toEqual({
       placeContext: {
         localTime: "2022-05-19T13:43:42.000-00:55",
-        localTimezoneOffset: 55
-      }
+        localTimezoneOffset: 55,
+      },
     });
   });
 
@@ -46,8 +46,8 @@ describe("Context::injectPlaceContext", () => {
     injectPlaceContext(() => date)(xdm);
     expect(xdm).toEqual({
       placeContext: {
-        localTime: "2022-05-19T13:43:42.000+00:00"
-      }
+        localTime: "2022-05-19T13:43:42.000+00:00",
+      },
     });
   });
 
@@ -59,8 +59,8 @@ describe("Context::injectPlaceContext", () => {
     expect(xdm).toEqual({
       placeContext: {
         localTime: "2022-10-28T11:57:42.000+99:59",
-        localTimezoneOffset: -5999
-      }
+        localTimezoneOffset: -5999,
+      },
     });
   });
 
@@ -71,8 +71,8 @@ describe("Context::injectPlaceContext", () => {
     injectPlaceContext(() => date)(xdm);
     expect(xdm).toEqual({
       placeContext: {
-        localTimezoneOffset: -6000
-      }
+        localTimezoneOffset: -6000,
+      },
     });
   });
 });

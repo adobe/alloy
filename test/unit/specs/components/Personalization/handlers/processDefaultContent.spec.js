@@ -16,7 +16,7 @@ describe("processDefaultContent", () => {
     const result = processDefaultContent();
     expect(result).toEqual({
       setRenderAttempted: true,
-      includeInNotification: true
+      includeInNotification: true,
     });
   });
 });

@@ -15,7 +15,7 @@ import {
   string,
   callback,
   enumOf,
-  objectOf
+  objectOf,
 } from "../../utils/validation";
 import { noop, validateConfigOverride } from "../../utils/index.js";
 import { EDGE as EDGE_DOMAIN } from "../../constants/domain.js";
@@ -26,18 +26,10 @@ export default () =>
   objectOf({
     debugEnabled: boolean().default(false),
     defaultConsent: enumOf(IN, OUT, PENDING).default(IN),
-    datastreamId: string()
-      .unique()
-      .required(),
-    edgeDomain: string()
-      .domain()
-      .default(EDGE_DOMAIN),
-    edgeBasePath: string()
-      .nonEmpty()
-      .default(EDGE_BASE_PATH),
-    orgId: string()
-      .unique()
-      .required(),
+    datastreamId: string().unique().required(),
+    edgeDomain: string().domain().default(EDGE_DOMAIN),
+    edgeBasePath: string().nonEmpty().default(EDGE_BASE_PATH),
+    orgId: string().unique().required(),
     onBeforeEventSend: callback().default(noop),
-    edgeConfigOverrides: validateConfigOverride
+    edgeConfigOverrides: validateConfigOverride,
   }).deprecated("edgeConfigId", string().unique(), "datastreamId");

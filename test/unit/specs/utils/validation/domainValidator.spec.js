@@ -19,6 +19,6 @@ describe("validation::domain", () => {
     { value: "stats-edge.adobe.com" },
     { value: "https://stats.adobe.com", error: true },
     { value: "stats.adobe.com\n", error: true },
-    { value: "stats.adobe.com\nbad", error: true }
+    { value: "stats.adobe.com\nbad", error: true },
   ]);
 });

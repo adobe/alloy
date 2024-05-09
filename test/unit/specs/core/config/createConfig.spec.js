@@ -20,11 +20,11 @@ describe("createConfig", () => {
       a: 123,
       b: "abc",
       c: {
-        a1: "xyz"
+        a1: "xyz",
       },
       neg: {
-        neg: false
-      }
+        neg: false,
+      },
     };
   });
   it("supports being instantiated with a config", () => {

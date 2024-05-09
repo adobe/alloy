@@ -23,7 +23,7 @@ describe("Privacy:createStoredConsent", () => {
     storedConsent = createStoredConsent({
       parseConsentCookie,
       orgId,
-      cookieJar
+      cookieJar,
     });
   });
 
@@ -43,14 +43,14 @@ describe("Privacy:createStoredConsent", () => {
   it("uses the correct cookie name", () => {
     storedConsent.read();
     expect(cookieJar.get).toHaveBeenCalledWith(
-      "kndctr_myorgid_mycompany_consent"
+      "kndctr_myorgid_mycompany_consent",
     );
   });
 
   it("removes the cookie", () => {
     storedConsent.clear();
     expect(cookieJar.remove).toHaveBeenCalledWith(
-      "kndctr_myorgid_mycompany_consent"
+      "kndctr_myorgid_mycompany_consent",
     );
   });
 });

@@ -12,13 +12,13 @@ governing permissions and limitations under the License.
 import { stringToBoolean } from "../../../../src/utils/index.js";
 
 describe("stringToBoolean", () => {
-  ["true", "TRUE", "True"].forEach(str => {
+  ["true", "TRUE", "True"].forEach((str) => {
     it(`parses '${str}' as true`, () => {
       expect(stringToBoolean(str)).toBe(true);
     });
   });
 
-  ["false", "0", "foo", ""].forEach(str => {
+  ["false", "0", "foo", ""].forEach((str) => {
     it(`parses '${str}' as false`, () => {
       expect(stringToBoolean(str)).toBe(false);
     });

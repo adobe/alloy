@@ -18,20 +18,18 @@ describe("validation::noUnknownFields", () => {
     { value: { b: "world" }, error: true },
     { value: { a: "hello", b: "world" }, error: true },
     { value: { a: "hello" }, error: false },
-    { value: {}, error: false }
+    { value: {}, error: false },
   ]);
 
   describeValidation(
     "required",
-    objectOf({ a: string().required() })
-      .noUnknownFields()
-      .required(),
+    objectOf({ a: string().required() }).noUnknownFields().required(),
     [
       { value: null, error: true },
       { value: undefined, error: true },
       { value: {}, error: true },
-      { value: { a: "Hello" }, error: false }
-    ]
+      { value: { a: "Hello" }, error: false },
+    ],
   );
 
   describeValidation(
@@ -43,7 +41,7 @@ describe("validation::noUnknownFields", () => {
       { value: null, expected: { a: "world" } },
       { value: undefined, expected: { a: "world" } },
       { value: {}, expected: { a: "hello" } },
-      { value: { b: "goodbye" }, error: true }
-    ]
+      { value: { b: "goodbye" }, error: true },
+    ],
   );
 });

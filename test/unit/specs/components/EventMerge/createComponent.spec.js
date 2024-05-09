@@ -18,9 +18,9 @@ describe("EventMerge:createComponent", () => {
     expect(createComponent({ createEventMergeId })).toEqual({
       commands: {
         createEventMergeId: {
-          run: createEventMergeId
-        }
-      }
+          run: createEventMergeId,
+        },
+      },
     });
   });
 });

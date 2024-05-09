@@ -20,12 +20,12 @@ import isBoolean from "./isBoolean.js";
 // We want to avoid mapping between specific keys because we want Konductor
 // to be able to add overrides in the future without us needing to make
 // any changes to the Web SDK
-export default configuration => {
+export default (configuration) => {
   if (isNil(configuration) || typeof configuration !== "object") {
     return null;
   }
   // remove entries that are empty strings or arrays
-  const configOverrides = filterObject(configuration, value => {
+  const configOverrides = filterObject(configuration, (value) => {
     if (isNil(value)) {
       return false;
     }

@@ -18,7 +18,7 @@ describe("updatePackageVersion", () => {
     await updatePackageVersion({ currentVersion: "1.2.2", ...container });
     expect(logger.warn).not.toHaveBeenCalled();
     expect(logger.info).toHaveBeenCalledOnceWith(
-      "Updating package.json with version 1.2.3."
+      "Updating package.json with version 1.2.3.",
     );
     expect(exec).toHaveBeenCalledTimes(4);
   });
@@ -26,7 +26,7 @@ describe("updatePackageVersion", () => {
   it("doesn't update the package version", async () => {
     await updatePackageVersion({ currentVersion: "1.2.3", ...container });
     expect(logger.warn).toHaveBeenCalledOnceWith(
-      "Version in package.json is already 1.2.3."
+      "Version in package.json is already 1.2.3.",
     );
     expect(logger.info).not.toHaveBeenCalled();
     expect(exec).not.toHaveBeenCalled();

@@ -12,9 +12,9 @@ governing permissions and limitations under the License.
 
 import { deepAssign, isFunction, toInteger } from "../../utils/index.js";
 
-const getScreenOrientationViaProperty = window => {
+const getScreenOrientationViaProperty = (window) => {
   const {
-    screen: { orientation }
+    screen: { orientation },
   } = window;
 
   if (orientation == null || orientation.type == null) {
@@ -34,7 +34,7 @@ const getScreenOrientationViaProperty = window => {
   return parts[0];
 };
 
-const getScreenOrientationViaMediaQuery = window => {
+const getScreenOrientationViaMediaQuery = (window) => {
   if (isFunction(window.matchMedia)) {
     if (window.matchMedia("(orientation: portrait)").matches) {
       return "portrait";
@@ -47,10 +47,10 @@ const getScreenOrientationViaMediaQuery = window => {
   return null;
 };
 
-export default window => {
-  return xdm => {
+export default (window) => {
+  return (xdm) => {
     const {
-      screen: { width, height }
+      screen: { width, height },
     } = window;
     const device = {};
 

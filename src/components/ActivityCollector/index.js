@@ -19,7 +19,7 @@ import getLinkRegion from "./getLinkRegion.js";
 import {
   determineLinkType,
   findSupportedAnchorElement,
-  getAbsoluteUrlFromAnchorElement
+  getAbsoluteUrlFromAnchorElement,
 } from "./utils";
 
 const getLinkDetails = createGetLinkDetails({
@@ -28,14 +28,14 @@ const getLinkDetails = createGetLinkDetails({
   getLinkRegion,
   getAbsoluteUrlFromAnchorElement,
   findSupportedAnchorElement,
-  determineLinkType
+  determineLinkType,
 });
 
 const createActivityCollector = ({
   config,
   eventManager,
   handleError,
-  logger
+  logger,
 }) => {
   const linkClick = createLinkClick({ getLinkDetails, config, logger });
 
@@ -46,14 +46,14 @@ const createActivityCollector = ({
         attachClickActivityCollector({
           eventManager,
           lifecycle,
-          handleError
+          handleError,
         });
         // TODO: createScrollActivityCollector ...
       },
       onClick({ event, clickedElement }) {
         linkClick({ targetElement: clickedElement, event });
-      }
-    }
+      },
+    },
   };
 };
 
@@ -61,12 +61,12 @@ createActivityCollector.namespace = "ActivityCollector";
 createActivityCollector.configValidators = configValidators;
 createActivityCollector.buildOnInstanceConfiguredExtraParams = ({
   config,
-  logger
+  logger,
 }) => {
   return {
-    getLinkDetails: targetElement => {
+    getLinkDetails: (targetElement) => {
       return getLinkDetails({ targetElement, config, logger });
-    }
+    },
   };
 };
 

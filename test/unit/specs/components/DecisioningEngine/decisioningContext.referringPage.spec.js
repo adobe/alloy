@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import {
   mockWindow,
   setupResponseHandler,
-  proposition
+  proposition,
 } from "./contextTestUtils";
 
 describe("DecisioningEngine:globalContext:referringPage", () => {
@@ -26,22 +26,22 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
       applyResponse,
       mockWindow({
         referrer:
-          "https://business.adobe.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer#home"
+          "https://business.adobe.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer#home",
       }),
       {
         definition: {
           key: "referringPage.domain",
           matcher: "eq",
-          values: ["business.adobe.com"]
+          values: ["business.adobe.com"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -50,22 +50,22 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
       applyResponse,
       mockWindow({
         referrer:
-          "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home"
+          "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home",
       }),
       {
         definition: {
           key: "referringPage.domain",
           matcher: "co",
-          values: ["business.adobe.com"]
+          values: ["business.adobe.com"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -74,22 +74,22 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
       applyResponse,
       mockWindow({
         referrer:
-          "https://business.adobe.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer#home"
+          "https://business.adobe.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer#home",
       }),
       {
         definition: {
           key: "referringPage.subdomain",
           matcher: "co",
-          values: ["business"]
+          values: ["business"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -98,22 +98,22 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
       applyResponse,
       mockWindow({
         referrer:
-          "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home"
+          "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home",
       }),
       {
         definition: {
           key: "referringPage.subdomain",
           matcher: "eq",
-          values: ["business"]
+          values: ["business"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -122,15 +122,15 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
       definition: {
         key: "referringPage.topLevelDomain",
         matcher: "eq",
-        values: ["com"]
+        values: ["com"],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -139,22 +139,22 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
       applyResponse,
       mockWindow({
         referrer:
-          "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home"
+          "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home",
       }),
       {
         definition: {
           key: "referringPage.topLevelDomain",
           matcher: "eq",
-          values: ["com"]
+          values: ["com"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -163,15 +163,15 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
       definition: {
         key: "referringPage.path",
         matcher: "co",
-        values: ["/search"]
+        values: ["/search"],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -180,22 +180,22 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
       applyResponse,
       mockWindow({
         referrer:
-          "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home"
+          "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home",
       }),
       {
         definition: {
           key: "referringPage.path",
           matcher: "co",
-          values: ["/search"]
+          values: ["/search"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -204,15 +204,15 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
       definition: {
         key: "referringPage.query",
         matcher: "co",
-        values: ["q=adobe+journey+optimizer&oq=adobe+journey+optimizer"]
+        values: ["q=adobe+journey+optimizer&oq=adobe+journey+optimizer"],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -221,22 +221,22 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
       applyResponse,
       mockWindow({
         referrer:
-          "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home"
+          "https://pro.mywebsite.org:8080/about?m=1&t=5&name=richard#home",
       }),
       {
         definition: {
           key: "referringPage.query",
           matcher: "co",
-          values: ["q=adobe+journey+optimizer&oq=adobe+journey+optimizer"]
+          values: ["q=adobe+journey+optimizer&oq=adobe+journey+optimizer"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -245,22 +245,22 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
       applyResponse,
       mockWindow({
         referrer:
-          "https://business.adobe.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer#home"
+          "https://business.adobe.com/search?q=adobe+journey+optimizer&oq=adobe+journey+optimizer#home",
       }),
       {
         definition: {
           key: "referringPage.fragment",
           matcher: "co",
-          values: ["home"]
+          values: ["home"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -268,21 +268,21 @@ describe("DecisioningEngine:globalContext:referringPage", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        referrer: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#about"
+        referrer: "https://pro.mywebsite.org:8080/about?m=1&t=5&name=bob#about",
       }),
       {
         definition: {
           key: "referringPage.fragment",
           matcher: "co",
-          values: ["home"]
+          values: ["home"],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 });

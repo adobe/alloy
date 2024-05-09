@@ -22,13 +22,13 @@ const DESCRIPTION = `${ID} - Ensure user-provided fields for context data don't 
 
 createFixture({
   title: DESCRIPTION,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID,
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test(DESCRIPTION, async () => {
@@ -37,27 +37,27 @@ test(DESCRIPTION, async () => {
   await alloy.sendEvent({
     xdm: {
       device: {
-        customDeviceField: "foo"
+        customDeviceField: "foo",
       },
       environment: {
-        customEnvironmentField: "foo"
+        customEnvironmentField: "foo",
       },
       implementationDetails: {
-        customImplementationDetailsField: "foo"
+        customImplementationDetailsField: "foo",
       },
       placeContext: {
-        customPlaceContextField: "foo"
+        customPlaceContextField: "foo",
       },
       web: {
-        customWebField: "foo"
-      }
-    }
+        customWebField: "foo",
+      },
+    },
   });
 
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   let parsedBody = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
+    networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
   let sentXdm = parsedBody.events[0].xdm;
 
@@ -82,7 +82,7 @@ test(DESCRIPTION, async () => {
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(2);
 
   parsedBody = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[1].request.body
+    networkLogger.edgeEndpointLogs.requests[1].request.body,
   );
   sentXdm = parsedBody.events[0].xdm;
 

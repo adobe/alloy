@@ -15,8 +15,8 @@ describe("Context::injectWeb", () => {
   const window = {
     location: { href: "http://mylocation.com" },
     document: {
-      referrer: "http://myreferrer.com"
-    }
+      referrer: "http://myreferrer.com",
+    },
   };
 
   it("works", () => {
@@ -25,12 +25,12 @@ describe("Context::injectWeb", () => {
     expect(xdm).toEqual({
       web: {
         webPageDetails: {
-          URL: "http://mylocation.com"
+          URL: "http://mylocation.com",
         },
         webReferrer: {
-          URL: "http://myreferrer.com"
-        }
-      }
+          URL: "http://myreferrer.com",
+        },
+      },
     });
   });
 });

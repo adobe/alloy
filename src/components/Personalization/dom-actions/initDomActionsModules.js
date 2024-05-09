@@ -23,7 +23,7 @@ import {
   appendHtml,
   prependHtml,
   insertHtmlAfter,
-  insertHtmlBefore
+  insertHtmlBefore,
 } from "./action";
 
 export default () => {
@@ -42,6 +42,6 @@ export default () => {
     insertBefore: createAction(insertHtmlBefore),
     replaceHtml: createAction(replaceHtml),
     prependHtml: createAction(prependHtml),
-    appendHtml: createAction(appendHtml)
+    appendHtml: createAction(appendHtml),
   };
 };

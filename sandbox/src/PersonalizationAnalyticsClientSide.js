@@ -3,7 +3,7 @@ import { Link, Route, Switch, useRouteMatch } from "react-router-dom.js";
 import ContentSecurityPolicy from "./components/ContentSecurityPolicy.js";
 import {
   getFormBasedOffer,
-  personalizationEvent
+  personalizationEvent,
 } from "./personalizationAnalyticsClientSideHelper";
 
 const Products = () => {

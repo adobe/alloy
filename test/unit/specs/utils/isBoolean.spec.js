@@ -21,7 +21,7 @@ describe("isString", () => {
   });
 
   it("returns false if the value is not a boolean", () => {
-    nonBooleans.forEach(value => {
+    nonBooleans.forEach((value) => {
       expect(isBoolean(value)).toBe(false);
     });
   });

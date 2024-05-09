@@ -20,7 +20,7 @@ describe("isEmptyObject", () => {
   });
 
   it("returns false if the value is not an empty object", () => {
-    nonEmptyObjects.forEach(obj => {
+    nonEmptyObjects.forEach((obj) => {
       expect(isEmptyObject(obj)).toBe(false);
     });
   });

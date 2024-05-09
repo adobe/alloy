@@ -21,14 +21,14 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
     documentMayUnload = false,
     eventType = DISPLAY,
     propositionEventTypes = [getPropositionEventType(eventType)],
-    viewName
+    viewName,
   }) => {
     const event = eventManager.createEvent();
     const data = { eventType };
 
     if (viewName) {
       data.web = {
-        webPageDetails: { viewName }
+        webPageDetails: { viewName },
       };
     }
     if (isNonEmptyArray(decisionsMeta)) {
@@ -36,7 +36,7 @@ export default ({ eventManager, mergeDecisionsMeta }) => {
         event,
         decisionsMeta,
         propositionEventTypes,
-        propositionAction
+        propositionAction,
       );
     }
 

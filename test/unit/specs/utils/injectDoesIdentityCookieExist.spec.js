@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import {
   injectDoesIdentityCookieExist,
-  cookieJar
+  cookieJar,
 } from "../../../../src/utils";
 import removeAllCookies from "../../helpers/removeAllCookies.js";
 
@@ -22,7 +22,7 @@ describe("Identity::injectDoesIdentityCookieExist", () => {
 
   it("returns false if cookie does not exist", () => {
     const doesIdentityCookieExist = injectDoesIdentityCookieExist({
-      orgId: "org@adobe"
+      orgId: "org@adobe",
     });
     expect(doesIdentityCookieExist()).toBeFalse();
   });
@@ -30,7 +30,7 @@ describe("Identity::injectDoesIdentityCookieExist", () => {
   it("returns true if cookie exists", () => {
     cookieJar.set("kndctr_org_adobe_identity", "user@adobe");
     const doesIdentityCookieExist = injectDoesIdentityCookieExist({
-      orgId: "org@adobe"
+      orgId: "org@adobe",
     });
     expect(doesIdentityCookieExist()).toBeTrue();
   });

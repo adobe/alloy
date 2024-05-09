@@ -22,5 +22,5 @@ import sanitizeOrgIdForCookieName from "./sanitizeOrgIdForCookieName.js";
  */
 export default (orgId, name) =>
   name.indexOf(
-    `${COOKIE_NAME_PREFIX}_${sanitizeOrgIdForCookieName(orgId)}_`
+    `${COOKIE_NAME_PREFIX}_${sanitizeOrgIdForCookieName(orgId)}_`,
   ) === 0;

@@ -16,7 +16,7 @@ import React, { useEffect, useState } from "react.js";
 
 const readCookies = () => {
   const cookies = {};
-  document.cookie.split(";").forEach(function(c) {
+  document.cookie.split(";").forEach(function (c) {
     const ct = c.trim();
     const index = ct.indexOf("=");
     const key = ct.slice(0, index);
@@ -35,28 +35,28 @@ const readIdentityCookie = () => {
   return decoded.substring(2, 40);
 };
 
-const getIdentity = setIdentity => () => {
-  window.alloy("getIdentity", { namespaces: ["ECID"] }).then(function(result) {
+const getIdentity = (setIdentity) => () => {
+  window.alloy("getIdentity", { namespaces: ["ECID"] }).then(function (result) {
     if (result.identity) {
       console.log(
         "Sandbox: Get Identity command has completed.",
-        result.identity.ECID
+        result.identity.ECID,
       );
       setIdentity(result.identity.ECID);
     } else {
       console.log(
-        "Sandbox: Get Identity command has completed but no identity was provided in the result (possibly due to lack of consent)."
+        "Sandbox: Get Identity command has completed but no identity was provided in the result (possibly due to lack of consent).",
       );
       setIdentity("No Identity");
     }
   });
 };
 
-const sendEvent = setIdentity => () => {
+const sendEvent = (setIdentity) => () => {
   window.alloy("sendEvent", {}).then(getIdentity(setIdentity));
 };
 
-const setConsent = setIdentity => () => {
+const setConsent = (setIdentity) => () => {
   window
     .alloy("setConsent", {
       consent: [
@@ -65,16 +65,16 @@ const setConsent = setIdentity => () => {
           version: "2.0",
           value: {
             collect: {
-              val: "y"
-            }
-          }
-        }
-      ]
+              val: "y",
+            },
+          },
+        },
+      ],
     })
     .then(getIdentity(setIdentity));
 };
 
-const appendIdentityToUrl = event => {
+const appendIdentityToUrl = (event) => {
   const url = event.target.href;
   event.preventDefault();
   window.alloy("appendIdentityToUrl", { url }).then(({ url: newUrl }) => {
@@ -82,7 +82,7 @@ const appendIdentityToUrl = event => {
   });
 };
 
-const removeUrlParameter = name => {
+const removeUrlParameter = (name) => {
   const escapedName = name.replace(/[[]/, "\\[").replace(/[\]]/, "\\]");
   const regex = new RegExp(`[\\?&]${escapedName}=([^&#]*)`);
   return document.location.search.replace(regex, "").replace(/^&/, "?");
@@ -103,7 +103,7 @@ export default function Identity() {
     setCurrentIdentityCookie(ecid);
   }, []);
 
-  const wrappedSetIdentity = ecid => {
+  const wrappedSetIdentity = (ecid) => {
     setIdentity(ecid);
     setCurrentIdentityCookie(readIdentityCookie());
   };

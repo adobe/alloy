@@ -18,6 +18,6 @@ describe("validation::required", () => {
     { value: null, error: true },
     { value: undefined, error: true },
     { value: "" },
-    { value: "hello" }
+    { value: "hello" },
   ]);
 });

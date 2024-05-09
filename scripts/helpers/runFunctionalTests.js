@@ -12,7 +12,7 @@ fs.readFile("dist/alloy.js", "utf8", (readFileErr, alloyData) => {
 
   // Extract componentCreators array from alloyData
   const componentCreatorsMatch = alloyData.match(
-    /var componentCreators = \[(.*?)\];/s
+    /var componentCreators = \[(.*?)\];/s,
   );
   if (!componentCreatorsMatch) {
     console.error("componentCreators array not found in dist/alloy.js");
@@ -20,11 +20,11 @@ fs.readFile("dist/alloy.js", "utf8", (readFileErr, alloyData) => {
   }
   const componentCreators = componentCreatorsMatch[1]
     .split(",")
-    .map(name => name.trim().replace("create", ""));
+    .map((name) => name.trim().replace("create", ""));
 
   // Convert component creator function names to component names
   const componentNames = componentCreators.map(
-    creator => creator.charAt(0).toLowerCase() + creator.slice(1) // Ensure first letter is lowercase to match directory names
+    (creator) => creator.charAt(0).toLowerCase() + creator.slice(1), // Ensure first letter is lowercase to match directory names
   );
 
   // Define a mapping from component names to their test directory names
@@ -38,12 +38,12 @@ fs.readFile("dist/alloy.js", "utf8", (readFileErr, alloyData) => {
     eventMerge: "EventMerge",
     libraryInfo: "LibraryInfo",
     machineLearning: "MachineLearning",
-    decisioningEngine: "DecisioningEngine"
+    decisioningEngine: "DecisioningEngine",
   };
 
   // Adjust componentNames using the mapping
   const adjustedComponentNames = componentNames.map(
-    name => componentNameToTestDirMapping[name] || name
+    (name) => componentNameToTestDirMapping[name] || name,
   );
 
   // Generate a glob pattern to match only the included components' test specs
@@ -61,13 +61,13 @@ fs.readFile("dist/alloy.js", "utf8", (readFileErr, alloyData) => {
       return;
     }
 
-    createTestCafe().then(testcafe => {
+    createTestCafe().then((testcafe) => {
       const runner = testcafe.createRunner();
       runner
         .src(files)
         .browsers("chrome")
         .run()
-        .then(failedCount => {
+        .then((failedCount) => {
           console.log(`Tests finished. Failed count: ${failedCount}`);
           testcafe.close();
         });

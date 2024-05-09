@@ -24,13 +24,13 @@ const TEST_ID = "C753470";
 createFixture({
   title: `${TEST_ID}: A nonce attribute should be added to injected style tags when CSP nonce is available`,
   url: `${TEST_PAGE_WITH_CSP_URL}?test=${TEST_ID}`,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: `${TEST_ID}`,
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const testStyleApplied = ClientFunction(() => {

@@ -14,7 +14,7 @@ import {
   mapOfValues,
   arrayOf,
   anything,
-  string
+  string,
 } from "../../../../../src/utils/validation";
 import describeValidation from "../../../helpers/describeValidation.js";
 
@@ -30,8 +30,8 @@ describe("validation::mapOfValues", () => {
       { value: null, error: true },
       { value: { a: 123 }, error: true },
       { value: 123, error: true },
-      { value: { a: undefined }, error: true }
-    ]
+      { value: { a: undefined }, error: true },
+    ],
   );
 
   describeValidation("map of arrays", mapOfValues(arrayOf(anything())), [
@@ -40,6 +40,6 @@ describe("validation::mapOfValues", () => {
     { value: { a: undefined }, expected: {} },
     { value: { a: null } },
     { value: undefined },
-    { value: null }
+    { value: null },
   ]);
 });

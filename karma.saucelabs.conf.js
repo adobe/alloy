@@ -12,20 +12,20 @@ governing permissions and limitations under the License.
 const karmaSauceLauncher = require("karma-sauce-launcher");
 const karmaConfig = require("./karma.conf");
 
-module.exports = config => {
+module.exports = (config) => {
   karmaConfig(config);
   const customLaunchers = {
     sl_chromeW3C: {
       base: "SauceLabs",
       browserName: "chrome",
       browserVersion: "latest",
-      platform: "Windows 11"
+      platform: "Windows 11",
     },
     sl_safariW3C: {
       base: "SauceLabs",
       browserName: "safari",
       browserVersion: "latest",
-      platform: "macOS 11.00"
+      platform: "macOS 11.00",
     },
     sl_firefoxW3C: {
       base: "SauceLabs",
@@ -33,15 +33,15 @@ module.exports = config => {
       platformName: "Windows 11",
       browserVersion: "latest",
       "sauce:options": {
-        geckodriverVersion: "0.34.0"
-      }
+        geckodriverVersion: "0.34.0",
+      },
     },
     sl_edgeW3C: {
       base: "SauceLabs",
       browserName: "microsoftedge",
       browserVersion: "latest",
-      platform: "Windows 11"
-    }
+      platform: "Windows 11",
+    },
   };
 
   config.set({
@@ -52,7 +52,7 @@ module.exports = config => {
     sauceLabs: {
       screenResolution: "800x600",
       build: `GH #${process.env.BUILD_NUMBER} (${process.env.BUILD_ID})`,
-      tunnelIdentifier: process.env.JOB_NUMBER
+      tunnelIdentifier: process.env.JOB_NUMBER,
     },
     plugins: [
       "karma-jasmine",
@@ -60,9 +60,9 @@ module.exports = config => {
       "karma-jasmine-matchers",
       "karma-spec-reporter",
       "karma-rollup-preprocessor",
-      karmaSauceLauncher
+      karmaSauceLauncher,
     ],
 
-    reporters: ["dots", "saucelabs"]
+    reporters: ["dots", "saucelabs"],
   });
 };

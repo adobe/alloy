@@ -18,16 +18,16 @@ export default () => {
   const payload = createRequestPayload({
     content,
     addIdentity: createAddIdentity(content),
-    hasIdentity: createHasIdentity(content)
+    hasIdentity: createHasIdentity(content),
   });
 
-  payload.addEvent = event => {
+  payload.addEvent = (event) => {
     content.events = content.events || [];
     content.events.push(event);
   };
 
   payload.getDocumentMayUnload = () => {
-    return (content.events || []).some(event => event.getDocumentMayUnload());
+    return (content.events || []).some((event) => event.getDocumentMayUnload());
   };
 
   return payload;

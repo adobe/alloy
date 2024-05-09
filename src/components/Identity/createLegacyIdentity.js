@@ -18,7 +18,7 @@ export default ({
   getEcidFromVisitor,
   apexDomain,
   isPageSsl,
-  cookieJar
+  cookieJar,
 }) => {
   const { idMigrationEnabled, orgId } = config;
   const amcvCookieName = `AMCV_${orgId}`;
@@ -64,9 +64,9 @@ export default ({
           domain: apexDomain,
           // Without `expires` this will be a session cookie.
           expires: 390, // days, or 13 months.
-          ...extraOptions
+          ...extraOptions,
         });
       }
-    }
+    },
   };
 };

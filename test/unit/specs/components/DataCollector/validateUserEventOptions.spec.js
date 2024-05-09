@@ -17,24 +17,24 @@ describe("DataCollector::validateUserEventOptions", () => {
       {
         xdm: {
           eventType: "test",
-          identityMap: "123"
-        }
+          identityMap: "123",
+        },
       },
       {
         xdm: {
           eventType: "test",
           identityMap: {
-            namespace1: { id: "123", primary: true }
-          }
-        }
+            namespace1: { id: "123", primary: true },
+          },
+        },
       },
       {
         xdm: {
           eventType: "test",
           identityMap: {
-            namespace1: {}
-          }
-        }
+            namespace1: {},
+          },
+        },
       },
       {
         xdm: {
@@ -44,16 +44,16 @@ describe("DataCollector::validateUserEventOptions", () => {
               {
                 id: "123",
                 primary: true,
-                authenticatedState: "loggedIn"
-              }
-            ]
-          }
-        }
+                authenticatedState: "loggedIn",
+              },
+            ],
+          },
+        },
       },
       {
-        decisionScopes: ["item1", "item1"]
-      }
-    ].forEach(options => {
+        decisionScopes: ["item1", "item1"],
+      },
+    ].forEach((options) => {
       expect(() => {
         validateUserEventOptions({ options });
       }).toThrowError();

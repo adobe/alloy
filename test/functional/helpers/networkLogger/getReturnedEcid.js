@@ -13,13 +13,13 @@ governing permissions and limitations under the License.
 import getResponseBody from "./getResponseBody.js";
 import createResponse from "../createResponse.js";
 
-export default request => {
+export default (request) => {
   const response = JSON.parse(getResponseBody(request));
   const payloads = createResponse({ content: response }).getPayloadsByType(
-    "identity:result"
+    "identity:result",
   );
   const ecidPayload = payloads.filter(
-    payload => payload.namespace.code === "ECID"
+    (payload) => payload.namespace.code === "ECID",
   )[0];
 
   return ecidPayload.id;

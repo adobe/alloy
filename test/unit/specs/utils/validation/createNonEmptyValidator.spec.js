@@ -18,28 +18,20 @@ describe("validation::nonEmpty", () => {
     { value: "key" },
     { value: "", error: true },
     { value: null },
-    { value: undefined }
+    { value: undefined },
+  ]);
+  describeValidation("required nonEmpty", string().nonEmpty().required(), [
+    { value: "abc" },
+    { value: null, error: true },
+    { value: undefined, error: true },
   ]);
   describeValidation(
-    "required nonEmpty",
-    string()
-      .nonEmpty()
-      .required(),
-    [
-      { value: "abc" },
-      { value: null, error: true },
-      { value: undefined, error: true }
-    ]
-  );
-  describeValidation(
     "default nonEmpty",
-    string()
-      .nonEmpty()
-      .default("mydefault"),
+    string().nonEmpty().default("mydefault"),
     [
       { value: null, expected: "mydefault" },
       { value: undefined, expected: "mydefault" },
-      { value: "abc" }
-    ]
+      { value: "abc" },
+    ],
   );
 });

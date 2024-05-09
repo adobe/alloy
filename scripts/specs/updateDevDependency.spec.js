@@ -18,14 +18,14 @@ describe("updateDevDependency", () => {
   it("installs the dev dependency", async () => {
     execSync.and.returnValue(
       JSON.stringify({
-        dependencies: { "@adobe/alloy": { version: "1.2.2" } }
-      })
+        dependencies: { "@adobe/alloy": { version: "1.2.2" } },
+      }),
     );
     exec.and.returnValue(Promise.resolve());
     await updateDevDependency(container);
     expect(logger.warn).not.toHaveBeenCalled();
     expect(logger.info).toHaveBeenCalledOnceWith(
-      "Installing @adobe/alloy@1.2.3 as a dev dependency."
+      "Installing @adobe/alloy@1.2.3 as a dev dependency.",
     );
     expect(exec).toHaveBeenCalledTimes(4);
   });
@@ -33,12 +33,12 @@ describe("updateDevDependency", () => {
   it("doesn't install the dev dependency", async () => {
     execSync.and.returnValue(
       JSON.stringify({
-        dependencies: { "@adobe/alloy": { version: "1.2.3" } }
-      })
+        dependencies: { "@adobe/alloy": { version: "1.2.3" } },
+      }),
     );
     await updateDevDependency(container);
     expect(logger.warn).toHaveBeenCalledOnceWith(
-      "Dependency @adobe/alloy@1.2.3 already installed."
+      "Dependency @adobe/alloy@1.2.3 already installed.",
     );
     expect(logger.info).not.toHaveBeenCalled();
     expect(exec).not.toHaveBeenCalled();

@@ -16,7 +16,7 @@ import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  targetMigrationEnabled
+  targetMigrationEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import { TEST_PAGE, TEST_PAGE_AT_JS_ONE } from "../../helpers/constants/url.js";
 import {
@@ -24,7 +24,7 @@ import {
   getEcid,
   getPropositionCustomContent,
   injectAlloyAndSendEvent,
-  MIGRATION_LOCATION
+  MIGRATION_LOCATION,
 } from "./helper.js";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
 import createResponse from "../../helpers/createResponse.js";
@@ -37,7 +37,7 @@ const config = compose(
   orgMainConfigMain,
   debugEnabled,
   migrationEnabled,
-  targetMigrationEnabled
+  targetMigrationEnabled,
 );
 
 createFixture({
@@ -46,16 +46,16 @@ createFixture({
     "at.js 1.x and fetch proposition offer based on profile attr using web sdk",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
-    networkLogger.targetMboxJsonEndpointLogs
+    networkLogger.targetMboxJsonEndpointLogs,
   ],
   url: TEST_PAGE_AT_JS_ONE,
-  includeAlloyLibrary: false
+  includeAlloyLibrary: false,
 });
 
 test.meta({
   ID: "C8085779",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test(
@@ -65,8 +65,8 @@ test(
     //  delivery API request
     await fetchMboxOffer({
       params: {
-        "profile.favoriteColor": favoriteColor
-      }
+        "profile.favoriteColor": favoriteColor,
+      },
     });
     await t
       .expect(networkLogger.targetMboxJsonEndpointLogs.count(() => true))
@@ -81,27 +81,27 @@ test(
     // NAVIGATE to a web sdk page
     await t.navigateTo(TEST_PAGE);
     await injectAlloyAndSendEvent(config, {
-      decisionScopes: [MIGRATION_LOCATION]
+      decisionScopes: [MIGRATION_LOCATION],
     });
     const sendEventRequest = networkLogger.edgeEndpointLogs.requests[0];
     const response = JSON.parse(getResponseBody(sendEventRequest));
     const identityPayload = createResponse({
-      content: response
+      content: response,
     }).getPayloadsByType("identity:result");
     const ecid = getEcid(identityPayload)[0].id;
 
     // expect same ecid is used in both requests
     await t.expect(marketingCloudVisitorId).eql(ecid);
     const personalizationPayload = createResponse({
-      content: response
+      content: response,
     }).getPayloadsByType("personalization:decisions");
 
     const propositionCustomContent = getPropositionCustomContent(
-      personalizationPayload
+      personalizationPayload,
     );
     // expect to get a offer based on the profile attr updated in the previous call using legacy libs
     await t
       .expect(propositionCustomContent)
       .eql(`The favorite Color for this visitor is ${favoriteColor}.`);
-  }
+  },
 );

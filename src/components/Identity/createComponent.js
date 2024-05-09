@@ -23,7 +23,7 @@ export default ({
   getIdentity,
   consent,
   appendIdentityToUrl,
-  logger
+  logger,
 }) => {
   let ecid;
   let edge = {};
@@ -51,12 +51,12 @@ export default ({
         edge = assign(edge, response.getEdge());
 
         return handleResponseForIdSyncs(response);
-      }
+      },
     },
     commands: {
       getIdentity: {
         optionsValidator: getIdentityOptionsValidator,
-        run: options => {
+        run: (options) => {
           return consent
             .awaitConsent()
             .then(() => {
@@ -65,16 +65,16 @@ export default ({
             .then(() => {
               return {
                 identity: {
-                  ECID: ecid
+                  ECID: ecid,
                 },
-                edge
+                edge,
               };
             });
-        }
+        },
       },
       appendIdentityToUrl: {
         optionsValidator: appendIdentityToUrlOptionsValidator,
-        run: options => {
+        run: (options) => {
           return consent
             .withConsent()
             .then(() => {
@@ -83,12 +83,12 @@ export default ({
             .then(() => {
               return { url: appendIdentityToUrl(ecid, options.url) };
             })
-            .catch(error => {
+            .catch((error) => {
               logger.warn(`Unable to append identity to url. ${error.message}`);
               return options;
             });
-        }
-      }
-    }
+        },
+      },
+    },
   };
 };

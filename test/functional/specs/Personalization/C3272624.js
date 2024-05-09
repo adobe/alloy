@@ -16,7 +16,7 @@ import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
 import createResponse from "../../helpers/createResponse.js";
@@ -32,13 +32,13 @@ const decisionContent =
 createFixture({
   title: "C3272624: Support passing profile attributes and qualify for offers",
   url: `${TEST_PAGE_URL}?test=C3272624`,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C3272624",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C3272624: Support passing profile attributes and qualify for offers", async () => {
@@ -49,10 +49,10 @@ test("Test C3272624: Support passing profile attributes and qualify for offers",
     data: {
       __adobe: {
         target: {
-          "profile.favoriteCategory": "shoes"
-        }
-      }
-    }
+          "profile.favoriteCategory": "shoes",
+        },
+      },
+    },
   });
 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
@@ -67,10 +67,10 @@ test("Test C3272624: Support passing profile attributes and qualify for offers",
     .eql([PAGE_WIDE_SCOPE]);
 
   const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
   );
   const personalizationPayload = createResponse({
-    content: response
+    content: response,
   }).getPayloadsByType("personalization:decisions");
 
   await t.expect(personalizationPayload[0].scope).eql(PAGE_WIDE_SCOPE);
@@ -87,17 +87,17 @@ test("Test C3272624: Support passing profile attributes and qualify for offers",
     data: {
       __adobe: {
         target: {
-          "profile.favoriteCategory": "shirts"
-        }
-      }
-    }
+          "profile.favoriteCategory": "shirts",
+        },
+      },
+    },
   });
 
   const responseTwo = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[1])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[1]),
   );
   const personalizationPayloadTwo = createResponse({
-    content: responseTwo
+    content: responseTwo,
   }).getPayloadsByType("personalization:decisions");
 
   await t.expect(personalizationPayloadTwo.length).eql(0);

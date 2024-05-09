@@ -19,7 +19,7 @@ export default () => {
       values.indexOf(value) === -1,
       value,
       path,
-      "a unique value across instances"
+      "a unique value across instances",
     );
     values.push(value);
     return value;

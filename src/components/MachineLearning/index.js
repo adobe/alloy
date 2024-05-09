@@ -15,9 +15,9 @@ import processResponse from "./processResponse.js";
 const createMachineLearning = () => {
   return {
     lifecycle: {
-      onResponse: processResponse
+      onResponse: processResponse,
     },
-    commands: {}
+    commands: {},
   };
 };
 

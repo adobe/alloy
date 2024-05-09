@@ -10,22 +10,22 @@ describe("Personalization::createNotificationHandler", () => {
       scope: "web://localhost:3000/inAppMessages",
       scopeDetails: {
         activity: {
-          id: "abc#123"
-        }
-      }
-    }
+          id: "abc#123",
+        },
+      },
+    },
   ];
 
   beforeEach(() => {
     collect = jasmine.createSpy("collect").and.returnValue(Promise.resolve());
 
     renderedPropositions = jasmine.createSpyObj("renderedPropositions", [
-      "concat"
+      "concat",
     ]);
 
     notificationHandler = createNotificationHandler(
       collect,
-      renderedPropositions
+      renderedPropositions,
     );
   });
 
@@ -34,7 +34,7 @@ describe("Personalization::createNotificationHandler", () => {
     handleNotifications(NOTIFICATIONS);
     expect(collect).toHaveBeenCalledOnceWith({
       decisionsMeta: NOTIFICATIONS,
-      viewName: "foo"
+      viewName: "foo",
     });
   });
 

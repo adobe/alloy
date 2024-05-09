@@ -23,7 +23,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
 
   beforeEach(() => {
     lifecycle = jasmine.createSpyObj("lifecycle", {
-      onDecision: Promise.resolve()
+      onDecision: Promise.resolve(),
     });
 
     storage = jasmine.createSpyObj("storage", ["getItem", "setItem", "clear"]);
@@ -42,28 +42,28 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
           web: {
             webPageDetails: {
               viewName: "contact",
-              URL: "https://mywebsite.com"
+              URL: "https://mywebsite.com",
             },
             webReferrer: {
-              URL: "https://google.com"
-            }
+              URL: "https://google.com",
+            },
           },
           timestamp: new Date().toISOString(),
           implementationDetails: {
             name: "https://ns.adobe.com/experience/alloy",
             version: "2.15.0",
-            environment: "browser"
-          }
+            environment: "browser",
+          },
         },
         data: {
-          moo: "woof"
-        }
-      })
+          moo: "woof",
+        },
+      }),
     };
 
     const decisionContext = {
       color: "orange",
-      action: "lipstick"
+      action: "lipstick",
     };
     const personalization = { surfaces: ["#woof"] };
 
@@ -73,7 +73,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
       applyResponse,
       event,
       personalization,
-      decisionContext
+      decisionContext,
     });
 
     const response = {
@@ -82,8 +82,8 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
           id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
           scopeDetails: {
             activity: {
-              id: "abc#xyz"
-            }
+              id: "abc#xyz",
+            },
           },
           items: [
             {
@@ -103,27 +103,27 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                                   definition: {
                                     key: "color",
                                     matcher: "eq",
-                                    values: ["orange", "blue"]
+                                    values: ["orange", "blue"],
                                   },
-                                  type: "matcher"
+                                  type: "matcher",
                                 },
                                 {
                                   definition: {
                                     key: "action",
                                     matcher: "eq",
-                                    values: ["lipstick"]
+                                    values: ["lipstick"],
                                   },
-                                  type: "matcher"
-                                }
+                                  type: "matcher",
+                                },
                               ],
-                              logic: "and"
+                              logic: "and",
                             },
-                            type: "group"
-                          }
+                            type: "group",
+                          },
                         ],
-                        logic: "and"
+                        logic: "and",
                       },
-                      type: "group"
+                      type: "group",
                     },
                     consequences: [
                       {
@@ -136,14 +136,14 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                               "HTML > BODY > DIV.offer:eq(0) > IMG:nth-of-type(1)",
                             type: "setAttribute",
                             content: {
-                              src: "img/demo-marketing-offer1-exp-A.png"
+                              src: "img/demo-marketing-offer1-exp-A.png",
                             },
                             prehidingSelector:
-                              "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)"
+                              "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
                           },
-                          id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
+                          id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
                         },
-                        id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
+                        id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
                       },
                       {
                         type: "schema",
@@ -156,25 +156,25 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                             type: "setHtml",
                             content: "Hello Treatment A!",
                             prehidingSelector:
-                              "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
+                              "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
                           },
-                          id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
+                          id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f",
                         },
-                        id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
+                        id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f",
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
           ],
-          scope: "web://target.jasonwaters.dev/aep.html"
-        }
-      ]
+          scope: "web://target.jasonwaters.dev/aep.html",
+        },
+      ],
     };
 
     responseHandler({
-      response
+      response,
     });
 
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
@@ -186,8 +186,8 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
           id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
           scopeDetails: {
             activity: {
-              id: "abc#xyz"
-            }
+              id: "abc#xyz",
+            },
           },
           items: [
             {
@@ -196,14 +196,14 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                 selector: "HTML > BODY > DIV.offer:eq(0) > IMG:nth-of-type(1)",
                 type: "setAttribute",
                 content: {
-                  src: "img/demo-marketing-offer1-exp-A.png"
+                  src: "img/demo-marketing-offer1-exp-A.png",
                 },
                 prehidingSelector:
                   "HTML > BODY > DIV:nth-of-type(2) > IMG:nth-of-type(1)",
                 qualifiedDate: jasmine.any(Number),
-                displayedDate: undefined
+                displayedDate: undefined,
               },
-              id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe"
+              id: "79129ecf-6430-4fbd-955a-b4f1dfdaa6fe",
             },
             {
               schema: "https://ns.adobe.com/personalization/dom-action",
@@ -215,14 +215,14 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                 prehidingSelector:
                   "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
                 qualifiedDate: jasmine.any(Number),
-                displayedDate: undefined
+                displayedDate: undefined,
               },
-              id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
-            }
+              id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f",
+            },
           ],
-          scope: "web://target.jasonwaters.dev/aep.html"
-        }
-      ]
+          scope: "web://target.jasonwaters.dev/aep.html",
+        },
+      ],
     });
   });
 
@@ -236,23 +236,23 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
           web: {
             webPageDetails: {
               viewName: "contact",
-              URL: "https://mywebsite.com"
+              URL: "https://mywebsite.com",
             },
             webReferrer: {
-              URL: "https://google.com"
-            }
+              URL: "https://google.com",
+            },
           },
           timestamp: new Date().toISOString(),
           implementationDetails: {
             name: "https://ns.adobe.com/experience/alloy",
             version: "12345",
-            environment: "browser"
-          }
+            environment: "browser",
+          },
         },
         data: {
-          moo: "woof"
-        }
-      })
+          moo: "woof",
+        },
+      }),
     };
 
     const decisionContext = {};
@@ -265,7 +265,7 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
       applyResponse,
       event,
       personalization,
-      decisionContext
+      decisionContext,
     });
 
     const response = {
@@ -274,8 +274,8 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
           id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
           scopeDetails: {
             activity: {
-              id: "abc#xyz"
-            }
+              id: "abc#xyz",
+            },
           },
           items: [
             {
@@ -295,35 +295,35 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                                   definition: {
                                     key: "xdm.web.webPageDetails.viewName",
                                     matcher: "eq",
-                                    values: ["contact"]
+                                    values: ["contact"],
                                   },
-                                  type: "matcher"
+                                  type: "matcher",
                                 },
                                 {
                                   definition: {
                                     key: "xdm.implementationDetails.version",
                                     matcher: "eq",
-                                    values: ["12345"]
+                                    values: ["12345"],
                                   },
-                                  type: "matcher"
+                                  type: "matcher",
                                 },
                                 {
                                   definition: {
                                     key: "data.moo",
                                     matcher: "eq",
-                                    values: ["woof"]
+                                    values: ["woof"],
                                   },
-                                  type: "matcher"
-                                }
+                                  type: "matcher",
+                                },
                               ],
-                              logic: "and"
+                              logic: "and",
                             },
-                            type: "group"
-                          }
+                            type: "group",
+                          },
                         ],
-                        logic: "and"
+                        logic: "and",
                       },
-                      type: "group"
+                      type: "group",
                     },
                     consequences: [
                       {
@@ -337,25 +337,25 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                             type: "setHtml",
                             content: "Hello Treatment A!",
                             prehidingSelector:
-                              "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)"
+                              "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
                           },
-                          id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
+                          id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f",
                         },
-                        id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
+                        id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f",
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
           ],
-          scope: "web://target.jasonwaters.dev/aep.html"
-        }
-      ]
+          scope: "web://target.jasonwaters.dev/aep.html",
+        },
+      ],
     };
 
     responseHandler({
-      response
+      response,
     });
 
     expect(lifecycle.onDecision).toHaveBeenCalledWith({
@@ -365,8 +365,8 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
           id: "2e4c7b28-b3e7-4d5b-ae6a-9ab0b44af87e",
           scopeDetails: {
             activity: {
-              id: "abc#xyz"
-            }
+              id: "abc#xyz",
+            },
           },
           items: [
             {
@@ -379,16 +379,16 @@ describe("DecisioningEngine:createOnResponseHandler", () => {
                 prehidingSelector:
                   "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
                 qualifiedDate: jasmine.any(Number),
-                displayedDate: undefined
+                displayedDate: undefined,
               },
-              id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f"
-            }
+              id: "10da709c-aa1a-40e5-84dd-966e2e8a1d5f",
+            },
           ],
-          scope: "web://target.jasonwaters.dev/aep.html"
-        }
+          scope: "web://target.jasonwaters.dev/aep.html",
+        },
       ],
       event,
-      personalization
+      personalization,
     });
   });
 });

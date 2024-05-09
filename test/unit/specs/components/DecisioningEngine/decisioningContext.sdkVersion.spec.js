@@ -13,7 +13,7 @@ import libraryVersion from "../../../../../src/constants/libraryVersion.js";
 import {
   mockWindow,
   setupResponseHandler,
-  proposition
+  proposition,
 } from "./contextTestUtils";
 
 describe("DecisioningEngine:globalContext:sdkVersion", () => {
@@ -28,15 +28,15 @@ describe("DecisioningEngine:globalContext:sdkVersion", () => {
       definition: {
         key: "~sdkver",
         matcher: "eq",
-        values: [currentVersion]
+        values: [currentVersion],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -45,15 +45,15 @@ describe("DecisioningEngine:globalContext:sdkVersion", () => {
       definition: {
         key: "~sdkver",
         matcher: "eq",
-        values: ["2.18.0-beta.0"]
+        values: ["2.18.0-beta.0"],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 });

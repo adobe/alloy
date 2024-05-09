@@ -18,7 +18,7 @@ export default ({
   mergeDecisionsMeta,
   collectClicks,
   getClickSelectors,
-  getClickMetasBySelector
+  getClickMetasBySelector,
 }) => {
   // Called when an element qualifying for conversion within an offer is clicked.
   return ({ event, clickedElement }) => {
@@ -27,7 +27,7 @@ export default ({
       const { decisionsMeta, eventLabel, viewName } = collectClicks(
         clickedElement,
         selectors,
-        getClickMetasBySelector
+        getClickMetasBySelector,
       );
 
       if (isNonEmptyArray(decisionsMeta)) {
@@ -36,8 +36,8 @@ export default ({
         if (viewName) {
           xdm.web = {
             webPageDetails: {
-              viewName
-            }
+              viewName,
+            },
           };
         }
 
@@ -46,7 +46,7 @@ export default ({
           event,
           decisionsMeta,
           [PropositionEventType.INTERACT],
-          eventLabel ? { label: eventLabel } : undefined
+          eventLabel ? { label: eventLabel } : undefined,
         );
       }
     }

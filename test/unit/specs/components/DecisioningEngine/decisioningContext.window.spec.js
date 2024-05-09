@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import {
   mockWindow,
   setupResponseHandler,
-  proposition
+  proposition,
 } from "./contextTestUtils";
 
 describe("DecisioningEngine:globalContext:window", () => {
@@ -26,15 +26,15 @@ describe("DecisioningEngine:globalContext:window", () => {
       definition: {
         key: "window.height",
         matcher: "gt",
-        values: [90]
+        values: [90],
       },
-      type: "matcher"
+      type: "matcher",
     });
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -42,22 +42,22 @@ describe("DecisioningEngine:globalContext:window", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        height: 50
+        height: 50,
       }),
       {
         definition: {
           key: "window.height",
           matcher: "gt",
-          values: [90]
+          values: [90],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
 
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -65,21 +65,21 @@ describe("DecisioningEngine:globalContext:window", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        width: 200
+        width: 200,
       }),
       {
         definition: {
           key: "window.width",
           matcher: "gt",
-          values: [90]
+          values: [90],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -87,21 +87,21 @@ describe("DecisioningEngine:globalContext:window", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        width: 50
+        width: 50,
       }),
       {
         definition: {
           key: "window.width",
           matcher: "gt",
-          values: [90]
+          values: [90],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -109,21 +109,21 @@ describe("DecisioningEngine:globalContext:window", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        scrollX: 200
+        scrollX: 200,
       }),
       {
         definition: {
           key: "window.scrollX",
           matcher: "gt",
-          values: [90]
+          values: [90],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: [proposition]
-      })
+        propositions: [proposition],
+      }),
     );
   });
 
@@ -131,21 +131,21 @@ describe("DecisioningEngine:globalContext:window", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        scrollX: 50
+        scrollX: 50,
       }),
       {
         definition: {
           key: "window.scrollX",
           matcher: "gt",
-          values: [90]
+          values: [90],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
     expect(applyResponse).toHaveBeenCalledOnceWith(
       jasmine.objectContaining({
-        propositions: []
-      })
+        propositions: [],
+      }),
     );
   });
 
@@ -153,16 +153,16 @@ describe("DecisioningEngine:globalContext:window", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        scrollY: 200
+        scrollY: 200,
       }),
       {
         definition: {
           key: "window.scrollY",
           matcher: "gt",
-          values: [90]
+          values: [90],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
   });
 
@@ -170,16 +170,16 @@ describe("DecisioningEngine:globalContext:window", () => {
     setupResponseHandler(
       applyResponse,
       mockWindow({
-        scrollY: 50
+        scrollY: 50,
       }),
       {
         definition: {
           key: "window.scrollY",
           matcher: "gt",
-          values: [90]
+          values: [90],
         },
-        type: "matcher"
-      }
+        type: "matcher",
+      },
     );
   });
 });

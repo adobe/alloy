@@ -18,7 +18,7 @@ module.exports = {
   env: {
     browser: true,
     node: true,
-    jasmine: true
+    jasmine: true,
   },
   plugins: ["ban", "prettier", "testcafe"],
   rules: {
@@ -30,7 +30,7 @@ module.exports = {
       { name: "fit", message: "don't focus tests" },
       { name: ["fixture", "only"], message: "don't focus tests" },
       { name: ["test", "only"], message: "don't focus tests" },
-      { name: "ftest", message: "don't focus tests" }
+      { name: "ftest", message: "don't focus tests" },
     ],
     "prettier/prettier": "error",
     "no-param-reassign": ["error", { props: false }],
@@ -56,27 +56,27 @@ module.exports = {
             from: [
               "src/core",
               "src/baseCode",
-              ...allPaths.filter(p => p !== path)
-            ]
+              ...allPaths.filter((p) => p !== path),
+            ],
           })),
           {
             target: "src/core",
-            from: "src/baseCode"
+            from: "src/baseCode",
           },
           {
             target: "src/utils",
-            from: ["src/core", "src/components", "src/baseCode"]
+            from: ["src/core", "src/components", "src/baseCode"],
           },
           {
             target: "src/constants",
-            from: ["src/core", "src/components", "src/utils", "src/baseCode"]
-          }
-        ]
-      }
-    ]
+            from: ["src/core", "src/components", "src/utils", "src/baseCode"],
+          },
+        ],
+      },
+    ],
   },
   globals: {
     expectAsync: "readonly", // newer jasmine feature
-    spyOnAllFunctions: "readonly" // newer jasmine feature
-  }
+    spyOnAllFunctions: "readonly", // newer jasmine feature
+  },
 };

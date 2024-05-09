@@ -18,12 +18,12 @@ describe("remapCustomCodeOffers", () => {
       remapCustomCodeOffers({
         type: "customCode",
         content: "<div>superfluous</div>",
-        selector: "BODY > *:eq(0)"
-      })
+        selector: "BODY > *:eq(0)",
+      }),
     ).toEqual({
       type: "customCode",
       content: "<div>superfluous</div>",
-      selector: "BODY"
+      selector: "BODY",
     });
   });
 
@@ -32,12 +32,12 @@ describe("remapCustomCodeOffers", () => {
       remapCustomCodeOffers({
         type: "customCode",
         content: "<div>superfluous</div>",
-        selector: ".whoopie"
-      })
+        selector: ".whoopie",
+      }),
     ).toEqual({
       type: "customCode",
       content: "<div>superfluous</div>",
-      selector: ".whoopie"
+      selector: ".whoopie",
     });
   });
 
@@ -46,12 +46,12 @@ describe("remapCustomCodeOffers", () => {
       remapCustomCodeOffers({
         type: "somethingSpecial",
         content: "<div>superfluous</div>",
-        selector: "BODY > *:eq(0)"
-      })
+        selector: "BODY > *:eq(0)",
+      }),
     ).toEqual({
       type: "somethingSpecial",
       content: "<div>superfluous</div>",
-      selector: "BODY > *:eq(0)"
+      selector: "BODY > *:eq(0)",
     });
   });
 });

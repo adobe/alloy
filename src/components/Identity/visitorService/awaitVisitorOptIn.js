@@ -17,12 +17,12 @@ export default ({ logger }) => {
     if (isObject(window.adobe) && isObject(window.adobe.optIn)) {
       const optInOld = window.adobe.optIn;
       logger.info(
-        "Delaying request while waiting for legacy opt-in to let Visitor retrieve ECID from server."
+        "Delaying request while waiting for legacy opt-in to let Visitor retrieve ECID from server.",
       );
       optInOld.fetchPermissions(() => {
         if (optInOld.isApproved([optInOld.Categories.ECID])) {
           logger.info(
-            "Received legacy opt-in approval to let Visitor retrieve ECID from server."
+            "Received legacy opt-in approval to let Visitor retrieve ECID from server.",
           );
           resolve();
         } else {

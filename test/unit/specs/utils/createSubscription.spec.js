@@ -93,15 +93,15 @@ describe("createSubscription", () => {
 
     const unsubsubscribe1 = subscription.add(callback1, {
       name: "jim",
-      profitMargin: 3
+      profitMargin: 3,
     });
     const unsubsubscribe2 = subscription.add(callback2, {
       name: "bob",
-      profitMargin: 1.8
+      profitMargin: 1.8,
     });
     const unsubsubscribe3 = subscription.add(callback3, {
       name: "tina",
-      profitMargin: 1.1
+      profitMargin: 1.1,
     });
 
     subscription.emit(10);
@@ -125,22 +125,22 @@ describe("createSubscription", () => {
     subscription.setEmissionCondition((params, result) => {
       const price = parseInt(
         result.substring(result.length - 2, result.length),
-        10
+        10,
       );
       return price < 20;
     });
 
     const unsubsubscribe1 = subscription.add(callback1, {
       name: "jim",
-      profitMargin: 3
+      profitMargin: 3,
     });
     const unsubsubscribe2 = subscription.add(callback2, {
       name: "bob",
-      profitMargin: 1.8
+      profitMargin: 1.8,
     });
     const unsubsubscribe3 = subscription.add(callback3, {
       name: "tina",
-      profitMargin: 1.1
+      profitMargin: 1.1,
     });
 
     subscription.emit(10);

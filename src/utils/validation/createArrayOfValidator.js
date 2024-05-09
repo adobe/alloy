@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 import { assertValid } from "./utils.js";
 
-export default elementValidator =>
+export default (elementValidator) =>
   function arrayOf(value, path) {
     assertValid(Array.isArray(value), value, path, "an array");
     const errors = [];

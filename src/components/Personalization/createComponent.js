@@ -31,7 +31,7 @@ export default ({
   mergeDecisionsMeta,
   renderedPropositions,
   onDecisionHandler,
-  handleConsentFlicker
+  handleConsentFlicker,
 }) => {
   return {
     lifecycle: {
@@ -49,7 +49,7 @@ export default ({
         decisionScopes = [],
         personalization = {},
         onResponse = noop,
-        onRequestFailure = noop
+        onRequestFailure = noop,
       }) {
         // Include propositions on all responses, overridden with data as needed
         onResponse(() => ({ propositions: [] }));
@@ -70,7 +70,7 @@ export default ({
           personalization,
           event,
           isCacheInitialized: viewCache.isInitialized(),
-          logger
+          logger,
         });
 
         const decisionsMetaPromises = [];
@@ -80,7 +80,7 @@ export default ({
 
         if (personalizationDetails.shouldFetchData()) {
           const cacheUpdate = viewCache.createCacheUpdate(
-            personalizationDetails.getViewName()
+            personalizationDetails.getViewName(),
           );
           onRequestFailure(() => cacheUpdate.cancel());
 
@@ -88,7 +88,7 @@ export default ({
             cacheUpdate,
             personalizationDetails,
             event,
-            onResponse
+            onResponse,
           });
         } else if (personalizationDetails.shouldUseCachedData()) {
           // eslint-disable-next-line consistent-return
@@ -97,35 +97,35 @@ export default ({
               personalizationDetails,
               event,
               onResponse,
-              onRequestFailure
-            })
+              onRequestFailure,
+            }),
           );
         }
 
         // This promise.all waits for both the pending display notifications to be resolved
         // (i.e. the top of page call to finish rendering) and the view change handler to
         // finish rendering anything for this view.
-        return Promise.all(decisionsMetaPromises).then(decisionsMetas => {
+        return Promise.all(decisionsMetaPromises).then((decisionsMetas) => {
           // We only want to call mergeDecisionsMeta once, but we can get the propositions
           // from two places: the pending display notifications and the view change handler.
-          const decisionsMeta = flatMap(decisionsMetas, dms => dms);
+          const decisionsMeta = flatMap(decisionsMetas, (dms) => dms);
           if (isNonEmptyArray(decisionsMeta)) {
             mergeDecisionsMeta(event, decisionsMeta, [
-              PropositionEventType.DISPLAY
+              PropositionEventType.DISPLAY,
             ]);
           }
         });
       },
       onClick({ event, clickedElement }) {
         onClickHandler({ event, clickedElement });
-      }
+      },
     },
     commands: {
       applyPropositions: {
-        optionsValidator: options =>
+        optionsValidator: (options) =>
           validateApplyPropositionsOptions({ logger, options }),
-        run: applyPropositions
-      }
-    }
+        run: applyPropositions,
+      },
+    },
   };
 };

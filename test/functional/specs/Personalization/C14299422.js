@@ -14,7 +14,7 @@ import createFixture from "../../helpers/createFixture/index.js";
 import {
   compose,
   orgMainConfigMain,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import { TEST_PAGE as TEST_PAGE_URL } from "../../helpers/constants/url.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
@@ -25,18 +25,18 @@ const config = compose(orgMainConfigMain, debugEnabled);
 createFixture({
   title:
     "C14299422: Prehiding style is removed when there is a personalization payload",
-  url: `${TEST_PAGE_URL}?test=C14299421`
+  url: `${TEST_PAGE_URL}?test=C14299421`,
 });
 
 test.meta({
   ID: "C14299422",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("Test C14299422: Prehiding style is removed when there is a personalization payload", async () => {
   await addHtmlToHeader(
-    `<style id="alloy-prehiding">body { visibility: hidden; }</style`
+    `<style id="alloy-prehiding">body { visibility: hidden; }</style`,
   );
 
   const alloy = createAlloyProxy();

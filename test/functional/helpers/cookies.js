@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 import { ClientFunction, t } from "testcafe";
 
-const blankOutCookieInBrowser = ClientFunction(name => {
+const blankOutCookieInBrowser = ClientFunction((name) => {
   document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT`;
 });
 
@@ -26,14 +26,14 @@ export default {
       document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT`;
     }
   }),
-  get: ClientFunction(name => {
+  get: ClientFunction((name) => {
     const cookies = document.cookie
       .split(";")
-      .map(c => {
+      .map((c) => {
         const ct = c.trim();
         const index = ct.indexOf("=");
         return [ct.slice(0, index), ct.slice(index + 1)].map(
-          decodeURIComponent
+          decodeURIComponent,
         );
       })
       .reduce((a, b) => {
@@ -53,5 +53,5 @@ export default {
     // when we use t.deleteCookies. So I call both here.
     await blankOutCookieInBrowser(name);
     await t.deleteCookies(name);
-  }
+  },
 };

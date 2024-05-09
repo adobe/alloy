@@ -16,7 +16,7 @@ import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  migrationDisabled
+  migrationDisabled,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
@@ -28,19 +28,19 @@ createFixture({
   title: "C1338399: Use SDK from NPM entry point",
   includeAlloyLibrary: false,
   includeNpmLibrary: true,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 const createAlloyInstance = ClientFunction(() => {
   window.npmLibraryAlloy = window.alloyCreateInstance({
-    name: "npmLibraryAlloy"
+    name: "npmLibraryAlloy",
   });
 });
 
 test.meta({
   ID: "C1338399: Use SDK from NPM entry point",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("C1338399: Use SDK from NPM entry point", async () => {

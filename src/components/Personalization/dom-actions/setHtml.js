@@ -14,7 +14,7 @@ import { removeNode } from "../../../utils/dom/index.js";
 import { getChildNodes } from "./dom/index.js";
 import appendHtml from "./appendHtml.js";
 
-const clear = container => {
+const clear = (container) => {
   // We want to remove ALL nodes, text, comments etc
   const childNodes = getChildNodes(container);
 

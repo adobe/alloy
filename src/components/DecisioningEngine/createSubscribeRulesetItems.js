@@ -13,7 +13,7 @@ import {
   arrayOf,
   callback as callbackType,
   objectOf,
-  string
+  string,
 } from "../../utils/validation";
 import createSubscription from "../../utils/createSubscription.js";
 import { includes } from "../../utils/index.js";
@@ -22,7 +22,7 @@ const validateOptions = ({ options }) => {
   const validator = objectOf({
     surfaces: arrayOf(string()).uniqueItems(),
     schemas: arrayOf(string()).uniqueItems(),
-    callback: callbackType().required()
+    callback: callbackType().required(),
   }).noUnknownFields();
 
   return validator(options);
@@ -33,19 +33,19 @@ const emissionPreprocessor = (params, propositions) => {
 
   const result = {
     propositions: propositions
-      .filter(payload =>
-        surfacesFilter ? includes(surfacesFilter, payload.scope) : true
+      .filter((payload) =>
+        surfacesFilter ? includes(surfacesFilter, payload.scope) : true,
       )
-      .map(payload => {
+      .map((payload) => {
         const { items = [] } = payload;
         return {
           ...payload,
-          items: items.filter(item =>
-            schemasFilter ? includes(schemasFilter, item.schema) : true
-          )
+          items: items.filter((item) =>
+            schemasFilter ? includes(schemasFilter, item.schema) : true,
+          ),
         };
       })
-      .filter(payload => payload.items.length > 0)
+      .filter((payload) => payload.items.length > 0),
   };
 
   return [result];
@@ -63,15 +63,15 @@ export default () => {
   const run = ({ surfaces, schemas, callback }) => {
     const unsubscribe = subscription.add(callback, {
       surfacesFilter: surfaces instanceof Array ? surfaces : undefined,
-      schemasFilter: schemas instanceof Array ? schemas : undefined
+      schemasFilter: schemas instanceof Array ? schemas : undefined,
     });
 
     return Promise.resolve({ unsubscribe });
   };
 
-  const optionsValidator = options => validateOptions({ options });
+  const optionsValidator = (options) => validateOptions({ options });
 
-  const refresh = propositions => {
+  const refresh = (propositions) => {
     if (!subscription.hasSubscriptions()) {
       return;
     }
@@ -83,7 +83,7 @@ export default () => {
     refresh,
     command: {
       optionsValidator,
-      run
-    }
+      run,
+    },
   };
 };

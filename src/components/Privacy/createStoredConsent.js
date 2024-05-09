@@ -23,6 +23,6 @@ export default ({ parseConsentCookie, orgId, cookieJar }) => {
     },
     clear() {
       cookieJar.remove(consentCookieName);
-    }
+    },
   };
 };

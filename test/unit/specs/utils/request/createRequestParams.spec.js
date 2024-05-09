@@ -23,43 +23,43 @@ describe("createRequestParams", () => {
     const result = createRequestParams({
       payload,
       localConfigOverrides: {
-        datastreamId: "123"
-      }
+        datastreamId: "123",
+      },
     });
     expect(result).toEqual({
       payload,
-      datastreamIdOverride: "123"
+      datastreamIdOverride: "123",
     });
   });
 
   it("works fine without overrides", () => {
     const result = createRequestParams({
-      payload
+      payload,
     });
     expect(result).toEqual({
-      payload
+      payload,
     });
   });
 
   it("merges the global and local config overrides", () => {
     globalConfigOverrides = {
       a: "b",
-      c: "d"
+      c: "d",
     };
     localConfigOverrides = {
-      a: "e"
+      a: "e",
     };
     createRequestParams({
       payload,
       globalConfigOverrides,
-      localConfigOverrides
+      localConfigOverrides,
     });
     expect(payload.mergeConfigOverride).toHaveBeenCalledWith({
       a: "b",
-      c: "d"
+      c: "d",
     });
     expect(payload.mergeConfigOverride).toHaveBeenCalledWith({
-      a: "e"
+      a: "e",
     });
   });
 });

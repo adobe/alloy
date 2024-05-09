@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 import displayIframeContent from "./actions/displayIframeContent.js";
 
-export default collect => {
+export default (collect) => {
   return {
-    defaultContent: settings => displayIframeContent(settings, collect)
+    defaultContent: (settings) => displayIframeContent(settings, collect),
   };
 };

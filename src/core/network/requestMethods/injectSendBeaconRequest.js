@@ -26,7 +26,7 @@ export default ({ sendBeacon, sendFetchRequest, logger }) => {
       getHeader() {
         return null;
       },
-      body: ""
+      body: "",
     });
   };
 };

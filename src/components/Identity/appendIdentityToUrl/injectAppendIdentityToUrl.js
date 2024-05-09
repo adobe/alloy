@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 const URL_REGEX = /^([^?#]*)(\??[^#]*)(#?.*)$/;
 
-const getSeparator = queryString => {
+const getSeparator = (queryString) => {
   if (queryString === "") {
     return "?";
   }
@@ -21,12 +21,13 @@ const getSeparator = queryString => {
   return "&";
 };
 
-export default ({ dateProvider, orgId }) => (ecid, url) => {
-  const ts = Math.round(dateProvider().getTime() / 1000);
-  const adobemc = encodeURIComponent(
-    `TS=${ts}|MCMID=${ecid}|MCORGID=${encodeURIComponent(orgId)}`
-  );
-  const [, location, queryString, fragment] = url.match(URL_REGEX);
-  const separator = getSeparator(queryString);
-  return `${location}${queryString}${separator}adobe_mc=${adobemc}${fragment}`;
-};
+export default ({ dateProvider, orgId }) =>
+  (ecid, url) => {
+    const ts = Math.round(dateProvider().getTime() / 1000);
+    const adobemc = encodeURIComponent(
+      `TS=${ts}|MCMID=${ecid}|MCORGID=${encodeURIComponent(orgId)}`,
+    );
+    const [, location, queryString, fragment] = url.match(URL_REGEX);
+    const separator = getSeparator(queryString);
+    return `${location}${queryString}${separator}adobe_mc=${adobemc}${fragment}`;
+  };

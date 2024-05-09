@@ -20,7 +20,7 @@ describe("isString", () => {
   });
 
   it("returns false if the value is not a string", () => {
-    nonStrings.forEach(str => {
+    nonStrings.forEach((str) => {
       expect(isString(str)).toBe(false);
     });
   });

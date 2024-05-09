@@ -3,7 +3,7 @@ const updatePackage = async ({
   exec,
   githubRef,
   logger,
-  version
+  version,
 }) => {
   if (currentVersion === version) {
     logger.warn(`Version in package.json is already ${version}.`);

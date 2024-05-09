@@ -24,13 +24,13 @@ const DESCRIPTION = `${ID} - Adds all context data to requests by default.`;
 
 createFixture({
   title: DESCRIPTION,
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID,
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test(DESCRIPTION, async () => {
@@ -42,7 +42,7 @@ test(DESCRIPTION, async () => {
   await t.expect(networkLogger.edgeEndpointLogs.requests.length).eql(1);
 
   const parsedBody = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
+    networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
 
   await t.expect(parsedBody.events[0].xdm.device).ok();
@@ -52,7 +52,8 @@ test(DESCRIPTION, async () => {
   if (await isUserAgentClientHintsSupported()) {
     await t
       .expect(
-        parsedBody.events[0].xdm.environment.browserDetails.userAgentClientHints
+        parsedBody.events[0].xdm.environment.browserDetails
+          .userAgentClientHints,
       )
       .notOk();
   }

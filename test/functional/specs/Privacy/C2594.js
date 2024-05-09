@@ -15,7 +15,7 @@ import {
   compose,
   orgMainConfigMain,
   consentPending,
-  debugEnabled
+  debugEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import createConsoleLogger from "../../helpers/consoleLogger/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
@@ -28,16 +28,16 @@ const networkLogger = createNetworkLogger();
 createFixture({
   title:
     "C2594: event command resolves promise with empty object if user consents to no purposes",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C2594",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
-test("Test C2594: event command resolves promise with empty object if user consents to no purposes", async t => {
+test("Test C2594: event command resolves promise with empty object if user consents to no purposes", async (t) => {
   const alloy = createAlloyProxy();
   await alloy.configure(config);
   const logger = await createConsoleLogger();

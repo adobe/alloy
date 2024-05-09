@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 import { PropositionEventType } from "../../constants/propositionEventType.js";
 
 export default ({ eventRegistry }) => {
-  const recordQualified = id => {
+  const recordQualified = (id) => {
     if (!id) {
       return undefined;
     }

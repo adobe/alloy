@@ -2,7 +2,7 @@ import {
   collectAnalyticsPayloadData,
   concatenateAnalyticsPayloads,
   getDisplayAnalyticsToken,
-  getECID
+  getECID,
 } from "./analyticsTokenHandler";
 import { sendAnalyticsPayload } from "./DataInsertionAPI.js";
 
@@ -25,17 +25,17 @@ const sendEvent = ({
   viewName,
   decisionScopes,
   renderDecisions,
-  executedPropositions
+  executedPropositions,
 }) => {
   const xdm = {
-    eventType
+    eventType,
   };
 
   if (viewName) {
     xdm.web = {
       webPageDetails: {
-        viewName
-      }
+        viewName,
+      },
     };
   }
 
@@ -43,28 +43,28 @@ const sendEvent = ({
     // eslint-disable-next-line no-underscore-dangle
     xdm._experience = {
       decisioning: {
-        propositions: executedPropositions
-      }
+        propositions: executedPropositions,
+      },
     };
   }
 
   return window[instanceName]("sendEvent", {
     renderDecisions,
     decisionScopes, // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
-    xdm
+    xdm,
   });
 };
 
 export const personalizationEvent = ({ renderDecisions }) => {
   const viewName = extractViewName();
   const eventType = viewName ? "view-change" : "page-view";
-  sendEvent({ eventType, viewName, renderDecisions }).then(result => {
+  sendEvent({ eventType, viewName, renderDecisions }).then((result) => {
     if (!result.propositions) {
       return;
     }
 
     const analyticsPayload = collectAnalyticsPayloadData(result.propositions);
-    getECID(instanceName).then(visitorID => {
+    getECID(instanceName).then((visitorID) => {
       sendAnalyticsPayload({ analyticsPayload, visitorID });
     });
   });
@@ -73,16 +73,16 @@ export const personalizationEvent = ({ renderDecisions }) => {
 export const getFormBasedOffer = () => {
   sendEvent({
     eventType: "form-based-offer",
-    decisionScopes: ["a4t-test"] // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
-  }).then(result => {
+    decisionScopes: ["a4t-test"], // Note: this option will soon be deprecated, please use personalization.decisionScopes instead
+  }).then((result) => {
     if (!result.propositions) {
       return;
     }
     const analyticsPayloads = new Set();
     const executedPropositions = [];
 
-    result.propositions.forEach(proposition => {
-      proposition.items.forEach(item => {
+    result.propositions.forEach((proposition) => {
+      proposition.items.forEach((item) => {
         if (item.schema === HTML_SCHEMA) {
           // apply offer
           document.getElementById("form-based-offer-container").innerHTML =
@@ -92,7 +92,7 @@ export const getFormBasedOffer = () => {
           executedPropositions.push({
             id: proposition.id,
             scope: proposition.scope,
-            scopeDetails: proposition.scopeDetails
+            scopeDetails: proposition.scopeDetails,
           });
 
           analyticsPayloads.add(getDisplayAnalyticsToken(proposition));
@@ -109,10 +109,10 @@ export const getFormBasedOffer = () => {
                 {
                   id: proposition.id,
                   scope: proposition.scope,
-                  scopeDetails: proposition.scopeDetails
-                }
+                  scopeDetails: proposition.scopeDetails,
+                },
               ],
-              instanceName
+              instanceName,
             });
           });
         }
@@ -122,10 +122,10 @@ export const getFormBasedOffer = () => {
     sendEvent({
       eventType: "decisioning.propositionDisplay",
       executedPropositions,
-      instanceName
+      instanceName,
     });
 
-    getECID(instanceName).then(visitorID => {
+    getECID(instanceName).then((visitorID) => {
       const analyticsPayload = concatenateAnalyticsPayloads(analyticsPayloads);
       sendAnalyticsPayload({ analyticsPayload, visitorID });
     });

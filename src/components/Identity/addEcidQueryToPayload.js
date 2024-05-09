@@ -12,10 +12,10 @@ governing permissions and limitations under the License.
 
 import ecidNamespace from "../../constants/ecidNamespace.js";
 
-export default payload => {
+export default (payload) => {
   payload.mergeQuery({
     identity: {
-      fetch: [ecidNamespace]
-    }
+      fetch: [ecidNamespace],
+    },
   });
 };

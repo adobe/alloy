@@ -13,6 +13,6 @@ governing permissions and limitations under the License.
 import { createNode } from "../../../../utils/dom/index.js";
 import { DIV } from "../../../../constants/tagName.js";
 
-export default content => {
+export default (content) => {
   return createNode(DIV, {}, { innerHTML: content });
 };

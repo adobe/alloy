@@ -11,9 +11,9 @@ governing permissions and limitations under the License.
 
 import getLinkRegion from "../../../../../src/components/ActivityCollector/getLinkRegion.js";
 
-const createChildElement = element => {
+const createChildElement = (element) => {
   return {
-    parentNode: element
+    parentNode: element,
   };
 };
 
@@ -29,26 +29,26 @@ describe("ActivityCollector::getLinkRegion", () => {
           id: "id",
           role: "region",
           "aria-label": "aria",
-          nodeName: "HEADER"
+          nodeName: "HEADER",
         },
-        result: "id"
+        result: "id",
       },
       {
         element: {
           role: "region",
           "aria-label": "aria",
-          nodeName: "HEADER"
+          nodeName: "HEADER",
         },
-        result: "aria"
+        result: "aria",
       },
       {
         element: {
-          nodeName: "HEADER"
+          nodeName: "HEADER",
         },
-        result: "HEADER"
-      }
+        result: "HEADER",
+      },
     ];
-    tests.forEach(test => {
+    tests.forEach((test) => {
       const anchor = createChildElement(test.element);
       expect(getLinkRegion(anchor)).toBe(test.result);
     });
@@ -57,7 +57,7 @@ describe("ActivityCollector::getLinkRegion", () => {
 
   it("Traverses up the DOM to find a region", () => {
     const element = {
-      id: "3-levels"
+      id: "3-levels",
     };
     const anchor = createChildElement(createChildElement(element));
     expect(getLinkRegion(anchor)).toBe("3-levels");
@@ -67,36 +67,36 @@ describe("ActivityCollector::getLinkRegion", () => {
     const tests = [
       {
         element: {
-          nodeName: "HEADER"
+          nodeName: "HEADER",
         },
-        result: "HEADER"
+        result: "HEADER",
       },
       {
         element: {
-          nodeName: "MAIN"
+          nodeName: "MAIN",
         },
-        result: "MAIN"
+        result: "MAIN",
       },
       {
         element: {
-          nodeName: "FOOTER"
+          nodeName: "FOOTER",
         },
-        result: "FOOTER"
+        result: "FOOTER",
       },
       {
         element: {
-          nodeName: "NAV"
+          nodeName: "NAV",
         },
-        result: "NAV"
+        result: "NAV",
       },
       {
         element: {
-          nodeName: "SECTION"
+          nodeName: "SECTION",
         },
-        result: "BODY"
-      }
+        result: "BODY",
+      },
     ];
-    tests.forEach(test => {
+    tests.forEach((test) => {
       const anchor = createChildElement(test.element);
       expect(getLinkRegion(anchor)).toBe(test.result);
     });
@@ -105,7 +105,7 @@ describe("ActivityCollector::getLinkRegion", () => {
 
   it("Truncates excess whitespace in region", () => {
     const element = {
-      id: " ab   c"
+      id: " ab   c",
     };
     const anchor = createChildElement(element);
     expect(getLinkRegion(anchor)).toBe("ab c");

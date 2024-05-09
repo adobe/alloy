@@ -14,7 +14,7 @@ import {
   selectNodes,
   removeNode,
   appendNode,
-  createNode
+  createNode,
 } from "../../../../../../../src/utils/dom";
 import { getElementById } from "../../../../../../../src/components/Personalization/dom-actions/dom/index.js";
 

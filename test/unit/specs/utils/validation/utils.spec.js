@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import {
   chain,
   nullSafeChain,
-  assertValid
+  assertValid,
 } from "../../../../../src/utils/validation/utils";
 
 describe("validation::utils", () => {
@@ -44,7 +44,7 @@ describe("validation::utils", () => {
       validator3.and.returnValue("validator3return");
       const subject = chain(chain(validator1, validator2), validator3);
       expect(() => subject("myCurrentValue", "myKey")).toThrow(
-        Error("My Error!")
+        Error("My Error!"),
       );
       expect(validator3).not.toHaveBeenCalled();
     });
@@ -58,7 +58,7 @@ describe("validation::utils", () => {
       validator1.and.returnValue(null);
       const subject = nullSafeChain(
         nullSafeChain(validator1, validator2),
-        validator3
+        validator3,
       );
       expect(subject(null, "myKey")).toEqual(null);
       expect(validator1).toHaveBeenCalledTimes(1);
@@ -71,10 +71,10 @@ describe("validation::utils", () => {
   describe("assertValid", () => {
     it("throws an error when it is invalid", () => {
       expect(() =>
-        assertValid(false, "myValue", "myPath", "myMessage")
-      ).toThrowMatching(e => {
+        assertValid(false, "myValue", "myPath", "myMessage"),
+      ).toThrowMatching((e) => {
         expect(e.message).toEqual(
-          `'myPath': Expected myMessage, but got "myValue".`
+          `'myPath': Expected myMessage, but got "myValue".`,
         );
         return true;
       });
@@ -82,7 +82,7 @@ describe("validation::utils", () => {
 
     it("does not throw an error when it is valid", () => {
       expect(
-        assertValid(true, "myValue", "myPath", "myMessage")
+        assertValid(true, "myValue", "myPath", "myMessage"),
       ).toBeUndefined();
     });
   });

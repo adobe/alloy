@@ -14,7 +14,7 @@ import { noop } from "../../utils/index.js";
 
 export default ({ targetMigrationEnabled }) => {
   if (targetMigrationEnabled) {
-    return request => {
+    return (request) => {
       request.getPayload().mergeMeta({ target: { migration: true } });
     };
   }

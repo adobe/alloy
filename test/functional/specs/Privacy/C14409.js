@@ -21,13 +21,13 @@ const networkLogger = createNetworkLogger();
 
 createFixture({
   title: "C14409 - Consenting to no purposes should be persisted.",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C14409",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const config = {
@@ -35,7 +35,7 @@ const config = {
   orgId: "53A16ACB5CC1D3760A495C99@AdobeOrg",
   defaultConsent: "pending",
   idMigrationEnabled: false,
-  debugEnabled: true
+  debugEnabled: true,
 };
 
 test("C14409 - Consenting to no purposes should be persisted.", async () => {

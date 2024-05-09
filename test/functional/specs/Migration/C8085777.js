@@ -16,20 +16,20 @@ import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  targetMigrationEnabled
+  targetMigrationEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import { TEST_PAGE, TEST_PAGE_AT_JS_TWO } from "../../helpers/constants/url.js";
 import getResponseBody from "../../helpers/networkLogger/getResponseBody.js";
 import {
   MBOX_EDGE_CLUSTER,
-  MBOX
+  MBOX,
 } from "../../../../src/constants/legacyCookies.js";
 import {
   assertKonductorReturnsCookieAndCookieIsSet,
   assertSameLocationHintIsUsed,
   assertTargetMigrationEnabledIsSent,
   fetchMboxOffer,
-  MIGRATION_LOCATION
+  MIGRATION_LOCATION,
 } from "./helper.js";
 import migrationEnabled from "../../helpers/constants/configParts/migrationEnabled.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
@@ -40,7 +40,7 @@ const config = compose(
   orgMainConfigMain,
   debugEnabled,
   migrationEnabled,
-  targetMigrationEnabled
+  targetMigrationEnabled,
 );
 createFixture({
   title:
@@ -48,16 +48,16 @@ createFixture({
     "web sdk and fetch offer based on profile attr using at.js 2.x",
   requestHooks: [
     networkLogger.edgeEndpointLogs,
-    networkLogger.targetDeliveryEndpointLogs
+    networkLogger.targetDeliveryEndpointLogs,
   ],
   url: TEST_PAGE,
-  includeAlloyLibrary: true
+  includeAlloyLibrary: true,
 });
 
 test.meta({
   ID: "C8085777",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test.skip(
@@ -69,10 +69,10 @@ test.skip(
       data: {
         __adobe: {
           target: {
-            "profile.favoriteColor": favoriteColor
-          }
-        }
-      }
+            "profile.favoriteColor": favoriteColor,
+          },
+        },
+      },
     };
     // Loaded a page with Alloy
     const alloy = createAlloyProxy();
@@ -87,14 +87,15 @@ test.skip(
     // Check that mbox cookie is present in the response from Konductor
     const mboxCookie = await assertKonductorReturnsCookieAndCookieIsSet(
       MBOX,
-      sendEventRequest
+      sendEventRequest,
     );
 
     // Check that mboxEdgeCluster cookie is present in the response from Konductor
-    const mboxEdgeClusterCookie = await assertKonductorReturnsCookieAndCookieIsSet(
-      MBOX_EDGE_CLUSTER,
-      sendEventRequest
-    );
+    const mboxEdgeClusterCookie =
+      await assertKonductorReturnsCookieAndCookieIsSet(
+        MBOX_EDGE_CLUSTER,
+        sendEventRequest,
+      );
 
     // NAVIGATE to clean page
     await t.navigateTo(TEST_PAGE_AT_JS_TWO);
@@ -123,10 +124,10 @@ test.skip(
       .expect(mboxCookie)
       .contains(
         `#${sessionIdFromDeliveryRequest}#`,
-        "Session ID returned from Target Upstream does not match the session ID sent to delivery API"
+        "Session ID returned from Target Upstream does not match the session ID sent to delivery API",
       );
 
     // assert the same cluster is used
     await assertSameLocationHintIsUsed(hostname, mboxEdgeClusterCookie);
-  }
+  },
 );

@@ -13,16 +13,16 @@ import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import createFixture from "../../helpers/createFixture/index.js";
 
 createFixture({
-  title: "C13816: Throws error when configure has no options"
+  title: "C13816: Throws error when configure has no options",
 });
 
 test.meta({
   ID: "C13816",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
-test("Test C13816: Throws error when configure has no options", async t => {
+test("Test C13816: Throws error when configure has no options", async (t) => {
   const alloy = createAlloyProxy();
   const configureErrorMessage = await alloy.configureErrorMessage();
 

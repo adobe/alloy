@@ -20,19 +20,19 @@ const INCREMENTAL_DELAY_MILLIS = 1000;
 // When the target delay is randomized, make it within the range of this percentage above or below the target delay.
 const MAX_RANDOM_VARIANCE_PERCENTAGE = 0.3;
 
-const calculateRetryDelay = retriesAttempted => {
+const calculateRetryDelay = (retriesAttempted) => {
   const targetDelay =
     FIRST_DELAY_MILLIS + retriesAttempted * INCREMENTAL_DELAY_MILLIS;
   const maxVariance = targetDelay * MAX_RANDOM_VARIANCE_PERCENTAGE;
   const minDelay = targetDelay - maxVariance;
   const maxDelay = targetDelay + maxVariance;
   const randomizedDelayWithinRange = Math.round(
-    minDelay + Math.random() * (maxDelay - minDelay)
+    minDelay + Math.random() * (maxDelay - minDelay),
   );
   return randomizedDelayWithinRange;
 };
 
-const getDelayFromHeader = response => {
+const getDelayFromHeader = (response) => {
   // According to the HTTP spec, if the header is defined, its value will be a string that
   // represents either:
   //  * An integer indicating the number of seconds to delay.
@@ -50,7 +50,7 @@ const getDelayFromHeader = response => {
     } else {
       delayInMillis = Math.max(
         0,
-        new Date(headerValue).getTime() - new Date().getTime()
+        new Date(headerValue).getTime() - new Date().getTime(),
       );
     }
   }

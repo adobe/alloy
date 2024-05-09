@@ -24,11 +24,11 @@ export default (collect, renderedPropositions) => {
       return renderedPropositionsDeferred.resolve;
     }
 
-    return decisionsMeta => {
+    return (decisionsMeta) => {
       if (decisionsMeta.length > 0) {
         collect({
           decisionsMeta,
-          viewName
+          viewName,
         });
       }
     };

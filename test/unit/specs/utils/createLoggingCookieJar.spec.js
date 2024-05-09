@@ -28,14 +28,14 @@ describe("loggingCookieJar", () => {
     expect(logger.info).toHaveBeenCalledOnceWith("Setting cookie", {
       name: "mykey",
       value: "myvalue",
-      myoption: "myoptionvalue"
+      myoption: "myoptionvalue",
     });
   });
 
   it("calls set", () => {
     loggingCookieJar.set("mykey", "myvalue", { myoption: "myoptionvalue" });
     expect(cookieJar.set).toHaveBeenCalledOnceWith("mykey", "myvalue", {
-      myoption: "myoptionvalue"
+      myoption: "myoptionvalue",
     });
   });
 

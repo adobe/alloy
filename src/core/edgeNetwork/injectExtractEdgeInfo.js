@@ -10,26 +10,27 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-export default ({ logger }) => adobeEdgeHeader => {
-  if (adobeEdgeHeader) {
-    const headerParts = adobeEdgeHeader.split(";");
-    if (headerParts.length >= 2 && headerParts[1].length > 0) {
-      try {
-        const regionId = parseInt(headerParts[1], 10);
-        // eslint recommends using Number.isNaN instead, but this function is
-        // not available in Internet Explorer. Number.isNaN is more robust to
-        // non-numeric parameters. Since we already know regionId will be an
-        // integer, using isNaN is okay.
-        // https://github.com/airbnb/javascript#standard-library--isnan
-        // eslint-disable-next-line no-restricted-globals
-        if (!isNaN(regionId)) {
-          return { regionId };
+export default ({ logger }) =>
+  (adobeEdgeHeader) => {
+    if (adobeEdgeHeader) {
+      const headerParts = adobeEdgeHeader.split(";");
+      if (headerParts.length >= 2 && headerParts[1].length > 0) {
+        try {
+          const regionId = parseInt(headerParts[1], 10);
+          // eslint recommends using Number.isNaN instead, but this function is
+          // not available in Internet Explorer. Number.isNaN is more robust to
+          // non-numeric parameters. Since we already know regionId will be an
+          // integer, using isNaN is okay.
+          // https://github.com/airbnb/javascript#standard-library--isnan
+          // eslint-disable-next-line no-restricted-globals
+          if (!isNaN(regionId)) {
+            return { regionId };
+          }
+        } catch (e) {
+          // No need to do anything. The log statement below will log an error
         }
-      } catch (e) {
-        // No need to do anything. The log statement below will log an error
       }
+      logger.warn(`Invalid adobe edge: "${adobeEdgeHeader}"`);
     }
-    logger.warn(`Invalid adobe edge: "${adobeEdgeHeader}"`);
-  }
-  return {};
-};
+    return {};
+  };

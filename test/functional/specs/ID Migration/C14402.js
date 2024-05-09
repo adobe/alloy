@@ -20,12 +20,12 @@ import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  migrationEnabled
+  migrationEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 import {
   LEGACY_IDENTITY_COOKIE_NAME,
-  LEGACY_IDENTITY_COOKIE_UNESCAPED_NAME
+  LEGACY_IDENTITY_COOKIE_UNESCAPED_NAME,
 } from "../../helpers/constants/cookies.js";
 import createConsoleLogger from "../../helpers/consoleLogger/index.js";
 
@@ -36,13 +36,13 @@ const networkLogger = createNetworkLogger();
 createFixture({
   title:
     "C14402: When ID migration is enabled and no legacy AMCV cookie is found, an AMCV cookie should be created",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C14402",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const getDocumentCookie = ClientFunction(() => document.cookie);
@@ -57,15 +57,15 @@ test("Test C14402: When ID migration is enabled and no legacy AMCV cookie is fou
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
   const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
   );
 
   const payloads = createResponse({ content: response }).getPayloadsByType(
-    "identity:result"
+    "identity:result",
   );
 
   const ecidPayload = payloads.filter(
-    payload => payload.namespace.code === "ECID"
+    (payload) => payload.namespace.code === "ECID",
   )[0];
 
   await t.expect(ecidPayload.id).match(ECID_REGEX);
@@ -78,11 +78,13 @@ test("Test C14402: When ID migration is enabled and no legacy AMCV cookie is fou
 
   const logs = await logger.info.getMessagesSinceReset();
   const setCookieAttributes = logs
-    .filter(message => message.length === 3 && message[1] === "Setting cookie")
-    .map(message => message[2])
     .filter(
-      cookieSettings =>
-        cookieSettings.name === LEGACY_IDENTITY_COOKIE_UNESCAPED_NAME
+      (message) => message.length === 3 && message[1] === "Setting cookie",
+    )
+    .map((message) => message[2])
+    .filter(
+      (cookieSettings) =>
+        cookieSettings.name === LEGACY_IDENTITY_COOKIE_UNESCAPED_NAME,
     );
 
   await t.expect(setCookieAttributes.length).eql(1);

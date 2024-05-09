@@ -12,14 +12,14 @@ governing permissions and limitations under the License.
 import createEvent from "../../../../../../src/core/createEvent.js";
 import createResponse from "../../../../../functional/helpers/createResponse.js";
 
-export default decisions => {
+export default (decisions) => {
   const response = createResponse({
     content: {
-      handle: decisions.map(payload => ({
+      handle: decisions.map((payload) => ({
         type: "personalization:decisions",
-        payload
-      }))
-    }
+        payload,
+      })),
+    },
   });
 
   const actions = jasmine.createSpyObj("actions", [
@@ -35,16 +35,16 @@ export default decisions => {
     "appendHtml",
     "prependHtml",
     "insertHtmlAfter",
-    "insertHtmlBefore"
+    "insertHtmlBefore",
   ]);
 
   const config = {
     targetMigrationEnabled: true,
-    prehidingStyle: "myprehidingstyle"
+    prehidingStyle: "myprehidingstyle",
   };
   const logger = {
     warn: spyOn(console, "warn").and.callThrough(),
-    error: spyOn(console, "error").and.callThrough()
+    error: spyOn(console, "error").and.callThrough(),
   };
   const sendEvent = jasmine.createSpy("sendEvent");
   const eventManager = {
@@ -53,11 +53,11 @@ export default decisions => {
       event.finalize();
       sendEvent(event.toJSON());
       return Promise.resolve();
-    }
+    },
   };
   const getPageLocation = () => new URL("http://example.com/home");
   const window = {
-    location: jasmine.createSpyObj("location", ["replace"])
+    location: jasmine.createSpyObj("location", ["replace"]),
   };
   const hideContainers = jasmine.createSpy("hideContainers");
   const showContainers = jasmine.createSpy("showContainers");
@@ -72,6 +72,6 @@ export default decisions => {
     window,
     hideContainers,
     showContainers,
-    response
+    response,
   };
 };

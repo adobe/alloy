@@ -26,7 +26,7 @@ describe("Context::injectTimestamp", () => {
     const xdm = {};
     injectTimestamp(dateProvider)(xdm);
     expect(xdm).toEqual({
-      timestamp: "2019-11-25T10:09:42.000Z"
+      timestamp: "2019-11-25T10:09:42.000Z",
     });
   });
 });

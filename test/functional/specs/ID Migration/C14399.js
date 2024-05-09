@@ -19,7 +19,7 @@ import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  migrationEnabled
+  migrationEnabled,
 } from "../../helpers/constants/configParts/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
 
@@ -30,13 +30,13 @@ const networkLogger = createNetworkLogger();
 createFixture({
   title:
     "C14399: When ID migration is enabled and no identity cookie is found but legacy s_ecid cookie is found, the ECID will be sent on the request",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C14399",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const setEcidCookie = ClientFunction(() => {
@@ -54,7 +54,7 @@ test("Test C14399: When ID migration is enabled and no identity cookie is found 
   await responseStatus(networkLogger.edgeEndpointLogs.requests, 200);
 
   const request = JSON.parse(
-    networkLogger.edgeEndpointLogs.requests[0].request.body
+    networkLogger.edgeEndpointLogs.requests[0].request.body,
   );
 
   await t
@@ -62,15 +62,15 @@ test("Test C14399: When ID migration is enabled and no identity cookie is found 
     .eql("16908443662402872073525706953453086963");
 
   const response = JSON.parse(
-    getResponseBody(networkLogger.edgeEndpointLogs.requests[0])
+    getResponseBody(networkLogger.edgeEndpointLogs.requests[0]),
   );
 
   const payloads = createResponse({ content: response }).getPayloadsByType(
-    "identity:result"
+    "identity:result",
   );
 
   const ecidPayload = payloads.filter(
-    payload => payload.namespace.code === "ECID"
+    (payload) => payload.namespace.code === "ECID",
   )[0];
 
   await t.expect(ecidPayload.id).eql("16908443662402872073525706953453086963");

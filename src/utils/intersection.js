@@ -18,4 +18,4 @@ import includes from "./includes.js";
  * @param {Array} b
  * @returns {Array}
  */
-export default (a, b) => a.filter(x => includes(b, x));
+export default (a, b) => a.filter((x) => includes(b, x));

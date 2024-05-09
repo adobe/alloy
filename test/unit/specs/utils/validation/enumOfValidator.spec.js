@@ -24,7 +24,7 @@ describe("validation:enumOf", () => {
     { value: "out", error: true },
     { value: "", error: true },
     { value: {}, error: true },
-    { value: [], error: true }
+    { value: [], error: true },
   ]);
   describeValidation("required enum", enumOf("in", "pending").required(), [
     { value: "in", error: false },
@@ -36,6 +36,6 @@ describe("validation:enumOf", () => {
     { value: "out", error: true },
     { value: "", error: true },
     { value: {}, error: true },
-    { value: [], error: true }
+    { value: [], error: true },
   ]);
 });

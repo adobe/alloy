@@ -29,9 +29,9 @@ export default (config, logger, optionalContexts, requiredContexts) => {
       onBeforeEvent({ event }) {
         const xdm = {};
         return Promise.all(
-          contexts.map(context => Promise.resolve(context(xdm, logger)))
+          contexts.map((context) => Promise.resolve(context(xdm, logger))),
         ).then(() => event.mergeXdm(xdm));
-      }
-    }
+      },
+    },
   };
 };

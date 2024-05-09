@@ -15,11 +15,11 @@ import {
   selectNodes,
   removeNode,
   appendNode,
-  createNode
+  createNode,
 } from "../../../../../../../src/utils/dom";
 import {
   getElementById,
-  getNextSibling
+  getNextSibling,
 } from "../../../../../../../src/components/Personalization/dom-actions/dom";
 
 describe("Personalization::DOM::insertAfter", () => {

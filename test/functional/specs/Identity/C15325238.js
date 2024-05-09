@@ -17,7 +17,7 @@ import {
   compose,
   orgMainConfigMain,
   debugEnabled,
-  thirdPartyCookiesDisabled
+  thirdPartyCookiesDisabled,
 } from "../../helpers/constants/configParts/index.js";
 import createNetworkLogger from "../../helpers/networkLogger/index.js";
 import createAlloyProxy from "../../helpers/createAlloyProxy.js";
@@ -28,7 +28,7 @@ import getReturnedEcid from "../../helpers/networkLogger/getReturnedEcid.js";
 const config = compose(
   orgMainConfigMain,
   debugEnabled,
-  thirdPartyCookiesDisabled
+  thirdPartyCookiesDisabled,
 );
 
 const networkLogger = createNetworkLogger();
@@ -36,13 +36,13 @@ const networkLogger = createNetworkLogger();
 createFixture({
   title:
     "C15325238: When there are multiple adobe_mc parameters, the last one is used.",
-  requestHooks: [networkLogger.edgeEndpointLogs]
+  requestHooks: [networkLogger.edgeEndpointLogs],
 });
 
 test.meta({
   ID: "C15325238",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 test("C15325238: When there are multiple adobe_mc parameters, the last one is used.", async () => {
@@ -50,7 +50,7 @@ test("C15325238: When there are multiple adobe_mc parameters, the last one is us
   await alloy.configure(config);
   await alloy.sendEvent({});
   const { url: newUrl1 } = await alloy.appendIdentityToUrl({
-    url: TEST_PAGE
+    url: TEST_PAGE,
   });
 
   await t.navigateTo(SECONDARY_TEST_PAGE);
@@ -58,16 +58,15 @@ test("C15325238: When there are multiple adobe_mc parameters, the last one is us
   await alloy.sendEvent({});
 
   const { url: newUrl2 } = await alloy.appendIdentityToUrl({
-    url: newUrl1
+    url: newUrl1,
   });
 
   await t.navigateTo(newUrl2);
   await alloy.configure(config);
   await alloy.sendEvent({});
 
-  const [ecid1, ecid2, ecid3] = networkLogger.edgeEndpointLogs.requests.map(
-    getReturnedEcid
-  );
+  const [ecid1, ecid2, ecid3] =
+    networkLogger.edgeEndpointLogs.requests.map(getReturnedEcid);
   await t.expect(ecid1).notEql(ecid2);
   await t.expect(ecid2).eql(ecid3);
 

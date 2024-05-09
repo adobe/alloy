@@ -15,7 +15,7 @@ import {
   getExpirationDate,
   getActivityId,
   hasExperienceData,
-  getDecisionProvider
+  getDecisionProvider,
 } from "./utils";
 import { EVENT_TYPE_TRUE } from "../../constants/eventType.js";
 import { ADOBE_JOURNEY_OPTIMIZER } from "../../constants/decisionProvider.js";
@@ -24,23 +24,24 @@ const STORAGE_KEY = "events";
 const MAX_EVENT_RECORDS = 1000;
 const RETENTION_PERIOD = 30;
 
-const prefixed = key => `iam.${key}`;
+const prefixed = (key) => `iam.${key}`;
 export const createEventPruner = (
   limit = MAX_EVENT_RECORDS,
-  retentionPeriod = RETENTION_PERIOD
+  retentionPeriod = RETENTION_PERIOD,
 ) => {
-  return events => {
+  return (events) => {
     const pruned = {};
-    Object.keys(events).forEach(eventType => {
+    Object.keys(events).forEach((eventType) => {
       pruned[eventType] = {};
       Object.values(events[eventType])
         .filter(
-          entry =>
-            new Date(entry.firstTimestamp) >= getExpirationDate(retentionPeriod)
+          (entry) =>
+            new Date(entry.firstTimestamp) >=
+            getExpirationDate(retentionPeriod),
         )
         .sort((a, b) => a.firstTimestamp - b.firstTimestamp)
         .slice(-1 * limit)
-        .forEach(entry => {
+        .forEach((entry) => {
           pruned[eventType][entry.event[prefixed("id")]] = entry;
         });
     });
@@ -53,14 +54,14 @@ export default ({ storage }) => {
   let restore;
   let save;
   let events;
-  const setStorage = newStorage => {
+  const setStorage = (newStorage) => {
     currentStorage = newStorage;
 
     restore = createRestoreStorage(currentStorage, STORAGE_KEY);
     save = createSaveStorage(
       currentStorage,
       STORAGE_KEY,
-      createEventPruner(MAX_EVENT_RECORDS, RETENTION_PERIOD)
+      createEventPruner(MAX_EVENT_RECORDS, RETENTION_PERIOD),
     );
     events = restore({});
   };
@@ -88,11 +89,11 @@ export default ({ storage }) => {
         ...event,
         [prefixed("id")]: eventId,
         [prefixed("eventType")]: eventType,
-        [prefixed("action")]: action
+        [prefixed("action")]: action,
       },
       firstTimestamp,
       timestamp,
-      count: count + 1
+      count: count + 1,
     };
 
     save(events);
@@ -100,7 +101,7 @@ export default ({ storage }) => {
     return events[eventType][eventId];
   };
 
-  const addExperienceEdgeEvent = event => {
+  const addExperienceEdgeEvent = (event) => {
     const { xdm = {} } = event.getContent();
     const { _experience } = xdm;
 
@@ -112,7 +113,7 @@ export default ({ storage }) => {
     const {
       propositionEventType: propositionEventTypeObj = {},
       propositionAction = {},
-      propositions = []
+      propositions = [],
     } = decisioning;
 
     const propositionEventTypesList = Object.keys(propositionEventTypeObj);
@@ -122,15 +123,15 @@ export default ({ storage }) => {
       return;
     }
 
-    const validPropositionEventType = propositionEventType =>
+    const validPropositionEventType = (propositionEventType) =>
       propositionEventTypeObj[propositionEventType] === EVENT_TYPE_TRUE;
 
     const { id: action } = propositionAction;
 
     propositionEventTypesList
       .filter(validPropositionEventType)
-      .forEach(propositionEventType => {
-        propositions.forEach(proposition => {
+      .forEach((propositionEventType) => {
+        propositions.forEach((proposition) => {
           if (getDecisionProvider(proposition) !== ADOBE_JOURNEY_OPTIMIZER) {
             return;
           }
@@ -138,7 +139,7 @@ export default ({ storage }) => {
             {},
             propositionEventType,
             getActivityId(proposition),
-            action
+            action,
           );
         });
       });
@@ -156,6 +157,6 @@ export default ({ storage }) => {
     addEvent,
     getEvent,
     toJSON: () => events,
-    setStorage
+    setStorage,
   };
 };

@@ -21,7 +21,7 @@ import {
   thirdPartyCookiesDisabled,
   thirdPartyCookiesEnabled,
   migrationEnabled,
-  migrationDisabled
+  migrationDisabled,
 } from "../../helpers/constants/configParts/index.js";
 import reloadPage from "../../helpers/reloadPage.js";
 import setLegacyIdentityCookie from "../../helpers/setLegacyIdentityCookie.js";
@@ -47,7 +47,7 @@ const assertRequestDidNotGoToDemdex = async () => {
 
 createFixture({
   title: "C10922 - demdex usage",
-  requestHooks: [networkLogger.edgeInteractEndpointLogs]
+  requestHooks: [networkLogger.edgeInteractEndpointLogs],
 });
 
 fixture.beforeEach(async () => {
@@ -57,7 +57,7 @@ fixture.beforeEach(async () => {
 test.meta({
   ID: "C10922",
   SEVERITY: "P0",
-  TEST_RUN: "Regression"
+  TEST_RUN: "Regression",
 });
 
 const permutationsUsingDemdex = [
@@ -67,8 +67,8 @@ const permutationsUsingDemdex = [
       orgMainConfigMain,
       thirdPartyCookiesEnabled,
       edgeDomainThirdParty,
-      migrationDisabled
-    )
+      migrationDisabled,
+    ),
   },
   {
     description: "third-party cookies enabled and first-party edge domain",
@@ -76,8 +76,8 @@ const permutationsUsingDemdex = [
       orgMainConfigMain,
       thirdPartyCookiesEnabled,
       edgeDomainFirstParty,
-      migrationDisabled
-    )
+      migrationDisabled,
+    ),
   },
   {
     // If we have a identity to migrate, we still want to hit demdex because
@@ -90,12 +90,12 @@ const permutationsUsingDemdex = [
       orgMainConfigMain,
       thirdPartyCookiesEnabled,
       edgeDomainThirdParty,
-      migrationEnabled
-    )
-  }
+      migrationEnabled,
+    ),
+  },
 ];
 
-permutationsUsingDemdex.forEach(permutation => {
+permutationsUsingDemdex.forEach((permutation) => {
   test(`C10922 - demdex is used for first request when configured with ${permutation.description} and browser supports third-party cookies by default`, async () => {
     const alloy = createAlloyProxy();
     await alloy.configure(permutation.config);
@@ -123,8 +123,8 @@ const permutationsNotUsingDemdex = [
       orgMainConfigMain,
       thirdPartyCookiesDisabled,
       edgeDomainThirdParty,
-      migrationDisabled
-    )
+      migrationDisabled,
+    ),
   },
   {
     description: "third-party cookies disabled and first-party edge domain",
@@ -132,8 +132,8 @@ const permutationsNotUsingDemdex = [
       orgMainConfigMain,
       thirdPartyCookiesDisabled,
       edgeDomainFirstParty,
-      migrationDisabled
-    )
+      migrationDisabled,
+    ),
   },
   {
     description:
@@ -142,12 +142,12 @@ const permutationsNotUsingDemdex = [
       orgMainConfigMain,
       thirdPartyCookiesDisabled,
       edgeDomainFirstParty,
-      migrationEnabled
-    )
-  }
+      migrationEnabled,
+    ),
+  },
 ];
 
-permutationsNotUsingDemdex.forEach(permutation => {
+permutationsNotUsingDemdex.forEach((permutation) => {
   test(`C10922 - demdex is not used when configured with ${permutation.description}`, async () => {
     const alloy = createAlloyProxy();
     await alloy.configure(permutation.config);

@@ -17,14 +17,14 @@ import buildAlloy from "./buildAlloy.js";
 describe("PersonalizationComponent", () => {
   it("PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS", async () => {
     const mocks = buildMocks(
-      PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS
+      PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS,
     );
     const alloy = buildAlloy(mocks);
     const { event, result } = await alloy.sendEvent(
       {
-        renderDecisions: true
+        renderDecisions: true,
       },
-      PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS
+      PAGE_WIDE_SCOPE_DECISIONS_WITHOUT_DOM_ACTION_SCHEMA_ITEMS,
     );
     expect(event.toJSON()).toEqual({
       query: {
@@ -37,12 +37,12 @@ describe("PersonalizationComponent", () => {
             "https://ns.adobe.com/personalization/ruleset-item",
             "https://ns.adobe.com/personalization/message/in-app",
             "https://ns.adobe.com/personalization/message/feed-item",
-            "https://ns.adobe.com/personalization/dom-action"
+            "https://ns.adobe.com/personalization/dom-action",
           ],
           decisionScopes: ["__view__"],
-          surfaces: ["web://example.com/home"]
-        }
-      }
+          surfaces: ["web://example.com/home"],
+        },
+      },
     });
     expect(result).toEqual({
       propositions: [
@@ -55,21 +55,21 @@ describe("PersonalizationComponent", () => {
               schema: "https://ns.adove.com/experience/item",
               data: {
                 id: "A",
-                content: "Banner A ...."
-              }
+                content: "Banner A ....",
+              },
             },
             {
               schema: "https://ns.adove.com/experience/item",
               data: {
                 id: "B",
-                content: "Banner B ...."
-              }
-            }
+                content: "Banner B ....",
+              },
+            },
           ],
           scopeDetails: {
-            blah: "test"
-          }
-        }
+            blah: "test",
+          },
+        },
       ],
       decisions: [
         {
@@ -80,22 +80,22 @@ describe("PersonalizationComponent", () => {
               schema: "https://ns.adove.com/experience/item",
               data: {
                 id: "A",
-                content: "Banner A ...."
-              }
+                content: "Banner A ....",
+              },
             },
             {
               schema: "https://ns.adove.com/experience/item",
               data: {
                 id: "B",
-                content: "Banner B ...."
-              }
-            }
+                content: "Banner B ....",
+              },
+            },
           ],
           scopeDetails: {
-            blah: "test"
-          }
-        }
-      ]
+            blah: "test",
+          },
+        },
+      ],
     });
     expect(mocks.sendEvent).not.toHaveBeenCalled();
 

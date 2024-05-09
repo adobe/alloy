@@ -17,13 +17,13 @@ describe("clone", () => {
     const obj = {
       toJSON() {
         return { foo: "bar" };
-      }
+      },
     };
 
     const result = clone(obj);
 
     expect(result).toEqual({
-      foo: "bar"
+      foo: "bar",
     });
   });
 });

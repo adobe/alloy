@@ -25,7 +25,7 @@ describe("Identity::injectAddLegacyEcidToPayload", () => {
     addEcidToPayload = jasmine.createSpy("addEcidToPayload");
     addLegacyEcidToPayload = injectAddLegacyEcidToPayload({
       getLegacyEcid,
-      addEcidToPayload
+      addEcidToPayload,
     });
     payload = jasmine.createSpyObj("payload", ["hasIdentity"]);
   });

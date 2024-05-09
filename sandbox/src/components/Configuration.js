@@ -1,6 +1,6 @@
 import React from "react.js";
 
-const getQueryStringParameter = key => {
+const getQueryStringParameter = (key) => {
   const searchParams = new URLSearchParams(window.location.search);
   return searchParams.get(key);
 };
@@ -56,7 +56,7 @@ export default () => {
               options={[
                 { value: "pending", label: "Set to pending" },
                 { value: "in", label: "Set to in" },
-                { value: "out", label: "Set to out" }
+                { value: "out", label: "Set to out" },
               ]}
             />
           </td>
@@ -71,7 +71,7 @@ export default () => {
               defaultValue="true"
               options={[
                 { value: true, label: "Enable" },
-                { value: false, label: "Disable" }
+                { value: false, label: "Disable" },
               ]}
             />
           </td>
@@ -86,7 +86,7 @@ export default () => {
               defaultValue="false"
               options={[
                 { value: true, label: "Include" },
-                { value: false, label: "Remove" }
+                { value: false, label: "Remove" },
               ]}
             />
           </td>
@@ -101,7 +101,7 @@ export default () => {
               defaultValue="false"
               options={[
                 { value: true, label: "Enable" },
-                { value: false, label: "Disable" }
+                { value: false, label: "Disable" },
               ]}
             />
           </td>

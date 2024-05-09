@@ -19,19 +19,19 @@ describe("validation::string", () => {
     { value: [], error: true },
     { value: () => {}, error: true },
     { value: null },
-    { value: undefined }
+    { value: undefined },
   ]);
 
   describeValidation("required string", string().required(), [
     { value: null, error: true },
     { value: undefined, error: true },
     { value: "" },
-    { value: "hello" }
+    { value: "hello" },
   ]);
 
   describeValidation("default string", string().default("default"), [
     { value: null, expected: "default" },
     { value: undefined, expected: "default" },
-    { value: "hello" }
+    { value: "hello" },
   ]);
 });
